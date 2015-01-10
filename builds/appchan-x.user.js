@@ -115,7 +115,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Labels, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Labels, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -11632,10 +11632,10 @@
     }
   };
 
-  Linkify = {
+  Embedding = {
     init: function() {
       var type, _i, _len, _ref;
-      if (!Conf['Linkify']) {
+      if (!(Conf['Embedding'] || Conf['Link Title'])) {
         return;
       }
       this.types = {};
@@ -11644,39 +11644,689 @@
         type = _ref[_i];
         this.types[type.key] = type;
       }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
+      if (Conf['Floating Embeds']) {
+        this.dialog = UI.dialog('embedding', 'top: 50px; right: 0px;', {
+          innerHTML: "<div>\r<div class=\"move\"></div>\r<a href=\"javascript:;\" class=\"jump\" title=\"Jump to post\">→</a>\r<a href=\"javascript:;\" class=\"close\" title=\"Close\">×</a>\r</div>\r<div id=\"media-embed\"><div></div></div>\r"
+        });
+        this.media = $('#media-embed', this.dialog);
+        $.one(d, '4chanXInitFinished', this.ready);
       }
-      if (Conf['Embedding'] || Conf['Link Title']) {
-        this.embedProcess = Function('link', 'post', "var data = this.services(link);\nif (data) {" + ((Conf['Embedding'] ? 'this.embed(data); ' : '') + (Conf['Link Title'] ? 'data.push(post); this.title(data);' : '')) + "}");
+      if (Conf['Link Title']) {
+        return $.on(d, '4chanXInitFinished PostsInserted', function() {
+          var key, service, _ref1, _ref2;
+          _ref1 = Embedding.types;
+          for (key in _ref1) {
+            service = _ref1[key];
+            if ((_ref2 = service.title) != null ? _ref2.batchSize : void 0) {
+              Embedding.flushTitles(service.title);
+            }
+          }
+        });
       }
-      return Post.callbacks.push({
-        name: 'Linkify',
-        cb: this.node
-      });
     },
     events: function(post) {
       var el, i, items;
+      if (!Conf['Embedding']) {
+        return;
+      }
       i = 0;
       items = $$('.embedder', post.nodes.comment);
       while (el = items[i++]) {
-        $.on(el, 'click', Linkify.cb.toggle);
+        $.on(el, 'click', Embedding.cb.toggle);
         if ($.hasClass(el, 'embedded')) {
-          Linkify.cb.toggle.call(el);
+          Embedding.cb.toggle.call(el);
         }
       }
     },
+    process: function(link, post) {
+      var data;
+      if (!(Conf['Embedding'] || Conf['Link Title'])) {
+        return;
+      }
+      if ($.x('ancestor::pre', link)) {
+        return;
+      }
+      if (data = Embedding.services(link)) {
+        data.post = post;
+        if (Conf['Embedding']) {
+          Embedding.embed(data);
+        }
+        if (Conf['Link Title']) {
+          return Embedding.title(data);
+        }
+      }
+    },
+    services: function(link) {
+      var href, match, type, _i, _len, _ref;
+      href = link.href;
+      _ref = Embedding.ordered_types;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        if (!(match = type.regExp.exec(href))) {
+          continue;
+        }
+        if (type.dummy || type.httpOnly && location.protocol !== 'http:') {
+          return;
+        }
+        return {
+          key: type.key,
+          uid: match[1],
+          options: match[2],
+          link: link
+        };
+      }
+    },
+    embed: function(data) {
+      var embed, key, link, name, options, post, uid, value, _ref;
+      key = data.key, uid = data.uid, options = data.options, link = data.link, post = data.post;
+      embed = $.el('a', {
+        className: 'embedder',
+        rel: 'nofollow noreferrer',
+        href: link.href,
+        textContent: '(embed)'
+      });
+      _ref = {
+        key: key,
+        uid: uid,
+        options: options
+      };
+      for (name in _ref) {
+        value = _ref[name];
+        embed.dataset[name] = value;
+      }
+      $.addClass(link, "" + embed.dataset.key);
+      $.on(embed, 'click', Embedding.cb.toggle);
+      $.after(link, [$.tn(' '), embed]);
+      if (Conf['Auto-embed'] && !Conf['Floating Embeds'] && !post.isFetchedQuote) {
+        return $.asap((function() {
+          return doc.contains(embed);
+        }), function() {
+          return Embedding.cb.toggle.call(embed);
+        });
+      }
+    },
+    ready: function() {
+      $.addClass(Embedding.dialog, 'empty');
+      $.on($('.close', Embedding.dialog), 'click', Embedding.closeFloat);
+      $.on($('.move', Embedding.dialog), 'mousedown', Embedding.dragEmbed);
+      $.on($('.jump', Embedding.dialog), 'click', function() {
+        if (doc.contains(Embedding.lastEmbed)) {
+          return Header.scrollTo(Embedding.lastEmbed);
+        }
+      });
+      return $.add(d.body, Embedding.dialog);
+    },
+    closeFloat: function() {
+      delete Embedding.lastEmbed;
+      $.addClass(Embedding.dialog, 'empty');
+      return $.replace(Embedding.media.firstChild, $.el('div'));
+    },
+    dragEmbed: function() {
+      var style;
+      style = Embedding.media.style;
+      if (Embedding.dragEmbed.mouseup) {
+        $.off(d, 'mouseup', Embedding.dragEmbed);
+        Embedding.dragEmbed.mouseup = false;
+        style.visibility = '';
+        return;
+      }
+      $.on(d, 'mouseup', Embedding.dragEmbed);
+      Embedding.dragEmbed.mouseup = true;
+      return style.visibility = 'hidden';
+    },
+    title: function(data) {
+      var key, link, options, post, service, uid;
+      key = data.key, uid = data.uid, options = data.options, link = data.link, post = data.post;
+      if (!(service = Embedding.types[key].title)) {
+        return;
+      }
+      if (service.batchSize) {
+        (service.queue || (service.queue = [])).push(data);
+        if (service.queue.length >= service.batchSize) {
+          return Embedding.flushTitles(service);
+        }
+      } else {
+        if (!$.cache(service.api(uid), (function() {
+          return Embedding.cb.title(this, data);
+        }), {
+          responseType: 'json'
+        })) {
+          return $.extend(link, {
+            innerHTML: "[" + E(key) + "] <span class=\"warning\">Title Link Blocked</span> (are you using NoScript?)</a>"
+          });
+        }
+      }
+    },
+    flushTitles: function(service) {
+      var cb, data, queue, _i, _len;
+      queue = service.queue;
+      if (!(queue != null ? queue.length : void 0)) {
+        return;
+      }
+      service.queue = [];
+      cb = function() {
+        var data, _i, _len;
+        for (_i = 0, _len = queue.length; _i < _len; _i++) {
+          data = queue[_i];
+          Embedding.cb.title(this, data);
+        }
+      };
+      if (!$.cache(service.api((function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = queue.length; _i < _len; _i++) {
+          data = queue[_i];
+          _results.push(data.uid);
+        }
+        return _results;
+      })()), cb, {
+        responseType: 'json'
+      })) {
+        for (_i = 0, _len = queue.length; _i < _len; _i++) {
+          data = queue[_i];
+          $.extend(data.link, {
+            innerHTML: "[" + E(data.key) + "] <span class=\"warning\">Title Link Blocked</span> (are you using NoScript?)</a>"
+          });
+        }
+      }
+    },
+    cb: {
+      toggle: function(e) {
+        var div;
+        if (e != null) {
+          e.preventDefault();
+        }
+        if (Conf['Floating Embeds']) {
+          if (!(div = Embedding.media.firstChild)) {
+            return;
+          }
+          $.replace(div, Embedding.cb.embed(this));
+          Embedding.lastEmbed = Get.postFromNode(this).nodes.root;
+          $.rmClass(Embedding.dialog, 'empty');
+          return;
+        }
+        if ($.hasClass(this, "embedded")) {
+          if (!$.hasClass(this.previousElementSibling, 'linkify')) {
+            $.rm(this.previousElementSibling);
+          }
+          this.previousElementSibling.hidden = false;
+          this.textContent = '(embed)';
+        } else {
+          this.previousElementSibling.hidden = true;
+          $.before(this, Embedding.cb.embed(this));
+          this.textContent = '(unembed)';
+        }
+        return $.toggleClass(this, 'embedded');
+      },
+      embed: function(a) {
+        var el, type;
+        el = (type = Embedding.types[a.dataset.key]).el(a);
+        el.style.cssText = type.style != null ? type.style : "border: 0; width: 640px; height: 390px";
+        return el;
+      },
+      title: function(req, data) {
+        var key, link, link2, options, post, post2, service, status, text, uid, _i, _j, _len, _len1, _ref, _ref1;
+        key = data.key, uid = data.uid, options = data.options, link = data.link, post = data.post;
+        status = req.status;
+        service = Embedding.types[key].title;
+        text = "[" + key + "] " + ((function() {
+          switch (status) {
+            case 200:
+            case 304:
+              return service.text(req.response, uid);
+            case 404:
+              return "Not Found";
+            case 403:
+              return "Forbidden or Private";
+            default:
+              return "" + status + "'d";
+          }
+        })());
+        link.dataset.original = link.textContent;
+        link.textContent = text;
+        _ref = post.clones;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          post2 = _ref[_i];
+          _ref1 = $$('a.linkify', post2.nodes.comment);
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            link2 = _ref1[_j];
+            if (!(link2.href === link.href)) {
+              continue;
+            }
+            link2.dataset.original = link2.textContent;
+            link2.textContent = text;
+          }
+        }
+      }
+    },
+    ordered_types: [
+      {
+        key: 'audio',
+        regExp: /\.(?:mp3|ogg|wav)(?:\?|$)/i,
+        style: '',
+        el: function(a) {
+          return $.el('audio', {
+            controls: true,
+            preload: 'auto',
+            src: a.href
+          });
+        }
+      }, {
+        key: 'gist',
+        regExp: /^\w+:\/\/gist\.github\.com\/(?:[\w\-]+\/)?(\w+)/,
+        el: function(a) {
+          var content, el;
+          el = $.el('iframe');
+          el.setAttribute('sandbox', 'allow-scripts');
+          content = {
+            innerHTML: "<html><head><title>" + E(a.dataset.uid) + "</title></head><body><script src=\"https://gist.github.com/" + E(a.dataset.uid) + ".js\"></script></body></html>"
+          };
+          el.src = "data:text/html;charset=utf-8,<!doctype html>" + (encodeURIComponent(content.innerHTML));
+          return el;
+        },
+        title: {
+          api: function(uid) {
+            return "https://api.github.com/gists/" + uid;
+          },
+          text: function(_arg) {
+            var file, files;
+            files = _arg.files;
+            for (file in files) {
+              if (files.hasOwnProperty(file)) {
+                return file;
+              }
+            }
+          }
+        }
+      }, {
+        key: 'image',
+        regExp: /\.(?:gif|png|jpg|jpeg|bmp)(?:\?|$)/i,
+        style: '',
+        el: function(a) {
+          return $.el('div', {
+            innerHTML: "<a target=\"_blank\" href=\"" + E(a.href) + "\"><img src=\"" + E(a.href) + "\" style=\"max-width: 80vw; max-height: 80vh;\"></a>"
+          });
+        }
+      }, {
+        key: 'InstallGentoo',
+        regExp: /^\w+:\/\/paste\.installgentoo\.com\/view\/(?:raw\/|download\/|embed\/)?(\w+)/,
+        el: function(a) {
+          return $.el('iframe', {
+            src: "https://paste.installgentoo.com/view/embed/" + a.dataset.uid
+          });
+        }
+      }, {
+        key: 'Twitter',
+        regExp: /^\w+:\/\/(?:www\.)?twitter\.com\/(\w+\/status\/\d+)/,
+        el: function(a) {
+          return $.el('iframe', {
+            src: "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid
+          });
+        }
+      }, {
+        key: 'LiveLeak',
+        regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*i=(\w+)/,
+        httpOnly: true,
+        el: function(a) {
+          var el;
+          el = $.el('iframe', {
+            width: "640",
+            height: "360",
+            src: "http://www.liveleak.com/ll_embed?i=" + a.dataset.uid,
+            frameborder: "0"
+          });
+          el.setAttribute("allowfullscreen", "true");
+          return el;
+        }
+      }, {
+        key: 'MediaCrush',
+        regExp: /^\w+:\/\/(?:www\.)?mediacru\.sh\/([\w\-]+)/,
+        style: '',
+        el: function(a) {
+          var el;
+          el = $.el('div');
+          $.queueTask(function() {
+            return $.cache("https://mediacru.sh/" + a.dataset.uid + ".json", function() {
+              var embed, ext, file, files, i, status, type, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+              if (!doc.contains(el)) {
+                return;
+              }
+              status = this.status;
+              if (status !== 200 && status !== 304) {
+                return el.textContent = "ERROR " + status;
+              }
+              files = this.response.files;
+              _ref = ['video/mp4', 'video/webm', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'audio/mpeg', 'audio/ogg'];
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                type = _ref[_i];
+                for (_j = 0, _len1 = files.length; _j < _len1; _j++) {
+                  file = files[_j];
+                  if (file.type === type) {
+                    embed = file;
+                    break;
+                  }
+                }
+                if (embed) {
+                  break;
+                }
+              }
+              if (!embed) {
+                return el.textContent = "ERROR: Not a valid filetype";
+              }
+              switch (embed.type) {
+                case 'video/mp4':
+                case 'video/webm':
+                case 'video/ogv':
+                  $.extend(el, {
+                    innerHTML: "<video controls loop style=\"max-width: 80vw; max-height: 80vh;\"><source type=\"video/mp4\"><source type=\"video/webm\"></video>"
+                  });
+                  _ref1 = ['mp4', 'webm'];
+                  for (i = _k = 0, _len2 = _ref1.length; _k < _len2; i = ++_k) {
+                    ext = _ref1[i];
+                    el.firstChild.children[i].src = "https://mediacru.sh/" + a.dataset.uid + "." + ext;
+                  }
+                  break;
+                case 'image/svg+xml':
+                case 'image/png':
+                case 'image/gif':
+                case 'image/jpeg':
+                  $.extend(el, {
+                    innerHTML: "<a target=\"_blank\" href=\"" + E(a.href) + "\"><img src=\"https://mediacru.sh/" + E(file.file) + "\" style=\"max-width: 80vw; max-height: 80vh;\"></a>"
+                  });
+                  break;
+                case 'audio/mpeg':
+                case 'audio/ogg':
+                  $.extend(el, {
+                    innerHTML: "<audio controls><source type=\"audio/ogg\" src=\"https://mediacru.sh/" + E(a.dataset.uid) + ".ogg\"></audio>"
+                  });
+                  break;
+                default:
+                  el.textContent = "ERROR: No valid filetype.";
+              }
+            });
+          });
+          return el;
+        }
+      }, {
+        key: 'pastebin',
+        regExp: /^\w+:\/\/(?:\w+\.)?pastebin\.com\/(?!u\/)(?:[\w\.]+\?i\=)?(\w+)/,
+        httpOnly: true,
+        el: function(a) {
+          var div;
+          return div = $.el('iframe', {
+            src: "http://pastebin.com/embed_iframe.php?i=" + a.dataset.uid
+          });
+        }
+      }, {
+        key: 'gfycat',
+        regExp: /^\w+:\/\/(?:www\.)?gfycat\.com\/(?:iframe\/)?(\w+)/,
+        el: function(a) {
+          var div;
+          return div = $.el('iframe', {
+            src: "//gfycat.com/iframe/" + a.dataset.uid
+          });
+        }
+      }, {
+        key: 'SoundCloud',
+        regExp: /^\w+:\/\/(?:www\.)?(?:soundcloud\.com\/|snd\.sc\/)([\w\-\/]+)/,
+        style: 'border: 0; width: 500px; height: 400px;',
+        el: function(a) {
+          return $.el('iframe', {
+            src: "https://w.soundcloud.com/player/?visual=true&show_comments=false&url=https%3A%2F%2Fsoundcloud.com%2F" + (encodeURIComponent(a.dataset.uid))
+          });
+        },
+        title: {
+          api: function(uid) {
+            return "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F" + (encodeURIComponent(uid));
+          },
+          text: function(_) {
+            return _.title;
+          }
+        }
+      }, {
+        key: 'StrawPoll',
+        regExp: /^\w+:\/\/(?:www\.)?strawpoll\.me\/(?:embed_\d+\/)?(\d+(?:\/r)?)/,
+        httpOnly: true,
+        style: 'border: 0; width: 600px; height: 406px;',
+        el: function(a) {
+          return $.el('iframe', {
+            src: "http://strawpoll.me/embed_1/" + a.dataset.uid
+          });
+        }
+      }, {
+        key: 'TwitchTV',
+        regExp: /^\w+:\/\/(?:www\.)?twitch\.tv\/([^#\&\?]*)/,
+        httpOnly: true,
+        style: "border: none; width: 640px; height: 360px;",
+        el: function(a) {
+          var channel, id, idparam, obj, result, type, _;
+          if (result = /(\w+)\/([bc])\/(\d+)/i.exec(a.dataset.uid)) {
+            _ = result[0], channel = result[1], type = result[2], id = result[3];
+            idparam = {
+              'b': 'archive_id',
+              'c': 'chapter_id'
+            };
+            obj = $.el('object', {
+              data: 'http://www.twitch.tv/widgets/archive_embed_player.swf'
+            });
+            $.extend(obj, {
+              innerHTML: "<param name=\"allowFullScreen\" value=\"true\"><param name=\"flashvars\">"
+            });
+            obj.children[1].value = "channel=" + channel + "&start_volume=25&auto_play=false&" + idparam[type] + "=" + id;
+            return obj;
+          } else {
+            channel = (/(\w+)/.exec(a.dataset.uid))[0];
+            obj = $.el('object', {
+              data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=" + channel
+            });
+            $.extend(obj, {
+              innerHTML: "<param name=\"allowFullScreen\" value=\"true\"><param name=\"flashvars\">"
+            });
+            obj.children[1].value = "hostname=www.twitch.tv&channel=" + channel + "&auto_play=true&start_volume=25";
+            return obj;
+          }
+        }
+      }, {
+        key: 'Vocaroo',
+        regExp: /^\w+:\/\/(?:www\.)?vocaroo\.com\/i\/(\w+)/,
+        style: '',
+        el: function(a) {
+          return $.el('audio', {
+            controls: true,
+            preload: 'auto',
+            src: "http://vocaroo.com/media_command.php?media=" + a.dataset.uid + "&command=download_ogg"
+          });
+        }
+      }, {
+        key: 'Vimeo',
+        regExp: /^\w+:\/\/(?:www\.)?vimeo\.com\/(\d+)/,
+        el: function(a) {
+          return $.el('iframe', {
+            src: "//player.vimeo.com/video/" + a.dataset.uid + "?wmode=opaque"
+          });
+        },
+        title: {
+          api: function(uid) {
+            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
+          },
+          text: function(_) {
+            return _.title;
+          }
+        }
+      }, {
+        key: 'Vine',
+        regExp: /^\w+:\/\/(?:www\.)?vine\.co\/v\/(\w+)/,
+        style: 'border: none; width: 500px; height: 500px;',
+        el: function(a) {
+          return $.el('iframe', {
+            src: "https://vine.co/v/" + a.dataset.uid + "/card"
+          });
+        }
+      }, {
+        key: 'YouTube',
+        regExp: /^\w+:\/\/(?:youtu.be\/|[\w\.]*youtube[\w\.]*\/.*(?:v=|\/embed\/|\/v\/|\/videos\/))([\w\-]{11})[^#\&\?]?(.*)/,
+        el: function(a) {
+          var el, start;
+          start = a.dataset.options.match(/\b(?:star)?t\=(\w+)/);
+          if (start) {
+            start = start[1];
+          }
+          if (start && !/^\d+$/.test(start)) {
+            start += ' 0h0m0s';
+            start = 3600 * start.match(/(\d+)h/)[1] + 60 * start.match(/(\d+)m/)[1] + 1 * start.match(/(\d+)s/)[1];
+          }
+          el = $.el('iframe', {
+            src: "//www.youtube.com/embed/" + a.dataset.uid + "?wmode=opaque" + (start ? '&start=' + start : '')
+          });
+          el.setAttribute("allowfullscreen", "true");
+          return el;
+        },
+        title: {
+          batchSize: 50,
+          api: function(uids) {
+            var ids, key;
+            ids = encodeURIComponent(uids.join(','));
+            key = '';
+            return "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" + ids + "&fields=items%28id%2Csnippet%28title%29%29&key=" + key;
+          },
+          text: function(data, uid) {
+            var item, _i, _len, _ref;
+            _ref = data.items;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              item = _ref[_i];
+              if (item.id === uid) {
+                return item.snippet.title;
+              }
+            }
+            return 'Not Found';
+          }
+        }
+      }, {
+        key: 'Loopvid',
+        regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/((?:pf|kd|lv|mc|gd|gh|db|nn)\/[\w\-]+(,[\w\-]+)*|fc\/\w+\/\d+)/,
+        style: 'max-width: 80vw; max-height: 80vh;',
+        el: function(a) {
+          var base, el, host, name, names, type, types, url, _, _i, _j, _len, _len1, _ref, _ref1;
+          el = $.el('video', {
+            controls: true,
+            preload: 'auto',
+            loop: true
+          });
+          _ref = a.dataset.uid.match(/(\w+)\/(.*)/), _ = _ref[0], host = _ref[1], names = _ref[2];
+          types = host === 'gd' || host === 'fc' ? [''] : ['.webm', '.mp4'];
+          _ref1 = names.split(',');
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            name = _ref1[_i];
+            for (_j = 0, _len1 = types.length; _j < _len1; _j++) {
+              type = types[_j];
+              base = "" + name + type;
+              url = (function() {
+                switch (host) {
+                  case 'pf':
+                    return "http://a.pomf.se/" + base;
+                  case 'kd':
+                    return "http://kastden.org/loopvid/" + base;
+                  case 'lv':
+                    return "http://loopvid.mooo.com/videos/" + base;
+                  case 'mc':
+                    return "https://cdn.mediacru.sh/" + base;
+                  case 'gd':
+                    return "https://docs.google.com/uc?export=download&id=" + base;
+                  case 'gh':
+                    return "https://googledrive.com/host/" + base;
+                  case 'db':
+                    return "https://googledrive.com/host/" + base;
+                  case 'fc':
+                    return "//i.4cdn.org/" + base + ".webm";
+                  case 'nn':
+                    return "http://naenara.eu/loopvids/" + base;
+                }
+              })();
+              $.add(el, $.el('source', {
+                src: url
+              }));
+            }
+          }
+          return el;
+        }
+      }, {
+        key: 'Clyp',
+        regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w+)/,
+        style: '',
+        el: function(a) {
+          return $.el('audio', {
+            controls: true,
+            preload: 'auto',
+            src: "http://clyp.it/" + a.dataset.uid + ".ogg"
+          });
+        }
+      }, {
+        key: 'Loopvid-dummy',
+        regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\//,
+        dummy: true
+      }, {
+        key: 'MediaFire-dummy',
+        regExp: /^\w+:\/\/(?:www\.)?mediafire.com\//,
+        dummy: true
+      }, {
+        key: 'video',
+        regExp: /\.(?:ogv|webm|mp4)(?:\?|$)/i,
+        style: 'max-width: 80vw; max-height: 80vh;',
+        el: function(a) {
+          return $.el('video', {
+            controls: true,
+            preload: 'auto',
+            src: a.href
+          });
+        }
+      }
+    ]
+  };
+
+  Linkify = {
+    init: function() {
+      var _ref;
+      if (((_ref = g.VIEW) !== 'index' && _ref !== 'thread') || !Conf['Linkify']) {
+        return;
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
+      Post.callbacks.push({
+        name: 'Linkify',
+        cb: this.node
+      });
+      CatalogThread.callbacks.push({
+        name: 'Linkify',
+        cb: this.catalogNode
+      });
+      return Embedding.init();
+    },
     node: function() {
-      var data, end, endNode, i, index, length, link, links, node, result, saved, snapshot, space, test, word;
+      var link, links, _i, _len;
       if (this.isClone) {
-        return (Conf['Embedding'] ? Linkify.events(this) : null);
+        return Embedding.events(this);
       }
       if (!Linkify.regString.test(this.info.comment)) {
         return;
       }
+      links = Linkify.process(this.nodes.comment);
+      for (_i = 0, _len = links.length; _i < _len; _i++) {
+        link = links[_i];
+        Embedding.process(link, this);
+      }
+    },
+    catalogNode: function() {
+      if (!Linkify.regString.test(this.thread.OP.info.comment)) {
+        return;
+      }
+      return Linkify.process(this.nodes.comment);
+    },
+    process: function(node) {
+      var data, end, endNode, i, index, length, links, result, saved, snapshot, space, test, word;
       test = /[^\s'"]+/g;
       space = /[\s'"]/;
-      snapshot = $.X('.//br|.//text()', this.nodes.comment);
+      snapshot = $.X('.//br|.//text()', node);
       i = 0;
       links = [];
       while (node = snapshot.snapshotItem(i++)) {
@@ -11696,16 +12346,18 @@
               }
               endNode = saved;
               data = saved.data;
-              word += data;
-              length = data.length;
               if (end = space.exec(data)) {
+                word += data.slice(0, end.index);
                 test.lastIndex = length = end.index;
                 i--;
                 break;
+              } else {
+                length = data.length;
+                word += data;
               }
             }
           }
-          if (Linkify.regString.exec(word)) {
+          if (Linkify.regString.test(word)) {
             links.push(Linkify.makeRange(node, endNode, index, length));
           }
           if (!(test.lastIndex && node === endNode)) {
@@ -11715,12 +12367,11 @@
       }
       i = links.length;
       while (i--) {
-        link = links[i];
-        Linkify.embedProcess(Linkify.makeLink(link), this);
+        links[i] = Linkify.makeLink(links[i]);
       }
+      return links;
     },
-    embedProcess: function() {},
-    regString: /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/])|[-a-z\d]+[.](aero|asia|biz|cat|com|coop|info|int|jobs|mobi|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2})([:\/]|(?!.))|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i,
+    regString: /((https?|mailto|git|magnet|ftp|irc):([a-z\d%\/?])|([-a-z\d]+[.])+(aero|asia|biz|cat|com|coop|dance|info|int|jobs|mobi|moe|museum|name|net|org|post|pro|tel|travel|xxx|edu|gov|mil|[a-z]{2})([:\/]|(?![^\s'"]))|[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}|[-\w\d.@]+@[a-z\d.-]+\.[a-z\d])/i,
     makeRange: function(startNode, endNode, startOffset, endOffset) {
       var range;
       range = document.createRange();
@@ -11731,11 +12382,8 @@
     makeLink: function(range) {
       var a, i, t, text;
       text = range.toString();
-      i = 0;
-      while (/[(\[{<>]/.test(text.charAt(i))) {
-        i++;
-      }
-      if (i) {
+      i = text.search(Linkify.regString);
+      if (i > 0) {
         text = text.slice(i);
         while (range.startOffset + i >= range.startContainer.data.length) {
           i--;
@@ -11760,7 +12408,7 @@
           range.setEnd(range.endContainer, range.endOffset - i);
         }
       }
-      if (!/(mailto:|.+:\/\/)/.test(text)) {
+      if (!/((mailto|magnet):|.+:\/\/)/.test(text)) {
         text = (/@/.test(text) ? 'mailto:' : 'http://') + text;
       }
       a = $.el('a', {
@@ -11773,414 +12421,7 @@
       range.insertNode(a);
       range.detach();
       return a;
-    },
-    services: function(link) {
-      var href, match, type, _i, _len, _ref;
-      href = link.href;
-      _ref = Linkify.ordered_types;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        type = _ref[_i];
-        if (!(match = type.regExp.exec(href))) {
-          continue;
-        }
-        if (type.dummy) {
-          return;
-        }
-        return [type.key, match[1], match[2], link];
-      }
-    },
-    embed: function(data) {
-      var embed, href, key, link, name, options, post, uid, value, _ref;
-      key = data[0], uid = data[1], options = data[2], link = data[3], post = data[4];
-      href = link.href;
-      embed = $.el('a', {
-        className: 'embedder',
-        href: 'javascript:;',
-        textContent: '(embed)'
-      });
-      _ref = {
-        key: key,
-        href: href,
-        uid: uid,
-        options: options
-      };
-      for (name in _ref) {
-        value = _ref[name];
-        embed.dataset[name] = value;
-      }
-      $.addClass(link, "" + embed.dataset.key);
-      $.on(embed, 'click', Linkify.cb.toggle);
-      $.after(link, [$.tn(' '), embed]);
-      if (Conf['Auto-embed']) {
-        return Linkify.cb.toggle.call(embed);
-      }
-    },
-    title: function(data) {
-      var err, key, link, options, post, service, title, titles, uid;
-      key = data[0], uid = data[1], options = data[2], link = data[3], post = data[4];
-      if (!(service = Linkify.types[key].title)) {
-        return;
-      }
-      titles = Conf['CachedTitles'];
-      if (title = titles[uid]) {
-        return link.textContent = title[0];
-      } else {
-        try {
-          return $.cache(service.api(uid), (function() {
-            return Linkify.cb.title(this, data);
-          }), {
-            responseType: 'json'
-          });
-        } catch (_error) {
-          err = _error;
-          link.innerHTML = '<span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>';
-          $.prepend(link, $.tn("[" + key + "] "));
-        }
-      }
-    },
-    cb: {
-      toggle: function() {
-        if ($.hasClass(this, "embedded")) {
-          $.rm(this.previousElementSibling);
-          this.previousElementSibling.hidden = false;
-          this.textContent = '(embed)';
-        } else {
-          this.previousElementSibling.hidden = true;
-          $.before(this, Linkify.cb.embed(this));
-          this.textContent = '(unembed)';
-        }
-        return $.toggleClass(this, 'embedded');
-      },
-      embed: function(a) {
-        var el, type;
-        el = (type = Linkify.types[a.dataset.key]).el(a);
-        el.style.cssText = type.style != null ? type.style : "border: 0; width: 640px; height: 390px";
-        return el;
-      },
-      title: function(req, data) {
-        var key, link, link2, options, post, post2, service, status, text, uid, _i, _j, _len, _len1, _ref, _ref1;
-        key = data[0], uid = data[1], options = data[2], link = data[3], post = data[4];
-        status = req.status;
-        service = Linkify.types[key].title;
-        text = "[" + key + "] " + ((function() {
-          switch (status) {
-            case 200:
-            case 304:
-              return service.text(req.response);
-            case 404:
-              return "Not Found";
-            case 403:
-              return "Forbidden or Private";
-            default:
-              return "" + status + "'d";
-          }
-        })());
-        link.textContent = text;
-        _ref = post.clones;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          post2 = _ref[_i];
-          _ref1 = $$('a', post2.nodes.comment);
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            link2 = _ref1[_j];
-            if (link2.href === link.href) {
-              link2.textContent = text;
-            }
-          }
-        }
-      }
-    },
-    ordered_types: [
-      {
-        key: 'audio',
-        regExp: /(.*\.(mp3|ogg|wav))$/,
-        style: '',
-        el: function(a) {
-          return $.el('audio', {
-            controls: true,
-            preload: 'auto',
-            src: a.dataset.uid
-          });
-        }
-      }, {
-        key: 'gist',
-        regExp: /.*(?:gist.github.com.*\/)([^\/][^\/]*)$/,
-        el: function(a) {
-          var div;
-          return div = $.el('iframe', {
-            src: "http://www.purplegene.com/script?url=https://gist.github.com/" + a.dataset.uid + ".js"
-          });
-        },
-        title: {
-          api: function(uid) {
-            return "https://api.github.com/gists/" + uid;
-          },
-          text: function(_arg) {
-            var file, files;
-            files = _arg.files;
-            for (file in files) {
-              if (files.hasOwnProperty(file)) {
-                return file;
-              }
-            }
-          }
-        }
-      }, {
-        key: 'image',
-        regExp: /(http|www).*\.(gif|png|jpg|jpeg|bmp)$/,
-        style: 'border: 0; width: auto; height: auto;',
-        el: function(a) {
-          var el;
-          el = $.el('div');
-          el.innerHTML = '<a target="_blank"><img></a>';
-          el.firstChild.href = el.firstChild.firstChild.src = a.dataset.href;
-          return el;
-        }
-      }, {
-        key: 'InstallGentoo',
-        regExp: /.*(?:paste.installgentoo.com\/view\/)([0-9a-z_]+)/,
-        el: function(a) {
-          return $.el('iframe', {
-            src: "http://paste.installgentoo.com/view/embed/" + a.dataset.uid
-          });
-        }
-      }, {
-        key: 'Twitter',
-        regExp: /.*twitter.com\/(.+\/status\/\d+)/,
-        el: function(a) {
-          return $.el('iframe', {
-            src: "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid
-          });
-        }
-      }, {
-        key: 'LiveLeak',
-        regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
-        el: function(a) {
-          var el;
-          el = $.el('iframe', {
-            width: "640",
-            height: "360",
-            src: "http://www.liveleak.com/ll_embed?i=" + a.dataset.uid,
-            frameborder: "0"
-          });
-          el.setAttribute("allowfullscreen", "true");
-          return el;
-        }
-      }, {
-        key: 'MediaCrush',
-        regExp: /.*(?:mediacru.sh\/)([0-9a-z_-]+)/i,
-        style: 'border: 0;',
-        el: function(a) {
-          var el;
-          el = $.el('div');
-          $.cache("https://mediacru.sh/" + a.dataset.uid + ".json", function() {
-            var embed, ext, file, files, i, status, type, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results, _results1;
-            status = this.status;
-            if (status !== 200 && status !== 304) {
-              return el.textContent = "ERROR " + status;
-            }
-            files = this.response.files;
-            _ref = ['video/webm', 'video/mp4', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'audio/mpeg', 'audio/ogg'];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              type = _ref[_i];
-              for (_j = 0, _len1 = files.length; _j < _len1; _j++) {
-                file = files[_j];
-                if (file.type === type) {
-                  embed = file;
-                  break;
-                }
-              }
-              if (embed) {
-                break;
-              }
-            }
-            if (!embed) {
-              return div.textContent = "ERROR: Not a valid filetype";
-            }
-            switch (embed.type) {
-              case 'video/mp4':
-              case 'video/webm':
-              case 'video/ogv':
-                el.innerHTML = '<video autoplay loop><source type="video/mp4"><source type="video/webm"><source type="video/ogg"></video>';
-                _ref1 = ['mp4', 'webm', 'ogv'];
-                _results = [];
-                for (i = _k = 0, _len2 = _ref1.length; _k < _len2; i = ++_k) {
-                  ext = _ref1[i];
-                  _results.push(el.firstChild.children[i].src = "https://mediacru.sh/" + a.dataset.uid + "." + ext);
-                }
-                return _results;
-                break;
-              case 'image/svg+xml':
-              case 'image/png':
-              case 'image/gif':
-              case 'image/jpeg':
-                el.innerHTML = '<a target="_blank"><img></a>';
-                el.firstChild.href = a.dataset.href;
-                return el.firstChild.firstChild.src = "https://mediacru.sh/" + file.file;
-              case 'audio/mpeg':
-              case 'audio/ogg':
-                el.innerHTML = '<audio controls><source type="audio/ogg"><source type="audio/mpeg"></audio>';
-                _ref2 = ['ogg', 'mp3'];
-                _results1 = [];
-                for (i = _l = 0, _len3 = _ref2.length; _l < _len3; i = ++_l) {
-                  ext = _ref2[i];
-                  _results1.push(el.firstChild.children[i].src = "https://mediacru.sh/" + a.dataset.uid + "." + ext);
-                }
-                return _results1;
-                break;
-              default:
-                return el.textContent = "ERROR: No valid filetype.";
-            }
-          });
-          return el;
-        }
-      }, {
-        key: 'pastebin',
-        regExp: /.*(?:pastebin.com\/(?!u\/))([^#\&\?]*).*/,
-        el: function(a) {
-          var div;
-          return div = $.el('iframe', {
-            src: "http://pastebin.com/embed_iframe.php?i=" + a.dataset.uid
-          });
-        }
-      }, {
-        key: 'gfycat',
-        regExp: /.*gfycat.com\/(?:iframe\/)?(\S*)/,
-        el: function(a) {
-          var div;
-          return div = $.el('iframe', {
-            src: "http://gfycat.com/iframe/" + a.dataset.uid
-          });
-        }
-      }, {
-        key: 'SoundCloud',
-        regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
-        style: 'border: 0; width: 500px; height: 400px;',
-        el: function(a) {
-          return $.el('iframe', {
-            src: "//w.soundcloud.com/player/?visual=true&show_comments=false&url=https%3A%2F%2Fsoundcloud.com%2F" + (encodeURIComponent(a.dataset.uid))
-          });
-        },
-        title: {
-          api: function(uid) {
-            return "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F" + (encodeURIComponent(uid));
-          },
-          text: function(_) {
-            return _.title;
-          }
-        }
-      }, {
-        key: 'StrawPoll',
-        regExp: /strawpoll\.me\/(?:embed_\d+\/)?(\d+)/,
-        style: 'border: 0; width: 600px; height: 406px;',
-        el: function(a) {
-          return $.el('iframe', {
-            src: "http://strawpoll.me/embed_1/" + a.dataset.uid
-          });
-        }
-      }, {
-        key: 'TwitchTV',
-        regExp: /.*(?:twitch.tv\/)([^#\&\?]*).*/,
-        style: "border: none; width: 640px; height: 360px;",
-        el: function(a) {
-          var channel, id, idparam, obj, result, type, _;
-          if (result = /(\w+)\/([bc])\/(\d+)/i.exec(a.dataset.uid)) {
-            _ = result[0], channel = result[1], type = result[2], id = result[3];
-            idparam = {
-              'b': 'archive_id',
-              'c': 'chapter_id'
-            };
-            obj = $.el('object', {
-              data: 'http://www.twitch.tv/widgets/archive_embed_player.swf'
-            });
-            obj.innerHTML = '<param name="allowFullScreen" value="true"><param name="flashvars">';
-            obj.children[1].value = "channel=" + channel + "&start_volume=25&auto_play=false&" + idparam[type] + "=" + id;
-            return obj;
-          } else {
-            channel = (/(\w+)/.exec(a.dataset.uid))[0];
-            obj = $.el('object', {
-              data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=" + channel
-            });
-            obj.innerHTML = '<param name="allowFullScreen" value="true"><param name="flashvars">';
-            obj.children[1].value = "hostname=www.twitch.tv&channel=" + channel + "&auto_play=true&start_volume=25";
-            return obj;
-          }
-        }
-      }, {
-        key: 'Vocaroo',
-        regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
-        style: '',
-        el: function(a) {
-          return $.el('audio', {
-            controls: true,
-            preload: 'auto',
-            src: "http://vocaroo.com/media_command.php?media=" + (a.dataset.uid.replace(/^i\//, '')) + "&command=download_ogg"
-          });
-        }
-      }, {
-        key: 'Vimeo',
-        regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
-        el: function(a) {
-          return $.el('iframe', {
-            src: "//player.vimeo.com/video/" + a.dataset.uid + "?wmode=opaque"
-          });
-        },
-        title: {
-          api: function(uid) {
-            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + uid;
-          },
-          text: function(_) {
-            return _.title;
-          }
-        }
-      }, {
-        key: 'Vine',
-        regExp: /.*(?:vine.co\/)([^#\&\?]*).*/,
-        style: 'border: none; width: 500px; height: 500px;',
-        el: function(a) {
-          return $.el('iframe', {
-            src: "https://vine.co/" + a.dataset.uid + "/card"
-          });
-        }
-      }, {
-        key: 'YouTube',
-        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*)\??(t\=.*)?/,
-        el: function(a) {
-          var el;
-          el = $.el('iframe', {
-            src: "//www.youtube.com/embed/" + a.dataset.uid + (a.dataset.option ? '#' + a.dataset.option : '') + "?wmode=opaque"
-          });
-          el.setAttribute("allowfullscreen", "true");
-          return el;
-        },
-        title: {
-          api: function(uid) {
-            return "https://gdata.youtube.com/feeds/api/videos/" + uid + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
-          },
-          text: function(data) {
-            return data.entry.title.$t;
-          }
-        }
-      }, {
-        key: 'Loopvid',
-        regExp: /.*loopvid.appspot.com\/.*/,
-        dummy: true
-      }, {
-        key: 'MediaFire',
-        regExp: /.*mediafire.com\/.*/,
-        dummy: true
-      }, {
-        key: 'video',
-        regExp: /(.*\.(ogv|webm|mp4))$/,
-        style: 'border: 0; width: auto; height: auto;',
-        el: function(a) {
-          return $.el('video', {
-            controls: 'controls',
-            preload: 'auto',
-            src: a.dataset.uid
-          });
-        }
-      }
-    ]
+    }
   };
 
   ArchiveLink = {
