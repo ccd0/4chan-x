@@ -3,8 +3,8 @@ Main =
     if location.hostname is 'www.google.com'
       return $.ready -> Captcha.noscript.initFrame()
 
-    g.threads = new SimpleDict
-    g.posts   = new SimpleDict
+    g.threads = new SimpleDict()
+    g.posts   = new SimpleDict()
 
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]

@@ -8,7 +8,7 @@ Build =
       {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>'}[c]
   shortFilename: (filename) ->
     threshold = 30
-    ext = filename.match(/\.[^.]+$/)[0]
+    ext = filename.match(/\.?[^\.]*$/)[0]
     if filename.length - ext.length > threshold
       "#{filename[...threshold - 5]}(...)#{ext}"
     else
@@ -33,24 +33,24 @@ Build =
   postFromObject: (data, boardID) ->
     o =
       # id
-      postID:     data.no
-      threadID:   data.resto or data.no
-      boardID:    boardID
+      postID:   data.no
+      threadID: data.resto or data.no
+      boardID:  boardID
       # info
-      name:       Build.unescape data.name
-      capcode:    data.capcode
-      tripcode:   data.trip
-      uniqueID:   data.id
-      email:      Build.unescape data.email
-      subject:    Build.unescape data.sub
-      flagCode:   data.country
-      flagName:   Build.unescape data.country_name
-      date:       data.now
-      dateUTC:    data.time
-      comment:    {innerHTML: data.com or ''}
+      name:     Build.unescape data.name
+      capcode:  data.capcode
+      tripcode: data.trip
+      uniqueID: data.id
+      email:    Build.unescape data.email
+      subject:  Build.unescape data.sub
+      flagCode: data.country
+      flagName: Build.unescape data.country_name
+      date:     data.now
+      dateUTC:  data.time
+      comment:  {innerHTML: data.com or ''}
       # thread status
-      isSticky:   !!data.sticky
-      isClosed:   !!data.closed
+      isSticky: !!data.sticky
+      isClosed: !!data.closed
       isArchived: !!data.archived
       # file
     if data.filedeleted
@@ -59,7 +59,6 @@ Build =
     else if data.ext
       o.file =
         name:      (Build.unescape data.filename) + data.ext
-        name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
         url: if boardID is 'f'
           "//i.4cdn.org/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
@@ -98,14 +97,15 @@ Build =
       when 'admin', 'admin_highlight'
         capcodeClass = ' capcodeAdmin'
         capcodeStart = <%= html(' <strong class="capcode hand id_admin" title="Highlight posts by the Administrator">## Admin</strong>') %>
-        capcodeIcon  = <%= html(' <img src="${staticPath}adminicon${gifIcon}" alt="Admin Icon" title="This user is the 4chan Administrator." class="identityIcon retina">') %>
+        capcodeIcon  = <%= html(' <img src="//s.4cdn.org/image/adminicon${retina}.gif" alt="Admin Icon" title="This user is the 4chan Administrator." class="identityIcon retina">') %>
       when 'mod'
         capcodeClass = ' capcodeMod'
         capcodeStart = <%= html(' <strong class="capcode hand id_mod" title="Highlight posts by Moderators">## Mod</strong>') %>
-        capcodeIcon  = <%= html(' <img src="${staticPath}modicon${gifIcon}" alt="Mod Icon" title="This user is a 4chan Moderator." class="identityIcon retina">') %>
+        capcodeIcon  = <%= html(' <img src="//s.4cdn.org/image/modicon${retina}.gif" alt="Mod Icon" title="This user is a 4chan Moderator." class="identityIcon retina">') %>
+      when 'developer'
         capcodeClass = ' capcodeDeveloper'
         capcodeStart = <%= html(' <strong class="capcode hand id_developer" title="Highlight posts by Developers">## Developer</strong>') %>
-        capcodeIcon  = <%= html(' <img src="${staticPath}developericon${gifIcon}" alt="Developer Icon" title="This user is a 4chan Developer." class="identityIcon retina">') %>
+        capcodeIcon  = <%= html(' <img src="//s.4cdn.org/image/developericon${retina}.gif" alt="Developer Icon" title="This user is a 4chan Developer." class="identityIcon retina">') %>
       else
         capcodeClass = ''
         capcodeStart = <%= html('') %>
@@ -181,14 +181,14 @@ Build =
 
     ### File Info ###
 
-    fileCont = if file?.isDeleted
-      <%= html(
+    if file?.isDeleted
+      fileCont = <%= html(
         '<span class="fileThumb">' +
           '<img src="${staticPath}filedeleted-res${gifIcon}" alt="File deleted." class="fileDeletedRes retina">' +
         '</span>'
       ) %>
     else if file and boardID is 'f'
-      <%= html(
+      fileCont = <%= html(
         '<div class="fileInfo"><span class="fileText" id="fT${postID}">' +
           'File: <a data-width="${file.width}" data-height="${file.height}" href="${file.url}" target="_blank">${file.name}</a>' +
           '-(${$.bytesToString(file.size)}, ${file.width}x${file.height}, ${file.tag})' +

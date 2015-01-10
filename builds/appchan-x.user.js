@@ -27,7 +27,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.43 - 2015-01-09
+* appchan x - Version 2.9.43 - 2015-01-10
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -2707,7 +2707,6 @@
           req.callbacks.push(cb);
         }
         return req;
-        return;
       }
       rm = function() {
         return delete reqs[url];
@@ -3180,8 +3179,8 @@
 
     function Board(ID) {
       this.ID = ID;
-      this.threads = new SimpleDict;
-      this.posts = new SimpleDict;
+      this.threads = new SimpleDict();
+      this.posts = new SimpleDict();
       g.boards[this] = this;
     }
 
@@ -3200,7 +3199,7 @@
       this.ID = ID;
       this.board = board;
       this.fullID = "" + this.board + "." + this.ID;
-      this.posts = new SimpleDict;
+      this.posts = new SimpleDict();
       this.isDead = false;
       this.isHidden = false;
       this.isOnTop = false;
@@ -5945,7 +5944,7 @@
     shortFilename: function(filename) {
       var ext, threshold;
       threshold = 30;
-      ext = filename.match(/\.[^.]+$/)[0];
+      ext = filename.match(/\.?[^\.]*$/)[0];
       if (filename.length - ext.length > threshold) {
         return "" + filename.slice(0, threshold - 5) + "(...)" + ext;
       } else {
@@ -6010,7 +6009,6 @@
       } else if (data.ext) {
         o.file = {
           name: (Build.unescape(data.filename)) + data.ext,
-          name: data.filename + data.ext,
           timestamp: "" + data.tim + data.ext,
           url: boardID === 'f' ? "//i.4cdn.org/" + boardID + "/" + (encodeURIComponent(data.filename)) + data.ext : "//i.4cdn.org/" + boardID + "/" + data.tim + data.ext,
           height: data.h,
@@ -6049,7 +6047,7 @@
             innerHTML: " <strong class=\"capcode hand id_admin\" title=\"Highlight posts by the Administrator\">## Admin</strong>"
           };
           capcodeIcon = {
-            innerHTML: " <img src=\"" + E(staticPath) + "adminicon" + E(gifIcon) + "\" alt=\"Admin Icon\" title=\"This user is the 4chan Administrator.\" class=\"identityIcon retina\">"
+            innerHTML: " <img src=\"//s.4cdn.org/image/adminicon" + E(retina) + ".gif\" alt=\"Admin Icon\" title=\"This user is the 4chan Administrator.\" class=\"identityIcon retina\">"
           };
           break;
         case 'mod':
@@ -6058,14 +6056,16 @@
             innerHTML: " <strong class=\"capcode hand id_mod\" title=\"Highlight posts by Moderators\">## Mod</strong>"
           };
           capcodeIcon = {
-            innerHTML: " <img src=\"" + E(staticPath) + "modicon" + E(gifIcon) + "\" alt=\"Mod Icon\" title=\"This user is a 4chan Moderator.\" class=\"identityIcon retina\">"
+            innerHTML: " <img src=\"//s.4cdn.org/image/modicon" + E(retina) + ".gif\" alt=\"Mod Icon\" title=\"This user is a 4chan Moderator.\" class=\"identityIcon retina\">"
           };
+          break;
+        case 'developer':
           capcodeClass = ' capcodeDeveloper';
           capcodeStart = {
             innerHTML: " <strong class=\"capcode hand id_developer\" title=\"Highlight posts by Developers\">## Developer</strong>"
           };
           capcodeIcon = {
-            innerHTML: " <img src=\"" + E(staticPath) + "developericon" + E(gifIcon) + "\" alt=\"Developer Icon\" title=\"This user is a 4chan Developer.\" class=\"identityIcon retina\">"
+            innerHTML: " <img src=\"//s.4cdn.org/image/developericon" + E(retina) + ".gif\" alt=\"Developer Icon\" title=\"This user is a 4chan Developer.\" class=\"identityIcon retina\">"
           };
           break;
         default:
@@ -6147,21 +6147,43 @@
       };
 
       /* File Info */
-      fileCont = (file != null ? file.isDeleted : void 0) ? {
-        innerHTML: "<span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span>"
-      } : file && boardID === 'f' ? {
-        innerHTML: "<div class=\"fileInfo\"><span class=\"fileText\" id=\"fT" + E(postID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(file.url) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E($.bytesToString(file.size)) + ", " + E(file.width) + "x" + E(file.height) + ", " + E(file.tag) + ")</span></div>"
-      } : file ? (file.isSpoiler ? (shortFilename = 'Spoiler Image', (spoilerRange = Build.spoilerRange[boardID]) ? fileThumb = "//s.4cdn.org/image/spoiler-" + boardID + (Math.floor(1 + spoilerRange * Math.random())) + ".png" : fileThumb = '//s.4cdn.org/image/spoiler.png', file.twidth = file.theight = 100) : (shortFilename = Build.shortFilename(file.name, !isOP), fileThumb = file.turl), fileSize = $.bytesToString(file.size), fileDims = file.url.slice(-4) === '.pdf' ? 'PDF' : "" + file.width + "x" + file.height, fileLink = file.isSpoiler || file.name === shortFilename ? {
-        innerHTML: "<a href=\"" + E(file.url) + "\" target=\"_blank\">" + E(shortFilename) + "</a>"
-      } : {
-        innerHTML: "<a title=\"" + E(file.name) + "\" href=\"" + E(file.url) + "\" target=\"_blank\">" + E(shortFilename) + "</a>"
-      }, fileText = file.isSpoiler ? {
-        innerHTML: "<div class=\"fileText\" id=\"fT" + E(postID) + "\" title=\"" + E(file.name) + "\">File: " + fileLink.innerHTML + " (" + E(fileSize) + ", " + E(fileDims) + ")</div>"
-      } : {
-        innerHTML: "<div class=\"fileText\" id=\"fT" + E(postID) + "\">File: " + fileLink.innerHTML + " (" + E(fileSize) + ", " + E(fileDims) + ")</div>"
-      }, {
-        innerHTML: fileText.innerHTML + "<a class=\"fileThumb" + E(file.isSpoiler ? " imgspoiler" : "") + "\" href=\"" + E(file.url) + "\" target=\"_blank\"><img src=\"" + E(fileThumb) + "\" alt=\"" + E(fileSize) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.theight) + "px; width: " + E(file.twidth) + "px;\"></a>"
-      }) : void 0;
+      if (file != null ? file.isDeleted : void 0) {
+        fileCont = {
+          innerHTML: "<span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span>"
+        };
+      } else if (file && boardID === 'f') {
+        fileCont = {
+          innerHTML: "<div class=\"fileInfo\"><span class=\"fileText\" id=\"fT" + E(postID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(file.url) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E($.bytesToString(file.size)) + ", " + E(file.width) + "x" + E(file.height) + ", " + E(file.tag) + ")</span></div>"
+        };
+      } else if (file) {
+        if (file.isSpoiler) {
+          shortFilename = 'Spoiler Image';
+          if (spoilerRange = Build.spoilerRange[boardID]) {
+            fileThumb = "//s.4cdn.org/image/spoiler-" + boardID + (Math.floor(1 + spoilerRange * Math.random())) + ".png";
+          } else {
+            fileThumb = '//s.4cdn.org/image/spoiler.png';
+          }
+          file.twidth = file.theight = 100;
+        } else {
+          shortFilename = Build.shortFilename(file.name, !isOP);
+          fileThumb = file.turl;
+        }
+        fileSize = $.bytesToString(file.size);
+        fileDims = file.url.slice(-4) === '.pdf' ? 'PDF' : "" + file.width + "x" + file.height;
+        fileLink = file.isSpoiler || file.name === shortFilename ? {
+          innerHTML: "<a href=\"" + E(file.url) + "\" target=\"_blank\">" + E(shortFilename) + "</a>"
+        } : {
+          innerHTML: "<a title=\"" + E(file.name) + "\" href=\"" + E(file.url) + "\" target=\"_blank\">" + E(shortFilename) + "</a>"
+        };
+        fileText = file.isSpoiler ? {
+          innerHTML: "<div class=\"fileText\" id=\"fT" + E(postID) + "\" title=\"" + E(file.name) + "\">File: " + fileLink.innerHTML + " (" + E(fileSize) + ", " + E(fileDims) + ")</div>"
+        } : {
+          innerHTML: "<div class=\"fileText\" id=\"fT" + E(postID) + "\">File: " + fileLink.innerHTML + " (" + E(fileSize) + ", " + E(fileDims) + ")</div>"
+        };
+        ({
+          innerHTML: fileText.innerHTML + "<a class=\"fileThumb" + E(file.isSpoiler ? " imgspoiler" : "") + "\" href=\"" + E(file.url) + "\" target=\"_blank\"><img src=\"" + E(fileThumb) + "\" alt=\"" + E(fileSize) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.theight) + "px; width: " + E(file.twidth) + "px;\"></a>"
+        });
+      }
       fileBlock = file ? {
         innerHTML: "<div class=\"file\" id=\"f" + E(postID) + "\">" + fileCont.innerHTML + "</div>"
       } : {
@@ -8421,7 +8443,7 @@
         posts.forEach(QuoteThreading.insert);
       } else {
         nodes = [];
-        Unread.order = new RandomAccessList;
+        Unread.order = new RandomAccessList();
         QuoteThreading.inserted = {};
         posts.forEach(function(post) {
           if (post.isFetchedQuote) {
@@ -14672,9 +14694,9 @@
       this.hr = $.el('hr', {
         id: 'unread-line'
       });
-      this.posts = new Set;
-      this.postsQuotingYou = new Set;
-      this.order = new RandomAccessList;
+      this.posts = new Set();
+      this.postsQuotingYou = new Set();
+      this.order = new RandomAccessList();
       this.position = null;
       Thread.callbacks.push({
         name: 'Unread',
@@ -19761,8 +19783,8 @@
           return Captcha.noscript.initFrame();
         });
       }
-      g.threads = new SimpleDict;
-      g.posts = new SimpleDict;
+      g.threads = new SimpleDict();
+      g.posts = new SimpleDict();
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
       if ((_ref = g.BOARD.ID) === 'z' || _ref === 'fk') {

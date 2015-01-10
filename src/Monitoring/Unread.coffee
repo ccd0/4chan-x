@@ -12,9 +12,9 @@ Unread =
     @db = new DataBoard 'lastReadPosts', @sync
     @hr = $.el 'hr',
       id: 'unread-line'
-    @posts = new Set
-    @postsQuotingYou = new Set
-    @order = new RandomAccessList
+    @posts = new Set()
+    @postsQuotingYou = new Set()
+    @order = new RandomAccessList()
     @position = null
 
     Thread.callbacks.push

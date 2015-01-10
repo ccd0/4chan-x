@@ -70,7 +70,6 @@ do ->
       else
         req.callbacks.push cb
       return req
-      return
     rm = -> delete reqs[url]
     try
       return unless req = $.ajax url, options

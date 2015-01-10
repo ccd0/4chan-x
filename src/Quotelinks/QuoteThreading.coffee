@@ -105,7 +105,7 @@ QuoteThreading =
       posts.forEach QuoteThreading.insert
     else
       nodes = []
-      Unread.order = new RandomAccessList
+      Unread.order = new RandomAccessList()
       QuoteThreading.inserted = {}
       posts.forEach (post) ->
         return if post.isFetchedQuote
