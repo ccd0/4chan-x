@@ -19528,7 +19528,8 @@
       mascotHide = $.el("div", {
         id: "mascot_hide",
         className: "reply"
-      }, {
+      });
+      $.extend(mascotHide, {
         innerHTML: "Hide Categories <span class=\"drop-marker\"></span><div></div>"
       });
       keys = Object.keys(Mascots);
@@ -19536,7 +19537,8 @@
       if (mode === 'default') {
         mascotoptions = $.el('div', {
           id: 'mascot-options'
-        }, {
+        });
+        $.extend(mascotoptions, {
           innerHTML: "<a class=\"edit\" href=\"javascript:;\">Edit</a><a class=\"delete\" href=\"javascript:;\">Delete</a><a class=\"export\" href=\"javascript:;\">Export</a>"
         });
         $.on($('.edit', mascotoptions), 'click', cb.edit);
@@ -19554,13 +19556,13 @@
           menu = $('div', mascotHide);
           categories[name] = div = $.el("div", {
             id: name,
-            className: "mascots-container"
-          }, {
-            innerHTML: "<h3 class=\"mascotHeader\">" + E(name) + "</h3>"
-          }, {
+            className: "mascots-container",
             hidden: __indexOf.call(Conf["Hidden Categories"], name) >= 0
           });
-          option = UI.checkbox(name, name, __indexOf.call(Conf["Hidden Categories"], name) >= 0);
+          $.extend(categories[name], {
+            innerHTML: "<h3 class=\"mascotHeader\">" + E(name) + "</h3>"
+          });
+          option = UI.checkbox(name, name, (__indexOf.call(Conf["Hidden Categories"], name) >= 0));
           $.on($('input', option), 'change', cb.category);
           $.add(suboptions, div);
           $.add(menu, option);
@@ -19575,7 +19577,7 @@
             id: name,
             className: __indexOf.call(Conf[g.MASCOTSTRING], name) >= 0 ? 'mascot enabled' : 'mascot'
           });
-          $.extend(div, {
+          $.extend(mascotEl, {
             innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, ' ')) + "</div>\r<div class='mascotcontainer " + (mascot.silhouette ? 'silhouette' : '') + "'><div class='mAlign " + mascot.category + "'><img class='mascotimg' src='" + mascot.image + "'></div></div>"
           });
           $.on(mascotEl, 'click', cb.select);
@@ -19651,7 +19653,8 @@
         $.add(suboptions, container);
         batchmascots = $.el('div', {
           id: "mascots_batch"
-        }, {
+        });
+        $.extend(batchmascots, {
           innerHTML: "<a href=\"javascript:;\" id=\"return\">Return</a>"
         });
         $.on($('#return', batchmascots), 'click', function() {

@@ -643,6 +643,8 @@ Settings =
     mascotHide = $.el "div",
       id: "mascot_hide"
       className: "reply"
+    
+    $.extend mascotHide,
       <%= html('Hide Categories <span class="drop-marker"></span><div></div>') %>
 
     keys = Object.keys Mascots
@@ -651,6 +653,8 @@ Settings =
     if mode is 'default'
       mascotoptions = $.el 'div',
         id: 'mascot-options'
+        
+      $.extend mascotoptions, 
         <%= html('<a class="edit" href="javascript:;">Edit</a><a class="delete" href="javascript:;">Delete</a><a class="export" href="javascript:;">Export</a>') %>
 
       $.on $('.edit',   mascotoptions), 'click', cb.edit
@@ -667,10 +671,12 @@ Settings =
         categories[name] = div = $.el "div",
           id:        name
           className: "mascots-container"
-          <%= html('<h3 class="mascotHeader">${name}</h3>') %>
           hidden:    name in Conf["Hidden Categories"]
+        
+        $.extend categories[name],
+          <%= html('<h3 class="mascotHeader">${name}</h3>') %>
 
-        option = UI.checkbox name, name, name in Conf["Hidden Categories"]
+        option = UI.checkbox name, name, (name in Conf["Hidden Categories"])
 
         $.on $('input', option), 'change', cb.category
 
@@ -684,7 +690,7 @@ Settings =
           id:        name
           className: if name in Conf[g.MASCOTSTRING] then 'mascot enabled' else 'mascot'
 
-        $.extend div, <%= importHTML('Settings/Mascot') %>
+        $.extend mascotEl, <%= importHTML('Settings/Mascot') %>
 
         $.on mascotEl, 'click', cb.select
         $.on mascotEl, 'mouseover', addoptions
@@ -747,6 +753,7 @@ Settings =
 
       batchmascots = $.el 'div',
         id: "mascots_batch"
+      $.extend batchmascots,
         <%= html('<a href="javascript:;" id="return">Return</a>') %>
 
       $.on $('#return', batchmascots), 'click', ->
