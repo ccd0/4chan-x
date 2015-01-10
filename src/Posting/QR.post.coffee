@@ -4,7 +4,7 @@ QR.post = class
       className: 'qr-preview'
       draggable: true
       href: 'javascript:;'
-      innerHTML: '<a class="remove fa" title=Remove>\uf057</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+    $.extend el, <%= html('<a class="remove fa" title="Remove">\uf057</a><label hidden><input type="checkbox"> Spoiler</label><span></span>') %>
 
     @nodes =
       el:      el
@@ -13,12 +13,6 @@ QR.post = class
       spoiler: $ 'input', el
       span:    el.lastChild
 
-    <% if (type === 'userscript') { %>
-    # XXX Firefox lacks focusin/focusout support.
-    for elm in $$ '*', el
-      $.on elm, 'blur',  QR.focusout
-      $.on elm, 'focus', QR.focusin
-    <% } %>
     $.on el,             'click',  @select
     $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
     $.on @nodes.label,   'click',  (e) => e.stopPropagation()
@@ -72,7 +66,7 @@ QR.post = class
     @select() if select
     @unlock()
     # Post count temporarily off by 1 when called from QR.post.rm
-    $.queueTask -> QR.captcha.setup()
+    $.queueTask -> QR.captcha.onNewPost()
 
   rm: ->
     @delete()
@@ -123,6 +117,9 @@ QR.post = class
       node.value = @[name] or node.dataset.default or null
 
     QR.tripcodeHider.call QR.nodes['name']
+
+    (if @thread isnt 'new' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
+
     @showFileData()
     QR.characterCount()
 
@@ -134,6 +131,7 @@ QR.post = class
     @[name] = input.value or input.dataset.default or null
     switch name
       when 'thread'
+        (if @thread isnt 'new' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
         QR.status()
       when 'com'
         @nodes.span.textContent = @com
@@ -271,10 +269,10 @@ QR.post = class
     URL.revokeObjectURL @URL
 
   updateFilename: ->
-    title = "#{@filename} (#{@filesize})\nCtrl/\u2318+click to edit filename. Shift+click to clear."
-    @nodes.el.title = title
+    long = "#{@filename} (#{@filesize})\nCtrl/\u2318+click to edit filename. Shift+click to clear."
+    @nodes.el.title = long
     return unless @ is QR.selected
-    QR.nodes.fileContainer.title = title
+    QR.nodes.fileContainer.title = long
 
   showFileData: ->
     if @file

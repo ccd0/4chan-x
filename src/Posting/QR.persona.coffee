@@ -56,7 +56,7 @@ QR.persona =
         # If we're in a closed thread, #postPassword isn't available.
         # And since #delPassword.value is only filled on window.onload
         # we'd rather use #postPassword when we can.
-        $.id('delPassword').value
+        $.id('delPassword')?.value or ''
     return QR.persona.pwd
 
   get: (cb) ->
@@ -68,6 +68,5 @@ QR.persona =
       persona =
         name:  post.name
         email: if /^sage$/.test post.email then persona.email else post.email
-        sub:   if Conf['Remember Subject'] then post.sub      else undefined
         flag:  post.flag
       $.set 'QR.persona', persona

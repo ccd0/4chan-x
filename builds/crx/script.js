@@ -10096,119 +10096,183 @@
   };
 
   QR.cooldown = {
+    seconds: 0,
     init: function() {
-      var key, setTimers, type;
+      var delay, items, key, keys, m, scope, type, _ref, _results;
       if (!Conf['Cooldown']) {
         return;
       }
-      setTimers = (function(_this) {
-        return function(e) {
-          return QR.cooldown.types = e.detail;
-        };
-      })(this);
-      $.on(window, 'cooldown:timers', setTimers);
-      $.globalEval('window.dispatchEvent(new CustomEvent("cooldown:timers", {detail: cooldowns}))');
-      $.off(window, 'cooldown:timers', setTimers);
-      for (type in QR.cooldown.types) {
-        QR.cooldown.types[type] = +QR.cooldown.types[type];
+      QR.cooldown.delays = (m = Get.scriptData().match(/\bcooldowns *= *({[^}]+})/)) ? JSON.parse(m[1]) : {
+        thread: 0,
+        reply: 0,
+        image: 0,
+        reply_intra: 0,
+        image_intra: 0
+      };
+      QR.cooldown.maxDelay = 0;
+      _ref = QR.cooldown.delays;
+      for (type in _ref) {
+        delay = _ref[type];
+        if (type !== 'thread') {
+          QR.cooldown.maxDelay = Math.max(QR.cooldown.maxDelay, delay);
+        }
       }
-      key = "cooldown." + g.BOARD;
-      $.get(key, {}, function(item) {
-        QR.cooldown.cooldowns = item[key];
+      QR.cooldown.delays['thread_global'] = 300;
+      keys = QR.cooldown.keys = {
+        local: "cooldown." + g.BOARD,
+        global: 'cooldown.global'
+      };
+      items = {};
+      for (scope in keys) {
+        key = keys[scope];
+        items[key] = {};
+      }
+      $.get(items, function(items) {
+        for (scope in keys) {
+          key = keys[scope];
+          QR.cooldown[scope] = items[key];
+        }
         return QR.cooldown.start();
       });
-      return $.sync(key, QR.cooldown.sync);
+      _results = [];
+      for (scope in keys) {
+        key = keys[scope];
+        _results.push($.sync(key, QR.cooldown.sync(scope)));
+      }
+      return _results;
     },
     start: function() {
-      if (QR.cooldown.isCounting || !Object.keys(QR.cooldown.cooldowns).length) {
+      if (QR.cooldown.isCounting || Object.keys(QR.cooldown.local).length + Object.keys(QR.cooldown.global).length === 0) {
         return;
       }
       QR.cooldown.isCounting = true;
       return QR.cooldown.count();
     },
-    sync: function(cooldowns) {
-      var id;
-      for (id in cooldowns) {
-        QR.cooldown.cooldowns[id] = cooldowns[id];
-      }
-      return QR.cooldown.start();
+    sync: function(scope) {
+      return function(cooldowns) {
+        QR.cooldown[scope] = cooldowns || {};
+        return QR.cooldown.start();
+      };
     },
-    set: function(data) {
-      var cooldown, delay, isReply, post, req, start, threadID;
+    add: function(start, threadID, postID) {
+      var boardID;
       if (!Conf['Cooldown']) {
         return;
       }
-      req = data.req, post = data.post, isReply = data.isReply, threadID = data.threadID, delay = data.delay;
-      start = req ? req.uploadEndTime : Date.now();
-      if (delay) {
-        cooldown = {
-          delay: delay
-        };
-      } else {
-        cooldown = {
-          isReply: isReply,
-          threadID: threadID
-        };
+      boardID = g.BOARD.ID;
+      QR.cooldown.set('local', start, {
+        threadID: threadID,
+        postID: postID
+      });
+      if (threadID === postID) {
+        QR.cooldown.set('global', start, {
+          boardID: boardID,
+          threadID: threadID,
+          postID: postID
+        });
       }
-      QR.cooldown.cooldowns[start] = cooldown;
-      $.set("cooldown." + g.BOARD, QR.cooldown.cooldowns);
       return QR.cooldown.start();
     },
-    unset: function(id) {
-      delete QR.cooldown.cooldowns[id];
-      if (Object.keys(QR.cooldown.cooldowns).length) {
-        return $.set("cooldown." + g.BOARD, QR.cooldown.cooldowns);
+    addDelay: function(post, delay) {
+      var cooldown;
+      if (!Conf['Cooldown']) {
+        return;
+      }
+      cooldown = QR.cooldown.categorize(post);
+      cooldown.delay = delay;
+      QR.cooldown.set('local', Date.now(), cooldown);
+      return QR.cooldown.start();
+    },
+    "delete": function(post) {
+      var cooldown, id, _ref;
+      if (!(Conf['Cooldown'] && g.BOARD.ID === post.board.ID)) {
+        return;
+      }
+      $.forceSync(QR.cooldown.keys.local);
+      _ref = QR.cooldown.local;
+      for (id in _ref) {
+        cooldown = _ref[id];
+        if ((cooldown.delay == null) && cooldown.threadID === post.thread.ID && cooldown.postID === post.ID) {
+          delete QR.cooldown.local[id];
+        }
+      }
+      return QR.cooldown.save('local');
+    },
+    categorize: function(post) {
+      if (post.thread === 'new') {
+        return {
+          type: 'thread'
+        };
       } else {
-        return $["delete"]("cooldown." + g.BOARD);
+        return {
+          type: !!post.file ? 'image' : 'reply',
+          threadID: +post.thread
+        };
+      }
+    },
+    set: function(scope, id, value) {
+      $.forceSync(QR.cooldown.keys[scope]);
+      QR.cooldown[scope][id] = value;
+      return $.set(QR.cooldown.keys[scope], QR.cooldown[scope]);
+    },
+    save: function(scope) {
+      if (Object.keys(QR.cooldown[scope]).length) {
+        return $.set(QR.cooldown.keys[scope], QR.cooldown[scope]);
+      } else {
+        return $["delete"](QR.cooldown.keys[scope]);
       }
     },
     count: function() {
-      var cooldown, cooldowns, elapsed, hasFile, isReply, maxTimer, now, post, seconds, start, type, types, update, _ref;
-      if (!Object.keys(QR.cooldown.cooldowns).length) {
-        $["delete"]("cooldown." + g.BOARD);
-        delete QR.cooldown.isCounting;
-        delete QR.cooldown.seconds;
-        QR.status();
-        return;
-      }
-      clearTimeout(QR.cooldown.timeout);
-      QR.cooldown.timeout = setTimeout(QR.cooldown.count, $.SECOND);
+      var cooldown, elapsed, key, maxDelay, now, save, scope, seconds, start, suffix, threadID, type, update, _ref, _ref1, _ref2;
       now = Date.now();
-      post = QR.posts[0];
-      isReply = post.thread !== 'new';
-      hasFile = !!post.file;
-      seconds = null;
-      _ref = QR.cooldown, types = _ref.types, cooldowns = _ref.cooldowns;
-      for (start in cooldowns) {
-        cooldown = cooldowns[start];
-        start = +start;
-        if ('delay' in cooldown) {
-          if (cooldown.delay) {
-            seconds = Math.max(seconds, cooldown.delay--);
-          } else {
-            seconds = Math.max(seconds, 0);
-            QR.cooldown.unset(start);
-          }
-          continue;
-        }
-        if (isReply === cooldown.isReply) {
+      _ref = QR.cooldown.categorize(QR.posts[0]), type = _ref.type, threadID = _ref.threadID;
+      seconds = 0;
+      _ref1 = QR.cooldown.keys;
+      for (scope in _ref1) {
+        key = _ref1[scope];
+        $.forceSync(key);
+        save = false;
+        _ref2 = QR.cooldown[scope];
+        for (start in _ref2) {
+          cooldown = _ref2[start];
+          start = +start;
           elapsed = Math.floor((now - start) / $.SECOND);
           if (elapsed < 0) {
-            QR.cooldown.unset(start);
+            delete QR.cooldown[scope][start];
+            save = true;
             continue;
           }
-          type = !isReply ? 'thread' : hasFile ? 'image' : 'reply';
-          maxTimer = Math.max(types[type] || 0, types[type + '_intra'] || 0);
-          if (!((start <= now && now <= start + maxTimer * $.SECOND))) {
-            QR.cooldown.unset(start);
+          if (cooldown.delay != null) {
+            if (cooldown.delay <= elapsed) {
+              delete QR.cooldown[scope][start];
+              save = true;
+            } else if (cooldown.type === type && cooldown.threadID === threadID) {
+              seconds = Math.max(seconds, cooldown.delay - elapsed);
+            }
+            continue;
           }
-          if (isReply && +post.thread === cooldown.threadID) {
-            type += '_intra';
+          maxDelay = cooldown.threadID !== cooldown.postID ? QR.cooldown.maxDelay : QR.cooldown.delays[scope === 'global' ? 'thread_global' : 'thread'];
+          if (maxDelay <= elapsed) {
+            delete QR.cooldown[scope][start];
+            save = true;
+            continue;
           }
-          seconds = Math.max(seconds, types[type] - elapsed);
+          if ((type === 'thread') === (cooldown.threadID === cooldown.postID)) {
+            suffix = scope === 'global' ? '_global' : type !== 'thread' && threadID === cooldown.threadID ? '_intra' : '';
+            seconds = Math.max(seconds, QR.cooldown.delays[type + suffix] - elapsed);
+          }
+        }
+        if (save) {
+          QR.cooldown.save(scope);
         }
       }
-      update = seconds !== null || !!QR.cooldown.seconds;
+      if (Object.keys(QR.cooldown.local).length + Object.keys(QR.cooldown.global).length) {
+        clearTimeout(QR.cooldown.timeout);
+        QR.cooldown.timeout = setTimeout(QR.cooldown.count, $.SECOND);
+      } else {
+        delete QR.cooldown.isCounting;
+      }
+      update = seconds !== QR.cooldown.seconds;
       QR.cooldown.seconds = seconds;
       if (update) {
         QR.status();
@@ -10287,9 +10351,9 @@
       }
     },
     getPassword: function() {
-      var input, m;
+      var input, m, _ref;
       if (!QR.persona.pwd) {
-        QR.persona.pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : (input = $.id('postPassword')) ? input.value : $.id('delPassword').value;
+        QR.persona.pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : (input = $.id('postPassword')) ? input.value : ((_ref = $.id('delPassword')) != null ? _ref.value : void 0) || '';
       }
       return QR.persona.pwd;
     },
@@ -10307,7 +10371,6 @@
         persona = {
           name: post.name,
           email: /^sage$/.test(post.email) ? persona.email : post.email,
-          sub: Conf['Remember Subject'] ? post.sub : void 0,
           flag: post.flag
         };
         return $.set('QR.persona', persona);
@@ -10322,8 +10385,10 @@
       el = $.el('a', {
         className: 'qr-preview',
         draggable: true,
-        href: 'javascript:;',
-        innerHTML: '<a class="remove fa" title=Remove>\uf057</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+        href: 'javascript:;'
+      });
+      $.extend(el, {
+        innerHTML: "<a class=\"remove fa\" title=\"Remove\"></a><label hidden><input type=\"checkbox\"> Spoiler</label><span></span>"
       });
       this.nodes = {
         el: el,
@@ -10380,7 +10445,7 @@
       }
       this.unlock();
       $.queueTask(function() {
-        return QR.captcha.setup();
+        return QR.captcha.onNewPost();
       });
     }
 
@@ -10455,6 +10520,7 @@
         node.value = this[name] || node.dataset["default"] || null;
       }
       QR.tripcodeHider.call(QR.nodes['name']);
+      (this.thread !== 'new' ? $.addClass : $.rmClass)(QR.nodes.el, 'reply-to-thread');
       this.showFileData();
       return QR.characterCount();
     };
@@ -10469,6 +10535,7 @@
       this[name] = input.value || input.dataset["default"] || null;
       switch (name) {
         case 'thread':
+          (this.thread !== 'new' ? $.addClass : $.rmClass)(QR.nodes.el, 'reply-to-thread');
           return QR.status();
         case 'com':
           this.nodes.span.textContent = this.com;
@@ -10632,13 +10699,13 @@
     };
 
     _Class.prototype.updateFilename = function() {
-      var title;
-      title = "" + this.filename + " (" + this.filesize + ")\nCtrl/\u2318+click to edit filename. Shift+click to clear.";
-      this.nodes.el.title = title;
+      var long;
+      long = "" + this.filename + " (" + this.filesize + ")\nCtrl/\u2318+click to edit filename. Shift+click to clear.";
+      this.nodes.el.title = long;
       if (this !== QR.selected) {
         return;
       }
-      return QR.nodes.fileContainer.title = title;
+      return QR.nodes.fileContainer.title = long;
     };
 
     _Class.prototype.showFileData = function() {
