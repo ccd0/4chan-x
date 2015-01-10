@@ -11410,7 +11410,10 @@
 
   ImageLoader = {
     init: function() {
-      var prefetch;
+      var prefetch, _ref;
+      if ((_ref = g.VIEW) !== 'index' && _ref !== 'thread') {
+        return;
+      }
       if (!(Conf["Image Prefetching"] || Conf["Replace JPG"] || Conf["Replace PNG"] || Conf["Replace GIF"] || Conf["Replace WEBM"])) {
         return;
       }
@@ -11418,12 +11421,17 @@
         name: 'Image Replace',
         cb: this.node
       });
-      Thread.callbacks.push({
-        name: 'Image Replace',
-        cb: this.thread
+      $.on(d, 'PostsInserted', function() {
+        return g.posts.forEach(ImageLoader.prefetch);
       });
+      if (Conf['Replace WEBM']) {
+        this.processVideo();
+      }
+      if (!Conf['Image Prefetching']) {
+        return;
+      }
       prefetch = $.el('label', {
-        innerHTML: '<input type=checkbox name="prefetch"> Prefetch Images'
+        innerHTML: "<input type=\"checkbox\" name=\"prefetch\"> Prefetch Images"
       });
       this.el = prefetch.firstElementChild;
       $.on(this.el, 'change', this.toggle);
@@ -11432,65 +11440,98 @@
         order: 104
       });
     },
-    thread: function() {
-      return ImageLoader.thread = this;
-    },
     node: function() {
-      var URL, cb, file, isImage, isVideo, match, replace, style, thumb, type, _ref, _ref1;
-      if (!this.file) {
+      if (this.isClone || !this.file) {
         return;
       }
-      _ref = this.file, isImage = _ref.isImage, isVideo = _ref.isVideo;
-      if (this.isClone || this.isHidden || this.thread.isHidden || !(isImage || isVideo)) {
+      if (Conf['Replace WEBM'] && this.file.isVideo) {
+        ImageLoader.replaceVideo(this);
+      }
+      return ImageLoader.prefetch(this);
+    },
+    replaceVideo: function(post) {
+      var attr, file, thumb, video, _i, _len, _ref;
+      file = post.file;
+      thumb = file.thumb;
+      video = $.el('video', {
+        preload: 'none',
+        loop: true,
+        poster: thumb.src,
+        textContent: thumb.alt,
+        className: thumb.className
+      });
+      video.dataset.md5 = thumb.dataset.md5;
+      _ref = ['height', 'width', 'maxHeight', 'maxWidth'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        attr = _ref[_i];
+        video.style[attr] = thumb.style[attr];
+      }
+      video.src = file.URL;
+      $.replace(thumb, video);
+      file.thumb = video;
+      return file.videoThumb = true;
+    },
+    prefetch: function(post) {
+      var URL, clone, el, file, isImage, isVideo, item, match, pass, replace, thumb, type, _i, _j, _len, _len1, _ref, _ref1;
+      file = post.file;
+      if (!file) {
         return;
       }
-      _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
-      style = thumb.style;
+      isImage = file.isImage, isVideo = file.isVideo, thumb = file.thumb, URL = file.URL;
+      if (file.isPrefetched || !(isImage || isVideo) || post.isHidden || post.thread.isHidden) {
+        return;
+      }
       type = (match = URL.match(/\.([^.]+)$/)[1].toUpperCase()) === 'JPEG' ? 'JPG' : match;
-      replace = "Replace " + type;
-      if (!((Conf[replace] && !/spoiler/.test(thumb.src)) || (Conf['prefetch'] && g.VIEW === 'thread'))) {
+      replace = Conf["Replace " + type] && !/spoiler/.test(thumb.src);
+      if (!(replace || Conf['prefetch'])) {
         return;
       }
-      if (this.file.isSpoiler) {
-        style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
-      }
-      file = $.el(isImage ? 'img' : 'video');
-      if (Conf[replace]) {
-        if (isVideo) {
-          file.alt = thumb.alt;
-          file.dataset.md5 = thumb.dataset.md5;
-          file.style.height = style.height;
-          file.style.width = style.width;
-          file.style.maxHeight = style.maxHeight;
-          file.style.maxWidth = style.maxWidth;
-          file.loop = true;
-          file.autoplay = Conf['Autoplay'];
-          if (Conf['Image Hover']) {
-            $.on(file, 'mouseover', ImageHover.mouseover);
-          }
+      pass = false;
+      _ref = [post].concat(__slice.call(post.clones));
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        item = _ref[_i];
+        if (doc.contains(item.nodes.root)) {
+          pass = true;
+          break;
         }
-        cb = (function(_this) {
-          return function() {
-            $.off(file, 'load loadedmetadata', cb);
-            if (isVideo) {
-              $.replace(thumb, file);
-              _this.file.thumb = file;
-              return;
-            }
-            return thumb.src = URL;
-          };
-        })(this);
-        $.on(file, 'load loadedmetadata', cb);
       }
-      return file.src = URL;
+      if (!pass) {
+        return;
+      }
+      file.isPrefetched = true;
+      if (file.videoThumb) {
+        _ref1 = post.clones;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          clone = _ref1[_j];
+          clone.file.thumb.preload = 'auto';
+        }
+        thumb.preload = 'auto';
+        if (typeof chrome === "undefined" || chrome === null) {
+          $.on(thumb, 'loadeddata', function() {
+            return this.removeAttribute('poster');
+          });
+        }
+        return;
+      }
+      el = $.el(isImage ? 'img' : 'video');
+      if (replace && isImage) {
+        $.on(el, 'load', function() {
+          var _k, _len2, _ref2, _results;
+          _ref2 = post.clones;
+          _results = [];
+          for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+            clone = _ref2[_k];
+            _results.push(clone.file.thumb.src = URL);
+          }
+          return _results;
+        });
+        thumb.src = URL;
+      }
+      return el.src = URL;
     },
     toggle: function() {
-      var enabled;
-      enabled = Conf['prefetch'] = this.checked;
-      if (enabled) {
-        g.BOARD.posts.forEach(function(post) {
-          return ImageLoader.node.call(post);
-        });
+      if (Conf['prefetch'] = this.checked) {
+        g.BOARD.posts.forEach(ImageLoader.prefetch);
       }
     }
   };
