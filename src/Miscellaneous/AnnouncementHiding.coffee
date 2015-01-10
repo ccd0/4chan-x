@@ -8,6 +8,7 @@ PSAHiding =
     $.off d, '4chanXInitFinished', PSAHiding.setup
 
     unless psa = $.id 'globalMessage'
+      $.rmClass doc, 'hide-announcement'
       return
 
     entry =
@@ -21,11 +22,11 @@ PSAHiding =
     $.on entry.el, 'click', PSAHiding.toggle
 
     PSAHiding.btn = btn = $.el 'span',
-      innerHTML: '[<a href=javascript:;>Dismiss</a>]'
       title:     'Mark announcement as read and hide.'
       className: 'hide-announcement' 
       href: 'javascript:;'
-      textContent: '[ - ]'
+
+    $.extend btn, <%= html('[<a href="javascript:;">Dismiss</a>]') %>
 
     $.on btn, 'click', PSAHiding.toggle
 

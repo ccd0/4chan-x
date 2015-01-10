@@ -1,13 +1,15 @@
 Menu = 
   init: ->
-    return if !Conf['Menu']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Menu']
 
-    a = $.el 'a',
+    @button = $.el 'a',
       className: 'menu-button'
       innerHTML: '<i class="fa fa-bars"></i>'
       href:      'javascript:;'
 
-    @menu = new UI.Menu()
+    $.extend @button, <%= html('<i class="fa fa-angle-down"></i>') %>
+
+    @menu = new UI.Menu 'post'
     Post.callbacks.push
       name: 'Menu'
       cb:   @node
@@ -18,22 +20,15 @@ Menu =
 
   node: ->
     if @isClone
-      $.on $('.menu-button', @nodes.info), 'click', Menu.toggle
+      Menu.makeButton @, $('.menu-button', @nodes.info)
       return
-    $.add @nodes.info, Menu.makeButton()
+    $.add @nodes.info, Menu.makeButton @
+
   catalogNode: ->
-    $.add @nodes.thumb, Menu.makeButton()
+    $.after @nodes.icons, Menu.makeButton @thread.OP
 
-  makeButton: do ->
-    a = $.el 'a',
-      className: 'menu-button'
-      innerHTML: '<i class=fa>\uf107</i>'
-      href:      'javascript:;'
-    ->
-      clone = a.cloneNode true
-      $.on clone, 'click', Menu.toggle
-      clone
-
-  toggle: (e) ->
-    fullID = $.x('ancestor::*[@data-full-i-d][1]', @).dataset.fullID
-    Menu.menu.toggle e, @, g.posts[fullID]
+  makeButton: (post, button) ->
+    button or= Menu.button.cloneNode true
+    $.on button, 'click', (e) ->
+      Menu.menu.toggle e, @, post
+    button

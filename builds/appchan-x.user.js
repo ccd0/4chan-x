@@ -115,7 +115,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -12673,16 +12673,19 @@
 
   Menu = {
     init: function() {
-      var a;
-      if (!Conf['Menu']) {
+      var _ref;
+      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Menu'])) {
         return;
       }
-      a = $.el('a', {
+      this.button = $.el('a', {
         className: 'menu-button',
         innerHTML: '<i class="fa fa-bars"></i>',
         href: 'javascript:;'
       });
-      this.menu = new UI.Menu();
+      $.extend(this.button, {
+        innerHTML: "<i class=\"fa fa-angle-down\"></i>"
+      });
+      this.menu = new UI.Menu('post');
       Post.callbacks.push({
         name: 'Menu',
         cb: this.node
@@ -12694,39 +12697,27 @@
     },
     node: function() {
       if (this.isClone) {
-        $.on($('.menu-button', this.nodes.info), 'click', Menu.toggle);
+        Menu.makeButton(this, $('.menu-button', this.nodes.info));
         return;
       }
-      return $.add(this.nodes.info, Menu.makeButton());
+      return $.add(this.nodes.info, Menu.makeButton(this));
     },
     catalogNode: function() {
-      return $.add(this.nodes.thumb, Menu.makeButton());
+      return $.after(this.nodes.icons, Menu.makeButton(this.thread.OP));
     },
-    makeButton: (function() {
-      var a;
-      a = $.el('a', {
-        className: 'menu-button',
-        innerHTML: '<i class=fa>\uf107</i>',
-        href: 'javascript:;'
+    makeButton: function(post, button) {
+      button || (button = Menu.button.cloneNode(true));
+      $.on(button, 'click', function(e) {
+        return Menu.menu.toggle(e, this, post);
       });
-      return function() {
-        var clone;
-        clone = a.cloneNode(true);
-        $.on(clone, 'click', Menu.toggle);
-        return clone;
-      };
-    })(),
-    toggle: function(e) {
-      var fullID;
-      fullID = $.x('ancestor::*[@data-full-i-d][1]', this).dataset.fullID;
-      return Menu.menu.toggle(e, this, g.posts[fullID]);
+      return button;
     }
   };
 
   ReportLink = {
     init: function() {
-      var a;
-      if (!Conf['Menu'] || !Conf['Report Link']) {
+      var a, _ref;
+      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Menu'] && Conf['Report Link'])) {
         return;
       }
       a = $.el('a', {
@@ -12749,7 +12740,7 @@
       post = ReportLink.post;
       url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
       id = Date.now();
-      set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
+      set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=285";
       return window.open(url, id, set);
     }
   };
@@ -14367,6 +14358,7 @@
       var btn, entry, psa;
       $.off(d, '4chanXInitFinished', PSAHiding.setup);
       if (!(psa = $.id('globalMessage'))) {
+        $.rmClass(doc, 'hide-announcement');
         return;
       }
       entry = {
@@ -14383,11 +14375,12 @@
       Header.menu.addEntry(entry);
       $.on(entry.el, 'click', PSAHiding.toggle);
       PSAHiding.btn = btn = $.el('span', {
-        innerHTML: '[<a href=javascript:;>Dismiss</a>]',
         title: 'Mark announcement as read and hide.',
         className: 'hide-announcement',
-        href: 'javascript:;',
-        textContent: '[ - ]'
+        href: 'javascript:;'
+      });
+      $.extend(btn, {
+        innerHTML: "[<a href=\"javascript:;\">Dismiss</a>]"
       });
       $.on(btn, 'click', PSAHiding.toggle);
       $.get('hiddenPSA', 0, function(_arg) {
@@ -14417,6 +14410,64 @@
       if ((hr = psa.nextElementSibling) && hr.nodeName === 'HR') {
         return hr.hidden = psa.hidden;
       }
+    }
+  };
+
+  AntiAutoplay = {
+    init: function() {
+      var audio, _i, _len, _ref;
+      if (!Conf['Disable Autoplaying Sounds']) {
+        return;
+      }
+      $.addClass(doc, 'anti-autoplay');
+      _ref = $$('audio[autoplay]', doc);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        audio = _ref[_i];
+        this.stop(audio);
+      }
+      window.addEventListener('loadstart', ((function(_this) {
+        return function(e) {
+          return _this.stop(e.target);
+        };
+      })(this)), true);
+      Post.callbacks.push({
+        name: 'Disable Autoplaying Sounds',
+        cb: this.node
+      });
+      CatalogThread.callbacks.push({
+        name: 'Disable Autoplaying Sounds',
+        cb: this.node
+      });
+      return $.ready((function(_this) {
+        return function() {
+          return _this.process(d.body);
+        };
+      })(this));
+    },
+    stop: function(audio) {
+      if (!audio.autoplay) {
+        return;
+      }
+      audio.pause();
+      audio.autoplay = false;
+      if (audio.controls) {
+        return;
+      }
+      audio.controls = true;
+      return $.addClass(audio, 'controls-added');
+    },
+    node: function() {
+      return AntiAutoplay.process(this.nodes.root);
+    },
+    process: function(root) {
+      var iframe, _i, _len, _ref, _results;
+      _ref = $$('iframe[src*="youtube"][src*="autoplay=1"]', root);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        iframe = _ref[_i];
+        _results.push(iframe.src = iframe.src.replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', ''));
+      }
+      return _results;
     }
   };
 
