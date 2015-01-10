@@ -1,6 +1,6 @@
 Quotify =
   init: ->
-    return if !Conf['Resurrect Quotes']
+    return if g.VIEW not in ['index', 'thread'] or !Conf['Resurrect Quotes'] and g.BOARD.ID isnt 'pol'
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
@@ -41,25 +41,45 @@ Quotify =
     quoteID = "#{boardID}.#{postID}"
 
     if post = g.posts[quoteID]
-      # Don't add 'deadlink' when quotifying in an archived post,
-      # and we don't know if the post died yet.
-      a = $.el 'a',
-        href: Build.path boardID, post.thread.ID, postID
-        className: if post.isDead then 'quotelink deadlink' else 'quotelink'
-        textContent: quote
-      $.extend a.dataset, {boardID, threadID: post.thread.ID, postID}
+      unless post.isDead
+        # Don't (Dead) when quotifying in an archived post,
+        # and we know the post still exists.
+        a = $.el 'a',
+          href:        Build.postURL boardID, post.thread.ID, postID
+          className:   'quotelink'
+          textContent: quote
+      else
+        # Replace the .deadlink span if we can redirect.
+        a = $.el 'a',
+          href:        Build.postURL boardID, post.thread.ID, postID
+          className:   'quotelink deadlink'
+          target:      '_blank'
+          textContent: "#{quote}\u00A0(Dead)"
+        $.extend a.dataset, {boardID, threadID: post.thread.ID, postID}
 
-    else if redirect = Redirect.to 'thread', {boardID, postID}
-      # Replace the .deadlink span if we can redirect.
+    else if @board.ID is boardID is 'pol' and postID.length is 9 and postID[-2] is postID[-1]
+      # XXX Misquotes due to fake doubles on /pol/. Assume they are all intra-thread.
+      postID = postID[...-1]
+      quoteID = "#{boardID}.#{postID}"
       a = $.el 'a',
-        href:        redirect
-        className:   'deadlink'
+        href:        Build.postURL boardID, @thread.ID, postID
+        className:   'quotelink'
         textContent: quote
-        target:      '_blank'
-      if Redirect.to 'post', {boardID, postID}
-        # Make it function as a normal quote if we can fetch the post.
-        $.addClass a, 'quotelink'
-        $.extend a.dataset, {boardID, postID}
+
+    else if Conf['Resurrect Quotes']
+      redirect = Redirect.to 'thread', {boardID, threadID: 0, postID}
+      fetchable = Redirect.to 'post', {boardID, postID}
+      if redirect or fetchable
+        # Replace the .deadlink span if we can redirect or fetch the post.
+        a = $.el 'a',
+          href:        redirect or 'javascript:;'
+          className:   'deadlink'
+          target:      '_blank'
+          textContent: "#{quote}\u00A0(Dead)"
+        if fetchable
+          # Make it function as a normal quote if we can fetch the post.
+          $.addClass a, 'quotelink'
+          $.extend a.dataset, {boardID, postID}
 
     @quotes.push quoteID unless quoteID in @quotes
 

@@ -1,6 +1,6 @@
 QuotePreview =
   init: ->
-    return if !Conf['Quote Previewing']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Quote Previewing']
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
