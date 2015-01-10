@@ -13,7 +13,7 @@ Settings =
       order: 1
 
     add = @addSection
-    
+
     add 'Style',    @style
     add 'Themes',   @themes
     add 'Mascots',  @mascots
@@ -122,7 +122,7 @@ Settings =
         div = $.el 'div'
         $.add div, [
           UI.checkbox key, key, false
-          $.el 'span', class: 'description', textContent: ": #{description}"
+          $.el 'span', className: 'description', textContent: ": #{description}"
         ]
         input = $ 'input', div
         $.on $('label', div), 'mouseover', Settings.mouseover
@@ -183,7 +183,7 @@ Settings =
     return unless file = @files[0]
     unless confirm 'Your current settings will be entirely overwritten, are you sure?'
       new Notice 'info', "Import aborted.", 1
-      return 
+      return
 
     reader = new FileReader()
     reader.onload = (e) ->
@@ -471,14 +471,16 @@ Settings =
           span = $.el 'span',
             class: 'description'
             textContent: description
-          
+
           span.style.display = 'none'
 
           $.add div, [
-            UI.checkbox key, key
+            box = UI.checkbox key, key
             span
           ]
-          
+
+          box.className = 'option'
+
           input = $ 'input', div
 
         items[key]  = Conf[key]
@@ -534,7 +536,7 @@ Settings =
         div = $.el 'div',
           className: "theme #{if name is Conf[g.THEMESTRING] then 'selectedtheme' else ''}"
           id:        name
-          
+
         $.extend div, <%= importHTML('Settings/Theme') %>
 
         div.style.backgroundColor = theme['Background Color']
@@ -554,7 +556,7 @@ Settings =
 
       div = $.el 'div',
         id:        'addthemes'
-        
+
       $.extend div, <%= importHTML('Settings/Batch-Theme') %>
 
       $.on $("#newtheme", div), 'click', ->
@@ -585,7 +587,7 @@ Settings =
         div = $.el 'div',
           id:        name
           className: theme
-          
+
         $.extend div, <%= importHTML('Settings/Deleted-Theme') %>
 
         $.on div, 'click', cb.restore
@@ -681,7 +683,7 @@ Settings =
         mascotEl = $.el 'div',
           id:        name
           className: if name in Conf[g.MASCOTSTRING] then 'mascot enabled' else 'mascot'
-        
+
         $.extend div, <%= importHTML('Settings/Mascot') %>
 
         $.on mascotEl, 'click', cb.select
@@ -691,7 +693,7 @@ Settings =
 
       batchmascots = $.el 'div',
         id: "mascots_batch"
-      
+
       $.extend batchmascots, <%= importHTML('Settings/Batch-Mascot') %>
 
       $.on $('#clear', batchmascots), 'click', ->
@@ -732,9 +734,9 @@ Settings =
       for name in keys when name in Conf["Deleted Mascots"]
         mascot = Mascots[name]
         mascotEl = $.el 'div',
-          className: 'mascot' 
+          className: 'mascot'
           id: name
-          
+
         $.extend mascotEl, <%= importHTML('Settings/Mascot') %>
 
         $.on mascotEl, 'click', cb.restore

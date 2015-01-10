@@ -4369,29 +4369,27 @@
           }
           $.asap((function() {
             return $.id('boardNavMobile') || d.readyState !== 'loading';
-          }), Header.setBoardList);
+          }), _this.setBoardList);
           $.prepend(d.body, _this.bar);
-          $.add(d.body, Header.hover);
+          $.add(d.body, _this.hover);
           return _this.setBarPosition(Conf['Bottom Header']);
         };
       })(this));
-      return $.ready((function(_this) {
-        return function() {
-          var a, footer, _i, _len, _ref, _results;
-          if (a = $("a[href*='/" + g.BOARD + "/']", footer = $.id('boardNavDesktopFoot'))) {
-            a.className = 'current';
+      return $.ready(function() {
+        var a, footer, _i, _len, _ref, _results;
+        if (a = $("a[href*='/" + g.BOARD + "/']", footer = $.id('boardNavDesktopFoot'))) {
+          a.className = 'current';
+        }
+        if (Conf['JSON Navigation']) {
+          _ref = $$('a', footer);
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            a = _ref[_i];
+            _results.push($.on(a, 'click', Navigate.navigate));
           }
-          if (Conf['JSON Navigation']) {
-            _ref = $$('a', footer);
-            _results = [];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              a = _ref[_i];
-              _results.push($.on(a, 'click', Navigate.navigate));
-            }
-            return _results;
-          }
-        };
-      })(this));
+          return _results;
+        }
+      });
     },
     bar: $.el('div', {
       id: 'header-bar'
@@ -4454,7 +4452,6 @@
       fullBoardList.normalize();
       btn = $('.hide-board-list-button', fullBoardList);
       $.on(btn, 'click', Header.toggleBoardList);
-      $.rm($('#navtopright', fullBoardList));
       shortcuts = $.el('span', {
         id: 'shortcuts'
       });
@@ -5556,7 +5553,14 @@
         pageNum = null;
       }
       onload = function(e) {
-        return Index.load(e, pageNum);
+        var err;
+        try {
+          return Index.load(e, pageNum);
+        } catch (_error) {
+          err = _error;
+          console.error(err.message);
+          return console.error(err.stack);
+        }
       };
       Index.req = $.ajax("//a.4cdn.org/" + g.BOARD.ID + "/catalog.json", {
         onabort: onload,
@@ -18845,7 +18849,7 @@
           div = $.el('div');
           $.add(div, [
             UI.checkbox(key, key, false), $.el('span', {
-              "class": 'description',
+              className: 'description',
               textContent: ": " + description
             })
           ]);
@@ -19279,7 +19283,7 @@
       return $.cb.value.call(this);
     },
     style: function(section) {
-      var arr, description, div, fs, html, input, inputs, items, key, name, nodes, obj, span, type, value, _i, _len, _ref;
+      var arr, box, description, div, fs, html, input, inputs, items, key, name, nodes, obj, span, type, value, _i, _len, _ref;
       nodes = $.frag();
       items = {};
       inputs = {};
@@ -19317,7 +19321,8 @@
               textContent: description
             });
             span.style.display = 'none';
-            $.add(div, [UI.checkbox(key, key), span]);
+            $.add(div, [box = UI.checkbox(key, key), span]);
+            box.className = 'option';
             input = $('input', div);
           }
           items[key] = Conf[key];

@@ -29,6 +29,7 @@ Index =
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="infinite"> Infinite scrolling' }
         { el: $.el 'label', innerHTML: '<input type=radio name="Index Mode" value="all pages"> All threads' }
       ]
+
     for label in modeEntry.subEntries
       input = label.el.firstChild
       input.checked = Conf['Index Mode'] is input.value
@@ -338,14 +339,14 @@ Index =
 
     size: (e) ->
       if Conf['Index Mode'] isnt 'catalog'
-        $.rmClass Index.root, 'catalog-small'
-        $.rmClass Index.root, 'catalog-large'
+        $.rmClass  Index.root,  'catalog-small'
+        $.rmClass  Index.root,  'catalog-large'
       else if Conf['Index Size'] is 'small'
-        $.addClass Index.root, 'catalog-small'
-        $.rmClass Index.root,  'catalog-large'
+        $.addClass Index.root,  'catalog-small'
+        $.rmClass  Index.root,  'catalog-large'
       else
-        $.addClass Index.root, 'catalog-large'
-        $.rmClass Index.root,  'catalog-small'
+        $.addClass Index.root,  'catalog-large'
+        $.rmClass  Index.root,  'catalog-small'
       Index.buildIndex() if e
 
     threadsNum: ->
@@ -545,7 +546,12 @@ Index =
       ), 3 * $.SECOND - (Date.now() - now)
 
     pageNum = null if typeof pageNum isnt 'number' # event
-    onload = (e) -> Index.load e, pageNum
+    onload = (e) -> 
+      try
+        Index.load e, pageNum
+      catch err
+        console.error err.message
+        console.error err.stack
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD.ID}/catalog.json",
       onabort:   onload
       onloadend: onload

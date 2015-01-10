@@ -71,12 +71,12 @@ Header =
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
       # it might be incomplete otherwise.
-      $.asap (-> $.id('boardNavMobile') or d.readyState isnt 'loading'), Header.setBoardList
+      $.asap (-> $.id('boardNavMobile') or d.readyState isnt 'loading'), @setBoardList
       $.prepend d.body, @bar
-      $.add d.body, Header.hover
+      $.add d.body, @hover
       @setBarPosition Conf['Bottom Header']
 
-    $.ready =>
+    $.ready ->
       if a = $ "a[href*='/#{g.BOARD}/']", footer = $.id 'boardNavDesktopFoot'
         a.className = 'current'
       if Conf['JSON Navigation']
@@ -136,8 +136,6 @@ Header =
 
     btn = $ '.hide-board-list-button', fullBoardList
     $.on btn, 'click', Header.toggleBoardList
-
-    $.rm $ '#navtopright', fullBoardList
 
     shortcuts = $.el 'span',
       id: 'shortcuts'
