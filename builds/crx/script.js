@@ -10908,7 +10908,8 @@
 
   ImageExpand = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
+      var _ref;
+      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Image Expansion'])) {
         return;
       }
       this.EAI = $.el('a', {
@@ -10918,6 +10919,13 @@
         href: 'javascript:;'
       });
       $.on(this.EAI, 'click', ImageExpand.cb.toggleAll);
+      $.on(d, 'scroll visibilitychange', this.cb.playVideos);
+      this.videoControls = $.el('span', {
+        className: 'video-controls'
+      });
+      $.extend(this.videoControls, {
+        innerHTML: " <a href=\"javascript:;\" title=\"You can also contract the video by dragging it to the left.\">contract</a>"
+      });
       Header.addShortcut(this.EAI, true);
       return Post.callbacks.push({
         name: 'Image Expansion',
@@ -10925,37 +10933,32 @@
       });
     },
     node: function() {
-      var clone, thumb, _ref, _ref1;
-      if (!(((_ref = this.file) != null ? _ref.isImage : void 0) || ((_ref1 = this.file) != null ? _ref1.isVideo : void 0))) {
+      var _ref;
+      if (!(this.file && (this.file.isImage || this.file.isVideo))) {
         return;
       }
-      thumb = this.file.thumb;
-      $.on(thumb.parentNode, 'click', ImageExpand.cb.toggle);
+      $.on(this.file.thumb.parentNode, 'click', ImageExpand.cb.toggle);
       if (this.isClone) {
-        if ($.hasClass(thumb, 'expanding')) {
+        if (this.file.isExpanding) {
           ImageExpand.contract(this);
-          ImageExpand.expand(this);
+          return ImageExpand.expand(this);
         } else if (this.file.isExpanded && this.file.isVideo) {
-          clone = this;
-          ImageExpand.setupVideoControls(clone);
-          if (!clone.origin.file.fullImage.paused) {
-            $.queueTask(function() {
-              return Video.start(clone.file.fullImage);
-            });
-          }
+          ImageExpand.setupVideoCB(this);
+          return ImageExpand.setupVideo(this, !((_ref = this.origin.file.fullImage) != null ? _ref.paused : void 0) || this.origin.file.wasPlaying, this.file.fullImage.controls);
         }
-      } else if (ImageExpand.on && !this.isHidden && (Conf['Expand spoilers'] || !this.file.isSpoiler) && (Conf['Expand videos'] || !this.file.isVideo)) {
-        return ImageExpand.expand(this, null, true);
+      } else if (ImageExpand.on && !this.isHidden && !this.isFetchedQuote && (Conf['Expand spoilers'] || !this.file.isSpoiler) && (Conf['Expand videos'] || !this.file.isVideo)) {
+        return ImageExpand.expand(this);
       }
     },
     cb: {
       toggle: function(e) {
-        var post, _ref;
+        var file, post;
         if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
           return;
         }
         post = Get.postFromNode(this);
-        if (post.file.isExpanded && ((_ref = post.file.fullImage) != null ? _ref.controls : void 0)) {
+        file = post.file;
+        if (file.isExpanded && file.isVideo && file.fullImage.controls) {
           return;
         }
         e.preventDefault();
@@ -10978,9 +10981,7 @@
         if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
           ImageExpand.EAI.className = 'contract-all-shortcut a-icon';
           ImageExpand.EAI.title = 'Contract All Images';
-          func = function(post) {
-            return ImageExpand.expand(post, null, true);
-          };
+          func = ImageExpand.expand;
         } else {
           ImageExpand.EAI.className = 'expand-all-shortcut a-icon';
           ImageExpand.EAI.title = 'Expand All Images';
@@ -10995,122 +10996,207 @@
           }
         });
       },
+      playVideos: function(e) {
+        return g.posts.forEach(function(post) {
+          var file, video, visible, _i, _len, _ref;
+          _ref = [post].concat(__slice.call(post.clones));
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            post = _ref[_i];
+            file = post.file;
+            if (!(file && file.isVideo && file.isExpanded)) {
+              continue;
+            }
+            video = file.fullImage;
+            visible = Header.isNodeVisible(video);
+            if (visible && file.wasPlaying) {
+              delete file.wasPlaying;
+              video.play();
+            } else if (!visible && !video.paused) {
+              file.wasPlaying = true;
+              video.pause();
+            }
+          }
+        });
+      },
       setFitness: function() {
-        return (this.checked ? $.addClass : $.rmClass)(doc, this.name.toLowerCase().replace(/\s+/g, '-'));
+        return $[this.checked ? 'addClass' : 'rmClass'](doc, this.name.toLowerCase().replace(/\s+/g, '-'));
       }
     },
     toggle: function(post) {
-      var headRect, left, root, top, x, y, _ref;
-      if (!(post.file.isExpanded || $.hasClass(post.file.thumb, 'expanding'))) {
+      var next;
+      if (!(post.file.isExpanding || post.file.isExpanded)) {
+        post.file.scrollIntoView = Conf['Scroll into view'];
         ImageExpand.expand(post);
         return;
       }
-      root = post.nodes.root;
-      _ref = (Conf['Advance on contract'] ? (function() {
-        var next;
-        next = root;
+      ImageExpand.contract(post);
+      if (Conf['Advance on contract']) {
+        next = post.nodes.root;
         while (next = $.x("following::div[contains(@class,'postContainer')][1]", next)) {
-          if ($('.stub', next) || next.offsetHeight === 0) {
-            continue;
+          if (!($('.stub', next) || next.offsetHeight === 0)) {
+            break;
           }
-          return next;
         }
-        return root;
-      })() : root).getBoundingClientRect(), top = _ref.top, left = _ref.left;
-      if (top < 0) {
-        y = top;
-        if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
-          headRect = Header.bar.getBoundingClientRect();
-          y -= headRect.top + headRect.height;
+        if (next) {
+          return Header.scrollTo(next);
         }
       }
-      if (left < 0) {
-        x = -window.scrollX;
-      }
-      if (x || y) {
-        window.scrollBy(x, y);
-      }
-      return ImageExpand.contract(post);
     },
     contract: function(post) {
-      var cb, eventName, thumb, video, _ref;
-      thumb = post.file.thumb;
-      if (post.file.isVideo && (video = post.file.fullImage)) {
-        video.pause();
-        TrashQueue.add(video, post);
-        thumb.parentNode.href = video.src;
-        thumb.parentNode.target = '_blank';
-        _ref = ImageExpand.videoCB;
-        for (eventName in _ref) {
-          cb = _ref[eventName];
-          $.off(video, eventName, cb);
-        }
-        $.rm(post.file.videoControls);
-        delete post.file.videoControls;
+      var bottom, cb, el, eventName, file, oldHeight, scrollY, top, x, _i, _len, _ref, _ref1;
+      file = post.file;
+      if (el = file.fullImage) {
+        top = Header.getTopOf(el);
+        bottom = top + el.getBoundingClientRect().height;
+        oldHeight = d.body.clientHeight;
+        scrollY = window.scrollY;
       }
       $.rmClass(post.nodes.root, 'expanded-image');
-      $.rmClass(post.file.thumb, 'expanding');
-      delete post.file.isExpanding;
-      delete post.file.isExpanded;
-      if (post.file.isVideo && post.file.fullImage) {
-        return post.file.fullImage.pause();
+      $.rmClass(file.thumb, 'expanding');
+      if (file.videoControls) {
+        $.rm(file.videoControls);
       }
+      file.thumb.parentNode.href = file.URL;
+      file.thumb.parentNode.target = '_blank';
+      _ref = ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying', 'scrollIntoView'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        x = _ref[_i];
+        delete file[x];
+      }
+      if (!el) {
+        return;
+      }
+      if (doc.contains(el)) {
+        if (bottom <= 0) {
+          window.scroll(0, scrollY + d.body.clientHeight - oldHeight);
+        } else {
+          Header.scrollToIfNeeded(post.nodes.root);
+        }
+        if (window.scrollX > 0) {
+          window.scroll(0, window.scrollY);
+        }
+      }
+      $.off(el, 'error', ImageExpand.error);
+      ImageCommon.pushCache(el);
+      if (file.isVideo) {
+        el.pause();
+        _ref1 = ImageExpand.videoCB;
+        for (eventName in _ref1) {
+          cb = _ref1[eventName];
+          $.off(el, eventName, cb);
+        }
+      }
+      if (Conf['Restart when Opened']) {
+        ImageCommon.rewind(file.thumb);
+      }
+      delete file.fullImage;
+      return $.queueTask(function() {
+        if (file.isExpanding || file.isExpanded) {
+          return;
+        }
+        $.rmClass(el, 'full-image');
+        if (el.id) {
+          return;
+        }
+        return $.rm(el);
+      });
     },
-    expand: function(post, src, disableAutoplay) {
-      var el, isVideo, thumb, _ref;
-      _ref = post.file, thumb = _ref.thumb, isVideo = _ref.isVideo;
-      if (post.isHidden || post.file.isExpanded || $.hasClass(thumb, 'expanding')) {
+    expand: function(post, src) {
+      var el, file, isVideo, thumb, _ref;
+      file = post.file;
+      thumb = file.thumb, isVideo = file.isVideo;
+      if (post.isHidden || file.isExpanding || file.isExpanded) {
         return;
       }
       $.addClass(thumb, 'expanding');
-      if (el = post.file.fullImage) {
-        el.className = 'full-image';
-        el.style.cssText = '';
-        TrashQueue.remove(el);
-      } else {
-        el = post.file.fullImage = $.el((isVideo ? 'video' : 'img'), {
-          className: 'full-image'
-        });
+      file.isExpanding = true;
+      if (file.fullImage) {
+        el = file.fullImage;
+      } else if (((_ref = ImageCommon.cache) != null ? _ref.dataset.fullID : void 0) === post.fullID) {
+        el = file.fullImage = ImageCommon.popCache();
         $.on(el, 'error', ImageExpand.error);
-        el.src = src || post.file.URL;
-        if (isVideo) {
-          el.loop = true;
+        if (Conf['Restart when Opened'] && el.id !== 'ihover') {
+          ImageCommon.rewind(el);
         }
+        el.removeAttribute('id');
+      } else {
+        el = file.fullImage = $.el((isVideo ? 'video' : 'img'));
+        el.dataset.fullID = post.fullID;
+        $.on(el, 'error', ImageExpand.error);
+        el.src = src || file.URL;
       }
-      if (el !== thumb.nextSibling) {
-        $.after(thumb, el);
+      el.className = 'full-image';
+      $.after(thumb, el);
+      if (isVideo) {
+        if (Conf['Show Controls'] && !file.videoControls) {
+          file.videoControls = ImageExpand.videoControls.cloneNode(true);
+          $.add(file.text, file.videoControls);
+        }
+        thumb.parentNode.removeAttribute('href');
+        thumb.parentNode.removeAttribute('target');
+        el.loop = true;
+        ImageExpand.setupVideoCB(post);
       }
-      return $.asap((function() {
-        return el.videoHeight || el.naturalHeight;
-      }), function() {
-        return ImageExpand.completeExpand(post, disableAutoplay);
-      });
+      if (!isVideo) {
+        return $.asap((function() {
+          return el.naturalHeight;
+        }), function() {
+          return ImageExpand.completeExpand(post);
+        });
+      } else if (el.readyState >= el.HAVE_METADATA) {
+        return ImageExpand.completeExpand(post);
+      } else {
+        return $.on(el, 'loadedmetadata', function() {
+          return ImageExpand.completeExpand(post);
+        });
+      }
     },
-    completeExpand: function(post, disableAutoplay) {
-      var bottom;
-      if (!$.hasClass(post.file.thumb, 'expanding')) {
+    completeExpand: function(post) {
+      var bottom, file, imageBottom, oldHeight, scrollY;
+      file = post.file;
+      if (!file.isExpanding) {
         return;
       }
-      if (!post.nodes.root.parentNode) {
-        ImageExpand.completeExpand2(post);
-        return;
-      }
-      bottom = post.nodes.root.getBoundingClientRect().bottom;
-      return $.queueTask(function() {
-        ImageExpand.completeExpand2(post, disableAutoplay);
-        if (!(bottom <= 0)) {
-          return;
-        }
-        return window.scrollBy(0, post.nodes.root.getBoundingClientRect().bottom - bottom);
-      });
-    },
-    completeExpand2: function(post, disableAutoplay) {
+      bottom = Header.getTopOf(file.thumb) + file.thumb.getBoundingClientRect().height;
+      oldHeight = d.body.clientHeight;
+      scrollY = window.scrollY;
       $.addClass(post.nodes.root, 'expanded-image');
-      $.rmClass(post.file.thumb, 'expanding');
-      post.file.isExpanded = true;
-      if (post.file.isVideo) {
-        ImageExpand.setupVideoControls(post);
-        return Video.configure(post.file.fullImage, disableAutoplay);
+      $.rmClass(file.thumb, 'expanding');
+      file.isExpanded = true;
+      delete file.isExpanding;
+      if (doc.contains(post.nodes.root) && bottom <= 0) {
+        window.scroll(window.scrollX, scrollY + d.body.clientHeight - oldHeight);
+      }
+      if (file.scrollIntoView) {
+        delete file.scrollIntoView;
+        imageBottom = Header.getBottomOf(file.fullImage) - 25;
+        if (imageBottom < 0) {
+          window.scrollBy(0, Math.min(-imageBottom, Header.getTopOf(file.fullImage)));
+        }
+      }
+      if (file.isVideo) {
+        return ImageExpand.setupVideo(post, Conf['Autoplay'], Conf['Show Controls']);
+      }
+    },
+    setupVideo: function(post, playing, controls) {
+      var fullImage;
+      fullImage = post.file.fullImage;
+      if (!playing) {
+        fullImage.controls = controls;
+        return;
+      }
+      fullImage.controls = false;
+      $.asap((function() {
+        return doc.contains(fullImage);
+      }), function() {
+        if (!d.hidden && Header.isNodeVisible(fullImage)) {
+          return fullImage.play();
+        } else {
+          return post.file.wasPlaying = true;
+        }
+      });
+      if (controls) {
+        return ImageCommon.addControls(fullImage);
       }
     },
     videoCB: (function() {
@@ -11132,106 +11218,58 @@
         },
         mouseout: function(e) {
           if (mousedown && e.clientX <= this.getBoundingClientRect().left) {
-            return ImageExpand.contract(Get.postFromNode(this));
+            return ImageExpand.toggle(Get.postFromNode(this));
           }
         },
         click: function(e) {
           if (this.paused && !this.controls) {
             this.play();
-            return e.preventDefault();
+            return e.stopPropagation();
           }
         }
       };
     })(),
-    setupVideoControls: function(post) {
-      var cb, contract, eventName, file, thumb, video, _ref;
+    setupVideoCB: function(post) {
+      var cb, eventName, file, _ref;
       file = post.file;
-      thumb = file.thumb;
-      video = file.fullImage;
-      file.thumb.parentNode.removeAttribute('href');
-      file.thumb.parentNode.removeAttribute('target');
       _ref = ImageExpand.videoCB;
       for (eventName in _ref) {
         cb = _ref[eventName];
-        $.on(video, eventName, cb);
+        $.on(file.fullImage, eventName, cb);
       }
-      file.videoControls = $.el('span', {
-        className: 'video-controls'
-      });
-      if (Conf['Show Controls']) {
-        contract = $.el('a', {
-          textContent: 'contract',
-          href: 'javascript:;',
-          title: 'You can also contract the video by dragging it to the left.'
+      if (file.videoControls) {
+        return $.on(file.videoControls.firstElementChild, 'click', function() {
+          return ImageExpand.toggle(post);
         });
-        $.on(contract, 'click', function(e) {
-          return ImageExpand.contract(post);
-        });
-        $.add(file.videoControls, [$.tn('\u00A0'), contract]);
       }
-      return $.add(file.text, file.videoControls);
     },
     error: function() {
-      var URL, error, post, src, timeoutID;
+      var post;
       post = Get.postFromNode(this);
       $.rm(this);
-      delete post.file.isReady;
       delete post.file.fullImage;
-      if (!($.hasClass(post.file.thumb, 'expanding') || $.hasClass(post.nodes.root, 'expanded-image'))) {
+      if (!(post.file.isExpanding || post.file.isExpanded)) {
         return;
       }
-      ImageExpand.contract(post);
-      if (this.error && this.error.code !== this.error.MEDIA_ERR_NETWORK) {
-        error = (function() {
-          switch (this.error.code) {
-            case 1:
-              return 'MEDIA_ERR_ABORTED';
-            case 3:
-              return 'MEDIA_ERR_DECODE';
-            case 4:
-              return 'MEDIA_ERR_SRC_NOT_SUPPORTED';
-            case 5:
-              return 'MEDIA_ERR_ENCRYPTED';
-          }
-        }).call(this);
-        post.file.error = $.el('div', {
-          textContent: "Playback error: " + error,
-          className: 'warning'
-        });
-        $.after(post.file.thumb, post.file.error);
-        return;
+      if (ImageCommon.decodeError(this, post)) {
+        return ImageExpand.contract(post);
       }
-      src = this.src.split('/');
-      if (src[2] === 'i.4cdn.org') {
-        URL = Redirect.to('file', {
-          boardID: src[3],
-          filename: src[4].replace(/\?.+$/, '')
-        });
-        if (URL) {
-          setTimeout(ImageExpand.expand, 10000, post, URL);
-          return;
-        }
-        if (g.DEAD || post.isDead || post.file.isDead) {
-          return;
-        }
+      if (this.src.split('/')[2] !== 'i.4cdn.org') {
+        return ImageExpand.contract(post);
       }
-      timeoutID = setTimeout(ImageExpand.expand, 10000, post);
-      return $.ajax(this.src, {
-        onloadend: function() {
-          if (this.status !== 404) {
-            return;
+      return ImageCommon.error(this, post, 10 * $.SECOND, function(URL) {
+        if (post.file.isExpanding || post.file.isExpanded) {
+          ImageExpand.contract(post);
+          if (URL) {
+            return ImageExpand.expand(post, URL);
           }
-          clearTimeout(timeoutID);
-          return post.kill(true);
         }
-      }, {
-        type: 'head'
       });
     },
     menu: {
       init: function() {
-        var conf, createSubEntry, el, name, subEntries, _ref;
-        if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
+        var conf, createSubEntry, el, name, subEntries, _ref, _ref1;
+        if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Image Expansion'])) {
           return;
         }
         el = $.el('span', {
@@ -11240,9 +11278,9 @@
         });
         createSubEntry = ImageExpand.menu.createSubEntry;
         subEntries = [];
-        _ref = Config.imageExpansion;
-        for (name in _ref) {
-          conf = _ref[name];
+        _ref1 = Config.imageExpansion;
+        for (name in _ref1) {
+          conf = _ref1[name];
           subEntries.push(createSubEntry(name, conf[1]));
         }
         return Header.menu.addEntry({
@@ -11253,15 +11291,12 @@
       },
       createSubEntry: function(name, desc) {
         var input, label;
-        label = $.el('label', {
-          innerHTML: "<input type=checkbox name='" + name + "'> " + name,
-          title: desc
-        });
+        label = UI.checkbox(name, name);
+        label.title = desc;
         input = label.firstElementChild;
         if (name === 'Fit width' || name === 'Fit height') {
           $.on(input, 'change', ImageExpand.cb.setFitness);
         }
-        input.checked = Conf[name];
         $.event('change', null, input);
         $.on(input, 'change', $.cb.checked);
         return {
