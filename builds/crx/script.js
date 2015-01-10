@@ -3899,15 +3899,22 @@
     };
 
     DataBoard.prototype["delete"] = function(_arg) {
-      var boardID, postID, threadID;
+      var boardID, postID, threadID, _ref;
       boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID;
+      $.forceSync(this.key);
       if (postID) {
+        if (!((_ref = this.data.boards[boardID]) != null ? _ref[threadID] : void 0)) {
+          return;
+        }
         delete this.data.boards[boardID][threadID][postID];
         this.deleteIfEmpty({
           boardID: boardID,
           threadID: threadID
         });
       } else if (threadID) {
+        if (!this.data.boards[boardID]) {
+          return;
+        }
         delete this.data.boards[boardID][threadID];
         this.deleteIfEmpty({
           boardID: boardID
@@ -3921,6 +3928,7 @@
     DataBoard.prototype.deleteIfEmpty = function(_arg) {
       var boardID, threadID;
       boardID = _arg.boardID, threadID = _arg.threadID;
+      $.forceSync(this.key);
       if (threadID) {
         if (!Object.keys(this.data.boards[boardID][threadID]).length) {
           delete this.data.boards[boardID][threadID];
@@ -3936,6 +3944,7 @@
     DataBoard.prototype.set = function(_arg) {
       var boardID, postID, threadID, val, _base, _base1, _base2;
       boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID, val = _arg.val;
+      $.forceSync(this.key);
       if (postID !== void 0) {
         ((_base = ((_base1 = this.data.boards)[boardID] || (_base1[boardID] = {})))[threadID] || (_base[threadID] = {}))[postID] = val;
       } else if (threadID !== void 0) {
@@ -3969,70 +3978,47 @@
       return val || defaultValue;
     };
 
+    DataBoard.prototype.forceSync = function() {
+      return $.forceSync(this.key);
+    };
+
     DataBoard.prototype.clean = function() {
-      var boardID, keys, now, _i, _len;
-      now = Date.now();
-      if ((this.data.lastChecked || 0) > now - 2 * $.HOUR) {
-        return;
-      }
-      keys = Object.keys(this.data.boards);
-      if (!keys.length) {
-        return;
-      }
-      for (_i = 0, _len = keys.length; _i < _len; _i++) {
-        boardID = keys[_i];
+      var boardID, now, threadID, val, _ref;
+      $.forceSync(this.key);
+      _ref = this.data.boards;
+      for (boardID in _ref) {
+        val = _ref[boardID];
         this.deleteIfEmpty({
           boardID: boardID
         });
-        if (boardID in this.data.boards) {
-          this.ajaxClean(boardID);
+      }
+      now = Date.now();
+      if ((this.data.lastChecked || 0) < now - 2 * $.HOUR) {
+        this.data.lastChecked = now;
+        for (boardID in this.data.boards) {
+          for (threadID in this.data.boards[boardID]) {
+            this.ajaxClean(boardID, threadID);
+          }
         }
       }
-      this.data.lastChecked = now;
       return this.save();
     };
 
-    DataBoard.prototype.ajaxClean = function(boardID) {
-      return $.cache("//a.4cdn.org/" + boardID + "/threads.json", (function(_this) {
-        return function(e) {
-          var board, count, page, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
-          if (e.target.status !== 200) {
+    DataBoard.prototype.ajaxClean = function(boardID, threadID) {
+      return $.ajax("//a.4cdn.org/" + boardID + "/thread/" + threadID + ".json", {
+        onloadend: (function(_this) {
+          return function(e) {
             if (e.target.status === 404) {
-              _this["delete"]({
-                boardID: boardID
+              return _this["delete"]({
+                boardID: boardID,
+                threadID: threadID
               });
             }
-            return;
-          }
-          board = _this.data.boards[boardID];
-          threads = {};
-          _ref = e.target.response;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            page = _ref[_i];
-            _ref1 = page.threads;
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              thread = _ref1[_j];
-              if (thread.no in board) {
-                threads[thread.no] = board[thread.no];
-              }
-            }
-          }
-          count = Object.keys(threads).length;
-          if (count === Object.keys(board).length) {
-            return;
-          }
-          if (count) {
-            return _this.set({
-              boardID: boardID,
-              val: threads
-            });
-          } else {
-            return _this["delete"]({
-              boardID: boardID
-            });
-          }
-        };
-      })(this));
+          };
+        })(this)
+      }, {
+        type: 'head'
+      });
     };
 
     DataBoard.prototype.onSync = function(data) {
@@ -4080,7 +4066,7 @@
         return;
       }
       $.off(d, 'visibilitychange', this.add);
-      $.add(Header.noticesRoot, this.el);
+      $.add(doc, this.el);
       this.el.clientHeight;
       this.el.style.opacity = 1;
       if (this.timeout) {
@@ -4348,7 +4334,7 @@
         className: 'menu-button a-icon',
         id: 'main-menu'
       });
-      box = UI.checkbox.bind(UI);
+      box = UI.checkbox;
       barFixedToggler = box('Fixed Header', 'Fixed Header');
       headerToggler = box('Header auto-hide', ' Auto-hide header');
       scrollHeaderToggler = box('Header auto-hide on scroll', ' Auto-hide header on scroll');
@@ -6240,43 +6226,21 @@
       };
 
       /* File Info */
-      if (file != null ? file.isDeleted : void 0) {
-        fileCont = {
-          innerHTML: "<span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span>"
-        };
-      } else if (file && boardID === 'f') {
-        fileCont = {
-          innerHTML: "<div class=\"fileInfo\"><span class=\"fileText\" id=\"fT" + E(postID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(file.url) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E($.bytesToString(file.size)) + ", " + E(file.width) + "x" + E(file.height) + ", " + E(file.tag) + ")</span></div>"
-        };
-      } else if (file) {
-        if (file.isSpoiler) {
-          shortFilename = 'Spoiler Image';
-          if (spoilerRange = Build.spoilerRange[boardID]) {
-            fileThumb = "//s.4cdn.org/image/spoiler-" + boardID + (Math.floor(1 + spoilerRange * Math.random())) + ".png";
-          } else {
-            fileThumb = '//s.4cdn.org/image/spoiler.png';
-          }
-          file.twidth = file.theight = 100;
-        } else {
-          shortFilename = Build.shortFilename(file.name, !isOP);
-          fileThumb = file.turl;
-        }
-        fileSize = $.bytesToString(file.size);
-        fileDims = file.url.slice(-4) === '.pdf' ? 'PDF' : "" + file.width + "x" + file.height;
-        fileLink = file.isSpoiler || file.name === shortFilename ? {
-          innerHTML: "<a href=\"" + E(file.url) + "\" target=\"_blank\">" + E(shortFilename) + "</a>"
-        } : {
-          innerHTML: "<a title=\"" + E(file.name) + "\" href=\"" + E(file.url) + "\" target=\"_blank\">" + E(shortFilename) + "</a>"
-        };
-        fileText = file.isSpoiler ? {
-          innerHTML: "<div class=\"fileText\" id=\"fT" + E(postID) + "\" title=\"" + E(file.name) + "\">File: " + fileLink.innerHTML + " (" + E(fileSize) + ", " + E(fileDims) + ")</div>"
-        } : {
-          innerHTML: "<div class=\"fileText\" id=\"fT" + E(postID) + "\">File: " + fileLink.innerHTML + " (" + E(fileSize) + ", " + E(fileDims) + ")</div>"
-        };
-        ({
-          innerHTML: fileText.innerHTML + "<a class=\"fileThumb" + E(file.isSpoiler ? " imgspoiler" : "") + "\" href=\"" + E(file.url) + "\" target=\"_blank\"><img src=\"" + E(fileThumb) + "\" alt=\"" + E(fileSize) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.theight) + "px; width: " + E(file.twidth) + "px;\"></a>"
-        });
-      }
+      fileCont = (file != null ? file.isDeleted : void 0) ? {
+        innerHTML: "<span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span>"
+      } : file && boardID === 'f' ? {
+        innerHTML: "<div class=\"fileInfo\"><span class=\"fileText\" id=\"fT" + E(postID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(file.url) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E($.bytesToString(file.size)) + ", " + E(file.width) + "x" + E(file.height) + ", " + E(file.tag) + ")</span></div>"
+      } : file ? (file.isSpoiler ? (shortFilename = 'Spoiler Image', (spoilerRange = Build.spoilerRange[boardID]) ? fileThumb = "//s.4cdn.org/image/spoiler-" + boardID + (Math.floor(1 + spoilerRange * Math.random())) + ".png" : fileThumb = '//s.4cdn.org/image/spoiler.png', file.twidth = file.theight = 100) : (shortFilename = Build.shortFilename(file.name, !isOP), fileThumb = file.turl), fileSize = $.bytesToString(file.size), fileDims = file.url.slice(-4) === '.pdf' ? 'PDF' : "" + file.width + "x" + file.height, fileLink = file.isSpoiler || file.name === shortFilename ? {
+        innerHTML: "<a href=\"" + E(file.url) + "\" target=\"_blank\">" + E(shortFilename) + "</a>"
+      } : {
+        innerHTML: "<a title=\"" + E(file.name) + "\" href=\"" + E(file.url) + "\" target=\"_blank\">" + E(shortFilename) + "</a>"
+      }, fileText = file.isSpoiler ? {
+        innerHTML: "<div class=\"fileText\" id=\"fT" + E(postID) + "\" title=\"" + E(file.name) + "\">File: " + fileLink.innerHTML + " (" + E(fileSize) + ", " + E(fileDims) + ")</div>"
+      } : {
+        innerHTML: "<div class=\"fileText\" id=\"fT" + E(postID) + "\">File: " + fileLink.innerHTML + " (" + E(fileSize) + ", " + E(fileDims) + ")</div>"
+      }, {
+        innerHTML: fileText.innerHTML + "<a class=\"fileThumb" + E(file.isSpoiler ? " imgspoiler" : "") + "\" href=\"" + E(file.url) + "\" target=\"_blank\"><img src=\"" + E(fileThumb) + "\" alt=\"" + E(fileSize) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.theight) + "px; width: " + E(file.twidth) + "px;\"></a>"
+      }) : void 0;
       fileBlock = file ? {
         innerHTML: "<div class=\"file\" id=\"f" + E(postID) + "\">" + fileCont.innerHTML + "</div>"
       } : {
@@ -6794,20 +6758,30 @@
   };
 
   UI = (function() {
-    var Menu, dialog, drag, dragend, dragstart, hover, hoverend, hoverstart, touchend, touchmove;
-    dialog = function(id, position, html) {
-      var el, move;
+    var Menu, checkbox, dialog, drag, dragend, dragstart, hover, hoverend, hoverstart, touchend, touchmove;
+    dialog = function(id, position, properties) {
+      var child, el, move, _i, _len, _ref;
       el = $.el('div', {
         className: 'dialog',
-        innerHTML: html,
         id: id
       });
+      $.extend(el, properties);
       el.style.cssText = position;
       $.get("" + id + ".position", position, function(item) {
         return el.style.cssText = item["" + id + ".position"];
       });
       move = $('.move', el);
       $.on(move, 'touchstart mousedown', dragstart);
+      _ref = move.children;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        child = _ref[_i];
+        if (!child.tagName) {
+          continue;
+        }
+        $.on(child, 'touchstart mousedown', function(e) {
+          return e.stopPropagation();
+        });
+      }
       return el;
     };
     Menu = (function() {
@@ -6817,11 +6791,24 @@
 
       lastToggledButton = null;
 
-      function Menu() {
+      function Menu(type) {
+        this.type = type;
         this.rmEntry = __bind(this.rmEntry, this);
+        this.addEntry = __bind(this.addEntry, this);
         this.onFocus = __bind(this.onFocus, this);
         this.keybinds = __bind(this.keybinds, this);
         this.close = __bind(this.close, this);
+        $.on(d, 'AddMenuEntry', (function(_this) {
+          return function(_arg) {
+            var detail;
+            detail = _arg.detail;
+            if (detail.type !== _this.type) {
+              return;
+            }
+            delete detail.open;
+            return _this.addEntry(detail);
+          };
+        })(this));
         this.entries = [];
       }
 
@@ -6861,7 +6848,6 @@
         menu = this.makeMenu();
         currentMenu = menu;
         lastToggledButton = button;
-        $.addClass(button, 'open');
         this.entries.sort(function(first, second) {
           return first.order - second.order;
         });
@@ -6899,12 +6885,7 @@
       Menu.prototype.insertEntry = function(entry, parent, data) {
         var subEntry, submenu, _i, _len, _ref;
         if (typeof entry.open === 'function') {
-          if (!entry.open(data, (function(_this) {
-            return function(subEntry) {
-              _this.parseEntry(subEntry);
-              return entry.subEntries.push(subEntry);
-            };
-          })(this))) {
+          if (!entry.open(data)) {
             return;
           }
         }
@@ -6928,7 +6909,7 @@
 
       Menu.prototype.close = function() {
         $.rm(currentMenu);
-        $.rmClass(lastToggledButton, 'open');
+        $.rmClass(lastToggledButton, 'active');
         currentMenu = null;
         lastToggledButton = null;
         return $.off(d, 'click CloseMenu', this.close);
@@ -7043,7 +7024,6 @@
           return;
         }
         $.addClass(el, 'has-submenu');
-        $.addClass(el, 'pfa');
         for (_i = 0, _len = subEntries.length; _i < _len; _i++) {
           subEntry = subEntries[_i];
           this.parseEntry(subEntry);
@@ -7054,13 +7034,13 @@
 
     })();
     dragstart = function(e) {
-      var el, isTouching, o, rect, screenHeight, screenWidth, _ref, _ref1;
+      var el, isTouching, o, rect, screenHeight, screenWidth, _ref;
       if (e.type === 'mousedown' && e.button !== 0) {
         return;
       }
       e.preventDefault();
       if (isTouching = e.type === 'touchstart') {
-        _ref = e.changedTouches, e = _ref[_ref.length - 1];
+        e = e.changedTouches[e.changedTouches.length - 1];
       }
       el = $.x('ancestor::div[contains(@class,"dialog")][1]', this);
       rect = el.getBoundingClientRect();
@@ -7077,7 +7057,7 @@
         screenWidth: screenWidth,
         isTouching: isTouching
       };
-      _ref1 = Conf['Header auto-hide'] || !Conf['Fixed Header'] ? [0, 0] : Conf['Bottom Header'] ? [0, Header.bar.getBoundingClientRect().height] : [Header.bar.getBoundingClientRect().height, 0], o.topBorder = _ref1[0], o.bottomBorder = _ref1[1];
+      _ref = Conf['Header auto-hide'] || !Conf['Fixed Header'] ? [0, 0] : Conf['Bottom Header'] ? [0, Header.bar.getBoundingClientRect().height] : [Header.bar.getBoundingClientRect().height, 0], o.topBorder = _ref[0], o.bottomBorder = _ref[1];
       if (isTouching) {
         o.identifier = e.identifier;
         o.move = touchmove.bind(o);
@@ -7139,33 +7119,29 @@
       return $.set("" + this.id + ".position", this.style.cssText);
     };
     hoverstart = function(_arg) {
-      var asapTest, cb, el, endEvents, latestEvent, noRemove, o, offsetX, offsetY, root;
-      root = _arg.root, el = _arg.el, latestEvent = _arg.latestEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, cb = _arg.cb, offsetX = _arg.offsetX, offsetY = _arg.offsetY, noRemove = _arg.noRemove;
+      var asapTest, cb, el, endEvents, height, latestEvent, noRemove, o, root, _ref;
+      root = _arg.root, el = _arg.el, latestEvent = _arg.latestEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, height = _arg.height, cb = _arg.cb, noRemove = _arg.noRemove;
       o = {
         root: root,
         el: el,
         style: el.style,
+        isImage: (_ref = el.nodeName) === 'IMG' || _ref === 'VIDEO',
         cb: cb,
-        close: close,
         endEvents: endEvents,
         latestEvent: latestEvent,
         clientHeight: doc.clientHeight,
         clientWidth: doc.clientWidth,
-        offsetX: offsetX || 45,
-        offsetY: offsetY || -120,
         noRemove: noRemove
       };
       o.hover = hover.bind(o);
       o.hoverend = hoverend.bind(o);
-      if (asapTest) {
-        $.asap(function() {
-          return !el.parentNode || asapTest();
-        }, function() {
-          if (el.parentNode) {
-            return o.hover(o.latestEvent);
-          }
-        });
-      }
+      $.asap(function() {
+        return !el.parentNode || asapTest();
+      }, function() {
+        if (el.parentNode) {
+          return o.hover(o.latestEvent);
+        }
+      });
       $.on(root, endEvents, o.hoverend);
       if ($.x('ancestor::div[contains(@class,"inline")][1]', root)) {
         $.on(d, 'keydown', o.hoverend);
@@ -7173,22 +7149,28 @@
       return $.on(root, 'mousemove', o.hover);
     };
     hover = function(e) {
-      var clientX, clientY, height, left, right, top, _ref;
+      var clientX, clientY, height, left, right, style, threshold, top, _ref;
       this.latestEvent = e;
-      height = this.el.offsetHeight + 25;
+      height = this.height || this.el.offsetHeight;
       clientX = e.clientX, clientY = e.clientY;
-      top = clientY + this.offsetY;
-      top = this.clientHeight <= height || top <= 0 ? 0 : top + height >= this.clientHeight ? this.clientHeight - height : top;
-      _ref = clientX <= this.clientWidth / 2 ? [clientX + this.offsetX + 'px', null] : [null, this.clientWidth - clientX + this.offsetX + 'px'], left = _ref[0], right = _ref[1];
-      this.style.top = top + 'px';
-      this.style.left = left;
-      return this.style.right = right;
+      top = this.isImage ? Math.max(0, clientY * (this.clientHeight - height) / this.clientHeight) : Math.max(0, Math.min(this.clientHeight - height, clientY - 120));
+      threshold = this.clientWidth / 2;
+      if (!this.isImage) {
+        threshold = Math.max(threshold, this.clientWidth - 400);
+      }
+      _ref = clientX <= threshold ? [clientX + 45 + 'px', null] : [null, this.clientWidth - clientX + 45 + 'px'], left = _ref[0], right = _ref[1];
+      style = this.style;
+      style.top = top + 'px';
+      style.left = left;
+      return style.right = right;
     };
     hoverend = function(e) {
       if (e.type === 'keydown' && e.keyCode !== 13 || e.target.nodeName === "TEXTAREA") {
         return;
       }
-      $.rm(this.el);
+      if (!this.noRemove) {
+        $.rm(this.el);
+      }
       $.off(this.root, this.endEvents, this.hoverend);
       $.off(d, 'keydown', this.hoverend);
       $.off(this.root, 'mousemove', this.hover);
@@ -7196,10 +7178,25 @@
         return this.cb.call(this);
       }
     };
+    checkbox = function(name, text, checked) {
+      var input, label;
+      if (checked == null) {
+        checked = Conf[name];
+      }
+      label = $.el('label');
+      input = $.el('input', {
+        type: 'checkbox',
+        name: name,
+        checked: checked
+      });
+      $.add(label, [input, $.tn(text)]);
+      return label;
+    };
     return {
       dialog: dialog,
       Menu: Menu,
-      hover: hoverstart
+      hover: hoverstart,
+      checkbox: checkbox
     };
   })();
 
@@ -9784,11 +9781,10 @@
     dialog: function() {
       var dialog, event, i, items, match_max, match_min, name, node, nodes, rules, save, setNode;
       QR.nodes = nodes = {
-        el: dialog = UI.dialog('qr', 'top:0;right:0;')
+        el: dialog = UI.dialog('qr', 'top:0;right:0;', {
+          innerHTML: "<div id=qrtab class=move>\r<input type=checkbox id=autohide title=Auto-hide>\r<div id=qr-thread-select>\r<select data-name=thread title='Create a new thread / Reply'>\r<option value=new>New thread</option>\r</select>\r</div>\r<a href=javascript:; class='close fa' title=Close>\\uf00d</a>\r</div>\r<form>\r<div class=persona>\r<input name=name  data-name=name  list=\"list-name\"  placeholder=Name    class=field size=1>\r<input name=email data-name=email list=\"list-email\" placeholder=Options class=field size=1>\r<input name=sub   data-name=sub   list=\"list-sub\"   placeholder=Subject class=field size=1> \r</div>\r<div class=textarea>\r<textarea data-name=com placeholder=Comment class=field></textarea>\r<span id=char-count></span>\r</div>\r<div id=dump-list-container>\r<div id=dump-list></div>\r<a id=add-post href=javascript:; title=\"Add a post\">+</a>\r</div>\r<div id=file-n-submit>\r<span id=qr-filename-container class=field tabindex=0>\r<span id=qr-no-file>No selected file</span>\r<input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\">\r<span id=qr-extras-container>\r<label id=qr-spoiler-label>\r<input type=checkbox id=qr-file-spoiler title='Spoiler image'>\r</label>\r<span class=description>Spoiler</span>\r<a id=url-button><i class=\"fa\">\\uf0c1</i></a>\r<span class=description>Post from URL</span>\r<a id=dump-button title='Dump list'>+</a>\r<span class=description>Dump</span>\r<a id=qr-filerm href=javascript:; title='Remove file' class=fa>\\uf00d</a>\r<span class=description>Remove File</span>\r</span>\r</span>\r<input type=submit>\r</div>\r<input type=file multiple>\r</form>\r<datalist id=\"list-name\"></datalist>\r<datalist id=\"list-email\"></datalist>\r<datalist id=\"list-sub\"></datalist>\r"
+        })
       };
-      $.extend(dialog, {
-        innerHTML: "<div id=qrtab class=move>\r<input type=checkbox id=autohide title=Auto-hide>\r<div id=qr-thread-select>\r<select data-name=thread title='Create a new thread / Reply'>\r<option value=new>New thread</option>\r</select>\r</div>\r<a href=javascript:; class='close fa' title=Close>\\uf00d</a>\r</div>\r<form>\r<div class=persona>\r<input name=name  data-name=name  list=\"list-name\"  placeholder=Name    class=field size=1>\r<input name=email data-name=email list=\"list-email\" placeholder=Options class=field size=1>\r<input name=sub   data-name=sub   list=\"list-sub\"   placeholder=Subject class=field size=1> \r</div>\r<div class=textarea>\r<textarea data-name=com placeholder=Comment class=field></textarea>\r<span id=char-count></span>\r</div>\r<div id=dump-list-container>\r<div id=dump-list></div>\r<a id=add-post href=javascript:; title=\"Add a post\">+</a>\r</div>\r<div id=file-n-submit>\r<span id=qr-filename-container class=field tabindex=0>\r<span id=qr-no-file>No selected file</span>\r<input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\">\r<span id=qr-extras-container>\r<label id=qr-spoiler-label>\r<input type=checkbox id=qr-file-spoiler title='Spoiler image'>\r</label>\r<span class=description>Spoiler</span>\r<a id=url-button><i class=\"fa\">\\uf0c1</i></a>\r<span class=description>Post from URL</span>\r<a id=dump-button title='Dump list'>+</a>\r<span class=description>Dump</span>\r<a id=qr-filerm href=javascript:; title='Remove file' class=fa>\\uf00d</a>\r<span class=description>Remove File</span>\r</span>\r</span>\r<input type=submit>\r</div>\r<input type=file multiple>\r</form>\r<datalist id=\"list-name\"></datalist>\r<datalist id=\"list-email\"></datalist>\r<datalist id=\"list-sub\"></datalist>\r"
-      });
       setNode = function(name, query) {
         return nodes[name] = $(query, dialog);
       };
@@ -14126,6 +14122,7 @@
       this.status = $('#watcher-status', this.dialog);
       this.list = this.dialog.lastElementChild;
       this.refreshButton = $('.refresh', this.dialog);
+      this.unreaddb = Unread.db || new DataBoard('lastReadPosts');
       $.on(d, 'QRPostSuccessful', this.cb.post);
       if (g.VIEW === 'thread') {
         $.on(d, 'ThreadUpdate', this.cb.threadUpdate);

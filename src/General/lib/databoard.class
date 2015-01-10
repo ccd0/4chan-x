@@ -16,10 +16,13 @@ class DataBoard
   save: -> $.set @key, @data
 
   delete: ({boardID, threadID, postID}) ->
+    $.forceSync @key
     if postID
+      return unless @data.boards[boardID]?[threadID]
       delete @data.boards[boardID][threadID][postID]
       @deleteIfEmpty {boardID, threadID}
     else if threadID
+      return unless @data.boards[boardID]
       delete @data.boards[boardID][threadID]
       @deleteIfEmpty {boardID}
     else
@@ -27,6 +30,7 @@ class DataBoard
     @save()
 
   deleteIfEmpty: ({boardID, threadID}) ->
+    $.forceSync @key
     if threadID
       unless Object.keys(@data.boards[boardID][threadID]).length
         delete @data.boards[boardID][threadID]
@@ -35,6 +39,7 @@ class DataBoard
       delete @data.boards[boardID]
 
   set: ({boardID, threadID, postID, val}) ->
+    $.forceSync @key
     if postID isnt undefined
       ((@data.boards[boardID] or= {})[threadID] or= {})[postID] = val
     else if threadID isnt undefined
@@ -60,39 +65,28 @@ class DataBoard
           thread
     val or defaultValue
 
+  forceSync: ->
+    $.forceSync @key
   clean: ->
-    now = Date.now()
-    return if (@data.lastChecked or 0) > now - 2 * $.HOUR
-
-    # Don't even bother writing unless we have data to write
-    keys = Object.keys @data.boards
-    return unless keys.length
-
-    # Since we generated the keys anyways, use them to avoid the slow ``Object::hasOwnProperty`` method
-    # Not that ``Object.keys`` is fast
-    for boardID in keys
+    $.forceSync @key
+    for boardID, val of @data.boards
       @deleteIfEmpty {boardID}
-      @ajaxClean boardID if boardID of @data.boards
 
-    @data.lastChecked = now
+    now = Date.now()
+    if (@data.lastChecked or 0) < now - 2 * $.HOUR
+      @data.lastChecked = now
+      for boardID of @data.boards
+        for threadID of @data.boards[boardID]
+          @ajaxClean boardID, threadID
     @save()
 
-  ajaxClean: (boardID) ->
-    $.cache "//a.4cdn.org/#{boardID}/threads.json", (e) =>
-      if e.target.status isnt 200
-        @delete {boardID} if e.target.status is 404
-        return
-      board   = @data.boards[boardID]
-      threads = {}
-      for page in e.target.response
-        for thread in page.threads when thread.no of board
-          threads[thread.no] = board[thread.no]
-      count = Object.keys(threads).length
-      return if count is Object.keys(board).length # Nothing changed.
-      if count
-        @set {boardID, val: threads}
-      else
-        @delete {boardID}
+  ajaxClean: (boardID, threadID) ->
+    $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
+      onloadend: (e) =>
+        if e.target.status is 404
+          @delete {boardID, threadID}
+    ,
+      type: 'head'
 
   onSync: (data) =>
     @data = data or boards: {}

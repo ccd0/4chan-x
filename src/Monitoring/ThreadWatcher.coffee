@@ -8,6 +8,7 @@ ThreadWatcher =
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
     @refreshButton = $ '.refresh', @dialog
+    @unreaddb = Unread.db or new DataBoard 'lastReadPosts'
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on d, 'ThreadUpdate',       @cb.threadUpdate if g.VIEW is 'thread'

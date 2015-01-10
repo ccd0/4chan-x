@@ -181,14 +181,14 @@ Build =
 
     ### File Info ###
 
-    if file?.isDeleted
-      fileCont = <%= html(
+    fileCont = if file?.isDeleted
+      <%= html(
         '<span class="fileThumb">' +
           '<img src="${staticPath}filedeleted-res${gifIcon}" alt="File deleted." class="fileDeletedRes retina">' +
         '</span>'
       ) %>
     else if file and boardID is 'f'
-      fileCont = <%= html(
+      <%= html(
         '<div class="fileInfo"><span class="fileText" id="fT${postID}">' +
           'File: <a data-width="${file.width}" data-height="${file.height}" href="${file.url}" target="_blank">${file.name}</a>' +
           '-(${$.bytesToString(file.size)}, ${file.width}x${file.height}, ${file.tag})' +

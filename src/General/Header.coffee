@@ -6,7 +6,7 @@ Header =
       className: 'menu-button a-icon'
       id:        'main-menu'
 
-    box = UI.checkbox.bind UI
+    box = UI.checkbox
 
     barFixedToggler     = box 'Fixed Header',               'Fixed Header'
     headerToggler       = box 'Header auto-hide',           ' Auto-hide header'

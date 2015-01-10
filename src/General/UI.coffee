@@ -1,15 +1,19 @@
 UI = do ->
-  dialog = (id, position, html) ->
+  dialog = (id, position, properties) ->
     el = $.el 'div',
       className: 'dialog'
-      innerHTML: html
       id: id
+    $.extend el, properties
     el.style.cssText = position
     $.get "#{id}.position", position, (item) ->
       el.style.cssText = item["#{id}.position"]
 
     move = $ '.move', el
     $.on move, 'touchstart mousedown', dragstart
+    for child in move.children
+      continue unless child.tagName
+      $.on child, 'touchstart mousedown', (e) ->
+        e.stopPropagation()
 
     el
 
@@ -17,7 +21,12 @@ UI = do ->
     currentMenu       = null
     lastToggledButton = null
 
-    constructor: ->
+    constructor: (@type) ->
+      # XXX AddMenuEntry event is deprecated
+      $.on d, 'AddMenuEntry', ({detail}) =>
+        return if detail.type isnt @type
+        delete detail.open
+        @addEntry detail
       @entries = []
 
     makeMenu: ->
@@ -47,7 +56,6 @@ UI = do ->
       menu = @makeMenu()
       currentMenu       = menu
       lastToggledButton = button
-      $.addClass button, 'open'
 
       @entries.sort (first, second) ->
         first.order - second.order
@@ -95,9 +103,7 @@ UI = do ->
 
     insertEntry: (entry, parent, data) ->
       if typeof entry.open is 'function'
-        return unless entry.open data, (subEntry) =>
-          @parseEntry subEntry
-          entry.subEntries.push subEntry
+        return unless entry.open data
       $.add parent, entry.el
 
       return unless entry.subEntries
@@ -113,7 +119,7 @@ UI = do ->
 
     close: =>
       $.rm currentMenu
-      $.rmClass lastToggledButton, 'open'
+      $.rmClass lastToggledButton, 'active'
       currentMenu       = null
       lastToggledButton = null
       $.off d, 'click CloseMenu', @close
@@ -184,7 +190,7 @@ UI = do ->
       style.left   = left
       style.right  = right
 
-    addEntry: (entry) ->
+    addEntry: (entry) =>
       @parseEntry entry
       @entries.push entry
 
@@ -199,7 +205,6 @@ UI = do ->
       el.style.order = entry.order or 100
       return unless subEntries
       $.addClass el, 'has-submenu'
-      $.addClass el, 'pfa'
       for subEntry in subEntries
         @parseEntry subEntry
       return
@@ -209,7 +214,7 @@ UI = do ->
     # prevent text selection
     e.preventDefault()
     if isTouching = e.type is 'touchstart'
-      [..., e] = e.changedTouches
+      e = e.changedTouches[e.changedTouches.length - 1]
     # distance from pointer to el edge is constant; calculate it here.
     el = $.x 'ancestor::div[contains(@class,"dialog")][1]', @
     rect = el.getBoundingClientRect()
@@ -302,76 +307,80 @@ UI = do ->
       $.off d, 'mouseup',   @up
     $.set "#{@id}.position", @style.cssText
 
-  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb, offsetX, offsetY, noRemove}) ->
+  hoverstart = ({root, el, latestEvent, endEvents, asapTest, height, cb, noRemove}) ->
     o = {
       root
       el
       style: el.style
+      isImage: el.nodeName in ['IMG', 'VIDEO']
       cb
-      close:  close
       endEvents
       latestEvent
       clientHeight: doc.clientHeight
       clientWidth:  doc.clientWidth
-      offsetX: offsetX or 45
-      offsetY: offsetY or -120
       noRemove
     }
     o.hover    = hover.bind    o
     o.hoverend = hoverend.bind o
 
-    if asapTest
-      $.asap ->
-        !el.parentNode or asapTest()
-      , ->
-        o.hover o.latestEvent if el.parentNode
+    $.asap ->
+      !el.parentNode or asapTest()
+    , ->
+      o.hover o.latestEvent if el.parentNode
 
     $.on root, endEvents,   o.hoverend
     if $.x 'ancestor::div[contains(@class,"inline")][1]', root
       $.on d,    'keydown',   o.hoverend
     $.on root, 'mousemove', o.hover
     <% if (type === 'userscript') { %>
-    # Workaround for https://github.com/MayhemYDG/4chan-x/issues/377
+    # Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=674955
     o.workaround = (e) -> o.hoverend(e) unless root.contains e.target
     $.on doc,  'mousemove', o.workaround
     <% } %>
 
   hover = (e) ->
     @latestEvent = e
-    height = @el.offsetHeight + 25
+    height = @height or @el.offsetHeight
     {clientX, clientY} = e
-
-    top = clientY + @offsetY
-    top = if @clientHeight <= height or top <= 0
-      0
-    else if top + height >= @clientHeight
-      @clientHeight - height
+    top = if @isImage
+      Math.max 0, clientY * (@clientHeight - height) / @clientHeight
     else
-      top
+      Math.max 0, Math.min(@clientHeight - height, clientY - 120)
 
-    [left, right] = if clientX <= @clientWidth / 2
-      [clientX + @offsetX + 'px', null]
+    threshold = @clientWidth / 2
+    threshold = Math.max threshold, @clientWidth - 400 unless @isImage
+    [left, right] = if clientX <= threshold
+      [clientX + 45 + 'px', null]
     else
-      [null, @clientWidth - clientX + @offsetX + 'px']
+      [null, @clientWidth - clientX + 45 + 'px']
 
-    @style.top   = top + 'px'
-    @style.left  = left
-    @style.right = right
+    {style} = @
+    style.top   = top + 'px'
+    style.left  = left
+    style.right = right
 
   hoverend = (e) ->
     return if e.type is 'keydown' and e.keyCode isnt 13 or e.target.nodeName is "TEXTAREA"
-    $.rm @el
+    $.rm @el unless @noRemove
     $.off @root, @endEvents,  @hoverend
     $.off d,     'keydown',   @hoverend
     $.off @root, 'mousemove', @hover
     <% if (type === 'userscript') { %>
-    # Workaround for https://github.com/MayhemYDG/4chan-x/issues/377
+    # Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=674955
     $.off doc,   'mousemove', @workaround
     <% } %>
     @cb.call @ if @cb
 
+  checkbox = (name, text, checked) ->
+    checked = Conf[name] unless checked?
+    label = $.el 'label'
+    input = $.el 'input', {type: 'checkbox', name, checked}
+    $.add label, [input, $.tn text]
+    label
+
   return {
-    dialog: dialog
-    Menu:   Menu
-    hover:  hoverstart
+    dialog:   dialog
+    Menu:     Menu
+    hover:    hoverstart
+    checkbox: checkbox
   }
