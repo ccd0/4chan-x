@@ -1,10 +1,22 @@
 DownloadLink =
   init: ->
-    return if !Conf['Menu'] or !Conf['Download Link']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Download Link']
 
     a = $.el 'a',
       className: 'download-link'
       textContent: 'Download file'
+
+    # Specifying the filename with the download attribute only works for same-origin links.
+    $.on a, 'click', (e) ->
+      return true if @protocol is 'blob:'
+      e.preventDefault()
+      CrossOrigin.file @href, (blob) =>
+        if blob
+          @href = URL.createObjectURL blob
+          @click()
+        else
+          new Notice 'error', "Could not download #{@href}", 30
+
     Menu.menu.addEntry
       el: a
       order: 100

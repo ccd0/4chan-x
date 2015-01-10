@@ -115,7 +115,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Labels, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, Callbacks, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -12426,8 +12426,8 @@
 
   ArchiveLink = {
     init: function() {
-      var div, entry, type, _i, _len, _ref;
-      if (!Conf['Menu'] || !Conf['Archive Link']) {
+      var div, entry, type, _i, _len, _ref, _ref1;
+      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Menu'] && Conf['Archive Link'])) {
         return;
       }
       div = $.el('div', {
@@ -12447,9 +12447,9 @@
         },
         subEntries: []
       };
-      _ref = [['Post', 'post'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['E-mail', 'email'], ['Subject', 'subject'], ['Filename', 'filename'], ['Image MD5', 'MD5']];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        type = _ref[_i];
+      _ref1 = [['Post', 'post'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['Subject', 'subject'], ['Filename', 'filename'], ['Image MD5', 'MD5']];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        type = _ref1[_i];
         entry.subEntries.push(this.createSubEntry(type[0], type[1]));
       }
       return Menu.menu.addEntry(entry);
@@ -12492,8 +12492,8 @@
 
   DeleteLink = {
     init: function() {
-      var div, fileEl, fileEntry, postEl, postEntry;
-      if (!Conf['Menu'] || !Conf['Delete Link']) {
+      var div, fileEl, fileEntry, postEl, postEntry, _ref;
+      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Menu'] && Conf['Delete Link'])) {
         return;
       }
       div = $.el('div', {
@@ -12584,6 +12584,7 @@
         $.on(link, 'click', DeleteLink["delete"]);
       } else {
         if (resDoc.title === 'Updating index...') {
+          QR.cooldown["delete"](post);
           (post.origin || post).kill(fileOnly);
         }
         s = 'Deleted';
@@ -12629,13 +12630,29 @@
 
   DownloadLink = {
     init: function() {
-      var a;
-      if (!Conf['Menu'] || !Conf['Download Link']) {
+      var a, _ref;
+      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Menu'] && Conf['Download Link'])) {
         return;
       }
       a = $.el('a', {
         className: 'download-link',
         textContent: 'Download file'
+      });
+      $.on(a, 'click', function(e) {
+        if (this.protocol === 'blob:') {
+          return true;
+        }
+        e.preventDefault();
+        return CrossOrigin.file(this.href, (function(_this) {
+          return function(blob) {
+            if (blob) {
+              _this.href = URL.createObjectURL(blob);
+              return _this.click();
+            } else {
+              return new Notice('error', "Could not download " + _this.href, 30);
+            }
+          };
+        })(this));
       });
       return Menu.menu.addEntry({
         el: a,
@@ -12650,38 +12667,6 @@
           a.download = file.name;
           return true;
         }
-      });
-    }
-  };
-
-  Labels = {
-    init: function() {
-      if (!Conf['Menu']) {
-        return;
-      }
-      return Menu.menu.addEntry({
-        el: $.el('div', {
-          textContent: 'Labels'
-        }),
-        order: 60,
-        open: function(post, addSubEntry) {
-          var label, labels, _i, _len;
-          labels = (post.origin || post).labels;
-          if (!labels.length) {
-            return false;
-          }
-          this.subEntries.length = 0;
-          for (_i = 0, _len = labels.length; _i < _len; _i++) {
-            label = labels[_i];
-            addSubEntry({
-              el: $.el('div', {
-                textContent: label
-              })
-            });
-          }
-          return true;
-        },
-        subEntries: []
       });
     }
   };

@@ -1,6 +1,6 @@
 ArchiveLink =
   init: ->
-    return if !Conf['Menu'] or !Conf['Archive Link']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Archive Link']
 
     div = $.el 'div',
       textContent: 'Archive'
@@ -16,7 +16,6 @@ ArchiveLink =
       ['Post',      'post']
       ['Name',      'name']
       ['Tripcode',  'tripcode']
-      ['E-mail',    'email']
       ['Subject',   'subject']
       ['Filename',  'filename']
       ['Image MD5', 'MD5']

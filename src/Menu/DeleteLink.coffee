@@ -1,6 +1,6 @@
 DeleteLink =
   init: ->
-    return if !Conf['Menu'] or !Conf['Delete Link']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Delete Link']
 
     div = $.el 'div',
       className: 'delete-link'
@@ -69,6 +69,7 @@ DeleteLink =
     else
       if resDoc.title is 'Updating index...'
         # We're 100% sure.
+        QR.cooldown.delete post
         (post.origin or post).kill fileOnly
       s = 'Deleted'
     link.textContent = s
