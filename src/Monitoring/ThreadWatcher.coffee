@@ -33,11 +33,7 @@ ThreadWatcher =
       Header.addShortcut sc
       $.addClass doc, 'fixed-watcher'
 
-    now = Date.now()
-    if (@db.data.lastChecked or 0) < now - 2 * $.HOUR
-      @db.data.lastChecked = now
-      ThreadWatcher.fetchAllStatus()
-      @db.save()
+    ThreadWatcher.fetchAuto()
 
     Post.callbacks.push
       name: 'Thread Watcher'
@@ -151,6 +147,17 @@ ThreadWatcher =
   fetchCount:
     fetched:  0
     fetching: 0
+  fetchAuto: ->
+    clearTimeout ThreadWatcher.timeout
+    return unless Conf['Auto Update Thread Watcher']
+    {db} = ThreadWatcher
+    interval = if Conf['Show Unread Count'] then 5 * $.MINUTE else 2 * $.HOUR
+    now = Date.now()
+    if now >= (db.data.lastChecked or 0) + interval
+      db.data.lastChecked = now
+      ThreadWatcher.fetchAllStatus()
+      db.save()
+    ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
   fetchAllStatus: ->
     ThreadWatcher.db.forceSync()
     ThreadWatcher.unreaddb.forceSync()
@@ -410,9 +417,10 @@ ThreadWatcher =
     createSubEntry: (name, desc) ->
       entry =
         type: 'thread watcher'
-        el: UI.checkbox name, " #{name}"
+        el: UI.checkbox name, " #{name.replace ' Thread Watcher', ''}"
       entry.el.title = desc
       input = entry.el.firstElementChild
       $.on input, 'change', $.cb.checked
-      $.on input, 'change', ThreadWatcher.refresh if name is 'Current Board' or name is 'Show Unread Count'
+      $.on input, 'change', ThreadWatcher.refresh if name in ['Current Board', 'Show Unread Count']
+      $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Unread Count', 'Auto Update Thread Watcher']
       entry

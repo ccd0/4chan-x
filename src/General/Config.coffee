@@ -560,6 +560,10 @@ Config =
       false
       'Only show watched threads from the current board.'
     ]
+    'Auto Update Thread Watcher': [
+      true
+      'Periodically check status of watched threads.'
+    ]
     'Auto Watch': [
       false
       'Automatically watch threads you start.'
