@@ -276,6 +276,7 @@ ThreadWatcher =
       $.addClass div, 'replies-quoting-you' if data.quotingYou
     $.add div, [x, $.tn(' '), link]
     div
+
   refresh: ->
     nodes = []
     for {boardID, threadID, data} in ThreadWatcher.getAll()
@@ -294,7 +295,7 @@ ThreadWatcher =
           toggler.title = "#{helper[1]} Thread"
       $[helper[0]] thread.catalogView.nodes.root, 'watched' if thread.catalogView
 
-    ThreadWatcher.shortcut.classList.toggle 'replies-quoting-you', !!$('.replies-quoting-you', ThreadWatcher.dialog)
+    ThreadWatcher.refreshIcon()
 
     for refresher in ThreadWatcher.menu.refreshers
       refresher()
@@ -302,6 +303,11 @@ ThreadWatcher =
     if Index.nodes and Conf['Pin Watched Threads']
       Index.sort()
       Index.buildIndex()
+
+  refreshIcon: ->
+    for className in ['replies-unread', 'replies-quoting-you']
+      ThreadWatcher.shortcut.classList.toggle className, !!$(".#{className}", ThreadWatcher.dialog)
+    return
 
   update: (boardID, threadID, newData) ->
     return unless data = ThreadWatcher.db?.get {boardID, threadID}
@@ -319,7 +325,7 @@ ThreadWatcher =
     if line = $ "#watched-threads > [data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
       newLine = ThreadWatcher.makeLine boardID, threadID, data
       $.replace line, newLine
-      ThreadWatcher.shortcut.classList.toggle 'replies-quoting-you', !!$('.replies-quoting-you', ThreadWatcher.dialog)
+      ThreadWatcher.refreshIcon()
     else
       ThreadWatcher.refresh()
 
