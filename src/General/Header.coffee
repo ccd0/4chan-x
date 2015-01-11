@@ -85,17 +85,25 @@ Header =
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
       # it might be incomplete otherwise.
-      $.asap (-> $.id('boardNavMobile') or d.readyState isnt 'loading'), Header.setBoardList
+      $.asap (-> $.id('boardNavMobile') or d.readyState isnt 'loading'), ->
+        Header.footer = footer = $.id('boardNavDesktop').cloneNode true
+        footer.id = 'boardNavDesktopFoot'
+        $.rm $('#navtopright', footer)
+        if a = $ "a[href*='/#{g.BOARD}/']", footer
+          a.className = 'current'
+        Header.setFooterVisibility Conf['Bottom Board List']
+        $.sync 'Bottom Board List', Header.setFooterVisibility
+        Main.ready ->
+          $.rm oldFooter if oldFooter = $.id 'boardNavDesktopFoot'
+          $.globalEval 'window.cloneTopNav = function() {};'
+          $.before $.id('absbot'), footer
+        Header.setBoardList()
       $.prepend d.body, @bar
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
       @
 
     Main.ready =>
-      @footer = footer = $.id 'boardNavDesktopFoot'
-      if a = $ "a[href*='/#{g.BOARD}/']", footer
-        a.className = 'current'
-
       if g.VIEW is 'catalog' or !Conf['Disable Native Extension']
         cs = $.el 'a', href: 'javascript:;'
         if g.VIEW is 'catalog'
@@ -107,9 +115,6 @@ Header =
         $.on cs, 'click', () ->
           $.id('settingsWindowLink').click()
         @addShortcut cs
-
-      Header.setFooterVisibility Conf['Bottom Board List']
-      $.sync 'Bottom Board List', Header.setFooterVisibility
 
     @enableDesktopNotifications()
 
