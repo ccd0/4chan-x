@@ -13064,29 +13064,23 @@
 
   Unread = {
     init: function() {
-      if (!(g.VIEW === 'thread' && Conf['Unread Count'] || Conf['Unread Favicon'] || Conf['Unread Line'] || Conf['Scroll to Last Read Post'] || Conf['Thread Watcher'] || Conf['Desktop Notifications'] || Conf['Quote Threading'])) {
+      if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Favicon'] && !Conf['Desktop Notifications']) {
         return;
       }
       this.db = new DataBoard('lastReadPosts', this.sync);
       this.hr = $.el('hr', {
         id: 'unread-line'
       });
-      this.posts = new Set;
-      this.postsQuotingYou = new Set;
-      this.order = new RandomAccessList;
-      this.position = null;
-      Thread.callbacks.push({
+      this.posts = new RandomAccessList;
+      this.postsQuotingYou = [];
+      return Thread.callbacks.push({
         name: 'Unread',
         cb: this.node
-      });
-      return Post.callbacks.push({
-        name: 'Unread',
-        cb: this.addPost
       });
     },
     disconnect: function() {
       var hr, name, _i, _len, _ref;
-      if (!(g.VIEW === 'thread' && Conf['Unread Count'] || Conf['Unread Favicon'] || Conf['Unread Line'] || Conf['Scroll to Last Read Post'] || Conf['Thread Watcher'] || Conf['Desktop Notifications'] || Conf['Quote Threading'])) {
+      if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Favicon'] && !Conf['Desktop Notifications']) {
         return;
       }
       Unread.db.disconnect();
@@ -13109,7 +13103,6 @@
       return Thread.callbacks.disconnect('Unread');
     },
     node: function() {
-      var ID, _i, _len, _ref;
       Unread.thread = this;
       Unread.title = d.title;
       Unread.lastReadPost = Unread.db.get({
@@ -13117,108 +13110,118 @@
         threadID: this.ID,
         defaultValue: 0
       });
-      Unread.readCount = 0;
-      _ref = this.posts.keys;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        ID = _ref[_i];
-        if (+ID <= Unread.lastReadPost) {
-          Unread.readCount++;
-        }
-      }
-      $.one(d, '4chanXInitFinished', Unread.ready);
-      return $.on(d, 'ThreadUpdate', Unread.onUpdate);
-    },
-    ready: function() {
-      Unread.setLine(true);
-      Unread.read();
-      Unread.update();
-      if (Conf['Scroll to Last Read Post']) {
-        Unread.scroll();
-      }
+      $.on(d, '4chanXInitFinished', Unread.ready);
+      $.on(d, 'ThreadUpdate', Unread.onUpdate);
       $.on(d, 'scroll visibilitychange', Unread.read);
       if (Conf['Unread Line']) {
         return $.on(d, 'visibilitychange', Unread.setLine);
       }
     },
-    positionPrev: function() {
-      if (Unread.position) {
-        return Unread.position.prev;
-      } else {
-        return Unread.order.last;
-      }
+    ready: function() {
+      var post, posts;
+      $.off(d, '4chanXInitFinished', Unread.ready);
+      posts = Unread.thread.posts;
+      post = posts.first().nodes.root;
+      return $.asap((function() {
+        return post.getBoundingClientRect().bottom;
+      }), function() {
+        var arr;
+        if (Conf['Quote Threading']) {
+          QuoteThreading.force();
+        } else {
+          arr = [];
+          posts.forEach(function(post) {
+            if (post.isReply) {
+              return arr.push(post);
+            }
+          });
+          Unread.addPosts(arr);
+        }
+        if (Conf['Scroll to Last Read Post']) {
+          return setTimeout(Unread.scroll, 200);
+        }
+      });
     },
     scroll: function() {
-      var hash, position, root;
+      var down, hash, keys, post, posts, root;
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
-      position = Unread.positionPrev();
-      while (position) {
-        root = position.data.nodes.root;
-        if (!root.getBoundingClientRect().height) {
-          position = position.prev;
-        } else {
-          Header.scrollToIfNeeded(root, true);
-          break;
+      if (post = Unread.posts.first) {
+        while (root = $.x('preceding-sibling::div[contains(@class,"replyContainer")][1]', post.data.nodes.root)) {
+          if (!(post = Get.postFromRoot(root)).isHidden) {
+            break;
+          }
         }
+        if (!root) {
+          return;
+        }
+        down = true;
+      } else {
+        posts = Unread.thread.posts;
+        keys = posts.keys;
+        root = posts[keys[keys.length - 1]].nodes.root;
+      }
+      if (Header.getBottomOf(root) < 0) {
+        return Header.scrollTo(root, down);
       }
     },
     sync: function() {
-      var ID, i, lastReadPost, postIDs, _i, _ref, _ref1;
-      if (Unread.lastReadPost == null) {
-        return;
-      }
+      var ID, lastReadPost, post;
       lastReadPost = Unread.db.get({
         boardID: Unread.thread.board.ID,
         threadID: Unread.thread.ID,
         defaultValue: 0
       });
-      if (!(Unread.lastReadPost < lastReadPost)) {
+      if (Unread.lastReadPost > lastReadPost) {
         return;
       }
       Unread.lastReadPost = lastReadPost;
-      postIDs = Unread.thread.posts.keys;
-      for (i = _i = _ref = Unread.readCount, _ref1 = postIDs.length; _i < _ref1; i = _i += 1) {
-        ID = +postIDs[i];
-        if (!Unread.thread.posts[ID].isFetchedQuote) {
-          if (ID > Unread.lastReadPost) {
-            break;
-          }
-          Unread.posts["delete"](ID);
-          Unread.postsQuotingYou["delete"](ID);
+      post = Unread.posts.first;
+      while (post) {
+        ID = post.ID;
+        if (ID > lastReadPost) {
+          break;
         }
-        Unread.readCount++;
+        post = post.next;
+        Unread.posts.rm(ID);
       }
-      Unread.updatePosition();
-      Unread.setLine();
+      Unread.readArray(Unread.postsQuotingYou);
+      if (Conf['Unread Line']) {
+        Unread.setLine();
+      }
       return Unread.update();
     },
-    addPost: function() {
-      var _ref;
-      if (this.isFetchedQuote || this.isClone) {
-        return;
+    addPosts: function(posts) {
+      var ID, post, _i, _len, _ref, _ref1;
+      for (_i = 0, _len = posts.length; _i < _len; _i++) {
+        post = posts[_i];
+        ID = post.ID;
+        if (ID <= Unread.lastReadPost || post.isHidden || QR.db.get({
+          boardID: post.board.ID,
+          threadID: post.thread.ID,
+          postID: ID
+        })) {
+          continue;
+        }
+        Unread.posts.push(post);
+        Unread.addPostQuotingYou(post);
       }
-      Unread.order.push(this);
-      if (this.ID <= Unread.lastReadPost || this.isHidden || ((_ref = QR.db) != null ? _ref.get({
-        boardID: this.board.ID,
-        threadID: this.thread.ID,
-        postID: this.ID
-      }) : void 0)) {
-        return;
+      if (Conf['Unread Line']) {
+        Unread.setLine((_ref = (_ref1 = Unread.posts.first) != null ? _ref1.data : void 0, __indexOf.call(posts, _ref) >= 0));
       }
-      Unread.posts.add(this.ID);
-      Unread.addPostQuotingYou(this);
-      return Unread.position != null ? Unread.position : Unread.position = Unread.order[this.ID];
+      Unread.read();
+      return Unread.update();
     },
     addPostQuotingYou: function(post) {
-      var quotelink, _i, _len, _ref, _ref1;
+      var quotelink, _i, _len, _ref;
       _ref = post.nodes.quotelinks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
-        if (!((_ref1 = QR.db) != null ? _ref1.get(Get.postDataFromLink(quotelink)) : void 0)) {
+        if (!(QR.db.get(Get.postDataFromLink(quotelink)))) {
           continue;
         }
-        Unread.postsQuotingYou.add(post.ID);
+        Unread.postsQuotingYou.push(post);
         Unread.openNotification(post);
         return;
       }
@@ -13228,8 +13231,8 @@
       if (!Header.areNotificationsEnabled) {
         return;
       }
-      notif = new Notification("" + post.info.nameBlock + " replied to you", {
-        body: post.info[Conf['Remove Spoilers'] || Conf['Reveal Spoilers'] ? 'comment' : 'commentSpoilered'],
+      notif = new Notification("" + (post.getNameBlock()) + " replied to you", {
+        body: post.info.comment,
         icon: Favicon.logo
       });
       notif.onclick = function() {
@@ -13243,83 +13246,80 @@
       };
     },
     onUpdate: function(e) {
-      if (!e.detail[404]) {
-        Unread.setLine();
+      if (e.detail[404]) {
+        return Unread.update();
+      } else if (Conf['Quote Threading']) {
         Unread.read();
+        return Unread.update();
+      } else {
+        return Unread.addPosts([].map.call(e.detail.newPosts, function(fullID) {
+          return g.posts[fullID];
+        }));
       }
-      return Unread.update();
     },
     readSinglePost: function(post) {
-      var ID;
+      var ID, i, posts;
       ID = post.ID;
-      if (!Unread.posts.has(ID)) {
+      posts = Unread.posts;
+      if (!posts[ID]) {
         return;
       }
-      Unread.posts["delete"](ID);
-      Unread.postsQuotingYou["delete"](ID);
-      Unread.updatePosition();
-      Unread.saveLastReadPost();
+      if (post === posts.first) {
+        Unread.lastReadPost = ID;
+        Unread.saveLastReadPost();
+      }
+      posts.rm(ID);
+      if ((i = Unread.postsQuotingYou.indexOf(post)) !== -1) {
+        Unread.postsQuotingYou.splice(i, 1);
+      }
       return Unread.update();
     },
-    read: $.debounce(100, function(e) {
-      var ID, count, data, height, root, _ref, _ref1;
-      if (d.hidden || !Unread.posts.size) {
-        return;
-      }
-      height = doc.clientHeight;
-      count = 0;
-      while (Unread.position) {
-        _ref = Unread.position, ID = _ref.ID, data = _ref.data;
-        root = data.nodes.root;
-        if (!(!root.getBoundingClientRect().height || Header.getBottomOf(root) > -1)) {
+    readArray: function(arr) {
+      var i, post, _i, _len;
+      for (i = _i = 0, _len = arr.length; _i < _len; i = ++_i) {
+        post = arr[i];
+        if (post.ID > Unread.lastReadPost) {
           break;
         }
-        count++;
-        Unread.posts["delete"](ID);
-        Unread.postsQuotingYou["delete"](ID);
-        if (Conf['Mark Quotes of You'] && ((_ref1 = QR.db) != null ? _ref1.get({
+      }
+      return arr.splice(0, i);
+    },
+    read: $.debounce(100, function(e) {
+      var ID, data, post, posts;
+      if (d.hidden || !Unread.posts.length) {
+        return;
+      }
+      posts = Unread.posts;
+      while (post = posts.first) {
+        if (!(Header.getBottomOf(post.data.nodes.root) > -1)) {
+          break;
+        }
+        ID = post.ID, data = post.data;
+        posts.rm(ID);
+        if (Conf['Mark Quotes of You'] && QR.db.get({
           boardID: data.board.ID,
           threadID: data.thread.ID,
           postID: ID
-        }) : void 0)) {
-          QuoteYou.lastRead = root;
+        })) {
+          QuoteMarkers.lastRead = data.nodes.root;
         }
-        Unread.position = Unread.position.next;
       }
-      if (!count) {
+      if (!ID) {
         return;
       }
-      Unread.updatePosition();
+      if (Unread.lastReadPost < ID) {
+        Unread.lastReadPost = ID;
+      }
       Unread.saveLastReadPost();
+      Unread.readArray(Unread.postsQuotingYou);
       if (e) {
         return Unread.update();
       }
     }),
-    updatePosition: function() {
-      var _results;
-      _results = [];
-      while (Unread.position && !Unread.posts.has(Unread.position.ID)) {
-        _results.push(Unread.position = Unread.position.next);
-      }
-      return _results;
-    },
-    saveLastReadPost: $.debounce(2 * $.SECOND, function() {
-      var ID, i, postIDs, _i, _ref, _ref1;
-      postIDs = Unread.thread.posts.keys;
-      for (i = _i = _ref = Unread.readCount, _ref1 = postIDs.length; _i < _ref1; i = _i += 1) {
-        ID = +postIDs[i];
-        if (!Unread.thread.posts[ID].isFetchedQuote) {
-          if (Unread.posts.has(ID)) {
-            break;
-          }
-          Unread.lastReadPost = ID;
-        }
-        Unread.readCount++;
-      }
-      if (Unread.thread.isDead && !Unread.thread.isArchived) {
+    saveLastReadPost: $.debounce(5 * $.SECOND, function() {
+      if (Unread.thread.isDead) {
         return;
       }
-      Unread.db.forceSync();
       return Unread.db.set({
         boardID: Unread.thread.board.ID,
         threadID: Unread.thread.ID,
@@ -13327,39 +13327,27 @@
       });
     }),
     setLine: function(force) {
-      if (!Conf['Unread Line']) {
+      var post;
+      if (!(d.hidden || force === true)) {
         return;
       }
-      if (d.hidden || (force === true)) {
-        if (Unread.linePosition = Unread.positionPrev()) {
-          $.after(Unread.linePosition.data.nodes.root, Unread.hr);
-        } else {
-          $.rm(Unread.hr);
-        }
+      if (!(post = Unread.posts.first)) {
+        return $.rm(Unread.hr);
       }
-      return Unread.hr.hidden = Unread.linePosition === Unread.order.last;
+      if ($.x('preceding-sibling::div[contains(@class,"replyContainer")]', post.data.nodes.root)) {
+        return $.before(post.data.nodes.root, Unread.hr);
+      }
     },
     update: function() {
-      var count, countQuotingYou, titleCount, titleDead, titleQuotingYou;
-      count = Unread.posts.size;
-      countQuotingYou = Unread.postsQuotingYou.size;
+      var count;
+      count = Unread.posts.length;
       if (Conf['Unread Count']) {
-        titleQuotingYou = Conf['Quoted Title'] && countQuotingYou ? '(!) ' : '';
-        titleCount = count || !Conf['Hide Unread Count at (0)'] ? "(" + count + ") " : '';
-        titleDead = Unread.thread.isDead ? Unread.title.replace('-', (Unread.thread.isArchived ? '- Archived -' : '- 404 -')) : Unread.title;
-        d.title = "" + titleQuotingYou + titleCount + titleDead;
-      }
-      if (!(Unread.thread.isDead && !Unread.thread.isArchived)) {
-        ThreadWatcher.update(Unread.thread.board.ID, Unread.thread.ID, {
-          isDead: Unread.thread.isDead,
-          unread: count,
-          quotingYou: countQuotingYou
-        });
+        d.title = "" + (count || !Conf['Hide Unread Count at (0)'] ? "(" + count + ") " : '') + (g.DEAD ? Unread.title.replace('-', '- 404 -') : Unread.title);
       }
       if (!Conf['Unread Favicon']) {
         return;
       }
-      return Favicon.el.href = Unread.thread.isDead ? countQuotingYou ? Favicon.unreadDeadY : count ? Favicon.unreadDead : Favicon.dead : count ? countQuotingYou ? Favicon.unreadY : Favicon.unread : Favicon["default"];
+      return Favicon.el.href = g.DEAD ? Unread.postsQuotingYou[0] ? Favicon.unreadDeadY : count ? Favicon.unreadDead : Favicon.dead : count ? Unread.postsQuotingYou[0] ? Favicon.unreadY : Favicon.unread : Favicon["default"];
     }
   };
 
