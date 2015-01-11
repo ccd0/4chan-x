@@ -476,22 +476,28 @@ Index =
     Index.currentPage = pageNum
     maxPageNum = Index.getMaxPageNum()
     pagesRoot  = $ '.pages', Index.pagelist
+
     # Previous/Next buttons
-    prev = pagesRoot.previousSibling.firstChild
-    next = pagesRoot.nextSibling.firstChild
+    prev = pagesRoot.previousElementSibling.firstElementChild
     href = Math.max pageNum - 1, 1
     prev.href = if href is 1 then './' else href
     prev.firstChild.disabled = href is pageNum
+
+    next = pagesRoot.nextElementSibling.firstElementChild
     href = Math.min pageNum + 1, maxPageNum
     next.href = if href is 1 then './' else href
     next.firstChild.disabled = href is pageNum
+
     # <strong> current page
     if strong = $ 'strong', pagesRoot
       return if +strong.textContent is pageNum
       $.replace strong, strong.firstChild
     else
       strong = $.el 'strong'
-    return unless a = pagesRoot.children[pageNum - 1] # If coming in from a Navigate.navigate, this could break.
+
+    # If coming in from a Navigate.navigate, this could break.
+    return unless a = pagesRoot.children[pageNum - 1]
+
     $.before a, strong
     $.add strong, a
 
@@ -546,12 +552,7 @@ Index =
       ), 3 * $.SECOND - (Date.now() - now)
 
     pageNum = null if typeof pageNum isnt 'number' # event
-    onload = (e) -> 
-      try
-        Index.load e, pageNum
-      catch err
-        console.error err.message
-        console.error err.stack
+    onload = (e) -> Index.load e, pageNum
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD.ID}/catalog.json",
       onabort:   onload
       onloadend: onload
@@ -776,9 +777,9 @@ Index =
     offset = 0
     topThreads    = []
     bottomThreads = []
-    for thread, i in Index.sortedThreads when match thread
+    for thread, i in Index.sortedThreads
       (if match thread then topThreads else bottomThreads).push thread
-    Index.sortedThreads = topThreads.push bottomThreads...
+    Index.sortedThreads = topThreads.concat bottomThreads
 
   buildIndex: (infinite) ->
     {sortedThreads} = Index
