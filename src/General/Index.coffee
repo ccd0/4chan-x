@@ -73,7 +73,7 @@ Index =
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
-    $.on $('.returnlink a',       @navLinks), 'click', @cb.frontPage unless Conf['Use 4chan X Catalog']
+    $.on $('.returnlink a',       @navLinks), 'click', @cb.frontPage unless Conf['Use <%= meta.name %> Catalog']
     $.on @selectMode, 'change', @cb.mode
     for select in [@selectMode, @selectSort, @selectSize]
       select.value = Conf[select.name]

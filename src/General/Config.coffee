@@ -5,9 +5,9 @@ Config =
         true
         'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'
       ]
-      'Use 4chan X Catalog': [
+      'Use <%= meta.name %> Catalog': [
         true
-        'Link to 4chan X\'s catalog instead of the native 4chan one.'
+        'Link to <%= meta.name %>\'s catalog instead of the native 4chan one.'
         1
       ]
       'External Catalog': [
@@ -82,7 +82,7 @@ Config =
       ]
       'Show Updated Notifications': [
         true
-        'Show notifications when 4chan X is successfully updated.'
+        'Show notifications when <%= meta.name %> is successfully updated.'
       ]
       'Color User IDs': [
         false
@@ -98,7 +98,7 @@ Config =
       ]
       'Show Support Message': [
         true
-        'Warn if your browser or configuration is unsupported and may cause 4chan X to not operate correctly.'
+        'Warn if your browser or configuration is unsupported and may cause <%= meta.name %> to not operate correctly.'
       ]
       'Normalize URL': [
         true
@@ -180,7 +180,7 @@ Config =
       ]
       'Image Hover in Catalog': [
         false
-        'Show full image / video on mouseover in 4chan X catalog.'
+        'Show full image / video on mouseover in <%= meta.name %> catalog.'
       ]
       'Gallery': [
         true

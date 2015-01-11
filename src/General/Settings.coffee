@@ -4,7 +4,7 @@ Settings =
     link = $.el 'a',
       className:   'settings-link fa fa-wrench'
       textContent: 'Settings'
-      title: '4chan X Settings'
+      title: '<%= meta.name %> Settings'
       href:        'javascript:;'
     $.on link, 'click', Settings.open
 

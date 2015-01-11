@@ -10,14 +10,14 @@ CatalogLinks =
           switch link.pathname
             when "/#{g.BOARD}/"        then link.href = CatalogLinks.index()
             when "/#{g.BOARD}/catalog" then link.href = CatalogLinks.catalog()
-          if g.VIEW is 'catalog' and Conf['JSON Navigation'] and Conf['Use 4chan X Catalog']
+          if g.VIEW is 'catalog' and Conf['JSON Navigation'] and Conf['Use <%= meta.name %> Catalog']
             catalogLink = link.parentNode.cloneNode true
-            catalogLink.firstElementChild.textContent = '4chan X Catalog'
+            catalogLink.firstElementChild.textContent = '<%= meta.name %> Catalog'
             catalogLink.firstElementChild.href = CatalogLinks.catalog()
             $.after link.parentNode, [$.tn(' '), catalogLink]
         return
 
-    if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog']
+    if Conf['JSON Navigation'] and Conf['Use <%= meta.name %> Catalog']
       Post.callbacks.push
         name: 'Catalog Link Rewrite'
         cb:   @node
@@ -69,13 +69,13 @@ CatalogLinks =
   catalog: (board=g.BOARD.ID) ->
     if Conf['External Catalog'] and board in ['a', 'c', 'g', 'biz', 'k', 'm', 'o', 'p', 'v', 'vg', 'vr', 'w', 'wg', 'cm', '3', 'adv', 'an', 'asp', 'cgl', 'ck', 'co', 'diy', 'fa', 'fit', 'gd', 'int', 'jp', 'lit', 'mlp', 'mu', 'n', 'out', 'po', 'sci', 'sp', 'tg', 'toy', 'trv', 'tv', 'vp', 'wsg', 'x', 'f', 'pol', 's4s', 'lgbt']
       "http://catalog.neet.tv/#{board}"
-    else if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog']
+    else if Conf['JSON Navigation'] and Conf['Use <%= meta.name %> Catalog']
       if g.BOARD.ID is board and g.VIEW is 'index' then '#catalog' else "/#{board}/#catalog"
     else
       "/#{board}/catalog"
 
   index: (board=g.BOARD.ID) ->
-    if Conf['JSON Navigation'] and Conf['Use 4chan X Catalog']
+    if Conf['JSON Navigation'] and Conf['Use <%= meta.name %> Catalog']
       if g.BOARD.ID is board and g.VIEW is 'index' then '#index' else "/#{board}/#index"
     else
       "/#{board}/"

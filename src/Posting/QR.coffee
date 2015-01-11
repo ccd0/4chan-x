@@ -709,7 +709,7 @@ QR =
         QR.status()
         QR.error $.el 'span',
           <%= html(
-            '4chan X encountered an error while posting. ' +
+            '${g.NAME} encountered an error while posting. ' +
             '[<a href="//4chan.org/banned" target="_blank">Banned?</a>] ' +
             '[<a href="${g.FAQ}#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target="_blank">More info</a>]'
           ) %>
