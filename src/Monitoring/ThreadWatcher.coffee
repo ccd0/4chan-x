@@ -159,7 +159,8 @@ ThreadWatcher =
     for thread in threads
       ThreadWatcher.fetchStatus thread
     return
-  fetchStatus: ({boardID, threadID, data}) ->
+  fetchStatus: (thread) ->
+    {boardID, threadID, data} = thread
     return if data.isDead and !Conf['Show Unread Count']
     {fetchCount} = ThreadWatcher
     if fetchCount.fetching is 0
@@ -168,61 +169,64 @@ ThreadWatcher =
     fetchCount.fetching++
     $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
       onloadend: ->
-        fetchCount.fetched++
-        if fetchCount.fetched is fetchCount.fetching
-          fetchCount.fetched = 0
-          fetchCount.fetching = 0
-          status = ''
-          $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
-        else
-          status = "#{Math.round fetchCount.fetched / fetchCount.fetching * 100}%"
-        ThreadWatcher.status.textContent = status
+        ThreadWatcher.parseStatus.call @, thread
+  parseStatus: ({boardID, threadID, data}) ->
+    {fetchCount} = ThreadWatcher
+    fetchCount.fetched++
+    if fetchCount.fetched is fetchCount.fetching
+      fetchCount.fetched = 0
+      fetchCount.fetching = 0
+      status = ''
+      $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
+    else
+      status = "#{Math.round fetchCount.fetched / fetchCount.fetching * 100}%"
+    ThreadWatcher.status.textContent = status
 
-        if @status is 200 and @response
-          isDead = !!@response.posts[0].archived
-          if isDead and Conf['Auto Prune']
-            ThreadWatcher.db.delete {boardID, threadID}
-            ThreadWatcher.refresh()
-            return
+    if @status is 200 and @response
+      isDead = !!@response.posts[0].archived
+      if isDead and Conf['Auto Prune']
+        ThreadWatcher.db.delete {boardID, threadID}
+        ThreadWatcher.refresh()
+        return
 
-          lastReadPost = ThreadWatcher.unreaddb.get
-            boardID: boardID
-            threadID: threadID
-            defaultValue: 0
+      lastReadPost = ThreadWatcher.unreaddb.get
+        boardID: boardID
+        threadID: threadID
+        defaultValue: 0
 
-          unread = quotingYou = 0
+      unread = quotingYou = 0
 
-          for postObj in @response.posts
-            continue unless postObj.no > lastReadPost
-            continue if QR.db?.get {boardID, threadID, postID: postObj.no}
-            unread++
-            continue unless QR.db and postObj.com
-            regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/(\d+))?(?:#p(\d+))?"/g
-            while match = regexp.exec postObj.com
-              if QR.db.get {
-                boardID:  match[1] or boardID
-                threadID: match[2] or threadID
-                postID:   match[3] or match[2] or threadID
-              }
-                quotingYou++
-                continue
+      for postObj in @response.posts
+        continue unless postObj.no > lastReadPost
+        continue if QR.db?.get {boardID, threadID, postID: postObj.no}
+        unread++
+        continue unless QR.db and postObj.com
+        regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/(\d+))?(?:#p(\d+))?"/g
+        while match = regexp.exec postObj.com
+          if QR.db.get {
+            boardID:  match[1] or boardID
+            threadID: match[2] or threadID
+            postID:   match[3] or match[2] or threadID
+          }
+            quotingYou++
+            continue
 
-          if isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou
-            data.isDead = isDead
-            data.unread = unread
-            data.quotingYou = quotingYou
-            ThreadWatcher.db.set {boardID, threadID, val: data}
-            ThreadWatcher.refresh()
+      if isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou
+        data.isDead = isDead
+        data.unread = unread
+        data.quotingYou = quotingYou
+        ThreadWatcher.db.set {boardID, threadID, val: data}
+        ThreadWatcher.refresh()
 
-        else if @status is 404
-          if Conf['Auto Prune']
-            ThreadWatcher.db.delete {boardID, threadID}
-          else
-            data.isDead = true
-            delete data.unread
-            delete data.quotingYou
-            ThreadWatcher.db.set {boardID, threadID, val: data}
-          ThreadWatcher.refresh()
+    else if @status is 404
+      if Conf['Auto Prune']
+        ThreadWatcher.db.delete {boardID, threadID}
+      else
+        data.isDead = true
+        delete data.unread
+        delete data.quotingYou
+        ThreadWatcher.db.set {boardID, threadID, val: data}
+      ThreadWatcher.refresh()
 
   getAll: ->
     all = []
