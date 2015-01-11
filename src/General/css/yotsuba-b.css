@@ -71,7 +71,7 @@
 }
 
 /* Thread Watcher */
-:root.yotsuba-b .replies-quoting-you > a {
+:root.yotsuba-b .replies-quoting-you > a, :root.yotsuba-b #watcher-link.disabled.replies-quoting-you {
   color: #F00;
 }
 

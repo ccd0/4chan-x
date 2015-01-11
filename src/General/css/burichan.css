@@ -70,7 +70,7 @@
 }
 
 /* Thread Watcher */
-:root.burichan .replies-quoting-you > a {
+:root.burichan .replies-quoting-you > a, :root.burichan #watcher-link.disabled.replies-quoting-you {
   color: #F00;
 }
 

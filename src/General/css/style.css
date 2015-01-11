@@ -269,7 +269,7 @@ audio.controls-added {
   content: "]\\00a0";
 }
 .dead-thread,
-.disabled {
+.disabled:not(.replies-quoting-you) {
   opacity: .45;
 }
 #shortcuts {

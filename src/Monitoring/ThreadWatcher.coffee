@@ -294,6 +294,8 @@ ThreadWatcher =
           toggler.title = "#{helper[1]} Thread"
       $[helper[0]] thread.catalogView.nodes.root, 'watched' if thread.catalogView
 
+    ThreadWatcher.shortcut.classList.toggle 'replies-quoting-you', !!$('.replies-quoting-you', ThreadWatcher.dialog)
+
     for refresher in ThreadWatcher.menu.refreshers
       refresher()
 
@@ -317,6 +319,7 @@ ThreadWatcher =
     if line = $ "#watched-threads > [data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
       newLine = ThreadWatcher.makeLine boardID, threadID, data
       $.replace line, newLine
+      ThreadWatcher.shortcut.classList.toggle 'replies-quoting-you', !!$('.replies-quoting-you', ThreadWatcher.dialog)
     else
       ThreadWatcher.refresh()
 

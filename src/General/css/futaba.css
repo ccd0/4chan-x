@@ -70,7 +70,7 @@
 }
 
 /* Thread Watcher */
-:root.futaba .replies-quoting-you > a {
+:root.futaba .replies-quoting-you > a, :root.futaba #watcher-link.disabled.replies-quoting-you {
   color: #F00;
 }
 
