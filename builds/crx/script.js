@@ -8437,6 +8437,20 @@
     parent: {},
     children: {},
     inserted: {},
+    disconnect: function() {
+      if (!(Conf['Quote Threading'] && g.VIEW === 'thread')) {
+        return;
+      }
+      Header.menu.rmEntry(this.entry);
+      delete this.enabled;
+      delete this.controls;
+      delete this.entry;
+      this.parent = {};
+      this.children = {};
+      this.inserted = {};
+      Thread.callbacks.disconnect('Quote Threading');
+      return Post.callbacks.disconnect('Quote Threading');
+    },
     setThread: function() {
       QuoteThreading.thread = this;
       return $.asap((function() {
