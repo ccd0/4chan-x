@@ -4794,7 +4794,7 @@
           return;
       }
       el = $.el('span', {
-        innerHTML: g.NAME + " needs your permission to show desktop notifications. [<a href=\"" + g.FAQ + "#why-is-4chan-x-asking-for-permission-to-show-desktop-notifications\" target=\"_blank\">FAQ</a>]<br><button>Authorize</button> or <button>Disable</button>"
+        innerHTML: E(g.NAME) + " needs your permission to show desktop notifications. [<a href=\"" + E(g.FAQ) + "#why-is-4chan-x-asking-for-permission-to-show-desktop-notifications\" target=\"_blank\">FAQ</a>]<br><button>Authorize</button> or <button>Disable</button>"
       });
       _ref = $$('button', el), authorize = _ref[0], disable = _ref[1];
       $.on(authorize, 'click', function() {
@@ -6092,7 +6092,7 @@
             innerHTML: " <strong class=\"capcode hand id_admin\" title=\"Highlight posts by the Administrator\">## Admin</strong>"
           };
           capcodeIcon = {
-            innerHTML: " <img src=\"" + staticPath + "adminicon" + gifIcon + "\" alt=\"Admin Icon\" title=\"This user is the 4chan Administrator.\" class=\"identityIcon retina\">"
+            innerHTML: " <img src=\"" + E(staticPath) + "adminicon" + E(gifIcon) + "\" alt=\"Admin Icon\" title=\"This user is the 4chan Administrator.\" class=\"identityIcon retina\">"
           };
           break;
         case 'mod':
@@ -6101,7 +6101,7 @@
             innerHTML: " <strong class=\"capcode hand id_mod\" title=\"Highlight posts by Moderators\">## Mod</strong>"
           };
           capcodeIcon = {
-            innerHTML: " <img src=\"" + staticPath + "modicon" + gifIcon + "\" alt=\"Mod Icon\" title=\"This user is a 4chan Moderator.\" class=\"identityIcon retina\">"
+            innerHTML: " <img src=\"" + E(staticPath) + "modicon" + E(gifIcon) + "\" alt=\"Mod Icon\" title=\"This user is a 4chan Moderator.\" class=\"identityIcon retina\">"
           };
           break;
         case 'developer':
@@ -6110,7 +6110,7 @@
             innerHTML: " <strong class=\"capcode hand id_developer\" title=\"Highlight posts by Developers\">## Developer</strong>"
           };
           capcodeIcon = {
-            innerHTML: " <img src=\"" + staticPath + "developericon" + gifIcon + "\" alt=\"Developer Icon\" title=\"This user is a 4chan Developer.\" class=\"identityIcon retina\">"
+            innerHTML: " <img src=\"" + E(staticPath) + "developericon" + E(gifIcon) + "\" alt=\"Developer Icon\" title=\"This user is a 4chan Developer.\" class=\"identityIcon retina\">"
           };
           break;
         default:
@@ -6126,38 +6126,38 @@
       }
       nameClass = capcode ? ' capcode' : '';
       tripcodeField = tripcode ? {
-        innerHTML: " <span class=\"postertrip\">" + tripcode + "</span>"
+        innerHTML: " <span class=\"postertrip\">" + E(tripcode) + "</span>"
       } : {
         innerHTML: ""
       };
       emailField = {
-        innerHTML: "<span class=\"name" + nameClass + "\">" + name + "</span>" + tripcodeField.innerHTML + capcodeStart.innerHTML
+        innerHTML: "<span class=\"name" + E(nameClass) + "\">" + E(name) + "</span>" + tripcodeField.innerHTML + capcodeStart.innerHTML
       };
       if (email) {
         emailProcessed = encodeURIComponent(email).replace(/%40/g, '@');
         emailField = {
-          innerHTML: "<a href=\"mailto:" + emailProcessed + "\" class=\"useremail\">" + emailField.innerHTML + "</a>"
+          innerHTML: "<a href=\"mailto:" + E(emailProcessed) + "\" class=\"useremail\">" + emailField.innerHTML + "</a>"
         };
       }
       userID = !capcode && uniqueID ? {
-        innerHTML: " <span class=\"posteruid id_" + uniqueID + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + uniqueID + "</span>)</span>"
+        innerHTML: " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>"
       } : {
         innerHTML: ""
       };
       flag = !flagCode ? {
         innerHTML: ""
       } : false ? {
-        innerHTML: " <img src=\"" + staticPath + "country/troll/" + flagCode.toLowerCase() + ".gif\" alt=\"" + flagCode + "\" title=\"" + flagName + "\" class=\"countryFlag\">"
+        innerHTML: " <img src=\"" + E(staticPath) + "country/troll/" + E(flagCode.toLowerCase()) + ".gif\" alt=\"" + E(flagCode) + "\" title=\"" + E(flagName) + "\" class=\"countryFlag\">"
       } : {
-        innerHTML: " <span title=\"" + flagName + "\" class=\"flag flag-" + flagCode.toLowerCase() + "\"></span>"
+        innerHTML: " <span title=\"" + E(flagName) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>"
       };
       nameBlock = {
-        innerHTML: "<span class=\"nameBlock" + capcodeClass + "\">" + emailField.innerHTML + capcodeIcon.innerHTML + userID.innerHTML + flag.innerHTML + "</span> "
+        innerHTML: "<span class=\"nameBlock" + E(capcodeClass) + "\">" + emailField.innerHTML + capcodeIcon.innerHTML + userID.innerHTML + flag.innerHTML + "</span> "
       };
 
       /* Post Info */
       subjectField = isOP || boardID === 'f' ? {
-        innerHTML: "<span class=\"subject\">" + subject + "</span> "
+        innerHTML: "<span class=\"subject\">" + E(subject) + "</span> "
       } : {
         innerHTML: ""
       };
@@ -6175,40 +6175,40 @@
           }
           typeLC = type.toLowerCase();
           _results.push({
-            innerHTML: " <img src=\"" + staticPath + typeLC + gifIcon + "\" alt=\"" + type + "\" title=\"" + type + "\" class=\"" + typeLC + "Icon retina\">"
+            innerHTML: " <img src=\"" + E(staticPath) + E(typeLC) + E(gifIcon) + "\" alt=\"" + E(type) + "\" title=\"" + E(type) + "\" class=\"" + E(typeLC) + "Icon retina\">"
           });
         }
         return _results;
       })();
       replyLink = isOP && g.VIEW === 'index' ? {
-        innerHTML: " &nbsp; <span>[<a href=\"/" + boardID + "/thread/" + threadID + "\" class=\"replylink\">Reply</a>]</span>"
+        innerHTML: " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>"
       } : {
         innerHTML: ""
       };
       postInfo = {
-        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + postID + "\"><input type=\"checkbox\" name=\"" + postID + "\" value=\"delete\"> " + subjectField.innerHTML + nameBlock.innerHTML + "<span class=\"dateTime\" data-utc=\"" + dateUTC + "\">" + date + "</span> <span class=\"postNum" + desktop2 + "\"><a href=\"" + postLink + "\" title=\"Link to this post\">No.</a><a href=\"" + quoteLink + "\" title=\"Reply to this post\">" + postID + "</a>" + icons.map(function(x) {
+        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(postID) + "\"><input type=\"checkbox\" name=\"" + E(postID) + "\" value=\"delete\"> " + subjectField.innerHTML + nameBlock.innerHTML + "<span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(date) + "</span> <span class=\"postNum" + E(desktop2) + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(postID) + "</a>" + icons.map(function(x) {
           return x.innerHTML;
         }).join('') + replyLink.innerHTML + "</span></div>"
       };
 
       /* File Info */
       fileCont = (file != null ? file.isDeleted : void 0) ? {
-        innerHTML: "<span class=\"fileThumb\"><img src=\"" + staticPath + "filedeleted-res" + gifIcon + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span>"
+        innerHTML: "<span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span>"
       } : file && boardID === 'f' ? {
-        innerHTML: "<div class=\"fileInfo\"><span class=\"fileText\" id=\"fT" + postID + "\">File: <a data-width=\"" + file.width + "\" data-height=\"" + file.height + "\" href=\"" + file.url + "\" target=\"_blank\">" + file.name + "</a>-(" + $.bytesToString(file.size) + ", " + file.width + "x" + file.height + ", " + file.tag + ")</span></div>"
+        innerHTML: "<div class=\"fileInfo\"><span class=\"fileText\" id=\"fT" + E(postID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(file.url) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E($.bytesToString(file.size)) + ", " + E(file.width) + "x" + E(file.height) + ", " + E(file.tag) + ")</span></div>"
       } : file ? (file.isSpoiler ? (shortFilename = 'Spoiler Image', (spoilerRange = Build.spoilerRange[boardID]) ? fileThumb = "//s.4cdn.org/image/spoiler-" + boardID + (Math.floor(1 + spoilerRange * Math.random())) + ".png" : fileThumb = '//s.4cdn.org/image/spoiler.png', file.twidth = file.theight = 100) : (shortFilename = Build.shortFilename(file.name, !isOP), fileThumb = file.turl), fileSize = $.bytesToString(file.size), fileDims = file.url.slice(-4) === '.pdf' ? 'PDF' : "" + file.width + "x" + file.height, fileLink = file.isSpoiler || file.name === shortFilename ? {
-        innerHTML: "<a href=\"" + file.url + "\" target=\"_blank\">" + shortFilename + "</a>"
+        innerHTML: "<a href=\"" + E(file.url) + "\" target=\"_blank\">" + E(shortFilename) + "</a>"
       } : {
-        innerHTML: "<a title=\"" + file.name + "\" href=\"" + file.url + "\" target=\"_blank\">" + shortFilename + "</a>"
+        innerHTML: "<a title=\"" + E(file.name) + "\" href=\"" + E(file.url) + "\" target=\"_blank\">" + E(shortFilename) + "</a>"
       }, fileText = file.isSpoiler ? {
-        innerHTML: "<div class=\"fileText\" id=\"fT" + postID + "\" title=\"" + file.name + "\">File: " + fileLink.innerHTML + " (" + fileSize + ", " + fileDims + ")</div>"
+        innerHTML: "<div class=\"fileText\" id=\"fT" + E(postID) + "\" title=\"" + E(file.name) + "\">File: " + fileLink.innerHTML + " (" + E(fileSize) + ", " + E(fileDims) + ")</div>"
       } : {
-        innerHTML: "<div class=\"fileText\" id=\"fT" + postID + "\">File: " + fileLink.innerHTML + " (" + fileSize + ", " + fileDims + ")</div>"
+        innerHTML: "<div class=\"fileText\" id=\"fT" + E(postID) + "\">File: " + fileLink.innerHTML + " (" + E(fileSize) + ", " + E(fileDims) + ")</div>"
       }, {
-        innerHTML: fileText.innerHTML + "<a class=\"fileThumb" + file.isSpoiler ? " imgspoiler" : "" + "\" href=\"" + file.url + "\" target=\"_blank\"><img src=\"" + fileThumb + "\" alt=\"" + fileSize + "\" data-md5=\"" + file.MD5 + "\" style=\"height: " + file.theight + "px; width: " + file.twidth + "px;\"></a>"
+        innerHTML: fileText.innerHTML + "<a class=\"fileThumb" + E(file.isSpoiler ? " imgspoiler" : "") + "\" href=\"" + E(file.url) + "\" target=\"_blank\"><img src=\"" + E(fileThumb) + "\" alt=\"" + E(fileSize) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.theight) + "px; width: " + E(file.twidth) + "px;\"></a>"
       }) : void 0;
       fileBlock = file ? {
-        innerHTML: "<div class=\"file\" id=\"f" + postID + "\">" + fileCont.innerHTML + "</div>"
+        innerHTML: "<div class=\"file\" id=\"f" + E(postID) + "\">" + fileCont.innerHTML + "</div>"
       } : {
         innerHTML: ""
       };
@@ -6216,12 +6216,12 @@
       /* Whole Post */
       highlightPost = capcode === 'admin_highlight' ? ' highlightPost' : '';
       message = {
-        innerHTML: "<blockquote class=\"postMessage\" id=\"m" + postID + "\">" + comment.innerHTML + "</blockquote>"
+        innerHTML: "<blockquote class=\"postMessage\" id=\"m" + E(postID) + "\">" + comment.innerHTML + "</blockquote>"
       };
       wholePost = isOP ? {
-        innerHTML: "<div id=\"p" + postID + "\" class=\"post op" + highlightPost + "\">" + fileBlock.innerHTML + postInfo.innerHTML + message.innerHTML + "</div>"
+        innerHTML: "<div id=\"p" + E(postID) + "\" class=\"post op" + E(highlightPost) + "\">" + fileBlock.innerHTML + postInfo.innerHTML + message.innerHTML + "</div>"
       } : {
-        innerHTML: "<div class=\"sideArrows\" id=\"sa" + postID + "\">&gt;&gt;</div><div id=\"p" + postID + "\" class=\"post reply" + highlightPost + "\">" + postInfo.innerHTML + fileBlock.innerHTML + message.innerHTML + "</div>"
+        innerHTML: "<div class=\"sideArrows\" id=\"sa" + E(postID) + "\">&gt;&gt;</div><div id=\"p" + E(postID) + "\" class=\"post reply" + E(highlightPost) + "\">" + postInfo.innerHTML + fileBlock.innerHTML + message.innerHTML + "</div>"
       };
       container = $.el('div', {
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
@@ -6289,7 +6289,7 @@
       fileCount = data.images + !!data.ext;
       pageCount = Math.floor(Index.liveThreadData.keys.indexOf("" + thread.ID) / Index.threadsNumPerPage) + 1;
       subject = thread.OP.info.subject ? {
-        innerHTML: "<div class='subject'>" + thread.OP.nodes.subject.innerHTML + "</div>"
+        innerHTML: "<div class='subject'>" + E(thread.OP.nodes.subject.innerHTML) + "</div>"
       } : '';
       comment = thread.OP.nodes.comment.innerHTML.replace(/(<br>\s*){2,}/g, '<br>');
       root = $.el('div', {
@@ -6600,11 +6600,11 @@
                 text2 = _ref[j];
                 if (j % 2 === 1) {
                   _results1.push({
-                    innerHTML: "<span class=\"deadlink\">" + text2 + "</span>"
+                    innerHTML: "<span class=\"deadlink\">" + E(text2) + "</span>"
                   });
                 } else {
                   _results1.push({
-                    innerHTML: text2
+                    innerHTML: E(text2)
                   });
                 }
               }
@@ -9985,7 +9985,7 @@
           QR.cooldown.auto = false;
           QR.status();
           return QR.error($.el('span', {
-            innerHTML: "4chan X encountered an error while posting. [<a href=\"//4chan.org/banned\" target=\"_blank\">Banned?</a>] [<a href=\"" + g.FAQ + "#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean\" target=\"_blank\">More info</a>]"
+            innerHTML: "4chan X encountered an error while posting. [<a href=\"//4chan.org/banned\" target=\"_blank\">Banned?</a>] [<a href=\"" + E(g.FAQ) + "#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean\" target=\"_blank\">More info</a>]"
           }));
         }
       };
@@ -12374,7 +12374,7 @@
           responseType: 'json'
         })) {
           return $.extend(link, {
-            innerHTML: "[" + key + "] <span class=\"warning\">Title Link Blocked</span> (are you using NoScript?)</a>"
+            innerHTML: "[" + E(key) + "] <span class=\"warning\">Title Link Blocked</span> (are you using NoScript?)</a>"
           });
         }
       }
@@ -12407,7 +12407,7 @@
         for (_i = 0, _len = queue.length; _i < _len; _i++) {
           data = queue[_i];
           $.extend(data.link, {
-            innerHTML: "[" + data.key + "] <span class=\"warning\">Title Link Blocked</span> (are you using NoScript?)</a>"
+            innerHTML: "[" + E(data.key) + "] <span class=\"warning\">Title Link Blocked</span> (are you using NoScript?)</a>"
           });
         }
       }
@@ -12501,7 +12501,7 @@
           el = $.el('iframe');
           el.setAttribute('sandbox', 'allow-scripts');
           content = {
-            innerHTML: "<html><head><title>" + a.dataset.uid + "</title></head><body><script src=\"https://gist.github.com/" + a.dataset.uid + ".js\"></script></body></html>"
+            innerHTML: "<html><head><title>" + E(a.dataset.uid) + "</title></head><body><script src=\"https://gist.github.com/" + E(a.dataset.uid) + ".js\"></script></body></html>"
           };
           el.src = "data:text/html;charset=utf-8,<!doctype html>" + (encodeURIComponent(content.innerHTML));
           return el;
@@ -12526,7 +12526,7 @@
         style: '',
         el: function(a) {
           return $.el('div', {
-            innerHTML: "<a target=\"_blank\" href=\"" + a.href + "\"><img src=\"" + a.href + "\" style=\"max-width: 80vw; max-height: 80vh;\"></a>"
+            innerHTML: "<a target=\"_blank\" href=\"" + E(a.href) + "\"><img src=\"" + E(a.href) + "\" style=\"max-width: 80vw; max-height: 80vh;\"></a>"
           });
         }
       }, {
@@ -12613,13 +12613,13 @@
                 case 'image/gif':
                 case 'image/jpeg':
                   $.extend(el, {
-                    innerHTML: "<a target=\"_blank\" href=\"" + a.href + "\"><img src=\"https://mediacru.sh/" + file.file + "\" style=\"max-width: 80vw; max-height: 80vh;\"></a>"
+                    innerHTML: "<a target=\"_blank\" href=\"" + E(a.href) + "\"><img src=\"https://mediacru.sh/" + E(file.file) + "\" style=\"max-width: 80vw; max-height: 80vh;\"></a>"
                   });
                   break;
                 case 'audio/mpeg':
                 case 'audio/ogg':
                   $.extend(el, {
-                    innerHTML: "<audio controls><source type=\"audio/ogg\" src=\"https://mediacru.sh/" + a.dataset.uid + ".ogg\"></audio>"
+                    innerHTML: "<audio controls><source type=\"audio/ogg\" src=\"https://mediacru.sh/" + E(a.dataset.uid) + ".ogg\"></audio>"
                   });
                   break;
                 default:
@@ -13493,7 +13493,7 @@
         Header.addShortcut(sc);
       } else {
         this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', {
-          innerHTML: "<div class=\"move\" title=\"" + statsTitle + "\">" + statsHTML.innerHTML + "</div>"
+          innerHTML: "<div class=\"move\" title=\"" + E(statsTitle) + "\">" + statsHTML.innerHTML + "</div>"
         });
         $.addClass(doc, 'float');
         $.ready(function() {
@@ -18831,7 +18831,7 @@
       for (key in _ref) {
         obj = _ref[key];
         fs = $.el('fieldset', {
-          innerHTML: "<legend>" + key + "</legend>"
+          innerHTML: "<legend>" + E(key) + "</legend>"
         });
         containers = [fs];
         for (key in obj) {
@@ -19241,7 +19241,7 @@
       for (key in _ref) {
         arr = _ref[key];
         tr = $.el('tr', {
-          innerHTML: "<td>" + arr[1] + "</td><td><input class=\"field\"></td>"
+          innerHTML: "<td>" + E(arr[1]) + "</td><td><input class=\"field\"></td>"
         });
         input = $('input', tr);
         input.name = key;
@@ -19293,7 +19293,7 @@
           if (type) {
             if (type === 'text') {
               $.extend(div, {
-                innerHTML: "<div class=\"option\"><span class=\"optionlabel\">" + key + "</span></div><div class=\"description\">" + description + "</div><div class=\"option\"><input name=\"" + key + "\" style=\"width: 100%\"></div>"
+                innerHTML: "<div class=\"option\"><span class=\"optionlabel\">" + E(key) + "</span></div><div class=\"description\">" + E(description) + "</div><div class=\"option\"><input name=\"" + E(key) + "\" style=\"width: 100%\"></div>"
               });
               input = $("input", div);
             } else {
@@ -19516,7 +19516,7 @@
             hidden: __indexOf.call(Conf["Hidden Categories"], name) >= 0
           });
           $.extend(categories[name], {
-            innerHTML: "<h3 class=\"mascotHeader\">" + name + "</h3>"
+            innerHTML: "<h3 class=\"mascotHeader\">" + E(name) + "</h3>"
           });
           option = UI.checkbox(name, name, (__indexOf.call(Conf["Hidden Categories"], name) >= 0));
           $.on($('input', option), 'change', cb.category);
@@ -20108,7 +20108,7 @@
         return;
       }
       div = $.el('div', {
-        innerHTML: errors.length + " errors occurred. [<a href=\"javascript:;\">show</a>]"
+        innerHTML: E(errors.length) + " errors occurred. [<a href=\"javascript:;\">show</a>]"
       });
       $.on(div.lastElementChild, 'click', function() {
         var _ref;

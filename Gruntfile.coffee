@@ -17,7 +17,7 @@ module.exports = (grunt) ->
           if /<[^>]*$/.test(checkText) and not (part is '$' and /\=['"][^"'<>]*$/.test checkText)
             throw new Error "Illegal insertion into HTML template: #{template}"
           parts2.push switch part
-            when '$' then "`#{parts[i+1]}`"
+            when '$' then "E(`#{parts[i+1]}`)"
             when '&' then "`#{parts[i+1]}`.innerHTML"
             when '@' then "`#{parts[i+1]}`.map((x) -> x.innerHTML).join('')"
     unless /^(<\w+( [\w-]+(='[^"'<>]*'|="[^"'<>]*")?)*>|<\/\w+>|[^"'<>]*)*$/.test checkText
