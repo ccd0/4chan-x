@@ -33,24 +33,24 @@ Build =
   postFromObject: (data, boardID) ->
     o =
       # id
-      postID:   data.no
-      threadID: data.resto or data.no
-      boardID:  boardID
+      postID:    data.no
+      threadID:  data.resto or data.no
+      boardID:   boardID
       # info
-      name:     Build.unescape data.name
-      capcode:  data.capcode
-      tripcode: data.trip
-      uniqueID: data.id
-      email:    Build.unescape data.email
-      subject:  Build.unescape data.sub
-      flagCode: data.country
-      flagName: Build.unescape data.country_name
-      date:     data.now
-      dateUTC:  data.time
-      comment:  {innerHTML: data.com or ''}
+      name:      data.name
+      capcode:   data.capcode
+      tripcode:  data.trip
+      uniqueID:  data.id
+      email:     data.email
+      subject:   data.sub
+      flagCode:  data.country
+      flagName:  data.country_name
+      date:      data.now
+      dateUTC:   data.time
+      comment:   {innerHTML: data.com or ''}
       # thread status
-      isSticky: !!data.sticky
-      isClosed: !!data.closed
+      isSticky:  !!data.sticky
+      isClosed:  !!data.closed
       isArchived: !!data.archived
       # file
     if data.filedeleted
@@ -58,7 +58,7 @@ Build =
         isDeleted: true
     else if data.ext
       o.file =
-        name:      (Build.unescape data.filename) + data.ext
+        name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
         url: if boardID is 'f'
           "//i.4cdn.org/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"

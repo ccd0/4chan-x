@@ -6059,14 +6059,14 @@
         postID: data.no,
         threadID: data.resto || data.no,
         boardID: boardID,
-        name: Build.unescape(data.name),
+        name: data.name,
         capcode: data.capcode,
         tripcode: data.trip,
         uniqueID: data.id,
-        email: Build.unescape(data.email),
-        subject: Build.unescape(data.sub),
+        email: data.email,
+        subject: data.sub,
         flagCode: data.country,
-        flagName: Build.unescape(data.country_name),
+        flagName: data.country_name,
         date: data.now,
         dateUTC: data.time,
         comment: {
@@ -6082,7 +6082,7 @@
         };
       } else if (data.ext) {
         o.file = {
-          name: (Build.unescape(data.filename)) + data.ext,
+          name: data.filename + data.ext,
           timestamp: "" + data.tim + data.ext,
           url: boardID === 'f' ? "//i.4cdn.org/" + boardID + "/" + (encodeURIComponent(data.filename)) + data.ext : "//i.4cdn.org/" + boardID + "/" + data.tim + data.ext,
           height: data.h,

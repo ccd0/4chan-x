@@ -27,6 +27,7 @@ QuoteThreading =
     Thread.callbacks.push
       name: 'Quote Threading'
       cb:   @setThread
+
     Post.callbacks.push
       name: 'Quote Threading'
       cb:   @node
@@ -34,6 +35,22 @@ QuoteThreading =
   parent:   {}
   children: {}
   inserted: {}
+
+  disconnect: ->
+    return unless Conf['Quote Threading'] and g.VIEW is 'thread'
+
+    Header.menu.rmEntry @entry
+
+    delete @enabled
+    delete @controls
+    delete @entry
+
+    @parent   = {}
+    @children = {}
+    @inserted = {}
+
+    Thread.callbacks.disconnect 'Quote Threading'
+    Post.callbacks.disconnect   'Quote Threading'
 
   setThread: ->
     QuoteThreading.thread = @
