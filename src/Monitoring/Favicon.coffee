@@ -67,7 +67,7 @@ Favicon =
     while items[i]
       items[i] = t + items[i++]
 
-    [f.unreadDead, funreadDeadY, f.unreadSFW, f.unreadSFWY, f.unreadNSFW, f.unreadNSFWY] = items
+    [f.unreadDead, f.unreadDeadY, f.unreadSFW, f.unreadSFWY, f.unreadNSFW, f.unreadNSFWY] = items
     f.update()
 
   update: ->
