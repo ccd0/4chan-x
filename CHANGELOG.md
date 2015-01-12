@@ -2,6 +2,19 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+<!-- v1.9.20.x -->
+### v1.9.20.0 
+*2015-01-12* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.20.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.20.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+
+Based on v1.9.19.10.
+
+**ccd0**
+- Add Unique ID to archive search menu.
+- Add `Auto Update` option to thread watcher (on by default).  Thread watcher auto updates every 5 minutes (if unread reply counts are shown) or 2 hours (if only thread death checked).
+- When there are replies quoting you and the thread watcher is hidden, the thread watcher icon is highlighted.
+- Improved performance on long threads.
+
 <!-- v1.9.19.x -->
 ### v1.9.19.10 
 *2015-01-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.19.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.19.10/builds/4chan-X-noupdate.crx "Chromium version")]
