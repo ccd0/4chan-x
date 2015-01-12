@@ -19,7 +19,9 @@ PostHiding =
         Recursive.apply PostHiding.hide, @, data.makeStub, true
         Recursive.add   PostHiding.hide, @, data.makeStub, true
     return unless Conf['Reply Hiding Buttons']
-    $.replace $('.sideArrows', @nodes.root), PostHiding.makeButton @, 'hide'
+    sideArrows = $('.sideArrows', @nodes.root)
+    $.replace sideArrows.firstChild, PostHiding.makeButton @, 'hide'
+    sideArrows.removeAttribute 'class'
 
   menu:
     init: ->

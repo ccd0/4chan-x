@@ -1006,6 +1006,9 @@ span.hide-announcement {
 .thread[hidden] + hr {
   display: none;
 }
+:root.reply-hide div.sideArrows {
+  display: none;
+}
 
 /* QR */
 :root.hide-original-post-form #togglePostFormLink,
