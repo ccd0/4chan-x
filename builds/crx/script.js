@@ -18890,7 +18890,7 @@
           description = arr[1];
           div = $.el('div');
           $.add(div, [
-            UI.checkbox(key, key, false), $.el('span', {
+            UI.checkbox(key, key), $.el('span', {
               className: 'description',
               textContent: ": " + description
             })

@@ -121,7 +121,7 @@ Settings =
         description = arr[1]
         div = $.el 'div'
         $.add div, [
-          UI.checkbox key, key, false
+          UI.checkbox key, key
           $.el 'span', className: 'description', textContent: ": #{description}"
         ]
         input = $ 'input', div
