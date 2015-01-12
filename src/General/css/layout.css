@@ -2020,7 +2020,7 @@ a:only-of-type > .remove {
 .hide-ads .middlead,
 .hide-ads .bottomad,
 .hide-ads .ad-plea,
-.hide-ads body > .center {
+.hide-ads .center {
   display: none !important;
 }
 .shrink-ads .topad a img,
