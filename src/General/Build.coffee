@@ -282,13 +282,12 @@ Build =
 
     if (OP = board.posts[data.no]) and root = OP.nodes.root.parentNode
       $.rmAll root
-      $.add root, OP.nodes.root
     else
       root = $.el 'div',
         className: 'thread'
         id: "t#{data.no}"
-      $.add root, Build[if full then 'fullThread' else 'excerptThread'] board, data, OP
 
+    $.add root, Build[if full then 'fullThread' else 'excerptThread'] board, data, OP
     root
 
   excerptThread: (board, data, OP) ->
@@ -307,65 +306,87 @@ Build =
     {staticPath, gifIcon} = Build
     data = Index.liveThreadData[thread.ID]
 
-    postCount = data.replies + 1
-    fileCount = data.images  + !!data.ext
-    pageCount = Index.liveThreadData.keys.indexOf("#{thread.ID}") // Index.threadsNumPerPage + 1
-
-    subject = if thread.OP.info.subject
-      <%= html("<div class='subject'>${thread.OP.nodes.subject.innerHTML}</div>") %>
-    else
-      ''
-    comment = thread.OP.nodes.comment.innerHTML.replace /(<br>\s*){2,}/g, '<br>'
-
-    root = $.el 'div',
-      className: 'catalog-thread',
-      
-    $.extend root, <%= importHTML('Features/Thread-catalog-view') %>
-
-    root.dataset.fullID = thread.fullID
-    $.addClass root, 'pinned' if thread.isPinned
-    $.addClass root, thread.OP.highlights... if thread.OP.highlights.length
-
-    thumb = root.firstElementChild
     if data.spoiler and !Conf['Reveal Spoiler Thumbnails']
       src = "#{staticPath}spoiler"
       if spoilerRange = Build.spoilerRange[thread.board]
         # Randomize the spoiler image.
         src += "-#{thread.board}" + Math.floor 1 + spoilerRange * Math.random()
       src += '.png'
-      $.addClass thumb, 'spoiler-file'
+      imgClass = 'spoiler-file'
     else if data.filedeleted
       src = "#{staticPath}filedeleted-res#{gifIcon}"
-      $.addClass thumb, 'deleted-file'
+      imgClass = 'deleted-file'
     else if thread.OP.file
       src = thread.OP.file.thumbURL
-      thumb.dataset.width  = data.tn_w
-      thumb.dataset.height = data.tn_h
     else
       src = "#{staticPath}nofile.png"
-      $.addClass thumb, 'no-file'
-    thumb.style.backgroundImage = "url(#{src})"
-    if Conf['Open threads in a new tab']
-      thumb.target = '_blank'
+      imgClass = 'no-file'
 
-    for quotelink in $$ '.quotelink', root.lastElementChild
-      $.replace quotelink, [quotelink.childNodes...]
+    thumb = if imgClass
+      <%= html('<img src="${src}" class="catalog-thumb ${imgClass}">') %>
+    else
+      <%= html('<img src="${src}" class="catalog-thumb" data-width="${data.tn_w}" data-height="${data.tn_h}">') %>
+
+    postCount = data.replies + 1
+    fileCount = data.images  + !!data.ext
+    pageCount = Index.liveThreadData.keys.indexOf("#{thread.ID}") // Index.threadsNumPerPage + 1
+
+    subject = if thread.OP.info.subject
+      <%= html('<div class="subject">${thread.OP.info.subject}</div>') %>
+    else
+      <%= html('') %>
+
+    comment = innerHTML: data.com or ''
+
+    root = $.el 'div',
+      className: 'catalog-thread'
+
+    $.extend root, <%= html(
+      '<a href="${Build.path(thread.board.ID, thread.ID)}" class="thumb">' +
+        '&{thumb}' +
+      '</a>' +
+      '<div class="catalog-stats" title="Post count / File count / Page count">' +
+        '<span class="post-count">${postCount}</span> / <span class="file-count">${fileCount}</span> / <span class="page-count">${pageCount}</span>' +
+        '<span class="catalog-icons"></span>' +
+      '</div>' +
+      '&{subject}' +
+      '<div class="comment">&{comment}</div>'
+    ) %>
+
+    root.dataset.fullID = thread.fullID
+    $.addClass root, 'pinned' if thread.isPinned
+    $.addClass root, thread.OP.highlights... if thread.OP.highlights
+
+    for quote in $$ '.quotelink', root.lastElementChild
+      href = quote.getAttribute 'href'
+      quote.href = Build.path thread.board, thread.ID + href if href[0] is '#'
+
+    for exif in $$ '.abbr, .exif', root.lastElementChild
+      $.rm exif
+
     for pp in $$ '.prettyprint', root.lastElementChild
-      $.replace pp, $.tn pp.textContent
+      cc = $.el 'span', className: 'catalog-code'
+      $.add cc, [pp.childNodes...]
+      $.replace pp, cc
+
+    for br in $$ 'br', root.lastElementChild when br.previousSibling?.nodeName is 'BR'
+      $.rm br
 
     if thread.isSticky
-      $.add $('.thread-icons', root), $.el 'img',
+      $.add $('.catalog-icons', root), $.el 'img',
         src: "#{staticPath}sticky#{gifIcon}"
         className: 'stickyIcon'
         title: 'Sticky'
+
     if thread.isClosed
-      $.add $('.thread-icons', root), $.el 'img',
+      $.add $('.catalog-icons', root), $.el 'img',
         src: "#{staticPath}closed#{gifIcon}"
         className: 'closedIcon'
         title: 'Closed'
 
     if data.bumplimit
       $.addClass $('.post-count', root), 'warning'
+
     if data.imagelimit
       $.addClass $('.file-count', root), 'warning'
 
