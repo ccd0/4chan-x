@@ -7114,8 +7114,8 @@
       return $.set("" + this.id + ".position", this.style.cssText);
     };
     hoverstart = function(_arg) {
-      var asapTest, cb, el, endEvents, height, latestEvent, noRemove, o, root, _ref;
-      root = _arg.root, el = _arg.el, latestEvent = _arg.latestEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, height = _arg.height, cb = _arg.cb, noRemove = _arg.noRemove;
+      var asapTest, cb, el, endEvents, height, latestEvent, noRemove, o, offsetX, offsetY, root, _ref;
+      root = _arg.root, el = _arg.el, latestEvent = _arg.latestEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, height = _arg.height, cb = _arg.cb, noRemove = _arg.noRemove, offsetX = _arg.offsetX, offsetY = _arg.offsetY;
       o = {
         root: root,
         el: el,
@@ -7126,7 +7126,9 @@
         latestEvent: latestEvent,
         clientHeight: doc.clientHeight,
         clientWidth: doc.clientWidth,
-        noRemove: noRemove
+        noRemove: noRemove,
+        offsetX: offsetX || 45,
+        offsetY: offsetY || -120
       };
       o.hover = hover.bind(o);
       o.hoverend = hoverend.bind(o);
@@ -7148,12 +7150,12 @@
       this.latestEvent = e;
       height = this.height || this.el.offsetHeight;
       clientX = e.clientX, clientY = e.clientY;
-      top = this.isImage ? Math.max(0, clientY * (this.clientHeight - height) / this.clientHeight) : Math.max(0, Math.min(this.clientHeight - height, clientY - 120));
+      top = this.isImage ? Math.max(0, clientY * (this.clientHeight - height) / this.clientHeight) : Math.max(0, Math.min(this.clientHeight - height, clientY + this.offsetY));
       threshold = this.clientWidth / 2;
       if (!this.isImage) {
         threshold = Math.max(threshold, this.clientWidth - 400);
       }
-      _ref = clientX <= threshold ? [clientX + 45 + 'px', null] : [null, this.clientWidth - clientX + 45 + 'px'], left = _ref[0], right = _ref[1];
+      _ref = clientX <= threshold ? [clientX + this.offsetX + 'px', null] : [null, this.clientWidth - clientX + this.offsetX + 'px'], left = _ref[0], right = _ref[1];
       style = this.style;
       style.top = top + 'px';
       style.left = left;

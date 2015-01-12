@@ -307,7 +307,7 @@ UI = do ->
       $.off d, 'mouseup',   @up
     $.set "#{@id}.position", @style.cssText
 
-  hoverstart = ({root, el, latestEvent, endEvents, asapTest, height, cb, noRemove}) ->
+  hoverstart = ({root, el, latestEvent, endEvents, asapTest, height, cb, noRemove, offsetX, offsetY}) ->
     o = {
       root
       el
@@ -319,6 +319,8 @@ UI = do ->
       clientHeight: doc.clientHeight
       clientWidth:  doc.clientWidth
       noRemove
+      offsetX: offsetX or 45
+      offsetY: offsetY or -120
     }
     o.hover    = hover.bind    o
     o.hoverend = hoverend.bind o
@@ -332,6 +334,7 @@ UI = do ->
     if $.x 'ancestor::div[contains(@class,"inline")][1]', root
       $.on d,    'keydown',   o.hoverend
     $.on root, 'mousemove', o.hover
+
     <% if (type === 'userscript') { %>
     # Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=674955
     o.workaround = (e) -> o.hoverend(e) unless root.contains e.target
@@ -345,14 +348,14 @@ UI = do ->
     top = if @isImage
       Math.max 0, clientY * (@clientHeight - height) / @clientHeight
     else
-      Math.max 0, Math.min(@clientHeight - height, clientY - 120)
+      Math.max 0, Math.min(@clientHeight - height, clientY + @offsetY)
 
     threshold = @clientWidth / 2
     threshold = Math.max threshold, @clientWidth - 400 unless @isImage
     [left, right] = if clientX <= threshold
-      [clientX + 45 + 'px', null]
+      [clientX + @offsetX + 'px', null]
     else
-      [null, @clientWidth - clientX + 45 + 'px']
+      [null, @clientWidth - clientX + @offsetX + 'px']
 
     {style} = @
     style.top   = top + 'px'
