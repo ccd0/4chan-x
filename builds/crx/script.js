@@ -19008,7 +19008,7 @@
           $.add(div, [
             UI.checkbox(key, key), $.el('span', {
               className: 'description',
-              textContent: ": " + description
+              textContent: description
             })
           ]);
           input = $('input', div);

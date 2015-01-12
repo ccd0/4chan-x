@@ -122,7 +122,7 @@ Settings =
         div = $.el 'div'
         $.add div, [
           UI.checkbox key, key
-          $.el 'span', className: 'description', textContent: ": #{description}"
+          $.el 'span', className: 'description', textContent: description
         ]
         input = $ 'input', div
         $.on $('label', div), 'mouseover', Settings.mouseover
