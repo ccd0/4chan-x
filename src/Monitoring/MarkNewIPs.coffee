@@ -7,7 +7,7 @@ MarkNewIPs =
 
   node: ->
     MarkNewIPs.ipCount = @ipCount
-    MarkNewIPs.postIDs = (+x for x in @post.keys)
+    MarkNewIPs.postIDs = (+x for x in @posts.keys)
     $.on d, 'ThreadUpdate', MarkNewIPs.onUpdate
 
   onUpdate: (e) ->

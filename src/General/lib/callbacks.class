@@ -11,21 +11,13 @@ class Callbacks
   disconnect: (name) -> @[name].disconnected = true if @[name]
 
   execute: (nodes) ->
-    i = 0
-    # c.time 'Features'
-    while name = @keys[i++]
-      j = 0
-      cb = @[name]
-      # c.time name
-      while node = nodes[j++]
-        try
-          cb.call node unless cb.disconnected
-        catch err
-          errors = [] unless errors
-          errors.push
-            message: ['"', name, '" crashed on node ', @type, ' No.', node.ID, ' (', node.board, ').'].join('')
-            error: err
-      # c.timeEnd name
-    # c.timeEnd 'Features'
+    for name in @keys
+      try
+        @[name].call node for node in nodes
+      catch err
+        errors = [] unless errors
+        errors.push
+          message: ['"', name, '" crashed on node ', @type, ' No.', node.ID, ' (', node.board, ').'].join('')
+          error: err
 
     Main.handleErrors errors if errors

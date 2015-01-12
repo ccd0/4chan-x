@@ -5,13 +5,18 @@ class Clone extends Post
       @[key] = origin[key]
 
     {nodes} = origin
-    root = nodes.root.cloneNode true
+    root = if contractThumb
+      @cloneWithoutVideo nodes.root
+    else
+      nodes.root.cloneNode true
     post = $ '.post',     root
     info = $ '.postInfo', post
     @nodes =
       root: root
       post: post
       info: info
+      nameBlock: $ '.nameBlock', info
+      quote: $ '.postNum > a:nth-of-type(2)', info
       comment: $ '.postMessage', post
       quotelinks: []
       backlinks: info.getElementsByClassName 'backlink'
@@ -37,9 +42,9 @@ class Clone extends Post
     if nodes.uniqueID
       @nodes.uniqueID = $ '.posteruid',   info
     if nodes.capcode
-      @nodes.capcode  = $ '.capcode',     info
+      @nodes.capcode  = $ '.capcode.hand', info
     if nodes.flag
-      @nodes.flag     = $ '.countryFlag', info
+      @nodes.flag     = $ '.flag, .countryFlag', info
     if nodes.date
       @nodes.date     = $ '.dateTime',    info
 
@@ -53,21 +58,23 @@ class Clone extends Post
         @file[key] = val
       file = $ '.file', post
       @file.text  = file.firstElementChild
-      @file.thumb = $ 'img[data-md5], video[data-md5]', file
+      @file.thumb = $ '.fileThumb > [data-md5]', file
       @file.fullImage = $ '.full-image', file
+      @file.videoControls = $ '.video-controls', @file.text
 
       # Contract thumbnails in quote preview
-      if contractThumb
-        $.rmClass root, 'expanded-image'
-        $.rmClass @file.thumb, 'expanding'
-      @file.isExpanded = $.hasClass root, 'expanded-image'
-
-      # Remove any #ihover ID
-      @file.fullImage?.removeAttribute 'id'
-
-      # Remove video controls.
-      ($ '.video-controls', @file.text)?.remove()
+      ImageExpand.contract @ if contractThumb
 
     @isDead  = true if origin.isDead
     @isClone = true
     root.dataset.clone = origin.clones.push(@) - 1
+
+  cloneWithoutVideo: (node) ->
+    if node.tagName is 'VIDEO' and !node.dataset.md5 # (exception for WebM thumbnails)
+      []
+    else if node.nodeType is Node.ELEMENT_NODE and $ 'video', node
+      clone = node.cloneNode false
+      $.add clone, @cloneWithoutVideo child for child in node.childNodes
+      clone
+    else
+      node.cloneNode true

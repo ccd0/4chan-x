@@ -6,15 +6,16 @@ class Post
     @ID     = +root.id[2..]
     @fullID = "#{@board}.#{@ID}"
 
+    @cleanup root, post if that.isOriginalMarkup
     post = $ '.post',     root
     info = $ '.postInfo', post
-    @cleanup root, post if that.isOriginalMarkup
     root.dataset.fullID = @fullID
     @nodes =
       root: root
       post: post
       info: info
       nameBlock: $ '.nameBlock', info
+      quote: $ '.postNum > a:nth-of-type(2)', info
       comment: $ '.postMessage', post
       links: []
       quotelinks: []
@@ -22,8 +23,10 @@ class Post
 
     unless @isReply = $.hasClass post, 'reply'
       @thread.OP = @
-      @thread.isSticky = !!$ '.stickyIcon', info
-      @thread.isClosed = !!$ '.closedIcon', info
+      @thread.isArchived = !!$ '.archivedIcon', info
+      @thread.isSticky   = !!$ '.stickyIcon', info
+      @thread.isClosed   = @thread.isArchived or !!$ '.closedIcon', info
+      @thread.kill() if @thread.isArchived
 
     @info = {}
     @info.nameBlock = if Conf['Anonymize']
@@ -71,28 +74,44 @@ class Post
   parseComment: ->
     # Merge text nodes and remove empty ones.
     @nodes.comment.normalize()
+
     # Get the comment's text.
     # <br> -> \n
     # Remove:
+    #   'Comment too long'...
     #   EXIF data. (/p/)
     #   Rolls. (/tg/)
+    #   Marquees. (/pol/)
     #   Preceding and following new lines.
     #   Trailing spaces.
     bq = @nodes.comment.cloneNode true
-    nodes = $$ '.abbr, .exif, b', bq
+    nodes = $$ '.abbr, .exif, b, marquee', bq
     i = 0
-    while node = nodes[i++]
-      $.rm node
+    $.rm node while node = nodes[i++]
+    @info.comment = @nodesToText bq
+
+    # Get the comment's text with spoilers hidden.
+    spoilers = $$ 's', bq
+    @info.commentSpoilered = if spoilers.length
+      for node in spoilers
+        $.replace node, $.tn '[spoiler]'
+      @nodesToText bq
+    else
+      @info.comment
+
+  nodesToText: (bq) ->
     text = ""
     nodes = $.X './/br|.//text()', bq
     i = 0
     while node = nodes.snapshotItem i++
       text += node.data or '\n'
-    @info.comment = text.trim().replace /\s+$/gm, ''
+    text.trim().replace /\s+$/gm, ''
 
   parseQuotes: ->
     @quotes = []
-    for quotelink in $$ '.quotelink', @nodes.comment
+    # XXX https://github.com/4chan/4chan-JS/issues/77
+    # 4chan currently creates quote links inside [code] tags; ignore them
+    for quotelink in $$ ':not(pre) > .quotelink', @nodes.comment
       @parseQuote quotelink
     return
 
@@ -106,9 +125,8 @@ class Post
     return unless match = quotelink.href.match ///
       boards\.4chan\.org/
       ([^/]+) # boardID
-      /thread/\d+
-      .*       # thread slug
-      \#p(\d+) # postID
+      /(?:res|thread)/\d+(?:\/[^#]*)?#p
+      (\d+)   # postID
       $
     ///
 
@@ -122,7 +140,7 @@ class Post
 
   parseFile: (that) ->
     return unless (fileEl = $ '.file', @nodes.post) and thumb = $ 'img[data-md5]', fileEl
-    # Supports JPG/PNG/GIF/WEBM/PDF.
+    # Supports JPG/PNG/GIF/PDF.
     # Flash files are not supported.
     anchor   = thumb.parentNode
     fileText = fileEl.firstElementChild
@@ -137,32 +155,17 @@ class Post
     unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
     size *= 1024 while unit-- > 0
     @file.sizeInBytes = size
-    @file.thumbURL = if that.isArchived
-      thumb.src
-    else
-      "#{location.protocol}//t.4cdn.org/#{@board}/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
+    @file.thumbURL = "#{location.protocol}//t.4cdn.org/#{@board}/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
     @file.isImage = /(jpg|png|gif)$/i.test @file.URL
     @file.isVideo = /webm$/i.test @file.URL
+    nameNode = $ 'a', fileText
     if @file.isImage or @file.isVideo
-      @file.dimensions = fileText.childNodes[2].data.match(/\d+x\d+/)[0]
-    @file.name = if !@file.isSpoiler and nameNode = $ 'a', fileText
-      nameNode.title or nameNode.textContent
-    else
-      fileText.title
-    <% if (type === 'crx') { %>
-    # replace %22 with quotes, see:
-    # crbug.com/81193
-    # webk.it/62107
-    # https://www.w3.org/Bugs/Public/show_bug.cgi?id=16909
-    # http://www.whatwg.org/specs/web-apps/current-work/#multipart-form-data
-    @file.name = @file.name?.replace /%22/g, '"'
-    <% } %>
+      @file.dimensions = nameNode.nextSibling.textContent.match(/\d+x\d+/)[0]
+    @file.name = fileText.title or nameNode.title or nameNode.textContent
 
-  cleanup: (root, post) ->
+  cleanup: (root) ->
     for node in $$ '.mobile', root
       $.rm node
-    for node in $$ '[id]:not(.exif)', post
-      node.removeAttribute 'id'
     for node in $$ '.desktop', root
       $.rmClass node, 'desktop'
     return
@@ -209,9 +212,6 @@ class Post
   show: (showRecursively=Conf['Recursive Hiding']) ->
     return if !@isHidden
     @isHidden = false
-    @labels = @labels.filter (label) ->
-      # This is lame.
-      !/^(Manually hidden|Recursively hidden|Hidden by)/.test label
 
     for quotelink in Get.allQuotelinksLinkingTo @
       $.rmClass quotelink, 'filtered'
@@ -233,8 +233,7 @@ class Post
     @nodes.post.previousElementSibling.hidden = false
     $.rm @nodes.stub
     delete @nodes.stub
-  highlight: (label, highlight, top) ->
-    @labels.push label
+  highlight: (highlight, top) ->
     unless highlight in @highlights
       @highlights.push highlight
       $.addClass @nodes.root, highlight

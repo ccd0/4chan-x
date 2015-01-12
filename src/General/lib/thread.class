@@ -22,24 +22,28 @@ class Thread
     g.threads.push @fullID, board.threads.push @, @
 
   setPage: (pageNum) ->
-    icon = $ '.page-num', @OP.nodes.info
-    for key in ['title', 'textContent']
-      icon[key] = icon[key].replace /\d+/, pageNum
+    {info, quote} = @OP.nodes
+    unless icon = $ '.page-num', info
+      icon = $.el 'span', className: 'page-num'
+      $.after quote, [$.tn(' '), icon]
+    icon.title       = "This thread is on page #{pageNum} in the original index."
+    icon.textContent = "[#{pageNum}]"
     @catalogView.nodes.pageCount.textContent = pageNum if @catalogView
+
   setCount: (type, count, reachedLimit) ->
     return unless @catalogView
     el = @catalogView.nodes["#{type}Count"]
     el.textContent = count
     (if reachedLimit then $.addClass else $.rmClass) el, 'warning'
+
   setStatus: (type, status) ->
     name = "is#{type}"
     return if @[name] is status
     @[name] = status
     return unless @OP
-    typeLC = type.toLowerCase()
     
-    @setIcon 'Sticky', @isSticky
-    @setIcon 'Closed', @isClosed and !@isArchived
+    @setIcon 'Sticky',   @isSticky
+    @setIcon 'Closed',   @isClosed and !@isArchived
     @setIcon 'Archived', @isArchived
 
   setIcon: (type, status) ->
@@ -58,11 +62,10 @@ class Thread
       title: type
       className: "#{typeLC}Icon retina"
 
-    root =
-      if type isnt 'Sticky' and @isSticky
-        $ '.stickyIcon', @OP.nodes.info
-      else
-        $('.page-num', @OP.nodes.info) or $('[title="Reply to this post"]', @OP.nodes.info)
+    root = if type isnt 'Sticky' and @isSticky
+      $ '.stickyIcon', @OP.nodes.info
+    else
+      $('.page-num', @OP.nodes.info) or @OP.nodes.quote
     $.after root, [$.tn(' '), icon]
 
     return unless @catalogView
@@ -71,6 +74,7 @@ class Thread
   pin: ->
     @isPinned = true
     $.addClass @catalogView.nodes.root, 'pinned' if @catalogView
+
   unpin: ->
     @isPinned = false
     $.rmClass  @catalogView.nodes.root, 'pinned' if @catalogView
@@ -81,6 +85,7 @@ class Thread
     @OP.nodes.root.parentElement.hidden = true
     if button = $ '.hide-post-button', @OP.nodes.root
       $.replace button, PostHiding.makeButton false
+
   show: ->
     return if !@isHidden
     @isHidden = false

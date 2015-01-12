@@ -3141,26 +3141,24 @@
     };
 
     Callbacks.prototype.execute = function(nodes) {
-      var cb, err, errors, i, j, name, node;
-      i = 0;
-      while (name = this.keys[i++]) {
-        j = 0;
-        cb = this[name];
-        while (node = nodes[j++]) {
-          try {
-            if (!cb.disconnected) {
-              cb.call(node);
-            }
-          } catch (_error) {
-            err = _error;
-            if (!errors) {
-              errors = [];
-            }
-            errors.push({
-              message: ['"', name, '" crashed on node ', this.type, ' No.', node.ID, ' (', node.board, ').'].join(''),
-              error: err
-            });
+      var err, errors, name, node, _i, _j, _len, _len1, _ref;
+      _ref = this.keys;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        name = _ref[_i];
+        try {
+          for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
+            node = nodes[_j];
+            this[name].call(node);
           }
+        } catch (_error) {
+          err = _error;
+          if (!errors) {
+            errors = [];
+          }
+          errors.push({
+            message: ['"', name, '" crashed on node ', this.type, ' No.', node.ID, ' (', node.board, ').'].join(''),
+            error: err
+          });
         }
       }
       if (errors) {
@@ -3216,13 +3214,16 @@
     }
 
     Thread.prototype.setPage = function(pageNum) {
-      var icon, key, _i, _len, _ref;
-      icon = $('.page-num', this.OP.nodes.info);
-      _ref = ['title', 'textContent'];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        key = _ref[_i];
-        icon[key] = icon[key].replace(/\d+/, pageNum);
+      var icon, info, quote, _ref;
+      _ref = this.OP.nodes, info = _ref.info, quote = _ref.quote;
+      if (!(icon = $('.page-num', info))) {
+        icon = $.el('span', {
+          className: 'page-num'
+        });
+        $.after(quote, [$.tn(' '), icon]);
       }
+      icon.title = "This thread is on page " + pageNum + " in the original index.";
+      icon.textContent = "[" + pageNum + "]";
       if (this.catalogView) {
         return this.catalogView.nodes.pageCount.textContent = pageNum;
       }
@@ -3239,7 +3240,7 @@
     };
 
     Thread.prototype.setStatus = function(type, status) {
-      var name, typeLC;
+      var name;
       name = "is" + type;
       if (this[name] === status) {
         return;
@@ -3248,7 +3249,6 @@
       if (!this.OP) {
         return;
       }
-      typeLC = type.toLowerCase();
       this.setIcon('Sticky', this.isSticky);
       this.setIcon('Closed', this.isClosed && !this.isArchived);
       return this.setIcon('Archived', this.isArchived);
@@ -3275,7 +3275,7 @@
         title: type,
         className: "" + typeLC + "Icon retina"
       });
-      root = type !== 'Sticky' && this.isSticky ? $('.stickyIcon', this.OP.nodes.info) : $('.page-num', this.OP.nodes.info) || $('[title="Reply to this post"]', this.OP.nodes.info);
+      root = type !== 'Sticky' && this.isSticky ? $('.stickyIcon', this.OP.nodes.info) : $('.page-num', this.OP.nodes.info) || this.OP.nodes.quote;
       $.after(root, [$.tn(' '), icon]);
       if (!this.catalogView) {
         return;
@@ -3349,11 +3349,12 @@
       this.board = this.thread.board;
       this.nodes = {
         root: root,
-        thumb: $('.thumb', root),
-        icons: $('.thread-icons', root),
+        thumb: $('.catalog-thumb', root),
+        icons: $('.catalog-icons', root),
         postCount: $('.post-count', root),
         fileCount: $('.file-count', root),
-        pageCount: $('.page-count', root)
+        pageCount: $('.page-count', root),
+        comment: $('.comment', root)
       };
       this.thread.catalogView = this;
     }
@@ -3378,17 +3379,18 @@
       }
       this.ID = +root.id.slice(2);
       this.fullID = "" + this.board + "." + this.ID;
-      post = $('.post', root);
-      info = $('.postInfo', post);
       if (that.isOriginalMarkup) {
         this.cleanup(root, post);
       }
+      post = $('.post', root);
+      info = $('.postInfo', post);
       root.dataset.fullID = this.fullID;
       this.nodes = {
         root: root,
         post: post,
         info: info,
         nameBlock: $('.nameBlock', info),
+        quote: $('.postNum > a:nth-of-type(2)', info),
         comment: $('.postMessage', post),
         links: [],
         quotelinks: [],
@@ -3396,8 +3398,12 @@
       };
       if (!(this.isReply = $.hasClass(post, 'reply'))) {
         this.thread.OP = this;
+        this.thread.isArchived = !!$('.archivedIcon', info);
         this.thread.isSticky = !!$('.stickyIcon', info);
-        this.thread.isClosed = !!$('.closedIcon', info);
+        this.thread.isClosed = this.thread.isArchived || !!$('.closedIcon', info);
+        if (this.thread.isArchived) {
+          this.thread.kill();
+        }
       }
       this.info = {};
       this.info.nameBlock = Conf['Anonymize'] ? 'Anonymous' : this.nodes.nameBlock.textContent.trim();
@@ -3448,27 +3454,45 @@
     }
 
     Post.prototype.parseComment = function() {
-      var bq, i, node, nodes, text;
+      var bq, i, node, nodes, spoilers;
       this.nodes.comment.normalize();
       bq = this.nodes.comment.cloneNode(true);
-      nodes = $$('.abbr, .exif, b', bq);
+      nodes = $$('.abbr, .exif, b, marquee', bq);
       i = 0;
       while (node = nodes[i++]) {
         $.rm(node);
       }
+      this.info.comment = this.nodesToText(bq);
+      spoilers = $$('s', bq);
+      return this.info.commentSpoilered = (function() {
+        var _i, _len;
+        if (spoilers.length) {
+          for (_i = 0, _len = spoilers.length; _i < _len; _i++) {
+            node = spoilers[_i];
+            $.replace(node, $.tn('[spoiler]'));
+          }
+          return this.nodesToText(bq);
+        } else {
+          return this.info.comment;
+        }
+      }).call(this);
+    };
+
+    Post.prototype.nodesToText = function(bq) {
+      var i, node, nodes, text;
       text = "";
       nodes = $.X('.//br|.//text()', bq);
       i = 0;
       while (node = nodes.snapshotItem(i++)) {
         text += node.data || '\n';
       }
-      return this.info.comment = text.trim().replace(/\s+$/gm, '');
+      return text.trim().replace(/\s+$/gm, '');
     };
 
     Post.prototype.parseQuotes = function() {
       var quotelink, _i, _len, _ref;
       this.quotes = [];
-      _ref = $$('.quotelink', this.nodes.comment);
+      _ref = $$(':not(pre) > .quotelink', this.nodes.comment);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
         this.parseQuote(quotelink);
@@ -3477,7 +3501,7 @@
 
     Post.prototype.parseQuote = function(quotelink) {
       var fullID, match;
-      if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/thread\/\d+.*\#p(\d+)$/))) {
+      if (!(match = quotelink.href.match(/boards\.4chan\.org\/([^\/]+)\/(?:res|thread)\/\d+(?:\/[^#]*)?#p(\d+)$/))) {
         return;
       }
       this.nodes.quotelinks.push(quotelink);
@@ -3511,30 +3535,26 @@
         size *= 1024;
       }
       this.file.sizeInBytes = size;
-      this.file.thumbURL = that.isArchived ? thumb.src : "" + location.protocol + "//t.4cdn.org/" + this.board + "/" + (this.file.URL.match(/(\d+)\./)[1]) + "s.jpg";
+      this.file.thumbURL = "" + location.protocol + "//t.4cdn.org/" + this.board + "/" + (this.file.URL.match(/(\d+)\./)[1]) + "s.jpg";
       this.file.isImage = /(jpg|png|gif)$/i.test(this.file.URL);
       this.file.isVideo = /webm$/i.test(this.file.URL);
+      nameNode = $('a', fileText);
       if (this.file.isImage || this.file.isVideo) {
-        this.file.dimensions = fileText.childNodes[2].data.match(/\d+x\d+/)[0];
+        this.file.dimensions = nameNode.nextSibling.textContent.match(/\d+x\d+/)[0];
       }
-      return this.file.name = !this.file.isSpoiler && (nameNode = $('a', fileText)) ? nameNode.title || nameNode.textContent : fileText.title;
+      return this.file.name = fileText.title || nameNode.title || nameNode.textContent;
     };
 
-    Post.prototype.cleanup = function(root, post) {
-      var node, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+    Post.prototype.cleanup = function(root) {
+      var node, _i, _j, _len, _len1, _ref, _ref1;
       _ref = $$('.mobile', root);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         node = _ref[_i];
         $.rm(node);
       }
-      _ref1 = $$('[id]:not(.exif)', post);
+      _ref1 = $$('.desktop', root);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         node = _ref1[_j];
-        node.removeAttribute('id');
-      }
-      _ref2 = $$('.desktop', root);
-      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-        node = _ref2[_k];
         $.rmClass(node, 'desktop');
       }
     };
@@ -3606,9 +3626,6 @@
         return;
       }
       this.isHidden = false;
-      this.labels = this.labels.filter(function(label) {
-        return !/^(Manually hidden|Recursively hidden|Hidden by)/.test(label);
-      });
       _ref = Get.allQuotelinksLinkingTo(this);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
@@ -3637,8 +3654,7 @@
       return delete this.nodes.stub;
     };
 
-    Post.prototype.highlight = function(label, highlight, top) {
-      this.labels.push(label);
+    Post.prototype.highlight = function(highlight, top) {
       if (__indexOf.call(this.highlights, highlight) < 0) {
         this.highlights.push(highlight);
         $.addClass(this.nodes.root, highlight);
@@ -3751,7 +3767,7 @@
     __extends(Clone, _super);
 
     function Clone(origin, context, contractThumb) {
-      var file, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      var file, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
       this.origin = origin;
       this.context = context;
       _ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
@@ -3760,13 +3776,15 @@
         this[key] = origin[key];
       }
       nodes = origin.nodes;
-      root = nodes.root.cloneNode(true);
+      root = contractThumb ? this.cloneWithoutVideo(nodes.root) : nodes.root.cloneNode(true);
       post = $('.post', root);
       info = $('.postInfo', post);
       this.nodes = {
         root: root,
         post: post,
         info: info,
+        nameBlock: $('.nameBlock', info),
+        quote: $('.postNum > a:nth-of-type(2)', info),
         comment: $('.postMessage', post),
         quotelinks: [],
         backlinks: info.getElementsByClassName('backlink')
@@ -3800,10 +3818,10 @@
         this.nodes.uniqueID = $('.posteruid', info);
       }
       if (nodes.capcode) {
-        this.nodes.capcode = $('.capcode', info);
+        this.nodes.capcode = $('.capcode.hand', info);
       }
       if (nodes.flag) {
-        this.nodes.flag = $('.countryFlag', info);
+        this.nodes.flag = $('.flag, .countryFlag', info);
       }
       if (nodes.date) {
         this.nodes.date = $('.dateTime', info);
@@ -3818,18 +3836,11 @@
         }
         file = $('.file', post);
         this.file.text = file.firstElementChild;
-        this.file.thumb = $('img[data-md5], video[data-md5]', file);
+        this.file.thumb = $('.fileThumb > [data-md5]', file);
         this.file.fullImage = $('.full-image', file);
+        this.file.videoControls = $('.video-controls', this.file.text);
         if (contractThumb) {
-          $.rmClass(root, 'expanded-image');
-          $.rmClass(this.file.thumb, 'expanding');
-        }
-        this.file.isExpanded = $.hasClass(root, 'expanded-image');
-        if ((_ref4 = this.file.fullImage) != null) {
-          _ref4.removeAttribute('id');
-        }
-        if ((_ref5 = $('.video-controls', this.file.text)) != null) {
-          _ref5.remove();
+          ImageExpand.contract(this);
         }
       }
       if (origin.isDead) {
@@ -3838,6 +3849,23 @@
       this.isClone = true;
       root.dataset.clone = origin.clones.push(this) - 1;
     }
+
+    Clone.prototype.cloneWithoutVideo = function(node) {
+      var child, clone, _i, _len, _ref;
+      if (node.tagName === 'VIDEO' && !node.dataset.md5) {
+        return [];
+      } else if (node.nodeType === Node.ELEMENT_NODE && $('video', node)) {
+        clone = node.cloneNode(false);
+        _ref = node.childNodes;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          child = _ref[_i];
+          $.add(clone, this.cloneWithoutVideo(child));
+        }
+        return clone;
+      } else {
+        return node.cloneNode(true);
+      }
+    };
 
     return Clone;
 
@@ -4012,12 +4040,13 @@
   })();
 
   Notice = (function() {
-    function Notice(type, content, timeout) {
+    function Notice(type, content, timeout, onclose) {
       this.timeout = timeout;
+      this.onclose = onclose;
       this.close = __bind(this.close, this);
       this.add = __bind(this.add, this);
       this.el = $.el('div', {
-        innerHTML: '<a href=javascript:; class="close fa" title=Close>\uf00d</a><div class=message></div>'
+        innerHTML: "<a href=\"javascript:;\" class=\"close fa fa-times\" title=\"Close\"></a><div class=\"message\"></div>"
       });
       this.el.style.opacity = 0;
       this.setType(type);
@@ -4049,7 +4078,8 @@
 
     Notice.prototype.close = function() {
       $.off(d, 'visibilitychange', this.add);
-      return $.rm(this.el);
+      $.rm(this.el);
+      return typeof this.onclose === "function" ? this.onclose() : void 0;
     };
 
     return Notice;
@@ -4089,7 +4119,7 @@
 
     RandomAccessList.prototype.before = function(root, item) {
       var prev;
-      if (item.next === root) {
+      if (item.next === root || item === root) {
         return;
       }
       this.rmi(item);
@@ -4099,6 +4129,8 @@
       item.prev = prev;
       if (prev) {
         return prev.next = item;
+      } else {
+        return this.first = item;
       }
     };
 
@@ -4114,6 +4146,8 @@
       item.next = next;
       if (next) {
         return next.prev = item;
+      } else {
+        return this.last = item;
       }
     };
 
@@ -4125,7 +4159,11 @@
       }
       this.rmi(item);
       item.next = first;
-      first.prev = item;
+      if (first) {
+        first.prev = item;
+      } else {
+        this.last = item;
+      }
       this.first = item;
       return delete item.prev;
     };
@@ -4279,7 +4317,28 @@
   })();
 
   Polyfill = {
-    init: function() {},
+    init: function() {
+      this.notificationPermission();
+      this.toBlob();
+      return this.visibility();
+    },
+    notificationPermission: function() {
+      if (!window.Notification || 'permission' in Notification || !window.webkitNotifications) {
+        return;
+      }
+      return Object.defineProperty(Notification, 'permission', {
+        get: function() {
+          switch (webkitNotifications.checkPermission()) {
+            case 0:
+              return 'granted';
+            case 1:
+              return 'default';
+            case 2:
+              return 'denied';
+          }
+        }
+      });
+    },
     toBlob: function() {
       var _base;
       return (_base = HTMLCanvasElement.prototype).toBlob || (_base.toBlob = function(cb) {
@@ -4293,6 +4352,26 @@
         return cb(new Blob([ui8a], {
           type: 'image/png'
         }));
+      });
+    },
+    visibility: function() {
+      if ('visibilityState' in d) {
+        return;
+      }
+      Object.defineProperties(HTMLDocument.prototype, {
+        visibilityState: {
+          get: function() {
+            return this.webkitVisibilityState;
+          }
+        },
+        hidden: {
+          get: function() {
+            return this.webkitHidden;
+          }
+        }
+      });
+      return $.on(d, 'webkitvisibilitychange', function() {
+        return $.event('visibilitychange');
       });
     }
   };
@@ -13442,7 +13521,7 @@
       MarkNewIPs.ipCount = this.ipCount;
       MarkNewIPs.postIDs = (function() {
         var _i, _len, _ref, _results;
-        _ref = this.post.keys;
+        _ref = this.posts.keys;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           x = _ref[_i];
