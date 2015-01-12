@@ -34,13 +34,21 @@ ImageHover =
     else
       el = $.el (if isVideo then 'video' else 'img')
       el.dataset.fullID = post.fullID
+      $.on el, 'error', error
+      el.src = file.URL
 
+    if Conf['Restart when Opened']
+      ImageCommon.rewind el
+      ImageCommon.rewind @
     el.id = 'ihover'
     $.add Header.hover, el
     if isVideo
       el.loop     = true
       el.controls = false
       el.play() if Conf['Autoplay']
+    [width, height] = (+x for x in file.dimensions.split 'x')
+    {left, right} = @getBoundingClientRect()
+    padding = 16
     maxWidth = Math.max left, doc.clientWidth - right
     maxHeight = doc.clientHeight - 16
     scale = Math.min 1, maxWidth / width, maxHeight / height

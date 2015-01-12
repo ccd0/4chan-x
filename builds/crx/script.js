@@ -11943,7 +11943,7 @@
       return $.on(this.nodes.thumb, 'mouseover', ImageHover.mouseover);
     },
     mouseover: function(e) {
-      var el, error, file, isVideo, maxHeight, maxWidth, post, scale, _ref;
+      var el, error, file, height, isVideo, left, maxHeight, maxWidth, padding, post, right, scale, width, x, _ref, _ref1, _ref2;
       post = $.hasClass(this, 'thumb') ? g.posts[this.parentNode.dataset.fullID] : Get.postFromNode(this);
       file = post.file;
       isVideo = file.isVideo;
@@ -11957,6 +11957,12 @@
       } else {
         el = $.el((isVideo ? 'video' : 'img'));
         el.dataset.fullID = post.fullID;
+        $.on(el, 'error', error);
+        el.src = file.URL;
+      }
+      if (Conf['Restart when Opened']) {
+        ImageCommon.rewind(el);
+        ImageCommon.rewind(this);
       }
       el.id = 'ihover';
       $.add(Header.hover, el);
@@ -11967,6 +11973,18 @@
           el.play();
         }
       }
+      _ref1 = (function() {
+        var _i, _len, _ref1, _results;
+        _ref1 = file.dimensions.split('x');
+        _results = [];
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          x = _ref1[_i];
+          _results.push(+x);
+        }
+        return _results;
+      })(), width = _ref1[0], height = _ref1[1];
+      _ref2 = this.getBoundingClientRect(), left = _ref2.left, right = _ref2.right;
+      padding = 16;
       maxWidth = Math.max(left, doc.clientWidth - right);
       maxHeight = doc.clientHeight - 16;
       scale = Math.min(1, maxWidth / width, maxHeight / height);
