@@ -2,7 +2,7 @@ module.exports = (grunt) ->
   grunt.util.linefeed = '\n'
 
   importHTML = (filename) ->
-    "(innerHTML: #{JSON.stringify grunt.file.read("src/General/html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')})"
+    "(innerHTML: #{JSON.stringify(grunt.file.read("src/General/html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')).replace(/\\\\u/g, '\\u')})"
 
   html = (template) ->
     parts = template.split /([\$&@]){([^}`]*)}/
