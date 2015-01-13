@@ -3147,8 +3147,7 @@
       name = _arg.name, cb = _arg.cb;
       if (this[name]) {
         this.connect(name);
-      }
-      if (!this[name]) {
+      } else {
         this.keys.push(name);
       }
       return this[name] = cb;

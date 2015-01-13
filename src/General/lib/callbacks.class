@@ -3,8 +3,10 @@ class Callbacks
     @keys = []
 
   push: ({name, cb}) ->
-    @connect name if @[name]
-    @keys.push name unless @[name]
+    if @[name]
+      @connect name
+    else
+      @keys.push name
     @[name] = cb
 
   connect:    (name) -> delete @[name].disconnected if @[name].disconnected
