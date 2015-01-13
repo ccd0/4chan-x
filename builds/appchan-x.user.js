@@ -8167,7 +8167,7 @@
       var name;
       name = "hashlink";
       if (hidden) {
-        name += "filtered";
+        name += " filtered";
       }
       return $.after(link, $.el('a', {
         className: name,
