@@ -233,7 +233,9 @@ class Post
     @nodes.post.previousElementSibling.hidden = false
     $.rm @nodes.stub
     delete @nodes.stub
-  highlight: (highlight, top) ->
+
+  highlight: (label, highlight, top) ->
+    @labels.push label
     unless highlight in @highlights
       @highlights.push highlight
       $.addClass @nodes.root, highlight

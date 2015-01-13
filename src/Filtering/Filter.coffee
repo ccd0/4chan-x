@@ -79,9 +79,9 @@ Filter =
     test =
       if typeof regexp is 'string'
         # MD5 checking
-        Filter.stringTest
+        (value) -> regexp is value
       else
-        Filter.regexpTest
+        (value) -> regexp.test value
 
     settings =
       hide:  !hl
@@ -89,7 +89,12 @@ Filter =
       class: hl
       top:   top
 
-    (value, isReply) -> return settings if Filter.test(test, value, isReply)
+    (value, isReply) ->
+      if isReply and op is 'only' or !isReply and op is 'no'
+        return false
+      unless test value
+        return false
+      settings
 
   node: ->
     return if @isClone or @isFetchedQuote
@@ -106,17 +111,6 @@ Filter =
         # Highlight
         @highlight "Highlighted by filtering the #{key}: #{result.match}", result.class, result.top
 
-  stringTest: (string, value) ->
-    string is value
-  regexpTest: (regexp, value) ->
-    regexp.test value
-  test: ({test, match, op}, value, isReply) ->
-    if isReply and op is 'only' or !isReply and op is 'no'
-      return false
-    unless test match, value
-      return false
-    true
-    
   name: (post) ->
     if 'name' of post.info
       return post.info.name

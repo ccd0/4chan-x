@@ -88,7 +88,7 @@
 'use strict';
 
 (function() {
-  var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, Callbacks, Captcha, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, Connection, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, IDHighlight, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReportLink, RevealSpoilers, Rice, Sauce, Settings, ShimSet, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, Callbacks, Captcha, CatalogLinks, CatalogThread, Clone, Color, Conf, Config, Connection, CrossOrigin, CustomCSS, DataBoard, DeleteLink, Dice, DownloadLink, E, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Flash, Fourchan, Gallery, Get, GlobalMessage, Header, IDColor, IDHighlight, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, JSColor, Keybinds, Labels, Linkify, Main, MarkNewIPs, MascotTools, Mascots, Menu, Nav, Navigate, Notice, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteInline, QuoteMarkers, QuotePreview, QuoteStrikeThrough, QuoteThreading, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReportLink, RevealSpoilers, Rice, Sauce, Settings, ShimSet, SimpleDict, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -3689,7 +3689,8 @@
       return delete this.nodes.stub;
     };
 
-    Post.prototype.highlight = function(highlight, top) {
+    Post.prototype.highlight = function(label, highlight, top) {
+      this.labels.push(label);
       if (__indexOf.call(this.highlights, highlight) < 0) {
         this.highlights.push(highlight);
         $.addClass(this.nodes.root, highlight);
@@ -7546,7 +7547,11 @@
     },
     createFilter: function(regexp, op, stub, hl, top) {
       var settings, test;
-      test = typeof regexp === 'string' ? Filter.stringTest : Filter.regexpTest;
+      test = typeof regexp === 'string' ? function(value) {
+        return regexp === value;
+      } : function(value) {
+        return regexp.test(value);
+      };
       settings = {
         hide: !hl,
         stub: stub,
@@ -7554,9 +7559,13 @@
         top: top
       };
       return function(value, isReply) {
-        if (Filter.test(test, value, isReply)) {
-          return settings;
+        if (isReply && op === 'only' || !isReply && op === 'no') {
+          return false;
         }
+        if (!test(value)) {
+          return false;
+        }
+        return settings;
       };
     },
     node: function() {
@@ -7583,23 +7592,6 @@
           }
         }
       }
-    },
-    stringTest: function(string, value) {
-      return string === value;
-    },
-    regexpTest: function(regexp, value) {
-      return regexp.test(value);
-    },
-    test: function(_arg, value, isReply) {
-      var match, op, test;
-      test = _arg.test, match = _arg.match, op = _arg.op;
-      if (isReply && op === 'only' || !isReply && op === 'no') {
-        return false;
-      }
-      if (!test(match, value)) {
-        return false;
-      }
-      return true;
     },
     name: function(post) {
       if ('name' in post.info) {
@@ -13448,6 +13440,38 @@
           a.download = file.name;
           return true;
         }
+      });
+    }
+  };
+
+  Labels = {
+    init: function() {
+      if (!Conf['Menu']) {
+        return;
+      }
+      return Menu.menu.addEntry({
+        el: $.el('div', {
+          textContent: 'Labels'
+        }),
+        order: 60,
+        open: function(post, addSubEntry) {
+          var label, labels, _i, _len;
+          labels = (post.origin || post).labels;
+          if (!labels.length) {
+            return false;
+          }
+          this.subEntries.length = 0;
+          for (_i = 0, _len = labels.length; _i < _len; _i++) {
+            label = labels[_i];
+            addSubEntry({
+              el: $.el('div', {
+                textContent: label
+              })
+            });
+          }
+          return true;
+        },
+        subEntries: []
       });
     }
   };
