@@ -12939,7 +12939,7 @@
           api: function(uids) {
             var ids, key;
             ids = encodeURIComponent(uids.join(','));
-            key = '';
+            key = 'AIzaSyCrvwsT3ub8sDl3S5APhok2eY-OzRcCK5U';
             return "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" + ids + "&fields=items%28id%2Csnippet%28title%29%29&key=" + key;
           },
           text: function(data, uid) {

@@ -8,6 +8,7 @@
     "repo": "https://github.com/zixaphir/appchan-x/",
     "page": "http://zixaphir.github.com/appchan-x/",
     "recaptchaKey": "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc",
+    "youtubeAPIKey": "AIzaSyCrvwsT3ub8sDl3S5APhok2eY-OzRcCK5U",
     "buildsPath": "builds/",
     "mainBranch": "master",
     "matches": [
