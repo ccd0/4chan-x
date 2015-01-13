@@ -19414,10 +19414,11 @@
       return $.cb.value.call(this);
     },
     style: function(section) {
-      var arr, box, description, div, fs, html, input, inputs, items, key, name, nodes, obj, span, type, value, _i, _len, _ref;
+      var arr, box, check, description, div, fs, html, input, inputs, items, key, name, nodes, obj, span, type, value, _i, _len, _ref;
       nodes = $.frag();
       items = {};
       inputs = {};
+      box = UI.checkbox;
       _ref = Config.style;
       for (key in _ref) {
         obj = _ref[key];
@@ -19452,8 +19453,8 @@
               textContent: description
             });
             span.style.display = 'none';
-            $.add(div, [box = UI.checkbox(key, key), span]);
-            box.className = 'option';
+            $.add(div, [check = box(key, key), span]);
+            check.className = 'option';
             input = $('input', div);
           }
           items[key] = Conf[key];

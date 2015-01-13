@@ -440,6 +440,8 @@ Settings =
     items  = {}
     inputs = {}
 
+    box = UI.checkbox
+
     for key, obj of Config.style
 
       fs = $.el 'fieldset',
@@ -475,11 +477,11 @@ Settings =
           span.style.display = 'none'
 
           $.add div, [
-            box = UI.checkbox key, key
+            check = box key, key
             span
           ]
 
-          box.className = 'option'
+          check.className = 'option'
 
           input = $ 'input', div
 
