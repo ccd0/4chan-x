@@ -59,7 +59,7 @@ Gallery =
     {cb} = Gallery
     $.on nodes.frame, 'click', cb.blank
     $.on nodes.next,  'click', cb.click
-    $.on nodes.name,  'click', DownloadLink.download
+    $.on nodes.name,  'click', ImageCommon.download
 
     $.on $('.gal-prev',  dialog), 'click', cb.prev
     $.on $('.gal-next',  dialog), 'click', cb.next

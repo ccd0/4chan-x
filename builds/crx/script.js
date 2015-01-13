@@ -11163,7 +11163,7 @@
       cb = Gallery.cb;
       $.on(nodes.frame, 'click', cb.blank);
       $.on(nodes.next, 'click', cb.click);
-      $.on(nodes.name, 'click', DownloadLink.download);
+      $.on(nodes.name, 'click', ImageCommon.download);
       $.on($('.gal-prev', dialog), 'click', cb.prev);
       $.on($('.gal-next', dialog), 'click', cb.next);
       $.on($('.gal-start', dialog), 'click', cb.start);
@@ -11623,6 +11623,22 @@
         });
       };
       return $.on(video, 'mouseover', handler);
+    },
+    download: function(e) {
+      if (this.protocol === 'blob:') {
+        return true;
+      }
+      e.preventDefault();
+      return CrossOrigin.file(this.href, (function(_this) {
+        return function(blob) {
+          if (blob) {
+            _this.href = URL.createObjectURL(blob);
+            return _this.click();
+          } else {
+            return new Notice('error', "Could not download " + _this.href, 30);
+          }
+        };
+      })(this));
     }
   };
 
@@ -13398,7 +13414,7 @@
         className: 'download-link',
         textContent: 'Download file'
       });
-      $.on(a, 'click', this.download);
+      $.on(a, 'click', ImageCommon.download);
       return Menu.menu.addEntry({
         el: a,
         order: 100,
@@ -13413,22 +13429,6 @@
           return true;
         }
       });
-    },
-    download: function(e) {
-      if (this.protocol === 'blob:') {
-        return true;
-      }
-      e.preventDefault();
-      return CrossOrigin.file(this.href, (function(_this) {
-        return function(blob) {
-          if (blob) {
-            _this.href = URL.createObjectURL(blob);
-            return _this.click();
-          } else {
-            return new Notice('error', "Could not download " + _this.href, 30);
-          }
-        };
-      })(this));
     }
   };
 

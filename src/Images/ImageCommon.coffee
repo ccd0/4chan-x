@@ -79,3 +79,13 @@ ImageCommon =
       $.asap (-> chrome? or (video.readyState >= 3 and video.currentTime <= Math.max 0.1, (video.duration - 0.5)) or new Date().getTime() >= t + 1000), ->
         video.controls = true
     $.on video, 'mouseover', handler
+
+  download: (e) ->
+    return true if @protocol is 'blob:'
+    e.preventDefault()
+    CrossOrigin.file @href, (blob) =>
+      if blob
+        @href = URL.createObjectURL blob
+        @click()
+      else
+        new Notice 'error', "Could not download #{@href}", 30
