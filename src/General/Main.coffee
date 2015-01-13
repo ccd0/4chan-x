@@ -72,7 +72,7 @@ Main =
     $.extend Themes,  Conf["userThemes"]
     $.extend Mascots, Conf["userMascots"]
 
-    return if g.BOARD.ID in ['z', 'fk'] then Style.init()
+    return Style.init() if g.BOARD.ID in ['z', 'fk']
 
     Main.setThemeString()
     Main.setMascotString()
