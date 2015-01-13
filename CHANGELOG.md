@@ -1,3 +1,5 @@
+- A bunch of shit from ccd0's 4chan X fork.
+
 ### v2.9.44 
 *2015-01-09*
 
