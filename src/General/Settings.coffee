@@ -441,6 +441,7 @@ Settings =
     inputs = {}
 
     box = UI.checkbox
+    {mouseover} = Settings
 
     for key, obj of Config.style
 
@@ -488,7 +489,7 @@ Settings =
         items[key]  = Conf[key]
         inputs[key] = input
 
-        $.on $('.option', div), 'mouseover', Settings.mouseover
+        $.on $('.option', div), 'mouseover', mouseover
 
         $.add fs, div
       $.add nodes, fs

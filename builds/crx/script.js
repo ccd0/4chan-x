@@ -19446,11 +19446,12 @@
       return $.cb.value.call(this);
     },
     style: function(section) {
-      var arr, box, check, description, div, fs, html, input, inputs, items, key, name, nodes, obj, span, type, value, _i, _len, _ref;
+      var arr, box, check, description, div, fs, html, input, inputs, items, key, mouseover, name, nodes, obj, span, type, value, _i, _len, _ref;
       nodes = $.frag();
       items = {};
       inputs = {};
       box = UI.checkbox;
+      mouseover = Settings.mouseover;
       _ref = Config.style;
       for (key in _ref) {
         obj = _ref[key];
@@ -19491,7 +19492,7 @@
           }
           items[key] = Conf[key];
           inputs[key] = input;
-          $.on($('.option', div), 'mouseover', Settings.mouseover);
+          $.on($('.option', div), 'mouseover', mouseover);
           $.add(fs, div);
         }
         $.add(nodes, fs);
