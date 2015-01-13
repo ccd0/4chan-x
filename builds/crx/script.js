@@ -4811,7 +4811,7 @@
       if (!(/^p\d+$/.test(hash) && (post = $.id(hash)))) {
         return;
       }
-      if ((Get.postFromRoot(post)).isHidden) {
+      if (!(post = Get.postFromRoot(post)) || post.isHidden) {
         return;
       }
       return Header.scrollTo(post);
@@ -18890,11 +18890,11 @@
       $.rmAll(board);
       $.add(board, [threadRoot, $.el('hr')]);
       QR.generatePostableThreadsList();
-      Header.hashScroll.call(window);
       if (errors) {
         Main.handleErrors(errors);
       }
-      return $.event('4chanXInitFinished');
+      $.event('4chanXInitFinished');
+      return Header.hashScroll.call(window);
     },
     pushState: function(path) {
       history.pushState(null, '', path);

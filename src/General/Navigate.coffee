@@ -354,12 +354,13 @@ Navigate =
     $.add board, [threadRoot, $.el 'hr']
 
     QR.generatePostableThreadsList()
-    Header.hashScroll.call window
 
     Main.handleErrors errors if errors
 
     # Thrown after thread has been generated and features have been parsed, like 4chan X
     $.event '4chanXInitFinished'
+
+    Header.hashScroll.call window
 
   pushState: (path) ->
     history.pushState null, '', path

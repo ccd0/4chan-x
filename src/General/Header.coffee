@@ -354,7 +354,7 @@ Header =
   hashScroll: ->
     hash = @location.hash[1..]
     return unless /^p\d+$/.test(hash) and post = $.id hash
-    return if (Get.postFromRoot post).isHidden
+    return if !(post = Get.postFromRoot post) or post.isHidden
     Header.scrollTo post
 
   scrollTo: (root, down, needed) ->
