@@ -1372,7 +1372,7 @@ s {
 .backlink.dead {
   text-decoration: none;
 }
-.filtered-backlinks .filtered.backlink {
+.backlink-container .filtered {
   display: none;
 }
 .backlinks-position-lower-left .backlink-container,
