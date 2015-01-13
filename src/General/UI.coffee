@@ -22,11 +22,6 @@ UI = do ->
     lastToggledButton = null
 
     constructor: (@type) ->
-      # XXX AddMenuEntry event is deprecated
-      $.on d, 'AddMenuEntry', ({detail}) =>
-        return if detail.type isnt @type
-        delete detail.open
-        @addEntry detail
       @entries = []
 
     makeMenu: ->

@@ -6916,17 +6916,6 @@
         this.onFocus = __bind(this.onFocus, this);
         this.keybinds = __bind(this.keybinds, this);
         this.close = __bind(this.close, this);
-        $.on(d, 'AddMenuEntry', (function(_this) {
-          return function(_arg) {
-            var detail;
-            detail = _arg.detail;
-            if (detail.type !== _this.type) {
-              return;
-            }
-            delete detail.open;
-            return _this.addEntry(detail);
-          };
-        })(this));
         this.entries = [];
       }
 
