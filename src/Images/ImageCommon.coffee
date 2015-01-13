@@ -83,3 +83,13 @@ ImageCommon =
   # XXX Estimate whether clicks are on the video controls and should be ignored.
   onControls: (e) ->
     e.target.controls and e.target.getBoundingClientRect().bottom - e.clientY < 35
+
+  download: (e) ->
+    return true if @protocol is 'blob:'
+    e.preventDefault()
+    CrossOrigin.file @href, (blob) =>
+      if blob
+        @href = URL.createObjectURL blob
+        @click()
+      else
+        new Notice 'error', "Could not download #{@href}", 30
