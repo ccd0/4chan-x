@@ -101,12 +101,15 @@ Index =
     @selectMode  = $ '#index-mode',   @navLinks
     @selectSort  = $ '#index-sort',   @navLinks
     @selectSize  = $ '#index-size',   @navLinks
+
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
+
     for select in [@selectMode, @selectSort, @selectSize]
       select.value = Conf[select.name]
       $.on select, 'change', $.cb.value
+
     $.on @selectMode, 'change', @cb.mode
     $.on @selectSort, 'change', @cb.sort
     $.on @selectSize, 'change', @cb.size

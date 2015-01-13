@@ -18662,6 +18662,13 @@
           return;
         }
       }
+      if (Navigate.isNavigating) {
+        return e != null ? e.preventDefault() : void 0;
+      }
+      Navigate.isNavigating = true;
+      setTimeout((function() {
+        return delete Navigate.isNavigating;
+      }), 100);
       if (this.pathname === Navigate.path) {
         if (g.VIEW === 'thread') {
           ThreadUpdater.update();

@@ -206,6 +206,13 @@ Navigate =
         Navigate.setMode @ unless e.button is 2 # Right Click
         return
 
+    return e?.preventDefault() if Navigate.isNavigating
+
+    Navigate.isNavigating = true
+
+    # XXX Prevent accidental double-navigates race condition
+    setTimeout (-> delete Navigate.isNavigating), 100
+
     if @pathname is Navigate.path
       if g.VIEW is 'thread'
         ThreadUpdater.update()
