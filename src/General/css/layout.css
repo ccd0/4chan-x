@@ -951,6 +951,26 @@ nav a,
   outline: none;
   z-index: 27;
 }
+
+/* Embedding */
+#embedding {
+  z-index: 11;
+  padding: 1px 4px 1px 4px;
+  position: fixed;
+}
+#embedding.empty {
+  display: none;
+}
+#embedding > div:first-child {
+  display: flex;
+}
+#embedding .move {
+  flex: 1;
+}
+#embedding .jump {
+  margin: -1px 4px;
+  text-decoration: none;
+}
 /* Image Expansion */
 .fit-width .full-image {
   max-width: 100%;
