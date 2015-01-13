@@ -343,19 +343,16 @@ Header =
     args = if bottom then [
       'bottom-header'
       'top-header'
-      'bottom'
       'after'
     ] else [
       'top-header'
       'bottom-header'
-      'top'
       'add'
     ]
 
     $.addClass doc, args[0]
     $.rmClass  doc, args[1]
-    Header.bar.parentNode.className = args[2]
-    $[args[3]] Header.bar, Header.noticesRoot
+    $[args[2]] Header.bar, Header.noticesRoot
 
   toggleBarPosition: ->
     $.cb.checked.call @
