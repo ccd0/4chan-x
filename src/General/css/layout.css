@@ -455,16 +455,18 @@ nav a,
 }
 /* Notifications */
 #notifications {
+  z-index: 40;
   position: fixed;
   top: 0;
   text-align: center;
   right: 0;
   left: 0;
+  height: 0;
+  overflow: visible;
   transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
 }
 .fixed.top-header #header-bar #notifications {
-  position: absolute;
-  top: 100%;
+  top: 2em;
 }
 .notification {
   font-weight: 700;
