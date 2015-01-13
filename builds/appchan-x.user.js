@@ -9623,12 +9623,12 @@
       return QR.notifications = [];
     },
     status: function() {
-      var disabled, status, thread, value;
+      var disabled, status, thread, value, _ref;
       if (!QR.nodes) {
         return;
       }
       thread = QR.posts[0].thread;
-      if (thread !== 'new' && g.threads["" + g.BOARD + "." + thread].isDead) {
+      if (thread !== 'new' && ((_ref = g.threads["" + g.BOARD + "." + thread]) != null ? _ref.isDead : void 0)) {
         value = 'Dead';
         disabled = true;
         QR.cooldown.auto = false;

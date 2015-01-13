@@ -197,7 +197,7 @@ QR =
   status: ->
     return unless QR.nodes
     {thread} = QR.posts[0]
-    if thread isnt 'new' and g.threads["#{g.BOARD}.#{thread}"].isDead
+    if thread isnt 'new' and g.threads["#{g.BOARD}.#{thread}"]?.isDead
       value    = 'Dead'
       disabled = true
       QR.cooldown.auto = false
