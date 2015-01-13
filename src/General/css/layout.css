@@ -1525,10 +1525,10 @@ input[type=checkbox]:checked + .rice::after {
   bottom: -1px;
 }
 .rounded-edges .rice {
-  border-radius: 2px;}
+  border-radius: 2px;
 }
 .circle-checkboxes .rice {
-  border-radius: 6px;}
+  border-radius: 6px;
 }
 input:checked + .rice {
   background-attachment: scroll;
