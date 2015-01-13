@@ -17,7 +17,7 @@ Settings =
     add 'Style',    @style
     add 'Themes',   @themes
     add 'Mascots',  @mascots
-    add 'Main',     @main
+    add 'Script',   @main
     add 'Filter',   @filter
     add 'Sauce',    @sauce
     add 'Advanced', @advanced

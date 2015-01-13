@@ -2273,6 +2273,36 @@ article li {
   resize: vertical;
   width: 100%;
 }
+
+div[data-checked="false"] > .suboption-list {
+display: none;
+}
+.suboption-list {
+position: relative;
+}
+.suboption-list::before {
+content: "";
+display: inline-block;
+position: absolute;
+left: .7em;
+width: 0;
+height: 100%;
+border-left: 1px solid;
+}
+.suboption-list > div {
+position: relative;
+padding-left: 1.4em;
+}
+.suboption-list > div::before {
+content: "";
+display: inline-block;
+position: absolute;
+left: .7em;
+width: .7em;
+height: .6em;
+border-left: 1px solid;
+border-bottom: 1px solid;
+}
 /* Hover Functionality */
 #mouseover {
   z-index: 33;
