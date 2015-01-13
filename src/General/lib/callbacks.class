@@ -13,7 +13,7 @@ class Callbacks
   execute: (nodes) ->
     for name in @keys
       try
-        @[name].call node for node in nodes
+        @[name].call node for node in nodes when not @[name].disconnected
       catch err
         errors = [] unless errors
         errors.push

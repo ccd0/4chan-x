@@ -3174,7 +3174,9 @@
         try {
           for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
             node = nodes[_j];
-            this[name].call(node);
+            if (!this[name].disconnected) {
+              this[name].call(node);
+            }
           }
         } catch (_error) {
           err = _error;
