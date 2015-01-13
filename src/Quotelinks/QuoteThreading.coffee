@@ -9,16 +9,15 @@ QuoteThreading =
     @enabled = true
     @controls = $.el 'span',
       <%= html('<label><input id="threadingControl" type="checkbox" checked> Threading</label>') %>
+
     @threadNewLink = $.el 'span',
       className: 'brackets-wrap threadnewlink'
       hidden: true
     $.extend @threadNewLink, <%= html('<a href="javascript:;">Thread New Posts</a>') %>
 
-    $.on $('input', @controls), 'change', ->
-      QuoteThreading.rethread @checked
-    $.on @threadNewLink.firstElementChild, 'click', ->
-      QuoteThreading.threadNewLink.hidden = true
-      QuoteThreading.rethread true
+    $.on $('input', @controls), 'change', @cb.thread
+    $.on @threadNewLink.firstElementChild, 'click', @cb.click
+    $.on d, '4chanXInitFinished', @cb.thread
 
     Header.menu.addEntry @entry =
       el:    @controls
@@ -49,6 +48,10 @@ QuoteThreading =
     @children = {}
     @inserted = {}
 
+    $.off $('input', @controls), 'change', @cb.thread
+    $.off @threadNewLink.firstElementChild, 'click', @cb.click
+    $.off d, '4chanXInitFinished', @cb.thread
+
     Thread.callbacks.disconnect 'Quote Threading'
     Post.callbacks.disconnect   'Quote Threading'
 
@@ -60,10 +63,10 @@ QuoteThreading =
   node: ->
     return if @isFetchedQuote or @isClone or !@isReply
     {thread} = QuoteThreading
-    parents = for quote in @quotes
-      parent = g.posts[quote]
-      continue if !parent or parent.isFetchedQuote or !parent.isReply or parent.ID >= @ID
-      parent
+    parents = (parent for quote in @quotes when (parent = g.posts[quote]) and
+      not parent.isFetchedQuote and parent.isReply and parent.ID <= @ID
+    )
+
     if parents.length is 1
       QuoteThreading.parent[@fullID] = parents[0]
 
@@ -80,9 +83,10 @@ QuoteThreading =
       !QuoteThreading.inserted[post.fullID]
 
     descendants = QuoteThreading.descendants post
-    if !Unread.posts.has(parent.ID) and descendants.some((x) -> Unread.posts.has(x.ID))
-      QuoteThreading.threadNewLink.hidden = false
-      return false
+    if !Unread.posts.has(parent.ID)
+      if (do -> return true for x in descendants when Unread.posts.has x.ID)
+        QuoteThreading.threadNewLink.hidden = false
+        return false
 
     {order} = Unread
     children = (QuoteThreading.children[parent.fullID] or= [])
@@ -91,7 +95,7 @@ QuoteThreading =
     nodes.push post.nodes.threadContainer if post.nodes.threadContainer
 
     i = children.length
-    i-- for child in children by -1 when child.ID >= post.ID
+    i-- while (child = children[i]) and child.ID >= post.ID
     if i isnt children.length
       next = children[i]
       order.before order[next.ID], order[x.ID] for x in descendants
@@ -114,7 +118,7 @@ QuoteThreading =
 
     return true
 
-  rethread: (enabled) ->
+  rethread: (enabled = true) ->
     {thread} = QuoteThreading
     {posts} = thread
 
@@ -140,3 +144,9 @@ QuoteThreading =
     Unread.setLine true
     Unread.read()
     Unread.update()
+  
+  cb:
+    thread: -> QuoteThreading.rethread QuoteThreading.checked
+    click: ->
+      QuoteThreading.threadNewLink.hidden = true
+      QuoteThreading.cb.thread()

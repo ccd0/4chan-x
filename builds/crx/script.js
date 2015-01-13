@@ -8513,13 +8513,9 @@
       $.extend(this.threadNewLink, {
         innerHTML: "<a href=\"javascript:;\">Thread New Posts</a>"
       });
-      $.on($('input', this.controls), 'change', function() {
-        return QuoteThreading.rethread(this.checked);
-      });
-      $.on(this.threadNewLink.firstElementChild, 'click', function() {
-        QuoteThreading.threadNewLink.hidden = true;
-        return QuoteThreading.rethread(true);
-      });
+      $.on($('input', this.controls), 'change', this.cb.thread);
+      $.on(this.threadNewLink.firstElementChild, 'click', this.cb.click);
+      $.on(d, '4chanXInitFinished', this.cb.thread);
       Header.menu.addEntry(this.entry = {
         el: this.controls,
         order: 98
@@ -8547,6 +8543,9 @@
       this.parent = {};
       this.children = {};
       this.inserted = {};
+      $.off($('input', this.controls), 'change', this.cb.thread);
+      $.off(this.threadNewLink.firstElementChild, 'click', this.cb.click);
+      $.off(d, '4chanXInitFinished', this.cb.thread);
       Thread.callbacks.disconnect('Quote Threading');
       return Post.callbacks.disconnect('Quote Threading');
     },
@@ -8570,11 +8569,9 @@
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           quote = _ref[_i];
-          parent = g.posts[quote];
-          if (!parent || parent.isFetchedQuote || !parent.isReply || parent.ID >= this.ID) {
-            continue;
+          if ((parent = g.posts[quote]) && !parent.isFetchedQuote && parent.isReply && parent.ID <= this.ID) {
+            _results.push(parent);
           }
-          _results.push(parent);
         }
         return _results;
       }).call(this);
@@ -8594,16 +8591,24 @@
       return posts;
     },
     insert: function(post) {
-      var child, children, descendants, i, next, nodes, order, parent, prev, prev2, threadContainer, x, _base, _i, _j, _k, _len, _name;
+      var child, children, descendants, i, next, nodes, order, parent, prev, prev2, threadContainer, x, _base, _i, _j, _len, _name;
       if (!(QuoteThreading.enabled && (parent = QuoteThreading.parent[post.fullID]) && !QuoteThreading.inserted[post.fullID])) {
         return false;
       }
       descendants = QuoteThreading.descendants(post);
-      if (!Unread.posts.has(parent.ID) && descendants.some(function(x) {
-        return Unread.posts.has(x.ID);
-      })) {
-        QuoteThreading.threadNewLink.hidden = false;
-        return false;
+      if (!Unread.posts.has(parent.ID)) {
+        if ((function() {
+          var x, _i, _len;
+          for (_i = 0, _len = descendants.length; _i < _len; _i++) {
+            x = descendants[_i];
+            if (Unread.posts.has(x.ID)) {
+              return true;
+            }
+          }
+        })()) {
+          QuoteThreading.threadNewLink.hidden = false;
+          return false;
+        }
       }
       order = Unread.order;
       children = ((_base = QuoteThreading.children)[_name = parent.fullID] || (_base[_name] = []));
@@ -8615,16 +8620,13 @@
         nodes.push(post.nodes.threadContainer);
       }
       i = children.length;
-      for (_i = children.length - 1; _i >= 0; _i += -1) {
-        child = children[_i];
-        if (child.ID >= post.ID) {
-          i--;
-        }
+      while ((child = children[i]) && child.ID >= post.ID) {
+        i--;
       }
       if (i !== children.length) {
         next = children[i];
-        for (_j = 0, _len = descendants.length; _j < _len; _j++) {
-          x = descendants[_j];
+        for (_i = 0, _len = descendants.length; _i < _len; _i++) {
+          x = descendants[_i];
           order.before(order[next.ID], order[x.ID]);
         }
         children.splice(i, 0, post);
@@ -8634,8 +8636,8 @@
         while ((prev2 = QuoteThreading.children[prev.fullID]) && prev2.length) {
           prev = prev2[prev2.length - 1];
         }
-        for (_k = descendants.length - 1; _k >= 0; _k += -1) {
-          x = descendants[_k];
+        for (_j = descendants.length - 1; _j >= 0; _j += -1) {
+          x = descendants[_j];
           order.after(order[prev.ID], order[x.ID]);
         }
         children.push(post);
@@ -8651,6 +8653,9 @@
     },
     rethread: function(enabled) {
       var nodes, posts, thread;
+      if (enabled == null) {
+        enabled = true;
+      }
       thread = QuoteThreading.thread;
       posts = thread.posts;
       if (QuoteThreading.enabled = enabled) {
@@ -8681,6 +8686,15 @@
       Unread.setLine(true);
       Unread.read();
       return Unread.update();
+    },
+    cb: {
+      thread: function() {
+        return QuoteThreading.rethread(QuoteThreading.checked);
+      },
+      click: function() {
+        QuoteThreading.threadNewLink.hidden = true;
+        return QuoteThreading.cb.thread();
+      }
     }
   };
 
