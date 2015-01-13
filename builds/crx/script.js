@@ -480,17 +480,24 @@
     boards: {}
   };
 
-  E = function(text) {
-    return (text + '').replace(/[&"'<>]/g, function(x) {
-      return {
-        '&': '&amp;',
-        "'": '&#039;',
-        '"': '&quot;',
-        '<': '&lt;',
-        '>': '&gt;'
-      }[x];
-    });
-  };
+  E = (function() {
+    var fn, r, regex, str;
+    str = {
+      '&': '&amp;',
+      "'": '&#039;',
+      '"': '&quot;',
+      '<': '&lt;',
+      '>': '&gt;'
+    };
+    r = String.prototype.replace;
+    regex = /[&"'<>]/g;
+    fn = function(x) {
+      return str[x];
+    };
+    return function(text) {
+      return r.call(text, regex, fn);
+    };
+  })();
 
   Mascots = {
     'Akiyama_Mio': {
