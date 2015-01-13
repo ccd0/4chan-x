@@ -7,15 +7,7 @@ DownloadLink =
       textContent: 'Download file'
 
     # Specifying the filename with the download attribute only works for same-origin links.
-    $.on a, 'click', (e) ->
-      return true if @protocol is 'blob:'
-      e.preventDefault()
-      CrossOrigin.file @href, (blob) =>
-        if blob
-          @href = URL.createObjectURL blob
-          @click()
-        else
-          new Notice 'error', "Could not download #{@href}", 30
+    $.on a, 'click', @download
 
     Menu.menu.addEntry
       el: a
@@ -25,3 +17,13 @@ DownloadLink =
         a.href     = file.URL
         a.download = file.name
         true
+
+  download: (e) ->
+    return true if @protocol is 'blob:'
+    e.preventDefault()
+    CrossOrigin.file @href, (blob) =>
+      if blob
+        @href = URL.createObjectURL blob
+        @click()
+      else
+        new Notice 'error', "Could not download #{@href}", 30
