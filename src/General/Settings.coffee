@@ -245,14 +245,18 @@ Settings =
       input = $ "[name='#{name}']", section
       items[name]  = Conf[name]
       inputs[name] = input
-      event = if name in ['favicon', 'usercss']
-        'change'
+      if name is 'usercss'
+        $.on input, 'change', $.cb.value
+      else if name is 'favicon'
+        $.on input, 'change', $.cb.value
+        $.on input, 'change', Settings[name]
       else
-        'input'
-      $.on input, event, $.cb.value
+        $.on input, 'input', $.cb.value
+        $.on input, 'input', Settings[name]
 
     # Quick Reply Personas
     ta = $ '.personafield', section
+
     $.get 'QR.personas', Conf['QR.personas'], (item) ->
       ta.value = item['QR.personas']
     $.on ta, 'change', $.cb.value
@@ -262,7 +266,6 @@ Settings =
         input = inputs[key]
         input.value = val
         continue if key is 'usercss'
-        $.on input, event, Settings[key]
         Settings[key].call input
       Rice.nodes section
 
@@ -387,7 +390,7 @@ Settings =
   favicon: ->
     Favicon.switch()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
-    img = @nextElementSibling.children
+    img = ($.id 'favicon-preview').children
     img[0].src = Favicon.default
     img[1].src = Favicon.unreadSFW
     img[2].src = Favicon.unreadNSFW

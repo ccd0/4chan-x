@@ -57,7 +57,7 @@ Rice =
     option: (e) ->
       e.stopPropagation()
       e.preventDefault()
-      
+
       return if @dataset.disabled
 
       select    = Rice.input
@@ -83,7 +83,7 @@ Rice =
       {style} = ul
 
       style.cssText = "width: #{width}px; left: #{left}px;" + (if clientHeight - bottom < 200 then "bottom: #{clientHeight - top}px" else "top: #{bottom}px")
-      Rice.input = select = @previousSibling
+      Rice.input = select = @previousElementSibling
 
       nodes = []
       for option in select.options

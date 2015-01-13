@@ -189,6 +189,7 @@ $.one = (el, events, handler) ->
     $.off el, events, cb
     handler.call @, e
   $.on el, events, cb
+
 $.event = (event, detail, root=d) ->
   <% if (type === 'userscript') { %>
   if detail? and typeof cloneInto is 'function'

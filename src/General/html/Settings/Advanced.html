@@ -1,6 +1,6 @@
 <fieldset>
   <legend>Archiver</legend>
-  <div class="warning" #{if Conf['404 Redirect'] then 'hidden' else ''}><code>404 Redirect</code> is disabled.</div>
+  <div class="warning" data-feature='404 Redirect'><code>404 Redirect</code> is disabled.</div>
   <div><select id='archive-board-select'></select></div>
   <table id='archive-table'>
     <thead>
@@ -19,18 +19,22 @@
   <span class=note>New lines will be converted into spaces.</span><br><br>
   <div class=note>In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div>
   <div>Board link: <code>g</code></div>
+  <div>Archive link: <code>g-archive</code></div>
+  <div>Internal archive link: <code>g-expired</code></div>
   <div>Title link: <code>g-title</code></div>
   <div>Board link (Replace with title when on that board): <code>g-replace</code></div>
   <div>Full text link: <code>g-full</code></div>
   <div>Custom text link: <code>g-text:"Install Gentoo"</code></div>
+  <div>Index-only link: <code>g-index</code></div>
+  <div>Catalog-only link: <code>g-catalog</code></div>
   <div>External link: <code>external-text:"Google","http://www.google.com"</code></div>
   <div>Index mode: <code>g-mode:"type"</code> where type is <code>paged</code>, <code>all threads</code> or <code>catalog</code></div>
   <div>Index sort: <code>g-sort:"type"</code> where type is <code>bump order</code>, <code>last reply</code>, <code>creation date</code>, <code>reply count</code> or <code>file count</code></div
-  <div>Combinations are possible: <code>g-text:"VIP Catalog"-mode:"catalog"-sort:"creation date"</code></div>
+  <div>Combinations are possible: <code>g-index-text:"Technology Index"</code></div>
   <div>Full board list toggle: <code>toggle-all</code></div>
   <br>
   <div class=note>
-    <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h-mode:"catalog"-sort:"file count"] [t-text:"Piracy"]</code><br>
+    <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:"Piracy"]</code><br>
     will give you<br>
     <code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>
     if you are on /g/.
@@ -38,7 +42,7 @@
 </fieldset>
 
 <fieldset>
-  <legend>Time Formatting <span class=warning #{if Conf['Time Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>Time Formatting <span class=warning data-feature='Time Formatting'>is disabled.</span></legend>
   <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>
   <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>
   <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>
@@ -50,13 +54,13 @@
 </fieldset>
 
 <fieldset>
-  <legend>Quote Backlinks formatting <span class=warning #{if Conf['Quote Backlinks'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>Quote Backlinks formatting <span class=warning data-feature='Quote Backlinks'>is disabled.</span></legend>
   <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>
 </fieldset>
 
 <fieldset>
-  <legend>File Info Formatting <span class=warning #{if Conf['File Info Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
-  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>
+  <legend>File Info Formatting <span class=warning data-feature='File Info Formatting'>is disabled.</span></legend>
+  <div><input name=fileInfo class=field spellcheck=false>: <span class='file-info file-info-preview'></span></div>
   <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>
   <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>
   <div>Spoiler indicator: <code>%p</code></div>
@@ -66,7 +70,7 @@
 
 <fieldset>
   <legend>Quick Reply Personas</legend>
-  <textarea class=personafield name="QR.personas" class="field" spellcheck="false"></textarea>
+  <textarea class="personafield field" name="QR.personas" spellcheck="false"></textarea>
   <p>
     One item per line.<br>
     Items will be added in the relevant input's auto-completion list.<br>
@@ -82,29 +86,34 @@
 </fieldset>
 
 <fieldset>
-  <legend>Unread Favicon <span class=warning #{if Conf['Unread Favicon'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>Unread Favicon <span class=warning data-feature='Unread Favicon'>is disabled.</span></legend>
   <select name=favicon>
     <option value=ferongr>ferongr</option>
     <option value=xat->xat-</option>
-    <option value=Mayhem>Mayhem</option>
     <option value=4chanJS>4chanJS</option>
+    <option value=Mayhem>Mayhem</option>
     <option value=Original>Original</option>
     <option value=Metro>Metro</option>
   </select>
-  <span id=favicon-preview></span>
+  <span id=favicon-preview>
+    <img src="data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D">
+    <img src="data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D">
+    <img src="data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D">
+    <img src="data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D">
+  </span>
 </fieldset>
 
 <fieldset>
-  <legend>Thread Updater <span class=warning #{if Conf['Thread Updater'] then 'hidden' else ''}>is disabled.</span></legend>
+  <legend>Thread Updater <span class=warning data-feature='Thread Updater'>is disabled.</span></legend>
   <div>
-    Interval: <input type=number name=Interval class=field min=1 value=#{Conf['Interval']}>
+    Interval: <input type="number" name="Interval" class="field" min="1"> seconds
   </div>
 </fieldset>
 
 <fieldset>
-  <legend><input type=checkbox name='Custom CSS' #{if Conf['Custom CSS'] then 'checked' else ''}> Custom CSS</legend>
-  <div>
-    <button id=apply-css>Apply CSS</button>
-    <textarea name=usercss class=field spellcheck=false #{if Conf['Custom CSS'] then '' else 'disabled'}></textarea>
-  </div>
+  <legend>
+    <label><input type=checkbox name='Custom CSS'> Custom CSS</label>
+  </legend>
+  <button id=apply-css>Apply CSS</button>
+  <textarea name=usercss class=field spellcheck=false></textarea>
 </fieldset>
