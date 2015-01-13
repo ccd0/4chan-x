@@ -2,10 +2,10 @@ Style =
   sheets: {}
   init: ->
     Style.svgs = {
-<% if (type === 'crx') { %>
+      <% if (type === 'crx') { %>
       el: $.el 'div',
         id: 'svg_filters'
-<% } %>
+      <% } %>
     }
 
     theme = Themes[Conf[g.THEMESTRING]] or Themes['Yotsuba B']
@@ -26,8 +26,8 @@ Style =
 
     $.asap (-> d.body), @asapInit
     $.asap (-> Header.bar.parentElement), Style.padding
+    $.asap (-> $.id 'boardNavDesktopFoot' ), @readyInit
     $.on window, "resize", Style.padding
-    $.ready @readyInit
 
   asapInit: ->
     <% if (type === 'crx') { %>
@@ -95,11 +95,8 @@ Style =
   silhouette: ([fg]) ->
     "0 0 0 0 #{fg.r} 0 0 0 0 #{fg.g} 0 0 0 0 #{fg.b}"
 
-  layout: """<%=
-    grunt.file.read('src/General/css/layout.css').replace(/\s+/g, ' ').trim()
-    + ' ' +
-    grunt.file.read('src/General/css/font-awesome.css').replace(/\s+/g, ' ').replace(/\\/g, '\\\\').trim()
-  %>"""
+  layout: 
+    <%= importCSS('layout') %> + ' ' + <%= importCSS('font-awesome') %>
 
   dynamic: ->
     sidebarLocation = if Conf["Sidebar Location"] is "left"
@@ -116,7 +113,7 @@ Style =
         left:   0
         right:  0
 
-    """<%= grunt.file.read('src/General/css/dynamic.css').replace(/\s+/g, ' ').trim() %>"""
+    <%= importCSS('dynamic') %>
 
   setTheme: (theme) -> Style.sheets.theme.textContent  = Style.theme theme
 
@@ -144,14 +141,15 @@ Style =
     Style.svgs.el.innerHTML = svgs.join ''
     <% } %>
 
-    """<%= grunt.file.read('src/General/css/theme.css').replace(/\s+/g, ' ').trim() %>""" + <%= grunt.file.read('src/General/css/themeoptions.css').replace(/\s+/g, ' ').trim() %>
+    <%= importCSS('theme') %> + ' ' + <%= importCSS('themeoptions') %>
 
   iconPositions: ->
     # Slideout Navigation
     slideNav = $.el 'span',
       id: 'so-nav'
-      innerHTML: '<i class=a-icon></a>'
-    $.add slideNav, $.id('boardNavDesktopFoot')
+
+    $.extend slideNav, <%= html('<i class="a-icon"></a>') %>
+    $.add slideNav, $.id 'boardNavDesktopFoot'
     Header.addShortcut slideNav, true
 
     # Announcements
@@ -159,7 +157,7 @@ Style =
       if (psa = $.id 'globalMessage') and !psa.hidden
         psaIcon = $.el 'i',
           id: 'so-psa'
-          innerHTML: '<i class=a-icon></a>'
+        $.extend psaIcon, <%= html('<i class="a-icon"></a>') %>
         $.add psaIcon, psa
         Header.addShortcut psaIcon, true
 
@@ -173,7 +171,7 @@ Style =
   padding: ->
     navHeight  = Header.bar.offsetHeight
     pageHeight = ($ '.pagelist', d.body)?.offsetHeight or 15
-    Style.sheets.padding.textContent  = """<%= grunt.file.read('src/General/css/padding.nav.css').replace(/\s+/g, ' ').trim() %> """ +
+    Style.sheets.padding.textContent  = <%= importCSS('padding.nav') %> +
       if pageHeight
-        """<%= grunt.file.read('src/General/css/padding.pages.css').replace(/\s+/g, ' ').trim() %>"""
+        ' ' + <%= importCSS('padding.pages') %>
       else ''

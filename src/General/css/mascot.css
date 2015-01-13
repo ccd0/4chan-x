@@ -1,16 +1,16 @@
 #mascot img {
   height: #{
-    if mascot.height and isNaN parseFloat mascot.height
+    if mascot.height and isNaN parseFloat mascot.height then
       mascot.height
-    else if mascot.height
+    else if mascot.height then
       parseInt(mascot.height, 10) + 'px'
     else
       'auto'
   };
   width: #{
-    if mascot.width and isNaN parseFloat mascot.width
+    if mascot.width and isNaN parseFloat mascot.width then
       mascot.width
-    else if mascot.width
+    else if mascot.width then
       parseInt(mascot.width,  10) + 'px'
     else
       'auto'

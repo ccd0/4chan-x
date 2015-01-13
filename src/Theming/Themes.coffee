@@ -311,7 +311,7 @@ ThemeTools =
           'Inputs':                       "rgb(#{textColor.rgb()})"
           'Warnings':                     "rgb(#{sageColor.rgb()})"
           'Shadow Color':                 "rbga(0,0,0,0.1)"
-          'Custom CSS':                   """<%= grunt.file.read('src/General/css/theme.import.css') %> #{imported.customCSS or ''}"""
+          'Custom CSS':                   <%= importCSS('theme.import') %> + " #{imported.customCSS or ''}"
       
       else
         Themes[name] = imported

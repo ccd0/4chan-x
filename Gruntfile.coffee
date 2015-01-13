@@ -1,6 +1,9 @@
 module.exports = (grunt) ->
   grunt.util.linefeed = '\n'
 
+  importCSS = (filename) ->
+     "\"\"\"#{grunt.file.read("src/General/css/#{filename}.css").replace(/\s+/g, ' ').trim()}\"\"\""
+
   importHTML = (filename) ->
     "(innerHTML: #{JSON.stringify(grunt.file.read("src/General/html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')).replace(/\\\\u/g, '\\u')})"
 
@@ -37,6 +40,7 @@ module.exports = (grunt) ->
         get: ->
           pkg = grunt.config 'pkg'
           pkg.importHTML = importHTML
+          pkg.importCSS  = importCSS
           pkg.html = html
           pkg.assert = assert
           pkg.tests_enabled or= false

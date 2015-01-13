@@ -399,4 +399,4 @@ MascotTools =
   position: (mascot) ->
     return unless Style.sheets.mascots
     mascot.image? or mascot = Mascots[Conf['mascot']] or {} # event
-    Style.sheets.mascots.textContent = """<%= grunt.file.read('src/General/css/mascot.css') %>"""
+    Style.sheets.mascots.textContent = <%= importCSS('mascot') %>
