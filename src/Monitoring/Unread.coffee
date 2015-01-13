@@ -1,6 +1,6 @@
 Unread =
   init: ->
-    return unless g.VIEW is 'thread' and
+    return unless g.VIEW is 'thread' and (
       Conf['Unread Count'] or
       Conf['Unread Favicon'] or
       Conf['Unread Line'] or
@@ -8,6 +8,7 @@ Unread =
       Conf['Thread Watcher'] or
       Conf['Desktop Notifications'] or
       Conf['Quote Threading']
+    )
 
     @db = new DataBoard 'lastReadPosts', @sync
     @hr = $.el 'hr',
@@ -46,9 +47,8 @@ Unread =
       el: testLink
     <% } %>
 
-
   disconnect: ->
-    return unless g.VIEW is 'thread' and
+    return unless g.VIEW is 'thread' and (
       Conf['Unread Count'] or
       Conf['Unread Favicon'] or
       Conf['Unread Line'] or
@@ -56,6 +56,7 @@ Unread =
       Conf['Thread Watcher'] or
       Conf['Desktop Notifications'] or
       Conf['Quote Threading']
+    )
 
     Unread.db.disconnect()
     {hr} = Unread
@@ -64,12 +65,12 @@ Unread =
     delete @[name] for name in ['db', 'hr', 'posts', 'postsQuotingYou', 'thread', 'title']
     @lastReadPost = 0
 
-    $.off d, '4chanXInitFinished',      @ready
     $.off d, 'ThreadUpdate',            @onUpdate
     $.off d, 'scroll visibilitychange', @read
     $.off d, 'visibilitychange',        @setLine if Conf['Unread Line']
 
     Thread.callbacks.disconnect 'Unread'
+    Post.callbacks.disconnect   'Unread'
 
   node: ->
     Unread.thread = @

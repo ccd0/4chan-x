@@ -360,8 +360,6 @@ Navigate =
     $.rmAll board
     $.add board, [threadRoot, $.el 'hr']
 
-    Unread.ready() if Conf['Unread Count']
-
     QR.generatePostableThreadsList()
     Header.hashScroll.call window
 

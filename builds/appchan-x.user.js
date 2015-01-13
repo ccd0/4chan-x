@@ -14932,7 +14932,7 @@
 
   Unread = {
     init: function() {
-      if (!(g.VIEW === 'thread' && Conf['Unread Count'] || Conf['Unread Favicon'] || Conf['Unread Line'] || Conf['Scroll to Last Read Post'] || Conf['Thread Watcher'] || Conf['Desktop Notifications'] || Conf['Quote Threading'])) {
+      if (!(g.VIEW === 'thread' && (Conf['Unread Count'] || Conf['Unread Favicon'] || Conf['Unread Line'] || Conf['Scroll to Last Read Post'] || Conf['Thread Watcher'] || Conf['Desktop Notifications'] || Conf['Quote Threading']))) {
         return;
       }
       this.db = new DataBoard('lastReadPosts', this.sync);
@@ -14954,7 +14954,7 @@
     },
     disconnect: function() {
       var hr, name, _i, _len, _ref;
-      if (!(g.VIEW === 'thread' && Conf['Unread Count'] || Conf['Unread Favicon'] || Conf['Unread Line'] || Conf['Scroll to Last Read Post'] || Conf['Thread Watcher'] || Conf['Desktop Notifications'] || Conf['Quote Threading'])) {
+      if (!(g.VIEW === 'thread' && (Conf['Unread Count'] || Conf['Unread Favicon'] || Conf['Unread Line'] || Conf['Scroll to Last Read Post'] || Conf['Thread Watcher'] || Conf['Desktop Notifications'] || Conf['Quote Threading']))) {
         return;
       }
       Unread.db.disconnect();
@@ -14968,13 +14968,13 @@
         delete this[name];
       }
       this.lastReadPost = 0;
-      $.off(d, '4chanXInitFinished', this.ready);
       $.off(d, 'ThreadUpdate', this.onUpdate);
       $.off(d, 'scroll visibilitychange', this.read);
       if (Conf['Unread Line']) {
         $.off(d, 'visibilitychange', this.setLine);
       }
-      return Thread.callbacks.disconnect('Unread');
+      Thread.callbacks.disconnect('Unread');
+      return Post.callbacks.disconnect('Unread');
     },
     node: function() {
       var ID, _i, _len, _ref;
@@ -18868,9 +18868,6 @@
       board = $('.board');
       $.rmAll(board);
       $.add(board, [threadRoot, $.el('hr')]);
-      if (Conf['Unread Count']) {
-        Unread.ready();
-      }
       QR.generatePostableThreadsList();
       Header.hashScroll.call(window);
       if (errors) {
