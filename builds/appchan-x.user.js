@@ -7089,6 +7089,7 @@
           return;
         }
         $.addClass(el, 'has-submenu');
+        $.addClass(el, 'pfa');
         for (_i = 0, _len = subEntries.length; _i < _len; _i++) {
           subEntry = subEntries[_i];
           this.parseEntry(subEntry);
@@ -13394,11 +13395,10 @@
       }
       this.button = $.el('a', {
         className: 'menu-button',
-        innerHTML: '<i class="fa fa-bars"></i>',
         href: 'javascript:;'
       });
       $.extend(this.button, {
-        innerHTML: "<i class=\"fa fa-angle-down\"></i>"
+        innerHTML: "<i class=\"fa\"></i>"
       });
       this.menu = new UI.Menu('post');
       Post.callbacks.push({

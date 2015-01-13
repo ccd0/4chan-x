@@ -205,6 +205,7 @@ UI = do ->
       el.style.order = entry.order or 100
       return unless subEntries
       $.addClass el, 'has-submenu'
+      $.addClass el, 'pfa'
       for subEntry in subEntries
         @parseEntry subEntry
       return
