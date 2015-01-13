@@ -137,7 +137,7 @@ Gallery =
     else if /\.pdf$/.test(thumb.href)
       'iframe'
     else
-      'image'
+      'img'
 
     $[if elType is 'iframe' then 'addClass' else 'rmClass'] doc, 'gal-pdf'
     file = $.el elType,
@@ -146,7 +146,7 @@ Gallery =
       Gallery.error file, thumb
     file.src = name.href = thumb.href
 
-    $.extend  file.dataset, thumb.dataset
+    $.extend file.dataset, thumb.dataset
     nodes.current.pause?() unless nodes.current.error
     $.replace nodes.current, file
     if elType is 'video'

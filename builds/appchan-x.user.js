@@ -11205,7 +11205,7 @@
         $.rmClass(el, 'gal-highlight');
       }
       $.addClass(thumb, 'gal-highlight');
-      elType = /\.webm$/.test(thumb.href) ? 'video' : /\.pdf$/.test(thumb.href) ? 'iframe' : 'image';
+      elType = /\.webm$/.test(thumb.href) ? 'video' : /\.pdf$/.test(thumb.href) ? 'iframe' : 'img';
       $[elType === 'iframe' ? 'addClass' : 'rmClass'](doc, 'gal-pdf');
       file = $.el(elType, {
         title: name.download = name.textContent = thumb.title
