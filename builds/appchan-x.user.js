@@ -4386,10 +4386,10 @@
       });
       box = UI.checkbox;
       barFixedToggler = box('Fixed Header', 'Fixed Header');
-      headerToggler = box('Header auto-hide', ' Auto-hide header');
-      scrollHeaderToggler = box('Header auto-hide on scroll', ' Auto-hide header on scroll');
-      barPositionToggler = box('Bottom Header', ' Bottom header');
-      customNavToggler = box('Custom Board Navigation', ' Custom board navigation');
+      headerToggler = box('Header auto-hide', 'Auto-hide header');
+      scrollHeaderToggler = box('Header auto-hide on scroll', 'Auto-hide header on scroll');
+      barPositionToggler = box('Bottom Header', 'Bottom header');
+      customNavToggler = box('Custom Board Navigation', 'Custom board navigation');
       editCustomNav = $.el('a', {
         textContent: 'Edit custom board navigation',
         href: 'javascript:;'
@@ -7264,7 +7264,7 @@
         name: name,
         checked: checked
       });
-      $.add(label, [input, $.tn(text)]);
+      $.add(label, [input, $.tn(" " + text)]);
       return label;
     };
     return {
@@ -13749,7 +13749,7 @@
 
   ThreadUpdater = {
     init: function() {
-      var checked, conf, el, input, name, sc, subEntries, _ref;
+      var box, checked, conf, el, input, name, sc, subEntries, _ref;
       if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
         return;
       }
@@ -13779,11 +13779,12 @@
       $.on(this.timer, 'click', this.update);
       $.on(this.status, 'click', this.update);
       subEntries = [];
+      box = UI.checkbox;
       _ref = Config.updater.checkbox;
       for (name in _ref) {
         conf = _ref[name];
         checked = Conf[name] ? 'checked' : '';
-        el = UI.checkbox(name, " " + name);
+        el = box(name, name);
         input = el.firstElementChild;
         $.on(input, 'change', $.cb.checked);
         if (input.name === 'Scroll BG') {
@@ -14862,7 +14863,7 @@
         var entry, input;
         entry = {
           type: 'thread watcher',
-          el: UI.checkbox(name, " " + name)
+          el: UI.checkbox(name, name)
         };
         input = entry.el.firstElementChild;
         $.on(input, 'change', $.cb.checked);

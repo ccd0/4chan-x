@@ -401,7 +401,7 @@ ThreadWatcher =
     createSubEntry: (name, desc) ->
       entry =
         type: 'thread watcher'
-        el: UI.checkbox name, " #{name}"
+        el: UI.checkbox name, name
       input = entry.el.firstElementChild
       $.on input, 'change', $.cb.checked
       $.on input, 'change', ThreadWatcher.refresh if name in ['Current Board', 'Show Unread Count']

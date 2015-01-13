@@ -379,7 +379,7 @@ UI = do ->
     checked = Conf[name] unless checked?
     label = $.el 'label'
     input = $.el 'input', {type: 'checkbox', name, checked}
-    $.add label, [input, $.tn text]
+    $.add label, [input, $.tn " #{text}"]
     label
 
   return {

@@ -25,9 +25,10 @@ ThreadUpdater =
     $.on @status, 'click', @update
 
     subEntries = []
+    box = UI.checkbox
     for name, conf of Config.updater.checkbox
       checked = if Conf[name] then 'checked' else ''
-      el = UI.checkbox name, " #{name}"
+      el = box name, name
       input = el.firstElementChild
       $.on input, 'change', $.cb.checked
       if input.name is 'Scroll BG'

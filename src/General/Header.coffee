@@ -9,10 +9,10 @@ Header =
     box = UI.checkbox
 
     barFixedToggler     = box 'Fixed Header',               'Fixed Header'
-    headerToggler       = box 'Header auto-hide',           ' Auto-hide header'
-    scrollHeaderToggler = box 'Header auto-hide on scroll', ' Auto-hide header on scroll'
-    barPositionToggler  = box 'Bottom Header',              ' Bottom header'
-    customNavToggler    = box 'Custom Board Navigation',    ' Custom board navigation'
+    headerToggler       = box 'Header auto-hide',           'Auto-hide header'
+    scrollHeaderToggler = box 'Header auto-hide on scroll', 'Auto-hide header on scroll'
+    barPositionToggler  = box 'Bottom Header',              'Bottom header'
+    customNavToggler    = box 'Custom Board Navigation',    'Custom board navigation'
 
     editCustomNav = $.el 'a',
       textContent: 'Edit custom board navigation'
