@@ -3141,26 +3141,27 @@
     };
 
     Callbacks.prototype.execute = function(nodes) {
-      var err, errors, name, node, _i, _j, _len, _len1, _ref;
+      var err, errors, feature, name, node, _i, _j, _len, _len1, _ref;
       _ref = this.keys;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         name = _ref[_i];
-        try {
-          for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
-            node = nodes[_j];
-            if (!this[name].disconnected) {
-              this[name].call(node);
+        feature = this[name];
+        for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
+          node = nodes[_j];
+          if (!feature.disconnected) {
+            try {
+              feature.call(node);
+            } catch (_error) {
+              err = _error;
+              if (!errors) {
+                errors = [];
+              }
+              errors.push({
+                message: ['"', name, '" crashed on node ', this.type, ' No.', node.ID, ' (', node.board, ').'].join(''),
+                error: err
+              });
             }
           }
-        } catch (_error) {
-          err = _error;
-          if (!errors) {
-            errors = [];
-          }
-          errors.push({
-            message: ['"', name, '" crashed on node ', this.type, ' No.', node.ID, ' (', node.board, ').'].join(''),
-            error: err
-          });
         }
       }
       if (errors) {

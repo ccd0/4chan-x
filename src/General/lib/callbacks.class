@@ -12,12 +12,14 @@ class Callbacks
 
   execute: (nodes) ->
     for name in @keys
-      try
-        @[name].call node for node in nodes when not @[name].disconnected
-      catch err
-        errors = [] unless errors
-        errors.push
-          message: ['"', name, '" crashed on node ', @type, ' No.', node.ID, ' (', node.board, ').'].join('')
-          error: err
+      feature = @[name]
+      for node in nodes when not feature.disconnected
+        try
+          feature.call node 
+        catch err
+          errors = [] unless errors
+          errors.push
+            message: ['"', name, '" crashed on node ', @type, ' No.', node.ID, ' (', node.board, ').'].join('')
+            error: err
 
     Main.handleErrors errors if errors
