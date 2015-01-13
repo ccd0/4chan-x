@@ -241,7 +241,7 @@ Main =
     new Notice 'error', [div, logs], 30
 
   parseError: (data) ->
-    c.error data.message, data.error.stack
+    c.error data.message, data.error.message, data.error.stack
     message = $.el 'div',
       textContent: data.message
     error = $.el 'div',

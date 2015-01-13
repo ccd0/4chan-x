@@ -18807,15 +18807,10 @@
         return Navigate.parse(req.response.posts);
       } catch (_error) {
         err = _error;
-        console.error('Navigate failure:');
-        console.log(err);
-        if (notice) {
-          notice.setType('error');
-          notice.el.lastElementChild.textContent = 'Navigation Failed.';
-          setTimeout(notice.close, 2 * $.SECOND);
-        } else {
-          new Notice('error', 'Navigation Failed.', 2);
-        }
+        return Main.handleErrors({
+          message: "Navigate Failure.",
+          error: err
+        });
       }
     },
     makeBreadCrumb: function(href, view, boardID, threadID) {
@@ -20328,7 +20323,7 @@
     },
     parseError: function(data) {
       var error, message;
-      c.error(data.message, data.error.stack);
+      c.error(data.message, data.error.message, data.error.stack);
       message = $.el('div', {
         textContent: data.message
       });

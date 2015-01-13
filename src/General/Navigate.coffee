@@ -304,16 +304,9 @@ Navigate =
     try
       Navigate.parse req.response.posts
     catch err
-      console.error 'Navigate failure:'
-      console.log err
-      # network error or non-JSON content for example.
-      if notice
-        notice.setType 'error'
-        notice.el.lastElementChild.textContent = 'Navigation Failed.'
-        setTimeout notice.close, 2 * $.SECOND
-      else
-        new Notice 'error', 'Navigation Failed.', 2
-      return
+      Main.handleErrors
+        message: "Navigate Failure."
+        error: err
 
   makeBreadCrumb: (href, view, boardID, threadID) ->
     breadCrumb = $.el 'span',
