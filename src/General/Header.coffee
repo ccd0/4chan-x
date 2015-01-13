@@ -159,7 +159,7 @@ Header =
     return unless boardnav
     boardnav = boardnav.replace /(\r\n|\n|\r)/g, ' '
     as = $$ '#full-board-list a[title]', Header.boardList
-    re = /[\w@]+(-(all|title|replace|full|archive|(mode|sort|text|url):"[^"]+"(\,"[^"]+[^"]")?))*|[^\w@]+/g
+    re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|(mode|sort|text|url):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g
     nodes = (Header.mapCustomNavigation t, as for t in boardnav.match re)
     $.add list, nodes
     $.ready CatalogLinks.initBoardList
@@ -168,10 +168,11 @@ Header =
     if /^[^\w@]/.test t
       return $.tn t
 
-    text = url = null
+    text = '' 
+    url  = ''
     t = t.replace /-text:"([^"]+)"(?:,"([^"]+)")?/g, (m0, m1, m2) ->
       text = m1
-      url = m2
+      url  = m2
       ''
 
     if /^toggle-all/.test t

@@ -384,7 +384,7 @@
       'Bottom Board List': true,
       'Custom Board Navigation': true
     },
-    boardnav: "[ toggle-all ]\na-replace\nc-replace\ng-replace\nk-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nco-replace\nfit-replace\njp-replace\nmu-replace\nsp-replace\ntv-replace\nvp-replace\n[external-text:\"FAQ\",\"\"]",
+    boardnav: "[ toggle-all ]\na-replace\nc-replace\ng-replace\nk-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nco-replace\nfit-replace\njp-replace\nmu-replace\nsp-replace\ntv-replace\nvp-replace\n[external-text:\"FAQ\",\"https://github.com/zixaphir/appchan-x/wiki/Frequently-Asked-Questions\"]",
     QR: {
       'QR.personas': "#options:\"sage\";boards:jp;always"
     },
@@ -475,7 +475,7 @@
     VERSION: '',
     NAMESPACE: 'appchan_x.',
     NAME: 'appchan x',
-    FAQ: '',
+    FAQ: 'https://github.com/zixaphir/appchan-x/wiki/Frequently-Asked-Questions',
     CHANGELOG: 'https://github.com/zixaphir/appchan-x/blob/master/CHANGELOG.md',
     boards: {}
   };
@@ -4580,7 +4580,7 @@
       }
       boardnav = boardnav.replace(/(\r\n|\n|\r)/g, ' ');
       as = $$('#full-board-list a[title]', Header.boardList);
-      re = /[\w@]+(-(all|title|replace|full|archive|(mode|sort|text|url):"[^"]+"(\,"[^"]+[^"]")?))*|[^\w@]+/g;
+      re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|(mode|sort|text|url):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g;
       nodes = (function() {
         var _i, _len, _ref, _results;
         _ref = boardnav.match(re);
@@ -4599,7 +4599,8 @@
       if (/^[^\w@]/.test(t)) {
         return $.tn(t);
       }
-      text = url = null;
+      text = '';
+      url = '';
       t = t.replace(/-text:"([^"]+)"(?:,"([^"]+)")?/g, function(m0, m1, m2) {
         text = m1;
         url = m2;
