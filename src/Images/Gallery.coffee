@@ -2,6 +2,8 @@ Gallery =
   init: ->
     return if not (g.VIEW in ['index', 'thread'] and Conf['Gallery']) or g.BOARD is 'f'
 
+    @delay = Conf['Slide Delay']
+
     el = $.el 'a',
       href: 'javascript:;'
       id:   'appchan-gal'

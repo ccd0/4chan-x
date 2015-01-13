@@ -2584,6 +2584,10 @@ article li {
   padding: 1px 5px 2px 5px;
   color: #fff !important;
 }
+.gal-buttons.gal-playing > .gal-start,
+.gal-buttons:not(.gal-playing) > .gal-stop {
+  display: none;
+}
 /* Catalog */
 #content .navLinks,
 #info .navLinks,
