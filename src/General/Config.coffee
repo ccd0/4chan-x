@@ -100,6 +100,11 @@ Config =
         true
         'Convert text into links where applicable.'
       ]
+      'Link Title': [
+        true
+        'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists'
+        1
+      ]
       'Embedding': [
         true
         'Embed supported services. Note: Some services don\'t work on HTTPS.'
@@ -114,11 +119,6 @@ Config =
         false
         'Embed content in a frame that remains in place when the page is scrolled.'
         2
-      ]
-      'Link Title': [
-        true
-        'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists'
-        1
       ]
 
     'Filtering':
@@ -240,6 +240,7 @@ Config =
       'Post Hiding Link': [
         true
         'Add a link to hide posts.'
+        1
       ]
       'Delete Link': [
         true
@@ -335,22 +336,18 @@ Config =
       'Persistent QR': [
         true
         'The Quick reply won\'t disappear after posting.'
-        1
       ]
       'Auto Hide QR': [
         true
         'Automatically hide the quick reply when posting.'
-        1
       ]
       'Open Post in New Tab': [
         true
         'Open new threads or replies to a thread from the index in a new tab.'
-        1
       ]
       'Remember QR Size': [
         false
         'Remember the size of the quick reply\'s comment field.'
-        1
       ]
       'Remember Spoiler': [
         false
@@ -359,22 +356,18 @@ Config =
       'Show Name and Subject': [
         false
         'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.'
-        1
       ]
       'Cooldown': [
         true
         'Indicate the remaining time before posting again.'
-        1
       ]
       'Posting Success Notifications': [
         true
         'Show notifications on successful post creation or file uploading.'
-        1
       ]
       'Force Noscript Captcha': [
         false
         'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled.'
-        1
       ]
       'Captcha Warning Notifications': [
         true
@@ -383,28 +376,25 @@ Config =
       'Dump List Before Comment': [
         false
         'Position of the QR\'s Dump List.'
-        1
       ]
       'Auto-load captcha': [
         false
         'Automatically load the captcha in the QR even if your post is empty.'
-        1
       ]
       'Post on Captcha Completion': [
         false
         'Submit the post immediately when the captcha is completed.'
-        1
       ]
 
     'Quote Links':
       'Quote Backlinks': [
         true
         'Add quote backlinks.'
-        1
       ]
       'OP Backlinks': [
         true
         'Add backlinks to the OP.'
+        1
       ]
       'Quote Inlining': [
         true
@@ -440,10 +430,12 @@ Config =
       'Highlight Posts Quoting You': [
         false
         'Highlights any posts that contain a quote to your post.'
+        1
       ]
       'Highlight Own Posts': [
         false
         'Highlights own posts if Quote Markers are enabled.'
+        1
       ]
       'Mark OP Quotes': [
         true
@@ -452,7 +444,6 @@ Config =
       'Mark Cross-thread Quotes': [
         true
         'Add \'(Cross-thread)\' to cross-threads quotes.'
-        'Highlights own posts if Quote Markers are enabled.'
       ]
       'Quote Threading': [
         false

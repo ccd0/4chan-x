@@ -139,10 +139,10 @@
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
+        'Link Title': [true, 'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists', 1],
         'Embedding': [true, 'Embed supported services. Note: Some services don\'t work on HTTPS.', 1],
         'Auto-embed': [false, 'Auto-embed Linkify Embeds.', 2],
-        'Floating Embeds': [false, 'Embed content in a frame that remains in place when the page is scrolled.', 2],
-        'Link Title': [true, 'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists', 1]
+        'Floating Embeds': [false, 'Embed content in a frame that remains in place when the page is scrolled.', 2]
       },
       'Filtering': {
         'Anonymize': [false, 'Make everyone Anonymous.'],
@@ -176,7 +176,7 @@
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
         'Report Link': [true, 'Add a report link to the menu.', 1],
-        'Post Hiding Link': [true, 'Add a link to hide posts.'],
+        'Post Hiding Link': [true, 'Add a link to hide posts.', 1],
         'Delete Link': [true, 'Add post and image deletion links to the menu.', 1],
         'Download Link': [true, 'Add a download with original filename link to the menu.', 1],
         'Archive Link': [true, 'Add an archive link to the menu.', 1]
@@ -201,23 +201,23 @@
       'Posting': {
         'Header Shortcut': [true, 'Add a shortcut to the header to toggle the QR.'],
         'Page Shortcut': [false, 'Add a shortcut to the top of the page to toggle the QR.'],
-        'Persistent QR': [true, 'The Quick reply won\'t disappear after posting.', 1],
-        'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.', 1],
-        'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.', 1],
-        'Remember QR Size': [false, 'Remember the size of the quick reply\'s comment field.', 1],
+        'Persistent QR': [true, 'The Quick reply won\'t disappear after posting.'],
+        'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
+        'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.'],
+        'Remember QR Size': [false, 'Remember the size of the quick reply\'s comment field.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
-        'Show Name and Subject': [false, 'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.', 1],
-        'Cooldown': [true, 'Indicate the remaining time before posting again.', 1],
-        'Posting Success Notifications': [true, 'Show notifications on successful post creation or file uploading.', 1],
-        'Force Noscript Captcha': [false, 'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled.', 1],
+        'Show Name and Subject': [false, 'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.'],
+        'Cooldown': [true, 'Indicate the remaining time before posting again.'],
+        'Posting Success Notifications': [true, 'Show notifications on successful post creation or file uploading.'],
+        'Force Noscript Captcha': [false, 'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled.'],
         'Captcha Warning Notifications': [true, 'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'],
-        'Dump List Before Comment': [false, 'Position of the QR\'s Dump List.', 1],
-        'Auto-load captcha': [false, 'Automatically load the captcha in the QR even if your post is empty.', 1],
-        'Post on Captcha Completion': [false, 'Submit the post immediately when the captcha is completed.', 1]
+        'Dump List Before Comment': [false, 'Position of the QR\'s Dump List.'],
+        'Auto-load captcha': [false, 'Automatically load the captcha in the QR even if your post is empty.'],
+        'Post on Captcha Completion': [false, 'Submit the post immediately when the captcha is completed.']
       },
       'Quote Links': {
-        'Quote Backlinks': [true, 'Add quote backlinks.', 1],
-        'OP Backlinks': [true, 'Add backlinks to the OP.'],
+        'Quote Backlinks': [true, 'Add quote backlinks.'],
+        'OP Backlinks': [true, 'Add backlinks to the OP.', 1],
         'Quote Inlining': [true, 'Inline quoted post on click.'],
         'Quote Hash Navigation': [false, 'Include an extra link after quotes for autoscrolling to quoted posts.', 1],
         'Forward Hiding': [true, 'Hide original posts of inlined backlinks.', 1],
@@ -225,10 +225,10 @@
         'Quote Highlighting': [true, 'Highlight the previewed post.', 1],
         'Resurrect Quotes': [true, 'Link dead quotes to the archives.'],
         'Mark Quotes of You': [true, 'Add \'(You)\' to quotes linking to your posts.'],
-        'Highlight Posts Quoting You': [false, 'Highlights any posts that contain a quote to your post.'],
-        'Highlight Own Posts': [false, 'Highlights own posts if Quote Markers are enabled.'],
+        'Highlight Posts Quoting You': [false, 'Highlights any posts that contain a quote to your post.', 1],
+        'Highlight Own Posts': [false, 'Highlights own posts if Quote Markers are enabled.', 1],
         'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
-        'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.', 'Highlights own posts if Quote Markers are enabled.'],
+        'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.'],
         'Quote Threading': [false, 'Thread conversations']
       }
     },
