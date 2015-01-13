@@ -160,79 +160,80 @@ Header =
     boardnav = boardnav.replace /(\r\n|\n|\r)/g, ' '
     as = $$ '#full-board-list a[title]', Header.boardList
     re = /[\w@]+(-(all|title|replace|full|archive|(mode|sort|text|url):"[^"]+"(\,"[^"]+[^"]")?))*|[^\w@]+/g
-    nodes = boardnav.match(re).map (t) ->
-      if /^[^\w@]/.test t
-        return $.tn t
-
-      text = url = null
-      t = t.replace /-text:"([^"]+)"(?:,"([^"]+)")?/g, (m0, m1, m2) ->
-        text = m1
-        url = m2
-        ''
-
-      if /^toggle-all/.test t
-        a = $.el 'a',
-          className: 'show-board-list-button'
-          textContent: text or '+'
-          href: 'javascript:;'
-        $.on a, 'click', Header.toggleBoardList
-        return a
-
-      if /^external/.test t
-        a = $.el 'a',
-          href: url or 'javascript:;'
-          textContent: text or '+'
-          className: 'external'
-        if a.hostname is 'boards.4chan.org' and a.pathname.split('/')[1] is g.BOARD.ID
-          a.className += ' current'
-        return a
-
-      boardID = t.split('-')[0]
-      boardID = g.BOARD.ID if boardID is 'current'
-      for a in as when a.textContent is boardID
-        a = a.cloneNode()
-        break
-
-      if Conf['JSON Navigation']
-        $.on a, 'click', Navigate.navigate
-
-      a.textContent = if /-title/.test(t) or /-replace/.test(t) and boardID is g.BOARD.ID
-        a.title
-      else if /-full/.test t
-        "/#{boardID}/ - #{a.title}"
-      else if m = t.match /-text:"([^"]+)"/
-        m[1]
-      else
-        boardID
-
-      if /-archive/.test t
-        if href = Redirect.to 'board', {boardID}
-          a.href = href
-        else
-          return a.firstChild # Its text node.
-
-      if m = t.match /-mode:"([^"]+)"/
-        type = m[1].toLowerCase()
-        a.dataset.indexMode = switch type
-          when 'all threads' then 'all pages'
-          when 'paged', 'catalog' then type
-          else 'paged'
-
-      if m = t.match /-sort:"([^"]+)"/
-        type = m[1].toLowerCase()
-        a.dataset.indexSort = switch type
-          when 'bump order'    then 'bump'
-          when 'last reply'    then 'lastreply'
-          when 'creation date' then 'birth'
-          when 'reply count'   then 'replycount'
-          when 'file count'    then 'filecount'
-          else 'bump'
-
-      $.addClass a, 'navSmall' if boardID is '@'
-      a
-
+    nodes = (Header.mapCustomNavigation t, as for t in boardnav.match re)
     $.add list, nodes
     $.ready CatalogLinks.initBoardList
+
+  mapCustomNavigation: (t, as) ->
+    if /^[^\w@]/.test t
+      return $.tn t
+
+    text = url = null
+    t = t.replace /-text:"([^"]+)"(?:,"([^"]+)")?/g, (m0, m1, m2) ->
+      text = m1
+      url = m2
+      ''
+
+    if /^toggle-all/.test t
+      a = $.el 'a',
+        className: 'show-board-list-button'
+        textContent: text or '+'
+        href: 'javascript:;'
+      $.on a, 'click', Header.toggleBoardList
+      return a
+
+    if /^external/.test t
+      a = $.el 'a',
+        href: url or 'javascript:;'
+        textContent: text or '+'
+        className: 'external'
+      if a.hostname is 'boards.4chan.org' and a.pathname.split('/')[1] is g.BOARD.ID
+        a.className += ' current'
+      return a
+
+    boardID = t.split('-')[0]
+    boardID = g.BOARD.ID if boardID is 'current'
+    for a in as when a.textContent is boardID
+      a = a.cloneNode()
+      break
+
+    if Conf['JSON Navigation']
+      $.on a, 'click', Navigate.navigate
+
+    a.textContent = if /-title/.test(t) or /-replace/.test(t) and boardID is g.BOARD.ID
+      a.title
+    else if /-full/.test t
+      "/#{boardID}/ - #{a.title}"
+    else if m = t.match /-text:"([^"]+)"/
+      m[1]
+    else
+      boardID
+
+    if /-archive/.test t
+      if href = Redirect.to 'board', {boardID}
+        a.href = href
+      else
+        return a.firstChild # Its text node.
+
+    if m = t.match /-mode:"([^"]+)"/
+      type = m[1].toLowerCase()
+      a.dataset.indexMode = switch type
+        when 'all threads' then 'all pages'
+        when 'paged', 'catalog' then type
+        else 'paged'
+
+    if m = t.match /-sort:"([^"]+)"/
+      type = m[1].toLowerCase()
+      a.dataset.indexSort = switch type
+        when 'bump order'    then 'bump'
+        when 'last reply'    then 'lastreply'
+        when 'creation date' then 'birth'
+        when 'reply count'   then 'replycount'
+        when 'file count'    then 'filecount'
+        else 'bump'
+
+    $.addClass a, 'navSmall' if boardID is '@'
+    a
 
   toggleBoardList: ->
     {bar}  = Header

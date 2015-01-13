@@ -357,7 +357,7 @@ ThreadUpdater =
       $.event 'ThreadUpdate',
         404: false
         threadID: ThreadUpdater.thread.fullID
-        newPosts: posts.map (post) -> post.fullID
+        newPosts: (post.fullID for post in posts)
         postCount: OP.replies + 1
         fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
         ipCount: OP.unique_ips

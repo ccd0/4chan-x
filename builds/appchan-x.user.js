@@ -27,7 +27,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.9.44 - 2015-01-12
+* appchan x - Version 2.9.44 - 2015-01-13
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -3087,9 +3087,17 @@
   })();
 
   $.clear = function(cb) {
-    $["delete"](GM_listValues().map(function(key) {
-      return key.replace(g.NAMESPACE, '');
-    }));
+    var key;
+    $["delete"]((function() {
+      var _i, _len, _ref, _results;
+      _ref = GM_listValues();
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        key = _ref[_i];
+        _results.push(key.replace(g.NAMESPACE, ''));
+      }
+      return _results;
+    })());
     return typeof cb === "function" ? cb() : void 0;
   };
 
@@ -4546,7 +4554,7 @@
       return $.sync('boardnav', Header.generateBoardList);
     },
     generateBoardList: function(boardnav) {
-      var as, list, nodes, re;
+      var as, list, nodes, re, t;
       list = $('#custom-board-list', Header.boardList);
       $.rmAll(list);
       if (!boardnav) {
@@ -4555,102 +4563,112 @@
       boardnav = boardnav.replace(/(\r\n|\n|\r)/g, ' ');
       as = $$('#full-board-list a[title]', Header.boardList);
       re = /[\w@]+(-(all|title|replace|full|archive|(mode|sort|text|url):"[^"]+"(\,"[^"]+[^"]")?))*|[^\w@]+/g;
-      nodes = boardnav.match(re).map(function(t) {
-        var a, boardID, href, m, text, type, url, _i, _len;
-        if (/^[^\w@]/.test(t)) {
-          return $.tn(t);
+      nodes = (function() {
+        var _i, _len, _ref, _results;
+        _ref = boardnav.match(re);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          t = _ref[_i];
+          _results.push(Header.mapCustomNavigation(t, as));
         }
-        text = url = null;
-        t = t.replace(/-text:"([^"]+)"(?:,"([^"]+)")?/g, function(m0, m1, m2) {
-          text = m1;
-          url = m2;
-          return '';
-        });
-        if (/^toggle-all/.test(t)) {
-          a = $.el('a', {
-            className: 'show-board-list-button',
-            textContent: text || '+',
-            href: 'javascript:;'
-          });
-          $.on(a, 'click', Header.toggleBoardList);
-          return a;
-        }
-        if (/^external/.test(t)) {
-          a = $.el('a', {
-            href: url || 'javascript:;',
-            textContent: text || '+',
-            className: 'external'
-          });
-          if (a.hostname === 'boards.4chan.org' && a.pathname.split('/')[1] === g.BOARD.ID) {
-            a.className += ' current';
-          }
-          return a;
-        }
-        boardID = t.split('-')[0];
-        if (boardID === 'current') {
-          boardID = g.BOARD.ID;
-        }
-        for (_i = 0, _len = as.length; _i < _len; _i++) {
-          a = as[_i];
-          if (!(a.textContent === boardID)) {
-            continue;
-          }
-          a = a.cloneNode();
-          break;
-        }
-        if (Conf['JSON Navigation']) {
-          $.on(a, 'click', Navigate.navigate);
-        }
-        a.textContent = /-title/.test(t) || /-replace/.test(t) && boardID === g.BOARD.ID ? a.title : /-full/.test(t) ? "/" + boardID + "/ - " + a.title : (m = t.match(/-text:"([^"]+)"/)) ? m[1] : boardID;
-        if (/-archive/.test(t)) {
-          if (href = Redirect.to('board', {
-            boardID: boardID
-          })) {
-            a.href = href;
-          } else {
-            return a.firstChild;
-          }
-        }
-        if (m = t.match(/-mode:"([^"]+)"/)) {
-          type = m[1].toLowerCase();
-          a.dataset.indexMode = (function() {
-            switch (type) {
-              case 'all threads':
-                return 'all pages';
-              case 'paged':
-              case 'catalog':
-                return type;
-              default:
-                return 'paged';
-            }
-          })();
-        }
-        if (m = t.match(/-sort:"([^"]+)"/)) {
-          type = m[1].toLowerCase();
-          a.dataset.indexSort = (function() {
-            switch (type) {
-              case 'bump order':
-                return 'bump';
-              case 'last reply':
-                return 'lastreply';
-              case 'creation date':
-                return 'birth';
-              case 'reply count':
-                return 'replycount';
-              case 'file count':
-                return 'filecount';
-              default:
-                return 'bump';
-            }
-          })();
-        }
-        if (boardID === '@') {
-          $.addClass(a, 'navSmall');
-        }
-        return a;
-      });
+        return _results;
+      })();
       $.add(list, nodes);
       return $.ready(CatalogLinks.initBoardList);
+    },
+    mapCustomNavigation: function(t, as) {
+      var a, boardID, href, m, text, type, url, _i, _len;
+      if (/^[^\w@]/.test(t)) {
+        return $.tn(t);
+      }
+      text = url = null;
+      t = t.replace(/-text:"([^"]+)"(?:,"([^"]+)")?/g, function(m0, m1, m2) {
+        text = m1;
+        url = m2;
+        return '';
+      });
+      if (/^toggle-all/.test(t)) {
+        a = $.el('a', {
+          className: 'show-board-list-button',
+          textContent: text || '+',
+          href: 'javascript:;'
+        });
+        $.on(a, 'click', Header.toggleBoardList);
+        return a;
+      }
+      if (/^external/.test(t)) {
+        a = $.el('a', {
+          href: url || 'javascript:;',
+          textContent: text || '+',
+          className: 'external'
+        });
+        if (a.hostname === 'boards.4chan.org' && a.pathname.split('/')[1] === g.BOARD.ID) {
+          a.className += ' current';
+        }
+        return a;
+      }
+      boardID = t.split('-')[0];
+      if (boardID === 'current') {
+        boardID = g.BOARD.ID;
+      }
+      for (_i = 0, _len = as.length; _i < _len; _i++) {
+        a = as[_i];
+        if (!(a.textContent === boardID)) {
+          continue;
+        }
+        a = a.cloneNode();
+        break;
+      }
+      if (Conf['JSON Navigation']) {
+        $.on(a, 'click', Navigate.navigate);
+      }
+      a.textContent = /-title/.test(t) || /-replace/.test(t) && boardID === g.BOARD.ID ? a.title : /-full/.test(t) ? "/" + boardID + "/ - " + a.title : (m = t.match(/-text:"([^"]+)"/)) ? m[1] : boardID;
+      if (/-archive/.test(t)) {
+        if (href = Redirect.to('board', {
+          boardID: boardID
+        })) {
+          a.href = href;
+        } else {
+          return a.firstChild;
+        }
+      }
+      if (m = t.match(/-mode:"([^"]+)"/)) {
+        type = m[1].toLowerCase();
+        a.dataset.indexMode = (function() {
+          switch (type) {
+            case 'all threads':
+              return 'all pages';
+            case 'paged':
+            case 'catalog':
+              return type;
+            default:
+              return 'paged';
+          }
+        })();
+      }
+      if (m = t.match(/-sort:"([^"]+)"/)) {
+        type = m[1].toLowerCase();
+        a.dataset.indexSort = (function() {
+          switch (type) {
+            case 'bump order':
+              return 'bump';
+            case 'last reply':
+              return 'lastreply';
+            case 'creation date':
+              return 'birth';
+            case 'reply count':
+              return 'replycount';
+            case 'file count':
+              return 'filecount';
+            default:
+              return 'bump';
+          }
+        })();
+      }
+      if (boardID === '@') {
+        $.addClass(a, 'navSmall');
+      }
+      return a;
     },
     toggleBoardList: function() {
       var bar, custom, full, showBoardList;
@@ -14172,7 +14190,7 @@
         }
       });
       sendEvent = function() {
-        var ipCountEl;
+        var ipCountEl, post;
         if ((OP.unique_ips != null) && (ipCountEl = $.id('unique-ips'))) {
           ipCountEl.textContent = OP.unique_ips;
           ipCountEl.previousSibling.textContent = ipCountEl.previousSibling.textContent.replace(/\b(?:is|are)\b/, OP.unique_ips === 1 ? 'is' : 'are');
@@ -14182,9 +14200,15 @@
         return $.event('ThreadUpdate', {
           404: false,
           threadID: ThreadUpdater.thread.fullID,
-          newPosts: posts.map(function(post) {
-            return post.fullID;
-          }),
+          newPosts: (function() {
+            var _j, _len1, _results;
+            _results = [];
+            for (_j = 0, _len1 = posts.length; _j < _len1; _j++) {
+              post = posts[_j];
+              _results.push(post.fullID);
+            }
+            return _results;
+          })(),
           postCount: OP.replies + 1,
           fileCount: OP.images + (!!ThreadUpdater.thread.OP.file && !ThreadUpdater.thread.OP.file.isDead),
           ipCount: OP.unique_ips
