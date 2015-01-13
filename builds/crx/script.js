@@ -3378,7 +3378,7 @@
       this.board = this.thread.board;
       this.nodes = {
         root: root,
-        thumb: $('.catalog-thumb', root),
+        thumb: $('.thumb', root),
         icons: $('.catalog-icons', root),
         postCount: $('.post-count', root),
         fileCount: $('.file-count', root),
@@ -5247,6 +5247,9 @@
         el: el,
         latestEvent: e,
         endEvents: 'mouseout',
+        asapTest: function() {
+          return true;
+        },
         offsetX: 15,
         offsetY: -20
       });

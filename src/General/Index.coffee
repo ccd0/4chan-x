@@ -247,6 +247,7 @@ Index =
       el: el
       latestEvent: e
       endEvents: 'mouseout'
+      asapTest: -> true
       offsetX: 15
       offsetY: -20
     setTimeout (-> el.hidden = false if el.parentNode), .25 * $.SECOND
