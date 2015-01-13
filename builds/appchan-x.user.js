@@ -4388,7 +4388,7 @@
 
   Header = {
     init: function() {
-      var barFixedToggler, barPositionToggler, box, customNavToggler, editCustomNav, headerToggler, menuButton, scrollHeaderToggler;
+      var barFixedToggler, barPositionToggler, box, customNavToggler, editCustomNav, footer, headerToggler, menuButton, scrollHeaderToggler;
       this.menu = new UI.Menu('header');
       menuButton = $.el('a', {
         className: 'menu-button a-icon',
@@ -4464,9 +4464,12 @@
           return _this.setBarPosition(Conf['Bottom Header']);
         };
       })(this));
-      return $.ready(function() {
-        var a, footer, _i, _len, _ref, _results;
-        if (a = $("a[href*='/" + g.BOARD + "/']", footer = $.id('boardNavDesktopFoot'))) {
+      footer = null;
+      return $.asap((function() {
+        return footer = $.id('boardNavDesktopFoot');
+      }), function() {
+        var a, _i, _len, _ref, _results;
+        if (a = $("a[href*='/" + g.BOARD + "/']", footer)) {
           a.className = 'current';
         }
         if (Conf['JSON Navigation']) {
@@ -5965,10 +5968,10 @@
       switch (Conf['Index Mode']) {
         case 'paged':
         case 'infinite':
-          pageNum = Index.getCurrentPage() - 1;
+          pageNum = Index.getCurrentPage();
           threadsPerPage = Index.getThreadsNumPerPage();
           threads = [];
-          i = threadsPerPage * pageNum;
+          i = threadsPerPage * (pageNum - 1);
           max = i + threadsPerPage;
           while (i < max && (thread = sortedThreads[i++])) {
             threads.push(thread);
@@ -5976,7 +5979,7 @@
             Index.buildReplies(thread);
           }
           Index.buildPagelist();
-          Index.setPage();
+          Index.setPage(pageNum);
           break;
         case 'catalog':
           nodes = Index.buildCatalogViews();
@@ -18476,7 +18479,7 @@
       if (!(g.VIEW === 'thread' && this.thread.ID === g.THREADID)) {
         $.on($('a[title="Link to this post"]', this.nodes.info), 'click', Navigate.navigate);
       }
-      if (!(linktype = Conf['Quote Inlining'] && Conf['Quote Hash Navigation'] ? '.hashlink' : !Conf['Quote Inlining'] ? '.quotelink' : null)) {
+      if (!(linktype = Conf['Quote Inlining'] && Conf['Quote Hash Navigation'] ? '.hashlink' : !Conf['Quote Inlining'] ? '.quotelink' : false)) {
         return;
       }
       return Navigate.quoteLink($$(linktype, this.nodes.comment));

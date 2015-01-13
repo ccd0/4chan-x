@@ -76,8 +76,9 @@ Header =
       $.add d.body, @hover
       @setBarPosition Conf['Bottom Header']
 
-    $.ready ->
-      if a = $ "a[href*='/#{g.BOARD}/']", footer = $.id 'boardNavDesktopFoot'
+    footer = null
+    $.asap (-> footer = $.id 'boardNavDesktopFoot' ), ->
+      if a = $ "a[href*='/#{g.BOARD}/']", footer 
         a.className = 'current'
       if Conf['JSON Navigation']
         $.on a, 'click', Navigate.navigate for a in $$ 'a', footer

@@ -790,11 +790,11 @@ Index =
     nodes = []
     switch Conf['Index Mode']
       when 'paged', 'infinite'
-        pageNum = Index.getCurrentPage() - 1
+        pageNum = Index.getCurrentPage()
         threadsPerPage = Index.getThreadsNumPerPage()
 
         threads = []
-        i       = threadsPerPage * pageNum
+        i       = threadsPerPage * (pageNum - 1)
         max     = i + threadsPerPage
         while i < max and thread = sortedThreads[i++]
           threads.push thread
@@ -802,7 +802,7 @@ Index =
           Index.buildReplies thread
 
         Index.buildPagelist()
-        Index.setPage()
+        Index.setPage pageNum
 
       when 'catalog'
         nodes = Index.buildCatalogViews()

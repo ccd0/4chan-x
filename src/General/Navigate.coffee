@@ -46,7 +46,7 @@ Navigate =
     else if !Conf['Quote Inlining']
       '.quotelink'
     else
-      null
+      false
     )
 
     Navigate.quoteLink $$ linktype, @nodes.comment
