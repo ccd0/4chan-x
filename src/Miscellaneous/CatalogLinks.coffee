@@ -14,7 +14,7 @@ CatalogLinks =
       el:    el
       order: 95
 
-    $.on d, '4chanXInitFinished', ->
+    $.asap (-> $.id 'boardNavDesktopFoot' ), ->
       # Set links on load.
       CatalogLinks.set Conf['Header catalog links']
 

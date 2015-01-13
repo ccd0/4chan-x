@@ -15626,7 +15626,9 @@
         el: el,
         order: 95
       });
-      return $.on(d, '4chanXInitFinished', function() {
+      return $.asap((function() {
+        return $.id('boardNavDesktopFoot');
+      }), function() {
         return CatalogLinks.set(Conf['Header catalog links']);
       });
     },
