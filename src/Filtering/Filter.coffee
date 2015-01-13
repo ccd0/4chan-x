@@ -93,15 +93,10 @@ Filter =
 
   node: ->
     return if @isClone or @isFetchedQuote
-    for key of Filter.filters
-      value = Filter[key] @
+    for key of Filter.filters when value = Filter[key] @
       # Continue if there's nothing to filter (no tripcode for example).
-      continue if value is false
 
-      for filter in Filter.filters[key]
-        unless result = filter value, @isReply
-          continue
-
+      for filter in Filter.filters[key] when result = filter value, @isReply
         # Hide
         if result.hide
           continue unless @isReply or g.VIEW is 'index'

@@ -7544,24 +7544,22 @@
         return;
       }
       for (key in Filter.filters) {
-        value = Filter[key](this);
-        if (value === false) {
-          continue;
-        }
-        _ref = Filter.filters[key];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          filter = _ref[_i];
-          if (!(result = filter(value, this.isReply))) {
-            continue;
-          }
-          if (result.hide) {
-            if (!(this.isReply || g.VIEW === 'index')) {
+        if (value = Filter[key](this)) {
+          _ref = Filter.filters[key];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            filter = _ref[_i];
+            if (!(result = filter(value, this.isReply))) {
               continue;
             }
-            this.hide("Hidden by filtering the " + key + ": " + result.match, result.stub);
-            return;
+            if (result.hide) {
+              if (!(this.isReply || g.VIEW === 'index')) {
+                continue;
+              }
+              this.hide("Hidden by filtering the " + key + ": " + result.match, result.stub);
+              return;
+            }
+            this.highlight("Highlighted by filtering the " + key + ": " + result.match, result["class"], result.top);
           }
-          this.highlight("Highlighted by filtering the " + key + ": " + result.match, result["class"], result.top);
         }
       }
     },
