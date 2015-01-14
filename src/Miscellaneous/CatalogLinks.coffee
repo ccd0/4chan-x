@@ -65,6 +65,7 @@ CatalogLinks =
       a.href = CatalogLinks[if useCatalog then 'catalog' else 'index'] board
 
     CatalogLinks.el.title = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
+    $('input', CatalogLinks.el).checked = useCatalog
 
   catalog: (board=g.BOARD.ID) ->
     if Conf['External Catalog'] and board in ['a', 'c', 'g', 'biz', 'k', 'm', 'o', 'p', 'v', 'vg', 'vr', 'w', 'wg', 'cm', '3', 'adv', 'an', 'asp', 'cgl', 'ck', 'co', 'diy', 'fa', 'fit', 'gd', 'int', 'jp', 'lit', 'mlp', 'mu', 'n', 'out', 'po', 'sci', 'sp', 'tg', 'toy', 'trv', 'tv', 'vp', 'wsg', 'x', 'f', 'pol', 's4s', 'lgbt']
