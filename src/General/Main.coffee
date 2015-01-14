@@ -336,7 +336,6 @@ Main =
     ['Mark New IPs',              MarkNewIPs]
     ['Index Navigation',          Nav]
     ['Keybinds',                  Keybinds]
-    ['Show Dice Roll',            Dice]
     ['Banner',                    Banner]
     ['Navigate',                  Navigate]
     ['Flash Features',            Flash]
