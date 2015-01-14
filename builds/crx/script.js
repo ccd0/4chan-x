@@ -15127,16 +15127,15 @@
       return Unread.update();
     },
     addPost: function() {
-      var _ref;
       if (this.isFetchedQuote || this.isClone) {
         return;
       }
       Unread.order.push(this);
-      if (this.ID <= Unread.lastReadPost || this.isHidden || ((_ref = QR.db) != null ? _ref.get({
+      if (this.ID <= Unread.lastReadPost || this.isHidden || QR.db.get({
         boardID: this.board.ID,
         threadID: this.thread.ID,
         postID: this.ID
-      }) : void 0)) {
+      })) {
         return;
       }
       Unread.posts.add(this.ID);
@@ -15144,11 +15143,11 @@
       return Unread.position != null ? Unread.position : Unread.position = Unread.order[this.ID];
     },
     addPostQuotingYou: function(post) {
-      var quotelink, _i, _len, _ref, _ref1;
+      var quotelink, _i, _len, _ref;
       _ref = post.nodes.quotelinks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
-        if (!((_ref1 = QR.db) != null ? _ref1.get(Get.postDataFromLink(quotelink)) : void 0)) {
+        if (!(QR.db.get(Get.postDataFromLink(quotelink)))) {
           continue;
         }
         Unread.postsQuotingYou.add(post.ID);
@@ -15195,7 +15194,7 @@
       return Unread.update();
     },
     read: $.debounce(100, function(e) {
-      var ID, count, data, height, root, _ref, _ref1;
+      var ID, count, data, height, root, _ref;
       if (d.hidden || !Unread.posts.size) {
         return;
       }
@@ -15210,11 +15209,11 @@
         count++;
         Unread.posts["delete"](ID);
         Unread.postsQuotingYou["delete"](ID);
-        if (Conf['Mark Quotes of You'] && ((_ref1 = QR.db) != null ? _ref1.get({
+        if (Conf['Mark Quotes of You'] && QR.db.get({
           boardID: data.board.ID,
           threadID: data.thread.ID,
           postID: ID
-        }) : void 0)) {
+        })) {
           QuoteYou.lastRead = root;
         }
         Unread.position = Unread.position.next;

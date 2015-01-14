@@ -135,7 +135,7 @@ Unread =
   addPost: ->
     return if @isFetchedQuote or @isClone
     Unread.order.push @
-    return if @ID <= Unread.lastReadPost or @isHidden or QR.db?.get {
+    return if @ID <= Unread.lastReadPost or @isHidden or QR.db.get {
       boardID:  @board.ID
       threadID: @thread.ID
       postID:   @ID
@@ -145,7 +145,7 @@ Unread =
     Unread.position ?= Unread.order[@ID]
 
   addPostQuotingYou: (post) ->
-    for quotelink in post.nodes.quotelinks when QR.db?.get Get.postDataFromLink quotelink
+    for quotelink in post.nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
       Unread.postsQuotingYou.add post.ID
       Unread.openNotification post
       return
@@ -192,7 +192,7 @@ Unread =
       Unread.posts.delete ID
       Unread.postsQuotingYou.delete ID
 
-      if Conf['Mark Quotes of You'] and QR.db?.get {
+      if Conf['Mark Quotes of You'] and QR.db.get {
         boardID:  data.board.ID
         threadID: data.thread.ID
         postID:   ID
