@@ -163,7 +163,7 @@ Header =
     re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|(mode|sort|text|url):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g
     nodes = (Header.mapCustomNavigation t, as for t in boardnav.match re)
     $.add list, nodes
-    $.ready CatalogLinks.initBoardList
+    $.ready -> CatalogLinks.set Conf['Header catalog links']
 
   mapCustomNavigation: (t, as) ->
     if /^[^\w@]/.test t

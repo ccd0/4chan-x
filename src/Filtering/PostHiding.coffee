@@ -1,6 +1,7 @@
 PostHiding =
   init: ->
     @db = new DataBoard 'hiddenPosts'
+
     @hideButton = $.el 'a',
       className: 'hide-post-button fa'
       href: 'javascript:;'
@@ -162,6 +163,7 @@ PostHiding =
         return
       PostHiding.saveHiddenState post, {thisPost: false, hideRecursively: replies, makeStub} unless thisPost
       $.event 'CloseMenu'
+
     show: (post) ->
       parent   = @parentNode
       thisPost = $('input[name=thisPost]', parent).checked

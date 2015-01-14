@@ -29,7 +29,7 @@ CatalogLinks =
     generateURL = if useCatalog and Conf['External Catalog']
       CatalogLinks.external
     else
-      (board) -> a.href = "/#{board}/#{path}"
+      CatalogLinks.internal
 
     for a in $$ """#board-list a:not(.catalog), #boardNavDesktopFoot a""" 
       continue if a.hostname not in ['boards.4chan.org', 'catalog.neet.tv', '4index.gropes.us'] or
@@ -39,10 +39,11 @@ CatalogLinks =
 
       # Href is easier than pathname because then we don't have
       # conditions where External Catalog has been disabled between switches.
-      a.href = generateURL board
+      a.href = generateURL board, path
 
     CatalogLinks.el.title = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
 
+  internal: (board, path) -> "/#{board}/#{path}"
   external: (board) ->
     if board in ['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q']
       "http://catalog.neet.tv/#{board}"

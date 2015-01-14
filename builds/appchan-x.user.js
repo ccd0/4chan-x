@@ -4585,7 +4585,9 @@
         return _results;
       })();
       $.add(list, nodes);
-      return $.ready(CatalogLinks.initBoardList);
+      return $.ready(function() {
+        return CatalogLinks.set(Conf['Header catalog links']);
+      });
     },
     mapCustomNavigation: function(t, as) {
       var a, boardID, href, m, text, type, url, _i, _len;
@@ -15650,18 +15652,19 @@
     set: function(useCatalog) {
       var a, board, generateURL, path, _i, _len, _ref, _ref1;
       path = useCatalog ? 'catalog' : '';
-      generateURL = useCatalog && Conf['External Catalog'] ? CatalogLinks.external : function(board) {
-        return a.href = "/" + board + "/" + path;
-      };
+      generateURL = useCatalog && Conf['External Catalog'] ? CatalogLinks.external : CatalogLinks.internal;
       _ref = $$("#board-list a:not(.catalog), #boardNavDesktopFoot a");
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
         if (((_ref1 = a.hostname) !== 'boards.4chan.org' && _ref1 !== 'catalog.neet.tv' && _ref1 !== '4index.gropes.us') || !(board = a.pathname.split('/')[1]) || (board === 'f' || board === 'status' || board === '4chan') || $.hasClass(a, 'external')) {
           continue;
         }
-        a.href = generateURL(board);
+        a.href = generateURL(board, path);
       }
       return CatalogLinks.el.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
+    },
+    internal: function(board, path) {
+      return "/" + board + "/" + path;
     },
     external: function(board) {
       if (board === 'a' || board === 'c' || board === 'g' || board === 'co' || board === 'k' || board === 'm' || board === 'o' || board === 'p' || board === 'v' || board === 'vg' || board === 'w' || board === 'cm' || board === '3' || board === 'adv' || board === 'an' || board === 'cgl' || board === 'ck' || board === 'diy' || board === 'fa' || board === 'fit' || board === 'int' || board === 'jp' || board === 'mlp' || board === 'lit' || board === 'mu' || board === 'n' || board === 'po' || board === 'sci' || board === 'toy' || board === 'trv' || board === 'tv' || board === 'vp' || board === 'x' || board === 'q') {
