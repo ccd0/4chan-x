@@ -27,6 +27,12 @@ Based on v1.9.19.10.
 - Improved performance on long threads.
 
 <!-- v1.9.19.x -->
+### v1.9.19.12 
+*2015-01-13* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.19.12/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.19.12/builds/4chan-X-noupdate.crx "Chromium version")]
+
+**ccd0**
+- Fix conflict with native catalog due to bottom board list changes.
+
 ### v1.9.19.11 
 *2015-01-12* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.19.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.19.11/builds/4chan-X-noupdate.crx "Chromium version")]
 

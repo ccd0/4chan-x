@@ -53,7 +53,7 @@ CatalogLinks =
     CatalogLinks.set @checked
 
   set: (useCatalog) ->
-    for a in $$('a:not([data-only])', Header.boardList).concat $$('a', Header.footer)
+    for a in $$('a:not([data-only])', Header.boardList).concat $$('a', Header.bottomBoardList)
       continue if a.hostname not in ['boards.4chan.org', 'catalog.neet.tv', '4index.gropes.us'] or
       !(board = a.pathname.split('/')[1]) or
       board in ['f', 'status', '4chan'] or
