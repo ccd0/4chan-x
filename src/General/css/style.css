@@ -59,6 +59,9 @@ a[href="javascript:;"] {
 #boardNavDesktop, #boardNavMobile {
   display: none !important;
 }
+:root.hide-bottom-board-list #boardNavDesktopFoot {
+  display: none;
+}
 body.hasDropDownNav{
   margin-top: 5px;
 }

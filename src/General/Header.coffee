@@ -44,6 +44,7 @@ Header =
     @setBarVisibility   Conf['Header auto-hide']
     @setLinkJustify     Conf['Centered links']
     @setShortcutIcons   Conf['Shortcut Icons']
+    @setFooterVisibility Conf['Bottom Board List']
 
     $.sync 'Fixed Header',               @setBarFixed
     $.sync 'Header auto-hide on scroll', @setHideBarOnScroll
@@ -51,6 +52,7 @@ Header =
     $.sync 'Shortcut Icons',             @setShortcutIcons
     $.sync 'Header auto-hide',           @setBarVisibility
     $.sync 'Centered links',             @setLinkJustify
+    $.sync 'Bottom Board List',          @setFooterVisibility
 
     @addShortcut menuButton
 
@@ -86,17 +88,19 @@ Header =
       # Wait for #boardNavMobile instead of #boardNavDesktop,
       # it might be incomplete otherwise.
       $.asap (-> $.id('boardNavMobile') or d.readyState isnt 'loading'), ->
-        Header.footer = footer = $.id('boardNavDesktop').cloneNode true
+        footer = $.id('boardNavDesktop').cloneNode true
         footer.id = 'boardNavDesktopFoot'
-        $.rm $('#navtopright', footer)
+        $('#navtopright',        footer).id = 'navbotright'
+        $('#settingsWindowLink', footer).id = 'settingsWindowLinkBot'
+        Header.bottomBoardList = $ '.boardList', footer
         if a = $ "a[href*='/#{g.BOARD}/']", footer
           a.className = 'current'
-        Header.setFooterVisibility Conf['Bottom Board List']
-        $.sync 'Bottom Board List', Header.setFooterVisibility
         Main.ready ->
-          $.rm oldFooter if oldFooter = $.id 'boardNavDesktopFoot'
-          $.globalEval 'window.cloneTopNav = function() {};'
-          $.before $.id('absbot'), footer
+          if oldFooter = $.id 'boardNavDesktopFoot'
+            $.replace $('.boardList', oldFooter), Header.bottomBoardList
+          else
+            $.before $.id('absbot'), footer
+            $.globalEval 'window.cloneTopNav = function() {};'
         Header.setBoardList()
       $.prepend d.body, @bar
       $.add d.body, Header.hover
@@ -363,14 +367,14 @@ Header =
 
   setFooterVisibility: (hide) ->
     Header.footerToggler.checked = hide
-    Header.footer.hidden = hide
+    doc.classList.toggle 'hide-bottom-board-list', hide
 
   toggleFooterVisibility: ->
     $.event 'CloseMenu'
     hide = if @nodeName is 'INPUT'
       @checked
     else
-      !!Header.footer.hidden
+      $.hasClass doc, 'hide-bottom-board-list'
     Header.setFooterVisibility hide
     $.set 'Bottom Board List', hide
     message = if hide
