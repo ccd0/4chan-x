@@ -22,6 +22,11 @@ ThreadWatcher =
       when 'thread'
         $.on d, 'ThreadUpdate', @cb.onThreadRefresh
 
+    if Conf['Slideout Watcher']
+      ThreadWatcher.shortcut = el = $.el 'div',
+        id: 'so-watcher'
+        innerHTML: '<i class=a-icon></a>'
+
     ThreadWatcher.fetchAuto()
 
     if Conf['JSON Navigation'] and Conf['Menu'] and g.BOARD.ID isnt 'f'
@@ -75,9 +80,7 @@ ThreadWatcher =
     ThreadWatcher.refresh()
 
     if Conf['Slideout Watcher']
-      el = $.el 'div',
-        id: 'so-watcher'
-        innerHTML: '<i class=a-icon></a>'
+      el = ThreadWatcher.shortcut
       Header.addShortcut el, true
     else
       el = d.body
@@ -289,7 +292,7 @@ ThreadWatcher =
           toggler.title = "#{helper[1]} Thread"
       $[helper[0]] thread.catalogView.nodes.root, 'watched' if thread.catalogView
 
-    ThreadWatcher.refreshIcon()
+    ThreadWatcher.refreshIcon() if Conf['Slideout Watcher']
 
     for refresher in ThreadWatcher.menu.refreshers
       refresher()
@@ -319,7 +322,7 @@ ThreadWatcher =
     if line = $ "#watched-threads > [data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
       newLine = ThreadWatcher.makeLine boardID, threadID, data
       $.replace line, newLine
-      ThreadWatcher.refreshIcon()
+      ThreadWatcher.refreshIcon() if Conf['Slideout Watcher']
     else
       ThreadWatcher.refresh()
 

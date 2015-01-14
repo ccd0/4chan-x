@@ -1,4 +1,23 @@
-- A bunch of shit from ccd0's 4chan X fork.
+- Countless changes from ccd0's 4chan X fork, including
+  * Unread count in Thread Watcher.
+  * New Gallery Features: Fullscreen, slideshow.
+  * Download with original filename in menu.
+  * New site embedding support.
+  * Floating embeds (from ihavenoface).
+  * Option to restart GIFs/WEBMs when opened.
+  * Command-Click alternative to CTRL-Click on OS X.
+  * IP count and IP marking support.
+  * Improved Quote Threading.
+  * Disable Autoplaying Sounds option.
+  * Post on Captcha Completion option.
+  * Settings that only apply when a parent option is checked are now shown in a tree beneath the parent option and hidden when the parent option is unchecked.
+  * Better support of archived threads.
+  * Bugfixes and performance improvements.
+
+- Implement Download With Original Filename in Gallery.
+- Implement Mayhem's Filter Labels.
+- Implement a localized FAQ instead of linking to somebody else's.
+- Improved JSON Navigation.
 
 ### v2.9.44 
 *2015-01-09*

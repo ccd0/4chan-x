@@ -14297,6 +14297,7 @@
 
   ThreadWatcher = {
     init: function() {
+      var el;
       if (!Conf['Thread Watcher']) {
         return;
       }
@@ -14320,6 +14321,12 @@
           break;
         case 'thread':
           $.on(d, 'ThreadUpdate', this.cb.onThreadRefresh);
+      }
+      if (Conf['Slideout Watcher']) {
+        ThreadWatcher.shortcut = el = $.el('div', {
+          id: 'so-watcher',
+          innerHTML: '<i class=a-icon></a>'
+        });
       }
       ThreadWatcher.fetchAuto();
       if (Conf['JSON Navigation'] && Conf['Menu'] && g.BOARD.ID !== 'f') {
@@ -14400,10 +14407,7 @@
       }
       ThreadWatcher.refresh();
       if (Conf['Slideout Watcher']) {
-        el = $.el('div', {
-          id: 'so-watcher',
-          innerHTML: '<i class=a-icon></a>'
-        });
+        el = ThreadWatcher.shortcut;
         Header.addShortcut(el, true);
       } else {
         el = d.body;
@@ -14747,7 +14751,9 @@
           return $[helper[0]](thread.catalogView.nodes.root, 'watched');
         }
       });
-      ThreadWatcher.refreshIcon();
+      if (Conf['Slideout Watcher']) {
+        ThreadWatcher.refreshIcon();
+      }
       _ref2 = ThreadWatcher.menu.refreshers;
       for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
         refresher = _ref2[_j];
@@ -14808,7 +14814,9 @@
       if (line = $("#watched-threads > [data-full-i-d='" + boardID + "." + threadID + "']", ThreadWatcher.dialog)) {
         newLine = ThreadWatcher.makeLine(boardID, threadID, data);
         $.replace(line, newLine);
-        return ThreadWatcher.refreshIcon();
+        if (Conf['Slideout Watcher']) {
+          return ThreadWatcher.refreshIcon();
+        }
       } else {
         return ThreadWatcher.refresh();
       }
