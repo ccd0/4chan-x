@@ -1,9 +1,9 @@
 Settings =
   init: ->
-    # Appchan X settings link
+    # Settings link
     el = $.el 'a',
       className:   'settings-link'
-      title:       'Appchan X Settings'
+      title:       '<%= meta.name %> Settings'
       href:        'javascript:;'
       textContent: 'Settings'
     $.on el, 'click', @open

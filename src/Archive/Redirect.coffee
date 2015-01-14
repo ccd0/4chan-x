@@ -69,6 +69,8 @@ Redirect =
   search: (archive, {boardID, type, value}) ->
     type = if type is 'name'
       'username'
+    else if type is 'uniqueID'
+      'uid'
     else if type is 'MD5'
       'image'
     else

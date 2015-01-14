@@ -1,6 +1,6 @@
 Quotify =
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or !Conf['Resurrect Quotes'] and g.BOARD.ID isnt 'pol'
+    return if g.VIEW not in ['index', 'thread'] or !Conf['Resurrect Quotes']
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
@@ -57,16 +57,7 @@ Quotify =
           textContent: "#{quote}\u00A0(Dead)"
         $.extend a.dataset, {boardID, threadID: post.thread.ID, postID}
 
-    else if @board.ID is boardID is 'pol' and postID.length is 9 and postID[-2] is postID[-1]
-      # XXX Misquotes due to fake doubles on /pol/. Assume they are all intra-thread.
-      postID = postID[...-1]
-      quoteID = "#{boardID}.#{postID}"
-      a = $.el 'a',
-        href:        Build.postURL boardID, @thread.ID, postID
-        className:   'quotelink'
-        textContent: quote
-
-    else if Conf['Resurrect Quotes']
+    else
       redirect = Redirect.to 'thread', {boardID, threadID: 0, postID}
       fetchable = Redirect.to 'post', {boardID, postID}
       if redirect or fetchable

@@ -22,11 +22,7 @@ ThreadWatcher =
       when 'thread'
         $.on d, 'ThreadUpdate', @cb.onThreadRefresh
 
-    now = Date.now()
-    if (@db.data.lastChecked or 0) < now - 2 * $.HOUR
-      @db.data.lastChecked = now
-      ThreadWatcher.fetchAllStatus()
-      @db.save()
+    ThreadWatcher.fetchAuto()
 
     if Conf['JSON Navigation'] and Conf['Menu'] and g.BOARD.ID isnt 'f'
       Menu.menu.addEntry
@@ -143,6 +139,17 @@ ThreadWatcher =
   fetchCount:
     fetched:  0
     fetching: 0
+  fetchAuto: ->
+    clearTimeout ThreadWatcher.timeout
+    return unless Conf['Auto Update Thread Watcher']
+    {db} = ThreadWatcher
+    interval = if Conf['Show Unread Count'] then 5 * $.MINUTE else 2 * $.HOUR
+    now = Date.now()
+    if now >= (db.data.lastChecked or 0) + interval
+      db.data.lastChecked = now
+      ThreadWatcher.fetchAllStatus()
+      db.save()
+    ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
   fetchAllStatus: ->
     ThreadWatcher.db.forceSync()
     ThreadWatcher.unreaddb.forceSync()
@@ -151,7 +158,8 @@ ThreadWatcher =
     for thread in threads
       ThreadWatcher.fetchStatus thread
     return
-  fetchStatus: ({boardID, threadID, data}) ->
+  fetchStatus: (thread) ->
+    {boardID, threadID, data} = thread
     return if data.isDead and !Conf['Show Unread Count']
     {fetchCount} = ThreadWatcher
     if fetchCount.fetching is 0
@@ -160,61 +168,64 @@ ThreadWatcher =
     fetchCount.fetching++
     $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
       onloadend: ->
-        fetchCount.fetched++
-        if fetchCount.fetched is fetchCount.fetching
-          fetchCount.fetched = 0
-          fetchCount.fetching = 0
-          status = ''
-          $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
-        else
-          status = "#{Math.round fetchCount.fetched / fetchCount.fetching * 100}%"
-        ThreadWatcher.status.textContent = status
+        ThreadWatcher.parseStatus.call @, thread
 
-        if @status is 200 and @response
-          isDead = !!@response.posts[0].archived
-          if isDead and Conf['Auto Prune']
-            ThreadWatcher.db.delete {boardID, threadID}
-            ThreadWatcher.refresh()
-            return
+  parseStatus: ({boardID, threadID, data}) ->
+    fetchCount.fetched++
+    if fetchCount.fetched is fetchCount.fetching
+      fetchCount.fetched = 0
+      fetchCount.fetching = 0
+      status = ''
+      $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
+    else
+      status = "#{Math.round fetchCount.fetched / fetchCount.fetching * 100}%"
+    ThreadWatcher.status.textContent = status
 
-          lastReadPost = ThreadWatcher.unreaddb.get
-            boardID: boardID
-            threadID: threadID
-            defaultValue: 0
+    if @status is 200 and @response
+      isDead = !!@response.posts[0].archived
+      if isDead and Conf['Auto Prune']
+        ThreadWatcher.db.delete {boardID, threadID}
+        ThreadWatcher.refresh()
+        return
 
-          unread = quotingYou = 0
+      lastReadPost = ThreadWatcher.unreaddb.get
+        boardID: boardID
+        threadID: threadID
+        defaultValue: 0
 
-          for postObj in @response.posts
-            continue unless postObj.no > lastReadPost
-            continue if QR.db?.get {boardID, threadID, postID: postObj.no}
-            unread++
-            continue unless QR.db and postObj.com
-            regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/(\d+))?(?:#p(\d+))?"/g
-            while match = regexp.exec postObj.com
-              if QR.db.get {
-                boardID:  match[1] or boardID
-                threadID: match[2] or threadID
-                postID:   match[3] or match[2] or threadID
-              }
-                quotingYou++
-                continue
+      unread = quotingYou = 0
 
-          if isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou
-            data.isDead = isDead
-            data.unread = unread
-            data.quotingYou = quotingYou
-            ThreadWatcher.db.set {boardID, threadID, val: data}
-            ThreadWatcher.refresh()
+      for postObj in @response.posts
+        continue unless postObj.no > lastReadPost
+        continue if QR.db?.get {boardID, threadID, postID: postObj.no}
+        unread++
+        continue unless QR.db and postObj.com
+        regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/(\d+))?(?:#p(\d+))?"/g
+        while match = regexp.exec postObj.com
+          if QR.db.get {
+            boardID:  match[1] or boardID
+            threadID: match[2] or threadID
+            postID:   match[3] or match[2] or threadID
+          }
+            quotingYou++
+            continue
 
-        else if @status is 404
-          if Conf['Auto Prune']
-            ThreadWatcher.db.delete {boardID, threadID}
-          else
-            data.isDead = true
-            delete data.unread
-            delete data.quotingYou
-            ThreadWatcher.db.set {boardID, threadID, val: data}
-          ThreadWatcher.refresh()
+      if isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou
+        data.isDead = isDead
+        data.unread = unread
+        data.quotingYou = quotingYou
+        ThreadWatcher.db.set {boardID, threadID, val: data}
+        ThreadWatcher.refresh()
+
+    else if @status is 404
+      if Conf['Auto Prune']
+        ThreadWatcher.db.delete {boardID, threadID}
+      else
+        data.isDead = true
+        delete data.unread
+        delete data.quotingYou
+        ThreadWatcher.db.set {boardID, threadID, val: data}
+      ThreadWatcher.refresh()
 
   getAll: ->
     all = []
@@ -259,6 +270,7 @@ ThreadWatcher =
       $.addClass div, 'replies-quoting-you' if data.quotingYou
     $.add div, [x, $.tn(' '), link]
     div
+
   refresh: ->
     nodes = []
     for {boardID, threadID, data} in ThreadWatcher.getAll()
@@ -277,12 +289,19 @@ ThreadWatcher =
           toggler.title = "#{helper[1]} Thread"
       $[helper[0]] thread.catalogView.nodes.root, 'watched' if thread.catalogView
 
+    ThreadWatcher.refreshIcon()
+
     for refresher in ThreadWatcher.menu.refreshers
       refresher()
 
     if Index.nodes and Conf['Pin Watched Threads']
       Index.sort()
       Index.buildIndex()
+
+  refreshIcon: ->
+    for className in ['replies-unread', 'replies-quoting-you']
+      ThreadWatcher.shortcut.classList.toggle className, !!$(".#{className}", ThreadWatcher.dialog)
+    return
 
   update: (boardID, threadID, newData) ->
     return unless data = ThreadWatcher.db?.get {boardID, threadID}
@@ -300,6 +319,7 @@ ThreadWatcher =
     if line = $ "#watched-threads > [data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
       newLine = ThreadWatcher.makeLine boardID, threadID, data
       $.replace line, newLine
+      ThreadWatcher.refreshIcon()
     else
       ThreadWatcher.refresh()
 
@@ -310,6 +330,7 @@ ThreadWatcher =
       ThreadWatcher.rm boardID, threadID
     else
       ThreadWatcher.add thread
+
   add: (thread) ->
     data     = {}
     boardID  = thread.board.ID
@@ -324,6 +345,7 @@ ThreadWatcher =
     ThreadWatcher.refresh()
     if Conf['Show Unread Count']
       ThreadWatcher.fetchStatus {boardID, threadID, data}
+
   rm: (boardID, threadID) ->
     ThreadWatcher.db.delete {boardID, threadID}
     ThreadWatcher.refresh()
@@ -401,8 +423,8 @@ ThreadWatcher =
     createSubEntry: (name, desc) ->
       entry =
         type: 'thread watcher'
-        el: UI.checkbox name, name
+        el: UI.checkbox name, " #{name.replace ' Thread Watcher', ''}"
       input = entry.el.firstElementChild
-      $.on input, 'change', $.cb.checked
-      $.on input, 'change', ThreadWatcher.refresh if name in ['Current Board', 'Show Unread Count']
+      $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Unread Count']
+      $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Unread Count', 'Auto Update Thread Watcher']
       entry

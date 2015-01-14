@@ -84,7 +84,7 @@ Config =
       ]
       'Show Support Message': [
         true
-        'Warn if your browser is unsupported. 4chan X may not operate correctly on unsupported browser versions.'
+        'Warn if your browser is unsupported. <%= meta.name %> may not operate correctly on unsupported browser versions.'
       ]
       'Normalize URL': [
          true
@@ -291,7 +291,7 @@ Config =
       ]
       'Thread Excerpt': [
         true
-        'Show an excerpt of the thread in the tab title if not already present.'
+        'Show an excerpt of the thread in the tab title for threads in /f/.'
       ]
       'Remove Thread Excerpt': [
         false
@@ -855,6 +855,10 @@ Config =
     'Current Board': [
       false
       'Only show watched threads from the current board.'
+    ]
+    'Auto Update Thread Watcher': [
+      true
+      'Periodically check status of watched threads.'
     ]
     'Auto Watch': [
       false
