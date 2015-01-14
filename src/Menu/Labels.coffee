@@ -9,8 +9,7 @@ Labels =
         {labels} = post.origin or post
         return false unless labels.length
         @subEntries.length = 0
-        for label in labels
-          addSubEntry el: $.el 'div', textContent: label
+        @subEntries = (el: $.el 'div', textContent: label for label in labels)
         true
       subEntries: []
 

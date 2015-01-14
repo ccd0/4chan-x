@@ -103,11 +103,13 @@ PostHiding =
           @cb = -> PostHiding.menu.show post
           $.on  @el, 'click', @cb
           true
+
       thisPost =
         el: UI.checkbox 'thisPost', 'This post', false
         open: (post) ->
           @el.firstChild.checked = post.isHidden
           true
+
       replies  =
         el: UI.checkbox 'replies', 'Show replies', false
         open: (post) ->

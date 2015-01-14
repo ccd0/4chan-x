@@ -1247,10 +1247,13 @@ nav a,
 .inline .menu-button {
   opacity: 1;
 }
-.color-user-ids .posteruid .hand {
+.posteruid .painted {
   padding: .1em .3em;
   border-radius: 1em;
   font-size: 80%;
+}
+.hand {
+  cursor: pointer;
 }
 div.post div.postInfo {
   padding: 1px 3px;

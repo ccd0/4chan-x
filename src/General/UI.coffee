@@ -158,6 +158,7 @@ UI = do ->
     onFocus: (e) =>
       e.stopPropagation()
       @focus e.target
+
     focus: (entry) ->
       while focused = $.x 'parent::*/child::*[contains(@class,"focused")]', entry
         $.rmClass focused, 'focused'
