@@ -872,6 +872,10 @@ Config =
       false
       'Automatically remove dead threads.'
     ]
+    'Show Unread Count': [
+      true
+      'Show number of unread posts in watched threads.'
+    ]
 
   filter:
     name: """

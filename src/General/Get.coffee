@@ -1,10 +1,10 @@
 Get =
   threadExcerpt: (thread) ->
     {OP} = thread
-    excerpt = "/#{thread.board}/ - " + (
+    excerpt =
       OP.info.subject?.trim() or
       OP.info.comment.replace(/\n+/g, ' // ') or
-      OP.info.nameBlock)
+      OP.info.nameBlock
     if excerpt.length > 70
       excerpt = "#{excerpt[...67]}..."
     "/#{thread.board}/ - #{excerpt}"

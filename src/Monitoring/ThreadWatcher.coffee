@@ -142,6 +142,7 @@ ThreadWatcher =
   fetchCount:
     fetched:  0
     fetching: 0
+
   fetchAuto: ->
     clearTimeout ThreadWatcher.timeout
     return unless Conf['Auto Update Thread Watcher']
@@ -153,6 +154,7 @@ ThreadWatcher =
       ThreadWatcher.fetchAllStatus()
       db.save()
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
+
   fetchAllStatus: ->
     ThreadWatcher.db.forceSync()
     ThreadWatcher.unreaddb.forceSync()
@@ -161,6 +163,7 @@ ThreadWatcher =
     for thread in threads
       ThreadWatcher.fetchStatus thread
     return
+
   fetchStatus: (thread) ->
     {boardID, threadID, data} = thread
     return if data.isDead and !Conf['Show Unread Count']
@@ -174,6 +177,7 @@ ThreadWatcher =
         ThreadWatcher.parseStatus.call @, thread
 
   parseStatus: ({boardID, threadID, data}) ->
+    {fetchCount} = ThreadWatcher
     fetchCount.fetched++
     if fetchCount.fetched is fetchCount.fetching
       fetchCount.fetched = 0
@@ -200,9 +204,9 @@ ThreadWatcher =
 
       for postObj in @response.posts
         continue unless postObj.no > lastReadPost
-        continue if QR.db?.get {boardID, threadID, postID: postObj.no}
+        continue if QR.db.get {boardID, threadID, postID: postObj.no}
         unread++
-        continue unless QR.db and postObj.com
+        continue unless postObj.com
         regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/(\d+))?(?:#p(\d+))?"/g
         while match = regexp.exec postObj.com
           if QR.db.get {
@@ -228,6 +232,7 @@ ThreadWatcher =
         delete data.unread
         delete data.quotingYou
         ThreadWatcher.db.set {boardID, threadID, val: data}
+
       ThreadWatcher.refresh()
 
   getAll: ->
@@ -254,20 +259,20 @@ ThreadWatcher =
 
     if Conf['Show Unread Count'] and data.unread?
       count = $.el 'span',
-        textContent: "(#{data.unread})"
+        textContent: "(#{data.unread}) "
         className: 'watcher-unread'
-      $.add link, count
+      $.prepend link, count
 
     title = $.el 'span',
-      textContent: data.excerpt
+      textContent: link.textContent
       className: 'watcher-title'
     $.add link, title
 
     div = $.el 'div'
     fullID = "#{boardID}.#{threadID}"
     div.dataset.fullID = fullID
-    $.addClass div, 'current'            if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
-    $.addClass div, 'dead-thread'        if data.isDead
+    $.addClass div, 'current'     if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
+    $.addClass div, 'dead-thread' if data.isDead
     if Conf['Show Unread Count']
       $.addClass div, 'replies-unread'      if data.unread
       $.addClass div, 'replies-quoting-you' if data.quotingYou
@@ -368,7 +373,7 @@ ThreadWatcher =
       $.on $('.menu-button', ThreadWatcher.dialog), 'click', (e) ->
         menu.toggle e, @, ThreadWatcher
       @addHeaderMenuEntry()
-      @addMenuEntries
+      @addMenuEntries()
 
     addHeaderMenuEntry: ->
       return if g.VIEW isnt 'thread'

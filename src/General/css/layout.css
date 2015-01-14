@@ -1149,6 +1149,7 @@ nav a,
 .slideout-watcher #thread-watcher {
   display: none;
   overflow-y: auto;
+  text-align: left;
 }
 .watch-thread-link {
   padding-top: 18px;
