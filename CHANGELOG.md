@@ -1,3 +1,6 @@
+## v2.10.0 
+*2015-01-14*
+
 - Countless changes from ccd0's 4chan X fork, including
   * Unread count in Thread Watcher.
   * New Gallery Features: Fullscreen, slideshow.
