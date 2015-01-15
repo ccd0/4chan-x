@@ -42,7 +42,7 @@ Config =
         'Display dates like "3 minutes ago". Tooltip shows the timestamp.'
       ]
       'Relative Date Title': [
-        true
+        false
         'Show Relative Post Date only when hovering over dates.'
         1
       ]
