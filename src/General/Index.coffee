@@ -715,7 +715,7 @@ Index =
     return nodes
 
   sizeSingleCatalogNode: (node, size) ->
-    thumb = node.firstElementChild
+    thumb = node.firstElementChild.firstElementChild
     {width, height} = thumb.dataset
     return unless width
     ratio = size / Math.max width, height

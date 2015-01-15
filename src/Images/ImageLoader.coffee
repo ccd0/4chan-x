@@ -11,7 +11,8 @@ ImageLoader =
     $.on d, 'PostsInserted', ->
       g.posts.forEach ImageLoader.prefetch
 
-    @processVideo() if Conf['Replace WEBM']
+    if Conf['Replace WEBM']
+      $.on d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', @quotePreviews
 
     return unless Conf['Image Prefetching']
 
@@ -83,3 +84,12 @@ ImageLoader =
     if Conf['prefetch'] = @checked
       g.BOARD.posts.forEach ImageLoader.prefetch
     return
+
+  quotePreviews: ->
+    # Special case: Quote previews are off screen when inserted into document, but quickly moved on screen.
+    qpClone = $.id('qp')?.firstElementChild
+    g.posts.forEach (post) ->
+      for post in [post, post.clones...] when post.file?.videoThumb
+        {thumb} = post.file
+        if Header.isNodeVisible(thumb) or post.nodes.root is qpClone then thumb.play() else thumb.pause()
+      return
