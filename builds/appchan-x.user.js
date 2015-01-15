@@ -7715,7 +7715,7 @@
     },
     node: function() {
       var a, data, label;
-      if (!this.isReply || this.isClone || this.isFetchedQuote) {
+      if (this.isClone || this.isFetchedQuote) {
         return;
       }
       if (data = PostHiding.db.get({
