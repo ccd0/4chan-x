@@ -477,7 +477,7 @@ $.set = do ->
       set key, val
     return
 $.clear = (cb) ->
-  $.delete (key.replace g.NAMESPACE, '' for key in GM_listValues())
+  $.delete GM_listValues().map (key) -> key.replace g.NAMESPACE, ''
   cb?()
 <% } %>
 

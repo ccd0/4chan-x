@@ -5,41 +5,42 @@ Banner =
     $.asap (-> d.body), ->
       $.asap (-> $ 'hr'), Banner.ready
 
-    # Let 4chan's JS load the banner if enabled; otherwise, load it ourselves.
-    if g.BOARD.ID isnt 'f'
-      Main.ready -> $.queueTask Banner.load
-
   ready: ->
     banner = $ ".boardBanner"
+    title = $.el "div",
+      id: "boardTitle"
     {children} = banner
+    nodes = []
 
     if g.BOARD.ID isnt 'f' and g.VIEW is 'thread' and Conf['Remove Thread Excerpt']
       Banner.setTitle children[1].textContent
 
-    i = 0
-    while child = children[i++]
-      if i is 1
-        child.title = "Click to change"
-        $.on child, 'click', Banner.cb.toggle
+    for child, i in children
+      if i is 0
+        $.rm child
+        img = $.el 'img',
+          alt:   '4chan'
+          title: 'Click to change'
+
+        $.on img, 'click', Banner.cb.toggle
+        Banner.cb.toggle.call img
+
+        $.prepend banner, img
 
         continue
 
       if Conf['Custom Board Titles']
-        Banner.custom(child).title = "Ctrl/\u2318+click to edit board #{if i is 3
+        Banner.custom(child).title = "Ctrl/\u2318+click to edit board #{if i is 2
           'sub'
         else
           ''}title"
         child.spellcheck = false
 
-    return
+      nodes.push child
 
-  load: ->
-    bannerCnt = $.id 'bannerCnt'
-    unless bannerCnt.firstChild
-      img = $.el 'img',
-        alt: '4chan'
-        src: '//s.4cdn.org/image/title/' + bannerCnt.dataset.src
-      $.add bannerCnt, img
+    $.add title, nodes
+    $.after banner, title
+    return
 
   setTitle: (title) ->
     if Unread.title?
@@ -54,7 +55,7 @@ Banner =
         Banner.choices = Banner.banners.slice()
       i = Math.floor(Banner.choices.length * Math.random())
       banner = Banner.choices.splice i, 1
-      $('img', @parentNode).src = "//s.4cdn.org/image/title/#{banner}"
+      @src = "//s.4cdn.org/image/title/#{banner}"
 
     click: (e) ->
       if e.ctrlKey or e.metaKey
