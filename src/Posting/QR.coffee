@@ -365,7 +365,7 @@ QR =
   generatePostableThreadsList: ->
     return unless QR.nodes
     list    = QR.nodes.thread
-    options = [list.firstChild]
+    options = [list.firstElementChild]
     for thread in g.BOARD.threads.keys
       options.push $.el 'option',
         value: thread

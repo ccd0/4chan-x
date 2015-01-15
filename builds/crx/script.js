@@ -9879,7 +9879,7 @@
         return;
       }
       list = QR.nodes.thread;
-      options = [list.firstChild];
+      options = [list.firstElementChild];
       _ref = g.BOARD.threads.keys;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thread = _ref[_i];
