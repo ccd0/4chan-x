@@ -13689,7 +13689,7 @@
         Header.addShortcut(sc);
       } else {
         this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', {
-          innerHTML: "<div class=\"move\" title=\"" + E(statsTitle) + "\">" + statsHTML.innerHTML + "</div>"
+          innerHTML: "<div class=move title='" + title + "'>" + html + "</div>"
         });
         $.addClass(doc, 'float');
         $.ready(function() {

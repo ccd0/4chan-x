@@ -24,7 +24,7 @@ ThreadStats =
 
     else
       @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',
-        <%= html('<div class="move" title="${statsTitle}">&{statsHTML}</div>') %>
+        innerHTML: "<div class=move title='#{title}'>#{html}</div>"
       $.addClass doc, 'float'
       $.ready ->
         $.add d.body, sc
