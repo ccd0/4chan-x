@@ -502,7 +502,7 @@
   doc = d.documentElement;
 
   g = {
-    VERSION: '',
+    VERSION: '2.10.2',
     NAMESPACE: 'appchan_x.',
     NAME: 'appchan x',
     FAQ: 'https://github.com/zixaphir/appchan-x/wiki/Frequently-Asked-Questions',

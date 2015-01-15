@@ -136,9 +136,9 @@ module.exports = (grunt) ->
         command: 'git checkout <%= pkg.meta.mainBranch %>'
       commit:
         command: [
-          'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."'
-          'git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
-          'git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
+          'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.meta.version %>."'
+          'git tag -a <%= pkg.meta.version %> -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."'
+          'git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."'
         ].join " && "
       push:
         command: 'git push origin --tags -f && git push origin --all'
@@ -249,7 +249,8 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'updcl', 'Update the changelog', (headerLevel) ->
     headerPrefix = new Array(+headerLevel + 1).join '#'
-    {version} = grunt.config 'pkg'
+    {meta} = grunt.config 'pkg'
+    {version} = meta
     today     = grunt.template.today 'yyyy-mm-dd'
     changelog = grunt.file.read 'CHANGELOG.md'
 

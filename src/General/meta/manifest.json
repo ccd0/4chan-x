@@ -1,6 +1,6 @@
 {
   "name": "<%= meta.name %>",
-  "version": "<%= version %>",
+  "version": "<%= meta.version %>",
   "manifest_version": 2,
   "description": "<%= description %>",
   "icons": {
