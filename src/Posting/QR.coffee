@@ -455,7 +455,9 @@ QR =
       nodes.addPost.tabIndex = 35
 
     if g.BOARD.ID is 'f' and g.VIEW isnt 'thread'
-      nodes.flashTag = $.el 'select', name: 'filetag',
+      nodes.flashTag = $.el 'select',
+        name: 'filetag'
+
       $.extend nodes.flashTag, <%= html(
         '<option value="0">Hentai</option>' +
         '<option value="6">Porn</option>' +
@@ -465,6 +467,7 @@ QR =
         '<option value="5">Loop</option>' +
         '<option value="4" selected>Other</option>'
       ) %>
+
       nodes.flashTag.dataset.default = '4'
       $.add nodes.form, nodes.flashTag
 
