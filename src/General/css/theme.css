@@ -53,7 +53,8 @@ html {
   border-color: #{theme["Reply Border"]};
 }
 .captcha-filter .captcha-img,
-.captcha-root iframe {
+.captcha-filter .captcha-root iframe,
+.captcha-filter .pls-container {
   <%= filter %>: url('<% if (type === 'userscript') { %>data:image/svg+xml,#{Style.svgs.captchafilter.replace /(\'|\")/g, '%22'}<% } %>#captcha-filter');
 }
 .silhouettize-mascots #mascot img,
