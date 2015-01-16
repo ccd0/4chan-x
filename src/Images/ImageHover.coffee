@@ -52,8 +52,10 @@ ImageHover =
     maxWidth = Math.max left, doc.clientWidth - right
     maxHeight = doc.clientHeight - 16
     scale = Math.min 1, maxWidth / width, maxHeight / height
-    el.style.maxWidth = "#{scale * width}px"
+    el.style.maxWidth  = "#{scale * width}px"
     el.style.maxHeight = "#{scale * height}px"
+    el.style.width     = "#{width}px"
+    el.style.height    = "#{height}px"
     UI.hover
       root: @
       el: el
