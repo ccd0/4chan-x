@@ -1,4 +1,4 @@
-"""#{if Style.lightTheme then "
+#{if Style.lightTheme then "
 .prettyprint {
   background-color: #e7e7e7 !important;
   border: 1px solid #dcdcdc !important;
@@ -54,4 +54,4 @@
 .lit {
   color: #558773 !important;
 }
-"}"""
+"}
