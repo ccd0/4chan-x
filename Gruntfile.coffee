@@ -241,6 +241,7 @@ module.exports = (grunt) ->
           GM_getValue:  true
           GM_setValue:  true
           GM_deleteValue: true
+          GM_listValues: true
           GM_openInTab: true
           GM_info:      true
           GM_xmlhttpRequest: true
