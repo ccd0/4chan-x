@@ -1,4 +1,10 @@
 ### v2.10.2 
+*2015-01-16*
+
+- Restored Captcha Filter option.
+- Bugfixes.
+
+### v2.10.2 
 *2015-01-14*
 
 - Bugfixes.
