@@ -197,7 +197,7 @@ Unread =
         threadID: data.thread.ID
         postID:   ID
       }
-        QuoteYou.lastRead = root
+        QuoteMarkers.lastRead = root
       Unread.position = Unread.position.next
 
     return unless count

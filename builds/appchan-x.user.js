@@ -27,7 +27,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.10.2 - 2015-01-15
+* appchan x - Version 2.10.2 - 2015-01-16
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -15211,7 +15211,7 @@
           threadID: data.thread.ID,
           postID: ID
         })) {
-          QuoteYou.lastRead = root;
+          QuoteMarkers.lastRead = root;
         }
         Unread.position = Unread.position.next;
       }
