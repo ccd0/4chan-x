@@ -125,7 +125,7 @@ ThemeTools =
 
           $.on input, 'click', (evt) ->
             if evt.shiftKey
-              @nextSibling.click()
+              @nextElementSibling.click()
 
           $.on fileInput, 'change', (evt) ->
             ThemeTools.uploadImage evt, @

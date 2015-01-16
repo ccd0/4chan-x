@@ -570,7 +570,7 @@ Settings =
         Settings.close()
 
       $.on $("#import", div), 'click', ->
-        @nextSibling.click()
+        @nextElementSibling.click()
 
       $.on $("#importbutton", div), 'change', ThemeTools.importtheme
 
@@ -726,7 +726,7 @@ Settings =
         Settings.close()
 
       $.on $("#importMascot", batchmascots), 'click', ->
-        @nextSibling.click()
+        @nextElementSibling.click()
 
       $.on $("#importMascotButton", batchmascots), 'change', MascotTools.importMascot
 

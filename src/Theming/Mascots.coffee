@@ -153,7 +153,7 @@ MascotTools =
     
     fileRice = (e) ->
       if e.shiftKey
-        @nextSibling.click()
+        @nextElementSibling.click()
     
     updateMascot = ->
       MascotTools.change editMascot

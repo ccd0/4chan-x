@@ -17557,7 +17557,7 @@
       container = $("#mascotcontent", dialog);
       fileRice = function(e) {
         if (e.shiftKey) {
-          return this.nextSibling.click();
+          return this.nextElementSibling.click();
         }
       };
       updateMascot = function() {
@@ -18182,7 +18182,7 @@
             });
             $.on(input, 'click', function(evt) {
               if (evt.shiftKey) {
-                return this.nextSibling.click();
+                return this.nextElementSibling.click();
               }
             });
             $.on(fileInput, 'change', function(evt) {
@@ -19679,7 +19679,7 @@
           return Settings.close();
         });
         $.on($("#import", div), 'click', function() {
-          return this.nextSibling.click();
+          return this.nextElementSibling.click();
         });
         $.on($("#importbutton", div), 'change', ThemeTools.importtheme);
         $.on($('#tUndelete', div), 'click', function() {
@@ -19846,7 +19846,7 @@
           return Settings.close();
         });
         $.on($("#importMascot", batchmascots), 'click', function() {
-          return this.nextSibling.click();
+          return this.nextElementSibling.click();
         });
         $.on($("#importMascotButton", batchmascots), 'change', MascotTools.importMascot);
         $.on($('#undelete', batchmascots), 'click', function() {
