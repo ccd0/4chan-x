@@ -391,7 +391,9 @@ nav a,
 .hide-navigation-decorations #board-list {
   font-size: 0;
   color: transparent;
-  word-spacing: 2px;
+}
+.hide-navigation-decorations #board-list a {
+  margin: 0 .1em;
 }
 .fixed #header-bar.autohide {
   z-index: 24;
