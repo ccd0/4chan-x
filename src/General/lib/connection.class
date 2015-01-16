@@ -1,11 +1,11 @@
 class Connection
   constructor: (@target, @origin, @cb) ->
-    $.on window, 'message', @onMessage.bind @
+    $.on window, 'message', @onMessage
 
-  send: (data) ->
+  send: (data) =>
     @target.postMessage "#{g.NAMESPACE}#{JSON.stringify data}", @origin
 
-  onMessage: (e) ->
+  onMessage: (e) =>
     return unless e.source is @target and
       e.origin is @origin and
       typeof e.data is 'string' and

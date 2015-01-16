@@ -1820,18 +1820,48 @@ input:checked + .rice {
 .textarea-resize-none #qr textarea {
   resize: none;
 }
-.captcha-img div {
-  margin: 1px 0 0;
+/* Noscript Recaptcha */
+.captcha-img {
+  margin: 1px 0px 0px;
   text-align: center;
-  line-height: 0;
-  background-color: #fff;
+  background-image: #fff;
+  font-size: 0px;
+  min-height: 59px;
+  min-width: 302px;
 }
-.captcha-img img {
-  width: 246px;
+.captcha-input{
+  width: 100%;
+  margin: 1px 0 0;
 }
-.captcha-img,
-.captcha-img img {
-  height: 4em;
+.captcha-input.error:focus {
+  border-color: rgb(255,0,0) !important;
+}
+#qr-captcha-iframe {
+  display: none;
+}
+/* Recaptcha v2 */
+#qr .captcha-root {
+  position: relative;
+}
+#qr .captcha-container > div > div {
+  margin: auto;
+}
+#qr .captcha-counter {
+  display: block;
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+}
+#qr.captcha-open .captcha-counter {
+  position: absolute;
+  bottom: 3px;
+}
+#qr .captcha-counter > a {
+  pointer-events: auto;
+}
+#qr:not(.captcha-open) .captcha-counter > a {
+  display: block;
+  width: 100%;
 }
 .captcha-input {
   width: 100%;
