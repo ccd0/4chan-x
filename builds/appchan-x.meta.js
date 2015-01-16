@@ -11,7 +11,7 @@
 // @match        *://sys.4chan.org/*
 // @match        *://a.4cdn.org/*
 // @match        *://i.4cdn.org/*
-// @match        *://www.google.com/recaptcha/api/fallback?k=6Ld9lQATAAAAAN6ZHhqB_oOjm7jat0swNdi0mmCs
+// @match        *://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc
 // @exclude      *://blog.4chan.org/*
 // @exclude      *://dis.4chan.org/*
 // @grant        GM_getValue

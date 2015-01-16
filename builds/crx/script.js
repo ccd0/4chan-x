@@ -8828,7 +8828,7 @@
 
   Captcha.noscript = {
     lifetime: 2 * $.MINUTE,
-    iframeURL: '//www.google.com/recaptcha/api/fallback?k=6Ld9lQATAAAAAN6ZHhqB_oOjm7jat0swNdi0mmCs',
+    iframeURL: '//www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc',
     init: function() {
       var container, input;
       if (d.cookie.indexOf('pass_enabled=1') >= 0) {
@@ -9259,7 +9259,7 @@
         childList: true,
         subtree: true
       });
-      return $.globalEval('(function() {\n  function render() {\n    var container = document.querySelector("#qr .captcha-container");\n    container.dataset.widgetID = window.grecaptcha.render(container, {\n      sitekey: \'6Ld9lQATAAAAAN6ZHhqB_oOjm7jat0swNdi0mmCs\',\n      theme: document.documentElement.classList.contains(\'tomorrow\') ? \'dark\' : \'light\',\n      callback: function(response) {\n        window.dispatchEvent(new CustomEvent("captcha:success", {detail: response}));\n      }\n    });\n  }\n  if (window.grecaptcha) {\n    render();\n  } else {\n    var cbNative = window.onRecaptchaLoaded;\n    window.onRecaptchaLoaded = function() {\n      render();\n      cbNative();\n    }\n  }\n})();');
+      return $.globalEval('(function() {\n  function render() {\n    var container = document.querySelector("#qr .captcha-container");\n    container.dataset.widgetID = window.grecaptcha.render(container, {\n      sitekey: \'6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc\',\n      theme: \'light\',\n      callback: function(response) {\n        window.dispatchEvent(new CustomEvent("captcha:success", {detail: response}));\n      }\n    });\n  }\n  if (window.grecaptcha) {\n    render();\n  } else {\n    var cbNative = window.onRecaptchaLoaded;\n    window.onRecaptchaLoaded = function() {\n      render();\n      cbNative();\n    }\n  }\n})();');
     },
     afterSetup: function(mutations) {
       var iframe, mutation, node, textarea, _i, _j, _len, _len1, _ref;

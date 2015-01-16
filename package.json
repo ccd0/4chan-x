@@ -8,7 +8,7 @@
     "repo": "https://github.com/zixaphir/appchan-x/",
     "page": "http://zixaphir.github.com/appchan-x/",
     "faq":  "https://github.com/zixaphir/appchan-x/wiki/Frequently-Asked-Questions",
-    "recaptchaKey": "6Ld9lQATAAAAAN6ZHhqB_oOjm7jat0swNdi0mmCs",
+    "recaptchaKey": "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc",
     "youtubeAPIKey": "AIzaSyCrvwsT3ub8sDl3S5APhok2eY-OzRcCK5U",
     "buildsPath": "builds/",
     "mainBranch": "master",
@@ -18,7 +18,7 @@
       "*://sys.4chan.org/*",
       "*://a.4cdn.org/*",
       "*://i.4cdn.org/*",
-      "*://www.google.com/recaptcha/api/fallback?k=6Ld9lQATAAAAAN6ZHhqB_oOjm7jat0swNdi0mmCs"
+      "*://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc"
     ],
     "excludes": [
       "*://blog.4chan.org/*",
