@@ -587,8 +587,8 @@
           "resolved": "https://registry.npmjs.org/hooker/-/hooker-0.2.3.tgz"
         },
         "jshint": {
-          "version": "2.5.10",
-          "resolved": "https://registry.npmjs.org/jshint/-/jshint-2.5.10.tgz",
+          "version": "2.5.11",
+          "resolved": "https://registry.npmjs.org/jshint/-/jshint-2.5.11.tgz",
           "dependencies": {
             "cli": {
               "version": "0.6.5",
