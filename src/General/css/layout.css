@@ -430,14 +430,11 @@ nav a,
 .fixed.bottom-header #header-bar.autohide:not(:hover) {
   <%= transform %>: translateY(100%);
 }
-#scroll-marker {
-  left: 0;
-  right: 0;
-  height: 10px;
-  position: absolute;
-}
 #header-bar #scroll-marker {
   display: none;
+}
+#header-bar:not(.autohide) #scroll-marker {
+  pointer-events: none;
 }
 .fixed #header-bar #scroll-marker {
   display: block;
