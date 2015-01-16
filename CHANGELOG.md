@@ -1,4 +1,4 @@
-### v2.10.2 
+### v2.10.3 
 *2015-01-16*
 
 - Restored Captcha Filter option.
