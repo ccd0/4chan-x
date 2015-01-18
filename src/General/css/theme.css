@@ -52,6 +52,7 @@ html {
   background: #{backgroundC};
   border-color: #{theme["Reply Border"]};
 }
+img[src*="//boards.4chan.org/js/jsMath/fonts/"],
 .captcha-filter .captcha-img,
 .captcha-filter .captcha-root iframe,
 .captcha-filter .pls-container {
