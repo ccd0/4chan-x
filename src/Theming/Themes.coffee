@@ -71,29 +71,29 @@ ThemeTools =
     ThemeTools.dialog = $.el "div",
       id: "themeConf"
       className: "reply dialog"
-      innerHTML: "
-<div id=themebar>
-</div>
-<hr>
-<div id=themecontent>
-</div>
-<div id=save>
-  <a href='javascript:;'>Save</a>
-</div>
-<div id=upload>
-  <a href='javascript:;'>Select Image</a>
-</div>
-<div id=close>
-  <a href='javascript:;'>Close</a>
-</div>
-"
+      innerHTML: """
+        <div id=themebar>
+        </div>
+        <hr>
+        <div id=themecontent>
+        </div>
+        <div id=save>
+          <a href='javascript:;'>Save</a>
+        </div>
+        <div id=upload>
+          <a href='javascript:;'>Select Image</a>
+        </div>
+        <div id=close>
+          <a href='javascript:;'>Close</a>
+        </div>
+      """
 
     header = $.el "div",
       innerHTML: """
-<input class='field subject' name='Theme' placeholder='Theme' value='#{key}'> by
-<input class='field name' name='Author' placeholder='Author' value='#{editTheme['Author']}'>
-<input class='field postertrip' name='Author Tripcode' placeholder='Author Tripcode' value='#{editTheme['Author Tripcode']}'>
-"""
+        <input class='field subject' name='Theme' placeholder='Theme' value='#{key}'> by
+        <input class='field name' name='Author' placeholder='Author' value='#{editTheme['Author']}'>
+        <input class='field postertrip' name='Author Tripcode' placeholder='Author Tripcode' value='#{editTheme['Author Tripcode']}'>
+      """
 
     # Setup inputs that are not generated from the layout variable.
     for input in $$("input", header)
@@ -108,7 +108,13 @@ ThemeTools =
 
       div = $.el "div",
         className: "themevar"
-        innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input name='#{item}' placeholder='#{if item is "Background Image" then "Shift+Click to upload image" else item}'>"
+        innerHTML: """
+          <div class=optionname>
+            <b>#{item}</b>
+          </div>
+          <div class=option>
+          <input name='#{item}' placeholder='#{if item is "Background Image" then "Shift+Click to upload image" else item}'>
+        """
 
       input = $('input', div)
 
@@ -155,7 +161,14 @@ ThemeTools =
 
     div = $.el "div",
       className: "themevar"
-      innerHTML: "<div class=optionname><b>Custom CSS</b></div><div class=option><textarea name='Custom CSS' placeholder='Custom CSS'>#{editTheme['Custom CSS']}</textarea>"
+      innerHTML: """
+        <div class=optionname>
+          <b>Custom CSS</b>
+        </div>
+        <div class=option>
+          <textarea name='Custom CSS' placeholder='Custom CSS'>#{editTheme['Custom CSS']}
+        </textarea>
+      """
 
     $.on $('textarea', div), 'blur', ->
       editTheme["Custom CSS"] = @value
@@ -169,6 +182,7 @@ ThemeTools =
     $.on  $('#close > a', ThemeTools.dialog), 'click', ThemeTools.close
 
     $.add d.body, ThemeTools.dialog
+    $.addClass doc, 'editTheme'
     Style.sheets.theme.textContent  = Style.theme editTheme
 
   apply: ->
@@ -347,4 +361,5 @@ ThemeTools =
     Conf['editMode'] = false
     Style.setTheme Themes[Conf['theme']]
     $.rm $.id 'themeConf'
+    $.rmClass doc, 'editTheme'
     Settings.open 'Themes'
