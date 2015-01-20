@@ -292,6 +292,10 @@ audio.controls-added {
 .current {
   font-weight: bold;
 }
+:root.fixed.bottom-header #jsMath_button {
+  bottom: auto;
+  top: 1px;
+}
 /* 4chan X link brackets */
 .brackets-wrap::before {
   content: "[";
