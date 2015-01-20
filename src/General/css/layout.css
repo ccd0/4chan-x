@@ -437,6 +437,10 @@ nav a,
 }
 #header-bar #scroll-marker {
   display: none;
+  left: 0;
+  right: 0;
+  height: 10px;
+  position: absolute;
 }
 #header-bar:not(.autohide) #scroll-marker {
   pointer-events: none;
