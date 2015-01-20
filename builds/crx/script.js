@@ -6970,8 +6970,7 @@
           this.insertEntry(entry, menu, data);
         }
         $.addClass(lastToggledButton, 'active');
-        $.on(d, 'click', this.close);
-        $.on(d, 'CloseMenu', this.close);
+        $.one(d, 'click scroll CloseMenu', this.close);
         Rice.nodes(menu);
         $.add(Header.hover, menu);
         mRect = menu.getBoundingClientRect();
@@ -7024,8 +7023,7 @@
         $.rm(currentMenu);
         $.rmClass(lastToggledButton, 'active');
         currentMenu = null;
-        lastToggledButton = null;
-        return $.off(d, 'click CloseMenu', this.close);
+        return lastToggledButton = null;
       };
 
       Menu.prototype.findNextEntry = function(entry, direction) {

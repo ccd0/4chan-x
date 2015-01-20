@@ -60,8 +60,7 @@ UI = do ->
 
       $.addClass lastToggledButton, 'active'
 
-      $.on d, 'click',     @close
-      $.on d, 'CloseMenu', @close
+      $.one d, 'click scroll CloseMenu', @close
       Rice.nodes menu
       $.add Header.hover, menu
 
@@ -117,7 +116,6 @@ UI = do ->
       $.rmClass lastToggledButton, 'active'
       currentMenu       = null
       lastToggledButton = null
-      $.off d, 'click CloseMenu', @close
 
     findNextEntry: (entry, direction) ->
       entries = [entry.parentNode.children...]
