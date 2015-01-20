@@ -12644,23 +12644,20 @@
           return;
         }
         if ($.hasClass(this, "embedded")) {
-          if (!$.hasClass(this.previousElementSibling, 'linkify')) {
-            $.rm(this.previousElementSibling);
-          }
-          this.previousElementSibling.hidden = false;
+          $.rm(this.nextElementSibling);
           this.textContent = '(embed)';
         } else {
-          this.previousElementSibling.hidden = true;
-          $.before(this, Embedding.cb.embed(this));
+          $.after(this, Embedding.cb.embed(this));
           this.textContent = '(unembed)';
         }
         return $.toggleClass(this, 'embedded');
       },
       embed: function(a) {
-        var el, type;
-        el = (type = Embedding.types[a.dataset.key]).el(a);
-        el.style.cssText = type.style != null ? type.style : "border: 0; width: 640px; height: 390px";
-        return el;
+        var container, el, type;
+        container = $.el('div');
+        $.add(container, el = (type = Embedding.types[a.dataset.key]).el(a));
+        el.style.cssText = type.style != null ? type.style : "border:0;width:640px;height:390px";
+        return container;
       },
       title: function(req, data) {
         var key, link, link2, options, post, post2, service, status, text, uid, _i, _j, _len, _len1, _ref, _ref1;

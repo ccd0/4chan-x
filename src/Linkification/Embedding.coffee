@@ -117,26 +117,25 @@ Embedding =
         $.rmClass Embedding.dialog, 'empty'
         return
       if $.hasClass @, "embedded"
-        $.rm @previousElementSibling unless $.hasClass @previousElementSibling, 'linkify'
-        @previousElementSibling.hidden = false
+        $.rm @nextElementSibling
         @textContent = '(embed)'
       else
-        @previousElementSibling.hidden = true
-        $.before @, Embedding.cb.embed @
+        $.after @, Embedding.cb.embed @
         @textContent = '(unembed)'
       $.toggleClass @, 'embedded'
 
     embed: (a) ->
       # We create an element to embed
-      el = (type = Embedding.types[a.dataset.key]).el a
+      container = $.el 'div'
+      $.add container, el = (type = Embedding.types[a.dataset.key]).el a
 
       # Set style values.
       el.style.cssText = if type.style?
         type.style
       else
-        "border: 0; width: 640px; height: 390px"
+        "border:0;width:640px;height:390px"
 
-      return el
+      return container
 
     title: (req, data) ->
       {key, uid, options, link, post} = data
