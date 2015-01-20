@@ -33,7 +33,7 @@
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
 *
-* Appchan X Copyright © 2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
+* Appchan X Copyright © 2013-2015 Zixaphir <zixaphirmoxphar@gmail.com>
 * http://zixaphir.github.io/appchan-x/ 
 * 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
 * https://github.com/aeosynth/4chan-x
