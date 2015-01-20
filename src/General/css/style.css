@@ -1561,6 +1561,7 @@ div.boardTitle {
   flex-direction: row;
   -webkit-flex: 1 1 auto;
   flex: 1 1 auto;
+  overflow: hidden;
 }
 .gal-thumbnails {
   -webkit-flex: 0 0 150px;
@@ -1659,6 +1660,7 @@ div.boardTitle {
 .gal-image a {
   margin: auto;
   line-height: 0;
+  max-width: 100%;
 }
 :root.gal-pdf .gal-image a {
   width: 100%;
