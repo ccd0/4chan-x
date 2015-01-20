@@ -2540,6 +2540,7 @@ div[data-checked="false"] > .suboption-list {
   <%= align %>-items: stretch;
   <%= flex %>-direction: row;
   <%= flex %>: 1 1 auto;
+  overflow: hidden;
 }
 .gal-thumbnails {
   <%= flex %>: 0 0 150px;
@@ -2620,10 +2621,13 @@ div[data-checked="false"] > .suboption-list {
 .gal-image a {
   margin: auto;
   line-height: 0;
+  max-width: 100%;
 }
+.gal-fit-width .gal-image video,
 .gal-fit-width .gal-image img {
   max-width: 100%;
 }
+.gal-fit-height .gal-image video,
 .gal-fit-height .gal-image img {
   max-height: 95vh;
   max-height: calc(100vh - 25px);
@@ -2632,7 +2636,7 @@ div[data-checked="false"] > .suboption-list {
   font-size: 2em;
   margin-right: 10px;
   top: 5px;
-  color: #ffffff;
+  color: #fff;
   text-shadow: 0px 0px 1px #000;
 }
 .gal-buttons,
