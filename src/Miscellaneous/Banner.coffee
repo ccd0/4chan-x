@@ -91,6 +91,7 @@ Banner =
 
     $.get string, cachedTest, (item) ->
       return unless title = item[string]
+      return if title is cachedTest
       return child.textContent = title if Conf['Persistent Custom Board Titles']
 
       string2 = "#{string}.orig"
