@@ -8481,9 +8481,10 @@
       $.extend(this.threadNewLink, {
         innerHTML: "<a href=\"javascript:;\">Thread New Posts</a>"
       });
-      $.on($('input', this.controls), 'change', this.cb.thread);
+      this.input = $('input', this.controls);
+      $.on(this.input, 'change', this.cb.thread);
       $.on(this.threadNewLink.firstElementChild, 'click', this.cb.click);
-      $.on(d, '4chanXInitFinished', this.cb.thread);
+      $.one(d, '4chanXInitFinished', this.cb.thread);
       Header.menu.addEntry(this.entry = {
         el: this.controls,
         order: 98
@@ -8505,15 +8506,15 @@
         return;
       }
       Header.menu.rmEntry(this.entry);
-      delete this.enabled;
-      delete this.controls;
-      delete this.entry;
       this.parent = {};
       this.children = {};
       this.inserted = {};
-      $.off($('input', this.controls), 'change', this.cb.thread);
-      $.off(this.threadNewLink.firstElementChild, 'click', this.cb.click);
+      $.off(this.input, 'change', this.cb.thread);
       $.off(d, '4chanXInitFinished', this.cb.thread);
+      delete this.enabled;
+      delete this.controls;
+      delete this.entry;
+      delete this.input;
       Thread.callbacks.disconnect('Quote Threading');
       return Post.callbacks.disconnect('Quote Threading');
     },
@@ -8657,7 +8658,7 @@
     },
     cb: {
       thread: function() {
-        return QuoteThreading.rethread(QuoteThreading.checked);
+        return QuoteThreading.rethread(QuoteThreading.input.checked);
       },
       click: function() {
         QuoteThreading.threadNewLink.hidden = true;

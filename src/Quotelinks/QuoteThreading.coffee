@@ -14,10 +14,12 @@ QuoteThreading =
       className: 'brackets-wrap threadnewlink'
       hidden: true
     $.extend @threadNewLink, <%= html('<a href="javascript:;">Thread New Posts</a>') %>
+    
+    @input = $('input', @controls)
 
-    $.on $('input', @controls), 'change', @cb.thread
+    $.on @input, 'change', @cb.thread
     $.on @threadNewLink.firstElementChild, 'click', @cb.click
-    $.on d, '4chanXInitFinished', @cb.thread
+    $.one d, '4chanXInitFinished', @cb.thread
 
     Header.menu.addEntry @entry =
       el:    @controls
@@ -40,17 +42,17 @@ QuoteThreading =
 
     Header.menu.rmEntry @entry
 
-    delete @enabled
-    delete @controls
-    delete @entry
-
     @parent   = {}
     @children = {}
     @inserted = {}
 
-    $.off $('input', @controls), 'change', @cb.thread
-    $.off @threadNewLink.firstElementChild, 'click', @cb.click
+    $.off @input, 'change', @cb.thread
     $.off d, '4chanXInitFinished', @cb.thread
+
+    delete @enabled
+    delete @controls
+    delete @entry
+    delete @input
 
     Thread.callbacks.disconnect 'Quote Threading'
     Post.callbacks.disconnect   'Quote Threading'
@@ -146,7 +148,7 @@ QuoteThreading =
     Unread.update()
   
   cb:
-    thread: -> QuoteThreading.rethread QuoteThreading.checked
+    thread: -> QuoteThreading.rethread QuoteThreading.input.checked
     click: ->
       QuoteThreading.threadNewLink.hidden = true
       QuoteThreading.cb.thread()
