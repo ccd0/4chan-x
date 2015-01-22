@@ -4660,7 +4660,7 @@
       if (Conf['JSON Navigation']) {
         $.on(a, 'click', Navigate.navigate);
       }
-      a.textContent = /-title/.test(t) || /-replace/.test(t) && boardID === g.BOARD.ID ? a.title : /-full/.test(t) ? "/" + boardID + "/ - " + a.title : (m = t.match(/-text:"([^"]+)"/)) ? m[1] : boardID;
+      a.textContent = /-title/.test(t) || /-replace/.test(t) && boardID === g.BOARD.ID ? a.title : /-full/.test(t) ? "/" + boardID + "/ - " + a.title : text || boardID;
       if (/-archive/.test(t)) {
         if (href = Redirect.to('board', {
           boardID: boardID

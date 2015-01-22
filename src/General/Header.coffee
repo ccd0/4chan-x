@@ -206,10 +206,8 @@ Header =
       a.title
     else if /-full/.test t
       "/#{boardID}/ - #{a.title}"
-    else if m = t.match /-text:"([^"]+)"/
-      m[1]
     else
-      boardID
+      text or boardID
 
     if /-archive/.test t
       if href = Redirect.to 'board', {boardID}
