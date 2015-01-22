@@ -28,7 +28,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.10.4 - 2015-01-21
+* appchan x - Version 2.10.4 - 2015-01-22
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -7709,6 +7709,9 @@
     node: function() {
       var a, data, label;
       if (this.isClone || this.isFetchedQuote) {
+        return;
+      }
+      if (g.VIEW === 'thread' && !this.isReply) {
         return;
       }
       if (data = PostHiding.db.get({
