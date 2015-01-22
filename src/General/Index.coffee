@@ -555,7 +555,7 @@ Index =
           Index.notice = new Notice 'info', 'Refreshing index...', 2
       ), 3 * $.SECOND - (Date.now() - now)
 
-    pageNum = null if typeof pageNum isnt 'number' # event
+    pageNum = '' if typeof pageNum isnt 'number' # event
     onload = (e) -> Index.load e, pageNum
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD.ID}/catalog.json",
       onabort:   onload
@@ -793,13 +793,9 @@ Index =
         pageNum = Index.getCurrentPage()
         threadsPerPage = Index.getThreadsNumPerPage()
 
-        threads = []
         i       = threadsPerPage * (pageNum - 1)
         max     = i + threadsPerPage
-        while i < max and thread = sortedThreads[i++]
-          threads.push thread
-          nodes.push thread.OP.nodes.root.parentNode, $.el 'hr'
-          Index.buildReplies thread
+        nodes = Index.processThreads sortedThreads, i, max
 
         Index.buildPagelist()
         Index.setPage pageNum
@@ -808,13 +804,17 @@ Index =
         nodes = Index.buildCatalogViews()
 
       else
-        i = 0
-        while thread = sortedThreads[i++]
-          nodes.push thread.OP.nodes.root.parentNode, $.el 'hr'
-          Index.buildReplies thread
+        nodes = Index.processThreads sortedThreads, 0, sortedThreads.length
 
     $.rmAll Index.root unless infinite
     $.add Index.root, nodes
+
+  processThreads: (threads, i, max) ->
+    nodes = []
+    while i < max and thread = threads[i++]
+      nodes.push thread.OP.nodes.root.parentNode, $.el 'hr'
+      Index.buildReplies thread
+    nodes
 
   isSearching: false
 

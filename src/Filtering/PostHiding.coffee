@@ -56,7 +56,7 @@ PostHiding =
     Index.updateHideLabel()
     if Conf['Index Mode'] is 'all pages' or !Conf['JSON Navigation'] # ssllooooww
       root = post.nodes.root.parentNode
-      $.rm root.nextElementSibling
+      $.rm root.nextElementSibling # HR element
       $.rm root
       return
     Index.sort()

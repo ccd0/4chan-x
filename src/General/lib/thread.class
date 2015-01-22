@@ -82,7 +82,7 @@ class Thread
   hide: ->
     return if @isHidden
     @isHidden = true
-    @OP.nodes.root.parentElement.hidden = true
+    @OP.nodes.root.parentElement.hidden = true unless Conf['JSON Navigation']
     if button = $ '.hide-post-button', @OP.nodes.root
       $.replace button, PostHiding.makeButton false
 

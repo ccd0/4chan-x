@@ -3340,7 +3340,9 @@
         return;
       }
       this.isHidden = true;
-      this.OP.nodes.root.parentElement.hidden = true;
+      if (!Conf['JSON Navigation']) {
+        this.OP.nodes.root.parentElement.hidden = true;
+      }
       if (button = $('.hide-post-button', this.OP.nodes.root)) {
         return $.replace(button, PostHiding.makeButton(false));
       }
@@ -5688,7 +5690,7 @@
         }), 3 * $.SECOND - (Date.now() - now));
       });
       if (typeof pageNum !== 'number') {
-        pageNum = null;
+        pageNum = '';
       }
       onload = function(e) {
         return Index.load(e, pageNum);
@@ -5994,7 +5996,7 @@
       return Index.sortedThreads = topThreads.concat(bottomThreads);
     },
     buildIndex: function(infinite) {
-      var i, max, nodes, pageNum, sortedThreads, thread, threads, threadsPerPage;
+      var i, max, nodes, pageNum, sortedThreads, threadsPerPage;
       sortedThreads = Index.sortedThreads;
       nodes = [];
       switch (Conf['Index Mode']) {
@@ -6002,14 +6004,9 @@
         case 'infinite':
           pageNum = Index.getCurrentPage();
           threadsPerPage = Index.getThreadsNumPerPage();
-          threads = [];
           i = threadsPerPage * (pageNum - 1);
           max = i + threadsPerPage;
-          while (i < max && (thread = sortedThreads[i++])) {
-            threads.push(thread);
-            nodes.push(thread.OP.nodes.root.parentNode, $.el('hr'));
-            Index.buildReplies(thread);
-          }
+          nodes = Index.processThreads(sortedThreads, i, max);
           Index.buildPagelist();
           Index.setPage(pageNum);
           break;
@@ -6017,16 +6014,21 @@
           nodes = Index.buildCatalogViews();
           break;
         default:
-          i = 0;
-          while (thread = sortedThreads[i++]) {
-            nodes.push(thread.OP.nodes.root.parentNode, $.el('hr'));
-            Index.buildReplies(thread);
-          }
+          nodes = Index.processThreads(sortedThreads, 0, sortedThreads.length);
       }
       if (!infinite) {
         $.rmAll(Index.root);
       }
       return $.add(Index.root, nodes);
+    },
+    processThreads: function(threads, i, max) {
+      var nodes, thread;
+      nodes = [];
+      while (i < max && (thread = threads[i++])) {
+        nodes.push(thread.OP.nodes.root.parentNode, $.el('hr'));
+        Index.buildReplies(thread);
+      }
+      return nodes;
     },
     isSearching: false,
     clearSearch: function() {
