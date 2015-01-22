@@ -28,3 +28,4 @@ AntiAutoplay =
       iframe.src = iframe.src.replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', '')
     for object in $$ 'object[data*="youtube"][data*="autoplay=1"]', root
       object.data = object.data.replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', '')
+    return
