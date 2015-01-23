@@ -32,8 +32,8 @@
   "http": false,
   "https": true,
   "software": "fuuka",
-  "boards": ["cgl", "g", "mu", "w"],
-  "files": ["cgl", "g", "mu", "w"]
+  "boards": ["cgl", "g", "mu", "qa", "w"],
+  "files": ["cgl", "g", "mu", "qa", "w"]
 }, {
   "uid": 10,
   "name": "warosu",
@@ -50,8 +50,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"],
-  "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"]
+  "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "y"],
+  "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "y"]
 }, {
   "uid": 21,
   "name": "imcute",
@@ -59,7 +59,7 @@
   "http": true,
   "https": false,
   "software": "foolfuuka",
-  "boards": ["an", "fit", "gif", "int", "mlp", "out", "r9k", "toy"],
-  "files": ["an", "fit", "gif", "int", "mlp", "out", "r9k", "toy"],
+  "boards": ["an", "fit", "gif", "int", "mlp", "out", "r9k", "qa", "toy"],
+  "files": ["an", "fit", "gif", "int", "mlp", "out", "r9k", "qa", "toy"],
   "imagehosts": ["http://imcute.yt/"]
 }]
