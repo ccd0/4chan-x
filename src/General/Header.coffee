@@ -207,39 +207,47 @@ Header =
         g.BOARD.ID
       else
         t.match(/^[^-]+/)[0]
-      for a in as
-        if a.textContent is boardID
-          a = a.cloneNode true
 
-          a.textContent = if /-title/.test(t) or /-replace/.test(t) and $.hasClass a, 'current'
-            a.title
-          else if /-full/.test t
-            "/#{boardID}/ - #{a.title}"
-          else if text
-            text
-          else
-            a.textContent
+      for aOrig in as
+        if aOrig.textContent is boardID
+          a = aOrig.cloneNode true
+      if !a
+        if /^current/.test t
+          a = $.el 'a',
+            href: "/#{boardID}/"
+            textContent: boardID
+        else
+          return $.tn t
 
-          if m = t.match /-(index|catalog)/
-            a.dataset.only = m[1]
-            a.href = CatalogLinks[m[1]] boardID
-            $.addClass a, 'catalog' if m[1] is 'catalog'
+      a.textContent = if /-title/.test(t) or /-replace/.test(t) and $.hasClass a, 'current'
+        a.title or a.textContent
+      else if /-full/.test t
+        "/#{boardID}/" + (if a.title then " - #{a.title}" else '')
+      else if text
+        text
+      else
+        a.textContent
 
-          if /-archive/.test t
-            if href = Redirect.to 'board', {boardID}
-              a.href = href
-            else
-              return $.tn a.textContent
+      if m = t.match /-(index|catalog)/
+        a.dataset.only = m[1]
+        a.href = CatalogLinks[m[1]] boardID
+        $.addClass a, 'catalog' if m[1] is 'catalog'
 
-          if /-expired/.test t
-            if boardID not in ['b', 'f']
-              a.href = "/#{boardID}/archive"
-            else
-              return $.tn a.textContent
+      if /-archive/.test t
+        if href = Redirect.to 'board', {boardID}
+          a.href = href
+        else
+          return $.tn a.textContent
 
-          $.addClass a, 'navSmall' if boardID is '@'
-          return a
-      $.tn t
+      if /-expired/.test t
+        if boardID not in ['b', 'f']
+          a.href = "/#{boardID}/archive"
+        else
+          return $.tn a.textContent
+
+      $.addClass a, 'navSmall' if boardID is '@'
+      return a
+
     $.add list, nodes
     $.ready CatalogLinks.initBoardList
 
