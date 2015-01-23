@@ -50,8 +50,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"],
-  "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "r", "s", "soc", "y"]
+  "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "y"],
+  "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "y"]
 }, {
   "uid": 21,
   "name": "imcute",
