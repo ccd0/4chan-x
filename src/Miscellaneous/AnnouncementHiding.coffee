@@ -2,14 +2,14 @@ PSAHiding =
   init: ->
     return if !Conf['Announcement Hiding']
     $.addClass doc, 'hide-announcement'
-    $.on d, '4chanXInitFinished', @setup
+    $.one d, '4chanXInitFinished', @setup
 
   setup: ->
-    $.off d, '4chanXInitFinished', PSAHiding.setup
-
-    unless psa = $.id 'globalMessage'
+    unless psa = PSAHiding.psa = $.id 'globalMessage'
       $.rmClass doc, 'hide-announcement'
       return
+    if (hr = $.id('globalToggle')?.previousElementSibling) and hr.nodeName is 'HR'
+      PSAHiding.hr = hr
 
     entry =
       el: $.el 'a',
@@ -17,7 +17,7 @@ PSAHiding =
         className: 'show-announcement'
         href: 'javascript:;'
       order: 50
-      open: -> psa.hidden
+      open: -> PSAHiding.hidden
     Header.menu.addEntry entry
     $.on entry.el, 'click', PSAHiding.toggle
 
@@ -42,10 +42,11 @@ PSAHiding =
       $.delete 'hiddenPSA'
     PSAHiding.sync UTC
   sync: (UTC) ->
-    psa = $.id 'globalMessage'
-    psa.hidden = PSAHiding.btn.hidden = if UTC and UTC >= +psa.dataset.utc
-      true
+    {psa} = PSAHiding
+    PSAHiding.hidden = PSAHiding.btn.hidden = UTC? and UTC >= +psa.dataset.utc
+    if PSAHiding.hidden
+      $.rm psa
     else
-      false
-    if (hr = psa.nextElementSibling) and hr.nodeName is 'HR'
-      hr.hidden = psa.hidden
+      $.after $.id('globalToggle'), psa
+    PSAHiding.hr?.hidden = PSAHiding.hidden
+    return
