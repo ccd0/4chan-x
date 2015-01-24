@@ -239,6 +239,7 @@ ThreadUpdater =
     ThreadUpdater.req?.abort()
     ThreadUpdater.req = $.ajax "//a.4cdn.org/#{ThreadUpdater.thread.board}/thread/#{ThreadUpdater.thread}.json",
       onloadend: ThreadUpdater.cb.load
+    ,
       whenModified: true
 
   updateThreadStatus: (type, status) ->
