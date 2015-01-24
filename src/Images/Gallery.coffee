@@ -81,7 +81,7 @@ Gallery =
     
     for file in $$ '.post .file'
       post = Get.postFromNode file
-      continue if post.file.isDead
+      continue if !post.file or post.file.isDead
       Gallery.generateThumb post
       # If no image to open is given, pick image we have scrolled to.
       if !image and Gallery.fullIDs[post.fullID]
