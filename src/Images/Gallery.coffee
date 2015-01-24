@@ -81,7 +81,7 @@ Gallery =
     
     for file in $$ '.post .file'
       post = Get.postFromNode file
-      continue if post.file.isDead
+      continue if !post.file or post.file.isDead
       Gallery.generateThumb post
       # If no image to open is given, pick image we have scrolled to.
       if !image and Gallery.fullIDs[post.fullID]
@@ -219,7 +219,7 @@ Gallery =
         when 'Right'
           Gallery.cb.next
         when 'Enter'
-          Gallery.cb.advance
+          Gallery.cb.enterKey
         when 'Left', ''
           Gallery.cb.prev
         when Conf['Pause']
@@ -254,7 +254,8 @@ Gallery =
     click:     -> Gallery.cb[if Gallery.nodes.current.controls then 'stop' else 'enterKey']()
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
-    
+    toggleSlideshow: ->  Gallery.cb[if Gallery.slideshow then 'stop' else 'start']()
+
     pause: ->
       Gallery.cb.stop()
       {current} = Gallery.nodes
@@ -269,7 +270,7 @@ Gallery =
       return unless Gallery.slideshow
       Gallery.cleanupTimer()
       {current} = Gallery.nodes
-      current.loop = current.nodeName is 'VIDEO'
+      current.loop = true if current.nodeName is 'VIDEO'
       $.rmClass Gallery.nodes.buttons, 'gal-playing'
       Gallery.slideshow = false
 
@@ -302,15 +303,10 @@ Gallery =
         textContent: 'Gallery'
         className: 'gallery-link'
 
-      {createSubEntry} = Gallery.menu
-      subEntries = []
-      for name of Config.gallery
-        subEntries.push createSubEntry name
-
       Header.menu.addEntry
         el: el
         order: 105
-        subEntries: subEntries
+        subEntries: Gallery.menu.createSubEntries()
 
     createSubEntry: (name) ->
       label = $.el 'label',
