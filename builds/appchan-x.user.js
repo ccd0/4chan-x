@@ -13655,7 +13655,7 @@
     },
     markNew: function(post, ipCount) {
       var counter, suffix;
-      suffix = ['st', 'nd', 'rd'][ipCount % 10] || 'th';
+      suffix = (Math.floor(ipCount / 10)) % 10 === 1 ? 'th' : ['st', 'nd', 'rd'][ipCount % 10 - 1] || 'th';
       counter = $.el('span', {
         className: 'ip-counter',
         textContent: "(" + ipCount + ")"
