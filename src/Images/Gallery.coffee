@@ -303,15 +303,10 @@ Gallery =
         textContent: 'Gallery'
         className: 'gallery-link'
 
-      {createSubEntry} = Gallery.menu
-      subEntries = []
-      for name of Config.gallery
-        subEntries.push createSubEntry name
-
       Header.menu.addEntry
         el: el
         order: 105
-        subEntries: subEntries
+        subEntries: Gallery.menu.createSubEntries()
 
     createSubEntry: (name) ->
       label = $.el 'label',

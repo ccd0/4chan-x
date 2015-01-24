@@ -11435,7 +11435,7 @@
     },
     menu: {
       init: function() {
-        var createSubEntry, el, name, subEntries, _ref;
+        var el, _ref;
         if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Gallery'])) {
           return;
         }
@@ -11443,15 +11443,10 @@
           textContent: 'Gallery',
           className: 'gallery-link'
         });
-        createSubEntry = Gallery.menu.createSubEntry;
-        subEntries = [];
-        for (name in Config.gallery) {
-          subEntries.push(createSubEntry(name));
-        }
         return Header.menu.addEntry({
           el: el,
           order: 105,
-          subEntries: subEntries
+          subEntries: Gallery.menu.createSubEntries()
         });
       },
       createSubEntry: function(name) {
