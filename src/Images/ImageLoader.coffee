@@ -12,7 +12,7 @@ ImageLoader =
       g.posts.forEach ImageLoader.prefetch
 
     if Conf['Replace WEBM']
-      $.on d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', @quotePreviews
+      $.on d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', @playVideos
 
     return unless Conf['Image Prefetching']
 
@@ -85,7 +85,7 @@ ImageLoader =
       g.BOARD.posts.forEach ImageLoader.prefetch
     return
 
-  quotePreviews: ->
+  playVideos: ->
     # Special case: Quote previews are off screen when inserted into document, but quickly moved on screen.
     qpClone = $.id('qp')?.firstElementChild
     g.posts.forEach (post) ->

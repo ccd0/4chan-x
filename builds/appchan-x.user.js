@@ -12162,7 +12162,7 @@
         return g.posts.forEach(ImageLoader.prefetch);
       });
       if (Conf['Replace WEBM']) {
-        $.on(d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', this.quotePreviews);
+        $.on(d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', this.playVideos);
       }
       if (!Conf['Image Prefetching']) {
         return;
@@ -12269,7 +12269,7 @@
         g.BOARD.posts.forEach(ImageLoader.prefetch);
       }
     },
-    quotePreviews: function() {
+    playVideos: function() {
       var qpClone, _ref;
       qpClone = (_ref = $.id('qp')) != null ? _ref.firstElementChild : void 0;
       return g.posts.forEach(function(post) {
