@@ -11428,7 +11428,9 @@
         }
         Gallery.cleanupTimer();
         current = Gallery.nodes.current;
-        current.loop = current.nodeName === 'VIDEO';
+        if (current.nodeName === 'VIDEO') {
+          current.loop = true;
+        }
         $.rmClass(Gallery.nodes.buttons, 'gal-playing');
         return Gallery.slideshow = false;
       },

@@ -269,7 +269,7 @@ Gallery =
       return unless Gallery.slideshow
       Gallery.cleanupTimer()
       {current} = Gallery.nodes
-      current.loop = current.nodeName is 'VIDEO'
+      current.loop = true if current.nodeName is 'VIDEO'
       $.rmClass Gallery.nodes.buttons, 'gal-playing'
       Gallery.slideshow = false
 
