@@ -11408,6 +11408,9 @@
           return Gallery.cb.close();
         }
       },
+      toggleSlideshow: function() {
+        return Gallery.cb[Gallery.slideshow ? 'stop' : 'start']();
+      },
       pause: function() {
         var current;
         Gallery.cb.stop();

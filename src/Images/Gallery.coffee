@@ -254,7 +254,8 @@ Gallery =
     click:     -> Gallery.cb[if Gallery.nodes.current.controls then 'stop' else 'enterKey']()
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
-    
+    toggleSlideshow: ->  Gallery.cb[if Gallery.slideshow then 'stop' else 'start']()
+
     pause: ->
       Gallery.cb.stop()
       {current} = Gallery.nodes
