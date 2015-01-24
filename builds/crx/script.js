@@ -4500,18 +4500,16 @@
       return $.asap((function() {
         return footer = $.id('boardNavDesktopFoot');
       }), function() {
-        var a, _i, _len, _ref, _results;
+        var a, _i, _len, _ref;
         if (a = $("a[href*='/" + g.BOARD + "/']", footer)) {
           a.className = 'current';
         }
         if (Conf['JSON Navigation']) {
           _ref = $$('a', footer);
-          _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             a = _ref[_i];
-            _results.push($.on(a, 'click', Navigate.navigate));
+            $.on(a, 'click', Navigate.navigate);
           }
-          return _results;
         }
       });
     },
@@ -7455,19 +7453,17 @@
     },
     archive: function() {
       return $.ready(function() {
-        var name, trip, _i, _j, _len, _len1, _ref, _ref1, _results;
+        var name, trip, _i, _j, _len, _len1, _ref, _ref1;
         _ref = $$('.name');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
           name.textContent = 'Anonymous';
         }
         _ref1 = $$('.postertrip');
-        _results = [];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           trip = _ref1[_j];
-          _results.push($.rm(trip));
+          $.rm(trip);
         }
-        return _results;
       });
     }
   };
@@ -15254,12 +15250,9 @@
       }
     }),
     updatePosition: function() {
-      var _results;
-      _results = [];
       while (Unread.position && !Unread.posts.has(Unread.position.ID)) {
-        _results.push(Unread.position = Unread.position.next);
+        Unread.position = Unread.position.next;
       }
-      return _results;
     },
     saveLastReadPost: $.debounce(2 * $.SECOND, function() {
       var ID, i, postIDs, _i, _ref, _ref1;

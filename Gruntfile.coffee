@@ -2,10 +2,10 @@ module.exports = (grunt) ->
   grunt.util.linefeed = '\n'
 
   importCSS = (filename) ->
-     "\"\"\"#{grunt.file.read("src/General/css/#{filename}.css").replace(/\s+/g, ' ').trim()}\"\"\""
+     "\"\"\"#{grunt.file.read("src/General/css/#{filename}.css").replace(/\s+/g, ' ').replace(/\r/g, '').trim()}\"\"\""
 
   importHTML = (filename) ->
-    "(innerHTML: #{JSON.stringify(grunt.file.read("src/General/html/#{filename}.html").replace(/^\s+|\s+$</gm, '').replace(/\n/g, '')).replace(/\\\\u/g, '\\u')})"
+    "(innerHTML: #{JSON.stringify(grunt.file.read("src/General/html/#{filename}.html").replace(/^ +| +$</gm, '').replace(/\r?\n/g, '')).replace(/\\\\u/g, '\\u')})"
 
   html = (template) ->
     parts = template.split /([\$&@]){([^}`]*)}/

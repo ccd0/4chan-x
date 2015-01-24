@@ -82,6 +82,7 @@ Header =
         a.className = 'current'
       if Conf['JSON Navigation']
         $.on a, 'click', Navigate.navigate for a in $$ 'a', footer
+      return
 
   bar: $.el 'div',
     id: 'header-bar'
