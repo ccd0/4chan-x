@@ -19,6 +19,7 @@ Fourchan =
       $.globalEval '''
         window.addEventListener('jsmath', function(e) {
           if (!jsMath) return;
+          if (jsMath.loaded) {
             // process one post
             jsMath.ProcessBeforeShowing(e.target);
           } else if (jsMath.Autoload && jsMath.Autoload.checked) {
