@@ -219,7 +219,7 @@ Gallery =
         when 'Right'
           Gallery.cb.next
         when 'Enter'
-          Gallery.cb.advance
+          Gallery.cb.enterKey
         when 'Left', ''
           Gallery.cb.prev
         when Conf['Pause']

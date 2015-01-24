@@ -11318,7 +11318,7 @@
             case 'Right':
               return Gallery.cb.next;
             case 'Enter':
-              return Gallery.cb.advance;
+              return Gallery.cb.enterKey;
             case 'Left':
             case '':
               return Gallery.cb.prev;
