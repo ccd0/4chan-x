@@ -108,7 +108,7 @@ ThreadWatcher =
       ThreadWatcher.refresh()
       $.event 'CloseMenu'
     toggle: ->
-      ThreadWatcher.toggle Get.threadFromNode @
+      {thread} = Get.postFromNode @
       Index.followedThreadID = thread.ID
       ThreadWatcher.toggle thread
       delete Index.followedThreadID
@@ -253,7 +253,6 @@ ThreadWatcher =
 
     link = $.el 'a',
       href: "/#{boardID}/thread/#{threadID}"
-      textContent: data.excerpt
       title: data.excerpt
       className: 'watcher-link'
 
@@ -264,7 +263,7 @@ ThreadWatcher =
       $.prepend link, count
 
     title = $.el 'span',
-      textContent: link.textContent
+      textContent: data.excerpt
       className: 'watcher-title'
     $.add link, title
 
@@ -431,8 +430,10 @@ ThreadWatcher =
     createSubEntry: (name, desc) ->
       entry =
         type: 'thread watcher'
-        el: UI.checkbox name, " #{name.replace ' Thread Watcher', ''}"
+        el: UI.checkbox name, name.replace(' Thread Watcher', '')
+      entry.el.title = desc
       input = entry.el.firstElementChild
+      $.on input, 'change', $.cb.checked
       $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Unread Count']
       $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Unread Count', 'Auto Update Thread Watcher']
       entry

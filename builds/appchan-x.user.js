@@ -12158,7 +12158,7 @@
         return g.posts.forEach(ImageLoader.prefetch);
       });
       if (Conf['Replace WEBM']) {
-        $.on(d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', this.quotePreviews);
+        $.on(d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', this.playVideos);
       }
       if (!Conf['Image Prefetching']) {
         return;
@@ -12265,7 +12265,7 @@
         g.BOARD.posts.forEach(ImageLoader.prefetch);
       }
     },
-    quotePreviews: function() {
+    playVideos: function() {
       var qpClone, _ref;
       qpClone = (_ref = $.id('qp')) != null ? _ref.firstElementChild : void 0;
       return g.posts.forEach(function(post) {
@@ -13651,7 +13651,7 @@
     },
     markNew: function(post, ipCount) {
       var counter, suffix;
-      suffix = ['st', 'nd', 'rd'][ipCount % 10] || 'th';
+      suffix = (Math.floor(ipCount / 10)) % 10 === 1 ? 'th' : ['st', 'nd', 'rd'][ipCount % 10 - 1] || 'th';
       counter = $.el('span', {
         className: 'ip-counter',
         textContent: "(" + ipCount + ")"
@@ -14460,7 +14460,8 @@
         return $.event('CloseMenu');
       },
       toggle: function() {
-        ThreadWatcher.toggle(Get.threadFromNode(this));
+        var thread;
+        thread = Get.postFromNode(this).thread;
         Index.followedThreadID = thread.ID;
         ThreadWatcher.toggle(thread);
         return delete Index.followedThreadID;
@@ -14689,7 +14690,6 @@
       $.on(x, 'click', ThreadWatcher.cb.rm);
       link = $.el('a', {
         href: "/" + boardID + "/thread/" + threadID,
-        textContent: data.excerpt,
         title: data.excerpt,
         className: 'watcher-link'
       });
@@ -14701,7 +14701,7 @@
         $.prepend(link, count);
       }
       title = $.el('span', {
-        textContent: link.textContent,
+        textContent: data.excerpt,
         className: 'watcher-title'
       });
       $.add(link, title);
@@ -14980,9 +14980,11 @@
         var entry, input;
         entry = {
           type: 'thread watcher',
-          el: UI.checkbox(name, " " + (name.replace(' Thread Watcher', '')))
+          el: UI.checkbox(name, name.replace(' Thread Watcher', ''))
         };
+        entry.el.title = desc;
         input = entry.el.firstElementChild;
+        $.on(input, 'change', $.cb.checked);
         if (name === 'Current Board' || name === 'Show Unread Count') {
           $.on(input, 'change', ThreadWatcher.refresh);
         }
