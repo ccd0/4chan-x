@@ -108,7 +108,7 @@ ThreadWatcher =
       ThreadWatcher.refresh()
       $.event 'CloseMenu'
     toggle: ->
-      ThreadWatcher.toggle Get.threadFromNode @
+      {thread} = Get.postFromNode @
       Index.followedThreadID = thread.ID
       ThreadWatcher.toggle thread
       delete Index.followedThreadID

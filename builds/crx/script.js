@@ -14483,7 +14483,8 @@
         return $.event('CloseMenu');
       },
       toggle: function() {
-        ThreadWatcher.toggle(Get.threadFromNode(this));
+        var thread;
+        thread = Get.postFromNode(this).thread;
         Index.followedThreadID = thread.ID;
         ThreadWatcher.toggle(thread);
         return delete Index.followedThreadID;
