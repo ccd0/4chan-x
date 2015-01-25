@@ -623,7 +623,7 @@ QR =
       $.rm nodes.flag
       delete nodes.flag
 
-    if false
+    if g.BOARD.ID is 'pol'
       flag = QR.flags()
       flag.dataset.name    = 'flag'
       flag.dataset.default = '0'
