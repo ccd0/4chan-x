@@ -15003,9 +15003,11 @@
         var entry, input;
         entry = {
           type: 'thread watcher',
-          el: UI.checkbox(name, " " + (name.replace(' Thread Watcher', '')))
+          el: UI.checkbox(name, name.replace(' Thread Watcher', ''))
         };
+        entry.el.title = desc;
         input = entry.el.firstElementChild;
+        $.on(input, 'change', $.cb.checked);
         if (name === 'Current Board' || name === 'Show Unread Count') {
           $.on(input, 'change', ThreadWatcher.refresh);
         }
