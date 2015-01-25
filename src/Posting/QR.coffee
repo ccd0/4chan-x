@@ -2,10 +2,12 @@ QR =
   mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm']
 
   init: ->
-    return if !Conf['Quick Reply'] or g.VIEW is 'archive'
+    return unless Conf['Quick Reply']
 
     @db = new DataBoard 'yourPosts'
     @posts = []
+
+    return if g.VIEW is 'archive'
 
     $.globalEval 'document.documentElement.dataset.jsEnabled = true;'
     noscript = Conf['Force Noscript Captcha'] or !doc.dataset.jsEnabled
