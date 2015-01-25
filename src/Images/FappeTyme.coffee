@@ -1,6 +1,6 @@
 FappeTyme =
   init: ->
-    return if !(Conf['Fappe Tyme'] or Conf['Werk Tyme']) or g.VIEW not in ['index', 'thread'] or g.BOARD is 'f'
+    return if !(Conf['Fappe Tyme'] or Conf['Werk Tyme']) or g.VIEW not in ['index', 'thread'] or g.BOARD.ID is 'f'
 
     @nodes = {}
     @enabled =
