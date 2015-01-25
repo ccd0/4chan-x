@@ -14689,7 +14689,6 @@
       $.on(x, 'click', ThreadWatcher.cb.rm);
       link = $.el('a', {
         href: "/" + boardID + "/thread/" + threadID,
-        textContent: data.excerpt,
         title: data.excerpt,
         className: 'watcher-link'
       });
@@ -14701,7 +14700,7 @@
         $.prepend(link, count);
       }
       title = $.el('span', {
-        textContent: link.textContent,
+        textContent: data.excerpt,
         className: 'watcher-title'
       });
       $.add(link, title);
