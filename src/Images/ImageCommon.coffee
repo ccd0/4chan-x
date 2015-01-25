@@ -79,3 +79,7 @@ ImageCommon =
       $.asap (-> chrome? or (video.readyState >= 3 and video.currentTime <= Math.max 0.1, (video.duration - 0.5)) or new Date().getTime() >= t + 1000), ->
         video.controls = true
     $.on video, 'mouseover', handler
+
+  # XXX Estimate whether clicks are on the video controls and should be ignored.
+  onControls: (e) ->
+    e.target.controls and e.target.getBoundingClientRect().bottom - e.clientY < 35

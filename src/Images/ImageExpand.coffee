@@ -10,8 +10,6 @@ ImageExpand =
     $.on @EAI, 'click', @cb.toggleAll
     Header.addShortcut @EAI, 3
     $.on d, 'scroll visibilitychange', @cb.playVideos
-    @videoControls = $.el 'span', className: 'video-controls'
-    $.extend @videoControls, <%= html('\u00A0<a href="javascript:;" title="You can also contract the video by dragging it to the left.">contract</a>') %>
 
     Post.callbacks.push
       name: 'Image Expansion'
@@ -27,7 +25,6 @@ ImageExpand =
         ImageExpand.contract @
         ImageExpand.expand @
       else if @file.isExpanded and @file.isVideo
-        ImageExpand.setupVideoCB @
         ImageExpand.setupVideo @, !@origin.file.fullImage?.paused or @origin.file.wasPlaying, @file.fullImage.controls
     else if ImageExpand.on and !@isHidden and !@isFetchedQuote and
       (Conf['Expand spoilers'] or !@file.isSpoiler) and
@@ -39,9 +36,12 @@ ImageExpand =
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       post = Get.postFromNode @
       {file} = post
-      return if file.isExpanded and file.isVideo and file.fullImage.controls
+      return if file.isExpanded and ImageCommon.onControls e
       e.preventDefault()
-      ImageExpand.toggle post
+      if file.fullImage?.paused
+        file.fullImage.play()
+      else
+        ImageExpand.toggle post
 
     toggleAll: ->
       $.event 'CloseMenu'
@@ -110,10 +110,9 @@ ImageExpand =
 
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass file.thumb,      'expanding'
-    $.rm file.videoControls if file.videoControls
     file.thumb.parentNode.href   = file.URL
     file.thumb.parentNode.target = '_blank'
-    for x in ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying', 'scrollIntoView']
+    for x in ['isExpanding', 'isExpanded', 'wasPlaying', 'scrollIntoView']
       delete file[x]
 
     return unless el
@@ -133,8 +132,6 @@ ImageExpand =
     ImageCommon.pushCache el
     if file.isVideo
       el.pause()
-      for eventName, cb of ImageExpand.videoCB
-        $.off el, eventName, cb
     ImageCommon.rewind file.thumb if Conf['Restart when Opened']
     delete file.fullImage
     $.queueTask ->
@@ -170,17 +167,11 @@ ImageExpand =
     $.after thumb, el
 
     if isVideo
-      # add contract link to file info
-      if Conf['Show Controls'] and !file.videoControls
-        file.videoControls = ImageExpand.videoControls.cloneNode true
-        $.add file.text, file.videoControls
-
       # disable link to file so native controls can work
       thumb.parentNode.removeAttribute 'href'
       thumb.parentNode.removeAttribute 'target'
 
       el.loop = true
-      ImageExpand.setupVideoCB post
 
     if !isVideo
       $.asap (-> el.naturalHeight), -> ImageExpand.completeExpand post
@@ -229,24 +220,6 @@ ImageExpand =
         post.file.wasPlaying = true
     if controls
       ImageCommon.addControls fullImage
-
-  videoCB: do ->
-    # dragging to the left contracts the video
-    mousedown = false
-    mouseover:     -> mousedown = false
-    mousedown: (e) -> mousedown = true  if e.button is 0
-    mouseup:   (e) -> mousedown = false if e.button is 0
-    mouseout:  (e) -> ImageExpand.toggle(Get.postFromNode @) if mousedown and e.clientX <= @getBoundingClientRect().left
-    click:     (e) ->
-      if @paused and not @controls
-        @play()
-        e.stopPropagation()
-
-  setupVideoCB: (post) ->
-    for eventName, cb of ImageExpand.videoCB
-      $.on post.file.fullImage, eventName, cb
-    if post.file.videoControls
-      $.on post.file.videoControls.firstElementChild, 'click', -> ImageExpand.toggle post
 
   error: ->
     post = Get.postFromNode @

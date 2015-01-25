@@ -242,7 +242,7 @@ Config =
       ]
       'Show Controls': [
         true
-        'Show controls on videos expanded inline. Turn this off if you want to contract videos by clicking on them.'
+        'Show controls on videos expanded inline.'
       ]
       'Loop in New Tab': [
         true

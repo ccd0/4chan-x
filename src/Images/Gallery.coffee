@@ -209,7 +209,7 @@ Gallery =
         when 'Right'
           Gallery.cb.next
         when 'Enter'
-          Gallery.cb.enterKey
+          Gallery.cb.advance
         when 'Left', ''
           Gallery.cb.prev
         when Conf['Pause']
@@ -239,8 +239,11 @@ Gallery =
       Gallery.cb.open.call(
         Gallery.images[+Gallery.nodes.current.dataset.id + 1] or Gallery.images[0]
       )
-    enterKey:  -> if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
-    click:     -> Gallery.cb[if Gallery.nodes.current.controls then 'stop' else 'enterKey']()
+    click: (e) ->
+      return if ImageCommon.onControls e
+      e.preventDefault()
+      Gallery.cb.advance()
+    advance:   -> if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
     toggleSlideshow: ->  Gallery.cb[if Gallery.slideshow then 'stop' else 'start']()
