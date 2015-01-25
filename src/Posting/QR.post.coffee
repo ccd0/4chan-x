@@ -55,11 +55,6 @@ QR.post = class
       else
         ''
 
-      if QR.nodes.flag
-        @flag = if prev
-          prev.flag
-        else
-          persona.flag
       @load() if QR.selected is @ # load persona
     @select() if select
     @unlock()
@@ -83,7 +78,7 @@ QR.post = class
   lock: (lock=true) ->
     @isLocked = lock
     return unless @ is QR.selected
-    for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler', 'flag'] when node = QR.nodes[name]
+    for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler'] when node = QR.nodes[name]
       node.disabled = lock
     @nodes.rm.style.visibility = if lock then 'hidden' else ''
     (if lock then $.off else $.on) QR.nodes.filename.previousElementSibling, 'click', QR.openFileInput
@@ -108,7 +103,7 @@ QR.post = class
 
   load: ->
     # Load this post's values.
-    for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag']
+    for name in ['thread', 'name', 'email', 'sub', 'com', 'filename']
       continue unless node = QR.nodes[name]
       node.value = @[name] or node.dataset.default or null
     (if @thread isnt 'new' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
@@ -147,7 +142,7 @@ QR.post = class
     return unless @ is QR.selected
     # Do this in case people use extensions
     # that do not trigger the `input` event.
-    for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler', 'flag']
+    for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler']
       continue unless node = QR.nodes[name]
       @save node
     return

@@ -68,5 +68,4 @@ QR.persona =
       persona =
         name:  post.name
         email: if /^sage$/.test post.email then persona.email else post.email
-        flag:  post.flag
       $.set 'QR.persona', persona

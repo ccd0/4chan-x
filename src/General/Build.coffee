@@ -125,8 +125,6 @@ Build =
 
     flag = unless flagCode
       <%= html('') %>
-    else if boardID is 'pol'
-      <%= html(' <img src="//s.4cdn.org/image/country/troll/${flagCode.toLowerCase()}.gif" alt="${flagCode}" title="${flagName}" class="countryFlag">') %>
     else
       <%= html(' <span title="${flagName}" class="flag flag-${flagCode.toLowerCase()}"></span>') %>
 
