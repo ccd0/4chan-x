@@ -5151,7 +5151,7 @@
           _ref5.parentNode.remove();
         }
         $.after($.x('child::form/preceding-sibling::hr[1]'), Index.navLinks);
-        if (g.VIEW !== 'index') {
+        if (g.VIEW !== 'index' || Index.root.parentElement) {
           return;
         }
         board = $('.board');

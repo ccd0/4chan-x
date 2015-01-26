@@ -155,7 +155,7 @@ Index =
       $.id('search-box')?.parentNode.remove()
       $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
 
-      return if g.VIEW isnt 'index'
+      return if g.VIEW isnt 'index' or Index.root.parentElement
 
       board = $ '.board'
       $.replace board, Index.root
