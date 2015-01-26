@@ -15,7 +15,7 @@ QR =
 
     if Conf['QR Shortcut']
       sc = $.el 'a',
-        className: "qr-shortcut fa fa-comment-o #{unless Conf['Persistent QR'] then 'disabled' else ''}"
+        className: 'qr-shortcut fa fa-comment-o disabled'
         textContent: 'QR' 
         title: 'Quick Reply'
         href: 'javascript:;'
@@ -24,10 +24,8 @@ QR =
         if Conf['Persistent QR'] or !QR.nodes or QR.nodes.el.hidden
           QR.open()
           QR.nodes.com.focus()
-          $.rmClass @, 'disabled'
         else
           QR.close()
-          $.addClass @, 'disabled'
 
       Header.addShortcut sc
 
@@ -62,8 +60,6 @@ QR =
       $.event 'CloseMenu'
       QR.open()
       QR.nodes.com.focus()
-      if Conf['QR Shortcut']
-        $.rmClass $('.qr-shortcut'), 'disabled'
 
     if Conf['Bottom QR Link'] and g.VIEW is 'thread'
       linkBot = $.el 'div',
@@ -74,8 +70,6 @@ QR =
         $.event 'CloseMenu'
         QR.open()
         QR.nodes.com.focus()
-        if Conf['QR Shortcut']
-          $.rmClass $('.qr-shortcut'), 'disabled'
 
       $.prepend $('.navLinksBot'), linkBot
 
@@ -110,14 +104,17 @@ QR =
       QR.captcha.setup() if QR.nodes.el.hidden
       QR.nodes.el.hidden = false
       QR.unhide()
-      return
-    try
-      QR.dialog()
-    catch err
-      delete QR.nodes
-      Main.handleErrors
-        message: 'Quick Reply dialog creation crashed.'
-        error: err
+    else
+      try
+        QR.dialog()
+      catch err
+        delete QR.nodes
+        Main.handleErrors
+          message: 'Quick Reply dialog creation crashed.'
+          error: err
+        return
+    if Conf['QR Shortcut']
+      $.rmClass $('.qr-shortcut'), 'disabled'
   close: ->
     if QR.req
       QR.abort()
@@ -127,7 +124,7 @@ QR =
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
     if Conf['QR Shortcut']
-      $.toggleClass $('.qr-shortcut'), 'disabled'
+      $.addClass $('.qr-shortcut'), 'disabled'
     new QR.post true
     for post in QR.posts.splice 0, QR.posts.length - 1
       post.delete()
@@ -279,9 +276,6 @@ QR =
 
     QR.selected.save com
     QR.selected.save thread
-
-    if Conf['QR Shortcut']
-      $.rmClass $('.qr-shortcut'), 'disabled'
 
   characterCount: ->
     counter = QR.nodes.charCount

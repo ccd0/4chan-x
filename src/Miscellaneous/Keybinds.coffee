@@ -215,8 +215,6 @@ Keybinds =
     if thread?
       QR.quote.call $ 'input', $('.post.highlight', thread) or thread
     QR.nodes.com.focus()
-    if Conf['QR Shortcut']
-      $.rmClass $('.qr-shortcut'), 'disabled'
 
   tags: (tag, ta) ->
     supported = switch tag
