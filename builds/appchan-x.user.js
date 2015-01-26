@@ -163,7 +163,8 @@
         'Reveal Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'],
         'Show Support Message': [true, 'Warn if your browser is unsupported. appchan x may not operate correctly on unsupported browser versions.'],
         'Normalize URL': [true, 'Rewrite the URL of the current page, removing stubs and changing /res/ to /thread/.'],
-        'Announcement Hiding': [true, 'Enable announcements to be hidden.']
+        'Announcement Hiding': [true, 'Enable announcements to be hidden.'],
+        'Disable Autoplaying Sounds': [false, 'Prevent sounds on the page from autoplaying.']
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
