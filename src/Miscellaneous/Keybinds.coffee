@@ -101,7 +101,6 @@ Keybinds =
         return unless Conf['Fappe Tyme'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
         FappeTyme.toggle 'fappe'
       when Conf['werkTyme']
-        return if !Conf['Werk Tyme'] or g.VIEW not in ['index', 'thread'] or g.BOARD is 'f'
         return unless Conf['Werk Tyme'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
         FappeTyme.toggle 'werk'
       # Board Navigation
