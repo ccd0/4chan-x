@@ -33,9 +33,10 @@ Keybinds =
       when Conf['Toggle header']
         Header.toggleBarVisibility()
       when Conf['Open empty QR']
+        return unless QR.postingIsEnabled
         Keybinds.qr()
       when Conf['Open QR']
-        return unless threadRoot
+        return unless QR.postingIsEnabled and threadRoot
         Keybinds.qr threadRoot
       when Conf['Open settings']
         Settings.open()
@@ -211,7 +212,6 @@ Keybinds =
     key
 
   qr: (thread) ->
-    return unless Conf['Quick Reply'] and QR.postingIsEnabled
     QR.open()
     if thread?
       QR.quote.call $ 'input', $('.post.highlight', thread) or thread
