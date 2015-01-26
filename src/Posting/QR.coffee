@@ -57,7 +57,6 @@ QR =
 
     QR.link = link.firstElementChild
     $.on link.firstChild, 'click', ->
-      $.event 'CloseMenu'
       QR.open()
       QR.nodes.com.focus()
 
@@ -67,7 +66,6 @@ QR =
       $.extend linkBot, <%= html('<a href="javascript:;" class="qr-link-bottom">Reply to Thread</a>') %>
 
       $.on linkBot.firstElementChild, 'click', ->
-        $.event 'CloseMenu'
         QR.open()
         QR.nodes.com.focus()
 
