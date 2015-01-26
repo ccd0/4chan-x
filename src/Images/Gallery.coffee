@@ -1,6 +1,6 @@
 Gallery =
   init: ->
-    return if not (g.VIEW in ['index', 'thread'] and Conf['Gallery']) or g.BOARD is 'f'
+    return unless @enabled = Conf['Gallery'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
 
     @delay = Conf['Slide Delay']
 
@@ -297,7 +297,7 @@ Gallery =
 
   menu:
     init: ->
-      return unless g.VIEW in ['index', 'thread'] and Conf['Gallery']
+      return unless Gallery.enabled
 
       el = $.el 'span',
         textContent: 'Gallery'

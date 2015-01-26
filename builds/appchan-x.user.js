@@ -28,7 +28,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.10.4 - 2015-01-24
+* appchan x - Version 2.10.4 - 2015-01-26
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -4927,8 +4927,8 @@
   Index = {
     showHiddenThreads: false,
     init: function() {
-      var anchorEntry, input, label, modeEntry, name, pinEntry, refNavEntry, repliesEntry, returnLink, select, sortEntry, targetEntry, threadNumEntry, threadsNumInput, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
-      if (g.BOARD.ID === 'f' || !Conf['JSON Navigation']) {
+      var anchorEntry, input, label, modeEntry, name, pinEntry, refNavEntry, repliesEntry, returnLink, select, sortEntry, targetEntry, threadNumEntry, threadsNumInput, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+      if (!(Conf['JSON Navigation'] && ((_ref = g.VIEW) === 'index' || _ref === 'thread') && g.BOARD.ID !== 'f')) {
         return;
       }
       this.board = "" + g.BOARD;
@@ -4969,9 +4969,9 @@
           }
         ]
       };
-      _ref = modeEntry.subEntries;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        label = _ref[_i];
+      _ref1 = modeEntry.subEntries;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        label = _ref1[_i];
         input = label.el.firstChild;
         input.checked = Conf['Index Mode'] === input.value;
         $.on(input, 'change', $.cb.value);
@@ -5018,9 +5018,9 @@
       pinEntry.el.title = 'Move watched threads to the start of the index.';
       anchorEntry.el.title = 'Move hidden threads to the end of the index.';
       refNavEntry.el.title = 'Refresh index when navigating through pages.';
-      _ref1 = [targetEntry, repliesEntry, pinEntry, anchorEntry, refNavEntry];
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        label = _ref1[_j];
+      _ref2 = [targetEntry, repliesEntry, pinEntry, anchorEntry, refNavEntry];
+      for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+        label = _ref2[_j];
         input = label.el.firstChild;
         name = input.name;
         input.checked = Conf[name];
@@ -5071,9 +5071,9 @@
       $.on(this.searchInput, 'input', this.onSearchInput);
       $.on($('#index-search-clear', this.navLinks), 'click', this.clearSearch);
       $.on($('#hidden-toggle a', this.navLinks), 'click', this.cb.toggleHiddenThreads);
-      _ref2 = [this.selectMode, this.selectSort, this.selectSize];
-      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-        select = _ref2[_k];
+      _ref3 = [this.selectMode, this.selectSort, this.selectSize];
+      for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
+        select = _ref3[_k];
         select.value = Conf[select.name];
         $.on(select, 'change', $.cb.value);
       }
@@ -5116,14 +5116,14 @@
       $.asap((function() {
         return $('.board', doc) || d.readyState !== 'loading';
       }), function() {
-        var board, navLink, _l, _len3, _ref3, _ref4;
-        _ref3 = $$('.navLinks');
-        for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
-          navLink = _ref3[_l];
+        var board, navLink, _l, _len3, _ref4, _ref5;
+        _ref4 = $$('.navLinks');
+        for (_l = 0, _len3 = _ref4.length; _l < _len3; _l++) {
+          navLink = _ref4[_l];
           $.rm(navLink);
         }
-        if ((_ref4 = $.id('search-box')) != null) {
-          _ref4.parentNode.remove();
+        if ((_ref5 = $.id('search-box')) != null) {
+          _ref5.parentNode.remove();
         }
         $.after($.x('child::form/preceding-sibling::hr[1]'), Index.navLinks);
         if (g.VIEW !== 'index') {
@@ -7783,8 +7783,8 @@
     },
     menu: {
       init: function() {
-        var apply, makeStub, replies, thisPost;
-        if (!Conf['Menu'] || !Conf['Post Hiding Link']) {
+        var apply, makeStub, replies, thisPost, _ref;
+        if (!(Conf['Menu'] && Conf['Post Hiding Link'] && ((_ref = g.VIEW) === 'index' || _ref === 'thread'))) {
           return;
         }
         apply = {
@@ -7880,16 +7880,13 @@
           },
           subEntries: [apply, thisPost, replies]
         });
-        if (g.VIEW !== 'index') {
-          return;
-        }
         return Menu.menu.addEntry({
           el: $.el('a', {
             href: 'javascript:;'
           }),
           order: 20,
           open: function(post) {
-            if (post.isReply) {
+            if (g.VIEW !== 'index' || post.isReply) {
               return false;
             }
             this.el.textContent = post.isHidden ? 'Unhide thread' : 'Hide thread';
@@ -10999,13 +10996,13 @@
 
   FappeTyme = {
     init: function() {
-      var el, lc, type, _i, _len, _ref;
-      if (!(Conf['Fappe Tyme'] || Conf['Werk Tyme']) || g.BOARD.ID === 'f') {
+      var el, lc, type, _i, _len, _ref, _ref1;
+      if (!((Conf['Fappe Tyme'] || Conf['Werk Tyme']) && ((_ref = g.VIEW) === 'index' || _ref === 'thread') && g.BOARD.ID !== 'f')) {
         return;
       }
-      _ref = ["Fappe", "Werk"];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        type = _ref[_i];
+      _ref1 = ["Fappe", "Werk"];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        type = _ref1[_i];
         if (!Conf["" + type + " Tyme"]) {
           continue;
         }
@@ -11055,7 +11052,7 @@
   Gallery = {
     init: function() {
       var el, _ref;
-      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Gallery']) || g.BOARD === 'f') {
+      if (!(this.enabled = Conf['Gallery'] && ((_ref = g.VIEW) === 'index' || _ref === 'thread') && g.BOARD.ID !== 'f')) {
         return;
       }
       this.delay = Conf['Slide Delay'];
@@ -11431,8 +11428,8 @@
     },
     menu: {
       init: function() {
-        var el, _ref;
-        if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Gallery'])) {
+        var el;
+        if (!Gallery.enabled) {
           return;
         }
         el = $.el('span', {
@@ -11622,7 +11619,7 @@
   ImageExpand = {
     init: function() {
       var _ref;
-      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Image Expansion'])) {
+      if (!(this.enabled = Conf['Image Expansion'] && ((_ref = g.VIEW) === 'index' || _ref === 'thread') && g.BOARD.ID !== 'f')) {
         return;
       }
       this.EAI = $.el('a', {
@@ -11981,8 +11978,8 @@
     },
     menu: {
       init: function() {
-        var conf, createSubEntry, el, name, subEntries, _ref, _ref1;
-        if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && Conf['Image Expansion'])) {
+        var conf, createSubEntry, el, name, subEntries, _ref;
+        if (!ImageExpand.enabled) {
           return;
         }
         el = $.el('span', {
@@ -11991,9 +11988,9 @@
         });
         createSubEntry = ImageExpand.menu.createSubEntry;
         subEntries = [];
-        _ref1 = Config.imageExpansion;
-        for (name in _ref1) {
-          conf = _ref1[name];
+        _ref = Config.imageExpansion;
+        for (name in _ref) {
+          conf = _ref[name];
           subEntries.push(createSubEntry(name, conf[1]));
         }
         return Header.menu.addEntry({
@@ -12144,10 +12141,10 @@
   ImageLoader = {
     init: function() {
       var prefetch, _ref;
-      if ((_ref = g.VIEW) !== 'index' && _ref !== 'thread') {
+      if (!(((_ref = g.VIEW) === 'index' || _ref === 'thread') && g.BOARD.ID !== 'f')) {
         return;
       }
-      if (!(Conf["Image Prefetching"] || Conf["Replace JPG"] || Conf["Replace PNG"] || Conf["Replace GIF"] || Conf["Replace WEBM"])) {
+      if (!(Conf['Image Prefetching'] || Conf['Replace JPG'] || Conf['Replace PNG'] || Conf['Replace GIF'] || Conf['Replace WEBM'])) {
         return;
       }
       Post.callbacks.push({
@@ -13430,7 +13427,8 @@
 
   Labels = {
     init: function() {
-      if (!Conf['Menu']) {
+      var _ref;
+      if (!(Conf['Menu'] && ((_ref = g.VIEW) === 'index' || _ref === 'thread'))) {
         return;
       }
       return Menu.menu.addEntry({
@@ -14297,7 +14295,7 @@
 
   ThreadWatcher = {
     init: function() {
-      var el;
+      var el, _ref;
       if (!Conf['Thread Watcher']) {
         return;
       }
@@ -14329,7 +14327,7 @@
         });
       }
       ThreadWatcher.fetchAuto();
-      if (Conf['JSON Navigation'] && Conf['Menu'] && g.BOARD.ID !== 'f') {
+      if (Conf['JSON Navigation'] && Conf['Menu'] && ((_ref = g.VIEW) === 'index' || _ref === 'thread') && g.BOARD.ID !== 'f') {
         Menu.menu.addEntry({
           el: $.el('a', {
             href: 'javascript:;'
@@ -16288,7 +16286,7 @@
       return Conf[hotkey] = key;
     },
     keydown: function(e) {
-      var form, key, notification, notifications, op, searchInput, target, thread, threadRoot, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
+      var form, key, notification, notifications, op, searchInput, target, thread, threadRoot, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -16419,25 +16417,25 @@
           ThreadWatcher.toggle(thread);
           break;
         case Conf['Expand image']:
-          if (!threadRoot) {
+          if (!(ImageExpand.enabled && threadRoot)) {
             return;
           }
           Keybinds.img(threadRoot);
           break;
         case Conf['Expand images']:
-          if (!threadRoot) {
+          if (!(ImageExpand.enabled && threadRoot)) {
             return;
           }
           Keybinds.img(threadRoot, true);
           break;
         case Conf['Open Gallery']:
-          if ((_ref2 = g.VIEW) !== 'index' && _ref2 !== 'thread') {
+          if (!Gallery.enabled) {
             return;
           }
           Gallery.cb.toggle();
           break;
         case Conf['fappeTyme']:
-          if (!Conf['Fappe Tyme'] || ((_ref3 = g.VIEW) !== 'index' && _ref3 !== 'thread') || g.BOARD === 'f') {
+          if (!(Conf['Fappe Tyme'] && ((_ref2 = g.VIEW) === 'index' || _ref2 === 'thread') && g.BOARD.ID !== 'f')) {
             return;
           }
           FappeTyme.cb.toggle.call({
@@ -16445,7 +16443,7 @@
           });
           break;
         case Conf['werkTyme']:
-          if (!Conf['Fappe Tyme'] || ((_ref4 = g.VIEW) !== 'index' && _ref4 !== 'thread') || g.BOARD === 'f') {
+          if (!(Conf['Werk Tyme'] && ((_ref3 = g.VIEW) === 'index' || _ref3 === 'thread') && g.BOARD.ID !== 'f')) {
             return;
           }
           FappeTyme.cb.toggle.call({
@@ -16467,7 +16465,7 @@
             return;
           }
           if (Conf['JSON Navigation']) {
-            if ((_ref5 = Conf['Index Mode']) !== 'paged' && _ref5 !== 'infinite') {
+            if ((_ref4 = Conf['Index Mode']) !== 'paged' && _ref4 !== 'infinite') {
               return;
             }
             $('.next button', Index.pagelist).click();
@@ -16482,7 +16480,7 @@
             return;
           }
           if (Conf['JSON Navigation']) {
-            if ((_ref6 = Conf['Index Mode']) !== 'paged' && _ref6 !== 'infinite') {
+            if ((_ref5 = Conf['Index Mode']) !== 'paged' && _ref5 !== 'infinite') {
               return;
             }
             $('.prev button', Index.pagelist).click();
@@ -16771,6 +16769,9 @@
           if (!Conf['Reply Navigation']) {
             return;
           }
+          break;
+        default:
+          return;
       }
       prev = $.el('a', {
         href: 'javascript:;',
@@ -18494,7 +18495,8 @@
   Navigate = {
     path: window.location.pathname,
     init: function() {
-      if (g.BOARD.ID === 'f' || !Conf['JSON Navigation']) {
+      var _ref;
+      if (!(Conf['JSON Navigation'] && ((_ref = g.VIEW) === 'index' || _ref === 'thread') && g.BOARD.ID !== 'f')) {
         return;
       }
       $.on(window, 'popstate', Navigate.popstate);

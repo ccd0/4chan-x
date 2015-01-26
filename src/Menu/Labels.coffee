@@ -1,6 +1,6 @@
 Labels =
   init: ->
-    return if !Conf['Menu']
+    return unless Conf['Menu'] and g.VIEW in ['index', 'thread']
 
     Menu.menu.addEntry
       el: $.el 'div', textContent: 'Labels'

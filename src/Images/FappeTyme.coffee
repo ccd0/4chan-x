@@ -1,6 +1,6 @@
 FappeTyme =
   init: ->
-    return if !(Conf['Fappe Tyme'] or Conf['Werk Tyme']) or g.BOARD.ID is 'f'
+    return unless (Conf['Fappe Tyme'] or Conf['Werk Tyme']) and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
 
     for type in ["Fappe", "Werk"] when Conf["#{type} Tyme"]
       lc = type.toLowerCase()

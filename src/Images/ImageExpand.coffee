@@ -1,6 +1,6 @@
 ImageExpand =
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Image Expansion']
+    return unless @enabled = Conf['Image Expansion'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
 
     @EAI = $.el 'a',
       id:          'img-controls'
@@ -280,7 +280,7 @@ ImageExpand =
 
   menu:
     init: ->
-      return unless g.VIEW in ['index', 'thread'] and Conf['Image Expansion']
+      return unless ImageExpand.enabled
 
       el = $.el 'span',
         textContent: 'Image Expansion'

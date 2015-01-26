@@ -75,7 +75,7 @@ PostHiding =
 
   menu:
     init: ->
-      return if !Conf['Menu'] or !Conf['Post Hiding Link']
+      return unless Conf['Menu'] and Conf['Post Hiding Link'] and g.VIEW in ['index', 'thread']
 
       # Hide
       apply =
@@ -132,12 +132,11 @@ PostHiding =
           true
         subEntries: [apply, thisPost, replies]
 
-      return if g.VIEW isnt 'index'
       Menu.menu.addEntry
         el: $.el 'a', href: 'javascript:;'
         order: 20
         open: (post) ->
-          return false if post.isReply
+          return false if g.VIEW isnt 'index' or post.isReply
           @el.textContent = if post.isHidden
             'Unhide thread'
           else
