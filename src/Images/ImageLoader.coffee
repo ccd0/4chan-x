@@ -1,7 +1,8 @@
 ImageLoader =
   init: ->
-    return if g.VIEW not in ['index', 'thread']
-    return unless Conf['Image Prefetching'] or Conf['Replace JPG'] or Conf['Replace PNG'] or Conf['Replace GIF'] or Conf['Replace WEBM']
+    return unless g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
+    return unless Conf['Image Prefetching'] or
+      Conf['Replace JPG'] or Conf['Replace PNG'] or Conf['Replace GIF'] or Conf['Replace WEBM']
 
     Post.callbacks.push
       name: 'Image Replace'
