@@ -5,6 +5,8 @@ Nav =
         return unless Conf['Index Navigation']
       when 'thread'
         return unless Conf['Reply Navigation']
+      else
+        return
 
     prev = $.el 'a',
       href: 'javascript:;'

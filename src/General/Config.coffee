@@ -94,6 +94,10 @@ Config =
         true
         'Enable announcements to be hidden.'
       ]
+      'Disable Autoplaying Sounds': [
+        false
+        'Prevent sounds on the page from autoplaying.'
+      ]
 
     'Linkification':
       'Linkify': [

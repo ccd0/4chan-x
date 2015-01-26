@@ -1,7 +1,7 @@
 Index =
   showHiddenThreads: false
   init: ->
-    return if g.BOARD.ID is 'f' or !Conf['JSON Navigation']
+    return unless Conf['JSON Navigation'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
 
     @board = "#{g.BOARD}"
 
@@ -155,7 +155,7 @@ Index =
       $.id('search-box')?.parentNode.remove()
       $.after $.x('child::form/preceding-sibling::hr[1]'), Index.navLinks
 
-      return if g.VIEW isnt 'index'
+      return if g.VIEW isnt 'index' or Index.root.parentElement
 
       board = $ '.board'
       $.replace board, Index.root

@@ -1,7 +1,7 @@
 Navigate =
   path:  window.location.pathname
   init: ->
-    return if g.BOARD.ID is 'f' or !Conf['JSON Navigation']
+    return unless Conf['JSON Navigation'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
 
     <% if (type === 'crx') { %>
     # blink/webkit throw a popstate on page load. Not what we want.

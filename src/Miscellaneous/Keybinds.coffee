@@ -93,19 +93,19 @@ Keybinds =
         ThreadWatcher.toggle thread
       # Images
       when Conf['Expand image']
-        return unless threadRoot
+        return unless ImageExpand.enabled and threadRoot
         Keybinds.img threadRoot
       when Conf['Expand images']
-        return unless threadRoot
+        return unless ImageExpand.enabled and threadRoot
         Keybinds.img threadRoot, true
       when Conf['Open Gallery']
-        return unless g.VIEW in ['index', 'thread']
+        return unless Gallery.enabled
         Gallery.cb.toggle()
       when Conf['fappeTyme']
-        return if !Conf['Fappe Tyme'] or g.VIEW not in ['index', 'thread'] or g.BOARD is 'f'
+        return unless Conf['Fappe Tyme'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
         FappeTyme.cb.toggle.call {name: 'fappe'}
       when Conf['werkTyme']
-        return if !Conf['Fappe Tyme'] or g.VIEW not in ['index', 'thread'] or g.BOARD is 'f'
+        return unless Conf['Werk Tyme'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
         FappeTyme.cb.toggle.call {name: 'werk'}
       # Board Navigation
       when Conf['Front page']
