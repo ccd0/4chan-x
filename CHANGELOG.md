@@ -2,6 +2,15 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+<!-- v1.9.21.x -->
+### v1.9.21.0 
+*2015-01-26* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- WebMs with controls now contract on click, provided the click is not on or near the controls. The contract button and dragging to the left have been removed. If `Autoplay` is disabled, the first click expands the video, the second click plays the video, and the third click contracts it.
+- (Zixaphir) Restore downloading by original filename in the gallery.
+- (Zixaphir) Embedded content is now shown after and underneath the `(embed)` link.
+- Minor bugfixes.
+
 <!-- v1.9.20.x -->
 ### v1.9.20.8 
 *2015-01-24* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.20.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.20.8/builds/4chan-X-noupdate.crx "Chromium version")]
