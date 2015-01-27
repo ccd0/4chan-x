@@ -3,6 +3,11 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.21.x -->
+### v1.9.21.2 
+*2015-01-27* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.2/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Merge v1.9.20.10: Fix reloading of noscript captcha images that failed to load the first time.
+
 ### v1.9.21.1 
 *2015-01-26* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.1/builds/4chan-X-noupdate.crx "Chromium version")]
 
