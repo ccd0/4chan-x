@@ -90,7 +90,7 @@ Captcha.noscript =
         src: @iframeURL
       $.add d.body, @nodes.iframe
       @conn.target = @nodes.iframe.contentWindow
-    else if !@occupied
+    else if !@occupied or force
       @nodes.iframe.src = @iframeURL
     @occupied = true
     @nodes.input.focus() if focus
