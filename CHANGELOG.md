@@ -21,6 +21,11 @@ Based on v1.9.20.8.
 - Minor bugfixes.
 
 <!-- v1.9.20.x -->
+### v1.9.20.10 
+*2015-01-27* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.20.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.20.10/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Fix reloading of noscript captcha images that failed to load the first time.
+
 ### v1.9.20.9 
 *2015-01-26* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.20.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.20.9/builds/4chan-X-noupdate.crx "Chromium version")]
 
