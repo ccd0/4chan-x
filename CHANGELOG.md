@@ -14,6 +14,11 @@ Based on v1.9.20.8.
 - Minor bugfixes.
 
 <!-- v1.9.20.x -->
+### v1.9.20.9 
+*2015-01-26* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.20.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.20.9/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Fix description of Thread Updater options in settings panel.
+
 ### v1.9.20.8 
 *2015-01-24* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.20.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.20.8/builds/4chan-X-noupdate.crx "Chromium version")]
 

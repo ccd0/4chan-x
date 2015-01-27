@@ -288,7 +288,7 @@ Config =
     'Monitoring':
       'Thread Updater': [
         true
-        'Fetch and insert new replies. Has more options in its own dialog.'
+        'Fetch and insert new replies. Has more options in the header menu and the "Advanced" tab.'
       ]
       'Unread Count': [
         true
