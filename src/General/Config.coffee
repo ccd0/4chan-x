@@ -658,7 +658,7 @@ http://iqdb.org/?url=%TURL
     'Index Sort': 'bump'
     'Index Size': 'small'
     'Show Replies': true
-    'Pin Watched Threads': false
+    'Pin Watched Threads': true
     'Anchor Hidden Threads': true
     'Refreshed Navigation': false
 
