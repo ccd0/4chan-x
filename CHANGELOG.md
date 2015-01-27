@@ -6,6 +6,8 @@ The links to individual versions below are to copies of the script with the upda
 ### v1.9.21.0 
 *2015-01-26* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.0/builds/4chan-X-noupdate.crx "Chromium version")]
 
+Based on v1.9.20.8.
+
 - WebMs with controls now contract on click, provided the click is not on or near the controls. The contract button and dragging to the left have been removed. If `Autoplay` is disabled, the first click expands the video, the second click plays the video, and the third click contracts it.
 - (Zixaphir) Restore downloading by original filename in the gallery.
 - (Zixaphir) Embedded content is now shown after and underneath the `(embed)` link.
