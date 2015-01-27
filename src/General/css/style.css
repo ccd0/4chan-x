@@ -905,6 +905,7 @@ span.hide-announcement {
 }
 .full-image {
   display: none;
+  cursor: pointer;
 }
 .expanded-image > .post > .file > .fileThumb > .full-image {
   display: inline;
