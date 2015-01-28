@@ -28,7 +28,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.10.4 - 2015-01-26
+* appchan x - Version 2.10.4 - 2015-01-27
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -9813,9 +9813,6 @@
       if ((e.ctrlKey || e.metaKey) && e.type === 'click') {
         $.addClass(QR.nodes.filename, 'edit');
         QR.nodes.filename.focus();
-        return $.on(QR.nodes.filename, 'blur', function() {
-          return $.rmClass(QR.nodes.filename, 'edit');
-        });
       }
       if (e.target.nodeName === 'INPUT' || (e.keyCode && ((_ref = e.keyCode) !== 32 && _ref !== 13)) || e.ctrlKey) {
         return;
