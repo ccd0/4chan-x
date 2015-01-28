@@ -64,7 +64,7 @@ ThreadUpdater =
   node: ->
     ThreadUpdater.thread       = @
     ThreadUpdater.root         = @OP.nodes.root.parentNode
-    ThreadUpdater.lastPost     = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0]
+    ThreadUpdater.lastPost     = +@posts.keys[@posts.keys.length - 1]
     ThreadUpdater.outdateCount = 0
 
     ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
