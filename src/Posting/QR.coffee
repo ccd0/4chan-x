@@ -357,7 +357,6 @@ QR =
     if (e.ctrlKey or e.metaKey) and e.type is 'click'
       $.addClass QR.nodes.filename, 'edit'
       QR.nodes.filename.focus()
-      return $.on QR.nodes.filename, 'blur', -> $.rmClass QR.nodes.filename, 'edit'
     return if e.target.nodeName is 'INPUT' or (e.keyCode and e.keyCode not in [32, 13]) or e.ctrlKey
     e.preventDefault()
     QR.nodes.fileInput.click()
@@ -502,7 +501,6 @@ QR =
       event = if node.nodeName is 'SELECT' then 'change' else 'input'
       $.on nodes[name], event, save
     $.on nodes['name'], 'blur', QR.tripcodeHider
-    $.on nodes.thread,  'change', -> QR.selected.save @
 
     <% if (type === 'userscript') { %>
     if Conf['Remember QR Size']

@@ -28,7 +28,7 @@
 // ==/UserScript==
 
 /*
-* appchan x - Version 2.10.4 - 2015-01-26
+* appchan x - Version 2.10.4 - 2015-01-27
 *
 * Licensed under the MIT license.
 * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -9813,9 +9813,6 @@
       if ((e.ctrlKey || e.metaKey) && e.type === 'click') {
         $.addClass(QR.nodes.filename, 'edit');
         QR.nodes.filename.focus();
-        return $.on(QR.nodes.filename, 'blur', function() {
-          return $.rmClass(QR.nodes.filename, 'edit');
-        });
       }
       if (e.target.nodeName === 'INPUT' || (e.keyCode && ((_ref = e.keyCode) !== 32 && _ref !== 13)) || e.ctrlKey) {
         return;
@@ -9971,9 +9968,6 @@
         $.on(nodes[name], event, save);
       }
       $.on(nodes['name'], 'blur', QR.tripcodeHider);
-      $.on(nodes.thread, 'change', function() {
-        return QR.selected.save(this);
-      });
       if (Conf['Remember QR Size']) {
         $.get('QR Size', '', function(item) {
           return nodes.com.style.cssText = item['QR Size'];
