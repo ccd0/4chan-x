@@ -10018,9 +10018,6 @@
         $.on(nodes[name], event, save);
       }
       $.on(nodes['name'], 'blur', QR.tripcodeHider);
-      $.on(nodes.thread, 'change', function() {
-        return QR.selected.save(this);
-      });
       QR.generatePostableThreadsList();
       QR.persona.init();
       new QR.post(true);

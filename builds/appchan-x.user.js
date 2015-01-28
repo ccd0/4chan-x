@@ -9968,9 +9968,6 @@
         $.on(nodes[name], event, save);
       }
       $.on(nodes['name'], 'blur', QR.tripcodeHider);
-      $.on(nodes.thread, 'change', function() {
-        return QR.selected.save(this);
-      });
       if (Conf['Remember QR Size']) {
         $.get('QR Size', '', function(item) {
           return nodes.com.style.cssText = item['QR Size'];

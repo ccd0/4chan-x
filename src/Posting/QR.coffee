@@ -501,7 +501,6 @@ QR =
       event = if node.nodeName is 'SELECT' then 'change' else 'input'
       $.on nodes[name], event, save
     $.on nodes['name'], 'blur', QR.tripcodeHider
-    $.on nodes.thread,  'change', -> QR.selected.save @
 
     <% if (type === 'userscript') { %>
     if Conf['Remember QR Size']
