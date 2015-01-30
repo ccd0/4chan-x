@@ -12,12 +12,14 @@ PostHiding =
 
   node: ->
     return if !@isReply or @isClone or @isFetchedQuote
+
     if data = PostHiding.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
       if data.thisPost
         PostHiding.hide @, data.makeStub, data.hideRecursively
       else
         Recursive.apply PostHiding.hide, @, data.makeStub, true
         Recursive.add   PostHiding.hide, @, data.makeStub, true
+
     return unless Conf['Reply Hiding Buttons']
     sideArrows = $('.sideArrows', @nodes.root)
     $.replace sideArrows.firstChild, PostHiding.makeButton @, 'hide'

@@ -1,6 +1,6 @@
 PSAHiding =
   init: ->
-    return if !Conf['Announcement Hiding']
+    return unless Conf['Announcement Hiding']
     $.addClass doc, 'hide-announcement'
     $.one d, '4chanXInitFinished', @setup
 
@@ -24,7 +24,9 @@ PSAHiding =
     PSAHiding.btn = btn = $.el 'span',
       title:     'Mark announcement as read and hide.'
       className: 'hide-announcement' 
+
     $.extend btn, <%= html('[<a href="javascript:;">Dismiss</a>]') %>
+
     $.on btn, 'click', PSAHiding.toggle
 
     $.get 'hiddenPSA', 0, ({hiddenPSA}) ->
@@ -33,6 +35,7 @@ PSAHiding =
       $.rmClass doc, 'hide-announcement'
 
     $.sync 'hiddenPSA', PSAHiding.sync
+
   toggle: (e) ->
     if $.hasClass @, 'hide-announcement'
       UTC = +$.id('globalMessage').dataset.utc
@@ -41,6 +44,7 @@ PSAHiding =
       $.event 'CloseMenu'
       $.delete 'hiddenPSA'
     PSAHiding.sync UTC
+
   sync: (UTC) ->
     {psa} = PSAHiding
     PSAHiding.hidden = PSAHiding.btn.hidden = UTC? and UTC >= +psa.dataset.utc

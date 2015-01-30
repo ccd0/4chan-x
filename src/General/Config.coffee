@@ -1,7 +1,7 @@
 Config =
   main:
     'Miscellaneous':
-      'JSON Navigation' : [
+      'JSON Navigation': [
         true
         'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'
       ]
@@ -112,6 +112,7 @@ Config =
         true
         '<%= meta.name %> is NOT designed to work with the native extension.'
       ]
+
     'Linkification':
       'Linkify': [
         true
@@ -587,69 +588,69 @@ Config =
 
   filter:
     name: """
-# Filter any namefags:
-#/^(?!Anonymous$)/
-"""
+      # Filter any namefags:
+      #/^(?!Anonymous$)/
+    """
 
     uniqueID: """
-# Filter a specific ID:
-#/Txhvk1Tl/
-"""
+      # Filter a specific ID:
+      #/Txhvk1Tl/
+    """
 
     tripcode: """
-# Filter any tripfag
-#/^!/
-"""
+      # Filter any tripfag
+      #/^!/
+    """
 
     capcode: """
-# Set a custom class for mods:
-#/Mod$/;highlight:mod;op:yes
-# Set a custom class for moot:
-#/Admin$/;highlight:moot;op:yes
-"""
+      # Set a custom class for mods:
+      #/Mod$/;highlight:mod;op:yes
+      # Set a custom class for moot:
+      #/Admin$/;highlight:moot;op:yes
+    """
 
     subject: """
-# Filter Generals on /v/:
-#/general/i;boards:v;op:only
-"""
+      # Filter Generals on /v/:
+      #/general/i;boards:v;op:only
+    """
 
     comment: """
-# Filter Stallman copypasta on /g/:
-#/what you\'re refer+ing to as linux/i;boards:g
-"""
+      # Filter Stallman copypasta on /g/:
+      #/what you\'re refer+ing to as linux/i;boards:g
+    """
 
     flag: ''
     filename: ''
     dimensions: """
-# Highlight potential wallpapers:
-#/1920x1080/;op:yes;highlight;top:no;boards:w,wg
-"""
+      # Highlight potential wallpapers:
+      #/1920x1080/;op:yes;highlight;top:no;boards:w,wg
+    """
 
     filesize: ''
 
     MD5: ''
 
   sauces: """
-https://www.google.com/searchbyimage?image_url=%TURL
-http://iqdb.org/?url=%TURL
-#//tineye.com/search?url=%TURL
-#//saucenao.com/search.php?url=%TURL
-#http://3d.iqdb.org/?url=%TURL
-#http://regex.info/exif.cgi?imgurl=%URL
-# uploaders:
-#//imgur.com/upload?url=%URL;text:Upload to imgur
-# "View Same" in archives:
-#https://archive.moe/_/search/image/%MD5/;text:View same on archive.moe
-#https://archive.moe/%board/search/image/%MD5/;text:View same on archive.moe/%board/;boards:<%=
-  grunt.file.readJSON('src/Archive/archives.json').filter(function(x) {return x.uid === 0})[0].files.join(',')
-%>
-#https://rbt.asia/%board/image/%MD5;text:View same on RBT /%board/;boards:<%=
-  grunt.file.readJSON('src/Archive/archives.json').filter(function(x) {return x.uid === 8})[0].files.join(',')
-%>
-# Search with full image only for image file types:
-#https://www.google.com/searchbyimage?image_url=%URL;types:gif,jpg,png
-#https://www.google.com/searchbyimage?image_url=%TURL;types:webm,pdf
-"""
+    https://www.google.com/searchbyimage?image_url=%TURL
+    http://iqdb.org/?url=%TURL
+    #//tineye.com/search?url=%TURL
+    #//saucenao.com/search.php?url=%TURL
+    #http://3d.iqdb.org/?url=%TURL
+    #http://regex.info/exif.cgi?imgurl=%URL
+    # uploaders:
+    #//imgur.com/upload?url=%URL;text:Upload to imgur
+    # "View Same" in archives:
+    #https://archive.moe/_/search/image/%MD5/;text:View same on archive.moe
+    #https://archive.moe/%board/search/image/%MD5/;text:View same on archive.moe/%board/;boards:<%=
+      grunt.file.readJSON('src/Archive/archives.json').filter(function(x) {return x.uid === 0})[0].files.join(',')
+    %>
+    #https://rbt.asia/%board/image/%MD5;text:View same on RBT /%board/;boards:<%=
+      grunt.file.readJSON('src/Archive/archives.json').filter(function(x) {return x.uid === 8})[0].files.join(',')
+    %>
+    # Search with full image only for image file types:
+    #https://www.google.com/searchbyimage?image_url=%URL;types:gif,jpg,png
+    #https://www.google.com/searchbyimage?image_url=%TURL;types:webm,pdf
+  """
 
   FappeT:
     werk:  false
@@ -678,29 +679,29 @@ http://iqdb.org/?url=%TURL
     'Custom Board Navigation':    true
 
   boardnav: """
-[ toggle-all ]
-a-replace
-c-replace
-g-replace
-k-replace
-v-replace
-vg-replace
-vr-replace
-ck-replace
-co-replace
-fit-replace
-jp-replace
-mu-replace
-sp-replace
-tv-replace
-vp-replace
-[external-text:"FAQ","<%= meta.faq %>"]
+    [ toggle-all ]
+    a-replace
+    c-replace
+    g-replace
+    k-replace
+    v-replace
+    vg-replace
+    vr-replace
+    ck-replace
+    co-replace
+    fit-replace
+    jp-replace
+    mu-replace
+    sp-replace
+    tv-replace
+    vp-replace
+    [external-text:"FAQ","<%= meta.faq %>"]
   """
 
   QR:
     'QR.personas': """
       #options:"sage";boards:jp;always
-      """
+    """
 
   time: '%m/%d/%y(%a)%H:%M:%S'
 

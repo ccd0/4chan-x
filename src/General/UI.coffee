@@ -328,6 +328,7 @@ UI = do ->
     if $.x 'ancestor::div[contains(@class,"inline")][1]', root
       $.on d,    'keydown',   o.hoverend
     $.on root, 'mousemove', o.hover
+
     <% if (type === 'userscript') { %>
     # Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=674955
     o.workaround = (e) -> o.hoverend(e) unless root.contains e.target

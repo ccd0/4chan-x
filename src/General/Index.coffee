@@ -161,6 +161,7 @@ Index =
 
   catalogNode: ->
     $.on @nodes.thumb.parentNode, 'click', Index.onClick
+
   onClick: (e) ->
     return if e.button isnt 0
     thread = g.threads[@parentNode.dataset.fullID]
@@ -169,6 +170,7 @@ Index =
     else
       return
     e.preventDefault()
+
   toggleHide: (thread) ->
     $.rm thread.catalogView.nodes.root
     if Index.showHiddenThreads
@@ -178,6 +180,7 @@ Index =
     else
       ThreadHiding.hide thread
     ThreadHiding.saveHiddenState thread
+
   cycleSortType: ->
     types = [Index.selectSort.options...].filter (option) -> !option.disabled
     for type, i in types
@@ -193,15 +196,18 @@ Index =
         'Show'
       Index.sort()
       Index.buildIndex()
+
     mode: ->
       mode = @value
       unless mode is 'catalog'
         Conf['Previous Index Mode'] = mode
         $.set 'Previous Index Mode', mode
       Index.pageLoad Index.pushState {mode}
+
     sort: ->
       Index.sort()
       Index.buildIndex()
+
     size: (e) ->
       if Conf['Index Mode'] isnt 'catalog'
         $.rmClass Index.root, 'catalog-small'
@@ -213,10 +219,12 @@ Index =
         $.addClass Index.root, 'catalog-large'
         $.rmClass Index.root,  'catalog-small'
       Index.buildIndex() if e
+
     replies: ->
       Index.buildThreads()
       Index.sort()
       Index.buildIndex()
+
     popstate: (e) ->
       if e?.state
         {search, mode} = e.state
@@ -236,6 +244,7 @@ Index =
           scroll:  true
         if state.command
           Index[if Conf['Refreshed Navigation'] then 'update' else 'pageLoad'] state
+
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       switch e.target.nodeName
@@ -249,6 +258,7 @@ Index =
       return if a.textContent is 'Catalog'
       e.preventDefault()
       Index.userPageNav +a.pathname.split('/')[2] or 1
+
     frontPage: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       e.preventDefault()
@@ -262,12 +272,14 @@ Index =
       1
     else
       +window.location.pathname.split('/')[2] or 1
+
   userPageNav: (page, noRefresh) ->
     state = Index.pushState {page, scroll: true}
     if Conf['Refreshed Navigation'] and !noRefresh
       Index.update state
     else
       Index.pageLoad state if state.page
+
   pushState: (state) ->
     {pathname, hash} = location
     pageBeforeSearch = history.state?.oldpage
@@ -309,6 +321,7 @@ Index =
       oldpage: pageBeforeSearch
     , '', pathname + hash
     state
+
   pageLoad: ({sort, search, mode, scroll}) ->
     if sort or search?
       Index.sort()
@@ -318,6 +331,7 @@ Index =
     Index.buildIndex()
     Index.setPage()
     Index.scrollToIndex() if scroll
+
   applyMode: ->
     for mode in ['paged', 'infinite', 'all pages', 'catalog']
       $[if mode is Conf['Index Mode'] then 'addClass' else 'rmClass'] doc, "#{mode.replace /\ /g, '-'}-mode"
@@ -331,8 +345,10 @@ Index =
       Math.ceil Index.sortedNodes.length / Index.threadsNumPerPage
     else
       Index.pagesNum
+
   getMaxPageNum: ->
     Math.max 1, Index.getPagesNum()
+
   buildPagelist: ->
     pagesRoot = $ '.pages', Index.pagelist
     maxPageNum = Index.getMaxPageNum()
@@ -345,10 +361,12 @@ Index =
         nodes.push $.tn('['), a, $.tn '] '
       $.rmAll pagesRoot
       $.add pagesRoot, nodes
+
   setPage: ->
     pageNum    = Index.getCurrentPage()
     maxPageNum = Index.getMaxPageNum()
     pagesRoot  = $ '.pages', Index.pagelist
+
     # Previous/Next buttons
     prev = pagesRoot.previousSibling.firstChild
     next = pagesRoot.nextSibling.firstChild
@@ -358,12 +376,14 @@ Index =
     href = Math.min pageNum + 1, maxPageNum
     next.href = if href is 1 then './' else href
     next.firstChild.disabled = href is pageNum
+
     # <strong> current page
     if strong = $ 'strong', pagesRoot
       return if +strong.textContent is pageNum
       $.replace strong, strong.firstChild
     else
       strong = $.el 'strong'
+
     a = pagesRoot.children[pageNum - 1]
     $.before a, strong
     $.add strong, a

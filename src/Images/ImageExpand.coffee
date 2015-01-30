@@ -7,6 +7,7 @@ ImageExpand =
       textContent: 'EAI' 
       title: 'Expand All Images'
       href: 'javascript:;'
+
     $.on @EAI, 'click', @cb.toggleAll
     Header.addShortcut @EAI, 3
     $.on d, 'scroll visibilitychange', @cb.playVideos
@@ -18,14 +19,17 @@ ImageExpand =
   node: ->
     return unless @file and (@file.isImage or @file.isVideo)
     $.on @file.thumb.parentNode, 'click', ImageExpand.cb.toggle
+
     if @isClone 
       if @file.isExpanding
         # If we clone a post where the image is still loading,
         # make it loading in the clone too.
         ImageExpand.contract @
         ImageExpand.expand @
+
       else if @file.isExpanded and @file.isVideo
         ImageExpand.setupVideo @, !@origin.file.fullImage?.paused or @origin.file.wasPlaying, @file.fullImage.controls
+
     else if ImageExpand.on and !@isHidden and !@isFetchedQuote and
       (Conf['Expand spoilers'] or !@file.isSpoiler) and
       (Conf['Expand videos'] or !@file.isVideo)
@@ -247,7 +251,7 @@ ImageExpand =
 
       el = $.el 'span',
         textContent: 'Image Expansion'
-        className: 'image-expansion-link'
+        className:   'image-expansion-link'
 
       {createSubEntry} = ImageExpand.menu
       subEntries = []

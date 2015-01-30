@@ -8,7 +8,7 @@ ThreadUpdater =
       $.extend sc, <%= html('<span id="update-status"></span><span id="update-timer" title="Update now"></span>') %>
       $.ready ->
         Header.addShortcut sc
-    else 
+    else
       @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
         <%= html('<div class="move"></div><span id="update-status"></span><span id="update-timer" title="Update now"></span>') %>
       $.addClass doc, 'float'
@@ -176,7 +176,7 @@ ThreadUpdater =
 
   setInterval: ->
     i   = ThreadUpdater.interval + 1
-    
+
     if Conf['Optional Increase']
       # Lower the max refresh rate limit on visible tabs.
       cur   = ThreadUpdater.outdateCount or 1

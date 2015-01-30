@@ -71,6 +71,7 @@ QR.post = class
       (QR.posts[index-1] or QR.posts[index+1]).select()
     QR.posts.splice index, 1
     QR.status()
+
   delete: ->
     $.rm @nodes.el
     URL.revokeObjectURL @URL
@@ -103,10 +104,13 @@ QR.post = class
 
   load: ->
     # Load this post's values.
+
     for name in ['thread', 'name', 'email', 'sub', 'com', 'filename']
       continue unless node = QR.nodes[name]
       node.value = @[name] or node.dataset.default or null
+
     (if @thread isnt 'new' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
+
     @showFileData()
     QR.characterCount()
 

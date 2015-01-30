@@ -5,6 +5,7 @@ Time =
     Post.callbacks.push
       name: 'Time Formatting'
       cb:   @node
+
   node: ->
     return if @isClone
     @nodes.date.textContent = Time.format Conf['time'], @info.date
@@ -14,6 +15,7 @@ Time =
         Time.formatters[c].call(date)
       else
         s
+
   day: [
     'Sunday'
     'Monday'
@@ -23,6 +25,7 @@ Time =
     'Friday'
     'Saturday'
   ]
+
   month: [
     'January'
     'February'
@@ -37,7 +40,9 @@ Time =
     'November'
     'December'
   ]
+
   zeroPad: (n) -> if n < 10 then "0#{n}" else n
+
   formatters:
     a: -> Time.day[@getDay()][...3]
     A: -> Time.day[@getDay()]

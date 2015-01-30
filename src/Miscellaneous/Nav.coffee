@@ -62,7 +62,9 @@ Nav =
     # Add extra space to the end of the page if necessary so that all threads can be selected by keybinds.
     extra = Header.getTopOf(thread) + doc.clientHeight - d.body.getBoundingClientRect().bottom
     d.body.style.marginBottom = "#{extra}px" if extra > 0
+
     Header.scrollTo thread
+
     if extra > 0 and !Nav.haveExtra
       Nav.haveExtra = true
       $.on d, 'scroll', Nav.removeExtra
