@@ -58,6 +58,7 @@ Redirect =
     protocol = Redirect.protocol archive
     URL = new String "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
     return '' unless Redirect.securityCheck URL
+
     URL.archive = archive
     URL
 

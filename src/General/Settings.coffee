@@ -73,11 +73,13 @@ Settings =
     delete Settings.dialog
 
   sections: []
+
   addSection: (title, open) ->
     if typeof title isnt 'string'
       {title, open} = title.detail
     hyphenatedTitle = title.toLowerCase().replace /\s+/g, '-'
     Settings.sections.push {title, hyphenatedTitle, open}
+
   openSection: ->
     if selected = $ '.tab-selected', Settings.dialog
       $.rmClass selected, 'tab-selected'
@@ -142,12 +144,14 @@ Settings =
           localStorage.removeItem "4chan-hide-t-#{boardID}"
         $.delete ['hiddenThreads', 'hiddenPosts']
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
+
   export: ->
     # Make sure to export the most recent data.
     $.get Conf, (Conf) ->
       # XXX don't export archives.
       delete Conf['archives']
       Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf}
+
   downloadExport: (data) ->
     a = $.el 'a',
       download: "<%= meta.name %> v#{g.VERSION}-#{data.date}.json"
@@ -160,12 +164,14 @@ Settings =
     a.click()
   import: ->
     $('input', @parentNode).click()
+
   onImport: ->
     return unless file = @files[0]
     output = $('.imp-exp-result')
     unless confirm 'Your current settings will be entirely overwritten, are you sure?'
       output.textContent = 'Import aborted.'
       return
+
     reader = new FileReader()
     reader.onload = (e) ->
       try
@@ -176,6 +182,7 @@ Settings =
         output.textContent = 'Import failed due to an error.'
         c.error err.stack
     reader.readAsText file
+
   loadSettings: (data) ->
     version = data.version.split '.'
     if version[0] is '2'
@@ -259,6 +266,7 @@ Settings =
       data.Conf['watchedThreads'] = boards: ThreadWatcher.convert data.Conf['WatchedThreads']
       delete data.Conf['WatchedThreads']
     $.clear -> $.set data.Conf
+
   reset: ->
     if confirm 'Your current settings will be entirely wiped, are you sure?'
       $.clear -> window.location.reload() if confirm 'Reset successful. Reload now?'
@@ -326,9 +334,11 @@ Settings =
 
     interval  = $ 'input[name="Interval"]',   section
     customCSS = $ 'input[name="Custom CSS"]', section
+
     interval.value             =  Conf['Interval']
     customCSS.checked          =  Conf['Custom CSS']
     inputs['usercss'].disabled = !Conf['Custom CSS']
+
     $.on interval,                 'change', ThreadUpdater.cb.interval
     $.on customCSS,                'change', Settings.togglecss
     $.on $('#apply-css', section), 'click',  Settings.usercss
@@ -421,10 +431,13 @@ Settings =
 
   boardnav: ->
     Header.generateBoardList @value
+
   time: ->
     @nextElementSibling.textContent = Time.format @value, new Date()
+
   backlink: ->
     @nextElementSibling.textContent = @value.replace /%(?:id|%)/g, (x) -> {'%id': '123456789', '%%': '%'}[x]
+
   fileInfo: ->
     data =
       isReply: true
@@ -437,6 +450,7 @@ Settings =
         isImage: true
         isSpoiler: true
     FileInfo.format @value, data, @nextElementSibling
+
   favicon: ->
     Favicon.switch()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
@@ -445,12 +459,14 @@ Settings =
     img[1].src = Favicon.unreadSFW
     img[2].src = Favicon.unreadNSFW
     img[3].src = Favicon.unreadDead
+
   togglecss: ->
     if $('textarea[name=usercss]', $.x 'ancestor::fieldset[1]', @).disabled = !@checked
       CustomCSS.rmStyle()
     else
       CustomCSS.addStyle()
     $.cb.checked.call @
+
   usercss: ->
     CustomCSS.update()
 
@@ -475,6 +491,7 @@ Settings =
       for key, val of items
         inputs[key].value = val
       return
+
   keybind: (e) ->
     return if e.keyCode is 9 # tab
     e.preventDefault()

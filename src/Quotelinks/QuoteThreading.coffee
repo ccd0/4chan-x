@@ -9,6 +9,7 @@ QuoteThreading =
     @enabled = true
     @controls = $.el 'span',
       <%= html('<label><input id="threadingControl" type="checkbox" checked> Threading</label>') %>
+
     @threadNewLink = $.el 'span',
       className: 'brackets-wrap threadnewlink'
       hidden: true
@@ -27,6 +28,7 @@ QuoteThreading =
     Thread.callbacks.push
       name: 'Quote Threading'
       cb:   @setThread
+
     Post.callbacks.push
       name: 'Quote Threading'
       cb:   @node

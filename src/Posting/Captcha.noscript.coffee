@@ -1,5 +1,5 @@
 Captcha.noscript =
-  lifetime: 2 * $.MINUTE
+  lifetime:  2 * $.MINUTE
   iframeURL: '//www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
 
   init: ->

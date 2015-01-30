@@ -8,9 +8,11 @@ RemoveSpoilers =
     Post.callbacks.push
       name: 'Reveal Spoilers'
       cb:   @node
+
     CatalogThread.callbacks.push
       name: 'Reveal Spoilers'
       cb:   @node
+
     if g.VIEW is 'archive'
       $.ready -> RemoveSpoilers.unspoiler $.id 'arc-list'
 

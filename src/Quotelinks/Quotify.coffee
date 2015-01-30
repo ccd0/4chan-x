@@ -55,7 +55,6 @@ Quotify =
           className:   'quotelink deadlink'
           target:      '_blank'
           textContent: "#{quote}\u00A0(Dead)"
-
         $.extend a.dataset, {boardID, threadID: post.thread.ID, postID}
 
     else

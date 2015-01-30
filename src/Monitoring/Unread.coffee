@@ -20,6 +20,7 @@ Unread =
     Thread.callbacks.push
       name: 'Unread'
       cb:   @node
+
     Post.callbacks.push
       name: 'Unread'
       cb:   @addPost

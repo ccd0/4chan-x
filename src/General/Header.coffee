@@ -143,7 +143,10 @@ Header =
     $.extend boardList, <%= html(
       '<span id="custom-board-list"></span>' +
       '<span id="full-board-list" hidden>' +
-        '<span class="hide-board-list-container brackets-wrap"><a href="javascript:;" class="hide-board-list-button">&nbsp;-&nbsp;</a></span> ' +
+        '<span class="hide-board-list-container brackets-wrap">' +
+          '<a href="javascript:;" class="hide-board-list-button">&nbsp;-&nbsp;</a>' +
+        '</span>' +
+        ' ' +
         '<span class="boardList"></span>' +
       '</span>'
     ) %>
@@ -185,11 +188,13 @@ Header =
     nodes = boardnav.match(/[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|text:"[^"]+"(,"[^"]+")?))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
+
       text = url = null
       t = t.replace /-text:"([^"]+)"(?:,"([^"]+)")?/g, (m0, m1, m2) ->
         text = m1
         url = m2
         ''
+
       if /^toggle-all/.test t
         a = $.el 'a',
           className: 'show-board-list-button'
@@ -197,12 +202,14 @@ Header =
           href: 'javascript:;'
         $.on a, 'click', Header.toggleBoardList
         return a
+
       if /^external/.test t
         a = $.el 'a',
           href: url or 'javascript:;'
           textContent: text or '+'
           className: 'external'
         return a
+
       boardID = if /^current/.test t
         g.BOARD.ID
       else
@@ -411,7 +418,6 @@ Header =
     hash = @location.hash[1..]
     return unless /^p\d+$/.test(hash) and post = $.id hash
     return if (Get.postFromRoot post).isHidden
-
     Header.scrollTo post
 
   scrollTo: (root, down, needed) ->
@@ -451,10 +457,12 @@ Header =
       headRect = Header.toggle.getBoundingClientRect()
       bottom  -= clientHeight - headRect.bottom + headRect.height
     bottom
+
   isNodeVisible: (node) ->
     return false if d.hidden or !doc.contains node
     {height} = node.getBoundingClientRect()
     Header.getTopOf(node) + height >= 0 and Header.getBottomOf(node) + height >= 0
+
   isHidden: ->
     {top} = Header.bar.getBoundingClientRect()
     if Conf['Bottom header']

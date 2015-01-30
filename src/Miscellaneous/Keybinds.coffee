@@ -56,16 +56,16 @@ Keybinds =
         else
           return
       when Conf['Spoiler tags']
-        return if target.nodeName isnt 'TEXTAREA'
+        return unless target.nodeName is 'TEXTAREA'
         Keybinds.tags 'spoiler', target
       when Conf['Code tags']
-        return if target.nodeName isnt 'TEXTAREA'
+        return unless target.nodeName is 'TEXTAREA'
         Keybinds.tags 'code', target
       when Conf['Eqn tags']
-        return if target.nodeName isnt 'TEXTAREA'
+        return unless target.nodeName is 'TEXTAREA'
         Keybinds.tags 'eqn', target
       when Conf['Math tags']
-        return if target.nodeName isnt 'TEXTAREA'
+        return unless target.nodeName is 'TEXTAREA'
         Keybinds.tags 'math', target
       when Conf['Toggle sage']
         return unless QR.nodes and !QR.nodes.el.hidden

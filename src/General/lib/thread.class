@@ -28,6 +28,7 @@ class Thread
     icon.title       = "This thread is on page #{pageNum} in the original index."
     icon.textContent = "[#{pageNum}]"
     @catalogView.nodes.pageCount.textContent = pageNum if @catalogView
+
   setCount: (type, count, reachedLimit) ->
     return unless @catalogView
     el = @catalogView.nodes["#{type}Count"]
@@ -47,6 +48,7 @@ class Thread
     typeLC = type.toLowerCase()
     icon = $ ".#{typeLC}Icon", @OP.nodes.info
     return if !!icon is status
+
     unless status
       $.rm icon.previousSibling
       $.rm icon
@@ -57,6 +59,7 @@ class Thread
       alt:   type
       title: type
       className: "#{typeLC}Icon retina"
+
     root = if type isnt 'Sticky' and @isSticky
       $ '.stickyIcon', @OP.nodes.info
     else

@@ -443,6 +443,7 @@ do ->
       delete $.oldValue[key]
       cb undefined, key
   $.on window, 'storage', ({key}) -> onChange key
+
   $.forceSync = (key) ->
     # Storage events don't work across origins
     # e.g. http://boards.4chan.org and https://boards.4chan.org
@@ -482,6 +483,7 @@ $.set = do ->
       $.oldValue[key] = val
       # for `storage` events
       localStorage.setItem key, val
+
   (keys, val) ->
     if typeof keys is 'string'
       set keys, val

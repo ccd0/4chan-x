@@ -334,6 +334,7 @@ Build =
 
     root = $.el 'div',
       className: 'catalog-thread'
+
     $.extend root, <%= html(
       '<a href="/${thread.board}/thread/${thread.ID}">' +
         '&{thumb}' +
@@ -352,12 +353,15 @@ Build =
     for quote in $$ '.quotelink', root.lastElementChild
       href = quote.getAttribute 'href'
       quote.href = "/#{thread.board}/thread/#{thread.ID}" + href if href[0] is '#'
+
     for exif in $$ '.abbr, .exif', root.lastElementChild
       $.rm exif
+
     for pp in $$ '.prettyprint', root.lastElementChild
       cc = $.el 'span', className: 'catalog-code'
       $.add cc, [pp.childNodes...]
       $.replace pp, cc
+
     for br in $$ 'br', root.lastElementChild when br.previousSibling?.nodeName is 'BR'
       $.rm br
 
@@ -366,6 +370,7 @@ Build =
         src: "#{staticPath}sticky#{gifIcon}"
         className: 'stickyIcon'
         title: 'Sticky'
+
     if thread.isClosed
       $.add $('.catalog-icons', root), $.el 'img',
         src: "#{staticPath}closed#{gifIcon}"
@@ -374,6 +379,7 @@ Build =
 
     if data.bumplimit
       $.addClass $('.post-count', root), 'warning'
+
     if data.imagelimit
       $.addClass $('.file-count', root), 'warning'
 

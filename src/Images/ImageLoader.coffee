@@ -73,6 +73,7 @@ ImageLoader =
       if !chrome?
         $.on thumb, 'loadeddata', -> @removeAttribute 'poster'
       return
+
     el = $.el if isImage then 'img' else 'video'
     if replace and isImage
       $.on el, 'load', ->

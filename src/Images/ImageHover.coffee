@@ -9,13 +9,16 @@ ImageHover =
       CatalogThread.callbacks.push
         name: 'Catalog Image Hover'
         cb:   @catalogNode
+
   node: ->
     return unless @file and (@file.isImage or @file.isVideo)
     $.on @file.thumb, 'mouseover', ImageHover.mouseover @
+
   catalogNode: ->
     {file} = @thread.OP
     return unless file and (file.isImage or file.isVideo)
     $.on @nodes.thumb, 'mouseover', ImageHover.mouseover @thread.OP
+
   mouseover: (post) -> (e) ->
     return unless doc.contains @
     {file} = post
@@ -30,6 +33,7 @@ ImageHover =
       el.dataset.fullID = post.fullID
       $.on el, 'error', error
       el.src = file.URL
+
     if Conf['Restart when Opened']
       ImageCommon.rewind el
       ImageCommon.rewind @
@@ -45,7 +49,7 @@ ImageHover =
     maxWidth = Math.max left, doc.clientWidth - right
     maxHeight = doc.clientHeight - padding
     scale = Math.min 1, maxWidth / width, maxHeight / height
-    el.style.maxWidth = "#{scale * width}px"
+    el.style.maxWidth  = "#{scale * width}px"
     el.style.maxHeight = "#{scale * height}px"
     UI.hover
       root: @
@@ -61,6 +65,7 @@ ImageHover =
         el.pause() if isVideo
         $.rm el
         el.removeAttribute 'style'
+
   error: (post) -> ->
     return if ImageCommon.decodeError @, post
     ImageCommon.error @, post, 3 * $.SECOND, (URL) =>

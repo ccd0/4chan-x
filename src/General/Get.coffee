@@ -51,7 +51,7 @@ Get =
     #   get all their backlinks.
     posts.forEach (qPost) ->
       if fullID in qPost.quotes
-        handleQuotes qPost, 'quotelinks' 
+        handleQuotes qPost, 'quotelinks'
 
     # Second:
     #   If we have quote backlinks:
@@ -66,10 +66,12 @@ Get =
     quotelinks.filter (quotelink) ->
       {boardID, postID} = Get.postDataFromLink quotelink
       boardID is post.board.ID and postID is post.ID
+
   scriptData: ->
     for script in $$ 'script:not([src])', d.head
       return script.textContent if /\bcooldowns *=/.test script.textContent
     ''
+
   postClone: (boardID, threadID, postID, root, context) ->
     if post = g.posts["#{boardID}.#{postID}"]
       Get.insert post, root, context
@@ -81,6 +83,7 @@ Get =
         Get.fetchedPost @, boardID, threadID, postID, root, context
     else
       Get.archivedPost boardID, postID, root, context
+
   insert: (post, root, context) ->
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
@@ -95,6 +98,7 @@ Get =
     $.rmAll root
     $.add root, nodes.root
     $.event 'PostsInserted'
+
   fetchedPost: (req, boardID, threadID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
@@ -127,6 +131,7 @@ Get =
         $.cache api, ->
           Get.fetchedPost @, boardID, threadID, postID, root, context
         return
+
       # The post can be deleted by the time we check a quote.
       unless Get.archivedPost boardID, postID, root, context
         $.addClass root, 'warning'
@@ -141,6 +146,7 @@ Get =
     post.isFetchedQuote = true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
+
   archivedPost: (boardID, postID, root, context) ->
     return false unless Conf['Resurrect Quotes']
     return false unless url = Redirect.to 'post', {boardID, postID}
@@ -161,6 +167,7 @@ Get =
         Get.parseArchivedPost response, boardID, postID, root, context
       return true
     return false
+
   parseArchivedPost: (data, boardID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.

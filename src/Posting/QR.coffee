@@ -113,6 +113,7 @@ QR =
         return
     if Conf['QR Shortcut']
       $.rmClass $('.qr-shortcut'), 'disabled'
+
   close: ->
     if QR.req
       QR.abort()
@@ -129,6 +130,7 @@ QR =
     QR.cooldown.auto = false
     QR.status()
     QR.captcha.destroy()
+
   focus: ->
     $.queueTask ->
       return unless QR.nodes
@@ -142,18 +144,22 @@ QR =
           $.on d, 'scroll', QR.scrollLock
         else
           $.off d, 'scroll', QR.scrollLock
+
   scrollLock: (e) ->
     if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
       window.scroll window.scrollX, QR.scrollY
     else
       $.off d, 'scroll', QR.scrollLock
+
   hide: ->
     d.activeElement.blur()
     $.addClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = true
+
   unhide: ->
     $.rmClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = false
+
   toggleHide: ->
     if @checked
       QR.hide()
@@ -195,6 +201,7 @@ QR =
       <% } %>
 
   notifications: []
+
   cleanNotifications: ->
     for notification in QR.notifications
       notification.close()
@@ -449,7 +456,8 @@ QR =
 
   dialog: ->
     QR.nodes = nodes =
-      el: dialog = UI.dialog 'qr', 'top: 50px; right: 0px;', <%= importHTML('Features/QuickReply') %>
+      el: dialog = UI.dialog 'qr', 'top: 50px; right: 0px;',
+        <%= importHTML('Features/QuickReply') %>
 
     setNode = (name, query) ->
       nodes[name] = $ query, dialog
@@ -478,7 +486,7 @@ QR =
     setNode 'spoilerPar',    '#qr-spoiler-label'
     setNode 'status',        '[type=submit]'
     setNode 'fileInput',     '[type=file]'
-    
+
     rules = $('ul.rules').textContent.trim()
     match_min = rules.match(/.+smaller than (\d+)x(\d+).+/)
     match_max = rules.match(/.+greater than (\d+)x(\d+).+/)
@@ -512,7 +520,9 @@ QR =
       nodes.spoiler.parentElement.hidden = true
 
     if g.BOARD.ID is 'f' and g.VIEW isnt 'thread'
-      nodes.flashTag = $.el 'select', name: 'filetag'
+      nodes.flashTag = $.el 'select',
+        name: 'filetag'
+
       $.extend nodes.flashTag, <%= html(
         '<option value="0">Hentai</option>' +
         '<option value="6">Porn</option>' +
@@ -522,6 +532,7 @@ QR =
         '<option value="5">Loop</option>' +
         '<option value="4" selected>Other</option>'
       ) %>
+
       nodes.flashTag.dataset.default = '4'
       $.add nodes.form, nodes.flashTag
 
@@ -533,8 +544,8 @@ QR =
     $.on nodes.urlButton,  'click',  QR.handleUrl
     $.on nodes.addPost,    'click',  -> new QR.post true
     $.on nodes.form,       'submit', QR.submit
-    $.on nodes.fileRM,     'click', -> QR.selected.rmFile()
-    $.on nodes.fileExtras, 'click', (e) -> e.stopPropagation()
+    $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
+    $.on nodes.fileExtras, 'click',  (e) -> e.stopPropagation()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.handleFiles
 
@@ -562,6 +573,7 @@ QR =
     QR.status()
     QR.cooldown.init()
     QR.captcha.init()
+
     $.add d.body, dialog
     QR.captcha.setup()
 
@@ -794,7 +806,7 @@ QR =
       QR.close()
     else
       post.rm()
-      QR.captcha.setup (d.activeElement is QR.nodes.status)
+      QR.captcha.setup(d.activeElement is QR.nodes.status)
 
     QR.cooldown.add req.uploadEndTime, threadID, postID
 
@@ -802,6 +814,7 @@ QR =
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}"
     else if g.VIEW is 'index' and !QR.cooldown.auto and Conf['Open Post in New Tab'] # replying from the index
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}#p#{postID}"
+
     if URL
       if Conf['Open Post in New Tab'] or postsCount
         $.open URL

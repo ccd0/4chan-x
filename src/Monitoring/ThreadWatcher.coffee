@@ -11,10 +11,10 @@ ThreadWatcher =
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
     @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', <%= importHTML('Monitoring/ThreadWatcher') %>
+
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
     @refreshButton = $ '.move > .refresh', @dialog
-
     @unreaddb = Unread.db or new DataBoard 'lastReadPosts'
 
     $.on d, 'QRPostSuccessful',   @cb.post
@@ -23,6 +23,7 @@ ThreadWatcher =
     $.on $('.move > .close', @dialog), 'click', @toggleWatcher
 
     $.on d, '4chanXInitFinished', @ready
+
     switch g.VIEW
       when 'index'
         $.on d, 'IndexRefresh', @cb.onIndexRefresh
@@ -147,6 +148,7 @@ ThreadWatcher =
   fetchCount:
     fetched:  0
     fetching: 0
+
   fetchAuto: ->
     clearTimeout ThreadWatcher.timeout
     return unless Conf['Auto Update Thread Watcher']
@@ -158,6 +160,7 @@ ThreadWatcher =
       ThreadWatcher.fetchAllStatus()
       db.save()
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
+
   fetchAllStatus: ->
     ThreadWatcher.db.forceSync()
     ThreadWatcher.unreaddb.forceSync()
@@ -166,6 +169,7 @@ ThreadWatcher =
     for thread in threads
       ThreadWatcher.fetchStatus thread
     return
+
   fetchStatus: (thread) ->
     {boardID, threadID, data} = thread
     return if data.isDead and !Conf['Show Unread Count']
@@ -177,6 +181,7 @@ ThreadWatcher =
     $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
       onloadend: ->
         ThreadWatcher.parseStatus.call @, thread
+
   parseStatus: ({boardID, threadID, data}) ->
     {fetchCount} = ThreadWatcher
     fetchCount.fetched++
@@ -233,6 +238,7 @@ ThreadWatcher =
         delete data.unread
         delete data.quotingYou
         ThreadWatcher.db.set {boardID, threadID, val: data}
+
       ThreadWatcher.refresh()
 
   getAll: ->
@@ -269,8 +275,8 @@ ThreadWatcher =
     div = $.el 'div'
     fullID = "#{boardID}.#{threadID}"
     div.dataset.fullID = fullID
-    $.addClass div, 'current'            if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
-    $.addClass div, 'dead-thread'        if data.isDead
+    $.addClass div, 'current'     if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
+    $.addClass div, 'dead-thread' if data.isDead
     if Conf['Show Unread Count']
       $.addClass div, 'replies-unread'      if data.unread
       $.addClass div, 'replies-quoting-you' if data.quotingYou
@@ -336,6 +342,7 @@ ThreadWatcher =
       ThreadWatcher.rm boardID, threadID
     else
       ThreadWatcher.add thread
+
   add: (thread) ->
     data     = {}
     boardID  = thread.board.ID
@@ -350,6 +357,7 @@ ThreadWatcher =
     ThreadWatcher.refresh()
     if Conf['Show Unread Count']
       ThreadWatcher.fetchStatus {boardID, threadID, data}
+
   rm: (boardID, threadID) ->
     ThreadWatcher.db.delete {boardID, threadID}
     ThreadWatcher.refresh()
@@ -423,6 +431,7 @@ ThreadWatcher =
         @refreshers.push refresh.bind entry if refresh
         @menu.addEntry entry
       return
+
     createSubEntry: (name, desc) ->
       entry =
         type: 'thread watcher'
@@ -430,6 +439,6 @@ ThreadWatcher =
       entry.el.title = desc
       input = entry.el.firstElementChild
       $.on input, 'change', $.cb.checked
-      $.on input, 'change', ThreadWatcher.refresh if name in ['Current Board', 'Show Unread Count']
+      $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Unread Count']
       $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Unread Count', 'Auto Update Thread Watcher']
       entry

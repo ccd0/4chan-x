@@ -55,7 +55,7 @@ Banner =
       i = Math.floor(Banner.choices.length * Math.random())
       banner = Banner.choices.splice i, 1
       $('img', @parentNode).src = "//s.4cdn.org/image/title/#{banner}"
-      
+
     click: (e) ->
       if e.ctrlKey or e.metaKey
         @contentEditable = true

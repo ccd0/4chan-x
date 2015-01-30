@@ -40,7 +40,7 @@ Sauce =
         type
     ext = post.file.URL.match(/\.([^\.]*)$/)?[1] or ''
     return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
-    return null unless !parts['types']  or ext           in parts['types'].split ','
+    return null unless !parts['types']  or ext           in parts['types'].split  ','
     a = Sauce.link.cloneNode true
     a.href = parts['url']
     a.textContent = parts['text']
@@ -49,8 +49,7 @@ Sauce =
   node: ->
     return if @isClone or !@file
     nodes = []
-    for link in Sauce.links
-      if node = Sauce.createSauceLink link, @
-        # \u00A0 is nbsp
-        nodes.push $.tn('\u00A0'), node
+    for link in Sauce.links when node = Sauce.createSauceLink link, @
+      # \u00A0 is nbsp
+      nodes.push $.tn('\u00A0'), node
     $.add @file.text, nodes

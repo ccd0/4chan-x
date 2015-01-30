@@ -78,6 +78,7 @@ Gallery =
 
     $.on  d, 'keydown', cb.keybinds
     $.off d, 'keydown', Keybinds.keydown if Conf['Keybinds']
+
     for file in $$ '.post .file' when !$ '.fileDeletedRes, .fileDeleted', file
       post = Get.postFromNode file
       Gallery.generateThumb post
@@ -87,6 +88,7 @@ Gallery =
         if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
           image = candidate
     $.addClass doc, 'gallery-open'
+
     $.add d.body, dialog
 
     nodes.thumbs.scrollTop = 0
@@ -103,6 +105,7 @@ Gallery =
     return if post.isClone or post.isHidden
     return unless post.file and (post.file.isImage or post.file.isVideo or Conf['PDF in Gallery'])
     return if Gallery.fullIDs[post.fullID]
+
     Gallery.fullIDs[post.fullID] = true
 
     thumb = $.el 'a',
@@ -110,13 +113,14 @@ Gallery =
       href:      post.file.URL
       target:    '_blank'
       title:     post.file.name
-    thumb.dataset.id = Gallery.images.length
+
+    thumb.dataset.id   = Gallery.images.length
     thumb.dataset.post = post.fullID
 
     thumbImg = post.file.thumb.cloneNode false
     thumbImg.style.cssText = ''
     $.add thumb, thumbImg
- 
+
     $.on thumb, 'click', Gallery.cb.open
 
     Gallery.images.push thumb
@@ -135,6 +139,7 @@ Gallery =
     elType = 'img'
     elType = 'video' if /\.webm$/.test(thumb.href)
     elType = 'iframe' if /\.pdf$/.test(thumb.href)
+
     $[if elType is 'iframe' then 'addClass' else 'rmClass'] doc, 'gal-pdf'
     file = $.el elType,
       title: name.download = name.textContent = thumb.title
@@ -142,7 +147,7 @@ Gallery =
       Gallery.error file, thumb
     file.src = name.href = thumb.href
 
-    $.extend  file.dataset, thumb.dataset
+    $.extend file.dataset, thumb.dataset
     nodes.current.pause?() unless nodes.current.error
     $.replace nodes.current, file
     if elType is 'video'
@@ -241,10 +246,12 @@ Gallery =
       Gallery.cb.open.call(
         Gallery.images[+Gallery.nodes.current.dataset.id + 1] or Gallery.images[0]
       )
+
     click: (e) ->
       return if ImageCommon.onControls e
       e.preventDefault()
       Gallery.cb.advance()
+
     advance:   -> if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @

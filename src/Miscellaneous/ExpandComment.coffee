@@ -12,10 +12,13 @@ ExpandComment =
   node: ->
     if a = $ '.abbr > a:not([onclick])', @nodes.comment
       $.on a, 'click', ExpandComment.cb
+
   callbacks: []
+
   cb: (e) ->
     e.preventDefault()
     ExpandComment.expand Get.postFromNode @
+
   expand: (post) ->
     if post.nodes.longComment and !post.nodes.longComment.parentNode
       $.replace post.nodes.shortComment, post.nodes.longComment
@@ -24,12 +27,14 @@ ExpandComment =
     return unless a = $ '.abbr > a', post.nodes.comment
     a.textContent = "Post No.#{post} Loading..."
     $.cache "//a.4cdn.org#{a.pathname.split('/').splice(0,4).join('/')}.json", -> ExpandComment.parse @, a, post
+
   contract: (post) ->
     return unless post.nodes.shortComment
     a = $ '.abbr > a', post.nodes.shortComment
     a.textContent = 'here'
     $.replace post.nodes.longComment, post.nodes.shortComment
     post.nodes.comment = post.nodes.shortComment
+
   parse: (req, a, post) ->
     {status} = req
     unless status in [200, 304]

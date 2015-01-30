@@ -33,10 +33,13 @@ Main =
       else # string or number
         Conf[parent] = obj
       return
+
     flatten null, Config
+
     for db in DataBoard.keys
       Conf[db] = boards: {}
     Conf['selectedArchives'] = {}
+
     $.get Conf, (items) ->
       $.extend Conf, items
       $.asap (-> doc = d.documentElement), Main.initFeatures
@@ -71,7 +74,7 @@ Main =
       pathname = location.pathname.split '/'
       if pathname[2] isnt 'thread' or pathname.length > 4
         pathname[2] = 'thread'
-        history.replaceState null, '', pathname.slice(0,4).join('/') + location.hash
+        history.replaceState null, '', pathname[0...4].join('/') + location.hash
 
     # c.time 'All initializations'
     for [name, feature] in Main.features

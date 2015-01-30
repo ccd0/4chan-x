@@ -84,11 +84,13 @@ Filter =
         (value) -> regexp is value
       else
         (value) -> regexp.test value
+
     settings =
       hide:  !hl
       stub:  stub
       class: hl
       top:   top
+
     (value, isReply) ->
       if isReply and op is 'only' or !isReply and op is 'no'
         return false
@@ -103,10 +105,7 @@ Filter =
       # Continue if there's nothing to filter (no tripcode for example).
       continue if value is false
 
-      for filter in Filter.filters[key]
-        unless result = filter value, @isReply
-          continue
-
+      for filter in Filter.filters[key] when result = filter value, @isReply
         # Hide
         if result.hide
           if @isReply
