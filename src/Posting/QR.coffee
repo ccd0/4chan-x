@@ -14,7 +14,7 @@ QR =
     @captcha = Captcha[if noscript then 'noscript' else 'v2']
 
     if Conf['QR Shortcut']
-      sc = $.el 'a',
+      @shortcut = sc = $.el 'a',
         className: 'qr-shortcut fa fa-comment-o disabled'
         textContent: 'QR' 
         title: 'Quick Reply'
@@ -112,7 +112,7 @@ QR =
           error: err
         return
     if Conf['QR Shortcut']
-      $.rmClass $('.qr-shortcut'), 'disabled'
+      $.rmClass QR.shortcut, 'disabled'
 
   close: ->
     if QR.req
@@ -123,7 +123,7 @@ QR =
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
     if Conf['QR Shortcut']
-      $.addClass $('.qr-shortcut'), 'disabled'
+      $.addClass QR.shortcut, 'disabled'
     new QR.post true
     for post in QR.posts.splice 0, QR.posts.length - 1
       post.delete()
