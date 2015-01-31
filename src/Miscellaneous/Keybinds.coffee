@@ -46,7 +46,7 @@ Keybinds =
         else if (notifications = $$ '.notification').length
           for notification in notifications
             $('.close', notification).click()
-        else if QR.nodes and !QR.nodes.el.hidden and window.getComputedStyle(QR.nodes.form).display isnt 'none'
+        else if QR.nodes and not (QR.nodes.el.hidden or window.getComputedStyle(QR.nodes.form).display is 'none')
           if Conf['Persistent QR']
             QR.hide()
           else
@@ -139,19 +139,19 @@ Keybinds =
         Index.cycleSortType()
       # Thread Navigation
       when Conf['Next thread']
-        return if g.VIEW isnt 'index' or !threadRoot
+        return unless g.VIEW is 'index' and threadRoot
         Nav.scroll +1
       when Conf['Previous thread']
-        return if g.VIEW isnt 'index' or !threadRoot
+        return unless g.VIEW is 'index' and threadRoot
         Nav.scroll -1
       when Conf['Expand thread']
-        return if g.VIEW isnt 'index' or !threadRoot
+        return unless g.VIEW is 'index' and threadRoot
         ExpandThread.toggle thread
       when Conf['Open thread']
-        return if g.VIEW isnt 'index' or !threadRoot
+        return unless g.VIEW is 'index' and threadRoot
         Keybinds.open thread
       when Conf['Open thread tab']
-        return if g.VIEW isnt 'index' or !threadRoot
+        return unless g.VIEW is 'index' and threadRoot
         Keybinds.open thread, true
       # Reply Navigation
       when Conf['Next reply']

@@ -1,28 +1,26 @@
 IDColor =
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or not Conf['Color User IDs']
-    @ids = {}
+    return unless g.VIEW in ['index', 'thread'] and Conf['Color User IDs']
+    @ids = {
+      Heaven: [0, 0, 0, '#fff']
+    }
 
     Post.callbacks.push
       name: 'Color User IDs'
       cb:   @node
 
   node: ->
-    return if @isClone or not uid = @info.uniqueID
-    span = $ '.hand', @nodes.uniqueID
-    return unless span and span.nodeName is 'SPAN'
-    rgb = IDColor.compute uid
+    return if @isClone or !((uid = @info.uniqueID) and (span = $ 'span.hand', @nodes.uniqueID))
+
+    rgb = IDColor.ids[uid] or IDColor.compute uid
 
     # Style the damn node.
     {style} = span
     style.color = rgb[3]
     style.backgroundColor = "rgb(#{rgb[0]},#{rgb[1]},#{rgb[2]})"
     $.addClass span, 'painted'
-    span.title = 'Highlight posts by this ID'
 
   compute: (uid) ->
-    return IDColor.ids[uid] if IDColor.ids[uid]
-
     # Convert chars to integers, bitshift and math to create a larger integer
     # Create a nice string of binary
     hash = IDColor.hash uid
@@ -35,7 +33,7 @@ IDColor =
     ]
 
     # Weight color luminance values, assign a font color that should be readable. 
-    rgb[3] = if (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125
+    rgb.push if (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125
       '#000'
     else
       '#fff'
