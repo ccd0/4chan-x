@@ -14,7 +14,7 @@ QR =
     @captcha = Captcha[if noscript then 'noscript' else 'v2']
 
     if Conf['QR Shortcut']
-      sc = $.el 'a',
+      @shortcut = sc = $.el 'a',
         className: 'qr-shortcut fa fa-comment-o disabled'
         textContent: 'QR' 
         title: 'Quick Reply'
@@ -112,7 +112,7 @@ QR =
           error: err
         return
     if Conf['QR Shortcut']
-      $.rmClass $('.qr-shortcut'), 'disabled'
+      $.rmClass QR.shortcut, 'disabled'
 
   close: ->
     if QR.req
@@ -123,7 +123,7 @@ QR =
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
     if Conf['QR Shortcut']
-      $.addClass $('.qr-shortcut'), 'disabled'
+      $.addClass QR.shortcut, 'disabled'
     new QR.post true
     for post in QR.posts.splice 0, QR.posts.length - 1
       post.delete()
@@ -404,7 +404,7 @@ QR =
         else if duration > QR.max_duration_video
           QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
           pass = false
-        if g.BOARD.ID not in ['gif', 'wsg'] and (video.mozHasAudio or video.webkitAudioDecodedByteCount)
+        if g.BOARD.ID not in ['gif', 'wsg'] and $.hasAudio video
           QR.error "#{file.name}: Audio not allowed"
           pass = false
         cb pass, video

@@ -79,6 +79,8 @@ ImageExpand =
           continue unless file and file.isVideo and file.isExpanded
 
           video = file.fullImage
+          continue if $.hasAudio video
+
           visible = Header.isNodeVisible video
           if visible and file.wasPlaying
             delete file.wasPlaying
