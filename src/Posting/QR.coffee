@@ -486,7 +486,11 @@ QR =
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
 
-    QR.max_size_video = 3145728
+    QR.max_size_video = if m = Get.scriptData().match /\bmaxWebmFilesize *= *(\d+)\b/
+      +m[1]
+    else
+      +nodes.fileInput.max
+
     QR.max_width_video = QR.max_height_video = 2048
     QR.max_duration_video = 120
 
