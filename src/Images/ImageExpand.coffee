@@ -62,7 +62,7 @@ ImageExpand =
       if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
         ImageExpand.EAI.className = 'contract-all-shortcut fa fa-compress'
         ImageExpand.EAI.title     = 'Contract All Images'
-        func = (post) -> ImageExpand.expand post
+        func = ImageExpand.expand
       else
         ImageExpand.EAI.className = 'expand-all-shortcut fa fa-expand'
         ImageExpand.EAI.title     = 'Expand All Images'
@@ -74,19 +74,22 @@ ImageExpand =
 
     playVideos: (e) ->
       g.posts.forEach (post) ->
-        for post in [post, post.clones...] when post.file and post.file.isVideo and post.file.isExpanded
-          video = post.file.fullImage
+        for post in [post, post.clones...]
+          {file} = post
+          continue unless file and file.isVideo and file.isExpanded
+
+          video = file.fullImage
           visible = Header.isNodeVisible video
-          if visible and post.file.wasPlaying
-            delete post.file.wasPlaying
+          if visible and file.wasPlaying
+            delete file.wasPlaying
             video.play()
           else if !visible and !video.paused
-            post.file.wasPlaying = true
+            file.wasPlaying = true
             video.pause()
         return
 
     setFitness: ->
-      (if @checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
+      $[if @checked then 'addClass' else 'rmClass'] doc, @name.toLowerCase().replace /\s+/g, '-'
 
   toggle: (post) ->
     unless post.file.isExpanding or post.file.isExpanded
@@ -218,7 +221,7 @@ ImageExpand =
       fullImage.controls = controls
       return
     fullImage.controls = false
-    $.asap (=> doc.contains fullImage), =>
+    $.asap (-> doc.contains fullImage), ->
       if !d.hidden and Header.isNodeVisible fullImage
         fullImage.play()
       else

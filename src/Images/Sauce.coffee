@@ -1,6 +1,6 @@
 Sauce =
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or !Conf['Sauce']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Sauce']
 
     links = []
     for link in Conf['sauces'].split '\n'

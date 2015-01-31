@@ -46,13 +46,13 @@ Gallery =
 
     nodes[key] = $ value, dialog for key, value of {
       buttons: '.gal-buttons'
+      frame:   '.gal-image'
       name:    '.gal-name'
       count:   '.count'
       total:   '.total'
-      frame:   '.gal-image'
+      thumbs:  '.gal-thumbnails'
       next:    '.gal-image a'
       current: '.gal-image img'
-      thumbs:  '.gal-thumbnails'
     }
 
     menuButton = $ '.menu-button', dialog
@@ -79,8 +79,9 @@ Gallery =
     $.on  d, 'keydown', cb.keybinds
     $.off d, 'keydown', Keybinds.keydown if Conf['Keybinds']
 
-    for file in $$ '.post .file' when !$ '.fileDeletedRes, .fileDeleted', file
+    for file in $$ '.post .file'
       post = Get.postFromNode file
+      continue if !post.file or post.file.isDead
       Gallery.generateThumb post
       # If no image to open is given, pick image we have scrolled to.
       if !image and Gallery.fullIDs[post.fullID]
@@ -136,9 +137,12 @@ Gallery =
     $.rmClass  el,    'gal-highlight' if el = $ '.gal-highlight', nodes.thumbs
     $.addClass thumb, 'gal-highlight'
 
-    elType = 'img'
-    elType = 'video' if /\.webm$/.test(thumb.href)
-    elType = 'iframe' if /\.pdf$/.test(thumb.href)
+    elType = if /\.webm$/.test(thumb.href)
+      'video'
+    else if /\.pdf$/.test(thumb.href)
+      'iframe'
+    else
+      'img'
 
     $[if elType is 'iframe' then 'addClass' else 'rmClass'] doc, 'gal-pdf'
     file = $.el elType,
@@ -313,13 +317,14 @@ Gallery =
     createSubEntry: (name) ->
       label = UI.checkbox name, " #{name}"
       input = label.firstElementChild
-      $.on input, 'change', Gallery.cb.setFitness
+      if name in ['Fit Width', 'Fit Height', 'Hide Thumbnails']
+        $.on input, 'change', Gallery.cb.setFitness
       $.event 'change', null, input
       $.on input, 'change', $.cb.checked
       el: label
 
     createSubEntries: ->
-      subEntries = ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Scroll to Post'].map Gallery.menu.createSubEntry
+      subEntries = (Gallery.menu.createSubEntry item for item in ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Scroll to Post'])
 
       delayLabel = $.el 'label', <%= html('Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">') %>
       delayInput = delayLabel.firstElementChild
