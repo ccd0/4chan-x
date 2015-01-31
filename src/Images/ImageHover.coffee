@@ -7,7 +7,7 @@ ImageHover =
         cb:   @node
     if Conf['Image Hover in Catalog']
       CatalogThread.callbacks.push
-        name: 'Catalog Image Hover'
+        name: 'Image Hover'
         cb:   @catalogNode
 
   node: ->
@@ -43,7 +43,7 @@ ImageHover =
       el.loop     = true
       el.controls = false
       el.play() if Conf['Autoplay']
-    [width, height] = file.dimensions.split('x').map (x) -> +x
+    [width, height] = (+x for x in file.dimensions.split 'x')
     {left, right} = @getBoundingClientRect()
     padding = 16
     maxWidth = Math.max left, doc.clientWidth - right

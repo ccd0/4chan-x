@@ -1,8 +1,9 @@
 RevealSpoilers =
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or !Conf['Reveal Spoiler Thumbnails']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Reveal Spoiler Thumbnails']
 
     Post.callbacks.push
+      name: 'Reveal Spoiler Thumbnails'
       cb:   @node
 
   node: ->

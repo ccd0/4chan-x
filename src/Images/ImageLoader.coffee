@@ -12,14 +12,7 @@ ImageLoader =
       g.posts.forEach ImageLoader.prefetch
 
     if Conf['Replace WEBM']
-      $.on d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', ->
-        # Special case: Quote previews are off screen when inserted into document, but quickly moved on screen.
-        qpClone = $.id('qp')?.firstElementChild
-        g.posts.forEach (post) ->
-          for post in [post, post.clones...] when post.file?.videoThumb
-            {thumb} = post.file
-            if Header.isNodeVisible(thumb) or post.nodes.root is qpClone then thumb.play() else thumb.pause()
-          return
+      $.on d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', @playVideos
 
     return unless Conf['Image Prefetching']
 
@@ -27,9 +20,7 @@ ImageLoader =
       <%= html('<input type="checkbox" name="prefetch"> Prefetch Images') %>
 
     @el = prefetch.firstElementChild
-    $.on @el, 'change', ->
-      if Conf['prefetch'] = @checked
-        g.posts.forEach ImageLoader.prefetch
+    $.on @el, 'change', @toggle
 
     Header.menu.addEntry
       el: prefetch
@@ -80,3 +71,17 @@ ImageLoader =
         clone.file.thumb.src = URL for clone in post.clones
         thumb.src = URL
     el.src = URL
+
+  toggle: ->
+    if Conf['prefetch'] = @checked
+      g.posts.forEach ImageLoader.prefetch
+    return
+
+  playVideos: ->
+    # Special case: Quote previews are off screen when inserted into document, but quickly moved on screen.
+    qpClone = $.id('qp')?.firstElementChild
+    g.posts.forEach (post) ->
+      for post in [post, post.clones...] when post.file?.videoThumb
+        {thumb} = post.file
+        if Header.isNodeVisible(thumb) or post.nodes.root is qpClone then thumb.play() else thumb.pause()
+      return
