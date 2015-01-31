@@ -3,6 +3,15 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.21.x -->
+### v1.9.21.4 
+*2015-01-30* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.4/builds/4chan-X-noupdate.crx "Chromium version")]
+
+Posting WebMs with sound has recently been enabled, at least on /wsg/.
+
+- Restore `Allow Sound` option.
+- Fix sound playing from replaced WebM thumbnails.
+- Remove check for sound before posting.
+
 ### v1.9.21.3 
 *2015-01-28* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.3/builds/4chan-X-noupdate.crx "Chromium version")]
 
