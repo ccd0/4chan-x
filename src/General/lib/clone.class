@@ -61,6 +61,8 @@ class Clone extends Post
       @file.thumb = $ '.fileThumb > [data-md5]', file
       @file.fullImage = $ '.full-image', file
 
+      @file.thumb.muted = true if @file.videoThumb
+
       # Contract thumbnails in quote preview
       ImageExpand.contract @ if contractThumb
 
