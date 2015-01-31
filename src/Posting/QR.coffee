@@ -404,7 +404,7 @@ QR =
         else if duration > QR.max_duration_video
           QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
           pass = false
-        if g.BOARD.ID not in ['gif', 'wsg'] and (video.mozHasAudio or video.webkitAudioDecodedByteCount)
+        if g.BOARD.ID not in ['gif', 'wsg'] and $.hasAudio video
           QR.error "#{file.name}: Audio not allowed"
           pass = false
         cb pass, video

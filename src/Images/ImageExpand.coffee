@@ -76,6 +76,7 @@ ImageExpand =
       g.posts.forEach (post) ->
         for post in [post, post.clones...] when post.file and post.file.isVideo and post.file.isExpanded
           video = post.file.fullImage
+          continue if $.hasAudio video
           visible = Header.isNodeVisible video
           if visible and post.file.wasPlaying
             delete post.file.wasPlaying
