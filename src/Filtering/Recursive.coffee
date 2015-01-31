@@ -22,10 +22,9 @@ Recursive =
 
   rm: (recursive, post) ->
     return unless obj = Recursive.recursives[post.fullID]
-    for rec, i in obj.recursives
-      if rec is recursive
-        obj.recursives.splice i, 1
-        obj.args.splice i, 1
+    for rec, i in obj.recursives when rec is recursive
+      obj.recursives.splice i, 1
+      obj.args.splice i, 1
     return
 
   apply: (recursive, post, args...) ->
