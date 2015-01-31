@@ -157,7 +157,7 @@ Get =
         responseType: 'json'
         withCredentials: url.archive.withCredentials
       return true
-    else if Conf['Except Archives from Encryption']
+    else if Conf['Exempt Archives from Encryption']
       CrossOrigin.json url, (response) ->
         {media} = response
         if media then for key of media when /_link$/.test key
