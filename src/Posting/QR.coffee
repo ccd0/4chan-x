@@ -13,6 +13,17 @@ QR =
     noscript = Conf['Force Noscript Captcha'] or !doc.dataset.jsEnabled
     @captcha = Captcha[if noscript then 'noscript' else 'v2']
 
+    $.on d, '4chanXInitFinished', @initReady
+
+    window.addEventListener 'focus', @focus, true
+    window.addEventListener 'blur',  @focus, true
+    # We don't receive blur events from captcha iframe.
+    $.on d, 'click', @focus
+
+    Post.callbacks.push
+      name: 'Quick Reply'
+      cb:   @node
+
     if Conf['QR Shortcut']
       sc = $.el 'a',
         className: 'qr-shortcut fa fa-comment-o disabled'
@@ -34,17 +45,6 @@ QR =
       if !doc.dataset.jsEnabled
         # Prevent unnecessary loading of fallback iframe.
         $.onExists doc, '#postForm noscript', true, $.rm
-
-    $.on d, '4chanXInitFinished', @initReady
-
-    window.addEventListener 'focus', @focus, true
-    window.addEventListener 'blur',  @focus, true
-    # We don't receive blur events from captcha iframe.
-    $.on d, 'click', @focus
-
-    Post.callbacks.push
-      name: 'Quick Reply'
-      cb:   @node
 
   initReady: ->
     $.off d, '4chanXInitFinished', @initReady
@@ -318,7 +318,7 @@ QR =
     QR.open()
     QR.handleFiles files
     $.addClass QR.nodes.el, 'dump'
-    
+
   handleUrl:  ->
     url = prompt 'Enter a URL:'
     return if url is null
@@ -429,7 +429,6 @@ QR =
     if (e.ctrlKey or e.metaKey) and e.type is 'click'
       $.addClass QR.nodes.filename, 'edit'
       QR.nodes.filename.focus()
-      return $.on QR.nodes.filename, 'blur', -> $.rmClass QR.nodes.filename, 'edit'
     return if e.target.nodeName is 'INPUT' or (e.keyCode and e.keyCode not in [32, 13]) or e.ctrlKey
     e.preventDefault()
     QR.nodes.fileInput.click()
@@ -437,11 +436,11 @@ QR =
   generatePostableThreadsList: ->
     return unless QR.nodes
     list    = QR.nodes.thread
-    options = [list.firstChild]
+    options = [list.firstElementChild]
     for thread in g.BOARD.threads.keys
       options.push $.el 'option',
         value: thread
-        textContent: "Thread No.#{thread}"
+        textContent: "No.#{thread}"
     val = list.value
     $.rmAll list
     $.add list, options
@@ -544,6 +543,7 @@ QR =
     $.on nodes.urlButton,  'click',  QR.handleUrl
     $.on nodes.addPost,    'click',  -> new QR.post true
     $.on nodes.form,       'submit', QR.submit
+    $.on nodes.filename,   'blur',   -> $.rmClass @, 'edit'
     $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
     $.on nodes.fileExtras, 'click',  (e) -> e.stopPropagation()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
@@ -661,7 +661,7 @@ QR =
         QR.status()
         QR.error $.el 'span',
           <%= html(
-            '${g.NAME} encountered an error while posting. ' +
+            meta.name + ' encountered an error while posting. ' +
             '[<a href="//4chan.org/banned" target="_blank">Banned?</a>] ' +
             '[<a href="${g.FAQ}#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target="_blank">More info</a>]'
           ) %>
