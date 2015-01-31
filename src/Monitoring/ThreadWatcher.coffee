@@ -14,7 +14,7 @@ ThreadWatcher =
 
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
-    @refreshButton = $ '.move > .refresh', @dialog
+    @refreshButton = $ '.refresh', @dialog
     @unreaddb = Unread.db or new DataBoard 'lastReadPosts'
 
     $.on d, 'QRPostSuccessful',   @cb.post
@@ -36,13 +36,6 @@ ThreadWatcher =
 
     ThreadWatcher.fetchAuto()
 
-    Post.callbacks.push
-      name: 'Thread Watcher'
-      cb:   @node
-    CatalogThread.callbacks.push
-      name: 'Thread Watcher'
-      cb:   @catalogNode
-
     if g.VIEW is 'index' and Conf['JSON Navigation'] and Conf['Menu'] and g.BOARD.ID isnt 'f'
       Menu.menu.addEntry
         el: $.el 'a', href: 'javascript:;'
@@ -59,6 +52,13 @@ ThreadWatcher =
             ThreadWatcher.toggle thread
           $.on @el, 'click', @cb
           true
+
+    Post.callbacks.push
+      name: 'Thread Watcher'
+      cb:   @node
+    CatalogThread.callbacks.push
+      name: 'Thread Watcher'
+      cb:   @catalogNode
 
   isWatched: (thread) ->
     ThreadWatcher.db?.get {boardID: thread.board.ID, threadID: thread.ID}

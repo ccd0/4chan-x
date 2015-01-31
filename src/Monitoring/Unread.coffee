@@ -1,20 +1,21 @@
 Unread =
   init: ->
-    return if g.VIEW isnt 'thread' or
-      !Conf['Unread Count'] and
-      !Conf['Unread Favicon'] and
-      !Conf['Unread Line'] and
-      !Conf['Scroll to Last Read Post'] and
-      !Conf['Thread Watcher'] and
-      !Conf['Desktop Notifications'] and
-      !Conf['Quote Threading']
+    return unless g.VIEW is 'thread' and (
+      Conf['Unread Count'] or
+      Conf['Unread Favicon'] or
+      Conf['Unread Line'] or
+      Conf['Scroll to Last Read Post'] or
+      Conf['Thread Watcher'] or
+      Conf['Desktop Notifications'] or
+      Conf['Quote Threading']
+    )
 
     @db = new DataBoard 'lastReadPosts', @sync
     @hr = $.el 'hr',
       id: 'unread-line'
-    @posts = new Set
-    @postsQuotingYou = new Set
-    @order = new RandomAccessList
+    @posts = new Set()
+    @postsQuotingYou = new Set()
+    @order = new RandomAccessList()
     @position = null
 
     Thread.callbacks.push
@@ -182,6 +183,7 @@ Unread =
   updatePosition: ->
     while Unread.position and !Unread.posts.has Unread.position.ID
       Unread.position = Unread.position.next
+    return
 
   saveLastReadPost: $.debounce 2 * $.SECOND, ->
     postIDs = Unread.thread.posts.keys
