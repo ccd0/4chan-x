@@ -397,7 +397,7 @@ QR =
         else if duration > QR.max_duration_video
           QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
           pass = false
-        if video.mozHasAudio or video.webkitAudioDecodedByteCount
+        if g.BOARD.ID not in ['gif', 'wsg'] and (video.mozHasAudio or video.webkitAudioDecodedByteCount)
           QR.error "#{file.name}: Audio not allowed"
           pass = false
         cb pass, video
@@ -495,7 +495,7 @@ QR =
       +nodes.fileInput.max
 
     QR.max_width_video = QR.max_height_video = 2048
-    QR.max_duration_video = 120
+    QR.max_duration_video = if g.BOARD.ID in ['gif', 'wsg'] then 300 else 120
 
     if Conf['Show New Thread Option in Threads']
       $.addClass QR.nodes.el, 'show-new-thread-option'
