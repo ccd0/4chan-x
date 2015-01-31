@@ -172,6 +172,7 @@ ImageExpand =
       thumb.parentNode.removeAttribute 'target'
 
       el.loop = true
+      el.muted = !Conf['Allow Sound']
 
     if !isVideo
       $.asap (-> el.naturalHeight), -> ImageExpand.completeExpand post

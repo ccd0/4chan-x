@@ -147,6 +147,7 @@ Gallery =
     $.replace nodes.current, file
     if elType is 'video'
       file.loop = true
+      file.muted = !Conf['Allow Sound']
       file.play() if Conf['Autoplay']
       ImageCommon.addControls file if Conf['Show Controls']
     nodes.count.textContent = +thumb.dataset.id + 1

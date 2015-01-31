@@ -244,6 +244,10 @@ Config =
         true
         'Show controls on videos expanded inline.'
       ]
+      'Allow Sound': [
+        true
+        'Allow sound in videos.'
+      ]
       'Loop in New Tab': [
         true
         'Loop videos opened in their own tabs.'

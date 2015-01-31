@@ -38,6 +38,7 @@ ImageHover =
     if isVideo
       el.loop     = true
       el.controls = false
+      el.muted    = !Conf['Allow Sound']
       el.play() if Conf['Autoplay']
     [width, height] = file.dimensions.split('x').map (x) -> +x
     {left, right} = @getBoundingClientRect()

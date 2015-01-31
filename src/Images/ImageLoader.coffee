@@ -46,6 +46,7 @@ ImageLoader =
     video = $.el 'video',
       preload:     'none'
       loop:        true
+      muted:       true
       poster:      thumb.src
       textContent: thumb.alt
       className:   thumb.className
