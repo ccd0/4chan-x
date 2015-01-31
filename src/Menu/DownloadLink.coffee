@@ -1,6 +1,6 @@
 DownloadLink =
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or !Conf['Menu'] or !Conf['Download Link']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Download Link']
 
     a = $.el 'a',
       className: 'download-link'
