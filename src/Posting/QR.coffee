@@ -397,6 +397,9 @@ QR =
         else if duration > QR.max_duration_video
           QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
           pass = false
+        if video.mozHasAudio or video.webkitAudioDecodedByteCount
+          QR.error "#{file.name}: Audio not allowed"
+          pass = false
         cb pass, video
         cb = null
       $.on video, 'error', ->
