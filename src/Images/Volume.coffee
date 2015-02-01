@@ -2,7 +2,7 @@ Volume =
   init: ->
     return unless g.BOARD.ID in ['gif', 'wsg'] and
       g.VIEW in ['index', 'thread'] and
-      (Conf['Image Expansion'] or Conf['Image Hover'] or Conf['Image Hover in Catalog'] or Conf['Gallery'])
+      (Conf['Image Expansion'] or Conf['Image Hover'] or Conf['Gallery'])
 
     unmuteEntry = UI.checkbox 'Allow Sound', ' Allow Sound'
     unmuteEntry.title = Config.main['Images and Videos']['Allow Sound'][1]
