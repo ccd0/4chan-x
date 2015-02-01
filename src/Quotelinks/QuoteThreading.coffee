@@ -15,11 +15,10 @@ QuoteThreading =
       hidden: true
     $.extend @threadNewLink, <%= html('<a href="javascript:;">Thread New Posts</a>') %>
 
-    $.on $('input', @controls), 'change', ->
-      QuoteThreading.rethread @checked
-    $.on @threadNewLink.firstElementChild, 'click', ->
-      QuoteThreading.threadNewLink.hidden = true
-      QuoteThreading.rethread true
+    @input = $('input', @controls)
+
+    $.on @input, 'change', @cb.thread
+    $.on @threadNewLink.firstElementChild, 'click', @cb.click
 
     Header.menu.addEntry @entry =
       el:    @controls
@@ -45,10 +44,10 @@ QuoteThreading =
   node: ->
     return if @isFetchedQuote or @isClone or !@isReply
     {thread} = QuoteThreading
-    parents = for quote in @quotes
-      parent = g.posts[quote]
-      continue if !parent or parent.isFetchedQuote or !parent.isReply or parent.ID >= @ID
-      parent
+    parents = (parent for quote in @quotes when (parent = g.posts[quote]) and
+      not parent.isFetchedQuote and parent.isReply and parent.ID < @ID
+    )
+
     if parents.length is 1
       QuoteThreading.parent[@fullID] = parents[0]
 
@@ -65,9 +64,10 @@ QuoteThreading =
       !QuoteThreading.inserted[post.fullID]
 
     descendants = QuoteThreading.descendants post
-    if !Unread.posts.has(parent.ID) and descendants.some((x) -> Unread.posts.has(x.ID))
-      QuoteThreading.threadNewLink.hidden = false
-      return false
+    if !Unread.posts.has(parent.ID)
+      if (do -> return true for x in descendants when Unread.posts.has x.ID)
+        QuoteThreading.threadNewLink.hidden = false
+        return false
 
     {order} = Unread
     children = (QuoteThreading.children[parent.fullID] or= [])
@@ -107,7 +107,7 @@ QuoteThreading =
       posts.forEach QuoteThreading.insert
     else
       nodes = []
-      Unread.order = new RandomAccessList
+      Unread.order = new RandomAccessList()
       QuoteThreading.inserted = {}
       posts.forEach (post) ->
         return if post.isFetchedQuote
@@ -125,3 +125,9 @@ QuoteThreading =
     Unread.setLine true
     Unread.read()
     Unread.update()
+
+  cb:
+    thread: -> QuoteThreading.rethread QuoteThreading.input.checked
+    click: ->
+      QuoteThreading.threadNewLink.hidden = true
+      QuoteThreading.rethread true

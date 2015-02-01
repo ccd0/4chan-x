@@ -74,7 +74,9 @@ Quotify =
 
     @quotes.push quoteID unless quoteID in @quotes
 
-    return deadlink.textContent = "#{quote}\u00A0(Dead)" unless a
+    unless a
+      deadlink.textContent = "#{quote}\u00A0(Dead)"
+      return
 
     $.replace deadlink, a
     if $.hasClass a, 'quotelink'
