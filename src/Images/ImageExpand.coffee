@@ -11,6 +11,8 @@ ImageExpand =
     $.on @EAI, 'click', @cb.toggleAll
     Header.addShortcut @EAI, 3
     $.on d, 'scroll visibilitychange', @cb.playVideos
+    @videoControls = $.el 'span', className: 'video-controls'
+    $.extend @videoControls, <%= html('\u00A0<a href="javascript:;" title="You can also contract the video by dragging it to the left.">contract</a>') %>
 
     Post.callbacks.push
       name: 'Image Expansion'
@@ -28,6 +30,8 @@ ImageExpand =
         ImageExpand.expand @
 
       else if @file.isExpanded and @file.isVideo
+        Volume.setup @file.fullImage
+        ImageExpand.setupVideoCB @
         ImageExpand.setupVideo @, !@origin.file.fullImage?.paused or @origin.file.wasPlaying, @file.fullImage.controls
 
     else if ImageExpand.on and !@isHidden and !@isFetchedQuote and
@@ -79,7 +83,7 @@ ImageExpand =
           continue unless file and file.isVideo and file.isExpanded
 
           video = file.fullImage
-          visible = Header.isNodeVisible video
+          visible = ($.hasAudio(video) and not video.muted) or Header.isNodeVisible video
           if visible and file.wasPlaying
             delete file.wasPlaying
             video.play()
@@ -117,9 +121,10 @@ ImageExpand =
 
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass file.thumb,      'expanding'
+    $.rm file.videoControls if file.videoControls
     file.thumb.parentNode.href   = file.URL
     file.thumb.parentNode.target = '_blank'
-    for x in ['isExpanding', 'isExpanded', 'wasPlaying', 'scrollIntoView']
+    for x in ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying', 'scrollIntoView']
       delete file[x]
 
     return unless el
@@ -139,6 +144,8 @@ ImageExpand =
     ImageCommon.pushCache el
     if file.isVideo
       el.pause()
+      for eventName, cb of ImageExpand.videoCB
+        $.off el, eventName, cb
     ImageCommon.rewind file.thumb if Conf['Restart when Opened']
     delete file.fullImage
     $.queueTask ->
@@ -165,6 +172,7 @@ ImageExpand =
       ImageCommon.rewind el if Conf['Restart when Opened'] and el.id isnt 'ihover'
       el.removeAttribute 'id'
     else
+      isNew = true
       el = file.fullImage = $.el (if isVideo then 'video' else 'img')
       el.dataset.fullID = post.fullID
       $.on el, 'error', ImageExpand.error
@@ -174,11 +182,18 @@ ImageExpand =
     $.after thumb, el
 
     if isVideo
+      # add contract link to file info
+      if Conf['Show Controls'] and Conf['Click Passthrough'] and !file.videoControls
+        file.videoControls = ImageExpand.videoControls.cloneNode true
+        $.add file.text, file.videoControls
+
       # disable link to file so native controls can work
       thumb.parentNode.removeAttribute 'href'
       thumb.parentNode.removeAttribute 'target'
 
       el.loop = true
+      Volume.setup el, isNew
+      ImageExpand.setupVideoCB post
 
     if !isVideo
       $.asap (-> el.naturalHeight), -> ImageExpand.completeExpand post
@@ -227,6 +242,20 @@ ImageExpand =
         post.file.wasPlaying = true
     if controls
       ImageCommon.addControls fullImage
+
+  videoCB: do ->
+    # dragging to the left contracts the video
+    mousedown = false
+    mouseover:     -> mousedown = false
+    mousedown: (e) -> mousedown = true  if e.button is 0
+    mouseup:   (e) -> mousedown = false if e.button is 0
+    mouseout:  (e) -> ImageExpand.toggle(Get.postFromNode @) if mousedown and e.clientX <= @getBoundingClientRect().left
+
+  setupVideoCB: (post) ->
+    for eventName, cb of ImageExpand.videoCB
+      $.on post.file.fullImage, eventName, cb
+    if post.file.videoControls
+      $.on post.file.videoControls.firstElementChild, 'click', -> ImageExpand.toggle post
 
   error: ->
     post = Get.postFromNode @

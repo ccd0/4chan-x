@@ -182,6 +182,12 @@ Config =
       'Image Hover in Catalog': [
         false
         'Show full image / video on mouseover in <%= meta.name %> catalog.'
+        1
+      ]
+      'Mouse Wheel Volume': [
+        true
+        'Adjust volume of hovering videos with mouse wheel.'
+        1
       ]
       'Gallery': [
         true
@@ -245,9 +251,22 @@ Config =
         true
         'Show controls on videos expanded inline.'
       ]
+      'Click Passthrough': [
+        false
+        'Clicks on videos trigger your browser\'s default behavior. Videos can be contracted with button / dragging to the left.'
+        1
+      ]
+      'Allow Sound': [
+        true
+        'Open videos with the sound unmuted.'
+      ]
       'Loop in New Tab': [
         true
         'Loop videos opened in their own tabs.'
+      ]
+      'Volume in New Tab': [
+        true
+        'Apply <%= meta.name %> mute and volume settings to videos opened in their own tabs.'
       ]
 
     'Menu':
@@ -555,6 +574,8 @@ Config =
     'Slide Delay': [
       6.0
     ]
+
+  'Default Volume': 1.0
 
   threadWatcher:
     'Current Board': [

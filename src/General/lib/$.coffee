@@ -296,6 +296,9 @@ $.minmax = (value, min, max) ->
         value
     )
 
+$.hasAudio = (video) ->
+  video.mozHasAudio or !!video.webkitAudioDecodedByteCount
+
 $.item = (key, val) ->
   item = {}
   item[key] = val

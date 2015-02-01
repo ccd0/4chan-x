@@ -25,7 +25,7 @@ QR =
       cb:   @node
 
     if Conf['QR Shortcut']
-      sc = $.el 'a',
+      @shortcut = sc = $.el 'a',
         className: 'qr-shortcut fa fa-comment-o disabled'
         textContent: 'QR' 
         title: 'Quick Reply'
@@ -112,7 +112,7 @@ QR =
           error: err
         return
     if Conf['QR Shortcut']
-      $.rmClass $('.qr-shortcut'), 'disabled'
+      $.rmClass QR.shortcut, 'disabled'
 
   close: ->
     if QR.req
@@ -123,7 +123,7 @@ QR =
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
     if Conf['QR Shortcut']
-      $.addClass $('.qr-shortcut'), 'disabled'
+      $.addClass QR.shortcut, 'disabled'
     new QR.post true
     for post in QR.posts.splice 0, QR.posts.length - 1
       post.delete()
@@ -404,7 +404,7 @@ QR =
         else if duration > QR.max_duration_video
           QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
           pass = false
-        if video.mozHasAudio or video.webkitAudioDecodedByteCount
+        if g.BOARD.ID not in ['gif', 'wsg'] and $.hasAudio video
           QR.error "#{file.name}: Audio not allowed"
           pass = false
         cb pass, video
@@ -496,9 +496,13 @@ QR =
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
 
-    QR.max_size_video = 3145728
+    QR.max_size_video = if m = Get.scriptData().match /\bmaxWebmFilesize *= *(\d+)\b/
+      +m[1]
+    else
+      +nodes.fileInput.max
+
     QR.max_width_video = QR.max_height_video = 2048
-    QR.max_duration_video = 120
+    QR.max_duration_video = if g.BOARD.ID in ['gif', 'wsg'] then 300 else 120
 
     if Conf['Show New Thread Option in Threads']
       $.addClass QR.nodes.el, 'show-new-thread-option'

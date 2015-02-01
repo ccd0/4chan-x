@@ -37,9 +37,11 @@ ImageLoader =
     video = $.el 'video',
       preload:     'none'
       loop:        true
+      muted:       true
       poster:      thumb.src
       textContent: thumb.alt
       className:   thumb.className
+    video.setAttribute 'muted', 'muted'
     video.dataset.md5 = thumb.dataset.md5
     video.style[attr] = thumb.style[attr] for attr in ['height', 'width', 'maxHeight', 'maxWidth']
     video.src         = file.URL

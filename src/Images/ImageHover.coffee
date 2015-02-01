@@ -1,10 +1,11 @@
 ImageHover =
   init: ->
-    return if g.VIEW not in ['index', 'thread']
-    if Conf['Image Hover']
-      Post.callbacks.push
-        name: 'Image Hover'
-        cb:   @node
+    return unless Conf['Image Hover'] and g.VIEW in ['index', 'thread']
+
+    Post.callbacks.push
+      name: 'Image Hover'
+      cb:   @node
+
     if Conf['Image Hover in Catalog']
       CatalogThread.callbacks.push
         name: 'Image Hover'
@@ -13,11 +14,13 @@ ImageHover =
   node: ->
     return unless @file and (@file.isImage or @file.isVideo)
     $.on @file.thumb, 'mouseover', ImageHover.mouseover @
+    $.on @file.thumb, 'wheel', ImageHover.wheel if Conf['Mouse Wheel Volume'] and @file.isVideo
 
   catalogNode: ->
     {file} = @thread.OP
     return unless file and (file.isImage or file.isVideo)
     $.on @nodes.thumb, 'mouseover', ImageHover.mouseover @thread.OP
+    $.on @nodes.thumb, 'wheel', ImageHover.wheel if Conf['Mouse Wheel Volume'] and @thread.OP.file.isVideo
 
   mouseover: (post) -> (e) ->
     return unless doc.contains @
@@ -29,6 +32,7 @@ ImageHover =
       el = ImageCommon.popCache()
       $.on el, 'error', error
     else
+      isNew = true
       el = $.el (if isVideo then 'video' else 'img')
       el.dataset.fullID = post.fullID
       $.on el, 'error', error
@@ -42,6 +46,7 @@ ImageHover =
     if isVideo
       el.loop     = true
       el.controls = false
+      Volume.setup el, isNew
       el.play() if Conf['Autoplay']
     [width, height] = (+x for x in file.dimensions.split 'x')
     {left, right} = @getBoundingClientRect()
@@ -73,3 +78,12 @@ ImageHover =
         @src = URL + if @src is URL then '?' + Date.now() else ''
       else
         $.rm @
+
+  wheel: (e) ->
+    return unless el = $.id 'ihover'
+    return if el.muted or not $.hasAudio el
+    {volume} = el
+    volume += 0.1 if e.deltaY < 0
+    volume -= 0.1 if e.deltaY > 0
+    el.volume = $.minmax volume, 0, 1
+    e.preventDefault()

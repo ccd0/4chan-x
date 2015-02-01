@@ -2,7 +2,84 @@ The attributions below are for work that has been incorporated into the script a
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+<!-- v1.9.22.x -->
+### v1.9.22.4 
+*2015-02-01* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.4/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Fix bugs in syncing of mute/volume settings between tabs.
+
+### v1.9.22.3 
+*2015-02-01* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.3/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Add option `Volume in New Tab` (on by default) to apply 4chan X mute/volume settings to videos opened in a new tab.
+
+### v1.9.22.2 
+*2015-02-01* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.2/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- 4chan X will now remember your last index mode regardless of how it was chosen (previously only index modes chosen with the drop-down menu were considered permanent choices).
+
+### v1.9.22.1 
+*2015-02-01* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.1/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Add option `Mouse Wheel Volume` (on by default) to adjust the volume of hovering images with the mouse wheel.
+- `Image Hover in Catalog` is now a suboption of `Image Hover`.
+- Merge v1.9.21.10, v1.9.21.11: Add `Click Passthrough` option (off by default) to allow clicks on videos to perform the browser's default function. Restore dragging to the left to contract and the contract button (shown if `Click Passthrough` is on).
+
+### v1.9.22.0 
+*2015-01-31* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.0/builds/4chan-X-noupdate.crx "Chromium version")]
+
+Based on v1.9.21.9.
+
+- Open new videos with the mute and volume settings of the last video adjusted.
+- Add default volume control in the header menu, and duplicate "Allow Sounds" there.
+- Minor fixes.
+
 <!-- v1.9.21.x -->
+### v1.9.21.11 
+*2015-01-31* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.11/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Fix bug in `Click Passthrough`: was being applied to images.
+
+### v1.9.21.10 
+*2015-01-31* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.10/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Add `Click Passthrough` option (off by default) to allow clicks on videos to perform the browser's default function. Restore dragging to the left to contract and the contract button (shown if `Click Passthrough` is on).
+
+### v1.9.21.9 
+*2015-01-31* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.9/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Fix bug causing unmuting of videos in inline quotes.
+
+### v1.9.21.8 
+*2015-01-31* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.8/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Expanded WebMs with audio are no longer paused when offscreen.
+
+### v1.9.21.7 
+*2015-01-31* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.7/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Update WebM duration limit to 5 minutes on /gif/ and /wsg/.
+- Restore audio check before posting on other boards.
+
+### v1.9.21.6 
+*2015-01-31* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.6/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Update for changes in WebM filesize limits.
+
+### v1.9.21.5 
+*2015-01-30* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.5/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Fix sound playing from replaced WebM thumbnails in previewed/inlined quotes.
+
+### v1.9.21.4 
+*2015-01-30* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.4/builds/4chan-X-noupdate.crx "Chromium version")]
+
+Posting WebMs with sound has recently been enabled, at least on /wsg/.
+
+- Restore `Allow Sound` option.
+- Fix sound playing from replaced WebM thumbnails.
+- Remove check for sound before posting.
+
 ### v1.9.21.3 
 *2015-01-28* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.3/builds/4chan-X-noupdate.crx "Chromium version")]
 
@@ -17,7 +94,7 @@ The links to individual versions below are to copies of the script with the upda
 *2015-01-26* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.1/builds/4chan-X-noupdate.crx "Chromium version")]
 
 - Merge v1.9.20.9: Fix description of Thread Updater options in settings panel.
-- (hotdogman) `Pin Watched Threads` is now on by default.
+- (hotdogman) `Pin Watched Threads` (in header menu -> `Index Navigation`) is now on by default.
 - Change mouse cursor over expanded WebMs to pointer.
 
 ### v1.9.21.0 
