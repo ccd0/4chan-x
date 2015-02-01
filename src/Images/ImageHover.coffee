@@ -13,11 +13,13 @@ ImageHover =
   node: ->
     return unless @file and (@file.isImage or @file.isVideo)
     $.on @file.thumb, 'mouseover', ImageHover.mouseover @
+    $.on @file.thumb, 'wheel', ImageHover.wheel if Conf['Mouse Wheel Volume'] and @file.isVideo
 
   catalogNode: ->
     {file} = @thread.OP
     return unless file and (file.isImage or file.isVideo)
     $.on @nodes.thumb, 'mouseover', ImageHover.mouseover @thread.OP
+    $.on @nodes.thumb, 'wheel', ImageHover.wheel if Conf['Mouse Wheel Volume'] and @thread.OP.file.isVideo
 
   mouseover: (post) -> (e) ->
     return unless doc.contains @
@@ -75,3 +77,12 @@ ImageHover =
         @src = URL + if @src is URL then '?' + Date.now() else ''
       else
         $.rm @
+
+  wheel: (e) ->
+    return unless el = $.id 'ihover'
+    return if el.muted or not $.hasAudio el
+    {volume} = el
+    volume += 0.1 if e.deltaY < 0
+    volume -= 0.1 if e.deltaY > 0
+    el.volume = $.minmax volume, 0, 1
+    e.preventDefault()

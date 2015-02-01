@@ -183,6 +183,10 @@ Config =
         false
         'Show full image / video on mouseover in <%= meta.name %> catalog.'
       ]
+      'Mouse Wheel Volume': [
+        true
+        'Adjust volume of hovering videos with mouse wheel.'
+      ]
       'Gallery': [
         true
         'Adds a simple and cute image gallery.'
