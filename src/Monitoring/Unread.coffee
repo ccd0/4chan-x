@@ -182,6 +182,7 @@ Unread =
   updatePosition: ->
     while Unread.position and !Unread.posts.has Unread.position.ID
       Unread.position = Unread.position.next
+    return
 
   saveLastReadPost: $.debounce 2 * $.SECOND, ->
     postIDs = Unread.thread.posts.keys
