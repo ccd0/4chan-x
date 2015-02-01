@@ -13,6 +13,11 @@ Based on v1.9.21.9.
 - Minor fixes.
 
 <!-- v1.9.21.x -->
+### v1.9.21.11 
+*2015-01-31* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.11/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Fix bug in `Click Passthrough`: was being applied to images.
+
 ### v1.9.21.10 
 *2015-01-31* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.10/builds/4chan-X-noupdate.crx "Chromium version")]
 

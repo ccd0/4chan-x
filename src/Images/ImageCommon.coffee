@@ -82,7 +82,7 @@ ImageCommon =
 
   # XXX Estimate whether clicks are on the video controls and should be ignored.
   onControls: (e) ->
-    (Conf['Show Controls'] and Conf['Click Passthrough']) or
+    (Conf['Show Controls'] and Conf['Click Passthrough'] and e.target.nodeName is 'VIDEO') or
       (e.target.controls and e.target.getBoundingClientRect().bottom - e.clientY < 35)
 
   download: (e) ->
