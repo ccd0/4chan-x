@@ -3,6 +3,13 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.22.x -->
+### v1.9.22.1 
+*2015-02-01* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.1/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Add option `Mouse Wheel Volume` (on by default) to adjust the volume of hovering images with the mouse wheel.
+- `Image Hover in Catalog` is now a suboption of `Image Hover`.
+- Merge v1.9.21.10, v1.9.21.11: Add `Click Passthrough` option (off by default) to allow clicks on videos to perform the browser's default function. Restore dragging to the left to contract and the contract button (shown if `Click Passthrough` is on).
+
 ### v1.9.22.0 
 *2015-01-31* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.0/builds/4chan-X-noupdate.crx "Chromium version")]
 
