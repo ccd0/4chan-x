@@ -28,6 +28,7 @@ ImageExpand =
         ImageExpand.expand @
 
       else if @file.isExpanded and @file.isVideo
+        @file.fullImage.muted = !Conf['Allow Sound']
         ImageExpand.setupVideo @, !@origin.file.fullImage?.paused or @origin.file.wasPlaying, @file.fullImage.controls
 
     else if ImageExpand.on and !@isHidden and !@isFetchedQuote and
