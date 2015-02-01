@@ -338,6 +338,7 @@ Main =
     ['Reveal Spoiler Thumbnails', RevealSpoilers]
     ['Image Loading',             ImageLoader]
     ['Image Hover',               ImageHover]
+    ['Volume Control',            Volume]
     ['Comment Expansion',         ExpandComment]
     ['Thread Expansion',          ExpandThread]
     ['Thread Excerpt',            ThreadExcerpt]

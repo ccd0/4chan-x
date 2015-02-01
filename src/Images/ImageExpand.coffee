@@ -28,7 +28,7 @@ ImageExpand =
         ImageExpand.expand @
 
       else if @file.isExpanded and @file.isVideo
-        @file.fullImage.muted = !Conf['Allow Sound']
+        Volume.setup @file.fullImage
         ImageExpand.setupVideo @, !@origin.file.fullImage?.paused or @origin.file.wasPlaying, @file.fullImage.controls
 
     else if ImageExpand.on and !@isHidden and !@isFetchedQuote and
@@ -168,6 +168,7 @@ ImageExpand =
       ImageCommon.rewind el if Conf['Restart when Opened'] and el.id isnt 'ihover'
       el.removeAttribute 'id'
     else
+      isNew = true
       el = file.fullImage = $.el (if isVideo then 'video' else 'img')
       el.dataset.fullID = post.fullID
       $.on el, 'error', ImageExpand.error
@@ -182,7 +183,7 @@ ImageExpand =
       thumb.parentNode.removeAttribute 'target'
 
       el.loop = true
-      el.muted = !Conf['Allow Sound']
+      Volume.setup el, isNew
 
     if !isVideo
       $.asap (-> el.naturalHeight), -> ImageExpand.completeExpand post

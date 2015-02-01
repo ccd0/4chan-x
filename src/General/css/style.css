@@ -928,6 +928,12 @@ span.hide-announcement {
 .fileThumb > .warning {
   clear: both;
 }
+input[name="Default Volume"] {
+  width: 4em;
+  height: 1ex;
+  vertical-align: middle;
+  margin: 0px;
+}
 /* Fappe Tyme */
 :root.fappeTyme .thread > .noFile,
 :root.fappeTyme .threadContainer > .noFile {

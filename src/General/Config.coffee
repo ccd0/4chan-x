@@ -247,7 +247,7 @@ Config =
       ]
       'Allow Sound': [
         true
-        'Allow sound in videos.'
+        'Open videos with the sound unmuted.'
       ]
       'Loop in New Tab': [
         true
@@ -559,6 +559,8 @@ Config =
     'Slide Delay': [
       6.0
     ]
+
+  'Default Volume': 1.0
 
   threadWatcher:
     'Current Board': [
