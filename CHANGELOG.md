@@ -47,7 +47,7 @@ Posting WebMs with sound has recently been enabled, at least on /wsg/.
 *2015-01-26* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.21.1/builds/4chan-X-noupdate.crx "Chromium version")]
 
 - Merge v1.9.20.9: Fix description of Thread Updater options in settings panel.
-- (hotdogman) `Pin Watched Threads` is now on by default.
+- (hotdogman) `Pin Watched Threads` (in header menu -> `Index Navigation`) is now on by default.
 - Change mouse cursor over expanded WebMs to pointer.
 
 ### v1.9.21.0 
