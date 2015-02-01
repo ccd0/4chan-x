@@ -60,6 +60,7 @@ class Clone extends Post
       @file.text  = file.firstElementChild
       @file.thumb = $ '.fileThumb > [data-md5]', file
       @file.fullImage = $ '.full-image', file
+      @file.videoControls = $ '.video-controls', @file.text
 
       @file.thumb.muted = true if @file.videoThumb
 

@@ -251,6 +251,11 @@ Config =
         true
         'Show controls on videos expanded inline.'
       ]
+      'Click Passthrough': [
+        false
+        'Clicks on videos trigger your browser\'s default behavior. Videos can be contracted with button / dragging to the left.'
+        1
+      ]
       'Allow Sound': [
         true
         'Open videos with the sound unmuted.'
