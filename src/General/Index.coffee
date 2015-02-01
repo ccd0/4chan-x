@@ -230,9 +230,13 @@ Index =
         {search, mode} = e.state
         page = Index.getCurrentPage()
         state = {}
-        state.search = Index.search       = search if Index.search       isnt search
-        state.mode   = Conf['Index Mode'] = mode   if Conf['Index Mode'] isnt mode
-        state.page   = Index.currentPage  = page   if Index.currentPage  isnt page
+        if Index.search isnt search
+          state.search = Index.search = search
+        if Conf['Index Mode'] isnt mode
+          state.mode = mode
+          Index.saveMode mode
+        if Index.currentPage isnt page
+          state.page = Index.currentPage = page
         if state.search? or state.mode? or state.page?
           Index.pageLoad state
       else
@@ -306,7 +310,7 @@ Index =
     if state.mode?
       {mode} = state
       delete state.mode if mode is Conf['Index Mode']
-      Conf['Index Mode'] = mode
+      Index.saveMode mode
       state.page = 1 if mode in ['all pages', 'catalog']
       hash = ''
     if state.page?
@@ -321,6 +325,13 @@ Index =
       oldpage: pageBeforeSearch
     , '', pathname + hash
     state
+
+  saveMode: (mode) ->
+    Conf['Index Mode'] = mode
+    $.set 'Index Mode', mode
+    unless mode is 'catalog'
+      Conf['Previous Index Mode'] = mode
+      $.set 'Previous Index Mode', mode
 
   pageLoad: ({sort, search, mode, scroll}) ->
     if sort or search?
