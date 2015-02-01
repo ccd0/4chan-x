@@ -1,8 +1,17 @@
 Volume =
   init: ->
-    return unless g.BOARD.ID in ['gif', 'wsg'] and
-      g.VIEW in ['index', 'thread'] and
+    return unless g.VIEW in ['index', 'thread'] and
       (Conf['Image Expansion'] or Conf['Image Hover'] or Conf['Gallery'])
+
+    $.sync 'Allow Sound', (x) ->
+      Conf['Allow Sound'] = x
+      Volume.inputs?.unmute.checked = x
+
+    $.sync 'Default Volume', (x) ->
+      Conf['Default Volume'] = x
+      Volume.inputs?.volume.value = x
+
+    return unless g.BOARD.ID in ['gif', 'wsg']
 
     unmuteEntry = UI.checkbox 'Allow Sound', ' Allow Sound'
     unmuteEntry.title = Config.main['Images and Videos']['Allow Sound'][1]
@@ -18,9 +27,6 @@ Volume =
 
     $.on @inputs.unmute, 'change', $.cb.checked
     $.on @inputs.volume, 'change', $.cb.value
-
-    $.sync 'Allow Sound',    (x) -> Volume.inputs.unmute.checked = x
-    $.sync 'Default Volume', (x) -> Volume.inputs.volume.value = x
 
     Header.menu.addEntry {el: unmuteEntry, order: 200}
     Header.menu.addEntry {el: volumeEntry, order: 201}
