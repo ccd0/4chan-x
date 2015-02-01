@@ -28,9 +28,9 @@ Volume =
   setup: (video, isNew=true) ->
     video.muted  = !Conf['Allow Sound']
     video.volume = Conf['Default Volume']
-    $.on video, 'volumechange', Volume.onchange if isNew
+    $.on video, 'volumechange', Volume.change if isNew
 
-  onchange: ->
+  change: ->
     {muted, volume} = @
     items =
       'Allow Sound': !muted
