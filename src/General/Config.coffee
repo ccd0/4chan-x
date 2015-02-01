@@ -264,6 +264,10 @@ Config =
         true
         'Loop videos opened in their own tabs.'
       ]
+      'Volume in New Tab': [
+        true
+        'Apply <%= meta.name %> mute and volume settings to videos opened in their own tabs.'
+      ]
 
     'Menu':
       'Menu': [
