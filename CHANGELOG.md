@@ -1,4 +1,4 @@
-The attributions below are for work that has been incorporated into the script and do not indicate direct involvement in this fork. All changes to the script are the fault of the maintainer (ccd0).
+Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
