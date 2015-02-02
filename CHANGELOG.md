@@ -3,6 +3,11 @@ The attributions below are for work that has been incorporated into the script a
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.22.x -->
+### v1.9.22.5 
+*2015-02-01* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.5/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Make scroll wheel volume adjustments finer at low volumes.
+
 ### v1.9.22.4 
 *2015-02-01* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.4/builds/4chan-X-noupdate.crx "Chromium version")]
 
