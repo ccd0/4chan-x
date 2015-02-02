@@ -10,8 +10,51 @@ CrossOrigin = do ->
         callbacks[id] = cb
   <% } %>
 
-  file: do ->
-    makeBlob = (urlBlob, contentType, contentDisposition, url) ->
+  binary: (url, cb, headers={}) ->
+    <% if (type === 'crx') { %>
+    if /^https:\/\//.test(url) or location.protocol is 'http:'
+      xhr = new XMLHttpRequest()
+      xhr.open 'GET', url, true
+      xhr.setRequestHeader key, value for key, value of headers
+      xhr.responseType = 'arraybuffer'
+      xhr.onload = ->
+        return cb null unless @readyState is @DONE and @status in [200, 206]
+        contentType        = @getResponseHeader 'Content-Type'
+        contentDisposition = @getResponseHeader 'Content-Disposition'
+        cb new Uint8Array(@response), contentType, contentDisposition
+      xhr.onerror = xhr.onabort = ->
+        cb null
+      xhr.send()
+    else
+      eventPageRequest url, 'arraybuffer', ({response, contentType, contentDisposition, error}) ->
+        return cb null if error
+        cb new Uint8Array(response), contentType, contentDisposition
+    <% } %>
+    <% if (type === 'userscript') { %>
+    GM_xmlhttpRequest
+      method: "GET"
+      url: url
+      headers: headers
+      overrideMimeType: "text/plain; charset=x-user-defined"
+      onload: (xhr) ->
+        r = xhr.responseText
+        data = new Uint8Array r.length
+        i = 0
+        while i < r.length
+          data[i] = r.charCodeAt i
+          i++
+        contentType        = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)?[1]
+        contentDisposition = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)?[1]
+        cb data, contentType, contentDisposition
+      onerror: ->
+        cb null
+      onabort: ->
+        cb null
+    <% } %>
+
+  file: (url, cb) ->
+    CrossOrigin.binary url, (data, contentType, contentDisposition) ->
+      return cb null unless data?
       name = url.match(/([^\/]+)\/*$/)?[1]
       mime = contentType?.match(/[^;]*/)[0] or 'application/octet-stream'
       match =
@@ -19,45 +62,9 @@ CrossOrigin = do ->
         contentType?.match(/\bname\s*=\s*"((\\"|[^"])+)"/i)?[1]
       if match
         name = match.replace /\\"/g, '"'
-      blob = new Blob([urlBlob], {type: mime})
+      blob = new Blob([data], {type: mime})
       blob.name = name
-      blob
-
-    (url, cb) ->
-      <% if (type === 'crx') { %>
-      if /^https:\/\//.test(url) or location.protocol is 'http:'
-        $.ajax url,
-          responseType: 'blob'
-          onload: ->
-            return cb null unless @readyState is @DONE and @status is 200
-            contentType        = @getResponseHeader 'Content-Type'
-            contentDisposition = @getResponseHeader 'Content-Disposition'
-            cb (makeBlob @response, contentType, contentDisposition, url)
-          onerror: ->
-            cb null
-      else
-        eventPageRequest url, 'arraybuffer', ({response, contentType, contentDisposition, error}) ->
-          return cb null if error
-          cb (makeBlob new Uint8Array(response), contentType, contentDisposition, url)
-      <% } %>
-      <% if (type === 'userscript') { %>
-      GM_xmlhttpRequest
-        method: "GET"
-        url: url
-        overrideMimeType: "text/plain; charset=x-user-defined"
-        onload: (xhr) ->
-          r = xhr.responseText
-          data = new Uint8Array r.length
-          i = 0
-          while i < r.length
-            data[i] = r.charCodeAt i
-            i++
-          contentType        = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)?[1]
-          contentDisposition = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)?[1]
-          cb (makeBlob data, contentType, contentDisposition, url)
-        onerror: ->
-          cb null
-      <% } %>
+      cb blob
 
   json: do ->
     callbacks = {}

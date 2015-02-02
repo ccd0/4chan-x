@@ -1,7 +1,7 @@
 Volume =
   init: ->
     return unless g.VIEW in ['index', 'thread'] and
-      (Conf['Image Expansion'] or Conf['Image Hover'] or Conf['Gallery'])
+      (Conf['Image Expansion'] or Conf['Image Hover'] or Conf['Image Hover in Catalog'] or Conf['Gallery'])
 
     $.sync 'Allow Sound', (x) ->
       Conf['Allow Sound'] = x

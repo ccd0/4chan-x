@@ -182,12 +182,10 @@ Config =
       'Image Hover in Catalog': [
         false
         'Show full image / video on mouseover in <%= meta.name %> catalog.'
-        1
       ]
       'Mouse Wheel Volume': [
         true
         'Adjust volume of hovering videos with mouse wheel.'
-        1
       ]
       'Gallery': [
         true
@@ -206,6 +204,10 @@ Config =
       'Sauce': [
         true
         'Add sauce links to images.'
+      ]
+      'WEBM Metadata': [
+        true
+        'Add link to fetch title metadata from webm videos.'
       ]
       'Reveal Spoiler Thumbnails': [
         false

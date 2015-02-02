@@ -1,11 +1,10 @@
 ImageHover =
   init: ->
-    return unless Conf['Image Hover'] and g.VIEW in ['index', 'thread']
-
-    Post.callbacks.push
-      name: 'Image Hover'
-      cb:   @node
-
+    return if g.VIEW not in ['index', 'thread']
+    if Conf['Image Hover']
+      Post.callbacks.push
+        name: 'Image Hover'
+        cb:   @node
     if Conf['Image Hover in Catalog']
       CatalogThread.callbacks.push
         name: 'Image Hover'
@@ -82,8 +81,8 @@ ImageHover =
   wheel: (e) ->
     return unless el = $.id 'ihover'
     return if el.muted or not $.hasAudio el
-    {volume} = el
-    volume += 0.1 if e.deltaY < 0
-    volume -= 0.1 if e.deltaY > 0
-    el.volume = $.minmax volume, 0, 1
+    volume = el.volume + 0.1
+    volume *= 1.1 if e.deltaY < 0
+    volume /= 1.1 if e.deltaY > 0
+    el.volume = $.minmax volume - 0.1, 0, 1
     e.preventDefault()

@@ -17,8 +17,8 @@ QuoteThreading =
 
     @input = $('input', @controls)
 
-    $.on @input, 'change', @cb.thread
-    $.on @threadNewLink.firstElementChild, 'click', @cb.click
+    $.on @input, 'change', @rethread
+    $.on @threadNewLink.firstElementChild, 'click', @rethread
 
     Header.menu.addEntry @entry =
       el:    @controls
@@ -99,11 +99,13 @@ QuoteThreading =
 
     return true
 
-  rethread: (enabled) ->
+  rethread: ->
     {thread} = QuoteThreading
     {posts} = thread
 
-    if QuoteThreading.enabled = enabled
+    QuoteThreading.threadNewLink.hidden = true
+
+    if QuoteThreading.enabled = QuoteThreading.input.checked
       posts.forEach QuoteThreading.insert
     else
       nodes = []
@@ -125,9 +127,3 @@ QuoteThreading =
     Unread.setLine true
     Unread.read()
     Unread.update()
-
-  cb:
-    thread: -> QuoteThreading.rethread QuoteThreading.input.checked
-    click: ->
-      QuoteThreading.threadNewLink.hidden = true
-      QuoteThreading.rethread true
