@@ -82,8 +82,8 @@ ImageHover =
   wheel: (e) ->
     return unless el = $.id 'ihover'
     return if el.muted or not $.hasAudio el
-    {volume} = el
-    volume += 0.1 if e.deltaY < 0
-    volume -= 0.1 if e.deltaY > 0
-    el.volume = $.minmax volume, 0, 1
+    volume = el.volume + 0.1
+    volume *= 1.1 if e.deltaY < 0
+    volume /= 1.1 if e.deltaY > 0
+    el.volume = $.minmax volume - 0.1, 0, 1
     e.preventDefault()
