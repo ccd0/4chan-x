@@ -928,6 +928,9 @@ span.hide-announcement {
 .fileThumb > .warning {
   clear: both;
 }
+a.webm-title.ready {
+  text-decoration: underline;
+}
 input[name="Default Volume"] {
   width: 4em;
   height: 1ex;

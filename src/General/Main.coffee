@@ -342,6 +342,7 @@ Main =
     ['Image Loading',             ImageLoader]
     ['Image Hover',               ImageHover]
     ['Volume Control',            Volume]
+    ['WEBM Metadata',             Metadata]
     ['Comment Expansion',         ExpandComment]
     ['Thread Expansion',          ExpandThread]
     ['Thread Excerpt',            ThreadExcerpt]
