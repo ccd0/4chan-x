@@ -19,6 +19,11 @@ The links to individual versions below are to copies of the script with the upda
 - `WEBM Metadata` option (on by default): Adds a link to display the title in the WebM metadata.
 
 <!-- v1.9.22.x -->
+### v1.9.22.7 
+*2015-02-03* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.7/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- `Pin Watched Threads` (in header menu -> `Index Navigation`) is now off by default.
+
 ### v1.9.22.6 
 *2015-02-02* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.6/builds/4chan-X-noupdate.crx "Chromium version")]
 
