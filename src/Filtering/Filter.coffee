@@ -60,7 +60,7 @@ Filter =
         # If not specified, the highlight class will be filter-highlight.
         # Defaults to post hiding.
         if hl = /highlight/.test filter
-          hl  = filter.match(/highlight:(\w+)/)?[1] or 'filter-highlight'
+          hl  = filter.match(/highlight:([\w-]+)/)?[1] or 'filter-highlight'
           # Put highlighted OP's thread on top of the board page or not.
           # Defaults to on top.
           top = filter.match(/top:(yes|no)/)?[1] or 'yes'
