@@ -190,9 +190,9 @@ Build =
         shortFilename = 'Spoiler Image'
         if spoilerRange = Build.spoilerRange[boardID]
           # Randomize the spoiler image.
-          fileThumb = "//s.4cdn.org/image/spoiler-#{boardID}#{Math.floor 1 + spoilerRange * Math.random()}.png"
+          fileThumb = "#{staticPath}spoiler-#{boardID}#{Math.floor 1 + spoilerRange * Math.random()}.png"
         else
-          fileThumb = '//s.4cdn.org/image/spoiler.png'
+          fileThumb = "#{staticPath}spoiler.png"
         file.twidth = file.theight = 100
       else
         shortFilename = Build.shortFilename file.name, !isOP
