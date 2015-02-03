@@ -101,6 +101,10 @@ Build =
         capcodeClass = ' capcodeDeveloper'
         capcodeStart = <%= html(' <strong class="capcode hand id_developer" title="Highlight posts by Developers">## Developer</strong>') %>
         capcodeIcon  = <%= html(' <img src="//s.4cdn.org/image/developericon${retina}.gif" alt="Developer Icon" title="This user is a 4chan Developer." class="identityIcon retina">') %>
+      when 'manager'
+        capcodeClass = ' capcodeManager'
+        capcodeStart = <%= html(' <strong class="capcode hand id_manager" title="Highlight posts by Managers">## Manager</strong>') %>
+        capcodeIcon  = <%= html(' <img src="//s.4cdn.org/image/managericon${retina}.gif" alt="Manager Icon" title="This user is a 4chan Manager." class="identityIcon retina">') %>
       else
         capcodeClass = ''
         capcodeStart = <%= html('') %>
