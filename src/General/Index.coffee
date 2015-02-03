@@ -26,10 +26,10 @@ Index =
     $.on @button, 'click', -> Index.update()
     Header.addShortcut @button, 1
 
-    repliesEntry = el: UI.checkbox 'Show Replies',          ' Show replies'
-    pinEntry     = el: UI.checkbox 'Pin Watched Threads',   ' Pin watched threads'
-    anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', ' Anchor hidden threads'
-    refNavEntry  = el: UI.checkbox 'Refreshed Navigation',  ' Refreshed navigation'
+    repliesEntry = el: UI.checkbox 'Show Replies',          'Show replies'
+    pinEntry     = el: UI.checkbox 'Pin Watched Threads',   'Pin watched threads'
+    anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', 'Anchor hidden threads'
+    refNavEntry  = el: UI.checkbox 'Refreshed Navigation',  'Refreshed navigation'
     pinEntry.el.title    = 'Move watched threads to the start of the index.'
     anchorEntry.el.title = 'Move hidden threads to the end of the index.'
     refNavEntry.el.title = 'Refresh index when navigating through pages.'

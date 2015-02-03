@@ -33,7 +33,7 @@ ThreadUpdater =
 
     subEntries = []
     for name, conf of Config.updater.checkbox
-      el = UI.checkbox name, " #{name}"
+      el = UI.checkbox name, name
       el.title = conf[1]
       input = el.firstElementChild
       $.on input, 'change', $.cb.checked

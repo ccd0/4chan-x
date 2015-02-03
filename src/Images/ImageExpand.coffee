@@ -295,7 +295,7 @@ ImageExpand =
         subEntries: subEntries
 
     createSubEntry: (name, desc) ->
-      label = UI.checkbox name, " #{name}"
+      label = UI.checkbox name, name
       label.title = desc
       input = label.firstElementChild
       if name in ['Fit width', 'Fit height']

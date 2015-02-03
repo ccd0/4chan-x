@@ -100,11 +100,8 @@ Settings =
       containers = [fs]
       for key, arr of obj
         description = arr[1]
-        div = $.el 'div'
-        $.add div, [
-          UI.checkbox key, key, false
-          $.el 'span', class: 'description', textContent: ": #{description}"
-        ]
+        div = $.el 'div',
+          <%= html('<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>') %>
         input = $ 'input', div
         $.on input, 'change', $.cb.checked
         $.on input, 'change', -> @parentNode.parentNode.dataset.checked = @checked

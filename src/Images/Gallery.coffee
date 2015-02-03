@@ -315,7 +315,7 @@ Gallery =
         subEntries: Gallery.menu.createSubEntries()
 
     createSubEntry: (name) ->
-      label = UI.checkbox name, " #{name}"
+      label = UI.checkbox name, name
       input = label.firstElementChild
       if name in ['Fit Width', 'Fit Height', 'Hide Thumbnails']
         $.on input, 'change', Gallery.cb.setFitness

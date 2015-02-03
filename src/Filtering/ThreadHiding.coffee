@@ -63,7 +63,7 @@ ThreadHiding =
         href: 'javascript:;'
       $.on apply, 'click', ThreadHiding.menu.hide
 
-      makeStub = UI.checkbox 'Stubs', ' Make stub'
+      makeStub = UI.checkbox 'Stubs', 'Make stub'
 
       Menu.menu.addEntry
         el: div
