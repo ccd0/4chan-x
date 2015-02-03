@@ -90,7 +90,7 @@ Get =
     clone = post.addClone context, ($.hasClass root, 'dialog')
     Main.callbackNodes Clone, [clone]
 
-    # Get rid of the side arrows.
+    # Get rid of the side arrows/stubs.
     {nodes} = clone
     $.rmAll nodes.root
     $.add nodes.root, nodes.post
@@ -109,13 +109,14 @@ Get =
     {status} = req
     unless status in [200, 304]
       # The thread can die by the time we check a quote.
-      unless Get.archivedPost boardID, postID, root, context
-        $.addClass root, 'warning'
-        root.textContent =
-          if status is 404
-            "Thread No.#{threadID} 404'd."
-          else
-            "Error #{req.statusText} (#{req.status})."
+      return if Get.archivedPost boardID, postID, root, context
+
+      $.addClass root, 'warning'
+      root.textContent =
+        if status is 404
+          "Thread No.#{threadID} 404'd."
+        else
+          "Error #{req.statusText} (#{req.status})."
       return
 
     {posts} = req.response
@@ -133,9 +134,10 @@ Get =
         return
 
       # The post can be deleted by the time we check a quote.
-      unless Get.archivedPost boardID, postID, root, context
-        $.addClass root, 'warning'
-        root.textContent = "Post No.#{postID} was not found."
+      return if Get.archivedPost boardID, postID, root, context
+
+      $.addClass root, 'warning'
+      root.textContent = "Post No.#{postID} was not found."
       return
 
     board = g.boards[boardID] or
