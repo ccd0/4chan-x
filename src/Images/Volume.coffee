@@ -13,7 +13,7 @@ Volume =
 
     return unless g.BOARD.ID in ['gif', 'wsg']
 
-    unmuteEntry = UI.checkbox 'Allow Sound', ' Allow Sound'
+    unmuteEntry = UI.checkbox 'Allow Sound', 'Allow Sound'
     unmuteEntry.title = Config.main['Images and Videos']['Allow Sound'][1]
 
     volumeEntry = $.el 'label',

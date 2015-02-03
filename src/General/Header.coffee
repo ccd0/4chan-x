@@ -6,14 +6,14 @@ Header =
       className: 'menu-button'
     $.extend menuButton, <%= html('<i></i>') %>
 
-    barFixedToggler     = UI.checkbox 'Fixed Header',               ' Fixed Header'
-    headerToggler       = UI.checkbox 'Header auto-hide',           ' Auto-hide header'
-    scrollHeaderToggler = UI.checkbox 'Header auto-hide on scroll', ' Auto-hide header on scroll'
-    barPositionToggler  = UI.checkbox 'Bottom Header',              ' Bottom header'
-    linkJustifyToggler  = UI.checkbox 'Centered links',             ' Centered links'
-    customNavToggler    = UI.checkbox 'Custom Board Navigation',    ' Custom board navigation'
-    footerToggler       = UI.checkbox 'Bottom Board List',          ' Hide bottom board list'
-    shortcutToggler     = UI.checkbox 'Shortcut Icons',             ' Shortcut Icons'
+    barFixedToggler     = UI.checkbox 'Fixed Header',               'Fixed Header'
+    headerToggler       = UI.checkbox 'Header auto-hide',           'Auto-hide header'
+    scrollHeaderToggler = UI.checkbox 'Header auto-hide on scroll', 'Auto-hide header on scroll'
+    barPositionToggler  = UI.checkbox 'Bottom Header',              'Bottom header'
+    linkJustifyToggler  = UI.checkbox 'Centered links',             'Centered links'
+    customNavToggler    = UI.checkbox 'Custom Board Navigation',    'Custom board navigation'
+    footerToggler       = UI.checkbox 'Bottom Board List',          'Hide bottom board list'
+    shortcutToggler     = UI.checkbox 'Shortcut Icons',             'Shortcut Icons'
     editCustomNav = $.el 'a',
       textContent: 'Edit custom board navigation'
       href: 'javascript:;'

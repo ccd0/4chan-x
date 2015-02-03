@@ -9,7 +9,7 @@ FappeTyme =
 
     for type in ["Fappe", "Werk"] when Conf["#{type} Tyme"]
       lc = type.toLowerCase()
-      el = UI.checkbox lc, " #{type} Tyme", false
+      el = UI.checkbox lc, "#{type} Tyme", false
       el.title = "#{type} Tyme"
 
       @nodes[lc] = el.firstElementChild

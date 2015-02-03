@@ -435,7 +435,7 @@ ThreadWatcher =
     createSubEntry: (name, desc) ->
       entry =
         type: 'thread watcher'
-        el: UI.checkbox name, " #{name.replace ' Thread Watcher', ''}"
+        el: UI.checkbox name, name.replace(' Thread Watcher', '')
       entry.el.title = desc
       input = entry.el.firstElementChild
       $.on input, 'change', $.cb.checked
