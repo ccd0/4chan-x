@@ -678,7 +678,7 @@ Config =
     'Index Sort': 'bump'
     'Index Size': 'small'
     'Show Replies': true
-    'Pin Watched Threads': true
+    'Pin Watched Threads': false
     'Anchor Hidden Threads': true
     'Refreshed Navigation': false
 
