@@ -220,16 +220,22 @@ Header =
     boardID = t.split('-')[0]
     boardID = g.BOARD.ID if boardID is 'current'
 
-    for aOrig in as
-      if aOrig.textContent is boardID
-        a = aOrig.cloneNode true
-    if !a
-      if /^current/.test t
-        a = $.el 'a',
-          href: "/#{boardID}/"
-          textContent: boardID
-      else
-        return $.tn t
+    a = do ->
+      if boardID is '@'
+        return $.el 'a',
+          href: 'https://twitter.com/4chan'
+          title: '4chan Twitter'
+          textContent: '@'
+
+      for a in as when a.textContent is boardID
+        return a.cloneNode true
+
+      a = $.el 'a',
+        href: "/#{boardID}/"
+        textContent: boardID
+      a.href += g.VIEW if g.VIEW in ['catalog', 'archive']
+      a.className = 'current' if boardID is g.BOARD.ID
+      a
 
     a.textContent = if /-title/.test(t) or /-replace/.test(t) and boardID is g.BOARD.ID
       a.title or a.textContent
