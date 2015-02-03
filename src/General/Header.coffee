@@ -6,14 +6,16 @@ Header =
       className: 'menu-button'
     $.extend menuButton, <%= html('<i></i>') %>
 
-    barFixedToggler     = UI.checkbox 'Fixed Header',               'Fixed Header'
-    headerToggler       = UI.checkbox 'Header auto-hide',           'Auto-hide header'
-    scrollHeaderToggler = UI.checkbox 'Header auto-hide on scroll', 'Auto-hide header on scroll'
-    barPositionToggler  = UI.checkbox 'Bottom Header',              'Bottom header'
-    linkJustifyToggler  = UI.checkbox 'Centered links',             'Centered links'
-    customNavToggler    = UI.checkbox 'Custom Board Navigation',    'Custom board navigation'
-    footerToggler       = UI.checkbox 'Bottom Board List',          'Hide bottom board list'
-    shortcutToggler     = UI.checkbox 'Shortcut Icons',             'Shortcut Icons'
+    box = UI.checkbox
+
+    barFixedToggler     = box 'Fixed Header',               'Fixed Header'
+    headerToggler       = box 'Header auto-hide',           'Auto-hide header'
+    scrollHeaderToggler = box 'Header auto-hide on scroll', 'Auto-hide header on scroll'
+    barPositionToggler  = box 'Bottom Header',              'Bottom header'
+    linkJustifyToggler  = box 'Centered links',             'Centered links'
+    customNavToggler    = box 'Custom Board Navigation',    'Custom board navigation'
+    footerToggler       = box 'Bottom Board List',          'Hide bottom board list'
+    shortcutToggler     = box 'Shortcut Icons',             'Shortcut Icons'
     editCustomNav = $.el 'a',
       textContent: 'Edit custom board navigation'
       href: 'javascript:;'
@@ -33,7 +35,6 @@ Header =
     $.on @barPositionToggler,  'change', @toggleBarPosition
     $.on @scrollHeaderToggler, 'change', @toggleHideBarOnScroll
     $.on @linkJustifyToggler,  'change', @toggleLinkJustify
-    $.on @headerToggler,       'change', @toggleBarVisibility
     $.on @footerToggler,       'change', @toggleFooterVisibility
     $.on @shortcutToggler,     'change', @toggleShortcutIcons
     $.on @customNavToggler,    'change', @toggleCustomNav
@@ -185,78 +186,77 @@ Header =
     return unless boardnav
     boardnav = boardnav.replace /(\r\n|\n|\r)/g, ' '
     as = $$ '#full-board-list a[title]', Header.boardList
-    nodes = boardnav.match(/[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|text:"[^"]+"(,"[^"]+")?))*|[^\w@]+/g).map (t) ->
-      if /^[^\w@]/.test t
-        return $.tn t
-
-      text = url = null
-      t = t.replace /-text:"([^"]+)"(?:,"([^"]+)")?/g, (m0, m1, m2) ->
-        text = m1
-        url = m2
-        ''
-
-      if /^toggle-all/.test t
-        a = $.el 'a',
-          className: 'show-board-list-button'
-          textContent: text or '+'
-          href: 'javascript:;'
-        $.on a, 'click', Header.toggleBoardList
-        return a
-
-      if /^external/.test t
-        a = $.el 'a',
-          href: url or 'javascript:;'
-          textContent: text or '+'
-          className: 'external'
-        return a
-
-      boardID = if /^current/.test t
-        g.BOARD.ID
-      else
-        t.match(/^[^-]+/)[0]
-
-      for aOrig in as
-        if aOrig.textContent is boardID
-          a = aOrig.cloneNode true
-      if !a
-        if /^current/.test t
-          a = $.el 'a',
-            href: "/#{boardID}/"
-            textContent: boardID
-        else
-          return $.tn t
-
-      a.textContent = if /-title/.test(t) or /-replace/.test(t) and $.hasClass a, 'current'
-        a.title or a.textContent
-      else if /-full/.test t
-        "/#{boardID}/" + (if a.title then " - #{a.title}" else '')
-      else if text
-        text
-      else
-        a.textContent
-
-      if m = t.match /-(index|catalog)/
-        a.dataset.only = m[1]
-        a.href = CatalogLinks[m[1]] boardID
-        $.addClass a, 'catalog' if m[1] is 'catalog'
-
-      if /-archive/.test t
-        if href = Redirect.to 'board', {boardID}
-          a.href = href
-        else
-          return $.tn a.textContent
-
-      if /-expired/.test t
-        if boardID not in ['b', 'f']
-          a.href = "/#{boardID}/archive"
-        else
-          return $.tn a.textContent
-
-      $.addClass a, 'navSmall' if boardID is '@'
-      return a
+    re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|text:"[^"]+"(,"[^"]+")?))*|[^\w@]+/g
+    nodes = (Header.mapCustomNavigation t, as for t in boardnav.match re)
 
     $.add list, nodes
     $.ready CatalogLinks.initBoardList
+
+  mapCustomNavigation: (t, as) ->
+    if /^[^\w@]/.test t
+      return $.tn t
+
+    text = url = null
+    t = t.replace /-text:"([^"]+)"(?:,"([^"]+)")?/g, (m0, m1, m2) ->
+      text = m1
+      url  = m2
+      ''
+
+    if /^toggle-all/.test t
+      a = $.el 'a',
+        className: 'show-board-list-button'
+        textContent: text or '+'
+        href: 'javascript:;'
+      $.on a, 'click', Header.toggleBoardList
+      return a
+
+    if /^external/.test t
+      a = $.el 'a',
+        href: url or 'javascript:;'
+        textContent: text or '+'
+        className: 'external'
+      return a
+
+    boardID = t.split('-')[0]
+    boardID = g.BOARD.ID if boardID is 'current'
+
+    for aOrig in as
+      if aOrig.textContent is boardID
+        a = aOrig.cloneNode true
+    if !a
+      if /^current/.test t
+        a = $.el 'a',
+          href: "/#{boardID}/"
+          textContent: boardID
+      else
+        return $.tn t
+
+    a.textContent = if /-title/.test(t) or /-replace/.test(t) and boardID is g.BOARD.ID
+      a.title or a.textContent
+    else if /-full/.test t
+      "/#{boardID}/" + (if a.title then " - #{a.title}" else '')
+    else
+      text or boardID
+
+    if m = t.match /-(index|catalog)/
+      a.dataset.only = m[1]
+      a.href = CatalogLinks[m[1]] boardID
+      $.addClass a, 'catalog' if m[1] is 'catalog'
+
+    if /-archive/.test t
+      if href = Redirect.to 'board', {boardID}
+        a.href = href
+      else
+        return a.firstChild # Its text node.
+
+    if /-expired/.test t
+      if boardID not in ['b', 'f']
+        a.href = "/#{boardID}/archive"
+      else
+        return a.firstChild # Its text node.
+
+    $.addClass a, 'navSmall' if boardID is '@'
+    a
 
   toggleBoardList: ->
     {bar}  = Header
@@ -323,10 +323,9 @@ Header =
       @checked
     else
       !$.hasClass Header.bar, 'autohide'
-    # set checked status if called from keybind
-    @checked = hide
 
-    $.set 'Header auto-hide', Conf['Header auto-hide'] = hide
+    Conf['Header auto-hide'] = hide
+    $.set 'Header auto-hide', hide
     Header.setBarVisibility hide
     message = "The header bar will #{if hide
       'automatically hide itself.'
@@ -412,7 +411,7 @@ Header =
   editCustomNav: ->
     Settings.open 'Advanced'
     settings = $.id 'fourchanx-settings'
-    $('textarea[name=boardnav]', settings).focus()
+    $('[name=boardnav]', settings).focus()
 
   hashScroll: ->
     hash = @location.hash[1..]
