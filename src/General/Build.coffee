@@ -1,13 +1,12 @@
 Build =
   staticPath: '//s.4cdn.org/image/'
   gifIcon: if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
-  initPixelRatio: window.devicePixelRatio
   spoilerRange: {}
   unescape: (text) ->
     return text unless text?
     text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt);/g, (c) ->
       {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>'}[c]
-  shortFilename: (filename, isReply) ->
+  shortFilename: (filename) ->
     threshold = 30
     ext = filename.match(/\.?[^\.]*$/)[0]
     if filename.length - ext.length > threshold
@@ -15,8 +14,8 @@ Build =
     else
       filename
   thumbRotate: do ->
-    n = 0
-    -> n = (n + 1) % 2
+    t = 0
+    -> t = (if t then 0 else 1)
   sameThread: (boardID, threadID) ->
     g.VIEW is 'thread' and g.BOARD.ID is boardID and g.THREADID is +threadID
   postURL: (boardID, threadID, postID) ->
@@ -83,8 +82,7 @@ Build =
     name    or= ''
     subject or= ''
     isOP = postID is threadID
-
-    retina = if Build.initPixelRatio >= 2 then '@2x' else ''
+    {staticPath, gifIcon} = Build
 
     ### Name Block ###
 
@@ -92,15 +90,15 @@ Build =
       when 'admin', 'admin_highlight'
         capcodeClass = ' capcodeAdmin'
         capcodeStart = <%= html(' <strong class="capcode hand id_admin" title="Highlight posts by the Administrator">## Admin</strong>') %>
-        capcodeIcon  = <%= html(' <img src="//s.4cdn.org/image/adminicon${retina}.gif" alt="Admin Icon" title="This user is the 4chan Administrator." class="identityIcon retina">') %>
+        capcodeIcon  = <%= html(' <img src="${staticPath}adminicon${gifIcon}" alt="Admin Icon" title="This user is the 4chan Administrator." class="identityIcon retina">') %>
       when 'mod'
         capcodeClass = ' capcodeMod'
         capcodeStart = <%= html(' <strong class="capcode hand id_mod" title="Highlight posts by Moderators">## Mod</strong>') %>
-        capcodeIcon  = <%= html(' <img src="//s.4cdn.org/image/modicon${retina}.gif" alt="Mod Icon" title="This user is a 4chan Moderator." class="identityIcon retina">') %>
+        capcodeIcon  = <%= html(' <img src="${staticPath}modicon${gifIcon}" alt="Mod Icon" title="This user is a 4chan Moderator." class="identityIcon retina">') %>
       when 'developer'
         capcodeClass = ' capcodeDeveloper'
         capcodeStart = <%= html(' <strong class="capcode hand id_developer" title="Highlight posts by Developers">## Developer</strong>') %>
-        capcodeIcon  = <%= html(' <img src="//s.4cdn.org/image/developericon${retina}.gif" alt="Developer Icon" title="This user is a 4chan Developer." class="identityIcon retina">') %>
+        capcodeIcon  = <%= html(' <img src="${staticPath}developericon${gifIcon}" alt="Developer Icon" title="This user is a 4chan Developer." class="identityIcon retina">') %>
       else
         capcodeClass = ''
         capcodeStart = <%= html('') %>
@@ -151,7 +149,7 @@ Build =
 
     icons = for type in ['Sticky', 'Closed', 'Archived'] when o["is#{type}"] and !(type is 'Closed' and o.isArchived)
       typeLC = type.toLowerCase()
-      <%= html(' <img src="//s.4cdn.org/image/${typeLC}${retina}.gif" alt="${type}" title="${type}" class="${typeLC}Icon retina">') %>
+      <%= html(' <img src="${staticPath}${typeLC}${gifIcon}" alt="${type}" title="${type}" class="${typeLC}Icon retina">') %>
 
     replyLink = if isOP and g.VIEW is 'index'
       <%= html(' &nbsp; <span>[<a href="/${boardID}/thread/${threadID}" class="replylink">Reply</a>]</span>') %>
@@ -177,7 +175,7 @@ Build =
     fileCont = if file?.isDeleted
       <%= html(
         '<span class="fileThumb">' +
-          '<img src="//s.4cdn.org/image/filedeleted-res${retina}.gif" alt="File deleted." class="fileDeletedRes retina">' +
+          '<img src="${staticPath}filedeleted-res${gifIcon}" alt="File deleted." class="fileDeletedRes retina">' +
         '</span>'
       ) %>
     else if file and boardID is 'f'
