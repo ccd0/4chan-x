@@ -3,6 +3,11 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.23.x -->
+### v1.9.23.3 
+*2015-02-03* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.3/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Merge v1.9.22.7: `Pin Watched Threads` (in header menu -> `Index Navigation`) is now off by default.
+
 ### v1.9.23.2 
 *2015-02-03* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.2/builds/4chan-X-noupdate.crx "Chromium version")]
 
