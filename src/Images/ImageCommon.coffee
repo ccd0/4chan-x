@@ -1,4 +1,11 @@
 ImageCommon =
+  # Pause and mute video in preparation for removing the element from the document.
+  pause: (video) ->
+    return unless video.nodeName is 'VIDEO'
+    video.pause()
+    $.off video, 'volumechange', Volume.change
+    video.muted = true
+
   rewind: (el) ->
     if el.nodeName is 'VIDEO'
       el.currentTime = 0 if el.readyState >= el.HAVE_METADATA

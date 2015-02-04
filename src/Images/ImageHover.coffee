@@ -31,7 +31,6 @@ ImageHover =
       el = ImageCommon.popCache()
       $.on el, 'error', error
     else
-      isNew = true
       el = $.el (if isVideo then 'video' else 'img')
       el.dataset.fullID = post.fullID
       $.on el, 'error', error
@@ -45,7 +44,7 @@ ImageHover =
     if isVideo
       el.loop     = true
       el.controls = false
-      Volume.setup el, isNew
+      Volume.setup el
       el.play() if Conf['Autoplay']
     [width, height] = (+x for x in file.dimensions.split 'x')
     {left, right} = @getBoundingClientRect()
@@ -66,7 +65,7 @@ ImageHover =
       cb: ->
         $.off el, 'error', error
         ImageCommon.pushCache el
-        el.pause() if isVideo
+        ImageCommon.pause el
         $.rm el
         el.removeAttribute 'style'
 

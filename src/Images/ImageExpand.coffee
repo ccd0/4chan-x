@@ -143,7 +143,7 @@ ImageExpand =
     $.off el, 'error', ImageExpand.error
     ImageCommon.pushCache el
     if file.isVideo
-      el.pause()
+      ImageCommon.pause el
       for eventName, cb of ImageExpand.videoCB
         $.off el, eventName, cb
     ImageCommon.rewind file.thumb if Conf['Restart when Opened']
@@ -172,7 +172,6 @@ ImageExpand =
       ImageCommon.rewind el if Conf['Restart when Opened'] and el.id isnt 'ihover'
       el.removeAttribute 'id'
     else
-      isNew = true
       el = file.fullImage = $.el (if isVideo then 'video' else 'img')
       el.dataset.fullID = post.fullID
       $.on el, 'error', ImageExpand.error
@@ -192,7 +191,7 @@ ImageExpand =
       thumb.parentNode.removeAttribute 'target'
 
       el.loop = true
-      Volume.setup el, isNew
+      Volume.setup el
       ImageExpand.setupVideoCB post
 
     if !isVideo

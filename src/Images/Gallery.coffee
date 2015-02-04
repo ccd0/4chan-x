@@ -152,7 +152,7 @@ Gallery =
     file.src = name.href = thumb.href
 
     $.off nodes.current, 'error', Gallery.error
-    nodes.current.pause?()
+    ImageCommon.pause nodes.current
     $.replace nodes.current, file
     if elType is 'video'
       file.loop = true
@@ -282,7 +282,7 @@ Gallery =
 
     close: ->
       $.off Gallery.nodes.current, 'error', Gallery.error
-      Gallery.nodes.current.pause?()
+      ImageCommon.pause Gallery.nodes.current
       $.rm Gallery.nodes.el
       $.rmClass doc, 'gallery-open'
       if Conf['Fullscreen Gallery']
