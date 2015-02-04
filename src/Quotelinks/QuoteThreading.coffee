@@ -43,13 +43,22 @@ QuoteThreading =
 
   node: ->
     return if @isFetchedQuote or @isClone or !@isReply
-    {thread} = QuoteThreading
-    parents = (parent for quote in @quotes when (parent = g.posts[quote]) and
-      not parent.isFetchedQuote and parent.isReply and parent.ID < @ID
-    )
 
-    if parents.length is 1
-      QuoteThreading.parent[@fullID] = parents[0]
+    parents = new Set()
+    lastParent = null
+    for quote in @quotes when parent = g.posts[quote]
+      if not parent.isFetchedQuote and parent.isReply and parent.ID < @ID
+        parents.add parent.ID
+        lastParent = parent if not lastParent or parent.ID > lastParent.ID
+
+    return unless lastParent
+
+    ancestor = lastParent
+    while ancestor = QuoteThreading.parent[ancestor.fullID]
+      parents.delete ancestor.ID
+
+    if parents.size is 1
+      QuoteThreading.parent[@fullID] = lastParent
 
   descendants: (post) ->
     posts = [post]

@@ -3,6 +3,26 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.23.x -->
+### v1.9.23.6 
+*2015-02-04* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.6/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Mute videos when removing them to work around a bug where the sound kept playing for some videos.
+
+### v1.9.23.5 
+*2015-02-03* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.5/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- WEBM Metadata: Show the WebM title on mouseover instead of toggling with a click.
+
+### v1.9.23.4 
+*2015-02-03* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.4/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Quote Threading improvement: Thread posts with multiple quotes provided all of them are ancestors of the last.
+
+### v1.9.23.3 
+*2015-02-03* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.3/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Merge v1.9.22.7: `Pin Watched Threads` (in header menu -> `Index Navigation`) is now off by default.
+
 ### v1.9.23.2 
 *2015-02-03* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.2/builds/4chan-X-noupdate.crx "Chromium version")]
 
@@ -19,6 +39,11 @@ The links to individual versions below are to copies of the script with the upda
 - `WEBM Metadata` option (on by default): Adds a link to display the title in the WebM metadata.
 
 <!-- v1.9.22.x -->
+### v1.9.22.7 
+*2015-02-03* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.7/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- `Pin Watched Threads` (in header menu -> `Index Navigation`) is now off by default.
+
 ### v1.9.22.6 
 *2015-02-02* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.22.6/builds/4chan-X-noupdate.crx "Chromium version")]
 

@@ -31,10 +31,10 @@ Volume =
     Header.menu.addEntry {el: unmuteEntry, order: 200}
     Header.menu.addEntry {el: volumeEntry, order: 201}
 
-  setup: (video, isNew=true) ->
+  setup: (video) ->
     video.muted  = !Conf['Allow Sound']
     video.volume = Conf['Default Volume']
-    $.on video, 'volumechange', Volume.change if isNew
+    $.on video, 'volumechange', Volume.change
 
   change: ->
     {muted, volume} = @

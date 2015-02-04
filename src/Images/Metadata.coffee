@@ -9,26 +9,32 @@ Metadata =
   node: ->
     return unless @file and /webm$/i.test @file.URL
     if @isClone
-      link = $ '.webm-title', @file.text
+      el = $ '.webm-title', @file.text
     else
-      link = $.el 'a',
-        className:   'webm-title ready'
-        href:        'javascript:;'
-        textContent: 'title'
-      $.add @file.text, [$.tn('\u00A0'), link]
-    $.on link, 'click', Metadata[if link.dataset.title? then 'toggle' else 'load']
+      el = $.el 'span',
+        className: 'webm-title'
+      $.extend el,
+        <%= html('<a href="javascript:;"></a>') %>
+      $.add @file.text, [$.tn('\u00A0'), el]
+    $.one el.lastElementChild, 'mouseover focus', Metadata.load if el.children.length is 1
 
   load: ->
-    $.off @, 'click', Metadata.load
-    $.rmClass @, 'ready'
-    @textContent = '...'
+    $.rmClass @parentNode, 'error'
+    $.addClass @parentNode, 'loading'
     CrossOrigin.binary Get.postFromNode(@).file.URL, (data) =>
+      $.rmClass @parentNode, 'loading'
       if data?
-        Metadata.parse.call @, data
-        $.on @, 'click', Metadata.toggle
+        title = Metadata.parse data
+        output = $.el 'span',
+          textContent: title or ''
+        $.addClass @parentNode, 'not-found' unless title?
+        $.before @, output
+        @parentNode.tabIndex = 0
+        @parentNode.focus() if d.activeElement is @
+        @tabIndex = -1
       else
-        @textContent = 'error'
-        $.on @, 'click', Metadata.load
+        $.addClass @parentNode, 'error'
+        $.one @, 'click', Metadata.load
     ,
       Range: 'bytes=0-9999'
 
@@ -50,15 +56,7 @@ Metadata =
         title = ''
         while size-- and i < data.length
           title += String.fromCharCode data[i++]
-        @textContent = @dataset.title = decodeURIComponent escape title # UTF-8 decoding
-        return
+        return decodeURIComponent escape title # UTF-8 decoding
       else unless element in [0x8538067, 0x549A966] # Segment, Info
         i += size
-    @textContent = 'not found'
-
-  toggle: ->
-    @textContent = if $.hasClass @, 'ready'
-      @dataset.title or 'not found'
-    else
-      'title'
-    $.toggleClass @, 'ready'
+    null
