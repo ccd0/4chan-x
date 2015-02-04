@@ -147,12 +147,12 @@ Gallery =
     $[if elType is 'iframe' then 'addClass' else 'rmClass'] doc, 'gal-pdf'
     file = $.el elType,
       title: name.download = name.textContent = thumb.title
-    $.on file, 'error', =>
-      Gallery.error file, thumb
+    $.extend file.dataset, thumb.dataset
+    $.on file, 'error', Gallery.error
     file.src = name.href = thumb.href
 
-    $.extend file.dataset, thumb.dataset
-    nodes.current.pause?() unless nodes.current.error
+    $.off nodes.current, 'error', Gallery.error
+    nodes.current.pause?()
     $.replace nodes.current, file
     if elType is 'video'
       file.loop = true
@@ -175,14 +175,14 @@ Gallery =
     # Center selected thumbnail
     nodes.thumbs.scrollTop = thumb.offsetTop + thumb.offsetHeight/2 - nodes.thumbs.clientHeight/2
 
-  error: (file, thumb) ->
-    if file.error?.code is MediaError.MEDIA_ERR_DECODE
+  error: ->
+    if @error?.code is MediaError.MEDIA_ERR_DECODE
       return new Notice 'error', 'Corrupt or unplayable video', 30
-    return unless file.src.split('/')[2] is 'i.4cdn.org'
-    ImageCommon.error file, g.posts[file.dataset.post], null, (URL) ->
-      return unless URL
-      thumb.href = URL
-      file.src = URL if Gallery.nodes.current is file
+    return unless @src.split('/')[2] is 'i.4cdn.org'
+    ImageCommon.error @, g.posts[@dataset.post], null, (url) =>
+      return unless url
+      Gallery.images[@dataset.id].href = url
+      @src = url if Gallery.nodes.current is @
 
   cleanupTimer: ->
     clearTimeout Gallery.timeoutID
@@ -281,6 +281,7 @@ Gallery =
       Gallery.slideshow = false
 
     close: ->
+      $.off Gallery.nodes.current, 'error', Gallery.error
       Gallery.nodes.current.pause?()
       $.rm Gallery.nodes.el
       $.rmClass doc, 'gallery-open'
