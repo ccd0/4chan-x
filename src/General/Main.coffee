@@ -3,8 +3,8 @@ Main =
     if location.hostname is 'www.google.com'
       return $.ready -> Captcha.noscript.initFrame()
 
-    g.threads = new SimpleDict
-    g.posts   = new SimpleDict
+    g.threads = new SimpleDict()
+    g.posts   = new SimpleDict()
 
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
@@ -90,6 +90,7 @@ Main =
           error: err
       # finally
       #   c.timeEnd "#{name} initialization"
+
     # c.timeEnd 'All initializations'
 
     $.ready Main.initReady
@@ -163,19 +164,19 @@ Main =
         Settings.open()
       $.set 'previousversion', g.VERSION
 
-    return unless Conf['Show Support Message']
-    <% if (type === 'userscript') { %>
-    GMver = GM_info.version.split '.'
-    for v, i in "<%= meta.min.greasemonkey %>".split '.'
-      continue if v is GMver[i]
-      (v < GMver[i]) or new Notice 'warning', "Your version of Greasemonkey is outdated (v#{GM_info.version} instead of v<%= meta.min.greasemonkey %> minimum) and <%= meta.name %> may not operate correctly.", 30
-      break
-    <% } %>
+    if Conf['Show Support Message']
+      <% if (type === 'userscript') { %>
+      GMver = GM_info.version.split '.'
+      for v, i in "<%= meta.min.greasemonkey %>".split '.'
+        continue if v is GMver[i]
+        (v < GMver[i]) or new Notice 'warning', "Your version of Greasemonkey is outdated (v#{GM_info.version} instead of v<%= meta.min.greasemonkey %> minimum) and <%= meta.name %> may not operate correctly.", 30
+        break
+      <% } %>
 
-    try
-      localStorage.getItem '4chan-settings'
-    catch err
-      new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
+      try
+        localStorage.getItem '4chan-settings'
+      catch err
+        new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
 
   initThread: ->
     if board = $ '.board'
