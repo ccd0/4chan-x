@@ -10,14 +10,16 @@ Settings =
 
     Header.addShortcut link
 
-    Settings.addSection 'Main',     Settings.main
-    Settings.addSection 'Filter',   Settings.filter
-    Settings.addSection 'Sauce',    Settings.sauce
-    Settings.addSection 'Advanced', Settings.advanced
-    Settings.addSection 'Keybinds', Settings.keybinds
+    add = @addSection
+
+    add 'Main',     @main
+    add 'Filter',   @filter
+    add 'Sauce',    @sauce
+    add 'Advanced', @advanced
+    add 'Keybinds', @keybinds
 
     $.on d, 'AddSettingsSection',   Settings.addSection
-    $.on d, 'OpenSettings',         (e) -> Settings.open e.detail
+    $.on d, 'OpenSettings', (e) -> Settings.open e.detail
 
     if Conf['Disable Native Extension']
       settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
@@ -26,11 +28,8 @@ Settings =
       localStorage.setItem '4chan-settings', JSON.stringify settings
 
   open: (openSection) ->
-    return if Settings.dialog
+    return if Settings.overlay
     $.event 'CloseMenu'
-
-    Settings.overlay = overlay = $.el 'div',
-      id: 'overlay'
 
     Settings.dialog = dialog = $.el 'div',
       id:        'fourchanx-settings'
@@ -38,10 +37,13 @@ Settings =
     $.extend dialog, <%= importHTML('Settings/Settings') %>
     $('a[href$="/CHANGELOG.md"]', dialog).textContent = g.VERSION
 
-    $.on $('.export', Settings.dialog), 'click',  Settings.export
-    $.on $('.import', Settings.dialog), 'click',  Settings.import
-    $.on $('.reset',  Settings.dialog), 'click',  Settings.reset
-    $.on $('input',   Settings.dialog), 'change', Settings.onImport
+    Settings.overlay = overlay = $.el 'div',
+      id: 'overlay'
+
+    $.on $('.export', dialog), 'click',  Settings.export
+    $.on $('.import', dialog), 'click',  Settings.import
+    $.on $('.reset',  dialog), 'click',  Settings.reset
+    $.on $('input',   dialog), 'change', Settings.onImport
 
     links = []
     for section in Settings.sections
@@ -54,7 +56,7 @@ Settings =
       sectionToOpen = link if section.title is openSection
     links.pop()
     $.add $('.sections-list', dialog), links
-    (if sectionToOpen then sectionToOpen else links[0]).click()
+    (if sectionToOpen then sectionToOpen else links[0]).click() unless openSection is 'none'
 
     $.on $('.close', dialog), 'click', Settings.close
     $.on overlay,             'click', Settings.close
@@ -103,8 +105,9 @@ Settings =
         div = $.el 'div',
           <%= html('<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>') %>
         input = $ 'input', div
-        $.on input, 'change', $.cb.checked
-        $.on input, 'change', -> @parentNode.parentNode.dataset.checked = @checked
+        $.on input, 'change', ->
+          @parentNode.parentNode.dataset.checked = @checked
+          $.cb.checked.call @
         items[key]  = Conf[key]
         inputs[key] = input
         level = arr[2] or 0
@@ -160,7 +163,7 @@ Settings =
     <% } %>
     a.click()
   import: ->
-    $('input', @parentNode).click()
+    $('input[type=file]', @parentNode).click()
 
   onImport: ->
     return unless file = @files[0]
@@ -305,17 +308,21 @@ Settings =
     items = {}
     inputs = {}
     for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
-      input = $ "[name=#{name}]", section
+      input = $ "[name='#{name}']", section
       items[name]  = Conf[name]
       inputs[name] = input
-      event = if name in ['favicon', 'usercss']
-        'change'
-      else
-        'input'
-      $.on input, event, $.cb.value
+      if name is 'usercss'
+        $.on input, 'change', $.cb.value
+      else if name is 'favicon'
+        $.on input, 'change', $.cb.value
+        $.on input, 'change', Settings[name]
+       else
+        $.on input, 'input', $.cb.value
+        $.on input, 'input', Settings[name]
 
     # Quick Reply Personas
     ta = $ '.personafield', section
+
     $.get 'QR.personas', Conf['QR.personas'], (item) ->
       ta.value = item['QR.personas']
     $.on ta, 'change', $.cb.value
@@ -325,7 +332,6 @@ Settings =
         input = inputs[key]
         input.value = val
         continue if key is 'usercss'
-        $.on input, event, Settings[key]
         Settings[key].call input
       return
 
@@ -484,6 +490,7 @@ Settings =
       inputs[key] = input
       $.on input, 'keydown', Settings.keybind
       $.add tbody, tr
+
     $.get items, (items) ->
       for key, val of items
         inputs[key].value = val
