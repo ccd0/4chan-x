@@ -65,8 +65,7 @@ UI = do ->
 
       $.addClass lastToggledButton, 'active'
 
-      $.on d, 'click',     @close
-      $.on d, 'CloseMenu', @close
+      $.one d, 'click scroll CloseMenu', @close
       $.add button, menu
 
       # Position
@@ -121,7 +120,6 @@ UI = do ->
       $.rmClass lastToggledButton, 'active'
       currentMenu       = null
       lastToggledButton = null
-      $.off d, 'click CloseMenu', @close
 
     findNextEntry: (entry, direction) ->
       entries = [entry.parentNode.children...]
@@ -162,6 +160,7 @@ UI = do ->
     onFocus: (e) =>
       e.stopPropagation()
       @focus e.target
+
     focus: (entry) ->
       while focused = $.x 'parent::*/child::*[contains(@class,"focused")]', entry
         $.rmClass focused, 'focused'
@@ -375,7 +374,6 @@ UI = do ->
     input = $.el 'input', {type: 'checkbox', name, checked}
     $.add label, [input, $.tn " #{text}"]
     label
-
 
   return {
     dialog:   dialog
