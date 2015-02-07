@@ -4,7 +4,7 @@ class Thread
 
   constructor: (@ID, @board) ->
     @fullID     = "#{@board}.#{@ID}"
-    @posts      = new SimpleDict
+    @posts      = new SimpleDict()
     @isDead     = false
     @isHidden   = false
     @isOnTop    = false
