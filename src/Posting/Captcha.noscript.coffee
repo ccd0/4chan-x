@@ -9,6 +9,7 @@ Captcha.noscript =
     container = $.el 'div',
       className: 'captcha-img'
       title: 'Reload reCAPTCHA'
+
     input = $.el 'input',
       className: 'captcha-input field'
       title: 'Verification'
@@ -103,7 +104,7 @@ Captcha.noscript =
     $.off input, 'focus click', @cb.focus
 
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
-      QR.nodes.el.style.top    = null
+      QR.nodes.el.style.top    = ''
       QR.nodes.el.style.bottom = '0px'
 
   destroy: ->

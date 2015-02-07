@@ -9,6 +9,11 @@ g    =
   FAQ:       '<%= meta.faq %>'
   CHANGELOG: '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
   boards:    {}
-E    = (text) ->
-  (text+'').replace /[&"'<>]/g, (x) ->
-    {'&': '&amp;', "'": '&#039;', '"': '&quot;', '<': '&lt;', '>': '&gt;'}[x]
+
+E = do ->
+  str = {'&': '&amp;', "'": '&#039;', '"': '&quot;', '<': '&lt;', '>': '&gt;'}
+  r = String::replace
+  regex = /[&"'<>]/g
+  fn = (x) ->
+    str[x]
+  (text) -> r.call text, regex, fn

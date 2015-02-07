@@ -1,6 +1,6 @@
 DeleteLink =
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or !Conf['Menu'] or !Conf['Delete Link']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Delete Link']
 
     div = $.el 'div',
       className: 'delete-link'

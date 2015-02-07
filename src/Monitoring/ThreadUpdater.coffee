@@ -12,7 +12,7 @@ ThreadUpdater =
       @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
         <%= html('<div class="move"></div><span id="update-status"></span><span id="update-timer" title="Update now"></span>') %>
       $.addClass doc, 'float'
-      $.ready => 
+      $.ready ->
         $.add d.body, sc
 
     @checkPostCount = 0
@@ -120,11 +120,11 @@ ThreadUpdater =
         -> not d.hidden
     autoUpdate: (e) ->
       ThreadUpdater.count ThreadUpdater.isUpdating = @checked
-    interval: ->
+    interval: (e) ->
       val = parseInt @value, 10
       if val < 1 then val = 1
       ThreadUpdater.interval = @value = val
-      $.cb.value.call @
+      $.cb.value.call @ if e
     load: (e) ->
       {req} = ThreadUpdater
       switch req.status
@@ -239,6 +239,7 @@ ThreadUpdater =
     ThreadUpdater.req?.abort()
     ThreadUpdater.req = $.ajax "//a.4cdn.org/#{ThreadUpdater.thread.board}/thread/#{ThreadUpdater.thread}.json",
       onloadend: ThreadUpdater.cb.load
+      timeout:   $.MINUTE
     ,
       whenModified: true
 
@@ -344,7 +345,7 @@ ThreadUpdater =
     $.event 'ThreadUpdate',
       404: false
       threadID: ThreadUpdater.thread.fullID
-      newPosts: posts.map (post) -> post.fullID
+      newPosts: (post.fullID for post in posts)
       postCount: OP.replies + 1
       fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
       ipCount: OP.unique_ips

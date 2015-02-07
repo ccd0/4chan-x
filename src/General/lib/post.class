@@ -234,10 +234,9 @@ class Post
     for clone in @clones
       clone.resurrect()
 
-    for quotelink in Get.allQuotelinksLinkingTo @
-      if $.hasClass quotelink, 'deadlink'
-        quotelink.textContent = quotelink.textContent.replace '\u00A0(Dead)', ''
-        $.rmClass quotelink, 'deadlink'
+    for quotelink in Get.allQuotelinksLinkingTo @ when $.hasClass quotelink, 'deadlink'
+      quotelink.textContent = quotelink.textContent.replace '\u00A0(Dead)', ''
+      $.rmClass quotelink, 'deadlink'
     return
 
   collect: ->

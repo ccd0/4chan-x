@@ -7,7 +7,7 @@ MarkNewIPs =
 
   node: ->
     MarkNewIPs.ipCount = @ipCount
-    MarkNewIPs.postIDs = @posts.keys.map (x) -> +x
+    MarkNewIPs.postIDs = (+x for x in @posts.keys)
     $.on d, 'ThreadUpdate', MarkNewIPs.onUpdate
 
   onUpdate: (e) ->
@@ -35,11 +35,7 @@ MarkNewIPs =
     suffix = if (ipCount // 10) % 10 is 1
       'th'
     else
-      switch ipCount % 10
-        when 1 then 'st'
-        when 2 then 'nd'
-        when 3 then 'rd'
-        else 'th'
+      ['st', 'nd', 'rd'][ipCount % 10 - 1] or 'th' # fuck switches
     counter = $.el 'span',
       className: 'ip-counter'
       textContent: "(#{ipCount})"

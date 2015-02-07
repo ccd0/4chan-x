@@ -1,6 +1,6 @@
 ArchiveLink =
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or !Conf['Menu'] or !Conf['Archive Link']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Archive Link']
 
     div = $.el 'div',
       textContent: 'Archive'

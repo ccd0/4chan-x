@@ -1,6 +1,6 @@
 ReportLink =
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or !Conf['Menu'] or !Conf['Report Link']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Report Link']
 
     a = $.el 'a',
       className: 'report-link'

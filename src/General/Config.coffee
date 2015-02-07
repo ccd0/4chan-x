@@ -53,7 +53,7 @@ Config =
       ]
       'Comment Expansion': [
         true
-        'Add buttons to expand too long comments.'
+        'Expand Comments that are too long to display on the index. Not applicable with JSON Navigation.'
       ]
       'File Info Formatting': [
         true
@@ -118,6 +118,11 @@ Config =
         true
         'Convert text into links where applicable.'
       ]
+      'Link Title': [
+        true
+        'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists'
+        1
+      ]
       'Embedding': [
         true
         'Embed supported services. Note: Some services don\'t work on HTTPS.'
@@ -132,11 +137,6 @@ Config =
         false
         'Embed content in a frame that remains in place when the page is scrolled.'
         2
-      ]
-      'Link Title': [
-        true
-        'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists'
-        1
       ]
 
     'Filtering':
@@ -384,8 +384,8 @@ Config =
         'All-in-one form to reply, create threads, automate dumping and more.'
       ]
       'QR Shortcut': [
-        true,
-        'Adds a small [QR] link in the header.'
+        true
+        'Add a shortcut to the header to toggle the QR.'
         1
       ]
       'Persistent QR': [
@@ -598,7 +598,7 @@ Config =
     ]
     'Auto Prune': [
       false
-      'Automatically prune dead threads.'
+      'Automatically remove dead threads.'
     ]
     'Show Unread Count': [
       true

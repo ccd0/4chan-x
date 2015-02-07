@@ -16,16 +16,15 @@ Banner =
     if g.BOARD.ID isnt 'f' and g.VIEW is 'thread' and Conf['Remove Thread Excerpt']
       Banner.setTitle children[1].textContent
 
-    i = 0
-    while child = children[i++]
-      if i is 1
+    for child, i in children
+      if i is 0
         child.title = "Click to change"
         $.on child, 'click', Banner.cb.toggle
 
         continue
 
       if Conf['Custom Board Titles']
-        Banner.custom(child).title = "Ctrl/\u2318+click to edit board #{if i is 3
+        Banner.custom(child).title = "Ctrl/\u2318+click to edit board #{if i is 2
           'sub'
         else
           ''}title"

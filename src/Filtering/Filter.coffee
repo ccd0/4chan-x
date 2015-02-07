@@ -1,7 +1,7 @@
 Filter =
   filters: {}
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or !Conf['Filter']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Filter']
 
     unless Conf['Filtered Backlinks']
       $.addClass doc, 'hide-backlinks'
@@ -100,10 +100,8 @@ Filter =
 
   node: ->
     return if @isClone or @isFetchedQuote
-    for key of Filter.filters
-      value = Filter[key] @
+    for key of Filter.filters when (value = Filter[key] @) isnt false
       # Continue if there's nothing to filter (no tripcode for example).
-      continue if value is false
 
       for filter in Filter.filters[key] when result = filter value, @isReply
         # Hide
@@ -171,7 +169,7 @@ Filter =
 
   menu:
     init: ->
-      return if g.VIEW not in ['index', 'thread'] or !Conf['Menu'] or !Conf['Filter']
+      return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Filter']
 
       div = $.el 'div',
         textContent: 'Filter'

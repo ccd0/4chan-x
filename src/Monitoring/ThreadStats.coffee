@@ -84,5 +84,5 @@ ThreadStats =
         ThreadStats.pageCountEl.textContent = page.page
         (if page.page is @response.length then $.addClass else $.rmClass) ThreadStats.pageCountEl, 'warning'
         # Thread data may be stale (modification date given < time of last post). If so, try again on next thread update.
-        ThreadStats.lastPageUpdate = new Date thread.last_modified * 1000
+        ThreadStats.lastPageUpdate = new Date thread.last_modified * $.SECOND
         return

@@ -1,6 +1,6 @@
 Menu = 
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or !Conf['Menu']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Menu']
 
     @button = $.el 'a',
       className: 'menu-button'
