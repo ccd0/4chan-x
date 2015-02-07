@@ -24,7 +24,7 @@ QuotePreview =
       className: 'dialog'
 
     $.add Header.hover, qp
-    Get.postClone boardID, threadID, postID, qp, Get.contextFromNode @
+    new Fetcher boardID, threadID, postID, qp, Get.contextFromNode @
 
     UI.hover
       root: @
