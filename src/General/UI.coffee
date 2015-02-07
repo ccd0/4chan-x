@@ -46,15 +46,15 @@ UI = do ->
         # Close if it's already opened.
         # Reopen if we clicked on another button.
         previousButton = lastToggledButton
-        @close()
+        currentMenu.close()
         return if previousButton is button
 
       return unless @entries.length
       @open button, data
 
     open: (button, data) ->
-      menu = @makeMenu()
-      currentMenu       = menu
+      menu = @menu = @makeMenu()
+      currentMenu       = @
       lastToggledButton = button
 
       @entries.sort (first, second) ->
@@ -65,7 +65,7 @@ UI = do ->
 
       $.addClass lastToggledButton, 'active'
 
-      $.one d, 'click scroll CloseMenu', @close
+      $.on d, 'click scroll CloseMenu', @close
       $.add button, menu
 
       # Position
@@ -116,10 +116,12 @@ UI = do ->
       return
 
     close: =>
-      $.rm currentMenu
+      $.rm @menu
+      delete @menu
       $.rmClass lastToggledButton, 'active'
       currentMenu       = null
       lastToggledButton = null
+      $.off d, 'click scroll CloseMenu', @close
 
     findNextEntry: (entry, direction) ->
       entries = [entry.parentNode.children...]
@@ -127,7 +129,7 @@ UI = do ->
       entries[entries.indexOf(entry) + direction]
 
     keybinds: (e) =>
-      entry = $ '.focused', currentMenu
+      entry = $ '.focused', @menu
       while subEntry = $ '.focused', entry
         entry = subEntry
 
