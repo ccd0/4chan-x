@@ -120,7 +120,7 @@ Config =
       ]
       'Link Title': [
         true
-        'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud, and Github gists'
+        'Replace the link of a supported site with its actual title. Currently supported: YouTube, Vimeo, SoundCloud, and Github gists.'
         1
       ]
       'Embedding': [
