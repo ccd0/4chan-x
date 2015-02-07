@@ -53,7 +53,7 @@ Config =
       ]
       'Comment Expansion': [
         true
-        'Expand Comments that are too long to display on the index. Not applicable with JSON Navigation.'
+        'Expand comments that are too long to display on the index. Not applicable with JSON Navigation.'
       ]
       'File Info Formatting': [
         true
