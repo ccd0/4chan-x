@@ -30,7 +30,7 @@ Config =
         true
         'Redirect dead threads and images to the archives.'
       ]
-      'Exempt Archives from Encryption': [
+      'Except Archives from Encryption': [
         false
         'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'
       ]
