@@ -79,8 +79,9 @@ Gallery =
     $.on  d, 'keydown', cb.keybinds
     $.off d, 'keydown', Keybinds.keydown if Conf['Keybinds']
 
-    for file in $$ '.post .file' when !$ '.fileDeletedRes, .fileDeleted', file
+    for file in $$ '.post .file'
       post = Get.postFromNode file
+      continue unless post.file
       Gallery.generateThumb post
       # If no image to open is given, pick image we have scrolled to.
       if !image and Gallery.fullIDs[post.fullID]
