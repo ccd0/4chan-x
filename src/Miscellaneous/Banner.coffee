@@ -2,6 +2,9 @@ Banner =
   banners: `<%= JSON.stringify(grunt.file.readJSON('src/Miscellaneous/banners.json')) %>`
 
   init: ->
+    if Conf['Custom Board Titles']
+      @db = new DataBoard 'customTitles', null, true
+
     $.asap (-> d.body), ->
       $.asap (-> $ 'hr'), Banner.ready
 
@@ -47,12 +50,8 @@ Banner =
       $('img', @parentNode).src = "//s.4cdn.org/image/title/#{banner}"
 
     click: (e) ->
-      return unless (e.ctrlKey or e.metaKey) and @className in ['boardTitle', 'boardSubtitle']
-
-      unless Banner.original[@className]
-        Banner.original[@className] = @cloneNode true
-        $.set "#{g.BOARD}.#{@className}.orig", @textContent
-
+      return unless (e.ctrlKey or e.metaKey)
+      Banner.original[@className] ?= @cloneNode true
       @contentEditable = true
       $.replace br, $.tn('\n') for br in $$ 'br', @
       @focus()
@@ -62,41 +61,48 @@ Banner =
       return @blur() if !e.shiftKey and e.keyCode is 13
 
     blur: ->
-      return unless @className in ['boardTitle', 'boardSubtitle']
-
       if @textContent
         @contentEditable = false
-        $.set "#{g.BOARD}.#{@className}", @textContent
+        Banner.db.set
+          boardID:  g.BOARD.ID
+          threadID: @className
+          val:
+            title: @textContent
+            orig:  Banner.original[@className].textContent
       else
         $.rmAll @
         $.add @, [Banner.original[@className].cloneNode(true).childNodes...]
-        $.delete "#{g.BOARD}.#{@className}"
+        Banner.db.delete
+          boardID:  g.BOARD.ID
+          threadID: @className
 
   original: {}
 
   custom: (child) ->
     {className} = child
-    return unless className in ['boardTitle', 'boardSubtitle']
-
     child.title = "Ctrl/\u2318+click to edit board #{className[5..].toLowerCase()}"
     child.spellcheck = false
 
     for event in ['click', 'keydown', 'blur']
       $.on child, event, Banner.cb[event]
 
-    cachedTest = child.textContent
+    # XXX Migrate old settings.
     string = "#{g.BOARD}.#{className}"
+    string2 = "#{string}.orig"
+    items = {}
+    items[string] = ''
+    items[string2] = child.textContent
+    $.get items, (items) ->
+      if items[string]
+        Banner.db.set
+          boardID:  g.BOARD.ID
+          threadID: className
+          val:      {title: items[string], orig: items[string2]}
+      $.delete [string, string2]
 
-    $.get string, '', (item) ->
-      return unless title = item[string]
-      Banner.original[className] ?= child.cloneNode true
-      return child.textContent = title if Conf['Persistent Custom Board Titles']
-
-      string2 = "#{string}.orig"
-
-      $.get string2, cachedTest, (itemb) ->
-       if cachedTest is itemb[string2]
-          child.textContent = title
-        else
-          $.delete string
-          $.set string2, cachedTest
+    if data = Banner.db.get {boardID: g.BOARD.ID, threadID: className}
+      if Conf['Persistent Custom Board Titles'] or data.orig is child.textContent
+        Banner.original[className] = child.cloneNode true
+        child.textContent = data.title
+      else
+        Banner.db.delete {boardID: g.BOARD.ID, threadID: className}
