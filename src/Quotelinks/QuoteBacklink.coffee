@@ -21,7 +21,7 @@ QuoteBacklink =
       name: 'Quote Backlinking Part 2'
       cb:   @secondNode
   firstNode: ->
-    return if @isClone or !@quotes.length
+    return if @isClone or !@quotes.length or @isRebuilt
     markYours = Conf['Quick Reply'] and Conf['Mark Quotes of You'] and QR.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
     a = $.el 'a',
       href: Build.postURL @board.ID, @thread.ID, @ID

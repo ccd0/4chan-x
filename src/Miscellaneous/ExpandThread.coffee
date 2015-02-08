@@ -90,7 +90,7 @@ ExpandThread =
     filesCount = 0
     for postData in req.response.posts
       continue if postData.no is thread.ID
-      if post = thread.posts[postData.no]
+      if (post = thread.posts[postData.no]) and not post.isFetchedQuote
         filesCount++ if 'file' of post
         postsRoot.push post.nodes.root
         continue

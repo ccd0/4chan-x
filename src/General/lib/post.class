@@ -89,6 +89,10 @@ class Post
     @isHidden = false
 
     @clones = []
+    if g.posts[@fullID]
+      @isRebuilt = true
+      @clones = g.posts[@fullID].clones
+      clone.origin = @ for clone in @clones
     g.posts.push @fullID, thread.posts.push @, board.posts.push @, @
     @kill() if that.isArchived
 
