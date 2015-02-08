@@ -77,7 +77,7 @@ Config =
       ]
       'Persistent Custom Board Titles': [
         false
-        'Force custom board titles to be persistent, even if moot updates the board titles.'
+        'Force custom board titles to be persistent, even if the board titles are updated.'
         1
       ]
       'Show Updated Notifications': [
