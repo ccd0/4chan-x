@@ -337,14 +337,16 @@ Settings =
 
     interval  = $ 'input[name="Interval"]',   section
     customCSS = $ 'input[name="Custom CSS"]', section
+    applyCSS  = $ '#apply-css',               section
 
     interval.value             =  Conf['Interval']
     customCSS.checked          =  Conf['Custom CSS']
     inputs['usercss'].disabled = !Conf['Custom CSS']
+    applyCSS.disabled          = !Conf['Custom CSS']
 
-    $.on interval,                 'change', ThreadUpdater.cb.interval
-    $.on customCSS,                'change', Settings.togglecss
-    $.on $('#apply-css', section), 'click',  Settings.usercss
+    $.on interval,  'change', ThreadUpdater.cb.interval
+    $.on customCSS, 'change', Settings.togglecss
+    $.on applyCSS,  'click',  Settings.usercss
 
     archBoards = {}
     for {name, boards, files, software, withCredentials} in Redirect.archives
@@ -464,7 +466,7 @@ Settings =
     img[3].src = Favicon.unreadDead
 
   togglecss: ->
-    if $('textarea[name=usercss]', $.x 'ancestor::fieldset[1]', @).disabled = !@checked
+    if $('textarea[name=usercss]', $.x 'ancestor::fieldset[1]', @).disabled = $.id('apply-css').disabled = !@checked
       CustomCSS.rmStyle()
     else
       CustomCSS.addStyle()
