@@ -16,21 +16,12 @@ Banner =
     if g.BOARD.ID isnt 'f' and g.VIEW is 'thread' and Conf['Remove Thread Excerpt']
       Banner.setTitle children[1].textContent
 
-    for child, i in children
-      if i is 0
-        child.title = "Click to change"
-        $.on child, 'click', Banner.cb.toggle
+    children[0].title = "Click to change"
+    $.on children[0], 'click', Banner.cb.toggle
 
-        continue
-
-      if Conf['Custom Board Titles']
-        Banner.custom(child).title = "Ctrl/\u2318+click to edit board #{if i is 2
-          'sub'
-        else
-          ''}title"
-        child.spellcheck = false
-
-    return
+    if Conf['Custom Board Titles']
+      Banner.custom children[1]
+      Banner.custom children[2] if children[2]
 
   load: ->
     bannerCnt = $.id 'bannerCnt'
@@ -56,41 +47,49 @@ Banner =
       $('img', @parentNode).src = "//s.4cdn.org/image/title/#{banner}"
 
     click: (e) ->
-      if e.ctrlKey or e.metaKey
-        @contentEditable = true
-        @focus()
+      return unless (e.ctrlKey or e.metaKey) and @className in ['boardTitle', 'boardSubtitle']
+
+      unless Banner.original[@className]
+        Banner.original[@className] = @cloneNode true
+        $.set "#{g.BOARD}.#{@className}.orig", @textContent
+
+      @contentEditable = true
+      $.replace br, $.tn('\n') for br in $$ 'br', @
+      @focus()
 
     keydown: (e) ->
       e.stopPropagation()
       return @blur() if !e.shiftKey and e.keyCode is 13
 
-    focus: ->
-      string = "#{g.BOARD}.#{@className}"
-      string2 = "#{string}.orig"
-
-      items = {title: @textContent}
-      items[string] = ''
-      items[string2] = false
-
-      $.get items, (items) ->
-        unless items[string2] and items.title is items[string]
-          $.set string2, items.title
-
-      return
-
     blur: ->
-      @contentEditable = false
-      $.set "#{g.BOARD}.#{@className}", @textContent
+      return unless @className in ['boardTitle', 'boardSubtitle']
+
+      if @textContent
+        @contentEditable = false
+        $.set "#{g.BOARD}.#{@className}", @textContent
+      else
+        $.rmAll @
+        $.add @, [Banner.original[@className].cloneNode(true).childNodes...]
+        $.delete "#{g.BOARD}.#{@className}"
+
+  original: {}
 
   custom: (child) ->
+    {className} = child
+    return unless className in ['boardTitle', 'boardSubtitle']
+
+    child.title = "Ctrl/\u2318+click to edit board #{className[5..].toLowerCase()}"
+    child.spellcheck = false
+
+    for event in ['click', 'keydown', 'blur']
+      $.on child, event, Banner.cb[event]
+
     cachedTest = child.textContent
-    string = "#{g.BOARD}.#{child.className}"
+    string = "#{g.BOARD}.#{className}"
 
-    $.on child, 'click keydown focus blur', (e) -> Banner.cb[e.type].apply @, [e]
-
-    $.get string, cachedTest, (item) ->
+    $.get string, '', (item) ->
       return unless title = item[string]
-      return if title is cachedTest
+      Banner.original[className] ?= child.cloneNode true
       return child.textContent = title if Conf['Persistent Custom Board Titles']
 
       string2 = "#{string}.orig"
@@ -99,7 +98,5 @@ Banner =
        if cachedTest is itemb[string2]
           child.textContent = title
         else
-          $.set string, cachedTest
+          $.delete string
           $.set string2, cachedTest
-
-    child

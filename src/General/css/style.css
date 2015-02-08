@@ -1503,6 +1503,9 @@ a:only-of-type > .remove {
   text-decoration: none !important;
 }
 /* Custom Board Titles */
+.boardTitle, .boardSubtitle {
+  white-space: pre-line;
+}
 .boardTitle[contenteditable="true"],
 .boardSubtitle[contenteditable="true"] {
   cursor: text !important;
