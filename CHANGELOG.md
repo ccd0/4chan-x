@@ -2,6 +2,19 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+## v1.10.0
+
+**v1.10.0.0** *(2015-02-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.9.23.8.
+- Fix import and export of custom board titles. Note: Due to related changes in the way the setting is stored, your custom board titles may not be visible on the first load with this version, but should be visible on refresh.
+- Support multiline custom board titles (had been broken by removal of HTML support).
+- Fix bugs when posts in a thread are previewed before expanding the thread in the index.
+- (Zixaphir) Close menus on scroll (fixes post menus not scrolling with their posts).
+- (Zixaphir) Add "none" option (don't open any section) to the "OpenSettings" event.
+- (Zixaphir) Give "Heaven" a white ID color.
+- (Zixaphir, ccd0) Advanced settings panel bugfixes.
+- (Zixaphir, ccd0) Various other minor changes and bugfixes.
+
 <!-- v1.9.23.x -->
 ### v1.9.23.8 
 *2015-02-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.8/builds/4chan-X-noupdate.crx "Chromium version")]
