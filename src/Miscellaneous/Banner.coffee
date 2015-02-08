@@ -62,7 +62,7 @@ Banner =
 
     blur: ->
       $.replace br, $.tn('\n') for br in $$ 'br', @
-      if @textContent
+      if @textContent = @textContent.replace /\n*$/, ''
         @contentEditable = false
         Banner.db.set
           boardID:  g.BOARD.ID
