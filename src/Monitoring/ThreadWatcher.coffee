@@ -170,9 +170,9 @@ ThreadWatcher =
       ThreadWatcher.fetchStatus thread
     return
 
-  fetchStatus: (thread) ->
+  fetchStatus: (thread, force) ->
     {boardID, threadID, data} = thread
-    return if data.isDead and !Conf['Show Unread Count']
+    return if data.isDead and not force
     {fetchCount} = ThreadWatcher
     if fetchCount.fetching is 0
       ThreadWatcher.status.textContent = '...'
@@ -356,7 +356,7 @@ ThreadWatcher =
     ThreadWatcher.db.set {boardID, threadID, val: data}
     ThreadWatcher.refresh()
     if Conf['Show Unread Count']
-      ThreadWatcher.fetchStatus {boardID, threadID, data}
+      ThreadWatcher.fetchStatus {boardID, threadID, data}, true
 
   rm: (boardID, threadID) ->
     ThreadWatcher.db.delete {boardID, threadID}
