@@ -61,6 +61,7 @@ Banner =
       return @blur() if !e.shiftKey and e.keyCode is 13
 
     blur: ->
+      $.replace br, $.tn('\n') for br in $$ 'br', @
       if @textContent
         @contentEditable = false
         Banner.db.set
