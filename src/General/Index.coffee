@@ -70,6 +70,7 @@ Index =
     $.on d, 'scroll', Index.scroll
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
+    $.on $('.refreshlink a',      @navLinks), 'click', @update
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
     $.on @selectMode, 'change', @cb.mode
