@@ -16,6 +16,11 @@ The links to individual versions below are to copies of the script with the upda
 - (Zixaphir, ccd0) Various other minor changes and bugfixes.
 
 <!-- v1.9.23.x -->
+### v1.9.23.9 
+*2015-02-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.9/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Fix top catalog link replacement with JSON Navigation off, External Catalog on.
+
 ### v1.9.23.8 
 *2015-02-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.8/builds/4chan-X-noupdate.crx "Chromium version")]
 

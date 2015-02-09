@@ -3,8 +3,8 @@ CatalogLinks =
     if (Conf['External Catalog'] or Conf['JSON Navigation']) and !(Conf['JSON Navigation'] and g.VIEW is 'index')
       selector = switch g.VIEW
         when 'thread', 'archive' then '.navLinks.desktop > a'
-        when 'catalog' then '.navLinks > :first-child > a'
-        when 'index'   then '.middlead + .desktop > a, .cataloglink > a'
+        when 'catalog'           then '.navLinks > :first-child > a'
+        when 'index'             then '#ctrl-top > a, .cataloglink > a'
       $.ready ->
         for link in $$ selector
           switch link.pathname
