@@ -4,6 +4,15 @@ The links to individual versions below are to copies of the script with the upda
 
 ## v1.10.0
 
+**v1.10.0.1** *(2015-02-09)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.9.23.9: Fix top catalog link replacement with `JSON Navigation` off, `External Catalog` on.
+- The "Front page" keybinds no longer change the index mode.
+- Add keybinds for changing the index mode to Paged, Infinite scroll, and All threads.
+- "Index-only" links in the board list always take you to a non-catalog mode of the index regardless of how `Use 4chan X Catalog` is set.
+- When `JSON Navigation` is on, the `[Return]` link is relabeled `[Index]` and always takes you to a non-catalog mode of the index.
+- Redundant `[Index]`/`[Catalog]` links at the top of the JSON index have been hidden.
+- Add `[Refresh]` link to top of JSON index.
+
 **v1.10.0.0** *(2015-02-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.9.23.8.
 - Fix import and export of custom board titles. Note: Due to related changes in the way the setting is stored, your custom board titles may not be visible on the first load with this version, but should be visible on refresh.
@@ -19,7 +28,7 @@ The links to individual versions below are to copies of the script with the upda
 ### v1.9.23.9 
 *2015-02-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.9/builds/4chan-X-noupdate.crx "Chromium version")]
 
-- Fix top catalog link replacement with JSON Navigation off, External Catalog on.
+- Fix top catalog link replacement with `JSON Navigation` off, `External Catalog` on.
 
 ### v1.9.23.8 
 *2015-02-08* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.8/builds/4chan-X-noupdate.crx "Chromium version")]
