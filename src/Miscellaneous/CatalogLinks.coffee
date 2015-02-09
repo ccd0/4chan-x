@@ -65,7 +65,7 @@ CatalogLinks =
 
       # Href is easier than pathname because then we don't have
       # conditions where External Catalog has been disabled between switches.
-      a.href = CatalogLinks[if useCatalog then 'catalog' else 'index'] board
+      a.href = if useCatalog then CatalogLinks.catalog(board) else "/#{board}/"
 
     CatalogLinks.el.title = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
     $('input', CatalogLinks.el).checked = useCatalog
