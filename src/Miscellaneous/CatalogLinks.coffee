@@ -8,8 +8,11 @@ CatalogLinks =
       $.ready ->
         for link in $$ selector
           switch link.pathname
-            when "/#{g.BOARD}/"        then link.href = CatalogLinks.index()
-            when "/#{g.BOARD}/catalog" then link.href = CatalogLinks.catalog()
+            when "/#{g.BOARD}/"
+              link.textContent = 'Index' if Conf['JSON Navigation']
+              link.href = CatalogLinks.index()
+            when "/#{g.BOARD}/catalog"
+              link.href = CatalogLinks.catalog()
           if g.VIEW is 'catalog' and Conf['JSON Navigation'] and Conf['Use <%= meta.name %> Catalog']
             catalogLink = link.parentNode.cloneNode true
             catalogLink.firstElementChild.textContent = '<%= meta.name %> Catalog'
@@ -76,7 +79,7 @@ CatalogLinks =
       "/#{board}/catalog"
 
   index: (board=g.BOARD.ID) ->
-    if Conf['JSON Navigation'] and Conf['Use <%= meta.name %> Catalog']
+    if Conf['JSON Navigation']
       if g.BOARD.ID is board and g.VIEW is 'index' then '#index' else "/#{board}/#index"
     else
       "/#{board}/"

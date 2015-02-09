@@ -545,6 +545,8 @@ div[data-checked="false"] > .suboption-list {
 :root.infinite-mode .pagelist,
 :root.all-pages-mode .pagelist,
 :root.catalog-mode .pagelist,
+:root:not(.catalog-mode) .indexlink,
+:root.catalog-mode .cataloglink,
 :root:not(.catalog-mode) #hidden-label,
 :root:not(.catalog-mode) #index-size {
   display: none;

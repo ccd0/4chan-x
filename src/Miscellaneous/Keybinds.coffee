@@ -105,12 +105,12 @@ Keybinds =
         FappeTyme.toggle 'werk'
       # Board Navigation
       when Conf['Front page']
-        if Conf['JSON Navigation'] and !Conf['Use <%= meta.name %> Catalog'] and g.VIEW is 'index'
+        if Conf['JSON Navigation'] and g.VIEW is 'index'
           Index.userPageNav 1
         else
-          window.location = CatalogLinks.index()
+          window.location = "/#{g.BOARD}/"
       when Conf['Open front page']
-        $.open CatalogLinks.index()
+        $.open "/#{g.BOARD}/"
       when Conf['Next page']
         return unless g.VIEW is 'index'
         if Conf['JSON Navigation']
@@ -132,6 +132,15 @@ Keybinds =
         searchInput = if Conf['JSON Navigation'] then Index.searchInput else $.id('search-box')
         Header.scrollToIfNeeded searchInput
         searchInput.focus()
+      when Conf['Paged mode']
+        return unless Conf['JSON Navigation']
+        window.location = if g.VIEW is 'index' then '#paged' else "/#{g.BOARD}/#paged"
+      when Conf['Infinite scrolling mode']
+        return unless Conf['JSON Navigation']
+        window.location = if g.VIEW is 'index' then '#infinite' else "/#{g.BOARD}/#infinite"
+      when Conf['All pages mode']
+        return unless Conf['JSON Navigation']
+        window.location = if g.VIEW is 'index' then '#all-pages' else "/#{g.BOARD}/#all-pages"
       when Conf['Open catalog']
         window.location = CatalogLinks.catalog()
       when Conf['Cycle sort type']

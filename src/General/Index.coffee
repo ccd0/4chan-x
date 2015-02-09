@@ -57,7 +57,6 @@ Index =
     $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
     @navLinks = $.el 'div', className: 'navLinks'
     $.extend @navLinks, <%= importHTML('Features/Index-navlinks') %>
-    $('.returnlink a',  @navLinks).href = CatalogLinks.index()
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
     $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID is 'b'
     @searchInput = $ '#index-search', @navLinks
@@ -73,7 +72,6 @@ Index =
     $.on @searchInput, 'input', @onSearchInput
     $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
     $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
-    $.on $('.returnlink a',       @navLinks), 'click', @cb.frontPage unless Conf['Use <%= meta.name %> Catalog']
     $.on @selectMode, 'change', @cb.mode
     for select in [@selectMode, @selectSort, @selectSize]
       select.value = Conf[select.name]
@@ -262,11 +260,6 @@ Index =
       return if a.textContent is 'Catalog'
       e.preventDefault()
       Index.userPageNav +a.pathname.split('/')[2] or 1
-
-    frontPage: (e) ->
-      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
-      e.preventDefault()
-      Index.userPageNav 1
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.navLinks

@@ -837,6 +837,18 @@ Config =
       'Ctrl+Left'
       'Jump to the previous page.'
     ]
+    'Paged mode': [
+      'Alt+1'
+      'Open the index in paged mode.'
+    ]
+    'Infinite scrolling mode': [
+      'Alt+2'
+      'Open the index in infinite scrolling mode.'
+    ]
+    'All pages mode': [
+      'Alt+3'
+      'Open the index in all threads mode.'
+    ]
     'Open catalog': [
       'Shift+c'
       'Open the catalog of the current board.'
