@@ -495,7 +495,18 @@ $.set = do ->
       set key, val
     return
 $.clear = (cb) ->
-  $.delete GM_listValues().map (key) -> key.replace g.NAMESPACE, ''
+  try
+    $.delete GM_listValues().map (key) -> key.replace g.NAMESPACE, ''
+  catch err
+    # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
+    $.delete Object.keys(Conf)
+    $.delete ['previousversion', 'AutoWatch', 'cooldown.global', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']
+    $.delete ("#{id}.position" for id in ['embedding', 'updater', 'thread-stats', 'thread-watcher', 'qr'])
+    boards = (a.textContent for a in $$ '#boardNavDesktop > .boardList > a')
+    boards.push 'qa'
+    $.delete ("cooldown.#{board}" for board in boards)
+    for board in boards
+      $.delete ["#{board}.boardTitle", "#{board}.boardSubtitle", "#{board}.boardTitle.orig", "#{board}.boardSubtitle.orig"]
   cb?()
 <% } %>
 
