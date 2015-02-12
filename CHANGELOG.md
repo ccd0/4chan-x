@@ -3,6 +3,11 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
 <!-- v1.9.23.x -->
+### v1.9.23.11 
+*2015-02-12* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.11/builds/4chan-X-noupdate.crx "Chromium version")]
+
+- Fix importing/resetting settings in Firefox 35+.
+
 ### v1.9.23.10 
 *2015-02-11* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.9.23.10/builds/4chan-X-noupdate.crx "Chromium version")]
 
