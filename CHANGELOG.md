@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ## v1.10.0
 
+**v1.10.0.3** *(2015-02-11)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.9.23.10: 4chan has moved thumbnails to i.4cdn.org.
+
 **v1.10.0.2** *(2015-02-09)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - The `Catalog Links` feature no longer forces a non-catalog index mode if the header menu item is unchecked.
 
