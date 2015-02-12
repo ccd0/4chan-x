@@ -14,9 +14,6 @@ Build =
       "#{filename[...threshold - 5]}(...)#{ext}"
     else
       filename
-  thumbRotate: do ->
-    n = 0
-    -> n = (n + 1) % 2
   sameThread: (boardID, threadID) ->
     g.VIEW is 'thread' and g.BOARD.ID is boardID and g.THREADID is +threadID
   postURL: (boardID, threadID, postID) ->
@@ -62,7 +59,7 @@ Build =
         width:     data.w
         MD5:       data.md5
         size:      data.fsize
-        turl:      "//#{Build.thumbRotate()}.t.4cdn.org/#{boardID}/#{data.tim}s.jpg"
+        turl:      "//i.4cdn.org/#{boardID}/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler

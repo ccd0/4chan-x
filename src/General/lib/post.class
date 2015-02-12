@@ -14,7 +14,6 @@ class Post
     for el in $$ 'a[rel=canonical]', root2
       el.removeAttribute 'rel'
     for el in $$ 'img[src]', root2
-      el.src = el.src.replace /^(\w+:\/\/)[0-2](\.t\.4cdn\.org\/)/, '$10$2'
       el.src = el.src.replace /(spoiler-\w+)\d(\.png)$/, '$11$2'
     Fourchan.code.call nodes: comment: $ '.postMessage', root2
     for el in $$ 'pre[style=""]', root2
@@ -175,7 +174,7 @@ class Post
     unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
     size *= 1024 while unit-- > 0
     @file.sizeInBytes = size
-    @file.thumbURL = "#{location.protocol}//t.4cdn.org/#{@board}/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
+    @file.thumbURL = "#{location.protocol}//i.4cdn.org/#{@board}/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
     @file.isImage = /(jpg|png|gif)$/i.test @file.URL
     @file.isVideo = /webm$/i.test @file.URL
     nameNode = $ 'a', fileText
