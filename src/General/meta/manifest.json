@@ -20,6 +20,7 @@
   },
   "homepage_url": "<%= meta.page %>",
 <% if (channel !== 'noupdate') { %>  "update_url": "<%= meta.downloads %>updates<%= meta.suffix[channel] %>.xml",
+  "key": "<%= meta.appid %>",
 <% } %>  "minimum_chrome_version": "<%= meta.min.chrome %>",
   "permissions": [
     "storage",
