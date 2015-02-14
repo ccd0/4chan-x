@@ -367,7 +367,7 @@ module.exports = (grunt) ->
     oldversion = pkg.meta.version
     pkg.meta.version = version
     grunt.config 'pkg', pkg
-    grunt.file.write 'package.json', JSON.stringify(pkg, null, 2)
+    grunt.file.write 'package.json', JSON.stringify(pkg, null, 2) + '\n'
     grunt.log.ok "Version updated from v#{oldversion} to v#{version}."
 
   grunt.registerTask 'updcl', 'Update the changelog', ->
