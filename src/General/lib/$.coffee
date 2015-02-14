@@ -308,29 +308,12 @@ $.syncing = {}
 
 <% if (type === 'crx') { %>
 # https://developer.chrome.com/extensions/storage.html
-$.localKeys = [
-  # filters
-  'name',
-  'uniqueID',
-  'tripcode',
-  'capcode',
-  'subject',
-  'comment',
-  'flag',
-  'filename',
-  'dimensions',
-  'filesize',
-  'MD5',
-  # custom css
-  'usercss',
-  # your posts
-  'yourPosts'
-]
+$.localKeys = {}
 
 chrome.storage.onChanged.addListener (changes, area) ->
   for key of changes
     cb = $.syncing[key]
-    if cb and (key in $.localKeys) is (area is 'local')
+    if cb and (key of $.localKeys) is (area is 'local')
       cb changes[key].newValue, key
   return
 $.sync = (key, cb) ->
@@ -353,12 +336,7 @@ $.get = (key, val, cb) ->
       if results.local and results.sync
         $.extend data, results.sync
         $.extend data, results.local
-        misplaced = null
-        for key, val of results.local when !(key in $.localKeys)
-          (misplaced or= {})[key] = val
-        if misplaced
-          chrome.storage.sync.set misplaced, ->
-            chrome.storage.local.remove Object.keys(misplaced)
+        $.localKeys[key] = true for key of results.local
         cb data
   get 'local'
   get 'sync'
@@ -378,44 +356,49 @@ do ->
     for key in keys
       delete items.local[key]
       delete items.sync[key]
+      delete $.localKeys[key]
     chrome.storage.local.remove keys
     chrome.storage.sync.remove keys
 
   timeout = {}
   setArea = (area) ->
-    data = items[area]
+    data = {}
+    $.extend data, items[area]
     return if !Object.keys(data).length or timeout[area] > Date.now()
     chrome.storage[area].set data, ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
-        for key, val of data when key not of items[area]
-          if area is 'sync' and exceedsQuota key, val
-            c.error chrome.runtime.lastError.message, key, val
-            continue
-          items[area][key] = val
         setTimeout setArea, $.MINUTE, area
         timeout[area] = Date.now() + $.MINUTE
         return
+
       delete timeout[area]
-    items[area] = {}
+      delete items[area][key] for key of data when items[area][key] is data[key]
+      if area is 'local'
+        items.sync[key] = val for key, val of data when not exceedsQuota(key, val)
+        setSync()
+      else
+        oldLocal = for key of data when key not of items.local
+          delete $.localKeys[key]
+          key
+        chrome.storage.local.remove oldLocal
 
   setSync = $.debounce $.SECOND, ->
     setArea 'sync'
 
   $.set = (key, val) ->
-    if typeof key is 'string'
-      items.sync[key] = val
+    data = if typeof key is 'string'
+      $.item key, val
     else
-      $.extend items.sync, key
-    for key in $.localKeys when key of items.sync
-      items.local[key] = items.sync[key]
-      delete items.sync[key]
+      key
+    $.extend items.local, data
+    $.localKeys[key] = true for key of data
     setArea 'local'
-    setSync()
 
   $.clear = (cb) ->
     items.local = {}
     items.sync  = {}
+    $.localKeys = {}
     count = 2
     done  = ->
       if chrome.runtime.lastError
