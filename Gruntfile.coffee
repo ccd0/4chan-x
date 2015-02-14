@@ -171,6 +171,11 @@ module.exports = (grunt) ->
         command: 'git push origin --tags -f && git push origin --all'
       npm:
         command: 'npm install'
+      update:
+        command: """
+          npm update --save-dev <%= Object.keys(pkg.devDependencies).filter(function(name) {return /^\\^/.test(pkg.devDependencies[name]);}).join(' ') %>
+          ./node_modules/.bin/npm-shrinkwrap --dev
+        """.split('\n').join('&&')
 
     watch:
       options:
