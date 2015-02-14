@@ -330,14 +330,18 @@ module.exports = (grunt) ->
     'build-crx'
   ]
 
+  grunt.registerTask 'full', [
+    'build'
+    'pack'
+    'concat:meta'
+    'copy:builds'
+  ]
+
   grunt.registerTask 'tag', 'Tag a new version', (version) ->
     grunt.task.run [
       "setversion:#{version}"
       'updcl'
-      'build'
-      'pack'
-      'concat:meta'
-      'copy:builds'
+      'full'
       'shell:commit'
     ]
 
