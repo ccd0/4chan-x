@@ -169,6 +169,8 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       push:
         command: 'git push origin --tags -f && git push origin --all'
+      npm:
+        command: 'npm install'
 
     watch:
       options:
@@ -272,6 +274,7 @@ module.exports = (grunt) ->
     grunt.config 'pkg', pkg
 
   grunt.registerTask 'build', [
+    'shell:npm'
     'concurrent:build'
   ]
 
