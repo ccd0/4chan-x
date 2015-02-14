@@ -3,8 +3,8 @@
   "npm-shrinkwrap-version": "5.1.0",
   "dependencies": {
     "font-awesome": {
-      "version": "4.2.0",
-      "resolved": "https://registry.npmjs.org/font-awesome/-/font-awesome-4.2.0.tgz"
+      "version": "4.3.0",
+      "resolved": "https://registry.npmjs.org/font-awesome/-/font-awesome-4.3.0.tgz"
     },
     "grunt": {
       "version": "0.4.5",
