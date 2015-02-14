@@ -321,9 +321,10 @@ Index =
     state
 
   saveMode: (mode) ->
-    Conf['Index Mode'] = mode
-    $.set 'Index Mode', mode
-    unless mode is 'catalog'
+    unless Conf['Index Mode'] is mode
+      Conf['Index Mode'] = mode
+      $.set 'Index Mode', mode
+    unless mode is 'catalog' or Conf['Previous Index Mode'] is mode
       Conf['Previous Index Mode'] = mode
       $.set 'Previous Index Mode', mode
 

@@ -79,7 +79,7 @@ class DataBoard
       for boardID of @data.boards
         for threadID of @data.boards[boardID]
           @ajaxClean boardID, threadID
-    @save()
+    return
 
   ajaxClean: (boardID, threadID) ->
     $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
