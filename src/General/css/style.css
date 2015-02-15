@@ -1516,50 +1516,15 @@ div.boardTitle {
   font-weight: 400 !important;
 }
 /* Link Title Favicons */
-.linkify.YouTube {
-  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/youtube.png",    {encoding: "base64"}) %>') center left no-repeat!important;
-  padding-left: 18px;
-}
-.linkify.Vimeo {
-  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/vimeo.png",    {encoding: "base64"}) %>') center left no-repeat!important;
-  padding-left: 18px;
-}
-.linkify.SoundCloud {
-  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/soundcloud.png",    {encoding: "base64"}) %>') center left no-repeat!important;
-  padding-left: 18px;
-}
-.linkify.audio {
-  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/audio.png",    {encoding: "base64"}) %>') center left no-repeat!important;
-  padding-left: 18px;
-}
-.linkify.LiveLeak {
-  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/liveleak.png",    {encoding: "base64"}) %>') center left no-repeat!important;
-  padding-left: 18px;
-}
-.linkify.Vocaroo {
-  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/vocaroo.png",    {encoding: "base64"}) %>') center left no-repeat!important;
-  padding-left: 18px;
-}
-.linkify.pastebin {
-  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/pastebin.png",    {encoding: "base64"}) %>') center left no-repeat!important;
-  padding-left: 18px;
-}
-.linkify.gist {
-  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/gist.png",    {encoding: "base64"}) %>') center left no-repeat!important;
-  padding-left: 18px;
-}
-.linkify.image {
-  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/image.png",    {encoding: "base64"}) %>') center left no-repeat!important;
-  padding-left: 18px;
-}
-.linkify.InstallGentoo {
-  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/installgentoo.png",    {encoding: "base64"}) %>') center left no-repeat!important;
-  padding-left: 18px;
-}
-.linkify.video {
-  background: transparent url('data:image/png;base64,<%= grunt.file.read("src/General/img/links/video.png",    {encoding: "base64"}) %>') center left no-repeat!important;
-  padding-left: 18px;
-}
+<%=
+'YouTube Vimeo SoundCloud audio LiveLeak Vocaroo pastebin gist image InstallGentoo video gfycat'.split(' ').map(function(key) {
+  var data = grunt.file.read('src/General/img/links/' + key.toLowerCase() + '.png', {encoding: 'base64'});
+  return ".linkify."+key+" {\n" +
+  "  background: transparent url('data:image/png;base64,"+data+"') center left no-repeat!important;\n" +
+  "  padding-left: 18px;\n" +
+  "}";
+}).join('\n')
+%>
 
 /* Embedding */
 #embedding {
