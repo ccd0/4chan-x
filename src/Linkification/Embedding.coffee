@@ -42,6 +42,7 @@ Embedding =
 
   embed: (data) ->
     {key, uid, options, link, post} = data
+    {href} = link
     $.addClass link, key.toLowerCase()
 
     if Embedding.types[key].httpOnly and location.protocol isnt 'http:'
@@ -58,7 +59,7 @@ Embedding =
       href:        'javascript:;'
       textContent: '(embed)'
 
-    embed.dataset[name] = value for name, value of {key, uid, options}
+    embed.dataset[name] = value for name, value of {key, uid, options, href}
 
     $.on embed, 'click', Embedding.cb.toggle
     $.after link, [$.tn(' '), embed]
@@ -177,7 +178,7 @@ Embedding =
         $.el 'audio',
           controls:    true
           preload:     'auto'
-          src:         a.href
+          src:         a.dataset.href
     ,
       key: 'Gist'
       regExp: /^\w+:\/\/gist\.github\.com\/(?:[\w\-]+\/)?(\w+)/
@@ -196,7 +197,7 @@ Embedding =
       regExp: /\.(?:gif|png|jpg|jpeg|bmp)(?:\?|$)/i
       style: ''
       el: (a) ->
-        $.el 'div', <%= html('<a target="_blank" href="${a.href}"><img src="${a.href}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
+        $.el 'div', <%= html('<a target="_blank" href="${a.dataset.href}"><img src="${a.dataset.href}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
     ,
       key: 'InstallGentoo'
       regExp: /^\w+:\/\/paste\.installgentoo\.com\/view\/(?:raw\/|download\/|embed\/)?(\w+)/
@@ -245,7 +246,7 @@ Embedding =
               for ext, i in ['mp4', 'webm']
                 el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
             when 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg'
-              $.extend el, <%= html('<a target="_blank" href="${a.href}"><img src="https://mediacru.sh/${file.file}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
+              $.extend el, <%= html('<a target="_blank" href="${a.dataset.href}"><img src="https://mediacru.sh/${file.file}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
             when 'audio/mpeg', 'audio/ogg'
               $.extend el, <%= html('<audio controls><source type="audio/ogg" src="https://mediacru.sh/${a.dataset.uid}.ogg"></audio>') %>
             else
@@ -405,5 +406,5 @@ Embedding =
         $.el 'video',
           controls: true
           preload:  'auto'
-          src:      a.href
+          src:      a.dataset.href
   ]
