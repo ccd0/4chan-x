@@ -36,7 +36,7 @@ PSAHiding =
 
     $.sync 'hiddenPSA', PSAHiding.sync
 
-  toggle: (e) ->
+  toggle: ->
     if $.hasClass @, 'hide-announcement'
       UTC = +$.id('globalMessage').dataset.utc
       $.set 'hiddenPSA', UTC

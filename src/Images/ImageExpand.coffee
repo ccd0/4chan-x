@@ -76,7 +76,7 @@ ImageExpand =
         toggle post for post in [post, post.clones...]
         return
 
-    playVideos: (e) ->
+    playVideos: ->
       g.posts.forEach (post) ->
         for post in [post, post.clones...]
           {file} = post

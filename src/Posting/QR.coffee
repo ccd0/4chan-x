@@ -145,7 +145,7 @@ QR =
         else
           $.off d, 'scroll', QR.scrollLock
 
-  scrollLock: (e) ->
+  scrollLock: ->
     if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
       window.scroll window.scrollX, QR.scrollY
     else

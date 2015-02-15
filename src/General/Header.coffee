@@ -348,7 +348,7 @@ Header =
     $.rmClass Header.bar, 'scroll'
     $.rmClass Header.bar, 'autohide' unless Conf['Header auto-hide']
 
-  toggleHideBarOnScroll: (e) ->
+  toggleHideBarOnScroll: ->
     hide = @checked
     $.cb.checked.call @
     Header.setHideBarOnScroll hide

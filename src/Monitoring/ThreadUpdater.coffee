@@ -118,14 +118,14 @@ ThreadUpdater =
         -> true
       else
         -> not d.hidden
-    autoUpdate: (e) ->
+    autoUpdate: ->
       ThreadUpdater.count ThreadUpdater.isUpdating = @checked
     interval: (e) ->
       val = parseInt @value, 10
       if val < 1 then val = 1
       ThreadUpdater.interval = @value = val
       $.cb.value.call @ if e
-    load: (e) ->
+    load: ->
       {req} = ThreadUpdater
       switch req.status
         when 200
