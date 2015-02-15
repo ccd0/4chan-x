@@ -49,7 +49,7 @@ Embedding =
 
     embed.dataset[name] = value for name, value of {key, uid, options}
 
-    $.addClass link, "#{embed.dataset.key}"
+    $.addClass link, key.toLowerCase()
 
     $.on embed, 'click', Embedding.cb.toggle
     $.after link, [$.tn(' '), embed]

@@ -1517,8 +1517,9 @@ div.boardTitle {
 }
 /* Link Title Favicons */
 <%=
-'YouTube Vimeo SoundCloud audio LiveLeak Vocaroo pastebin gist image InstallGentoo video gfycat'.split(' ').map(function(key) {
-  var data = grunt.file.read('src/General/img/links/' + key.toLowerCase() + '.png', {encoding: 'base64'});
+grunt.file.expand('src/General/img/links/*.png').map(function(file) {
+  var key  = file.match(/(\w+)\.png/)[1];
+  var data = grunt.file.read(file, {encoding: 'base64'});
   return ".linkify."+key+" {\n" +
   "  background: transparent url('data:image/png;base64,"+data+"') center left no-repeat!important;\n" +
   "  padding-left: 18px;\n" +
