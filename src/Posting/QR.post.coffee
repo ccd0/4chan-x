@@ -15,7 +15,7 @@ QR.post = class
 
     $.on el,             'click',  @select
     $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
-    $.on @nodes.label,   'click',  (e) => e.stopPropagation()
+    $.on @nodes.label,   'click',  (e) -> e.stopPropagation()
     $.on @nodes.spoiler, 'change', (e) =>
       @spoiler = e.target.checked
       QR.nodes.spoiler.checked = @spoiler if @ is QR.selected

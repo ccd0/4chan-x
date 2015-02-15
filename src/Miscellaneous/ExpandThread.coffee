@@ -44,13 +44,15 @@ ExpandThread =
     if thread.ID of ExpandThread.statuses
       ExpandThread.contract thread, a, threadRoot
     else
-      ExpandThread.expand   thread, a, threadRoot
-  expand: (thread, a, threadRoot) ->
+      ExpandThread.expand thread, a
+
+  expand: (thread, a) ->
     ExpandThread.statuses[thread] = status = {}
     a.textContent = ExpandThread.text '...', a.textContent.match(/\d+/g)...
     status.req = $.cache "//a.4cdn.org/#{thread.board}/thread/#{thread}.json", ->
       delete status.req
       ExpandThread.parse @, thread, a
+
   contract: (thread, a, threadRoot) ->
     status = ExpandThread.statuses[thread]
     delete ExpandThread.statuses[thread]
@@ -78,6 +80,7 @@ ExpandThread =
       filesCount++ if 'file' of Get.postFromRoot reply
       $.rm reply
     a.textContent = ExpandThread.text '+', postsCount, filesCount
+
   parse: (req, thread, a) ->
     if req.status not in [200, 304]
       a.textContent = "Error #{req.statusText} (#{req.status})"

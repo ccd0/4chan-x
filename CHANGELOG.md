@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.1
 
+**v1.10.1.1** *(2015-02-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Extend `Mouse Wheel Volume` to work on expanded videos (via mouse wheel over the file name) and in the gallery.
+
 **v1.10.1.0** *(2015-02-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.10.0.5.
 - Improve settings/data storage, expecially in Chromium, where failures in syncing data no longer result in failures in saving data.
