@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ## v1.10.0
 
+**v1.10.0.5** *(2015-02-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix thread cooldowns on /b/ and /pol/; apparently the 5-minute global cooldown after starting a thread only applies to boards other than the one you posted on.
+
 **v1.10.0.4** *(2015-02-12)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.9.23.11: Fix importing/resetting settings in Firefox 35+.
 
