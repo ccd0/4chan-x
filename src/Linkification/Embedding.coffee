@@ -36,20 +36,29 @@ Embedding =
   services: (link) ->
     {href} = link
     for type in Embedding.ordered_types when match = type.regExp.exec href
-      return if type.dummy or type.httpOnly and location.protocol isnt 'http:'
+      return if type.dummy
       return {key: type.key, uid: match[1], options: match[2], link}
     return
 
   embed: (data) ->
     {key, uid, options, link, post} = data
+    $.addClass link, key.toLowerCase()
+
+    if Embedding.types[key].httpOnly and location.protocol isnt 'http:'
+      embed = $.el 'a',
+        className:   'embedder'
+        href:        "http://boards.4chan.org/#{post.board}/thread/#{post.thread}#p#{post}"
+        textContent: '(HTTP)'
+        title:       "#{key} does not support HTTPS."
+      $.after link, [$.tn(' '), embed]
+      return
+
     embed = $.el 'a',
       className:   'embedder'
       href:        'javascript:;'
       textContent: '(embed)'
 
     embed.dataset[name] = value for name, value of {key, uid, options}
-
-    $.addClass link, key.toLowerCase()
 
     $.on embed, 'click', Embedding.cb.toggle
     $.after link, [$.tn(' '), embed]
@@ -170,7 +179,7 @@ Embedding =
           preload:     'auto'
           src:         a.href
     ,
-      key: 'gist'
+      key: 'Gist'
       regExp: /^\w+:\/\/gist\.github\.com\/(?:[\w\-]+\/)?(\w+)/
       el: (a) ->
         el = $.el 'iframe'
@@ -244,14 +253,14 @@ Embedding =
           return
         el
     ,
-      key: 'pastebin'
+      key: 'Pastebin'
       regExp: /^\w+:\/\/(?:\w+\.)?pastebin\.com\/(?!u\/)(?:[\w\.]+\?i\=)?(\w+)/
       httpOnly: true
       el: (a) ->
         div = $.el 'iframe',
           src: "http://pastebin.com/embed_iframe.php?i=#{a.dataset.uid}"
     ,
-      key: 'gfycat'
+      key: 'Gfycat'
       regExp: /^\w+:\/\/(?:www\.)?gfycat\.com\/(?:iframe\/)?(\w+)/
       el: (a) ->
         div = $.el 'iframe',
