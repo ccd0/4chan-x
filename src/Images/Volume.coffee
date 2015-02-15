@@ -31,6 +31,14 @@ Volume =
     Header.menu.addEntry {el: unmuteEntry, order: 200}
     Header.menu.addEntry {el: volumeEntry, order: 201}
 
+    if Conf['Mouse Wheel Volume']
+      Post.callbacks.push
+        name: 'Mouse Wheel Volume'
+        cb:   @node
+      CatalogThread.callbacks.push
+        name: 'Mouse Wheel Volume'
+        cb:   @catalogNode
+
   setup: (video) ->
     video.muted  = !Conf['Allow Sound']
     video.volume = Conf['Default Volume']
@@ -46,3 +54,22 @@ Volume =
     if Volume.inputs
       Volume.inputs.unmute.checked = !muted
       Volume.inputs.volume.value = volume
+
+  node: ->
+    return unless @file?.isVideo
+    $.on @file.thumb,        'wheel', Volume.wheel.bind(Header.hover)
+    $.on $('a', @file.text), 'wheel', Volume.wheel.bind(@file.thumb.parentNode)
+
+  catalogNode: ->
+    {file} = @thread.OP
+    return unless file?.isVideo
+    $.on @nodes.thumb, 'wheel', Volume.wheel.bind(Header.hover)
+
+  wheel: (e) ->
+    return unless el = $ 'video:not([data-md5])', @
+    return if el.muted or not $.hasAudio el
+    volume = el.volume + 0.1
+    volume *= 1.1 if e.deltaY < 0
+    volume /= 1.1 if e.deltaY > 0
+    el.volume = $.minmax volume - 0.1, 0, 1
+    e.preventDefault()

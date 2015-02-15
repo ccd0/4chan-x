@@ -183,10 +183,6 @@ Config =
         false
         'Show full image / video on mouseover in <%= meta.name %> catalog.'
       ]
-      'Mouse Wheel Volume': [
-        true
-        'Adjust volume of hovering videos with mouse wheel.'
-      ]
       'Gallery': [
         true
         'Adds a simple and cute image gallery.'
@@ -261,6 +257,10 @@ Config =
       'Allow Sound': [
         true
         'Open videos with the sound unmuted.'
+      ]
+      'Mouse Wheel Volume': [
+        true
+        'Adjust volume of videos with the mouse wheel over the thumbnail/filename/gallery.'
       ]
       'Loop in New Tab': [
         true
