@@ -2,7 +2,7 @@ class Post
   @callbacks = new Callbacks 'Post'
   toString: -> @ID
 
-  constructor: (root, @thread, @board, that={}) ->
+  constructor: (root, @thread, @board) ->
     <% if (tests_enabled) { %>
     root2 = root.cloneNode true
     for el in $$ '.mobile', root2
@@ -29,7 +29,6 @@ class Post
     @ID     = +root.id[2..]
     @fullID = "#{@board}.#{@ID}"
 
-    @cleanup root if that.isOriginalMarkup
     post = $ '.post',     root
     info = $ '.postInfo', post
     @nodes =
@@ -82,7 +81,7 @@ class Post
 
     @parseComment()
     @parseQuotes()
-    @parseFile that
+    @parseFile()
 
     @isDead   = false
     @isHidden = false
@@ -93,7 +92,6 @@ class Post
       @clones = g.posts[@fullID].clones
       clone.origin = @ for clone in @clones
     g.posts.push @fullID, thread.posts.push @, board.posts.push @, @
-    @kill() if that.isArchived
 
   parseComment: ->
     # Merge text nodes and remove empty ones.
@@ -161,7 +159,7 @@ class Post
     fullID = "#{match[1]}.#{match[2]}"
     @quotes.push fullID unless fullID in @quotes
 
-  parseFile: (that) ->
+  parseFile: ->
     return unless (fileEl = $ '.file', @nodes.post) and thumb = $ 'img[data-md5]', fileEl
     # Supports JPG/PNG/GIF/PDF.
     # Flash files are not supported.
@@ -185,13 +183,6 @@ class Post
     if @file.isImage or @file.isVideo
       @file.dimensions = nameNode.nextSibling.textContent.match(/\d+x\d+/)[0]
     @file.name = fileText.title or nameNode.title or nameNode.textContent
-
-  cleanup: (root) ->
-    for node in $$ '.mobile', root
-      $.rm node
-    for node in $$ '.desktop', root
-      $.rmClass node, 'desktop'
-    return
 
   kill: (file) ->
     if file

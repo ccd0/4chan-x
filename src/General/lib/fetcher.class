@@ -170,7 +170,8 @@ class Fetcher
       new Board @boardID
     thread = g.threads["#{@boardID}.#{@threadID}"] or
       new Thread @threadID, board
-    post = new Post Build.post(o), thread, board, {isArchived: true}
+    post = new Post Build.post(o), thread, board
+    post.kill()
     post.file.thumbURL = o.file.turl if post.file
     post.isFetchedQuote = true
     Main.callbackNodes Post, [post]
