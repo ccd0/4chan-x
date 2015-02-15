@@ -44,8 +44,7 @@ Embedding =
     {key, uid, options, link, post} = data
     embed = $.el 'a',
       className:   'embedder'
-      rel:         'nofollow noreferrer'
-      href:        link.href
+      href:        'javascript:;'
       textContent: '(embed)'
 
     embed.dataset[name] = value for name, value of {key, uid, options}
