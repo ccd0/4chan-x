@@ -225,6 +225,7 @@ module.exports = (grunt) ->
     jshint:
       options:
         undef:   true
+        unused:  true
         eqnull:  true
         expr:    true
         shadow:  true
