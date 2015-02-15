@@ -16,7 +16,7 @@ RemoveSpoilers =
     if g.VIEW is 'archive'
       $.ready -> RemoveSpoilers.unspoiler $.id 'arc-list'
 
-  node: (post) ->
+  node: ->
     RemoveSpoilers.unspoiler @nodes.comment
 
   unspoiler: (el) ->

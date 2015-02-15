@@ -318,7 +318,7 @@ chrome.storage.onChanged.addListener (changes, area) ->
   return
 $.sync = (key, cb) ->
   $.syncing[key] = cb
-$.forceSync = (key) -> return
+$.forceSync = -> return
 
 $.get = (key, val, cb) ->
   if typeof cb is 'function'
