@@ -2,6 +2,13 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+### v1.10.1
+
+**v1.10.1.0** *(2015-02-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.10.0.5.
+- Improve settings/data storage, expecially in Chromium, where failures in syncing data no longer result in failures in saving data.
+- All settings can now be synced (previously filters, custom CSS, and the list of your own posts were excluded from syncing in Chromium), but syncing of any given setting will fail if the amount of data exceeds the quota.
+
 ## v1.10.0
 
 **v1.10.0.5** *(2015-02-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.0.5/builds/4chan-X-noupdate.crx "Chromium version")]
