@@ -175,15 +175,17 @@ Settings =
     reader = new FileReader()
     reader.onload = (e) ->
       try
-        Settings.loadSettings JSON.parse e.target.result
-        if confirm 'Import successful. Reload now?'
-          window.location.reload()
+        Settings.loadSettings JSON.parse(e.target.result), (err) ->
+          if err
+            output.textContent = 'Import failed due to an error.'
+          else if confirm 'Import successful. Reload now?'
+            window.location.reload()
       catch err
         output.textContent = 'Import failed due to an error.'
         c.error err.stack
     reader.readAsText file
 
-  loadSettings: (data) ->
+  loadSettings: (data, cb) ->
     version = data.version.split '.'
     if version[0] is '2'
       convertSettings = (data, map) ->
@@ -265,11 +267,17 @@ Settings =
     if data.Conf['WatchedThreads']
       data.Conf['watchedThreads'] = boards: ThreadWatcher.convert data.Conf['WatchedThreads']
       delete data.Conf['WatchedThreads']
-    $.clear -> $.set data.Conf
+    $.clear (err) ->
+      return cb err if err
+      $.set data.Conf, cb
 
   reset: ->
     if confirm 'Your current settings will be entirely wiped, are you sure?'
-      $.clear -> window.location.reload() if confirm 'Reset successful. Reload now?'
+      $.clear (err) ->
+        if err
+          $('.imp-exp-result').textContent = 'Import failed due to an error.'
+        else if confirm 'Reset successful. Reload now?'
+          window.location.reload()
 
   filter: (section) ->
     $.extend section, <%= importHTML('Settings/Filter-select') %>

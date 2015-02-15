@@ -335,6 +335,17 @@ ThreadWatcher =
     else
       ThreadWatcher.refresh()
 
+  set404: (boardID, threadID, cb) ->
+    return cb() unless data = ThreadWatcher.db?.get {boardID, threadID}
+    if Conf['Auto Prune']
+      ThreadWatcher.db.delete {boardID, threadID}
+      return cb()
+    return cb() if data.isDead and not (data.unread? or data.quotingYou?)
+    data.isDead = true
+    delete data.unread
+    delete data.quotingYou
+    ThreadWatcher.db.set {boardID, threadID, val: data}, cb
+
   toggle: (thread) ->
     boardID  = thread.board.ID
     threadID = thread.ID

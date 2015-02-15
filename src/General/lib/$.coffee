@@ -361,16 +361,16 @@ do ->
     chrome.storage.sync.remove keys
 
   timeout = {}
-  setArea = (area) ->
+  setArea = (area, cb) ->
     data = {}
     $.extend data, items[area]
     return if !Object.keys(data).length or timeout[area] > Date.now()
     chrome.storage[area].set data, ->
-      if chrome.runtime.lastError
-        c.error chrome.runtime.lastError.message
+      if err = chrome.runtime.lastError
+        c.error err.message
         setTimeout setArea, $.MINUTE, area
         timeout[area] = Date.now() + $.MINUTE
-        return
+        return cb? err
 
       delete timeout[area]
       delete items[area][key] for key of data when items[area][key] is data[key]
@@ -382,29 +382,32 @@ do ->
           delete $.localKeys[key]
           key
         chrome.storage.local.remove oldLocal
+      cb?()
 
   setSync = $.debounce $.SECOND, ->
     setArea 'sync'
 
-  $.set = (key, val) ->
-    data = if typeof key is 'string'
-      $.item key, val
+  $.set = (key, val, cb) ->
+    if typeof key is 'string'
+      data = $.item key, val
     else
-      key
+      data = key
+      cb = val
     $.extend items.local, data
     $.localKeys[key] = true for key of data
-    setArea 'local'
+    setArea 'local', cb
 
   $.clear = (cb) ->
     items.local = {}
     items.sync  = {}
     $.localKeys = {}
     count = 2
+    err   = null
     done  = ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
-        return
-      cb?() unless --count
+      err ?= chrome.runtime.lastError
+      cb? err unless --count
     chrome.storage.local.clear done
     chrome.storage.sync.clear  done
 <% } else { %>
@@ -470,13 +473,14 @@ $.set = do ->
       # for `storage` events
       localStorage.setItem key, val
 
-  (keys, val) ->
+  (keys, val, cb) ->
     if typeof keys is 'string'
       set keys, val
-      return
-    for key, val of keys
-      set key, val
-    return
+    else
+      set key, value for key, value of keys
+      cb = val
+    cb?()
+
 $.clear = (cb) ->
   try
     $.delete GM_listValues().map (key) -> key.replace g.NAMESPACE, ''

@@ -129,12 +129,14 @@ Main =
 
   initReady: ->
     if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
-      if Conf['404 Redirect'] and g.VIEW is 'thread'
-        href = Redirect.to 'thread',
-          boardID:  g.BOARD.ID
-          threadID: g.THREADID
-          postID:   +location.hash.match /\d+/ # post number or 0
-        Redirect.navigate href, "/#{g.BOARD}/"
+      if g.VIEW is 'thread'
+        ThreadWatcher.set404 g.BOARD.ID, g.THREADID, ->
+          if Conf['404 Redirect']
+            href = Redirect.to 'thread',
+              boardID:  g.BOARD.ID
+              threadID: g.THREADID
+              postID:   +location.hash.match /\d+/ # post number or 0
+            Redirect.navigate href, "/#{g.BOARD}/"
       return
 
     # 4chan Pass Link
