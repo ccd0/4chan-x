@@ -15,7 +15,7 @@ QR.cooldown =
     for type, delay of QR.cooldown.delays when type isnt 'thread'
       QR.cooldown.maxDelay = Math.max QR.cooldown.maxDelay, delay
 
-    # There is a 300 second global thread cooldown.
+    # There is a 300 second inter-board thread cooldown.
     QR.cooldown.delays['thread_global'] = 300
 
     # Retrieve recent posts and delays.
@@ -115,9 +115,10 @@ QR.cooldown =
           save = true
           continue
 
-        if (type is 'thread') is (cooldown.threadID is cooldown.postID)
+        if (type is 'thread') is (cooldown.threadID is cooldown.postID) and cooldown.boardID isnt g.BOARD.ID
           # Only cooldowns relevant to this post can set the seconds variable:
-          #   reply cooldown with a reply, thread cooldown with a thread
+          #   reply cooldown with a reply, thread cooldown with a thread.
+          # Inter-board thread cooldowns only apply on boards other than the one they were posted on.
           suffix = if scope is 'global'
             '_global'
           else if type isnt 'thread' and threadID is cooldown.threadID
