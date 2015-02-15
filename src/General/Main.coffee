@@ -283,16 +283,14 @@ Main =
     $.ready ->
       cb() if Main.isThisPageLegit()
 
-  css: """
-  <%= grunt.file.read('src/General/css/font-awesome.css').replace(/\s+/g, ' ').replace(/\\/g, '\\\\').trim() %>
-  <%= grunt.file.read('src/General/css/style.css').replace(/\s+/g, ' ').trim() %>
-  <%= grunt.file.read('src/General/css/yotsuba.css').replace(/\s+/g, ' ').trim() %>
-  <%= grunt.file.read('src/General/css/yotsuba-b.css').replace(/\s+/g, ' ').trim() %>
-  <%= grunt.file.read('src/General/css/futaba.css').replace(/\s+/g, ' ').trim() %>
-  <%= grunt.file.read('src/General/css/burichan.css').replace(/\s+/g, ' ').trim() %>
-  <%= grunt.file.read('src/General/css/tomorrow.css').replace(/\s+/g, ' ').trim() %>
-  <%= grunt.file.read('src/General/css/photon.css').replace(/\s+/g, ' ').trim() %>
-  """
+  css: `<%=
+    grunt.template.process(
+      ['font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon'].map(function(name) {
+        return grunt.file.read('src/General/css/'+name+'.css');
+      }).join(''),
+      {data: {type: type}}
+    ).trim().replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`')
+  %>`
 
   features: [
     ['Polyfill',                  Polyfill]
