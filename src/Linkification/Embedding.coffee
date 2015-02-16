@@ -47,7 +47,6 @@ Embedding =
 
     if Embedding.types[key].httpOnly and location.protocol isnt 'http:'
       embed = $.el 'a',
-        className:   'embedder'
         href:        "http://boards.4chan.org/#{post.board}/thread/#{post.thread}#p#{post}"
         textContent: '(HTTP)'
         title:       "#{key} does not support HTTPS."
