@@ -2444,6 +2444,7 @@ Remove /v/ from stable Foolz archive.
 
 **Zixaphir**:
 - Fix file info bug.
+
 **ccd0**:
 - Fix memory issue.
 
@@ -2501,8 +2502,10 @@ Remove /v/ from stable Foolz archive.
 - Fix captcha submission:<br>
   Captchas were reloaded the instant a post was submitted to 4chan. Unfortunately, a recent change to reCAPTCHA made it so reloading captchas invalidates the ones that loaded but not yet used. This is now fixed by only unloading the captcha, and only load new ones after the post is submitted.<br>
   This also kills captcha caching, so the feature was removed.
+
 **duckness**:
 - Merge changes from Mayhem fork
+
 **ccd0**:
 - Embedding for direct video links
 - Merge changes from Mayhem fork
