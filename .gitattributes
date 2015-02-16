@@ -2,6 +2,7 @@
 * text=auto
 
 builds/* -text
+LICENSE  -text
 
 # Custom for Visual Studio
 *.cs     diff=csharp
