@@ -1,8 +1,11 @@
 module.exports = (grunt) ->
   grunt.util.linefeed = '\n'
 
+  json = (data) ->
+    "`#{JSON.stringify(data).replace(/`/g, '\\`')}`"
+
   importHTML = (filename) ->
-    "(innerHTML: #{JSON.stringify grunt.file.read("src/General/html/#{filename}.html").replace(/^ +| +$</gm, '').replace(/\r?\n/g, '')})"
+    "(innerHTML: #{json grunt.file.read("src/General/html/#{filename}.html").replace(/^ +| +$</gm, '').replace(/\r?\n/g, '')})"
 
   html = (template) ->
     parts = template.split /([\$&@]){([^}`]*)}/
@@ -11,7 +14,7 @@ module.exports = (grunt) ->
     for part, i in parts
       switch i % 3
         when 0
-          parts2.push JSON.stringify part unless part is ''
+          parts2.push json part unless part is ''
           checkText += part
         when 1
           if /<[^>]*$/.test(checkText) and not (part is '$' and /\=['"][^"'<>]*$/.test checkText)
@@ -27,7 +30,7 @@ module.exports = (grunt) ->
 
   assert = (statement, objs...) ->
     return '' unless grunt.config('pkg').tests_enabled
-    "throw new Error 'Assertion failed: ' + `#{JSON.stringify statement}` unless #{statement}"
+    "throw new Error 'Assertion failed: ' + `#{json statement}` unless #{statement}"
 
   # Project configuration.
   grunt.initConfig
