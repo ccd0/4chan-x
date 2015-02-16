@@ -107,6 +107,7 @@ ThreadWatcher =
       $.event 'CloseMenu'
     pruneDeads: ->
       return if $.hasClass @, 'disabled'
+      ThreadWatcher.db.forceSync()
       for {boardID, threadID, data} in ThreadWatcher.getAll() when data.isDead
         delete ThreadWatcher.db.data.boards[boardID][threadID]
         ThreadWatcher.db.deleteIfEmpty {boardID}
