@@ -189,7 +189,7 @@ Captcha.noscript =
     @occupied = true
     @timeout = Date.now() + @lifetime
     unless img
-      img = @nodes.img = new Image
+      img = @nodes.img = new Image()
       $.one img, 'load', @afterSetup.bind @
       $.on img, 'load', -> @hidden = false
       $.add container, img

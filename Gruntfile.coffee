@@ -241,7 +241,6 @@ module.exports = (grunt) ->
         '-W018': true
         '-W053': true
         '-W084': true
-        '-W058': true
         '-W083': true
         '-W093': true
         globals:
