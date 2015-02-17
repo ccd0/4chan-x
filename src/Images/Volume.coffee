@@ -11,7 +11,17 @@ Volume =
       Conf['Default Volume'] = x
       Volume.inputs?.volume.value = x
 
+    if Conf['Mouse Wheel Volume']
+      Post.callbacks.push
+        name: 'Mouse Wheel Volume'
+        cb:   @node
+
     return unless g.BOARD.ID in ['gif', 'wsg']
+
+    if Conf['Mouse Wheel Volume']
+      CatalogThread.callbacks.push
+        name: 'Mouse Wheel Volume'
+        cb:   @catalogNode
 
     unmuteEntry = UI.checkbox 'Allow Sound', 'Allow Sound'
     unmuteEntry.title = Config.main['Images and Videos']['Allow Sound'][1]
@@ -30,14 +40,6 @@ Volume =
 
     Header.menu.addEntry {el: unmuteEntry, order: 200}
     Header.menu.addEntry {el: volumeEntry, order: 201}
-
-    if Conf['Mouse Wheel Volume']
-      Post.callbacks.push
-        name: 'Mouse Wheel Volume'
-        cb:   @node
-      CatalogThread.callbacks.push
-        name: 'Mouse Wheel Volume'
-        cb:   @catalogNode
 
   setup: (video) ->
     video.muted  = !Conf['Allow Sound']
@@ -58,7 +60,7 @@ Volume =
       Volume.inputs.volume.value = volume
 
   node: ->
-    return unless @file?.isVideo
+    return unless @board.ID in ['gif', 'wsg'] and @file?.isVideo
     $.on @file.thumb,        'wheel', Volume.wheel.bind(Header.hover)
     $.on $('a', @file.text), 'wheel', Volume.wheel.bind(@file.thumb.parentNode)
 
