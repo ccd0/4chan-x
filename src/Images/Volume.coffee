@@ -49,6 +49,8 @@ Volume =
     items =
       'Allow Sound': !muted
       'Default Volume': volume
+    for key, val of items when Conf[key] is val
+      delete items[key]
     $.set items
     $.extend Conf, items
     if Volume.inputs
