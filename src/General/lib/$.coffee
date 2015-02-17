@@ -308,12 +308,17 @@ $.syncing = {}
 
 <% if (type === 'crx') { %>
 # https://developer.chrome.com/extensions/storage.html
-$.localKeys = {}
+$.oldValue =
+  local: {}
+  sync:  {}
 
 chrome.storage.onChanged.addListener (changes, area) ->
   for key of changes
+    oldValue = $.oldValue.local[key] ? $.oldValue.sync[key]
+    $.oldValue[area][key] = changes[key].newValue
+    newValue = $.oldValue.local[key] ? $.oldValue.sync[key]
     cb = $.syncing[key]
-    if cb and (key of $.localKeys) is (area is 'local')
+    if cb and JSON.stringify(newValue) isnt JSON.stringify(oldValue)
       cb changes[key].newValue, key
   return
 $.sync = (key, cb) ->
@@ -332,11 +337,12 @@ $.get = (key, val, cb) ->
     chrome.storage[area].get Object.keys(data), (result) ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
+      for key of data
+        $.oldValue[area][key] = result[key]
       results[area] = result
       if results.local and results.sync
         $.extend data, results.sync
         $.extend data, results.local
-        $.localKeys[key] = true for key of results.local
         cb data
   get 'local'
   get 'sync'
@@ -356,7 +362,6 @@ do ->
     for key in keys
       delete items.local[key]
       delete items.sync[key]
-      delete $.localKeys[key]
     chrome.storage.local.remove keys
     chrome.storage.sync.remove keys
 
@@ -378,10 +383,7 @@ do ->
         items.sync[key] = val for key, val of data when not exceedsQuota(key, val)
         setSync()
       else
-        oldLocal = for key of data when key not of items.local
-          delete $.localKeys[key]
-          key
-        chrome.storage.local.remove oldLocal
+        chrome.storage.local.remove (key for key of data when key not of items.local)
       cb?()
 
   setSync = $.debounce $.SECOND, ->
@@ -394,13 +396,11 @@ do ->
       data = key
       cb = val
     $.extend items.local, data
-    $.localKeys[key] = true for key of data
     setArea 'local', cb
 
   $.clear = (cb) ->
     items.local = {}
     items.sync  = {}
-    $.localKeys = {}
     count = 2
     err   = null
     done  = ->
