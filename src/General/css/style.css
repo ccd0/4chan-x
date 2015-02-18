@@ -46,8 +46,7 @@
   cursor: move;
   overflow: hidden;
 }
-label,
-.watch-thread-link {
+label {
   cursor: pointer;
 }
 a[href="javascript:;"] {

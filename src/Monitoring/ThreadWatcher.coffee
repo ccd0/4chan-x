@@ -68,7 +68,8 @@ ThreadWatcher =
     if @isClone
       toggler = $ '.watch-thread-link', @nodes.post
     else
-      toggler = $.el 'img',
+      toggler = $.el 'a',
+        href: 'javascript:;'
         className: 'watch-thread-link'
       $.before $('input', @nodes.post), toggler
     $.on toggler, 'click', ThreadWatcher.cb.toggle
