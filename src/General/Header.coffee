@@ -428,7 +428,7 @@ Header =
   scrollTo: (root, down, needed) ->
     if down
       x = Header.getBottomOf root
-      if Conf['Header auto-hide on scroll'] and Conf['Bottom header']
+      if Conf['Fixed Header'] and Conf['Header auto-hide on scroll'] and Conf['Bottom header']
         {height} = Header.bar.getBoundingClientRect()
         if x <= 0
           x += height if !Header.isHidden()
@@ -437,7 +437,7 @@ Header =
       window.scrollBy 0, -x unless needed and x >= 0
     else
       x = Header.getTopOf root
-      if Conf['Header auto-hide on scroll'] and !Conf['Bottom header']
+      if Conf['Fixed Header'] and Conf['Header auto-hide on scroll'] and !Conf['Bottom header']
         {height} = Header.bar.getBoundingClientRect()
         if x >= 0
           x += height if !Header.isHidden()
@@ -458,7 +458,7 @@ Header =
   getBottomOf: (root) ->
     {clientHeight} = doc
     bottom = clientHeight - root.getBoundingClientRect().bottom
-    if Conf['Bottom Header']
+    if Conf['Fixed Header'] and Conf['Bottom Header']
       headRect = Header.toggle.getBoundingClientRect()
       bottom  -= clientHeight - headRect.bottom + headRect.height
     bottom
