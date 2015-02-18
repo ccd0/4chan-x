@@ -169,12 +169,8 @@ QR =
   toggleAddCooldown: ->
     if @checked
       QR.cooldown.addCooldown = true
-      if QR.cooldown.seconds
-        QR.cooldown.seconds += parseInt(Conf['additionalCooldown'])
     else
       QR.cooldown.addCooldown = false
-      if QR.cooldown.seconds
-        QR.cooldown.seconds -= parseInt(Conf['additionalCooldown'])
 
   error: (err) ->
     QR.open()
