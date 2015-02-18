@@ -1280,6 +1280,9 @@ input#qr-filename:not(.edit) {
 #file-n-submit.add-cooldown {
     height: 43px;
 }
+#file-n-submit:not(.add-cooldown) #add-cooldown-label {
+    display: none;
+}
 #qr input[type="file"] {
   visibility: hidden;
   position: absolute;

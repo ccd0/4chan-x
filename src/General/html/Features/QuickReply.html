@@ -36,7 +36,7 @@
       <input type=checkbox id=qr-file-spoiler title='Spoiler image'>
     </label>
     <input type=submit>
-    #{if parseInt(Conf['additionalCooldown']) > 0 then '<span><input type=checkbox data-name=addCooldown title="Add Custom Cooldown">Enable Custom Cooldown</span>' else ''}
+    <label id="add-cooldown-label"><input type=checkbox data-name=addCooldown title="Add Custom Cooldown">Enable Custom Cooldown</label>
   </div>
   <input type=file multiple>
 </form>
