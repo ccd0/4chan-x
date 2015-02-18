@@ -34,7 +34,7 @@ This fork of 4chan X is not guaranteed to work correctly in other browsers, but 
 - [Installing 4chan X in dwb](https://github.com/ccd0/4chan-x/wiki/Installing-4chan-X-in-dwb)
 
 ## Beta version
-New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please [report](https://github.com/ccd0/4chan-x/issues) any issues you find, and be sure to mention which version you're using.
+New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please [report](https://github.com/ccd0/4chan-x/issues) any issues you find, and be sure to mention which version you're using. You should back up your settings regularly to prevent them from being lost due to bugs.
 - [Firefox version](https://ccd0.github.io/4chan-x/builds/4chan-X-beta.user.js)
 - [Chromium version](https://ccd0.github.io/4chan-x/builds/4chan-X-beta.crx)
 
