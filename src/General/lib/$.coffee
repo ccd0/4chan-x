@@ -319,7 +319,7 @@ chrome.storage.onChanged.addListener (changes, area) ->
     newValue = $.oldValue.local[key] ? $.oldValue.sync[key]
     cb = $.syncing[key]
     if cb and JSON.stringify(newValue) isnt JSON.stringify(oldValue)
-      cb changes[key].newValue, key
+      cb newValue, key
   return
 $.sync = (key, cb) ->
   $.syncing[key] = cb
