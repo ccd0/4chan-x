@@ -495,16 +495,15 @@ $.set = do ->
       set key, val
     return
 $.clear = (cb) ->
+  # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
+  $.delete Object.keys(Conf)
+  $.delete ['previousversion', 'AutoWatch', 'cooldown.global', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']
+  $.delete ("#{id}.position" for id in ['embedding', 'updater', 'thread-stats', 'thread-watcher', 'qr'])
+  boards = (a.textContent for a in $$ '#boardNavDesktop > .boardList > a')
+  boards.push 'qa'
+  $.delete ("cooldown.#{board}" for board in boards)
   try
     $.delete GM_listValues().map (key) -> key.replace g.NAMESPACE, ''
-  catch err
-    # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
-    $.delete Object.keys(Conf)
-    $.delete ['previousversion', 'AutoWatch', 'cooldown.global', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']
-    $.delete ("#{id}.position" for id in ['embedding', 'updater', 'thread-stats', 'thread-watcher', 'qr'])
-    boards = (a.textContent for a in $$ '#boardNavDesktop > .boardList > a')
-    boards.push 'qa'
-    $.delete ("cooldown.#{board}" for board in boards)
   cb?()
 <% } %>
 
