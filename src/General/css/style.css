@@ -927,7 +927,17 @@ span.hide-announcement {
 }
 :root.highlight-own .yourPost > .reply,
 :root.highlight-you .quotesYou > .reply {
-  border-left: 2px solid rgba(221,0,0,.5);
+  border-left: 3px solid rgba(221, 0, 0, .7);
+}
+:root.highlight-own .yourPost > div.sideArrows,
+:root.highlight-you .quotesYou > div.sideArrows,
+:root.highlight-own .yourPost .hide-reply-button > .fa:before,
+:root.highlight-you .quotesYou .hide-reply-button > .fa:before {
+  color: rgba(221, 0, 0, .7);
+}
+:root.highlight-own .yourPost .hide-reply-button,
+:root.highlight-you .quotesYou .hide-reply-button {
+  opacity: 1;
 }
 /* Quote Threading */
 .threadContainer {

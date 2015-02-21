@@ -49,6 +49,10 @@
   border-color: #111;
   background-color: rgba(0, 0, 0, .14);
 }
+:root.tomorrow.highlight-own .yourPost > div.sideArrows,
+:root.tomorrow.highlight-you .quotesYou > div.sideArrows {
+  color: rgba(255, 0, 0, 1);
+}
 
 /* QR */
 .tomorrow #dump-list::-webkit-scrollbar-thumb {
