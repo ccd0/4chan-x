@@ -93,6 +93,11 @@
   background: rgba(0, 0, 0, .33);
 }
 
+/* Unread */
+:root.tomorrow #unread-line {
+  border-color: rgb(197, 200, 198);
+}
+
 /* Thread Watcher */
 :root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.disabled.replies-quoting-you {
   color: #F00 !important;
