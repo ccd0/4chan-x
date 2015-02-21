@@ -217,7 +217,7 @@ Captcha.noscript =
 
   expire: ->
     return unless @nodes.iframe
-    if @needed() or d.activeElement is @nodes.input
+    if not d.hidden and (@needed() or d.activeElement is @nodes.input)
       @reload()
     else
       @destroy()
