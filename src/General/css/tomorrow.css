@@ -49,9 +49,17 @@
   border-color: #111;
   background-color: rgba(0, 0, 0, .14);
 }
+:root.tomorrow.highlight-own .yourPost > .reply,
+:root.tomorrow.highlight-you .quotesYou > .reply {
+  border-left: 3px solid rgba(129, 162, 190, .7);
+}
 :root.tomorrow.highlight-own .yourPost > div.sideArrows,
 :root.tomorrow.highlight-you .quotesYou > div.sideArrows {
-  color: rgba(255, 0, 0, 1);
+  color: rgb(197, 200, 198);
+}
+:root.tomorrow.highlight-own .yourPost .hide-reply-button > .fa:before,
+:root.tomorrow.highlight-you .quotesYou .hide-reply-button > .fa:before {
+  color: rgba(129, 162, 190, .7);
 }
 
 /* QR */
