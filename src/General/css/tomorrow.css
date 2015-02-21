@@ -38,7 +38,10 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Quote */
+/* Highlighting */
+:root.tomorrow .qphl {
+  outline: 2px solid rgba(129, 162, 190, .7);
+}
 :root.tomorrow .catalog-thread > .comment > span.quote, :root.tomorrow #arc-list span.quote {
   color: #B5BD68;
 }
@@ -50,16 +53,29 @@
   background-color: rgba(0, 0, 0, .14);
 }
 :root.tomorrow.highlight-own .yourPost > .reply,
-:root.tomorrow.highlight-you .quotesYou > .reply {
+:root.tomorrow.highlight-you .quotesYou > .reply,
+:root.tomorrow .filter-highlight > .reply {
   border-left: 3px solid rgba(129, 162, 190, .7);
 }
 :root.tomorrow.highlight-own .yourPost > div.sideArrows,
-:root.tomorrow.highlight-you .quotesYou > div.sideArrows {
+:root.tomorrow.highlight-you .quotesYou > div.sideArrows,
+:root.tomorrow .filter-highlight > div.sideArrows {
   color: rgb(197, 200, 198);
+  opacity: 1;
 }
 :root.tomorrow.highlight-own .yourPost .hide-reply-button > .fa:before,
-:root.tomorrow.highlight-you .quotesYou .hide-reply-button > .fa:before {
-  color: rgba(129, 162, 190, .7);
+:root.tomorrow.highlight-you .quotesYou .hide-reply-button > .fa:before,
+:root.tomorrow .filter-highlight .hide-reply-button > .fa:before {
+  color: rgb(129, 162, 190);
+}
+:root.tomorrow .opContainer.filter-highlight {
+  box-shadow: inset 5px 0 rgba(129, 162, 190, .7);
+}
+:root.tomorrow .catalog-thread.watched .catalog-thumb,
+:root.tomorrow .filter-highlight .catalog-thumb,
+:root.tomorrow .catalog-thread.watched .werkTyme-filename,
+:root.tomorrow .filter-highlight .werkTyme-filename {
+  border: 2px solid rgb(129, 162, 190);
 }
 
 /* QR */

@@ -922,23 +922,7 @@ span.hide-announcement {
   max-height: 80vh;
   max-width: 50vw;
 }
-.qphl {
-  outline: 2px solid rgba(216, 94, 49, .7);
-}
-:root.highlight-own .yourPost > .reply,
-:root.highlight-you .quotesYou > .reply {
-  border-left: 3px solid rgba(221, 0, 0, .7);
-}
-:root.highlight-own .yourPost > div.sideArrows,
-:root.highlight-you .quotesYou > div.sideArrows,
-:root.highlight-own .yourPost .hide-reply-button > .fa:before,
-:root.highlight-you .quotesYou .hide-reply-button > .fa:before {
-  color: rgba(221, 0, 0, .7);
-}
-:root.highlight-own .yourPost .hide-reply-button,
-:root.highlight-you .quotesYou .hide-reply-button {
-  opacity: 1;
-}
+
 /* Quote Threading */
 .threadContainer {
   margin-left: 20px;
@@ -1030,10 +1014,6 @@ input[name="Default Volume"] {
   -webkit-align-self: stretch;
   align-self: stretch;
 }
-.catalog-thread.watched .werkTyme-filename,
-.filter-highlight .werkTyme-filename {
-  border: 2px solid rgba(255, 0, 0, .5);
-}
 
 /* Index/Reply Navigation */
 #navlinks {
@@ -1045,16 +1025,39 @@ input[name="Default Volume"] {
   display: none;
 }
 
-/* Filter */
-.opContainer.filter-highlight {
-  box-shadow: inset 5px 0 rgba(255, 0, 0, .5);
+/* Highlighting */
+.qphl {
+  outline: 2px solid rgba(216, 94, 49, .7);
 }
+:root.highlight-own .yourPost > .reply,
+:root.highlight-you .quotesYou > .reply,
 .filter-highlight > .reply {
-  box-shadow: -5px 0 rgba(255, 0, 0, .5);
+  border-left: 3px solid rgba(221, 0, 0, .7);
+}
+:root.highlight-own .yourPost > div.sideArrows,
+:root.highlight-you .quotesYou > div.sideArrows,
+.filter-highlight > div.sideArrows,
+:root.highlight-own .yourPost .hide-reply-button > .fa:before,
+:root.highlight-you .quotesYou .hide-reply-button > .fa:before,
+.filter-highlight .hide-reply-button > .fa:before {
+  color: rgb(221, 0, 0);
+}
+:root.highlight-own .yourPost > div.sideArrows,
+:root.highlight-you .quotesYou > div.sideArrows,
+.filter-highlight > div.sideArrows,
+:root.highlight-own .yourPost .hide-reply-button:not(:hover),
+:root.highlight-you .quotesYou .hide-reply-button:not(:hover),
+.filter-highlight .hide-reply-button:not(:hover) {
+  opacity: 0.7;
+}
+.opContainer.filter-highlight {
+  box-shadow: inset 5px 0 rgba(221, 0, 0, .7);
 }
 .catalog-thread.watched .catalog-thumb,
-.filter-highlight .catalog-thumb {
-  border: 2px solid rgba(255, 0, 0, .5);
+.filter-highlight .catalog-thumb,
+.catalog-thread.watched .werkTyme-filename,
+.filter-highlight .werkTyme-filename {
+  border: 2px solid rgba(221, 0, 0, .7);
 }
 
 /* Spoiler text */
