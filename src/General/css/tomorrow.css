@@ -61,12 +61,6 @@
 :root.tomorrow.highlight-you .quotesYou > div.sideArrows,
 :root.tomorrow .filter-highlight > div.sideArrows {
   color: rgb(197, 200, 198);
-  opacity: 1;
-}
-:root.tomorrow.highlight-own .yourPost .hide-reply-button > .fa:before,
-:root.tomorrow.highlight-you .quotesYou .hide-reply-button > .fa:before,
-:root.tomorrow .filter-highlight .hide-reply-button > .fa:before {
-  color: rgb(129, 162, 190);
 }
 :root.tomorrow .opContainer.filter-highlight {
   box-shadow: inset 5px 0 rgba(129, 162, 190, .7);

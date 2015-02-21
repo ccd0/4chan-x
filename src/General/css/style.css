@@ -1036,19 +1036,8 @@ input[name="Default Volume"] {
 }
 :root.highlight-own .yourPost > div.sideArrows,
 :root.highlight-you .quotesYou > div.sideArrows,
-.filter-highlight > div.sideArrows,
-:root.highlight-own .yourPost .hide-reply-button > .fa:before,
-:root.highlight-you .quotesYou .hide-reply-button > .fa:before,
-.filter-highlight .hide-reply-button > .fa:before {
-  color: rgb(221, 0, 0);
-}
-:root.highlight-own .yourPost > div.sideArrows,
-:root.highlight-you .quotesYou > div.sideArrows,
-.filter-highlight > div.sideArrows,
-:root.highlight-own .yourPost .hide-reply-button:not(:hover),
-:root.highlight-you .quotesYou .hide-reply-button:not(:hover),
-.filter-highlight .hide-reply-button:not(:hover) {
-  opacity: 0.7;
+.filter-highlight > div.sideArrows {
+  color: rgba(221, 0, 0, .7);
 }
 .opContainer.filter-highlight {
   box-shadow: inset 5px 0 rgba(221, 0, 0, .7);
