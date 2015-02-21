@@ -25,6 +25,12 @@ Captcha.v2 =
       # XXX Greasemonkey 1.x workaround to gain access to GM_* functions.
       $.queueTask => @save false
 
+  initFrame: ->
+    $.on window, 'focus', ->
+      $.queueTask ->
+        return unless checkbox = $.id 'recaptcha-anchor'
+        checkbox.focus() unless d.activeElement is checkbox
+
   shouldFocus: false
   timeouts: {}
   postsCount: 0

@@ -1,7 +1,8 @@
 Main =
   init: ->
     if location.hostname is 'www.google.com'
-      return $.ready -> Captcha.noscript.initFrame()
+      type = if location.pathname is '/recaptcha/api/fallback' then 'noscript' else 'v2'
+      return $.ready -> Captcha[type].initFrame()
 
     g.threads = new SimpleDict()
     g.posts   = new SimpleDict()
