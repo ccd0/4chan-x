@@ -295,6 +295,47 @@ audio.controls-added {
   bottom: auto;
   top: 1px;
 }
+@media (min-width: 1300px) {
+  :root.fixed:not(.centered-links) #header-bar {
+    font-size: 12px;
+    white-space: nowrap;
+    display: flex;
+  }
+  :root.fixed:not(.centered-links) #board-list {
+    flex: auto;
+  }
+  :root.fixed:not(.centered-links) #full-board-list {
+    display: flex;
+    line-height: 15px;
+  }
+  :root.fixed:not(.centered-links) .hide-board-list-container {
+    flex: none;
+    margin-right: 5px;
+  }
+  :root.fixed:not(.centered-links) #full-board-list > .boardList {
+    flex: auto;
+    display: flex;
+  }
+  :root.fixed:not(.centered-links) #full-board-list > .boardList > a,
+  :root.fixed:not(.centered-links) #full-board-list > .boardList > span:not(.space):not(.spacer) {
+    flex: none;
+    padding: .17em;
+    margin: -.17em -.32em;
+  }
+  :root.fixed:not(.centered-links) #full-board-list > .boardList > span {
+    pointer-events: none;
+  }
+  :root.fixed:not(.centered-links) #full-board-list > .boardList > span.space {
+    flex: 0 .63 .63em;
+  }
+  :root.fixed:not(.centered-links) #full-board-list > .boardList > span.spacer {
+    flex: 0 .38 .38em;
+  }
+  :root.fixed:not(.centered-links) #shortcuts {
+    float: initial;
+    flex: none;
+  }
+}
 /* 4chan X link brackets */
 .brackets-wrap::before {
   content: "[";
