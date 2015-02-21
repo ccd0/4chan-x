@@ -3,7 +3,7 @@
   "description": "Cross-browser userscript for maximum lurking on 4chan.",
   "meta": {
     "name": "4chan X",
-    "version": "1.10.1.12",
+    "version": "1.10.1.13",
     "repo": "https://github.com/ccd0/4chan-x/",
     "page": "https://github.com/ccd0/4chan-x",
     "downloads": "https://ccd0.github.io/4chan-x/builds/",
@@ -19,6 +19,7 @@
       "*://sys.4chan.org/*",
       "*://a.4cdn.org/*",
       "*://i.4cdn.org/*",
+      "https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
       "*://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc"
     ],
     "suffix": {
