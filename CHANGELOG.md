@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.1
 
+**v1.10.1.12** *(2015-02-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.12/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.12/builds/4chan-X-noupdate.crx "Chromium version")]
+- Work around new scrolling issue when tabbing into captcha on Chromium.
+
 **v1.10.1.11** *(2015-02-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.11/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.10.0.7: Work around more issues with clearing settings in Firefox 35+.
 
