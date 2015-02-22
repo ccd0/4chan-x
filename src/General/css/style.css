@@ -1039,7 +1039,9 @@ input[name="Default Volume"] {
 .filter-highlight > div.sideArrows {
   color: rgba(221, 0, 0, .7);
 }
-.opContainer.filter-highlight {
+:root.highlight-own .yourPost.opContainer,
+:root.highlight-you .quotesYou.opContainer,
+.filter-highlight.opContainer {
   box-shadow: inset 5px 0 rgba(221, 0, 0, .7);
 }
 .catalog-thread.watched .catalog-thumb,

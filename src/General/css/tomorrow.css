@@ -64,6 +64,8 @@
 :root.tomorrow .filter-highlight > div.sideArrows {
   color: rgba(129, 162, 190, .9);
 }
+:root.tomorrow.highlight-own .yourPost.opContainer,
+:root.tomorrow.highlight-you .quotesYou.opContainer,
 :root.tomorrow .opContainer.filter-highlight {
   box-shadow: inset 5px 0 rgba(129, 162, 190, .9);
 }
