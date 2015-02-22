@@ -15,11 +15,6 @@ QR =
 
     $.on d, '4chanXInitFinished', @initReady
 
-    window.addEventListener 'focus', @focus, true
-    window.addEventListener 'blur',  @focus, true
-    # We don't receive blur events from captcha iframe.
-    $.on d, 'click', @focus
-
     Post.callbacks.push
       name: 'Quick Reply'
       cb:   @node
@@ -133,7 +128,6 @@ QR =
 
   focus: ->
     $.queueTask ->
-      return unless QR.nodes
       unless $$('.goog-bubble-content > iframe').some((el) -> el.getBoundingClientRect().top >= 0)
         focus = d.activeElement and QR.nodes.el.contains(d.activeElement)
         $[if focus then 'addClass' else 'rmClass'] QR.nodes.el, 'focus'
@@ -570,6 +564,11 @@ QR =
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.handleFiles
     $.on nodes.customCooldown, 'click', QR.toggleCustomCooldown
+
+    window.addEventListener 'focus', QR.focus, true
+    window.addEventListener 'blur',  QR.focus, true
+    # We don't receive blur events from captcha iframe.
+    $.on d, 'click', QR.focus
 
     # save selected post's data
     items = ['thread', 'name', 'email', 'sub', 'com', 'filename']
