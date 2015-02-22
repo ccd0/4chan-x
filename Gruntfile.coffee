@@ -30,7 +30,7 @@ module.exports = (grunt) ->
 
   assert = (statement, objs...) ->
     return '' unless grunt.config('pkg').tests_enabled
-    "throw new Error 'Assertion failed: ' + `#{json statement}` unless #{statement}"
+    "throw new Error 'Assertion failed: ' + #{json statement} unless #{statement}"
 
   # Project configuration.
   grunt.initConfig
