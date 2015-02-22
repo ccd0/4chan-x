@@ -110,8 +110,8 @@ QR.cooldown =
           QR.cooldown.maxDelay
         else
           QR.cooldown.delays[if scope is 'global' then 'thread_global' else 'thread']
-        if QR.cooldown.addCooldown
-          maxDelay += parseInt(Conf['additionalCooldown'])
+        if QR.cooldown.customCooldown
+          maxDelay = Math.max maxDelay, parseInt(Conf['customCooldown'], 10)
         if maxDelay <= elapsed
           delete QR.cooldown[scope][start]
           save = true
@@ -130,8 +130,8 @@ QR.cooldown =
           seconds = Math.max seconds, QR.cooldown.delays[type + suffix] - elapsed
 
         # If additional cooldown is enabled, add the configured seconds to the count.
-        if QR.cooldown.addCooldown
-          seconds = Math.max seconds, QR.cooldown.delays[type] + parseInt(Conf['additionalCooldown']) - elapsed
+        if QR.cooldown.customCooldown
+          seconds = Math.max seconds, parseInt(Conf['customCooldown'], 10) - elapsed
 
       QR.cooldown.save scope if save
 

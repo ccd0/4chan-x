@@ -1321,10 +1321,10 @@ input#qr-filename:not(.edit) {
 #file-n-submit {
   height: 23px;
 }
-#file-n-submit.add-cooldown {
+#file-n-submit.custom-cooldown {
     height: 43px;
 }
-#file-n-submit:not(.add-cooldown) #add-cooldown-label {
+#file-n-submit:not(.custom-cooldown) #custom-cooldown-label {
     display: none;
 }
 #qr input[type="file"] {
