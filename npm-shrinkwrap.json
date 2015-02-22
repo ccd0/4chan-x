@@ -228,8 +228,8 @@
       }
     },
     "grunt-contrib-coffee": {
-      "version": "0.12.0",
-      "resolved": "https://registry.npmjs.org/grunt-contrib-coffee/-/grunt-contrib-coffee-0.12.0.tgz",
+      "version": "0.13.0",
+      "resolved": "https://registry.npmjs.org/grunt-contrib-coffee/-/grunt-contrib-coffee-0.13.0.tgz",
       "dependencies": {
         "chalk": {
           "version": "0.5.1",
@@ -240,8 +240,8 @@
               "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-1.1.0.tgz"
             },
             "escape-string-regexp": {
-              "version": "1.0.2",
-              "resolved": "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.2.tgz"
+              "version": "1.0.3",
+              "resolved": "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.3.tgz"
             },
             "has-ansi": {
               "version": "0.1.0",
@@ -270,18 +270,12 @@
           }
         },
         "coffee-script": {
-          "version": "1.8.0",
-          "resolved": "https://registry.npmjs.org/coffee-script/-/coffee-script-1.8.0.tgz",
-          "dependencies": {
-            "mkdirp": {
-              "version": "0.3.5",
-              "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.3.5.tgz"
-            }
-          }
+          "version": "1.9.1",
+          "resolved": "https://registry.npmjs.org/coffee-script/-/coffee-script-1.9.1.tgz"
         },
         "lodash": {
-          "version": "2.4.1",
-          "resolved": "https://registry.npmjs.org/lodash/-/lodash-2.4.1.tgz"
+          "version": "3.3.0",
+          "resolved": "https://registry.npmjs.org/lodash/-/lodash-3.3.0.tgz"
         },
         "uri-path": {
           "version": "0.0.2",
