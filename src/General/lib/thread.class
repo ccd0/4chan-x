@@ -18,7 +18,8 @@ class Thread
     @OP = null
     @catalogView = null
 
-    g.threads.push @fullID, @board.threads.push @, @
+    @board.threads.push @ID, @
+    g.threads.push  @fullID, @
 
   setPage: (pageNum) ->
     {info, quote} = @OP.nodes
