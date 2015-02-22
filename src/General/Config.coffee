@@ -937,3 +937,4 @@ Config =
     'Interval': 30
 
   customCooldown: 0
+  customCooldownEnabled: true

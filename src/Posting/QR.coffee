@@ -166,10 +166,15 @@ QR =
     else
       QR.unhide()
 
+  setCustomCooldown: (enabled) ->
+    Conf['customCooldownEnabled'] = enabled
+    QR.cooldown.customCooldown = enabled
+    QR.nodes.customCooldown.classList.toggle 'disabled', !enabled
+
   toggleCustomCooldown: ->
     enabled = $.hasClass @, 'disabled'
-    QR.cooldown.customCooldown = enabled
-    @classList.toggle 'disabled', !enabled
+    QR.setCustomCooldown enabled
+    $.set 'customCooldownEnabled', enabled
 
   error: (err) ->
     QR.open()
@@ -528,7 +533,11 @@ QR =
     else
       nodes.spoiler.parentElement.hidden = true
 
-    QR.nodes.fileSubmit.classList.toggle 'custom-cooldown', (parseInt(Conf['customCooldown'], 10) > 0)
+    if parseInt(Conf['customCooldown'], 10) > 0
+      $.addClass QR.nodes.fileSubmit, 'custom-cooldown'
+      $.get 'customCooldownEnabled', Conf['customCooldownEnabled'], ({customCooldownEnabled}) ->
+        QR.setCustomCooldown customCooldownEnabled
+        $.sync 'customCooldownEnabled', QR.setCustomCooldown
 
     if g.BOARD.ID is 'f' and g.VIEW isnt 'thread'
       nodes.flashTag = $.el 'select',
