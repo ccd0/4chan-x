@@ -1106,8 +1106,9 @@ input[name="Default Volume"] {
   display: none !important;
 }
 #qr select,
-#dump-button,
 #url-button,
+#custom-cooldown-button,
+#dump-button,
 .remove,
 .captcha-img {
   cursor: pointer;
@@ -1162,7 +1163,7 @@ input[name="Default Volume"] {
   -webkit-flex-direction: row;
   flex-direction: row;
 }
-#dump-button {
+#url-button, #custom-cooldown-button, #dump-button {
   width: 10%;
   margin: 0;
   margin-right: 4px;
@@ -1170,13 +1171,8 @@ input[name="Default Volume"] {
   padding: 1px 0px 2px;
   opacity: 0.6;
 }
-#url-button {
-  width: 10%;
-  margin: 0;
-  margin-right: 4px;
-  font: 13px sans-serif;
-  padding: 1px 0px 2px;
-  opacity: 0.6;
+#custom-cooldown-button.disabled {
+  opacity: 0.27;
 }
 .persona .field {
   -webkit-flex: 1;
@@ -1321,10 +1317,7 @@ input#qr-filename:not(.edit) {
 #file-n-submit {
   height: 23px;
 }
-#file-n-submit.custom-cooldown {
-    height: 43px;
-}
-#file-n-submit:not(.custom-cooldown) #custom-cooldown-label {
+#file-n-submit:not(.custom-cooldown) #custom-cooldown-button {
     display: none;
 }
 #qr input[type="file"] {

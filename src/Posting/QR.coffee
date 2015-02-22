@@ -167,10 +167,9 @@ QR =
       QR.unhide()
 
   toggleCustomCooldown: ->
-    if @checked
-      QR.cooldown.customCooldown = true
-    else
-      QR.cooldown.customCooldown = false
+    enabled = $.hasClass @, 'disabled'
+    QR.cooldown.customCooldown = enabled
+    @classList.toggle 'disabled', !enabled
 
   error: (err) ->
     QR.open()
@@ -491,7 +490,7 @@ QR =
     setNode 'spoilerPar',    '#qr-spoiler-label'
     setNode 'status',        '[type=submit]'
     setNode 'fileInput',     '[type=file]'
-    setNode 'customCooldown', '[data-name=customCooldown]'
+    setNode 'customCooldown', '#custom-cooldown-button'
 
     rules = $('ul.rules').textContent.trim()
     match_min = rules.match(/.+smaller than (\d+)x(\d+).+/)
@@ -529,10 +528,7 @@ QR =
     else
       nodes.spoiler.parentElement.hidden = true
 
-    if parseInt(Conf['customCooldown']) > 0
-      $.addClass QR.nodes.fileSubmit, 'custom-cooldown'
-    else
-      $.rmClass QR.nodes.fileSubmit, 'custom-cooldown'
+    QR.nodes.fileSubmit.classList.toggle 'custom-cooldown', (parseInt(Conf['customCooldown'], 10) > 0)
 
     if g.BOARD.ID is 'f' and g.VIEW isnt 'thread'
       nodes.flashTag = $.el 'select',
@@ -564,8 +560,7 @@ QR =
     $.on nodes.fileExtras, 'click',  (e) -> e.stopPropagation()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.handleFiles
-    if parseInt(Conf['customCooldown']) > 0
-      $.on nodes.customCooldown,'change', QR.toggleCustomCooldown
+    $.on nodes.customCooldown, 'click', QR.toggleCustomCooldown
 
     # save selected post's data
     items = ['thread', 'name', 'email', 'sub', 'com', 'filename']
