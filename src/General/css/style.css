@@ -1042,7 +1042,14 @@ input[name="Default Volume"] {
 :root.highlight-own .yourPost.opContainer,
 :root.highlight-you .quotesYou.opContainer,
 .filter-highlight.opContainer {
-  border-left: 5px solid rgba(221, 0, 0, .7);
+  border-left: 3px solid rgba(221, 0, 0, .7);
+}
+:root.highlight-own .yourPost.opContainer::after,
+:root.highlight-you .quotesYou.opContainer::after,
+.filter-highlight.opContainer::after {
+  content: "";
+  display: block;
+  clear: both;
 }
 .catalog-thread.watched .catalog-thumb,
 .filter-highlight .catalog-thumb,
