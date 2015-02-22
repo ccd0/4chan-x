@@ -49,7 +49,6 @@ module.exports = (grunt) ->
       )
       coffee:
         src: [
-          'src/General/Cheats.coffee'
           'src/General/Config.coffee'
           'src/General/Globals.coffee'
           'src/General/lib/*.coffee'
