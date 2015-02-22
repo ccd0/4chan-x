@@ -1027,22 +1027,22 @@ input[name="Default Volume"] {
 
 /* Highlighting */
 .qphl {
-  outline: 2px solid rgba(216, 94, 49, .7);
+  outline: 2px solid rgba(216, 94, 49, .8);
 }
 :root.highlight-own .yourPost > .reply,
 :root.highlight-you .quotesYou > .reply,
 .filter-highlight > .reply {
-  border-left: 3px solid rgba(221, 0, 0, .7);
+  border-left: 3px solid rgba(221, 0, 0, .8);
 }
 :root.highlight-own .yourPost > div.sideArrows,
 :root.highlight-you .quotesYou > div.sideArrows,
 .filter-highlight > div.sideArrows {
-  color: rgba(221, 0, 0, .7);
+  color: rgba(221, 0, 0, .8);
 }
 :root.highlight-own .yourPost.opContainer,
 :root.highlight-you .quotesYou.opContainer,
 .filter-highlight.opContainer {
-  border-left: 3px solid rgba(221, 0, 0, .7);
+  border-left: 3px solid rgba(221, 0, 0, .8);
 }
 :root.highlight-own .yourPost.opContainer::after,
 :root.highlight-you .quotesYou.opContainer::after,
@@ -1055,7 +1055,7 @@ input[name="Default Volume"] {
 .filter-highlight .catalog-thumb,
 .catalog-thread.watched .werkTyme-filename,
 .filter-highlight .werkTyme-filename {
-  border: 2px solid rgba(221, 0, 0, .7);
+  border: 2px solid rgba(221, 0, 0, .8);
 }
 
 /* Spoiler text */
