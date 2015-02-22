@@ -86,8 +86,8 @@ Build =
     switch capcode
       when 'admin', 'admin_highlight'
         capcodeClass = ' capcodeAdmin'
-        capcodeStart = <%= html(' <strong class="capcode hand id_admin" title="Highlight posts by the Administrator">## Admin</strong>') %>
-        capcodeIcon  = <%= html(' <img src="${staticPath}adminicon${gifIcon}" alt="Admin Icon" title="This user is the 4chan Administrator." class="identityIcon retina">') %>
+        capcodeStart = <%= html(' <strong class="capcode hand id_admin" title="Highlight posts by Administrators">## Admin</strong>') %>
+        capcodeIcon  = <%= html(' <img src="${staticPath}adminicon${gifIcon}" alt="Admin Icon" title="This user is a 4chan Administrator." class="identityIcon retina">') %>
       when 'mod'
         capcodeClass = ' capcodeMod'
         capcodeStart = <%= html(' <strong class="capcode hand id_mod" title="Highlight posts by Moderators">## Mod</strong>') %>
@@ -100,6 +100,10 @@ Build =
         capcodeClass = ' capcodeManager'
         capcodeStart = <%= html(' <strong class="capcode hand id_manager" title="Highlight posts by Managers">## Manager</strong>') %>
         capcodeIcon  = <%= html(' <img src="${staticPath}managericon${gifIcon}" alt="Manager Icon" title="This user is a 4chan Manager." class="identityIcon retina">') %>
+      when 'admin_emeritus'
+        capcodeClass = ' capcodeAdmin'
+        capcodeStart = <%= html(' <strong class="capcode hand id_admin" title="Highlight posts by the Administrator Emeritus">## Admin Emeritus</strong>') %>
+        capcodeIcon  = <%= html(' <img src="${staticPath}adminicon${gifIcon}" alt="Admin Icon" title="This user is 4chan&#039;s founding Administrator." class="identityIcon retina">') %>
       else
         capcodeClass = ''
         capcodeStart = <%= html('') %>
