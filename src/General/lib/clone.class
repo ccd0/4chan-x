@@ -2,9 +2,9 @@ class Clone extends Post
   constructor: (@origin, @context, contractThumb) ->
     for key in ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply']
       # Copy or point to the origin's key value.
-      @[key] = origin[key]
+      @[key] = @origin[key]
 
-    {nodes} = origin
+    {nodes} = @origin
     root = if contractThumb
       @cloneWithoutVideo nodes.root
     else
@@ -50,11 +50,11 @@ class Clone extends Post
 
     @parseQuotes()
 
-    if origin.file
+    if @origin.file
       # Copy values, point to relevant elements.
       # See comments in Post's constructor.
       @file = {}
-      for key, val of origin.file
+      for key, val of @origin.file
         @file[key] = val
       file = $ '.file', post
       @file.text  = file.firstElementChild
@@ -67,9 +67,9 @@ class Clone extends Post
       # Contract thumbnails in quote preview
       ImageExpand.contract @ if contractThumb
 
-    @isDead  = true if origin.isDead
+    @isDead  = true if @origin.isDead
     @isClone = true
-    root.dataset.clone = origin.clones.push(@) - 1
+    root.dataset.clone = @origin.clones.push(@) - 1
 
   cloneWithoutVideo: (node) ->
     if node.tagName is 'VIDEO' and !node.dataset.md5 # (exception for WebM thumbnails)

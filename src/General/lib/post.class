@@ -91,7 +91,7 @@ class Post
       @isRebuilt = true
       @clones = g.posts[@fullID].clones
       clone.origin = @ for clone in @clones
-    g.posts.push @fullID, thread.posts.push @, board.posts.push @, @
+    g.posts.push @fullID, @thread.posts.push @, @board.posts.push @, @
 
   parseComment: ->
     # Merge text nodes and remove empty ones.

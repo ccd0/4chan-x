@@ -152,8 +152,8 @@ QR.post = class
     return
 
   setFile: (@file, el) ->
-    @filename = file.name
-    @filesize = $.bytesToString file.size
+    @filename = @file.name
+    @filesize = $.bytesToString @file.size
     @nodes.label.hidden = false if QR.spoiler
     QR.captcha.onPostChange()
     URL.revokeObjectURL @URL
