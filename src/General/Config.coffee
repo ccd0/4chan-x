@@ -935,3 +935,5 @@ Config =
         'Increase the intervals between updates on threads without new posts.'
       ]
     'Interval': 30
+
+  additionalCooldown: 0

@@ -315,7 +315,7 @@ Settings =
 
     items = {}
     inputs = {}
-    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
+    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss', 'additionalCooldown']
       input = $ "[name='#{name}']", section
       items[name]  = Conf[name]
       inputs[name] = input
@@ -339,7 +339,7 @@ Settings =
       for key, val of items
         input = inputs[key]
         input.value = val
-        continue if key is 'usercss'
+        continue if key in ['usercss', 'additionalCooldown']
         Settings[key].call input
       return
 
