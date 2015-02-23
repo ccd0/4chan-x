@@ -1029,20 +1029,22 @@ input[name="Default Volume"] {
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .8);
 }
-:root.highlight-own .yourPost > .reply,
-:root.highlight-you .quotesYou > .reply,
-.filter-highlight > .reply {
+:root.highlight-own .yourPost.opContainer,
+:root.highlight-own .yourPost > .reply {
+  border-left: 3px dashed rgba(221, 0, 0, .8);
+}
+:root.highlight-you .quotesYou.opContainer,
+:root.highlight-you .quotesYou > .reply {
   border-left: 3px solid rgba(221, 0, 0, .8);
+}
+.filter-highlight.opContainer,
+.filter-highlight > .reply {
+  box-shadow: inset 5px 0 rgba(221, 0, 0, .5);
 }
 :root.highlight-own .yourPost > div.sideArrows,
 :root.highlight-you .quotesYou > div.sideArrows,
 .filter-highlight > div.sideArrows {
   color: rgba(221, 0, 0, .8);
-}
-:root.highlight-own .yourPost.opContainer,
-:root.highlight-you .quotesYou.opContainer,
-.filter-highlight.opContainer {
-  border-left: 3px solid rgba(221, 0, 0, .8);
 }
 :root.highlight-own .yourPost.opContainer::after,
 :root.highlight-you .quotesYou.opContainer::after,
@@ -1051,11 +1053,13 @@ input[name="Default Volume"] {
   display: block;
   clear: both;
 }
-.catalog-thread.watched .catalog-thumb,
 .filter-highlight .catalog-thumb,
-.catalog-thread.watched .werkTyme-filename,
 .filter-highlight .werkTyme-filename {
-  border: 2px solid rgba(221, 0, 0, .8);
+  box-shadow: 0 0 3px 3px rgba(255, 0, 0, .5);
+}
+.catalog-thread.watched .catalog-thumb,
+.catalog-thread.watched .werkTyme-filename {
+  border: 2px solid rgba(255, 0, 0, .75);
 }
 
 /* Spoiler text */

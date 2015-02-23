@@ -49,27 +49,31 @@
 
 /* Highlighting */
 :root.tomorrow .qphl {
-  outline: 2px solid rgba(129, 162, 190, .9);
+  outline: 2px solid rgba(145, 182, 214, .8);
 }
-:root.tomorrow.highlight-own .yourPost > .reply,
-:root.tomorrow.highlight-you .quotesYou > .reply,
+:root.tomorrow.highlight-own .yourPost.opContainer,
+:root.tomorrow.highlight-own .yourPost > .reply {
+  border-left: 3px dashed rgba(145, 182, 214, .8);
+}
+:root.tomorrow.highlight-you .quotesYou.opContainer,
+:root.tomorrow.highlight-you .quotesYou > .reply {
+  border-left: 3px solid rgba(145, 182, 214, .8);
+}
+:root.tomorrow .opContainer.filter-highlight,
 :root.tomorrow .filter-highlight > .reply {
-  border-left: 3px solid rgba(129, 162, 190, .9);
+  box-shadow: inset 5px 0 rgba(145, 182, 214, .5);
 }
 :root.tomorrow.highlight-own .yourPost > div.sideArrows,
 :root.tomorrow.highlight-you .quotesYou > div.sideArrows,
 :root.tomorrow .filter-highlight > div.sideArrows {
-  color: rgba(129, 162, 190, .9);
+  color: rgb(155, 185, 210);
 }
-:root.tomorrow.highlight-own .yourPost.opContainer,
-:root.tomorrow.highlight-you .quotesYou.opContainer,
-:root.tomorrow .opContainer.filter-highlight {
-  border-left: 3px solid rgba(129, 162, 190, .9);
+:root.tomorrow .filter-highlight .catalog-thumb,
+:root.tomorrow .filter-highlight .werkTyme-filename {
+  box-shadow: 0 0 3px 3px rgba(64, 192, 255, .7);
 }
 :root.tomorrow .catalog-thread.watched .catalog-thumb,
-:root.tomorrow .filter-highlight .catalog-thumb,
-:root.tomorrow .catalog-thread.watched .werkTyme-filename,
-:root.tomorrow .filter-highlight .werkTyme-filename {
+:root.tomorrow .catalog-thread.watched .werkTyme-filename {
   border: 2px solid rgb(64, 192, 255);
 }
 
