@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.2
 
+**v1.10.2.2** *(2015-02-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix highlighting of your posts quoting yourself.
+
 **v1.10.2.1** *(2015-02-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - More tweaks to highlighting, this time making the different types of highlighting (filter, your posts, quoting you, watched in catalog) look distinct.
 
