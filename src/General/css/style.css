@@ -1029,13 +1029,13 @@ input[name="Default Volume"] {
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .8);
 }
-:root.highlight-own .yourPost.opContainer,
-:root.highlight-own .yourPost > .reply {
-  border-left: 3px dashed rgba(221, 0, 0, .8);
-}
 :root.highlight-you .quotesYou.opContainer,
 :root.highlight-you .quotesYou > .reply {
   border-left: 3px solid rgba(221, 0, 0, .8);
+}
+:root.highlight-own .yourPost.opContainer,
+:root.highlight-own .yourPost > .reply {
+  border-left: 3px dashed rgba(221, 0, 0, .8);
 }
 .filter-highlight.opContainer,
 .filter-highlight > .reply {

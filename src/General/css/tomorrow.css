@@ -51,13 +51,13 @@
 :root.tomorrow .qphl {
   outline: 2px solid rgba(145, 182, 214, .8);
 }
-:root.tomorrow.highlight-own .yourPost.opContainer,
-:root.tomorrow.highlight-own .yourPost > .reply {
-  border-left: 3px dashed rgba(145, 182, 214, .8);
-}
 :root.tomorrow.highlight-you .quotesYou.opContainer,
 :root.tomorrow.highlight-you .quotesYou > .reply {
   border-left: 3px solid rgba(145, 182, 214, .8);
+}
+:root.tomorrow.highlight-own .yourPost.opContainer,
+:root.tomorrow.highlight-own .yourPost > .reply {
+  border-left: 3px dashed rgba(145, 182, 214, .8);
 }
 :root.tomorrow .opContainer.filter-highlight,
 :root.tomorrow .filter-highlight > .reply {
