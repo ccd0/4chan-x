@@ -191,9 +191,6 @@ audio.controls-added {
 :root.fixed #header-bar {
   box-shadow: -5px 1px 10px rgba(0, 0, 0, 0.20);
 }
-#header-bar #custom-board-list .current {
-  padding: 1px 1px 4px 1px;
-}
 :root.centered-links #shortcuts {
   width: 300px;
   text-align: right;
