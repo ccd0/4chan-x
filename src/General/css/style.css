@@ -178,6 +178,7 @@ audio.controls-added {
   right: 0;
   left: 0;
   padding: 3px 4px 4px;
+  font-size: 12px;
 }
 .fixed.top-header #header-bar {
   top: 0;
@@ -295,7 +296,6 @@ audio.controls-added {
 }
 @media (min-width: 1300px) {
   :root.fixed:not(.centered-links) #header-bar {
-    font-size: 12px;
     white-space: nowrap;
     display: flex;
     -webkit-align-items: center;

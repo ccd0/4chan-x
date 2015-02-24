@@ -11,8 +11,10 @@
 :root.yotsuba #header-bar.dialog {
   background-color: rgba(240,224,214,0.98);
 }
-:root.yotsuba #header-bar, :root.yotsuba #notifications {
+:root.yotsuba:not(.fixed) #header-bar, :root.yotsuba #notifications {
   font-size: 9pt;
+}
+:root.yotsuba #header-bar, :root.yotsuba #notifications {
   color: #B86;
 }
 :root.yotsuba #board-list a, :root.yotsuba #shortcuts a  {

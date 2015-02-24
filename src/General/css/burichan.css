@@ -11,8 +11,10 @@
 :root.burichan #header-bar.dialog {
   background-color: rgba(214,218,240,0.98);
 }
-:root.burichan #header-bar, :root.burichan #header-bar #notifications {
+:root.burichan:not(.fixed) #header-bar, :root.burichan #header-bar #notifications {
   font-size: 11pt;
+}
+:root.burichan #header-bar, :root.burichan #header-bar #notifications {
   color: #89A;
 }
 :root.burichan #header-bar a, :root.burichan #header-bar #notifications a {
