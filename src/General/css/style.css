@@ -166,6 +166,7 @@ audio.controls-added {
 #thread-watcher {
   z-index: 10;
 }
+
 /* Header */
 .fixed.top-header body {
   padding-top: 2em;
@@ -297,13 +298,14 @@ audio.controls-added {
     font-size: 12px;
     white-space: nowrap;
     display: flex;
+    -webkit-align-items: center;
+    align-items: center;
   }
   :root.fixed:not(.centered-links) #board-list {
     flex: auto;
   }
   :root.fixed:not(.centered-links) #full-board-list {
     display: flex;
-    line-height: 15px;
   }
   :root.fixed:not(.centered-links) .hide-board-list-container {
     flex: none;
@@ -331,6 +333,9 @@ audio.controls-added {
   :root.fixed:not(.centered-links) #shortcuts {
     float: initial;
     flex: none;
+    display: flex;
+    -webkit-align-items: center;
+    align-items: center;
   }
 }
 /* 4chan X link brackets */
