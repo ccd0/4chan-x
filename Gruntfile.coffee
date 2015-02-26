@@ -142,27 +142,30 @@ module.exports = (grunt) ->
         command: """
           git tag -af beta -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git checkout gh-pages
-          git checkout beta "builds/*<%= pkg.meta.suffix.beta %>.*"
+          git pull
+          git merge --no-commit -s ours beta
+          git checkout beta "builds/*<%= pkg.meta.suffix.beta %>.*" LICENSE CHANGELOG.md img .gitignore .gitattributes
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to beta channel."
           git checkout -
         """.split('\n').join('&&')
       stable:
         command: """
           git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
-          git checkout -b tmp
-          git merge --no-commit -s ours gh-pages
-          git checkout gh-pages "builds/*<%= pkg.meta.suffix.beta %>.*" README.md template.jst index.html img
-          git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to stable channel."
           git checkout gh-pages
-          git merge --ff-only tmp
-          git branch -d tmp
-          git checkout @{-2}
+          git pull
+          git merge --no-commit -s ours stable
+          git checkout stable builds
+          git checkout HEAD "builds/*<%= pkg.meta.suffix.beta %>.*"
+          git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to stable channel."
+          git checkout -
         """.split('\n').join('&&')
       web:
         command: """
           git commit -am "Build web page."
           git checkout gh-pages
-          git checkout - README.md template.jst index.html img
+          git pull
+          git merge --no-commit -s ours -
+          git checkout - README.md index.html img
           git commit -am "Update web page."
           git checkout -
         """.split('\n').join('&&')
