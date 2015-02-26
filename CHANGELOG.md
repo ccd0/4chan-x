@@ -2,6 +2,27 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+### v1.10.2
+
+**v1.10.2.4** *(2015-02-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Header CSS fixes.
+
+**v1.10.2.3** *(2015-02-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.1.15: (VoH) Restore Nyafuu archive.
+
+**v1.10.2.2** *(2015-02-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix highlighting of your posts quoting yourself.
+
+**v1.10.2.1** *(2015-02-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- More tweaks to highlighting, this time making the different types of highlighting (filter, your posts, quoting you, watched in catalog) look distinct.
+
+**v1.10.2.0** *(2015-02-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.10.1.14.
+- Remove `Unique ID` from the archive search menu as IDs on /pol/ no longer persist between threads.
+- (AchtBit) `Custom Cooldown Time` (in the advanced settings): Allows setting a cooldown time between posts longer than 4chan's cooldowns.
+- Make highlighting of posts more consistent.
+- (ccd0, Nebukazar, hotdogman, fgsfdss) Various aesthetic tweaks.
+
 ### v1.10.1
 
 **v1.10.1.15** *(2015-02-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.15/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.15/builds/4chan-X-noupdate.crx "Chromium version")]
