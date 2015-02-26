@@ -76,16 +76,13 @@ module.exports = (grunt) ->
           'src/General/Main.coffee'
         ]
         dest: 'tmp-<%= pkg.type %>/script.coffee'
-      meta:
-        files:
-          'LICENSE':   'src/General/meta/banner.js'
       crx:
         files:
           'testbuilds/updates<%= pkg.meta.suffix[pkg.channel] %>.xml': 'src/General/meta/updates.xml'
           'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/manifest.json': 'src/General/meta/manifest.json'
           'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/script.js': [
             'src/General/meta/botproc.js'
-            'src/General/meta/banner.js'
+            'LICENSE'
             'src/General/meta/usestrict.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
@@ -96,7 +93,7 @@ module.exports = (grunt) ->
           'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.user.js': [
             'src/General/meta/botproc.js'
             'src/General/meta/metadata.js'
-            'src/General/meta/banner.js'
+            'LICENSE'
             'src/General/meta/usestrict.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
@@ -341,7 +338,6 @@ module.exports = (grunt) ->
   grunt.registerTask 'full', [
     'build'
     'pack'
-    'concat:meta'
     'copy:builds'
   ]
 
