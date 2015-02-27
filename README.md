@@ -11,7 +11,7 @@ Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonk
 If you want to try out Electrolysis, use the latest [beta version](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) of Greasemonkey. See [this thread](https://github.com/greasemonkey/greasemonkey/issues/2004) for the latest news on support.
 
 **WARNING**:
-If you're switching to this fork from someone else's fork of 4chan X, back up your old script before installing this one as the old one will be overwritten.
+If you're switching to this fork from someone else's fork of 4chan X, back up your old script before installing this one as the old one may be overwritten.
 
 **Known issues**:
 The combination of Firefox 29 and Greasemonkey 2.0+ causes 4chan X not to work.
