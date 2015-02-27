@@ -50,8 +50,8 @@ class DataBoard
 
   get: ({boardID, threadID, postID, defaultValue}) ->
     if board = @data.boards[boardID]
-      unless threadID
-        if postID
+      unless threadID?
+        if postID?
           for ID, thread in board
             if postID of thread
               val = thread[postID]
@@ -59,7 +59,7 @@ class DataBoard
         else
           val = board
       else if thread = board[threadID]
-        val = if postID
+        val = if postID?
           thread[postID]
         else
           thread
