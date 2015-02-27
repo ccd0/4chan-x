@@ -134,8 +134,8 @@ ThreadWatcher =
       {db}    = ThreadWatcher
       boardID = g.BOARD.ID
       db.forceSync()
-      for threadID, data of db.data.boards[boardID] when not data.isDead and threadID not of g.BOARD.threads
-        if Conf['Auto Prune']
+      for threadID, data of db.data.boards[boardID] when not data?.isDead and threadID not of g.BOARD.threads
+        if Conf['Auto Prune'] or not (data and typeof data is 'object')
           ThreadWatcher.db.delete {boardID, threadID}
         else
           data.isDead = true
@@ -248,7 +248,7 @@ ThreadWatcher =
     for boardID, threads of ThreadWatcher.db.data.boards
       if Conf['Current Board'] and boardID isnt g.BOARD.ID
         continue
-      for threadID, data of threads
+      for threadID, data of threads when data and typeof data is 'object'
         all.push {boardID, threadID, data}
     all
 
