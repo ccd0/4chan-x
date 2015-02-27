@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.2
 
+**v1.10.2.5** *(2015-02-26)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.1.16: Fix thread watcher data corruption issue.
+
 **v1.10.2.4** *(2015-02-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Header CSS fixes.
 
@@ -24,6 +27,9 @@ The links to individual versions below are to copies of the script with the upda
 - (ccd0, Nebukazar, hotdogman, fgsfdss) Various aesthetic tweaks.
 
 ### v1.10.1
+
+**v1.10.1.16** *(2015-02-26)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.16/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.16/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix thread watcher data corruption issue.
 
 **v1.10.1.15** *(2015-02-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.15/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.1.15/builds/4chan-X-noupdate.crx "Chromium version")]
 - (VoH) Restore Nyafuu archive.
