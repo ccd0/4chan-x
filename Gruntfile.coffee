@@ -111,6 +111,9 @@ module.exports = (grunt) ->
         filter: (src) ->
           pkg = grunt.config 'pkg'
           grunt.file.isFile(src) and !grunt.file.isMatch(src, "testbuilds/#{pkg.name}#{pkg.meta.suffix.dev}.user.js")
+      web:
+        src:  'test.html'
+        dest: 'index.html'
 
     coffee:
       script:
@@ -220,7 +223,7 @@ module.exports = (grunt) ->
     markdown:
       web:
         src: 'README.md'
-        dest: 'index.html'
+        dest: 'test.html'
       options:
         template: 'template.jst'
 
@@ -361,6 +364,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'web', [
     'markdown:web'
+    'copy:web'
     'shell:web'
   ]
 

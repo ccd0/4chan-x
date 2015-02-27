@@ -5,4 +5,5 @@ node_modules/
 tmp-crx/
 tmp-userscript/
 testbuilds/
+test.html
 Gruntfile.js
