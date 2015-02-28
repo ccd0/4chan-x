@@ -426,15 +426,7 @@ QR =
     else
       cb true, null
 
-  openFileInput: (e) ->
-    e.stopPropagation()
-    if e.shiftKey and e.type is 'click'
-      return QR.selected.rmFile()
-    if (e.ctrlKey or e.metaKey) and e.type is 'click'
-      $.addClass QR.nodes.filename, 'edit'
-      QR.nodes.filename.focus()
-    return if e.target.nodeName is 'INPUT' or (e.keyCode and e.keyCode not in [32, 13]) or e.ctrlKey
-    e.preventDefault()
+  openFileInput: ->
     QR.nodes.fileInput.click()
 
   generatePostableThreadsList: ->
@@ -481,10 +473,9 @@ QR =
     setNode 'addPost',       '#add-post'
     setNode 'charCount',     '#char-count'
     setNode 'fileSubmit',    '#file-n-submit'
+    setNode 'fileButton',    '#qr-file-button'
     setNode 'filename',      '#qr-filename'
-    setNode 'fileContainer', '#qr-filename-container'
     setNode 'fileRM',        '#qr-filerm'
-    setNode 'fileExtras',    '#qr-extras-container'
     setNode 'spoiler',       '#qr-file-spoiler'
     setNode 'spoilerPar',    '#qr-spoiler-label'
     setNode 'status',        '[type=submit]'
@@ -550,17 +541,14 @@ QR =
       nodes.flashTag.dataset.default = '4'
       $.add nodes.form, nodes.flashTag
 
-    $.on nodes.filename.parentNode, 'click keydown', QR.openFileInput
-
+    $.on nodes.fileButton, 'click',  QR.openFileInput
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
     $.on nodes.urlButton,  'click',  QR.handleUrl
     $.on nodes.addPost,    'click',  -> new QR.post true
     $.on nodes.form,       'submit', QR.submit
-    $.on nodes.filename,   'blur',   -> $.rmClass @, 'edit'
     $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
-    $.on nodes.fileExtras, 'click',  (e) -> e.stopPropagation()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.handleFiles
     $.on nodes.customCooldown, 'click', QR.toggleCustomCooldown

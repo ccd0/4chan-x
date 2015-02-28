@@ -206,17 +206,17 @@ QR.post = class
     delete @filename
     delete @filesize
     @nodes.el.title = null
-    QR.nodes.fileContainer.title = ''
+    QR.nodes.filename.title = ''
     @nodes.el.style.backgroundImage = null
     @nodes.label.hidden = true if QR.spoiler
     @showFileData()
     URL.revokeObjectURL @URL
 
   updateFilename: ->
-    long = "#{@filename} (#{@filesize})\nCtrl/\u2318+click to edit filename. Shift+click to clear."
+    long = "#{@filename} (#{@filesize})"
     @nodes.el.title = long
     return unless @ is QR.selected
-    QR.nodes.fileContainer.title = long
+    QR.nodes.filename.title = long
 
   showFileData: ->
     if @file

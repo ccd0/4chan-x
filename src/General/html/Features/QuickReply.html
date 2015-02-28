@@ -23,16 +23,13 @@
     <a id=add-post href=javascript:; title="Add a post">+</a>
   </div>
   <div id=file-n-submit>
-    <span id=qr-filename-container class=field tabindex=0>
-      <span id=qr-no-file>No selected file</span>
-      <input id="qr-filename" data-name="filename" spellcheck="false">
-      <span id="qr-extras-container">
-        <a href="javascript:;" id="qr-filerm" title="Remove file"><i class="fa fa-times-circle"></i></a>
-        <a href="javascript:;" id="url-button" title="Post from url"><i class="fa fa-link"></i></a>
-        <a href="javascript:;" id="custom-cooldown-button" title="Toggle custom cooldown" class="disabled"><i class="fa fa-clock-o"></i></a>
-        <a href="javascript:;" id="dump-button" title="Dump list"><i class="fa fa-plus-square"></i></a>
-      </span>
-    </span>
+    <input type="button" id="qr-file-button" value="Choose files">
+    <span id="qr-no-file">No selected file</span>
+    <input id="qr-filename" data-name="filename" spellcheck="false">
+    <a href="javascript:;" id="qr-filerm" title="Remove file"><i class="fa fa-times-circle"></i></a>
+    <a href="javascript:;" id="url-button" title="Post from url"><i class="fa fa-link"></i></a>
+    <a href="javascript:;" id="custom-cooldown-button" title="Toggle custom cooldown" class="disabled"><i class="fa fa-clock-o"></i></a>
+    <a href="javascript:;" id="dump-button" title="Dump list"><i class="fa fa-plus-square"></i></a>
     <label id=qr-spoiler-label>
       <input type=checkbox id=qr-file-spoiler title='Spoiler image'>
     </label>

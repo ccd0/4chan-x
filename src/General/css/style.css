@@ -1173,17 +1173,6 @@ input[name="Default Volume"] {
   -webkit-flex-direction: row;
   flex-direction: row;
 }
-#url-button, #custom-cooldown-button, #dump-button {
-  width: 10%;
-  margin: 0;
-  margin-right: 4px;
-  font: 13px sans-serif;
-  padding: 1px 0px 2px;
-  opacity: 0.6;
-}
-#custom-cooldown-button.disabled {
-  opacity: 0.27;
-}
 .persona .field {
   -webkit-flex: 1;
   flex: 1;
@@ -1208,6 +1197,7 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr textarea {
   resize: both;
 }
+
 /* Noscript Recaptcha */
 .captcha-img {
   margin: 0px;
@@ -1227,6 +1217,7 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr-captcha-iframe {
   display: none;
 }
+
 /* Recaptcha v2 */
 #qr .captcha-root {
   position: relative;
@@ -1259,81 +1250,59 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr textarea {
   min-width: 100%;
 }
-#qr [type="submit"] {
-  width: 25%;
-  vertical-align: top;
-}
-:root.webkit #qr [type="submit"] {
-  height: 24px;
-}
 #qr label input[type="checkbox"] {
   position: relative;
   top: 2px;
 }
+
 /* Fake File Input */
+#file-n-submit {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+}
 input#qr-filename {
   border: none !important;
-  width: 80%;
-  padding: 0px 4px;
-  position: relative;
-  bottom: 1px;
   background: none !important;
 }
-input#qr-filename:not(.edit) {
-  pointer-events: none;
-}
 #qr-filename,
-#qr-filesize,
 .has-file #qr-no-file {
   display: none;
 }
 #qr-no-file,
-.has-file #qr-filename,
-.has-file #qr-filesize {
+.has-file #qr-filename {
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
   display: inline-block;
-  margin: 0 0 2px;
+  padding: 0px 4px;
   overflow: hidden;
   text-overflow: ellipsis;
-  vertical-align: top;
 }
 #qr-no-file {
   color: #AAA;
-  padding: 1px 4px;
-}
-#qr-filename-container {
-  -moz-box-sizing: border-box;
-  display: inline-block;
-  position: relative;
-  width: 100px;
-  min-width: 74.6%;
-  max-width: 74.6%;
-  margin-right: 0.4%;
-  margin-top: 1px;
-  overflow: hidden;
-  padding: 2px 1px 0;
-  height: 22px;
-}
-#qr-filename-container:hover {
-  cursor: text;
-}
-#qr-extras-container {
-  position: absolute;
-  right: 0px;
-}
-#qr-filerm {
-  margin-right: 3px;
-  z-index: 2;
-}
-#file-n-submit {
-  height: 23px;
-}
-#file-n-submit:not(.custom-cooldown) #custom-cooldown-button {
-    display: none;
 }
 #qr input[type="file"] {
   visibility: hidden;
   position: absolute;
 }
+
+/* QR Icons */
+#file-n-submit > a {
+  margin: 0;
+  margin-right: 4px;
+  font: 13px sans-serif;
+}
+#url-button, #custom-cooldown-button, #dump-button {
+  opacity: 0.6;
+}
+#custom-cooldown-button.disabled {
+  opacity: 0.27;
+}
+#file-n-submit:not(.custom-cooldown) #custom-cooldown-button {
+  display: none;
+}
+
 /* Thread Select / Spoiler Label */
 #qr select[data-name="thread"] {
   float: right;
@@ -1349,14 +1318,11 @@ input#qr-filename:not(.edit) {
 #qr.has-spoiler #file-n-submit:not(.has-file) #qr-spoiler-label {
   display: none;
 }
-#qr.has-spoiler .has-file #qr-filename-container {
-  max-width: 67.9%;
-  min-width: 67.9%;
-}
 #qr-spoiler-label input {
   position: relative;
   top: 3px;
 }
+
 /* Dumping UI */
 .dump #dump-list-container {
   display: block;
