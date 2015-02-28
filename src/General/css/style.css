@@ -1206,7 +1206,17 @@ input.field.tripped:not(:hover):not(:focus) {
   text-shadow: none !important;
 }
 #qr textarea {
+  min-width: 100%;
   resize: both;
+}
+.field {
+  -moz-box-sizing: border-box;
+  margin: 0px;
+  padding: 2px 4px 3px;
+}
+#qr label input[type="checkbox"] {
+  position: relative;
+  top: 2px;
 }
 
 /* Noscript Recaptcha */
@@ -1253,25 +1263,28 @@ input.field.tripped:not(:hover):not(:focus) {
   display: block;
   width: 100%;
 }
-.field {
-  -moz-box-sizing: border-box;
-  margin: 0px;
-  padding: 2px 4px 3px;
-}
-#qr textarea {
-  min-width: 100%;
-}
-#qr label input[type="checkbox"] {
-  position: relative;
-  top: 2px;
-}
 
 /* Fake File Input */
 #file-n-submit {
   display: -webkit-flex;
   display: flex;
+  -webkit-align-items: stretch;
+  align-items: stretch;
+  margin-top: 1px;
+}
+:root.gecko #file-n-submit > input {
+  margin: 0px -1px -1px;
+}
+#qr-filename-container {
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+  width: 0;
+  display: -webkit-flex;
+  display: flex;
   -webkit-align-items: center;
   align-items: center;
+  position: relative;
+  padding: 1px;
 }
 input#qr-filename {
   border: none !important;
@@ -1286,7 +1299,8 @@ input#qr-filename {
   -webkit-flex: 1 1 auto;
   flex: 1 1 auto;
   display: inline-block;
-  padding: 0px 4px;
+  padding: 0;
+  padding-left: 3px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -1298,11 +1312,21 @@ input#qr-filename {
   position: absolute;
 }
 
-/* QR Icons */
-#file-n-submit > a {
+/* Spoiler Checkbox, QR Icons */
+#qr-spoiler-label, #qr-filename-container > a {
+  -webkit-flex: none;
+  flex: none;
   margin: 0;
-  margin-right: 4px;
+  margin-right: 3px;
   font: 13px sans-serif;
+}
+#qr.has-spoiler #file-n-submit:not(.has-file) #qr-spoiler-label,
+.has-file #url-button,
+#file-n-submit:not(.custom-cooldown) #custom-cooldown-button {
+  display: none;
+}
+#qr-file-spoiler {
+  margin: 0;
 }
 #url-button, #custom-cooldown-button, #dump-button {
   opacity: 0.6;
@@ -1310,28 +1334,10 @@ input#qr-filename {
 #custom-cooldown-button.disabled {
   opacity: 0.27;
 }
-#file-n-submit:not(.custom-cooldown) #custom-cooldown-button {
-  display: none;
-}
 
-/* Thread Select / Spoiler Label */
+/* Thread Select */
 #qr select[data-name="thread"] {
   float: right;
-}
-#qr.has-spoiler .has-file #qr-spoiler-label {
-  width: 6.7%;
-  min-width: 6.7%;
-  max-width: 6.7%;
-  display: inline-block;
-  text-align: center;
-  vertical-align: top;
-}
-#qr.has-spoiler #file-n-submit:not(.has-file) #qr-spoiler-label {
-  display: none;
-}
-#qr-spoiler-label input {
-  position: relative;
-  top: 3px;
 }
 
 /* Dumping UI */
