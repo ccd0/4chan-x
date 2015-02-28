@@ -1,8 +1,8 @@
 # 4chan X
 Adds various features to 4chan.
-A continuation of the fork formerly maintained by [Seaweed](https://github.com/seaweedchan/4chan-x) and subsequently [Spittie](https://github.com/Spittie/4chan-x).
+Originally written by [aeosynth](https://github.com/aeosynth/4chan-x), and subsequently maintained by [Mayhem](https://github.com/MayhemYDG/4chan-x), [ihavenoface](https://github.com/ihavenoface/4chan-x), [Zixaphir](https://github.com/zixaphir/appchan-x), [Seaweed](https://github.com/seaweedchan/4chan-x), and [Spittie](https://github.com/Spittie/4chan-x), with contributions from many others.
 
-If you're looking for a maintained fork of OneeChan, try
+If you're looking for a maintained fork of OneeChan (a style script used in addition to 4chan X), try
 https://github.com/Nebukazar/OneeChan
 
 ## Firefox version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js)
@@ -29,7 +29,7 @@ The stable and beta releases of Chrome on Windows will disable extensions not in
 Only the latest stable version of 4chan X is available.
 
 ## Other browsers
-This fork of 4chan X is not guaranteed to work correctly in other browsers, but you are welcome to try your luck. Pull requests to fix the bugs you will likely find are always welcome. You may fare better with [loadletter's v2 fork](https://github.com/loadletter/4chan-x), which has fewer features but less dependence on browser-specific APIs.
+This fork of 4chan X is not guaranteed to work correctly in other browsers, but you are welcome to try your luck. Pull requests to fix the bugs you will likely find are always welcome. You may fare better with [loadletter's fork](https://github.com/loadletter/4chan-x), which has fewer features but less dependence on browser-specific APIs.
 
 - [Installing 4chan X in dwb](https://github.com/ccd0/4chan-x/wiki/Installing-4chan-X-in-dwb)
 
