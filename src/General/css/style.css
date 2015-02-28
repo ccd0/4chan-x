@@ -711,7 +711,7 @@ div[data-checked="false"] > .suboption-list {
   text-align: center;
 }
 /* /tg/ dice rolls */
-.catalog-thread > .comment > b {
+.board_tg .catalog-thread > .comment > b {
   font-weight: normal;
 }
 .catalog-code {
