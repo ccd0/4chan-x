@@ -22,7 +22,7 @@ QuoteThreading =
 
     Header.menu.addEntry @entry =
       el:    @controls
-      order: 98
+      order: 99
 
     Thread.callbacks.push
       name: 'Quote Threading'

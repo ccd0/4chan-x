@@ -46,7 +46,7 @@ Index =
     Header.menu.addEntry
       el: $.el 'span',
         textContent: 'Index Navigation'
-      order: 98
+      order: 100
       subEntries: [repliesEntry, pinEntry, anchorEntry, refNavEntry]
 
     $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"

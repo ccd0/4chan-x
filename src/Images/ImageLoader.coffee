@@ -24,7 +24,7 @@ ImageLoader =
 
     Header.menu.addEntry
       el: prefetch
-      order: 104
+      order: 98
 
   node: ->
     return if @isClone or !@file
