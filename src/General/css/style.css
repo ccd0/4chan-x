@@ -64,9 +64,6 @@ a[href="javascript:;"] {
 body.hasDropDownNav{
   margin-top: 5px;
 }
-a {
-  outline: none !important;
-}
 .painted {
   border-radius: 3px;
   padding: 0px 2px;
