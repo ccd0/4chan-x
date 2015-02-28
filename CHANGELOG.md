@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.2
 
+**v1.10.2.7** *(2015-02-27)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.7/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix header board list and floating embeds in older Webkit browsers such as dwb.
+
 **v1.10.2.6** *(2015-02-27)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.6/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix captcha stealing focus from the submit button.
 
