@@ -58,7 +58,6 @@ Captcha.v2 =
 
   setup: (focus, force) ->
     return unless @isEnabled and (@needed() or force)
-    $.addClass QR.nodes.el, 'captcha-open'
     @shouldFocus = true if focus
     if @timeouts.destroy
       clearTimeout @timeouts.destroy
@@ -110,6 +109,7 @@ Captcha.v2 =
 
   setupIFrame: (iframe) ->
     @setupTime = Date.now()
+    $.addClass QR.nodes.el, 'captcha-open'
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
       QR.nodes.el.style.top    = null
       QR.nodes.el.style.bottom = '0px'
