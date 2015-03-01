@@ -1264,7 +1264,7 @@ input.field.tripped:not(:hover):not(:focus) {
   width: 100%;
 }
 
-/* Fake File Input */
+/* File Input, Submit Button */
 #file-n-submit {
   display: -webkit-flex;
   display: flex;
@@ -1274,6 +1274,9 @@ input.field.tripped:not(:hover):not(:focus) {
 }
 :root.gecko #file-n-submit > input {
   margin: 0px -1px -1px;
+}
+#file-n-submit input[type="submit"] {
+  width: 25%;
 }
 #qr-filename-container {
   -webkit-flex: 1 1 auto;
