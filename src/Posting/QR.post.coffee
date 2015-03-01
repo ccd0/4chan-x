@@ -303,6 +303,7 @@ QR.post = class
       $.rmClass QR.nodes.fileSubmit, 'has-file'
 
   pasteText: (file) ->
+    @pasting = true
     reader = new FileReader()
     reader.onload = (e) =>
       text = e.target.result
@@ -313,6 +314,7 @@ QR.post = class
       if QR.selected is @
         QR.nodes.com.value    = @com
       @nodes.span.textContent = @com
+      delete @pasting
     reader.readAsText file
 
   dragStart: (e) ->

@@ -351,7 +351,7 @@ QR =
       post = QR.selected
     else
       post = QR.posts[QR.posts.length - 1]
-      if post[if isText then 'com' else 'file']
+      if (if isText then post.com or post.pasting else post.file)
         post = new QR.post()
     post[if isText then 'pasteText' else 'setFile'] file
 
