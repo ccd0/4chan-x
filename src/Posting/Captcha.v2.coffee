@@ -29,7 +29,7 @@ Captcha.v2 =
     $.globalEval 'window.focus = function() {};'
     $.on window, 'focus', ->
       $.queueTask ->
-        return unless checkbox = $.id 'recaptcha-anchor'
+        return unless d.hasFocus() and (checkbox = $.id 'recaptcha-anchor')
         checkbox.focus() unless d.activeElement is checkbox
 
   shouldFocus: false
