@@ -353,6 +353,7 @@ QR =
     post[if isText then 'pasteText' else 'setFile'] file
 
   openFileInput: ->
+    return if QR.nodes.fileButton.disabled
     QR.nodes.fileInput.click()
 
   generatePostableThreadsList: ->
@@ -400,6 +401,7 @@ QR =
     setNode 'charCount',     '#char-count'
     setNode 'fileSubmit',    '#file-n-submit'
     setNode 'fileButton',    '#qr-file-button'
+    setNode 'noFile',        '#qr-no-file'
     setNode 'filename',      '#qr-filename'
     setNode 'fileRM',        '#qr-filerm'
     setNode 'spoiler',       '#qr-file-spoiler'
@@ -468,6 +470,7 @@ QR =
       $.add nodes.form, nodes.flashTag
 
     $.on nodes.fileButton, 'click',  QR.openFileInput
+    $.on nodes.noFile,     'click',  QR.openFileInput
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'

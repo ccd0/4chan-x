@@ -83,7 +83,6 @@ QR.post = class
     for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler'] when node = QR.nodes[name]
       node.disabled = lock
     @nodes.rm.style.visibility = if lock then 'hidden' else ''
-    (if lock then $.off else $.on) QR.nodes.filename.previousElementSibling, 'click', QR.openFileInput
     @nodes.spoiler.disabled = lock
     @nodes.el.draggable = !lock
 
