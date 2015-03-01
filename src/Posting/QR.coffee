@@ -326,6 +326,7 @@ QR =
   handleUrl:  ->
     url = prompt 'Enter a URL:'
     return if url is null
+    QR.nodes.fileButton.focus()
     CrossOrigin.file url, (blob) ->
       if blob
         QR.handleFiles([blob])
@@ -341,6 +342,8 @@ QR =
     for file in files
       QR.handleFile file, files.length
     $.addClass QR.nodes.el, 'dump' unless files.length is 1
+    if d.activeElement is QR.nodes.fileButton and $.hasClass QR.nodes.fileSubmit, 'has-file'
+      QR.nodes.filename.focus()
 
   handleFile: (file, nfiles) ->
     isText = /^text\//.test file.type
@@ -355,6 +358,7 @@ QR =
   openFileInput: ->
     return if QR.nodes.fileButton.disabled
     QR.nodes.fileInput.click()
+    QR.nodes.fileButton.focus()
 
   generatePostableThreadsList: ->
     return unless QR.nodes
