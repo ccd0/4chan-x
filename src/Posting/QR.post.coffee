@@ -151,7 +151,8 @@ QR.post = class
       @save node
     return
 
-  @rmErrored: ->
+  @rmErrored: (e) ->
+    e.stopPropagation()
     for post in QR.posts by -1 when errors = post.errors
       for error in errors when doc.contains error
         post.rm()
@@ -163,7 +164,11 @@ QR.post = class
     $.extend div, <%= html('${message}<br>[<a href="javascript:;">delete</a>] [<a href="javascript:;">delete all</a>]') %>
     (@errors or= []).push div
     [rm, rmAll] = $$ 'a', div
-    $.on rm, 'click', => @rm() if @ in QR.posts
+    $.on div, 'click', =>
+      @select() if @ in QR.posts
+    $.on rm, 'click', (e) =>
+      e.stopPropagation()
+      @rm() if @ in QR.posts
     $.on rmAll, 'click', QR.post.rmErrored
     QR.error div
 
