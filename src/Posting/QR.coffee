@@ -338,93 +338,19 @@ QR =
       @value = null
     return unless files.length
     QR.cleanNotifications()
-    for file, i in files
-      QR.handleFile file, i, files.length
+    for file in files
+      QR.handleFile file, files.length
     $.addClass QR.nodes.el, 'dump' unless files.length is 1
 
-  handleFile: (file, index, nfiles) ->
-    isSingle = nfiles is 1
-    if /^text\//.test file.type
-      if isSingle
-        post = QR.selected
-      else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).com
-        post = new QR.post()
-      post.pasteText file
-      return
-    unless file.type in QR.mimeTypes
-      QR.error "#{file.name}: Unsupported file type."
-      return unless isSingle
-    max = QR.nodes.fileInput.max
-    max = Math.min(max, QR.max_size_video) if /^video\//.test file.type
-    if file.size > max
-      QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
-      return unless isSingle
-    isNewPost = false
-    if isSingle
+  handleFile: (file, nfiles) ->
+    isText = /^text\//.test file.type
+    if nfiles is 1
       post = QR.selected
-    else if index isnt 0 or (post = QR.posts[QR.posts.length - 1]).file
-      isNewPost = true
-      post = new QR.post()
-    QR.checkDimensions file, (pass, el) ->
-      if pass or isSingle
-        post.setFile file, el
-      else if isNewPost
-        post.rm()
-        URL.revokeObjectURL el.src if el
-
-  checkDimensions: (file, cb) ->
-    if /^image\//.test file.type
-      img = new Image()
-      img.onload = ->
-        {height, width} = img
-        pass = true
-        if height > QR.max_height or width > QR.max_width
-          QR.error "#{file.name}: Image too large (image: #{height}x#{width}px, max: #{QR.max_height}x#{QR.max_width}px)"
-          pass = false
-        if height < QR.min_height or width < QR.min_width
-          QR.error "#{file.name}: Image too small (image: #{height}x#{width}px, min: #{QR.min_height}x#{QR.min_width}px)"
-          pass = false
-        cb pass, img
-      img.onerror = ->
-        cb false, null
-      img.src = URL.createObjectURL file
-    else if /^video\//.test file.type
-      video = $.el 'video'
-      $.on video, 'loadeddata', ->
-        return unless cb
-        {videoHeight, videoWidth, duration} = video
-        max_height = Math.min(QR.max_height, QR.max_height_video)
-        max_width = Math.min(QR.max_width, QR.max_width_video)
-        pass = true
-        if videoHeight > max_height or videoWidth > max_width
-          QR.error "#{file.name}: Video too large (video: #{videoHeight}x#{videoWidth}px, max: #{max_height}x#{max_width}px)"
-          pass = false
-        if videoHeight < QR.min_height or videoWidth < QR.min_width
-          QR.error "#{file.name}: Video too small (video: #{videoHeight}x#{videoWidth}px, min: #{QR.min_height}x#{QR.min_width}px)"
-          pass = false
-        unless isFinite duration
-          QR.error "#{file.name}: Video lacks duration metadata (try remuxing)"
-          pass = false
-        else if duration > QR.max_duration_video
-          QR.error "#{file.name}: Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
-          pass = false
-        if g.BOARD.ID not in ['gif', 'wsg'] and $.hasAudio video
-          QR.error "#{file.name}: Audio not allowed"
-          pass = false
-        cb pass, video
-        cb = null
-      $.on video, 'error', ->
-        return unless cb
-        if file.type in QR.mimeTypes
-          # only report error here if we should have been able to play the video
-          # otherwise "unsupported type" should already have been shown
-          QR.error "#{file.name}: Video appears corrupt"
-        URL.revokeObjectURL file
-        cb false, null
-        cb = null
-      video.src = URL.createObjectURL file
     else
-      cb true, null
+      post = QR.posts[QR.posts.length - 1]
+      if post[if isText then 'com' else 'file']
+        post = new QR.post()
+    post[if isText then 'pasteText' else 'setFile'] file
 
   openFileInput: ->
     QR.nodes.fileInput.click()

@@ -75,6 +75,7 @@ QR.post = class
   delete: ->
     $.rm @nodes.el
     URL.revokeObjectURL @URL
+    @dismissErrors()
 
   lock: (lock=true) ->
     @isLocked = lock
@@ -151,9 +152,35 @@ QR.post = class
       @save node
     return
 
-  setFile: (@file, el) ->
+  @rmErrored: ->
+    for post in QR.posts by -1 when errors = post.errors
+      for error in errors when doc.contains error
+        post.rm()
+        break
+    return
+
+  error: (className, message) ->
+    div = $.el 'div', {className}
+    $.extend div, <%= html('${message}<br>[<a href="javascript:;">delete</a>] [<a href="javascript:;">delete all</a>]') %>
+    (@errors or= []).push div
+    [rm, rmAll] = $$ 'a', div
+    $.on rm, 'click', => @rm() if @ in QR.posts
+    $.on rmAll, 'click', QR.post.rmErrored
+    QR.error div
+
+  fileError: (message) ->
+    @error 'file-error', "#{@filename}: #{message}"
+
+  dismissErrors: (test = -> true) ->
+    if @errors
+      for error in @errors when doc.contains(error) and test error
+        error.parentNode.previousElementSibling.click()
+    return
+
+  setFile: (@file) ->
     @filename = @file.name
     @filesize = $.bytesToString @file.size
+    @checkSize()
     @nodes.label.hidden = false if QR.spoiler
     QR.captcha.onPostChange()
     URL.revokeObjectURL @URL
@@ -161,10 +188,57 @@ QR.post = class
       @showFileData()
     else
       @updateFilename()
-    if el
+    @nodes.el.style.backgroundImage = null
+    unless @file.type in QR.mimeTypes
+      @fileError 'Unsupported file type.'
+    else if /^(image|video)\//.test @file.type
+      @readFile()
+
+  checkSize: ->
+    max = QR.nodes.fileInput.max
+    max = Math.min(max, QR.max_size_video) if /^video\//.test @file.type
+    if @file.size > max
+      @fileError "File too large (file: #{@filesize}, max: #{$.bytesToString max})."
+
+  readFile: ->
+    isVideo = /^video\//.test @file.type
+    el = $.el(if isVideo then 'video' else 'img')
+    event = if isVideo then 'loadeddata' else 'load'
+    onload = =>
+      $.off el, event, onload
+      $.off el, 'error', onerror
+      @checkDimensions el
       @setThumbnail el
+    onerror = =>
+      $.off el, event, onload
+      $.off el, 'error', onerror
+      @fileError "#{if isVideo then 'Video' else 'Image'} appears corrupt"
+      URL.revokeObjectURL el.src
+    $.on el, event, onload
+    $.on el, 'error', onerror
+    el.src = URL.createObjectURL @file
+
+  checkDimensions: (el) ->
+    if el.tagName is 'IMG'
+      {height, width} = el
+      if height > QR.max_height or width > QR.max_width
+        @fileError "Image too large (image: #{height}x#{width}px, max: #{QR.max_height}x#{QR.max_width}px)"
+      if height < QR.min_height or width < QR.min_width
+        @fileError "Image too small (image: #{height}x#{width}px, min: #{QR.min_height}x#{QR.min_width}px)"
     else
-      @nodes.el.style.backgroundImage = null
+      {videoHeight, videoWidth, duration} = el
+      max_height = Math.min(QR.max_height, QR.max_height_video)
+      max_width  = Math.min(QR.max_width,  QR.max_width_video)
+      if videoHeight > max_height or videoWidth > max_width
+        @fileError "Video too large (video: #{videoHeight}x#{videoWidth}px, max: #{max_height}x#{max_width}px)"
+      if videoHeight < QR.min_height or videoWidth < QR.min_width
+        @fileError "Video too small (video: #{videoHeight}x#{videoWidth}px, min: #{QR.min_height}x#{QR.min_width}px)"
+      unless isFinite duration
+        @fileError 'Video lacks duration metadata (try remuxing)'
+      else if duration > QR.max_duration_video
+        @fileError "Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
+      if g.BOARD.ID not in ['gif', 'wsg'] and $.hasAudio el
+        @fileError 'Audio not allowed'
 
   setThumbnail: (el) ->
     # Create a redimensioned thumbnail.
@@ -185,6 +259,7 @@ QR.post = class
         @URL = el.src
         @nodes.el.style.backgroundImage = "url(#{@URL})"
         return
+
     if height <= width
       width  = s / height * width
       height = s
@@ -211,6 +286,7 @@ QR.post = class
     @nodes.label.hidden = true if QR.spoiler
     @showFileData()
     URL.revokeObjectURL @URL
+    @dismissErrors (error) -> $.hasClass error, 'file-error'
 
   updateFilename: ->
     long = "#{@filename} (#{@filesize})"
