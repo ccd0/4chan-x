@@ -2,6 +2,16 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+### v1.10.3
+
+**v1.10.3.0** *(2015-03-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Make the filename in the Quick Reply editable immediately without having to Control+click it.
+- Add a "Files" button which can be used to open the file picker even if a file has already been selected. This also fixes issues with opening the file picker via keyboard on Firefox.
+- Move the spoiler checkbox into the box containing the filename.
+- Always merely warn about disallowed file types / sizes / dimensions, rather than outright preventing them from being posted. Links to `[delete]` and `[delete all]` such posts have been added to the warning messages to make removing the files from a dumplist convenient.
+- Remove the "low on cached captchas" notifications as the 2-minute captcha expiry time has made them more annoying than useful.
+- Minor bugfixes.
+
 ### v1.10.2
 
 **v1.10.2.8** *(2015-02-28)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.8/builds/4chan-X-noupdate.crx "Chromium version")]
