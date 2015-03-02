@@ -1292,6 +1292,7 @@ input.field.tripped:not(:hover):not(:focus) {
 input#qr-filename {
   border: none !important;
   background: none !important;
+  outline: none;
 }
 #qr-filename,
 .has-file #qr-no-file {
