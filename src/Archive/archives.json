@@ -71,4 +71,13 @@
   "boards": ["an", "fit", "gif", "int", "mlp", "out", "r9k", "qa", "toy"],
   "files": ["an", "fit", "gif", "int", "mlp", "out", "r9k", "qa", "toy"],
   "imagehosts": ["http://imcute.yt/"]
+}, {
+  "uid": 22,
+  "name": "not4plebs",
+  "domain": "totally.not4plebs.org",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["sp"],
+  "files": ["sp"]
 }]
