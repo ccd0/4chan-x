@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.3
 
+**v1.10.3.3** *(2015-03-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix gallery menu closing during slideshow.
+
 **v1.10.3.2** *(2015-03-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix highlighting of filename field when selected.
 
