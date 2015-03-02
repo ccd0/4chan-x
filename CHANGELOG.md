@@ -2544,6 +2544,8 @@ Based on v1.5.2. The changes of v1.6.x were completely reverted, except those re
 ## v1.6.0 
 *2014-04-06*
 
+Historical note: v1.6.0 was my (ccd0's) attempt to rebase the script on a version of 4chan X that Zixaphir had been keeping up to date. It proved to be more buggy than v1.5.2, which I soon reverted back to.
+
 **MayhemYDG**:
 - Thread and post hiding changes:
  - The posts' menu now has a label entry listing the reasons why a post got hidden or highlighted.
