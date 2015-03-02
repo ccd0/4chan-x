@@ -2,6 +2,7 @@
 * text=auto
 
 builds/* -text
+text eol=lf
 
 # Custom for Visual Studio
 *.cs     diff=csharp
