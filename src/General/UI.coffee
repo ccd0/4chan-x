@@ -65,7 +65,8 @@ UI = do ->
 
       $.addClass lastToggledButton, 'active'
 
-      $.on d, 'click scroll CloseMenu', @close
+      $.on d, 'click CloseMenu', @close
+      $.on d, 'scroll', @close unless @type is 'gallery'
       $.add button, menu
 
       # Position
