@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.3
 
+**v1.10.3.4** *(2015-03-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.2.9: (pleebe) Add not4plebs archive.
+
 **v1.10.3.3** *(2015-03-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix gallery menu closing during slideshow.
 
@@ -22,6 +25,9 @@ The links to individual versions below are to copies of the script with the upda
 - Minor bugfixes.
 
 ### v1.10.2
+
+**v1.10.2.9** *(2015-03-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.9/builds/4chan-X-noupdate.crx "Chromium version")]
+- (pleebe) Add not4plebs archive.
 
 **v1.10.2.8** *(2015-02-28)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.8/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix v1.10.2.0's unintentional increase in the number of tabs needed to get to submit button.
