@@ -210,6 +210,7 @@ module.exports = (grunt) ->
         src: 'testbuilds/crx<%= pkg.meta.suffix.noupdate %>/*'
         dest: '/'
         date: '<%= pkg.meta.date %>'
+        mode: parseInt('644', 8)
 
     clean:
       builds: 'builds'
