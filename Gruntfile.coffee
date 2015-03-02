@@ -209,6 +209,7 @@ module.exports = (grunt) ->
         flatten: true
         src: 'testbuilds/crx<%= pkg.meta.suffix.noupdate %>/*'
         dest: '/'
+        date: '<%= pkg.meta.date %>'
 
     clean:
       builds: 'builds'
@@ -376,6 +377,7 @@ module.exports = (grunt) ->
     pkg = grunt.file.readJSON 'package.json'
     oldversion = pkg.meta.version
     pkg.meta.version = version
+    pkg.meta.date = new Date()
     grunt.config 'pkg', pkg
     grunt.file.write 'package.json', JSON.stringify(pkg, null, 2) + '\n'
     grunt.log.ok "Version updated from v#{oldversion} to v#{version}."
