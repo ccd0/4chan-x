@@ -32,7 +32,7 @@
 .field:hover {
   border-color: #999;
 }
-.field:hover, .field:focus {
+.field:hover, .field:focus, .field.focus {
   color: #000;
 }
 .field[disabled] {

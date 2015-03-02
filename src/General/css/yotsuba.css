@@ -3,7 +3,8 @@
   background-color: #F0E0D6;
   border-color: #D9BFB7;
 }
-:root.yotsuba .field:focus {
+:root.yotsuba .field:focus,
+:root.yotsuba .field.focus {
   border-color: #EA8;
 }
 

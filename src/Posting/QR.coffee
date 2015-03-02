@@ -475,6 +475,8 @@ QR =
 
     $.on nodes.fileButton, 'click',  QR.openFileInput
     $.on nodes.noFile,     'click',  QR.openFileInput
+    $.on nodes.filename,   'focus',  -> $.addClass @parentNode, 'focus'
+    $.on nodes.filename,   'blur',   -> $.rmClass  @parentNode, 'focus'
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'

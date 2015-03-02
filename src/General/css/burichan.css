@@ -3,7 +3,8 @@
   background-color: #D6DAF0;
   border-color: #B7C5D9;
 }
-:root.burichan .field:focus {
+:root.burichan .field:focus,
+:root.burichan .field.focus {
   border-color: #98E;
 }
 

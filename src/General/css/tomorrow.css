@@ -92,7 +92,8 @@
   color: rgb(197,200,198);
   border-color: rgb(40, 41, 42);
 }
-:root.tomorrow #qr .field:focus {
+:root.tomorrow #qr .field:focus,
+:root.tomorrow #qr .field.focus {
   border-color: rgb(129, 162, 190) !important;
   background-color: rgb(30,32,36);
 }
