@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.3
 
+**v1.10.3.5** *(2015-03-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Remove focus outlines around links only when they were focused with the mouse.
+
 **v1.10.3.4** *(2015-03-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.10.2.9: (pleebe) Add not4plebs archive.
 
@@ -14,7 +17,7 @@ The links to individual versions below are to copies of the script with the upda
 - Fix highlighting of filename field when selected.
 
 **v1.10.3.1** *(2015-03-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.1/builds/4chan-X-noupdate.crx "Chromium version")]
-- Fix outline around images in gallery.
+- Remove outline around images in gallery.
 
 **v1.10.3.0** *(2015-03-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Make the filename in the Quick Reply editable immediately without having to Control+click it.
@@ -22,6 +25,7 @@ The links to individual versions below are to copies of the script with the upda
 - Move the spoiler checkbox into the box containing the filename.
 - Always merely warn about disallowed file types / sizes / dimensions, rather than outright preventing them from being posted. Links to `[delete]` and `[delete all]` such posts have been added to the warning messages to make removing the files from a dumplist convenient.
 - Remove the "low on cached captchas" notifications as the 2-minute captcha expiry time has made them more annoying than useful.
+- Stop hiding focus outlines around links.
 - Minor bugfixes.
 
 ### v1.10.2
