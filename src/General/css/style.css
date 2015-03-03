@@ -1710,7 +1710,6 @@ grunt.file.expand('src/General/img/links/*.png').map(function(file) {
   margin: auto;
   line-height: 0;
   max-width: 100%;
-  outline: none;
 }
 :root.gal-pdf .gal-image a {
   width: 100%;
