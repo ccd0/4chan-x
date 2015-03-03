@@ -105,6 +105,11 @@ Main =
     $.addClass doc, if chrome? then 'blink' else 'gecko'
     $.addStyle Main.css, 'fourchanx-css'
 
+    mouse = false
+    $.on d, 'mousedown', -> mouse = true
+    $.on d, 'keydown',   -> mouse = false
+    window.addEventListener 'focus', (-> doc.classList.toggle 'mouse-focus', mouse), true
+
     Main.setClass()
 
   setClass: ->
