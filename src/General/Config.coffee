@@ -10,6 +10,11 @@ Config =
         'Link to <%= meta.name %>\'s catalog instead of the native 4chan one.'
         1
       ]
+      'Index Refresh Notifications': [
+        false
+        'Show a notice at the top of the page when the index is refreshed.'
+        1
+      ]
       'External Catalog': [
         false
         'Link to external catalog instead of the internal one.'

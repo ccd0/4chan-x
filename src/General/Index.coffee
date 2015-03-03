@@ -414,13 +414,17 @@ Index =
     Index.req?.abort()
     Index.notice?.close()
 
-    # This notice only displays if Index Refresh is taking too long
-    now = Date.now()
-    $.ready ->
-      Index.nTimeout = setTimeout (->
-        if Index.req and !Index.notice
-          Index.notice = new Notice 'info', 'Refreshing index...', 2
-      ), 3 * $.SECOND - (Date.now() - now)
+    if Conf['Index Refresh Notifications'] and d.readyState isnt 'loading'
+      # Optional notification for manual refreshes
+      Index.notice = new Notice 'info', 'Refreshing index...'
+    else
+      # Also display notice if Index Refresh is taking too long
+      now = Date.now()
+      $.ready ->
+        Index.nTimeout = setTimeout (->
+          if Index.req and !Index.notice
+            Index.notice = new Notice 'info', 'Refreshing index...'
+        ), 3 * $.SECOND - (Date.now() - now)
 
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
       onloadend: (e) -> Index.load e, state
@@ -466,6 +470,14 @@ Index =
       else
         new Notice 'error', 'Index refresh failed.', 1
       return
+
+    if notice
+      if Conf['Index Refresh Notifications']
+        notice.setType 'success'
+        notice.el.lastElementChild.textContent = 'Index refreshed!'
+        setTimeout notice.close, $.SECOND
+      else
+        notice.close()
 
     timeEl = $ '#index-last-refresh time', Index.navLinks
     timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
