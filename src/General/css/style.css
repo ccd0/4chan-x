@@ -1286,12 +1286,10 @@ input.field.tripped:not(:hover):not(:focus) {
   padding: 0;
 }
 #qr-file-button {
-  -webkit-flex: .1 .1 40px;
-  flex: .1 .1 40px;
+  width: 15%;
 }
 #file-n-submit input[type="submit"] {
-  -webkit-flex: .25 .25 40px;
-  flex: .25 .25 40px;
+  width: 25%;
 }
 #qr-filename-container {
   -webkit-flex: 1 1 auto;
