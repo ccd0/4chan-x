@@ -367,7 +367,7 @@ QR =
     for thread in g.BOARD.threads.keys
       options.push $.el 'option',
         value: thread
-        textContent: "Thread No.#{thread}"
+        textContent: "Thread #{thread}"
     val = list.value
     $.rmAll list
     $.add list, options
