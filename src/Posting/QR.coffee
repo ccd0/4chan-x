@@ -433,6 +433,7 @@ QR =
     if (e.ctrlKey or e.metaKey) and e.type is 'click'
       $.addClass QR.nodes.filename, 'edit'
       QR.nodes.filename.focus()
+      return
     return if e.target.nodeName is 'INPUT' or (e.keyCode and e.keyCode not in [32, 13]) or e.ctrlKey
     e.preventDefault()
     QR.nodes.fileInput.click()
