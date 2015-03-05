@@ -1275,7 +1275,8 @@ input.field.tripped:not(:hover):not(:focus) {
   align-items: stretch;
   margin-top: 1px;
 }
-:root.gecko #file-n-submit > input {
+:root.gecko #file-n-submit > input,
+:root.gecko #qr > form > select {
   margin: 0px -1px -1px;
 }
 #file-n-submit input[type="submit"] {
