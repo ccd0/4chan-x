@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.2
 
+**v1.10.2.10** *(2015-03-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.10/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix Command+click to edit filename on OS X.
+
 **v1.10.2.9** *(2015-03-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.9/builds/4chan-X-noupdate.crx "Chromium version")]
 - (pleebe) Add not4plebs archive.
 
