@@ -97,6 +97,10 @@
   border-color: rgb(129, 162, 190) !important;
   background-color: rgb(30,32,36);
 }
+:root.tomorrow #qr select,
+:root.tomorrow #file-n-submit > input {
+  border-color: rgb(40, 41, 42);
+}
 :root.tomorrow #qr-filename {
   color: rgb(197,200,198);
 }

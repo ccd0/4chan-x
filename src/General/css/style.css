@@ -1273,14 +1273,25 @@ input.field.tripped:not(:hover):not(:focus) {
   display: flex;
   -webkit-align-items: stretch;
   align-items: stretch;
+  height: 1.7em;
   margin-top: 1px;
 }
-:root.gecko #file-n-submit > input,
-:root.gecko #qr > form > select {
-  margin: 0px -1px -1px;
+#file-n-submit > input {
+  background: linear-gradient(to bottom, #F8F8F8, #DCDCDC) no-repeat;
+  border: 1px solid #BBB;
+  border-radius: 2px;
+}
+#file-n-submit > input::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+#qr-file-button {
+  -webkit-flex: .1 .1 40px;
+  flex: .1 .1 40px;
 }
 #file-n-submit input[type="submit"] {
-  width: 25%;
+  -webkit-flex: .25 .25 40px;
+  flex: .25 .25 40px;
 }
 #qr-filename-container {
   -webkit-flex: 1 1 auto;
@@ -1343,9 +1354,16 @@ input#qr-filename {
   opacity: 0.27;
 }
 
-/* Thread Select */
+/* Thread and Flash Tag Select */
+#qr select {
+  background: white;
+  border: 1px solid #CCC;
+}
 #qr select[data-name="thread"] {
   float: right;
+}
+#qr > form > select {
+  margin-top: 1px;
 }
 
 /* Dumping UI */
