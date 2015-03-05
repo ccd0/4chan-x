@@ -2,43 +2,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
-### v1.10.3
-
-**v1.10.3.8** *(2015-03-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.8/builds/4chan-X-noupdate.crx "Chromium version")]
-- Make the Quick Reply look more consistent across browsers/platforms.
-
-**v1.10.3.7** *(2015-03-04)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.7/builds/4chan-X-noupdate.crx "Chromium version")]
-- Fix alignment of /f/ tag selector.
-- Change "Thread No." in thread selector to just "Thread".
-
-**v1.10.3.6** *(2015-03-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.6/builds/4chan-X-noupdate.crx "Chromium version")]
-- Restore index notifications for users who select the new option `Index Refresh Notifications` (off by default).
-
-**v1.10.3.5** *(2015-03-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.5/builds/4chan-X-noupdate.crx "Chromium version")]
-- Remove focus outlines around links only when they were focused with the mouse.
-
-**v1.10.3.4** *(2015-03-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.4/builds/4chan-X-noupdate.crx "Chromium version")]
-- Merge v1.10.2.9: (pleebe) Add not4plebs archive.
-
-**v1.10.3.3** *(2015-03-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.3/builds/4chan-X-noupdate.crx "Chromium version")]
-- Fix gallery menu closing during slideshow.
-
-**v1.10.3.2** *(2015-03-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.2/builds/4chan-X-noupdate.crx "Chromium version")]
-- Fix highlighting of filename field when selected.
-
-**v1.10.3.1** *(2015-03-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.1/builds/4chan-X-noupdate.crx "Chromium version")]
-- Remove outline around images in gallery.
-
-**v1.10.3.0** *(2015-03-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.0/builds/4chan-X-noupdate.crx "Chromium version")]
-- Make the filename in the Quick Reply editable immediately without having to Control+click it.
-- Add a "Files" button which can be used to open the file picker even if a file has already been selected. This also fixes issues with opening the file picker via keyboard on Firefox.
-- Move the spoiler checkbox into the box containing the filename.
-- Always merely warn about disallowed file types / sizes / dimensions, rather than outright preventing them from being posted. Links to `[delete]` and `[delete all]` such posts have been added to the warning messages to make removing the files from a dumplist convenient.
-- Remove the "low on cached captchas" notifications as the 2-minute captcha expiry time has made them more annoying than useful.
-- Stop hiding focus outlines around links.
-- Minor bugfixes.
-
 ### v1.10.2
+
+**v1.10.2.10** *(2015-03-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.10/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix Command+click to edit filename on OS X.
 
 **v1.10.2.9** *(2015-03-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.2.9/builds/4chan-X-noupdate.crx "Chromium version")]
 - (pleebe) Add not4plebs archive.
@@ -2546,92 +2513,7 @@ Remove /v/ from stable Foolz archive.
 ## v1.7.0 
 *2014-04-06*
 
-Based on v1.5.2. The changes of v1.6.x were completely reverted, except those relisted below.
-
 **Zixaphir** 
-- Reload captcha if there are posts in the queue.
-
-**ccd0**
-- In v1.5.1, image/video hover was changed to hide and re-use the images/videos to avoid crashes.
-  Fixing bugs caused by this change.
-
-**duckness**
-- Allow disabling upgrade nag message.
-
-### v1.6.1 
-*2014-04-06*
-
-- Restore `Quoted Title` (had been removed in 1.6.0 but option left)
-- Fixed auto-hide permanently hiding the header
-
-## v1.6.0 
-*2014-04-06*
-
-Historical note: v1.6.0 was my (ccd0's) attempt to rebase the script on a version of 4chan X that Zixaphir had been keeping up to date. It proved to be more buggy than v1.5.2, which I soon reverted back to.
-
-**MayhemYDG**:
-- Thread and post hiding changes:
- - The posts' menu now has a label entry listing the reasons why a post got hidden or highlighted.
- - `Thread Hiding` and `Reply Hiding` settings are merged into one: `Post Hiding`.
- - `Thread Hiding Link` and `Reply Hiding Link` settings are merged into one: `Post Hiding Link`.
- - Hiding a thread removes it from the index in `Paged` or `All threads` modes.
- <ul>
-  <li> Hidden threads can be seen by clicking the `[Show]` button the the top of the index.
-  <li> The `Anchor Hidden Threads` setting has been removed.
- </ul>
-- Added `Image Size` setting for the catalog.
-- Added `Open threads in a new tab` setting for the catalog.
-- Added `board-mode:"type"` and `board-sort:"type"` parameters to custom board navigation.
-- Added OP name/date tooltip in the catalog.
-- Added a keybind to cycle through index sort types, `Ctrl+x` by default.
-- Added keybindings for index modes, `Ctrl+{1,2,3}` by default.
-- `Index Mode` and `Index Sort` have been moved out of the header's menu into the index page.
-- Minor captcha fixes.
-- Backlinks now also get quote markers.
-- Multiple markers are now more compact, for example `>>123 (You/OP)` instead of `>>123 (You) (OP)`.
-- New setting: `Image Hover in Catalog`
- - Like `Image Hover`, but for the catalog only.
-- Added `Archive link` to the Custom Board Navigation Rice
-- Added a setting to configure the number of threads per page for the paged mode of the index.
-- Dropped support for the official catalog.
-- More index navigation improvements:
- - Threads in catalog mode have the usual menu.
- - When in catalog mode, the menu now also allows to pin/unpin threads.
- - The index will now display how many threads are hidden.
- - When in catalog mode, you can toggle between hidden/non-hidden threads.
- - New index mode: `catalog`<br>
-  ![catalog mode](img/1.6.0.png)
- - When in catalog mode, use `Shift+Click` to hide, and `Alt+Click` to pin threads.
- - Existing features affect the catalog mode such as:
- <ul>
-  <li> Filter (hiding, highlighting)
-  <li> Thread Hiding
-  <li> Linkify
-  <li> Thumbnail Replacemenu
-  <li> Image Hover
- </ul>
- - Support for the official catalog will be removed in the future, once the catalog mode for the index is deemed satisfactory.
-- Added `Original filename` variable to Sauce panel.
-- Fixed a bug which prevented QR cooldowns from being pruned from storage.
- - On Chrome, the storage could reach the quota and prevent 4chan X from saving data like QR name/mail or auto-watch for example.
-- Clicking on the border of the Header will not toggle `Header auto-hide` anymore.
-  You can still change the setting in the Header menu &rarr; Header.
-- Bugfixes
-- WebM support fixes.
-
-**Vampiricwulf**
-- Flash embedding and other Flash features.
-
-**Zixaphir** 
-- Update Custom Navigation legend to reflect index mode changes.
-- JSON Navigation now works for backlinks (when Quote Inlining is disabled) and backlink hashlinks.
-- JSON Navigation (Index, Catalog) performance improvements.
-- Added a nifty bread-crumb for the JSON Navigation.
-- Added a return button to the JSON Navigation that will switch you back to non-catalog view (requires NavLinks not to be hidden).
-- Rewrote "Scroll to post quoting you" functionality, solving several small issues with it.
-- Improved Linkifier link detection.
-- Fixed an issue with Thread Updater intervals not saving correctly.
-- Many spiffy performance, state awareness, and sanity improvements to JSON Navigation.
 - Reload captcha if there are posts in the queue.
 
 **ccd0**
