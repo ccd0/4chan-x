@@ -164,10 +164,11 @@ module.exports = (grunt) ->
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to stable channel."
           git checkout -
         """.split('\n').join('&&')
+      'commit-web':
+        command: 'git commit -am "Build web page."'
       web:
         command: """
           git fetch --tags
-          git commit -am "Build web page."
           git checkout gh-pages
           git pull
           git merge --no-commit -s ours -
@@ -370,6 +371,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'web', [
     'markdown:web'
     'copy:web'
+    'shell:commit-web'
     'shell:web'
   ]
 
