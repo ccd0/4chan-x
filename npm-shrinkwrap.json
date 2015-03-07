@@ -197,6 +197,16 @@
         }
       }
     },
+    "grunt-checkbranch": {
+      "version": "0.3.1",
+      "resolved": "https://registry.npmjs.org/grunt-checkbranch/-/grunt-checkbranch-0.3.1.tgz",
+      "dependencies": {
+        "shelljs": {
+          "version": "0.3.0",
+          "resolved": "https://registry.npmjs.org/shelljs/-/shelljs-0.3.0.tgz"
+        }
+      }
+    },
     "grunt-concurrent": {
       "version": "1.0.0",
       "resolved": "https://registry.npmjs.org/grunt-concurrent/-/grunt-concurrent-1.0.0.tgz",
