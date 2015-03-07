@@ -183,6 +183,17 @@ module.exports = (grunt) ->
           ./node_modules/.bin/npm-shrinkwrap --dev
         """.split('\n').join('&&')
 
+    webstore_upload:
+      accounts:
+        default:
+          publish: true
+          client_id: '<%= grunt.file.readJSON("../"+pkg.name+"-keys/chrome-store.json").installed.client_id %>'
+          client_secret: '<%= grunt.file.readJSON("../"+pkg.name+"-keys/chrome-store.json").installed.client_secret %>'
+      extensions:
+        extension:
+          appID: '<%= pkg.meta.chromeStoreID %>'
+          zip: 'builds/<%= pkg.name %>.zip'
+
     watch:
       options:
         interrupt: true
@@ -374,6 +385,10 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'push', [
     'shell:push'
+  ]
+
+  grunt.registerTask 'store', [
+    'webstore_upload'
   ]
 
   grunt.registerTask 'setversion', 'Set the version number', (version) ->

@@ -1027,6 +1027,24 @@
         }
       }
     },
+    "grunt-webstore-upload": {
+      "version": "0.8.2",
+      "resolved": "https://registry.npmjs.org/grunt-webstore-upload/-/grunt-webstore-upload-0.8.2.tgz",
+      "dependencies": {
+        "lodash": {
+          "version": "2.4.1",
+          "resolved": "https://registry.npmjs.org/lodash/-/lodash-2.4.1.tgz"
+        },
+        "open": {
+          "version": "0.0.5",
+          "resolved": "https://registry.npmjs.org/open/-/open-0.0.5.tgz"
+        },
+        "q": {
+          "version": "1.2.0",
+          "resolved": "https://registry.npmjs.org/q/-/q-1.2.0.tgz"
+        }
+      }
+    },
     "load-grunt-tasks": {
       "version": "3.1.0",
       "resolved": "https://registry.npmjs.org/load-grunt-tasks/-/load-grunt-tasks-3.1.0.tgz",
