@@ -63,11 +63,14 @@
     "type": "git",
     "url": "https://github.com/ccd0/4chan-x.git"
   },
-  "author": "seaweedchan <jtbates@asu.edu>",
   "contributors": [
-    "Zixaphir<zixaphirmoxphar@gmail.com>",
+    "James Campos <james.r.campos@gmail.com>",
     "Nicolas Stepien <stepien.nicolas@gmail.com>",
-    "James Campos <james.r.campos@gmail.com>"
+    "ihavenoface <noface@outlook.com>",
+    "Zixaphir <zixaphirmoxphar@gmail.com>",
+    "seaweedchan <jtbates@asu.edu>",
+    "Kabir Sala <spittiepie@gmail.com>",
+    "ccd0 <admin@containerchan.org>"
   ],
   "license": "MIT",
   "readmeFilename": "README.md",
