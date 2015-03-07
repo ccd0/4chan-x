@@ -358,12 +358,10 @@ module.exports = (grunt) ->
     ]
 
   grunt.registerTask 'beta', [
-    'checkbranch:master'
     'shell:beta'
   ]
 
   grunt.registerTask 'stable', [
-    'checkbranch:bstable'
     'shell:stable'
   ]
 
