@@ -105,10 +105,10 @@ Main =
     $.addClass doc, if chrome? then 'blink' else 'gecko'
     $.addStyle Main.css, 'fourchanx-css'
 
-    mouse = false
-    $.on d, 'mousedown', -> mouse = true
-    $.on d, 'keydown',   -> mouse = false
-    window.addEventListener 'focus', (-> doc.classList.toggle 'mouse-focus', mouse), true
+    keyboard = false
+    $.on d, 'mousedown', -> keyboard = false
+    $.on d, 'keydown', (e) -> keyboard = true if e.keyCode is 9 # tab
+    window.addEventListener 'focus', (-> doc.classList.toggle 'keyboard-focus', keyboard), true
 
     Main.setClass()
 

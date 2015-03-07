@@ -64,7 +64,7 @@ a[href="javascript:;"] {
 body.hasDropDownNav{
   margin-top: 5px;
 }
-:root.mouse-focus a {
+:root:not(.keyboard-focus) a {
   outline: none;
 }
 .painted {
