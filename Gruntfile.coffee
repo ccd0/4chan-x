@@ -143,7 +143,6 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       beta:
         command: """
-          git fetch --tags
           git tag -af beta -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git checkout gh-pages
           git pull
@@ -154,7 +153,6 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       stable:
         command: """
-          git fetch --tags
           git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git checkout gh-pages
           git pull
@@ -166,7 +164,6 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       web:
         command: """
-          git fetch --tags
           git commit -am "Build web page."
           git checkout gh-pages
           git pull
