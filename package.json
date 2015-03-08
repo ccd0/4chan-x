@@ -55,7 +55,7 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-crx": "^0.3.4",
     "grunt-markdown": "^0.7.0",
-    "grunt-shell": "^1.1.1",
+    "grunt-shell": "^1.1.2",
     "grunt-webstore-upload": "^0.8.2",
     "load-grunt-tasks": "^3.1.0",
     "npm-shrinkwrap": "^5.2.0"
