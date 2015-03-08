@@ -2,47 +2,11 @@
 <html><head>
 <meta charset="utf-8">
 <title>4chan X</title>
-<style>
-body {
-  font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
-}
-h1 {
-  text-align: center;
-  background-color: #eee;
-}
-img.screenshot {
-  display: block;
-  margin: auto;
-  width: 640px;
-  max-width: 100%;
-}
-@media (min-width: 1120px) {
-  img.screenshot {
-    float: right;
-    margin-left: 8px;
-  }
-}
-img.hover {
-  display: none;
-}
-a:hover + img.hover {
-  display: block;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin: auto;
-  max-width: 100%;
-  max-height: 100%;
-  pointer-events: none;
-  box-shadow: 5px 5px 20px rgba(0,0,0,0.4);
-}
-</style>
+<link rel="stylesheet" href="web.css">
 <link rel="icon" href="src/General/img/icon.gif">
 <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">
 </head><body>
-<h1 id="4chan-x">4chan X</h1><a href="img/screenshot.png"><img class="screenshot" src="img/screenshot.png"></a><img class="hover" src="img/screenshot.png">
+<h1 id="4chan-x">4chan X</h1><a href="img/screenshot.png"><img class="screenshot" src="img/screenshot.png" alt="screenshot"></a><span class="hover"><img src="img/screenshot.png" alt="preview"></span>
 <p>Adds various features to 4chan.
 Originally written by <a href="https://github.com/aeosynth/4chan-x">aeosynth</a>, and subsequently maintained by <a href="https://github.com/MayhemYDG/4chan-x">Mayhem</a>, <a href="https://github.com/ihavenoface/4chan-x">ihavenoface</a>, <a href="https://github.com/zixaphir/appchan-x">Zixaphir</a>, <a href="https://github.com/seaweedchan/4chan-x">Seaweed</a>, and <a href="https://github.com/Spittie/4chan-x">Spittie</a>, with contributions from many others.</p>
 <p>If you&#39;re looking for a maintained fork of OneeChan (a style script used in addition to 4chan X), try
@@ -55,7 +19,7 @@ If you&#39;re switching to this fork from someone else&#39;s fork of 4chan X, ba
 <p><strong>Known issues</strong>:
 The combination of Firefox 29 and Greasemonkey 2.0+ causes 4chan X not to work.
 If you have this problem, you should <a href="http://www.mozilla.org/en-US/firefox/new/">upgrade Firefox</a> to version 30 or higher.
-Alternatively, you can downgrade to <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15">Greasemonkey 1.15</a> and turn off automatic updates for Greasemonkey (<a href="https://ccd0.github.io/4chan-x/img/2014-07-12_16-19-32.png">see pic</a><img class="hover" src="https://ccd0.github.io/4chan-x/img/2014-07-12_16-19-32.png">).</p>
+Alternatively, you can downgrade to <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15">Greasemonkey 1.15</a> and turn off automatic updates for Greasemonkey (<a href="https://ccd0.github.io/4chan-x/img/2014-07-12_16-19-32.png">see pic</a><span class="hover"><img src="https://ccd0.github.io/4chan-x/img/2014-07-12_16-19-32.png" alt="preview"></span>).</p>
 <h2 id="chromium-version-click-to-install-https-ccd0-github-io-4chan-x-builds-4chan-x-crx-">Chromium version: <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.crx">Click to Install</a></h2>
 <p>Download the file from the link above and add drag it to your <code>chrome://extensions</code> page.
 This should also work for non-Windows/dev/canary Chrome and Chromium-based versions of Opera.</p>
@@ -99,4 +63,3 @@ for (var i = 0; i < links.length; i++) {
 }
 </script>
 </body></html>
-
