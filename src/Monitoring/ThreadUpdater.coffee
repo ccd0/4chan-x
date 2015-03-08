@@ -94,17 +94,11 @@ ThreadUpdater =
         ThreadUpdater.setInterval()
 
     checkpost: (e) ->
-      unless ThreadUpdater.checkPostCount
-        return if e and e.detail.threadID isnt ThreadUpdater.thread.ID
-        ThreadUpdater.seconds = 0
-        ThreadUpdater.outdateCount = 0
-        ThreadUpdater.set 'timer', '...', 'loading'
-      unless ThreadUpdater.thread.isDead or ThreadUpdater.foundPost or ThreadUpdater.checkPostCount >= 5
-        return setTimeout ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND
-      ThreadUpdater.setInterval()
+      return if e.detail.threadID isnt ThreadUpdater.thread.ID
+      ThreadUpdater.postID = e.detail.postID
       ThreadUpdater.checkPostCount = 0
-      delete ThreadUpdater.foundPost
-      delete ThreadUpdater.postID
+      ThreadUpdater.outdateCount = 0
+      ThreadUpdater.setInterval()
 
     visibility: ->
       return if d.hidden
@@ -153,9 +147,6 @@ ThreadUpdater =
         else
           ThreadUpdater.error req
 
-      if ThreadUpdater.postID
-        ThreadUpdater.cb.checkpost()
-
   kill: ->
     ThreadUpdater.thread.kill()
     ThreadUpdater.setInterval()
@@ -180,6 +171,12 @@ ThreadUpdater =
       ThreadUpdater.set 'timer', ''
       return
 
+    # Fetching your own posts after posting
+    if ThreadUpdater.postID and ThreadUpdater.checkPostCount < 5
+      ThreadUpdater.set 'timer', '...', 'loading'
+      ThreadUpdater.timeoutID = setTimeout ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND
+      return
+
     unless Conf['Auto Update']
       ThreadUpdater.set 'timer', 'Update'
       return
@@ -190,26 +187,17 @@ ThreadUpdater =
         ThreadUpdater.set 'timer', ''
         return
 
-    i = ThreadUpdater.interval + 1
-
+    {interval} = ThreadUpdater
     if Conf['Optional Increase']
       # Lower the max refresh rate limit on visible tabs.
-      cur   = ThreadUpdater.outdateCount or 1
       limit = if d.hidden then 7 else 10
-      j     = if cur <= limit then cur else limit
+      j     = Math.min ThreadUpdater.outdateCount, limit
 
       # 1 second to 100, 30 to 300.
-      cur = (Math.floor(i * 0.1) or 1) * j * j
-      ThreadUpdater.seconds =
-        if cur > i
-          if cur <= 300
-            cur
-          else
-            300
-        else
-          i
+      cur = (Math.floor(interval * 0.1) or 1) * j * j
+      ThreadUpdater.seconds = $.minmax cur, interval, 300
     else
-      ThreadUpdater.seconds = i
+      ThreadUpdater.seconds = interval
 
     ThreadUpdater.timeout()
 
@@ -229,15 +217,13 @@ ThreadUpdater =
     el.className = klass ? (if text is '' then 'empty' else '')
 
   timeout: ->
-    ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
-    unless n = --ThreadUpdater.seconds
+    if ThreadUpdater.seconds
+      ThreadUpdater.set 'timer', ThreadUpdater.seconds
+      ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
+    else
       ThreadUpdater.outdateCount++
       ThreadUpdater.update()
-    else if n <= -60
-      ThreadUpdater.set 'status', 'Retrying'
-      ThreadUpdater.update()
-    else if n > 0
-      ThreadUpdater.set 'timer', n
+    ThreadUpdater.seconds--
 
   update: ->
     clearTimeout ThreadUpdater.timeoutID
@@ -310,7 +296,7 @@ ThreadUpdater =
 
       # Fetching your own posts after posting
       if ThreadUpdater.postID and ThreadUpdater.postID is ID
-        ThreadUpdater.foundPost = true
+        delete ThreadUpdater.postID
 
     unless count
       ThreadUpdater.set 'status', ''
