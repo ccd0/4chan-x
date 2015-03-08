@@ -169,7 +169,7 @@ module.exports = (grunt) ->
           git checkout gh-pages
           git pull
           git merge --no-commit -s ours -
-          git checkout - README.md index.html img src/General/img/icon.gif
+          git checkout - README.md index.html web.css img src/General/img/icon.gif
           git commit -am "Update web page."
           git checkout -
         """.split('\n').join('&&')
