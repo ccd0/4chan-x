@@ -409,7 +409,6 @@ Index =
       "#{hiddenCount} hidden threads"
 
   update: (state) ->
-    return unless navigator.onLine
     delete Index.pageNum
     Index.req?.abort()
     Index.notice?.close()
