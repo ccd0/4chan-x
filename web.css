@@ -1,5 +1,6 @@
 body {
   font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
+  margin: 1em;
 }
 h1 {
   text-align: center;
@@ -14,7 +15,7 @@ img.screenshot {
 @media (min-width: 1120px) {
   img.screenshot {
     float: right;
-    margin-left: 8px;
+    margin: 0 0 1em 1em;
   }
 }
 span.hover {
