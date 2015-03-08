@@ -777,8 +777,8 @@ span.hide-announcement {
 .new {
   color: limegreen;
 }
-#update-status.new {
-  margin-right: 5px;
+#update-status:not(.empty) + #update-timer:not(.empty):not(.loading) {
+  margin-left: 5px;
 }
 #update-timer {
   cursor: pointer;

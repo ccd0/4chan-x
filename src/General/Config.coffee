@@ -935,6 +935,10 @@ Config =
         true
         'Automatically fetch new posts.'
       ]
+      'Ignore Offline Status': [
+        false
+        'Update even if your browser reports you are offline.'
+      ]
       'Optional Increase': [
         false
         'Increase the intervals between updates on threads without new posts.'

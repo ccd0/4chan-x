@@ -5,7 +5,7 @@ ThreadUpdater =
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
         id:        'updater'
-      $.extend sc, <%= html('<span id="update-status"></span><span id="update-timer" title="Update now"></span>') %>
+      $.extend sc, <%= html('<span id="update-status" class="empty"></span><span id="update-timer" class="empty" title="Update now"></span>') %>
       $.ready ->
         Header.addShortcut sc
     else
@@ -19,7 +19,6 @@ ThreadUpdater =
 
     @timer  = $ '#update-timer', sc
     @status = $ '#update-status', sc
-    @isUpdating = Conf['Auto Update']
 
     $.on @timer,  'click', @update
     $.on @status, 'click', @update
@@ -41,7 +40,7 @@ ThreadUpdater =
         $.on input, 'change', @cb.scrollBG
         @cb.scrollBG()
       else if input.name is 'Auto Update'
-        $.on input, 'change', @cb.autoUpdate
+        $.on input, 'change', @setInterval
       subEntries.push el: el
 
     @settings = $.el 'span',
@@ -73,10 +72,7 @@ ThreadUpdater =
     $.on d,      'QRPostSuccessful', ThreadUpdater.cb.checkpost
     $.on d,      'visibilitychange', ThreadUpdater.cb.visibility
 
-    if ThreadUpdater.thread.isArchived
-      ThreadUpdater.set 'status', 'Archived', 'warning'
-    else
-      ThreadUpdater.cb.online()
+    ThreadUpdater.setInterval()
 
   ###
   http://freesound.org/people/pierrecartoons1979/sounds/90112/
@@ -87,51 +83,54 @@ ThreadUpdater =
   cb:
     online: ->
       return if ThreadUpdater.thread.isDead
-      if ThreadUpdater.online = navigator.onLine
+
+      if navigator.onLine
+        ThreadUpdater.set 'status', ''
+      else
+        ThreadUpdater.set 'status', 'Offline', 'warning'
+
+      if Conf['Auto Update'] and not Conf['Ignore Offline Status']
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.setInterval()
-        ThreadUpdater.set 'status', '', ''
-      else
-        ThreadUpdater.set 'timer', ''
-        ThreadUpdater.set 'status', 'Offline', 'warning'
-        clearTimeout ThreadUpdater.timeoutID
+
     checkpost: (e) ->
       unless ThreadUpdater.checkPostCount
         return if e and e.detail.threadID isnt ThreadUpdater.thread.ID
         ThreadUpdater.seconds = 0
         ThreadUpdater.outdateCount = 0
-        ThreadUpdater.set 'timer', '...'
+        ThreadUpdater.set 'timer', '...', 'loading'
       unless ThreadUpdater.thread.isDead or ThreadUpdater.foundPost or ThreadUpdater.checkPostCount >= 5
         return setTimeout ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND
       ThreadUpdater.setInterval()
       ThreadUpdater.checkPostCount = 0
       delete ThreadUpdater.foundPost
       delete ThreadUpdater.postID
+
     visibility: ->
       return if d.hidden
       # Reset the counter when we focus this tab.
       ThreadUpdater.outdateCount = 0
       if ThreadUpdater.seconds > ThreadUpdater.interval
         ThreadUpdater.setInterval()
+
     scrollBG: ->
       ThreadUpdater.scrollBG = if Conf['Scroll BG']
         -> true
       else
         -> not d.hidden
-    autoUpdate: ->
-      ThreadUpdater.count ThreadUpdater.isUpdating = @checked
+
     interval: (e) ->
       val = parseInt @value, 10
       if val < 1 then val = 1
       ThreadUpdater.interval = @value = val
       $.cb.value.call @ if e
+
     load: ->
       {req} = ThreadUpdater
       switch req.status
         when 200
           ThreadUpdater.parse req.response.posts
           if ThreadUpdater.thread.isArchived
-            ThreadUpdater.set 'status', 'Archived', 'warning'
             ThreadUpdater.kill()
           else
             ThreadUpdater.setInterval()
@@ -148,7 +147,6 @@ ThreadUpdater =
             else
               confirmed = false
             if confirmed
-              ThreadUpdater.set 'status', '404', 'warning'
               ThreadUpdater.kill()
             else
               ThreadUpdater.error req
@@ -159,23 +157,40 @@ ThreadUpdater =
         ThreadUpdater.cb.checkpost()
 
   kill: ->
-    ThreadUpdater.set 'timer', ''
-    clearTimeout ThreadUpdater.timeoutID
     ThreadUpdater.thread.kill()
+    ThreadUpdater.setInterval()
     $.event 'ThreadUpdate',
       404: true
       threadID: ThreadUpdater.thread.fullID
 
   error: (req) ->
+    if req.status is 304
+      ThreadUpdater.set 'status', ''
     ThreadUpdater.setInterval()
-    [text, klass] = if req.status is 304
-      ['', '']
-    else
-      ["#{req.statusText} (#{req.status})", 'warning']
-    ThreadUpdater.set 'status', text, klass
+    unless req.status
+      ThreadUpdater.set 'status', 'Connection Failed', 'warning'
+    else if req.status isnt 304
+      ThreadUpdater.set 'status', "#{req.statusText} (#{req.status})", 'warning'
 
   setInterval: ->
-    i   = ThreadUpdater.interval + 1
+    clearTimeout ThreadUpdater.timeoutID
+
+    if ThreadUpdater.thread.isDead
+      ThreadUpdater.set 'status', (if ThreadUpdater.thread.isArchived then 'Archived' else '404'), 'warning'
+      ThreadUpdater.set 'timer', ''
+      return
+
+    unless Conf['Auto Update']
+      ThreadUpdater.set 'timer', 'Update'
+      return
+
+    unless navigator.onLine
+      ThreadUpdater.set 'status', 'Offline', 'warning'
+      unless Conf['Ignore Offline Status']
+        ThreadUpdater.set 'timer', ''
+        return
+
+    i = ThreadUpdater.interval + 1
 
     if Conf['Optional Increase']
       # Lower the max refresh rate limit on visible tabs.
@@ -196,8 +211,7 @@ ThreadUpdater =
     else
       ThreadUpdater.seconds = i
 
-    ThreadUpdater.set 'timer', ThreadUpdater.seconds
-    ThreadUpdater.count true
+    ThreadUpdater.timeout()
 
   intervalShortcut: ->
     Settings.open 'Advanced'
@@ -212,11 +226,7 @@ ThreadUpdater =
       node.data = text
     else
       el.textContent = text
-    el.className = klass if klass isnt undefined
-
-  count: (start) ->
-    clearTimeout ThreadUpdater.timeoutID
-    ThreadUpdater.timeout() if start and ThreadUpdater.isUpdating and navigator.onLine
+    el.className = klass ? (if text is '' then 'empty' else '')
 
   timeout: ->
     ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
@@ -224,18 +234,14 @@ ThreadUpdater =
       ThreadUpdater.outdateCount++
       ThreadUpdater.update()
     else if n <= -60
-      ThreadUpdater.set 'status', 'Retrying', ''
+      ThreadUpdater.set 'status', 'Retrying'
       ThreadUpdater.update()
     else if n > 0
       ThreadUpdater.set 'timer', n
 
   update: ->
-    return unless navigator.onLine
-    ThreadUpdater.count()
-    if Conf['Auto Update']
-      ThreadUpdater.set 'timer', '...'
-    else
-      ThreadUpdater.set 'timer', 'Update'
+    clearTimeout ThreadUpdater.timeoutID
+    ThreadUpdater.set 'timer', '...', 'loading'
     ThreadUpdater.req?.abort()
     ThreadUpdater.req = $.ajax "//a.4cdn.org/#{ThreadUpdater.thread.board}/thread/#{ThreadUpdater.thread}.json",
       onloadend: ThreadUpdater.cb.load
@@ -307,7 +313,7 @@ ThreadUpdater =
         ThreadUpdater.foundPost = true
 
     unless count
-      ThreadUpdater.set 'status', '', ''
+      ThreadUpdater.set 'status', ''
     else
       ThreadUpdater.set 'status', "+#{count}", 'new'
       ThreadUpdater.outdateCount = 0
