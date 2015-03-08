@@ -22,11 +22,19 @@ img.screenshot {
     margin-left: 8px;
   }
 }
-img.hover {
+span.hover {
   display: none;
 }
-a:hover + img.hover {
+a:hover + span.hover {
   display: block;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+span.hover > img {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -35,7 +43,6 @@ a:hover + img.hover {
   margin: auto;
   max-width: 100%;
   max-height: 100%;
-  pointer-events: none;
   box-shadow: 5px 5px 20px rgba(0,0,0,0.4);
 }
 h2 ~ p, h2 ~ p + ul {
@@ -48,7 +55,7 @@ h2 ~ p, h2 ~ p + ul {
 <%=
   content
     .replace('</h1>', '</h1><a href="img/screenshot.png"><img class="screenshot" src="img/screenshot.png"></a>')
-    .replace(/(<a href="([^"]+\.png)">.*?<\/a>)/g, '$1<img class="hover" src="$2">')
+    .replace(/(<a href="([^"]+\.png)">.*?<\/a>)/g, '$1<span class="hover"><img src="$2"></span>')
 %>
 <script>
 var links = document.querySelectorAll('a[href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam"]');
