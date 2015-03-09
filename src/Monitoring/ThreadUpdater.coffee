@@ -66,6 +66,15 @@ ThreadUpdater =
     ThreadUpdater.lastPost     = +@posts.keys[@posts.keys.length - 1]
     ThreadUpdater.outdateCount = 0
 
+    # We must keep track of our own list of live posts/files
+    # to provide an accurate deletedPosts/deletedFiles on update
+    # as posts may be `kill`ed elsewhere.
+    ThreadUpdater.postIDs = []
+    ThreadUpdater.fileIDs = []
+    @posts.forEach (post) ->
+      ThreadUpdater.postIDs.push post.ID
+      ThreadUpdater.fileIDs.push post.ID if post.file and not post.file.isDead
+
     ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
 
     $.on window, 'online offline',   ThreadUpdater.cb.online
@@ -283,20 +292,22 @@ ThreadUpdater =
       count++
       node = Build.postFromObject postObject, ThreadUpdater.thread.board.ID
       posts.push new Post node, ThreadUpdater.thread, ThreadUpdater.thread.board
-
-    ThreadUpdater.thread.posts.forEach (post) ->
-      return if post.isDead
-
-      # Check for deleted posts/files.
-      ID = +post.ID
-      unless ID in index
-        post.kill()
-      else if post.file and not (post.file.isDead or ID in files)
-        post.kill true
-
       # Fetching your own posts after posting
-      if ThreadUpdater.postID and ThreadUpdater.postID is ID
-        delete ThreadUpdater.postID
+      delete ThreadUpdater.postID if ThreadUpdater.postID is num
+
+    # Check for deleted posts.
+    deletedPosts = []
+    for ID in ThreadUpdater.postIDs when ID not in index
+      ThreadUpdater.thread.posts[ID].kill()
+      deletedPosts.push ID
+    ThreadUpdater.postIDs = index
+
+    # Check for deleted files.
+    deletedFiles = []
+    for ID in ThreadUpdater.fileIDs when not (ID in files or ID in deletedPosts)
+      ThreadUpdater.thread.posts[ID].kill true
+      deletedFiles.push ID
+    ThreadUpdater.fileIDs = files
 
     unless count
       ThreadUpdater.set 'status', ''
@@ -332,12 +343,12 @@ ThreadUpdater =
       ipCountEl.previousSibling.textContent = ipCountEl.previousSibling.textContent.replace(/\b(?:is|are)\b/, if OP.unique_ips is 1 then 'is' else 'are')
       ipCountEl.nextSibling.textContent = ipCountEl.nextSibling.textContent.replace(/\bposters?\b/, if OP.unique_ips is 1 then 'poster' else 'posters')
 
-    ThreadUpdater.postIDs = index
-
     $.event 'ThreadUpdate',
       404: false
       threadID: ThreadUpdater.thread.fullID
       newPosts: (post.fullID for post in posts)
+      deletedPosts: deletedPosts
+      deletedFiles: deletedFiles
       postCount: OP.replies + 1
       fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
       ipCount: OP.unique_ips
