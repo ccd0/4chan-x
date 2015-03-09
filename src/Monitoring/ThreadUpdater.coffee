@@ -325,9 +325,10 @@ ThreadUpdater =
       scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
         ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
 
+      firstPost = null
       for post in posts
-        root = post.nodes.root
         unless QuoteThreading.insert post
+          firstPost or= post.nodes.root
           $.add ThreadUpdater.root, post.nodes.root
       $.event 'PostsInserted'
 
@@ -335,7 +336,7 @@ ThreadUpdater =
         if Conf['Bottom Scroll']
           window.scrollTo 0, d.body.clientHeight
         else
-          Header.scrollTo root if root
+          Header.scrollTo firstPost if firstPost
 
     # Update IP count in original post form.
     if OP.unique_ips? and ipCountEl = $.id('unique-ips')
