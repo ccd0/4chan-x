@@ -2,6 +2,14 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+### v1.10.4
+
+**v1.10.4.0** *(2015-03-09)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.10.3.9.
+- Add `Ignore Offline Status` option in the Updater header submenu to continue auto-updating even when your browser reports you are offline.
+- Fix `Auto Scroll` not scrolling to the first new post.
+- Restore `deletedPosts` and `deletedFiles` fields of the `ThreadUpdate` event, which will now each contain an array of the relevant posts' full IDs.
+
 ### v1.10.3
 
 **v1.10.3.9** *(2015-03-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.9/builds/4chan-X-noupdate.crx "Chromium version")]
