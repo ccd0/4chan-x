@@ -268,15 +268,17 @@ ThreadUpdater =
 
     postObjects = req.response.posts
     OP = postObjects[0]
-    Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler
+    {thread} = ThreadUpdater
+    {board} = thread
+    Build.spoilerRange[board] = OP.custom_spoiler
 
     # XXX Some threads such as /g/'s sticky https://a.4cdn.org/g/thread/39894014.json still use a string as the archived property.
-    ThreadUpdater.thread.setStatus 'Archived', !!+OP.archived
+    thread.setStatus 'Archived', !!+OP.archived
     ThreadUpdater.updateThreadStatus 'Sticky', !!OP.sticky
     ThreadUpdater.updateThreadStatus 'Closed', !!OP.closed
-    ThreadUpdater.thread.postLimit = !!OP.bumplimit
-    ThreadUpdater.thread.fileLimit = !!OP.imagelimit
-    ThreadUpdater.thread.ipCount   = OP.unique_ips if OP.unique_ips?
+    thread.postLimit = !!OP.bumplimit
+    thread.fileLimit = !!OP.imagelimit
+    thread.ipCount   = OP.unique_ips if OP.unique_ips?
 
     posts = [] # post objects
     index = [] # existing posts
@@ -290,22 +292,22 @@ ThreadUpdater =
       continue if num <= ThreadUpdater.lastPost
       # Insert new posts, not older ones.
       count++
-      node = Build.postFromObject postObject, ThreadUpdater.thread.board.ID
-      posts.push new Post node, ThreadUpdater.thread, ThreadUpdater.thread.board
+      node = Build.postFromObject postObject, board.ID
+      posts.push new Post node, thread, board
       # Fetching your own posts after posting
       delete ThreadUpdater.postID if ThreadUpdater.postID is num
 
     # Check for deleted posts.
     deletedPosts = []
     for ID in ThreadUpdater.postIDs when ID not in index
-      ThreadUpdater.thread.posts[ID].kill()
+      thread.posts[ID].kill()
       deletedPosts.push ID
     ThreadUpdater.postIDs = index
 
     # Check for deleted files.
     deletedFiles = []
     for ID in ThreadUpdater.fileIDs when not (ID in files or ID in deletedPosts)
-      ThreadUpdater.thread.posts[ID].kill true
+      thread.posts[ID].kill true
       deletedFiles.push ID
     ThreadUpdater.fileIDs = files
 
@@ -346,10 +348,10 @@ ThreadUpdater =
 
     $.event 'ThreadUpdate',
       404: false
-      threadID: ThreadUpdater.thread.fullID
+      threadID: thread.fullID
       newPosts: (post.fullID for post in posts)
       deletedPosts: deletedPosts
       deletedFiles: deletedFiles
       postCount: OP.replies + 1
-      fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
+      fileCount: OP.images + (!!thread.OP.file and !thread.OP.file.isDead)
       ipCount: OP.unique_ips
