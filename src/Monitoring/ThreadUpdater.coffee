@@ -123,7 +123,7 @@ ThreadUpdater =
       {req} = ThreadUpdater
       switch req.status
         when 200
-          ThreadUpdater.parse req.response.posts
+          ThreadUpdater.parse req
           if ThreadUpdater.thread.isArchived
             ThreadUpdater.kill()
           else
@@ -251,7 +251,13 @@ ThreadUpdater =
         'not closed anymore'
     new Notice 'info', "The thread is #{change}.", 30
 
-  parse: (postObjects) ->
+  parse: (req) ->
+    # XXX 4chan sometimes sends outdated JSON which would result in false-positive dead posts.
+    lastModified = new Date req.getResponseHeader('Last-Modified')
+    return if ThreadUpdater.lastModified and lastModified < ThreadUpdater.lastModified
+    ThreadUpdater.lastModified = lastModified
+
+    postObjects = req.response.posts
     OP = postObjects[0]
     Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler
 
@@ -278,21 +284,15 @@ ThreadUpdater =
       node = Build.postFromObject postObject, ThreadUpdater.thread.board.ID
       posts.push new Post node, ThreadUpdater.thread, ThreadUpdater.thread.board
 
-    # Check for deleted posts/files.
     ThreadUpdater.thread.posts.forEach (post) ->
-      # XXX tmp fix for 4chan's racing condition
-      # giving us false-positive dead posts.
-      # continue if post.isDead
-      ID = +post.ID
+      return if post.isDead
 
-      # Assume deleted posts less than 60 seconds old are false positives.
-      unless post.info.date > Date.now() - 60 * $.SECOND
-        unless ID in index
-          post.kill()
-        else if post.isDead
-          post.resurrect()
-        else if post.file and not (post.file.isDead or ID in files)
-          post.kill true
+      # Check for deleted posts/files.
+      ID = +post.ID
+      unless ID in index
+        post.kill()
+      else if post.file and not (post.file.isDead or ID in files)
+        post.kill true
 
       # Fetching your own posts after posting
       if ThreadUpdater.postID and ThreadUpdater.postID is ID
