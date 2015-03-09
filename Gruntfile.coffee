@@ -421,5 +421,9 @@ module.exports = (grunt) ->
     throw new Error 'Separator not found.' if breakPos is -1
     breakPos += separator.length
 
+    prevVersion = changelog[breakPos..].match(/\*\*v([\d\.]+)\*\*/)[1]
+    unless prevVersion.replace(/\.\d+$/, '') is branch
+      line += "\n- Based on v#{prevVersion}."
+
     grunt.file.write 'CHANGELOG.md', "#{changelog[...breakPos]}\n\n#{line}#{changelog[breakPos..]}"
     grunt.log.ok "Changelog updated for v#{version}."
