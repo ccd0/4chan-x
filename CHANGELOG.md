@@ -33,6 +33,7 @@ The links to individual versions below are to copies of the script with the upda
 - Remove outline around images in gallery.
 
 **v1.10.3.0** *(2015-03-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.3.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.10.2.8.
 - Make the filename in the Quick Reply editable immediately without having to Control+click it.
 - Add a "Files" button which can be used to open the file picker even if a file has already been selected. This also fixes issues with opening the file picker via keyboard on Firefox.
 - Move the spoiler checkbox into the box containing the filename.
