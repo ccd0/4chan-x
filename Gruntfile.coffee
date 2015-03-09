@@ -360,13 +360,21 @@ module.exports = (grunt) ->
     'copy:builds'
   ]
 
-  grunt.registerTask 'tag', 'Tag a new version', (version) ->
+  grunt.registerTask 'tag', 'Tag a new release', (version) ->
     grunt.task.run [
       "setversion:#{version}"
       'updcl'
       'full'
       'shell:commit'
     ]
+
+  grunt.registerTask 'bump', 'Bump the version number and tag a new release', (level) ->
+    pkg = grunt.config 'pkg'
+    parts = pkg.meta.version.split '.'
+    parts[i] or= '0' for i in [0...level]
+    parts[level-1] = +parts[level-1] + 1
+    parts[i] = 0 for i in [level...parts.length]
+    grunt.task.run "tag:#{parts.join '.'}"
 
   grunt.registerTask 'beta', [
     'shell:beta'
