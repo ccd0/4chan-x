@@ -301,14 +301,14 @@ ThreadUpdater =
     deletedPosts = []
     for ID in ThreadUpdater.postIDs when ID not in index
       thread.posts[ID].kill()
-      deletedPosts.push ID
+      deletedPosts.push "#{board}.#{ID}"
     ThreadUpdater.postIDs = index
 
     # Check for deleted files.
     deletedFiles = []
-    for ID in ThreadUpdater.fileIDs when not (ID in files or ID in deletedPosts)
+    for ID in ThreadUpdater.fileIDs when not (ID in files or "#{board}.#{ID}" in deletedPosts)
       thread.posts[ID].kill true
-      deletedFiles.push ID
+      deletedFiles.push "#{board}.#{ID}"
     ThreadUpdater.fileIDs = files
 
     unless count
