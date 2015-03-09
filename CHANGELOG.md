@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.4
 
+**v1.10.4.1** *(2015-03-09)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix updater beeping on posts to not completely read thread.
+
 **v1.10.4.0** *(2015-03-09)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.10.3.9.
 - Add `Ignore Offline Status` option in the Updater header submenu to continue auto-updating even when your browser reports you are offline.
