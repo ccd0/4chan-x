@@ -317,31 +317,39 @@ Config =
         true
         'Fetch and insert new replies. Has more options in the header menu and the "Advanced" tab.'
       ]
+      'Track Unread Posts': [
+        true
+        'Keep track of how far down you\'ve scrolled in a thread.'
+      ]
       'Unread Count': [
         true
         'Show the unread posts count in the tab title.'
+        1
       ]
       'Quoted Title': [
         false
         'Change the page title to reflect you\'ve been quoted.'
-        1
+        2
       ]
       'Hide Unread Count at (0)': [
         false
         'Hide the unread posts count in the tab title when it reaches 0.'
-        1
+        2
       ]
       'Unread Favicon': [
         true
         'Show a different favicon when there are unread posts.'
+        1
       ]
       'Unread Line': [
         true
         'Show a line to distinguish read posts from unread ones.'
+        1
       ]
       'Scroll to Last Read Post': [
         true
         'Scroll back to the last read post when reopening a thread.'
+        1
       ]
       'Thread Excerpt': [
         true

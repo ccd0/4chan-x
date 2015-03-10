@@ -35,6 +35,10 @@ ThreadUpdater =
       el = UI.checkbox name, name
       el.title = conf[1]
       input = el.firstElementChild
+      if name is 'Beep' and not Conf['Track Unread Posts']
+        input.disabled = true
+        $.addClass el, 'disabled'
+        el.title += '\n[Track Unread Posts is disabled.]'
       $.on input, 'change', $.cb.checked
       if input.name is 'Scroll BG'
         $.on input, 'change', @cb.scrollBG
@@ -316,7 +320,7 @@ ThreadUpdater =
     else
       ThreadUpdater.set 'status', "+#{count}", 'new'
       ThreadUpdater.outdateCount = 0
-      if Conf['Beep'] and d.hidden and Unread.posts and !Unread.posts.size
+      if Conf['Track Unread Posts'] and Conf['Beep'] and d.hidden and Unread.posts and !Unread.posts.size
         unless ThreadUpdater.audio
           ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
         ThreadUpdater.audio.play()

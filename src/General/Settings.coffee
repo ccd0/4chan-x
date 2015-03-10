@@ -312,6 +312,7 @@ Settings =
   advanced: (section) ->
     $.extend section, <%= importHTML('Settings/Advanced') %>
     warning.hidden = Conf[warning.dataset.feature] for warning in $$ '.warning', section
+    $('.warning[data-feature="Unread Favicon"]').hidden = false unless Conf['Track Unread Posts']
 
     items = {}
     inputs = {}
@@ -466,7 +467,7 @@ Settings =
 
   favicon: ->
     Favicon.switch()
-    Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
+    Unread.update() if g.VIEW is 'thread' and Conf['Track Unread Posts'] and Conf['Unread Favicon']
     img = @nextElementSibling.children
     img[0].src = Favicon.default
     img[1].src = Favicon.unreadSFW
