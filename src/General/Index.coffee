@@ -517,7 +517,7 @@ Index =
           thread = new Thread threadData.no, g.BOARD
           threads.push thread
         Index.nodes.push threadRoot
-        unless thread.ID of thread.posts
+        unless thread.OP and not thread.OP.isFetchedQuote
           posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
         thread.setPage i // Index.threadsNumPerPage + 1
       catch err
@@ -543,7 +543,7 @@ Index =
       continue unless lastReplies = Index.liveThreadData[i].last_replies
       nodes = []
       for data in lastReplies
-        if post = thread.posts[data.no]
+        if (post = thread.posts[data.no]) and not post.isFetchedQuote
           nodes.push post.nodes.root
           continue
         nodes.push node = Build.postFromObject data, thread.board.ID

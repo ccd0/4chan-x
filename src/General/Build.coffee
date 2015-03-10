@@ -276,7 +276,10 @@ Build =
   thread: (board, data, full) ->
     Build.spoilerRange[board] = data.custom_spoiler
 
-    if (OP = board.posts[data.no]) and root = OP.nodes.root.parentNode
+    if OP = board.posts[data.no]
+      OP = null if OP.isFetchedQuote
+
+    if OP and (root = OP.nodes.root.parentNode)
       $.rmAll root
     else
       root = $.el 'div',

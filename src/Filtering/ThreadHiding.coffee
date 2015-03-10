@@ -4,7 +4,7 @@ ThreadHiding =
     @db = new DataBoard 'hiddenThreads'
     return @catalogWatch() if g.VIEW is 'catalog'
     @catalogSet g.BOARD
-    Thread.callbacks.push
+    Post.callbacks.push
       name: 'Thread Hiding'
       cb:   @node
 
@@ -38,10 +38,13 @@ ThreadHiding =
     ThreadHiding.hiddenThreads = hiddenThreads2
 
   node: ->
+    return if @isReply or @isClone or @isFetchedQuote
+
     if data = ThreadHiding.db.get {boardID: @board.ID, threadID: @ID}
-      ThreadHiding.hide @, data.makeStub
+      ThreadHiding.hide @thread, data.makeStub
+
     return unless Conf['Thread Hiding Buttons']
-    $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
+    $.prepend @nodes.root, ThreadHiding.makeButton(@thread, 'hide')
 
   onIndexBuild: (nodes) ->
     for root in nodes
