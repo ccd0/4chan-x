@@ -271,8 +271,7 @@ ThreadUpdater =
       new Date(req.getResponseHeader('Last-Modified')) - thread.posts[lastPost].info.date < 30 * $.SECOND
 
     Build.spoilerRange[board] = OP.custom_spoiler
-    # XXX Some threads such as /g/'s sticky https://a.4cdn.org/g/thread/39894014.json still use a string as the archived property.
-    thread.setStatus 'Archived', !!+OP.archived
+    thread.setStatus 'Archived', !!OP.archived
     ThreadUpdater.updateThreadStatus 'Sticky', !!OP.sticky
     ThreadUpdater.updateThreadStatus 'Closed', !!OP.closed
     thread.postLimit = !!OP.bumplimit
