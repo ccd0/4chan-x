@@ -16,21 +16,31 @@
 </div>
 </div>
 <a class="screenshot" href="img/screenshot.png"><img src="img/screenshot.png" alt="screenshot"></a>
-<span class="hover"><img src="img/screenshot.png" alt="preview"></span>
-<%=
-  content
-    .match(/<\/h1>([^]*)<h2 id="more-information"/)[1]
-    .replace(/(<a href="([^"]+\.png)">.*?<\/a>)/g, '$1<span class="hover"><img src="$2" alt="preview"></span>')
-%>
+<%= content.match(/<\/h1>([^]*)<h2 id="more-information"/)[1] %>
 <script>
-var links = document.querySelectorAll('a[href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam"]');
-for (var i = 0; i < links.length; i++) {
-  links[i].addEventListener('click', function(e) {
-    if (window.chrome && !e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
-      chrome.webstore.install();
-      e.preventDefault();
-    }
-  }, false);
+function imagePreview() {
+  this.removeEventListener('mouseover', imagePreview, false);
+  var img = new Image();
+  img.src = this.href;
+  img.alt = 'preview';
+  var span = document.createElement('span');
+  span.className = 'hover';
+  span.appendChild(img);
+  this.appendChild(span);
+}
+function storeInstall(e) {
+  if (!e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
+    chrome.webstore.install();
+    e.preventDefault();
+  }
+}
+for (var i = 0; i < document.links.length; i++) {
+  var link = document.links[i];
+  if (/\.png$/.test(link.pathname) && !link.querySelector('.hover')) {
+    link.addEventListener('mouseover', imagePreview, false);
+  } else if (window.chrome && link.host === 'chrome.google.com') {
+    link.addEventListener('click', storeInstall, false);
+  }
 }
 </script>
 </body></html>
