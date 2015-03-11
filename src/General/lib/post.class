@@ -216,6 +216,27 @@ class Post
       $.addClass quotelink, 'deadlink'
     return
 
+  # XXX Workaround for 4chan's racing condition
+  # giving us false-positive dead posts.
+  resurrect: ->
+    delete @isDead
+    $.rmClass @nodes.root, 'deleted-post'
+    strong = $ 'strong.warning', @nodes.info
+    # no false-positive files
+    if @file and @file.isDead
+      strong.textContent = '[File deleted]'
+    else
+      $.rm strong
+
+    return if @isClone
+    for clone in @clones
+      clone.resurrect()
+
+    for quotelink in Get.allQuotelinksLinkingTo @ when $.hasClass quotelink, 'deadlink'
+      quotelink.textContent = quotelink.textContent.replace '\u00A0(Dead)', ''
+      $.rmClass quotelink, 'deadlink'
+    return
+
   collect: ->
     @kill()
     g.posts.rm @fullID

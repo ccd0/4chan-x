@@ -63,7 +63,6 @@ ThreadUpdater =
   node: ->
     ThreadUpdater.thread       = @
     ThreadUpdater.root         = @OP.nodes.root.parentNode
-    ThreadUpdater.lastPost     = +@posts.keys[@posts.keys.length - 1]
     ThreadUpdater.outdateCount = 0
 
     # We must keep track of our own list of live posts/files
@@ -261,17 +260,17 @@ ThreadUpdater =
     new Notice 'info', "The thread is #{change}.", 30
 
   parse: (req) ->
-    # XXX 4chan sometimes sends outdated JSON which would result in false-positive dead posts.
-    lastModified = new Date req.getResponseHeader('Last-Modified')
-    return if ThreadUpdater.lastModified and lastModified < ThreadUpdater.lastModified
-    ThreadUpdater.lastModified = lastModified
-
     postObjects = req.response.posts
     OP = postObjects[0]
     {thread} = ThreadUpdater
     {board} = thread
-    Build.spoilerRange[board] = OP.custom_spoiler
+    [..., lastPost] = ThreadUpdater.postIDs
 
+    # XXX Reject updates that falsely delete the last post.
+    return if postObjects[postObjects.length-1].no < lastPost and
+      new Date(req.getResponseHeader('Last-Modified')) - thread.posts[lastPost].info.date < 30 * $.SECOND
+
+    Build.spoilerRange[board] = OP.custom_spoiler
     # XXX Some threads such as /g/'s sticky https://a.4cdn.org/g/thread/39894014.json still use a string as the archived property.
     thread.setStatus 'Archived', !!+OP.archived
     ThreadUpdater.updateThreadStatus 'Sticky', !!OP.sticky
@@ -280,22 +279,31 @@ ThreadUpdater =
     thread.fileLimit = !!OP.imagelimit
     thread.ipCount   = OP.unique_ips if OP.unique_ips?
 
-    posts = [] # post objects
-    index = [] # existing posts
-    files = [] # existing files
-    count = 0  # new posts count
+    posts    = [] # new post objects
+    index    = [] # existing posts
+    files    = [] # existing files
+    newPosts = [] # new post fullID list for API
+
     # Build the index, create posts.
     for postObject in postObjects
-      num = postObject.no
-      index.push num
-      files.push num if postObject.fsize
-      continue if num <= ThreadUpdater.lastPost
+      ID = postObject.no
+      index.push ID
+      files.push ID if postObject.fsize
+
       # Insert new posts, not older ones.
-      count++
+      continue if ID <= lastPost
+
+      newPosts.push "#{board}.#{ID}"
+
+      # XXX Resurrect wrongly deleted posts.
+      if (post = thread.posts[ID]) and not post.isFetchedQuote
+        post.resurrect()
+        continue
+
       node = Build.postFromObject postObject, board.ID
       posts.push new Post node, thread, board
       # Fetching your own posts after posting
-      delete ThreadUpdater.postID if ThreadUpdater.postID is num
+      delete ThreadUpdater.postID if ThreadUpdater.postID is ID
 
     # Check for deleted posts.
     deletedPosts = []
@@ -311,17 +319,16 @@ ThreadUpdater =
       deletedFiles.push "#{board}.#{ID}"
     ThreadUpdater.fileIDs = files
 
-    unless count
+    unless posts.length
       ThreadUpdater.set 'status', ''
     else
-      ThreadUpdater.set 'status', "+#{count}", 'new'
+      ThreadUpdater.set 'status', "+#{posts.length}", 'new'
       ThreadUpdater.outdateCount = 0
       if Conf['Beep'] and d.hidden and Unread.posts and !Unread.posts.size
         unless ThreadUpdater.audio
           ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
         ThreadUpdater.audio.play()
 
-      ThreadUpdater.lastPost = posts[count - 1].ID
       Main.callbackNodes Post, posts
 
       scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
@@ -349,7 +356,7 @@ ThreadUpdater =
     $.event 'ThreadUpdate',
       404: false
       threadID: thread.fullID
-      newPosts: (post.fullID for post in posts)
+      newPosts: newPosts
       deletedPosts: deletedPosts
       deletedFiles: deletedFiles
       postCount: OP.replies + 1
