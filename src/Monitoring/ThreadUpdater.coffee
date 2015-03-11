@@ -70,9 +70,10 @@ ThreadUpdater =
     # as posts may be `kill`ed elsewhere.
     ThreadUpdater.postIDs = []
     ThreadUpdater.fileIDs = []
+    ThreadUpdater.fileIDs.push @ID if @board.ID is 'f'
     @posts.forEach (post) ->
       ThreadUpdater.postIDs.push post.ID
-      ThreadUpdater.fileIDs.push post.ID if post.file and not post.file.isDead
+      ThreadUpdater.fileIDs.push post.ID if post.file
 
     ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
 
@@ -359,5 +360,5 @@ ThreadUpdater =
       deletedPosts: deletedPosts
       deletedFiles: deletedFiles
       postCount: OP.replies + 1
-      fileCount: OP.images + (!!thread.OP.file and !thread.OP.file.isDead)
+      fileCount: OP.images + !!OP.fsize
       ipCount: OP.unique_ips
