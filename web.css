@@ -28,14 +28,16 @@ h1 {
   background-color: #CCC;
   font-weight: bold;
 }
-img.screenshot {
+a.screenshot {
   display: block;
   margin: auto;
+}
+a.screenshot > img {
   width: 640px;
   max-width: 100%;
 }
 @media (min-width: 1120px) {
-  img.screenshot {
+  a.screenshot {
     float: right;
     margin: 0 0 1em 1em;
   }
