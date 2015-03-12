@@ -63,7 +63,7 @@ function imagePreview() {
   var span = document.createElement('span');
   span.className = 'hover';
   span.appendChild(img);
-  this.appendChild(span);
+  this.parentNode.insertBefore(span, this.nextSibling);
 }
 function storeInstall(e) {
   if (!e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
