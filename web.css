@@ -46,7 +46,7 @@ a.screenshot > img {
 span.hover {
   display: none;
 }
-a:hover > span.hover {
+a:hover + span.hover {
   display: block;
   position: fixed;
   top: 0;
