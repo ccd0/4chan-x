@@ -30,11 +30,12 @@ h1 {
 }
 a.screenshot {
   display: block;
+  width: 640px;
+  max-width: 100%;
   margin: auto;
 }
 a.screenshot > img {
-  width: 640px;
-  max-width: 100%;
+  width: 100%;
 }
 @media (min-width: 1120px) {
   a.screenshot {
