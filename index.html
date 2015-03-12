@@ -15,7 +15,7 @@
 <a href="https://github.com/ccd0/4chan-x/issues">Report Bugs</a>
 </div>
 </div>
-<a class="screenshot" href="img/screenshot.png"><img src="img/screenshot.png" alt="screenshot"></a>
+<a class="screenshot" href="img/screenshot.png"><img src="img/screenshot.png" alt="Screenshot"></a>
 
 <p>Adds various features to 4chan.
 Originally written by <a href="https://github.com/aeosynth/4chan-x">aeosynth</a>, and subsequently maintained by <a href="https://github.com/MayhemYDG/4chan-x">Mayhem</a>, <a href="https://github.com/ihavenoface/4chan-x">ihavenoface</a>, <a href="https://github.com/zixaphir/appchan-x">Zixaphir</a>, <a href="https://github.com/seaweedchan/4chan-x">Seaweed</a>, and <a href="https://github.com/Spittie/4chan-x">Spittie</a>, with contributions from many others.</p>
@@ -78,6 +78,9 @@ for (var i = 0; i < document.links.length; i++) {
   } else if (window.chrome && link.host === 'chrome.google.com') {
     link.addEventListener('click', storeInstall, false);
   }
+}
+if (!('pointer-events' in document.documentElement.style)) {
+  document.documentElement.className = 'workaround';
 }
 </script>
 </body></html>
