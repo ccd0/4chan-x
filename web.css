@@ -9,6 +9,7 @@ body {
 }
 h1 {
   margin: 0;
+  line-height: 1.5;
 }
 #links {
   background-color: #e0e0e0;
