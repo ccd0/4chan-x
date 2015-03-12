@@ -2,18 +2,42 @@ body {
   font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
   margin: 1em;
 }
-h1 {
-  text-align: center;
+#header {
   background-color: #eee;
+  margin-bottom: 1em;
+  text-align: center;
 }
-img.screenshot {
+h1 {
+  margin: 0;
+}
+#links {
+  background-color: #e0e0e0;
+  display: table;
+  width: 100%;
+  height: 1.5em;
+}
+#links > a {
+  display: table-cell;
+  vertical-align: middle;
+  width: 25%;
+  color: #000;
+  text-decoration: none;
+}
+#links > a:hover,
+#links > a:focus {
+  background-color: #CCC;
+  font-weight: bold;
+}
+a.screenshot {
   display: block;
   margin: auto;
+}
+a.screenshot > img {
   width: 640px;
   max-width: 100%;
 }
 @media (min-width: 1120px) {
-  img.screenshot {
+  a.screenshot {
     float: right;
     margin: 0 0 1em 1em;
   }
@@ -21,7 +45,7 @@ img.screenshot {
 span.hover {
   display: none;
 }
-a:hover + span.hover {
+a:hover > span.hover {
   display: block;
   position: fixed;
   top: 0;

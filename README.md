@@ -47,8 +47,8 @@ If you want to install the current beta version but get updates from the stable 
 4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the `[Settings]` link in the top right corner and uncheck "`Disable the native extension`" in the panel that appears.
 
 ## More information
-- [Source Code](https://github.com/ccd0/4chan-x)
 - [Changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md)
 - [Frequently Asked Questions](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions)
-- [Reporting Bugs and Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
+- [Report Bugs](https://github.com/ccd0/4chan-x/issues)
+- [Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
 

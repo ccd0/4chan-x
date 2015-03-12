@@ -6,7 +6,17 @@
 <link rel="icon" href="src/General/img/icon.gif">
 <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">
 </head><body>
-<h1 id="4chan-x">4chan X</h1><a href="img/screenshot.png"><img class="screenshot" src="img/screenshot.png" alt="screenshot"></a><span class="hover"><img src="img/screenshot.png" alt="preview"></span>
+<div id="header">
+<h1 id="4chan-x">4chan X</h1>
+<div id="links">
+<a href="https://github.com/ccd0/4chan-x">Source Code</a>
+<a href="https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md">Changelog</a>
+<a href="https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions">FAQ</a>
+<a href="https://github.com/ccd0/4chan-x/issues">Report Bugs</a>
+</div>
+</div>
+<a class="screenshot" href="img/screenshot.png"><img src="img/screenshot.png" alt="screenshot"></a>
+
 <p>Adds various features to 4chan.
 Originally written by <a href="https://github.com/aeosynth/4chan-x">aeosynth</a>, and subsequently maintained by <a href="https://github.com/MayhemYDG/4chan-x">Mayhem</a>, <a href="https://github.com/ihavenoface/4chan-x">ihavenoface</a>, <a href="https://github.com/zixaphir/appchan-x">Zixaphir</a>, <a href="https://github.com/seaweedchan/4chan-x">Seaweed</a>, and <a href="https://github.com/Spittie/4chan-x">Spittie</a>, with contributions from many others.</p>
 <p>If you&#39;re looking for a maintained fork of OneeChan (a style script used in addition to 4chan X), try
@@ -19,7 +29,7 @@ If you&#39;re switching to this fork from someone else&#39;s fork of 4chan X, ba
 <p><strong>Known issues</strong>:
 The combination of Firefox 29 and Greasemonkey 2.0+ causes 4chan X not to work.
 If you have this problem, you should <a href="http://www.mozilla.org/en-US/firefox/new/">upgrade Firefox</a> to version 30 or higher.
-Alternatively, you can downgrade to <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15">Greasemonkey 1.15</a> and turn off automatic updates for Greasemonkey (<a href="https://ccd0.github.io/4chan-x/img/2014-07-12_16-19-32.png">see pic</a><span class="hover"><img src="https://ccd0.github.io/4chan-x/img/2014-07-12_16-19-32.png" alt="preview"></span>).</p>
+Alternatively, you can downgrade to <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15">Greasemonkey 1.15</a> and turn off automatic updates for Greasemonkey (<a href="https://ccd0.github.io/4chan-x/img/2014-07-12_16-19-32.png">see pic</a>).</p>
 <h2 id="chromium-version-click-to-install-https-ccd0-github-io-4chan-x-builds-4chan-x-crx-">Chromium version: <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.crx">Click to Install</a></h2>
 <p>Download the file from the link above and add drag it to your <code>chrome://extensions</code> page.
 This should also work for non-Windows/dev/canary Chrome and Chromium-based versions of Opera.</p>
@@ -43,23 +53,31 @@ Only the latest stable version of 4chan X is available.</p>
 <p>4chan X currently shares your settings and post history between the HTTP and HTTPS versions of 4chan. If you are concerned about protecting your privacy against a man-in-the-middle attack, you should disable 4chan X on the HTTP version of 4chan and/or install <a href="https://www.eff.org/https-everywhere">HTTPS Everywhere</a>.</p>
 <h2 id="uninstalling">Uninstalling</h2>
 <p>4chan X disables the native extension, so if you uninstall 4chan X, you&#39;ll need to re-enable it. To do this, click the <code>[Settings]</code> link in the top right corner and uncheck &quot;<code>Disable the native extension</code>&quot; in the panel that appears.</p>
-<h2 id="more-information">More information</h2>
-<ul>
-<li><a href="https://github.com/ccd0/4chan-x">Source Code</a></li>
-<li><a href="https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md">Changelog</a></li>
-<li><a href="https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions">Frequently Asked Questions</a></li>
-<li><a href="https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md">Reporting Bugs and Contributing</a></li>
-</ul>
 
 <script>
-var links = document.querySelectorAll('a[href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam"]');
-for (var i = 0; i < links.length; i++) {
-  links[i].addEventListener('click', function(e) {
-    if (window.chrome && !e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
-      chrome.webstore.install();
-      e.preventDefault();
-    }
-  }, false);
+function imagePreview() {
+  this.removeEventListener('mouseover', imagePreview, false);
+  var img = new Image();
+  img.src = this.href;
+  img.alt = 'preview';
+  var span = document.createElement('span');
+  span.className = 'hover';
+  span.appendChild(img);
+  this.appendChild(span);
+}
+function storeInstall(e) {
+  if (!e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
+    chrome.webstore.install();
+    e.preventDefault();
+  }
+}
+for (var i = 0; i < document.links.length; i++) {
+  var link = document.links[i];
+  if (/\.png$/.test(link.pathname) && !link.querySelector('.hover')) {
+    link.addEventListener('mouseover', imagePreview, false);
+  } else if (window.chrome && link.host === 'chrome.google.com') {
+    link.addEventListener('click', storeInstall, false);
+  }
 }
 </script>
 </body></html>
