@@ -70,7 +70,7 @@ span.hover > img {
   max-height: 100%;
   box-shadow: 5px 5px 20px rgba(0,0,0,0.4);
 }
-@supports not (pointer-events: none) {
+@supports not (pointer-events: auto) {
   a[href$=".png"] {
     position: relative;
   }
