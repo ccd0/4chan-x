@@ -70,17 +70,19 @@ span.hover > img {
   max-height: 100%;
   box-shadow: 5px 5px 20px rgba(0,0,0,0.4);
 }
-:root.workaround a[href$=".png"] {
-  position: relative;
-}
-:root.workaround a[href$=".png"]::after {
-  content: " ";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 1;
+@supports not (pointer-events: none) {
+  a[href$=".png"] {
+    position: relative;
+  }
+  a[href$=".png"]::after {
+    content: " ";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+  }
 }
 h2 ~ p, h2 ~ p + ul {
   margin-left: 1em;
