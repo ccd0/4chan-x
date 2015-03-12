@@ -384,12 +384,14 @@ module.exports = (grunt) ->
     'shell:stable'
   ]
 
-  grunt.registerTask 'web', [
-    'markdown:web'
-    'copy:web'
-    'shell:commit-web'
-    'shell:web'
-  ]
+  grunt.registerTask 'web', 'Move website changes to gh-pages.', ->
+    grunt.task.run 'markdown:web'
+    if grunt.file.read('test.html') isnt grunt.file.read('index.html')
+      grunt.task.run [
+        'copy:web'
+        'shell:commit-web'
+      ]
+    grunt.task.run 'shell:web'
 
   grunt.registerTask 'push', [
     'shell:push'
