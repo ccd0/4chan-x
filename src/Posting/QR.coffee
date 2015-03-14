@@ -701,8 +701,6 @@ QR =
     if Conf['Posting Success Notifications']
       QR.notifications.push new Notice 'success', h1.textContent, 5
 
-    QR.persona.set post
-
     [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
     postID   = +postID
     threadID = +threadID or postID

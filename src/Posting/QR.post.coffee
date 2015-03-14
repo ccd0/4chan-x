@@ -141,6 +141,8 @@ QR.post = class
           # so we suffix it with '.jpg' when needed.
           @file.newName += '.jpg'
         @updateFilename()
+      when 'name', 'email'
+        QR.persona.set @
 
   forceSave: ->
     return unless @ is QR.selected
