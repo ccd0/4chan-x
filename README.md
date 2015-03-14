@@ -1,3 +1,4 @@
+![screenshot](https://ccd0.github.io/4chan-x/img/screenshot.png)
 # 4chan X
 Adds various features to 4chan.
 Originally written by [aeosynth](https://github.com/aeosynth/4chan-x), and subsequently maintained by [Mayhem](https://github.com/MayhemYDG/4chan-x), [ihavenoface](https://github.com/ihavenoface/4chan-x), [Zixaphir](https://github.com/zixaphir/appchan-x), [Seaweed](https://github.com/seaweedchan/4chan-x), and [Spittie](https://github.com/Spittie/4chan-x), with contributions from many others.
