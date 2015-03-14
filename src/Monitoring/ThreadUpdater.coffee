@@ -293,13 +293,12 @@ ThreadUpdater =
       # Insert new posts, not older ones.
       continue if ID <= lastPost
 
-      newPosts.push "#{board}.#{ID}"
-
       # XXX Resurrect wrongly deleted posts.
       if (post = thread.posts[ID]) and not post.isFetchedQuote
         post.resurrect()
         continue
 
+      newPosts.push "#{board}.#{ID}"
       node = Build.postFromObject postObject, board.ID
       posts.push new Post node, thread, board
       # Fetching your own posts after posting
