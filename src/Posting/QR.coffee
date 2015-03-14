@@ -170,7 +170,7 @@ QR =
     QR.setCustomCooldown enabled
     $.set 'customCooldownEnabled', enabled
 
-  error: (err) ->
+  error: (err, focusOverride) ->
     QR.open()
     if typeof err is 'string'
       el = $.tn err
@@ -179,28 +179,24 @@ QR =
       el.removeAttribute 'style'
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       QR.captcha.setup true
-    QR.notify el
-    alert el.textContent if d.hidden and not QR.cooldown.auto
-
-  notify: (el) ->
     notice = new Notice 'warning', el
-    unless Header.areNotificationsEnabled and d.hidden
-      QR.notifications.push notice
-    else
+    QR.notifications.push notice
+    unless Header.areNotificationsEnabled
+      alert el.textContent if d.hidden and not QR.cooldown.auto
+    else if d.hidden or not (focusOverride or d.hasFocus())
       notif = new Notification el.textContent,
         body: el.textContent
         icon: Favicon.logo
       notif.onclick = -> window.focus()
-      <% if (type === 'crx') { %>
-      # Firefox automatically closes notifications
-      # so we can't control the onclose properly.
-      notif.onclose = -> notice.close()
-      notif.onshow  = ->
-        setTimeout ->
-          notif.onclose = null
-          notif.close()
-        , 7 * $.SECOND
-      <% } %>
+      if chrome?
+        # Firefox automatically closes notifications
+        # so we can't control the onclose properly.
+        notif.onclose = -> notice.close()
+        notif.onshow  = ->
+          setTimeout ->
+            notif.onclose = null
+            notif.close()
+          , 7 * $.SECOND
 
   notifications: []
 

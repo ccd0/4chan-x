@@ -170,7 +170,7 @@ QR.post = class
       e.stopPropagation()
       @rm() if @ in QR.posts
     $.on rmAll, 'click', QR.post.rmErrored
-    QR.error div
+    QR.error div, true
 
   fileError: (message) ->
     @error 'file-error', "#{@filename}: #{message}"
