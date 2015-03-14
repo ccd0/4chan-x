@@ -1235,9 +1235,6 @@ input.field.tripped:not(:hover):not(:focus) {
   width: 100%;
   margin: 1px 0 0;
 }
-.captcha-input.error:focus {
-  border-color: rgb(255,0,0) !important;
-}
 #qr-captcha-iframe {
   display: none;
 }

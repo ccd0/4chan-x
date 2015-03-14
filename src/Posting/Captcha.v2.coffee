@@ -163,9 +163,6 @@ Captcha.v2 =
 
     QR.submit() if Conf['Post on Captcha Completion'] and !QR.cooldown.auto
 
-  notify: (el) ->
-    QR.notify el
-
   clear: ->
     return unless @captchas.length
     $.forceSync 'captchas'

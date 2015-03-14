@@ -114,7 +114,6 @@ Captcha.noscript =
     $.rm @nodes.iframe if @nodes.iframe
     delete @nodes.iframe
     delete @occupied
-    @unflag()
     @beforeSetup()
 
   sync: (captchas=[]) ->
@@ -162,16 +161,6 @@ Captcha.noscript =
       @submitCB()
       delete @submitCB
     QR.error "Captcha Error: #{message}"
-
-  notify: (el) ->
-    if Conf['Captcha Warning Notifications'] and !d.hidden
-      QR.notify el
-    else
-      $.addClass @nodes.input, 'error'
-      $.one @nodes.input, 'keydown', @unflag.bind @
-
-  unflag: ->
-    $.rmClass @nodes.input, 'error'
 
   clear: ->
     return unless @captchas.length

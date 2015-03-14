@@ -179,9 +179,7 @@ QR =
       el.removeAttribute 'style'
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       QR.captcha.setup true
-      QR.captcha.notify el
-    else
-      QR.notify el
+    QR.notify el
     alert el.textContent if d.hidden and not QR.cooldown.auto
 
   notify: (el) ->

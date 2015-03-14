@@ -450,11 +450,6 @@ Config =
         'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled.'
         1
       ]
-      'Captcha Warning Notifications': [
-        true
-        'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'
-        1
-      ]
       'Auto-load captcha': [
         false
         'Automatically load the captcha in the QR even if your post is empty.'
