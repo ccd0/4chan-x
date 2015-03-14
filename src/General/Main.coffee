@@ -364,6 +364,7 @@ Main =
     ['Index Navigation',          Nav]
     ['Keybinds',                  Keybinds]
     ['Banner',                    Banner]
+    ['Flash Features',            Flash]
     <% if (tests_enabled) { %>
     ['Build Test',                BuildTest]
     <% } %>
