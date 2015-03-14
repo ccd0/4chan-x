@@ -222,37 +222,6 @@ Embedding =
         el.setAttribute "allowfullscreen", "true"
         el
     ,
-      key: 'MediaCrush'
-      regExp: /^\w+:\/\/(?:www\.)?mediacru\.sh\/([\w\-]+)/
-      style: ''
-      el: (a) ->
-        el = $.el 'div'
-        $.queueTask -> $.cache "https://mediacru.sh/#{a.dataset.uid}.json", ->
-          return unless doc.contains el
-          {status} = @
-          return el.textContent = "ERROR #{status}" unless status in [200, 304]
-          {files} = @response
-          for type in ['video/mp4', 'video/webm', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'audio/mpeg', 'audio/ogg']
-            for file in files
-              if file.type is type
-                embed = file
-                break
-            break if embed
-          return el.textContent = "ERROR: Not a valid filetype" unless embed
-          switch embed.type
-            when 'video/mp4', 'video/webm', 'video/ogv'
-              $.extend el, <%= html('<video controls loop style="max-width: 80vw; max-height: 80vh;"><source type="video/mp4"><source type="video/webm"></video>') %>
-              for ext, i in ['mp4', 'webm']
-                el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
-            when 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg'
-              $.extend el, <%= html('<a target="_blank" href="${a.dataset.href}"><img src="https://mediacru.sh/${file.file}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
-            when 'audio/mpeg', 'audio/ogg'
-              $.extend el, <%= html('<audio controls><source type="audio/ogg" src="https://mediacru.sh/${a.dataset.uid}.ogg"></audio>') %>
-            else
-              el.textContent = "ERROR: No valid filetype."
-          return
-        el
-    ,
       key: 'Pastebin'
       regExp: /^\w+:\/\/(?:\w+\.)?pastebin\.com\/(?!u\/)(?:[\w\.]+\?i\=)?(\w+)/
       httpOnly: true
