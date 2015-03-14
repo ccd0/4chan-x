@@ -353,7 +353,7 @@ Embedding =
           'Not Found'
     ,
       key: 'Loopvid'
-      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/((?:pf|kd|lv|mc|gd|gh|db|nn)\/[\w\-]+(,[\w\-]+)*|fc\/\w+\/\d+)/
+      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|gc)\/[\w\-\/]+(,[\w\-\/]+)*|fc\/\w+\/\d+)/
       style: 'max-width: 80vw; max-height: 80vh;'
       el: (a) ->
         el = $.el 'video',
@@ -361,21 +361,29 @@ Embedding =
           preload:  'auto'
           loop:     true
         [_, host, names] = a.dataset.uid.match /(\w+)\/(.*)/
-        types = if host in ['gd', 'fc'] then [''] else ['.webm', '.mp4']
+        types = switch host
+          when 'gd', 'wu', 'fc' then ['']
+          when 'gc' then ['giant', 'fat', 'zippy']
+          else ['.webm', '.mp4']
         for name in names.split ','
           for type in types
             base = "#{name}#{type}"
             url = switch host
-              # list from src/loopvid.py at http://loopvid.appspot.com/source.html
-              when 'pf' then "http://a.pomf.se/#{base}"
-              when 'kd' then "http://kastden.org/loopvid/#{base}"
+              # list from src/common.py at http://loopvid.appspot.com/source.html
+              when 'pf' then "https://a.pomf.se/#{base}"
+              when 'kd' then "http://2.kastden.org/loopvid/#{base}"
               when 'lv' then "http://loopvid.mooo.com/videos/#{base}"
-              when 'mc' then "https://cdn.mediacru.sh/#{base}"
               when 'gd' then "https://docs.google.com/uc?export=download&id=#{base}"
               when 'gh' then "https://googledrive.com/host/#{base}"
-              when 'db' then "https://googledrive.com/host/#{base}"
-              when 'fc' then "//i.4cdn.org/#{base}.webm"
+              when 'db' then "https://dl.dropboxusercontent.com/u/#{base}"
+              when 'dx' then "https://dl.dropboxusercontent.com/#{base}"
               when 'nn' then "http://naenara.eu/loopvids/#{base}"
+              when 'cp' then "https://copy.com/#{base}"
+              when 'wu' then "http://webmup.com/#{base}/vid.webm"
+              when 'ig' then "https://i.imgur.com/#{base}"
+              when 'ky' then "https://kiyo.me/#{base}"
+              when 'fc' then "//i.4cdn.org/#{base}.webm"
+              when 'gc' then "https://#{type}.gfycat.com/#{name}.webm"
             $.add el, $.el 'source', src: url
         el
     ,
