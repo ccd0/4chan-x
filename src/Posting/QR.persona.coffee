@@ -67,5 +67,4 @@ QR.persona =
     $.get 'QR.persona', {}, ({'QR.persona': persona}) ->
       persona =
         name:  post.name
-        email: if /^sage$/.test post.email then persona.email else post.email
       $.set 'QR.persona', persona
