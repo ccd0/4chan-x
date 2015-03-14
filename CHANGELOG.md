@@ -4,6 +4,10 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.4
 
+**v1.10.4.4** *(2015-03-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update Strawpoll, Loopvid embedding; remove MediaCrush.
+- API bug fix.
+
 **v1.10.4.3** *(2015-03-10)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix false-positive deleted posts again.
 
