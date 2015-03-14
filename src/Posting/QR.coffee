@@ -182,7 +182,7 @@ QR =
       QR.captcha.notify el
     else
       QR.notify el
-    alert el.textContent if d.hidden
+    alert el.textContent if d.hidden and not QR.cooldown.auto
 
   notify: (el) ->
     notice = new Notice 'warning', el
