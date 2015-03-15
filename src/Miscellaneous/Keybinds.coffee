@@ -21,7 +21,11 @@ Keybinds =
     {target} = e
     if target.nodeName in ['INPUT', 'TEXTAREA']
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test key
-    unless g.VIEW not in ['index', 'thread'] or g.VIEW is 'index' and Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog'
+    unless (
+      g.VIEW not in ['index', 'thread'] or
+      g.VIEW is 'index' and Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog' or
+      g.VIEW is 'index' and g.BOARD.ID is 'f'
+    )
       threadRoot = Nav.getThread()
       if op = $ '.op', threadRoot
         thread = Get.postFromNode(op).thread
@@ -133,18 +137,19 @@ Keybinds =
         Header.scrollToIfNeeded searchInput
         searchInput.focus()
       when Conf['Paged mode']
-        return unless Conf['JSON Navigation']
+        return unless Conf['JSON Navigation'] and g.BOARD.ID isnt 'f'
         window.location = if g.VIEW is 'index' then '#paged' else "/#{g.BOARD}/#paged"
       when Conf['Infinite scrolling mode']
-        return unless Conf['JSON Navigation']
+        return unless Conf['JSON Navigation'] and g.BOARD.ID isnt 'f'
         window.location = if g.VIEW is 'index' then '#infinite' else "/#{g.BOARD}/#infinite"
       when Conf['All pages mode']
-        return unless Conf['JSON Navigation']
+        return unless Conf['JSON Navigation'] and g.BOARD.ID isnt 'f'
         window.location = if g.VIEW is 'index' then '#all-pages' else "/#{g.BOARD}/#all-pages"
       when Conf['Open catalog']
+        return if g.BOARD.ID is 'f'
         window.location = CatalogLinks.catalog()
       when Conf['Cycle sort type']
-        return unless Conf['JSON Navigation'] and g.VIEW is 'index' and g.BOARD isnt 'f'
+        return unless Conf['JSON Navigation'] and g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         Index.cycleSortType()
       # Thread Navigation
       when Conf['Next thread']
