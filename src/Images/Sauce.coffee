@@ -17,6 +17,8 @@ Sauce =
       cb:   @node
 
   createSauceLink: (link, post) ->
+    return null unless link = link.trim()
+
     parts = {}
     for part, i in link.split /;(?=(?:text|boards|types):)/
       if i is 0
