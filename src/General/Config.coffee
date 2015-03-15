@@ -117,6 +117,10 @@ Config =
         true
         '<%= meta.name %> is NOT designed to work with the native extension.'
       ]
+      'Enable Native Flash Embedding': [
+        true
+        'Activate the native extension\'s Flash embedding if the native extension is disabled.'
+      ]
 
     'Linkification':
       'Linkify': [
