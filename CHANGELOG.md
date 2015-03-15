@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.4
 
+**v1.10.4.6** *(2015-03-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Work around Greasemonkey 3.0 bug causing multiple tabs to be opened upon posting. For now, users will have to either enable popups on boards.4chan.org or downgrade to Greasemonkey 2.3.
+
 **v1.10.4.5** *(2015-03-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.5/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix wait-to-post error messages pausing autoposting.
 
