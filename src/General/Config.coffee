@@ -658,6 +658,7 @@ Config =
     http://iqdb.org/?url=%IMG
     http://eye.swfchan.com/search/?q=%name;types:swf
     #//tineye.com/search?url=%IMG
+    #https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG
     #//saucenao.com/search.php?url=%IMG
     #http://3d.iqdb.org/?url=%IMG
     #http://regex.info/exif.cgi?imgurl=%URL
