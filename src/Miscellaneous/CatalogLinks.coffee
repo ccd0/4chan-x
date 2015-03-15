@@ -79,7 +79,7 @@ CatalogLinks =
       "/#{board}/catalog"
 
   index: (board=g.BOARD.ID) ->
-    if Conf['JSON Navigation']
+    if Conf['JSON Navigation'] and board isnt 'f'
       if g.BOARD.ID is board and g.VIEW is 'index' then '#index' else "/#{board}/#index"
     else
       "/#{board}/"

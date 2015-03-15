@@ -109,7 +109,7 @@ Keybinds =
         FappeTyme.toggle 'werk'
       # Board Navigation
       when Conf['Front page']
-        if Conf['JSON Navigation'] and g.VIEW is 'index'
+        if Conf['JSON Navigation'] and g.VIEW is 'index' and g.BOARD.ID isnt 'f'
           Index.userPageNav 1
         else
           window.location = "/#{g.BOARD}/"
