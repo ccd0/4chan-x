@@ -652,6 +652,7 @@ Config =
   sauces: """
     https://www.google.com/searchbyimage?image_url=%TURL
     http://iqdb.org/?url=%TURL
+    http://eye.swfchan.com/search/?q=%name;types:swf
     #//tineye.com/search?url=%TURL
     #//saucenao.com/search.php?url=%TURL
     #http://3d.iqdb.org/?url=%TURL
