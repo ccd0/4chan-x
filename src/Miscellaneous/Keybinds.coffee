@@ -84,7 +84,7 @@ Keybinds =
             return unless Conf['Thread Updater']
             ThreadUpdater.update()
           when 'index'
-            return unless Conf['JSON Navigation']
+            return unless Conf['JSON Navigation'] and g.BOARD.ID isnt 'f'
             Index.update()
           else
             return
@@ -116,7 +116,7 @@ Keybinds =
       when Conf['Open front page']
         $.open "/#{g.BOARD}/"
       when Conf['Next page']
-        return unless g.VIEW is 'index'
+        return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         if Conf['JSON Navigation']
           return unless Conf['Index Mode'] in ['paged', 'infinite']
           $('.next button', Index.pagelist).click()
@@ -124,7 +124,7 @@ Keybinds =
           if form = $ '.next form'
             window.location = form.action
       when Conf['Previous page']
-        return unless g.VIEW is 'index'
+        return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         if Conf['JSON Navigation']
           return unless Conf['Index Mode'] in ['paged', 'infinite']
           $('.prev button', Index.pagelist).click()
@@ -132,7 +132,7 @@ Keybinds =
           if form = $ '.prev form'
             window.location = form.action
       when Conf['Search form']
-        return unless g.VIEW is 'index'
+        return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         searchInput = if Conf['JSON Navigation'] then Index.searchInput else $.id('search-box')
         Header.scrollToIfNeeded searchInput
         searchInput.focus()
