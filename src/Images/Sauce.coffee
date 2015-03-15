@@ -9,11 +9,13 @@ Sauce =
       catch err
         # Don't add random text plz.
     return unless links.length
+
     @links = links
     @link  = $.el 'a', target: '_blank'
     Post.callbacks.push
       name: 'Sauce'
       cb:   @node
+
   createSauceLink: (link, post) ->
     parts = {}
     for part, i in link.split /;(?=(?:text|boards|types):)/
@@ -22,6 +24,7 @@ Sauce =
       else
         m = part.match /^(\w*):(.*)$/
         parts[m[1]] = m[2]
+
     parts['text'] or= parts['url'].match(/(\w+)\.\w+\//)?[1] or '?'
     skip = false
     for key of parts
@@ -38,11 +41,14 @@ Sauce =
         if not type?
           skip = true
           return ''
+
         if key is 'url' and parameter isnt '%%' and parameter isnt '%semi'
           type = JSON.stringify type if /^javascript:/i.test parts['url']
           type = encodeURIComponent type
         type
+
     return null if skip
+
     ext = post.file.URL.match(/\.([^\.]*)$/)?[1] or ''
     return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
     return null unless !parts['types']  or ext           in parts['types'].split  ','
@@ -51,8 +57,10 @@ Sauce =
     a.textContent = parts['text']
     a.removeAttribute 'target' if /^javascript:/i.test parts['url']
     a
+
   node: ->
     return if @isClone or !@file
+
     nodes = []
     for link in Sauce.links when node = Sauce.createSauceLink link, @
       # \u00A0 is nbsp
