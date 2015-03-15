@@ -2,6 +2,19 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+### v1.10.5
+
+**v1.10.5.0** *(2015-03-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.10.4.6.
+- (vampiricwulf) Activate native extension's Flash embedding on /f/ (option: `Enable Native Flash Embedding`).
+- `Sauce`, `File Info Formatting`, and searching the filename in the archive now work in /f/ threads.
+- Sauce links now support the `%IMG` parameter, which searches the full image for GIF, JPEG, and PNG file types, and the thumbnail for PDF and WEBM.
+- SWFchan (`http://eye.swfchan.com/search/?q=%name;types:swf`) has been added to the default sauce links, and Yandex (`https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG`) has been added to the default sauce link examples.
+- You no longer need to make a post for 4chan X to remember changes to the name field. The options field is no longer remembered (use `Advanced` > `Quick Reply Personas` if you want certain options like `sage` by default).
+- `Desktop Notifications` is now on by default.
+- The `Captcha Warning Notifications` option has been removed. Captcha errors will always show a normal error notice.
+- Various bugfixes.
+
 ### v1.10.4
 
 **v1.10.4.6** *(2015-03-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.6/builds/4chan-X-noupdate.crx "Chromium version")]
