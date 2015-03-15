@@ -20,6 +20,8 @@ Main =
           'archive'
         else
           'index'
+    return if g.VIEW is 'catalog' and g.BOARD.ID is 'f'
+    return if g.VIEW is 'archive' and g.BOARD.ID in ['b', 'f']
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
 
