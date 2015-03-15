@@ -38,7 +38,6 @@ ThreadStats =
   node: ->
     postCount = 0
     fileCount = 0
-    fileCount++ if @board.ID is 'f'
     @posts.forEach (post) ->
       postCount++
       fileCount++ if post.file

@@ -70,7 +70,6 @@ ThreadUpdater =
     # as posts may be `kill`ed elsewhere.
     ThreadUpdater.postIDs = []
     ThreadUpdater.fileIDs = []
-    ThreadUpdater.fileIDs.push @ID if @board.ID is 'f'
     @posts.forEach (post) ->
       ThreadUpdater.postIDs.push post.ID
       ThreadUpdater.fileIDs.push post.ID if post.file

@@ -7,8 +7,11 @@ FileInfo =
       cb:   @node
   node: ->
     return if !@file or @isClone
-    $.extend @file.text, <%= html('<span class="file-info"></span>') %>
-    FileInfo.format Conf['fileInfo'], @, @file.text.firstElementChild
+    @file.link.hidden = true
+    @file.link.previousSibling.nodeValue = @file.link.nextSibling.nodeValue = ''
+    info = $.el 'span', className: 'file-info'
+    $.after @file.link.nextSibling, info
+    FileInfo.format Conf['fileInfo'], @, info
   format: (formatString, post, outputNode) ->
     output = []
     formatString.replace /%(.)|[^%]+/g, (s, c) ->
@@ -19,7 +22,7 @@ FileInfo =
       ''
     $.extend outputNode, <%= html('@{output}') %>
   formatters:
-    t: -> <%= html('${this.file.URL.match(/\\d+\\..+$/)[0]}') %>
+    t: -> <%= html('${this.file.URL.match(/[^\/]*$/)[0]}') %>
     T: -> <%= html('<a href="${this.file.URL}" target="_blank">&{FileInfo.formatters.t.call(this)}</a>') %>
     l: -> <%= html('<a href="${this.file.URL}" target="_blank">&{FileInfo.formatters.n.call(this)}</a>') %>
     L: -> <%= html('<a href="${this.file.URL}" target="_blank">&{FileInfo.formatters.N.call(this)}</a>') %>

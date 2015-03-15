@@ -163,29 +163,29 @@ class Post
     @quotes.push fullID unless fullID in @quotes
 
   parseFile: ->
-    return unless (fileEl = $ '.file', @nodes.post) and thumb = $ 'img[data-md5]', fileEl
-    # Supports JPG/PNG/GIF/PDF.
-    # Flash files are not supported.
-    anchor   = thumb.parentNode
+    return unless (fileEl = $ '.file', @nodes.post) and not $('.fileDeletedRes', fileEl)
     fileText = fileEl.firstElementChild
-    @file    =
-      text:  fileText
-      thumb: thumb
-      URL:   anchor.href
-      size:  thumb.alt.match(/[\d.]+\s\w+/)[0]
-      MD5:   thumb.dataset.md5
-      isSpoiler: $.hasClass anchor, 'imgspoiler'
+    link     = $ 'a', fileText
+    info     = link.nextSibling.textContent
+    @file =
+      text:       fileText
+      link:       link
+      URL:        link.href
+      name:       fileText.title or link.title or link.textContent
+      size:       info.match(/[\d.]+\s\w+/)[0]
+      isImage:    /(jpg|png|gif)$/i.test link.href
+      isVideo:    /webm$/i.test link.href
+      dimensions: info.match(/\d+x\d+/)?[0]
     size  = +@file.size.match(/[\d.]+/)[0]
     unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
     size *= 1024 while unit-- > 0
     @file.sizeInBytes = size
-    @file.thumbURL = "#{location.protocol}//i.4cdn.org/#{@board}/#{@file.URL.match(/(\d+)\./)[1]}s.jpg"
-    @file.isImage = /(jpg|png|gif)$/i.test @file.URL
-    @file.isVideo = /webm$/i.test @file.URL
-    nameNode = $ 'a', fileText
-    if @file.isImage or @file.isVideo
-      @file.dimensions = nameNode.nextSibling.textContent.match(/\d+x\d+/)[0]
-    @file.name = fileText.title or nameNode.title or nameNode.textContent
+    if (thumb = $ 'img[data-md5]', fileEl)
+      $.extend @file,
+        thumb:     thumb
+        thumbURL:  "#{location.protocol}//i.4cdn.org/#{@board}/#{link.href.match(/(\d+)\./)[1]}s.jpg"
+        MD5:       thumb.dataset.md5
+        isSpoiler: $.hasClass thumb.parentNode, 'imgspoiler'
 
   kill: (file) ->
     if file
