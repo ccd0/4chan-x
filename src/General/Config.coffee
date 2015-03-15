@@ -662,7 +662,7 @@ Config =
     #http://3d.iqdb.org/?url=%IMG
     #http://regex.info/exif.cgi?imgurl=%URL
     # uploaders:
-    #//imgur.com/upload?url=%URL;text:Upload to imgur
+    #//imgur.com/upload?url=%URL;types:gif,jpg,png,pdf;text:Upload to imgur
     # "View Same" in archives:
     #https://archive.moe/_/search/image/%MD5/;text:View same on archive.moe
     #https://archive.moe/%board/search/image/%MD5/;text:View same on archive.moe/%board/;boards:<%=
