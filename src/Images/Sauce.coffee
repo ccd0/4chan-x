@@ -26,14 +26,16 @@ Sauce =
       else
         m = part.match /^(\w*):(.*)$/
         parts[m[1]] = m[2]
-
     parts['text'] or= parts['url'].match(/(\w+)\.\w+\//)?[1] or '?'
+    ext = post.file.URL.match(/[^.]*$/)[0]
+
     skip = false
     for key of parts
-      parts[key] = parts[key].replace /%(T?URL|MD5|board|name|%|semi)/g, (parameter) ->
+      parts[key] = parts[key].replace /%(T?URL|IMG|MD5|board|name|%|semi)/g, (parameter) ->
         type = {
           '%TURL':  post.file.thumbURL
           '%URL':   post.file.URL
+          '%IMG':   if ext in ['gif', 'jpg', 'png'] then post.file.URL else post.file.thumbURL
           '%MD5':   post.file.MD5
           '%board': post.board.ID
           '%name':  post.file.name
@@ -50,10 +52,9 @@ Sauce =
         type
 
     return null if skip
-
-    ext = post.file.URL.match(/\.([^\.]*)$/)?[1] or ''
     return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
     return null unless !parts['types']  or ext           in parts['types'].split  ','
+
     a = Sauce.link.cloneNode true
     a.href = parts['url']
     a.textContent = parts['text']

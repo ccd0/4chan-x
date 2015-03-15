@@ -654,12 +654,12 @@ Config =
     MD5: ''
 
   sauces: """
-    https://www.google.com/searchbyimage?image_url=%TURL
-    http://iqdb.org/?url=%TURL
+    https://www.google.com/searchbyimage?image_url=%IMG
+    http://iqdb.org/?url=%IMG
     http://eye.swfchan.com/search/?q=%name;types:swf
-    #//tineye.com/search?url=%TURL
-    #//saucenao.com/search.php?url=%TURL
-    #http://3d.iqdb.org/?url=%TURL
+    #//tineye.com/search?url=%IMG
+    #//saucenao.com/search.php?url=%IMG
+    #http://3d.iqdb.org/?url=%IMG
     #http://regex.info/exif.cgi?imgurl=%URL
     # uploaders:
     #//imgur.com/upload?url=%URL;text:Upload to imgur
@@ -671,9 +671,6 @@ Config =
     #https://rbt.asia/%board/image/%MD5;text:View same on RBT /%board/;boards:<%=
       grunt.file.readJSON('src/Archive/archives.json').filter(function(x) {return x.uid === 8})[0].files.join(',')
     %>
-    # Search with full image only for image file types:
-    #https://www.google.com/searchbyimage?image_url=%URL;types:gif,jpg,png
-    #https://www.google.com/searchbyimage?image_url=%TURL;types:webm,pdf
   """
 
   FappeT:
