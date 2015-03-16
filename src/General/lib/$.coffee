@@ -221,11 +221,7 @@ $.event = (event, detail, root=d) ->
 
 $.open = 
 <% if (type === 'userscript') { %>
-  if GM_info.version is 'unknown' # GM_info.version is broken in GM3.0
-    # XXX https://github.com/greasemonkey/greasemonkey/issues/2094
-    (URL) -> $.globalEval "window.open(#{JSON.stringify URL}, '_blank');"
-  else
-    GM_openInTab
+  GM_openInTab
 <% } else { %>
   (URL) -> window.open URL, '_blank'
 <% } %>
