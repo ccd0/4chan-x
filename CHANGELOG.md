@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.5
 
+**v1.10.5.2** *(2015-03-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.4.8: Revert workaround for Greasemonkey 3.0 bug requiring popup permissions. Users having problems with multiple tabs opening should update to [Greasemonkey 3.1](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) (currently in beta).
+
 **v1.10.5.1** *(2015-03-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.10.4.7: Fix maximum updater interval when `Optional Increase` is enabled.
 
