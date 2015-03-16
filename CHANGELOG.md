@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.5
 
+**v1.10.5.1** *(2015-03-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.4.7: Fix maximum updater interval when `Optional Increase` is enabled.
+
 **v1.10.5.0** *(2015-03-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.10.4.6.
 - (vampiricwulf) Activate native extension's Flash embedding on /f/ (option: `Enable Native Flash Embedding`).
