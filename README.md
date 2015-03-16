@@ -9,12 +9,12 @@ https://github.com/Nebukazar/OneeChan.
 ## Firefox version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js)
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install 4chan X. If you are using Firefox 29 or earlier, you should use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15).
 
-If you want to try out Electrolysis, use the latest [beta version](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) of Greasemonkey. See [this thread](https://github.com/greasemonkey/greasemonkey/issues/2004) for the latest news on support.
-
 **WARNING**:
 If you're switching to this fork from someone else's fork of 4chan X, back up your old script before installing this one as the old one may be overwritten.
 
 **Known issues**:
+If you're using Greasemonkey 3.0, 4chan X requires popups to be enabled on `boards.4chan.org` in order to open new tabs (for example, when starting a thread). The underlying issue will most likely be fixed in Greasemonkey 3.1.
+
 The combination of Firefox 29 and Greasemonkey 2.0+ causes 4chan X not to work.
 If you have this problem, you should [upgrade Firefox](http://www.mozilla.org/en-US/firefox/new/) to version 30 or higher.
 Alternatively, you can downgrade to [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) and turn off automatic updates for Greasemonkey ([see pic](https://ccd0.github.io/4chan-x/img/2014-07-12_16-19-32.png)).
