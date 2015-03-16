@@ -7,7 +7,7 @@ If you're looking for a maintained fork of OneeChan (a style script used in addi
 https://github.com/Nebukazar/OneeChan.
 
 ## Firefox version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js)
-Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) (note: You may want to install the beta version due to bugs in version 3.0), then click the link above to install 4chan X. If you're using a fork of Firefox (e.g. Pale Moon), you may need to use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) instead of the most recent version.
+Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) (note: You may want to install the beta version due to a bug in version 3.0), then click the link above to install 4chan X. If you're using a fork of Firefox (e.g. Pale Moon), you may need to use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) instead of the most recent version.
 
 **WARNING**:
 If you're switching to this fork from someone else's fork of 4chan X, back up your old script before installing this one as the old one may be overwritten.
