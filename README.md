@@ -13,7 +13,7 @@ Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonk
 If you're switching to this fork from someone else's fork of 4chan X, back up your old script before installing this one as the old one may be overwritten.
 
 **Known issues**:
-Greasemonkey 3.0 has a [bug](https://github.com/greasemonkey/greasemonkey/issues/2094) causing 4chan X to open multiple tabs when you open a new tab (for example, when starting a thread). If you're having this problem, you upgrading to [Greasemonkey 3.1](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) (currently in beta) should fix it.
+Greasemonkey 3.0 has a [bug](https://github.com/greasemonkey/greasemonkey/issues/2094) causing 4chan X to open multiple tabs when you open a new tab (for example, when starting a thread). If you're having this problem, upgrading to [Greasemonkey 3.1](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) (currently in beta) should fix it.
 
 ## Chromium version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.crx)
 Download the file from the link above and add drag it to your `chrome://extensions` page.
