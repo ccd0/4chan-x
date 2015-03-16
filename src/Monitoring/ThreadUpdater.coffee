@@ -198,7 +198,7 @@ ThreadUpdater =
     {interval} = ThreadUpdater
     if Conf['Optional Increase']
       # Lower the max refresh rate limit on visible tabs.
-      limit = if d.hidden then 7 else 10
+      limit = if d.hidden then 10 else 5
       j     = Math.min ThreadUpdater.outdateCount, limit
 
       # 1 second to 100, 30 to 300.
