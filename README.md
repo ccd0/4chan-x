@@ -7,13 +7,13 @@ If you're looking for a maintained fork of OneeChan (a style script used in addi
 https://github.com/Nebukazar/OneeChan.
 
 ## Firefox version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js)
-Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install 4chan X. If you're using a fork of Firefox (e.g. Pale Moon), you may need to use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) instead of the most recent version.
+Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) (note: You may want to install the beta version due to bugs in version 3.0), then click the link above to install 4chan X. If you're using a fork of Firefox (e.g. Pale Moon), you may need to use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) instead of the most recent version.
 
 **WARNING**:
 If you're switching to this fork from someone else's fork of 4chan X, back up your old script before installing this one as the old one may be overwritten.
 
 **Known issues**:
-If you're using Greasemonkey 3.0, 4chan X requires popups to be enabled on `boards.4chan.org` in order to open new tabs (for example, when starting a thread). The underlying issue will most likely be fixed in Greasemonkey 3.1.
+Greasemonkey 3.0 has a [bug](https://github.com/greasemonkey/greasemonkey/issues/2094) causing 4chan X to open multiple tabs when you open a new tab (for example, when starting a thread). If you're having this problem, you upgrading to [Greasemonkey 3.1](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) (currently in beta) should fix it.
 
 ## Chromium version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.crx)
 Download the file from the link above and add drag it to your `chrome://extensions` page.
