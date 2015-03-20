@@ -7,13 +7,13 @@ If you're looking for a maintained fork of OneeChan (a style script used in addi
 https://github.com/Nebukazar/OneeChan.
 
 ## Firefox version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js)
-Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) (note: You may want to install the beta version due to a bug in version 3.0), then click the link above to install 4chan X. If you're using a fork of Firefox (e.g. Pale Moon), you may need to use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) instead of the most recent version.
+Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install 4chan X. If you're using a fork of Firefox (e.g. Pale Moon), you may need to use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) instead of the most recent version.
 
 **WARNING**:
 If you're switching to this fork from someone else's fork of 4chan X, back up your old script before installing this one as the old one may be overwritten.
 
 **Known issues**:
-Greasemonkey 3.0 has a [bug](https://github.com/greasemonkey/greasemonkey/issues/2094) causing 4chan X to open multiple tabs when you open a new tab (for example, when starting a thread). If you're having this problem, upgrading to [Greasemonkey 3.1](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) (currently in beta) should fix it.
+Greasemonkey 3.0 has a [bug](https://github.com/greasemonkey/greasemonkey/issues/2094) causing 4chan X to open multiple tabs when you open a new tab (for example, when starting a thread). If you're having this problem, [updating](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) to Greasemonkey 3.1 or later should fix it.
 
 ## Chromium version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.crx)
 Download the file from the link above and add drag it to your `chrome://extensions` page.
