@@ -62,15 +62,6 @@
   "boards": ["asp", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "y"],
   "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "y"]
 }, {
-  "uid": 21,
-  "name": "imcute",
-  "domain": "imcute.yt",
-  "http": true,
-  "https": false,
-  "software": "foolfuuka",
-  "boards": ["an", "fit", "gif", "int", "mlp", "out", "r9k", "qa", "toy"],
-  "files": ["an", "fit", "gif", "int", "mlp", "out", "r9k", "qa", "toy"]
-}, {
   "uid": 22,
   "name": "not4plebs",
   "domain": "totally.not4plebs.org",
