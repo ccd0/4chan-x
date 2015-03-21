@@ -264,6 +264,7 @@ module.exports = (grunt) ->
           webkitNotifications: true
           HTMLDocument: true
           MediaError:   true
+          Set:          true
           GM_getValue:  true
           GM_setValue:  true
           GM_deleteValue: true
