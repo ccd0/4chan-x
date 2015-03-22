@@ -1332,9 +1332,9 @@ input#qr-filename {
   flex: none;
   margin: 0;
   margin-right: 3px;
-  font: 13px sans-serif;
 }
 #qr.has-spoiler #file-n-submit:not(.has-file) #qr-spoiler-label,
+.has-file #paste-area,
 .has-file #url-button,
 #file-n-submit:not(.custom-cooldown) #custom-cooldown-button {
   display: none;
@@ -1342,8 +1342,14 @@ input#qr-filename {
 #qr-file-spoiler {
   margin: 0;
 }
-#url-button, #custom-cooldown-button, #dump-button {
+#paste-area, #url-button, #custom-cooldown-button, #dump-button {
   opacity: 0.6;
+}
+#paste-area {
+  font-size: 0;
+}
+#paste-area:focus {
+  opacity: 1;
 }
 #custom-cooldown-button.disabled {
   opacity: 0.27;
