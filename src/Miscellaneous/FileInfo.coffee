@@ -5,6 +5,7 @@ FileInfo =
     Post.callbacks.push
       name: 'File Info Formatting'
       cb:   @node
+
   node: ->
     return if !@file or @isClone
     @file.link.hidden = true
@@ -12,6 +13,7 @@ FileInfo =
     info = $.el 'span', className: 'file-info'
     $.after @file.link.nextSibling, info
     FileInfo.format Conf['fileInfo'], @, info
+
   format: (formatString, post, outputNode) ->
     output = []
     formatString.replace /%(.)|[^%]+/g, (s, c) ->
@@ -21,6 +23,7 @@ FileInfo =
         <%= html('${s}') %>
       ''
     $.extend outputNode, <%= html('@{output}') %>
+
   formatters:
     t: -> <%= html('${this.file.URL.match(/[^\/]*$/)[0]}') %>
     T: -> <%= html('<a href="${this.file.URL}" target="_blank">&{FileInfo.formatters.t.call(this)}</a>') %>
