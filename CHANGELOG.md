@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.6
 
+**v1.10.6.3** *(2015-03-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Drop `Remove Original Link` option; work around DownThemAll limitations a better way.
+
 **v1.10.6.2** *(2015-03-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix conflict with 4chan imgur thumbnail script, hopefully correctly this time.
 - Add `Remove Original Link` suboption (default: off) to `File Info Formatting` to remove rather than hide the original link in the file info.
