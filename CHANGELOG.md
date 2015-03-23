@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.6
 
+**v1.10.6.3** *(2015-03-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Drop `Remove Original Link` option; work around DownThemAll limitations a better way.
+
 **v1.10.6.2** *(2015-03-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix conflict with 4chan imgur thumbnail script, hopefully correctly this time.
 - Add `Remove Original Link` suboption (default: off) to `File Info Formatting` to remove rather than hide the original link in the file info.
@@ -17,6 +20,9 @@ The links to individual versions below are to copies of the script with the upda
 - Add workaround for pasting images to the Quick Reply in Firefox.
 
 ### v1.10.5
+
+**v1.10.5.4** *(2015-03-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix conflict with 4chan imgur thumbnail extension.
 
 **v1.10.5.3** *(2015-03-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - (MayhemYDG) Remove dead imcute.yt archive.
