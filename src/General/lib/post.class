@@ -164,18 +164,18 @@ class Post
 
   parseFile: ->
     return unless fileEl = $ '.file', @nodes.post
-    return unless link   = $ '.fileText > a:first-child', fileEl
+    return unless link   = $ '.fileText > a', fileEl
+    return unless info   = link.nextSibling?.textContent.match /\(([\d.]+ [KMG]?B).*\)/
     fileText = fileEl.firstElementChild
-    info     = link.nextSibling.textContent
     @file =
       text:       fileText
       link:       link
       URL:        link.href
       name:       fileText.title or link.title or link.textContent
-      size:       info.match(/[\d.]+\s\w+/)[0]
+      size:       info[1]
       isImage:    /(jpg|png|gif)$/i.test link.href
       isVideo:    /webm$/i.test link.href
-      dimensions: info.match(/\d+x\d+/)?[0]
+      dimensions: info[0].match(/\d+x\d+/)?[0]
     size  = +@file.size.match(/[\d.]+/)[0]
     unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
     size *= 1024 while unit-- > 0
