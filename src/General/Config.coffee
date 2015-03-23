@@ -64,6 +64,11 @@ Config =
         true
         'Reformat the file information.'
       ]
+      'Remove Original Link': [
+        false
+        'Remove the original file link rather than hiding it. May cause incompatibilities with other scripts.'
+        1
+      ]
       'Thread Expansion': [
         true
         'Add buttons to expand threads.'

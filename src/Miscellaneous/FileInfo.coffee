@@ -8,15 +8,22 @@ FileInfo =
 
   node: ->
     return if !@file or @isClone
-    @file.link.previousSibling.nodeValue = ''
-    @file.link.hidden = true
-    {nextSibling} = @file.link
-    wrapper = $.el 'span', {hidden: true}
-    $.replace nextSibling, wrapper
-    $.add wrapper, nextSibling
+
     info = $.el 'span', className: 'file-info'
     FileInfo.format Conf['fileInfo'], @, info
-    $.after wrapper, info
+
+    if Conf['Remove Original Link'] and not (@board.ID is 'f' and Conf['Enable Native Flash Embedding'])
+      {parentNode} = @file.link
+      $.rmAll parentNode
+      $.add parentNode, info
+    else
+      @file.link.previousSibling.nodeValue = ''
+      @file.link.hidden = true
+      {nextSibling} = @file.link
+      wrapper = $.el 'span', {hidden: true}
+      $.replace nextSibling, wrapper
+      $.add wrapper, nextSibling
+      $.after wrapper, info
 
   format: (formatString, post, outputNode) ->
     output = []
