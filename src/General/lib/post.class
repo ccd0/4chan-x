@@ -166,7 +166,6 @@ class Post
     return unless (fileEl = $ '.file', @nodes.post) and not $('.fileDeletedRes', fileEl)
     fileText = fileEl.firstElementChild
     link     = $ 'a', fileText
-    return unless link.host is 'i.4cdn.org' # Don't parse file info from userscripts like 4chan imgur thumbnail.
     info     = link.nextSibling.textContent
     @file =
       text:       fileText
