@@ -166,6 +166,7 @@ class Post
     return unless (fileEl = $ '.file', @nodes.post) and not $('.fileDeletedRes', fileEl)
     fileText = fileEl.firstElementChild
     link     = $ 'a', fileText
+    return unless link.nextSibling
     info     = link.nextSibling.textContent
     @file =
       text:       fileText
