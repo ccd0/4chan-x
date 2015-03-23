@@ -8,11 +8,15 @@ FileInfo =
 
   node: ->
     return if !@file or @isClone
+    @file.link.previousSibling.nodeValue = ''
     @file.link.hidden = true
-    @file.link.previousSibling.nodeValue = @file.link.nextSibling.nodeValue = ''
+    {nextSibling} = @file.link
+    wrapper = $.el 'span', {hidden: true}
+    $.replace nextSibling, wrapper
+    $.add wrapper, nextSibling
     info = $.el 'span', className: 'file-info'
-    $.after @file.link.nextSibling, info
     FileInfo.format Conf['fileInfo'], @, info
+    $.after wrapper, info
 
   format: (formatString, post, outputNode) ->
     output = []
