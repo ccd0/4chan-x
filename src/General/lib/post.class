@@ -163,9 +163,9 @@ class Post
     @quotes.push fullID unless fullID in @quotes
 
   parseFile: ->
-    return unless (fileEl = $ '.file', @nodes.post) and not $('.fileDeletedRes', fileEl)
+    return unless fileEl = $ '.file', @nodes.post
+    return unless link   = $ '.fileText > a:first-child', fileEl
     fileText = fileEl.firstElementChild
-    link     = $ 'a', fileText
     info     = link.nextSibling.textContent
     @file =
       text:       fileText
