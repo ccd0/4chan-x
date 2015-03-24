@@ -170,7 +170,7 @@ QR =
     QR.setCustomCooldown enabled
     $.set 'customCooldownEnabled', enabled
 
-  error: (err) ->
+  error: (err, focusOverride) ->
     QR.open()
     if typeof err is 'string'
       el = $.tn err
@@ -179,30 +179,24 @@ QR =
       el.removeAttribute 'style'
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       QR.captcha.setup true
-      QR.captcha.notify el
-    else
-      QR.notify el
-    alert el.textContent if d.hidden
-
-  notify: (el) ->
     notice = new Notice 'warning', el
-    unless Header.areNotificationsEnabled and d.hidden
-      QR.notifications.push notice
-    else
+    QR.notifications.push notice
+    unless Header.areNotificationsEnabled
+      alert el.textContent if d.hidden and not QR.cooldown.auto
+    else if d.hidden or not (focusOverride or d.hasFocus())
       notif = new Notification el.textContent,
         body: el.textContent
         icon: Favicon.logo
       notif.onclick = -> window.focus()
-      <% if (type === 'crx') { %>
-      # Firefox automatically closes notifications
-      # so we can't control the onclose properly.
-      notif.onclose = -> notice.close()
-      notif.onshow  = ->
-        setTimeout ->
-          notif.onclose = null
-          notif.close()
-        , 7 * $.SECOND
-      <% } %>
+      if chrome?
+        # Firefox automatically closes notifications
+        # so we can't control the onclose properly.
+        notif.onclose = -> notice.close()
+        notif.onshow  = ->
+          setTimeout ->
+            notif.onclose = null
+            notif.close()
+          , 7 * $.SECOND
 
   notifications: []
 
@@ -323,13 +317,32 @@ QR =
     QR.handleFiles files
     $.addClass QR.nodes.el, 'dump'
 
-  handleUrl:  ->
-    url = prompt 'Enter a URL:'
+  pasteFF: ->
+    {pasteArea} = QR.nodes
+    return unless pasteArea.childNodes.length
+    images = $$ 'img', pasteArea
+    $.rmAll pasteArea
+    for img in images
+      {src} = img
+      if m = src.match /data:(image\/(\w+));base64,(.+)/
+        bstr = atob m[3]
+        arr = new Uint8Array(bstr.length)
+        for i in [0...bstr.length]
+          arr[i] = bstr.charCodeAt(i)
+        blob = new Blob [arr], {type: m[1]}
+        blob.name = "image.#{m[2]}"
+        QR.handleFiles [blob]
+      else if /^https?:\/\//.test src
+        QR.handleUrl src
+    return
+
+  handleUrl: (urlDefault) ->
+    url = prompt 'Enter a URL:', urlDefault
     return if url is null
     QR.nodes.fileButton.focus()
     CrossOrigin.file url, (blob) ->
       if blob
-        QR.handleFiles([blob])
+        QR.handleFiles [blob]
       else
         QR.error "Can't load image."
 
@@ -395,6 +408,7 @@ QR =
     setNode 'close',         '.close'
     setNode 'form',          'form'
     setNode 'dumpButton',    '#dump-button'
+    setNode 'pasteArea',     '#paste-area'
     setNode 'urlButton',     '#url-button'
     setNode 'name',          '[data-name=name]'
     setNode 'email',         '[data-name=email]'
@@ -480,7 +494,7 @@ QR =
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
-    $.on nodes.urlButton,  'click',  QR.handleUrl
+    $.on nodes.urlButton,  'click',  -> QR.handleUrl ''
     $.on nodes.addPost,    'click',  -> new QR.post true
     $.on nodes.form,       'submit', QR.submit
     $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
@@ -492,6 +506,10 @@ QR =
     window.addEventListener 'blur',  QR.focus, true
     # We don't receive blur events from captcha iframe.
     $.on d, 'click', QR.focus
+
+    unless chrome?
+      nodes.pasteArea.hidden = false
+      new MutationObserver(QR.pasteFF).observe nodes.pasteArea, {childList: true}
 
     # save selected post's data
     items = ['thread', 'name', 'email', 'sub', 'com', 'filename']
@@ -706,8 +724,6 @@ QR =
 
     if Conf['Posting Success Notifications']
       QR.notifications.push new Notice 'success', h1.textContent, 5
-
-    QR.persona.set post
 
     [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
     postID   = +postID

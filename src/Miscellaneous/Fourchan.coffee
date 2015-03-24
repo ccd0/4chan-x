@@ -3,10 +3,20 @@ Fourchan =
     return unless g.VIEW in ['index', 'thread']
 
     if g.BOARD.ID is 'g'
+      $.on window, 'prettyprint:cb', (e) ->
+        return unless post = g.posts[e.detail.ID]
+        return unless pre  = $$('.prettyprint', post.nodes.comment)[e.detail.i]
+        unless $.hasClass pre, 'prettyprinted'
+          pre.innerHTML = e.detail.html
+          $.addClass pre, 'prettyprinted'
       $.globalEval '''
         window.addEventListener('prettyprint', function(e) {
           window.dispatchEvent(new CustomEvent('prettyprint:cb', {
-            detail: prettyPrintOne(e.detail)
+            detail: {
+              ID:   e.detail.ID,
+              i:    e.detail.i,
+              html: prettyPrintOne(e.detail.html)
+            }
           }));
         }, false);
       '''
@@ -50,13 +60,8 @@ Fourchan =
 
   code: ->
     return if @isClone
-    apply = (e) ->
-      pre.innerHTML = e.detail
-      $.addClass pre, 'prettyprinted'
-    $.on window, 'prettyprint:cb', apply
-    for pre in $$ '.prettyprint:not(.prettyprinted)', @nodes.comment
-      $.event 'prettyprint', pre.innerHTML, window
-    $.off window, 'prettyprint:cb', apply
+    for pre, i in $$('.prettyprint', @nodes.comment) when not $.hasClass(pre, 'prettyprinted')
+      $.event 'prettyprint', {ID: @fullID, i: i, html: pre.innerHTML}, window
     return
 
   math: ->

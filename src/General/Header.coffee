@@ -245,9 +245,12 @@ Header =
       text or boardID
 
     if m = t.match /-(index|catalog)/
-      a.dataset.only = m[1]
-      a.href = CatalogLinks[m[1]] boardID
-      $.addClass a, 'catalog' if m[1] is 'catalog'
+      unless boardID is 'f' and m[1] is 'catalog'
+        a.dataset.only = m[1]
+        a.href = CatalogLinks[m[1]] boardID
+        $.addClass a, 'catalog' if m[1] is 'catalog'
+      else
+        return a.firstChild # Its text node.
 
     if /-archive/.test t
       if href = Redirect.to 'board', {boardID}

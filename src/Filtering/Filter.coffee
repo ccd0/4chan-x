@@ -155,7 +155,7 @@ Filter =
     false
   dimensions: (post) ->
     {file} = post
-    if file and (file.isImage or file.isVideo)
+    if file?.dimensions
       return file.dimensions
     false
   filesize: (post) ->
@@ -163,7 +163,7 @@ Filter =
       return post.file.size
     false
   MD5: (post) ->
-    if post.file
+    if post.file?.MD5
       return post.file.MD5
     false
 

@@ -2,7 +2,72 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+### v1.10.6
+
+**v1.10.6.3** *(2015-03-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Drop `Remove Original Link` option; work around DownThemAll limitations a better way.
+
+**v1.10.6.2** *(2015-03-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix conflict with 4chan imgur thumbnail script, hopefully correctly this time.
+- Add `Remove Original Link` suboption (default: off) to `File Info Formatting` to remove rather than hide the original link in the file info.
+- Minor unread line bugfix.
+
+**v1.10.6.1** *(2015-03-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix conflict with 4chan imgur thumbnail script.
+
+**v1.10.6.0** *(2015-03-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.6.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.10.5.3.
+- Add workaround for pasting images to the Quick Reply in Firefox.
+
+### v1.10.5
+
+**v1.10.5.5** *(2015-03-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Backport `File Info Formatting` fixes from v1.10.6.3.
+
+**v1.10.5.4** *(2015-03-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix conflict with 4chan imgur thumbnail extension.
+
+**v1.10.5.3** *(2015-03-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- (MayhemYDG) Remove dead imcute.yt archive.
+- Add DesuStorage archive.
+
+**v1.10.5.2** *(2015-03-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.4.8: Revert asking for popup permissions to work around Greasemonkey 3.0 bug. Users having problems with multiple tabs opening should update to [Greasemonkey 3.1](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) (currently in beta).
+
+**v1.10.5.1** *(2015-03-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.4.7: Fix maximum updater interval when `Optional Increase` is enabled.
+
+**v1.10.5.0** *(2015-03-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.10.4.6.
+- (vampiricwulf) Activate native extension's Flash embedding on /f/ (option: `Enable Native Flash Embedding`).
+- `Sauce`, `File Info Formatting`, and searching the filename in the archive now work in /f/ threads.
+- Sauce links now support the `%IMG` parameter, which searches the full image for GIF, JPEG, and PNG file types, and the thumbnail for PDF and WEBM.
+- SWFchan (`http://eye.swfchan.com/search/?q=%name;types:swf`) has been added to the default sauce links, and Yandex (`https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG`) has been added to the default sauce link examples.
+- You no longer need to make a post for 4chan X to remember changes to the name field. The options field is no longer remembered (use `Advanced` > `Quick Reply Personas` if you want certain options like `sage` by default).
+- `Desktop Notifications` is now on by default.
+- The `Captcha Warning Notifications` option has been removed. Captcha errors will always show a normal error notice.
+- Various bugfixes.
+
 ### v1.10.4
+
+**v1.10.4.8** *(2015-03-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.8/builds/4chan-X-noupdate.crx "Chromium version")]
+- Revert asking for popup permissions to work around Greasemonkey 3.0 bug. Users having problems with multiple tabs opening should update to [Greasemonkey 3.1](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) (currently in beta).
+
+**v1.10.4.7** *(2015-03-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.7/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix maximum updater interval when `Optional Increase` is enabled.
+
+**v1.10.4.6** *(2015-03-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Work around Greasemonkey 3.0 bug causing multiple tabs to be opened upon posting. For now, users will have to either enable popups on boards.4chan.org or downgrade to Greasemonkey 2.3.
+
+**v1.10.4.5** *(2015-03-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix wait-to-post error messages pausing autoposting.
+
+**v1.10.4.4** *(2015-03-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update Strawpoll, Loopvid embedding; remove MediaCrush.
+- API bug fix.
+
+**v1.10.4.3** *(2015-03-10)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix false-positive deleted posts again.
 
 **v1.10.4.2** *(2015-03-09)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.4.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix bugs when posts are previewed before they appear in the index (by links to future posts).

@@ -7,7 +7,7 @@ RevealSpoilers =
       cb:   @node
 
   node: ->
-    return if @isClone or !@file?.isSpoiler
+    return unless not @isClone and @file and @file.thumb and @file.isSpoiler
     {thumb} = @file
     # Remove old width and height.
     thumb.removeAttribute 'style'

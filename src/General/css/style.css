@@ -946,6 +946,7 @@ span.hide-announcement {
 }
 
 /* File */
+.original-file-info,
 .fnswitch:hover > .fntrunc,
 .fnswitch:not(:hover) > .fnfull,
 .expanded-image > .post > .file > .fileThumb > video[data-md5],
@@ -1235,9 +1236,6 @@ input.field.tripped:not(:hover):not(:focus) {
   width: 100%;
   margin: 1px 0 0;
 }
-.captcha-input.error:focus {
-  border-color: rgb(255,0,0) !important;
-}
 #qr-captcha-iframe {
   display: none;
 }
@@ -1335,9 +1333,9 @@ input#qr-filename {
   flex: none;
   margin: 0;
   margin-right: 3px;
-  font: 13px sans-serif;
 }
 #qr.has-spoiler #file-n-submit:not(.has-file) #qr-spoiler-label,
+.has-file #paste-area,
 .has-file #url-button,
 #file-n-submit:not(.custom-cooldown) #custom-cooldown-button {
   display: none;
@@ -1345,8 +1343,14 @@ input#qr-filename {
 #qr-file-spoiler {
   margin: 0;
 }
-#url-button, #custom-cooldown-button, #dump-button {
+#paste-area, #url-button, #custom-cooldown-button, #dump-button {
   opacity: 0.6;
+}
+#paste-area {
+  font-size: 0;
+}
+#paste-area:focus {
+  opacity: 1;
 }
 #custom-cooldown-button.disabled {
   opacity: 0.27;

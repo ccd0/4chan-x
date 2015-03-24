@@ -21,7 +21,11 @@ Keybinds =
     {target} = e
     if target.nodeName in ['INPUT', 'TEXTAREA']
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test key
-    unless g.VIEW not in ['index', 'thread'] or g.VIEW is 'index' and Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog'
+    unless (
+      g.VIEW not in ['index', 'thread'] or
+      g.VIEW is 'index' and Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog' or
+      g.VIEW is 'index' and g.BOARD.ID is 'f'
+    )
       threadRoot = Nav.getThread()
       if op = $ '.op', threadRoot
         thread = Get.postFromNode(op).thread
@@ -80,7 +84,7 @@ Keybinds =
             return unless Conf['Thread Updater']
             ThreadUpdater.update()
           when 'index'
-            return unless Conf['JSON Navigation']
+            return unless Conf['JSON Navigation'] and g.BOARD.ID isnt 'f'
             Index.update()
           else
             return
@@ -98,21 +102,21 @@ Keybinds =
         return unless Gallery.enabled
         Gallery.cb.toggle()
       when Conf['fappeTyme']
-        return unless Conf['Fappe Tyme'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
+        return unless Conf['Fappe Tyme'] and g.VIEW in ['index', 'thread']
         FappeTyme.toggle 'fappe'
       when Conf['werkTyme']
-        return unless Conf['Werk Tyme'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
+        return unless Conf['Werk Tyme'] and g.VIEW in ['index', 'thread']
         FappeTyme.toggle 'werk'
       # Board Navigation
       when Conf['Front page']
-        if Conf['JSON Navigation'] and g.VIEW is 'index'
+        if Conf['JSON Navigation'] and g.VIEW is 'index' and g.BOARD.ID isnt 'f'
           Index.userPageNav 1
         else
           window.location = "/#{g.BOARD}/"
       when Conf['Open front page']
         $.open "/#{g.BOARD}/"
       when Conf['Next page']
-        return unless g.VIEW is 'index'
+        return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         if Conf['JSON Navigation']
           return unless Conf['Index Mode'] in ['paged', 'infinite']
           $('.next button', Index.pagelist).click()
@@ -120,7 +124,7 @@ Keybinds =
           if form = $ '.next form'
             window.location = form.action
       when Conf['Previous page']
-        return unless g.VIEW is 'index'
+        return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         if Conf['JSON Navigation']
           return unless Conf['Index Mode'] in ['paged', 'infinite']
           $('.prev button', Index.pagelist).click()
@@ -128,23 +132,24 @@ Keybinds =
           if form = $ '.prev form'
             window.location = form.action
       when Conf['Search form']
-        return unless g.VIEW is 'index'
+        return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         searchInput = if Conf['JSON Navigation'] then Index.searchInput else $.id('search-box')
         Header.scrollToIfNeeded searchInput
         searchInput.focus()
       when Conf['Paged mode']
-        return unless Conf['JSON Navigation']
+        return unless Conf['JSON Navigation'] and g.BOARD.ID isnt 'f'
         window.location = if g.VIEW is 'index' then '#paged' else "/#{g.BOARD}/#paged"
       when Conf['Infinite scrolling mode']
-        return unless Conf['JSON Navigation']
+        return unless Conf['JSON Navigation'] and g.BOARD.ID isnt 'f'
         window.location = if g.VIEW is 'index' then '#infinite' else "/#{g.BOARD}/#infinite"
       when Conf['All pages mode']
-        return unless Conf['JSON Navigation']
+        return unless Conf['JSON Navigation'] and g.BOARD.ID isnt 'f'
         window.location = if g.VIEW is 'index' then '#all-pages' else "/#{g.BOARD}/#all-pages"
       when Conf['Open catalog']
+        return if g.BOARD.ID is 'f'
         window.location = CatalogLinks.catalog()
       when Conf['Cycle sort type']
-        return unless Conf['JSON Navigation'] and g.VIEW is 'index' and g.BOARD isnt 'f'
+        return unless Conf['JSON Navigation'] and g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         Index.cycleSortType()
       # Thread Navigation
       when Conf['Next thread']

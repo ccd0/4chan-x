@@ -5,10 +5,18 @@ FileInfo =
     Post.callbacks.push
       name: 'File Info Formatting'
       cb:   @node
+
   node: ->
     return if !@file or @isClone
-    $.extend @file.text, <%= html('<span class="file-info"></span>') %>
-    FileInfo.format Conf['fileInfo'], @, @file.text.firstElementChild
+
+    oldInfo = $.el 'span', {className: 'original-file-info'}
+    $.prepend @file.link.parentNode, oldInfo
+    $.add oldInfo, [@file.link.previousSibling, @file.link, @file.link.nextSibling]
+
+    info = $.el 'span', {className: 'file-info'}
+    FileInfo.format Conf['fileInfo'], @, info
+    $.prepend @file.text, info
+
   format: (formatString, post, outputNode) ->
     output = []
     formatString.replace /%(.)|[^%]+/g, (s, c) ->
@@ -18,8 +26,9 @@ FileInfo =
         <%= html('${s}') %>
       ''
     $.extend outputNode, <%= html('@{output}') %>
+
   formatters:
-    t: -> <%= html('${this.file.URL.match(/\\d+\\..+$/)[0]}') %>
+    t: -> <%= html('${this.file.URL.match(/[^\/]*$/)[0]}') %>
     T: -> <%= html('<a href="${this.file.URL}" target="_blank">&{FileInfo.formatters.t.call(this)}</a>') %>
     l: -> <%= html('<a href="${this.file.URL}" target="_blank">&{FileInfo.formatters.n.call(this)}</a>') %>
     L: -> <%= html('<a href="${this.file.URL}" target="_blank">&{FileInfo.formatters.N.call(this)}</a>') %>

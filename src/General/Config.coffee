@@ -28,7 +28,7 @@ Config =
         'Add button to hide 4chan announcements.'
       ]
       'Desktop Notifications': [
-        false
+        true
         'Enables desktop notifications across various <%= meta.name %> features.'
       ]
       '404 Redirect': [
@@ -116,6 +116,10 @@ Config =
       'Disable Native Extension': [
         true
         '<%= meta.name %> is NOT designed to work with the native extension.'
+      ]
+      'Enable Native Flash Embedding': [
+        true
+        'Activate the native extension\'s Flash embedding if the native extension is disabled.'
       ]
 
     'Linkification':
@@ -458,11 +462,6 @@ Config =
         'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled.'
         1
       ]
-      'Captcha Warning Notifications': [
-        true
-        'When disabled, shows a red border on the CAPTCHA input until a key is pressed instead of a notification.'
-        1
-      ]
       'Auto-load captcha': [
         false
         'Automatically load the captcha in the QR even if your post is empty.'
@@ -663,14 +662,16 @@ Config =
     MD5: ''
 
   sauces: """
-    https://www.google.com/searchbyimage?image_url=%TURL
-    http://iqdb.org/?url=%TURL
-    #//tineye.com/search?url=%TURL
-    #//saucenao.com/search.php?url=%TURL
-    #http://3d.iqdb.org/?url=%TURL
+    https://www.google.com/searchbyimage?image_url=%IMG
+    http://iqdb.org/?url=%IMG
+    http://eye.swfchan.com/search/?q=%name;types:swf
+    #//tineye.com/search?url=%IMG
+    #https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG
+    #//saucenao.com/search.php?url=%IMG
+    #http://3d.iqdb.org/?url=%IMG
     #http://regex.info/exif.cgi?imgurl=%URL
     # uploaders:
-    #//imgur.com/upload?url=%URL;text:Upload to imgur
+    #//imgur.com/upload?url=%URL;types:gif,jpg,png,pdf;text:Upload to imgur
     # "View Same" in archives:
     #https://archive.moe/_/search/image/%MD5/;text:View same on archive.moe
     #https://archive.moe/%board/search/image/%MD5/;text:View same on archive.moe/%board/;boards:<%=
@@ -679,9 +680,6 @@ Config =
     #https://rbt.asia/%board/image/%MD5;text:View same on RBT /%board/;boards:<%=
       grunt.file.readJSON('src/Archive/archives.json').filter(function(x) {return x.uid === 8})[0].files.join(',')
     %>
-    # Search with full image only for image file types:
-    #https://www.google.com/searchbyimage?image_url=%URL;types:gif,jpg,png
-    #https://www.google.com/searchbyimage?image_url=%TURL;types:webm,pdf
   """
 
   FappeT:

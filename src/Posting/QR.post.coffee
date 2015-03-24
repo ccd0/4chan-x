@@ -45,10 +45,8 @@ QR.post = class
 
       @email = if 'email' of QR.persona.always
         QR.persona.always.email
-      else if prev and !/^sage$/.test prev.email
-        prev.email
       else
-        persona.email
+        ''
 
       @sub = if 'sub' of QR.persona.always
         QR.persona.always.sub
@@ -141,6 +139,8 @@ QR.post = class
           # so we suffix it with '.jpg' when needed.
           @file.newName += '.jpg'
         @updateFilename()
+      when 'name'
+        QR.persona.set @
 
   forceSave: ->
     return unless @ is QR.selected
@@ -170,7 +170,7 @@ QR.post = class
       e.stopPropagation()
       @rm() if @ in QR.posts
     $.on rmAll, 'click', QR.post.rmErrored
-    QR.error div
+    QR.error div, true
 
   fileError: (message) ->
     @error 'file-error', "#{@filename}: #{message}"

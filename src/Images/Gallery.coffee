@@ -20,7 +20,7 @@ Gallery =
       cb:   @node
 
   node: ->
-    return unless @file
+    return unless @file?.thumb
     if Gallery.nodes
       Gallery.generateThumb @
       Gallery.nodes.total.textContent = Gallery.images.length
@@ -82,7 +82,7 @@ Gallery =
 
     for file in $$ '.post .file'
       post = Get.postFromNode file
-      continue unless post.file
+      continue unless post.file?.thumb
       Gallery.generateThumb post
       # If no image to open is given, pick image we have scrolled to.
       if !image and Gallery.fullIDs[post.fullID]
@@ -105,7 +105,7 @@ Gallery =
 
   generateThumb: (post) ->
     return if post.isClone or post.isHidden
-    return unless post.file and (post.file.isImage or post.file.isVideo or Conf['PDF in Gallery'])
+    return unless post.file and post.file.thumb and (post.file.isImage or post.file.isVideo or Conf['PDF in Gallery'])
     return if Gallery.fullIDs[post.fullID]
 
     Gallery.fullIDs[post.fullID] = true

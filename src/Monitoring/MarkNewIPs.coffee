@@ -7,14 +7,15 @@ MarkNewIPs =
 
   node: ->
     MarkNewIPs.ipCount = @ipCount
+    MarkNewIPs.postCount = @posts.keys.length
     $.on d, 'ThreadUpdate', MarkNewIPs.onUpdate
 
   onUpdate: (e) ->
-    {ipCount, newPosts, deletedPosts} = e.detail
+    {ipCount, postCount, newPosts, deletedPosts} = e.detail
     return unless ipCount?
 
     switch ipCount - MarkNewIPs.ipCount
-      when newPosts.length
+      when postCount - MarkNewIPs.postCount + deletedPosts.length
         i = MarkNewIPs.ipCount
         for fullID in newPosts
           MarkNewIPs.markNew g.posts[fullID], ++i
@@ -22,6 +23,7 @@ MarkNewIPs =
         for fullID in newPosts
           MarkNewIPs.markOld g.posts[fullID]
     MarkNewIPs.ipCount = ipCount
+    MarkNewIPs.postCount = postCount
 
   markNew: (post, ipCount) ->
     suffix = if (ipCount // 10) % 10 is 1

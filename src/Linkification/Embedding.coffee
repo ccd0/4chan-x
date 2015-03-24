@@ -222,37 +222,6 @@ Embedding =
         el.setAttribute "allowfullscreen", "true"
         el
     ,
-      key: 'MediaCrush'
-      regExp: /^\w+:\/\/(?:www\.)?mediacru\.sh\/([\w\-]+)/
-      style: ''
-      el: (a) ->
-        el = $.el 'div'
-        $.queueTask -> $.cache "https://mediacru.sh/#{a.dataset.uid}.json", ->
-          return unless doc.contains el
-          {status} = @
-          return el.textContent = "ERROR #{status}" unless status in [200, 304]
-          {files} = @response
-          for type in ['video/mp4', 'video/webm', 'video/ogv', 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg', 'audio/mpeg', 'audio/ogg']
-            for file in files
-              if file.type is type
-                embed = file
-                break
-            break if embed
-          return el.textContent = "ERROR: Not a valid filetype" unless embed
-          switch embed.type
-            when 'video/mp4', 'video/webm', 'video/ogv'
-              $.extend el, <%= html('<video controls loop style="max-width: 80vw; max-height: 80vh;"><source type="video/mp4"><source type="video/webm"></video>') %>
-              for ext, i in ['mp4', 'webm']
-                el.firstChild.children[i].src = "https://mediacru.sh/#{a.dataset.uid}.#{ext}"
-            when 'image/svg+xml', 'image/png', 'image/gif', 'image/jpeg'
-              $.extend el, <%= html('<a target="_blank" href="${a.dataset.href}"><img src="https://mediacru.sh/${file.file}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
-            when 'audio/mpeg', 'audio/ogg'
-              $.extend el, <%= html('<audio controls><source type="audio/ogg" src="https://mediacru.sh/${a.dataset.uid}.ogg"></audio>') %>
-            else
-              el.textContent = "ERROR: No valid filetype."
-          return
-        el
-    ,
       key: 'Pastebin'
       regExp: /^\w+:\/\/(?:\w+\.)?pastebin\.com\/(?!u\/)(?:[\w\.]+\?i\=)?(\w+)/
       httpOnly: true
@@ -278,11 +247,10 @@ Embedding =
     ,
       key: 'StrawPoll'
       regExp: /^\w+:\/\/(?:www\.)?strawpoll\.me\/(?:embed_\d+\/)?(\d+(?:\/r)?)/
-      httpOnly: true
       style: 'border: 0; width: 600px; height: 406px;'
       el: (a) ->
         $.el 'iframe',
-          src: "http://strawpoll.me/embed_1/#{a.dataset.uid}"
+          src: "//strawpoll.me/embed_1/#{a.dataset.uid}"
     ,
       key: 'TwitchTV'
       regExp: /^\w+:\/\/(?:www\.)?twitch\.tv\/([^#\&\?]*)/
@@ -354,7 +322,7 @@ Embedding =
           'Not Found'
     ,
       key: 'Loopvid'
-      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/((?:pf|kd|lv|mc|gd|gh|db|nn)\/[\w\-]+(,[\w\-]+)*|fc\/\w+\/\d+)/
+      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|gc)\/[\w\-\/]+(,[\w\-\/]+)*|fc\/\w+\/\d+)/
       style: 'max-width: 80vw; max-height: 80vh;'
       el: (a) ->
         el = $.el 'video',
@@ -362,21 +330,29 @@ Embedding =
           preload:  'auto'
           loop:     true
         [_, host, names] = a.dataset.uid.match /(\w+)\/(.*)/
-        types = if host in ['gd', 'fc'] then [''] else ['.webm', '.mp4']
+        types = switch host
+          when 'gd', 'wu', 'fc' then ['']
+          when 'gc' then ['giant', 'fat', 'zippy']
+          else ['.webm', '.mp4']
         for name in names.split ','
           for type in types
             base = "#{name}#{type}"
             url = switch host
-              # list from src/loopvid.py at http://loopvid.appspot.com/source.html
-              when 'pf' then "http://a.pomf.se/#{base}"
-              when 'kd' then "http://kastden.org/loopvid/#{base}"
+              # list from src/common.py at http://loopvid.appspot.com/source.html
+              when 'pf' then "https://a.pomf.se/#{base}"
+              when 'kd' then "http://2.kastden.org/loopvid/#{base}"
               when 'lv' then "http://loopvid.mooo.com/videos/#{base}"
-              when 'mc' then "https://cdn.mediacru.sh/#{base}"
               when 'gd' then "https://docs.google.com/uc?export=download&id=#{base}"
               when 'gh' then "https://googledrive.com/host/#{base}"
-              when 'db' then "https://googledrive.com/host/#{base}"
-              when 'fc' then "//i.4cdn.org/#{base}.webm"
+              when 'db' then "https://dl.dropboxusercontent.com/u/#{base}"
+              when 'dx' then "https://dl.dropboxusercontent.com/#{base}"
               when 'nn' then "http://naenara.eu/loopvids/#{base}"
+              when 'cp' then "https://copy.com/#{base}"
+              when 'wu' then "http://webmup.com/#{base}/vid.webm"
+              when 'ig' then "https://i.imgur.com/#{base}"
+              when 'ky' then "https://kiyo.me/#{base}"
+              when 'fc' then "//i.4cdn.org/#{base}.webm"
+              when 'gc' then "https://#{type}.gfycat.com/#{name}.webm"
             $.add el, $.el 'source', src: url
         el
     ,

@@ -65,7 +65,7 @@ class Clone extends Post
       @file.thumb.muted = true if @file.videoThumb
 
       # Contract thumbnails in quote preview
-      ImageExpand.contract @ if contractThumb
+      ImageExpand.contract @ if @file.thumb and contractThumb
 
     @isDead  = true if @origin.isDead
     @isClone = true

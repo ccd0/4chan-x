@@ -1,3 +1,4 @@
+![screenshot](https://ccd0.github.io/4chan-x/img/screenshot.png)
 # 4chan X
 Adds various features to 4chan.
 Originally written by [aeosynth](https://github.com/aeosynth/4chan-x), and subsequently maintained by [Mayhem](https://github.com/MayhemYDG/4chan-x), [ihavenoface](https://github.com/ihavenoface/4chan-x), [Zixaphir](https://github.com/zixaphir/appchan-x), [Seaweed](https://github.com/seaweedchan/4chan-x), and [Spittie](https://github.com/Spittie/4chan-x), with contributions from many others.
@@ -6,17 +7,13 @@ If you're looking for a maintained fork of OneeChan (a style script used in addi
 https://github.com/Nebukazar/OneeChan.
 
 ## Firefox version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js)
-Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install 4chan X. If you are using Firefox 29 or earlier, you should use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15).
-
-If you want to try out Electrolysis, use the latest [beta version](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/) of Greasemonkey. See [this thread](https://github.com/greasemonkey/greasemonkey/issues/2004) for the latest news on support.
+Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install 4chan X. If you're using a fork of Firefox (e.g. Pale Moon), you may need to use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) instead of the most recent version.
 
 **WARNING**:
 If you're switching to this fork from someone else's fork of 4chan X, back up your old script before installing this one as the old one may be overwritten.
 
 **Known issues**:
-The combination of Firefox 29 and Greasemonkey 2.0+ causes 4chan X not to work.
-If you have this problem, you should [upgrade Firefox](http://www.mozilla.org/en-US/firefox/new/) to version 30 or higher.
-Alternatively, you can downgrade to [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15) and turn off automatic updates for Greasemonkey ([see pic](https://ccd0.github.io/4chan-x/img/2014-07-12_16-19-32.png)).
+Greasemonkey 3.0 has a [bug](https://github.com/greasemonkey/greasemonkey/issues/2094) causing 4chan X to open multiple tabs when you open a new tab (for example, when starting a thread). If you're having this problem, [updating](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) to Greasemonkey 3.1 or later should fix it.
 
 ## Chromium version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.crx)
 Download the file from the link above and add drag it to your `chrome://extensions` page.
@@ -47,8 +44,8 @@ If you want to install the current beta version but get updates from the stable 
 4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the `[Settings]` link in the top right corner and uncheck "`Disable the native extension`" in the panel that appears.
 
 ## More information
-- [Source Code](https://github.com/ccd0/4chan-x)
 - [Changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md)
 - [Frequently Asked Questions](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions)
-- [Reporting Bugs and Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
+- [Report Bugs](https://github.com/ccd0/4chan-x/issues)
+- [Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
 
