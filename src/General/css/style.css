@@ -946,6 +946,7 @@ span.hide-announcement {
 }
 
 /* File */
+.original-file-info,
 .fnswitch:hover > .fntrunc,
 .fnswitch:not(:hover) > .fnfull,
 .expanded-image > .post > .file > .fileThumb > video[data-md5],
