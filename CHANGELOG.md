@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.5
 
+**v1.10.5.6** *(2015-03-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix QR file/submit button focus indication in Firefox.
+
 **v1.10.5.5** *(2015-03-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.5/builds/4chan-X-noupdate.crx "Chromium version")]
 - Backport `File Info Formatting` fixes from v1.10.6.3.
 
