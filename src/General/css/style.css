@@ -1271,17 +1271,13 @@ input.field.tripped:not(:hover):not(:focus) {
   display: flex;
   -webkit-align-items: stretch;
   align-items: stretch;
-  height: 1.7em;
+  height: 25px;
   margin-top: 1px;
 }
 #file-n-submit > input {
   background: linear-gradient(to bottom, #F8F8F8, #DCDCDC) no-repeat;
   border: 1px solid #BBB;
   border-radius: 2px;
-}
-#file-n-submit > input::-moz-focus-inner {
-  border: 0;
-  padding: 0;
 }
 #qr-file-button {
   width: 15%;
