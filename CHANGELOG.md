@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.5
 
+**v1.10.5.5** *(2015-03-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Backport `File Info Formatting` fixes from v1.10.6.3.
+
 **v1.10.5.4** *(2015-03-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.5.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix conflict with 4chan imgur thumbnail extension.
 
