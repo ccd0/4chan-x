@@ -322,12 +322,15 @@ ThreadUpdater =
     else
       ThreadUpdater.set 'status', "+#{posts.length}", 'new'
       ThreadUpdater.outdateCount = 0
-      if Conf['Beep'] and d.hidden and Unread.posts and !Unread.posts.size
+
+      unreadCount = Unread.posts?.size
+
+      Main.callbackNodes Post, posts
+
+      if Conf['Beep'] and d.hidden and unreadCount is 0 and Unread.posts?.size
         unless ThreadUpdater.audio
           ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
         ThreadUpdater.audio.play()
-
-      Main.callbackNodes Post, posts
 
       scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
         ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
