@@ -228,26 +228,15 @@ Unread =
         unread: count
         quotingYou: countQuotingYou
 
-    return unless Conf['Unread Favicon']
-
-    Favicon.el.href =
-      if Unread.thread.isDead
+    if Conf['Unread Favicon']
+      {isDead} = Unread.thread
+      Favicon.el.href =
         if countQuotingYou
-          Favicon.unreadDeadY
+          Favicon[if isDead then 'unreadDeadY' else 'unreadY']
         else if count
-          Favicon.unreadDead
+          Favicon[if isDead then 'unreadDead' else 'unread']
         else
-          Favicon.dead
-      else
-        if count
-          if countQuotingYou
-            Favicon.unreadY
-          else
-            Favicon.unread
-        else
-          Favicon.default
-
-    <% if (type === 'userscript') { %>
-    # `favicon.href = href` doesn't work on Firefox.
-    $.add d.head, Favicon.el
-    <% } %>
+          Favicon[if isDead then 'dead' else 'default']
+      unless chrome?
+        # `favicon.href = href` doesn't work on Firefox.
+        $.add d.head, Favicon.el
