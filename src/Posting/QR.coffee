@@ -762,12 +762,32 @@ QR =
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}#p#{postID}"
 
     if URL
-      if Conf['Open Post in New Tab'] or postsCount
-        $.open URL
+      open = if Conf['Open Post in New Tab'] or postsCount
+        -> $.open URL
       else
-        window.location = URL
+        -> window.location = URL
+
+      if threadID is postID
+        # XXX 4chan sometimes responds before the thread exists.
+        QR.waitForThread URL, open
+      else
+        open()
 
     QR.status()
+
+  waitForThread: (url, cb) ->
+    attempts = 0
+    check = ->
+      $.ajax url,
+        onloadend: ->
+          attempts++
+          if attempts >= 5 or @status is 200
+            cb()
+          else
+            setTimeout check, attempts * $.SECOND
+      ,
+        type: 'HEAD'
+    check()
 
   abort: ->
     if QR.req and !QR.req.isUploadFinished
