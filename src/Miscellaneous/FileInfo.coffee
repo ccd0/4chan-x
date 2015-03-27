@@ -9,7 +9,7 @@ FileInfo =
   node: ->
     return if !@file or @isClone
 
-    oldInfo = $.el 'span', {className: 'original-file-info'}
+    oldInfo = $.el 'span', {className: 'fileText-original'}
     $.prepend @file.link.parentNode, oldInfo
     $.add oldInfo, [@file.link.previousSibling, @file.link, @file.link.nextSibling]
 
