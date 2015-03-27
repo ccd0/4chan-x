@@ -1,6 +1,6 @@
 Unread =
   init: ->
-    return unless g.VIEW is 'thread' and (Conf['Track Unread Posts'] or Conf['Desktop Notifications'] or Conf['Quote Threading'])
+    return unless g.VIEW is 'thread' and (Conf['Track Read Posts'] or Conf['Desktop Notifications'] or Conf['Quote Threading'])
 
     @db = new DataBoard 'lastReadPosts', @sync
     @hr = $.el 'hr',
@@ -55,9 +55,9 @@ Unread =
     Unread.setLine true
     Unread.read()
     Unread.update()
-    Unread.scroll() if Conf['Track Unread Posts'] and Conf['Scroll to Last Read Post']
+    Unread.scroll() if Conf['Track Read Posts'] and Conf['Scroll to Last Read Post']
     $.on  d, 'scroll visibilitychange', Unread.read
-    $.on  d, 'visibilitychange',        Unread.setLine if Conf['Track Unread Posts'] and Conf['Unread Line']
+    $.on  d, 'visibilitychange',        Unread.setLine if Conf['Track Read Posts'] and Conf['Unread Line']
 
   positionPrev: ->
     if Unread.position then Unread.position.prev else Unread.order.last
@@ -193,7 +193,7 @@ Unread =
       val:      Unread.lastReadPost
 
   setLine: (force) ->
-    return unless Conf['Track Unread Posts'] and Conf['Unread Line']
+    return unless Conf['Track Read Posts'] and Conf['Unread Line']
     if Unread.hr.hidden or d.hidden or (force is true)
       if Unread.linePosition = Unread.positionPrev()
         $.after Unread.linePosition.data.nodes.root, Unread.hr
@@ -205,7 +205,7 @@ Unread =
     count = Unread.posts.size
     countQuotingYou = Unread.postsQuotingYou.size
 
-    if Conf['Track Unread Posts'] and Conf['Unread Count']
+    if Conf['Track Read Posts'] and Conf['Unread Count']
       titleQuotingYou = if Conf['Quoted Title'] and countQuotingYou then '(!) ' else ''
       titleCount = if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''
       titleDead = if Unread.thread.isDead
@@ -220,7 +220,7 @@ Unread =
         unread: count
         quotingYou: countQuotingYou
 
-    if Conf['Track Unread Posts'] and Conf['Unread Favicon']
+    if Conf['Track Read Posts'] and Conf['Unread Favicon']
       {isDead} = Unread.thread
       Favicon.el.href =
         if countQuotingYou

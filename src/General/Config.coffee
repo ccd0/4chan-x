@@ -321,7 +321,7 @@ Config =
         true
         'Fetch and insert new replies. Has more options in the header menu and the "Advanced" tab.'
       ]
-      'Track Unread Posts': [
+      'Track Read Posts': [
         true
         'Keep track of how far down you\'ve scrolled in a thread.'
       ]
