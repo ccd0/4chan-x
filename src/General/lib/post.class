@@ -164,7 +164,7 @@ class Post
 
   parseFile: ->
     return unless fileEl = $ '.file', @nodes.post
-    return unless link   = $ '.fileText > a, .original-file-info > a', fileEl
+    return unless link   = $ '.fileText > a, .fileText-original > a', fileEl
     return unless info   = link.nextSibling?.textContent.match /\(([\d.]+ [KMG]?B).*\)/
     fileText = fileEl.firstElementChild
     @file =
