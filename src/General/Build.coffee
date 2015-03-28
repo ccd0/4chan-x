@@ -13,6 +13,12 @@ Build =
       "#{filename[...threshold - 5]}(...)#{ext}"
     else
       filename
+  spoilerThumb: (boardID) ->
+    if spoilerRange = Build.spoilerRange[boardID]
+      # Randomize the spoiler image.
+      "#{Build.staticPath}spoiler-#{boardID}#{Math.floor 1 + spoilerRange * Math.random()}.png"
+    else
+      "#{Build.staticPath}spoiler.png"
   sameThread: (boardID, threadID) ->
     g.VIEW is 'thread' and g.BOARD.ID is boardID and g.THREADID is +threadID
   postURL: (boardID, threadID, postID) ->
@@ -81,70 +87,19 @@ Build =
     isOP = postID is threadID
     {staticPath, gifIcon} = Build
 
-    ### Name Block ###
-
-    switch capcode
-      when 'admin', 'admin_highlight'
-        capcodeClass = ' capcodeAdmin'
-        capcodeStart = <%= html(' <strong class="capcode hand id_admin" title="Highlight posts by Administrators">## Admin</strong>') %>
-        capcodeIcon  = <%= html(' <img src="${staticPath}adminicon${gifIcon}" alt="Admin Icon" title="This user is a 4chan Administrator." class="identityIcon retina">') %>
-      when 'mod'
-        capcodeClass = ' capcodeMod'
-        capcodeStart = <%= html(' <strong class="capcode hand id_mod" title="Highlight posts by Moderators">## Mod</strong>') %>
-        capcodeIcon  = <%= html(' <img src="${staticPath}modicon${gifIcon}" alt="Mod Icon" title="This user is a 4chan Moderator." class="identityIcon retina">') %>
-      when 'developer'
-        capcodeClass = ' capcodeDeveloper'
-        capcodeStart = <%= html(' <strong class="capcode hand id_developer" title="Highlight posts by Developers">## Developer</strong>') %>
-        capcodeIcon  = <%= html(' <img src="${staticPath}developericon${gifIcon}" alt="Developer Icon" title="This user is a 4chan Developer." class="identityIcon retina">') %>
-      when 'manager'
-        capcodeClass = ' capcodeManager'
-        capcodeStart = <%= html(' <strong class="capcode hand id_manager" title="Highlight posts by Managers">## Manager</strong>') %>
-        capcodeIcon  = <%= html(' <img src="${staticPath}managericon${gifIcon}" alt="Manager Icon" title="This user is a 4chan Manager." class="identityIcon retina">') %>
-      when 'admin_emeritus'
-        capcodeClass = ' capcodeAdmin'
-        capcodeStart = <%= html(' <strong class="capcode hand id_admin" title="Highlight posts by the Administrator Emeritus">## Admin Emeritus</strong>') %>
-        capcodeIcon  = <%= html(' <img src="${staticPath}adminicon${gifIcon}" alt="Admin Icon" title="This user is 4chan&#039;s founding Administrator." class="identityIcon retina">') %>
-      else
-        capcodeClass = ''
-        capcodeStart = <%= html('') %>
-        capcodeIcon  = if isOP and boardID is 'f' then <%= html('') %> else <%= html(' ') %>
-
-    nameClass = if capcode then ' capcode' else ''
-
-    tripcodeField = if tripcode
-      <%= html(' <span class="postertrip">${tripcode}</span>') %>
-    else
-      <%= html('') %>
-
-    emailField = <%= html('<span class="name${nameClass}">${name}</span>&{tripcodeField}&{capcodeStart}') %>
-    if email
-      emailProcessed = encodeURIComponent(email).replace /%40/g, '@'
-      emailField = <%= html('<a href="mailto:${emailProcessed}" class="useremail">&{emailField}</a>') %>
-
-    userID = if !capcode and uniqueID
-      <%= html(' <span class="posteruid id_${uniqueID}">(ID: <span class="hand" title="Highlight posts by this ID">${uniqueID}</span>)</span>') %>
-    else
-      <%= html('') %>
-
-    flag = unless flagCode
-      <%= html('') %>
-    else
-      <%= html(' <span title="${flagName}" class="flag flag-${flagCode.toLowerCase()}"></span>') %>
-
-    nameBlock = <%= html(
-      '<span class="nameBlock${capcodeClass}">' +
-        '&{emailField}&{capcodeIcon}&{userID}&{flag}' +
-      '</span> '
-    ) %>
-
     ### Post Info ###
 
-    subjectField = if isOP or boardID is 'f'
-      <%= html('<span class="subject">${subject}</span> ') %>
-    else
-      <%= html('') %>
-
-    desktop2 = if isOP and boardID is 'f' then '' else ' desktop'
+    if capcode
+      capcodeLC = capcode.split('_')[0]
+      capcodeUC = capcodeLC[0].toUpperCase() + capcodeLC[1..]
+      capcodeText   = capcodeUC
+      capcodeLong   = {'Admin': 'Administrator', 'Mod': 'Moderator'}[capcodeUC] or capcodeUC
+      capcodePlural = "#{capcodeLong}s"
+      capcodeDescription = "a 4chan #{capcodeLong}"
+      if capcode is 'admin_emeritus'
+        capcodeText        = 'Admin Emeritus'
+        capcodePlural      = 'the Administrator Emeritus'
+        capcodeDescription = "4chan's founding Administrator"
 
     postLink = Build.postURL boardID, threadID, postID
     quoteLink = if Build.sameThread boardID, threadID
@@ -152,104 +107,86 @@ Build =
     else
       "/#{boardID}/thread/#{threadID}#q#{postID}"
 
-    icons = for type in ['Sticky', 'Closed', 'Archived'] when o["is#{type}"] and !(type is 'Closed' and o.isArchived)
-      typeLC = type.toLowerCase()
-      <%= html(' <img src="${staticPath}${typeLC}${gifIcon}" alt="${type}" title="${type}" class="${typeLC}Icon retina">') %>
-
-    replyLink = if isOP and g.VIEW is 'index'
-      <%= html(' &nbsp; <span>[<a href="/${boardID}/thread/${threadID}" class="replylink">Reply</a>]</span>') %>
-    else
-      <%= html('') %>
-
     postInfo = <%= html(
       '<div class="postInfo desktop" id="pi${postID}">' +
         '<input type="checkbox" name="${postID}" value="delete"> ' +
-        '&{subjectField}' +
-        '&{nameBlock}' +
+        '?{isOP || boardID === "f"}{<span class="subject">${subject}</span> }' +
+        '<span class="nameBlock?{capcode}{ capcode${capcodeUC}}">' +
+          '?{email}{<a href="mailto:${encodeURIComponent(email).replace(/%40/g, "@")}" class="useremail">}' +
+            '<span class="name?{capcode}{ capcode}">${name}</span>' +
+            '?{tripcode}{ <span class="postertrip">${tripcode}</span>}' +
+            '?{capcode}{ <strong class="capcode hand id_${capcodeLC}" title="Highlight posts by ${capcodePlural}">## ${capcodeText}</strong>}' +
+          '?{email}{</a>}' +
+          '?{boardID === "f" && isOP || capcode}{}{ }' +
+          '?{capcode}{ <img src="${staticPath}${capcodeLC}icon${gifIcon}" alt="${capcodeUC} Icon" title="This user is ${capcodeDescription}." class="identityIcon retina">}' +
+          '?{uniqueID && !capcode}{ <span class="posteruid id_${uniqueID}">(ID: <span class="hand" title="Highlight posts by this ID">${uniqueID}</span>)</span>}' +
+          '?{flagCode}{ <span title="${flagName}" class="flag flag-${flagCode.toLowerCase()}"></span>}' +
+        '</span> ' +
         '<span class="dateTime" data-utc="${dateUTC}">${date}</span> ' +
-        '<span class="postNum${desktop2}">' +
+        '<span class="postNum?{!(boardID === "f" && isOP)}{ desktop}">' +
           '<a href="${postLink}" title="Link to this post">No.</a>' +
           '<a href="${quoteLink}" title="Reply to this post">${postID}</a>' +
-          '@{icons}&{replyLink}' +
+          '?{o.isSticky}{ <img src="${staticPath}sticky${gifIcon}" alt="Sticky" title="Sticky" class="stickyIcon retina">}' +
+          '?{o.isClosed && !o.isArchived}{ <img src="${staticPath}closed${gifIcon}" alt="Closed" title="Closed" class="closedIcon retina">}' +
+          '?{o.isArchived}{ <img src="${staticPath}archived${gifIcon}" alt="Archived" title="Archived" class="archivedIcon retina">}' +
+          '?{isOP && g.VIEW === "index"}{ &nbsp; <span>[<a href="/${boardID}/thread/${threadID}" class="replylink">Reply</a>]</span>}' +
         '</span>' +
       '</div>'
     ) %>
 
     ### File Info ###
 
-    fileCont = if file?.isDeleted
-      <%= html(
-        '<span class="fileThumb">' +
-          '<img src="${staticPath}filedeleted-res${gifIcon}" alt="File deleted." class="fileDeletedRes retina">' +
-        '</span>'
-      ) %>
-    else if file and boardID is 'f'
-      <%= html(
-        '<div class="fileInfo"><span class="fileText" id="fT${postID}">' +
-          'File: <a data-width="${file.width}" data-height="${file.height}" href="${file.url}" target="_blank">${file.name}</a>' +
-          '-(${$.bytesToString(file.size)}, ${file.width}x${file.height}, ${file.tag})' +
-        '</span></div>'
-      ) %>
-    else if file
-      if file.isSpoiler
-        shortFilename = 'Spoiler Image'
-        if spoilerRange = Build.spoilerRange[boardID]
-          # Randomize the spoiler image.
-          fileThumb = "#{staticPath}spoiler-#{boardID}#{Math.floor 1 + spoilerRange * Math.random()}.png"
-        else
-          fileThumb = "#{staticPath}spoiler.png"
-        file.twidth = file.theight = 100
-      else
-        shortFilename = Build.shortFilename file.name, !isOP
-        fileThumb = file.turl
-
+    if file and not file.isDeleted
+      shortFilename = Build.shortFilename file.name
       fileSize = $.bytesToString file.size
       fileDims = if file.url[-4..] is '.pdf' then 'PDF' else "#{file.width}x#{file.height}"
 
-      fileLink = if file.isSpoiler or file.name is shortFilename
-        <%= html('<a href="${file.url}" target="_blank">${shortFilename}</a>') %>
-      else
-        <%= html('<a title="${file.name}" href="${file.url}" target="_blank">${shortFilename}</a>') %>
-
-      fileText = if file.isSpoiler
-        <%= html('<div class="fileText" id="fT${postID}" title="${file.name}">File: &{fileLink} (${fileSize}, ${fileDims})</div>') %>
-      else
-        <%= html('<div class="fileText" id="fT${postID}">File: &{fileLink} (${fileSize}, ${fileDims})</div>') %>
-
-      <%= html(
-        '&{fileText}' +
-        '<a class="fileThumb${file.isSpoiler ? " imgspoiler" : ""}" href="${file.url}" target="_blank">' +
-          '<img src="${fileThumb}" alt="${fileSize}" data-md5="${file.MD5}" style="height: ${file.theight}px; width: ${file.twidth}px;">' +
-        '</a>'
-      ) %>
-
-    fileBlock = if file
-      <%= html('<div class="file" id="f${postID}">&{fileCont}</div>') %>
-    else
-      <%= html('') %>
+    fileBlock = <%= html(
+      '?{file}{<div class="file" id="f${postID}">' +
+        '?{file.isDeleted}{' +
+          '<span class="fileThumb">' +
+            '<img src="${staticPath}filedeleted-res${gifIcon}" alt="File deleted." class="fileDeletedRes retina">' +
+          '</span>' +
+        '}{?{boardID === "f"}{' +
+          '<div class="fileInfo"><span class="fileText" id="fT${postID}">' +
+            'File: ' +
+            '<a data-width="${file.width}" data-height="${file.height}" href="${file.url}" target="_blank">${file.name}</a>' +
+            '-(${fileSize}, ${fileDims}, ${file.tag})' +
+          '</span></div>' +
+        '}{' +
+          '<div class="fileText" id="fT${postID}"?{file.isSpoiler}{ title="${file.name}"}>' +
+            'File: ' +
+            '<a?{file.name === shortFilename || file.isSpoiler}{}{ title="${file.name}"} href="${file.url}" target="_blank">' +
+              '?{file.isSpoiler}{Spoiler Image}{${shortFilename}}' +
+            '</a> ' +
+            '(${fileSize}, ${fileDims})' +
+          '</div>' +
+          '<a class="fileThumb?{file.isSpoiler}{ imgspoiler}{}" href="${file.url}" target="_blank">' +
+            '<img ' +
+              'src="${file.isSpoiler ? Build.spoilerThumb(boardID) : file.turl}" ' +
+              'alt="${fileSize}" ' +
+              'data-md5="${file.MD5}" ' +
+              'style="height: ${file.isSpoiler ? 100 : file.theight}px; width: ${file.isSpoiler ? 100 : file.twidth}px;"' +
+            '>' +
+          '</a>' +
+        '}}' +
+      '</div>}'
+    ) %>
 
     ### Whole Post ###
 
-    highlightPost = if capcode is 'admin_highlight' then ' highlightPost' else ''
+    postClass = if isOP then 'op' else 'reply'
 
-    message = <%= html('<blockquote class="postMessage" id="m${postID}">&{comment}</blockquote>') %>
-
-    wholePost = if isOP
-      <%= html(
-        '<div id="p${postID}" class="post op${highlightPost}">' +
-          '&{fileBlock}&{postInfo}&{message}' +
-        '</div>'
-      ) %>
-    else
-      <%= html(
-        '<div class="sideArrows" id="sa${postID}">&gt;&gt;</div>' +
-        '<div id="p${postID}" class="post reply${highlightPost}">' +
-          '&{postInfo}&{fileBlock}&{message}' +
-        '</div>'
-      ) %>
+    wholePost = <%= html(
+      '?{!isOP}{<div class="sideArrows" id="sa${postID}">&gt;&gt;</div>}' +
+      '<div id="p${postID}" class="post ${postClass}?{capcode === "admin_highlight"}{ highlightPost}">' +
+        '?{isOP}{&{fileBlock}&{postInfo}}{&{postInfo}&{fileBlock}}' +
+        '<blockquote class="postMessage" id="m${postID}">&{comment}</blockquote>' +
+      '</div>'
+    ) %>
 
     container = $.el 'div',
-      className: "postContainer #{if isOP then 'op' else 'reply'}Container"
+      className: "postContainer #{postClass}Container"
       id:        "pc#{postID}"
     $.extend container, wholePost
 
