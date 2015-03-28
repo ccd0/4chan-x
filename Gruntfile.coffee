@@ -19,7 +19,7 @@ module.exports = (grunt) ->
           if      part = text.match /^ [\w-]+(?![\w-=])/ # boolean attribute
           else if part = text.match /^ [\w-]+=(['"])/    # start of attribute value
             context = part[1]
-          else if part = text.match /^>/              # end of HTML tag
+          else if part = text.match /^>/                 # end of HTML tag
             context = ''
         when "'", '"'
           if      part = text.match /^[^'"<>]+/ # attribute value
