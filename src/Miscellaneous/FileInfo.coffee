@@ -40,7 +40,7 @@ FileInfo =
       else
         <%= html('<span class="fnswitch"><span class="fntrunc">${shortname}</span><span class="fnfull">${fullname}</span></span>') %>
     N: -> <%= html('${this.file.name}') %>
-    p: -> if @file.isSpoiler then <%= html('Spoiler, ') %> else <%= html('') %>
+    p: -> <%= html('?{this.file.isSpoiler}{Spoiler, }') %>
     s: -> <%= html('${this.file.size}') %>
     B: -> <%= html('${Math.round(this.file.sizeInBytes)} Bytes') %>
     K: -> <%= html('${Math.round(this.file.sizeInBytes/1024)} KB') %>
