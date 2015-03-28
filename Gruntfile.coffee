@@ -37,23 +37,34 @@ module.exports = (grunt) ->
     text = template
     while text
       if part = text.match /^[^{}]+(?!{)/
+        text = text[part[0].length..]
         try
           context = checkHTML part[0], context
         catch err
           throw new Error "#{err.message}: #{template}"
         parts.push json part[0]
       else if part = text.match /^([^}]){([^}`]*)}/
-        unless context is '' or (part[1] is '$' and context isnt '<')
+        text = text[part[0].length..]
+        unless context is '' or (part[1] is '$' and context isnt '<') or part[1] is '?'
           throw new Error "Illegal insertion into HTML template: #{template}"
         parts.push switch part[1]
           when '$' then "E(`#{part[2]}`)"
           when '&' then "`#{part[2]}`.innerHTML"
           when '@' then "`#{part[2]}`.map((x) -> x.innerHTML).join('')"
+          when '?'
+            args = ['""', '""']
+            for i in [0...2]
+              break if text[0] isnt '{'
+              text = text[1..]
+              [args[i], text] = parseTemplate text, context
+              if text[0] isnt '}'
+                throw new Error "Unexpected characters in subtemplate (#{text}): #{template}"
+              text = text[1..]
+            "(if `#{part[2]}` then #{args[0]} else #{args[1]})"
           else
             throw new Error "Unrecognized substitution operator (#{part[1]}): #{template}"
       else
         break
-      text = text[part[0].length..]
     if context isnt context0
       throw new Error "HTML template not properly terminated: #{template}"
     output = if parts.length is 0 then '""' else parts.join ' + '
