@@ -198,36 +198,16 @@ Build =
       src = "#{staticPath}nofile.png"
       imgClass = 'no-file'
 
-    thumb = if imgClass
-      <%= html('<img src="${src}" class="catalog-thumb ${imgClass}">') %>
-    else
-      <%= html('<img src="${src}" class="catalog-thumb" data-width="${data.tn_w}" data-height="${data.tn_h}">') %>
-
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
     pageCount = Index.liveThreadIDs.indexOf(thread.ID) // Index.threadsNumPerPage + 1
-
-    subject = if thread.OP.info.subject
-      <%= html('<div class="subject">${thread.OP.info.subject}</div>') %>
-    else
-      <%= html('') %>
 
     comment = innerHTML: data.com or ''
 
     root = $.el 'div',
       className: 'catalog-thread'
 
-    $.extend root, <%= html(
-      '<a href="/${thread.board}/thread/${thread.ID}">' +
-        '&{thumb}' +
-      '</a>' +
-      '<div class="catalog-stats" title="Post count / File count / Page count">' +
-        '<span class="post-count">${postCount}</span> / <span class="file-count">${fileCount}</span> / <span class="page-count">${pageCount}</span>' +
-        '<span class="catalog-icons"></span>' +
-      '</div>' +
-      '&{subject}' +
-      '<div class="comment">&{comment}</div>'
-    ) %>
+    $.extend root, <%= importHTML('Build/CatalogThread') %>
 
     root.dataset.fullID = thread.fullID
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
