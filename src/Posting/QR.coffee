@@ -625,7 +625,7 @@ QR =
           <%= html(
             meta.name + ' encountered an error while posting. ' +
             '[<a href="//4chan.org/banned" target="_blank">Banned?</a>] ' +
-            '[<a href="${g.FAQ}#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target="_blank">More info</a>]'
+            '[<a href="' + meta.faq + '#what-does-4chan-x-encountered-an-error-while-posting-please-try-again-mean" target="_blank">More info</a>]'
           ) %>
     extra =
       form: $.formData formData

@@ -48,8 +48,8 @@ $.ajax = do ->
     blockedURLs[url] = true
     message = $.el 'div',
       <%= html(
-        '${g.NAME} was blocked from loading the following URL:<br><span></span><br>' +
-        '[<a href="${g.FAQ}#why-was-4chan-x-blocked-from-loading-a-url" target="_blank">More info</a>]'
+        meta.name + ' was blocked from loading the following URL:<br><span></span><br>' +
+        '[<a href="' + meta.faq + '#why-was-4chan-x-blocked-from-loading-a-url" target="_blank">More info</a>]'
       ) %>
     $('span', message).textContent = (if /^\/\//.test url then location.protocol else '') + url
     new Notice 'error', message, 30, -> delete blockedURLs[url]

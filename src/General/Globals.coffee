@@ -5,9 +5,6 @@ doc  = d.documentElement
 g    =
   VERSION:   '<%= meta.version %>'
   NAMESPACE: '<%= meta.name %>.'
-  NAME:      '<%= meta.name %>'
-  FAQ:       '<%= meta.faq %>'
-  CHANGELOG: '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
   boards:    {}
 
 E = do ->
