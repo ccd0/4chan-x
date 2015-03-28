@@ -50,7 +50,7 @@ module.exports = (grunt) ->
         parts.push switch part[1]
           when '$' then "E(`#{part[2]}`)"
           when '&' then "`#{part[2]}`.innerHTML"
-          when '@' then "`#{part[2]}`.map((x) -> x.innerHTML).join('')"
+          when '@' then "E.cat(`#{part[2]}`)"
           when '?'
             args = ['""', '""']
             for i in [0...2]

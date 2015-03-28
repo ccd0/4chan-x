@@ -14,3 +14,8 @@ E = do ->
   fn = (x) ->
     str[x]
   (text) -> r.call text, regex, fn
+
+E.cat = (templates) ->
+  html = ''
+  html += x.innerHTML for x in templates
+  html
