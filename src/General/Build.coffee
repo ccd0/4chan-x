@@ -107,32 +107,7 @@ Build =
     else
       "/#{boardID}/thread/#{threadID}#q#{postID}"
 
-    postInfo = <%= html(
-      '<div class="postInfo desktop" id="pi${postID}">' +
-        '<input type="checkbox" name="${postID}" value="delete"> ' +
-        '?{isOP || boardID === "f"}{<span class="subject">${subject}</span> }' +
-        '<span class="nameBlock?{capcode}{ capcode${capcodeUC}}">' +
-          '?{email}{<a href="mailto:${encodeURIComponent(email).replace(/%40/g, "@")}" class="useremail">}' +
-            '<span class="name?{capcode}{ capcode}">${name}</span>' +
-            '?{tripcode}{ <span class="postertrip">${tripcode}</span>}' +
-            '?{capcode}{ <strong class="capcode hand id_${capcodeLC}" title="Highlight posts by ${capcodePlural}">## ${capcodeText}</strong>}' +
-          '?{email}{</a>}' +
-          '?{boardID === "f" && isOP || capcode}{}{ }' +
-          '?{capcode}{ <img src="${staticPath}${capcodeLC}icon${gifIcon}" alt="${capcodeUC} Icon" title="This user is ${capcodeDescription}." class="identityIcon retina">}' +
-          '?{uniqueID && !capcode}{ <span class="posteruid id_${uniqueID}">(ID: <span class="hand" title="Highlight posts by this ID">${uniqueID}</span>)</span>}' +
-          '?{flagCode}{ <span title="${flagName}" class="flag flag-${flagCode.toLowerCase()}"></span>}' +
-        '</span> ' +
-        '<span class="dateTime" data-utc="${dateUTC}">${date}</span> ' +
-        '<span class="postNum?{!(boardID === "f" && isOP)}{ desktop}">' +
-          '<a href="${postLink}" title="Link to this post">No.</a>' +
-          '<a href="${quoteLink}" title="Reply to this post">${postID}</a>' +
-          '?{o.isSticky}{ <img src="${staticPath}sticky${gifIcon}" alt="Sticky" title="Sticky" class="stickyIcon retina">}' +
-          '?{o.isClosed && !o.isArchived}{ <img src="${staticPath}closed${gifIcon}" alt="Closed" title="Closed" class="closedIcon retina">}' +
-          '?{o.isArchived}{ <img src="${staticPath}archived${gifIcon}" alt="Archived" title="Archived" class="archivedIcon retina">}' +
-          '?{isOP && g.VIEW === "index"}{ &nbsp; <span>[<a href="/${boardID}/thread/${threadID}" class="replylink">Reply</a>]</span>}' +
-        '</span>' +
-      '</div>'
-    ) %>
+    postInfo = <%= importHTML('Build/PostInfo') %>
 
     ### File Info ###
 
@@ -141,49 +116,13 @@ Build =
       fileSize = $.bytesToString file.size
       fileDims = if file.url[-4..] is '.pdf' then 'PDF' else "#{file.width}x#{file.height}"
 
-    fileBlock = <%= html(
-      '?{file}{<div class="file" id="f${postID}">' +
-        '?{file.isDeleted}{' +
-          '<span class="fileThumb">' +
-            '<img src="${staticPath}filedeleted-res${gifIcon}" alt="File deleted." class="fileDeletedRes retina">' +
-          '</span>' +
-        '}{?{boardID === "f"}{' +
-          '<div class="fileInfo"><span class="fileText" id="fT${postID}">' +
-            'File: ' +
-            '<a data-width="${file.width}" data-height="${file.height}" href="${file.url}" target="_blank">${file.name}</a>' +
-            '-(${fileSize}, ${fileDims}, ${file.tag})' +
-          '</span></div>' +
-        '}{' +
-          '<div class="fileText" id="fT${postID}"?{file.isSpoiler}{ title="${file.name}"}>' +
-            'File: ' +
-            '<a?{file.name === shortFilename || file.isSpoiler}{}{ title="${file.name}"} href="${file.url}" target="_blank">' +
-              '?{file.isSpoiler}{Spoiler Image}{${shortFilename}}' +
-            '</a> ' +
-            '(${fileSize}, ${fileDims})' +
-          '</div>' +
-          '<a class="fileThumb?{file.isSpoiler}{ imgspoiler}{}" href="${file.url}" target="_blank">' +
-            '<img ' +
-              'src="${file.isSpoiler ? Build.spoilerThumb(boardID) : file.turl}" ' +
-              'alt="${fileSize}" ' +
-              'data-md5="${file.MD5}" ' +
-              'style="height: ${file.isSpoiler ? 100 : file.theight}px; width: ${file.isSpoiler ? 100 : file.twidth}px;"' +
-            '>' +
-          '</a>' +
-        '}}' +
-      '</div>}'
-    ) %>
+    fileBlock = <%= importHTML('Build/File') %>
 
     ### Whole Post ###
 
     postClass = if isOP then 'op' else 'reply'
 
-    wholePost = <%= html(
-      '?{!isOP}{<div class="sideArrows" id="sa${postID}">&gt;&gt;</div>}' +
-      '<div id="p${postID}" class="post ${postClass}?{capcode === "admin_highlight"}{ highlightPost}">' +
-        '?{isOP}{&{fileBlock}&{postInfo}}{&{postInfo}&{fileBlock}}' +
-        '<blockquote class="postMessage" id="m${postID}">&{comment}</blockquote>' +
-      '</div>'
-    ) %>
+    wholePost = <%= importHTML('Build/Post') %>
 
     container = $.el 'div',
       className: "postContainer #{postClass}Container"

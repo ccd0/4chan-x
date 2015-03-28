@@ -1,0 +1,29 @@
+?{file}{<div class="file" id="f${postID}">
+  ?{file.isDeleted}{
+    <span class="fileThumb">
+      <img src="${staticPath}filedeleted-res${gifIcon}" alt="File deleted." class="fileDeletedRes retina">
+    </span>
+  }{?{boardID === "f"}{
+    <div class="fileInfo"><span class="fileText" id="fT${postID}">
+      File: 
+      <a data-width="${file.width}" data-height="${file.height}" href="${file.url}" target="_blank">${file.name}</a>
+      -(${fileSize}, ${fileDims}, ${file.tag})
+    </span></div>
+  }{
+    <div class="fileText" id="fT${postID}"?{file.isSpoiler}{ title="${file.name}"}>
+      File: 
+      <a?{file.name === shortFilename || file.isSpoiler}{}{ title="${file.name}"} href="${file.url}" target="_blank">
+        ?{file.isSpoiler}{Spoiler Image}{${shortFilename}}
+      </a> 
+      (${fileSize}, ${fileDims})
+    </div>
+    <a class="fileThumb?{file.isSpoiler}{ imgspoiler}{}" href="${file.url}" target="_blank">
+      <img 
+        src="${file.isSpoiler ? Build.spoilerThumb(boardID) : file.turl}" 
+        alt="${fileSize}" 
+        data-md5="${file.MD5}" 
+        style="height: ${file.isSpoiler ? 100 : file.theight}px; width: ${file.isSpoiler ? 100 : file.twidth}px;"
+      >
+    </a>
+  }}
+</div>}
