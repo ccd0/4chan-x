@@ -5,7 +5,7 @@ module.exports = (grunt) ->
     "`#{JSON.stringify(data).replace(/`/g, '\\`')}`"
 
   importHTML = (filename) ->
-    "(innerHTML: #{json grunt.file.read("src/General/html/#{filename}.html").replace(/^ +/gm, '').replace(/\r?\n/g, '')})"
+    html grunt.template.process(grunt.file.read("src/General/html/#{filename}.html").replace(/^ +/gm, '').replace(/\r?\n/g, ''), data: grunt.config('pkg'))
 
   checkHTML = (text, context) ->
     while text
