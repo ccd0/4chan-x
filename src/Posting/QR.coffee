@@ -748,6 +748,8 @@ QR =
     postsCount = QR.posts.length - 1
     QR.cooldown.auto = postsCount and isReply
 
+    lastPostToThread = not (do -> return true for p in QR.posts[1..] when p.thread is post.thread)
+
     unless Conf['Persistent QR'] or postsCount
       QR.close()
     else
@@ -758,7 +760,7 @@ QR =
 
     URL = if threadID is postID # new thread
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}"
-    else if g.VIEW is 'index' and !QR.cooldown.auto and Conf['Open Post in New Tab'] # replying from the index
+    else if g.VIEW is 'index' and lastPostToThread and Conf['Open Post in New Tab'] # replying from the index
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}#p#{postID}"
 
     if URL

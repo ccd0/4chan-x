@@ -164,7 +164,7 @@ class Post
 
   parseFile: ->
     return unless fileEl = $ '.file', @nodes.post
-    return unless link   = $ '.fileText > a', fileEl
+    return unless link   = $ '.fileText > a, .fileText-original > a', fileEl
     return unless info   = link.nextSibling?.textContent.match /\(([\d.]+ [KMG]?B).*\)/
     fileText = fileEl.firstElementChild
     @file =
@@ -180,7 +180,7 @@ class Post
     unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
     size *= 1024 while unit-- > 0
     @file.sizeInBytes = size
-    if (thumb = $ 'img[data-md5]', fileEl)
+    if (thumb = $ '.fileThumb > [data-md5]', fileEl)
       $.extend @file,
         thumb:     thumb
         thumbURL:  "#{location.protocol}//i.4cdn.org/#{@board}/#{link.href.match(/(\d+)\./)[1]}s.jpg"
