@@ -7,30 +7,6 @@ module.exports = (grunt) ->
   importHTML = (filename) ->
     html grunt.template.process(grunt.file.read("src/General/html/#{filename}.html").replace(/^ +/gm, '').replace(/\r?\n/g, ''), data: grunt.config('pkg'))
 
-  checkHTML = (text, context) ->
-    while text
-      switch context
-        when ''
-          if      part = text.match /^[^'"<>]+/ # plain text
-          else if part = text.match /^<\/\w+>/  # HTML end tag
-          else if part = text.match /^<\w+/     # start of HTML tag
-            context = '<'
-        when '<'
-          if      part = text.match /^ [\w-]+(?![\w-=])/ # boolean attribute
-          else if part = text.match /^ [\w-]+=(['"])/    # start of attribute value
-            context = part[1]
-          else if part = text.match /^>/                 # end of HTML tag
-            context = ''
-        when "'", '"'
-          if      part = text.match /^[^'"<>]+/ # attribute value
-          else if part = text.match /^['"]/     # end of attribute value
-            throw new Error 'Inconsistent quoting' if part[0] isnt context
-            context = '<'
-      unless part
-        throw new Error "HTML template is ill-formed (at #{text})"
-      text = text[part[0].length..]
-    context
-
   parseTemplate = (template, context='') ->
     context0 = context
     parts = []
@@ -38,15 +14,15 @@ module.exports = (grunt) ->
     while text
       if part = text.match /^[^{}]+(?!{)/
         text = text[part[0].length..]
-        try
-          context = checkHTML part[0], context
-        catch err
-          throw new Error "#{err.message}: #{template}"
+        context = (context + part[0])
+          .replace(/(=['"])[^'"<>]*/g, '$1')
+          .replace(/(<\w+)( [\w-]+((?=[ >])|=''|=""))*/g, '$1')
+          .replace(/^([^'"<>]+|<\/?\w+>)*/, '')
         parts.push json part[0]
       else if part = text.match /^([^}]){([^}`]*)}/
         text = text[part[0].length..]
-        unless context is '' or (part[1] is '$' and context isnt '<') or part[1] is '?'
-          throw new Error "Illegal insertion into HTML template: #{template}"
+        unless context is '' or (part[1] is '$' and /\=['"]$/.test context) or part[1] is '?'
+          throw new Error "Illegal insertion into HTML template (at #{context}): #{template}"
         parts.push switch part[1]
           when '$' then "E(`#{part[2]}`)"
           when '&' then "`#{part[2]}`.innerHTML"
@@ -66,7 +42,7 @@ module.exports = (grunt) ->
       else
         break
     if context isnt context0
-      throw new Error "HTML template not properly terminated: #{template}"
+      throw new Error "HTML template is ill-formed (at #{context}): #{template}"
     output = if parts.length is 0 then '""' else parts.join ' + '
     [output, text]
 
