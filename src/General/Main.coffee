@@ -168,7 +168,7 @@ Main =
       return if previousversion is g.VERSION
       if previousversion
         el = $.el 'span',
-          <%= html('${g.NAME} has been updated to <a href="${g.CHANGELOG}" target="_blank">version ${g.VERSION}</a>.') %>
+          <%= html(meta.name + ' has been updated to <a href="' + meta.repo + 'blob/' + meta.mainBranch + '/CHANGELOG.md" target="_blank">version ${g.VERSION}</a>.') %>
         new Notice 'info', el, 15
       else
         Settings.open()

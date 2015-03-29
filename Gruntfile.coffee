@@ -5,27 +5,75 @@ module.exports = (grunt) ->
     "`#{JSON.stringify(data).replace(/`/g, '\\`')}`"
 
   importHTML = (filename) ->
-    "(innerHTML: #{json grunt.file.read("src/General/html/#{filename}.html").replace(/^ +| +$</gm, '').replace(/\r?\n/g, '')})"
+    html grunt.template.process(grunt.file.read("src/General/html/#{filename}.html").replace(/^ +/gm, '').replace(/\r?\n/g, ''), data: grunt.config('pkg'))
+
+  checkHTML = (text, context) ->
+    while text
+      switch context
+        when ''
+          if      part = text.match /^[^'"<>]+/ # plain text
+          else if part = text.match /^<\/\w+>/  # HTML end tag
+          else if part = text.match /^<\w+/     # start of HTML tag
+            context = '<'
+        when '<'
+          if      part = text.match /^ [\w-]+(?![\w-=])/ # boolean attribute
+          else if part = text.match /^ [\w-]+=(['"])/    # start of attribute value
+            context = part[1]
+          else if part = text.match /^>/                 # end of HTML tag
+            context = ''
+        when "'", '"'
+          if      part = text.match /^[^'"<>]+/ # attribute value
+          else if part = text.match /^['"]/     # end of attribute value
+            throw new Error 'Inconsistent quoting' if part[0] isnt context
+            context = '<'
+      unless part
+        throw new Error "HTML template is ill-formed (at #{text})"
+      text = text[part[0].length..]
+    context
+
+  parseTemplate = (template, context='') ->
+    context0 = context
+    parts = []
+    text = template
+    while text
+      if part = text.match /^[^{}]+(?!{)/
+        text = text[part[0].length..]
+        try
+          context = checkHTML part[0], context
+        catch err
+          throw new Error "#{err.message}: #{template}"
+        parts.push json part[0]
+      else if part = text.match /^([^}]){([^}`]*)}/
+        text = text[part[0].length..]
+        unless context is '' or (part[1] is '$' and context isnt '<') or part[1] is '?'
+          throw new Error "Illegal insertion into HTML template: #{template}"
+        parts.push switch part[1]
+          when '$' then "E(`#{part[2]}`)"
+          when '&' then "`#{part[2]}`.innerHTML"
+          when '@' then "E.cat(`#{part[2]}`)"
+          when '?'
+            args = ['""', '""']
+            for i in [0...2]
+              break if text[0] isnt '{'
+              text = text[1..]
+              [args[i], text] = parseTemplate text, context
+              if text[0] isnt '}'
+                throw new Error "Unexpected characters in subtemplate (#{text}): #{template}"
+              text = text[1..]
+            "(if `#{part[2]}` then #{args[0]} else #{args[1]})"
+          else
+            throw new Error "Unrecognized substitution operator (#{part[1]}): #{template}"
+      else
+        break
+    if context isnt context0
+      throw new Error "HTML template not properly terminated: #{template}"
+    output = if parts.length is 0 then '""' else parts.join ' + '
+    [output, text]
 
   html = (template) ->
-    parts = template.split /([\$&@]){([^}`]*)}/
-    parts2 = []
-    checkText = ''
-    for part, i in parts
-      switch i % 3
-        when 0
-          parts2.push json part unless part is ''
-          checkText += part
-        when 1
-          if /<[^>]*$/.test(checkText) and not (part is '$' and /\=['"][^"'<>]*$/.test checkText)
-            throw new Error "Illegal insertion into HTML template: #{template}"
-          parts2.push switch part
-            when '$' then "E(`#{parts[i+1]}`)"
-            when '&' then "`#{parts[i+1]}`.innerHTML"
-            when '@' then "`#{parts[i+1]}`.map((x) -> x.innerHTML).join('')"
-    unless /^(<\w+( [\w-]+(='[^"'<>]*'|="[^"'<>]*")?)*>|<\/\w+>|[^"'<>]*)*$/.test checkText
-      throw new Error "HTML template is ill-formed: #{template}"
-    output = if parts2.length is 0 then '""' else parts2.join ' + '
+    [output, remaining] = parseTemplate template
+    if remaining
+      throw new Error "Unexpected characters in template (#{remaining}): #{template}"
     "(innerHTML: #{output})"
 
   assert = (statement, objs...) ->

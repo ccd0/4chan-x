@@ -35,7 +35,6 @@ Settings =
       id:        'fourchanx-settings'
       className: 'dialog'
     $.extend dialog, <%= importHTML('Settings/Settings') %>
-    $('a[href$="/CHANGELOG.md"]', dialog).textContent = g.VERSION
 
     Settings.overlay = overlay = $.el 'div',
       id: 'overlay'

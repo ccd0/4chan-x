@@ -5,9 +5,6 @@ doc  = d.documentElement
 g    =
   VERSION:   '<%= meta.version %>'
   NAMESPACE: '<%= meta.name %>.'
-  NAME:      '<%= meta.name %>'
-  FAQ:       '<%= meta.faq %>'
-  CHANGELOG: '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
   boards:    {}
 
 E = do ->
@@ -17,3 +14,8 @@ E = do ->
   fn = (x) ->
     str[x]
   (text) -> r.call text, regex, fn
+
+E.cat = (templates) ->
+  html = ''
+  html += x.innerHTML for x in templates
+  html

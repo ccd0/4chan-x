@@ -508,8 +508,8 @@ Header =
 
     el = $.el 'span',
       <%= html(
-        '${g.NAME} needs your permission to show desktop notifications. ' +
-        '[<a href="${g.FAQ}#why-is-4chan-x-asking-for-permission-to-show-desktop-notifications" target="_blank">FAQ</a>]<br>' +
+        meta.name + ' needs your permission to show desktop notifications. ' +
+        '[<a href="' + meta.faq + '#why-is-4chan-x-asking-for-permission-to-show-desktop-notifications" target="_blank">FAQ</a>]<br>' +
         '<button>Authorize</button> or <button>Disable</button>'
       ) %>
     [authorize, disable] = $$ 'button', el

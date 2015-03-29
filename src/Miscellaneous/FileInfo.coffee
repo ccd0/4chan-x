@@ -9,7 +9,7 @@ FileInfo =
   node: ->
     return if !@file or @isClone
 
-    oldInfo = $.el 'span', {className: 'original-file-info'}
+    oldInfo = $.el 'span', {className: 'fileText-original'}
     $.prepend @file.link.parentNode, oldInfo
     $.add oldInfo, [@file.link.previousSibling, @file.link, @file.link.nextSibling]
 
@@ -40,7 +40,7 @@ FileInfo =
       else
         <%= html('<span class="fnswitch"><span class="fntrunc">${shortname}</span><span class="fnfull">${fullname}</span></span>') %>
     N: -> <%= html('${this.file.name}') %>
-    p: -> if @file.isSpoiler then <%= html('Spoiler, ') %> else <%= html('') %>
+    p: -> <%= html('?{this.file.isSpoiler}{Spoiler, }') %>
     s: -> <%= html('${this.file.size}') %>
     B: -> <%= html('${Math.round(this.file.sizeInBytes)} Bytes') %>
     K: -> <%= html('${Math.round(this.file.sizeInBytes/1024)} KB') %>

@@ -119,12 +119,8 @@ class Fetcher
         greentext = text[0] is '>'
         text = text.replace /(\[\/?[a-z]+):lit(\])/, '$1$2'
         text = for text2, j in text.split /(>>(?:>\/[a-z\d]+\/)?\d+)/g
-          if j % 2 is 1
-            <%= html('<span class="deadlink">${text2}</span>') %>
-          else
-            <%= html('${text2}') %>
-        text = <%= html('@{text}') %>
-        text = <%= html('<span class="quote">&{text}</span>') %> if greentext
+          <%= html('?{j % 2}{<span class="deadlink">${text2}</span>}{${text2}}') %>
+        text = <%= html('?{greentext}{<span class="quote">@{text}</span>}{@{text}}') %>
         text
     comment = <%= html('@{comment}') %>
 
