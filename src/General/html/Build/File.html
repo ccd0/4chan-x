@@ -18,8 +18,8 @@
       (${fileSize}, ${fileDims})
     </div>
     <a class="fileThumb?{file.isSpoiler}{ imgspoiler}{}" href="${file.url}" target="_blank">
-      <img 
-        src="${file.isSpoiler ? Build.spoilerThumb(boardID) : file.turl}" 
+      <img
+        ?{suppressThumb}{ data-src="${fileThumb}"}{ src="${fileThumb}"} 
         alt="${fileSize}" 
         data-md5="${file.MD5}" 
         style="height: ${file.isSpoiler ? 100 : file.theight}px; width: ${file.isSpoiler ? 100 : file.twidth}px;"

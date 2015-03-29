@@ -26,7 +26,7 @@ Build =
       "#p#{postID}"
     else
       "/#{boardID}/thread/#{threadID}#p#{postID}"
-  postFromObject: (data, boardID) ->
+  postFromObject: (data, boardID, suppressThumb) ->
     o =
       # id
       postID:   data.no
@@ -70,8 +70,8 @@ Build =
         isSpoiler: !!data.spoiler
         isDeleted: false
         tag:       data.tag
-    Build.post o
-  post: (o) ->
+    Build.post o, suppressThumb
+  post: (o, suppressThumb) ->
     ###
     This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
     @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
@@ -115,6 +115,7 @@ Build =
       shortFilename = Build.shortFilename file.name
       fileSize = $.bytesToString file.size
       fileDims = if file.url[-4..] is '.pdf' then 'PDF' else "#{file.width}x#{file.height}"
+      fileThumb = if file.isSpoiler then Build.spoilerThumb boardID else file.turl
 
     fileBlock = <%= importHTML('Build/File') %>
 
@@ -166,7 +167,7 @@ Build =
     root
 
   excerptThread: (board, data, OP) ->
-    nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID]
+    nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID, true]
     if data.omitted_posts or !Conf['Show Replies'] and data.replies
       [posts, files] = if Conf['Show Replies']
         # XXX data.omitted_images is not accurate.

@@ -647,6 +647,10 @@ Index =
 
   buildStructure: (nodes) ->
     for node in nodes
+      if thumb = $ 'img[data-src]', node
+        thumb.src = thumb.dataset.src
+        # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
+        thumb.removeAttribute 'data-src'
       $.add Index.root, [node, $.el 'hr']
     $.event 'PostsInserted' if doc.contains Index.root
     ThreadHiding.onIndexBuild nodes
@@ -661,7 +665,7 @@ Index =
     if Index.search
       Index.searchInput.dataset.searching = 1
     else
-      # XXX https://github.com/greasemonkey/greasemonkey/issues/1571
+      # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
       Index.searchInput.removeAttribute 'data-searching'
 
   onSearchInput: ->
