@@ -70,9 +70,9 @@ Index =
     $.on d, 'scroll', Index.scroll
     $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
-    $.on $('.refreshlink a',      @navLinks), 'click', @update
-    $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
-    $.on $('#hidden-toggle a',    @navLinks), 'click', @cb.toggleHiddenThreads
+    $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
+    $.on $('#index-search-clear',   @navLinks), 'click', @clearSearch
+    $.on $('#hidden-toggle a',      @navLinks), 'click', @cb.toggleHiddenThreads
     $.on @selectMode, 'change', @cb.mode
     for select in [@selectMode, @selectSort, @selectSize]
       select.value = Conf[select.name]
@@ -261,6 +261,10 @@ Index =
       return if a.textContent is 'Catalog'
       e.preventDefault()
       Index.userPageNav +a.pathname.split('/')[2] or 1
+
+    refreshFront: ->
+      Index.userPageNav 1
+      Index.update()
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.navLinks
