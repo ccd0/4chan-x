@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.7
 
+**v1.10.7.1** *(2015-03-31)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge refresh button in navigation links with the time since last refresh, and make it navigate to the front page.
+
 **v1.10.7.0** *(2015-03-29)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.10.6.7.
 - Fix excessive loading of thumbnails in index.
