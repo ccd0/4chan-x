@@ -14,10 +14,8 @@ Main =
       switch pathname[2]
         when 'res', 'thread'
           'thread'
-        when 'catalog'
-          'catalog'
-        when 'archive'
-          'archive'
+        when 'catalog', 'archive', 'post'
+          pathname[2]
         else
           'index'
     return if g.VIEW is 'catalog' and g.BOARD.ID is 'f'
@@ -56,6 +54,7 @@ Main =
       when 'a.4cdn.org'
         return
       when 'sys.4chan.org'
+        PostSuccessful.init() if g.VIEW is 'post'
         return
       when 'i.4cdn.org'
         $.asap (-> d.readyState isnt 'loading'), ->
