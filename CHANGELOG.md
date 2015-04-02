@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.7
 
+**v1.10.7.2** *(2015-04-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix posts from original post form not being marked as yours.
+
 **v1.10.7.1** *(2015-03-31)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge refresh button in navigation links with the time since last refresh, and make it navigate to the front page.
 
