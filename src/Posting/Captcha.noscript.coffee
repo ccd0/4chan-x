@@ -40,7 +40,7 @@ Captcha.noscript =
     @setup()
 
   initFrame: ->
-    conn = new Connection window.top, "#{location.protocol}//boards.4chan.org",
+    conn = new Connection window.parent, "#{location.protocol}//boards.4chan.org",
       response: (response) ->
         $.id('response').value = response
         $('.fbc-challenge > form').submit()
