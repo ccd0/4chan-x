@@ -68,6 +68,9 @@ QR =
 
     $.before $.id('togglePostFormLink'), link
 
+    $.on d, 'QRGetFile',          QR.getFile
+    $.on d, 'QRSetFile',          QR.setFile
+
     $.on d, 'paste',              QR.paste
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
@@ -286,6 +289,15 @@ QR =
     counter.textContent = count
     counter.hidden      = count < 1000
     (if count > 1500 then $.addClass else $.rmClass) counter, 'warning'
+
+  getFile: ->
+    $.event 'QRFile', QR.selected?.file
+
+  setFile: (e) ->
+    {file, name} = e.detail
+    file.name = name if name?
+    QR.open()
+    QR.handleFiles [file]
 
   drag: (e) ->
     # Let it drag anything from the page.
