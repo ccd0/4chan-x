@@ -17,10 +17,14 @@ ThreadWatcher =
     @refreshButton = $ '.refresh', @dialog
     @unreaddb = Unread.db or new DataBoard 'lastReadPosts'
 
+    @setHidden(Conf['Toggleable Thread Watcher'] and Conf['Thread Watcher Hidden'])
+    if Conf['Toggleable Thread Watcher']
+      $.sync 'Thread Watcher Hidden', @setHidden
+
     $.on d, 'QRPostSuccessful',   @cb.post
-    $.on sc, 'click', @toggleWatcher
+    $.on sc, 'click', @toggleHidden
     $.on @refreshButton, 'click', @fetchAllStatus
-    $.on $('.move > .close', @dialog), 'click', @toggleWatcher
+    $.on $('.move > .close', @dialog), 'click', @toggleHidden
 
     $.on d, '4chanXInitFinished', @ready
 
@@ -87,18 +91,21 @@ ThreadWatcher =
     ThreadWatcher.refresh()
     $.add d.body, ThreadWatcher.dialog
 
-    if Conf['Toggleable Thread Watcher']
-      ThreadWatcher.dialog.hidden = true
-
     return unless Conf['Auto Watch']
     $.get 'AutoWatch', 0, ({AutoWatch}) ->
       return unless thread = g.BOARD.threads[AutoWatch]
       ThreadWatcher.add thread
       $.delete 'AutoWatch'
 
-  toggleWatcher: ->
-    $.toggleClass ThreadWatcher.shortcut, 'disabled'
-    ThreadWatcher.dialog.hidden = !ThreadWatcher.dialog.hidden
+  setHidden: (hide) ->
+    ThreadWatcher.shortcut.classList.toggle 'disabled', hide
+    ThreadWatcher.dialog.hidden = hide
+
+  toggleHidden: ->
+    hide = !ThreadWatcher.dialog.hidden
+    ThreadWatcher.setHidden hide
+    if Conf['Toggleable Thread Watcher']
+      $.set 'Thread Watcher Hidden', hide
 
   cb:
     openAll: ->
