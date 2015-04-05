@@ -2,6 +2,14 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+### v1.10.8
+
+**v1.10.8.0** *(2015-04-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.10.7.4.
+- Make the thread watcher remember whether it was closed or open.
+- Remove the close button from the thread watcher when `Toggleable Thread Watcher` is disabled.
+- Add an API for getting and setting the contents of the selected file in the Quick Reply (`QRGetFile`, `QRFile`, and `QRSetFile` events).
+
 ### v1.10.7
 
 **v1.10.7.4** *(2015-04-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.4/builds/4chan-X-noupdate.crx "Chromium version")]
