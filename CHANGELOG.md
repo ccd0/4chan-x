@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.7
 
+**v1.10.7.5** *(2015-04-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix 'Last Index Refresh' button refreshing twice when Refreshed Navigation is on.
+
 **v1.10.7.4** *(2015-04-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - (fgts) Add /toy/ to fgts.jp.
 
