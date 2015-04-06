@@ -837,6 +837,9 @@ span.hide-announcement {
 #thread-watcher a {
   text-decoration: none;
 }
+:root:not(.fixed-watcher) #thread-watcher .move > .close {
+  display: none;
+}
 #thread-watcher .move > .close {
   position: absolute;
   right: 0px;

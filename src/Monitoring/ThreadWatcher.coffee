@@ -18,7 +18,6 @@ ThreadWatcher =
     @closeButon = $('.move > .close', @dialog)
     @unreaddb = Unread.db or new DataBoard 'lastReadPosts'
 
-    @closeButon.hidden = not Conf['Toggleable Thread Watcher']
     if Conf['Toggleable Thread Watcher']
       @setHidden Conf['Thread Watcher Hidden']
       $.sync 'Thread Watcher Hidden', @setHidden
