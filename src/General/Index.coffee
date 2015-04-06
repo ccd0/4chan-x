@@ -263,8 +263,7 @@ Index =
       Index.userPageNav +a.pathname.split('/')[2] or 1
 
     refreshFront: ->
-      Index.userPageNav 1
-      Index.update()
+      Index.update Index.pushState {page: 1, scroll: true}
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.navLinks
