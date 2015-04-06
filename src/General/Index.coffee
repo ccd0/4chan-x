@@ -274,9 +274,9 @@ Index =
     else
       +window.location.pathname.split('/')[2] or 1
 
-  userPageNav: (page, noRefresh) ->
+  userPageNav: (page) ->
     state = Index.pushState {page, scroll: true}
-    if Conf['Refreshed Navigation'] and !noRefresh
+    if Conf['Refreshed Navigation']
       Index.update state
     else
       Index.pageLoad state if state.page
