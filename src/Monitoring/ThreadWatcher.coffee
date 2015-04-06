@@ -15,7 +15,7 @@ ThreadWatcher =
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
     @refreshButton = $ '.refresh', @dialog
-    @closeButon = $('.move > .close', @dialog)
+    @closeButton = $('.move > .close', @dialog)
     @unreaddb = Unread.db or new DataBoard 'lastReadPosts'
 
     if Conf['Toggleable Thread Watcher']
@@ -25,7 +25,7 @@ ThreadWatcher =
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on sc, 'click', @toggleHidden
     $.on @refreshButton, 'click', @fetchAllStatus
-    $.on @closeButon, 'click', @toggleHidden
+    $.on @closeButton, 'click', @toggleHidden
 
     $.on d, '4chanXInitFinished', @ready
 
