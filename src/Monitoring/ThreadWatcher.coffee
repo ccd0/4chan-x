@@ -18,9 +18,6 @@ ThreadWatcher =
     @closeButton = $('.move > .close', @dialog)
     @unreaddb = Unread.db or new DataBoard 'lastReadPosts'
 
-    if Conf['Toggleable Thread Watcher']
-      @dialog.hidden = true
-
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on sc, 'click', @toggleWatcher
     $.on @refreshButton, 'click', @fetchAllStatus
@@ -34,9 +31,12 @@ ThreadWatcher =
       when 'thread'
         $.on d, 'ThreadUpdate', @cb.onThreadRefresh
 
-    if Conf['Toggleable Thread Watcher']
-      Header.addShortcut sc
+    if Conf['Fixed Thread Watcher']
       $.addClass doc, 'fixed-watcher'
+    if Conf['Toggleable Thread Watcher']
+      @dialog.hidden = true
+      Header.addShortcut sc
+      $.addClass doc, 'toggleable-watcher'
 
     ThreadWatcher.fetchAuto()
 

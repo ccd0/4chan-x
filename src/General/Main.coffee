@@ -43,6 +43,8 @@ Main =
 
     $.get Conf, (items) ->
       $.extend Conf, items
+      # XXX temporarily set here so old versions update to correct setting
+      Conf['Fixed Thread Watcher'] ?= Conf['Toggleable Thread Watcher']
       $.asap (-> doc = d.documentElement), Main.initFeatures
 
     # set up CSS when <head> is completely loaded

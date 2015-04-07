@@ -803,7 +803,7 @@ span.hide-announcement {
 :root.fixed-watcher #thread-watcher {
   position: fixed;
 }
-:root:not(.fixed-watcher) #thread-watcher:not(:hover) {
+:root:not(.toggleable-watcher) #thread-watcher:not(:hover) {
   max-height: 210px;
   overflow-y: hidden;
 }
@@ -837,7 +837,7 @@ span.hide-announcement {
 #thread-watcher a {
   text-decoration: none;
 }
-:root:not(.fixed-watcher) #thread-watcher .move > .close {
+:root:not(.toggleable-watcher) #thread-watcher .move > .close {
   display: none;
 }
 #thread-watcher .move > .close {

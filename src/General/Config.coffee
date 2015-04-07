@@ -377,9 +377,14 @@ Config =
         true
         'Bookmark threads.'
       ]
+      'Fixed Thread Watcher': [
+        null # XXX temporarily set in Main.coffee so old versions update to correct setting
+        'Makes the thread watcher scroll with the page.'
+        1
+      ]
       'Toggleable Thread Watcher': [
         true
-        'Adds a shortcut for the thread watcher, hides the watcher by default, and makes it scroll with the page.'
+        'Adds a shortcut for the thread watcher and hides the watcher by default.'
         1
       ]
       'Mark New IPs': [
