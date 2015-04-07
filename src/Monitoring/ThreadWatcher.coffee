@@ -245,8 +245,6 @@ ThreadWatcher =
         ThreadWatcher.db.delete {boardID, threadID}
       else
         data.isDead = true
-        delete data.unread
-        delete data.quotingYou
         ThreadWatcher.db.set {boardID, threadID, val: data}
 
       ThreadWatcher.refresh()
