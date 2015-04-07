@@ -609,8 +609,6 @@ Config =
       'Show number of unread posts in watched threads.'
     ]
 
-  'Thread Watcher Hidden': true
-
   filter:
     name: """
       # Filter any namefags:

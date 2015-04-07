@@ -19,13 +19,12 @@ ThreadWatcher =
     @unreaddb = Unread.db or new DataBoard 'lastReadPosts'
 
     if Conf['Toggleable Thread Watcher']
-      @setHidden Conf['Thread Watcher Hidden']
-      $.sync 'Thread Watcher Hidden', @setHidden
+      @dialog.hidden = true
 
     $.on d, 'QRPostSuccessful',   @cb.post
-    $.on sc, 'click', @toggleHidden
+    $.on sc, 'click', @toggleWatcher
     $.on @refreshButton, 'click', @fetchAllStatus
-    $.on @closeButton, 'click', @toggleHidden
+    $.on @closeButton, 'click', @toggleWatcher
 
     $.on d, '4chanXInitFinished', @ready
 
@@ -98,15 +97,9 @@ ThreadWatcher =
       ThreadWatcher.add thread
       $.delete 'AutoWatch'
 
-  setHidden: (hide) ->
-    ThreadWatcher.shortcut.classList.toggle 'disabled', hide
-    ThreadWatcher.dialog.hidden = hide
-    Conf['Thread Watcher Hidden'] = hide
-
-  toggleHidden: ->
-    hide = !ThreadWatcher.dialog.hidden
-    ThreadWatcher.setHidden hide
-    $.set 'Thread Watcher Hidden', hide
+  toggleWatcher: ->
+    $.toggleClass ThreadWatcher.shortcut, 'disabled'
+    ThreadWatcher.dialog.hidden = !ThreadWatcher.dialog.hidden
 
   cb:
     openAll: ->
