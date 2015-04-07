@@ -286,6 +286,7 @@ ThreadWatcher =
     $.addClass div, 'current'     if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
     $.addClass div, 'dead-thread' if data.isDead
     if Conf['Show Unread Count']
+      $.addClass div, 'replies-read'        if data.unread is 0
       $.addClass div, 'replies-unread'      if data.unread
       $.addClass div, 'replies-quoting-you' if data.quotingYou
     $.add div, [x, $.tn(' '), link]
