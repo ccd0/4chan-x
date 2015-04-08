@@ -28,6 +28,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.7
 
+**v1.10.7.7** *(2015-04-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.7/builds/4chan-X-noupdate.crx "Chromium version")]
+- (fgts) Add /fit/ to fgts archive.
+
 **v1.10.7.6** *(2015-04-06)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.6/builds/4chan-X-noupdate.crx "Chromium version")]
 - Add /b/ to fgts archive.
 
