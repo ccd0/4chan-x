@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.8
 
+**v1.10.8.6** *(2015-04-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.7.7: (fgts) Add /fit/ to fgts archive.
+
 **v1.10.8.5** *(2015-04-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.5/builds/4chan-X-noupdate.crx "Chromium version")]
 - Impose max height on thread watcher when not fixed rather than when not toggleable.
 
