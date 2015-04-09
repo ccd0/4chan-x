@@ -482,7 +482,7 @@ QR =
         QR.setCustomCooldown customCooldownEnabled
         $.sync 'customCooldownEnabled', QR.setCustomCooldown
 
-    if g.BOARD.ID is 'f' and g.VIEW isnt 'thread'
+    if g.BOARD.ID is 'f'
       nodes.flashTag = $.el 'select',
         name: 'filetag'
 
@@ -569,10 +569,10 @@ QR =
 
     post = QR.posts[0]
     post.forceSave()
-    if g.BOARD.ID is 'f' and g.VIEW isnt 'thread'
-      filetag = QR.nodes.flashTag.value
     threadID = post.thread
     thread = g.BOARD.threads[threadID]
+    if g.BOARD.ID is 'f' and threadID is 'new'
+      filetag = QR.nodes.flashTag.value
 
     # prevent errors
     if threadID is 'new'

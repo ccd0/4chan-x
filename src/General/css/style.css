@@ -1198,7 +1198,8 @@ input[name="Default Volume"] {
 }
 #qr.forced-anon input[data-name="name"]:not(.force-show),
 #qr.forced-anon input[data-name="sub"]:not(.force-show),
-#qr.reply-to-thread input[data-name="sub"]:not(.force-show) {
+#qr.reply-to-thread input[data-name="sub"]:not(.force-show),
+#qr.reply-to-thread select[name="filetag"] {
   display: none;
 }
 #qr textarea.field {
