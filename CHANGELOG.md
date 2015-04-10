@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.8
 
+**v1.10.8.8** *(2015-04-10)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.8/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.7.8: (Hasumi) Update archive.moe: added /fit/ with full images, /r9k/ full images.
+
 **v1.10.8.7** *(2015-04-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.7/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix missing /f/ tag selector when posting new thread from within thread.
 
@@ -33,6 +36,9 @@ The links to individual versions below are to copies of the script with the upda
 - Add an API for getting and setting the contents of the selected file in the Quick Reply (`QRGetFile`, `QRFile`, and `QRSetFile` events).
 
 ### v1.10.7
+
+**v1.10.7.8** *(2015-04-10)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.8/builds/4chan-X-noupdate.crx "Chromium version")]
+- (Hasumi) Update archive.moe: added /fit/ with full images, /r9k/ full images.
 
 **v1.10.7.7** *(2015-04-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.7.7/builds/4chan-X-noupdate.crx "Chromium version")]
 - (fgts) Add /fit/ to fgts archive.
