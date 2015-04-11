@@ -1,3 +1,5 @@
+crx = require 'crx'
+
 module.exports = (grunt) ->
   grunt.util.linefeed = '\n'
 
@@ -134,7 +136,7 @@ module.exports = (grunt) ->
         expand: true
         filter: (src) ->
           pkg = grunt.config 'pkg'
-          grunt.file.isFile(src) and !grunt.file.isMatch(src, "testbuilds/#{pkg.name}#{pkg.meta.suffix.dev}.user.js")
+          grunt.file.isFile(src) and not grunt.file.isMatch(src, "testbuilds/#{pkg.name}#{pkg.meta.suffix.dev}.user.js") and not /\.crx\.zip$/.test(src)
       web:
         src:  'test.html'
         dest: 'index.html'
@@ -236,6 +238,17 @@ module.exports = (grunt) ->
         privateKey: '../<%= pkg.name %>-keys/<%= pkg.name %>.pem'
 
     compress:
+      crx:
+        options:
+          archive: 'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.crx.zip'
+          level: 9
+          pretty: true
+        expand:  true
+        flatten: true
+        src: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/*'
+        dest: '/'
+        date: '<%= pkg.meta.date %>'
+        mode: parseInt('644', 8)
       zip:
         options:
           archive: 'testbuilds/<%= pkg.name %>.zip'
@@ -330,6 +343,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'build-crx-channel', [
     'concat:crx'
     'copy:crx'
+    'compress:crx'
   ]
 
   grunt.registerTask 'build-crx', [
@@ -348,13 +362,21 @@ module.exports = (grunt) ->
     'clean:tmpcrx'
   ]
 
-  grunt.registerTask 'pack', [
-    'set-channel:stable'
-    'crx:prod'
-    'set-channel:beta'
-    'crx:prod'
-    'set-channel:noupdate'
-    'crx:prod'
+  grunt.registerTask 'sign-channel', 'Sign CRX package', (channel) ->
+    done = @async()
+    pkg = grunt.config 'pkg'
+    privateKey = grunt.file.read "../#{pkg.name}-keys/#{pkg.name}.pem"
+    archive    = grunt.file.read "testbuilds/#{pkg.name}#{pkg.meta.suffix[channel]}.crx.zip", {encoding: null}
+    extension = new crx {privateKey, loaded: true}
+    extension.pack(archive).then((data) ->
+      grunt.file.write "testbuilds/#{pkg.name}#{pkg.meta.suffix[channel]}.crx", data
+      done()
+    ).catch(done)
+
+  grunt.registerTask 'sign', [
+    'sign-channel:stable'
+    'sign-channel:beta'
+    'sign-channel:noupdate'
   ]
 
   grunt.registerTask 'build-userscript', [
@@ -381,7 +403,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'full', [
     'build'
-    'pack'
+    'sign'
     'copy:builds'
   ]
 
