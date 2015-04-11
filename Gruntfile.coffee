@@ -129,6 +129,9 @@ module.exports = (grunt) ->
         dest: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/'
         expand:  true
         flatten: true
+      zip:
+        src:  'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.noupdate %>.crx.zip'
+        dest: 'testbuilds/<%= pkg.name %>.zip'
       builds:
         cwd: 'testbuilds/'
         src: '*'
@@ -249,17 +252,6 @@ module.exports = (grunt) ->
         dest: '/'
         date: '<%= pkg.meta.date %>'
         mode: parseInt('644', 8)
-      zip:
-        options:
-          archive: 'testbuilds/<%= pkg.name %>.zip'
-          level: 9
-          pretty: true
-        expand:  true
-        flatten: true
-        src: 'testbuilds/crx<%= pkg.meta.suffix.noupdate %>/*'
-        dest: '/'
-        date: '<%= pkg.meta.date %>'
-        mode: parseInt('644', 8)
 
     clean:
       builds: 'builds'
@@ -358,7 +350,7 @@ module.exports = (grunt) ->
     'build-crx-channel'
     'set-channel:noupdate'
     'build-crx-channel'
-    'compress:zip'
+    'copy:zip'
     'clean:tmpcrx'
   ]
 
