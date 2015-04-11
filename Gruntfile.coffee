@@ -236,7 +236,7 @@ module.exports = (grunt) ->
         privateKey: '../<%= pkg.name %>-keys/<%= pkg.name %>.pem'
 
     compress:
-      crx:
+      zip:
         options:
           archive: 'testbuilds/<%= pkg.name %>.zip'
           level: 9
@@ -344,7 +344,7 @@ module.exports = (grunt) ->
     'build-crx-channel'
     'set-channel:noupdate'
     'build-crx-channel'
-    'compress:crx'
+    'compress:zip'
     'clean:tmpcrx'
   ]
 
