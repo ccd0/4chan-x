@@ -100,7 +100,7 @@ Filter =
 
   node: ->
     return if @isClone
-    for key of Filter.filters when (value = Filter[key] @) isnt false
+    for key of Filter.filters when (value = Filter[key] @)?
       # Continue if there's nothing to filter (no tripcode for example).
 
       for filter in Filter.filters[key] when result = filter value, @isReply
@@ -121,51 +121,17 @@ Filter =
         if !@isReply and result.top
           @thread.isOnTop = true
 
-  name: (post) ->
-    if 'name' of post.info
-      return post.info.name
-    false
-  uniqueID: (post) ->
-    if 'uniqueID' of post.info
-      return post.info.uniqueID
-    false
-  tripcode: (post) ->
-    if 'tripcode' of post.info
-      return post.info.tripcode
-    false
-  capcode: (post) ->
-    if 'capcode' of post.info
-      return post.info.capcode
-    false
-  subject: (post) ->
-    if 'subject' of post.info
-      return post.info.subject or false
-    false
-  comment: (post) ->
-    if 'comment' of post.info
-      return post.info.comment
-    false
-  flag: (post) ->
-    if 'flag' of post.info
-      return post.info.flag
-    false
-  filename: (post) ->
-    if post.file
-      return post.file.name
-    false
-  dimensions: (post) ->
-    {file} = post
-    if file?.dimensions
-      return file.dimensions
-    false
-  filesize: (post) ->
-    if post.file
-      return post.file.size
-    false
-  MD5: (post) ->
-    if post.file?.MD5
-      return post.file.MD5
-    false
+  name:       (post) -> post.info.name
+  uniqueID:   (post) -> post.info.uniqueID
+  tripcode:   (post) -> post.info.tripcode
+  capcode:    (post) -> post.info.capcode
+  subject:    (post) -> post.info.subject or undefined
+  comment:    (post) -> post.info.comment
+  flag:       (post) -> post.info.flag
+  filename:   (post) -> post.file?.name
+  dimensions: (post) -> post.file?.dimensions
+  filesize:   (post) -> post.file?.size
+  MD5:        (post) -> post.file?.MD5
 
   menu:
     init: ->
@@ -211,7 +177,7 @@ Filter =
         el: el
         open: (post) ->
           value = Filter[type] post
-          value isnt false
+          value?
       }
 
     makeFilter: ->
