@@ -99,13 +99,13 @@ Filter =
       settings
 
   node: ->
-    return if @isClone or @isFetchedQuote
+    return if @isClone
     for key of Filter.filters when (value = Filter[key] @) isnt false
       # Continue if there's nothing to filter (no tripcode for example).
 
       for filter in Filter.filters[key] when result = filter value, @isReply
         # Hide
-        if result.hide
+        if result.hide and not @isFetchedQuote
           if @isReply
             PostHiding.hide @, result.stub
           else if g.VIEW is 'index'
