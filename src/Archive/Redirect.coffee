@@ -75,6 +75,8 @@ Redirect =
       'image'
     else
       type
+    if type is 'capcode'
+      value = {'Developer': 'dev'}[value] or value.toLowerCase()
     value = encodeURIComponent value
     path  = if archive.software is 'foolfuuka'
       "#{boardID}/search/#{type}/#{value}"
