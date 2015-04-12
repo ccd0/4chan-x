@@ -1,9 +1,6 @@
-?{file}{<div class="file" id="f${postID}">
-  ?{file.isDeleted}{
-    <span class="fileThumb">
-      <img src="${staticPath}filedeleted-res${gifIcon}" alt="File deleted." class="fileDeletedRes retina">
-    </span>
-  }{?{boardID === "f"}{
+?{file}{
+  <div class="file" id="f${postID}">
+  ?{boardID === "f"}{
     <div class="fileInfo"><span class="fileText" id="fT${postID}">
       File: 
       <a data-width="${file.width}" data-height="${file.height}" href="${file.url}" target="_blank">${file.name}</a>
@@ -25,5 +22,14 @@
         style="height: ${file.isSpoiler ? 100 : file.theight}px; width: ${file.isSpoiler ? 100 : file.twidth}px;"
       >
     </a>
-  }}
-</div>}
+  }
+  </div>
+}{
+  ?{fileDeleted}{
+    <div class="file" id="f${postID}">
+      <span class="fileThumb">
+        <img src="${staticPath}filedeleted-res${gifIcon}" alt="File deleted." class="fileDeletedRes retina">
+      </span>
+    </div>
+  }
+}

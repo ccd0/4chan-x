@@ -48,11 +48,10 @@ Build =
       isSticky: !!data.sticky
       isClosed: !!data.closed
       isArchived: !!data.archived
-      # file
-    if data.filedeleted
-      o.file =
-        isDeleted: true
-    else if data.ext
+      # file status
+      fileDeleted: !!data.filedeleted
+    # file
+    if data.ext
       o.file =
         name:      (Build.unescape data.filename) + data.ext
         timestamp: "#{data.tim}#{data.ext}"
@@ -68,7 +67,6 @@ Build =
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
-        isDeleted: false
         tag:       data.tag
     Build.post o, suppressThumb
   post: (o, suppressThumb) ->
@@ -80,7 +78,7 @@ Build =
       postID, threadID, boardID
       name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
       comment
-      file
+      file, fileDeleted
     } = o
     name    or= ''
     subject or= ''
@@ -111,7 +109,7 @@ Build =
 
     ### File Info ###
 
-    if file and not file.isDeleted
+    if file
       shortFilename = Build.shortFilename file.name
       fileSize = $.bytesToString file.size
       fileDims = if file.url[-4..] is '.pdf' then 'PDF' else "#{file.width}x#{file.height}"
