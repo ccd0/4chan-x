@@ -59,8 +59,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["asp", "b", "cm", "fit", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "y"],
-  "files": ["asp", "b", "cm", "fit", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "y"]
+  "boards": ["asp", "b", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "y"],
+  "files": ["asp", "b", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "y"]
 }, {
   "uid": 22,
   "name": "not4plebs",
