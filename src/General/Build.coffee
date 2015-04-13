@@ -56,15 +56,15 @@ Build =
       o.file =
         name:      (Build.unescape data.filename) + data.ext
         url: if boardID is 'f'
-          "//i.4cdn.org/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
+          "#{location.protocol}//i.4cdn.org/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
         else
-          "//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
+          "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h
         width:     data.w
         MD5:       data.md5
         size:      $.bytesToString data.fsize
         sizeInBytes: data.fsize
-        turl:      "//i.4cdn.org/#{boardID}/#{data.tim}s.jpg"
+        turl:      "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
@@ -108,9 +108,11 @@ Build =
     ### File Info ###
 
     if file
+      protocol = /^https?:(?=\/\/i\.4cdn\.org\/)/
+      fileURL = file.url.replace protocol, ''
       shortFilename = Build.shortFilename file.name
       fileDims = if file.url[-4..] is '.pdf' then 'PDF' else "#{file.width}x#{file.height}"
-      fileThumb = if file.isSpoiler then Build.spoilerThumb boardID else file.turl
+      fileThumb = if file.isSpoiler then Build.spoilerThumb(boardID) else file.turl.replace(protocol, '')
 
     fileBlock = <%= importHTML('Build/File') %>
 
