@@ -156,7 +156,7 @@ class Fetcher
         MD5:       data.media.media_hash
         size:      $.bytesToString data.media.media_size
         sizeInBytes: data.media.media_size
-        turl:      data.media.thumb_link or "#{location.protocol}//i.4cdn.org/#{@boardID}/#{data.media.preview_orig}"
+        thumbURL:  data.media.thumb_link or "#{location.protocol}//i.4cdn.org/#{@boardID}/#{data.media.preview_orig}"
         theight:   data.media.preview_h
         twidth:    data.media.preview_w
         isSpoiler: data.media.spoiler is '1'
@@ -168,7 +168,7 @@ class Fetcher
       new Thread @threadID, board
     post = new Post Build.post(o), thread, board
     post.kill()
-    post.file.thumbURL = o.file.turl if post.file
+    post.file.thumbURL = o.file.thumbURL if post.file
     post.isFetchedQuote = true
     Main.callbackNodes Post, [post]
     @insert post

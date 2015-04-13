@@ -64,7 +64,7 @@ Build =
         MD5:       data.md5
         size:      $.bytesToString data.fsize
         sizeInBytes: data.fsize
-        turl:      "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}s.jpg"
+        thumbURL:  "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
@@ -112,7 +112,7 @@ Build =
       fileURL = file.url.replace protocol, ''
       shortFilename = Build.shortFilename file.name
       fileDims = if file.url[-4..] is '.pdf' then 'PDF' else "#{file.width}x#{file.height}"
-      fileThumb = if file.isSpoiler then Build.spoilerThumb(boardID) else file.turl.replace(protocol, '')
+      fileThumb = if file.isSpoiler then Build.spoilerThumb(boardID) else file.thumbURL.replace(protocol, '')
 
     fileBlock = <%= importHTML('Build/File') %>
 
