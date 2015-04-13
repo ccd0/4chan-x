@@ -460,6 +460,7 @@ Settings =
         sizeInBytes: 276 * 1024
         dimensions: '1280x720'
         isImage: true
+        isVideo: false
         isSpoiler: true
     FileInfo.format @value, data, @nextElementSibling
 
