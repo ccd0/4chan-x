@@ -144,7 +144,7 @@ class Fetcher
       flag:     data.poster_country_name
       dateText: data.fourchan_date
       dateUTC:  data.timestamp
-      comment:  comment
+      commentHTML: comment
       # file
     if data.media?.media_filename
       o.file =

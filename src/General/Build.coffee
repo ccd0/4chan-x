@@ -42,7 +42,7 @@ Build =
       flag:     Build.unescape data.country_name
       dateText: data.now
       dateUTC:  data.time
-      comment:  {innerHTML: data.com or ''}
+      commentHTML: {innerHTML: data.com or ''}
       # thread status
       isSticky: !!data.sticky
       isClosed: !!data.closed
@@ -78,7 +78,7 @@ Build =
     {
       postID, threadID, boardID
       name, capcode, capcodeHighlight, tripcode, uniqueID, email, subject, flagCode, flag, dateText, dateUTC
-      comment
+      commentHTML
       file, fileDeleted
     } = o
     isOP = postID is threadID
