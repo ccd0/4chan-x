@@ -5,7 +5,7 @@
     ?{email}{<a href="mailto:${encodeURIComponent(email).replace(/%40/g, "@")}" class="useremail">}
       <span class="name?{capcode}{ capcode}">${name}</span>
       ?{tripcode}{ <span class="postertrip">${tripcode}</span>}
-      ?{capcode}{ <strong class="capcode hand id_${capcodeLC}" title="Highlight posts by ${capcodePlural}">## ${capcodeText}</strong>}
+      ?{capcode}{ <strong class="capcode hand id_${capcodeLC}" title="Highlight posts by ${capcodePlural}">## ${capcode}</strong>}
     ?{email}{</a>}
     ?{boardID === "f" && isOP || capcode}{}{ }
     ?{capcode}{ <img src="${staticPath}${capcodeLC}icon${gifIcon}" alt="${capcodeUC} Icon" title="This user is ${capcodeDescription}." class="identityIcon retina">}

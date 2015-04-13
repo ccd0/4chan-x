@@ -133,9 +133,9 @@ class Fetcher
       # info
       name:     data.name
       capcode:  switch data.capcode
-        when 'M' then 'mod'
-        when 'A' then 'admin'
-        when 'D' then 'developer'
+        when 'M' then 'Mod'
+        when 'A' then 'Admin'
+        when 'D' then 'Developer'
       tripcode: data.trip
       uniqueID: data.poster_hash
       email:    data.email or ''

@@ -34,7 +34,6 @@ Build =
       boardID:  boardID
       # info
       name:     Build.unescape data.name
-      capcode:  data.capcode
       tripcode: data.trip
       uniqueID: data.id
       email:    Build.unescape data.email
@@ -50,7 +49,9 @@ Build =
       isArchived: !!data.archived
       # file status
       fileDeleted: !!data.filedeleted
-    # file
+    if data.capcode
+      o.capcode = data.capcode.replace(/_highlight$/, '').replace(/_/g, ' ').replace(/\b\w/g, (c) -> c.toUpperCase())
+      o.capcodeHighlight = /_highlight$/.test data.capcode
     if data.ext
       o.file =
         name:      (Build.unescape data.filename) + data.ext
@@ -76,7 +77,7 @@ Build =
     ###
     {
       postID, threadID, boardID
-      name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
+      name, capcode, capcodeHighlight, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
       comment
       file, fileDeleted
     } = o
@@ -88,16 +89,15 @@ Build =
     ### Post Info ###
 
     if capcode
-      capcodeLC = capcode.split('_')[0]
-      capcodeUC = capcodeLC[0].toUpperCase() + capcodeLC[1..]
-      capcodeText   = capcodeUC
-      capcodeLong   = {'Admin': 'Administrator', 'Mod': 'Moderator'}[capcodeUC] or capcodeUC
-      capcodePlural = "#{capcodeLong}s"
-      capcodeDescription = "a 4chan #{capcodeLong}"
-      if capcode is 'admin_emeritus'
-        capcodeText        = 'Admin Emeritus'
+      capcodeUC = capcode.split(' ')[0]
+      capcodeLC = capcodeUC.toLowerCase()
+      if capcode is 'Admin Emeritus'
         capcodePlural      = 'the Administrator Emeritus'
         capcodeDescription = "4chan's founding Administrator"
+      else
+        capcodeLong   = {'Admin': 'Administrator', 'Mod': 'Moderator'}[capcode] or capcode
+        capcodePlural = "#{capcodeLong}s"
+        capcodeDescription = "a 4chan #{capcodeLong}"
 
     postLink = Build.postURL boardID, threadID, postID
     quoteLink = if Build.sameThread boardID, threadID
