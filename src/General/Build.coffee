@@ -69,6 +69,7 @@ Build =
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
         tag:       data.tag
+      o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
     Build.post o, suppressThumb
   post: (o, suppressThumb) ->
     ###
@@ -111,7 +112,6 @@ Build =
       protocol = /^https?:(?=\/\/i\.4cdn\.org\/)/
       fileURL = file.url.replace protocol, ''
       shortFilename = Build.shortFilename file.name
-      fileDims = if file.url[-4..] is '.pdf' then 'PDF' else "#{file.width}x#{file.height}"
       fileThumb = if file.isSpoiler then Build.spoilerThumb(boardID) else file.thumbURL.replace(protocol, '')
 
     fileBlock = <%= importHTML('Build/File') %>
