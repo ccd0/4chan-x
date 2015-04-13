@@ -62,7 +62,8 @@ Build =
         height:    data.h
         width:     data.w
         MD5:       data.md5
-        size:      data.fsize
+        size:      $.bytesToString data.fsize
+        sizeInBytes: data.fsize
         turl:      "//i.4cdn.org/#{boardID}/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
@@ -108,7 +109,6 @@ Build =
 
     if file
       shortFilename = Build.shortFilename file.name
-      fileSize = $.bytesToString file.size
       fileDims = if file.url[-4..] is '.pdf' then 'PDF' else "#{file.width}x#{file.height}"
       fileThumb = if file.isSpoiler then Build.spoilerThumb boardID else file.turl
 
