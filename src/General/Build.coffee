@@ -55,7 +55,6 @@ Build =
     if data.ext
       o.file =
         name:      (Build.unescape data.filename) + data.ext
-        timestamp: "#{data.tim}#{data.ext}"
         url: if boardID is 'f'
           "//i.4cdn.org/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
         else
