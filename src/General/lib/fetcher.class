@@ -141,7 +141,7 @@ class Fetcher
       email:    data.email
       subject:  data.title
       flagCode: data.poster_country
-      flagName: data.poster_country_name
+      flag:     data.poster_country_name
       date:     data.fourchan_date
       dateUTC:  data.timestamp
       comment:  comment

@@ -39,7 +39,7 @@ Build =
       email:    Build.unescape data.email
       subject:  Build.unescape data.sub
       flagCode: data.country
-      flagName: Build.unescape data.country_name
+      flag:     Build.unescape data.country_name
       date:     data.now
       dateUTC:  data.time
       comment:  {innerHTML: data.com or ''}
@@ -77,7 +77,7 @@ Build =
     ###
     {
       postID, threadID, boardID
-      name, capcode, capcodeHighlight, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
+      name, capcode, capcodeHighlight, tripcode, uniqueID, email, subject, flagCode, flag, date, dateUTC
       comment
       file, fileDeleted
     } = o
