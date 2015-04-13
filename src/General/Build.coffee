@@ -40,7 +40,7 @@ Build =
       subject:  Build.unescape data.sub
       flagCode: data.country
       flag:     Build.unescape data.country_name
-      date:     data.now
+      dateText: data.now
       dateUTC:  data.time
       comment:  {innerHTML: data.com or ''}
       # thread status
@@ -77,7 +77,7 @@ Build =
     ###
     {
       postID, threadID, boardID
-      name, capcode, capcodeHighlight, tripcode, uniqueID, email, subject, flagCode, flag, date, dateUTC
+      name, capcode, capcodeHighlight, tripcode, uniqueID, email, subject, flagCode, flag, dateText, dateUTC
       comment
       file, fileDeleted
     } = o

@@ -142,7 +142,7 @@ class Fetcher
       subject:  data.title
       flagCode: data.poster_country
       flag:     data.poster_country_name
-      date:     data.fourchan_date
+      dateText: data.fourchan_date
       dateUTC:  data.timestamp
       comment:  comment
       # file
