@@ -32,7 +32,7 @@ ImageHover =
       el = $.el (if isVideo then 'video' else 'img')
       el.dataset.fullID = post.fullID
       $.on el, 'error', error
-      el.src = file.URL
+      el.src = file.url
 
     if Conf['Restart when Opened']
       ImageCommon.rewind el

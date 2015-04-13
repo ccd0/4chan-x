@@ -34,7 +34,7 @@ ImageCommon =
     return true
 
   error: (file, post, delay, cb) ->
-    src = post.file.URL.split '/'
+    src = post.file.url.split '/'
     URL = Redirect.to 'file',
       boardID:  post.board.ID
       filename: src[src.length - 1]
@@ -51,10 +51,10 @@ ImageCommon =
         cb URL
 
     <% if (type === 'crx') { %>
-    $.ajax post.file.URL,
+    $.ajax post.file.url,
       onloadend: ->
         if @status is 200
-          URL = post.file.URL
+          URL = post.file.url
         else
           post.kill true if @status is 404
           redirect()
@@ -74,7 +74,7 @@ ImageCommon =
         post.kill true
         redirect()
       else
-        URL = post.file.URL
+        URL = post.file.url
     <% } %>
 
   # Add controls, but not until the mouse is moved over the video.

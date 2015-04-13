@@ -112,7 +112,7 @@ Gallery =
 
     thumb = $.el 'a',
       className: 'gal-thumb'
-      href:      post.file.URL
+      href:      post.file.url
       target:    '_blank'
       title:     post.file.name
 

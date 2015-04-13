@@ -170,7 +170,7 @@ class Post
     @file =
       text:       fileText
       link:       link
-      URL:        link.href
+      url:        link.href
       name:       fileText.title or link.title or link.textContent
       size:       info[1]
       isImage:    /(jpg|png|gif)$/i.test link.href

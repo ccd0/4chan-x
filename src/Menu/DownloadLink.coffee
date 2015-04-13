@@ -14,6 +14,6 @@ DownloadLink =
       order: 100
       open: ({file}) ->
         return false unless file
-        a.href     = file.URL
+        a.href     = file.url
         a.download = file.name
         true
