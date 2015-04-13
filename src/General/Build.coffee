@@ -33,7 +33,7 @@ Build =
       threadID: data.resto or data.no
       boardID:  boardID
       # info
-      name:     Build.unescape data.name
+      name:     Build.unescape(data.name) or ''
       tripcode: data.trip
       uniqueID: data.id
       email:    Build.unescape data.email
@@ -81,8 +81,6 @@ Build =
       comment
       file, fileDeleted
     } = o
-    name    or= ''
-    subject or= ''
     isOP = postID is threadID
     {staticPath, gifIcon} = Build
 

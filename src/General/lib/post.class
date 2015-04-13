@@ -56,7 +56,7 @@ class Post
       @nodes.nameBlock.textContent.trim()
     if subject        = $ '.subject',            info
       @nodes.subject  = subject
-      @info.subject   = subject.textContent
+      @info.subject   = subject.textContent or undefined
     if name           = $ '.name',               info
       @nodes.name     = name
       @info.name      = name.textContent
