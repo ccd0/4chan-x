@@ -234,12 +234,6 @@ module.exports = (grunt) ->
         ]
         tasks: 'build'
 
-    crx:
-      prod:
-        src: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/'
-        dest: 'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.crx'
-        privateKey: '../<%= pkg.name %>-keys/<%= pkg.name %>.pem'
-
     compress:
       crx:
         options:
