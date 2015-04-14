@@ -155,11 +155,12 @@ Captcha.v2 =
         QR.nodes.status.focus()
       @reload()
     else
+      focus = d.activeElement?.nodeName is 'IFRAME' and d.activeElement.src?[...38] is 'https://www.google.com/recaptcha/api2/'
       if pasted
         @destroy()
       else
         @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
-      QR.nodes.status.focus()
+      QR.nodes.status.focus() if focus
 
     QR.submit() if Conf['Post on Captcha Completion'] and !QR.cooldown.auto
 
