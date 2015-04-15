@@ -1,8 +1,17 @@
 Report =
   init: ->
-    return unless /report/.test(location.search)
-    $.asap (-> $.id 'recaptcha_response_field'), Report.ready
+    return unless Conf['Archive Report'] and /\bmode=report\b/.test(location.search)
+    return unless match = location.search.match /\bno=(\d+)/
+    postID = +match[1]
+    Redirect.init()
+    if @archive = Redirect.to 'report', {boardID: g.BOARD.ID, postID}
+      $.ready @ready
+
   ready: ->
-    field = $.id 'recaptcha_response_field'
-    $.on field, 'keydown', (e) ->
-      $.globalEval 'Recaptcha.reload()' if e.keyCode is 8 and not field.value
+    if (message = $ 'h3') and /Report submitted!/.test(message.textContent)
+      location.replace Report.archive
+      return
+    link = $.el 'a',
+      href: Report.archive
+      textContent: 'Report to fgts'
+    $.add d.body, [$.tn(' ['), link, $.tn(']')]
