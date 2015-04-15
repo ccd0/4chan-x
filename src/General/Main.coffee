@@ -56,6 +56,7 @@ Main =
       when 'a.4cdn.org'
         return
       when 'sys.4chan.org'
+        Report.init()
         PostSuccessful.init() if g.VIEW is 'post'
         return
       when 'i.4cdn.org'
