@@ -4,6 +4,10 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.9
 
+**v1.10.9.2** *(2015-04-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- (aCarbon) Normal report size box if pass is logged in.
+- Clean up leftover Recaptcha iframes to prevent memory leak.
+
 **v1.10.9.1** *(2015-04-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.10.8.11: Increase report window size to accomodate increasingly common image captchas.
 - Fix report window closing before redirect.
