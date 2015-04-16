@@ -20,5 +20,5 @@ ReportLink =
   report: ->
     {url} = ReportLink
     id  = Date.now()
-    set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=320"
+    set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=675"
     window.open url, id, set
