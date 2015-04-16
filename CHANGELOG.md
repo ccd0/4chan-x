@@ -4,12 +4,19 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.9
 
+**v1.10.9.1** *(2015-04-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.8.11: Increase report window size to accomodate increasingly common image captchas.
+- Fix report window closing before redirect.
+
 **v1.10.9.0** *(2015-04-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.10.8.10.
 - Support reporting posts to fgts archive.
 - Add capcode to archive search menu.
 
 ### v1.10.8
+
+**v1.10.8.11** *(2015-04-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.11/builds/4chan-X-noupdate.crx "Chromium version")]
+- Increase report window size to accomodate increasingly common image captchas.
 
 **v1.10.8.10** *(2015-04-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.8.10/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix unwanted focusing on the submit button if you focus on the comment field too soon after entering the captcha.
