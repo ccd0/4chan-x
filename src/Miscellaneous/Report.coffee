@@ -9,6 +9,7 @@ Report =
 
   ready: ->
     if (message = $ 'h3') and /Report submitted!/.test(message.textContent)
+      $.globalEval 'self.close = function(){};'
       location.replace Report.archive
       return
     link = $.el 'a',
