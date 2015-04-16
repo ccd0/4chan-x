@@ -125,6 +125,11 @@ Captcha.v2 =
     $.rmClass QR.nodes.el, 'captcha-open'
     $.rm @nodes.container if @nodes.container
     delete @nodes.container
+    # Clean up abandoned iframes.
+    for garbage in $$ 'div > .gc-bubbleDefault'
+      $.rm ins if (ins = garbage.parentNode.nextSibling) and ins.nodeName is 'INS'
+      $.rm garbage.parentNode
+    return
 
   sync: (captchas=[]) ->
     @captchas = captchas
