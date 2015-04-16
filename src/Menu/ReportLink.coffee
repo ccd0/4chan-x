@@ -20,6 +20,6 @@ ReportLink =
   report: ->
     {url} = ReportLink
     id  = Date.now()
-    height = if d.cookie.indexOf('pass_enabled=1') >= 0 then 285 else 675
-    set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=" + height
+    height = if d.cookie.indexOf('pass_enabled=1') >= 0 then 200 else 675
+    set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=#{height}"
     window.open url, id, set
