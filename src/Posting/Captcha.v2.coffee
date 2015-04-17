@@ -26,10 +26,13 @@ Captcha.v2 =
       $.queueTask => @save false
 
   initFrame: ->
-    $.on window, 'focus', ->
-      $.queueTask ->
-        return unless d.hasFocus() and (checkbox = $.id 'recaptcha-anchor')
-        checkbox.focus() unless d.activeElement is checkbox
+    $.onExists d.body, '#recaptcha-anchor', true, (checkbox) ->
+      focus = ->
+        if d.hasFocus() and d.activeElement isnt checkbox
+          checkbox.focus()
+      focus()
+      $.on window, 'focus', ->
+        $.queueTask focus
 
   shouldFocus: false
   timeouts: {}
