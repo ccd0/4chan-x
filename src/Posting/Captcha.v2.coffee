@@ -26,7 +26,6 @@ Captcha.v2 =
       $.queueTask => @save false
 
   initFrame: ->
-    $.globalEval 'window.focus = function() {};'
     $.on window, 'focus', ->
       $.queueTask ->
         return unless d.hasFocus() and (checkbox = $.id 'recaptcha-anchor')
