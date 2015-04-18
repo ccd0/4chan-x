@@ -31,6 +31,7 @@ Captcha.fixes =
   focusImage: (img) ->
     # XXX Image is not focusable at first in Firefox; to be refactored when I figure out why.
     $.asap ->
+      return true unless doc.contains img
       img.focus()
-      d.activeElement is img or not doc.contains img
+      d.activeElement is img
     , ->
