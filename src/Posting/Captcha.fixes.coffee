@@ -40,15 +40,16 @@ Captcha.fixes =
 
   keybinds: (e) ->
     return unless @images and doc.contains(@images[0]) and d.activeElement
+    reload = $.id 'recaptcha-reload-button'
+    verify = $.id 'recaptcha-verify-button'
     x = @images.indexOf d.activeElement
     if x < 0
       return unless $('.rc-controls').contains d.activeElement
-      x = 11
-    return unless dx = {38: 9, 40: 3, 37: 11, 39: 1}[e.keyCode]
-    if x is 11 and dx is 11 # left from buttons
-      x = 8
-    else
-      x = (x + dx) % 12
-    (@images[x] or $.id 'recaptcha-verify-button').focus()
+      x = if d.activeElement is verify then 11 else 9
+    return unless dx = {38: 9, 40: 3, 37: 11, 39: 1}[e.keyCode] # Up, Down, Left, Right
+    x = (x + dx) % 12
+    if x is 10
+      x = if dx is 11 then 9 else 11
+    (@images[x] or {9: reload, 11: verify}[x]).focus()
     e.preventDefault()
     e.stopPropagation()
