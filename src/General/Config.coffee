@@ -478,6 +478,10 @@ Config =
         'Places a link on the bottom of threads to open the QR.'
         1
       ]
+      'Captcha Fixes': [
+        true
+        'Make captcha more keyboard-navigable.'
+      ]
 
     'Quote Links':
       'Quote Backlinks': [

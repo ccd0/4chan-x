@@ -1,12 +1,13 @@
 Main =
   init: ->
     if location.hostname is 'www.google.com'
-      return $.ready ->
-        doc = d.documentElement
-        if location.pathname is '/recaptcha/api/fallback'
-          Captcha.noscript.initFrame()
-        else
-          Captcha.fixes.init()
+      if location.pathname is '/recaptcha/api/fallback'
+        $.ready -> Captcha.noscript.initFrame()
+      else
+        $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
+          if enabled
+            $.ready -> Captcha.fixes.init()
+      return
 
     g.threads = new SimpleDict()
     g.posts   = new SimpleDict()
