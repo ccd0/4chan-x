@@ -25,36 +25,6 @@ Captcha.v2 =
       # XXX Greasemonkey 1.x workaround to gain access to GM_* functions.
       $.queueTask => @save false
 
-  initFrame: ->
-    @initFrame2[location.pathname.split('/')[3]]()
-
-  initFrame2:
-    anchor: ->
-      $.onExists d.body, '#recaptcha-anchor', true, (checkbox) ->
-        focus = ->
-          if d.hasFocus() and d.activeElement isnt checkbox
-            checkbox.focus()
-        focus()
-        $.on window, 'focus', ->
-          $.queueTask focus
-
-    frame: ->
-      selector = '.rc-imageselect-target > .rc-imageselect-tile > img'
-      $.addStyle "#{selector}:focus {outline: 2px solid #4a90e2;}"
-      fixImages = ->
-        return unless (images = $$ selector).length
-        focus = images[0].tabIndex isnt 0
-        for img in images
-          img.tabIndex = 0
-        if focus
-          # XXX Image is not focusable at first in Firefox; to be refactored when I figure out why.
-          $.asap ->
-            images[0].focus()
-            d.activeElement is images[0] or not doc.contains images[0]
-          , ->
-      fixImages()
-      new MutationObserver(fixImages).observe d.body, {childList: true, subtree: true}
-
   shouldFocus: false
   timeouts: {}
   postsCount: 0
