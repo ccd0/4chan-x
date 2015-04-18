@@ -2,6 +2,13 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+### v1.10.10
+
+**v1.10.10.0** *(2015-04-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.10.9.4.
+- Make images in image captcha selectable with arrow keys.
+- Add `Captcha Fixes` option (on by default) to control whether 4chan X runs inside the Javascript-based captcha.
+
 ### v1.10.9
 
 **v1.10.9.4** *(2015-04-17)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.4/builds/4chan-X-noupdate.crx "Chromium version")]
