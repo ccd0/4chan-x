@@ -47,7 +47,11 @@ Captcha.v2 =
         for img in images
           img.tabIndex = 0
         if focus
-          images[0].focus()
+          # XXX Image is not focusable at first in Firefox; to be refactored when I figure out why.
+          $.asap ->
+            images[0].focus()
+            d.activeElement is images[0] or not doc.contains images[0]
+          , ->
       fixImages()
       new MutationObserver(fixImages).observe d.body, {childList: true, subtree: true}
 
