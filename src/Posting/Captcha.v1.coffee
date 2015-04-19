@@ -44,14 +44,31 @@ Captcha.v1 =
 
     @beforeSetup()
     @afterSetup() # reCAPTCHA might have loaded before the QR.
+
+  cb:
+    focus: -> QR.captcha.setup false, true
+
   beforeSetup: ->
     {img, input} = @nodes
     img.parentNode.hidden = true
     input.value = ''
     input.placeholder = 'Focus to load reCAPTCHA'
     @count()
-    $.on input, 'focus', @setup
-  setup: ->
+    $.on input, 'focus click', @cb.focus
+
+  needed: ->
+    captchaCount = @captchas.length
+    captchaCount++ if QR.req
+    postsCount = QR.posts.length
+    postsCount = 0 if postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
+    captchaCount < postsCount
+
+  onNewPost: ->
+
+  onPostChange: ->
+
+  setup: (focus, force) ->
+    return unless @isEnabled and (@needed() or force)
     $.globalEval '''
       (function() {
         var captchaContainer = document.getElementById("captchaContainer");
@@ -66,6 +83,8 @@ Captcha.v1 =
         setup();
       })()
     '''
+    @nodes.input.focus() if focus
+
   afterSetup: ->
     return unless challenge = $.id 'recaptcha_challenge_field_holder'
     return if challenge is QR.captcha.nodes.challenge
@@ -79,7 +98,7 @@ Captcha.v1 =
     img.parentNode.hidden = false
     input.placeholder = 'Verification'
     QR.captcha.count()
-    $.off input, 'focus', QR.captcha.setup
+    $.off input, 'focus click', QR.captcha.cb.focus
 
     QR.captcha.nodes.challenge = challenge
     new MutationObserver(QR.captcha.load.bind QR.captcha).observe challenge,
@@ -91,11 +110,13 @@ Captcha.v1 =
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
       QR.nodes.el.style.top    = null
       QR.nodes.el.style.bottom = '0px'
+
   destroy: ->
+    return unless @isEnabled
     $.globalEval 'Recaptcha.destroy()'
     @beforeSetup()
 
-  sync: (captchas) ->
+  sync: (captchas=[]) ->
     QR.captcha.captchas = captchas
     QR.captcha.count()
 
@@ -109,10 +130,6 @@ Captcha.v1 =
       challenge   = @nodes.img.alt
       if response = @nodes.input.value
         if Conf['Auto-load captcha'] then @reload() else @destroy()
-    # Duplicate one-word captchas.
-    # Don't duplicate street numbers for now (needs testing).
-    if response and !/\s|^\d$/.test response
-      response = "#{response} #{response}"
     {challenge, response}
 
   save: ->

@@ -463,6 +463,11 @@ Config =
         'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled.'
         1
       ]
+      'Use Recaptcha v1': [
+        false
+        'Use the old version of Recaptcha before the introduction of the checkbox.'
+        1
+      ]
       'Auto-load captcha': [
         false
         'Automatically load the captcha in the QR even if your post is empty.'
