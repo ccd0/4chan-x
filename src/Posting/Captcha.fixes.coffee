@@ -3,6 +3,9 @@ Captcha.fixes =
     .rc-imageselect-target > .rc-imageselect-tile > img:focus {
       outline: 2px solid #4a90e2;
     }
+    .rc-button-default:focus {
+      box-shadow: inset 0 0 0 2px #0063d6;
+    }
   '''
 
   init: ->
