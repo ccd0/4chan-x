@@ -1,6 +1,9 @@
 Captcha.fixes =
-  selectors:
-    image: '.rc-imageselect-target > .rc-imageselect-tile > img'
+  css: '''
+    .rc-imageselect-target > .rc-imageselect-tile > img:focus {
+      outline: 2px solid #4a90e2;
+    }
+  '''
 
   init: ->
     switch location.pathname.split('/')[3]
@@ -17,13 +20,13 @@ Captcha.fixes =
         $.queueTask focus
 
   initPopup: ->
-    $.addStyle "#{@selectors.image}:focus {outline: 2px solid #4a90e2;}"
+    $.addStyle @css
     @fixImages()
     new MutationObserver(=> @fixImages()).observe d.body, {childList: true, subtree: true}
     $.on d, 'keydown', @keybinds.bind(@)
 
   fixImages: ->
-    return unless (@images = $$ @selectors.image).length
+    return unless (@images = $$ '.rc-imageselect-target > .rc-imageselect-tile > img').length
     focus = @images[0].tabIndex isnt 0
     for img in @images
       img.tabIndex = 0
