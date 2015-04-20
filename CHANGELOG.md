@@ -11,6 +11,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.9
 
+**v1.10.9.5** *(2015-04-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- (thebladeee) Archive list: Transferred /w/ and /wg/ back to Nyafuu.
+
 **v1.10.9.4** *(2015-04-17)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.9.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - (Hasumi) Update archive.moe: Add /gif/.
 
