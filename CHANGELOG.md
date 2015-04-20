@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.10
 
+**v1.10.10.1** *(2015-04-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.9.5: (thebladeee) Archive list: Transferred /w/ and /wg/ back to Nyafuu.
+
 **v1.10.10.0** *(2015-04-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.10.9.4.
 - Make images in image captcha selectable with arrow keys.
