@@ -4,11 +4,17 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.11
 
+**v1.10.11.1** *(2015-04-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.10.3: Fix original post form not showing when JS is disabled.
+
 **v1.10.11.0** *(2015-04-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.10.10.2.
 - Fix whitespace being stripped from the comment before filtering. This makes it possible to filter whitespace spam.
 
 ### v1.10.10
+
+**v1.10.10.3** *(2015-04-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix original post form not showing when JS is disabled.
 
 **v1.10.10.2** *(2015-04-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Add focus indication to verify button in captcha popup.
