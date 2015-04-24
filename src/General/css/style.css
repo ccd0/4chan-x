@@ -110,6 +110,9 @@ marquee,
 .postMessage marquee + br + br {
   display: none;
 }
+:root:not([data-js-enabled]) #postForm {
+  display: table;
+}
 
 /* Anti-autoplay */
 audio.controls-added {
