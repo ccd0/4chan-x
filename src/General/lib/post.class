@@ -106,22 +106,28 @@ class Post
     #   'Comment too long'...
     #   EXIF data. (/p/)
     #   Rolls. (/tg/)
-    #   Marquees. (/pol/)
+    #   Fortunes. (/s4s/)
+    bq = @nodes.comment.cloneNode true
+    for node in $$ '.abbr + br, .exif, b, .fortune', bq
+      $.rm node
+    if abbr = $ '.abbr', bq
+      $.rm abbr
+    @info.comment = @nodesToText bq
+    if abbr
+      @info.comment = @info.comment.replace /\n\n$/, ''
+
+    # Hide spoilers.
+    # Remove:
     #   Preceding and following new lines.
     #   Trailing spaces.
-    bq = @nodes.comment.cloneNode true
-    for node in $$ '.abbr, .exif, b, marquee', bq
-      $.rm node
-    @info.comment = @nodesToText bq
-
-    # Get the comment's text with spoilers hidden.
-    spoilers = $$ 's', bq
-    @info.commentSpoilered = if spoilers.length
-      for node in spoilers
-        $.replace node, $.tn '[spoiler]'
-      @nodesToText bq
-    else
-      @info.comment
+    commentDisplay = @info.comment
+    unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
+      spoilers = $$ 's', bq
+      if spoilers.length
+        for node in spoilers
+          $.replace node, $.tn '[spoiler]'
+        commentDisplay = @nodesToText bq
+    @info.commentDisplay = commentDisplay.trim().replace /\s+$/gm, ''
 
   nodesToText: (bq) ->
     text = ""
@@ -129,7 +135,7 @@ class Post
     i = 0
     while node = nodes.snapshotItem i++
       text += node.data or '\n'
-    text.trim().replace /\s+$/gm, ''
+    text
 
   parseQuotes: ->
     @quotes = []
