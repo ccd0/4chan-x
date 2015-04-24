@@ -105,11 +105,6 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   /* party hats */
   pointer-events: none;
 }
-marquee,
-.postMessage marquee + br,
-.postMessage marquee + br + br {
-  display: none;
-}
 :root:not([data-js-enabled]) #postForm {
   display: table;
 }
