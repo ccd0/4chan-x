@@ -105,7 +105,7 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   /* party hats */
   pointer-events: none;
 }
-:root:not([data-js-enabled]) #postForm {
+:root:not(.js-enabled) #postForm {
   display: table;
 }
 

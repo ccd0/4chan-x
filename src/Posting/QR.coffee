@@ -9,8 +9,8 @@ QR =
 
     return if g.VIEW is 'archive'
 
-    $.globalEval 'document.documentElement.dataset.jsEnabled = true;'
-    noscript = Conf['Force Noscript Captcha'] or !doc.dataset.jsEnabled
+    $.globalEval 'document.documentElement.classList.add("js-enabled");'
+    noscript = Conf['Force Noscript Captcha'] or not $.hasClass doc, 'js-enabled'
     @captcha = Captcha[if noscript then 'noscript' else 'v2']
 
     $.on d, '4chanXInitFinished', @initReady
@@ -37,7 +37,7 @@ QR =
 
     if Conf['Hide Original Post Form']
       $.addClass doc, 'hide-original-post-form'
-      if !doc.dataset.jsEnabled
+      unless $.hasClass doc, 'js-enabled'
         # Prevent unnecessary loading of fallback iframe.
         $.onExists doc, '#postForm noscript', true, $.rm
 
