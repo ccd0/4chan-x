@@ -1280,6 +1280,7 @@ input.field.tripped:not(:hover):not(:focus) {
   background: linear-gradient(to bottom, #F8F8F8, #DCDCDC) no-repeat;
   border: 1px solid #BBB;
   border-radius: 2px;
+  height: 100%;
 }
 #qr-file-button {
   width: 15%;
