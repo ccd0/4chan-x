@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.10
 
+**v1.10.10.3** *(2015-04-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix original post form not showing when JS is disabled.
+
 **v1.10.10.2** *(2015-04-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Add focus indication to verify button in captcha popup.
 
