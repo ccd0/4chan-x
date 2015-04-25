@@ -56,7 +56,7 @@ BuildTest =
             c.log x.outerHTML
             c.log y.outerHTML
 
-          for key of Config.filter when not (key is 'comment' or key is 'MD5' and post.board.ID is 'f')
+          for key of Config.filter when not (key is 'MD5' and post.board.ID is 'f')
             val1 = Filter[key] obj
             val2 = Filter[key] post2
             if val1 isnt val2
@@ -76,8 +76,9 @@ BuildTest =
 
   testAll: ->
     g.posts.forEach (post) ->
-      unless post.isClone or post.isFetchedQuote or $ '.abbr', post.nodes.comment
-        BuildTest.testOne post
+      unless post.isClone or post.isFetchedQuote
+        unless (abbr = $ '.abbr', post.nodes.comment) and /Comment too long\./.test(abbr.textContent)
+          BuildTest.testOne post
     return
 
   postsRemaining: 0

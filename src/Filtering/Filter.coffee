@@ -126,7 +126,7 @@ Filter =
   tripcode:   (post) -> post.info.tripcode
   capcode:    (post) -> post.info.capcode
   subject:    (post) -> post.info.subject
-  comment:    (post) -> post.info.comment
+  comment:    (post) -> post.info.comment ? Build.parseComment(post)
   flag:       (post) -> post.info.flag
   filename:   (post) -> post.file?.name
   dimensions: (post) -> post.file?.dimensions
