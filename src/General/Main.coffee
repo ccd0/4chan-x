@@ -1,8 +1,13 @@
 Main =
   init: ->
     if location.hostname is 'www.google.com'
-      type = if location.pathname is '/recaptcha/api/fallback' then 'noscript' else 'v2'
-      return $.ready -> Captcha[type].initFrame()
+      if location.pathname is '/recaptcha/api/fallback'
+        $.ready -> Captcha.noscript.initFrame()
+      else
+        $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
+          if enabled
+            $.ready -> Captcha.fixes.init()
+      return
 
     g.threads = new SimpleDict()
     g.posts   = new SimpleDict()
@@ -56,6 +61,7 @@ Main =
       when 'a.4cdn.org'
         return
       when 'sys.4chan.org'
+        Report.init()
         PostSuccessful.init() if g.VIEW is 'post'
         return
       when 'i.4cdn.org'

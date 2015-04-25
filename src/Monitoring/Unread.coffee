@@ -128,7 +128,7 @@ Unread =
   openNotification: (post) ->
     return unless Header.areNotificationsEnabled
     notif = new Notification "#{post.info.nameBlock} replied to you",
-      body: post.info[if Conf['Remove Spoilers'] or Conf['Reveal Spoilers'] then 'comment' else 'commentSpoilered']
+      body: post.info.commentDisplay
       icon: Favicon.logo
     notif.onclick = ->
       Header.scrollToIfNeeded post.nodes.root, true

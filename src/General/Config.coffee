@@ -35,6 +35,10 @@ Config =
         true
         'Redirect dead threads and images to the archives.'
       ]
+      'Archive Report': [
+        true
+        'Enable reporting posts to supported archives.'
+      ]
       'Except Archives from Encryption': [
         false
         'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'
@@ -473,6 +477,10 @@ Config =
         true
         'Places a link on the bottom of threads to open the QR.'
         1
+      ]
+      'Captcha Fixes': [
+        true
+        'Make captcha more keyboard-navigable.'
       ]
 
     'Quote Links':

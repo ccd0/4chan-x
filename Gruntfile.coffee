@@ -1,4 +1,6 @@
+path = require 'path'
 crx = require 'crx'
+JSZip = require 'jszip'
 
 module.exports = (grunt) ->
   grunt.util.linefeed = '\n'
@@ -234,25 +236,6 @@ module.exports = (grunt) ->
         ]
         tasks: 'build'
 
-    crx:
-      prod:
-        src: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/'
-        dest: 'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.crx'
-        privateKey: '../<%= pkg.name %>-keys/<%= pkg.name %>.pem'
-
-    compress:
-      crx:
-        options:
-          archive: 'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.crx.zip'
-          level: 9
-          pretty: true
-        expand:  true
-        flatten: true
-        src: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/*'
-        dest: '/'
-        date: '<%= pkg.meta.date %>'
-        mode: parseInt('644', 8)
-
     clean:
       builds: 'builds'
       testbuilds: 'testbuilds'
@@ -335,7 +318,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'build-crx-channel', [
     'concat:crx'
     'copy:crx'
-    'compress:crx'
+    'zip-crx'
   ]
 
   grunt.registerTask 'build-crx', [
@@ -353,6 +336,17 @@ module.exports = (grunt) ->
     'copy:zip'
     'clean:tmpcrx'
   ]
+
+  grunt.registerTask 'zip-crx', 'Pack CRX contents in ZIP file', ->
+    pkg = grunt.config 'pkg'
+    zip = new JSZip()
+    for file in grunt.file.expand "testbuilds/crx#{pkg.meta.suffix[pkg.channel]}/*"
+      zip.file path.basename(file), grunt.file.read(file, {encoding: null}), {date: new Date(pkg.meta.date)}
+    output = zip.generate
+      type: 'nodebuffer'
+      compression: 'DEFLATE'
+      compressionOptions: {level: 9}
+    grunt.file.write "testbuilds/#{pkg.name}#{pkg.meta.suffix[pkg.channel]}.crx.zip", output
 
   grunt.registerTask 'sign-channel', 'Sign CRX package', (channel) ->
     done = @async()

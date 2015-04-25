@@ -4,15 +4,18 @@ Redirect =
       thread: {}
       post:   {}
       file:   {}
+      report: {}
 
     archives = {}
     for data in Redirect.archives
       {name, boards, files, software, withCredentials} = data
       archives[name] = data
-      for boardID in boards when !withCredentials
-        o.thread[boardID] = data unless boardID of o.thread
-        o.post[boardID]   = data unless boardID of o.post   or software isnt 'foolfuuka'
-        o.file[boardID]   = data unless boardID of o.file   or boardID  not in files
+      for boardID in boards
+        unless withCredentials
+          o.thread[boardID] = data unless boardID of o.thread
+          o.post[boardID]   = data unless boardID of o.post   or software isnt 'foolfuuka'
+          o.file[boardID]   = data unless boardID of o.file   or boardID  not in files
+        o.report[boardID]   = data if name is 'fgts'
 
     for boardID, record of Conf['selectedArchives']
       for type, id of record
@@ -83,6 +86,9 @@ Redirect =
     else
       "#{boardID}/?task=search2&search_#{if type is 'image' then 'media_hash' else type}=#{value}"
     "#{Redirect.protocol archive}#{archive.domain}/#{path}"
+
+  report: (archive, {boardID, postID}) ->
+    "https://so.fgts.jp/report/?board=#{boardID}&no=#{postID}"
 
   securityCheck: (URL) ->
     /^https:\/\//.test(URL) or

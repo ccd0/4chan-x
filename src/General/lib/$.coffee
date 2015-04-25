@@ -125,8 +125,8 @@ $.onExists = (root, selector, subtree, cb) ->
 
 $.addStyle = (css, id, test) ->
   style = $.el 'style',
-    id: id
     textContent: css
+  style.id = id if id?
   $.asap (-> d.head and (!test? or test())), ->
     $.add d.head, style
   style

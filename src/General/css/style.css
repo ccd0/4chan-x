@@ -105,10 +105,8 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   /* party hats */
   pointer-events: none;
 }
-marquee,
-.postMessage marquee + br,
-.postMessage marquee + br + br {
-  display: none;
+:root:not(.js-enabled) #postForm {
+  display: table;
 }
 
 /* Anti-autoplay */
@@ -1282,6 +1280,7 @@ input.field.tripped:not(:hover):not(:focus) {
   background: linear-gradient(to bottom, #F8F8F8, #DCDCDC) no-repeat;
   border: 1px solid #BBB;
   border-radius: 2px;
+  height: 100%;
 }
 #qr-file-button {
   width: 15%;

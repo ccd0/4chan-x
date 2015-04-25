@@ -25,13 +25,6 @@ Captcha.v2 =
       # XXX Greasemonkey 1.x workaround to gain access to GM_* functions.
       $.queueTask => @save false
 
-  initFrame: ->
-    $.globalEval 'window.focus = function() {};'
-    $.on window, 'focus', ->
-      $.queueTask ->
-        return unless d.hasFocus() and (checkbox = $.id 'recaptcha-anchor')
-        checkbox.focus() unless d.activeElement is checkbox
-
   shouldFocus: false
   timeouts: {}
   postsCount: 0
@@ -125,6 +118,11 @@ Captcha.v2 =
     $.rmClass QR.nodes.el, 'captcha-open'
     $.rm @nodes.container if @nodes.container
     delete @nodes.container
+    # Clean up abandoned iframes.
+    for garbage in $$ 'div > .gc-bubbleDefault'
+      $.rm ins if (ins = garbage.parentNode.nextSibling) and ins.nodeName is 'INS'
+      $.rm garbage.parentNode
+    return
 
   sync: (captchas=[]) ->
     @captchas = captchas
@@ -155,11 +153,12 @@ Captcha.v2 =
         QR.nodes.status.focus()
       @reload()
     else
+      focus = d.activeElement?.nodeName is 'IFRAME' and d.activeElement.src?[...38] is 'https://www.google.com/recaptcha/api2/'
       if pasted
         @destroy()
       else
         @timeouts.destroy ?= setTimeout @destroy.bind(@), 3 * $.SECOND
-      QR.nodes.status.focus()
+      QR.nodes.status.focus() if focus
 
     QR.submit() if Conf['Post on Captcha Completion'] and !QR.cooldown.auto
 
