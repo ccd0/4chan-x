@@ -58,6 +58,7 @@ Build =
     if data.capcode
       o.info.capcode = data.capcode.replace(/_highlight$/, '').replace(/_/g, ' ').replace(/\b\w/g, (c) -> c.toUpperCase())
       o.capcodeHighlight = /_highlight$/.test data.capcode
+      delete o.info.uniqueID
     if data.ext
       o.file =
         name:      (Build.unescape data.filename) + data.ext

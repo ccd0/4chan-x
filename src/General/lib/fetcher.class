@@ -144,6 +144,7 @@ class Fetcher
       dateUTC:  data.timestamp
       dateText: data.fourchan_date
       commentHTML: comment
+    delete o.info.uniqueID if o.info.capcode
     if data.media?.media_filename
       o.file =
         name:      data.media.media_filename
