@@ -32,7 +32,7 @@ Build =
     else
       "/#{boardID}/thread/#{threadID}#p#{postID}"
 
-  postFromObject: (data, boardID, suppressThumb) ->
+  parseJSON: (data, boardID) ->
     o =
       # id
       postID:   data.no
@@ -75,6 +75,10 @@ Build =
         isSpoiler: !!data.spoiler
         tag:       data.tag
       o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
+    o
+
+  postFromObject: (data, boardID, suppressThumb) ->
+    o = Build.parseJSON data, boardID
     Build.post o, suppressThumb
 
   post: (o, suppressThumb) ->
