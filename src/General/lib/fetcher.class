@@ -129,6 +129,7 @@ class Fetcher
       postID:   @postID
       threadID: @threadID
       boardID:  @boardID
+      isReply:  @postID isnt @threadID
     o.info =
       subject:  data.title
       email:    data.email

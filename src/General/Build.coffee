@@ -38,6 +38,7 @@ Build =
       postID:   data.no
       threadID: data.resto or data.no
       boardID:  boardID
+      isReply:  !!data.resto
       # thread status
       isSticky: !!data.sticky
       isClosed: !!data.closed
@@ -98,7 +99,6 @@ Build =
     ###
     {postID, threadID, boardID, file} = o
     {subject, email, name, tripcode, capcode, uniqueID, flagCode, flag, dateUTC, dateText, commentHTML} = o.info
-    isOP = postID is threadID
     {staticPath, gifIcon} = Build
 
     ### Post Info ###
@@ -134,7 +134,7 @@ Build =
 
     ### Whole Post ###
 
-    postClass = if isOP then 'op' else 'reply'
+    postClass = if o.isReply then 'reply' else 'op'
 
     wholePost = <%= importHTML('Build/Post') %>
 
