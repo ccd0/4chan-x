@@ -80,10 +80,10 @@ Build =
 
   parseComment: (o) ->
     html = o.info.commentHTML.innerHTML
-      .replace(/<br><br><span class="abbr">.*$/, '')
-      .replace(/^<b>Rolled [^<]*<br><br><\/b>/, '')
-      .replace(/<span class="fortune".*$/, '')
-      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<br\b[^<]*>/gi, '\n')
+      .replace(/\n\n<span\b[^<]* class="abbr"[^]*$/i, '') # EXIF data (/p/)
+      .replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '')       # Rolls (/tg/)
+      .replace(/<span\b[^<]* class="fortune"[^]*$/i, '')  # Fortunes (/s4s/)
       .replace(/<[^>]*>/g, '')
     o.info.comment = Build.unescape html
 
