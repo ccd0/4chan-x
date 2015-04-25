@@ -38,22 +38,37 @@ BuildTest =
       for postData in posts
         if postData.no is post.ID
           t1 = new Date().getTime()
-          root = Build.postFromObject postData, post.board.ID
+          obj = Build.parseJSON postData, post.board.ID
+          root = Build.post obj
           t2 = new Date().getTime()
           BuildTest.time += t2 - t1
           post2 = new Post root, post.thread, post.board
+          fail = false
+
           x = post.normalizedOriginal
           y = post2.normalizedOriginal
-          if x.isEqualNode y
-            c.log "#{post.fullID} correct"
-          else
+          unless x.isEqualNode y
+            fail = true
             c.log "#{post.fullID} differs"
-            BuildTest.postsFailed++
             [x2, y2] = BuildTest.firstDiff x, y
             c.log x2
             c.log y2
             c.log x.outerHTML
             c.log y.outerHTML
+
+          for key of Config.filter when not (key is 'comment' or key is 'MD5' and post.board.ID is 'f')
+            val1 = Filter[key] obj
+            val2 = Filter[key] post2
+            if val1 isnt val2
+              fail = true
+              c.log "#{post.fullID} has filter bug in #{key}"
+              c.log val1
+              c.log val2
+
+          if fail
+            BuildTest.postsFailed++
+          else
+            c.log "#{post.fullID} correct"
           BuildTest.postsRemaining--
           BuildTest.report() if BuildTest.postsRemaining is 0
           post2.isFetchedQuote = true
