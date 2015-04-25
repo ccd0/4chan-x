@@ -63,7 +63,6 @@ Build =
         width:     data.w
         MD5:       data.md5
         size:      $.bytesToString data.fsize
-        sizeInBytes: data.fsize
         thumbURL:  "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w

@@ -155,7 +155,6 @@ class Fetcher
         width:     data.media.media_w
         MD5:       data.media.media_hash
         size:      $.bytesToString data.media.media_size
-        sizeInBytes: data.media.media_size
         thumbURL:  data.media.thumb_link or "#{location.protocol}//i.4cdn.org/#{@boardID}/#{data.media.preview_orig}"
         theight:   data.media.preview_h
         twidth:    data.media.preview_w
