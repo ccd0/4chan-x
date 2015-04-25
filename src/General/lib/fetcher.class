@@ -126,26 +126,24 @@ class Fetcher
 
     @threadID = +data.thread_num
     o =
-      # id
       postID:   @postID
       threadID: @threadID
       boardID:  @boardID
-      # info
+    o.info =
+      subject:  data.title
+      email:    data.email
       name:     data.name or ''
+      tripcode: data.trip
       capcode:  switch data.capcode
         when 'M' then 'Mod'
         when 'A' then 'Admin'
         when 'D' then 'Developer'
-      tripcode: data.trip
       uniqueID: data.poster_hash
-      email:    data.email
-      subject:  data.title
       flagCode: data.poster_country
       flag:     data.poster_country_name
-      dateText: data.fourchan_date
       dateUTC:  data.timestamp
+      dateText: data.fourchan_date
       commentHTML: comment
-      # file
     if data.media?.media_filename
       o.file =
         name:      data.media.media_filename

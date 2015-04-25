@@ -32,25 +32,25 @@ Build =
       postID:   data.no
       threadID: data.resto or data.no
       boardID:  boardID
-      # info
-      name:     Build.unescape(data.name) or ''
-      tripcode: data.trip
-      uniqueID: data.id
-      email:    Build.unescape data.email
-      subject:  Build.unescape data.sub
-      flagCode: data.country
-      flag:     Build.unescape data.country_name
-      dateText: data.now
-      dateUTC:  data.time
-      commentHTML: {innerHTML: data.com or ''}
       # thread status
       isSticky: !!data.sticky
       isClosed: !!data.closed
       isArchived: !!data.archived
       # file status
       fileDeleted: !!data.filedeleted
+    o.info =
+      subject:  Build.unescape data.sub
+      email:    Build.unescape data.email
+      name:     Build.unescape(data.name) or ''
+      tripcode: data.trip
+      uniqueID: data.id
+      flagCode: data.country
+      flag:     Build.unescape data.country_name
+      dateUTC:  data.time
+      dateText: data.now
+      commentHTML: {innerHTML: data.com or ''}
     if data.capcode
-      o.capcode = data.capcode.replace(/_highlight$/, '').replace(/_/g, ' ').replace(/\b\w/g, (c) -> c.toUpperCase())
+      o.info.capcode = data.capcode.replace(/_highlight$/, '').replace(/_/g, ' ').replace(/\b\w/g, (c) -> c.toUpperCase())
       o.capcodeHighlight = /_highlight$/.test data.capcode
     if data.ext
       o.file =
@@ -75,12 +75,8 @@ Build =
     This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
     @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
     ###
-    {
-      postID, threadID, boardID
-      name, capcode, capcodeHighlight, tripcode, uniqueID, email, subject, flagCode, flag, dateText, dateUTC
-      commentHTML
-      file, fileDeleted
-    } = o
+    {postID, threadID, boardID, file} = o
+    {subject, email, name, tripcode, capcode, uniqueID, flagCode, flag, dateUTC, dateText, commentHTML} = o.info
     isOP = postID is threadID
     {staticPath, gifIcon} = Build
 
