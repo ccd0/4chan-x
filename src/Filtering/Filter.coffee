@@ -121,6 +121,12 @@ Filter =
         if !@isReply and result.top
           @thread.isOnTop = true
 
+  isHidden: (post) ->
+    for key of Filter.filters when (value = Filter[key] post)?
+      for filter in Filter.filters[key] when result = filter value, post.isReply
+        return true if result.hide
+    false
+
   name:       (post) -> post.info.name
   uniqueID:   (post) -> post.info.uniqueID
   tripcode:   (post) -> post.info.tripcode

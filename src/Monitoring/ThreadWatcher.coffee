@@ -214,6 +214,8 @@ ThreadWatcher =
       for postObj in @response.posts
         continue unless postObj.no > lastReadPost
         continue if QR.db?.get {boardID, threadID, postID: postObj.no}
+        continue if Filter.isHidden(Build.parseJSON postObj, boardID)
+
         unread++
         continue unless QR.db and postObj.com
         regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/(\d+))?(?:#p(\d+))?"/g
