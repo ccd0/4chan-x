@@ -2,10 +2,12 @@ Build =
   staticPath: '//s.4cdn.org/image/'
   gifIcon: if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
   spoilerRange: {}
+
   unescape: (text) ->
     return text unless text?
     text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt);/g, (c) ->
       {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>'}[c]
+
   shortFilename: (filename) ->
     threshold = 30
     ext = filename.match(/\.?[^\.]*$/)[0]
@@ -13,19 +15,23 @@ Build =
       "#{filename[...threshold - 5]}(...)#{ext}"
     else
       filename
+
   spoilerThumb: (boardID) ->
     if spoilerRange = Build.spoilerRange[boardID]
       # Randomize the spoiler image.
       "#{Build.staticPath}spoiler-#{boardID}#{Math.floor 1 + spoilerRange * Math.random()}.png"
     else
       "#{Build.staticPath}spoiler.png"
+
   sameThread: (boardID, threadID) ->
     g.VIEW is 'thread' and g.BOARD.ID is boardID and g.THREADID is +threadID
+
   postURL: (boardID, threadID, postID) ->
     if Build.sameThread boardID, threadID
       "#p#{postID}"
     else
       "/#{boardID}/thread/#{threadID}#p#{postID}"
+
   postFromObject: (data, boardID, suppressThumb) ->
     o =
       # id
@@ -70,6 +76,7 @@ Build =
         tag:       data.tag
       o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
     Build.post o, suppressThumb
+
   post: (o, suppressThumb) ->
     ###
     This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
