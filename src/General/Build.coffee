@@ -93,10 +93,6 @@ Build =
     Build.post o, suppressThumb
 
   post: (o, suppressThumb) ->
-    ###
-    This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
-    @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
-    ###
     {postID, threadID, boardID, file} = o
     {subject, email, name, tripcode, capcode, uniqueID, flagCode, flag, dateUTC, dateText, commentHTML} = o.info
     {staticPath, gifIcon} = Build
