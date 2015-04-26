@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.11
 
+**v1.10.11.3** *(2015-04-26)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.10.4: Possible fix for bug causing scrolling to the top of the page upon loading image captcha.
+
 **v1.10.11.2** *(2015-04-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Posts hidden by filtering are no longer counted as unread posts in the thread watcher.
 - Add Flash tag (`%g`) to File Info Formatting.
