@@ -33,7 +33,8 @@ Captcha.fixes =
     focus = @images[0].tabIndex isnt 0
     for img in @images
       img.tabIndex = 0
-    @focusImage() if focus
+    if focus
+      $.queueTask => @focusImage()
 
   focusImage: ->
     # XXX Image is not focusable at first in Firefox; to be refactored when I figure out why.

@@ -18,6 +18,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.10
 
+**v1.10.10.4** *(2015-04-26)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Possible fix for bug causing scrolling to the top of the page upon loading image captcha.
+
 **v1.10.10.3** *(2015-04-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.10.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix original post form not showing when JS is disabled.
 
