@@ -214,10 +214,12 @@ ThreadWatcher =
       for postObj in @response.posts
         continue unless postObj.no > lastReadPost
         continue if QR.db?.get {boardID, threadID, postID: postObj.no}
-        continue if Filter.isHidden(Build.parseJSON postObj, boardID)
 
         unread++
+
         continue unless QR.db and postObj.com
+
+        quotesYou = false
         regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/(\d+))?(?:#p(\d+))?"/g
         while match = regexp.exec postObj.com
           if QR.db.get {
@@ -225,8 +227,10 @@ ThreadWatcher =
             threadID: match[2] or threadID
             postID:   match[3] or match[2] or threadID
           }
-            quotingYou++
-            continue
+            quotesYou = true
+            break
+        if quotesYou and not Filter.isHidden(Build.parseJSON postObj, boardID)
+          quotingYou++
 
       if isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou
         data.isDead = isDead
