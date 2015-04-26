@@ -4,6 +4,11 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.11
 
+**v1.10.11.2** *(2015-04-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Posts hidden by filtering are no longer counted as unread posts in the thread watcher.
+- Add Flash tag (`%g`) to File Info Formatting.
+- Fix subject not being displayed in old non-OP posts loaded from the archives.
+
 **v1.10.11.1** *(2015-04-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.10.10.3: Fix original post form not showing when JS is disabled.
 
