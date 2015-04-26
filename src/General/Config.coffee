@@ -742,7 +742,7 @@ Config =
 
   backlink: '>>%id'
 
-  fileInfo: '%l (%p%s, %r)'
+  fileInfo: '%l (%p%s, %r%g)'
 
   favicon: 'ferongr'
 

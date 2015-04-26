@@ -462,6 +462,7 @@ Settings =
         isImage: true
         isVideo: false
         isSpoiler: true
+        tag: 'Loop'
     FileInfo.format @value, data, @nextElementSibling
 
   favicon: ->

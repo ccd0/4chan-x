@@ -46,4 +46,5 @@ FileInfo =
     K: -> <%= html('${Math.round(this.file.sizeInBytes/1024)} KB') %>
     M: -> <%= html('${Math.round(this.file.sizeInBytes/1048576*100)/100} MB') %>
     r: -> <%= html('${this.file.dimensions || "PDF"}') %>
+    g: -> <%= html('?{this.file.tag}{, ${this.file.tag}}{}') %>
     '%': -> <%= html('%') %>
