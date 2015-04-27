@@ -11,14 +11,18 @@ ReportLink =
       el: a
       order: 10
       open: (post) ->
-        ReportLink.url = unless post.isDead
-          "//sys.4chan.org/#{post.board}/imgboard.php?mode=report&no=#{post}"
+        unless post.isDead or (post.thread.isDead and not post.thread.isArchived)
+          ReportLink.url = "//sys.4chan.org/#{post.board}/imgboard.php?mode=report&no=#{post}"
+          ReportLink.height = 200
         else if Conf['Archive Report']
-          Redirect.to 'report', {boardID: post.board.ID, postID: post.ID}
+          ReportLink.url = Redirect.to 'report', {boardID: post.board.ID, postID: post.ID}
+          ReportLink.height = 350
+        else
+          ReportLink.url = ''
         !!ReportLink.url
 
   report: ->
-    {url} = ReportLink
+    {url, height} = ReportLink
     id  = Date.now()
-    set = "toolbar=0,scrollbars=1,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
+    set = "toolbar=0,scrollbars=1,location=0,status=1,menubar=0,resizable=1,width=700,height=#{height}"
     window.open url, id, set

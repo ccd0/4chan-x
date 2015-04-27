@@ -22,7 +22,7 @@ Report =
 
     if (message = $ 'h3') and /Report submitted!/.test(message.textContent)
       $.globalEval 'self.close = function(){};'
-      window.resizeTo 685, 320
+      window.resizeBy 0, 350 - doc.clientHeight
       location.replace url
       return
     link = $.el 'a',
@@ -30,5 +30,5 @@ Report =
       textContent: 'Report to fgts'
     $.on link, 'click', (e) ->
       unless e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
-        window.resizeTo 685, 320
+        window.resizeBy 0, 350 - doc.clientHeight
     $.add d.body, [$.tn(' ['), link, $.tn(']')]
