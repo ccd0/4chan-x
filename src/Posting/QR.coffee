@@ -131,19 +131,24 @@ QR =
 
   focus: ->
     $.queueTask ->
-      unless $$('.goog-bubble-content > iframe').some((el) -> el.getBoundingClientRect().top >= 0)
-        focus = d.activeElement and QR.nodes.el.contains(d.activeElement)
-        $[if focus then 'addClass' else 'rmClass'] QR.nodes.el, 'focus'
-    if chrome?
-      # XXX Stop anomalous scrolling on space/tab in/into captcha iframe.
-      if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
+      unless QR.inBubble()
+        QR.hasFocus = d.activeElement and QR.nodes.el.contains(d.activeElement)
+        QR.nodes.el.classList.toggle 'focus', QR.hasFocus
+      # XXX Stop unwanted scrolling due to captcha.
+      if QR.inCaptcha()
         QR.scrollY = window.scrollY
         $.on d, 'scroll', QR.scrollLock
       else
         $.off d, 'scroll', QR.scrollLock
 
+  inBubble: ->
+    $$('.goog-bubble-content > iframe').some((el) -> el.getBoundingClientRect().bottom > 0)
+
+  inCaptcha: ->
+    (d.activeElement?.nodeName is 'IFRAME' and QR.nodes.el.contains(d.activeElement)) or (QR.hasFocus and QR.inBubble())
+
   scrollLock: ->
-    if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
+    if QR.inCaptcha()
       window.scroll window.scrollX, QR.scrollY
     else
       $.off d, 'scroll', QR.scrollLock
