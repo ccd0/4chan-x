@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.11
 
+**v1.10.11.11** *(2015-05-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.11/builds/4chan-X-noupdate.crx "Chromium version")]
+- Remove swfchan from default sauce list.
+
 **v1.10.11.10** *(2015-05-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.10/builds/4chan-X-noupdate.crx "Chromium version")]
 - Make link to MDN in filter guide stand out better.
 
