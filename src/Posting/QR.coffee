@@ -75,6 +75,8 @@ QR =
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
+    $.on d, 'dragenter',          QR.dragEnter
+    $.on d, 'dragleave',          QR.dragLeave
 
     $.on d, 'IndexRefresh', QR.generatePostableThreadsList
     $.on d, 'ThreadUpdate', QR.statusCheck
@@ -315,11 +317,24 @@ QR =
     e.dataTransfer.dropEffect = 'copy' # cursor feedback
 
   dropFile: (e) ->
+    delete QR.dragTarget
+    $.rmClass doc, 'dragging'
+
     # Let it only handle files from the desktop.
     return unless e.dataTransfer.files.length
+
     e.preventDefault()
     QR.open()
     QR.handleFiles e.dataTransfer.files
+
+  dragEnter: (e) ->
+    QR.dragTarget = e.target
+    $.addClass doc, 'dragging'
+
+  dragLeave: (e) ->
+    if QR.dragTarget is e.target
+      delete QR.dragTarget
+      $.rmClass doc, 'dragging'
 
   paste: (e) ->
     return unless e.clipboardData.items
