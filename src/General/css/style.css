@@ -1269,6 +1269,14 @@ input.field.tripped:not(:hover):not(:focus) {
   display: block;
   width: 100%;
 }
+.goog-bubble-content {
+  max-width: 100vw;
+  max-height: 100vh;
+  overflow: auto;
+}
+.goog-bubble-content iframe {
+  position: static !important;
+}
 
 /* Prevent dragging files into captcha */
 :root.dragging iframe {
