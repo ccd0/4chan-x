@@ -139,13 +139,15 @@ Build =
       id:        "pc#{postID}"
     $.extend container, wholePost
 
-    # Fix pathnames
+    # Fix quotelinks
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
       if (href[0] is '#') and !(Build.sameThread boardID, threadID)
         quote.href = "/#{boardID}/thread/#{threadID}" + href
       else if (match = href.match /^\/([^\/]+)\/thread\/(\d+)/) and (Build.sameThread match[1], match[2])
         quote.href = href.match(/(#[^#]*)?$/)[0] or '#'
+      else if /^\d+(#|$)/.test(href) and not (g.VIEW is 'thread' and g.BOARD.ID is boardID) # used on /f/
+        quote.href = "/#{boardID}/thread/#{href}"
 
     container
 

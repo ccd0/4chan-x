@@ -220,7 +220,7 @@ ThreadWatcher =
         continue unless QR.db and postObj.com
 
         quotesYou = false
-        regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/(\d+))?(?:#p(\d+))?"/g
+        regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
         while match = regexp.exec postObj.com
           if QR.db.get {
             boardID:  match[1] or boardID
