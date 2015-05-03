@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.11
 
+**v1.10.11.10** *(2015-05-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.10/builds/4chan-X-noupdate.crx "Chromium version")]
+- Make link to MDN in filter guide stand out better.
+
 **v1.10.11.9** *(2015-05-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.11.9/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix loading archived /f/ posts from before tag was recorded.
 
