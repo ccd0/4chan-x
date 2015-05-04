@@ -9,7 +9,6 @@ QR =
 
     return if g.VIEW is 'archive'
 
-    $.globalEval 'document.documentElement.classList.add("js-enabled");'
     noscript = Conf['Force Noscript Captcha'] or not $.hasClass doc, 'js-enabled'
     @captcha = Captcha[if noscript then 'noscript' else 'v2']
 

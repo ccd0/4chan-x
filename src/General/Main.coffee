@@ -57,6 +57,9 @@ Main =
       $.onExists doc, 'body', false, Main.initStyle
 
   initFeatures: ->
+    if location.hostname in ['boards.4chan.org', 'sys.4chan.org']
+      $.globalEval 'document.documentElement.classList.add("js-enabled");'
+
     switch location.hostname
       when 'a.4cdn.org'
         return
