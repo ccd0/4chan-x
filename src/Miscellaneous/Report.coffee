@@ -1,19 +1,29 @@
 Report =
+  css: '''
+    :root:not(.js-enabled) #g-recaptcha {
+      height: auto;
+    }
+  '''
+
   init: ->
     return unless /\bmode=report\b/.test(location.search) and match = location.search.match /\bno=(\d+)/
     @postID = +match[1]
     $.ready @ready
 
   ready: ->
-    new MutationObserver(Report.resize).observe d.body,
-      childList:  true
-      attributes: true
-      subtree:    true
+    $.addStyle Report.css
+    if $.hasClass doc, 'js-enabled'
+      new MutationObserver(-> Report.fit '.gc-bubbleDefault').observe d.body,
+        childList:  true
+        attributes: true
+        subtree:    true
+    else
+      Report.fit '.rules'
     Report.archive() if Conf['Archive Report']
 
-  resize: ->
-    return unless bubble = $ '.gc-bubbleDefault'
-    dy = bubble.getBoundingClientRect().bottom - doc.clientHeight
+  fit: (selector) ->
+    return unless el = $ selector
+    dy = el.getBoundingClientRect().bottom - doc.clientHeight + 8
     window.resizeBy 0, dy if dy > 0
 
   archive: ->
