@@ -16,15 +16,18 @@ Sauce =
       name: 'Sauce'
       cb:   @node
 
+  sandbox: (url) ->
+    E.url <%= importHTML('Features/Sandbox') %>
+
   createSauceLink: (link, post) ->
     return null unless link = link.trim()
 
     parts = {}
-    for part, i in link.split /;(?=(?:text|boards|types):)/
+    for part, i in link.split /;(?=(?:text|boards|types|sandbox):?)/
       if i is 0
         parts['url'] = part
       else
-        m = part.match /^(\w*):(.*)$/
+        m = part.match /^(\w*):?(.*)$/
         parts[m[1]] = m[2]
     parts['text'] or= parts['url'].match(/(\w+)\.\w+\//)?[1] or '?'
     ext = post.file.url.match(/[^.]*$/)[0]
@@ -55,8 +58,11 @@ Sauce =
     return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
     return null unless !parts['types']  or ext           in parts['types'].split  ','
 
+    url = parts['url']
+    url = Sauce.sandbox url if parts['sandbox']?
+
     a = Sauce.link.cloneNode true
-    a.href = parts['url']
+    a.href = url
     a.textContent = parts['text']
     a.removeAttribute 'target' if /^javascript:/i.test parts['url']
     a

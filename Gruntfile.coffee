@@ -16,13 +16,14 @@ module.exports = (grunt) ->
     parts = []
     text = template
     while text
-      if part = text.match /^[^{}]+(?!{)/
+      if part = text.match /^(?:[^{}\\]|\\.)+(?!{)/
         text = text[part[0].length..]
-        context = (context + part[0])
+        unescaped = part[0].replace /\\(.)/g, '$1'
+        context = (context + unescaped)
           .replace(/(=['"])[^'"<>]*/g, '$1')
           .replace(/(<\w+)( [\w-]+((?=[ >])|=''|=""))*/g, '$1')
           .replace(/^([^'"<>]+|<\/?\w+>)*/, '')
-        parts.push json part[0]
+        parts.push json unescaped
       else if part = text.match /^([^}]){([^}`]*)}/
         text = text[part[0].length..]
         unless context is '' or (part[1] is '$' and /\=['"]$/.test context) or part[1] is '?'
