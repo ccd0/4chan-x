@@ -1159,13 +1159,6 @@ input[name="Default Volume"] {
   float: right;
   padding: 0 3px;
 }
-#qr .warning {
-  min-height: 1.6em;
-  vertical-align: middle;
-  padding: 0 1px;
-  border-width: 1px;
-  border-style: solid;
-}
 .qr-link-container {
   text-align: center;
 }
@@ -1489,6 +1482,9 @@ a:only-of-type > .remove {
   bottom: 1px;
   right: 1px;
   pointer-events: none;
+}
+#char-count.warning {
+  color: red;
 }
 
 /* Menu */

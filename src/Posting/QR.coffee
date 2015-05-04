@@ -291,10 +291,10 @@ QR =
 
   characterCount: ->
     counter = QR.nodes.charCount
-    count   = QR.nodes.com.textLength
+    count   = QR.nodes.com.value.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length
     counter.textContent = count
     counter.hidden      = count < 1000
-    (if count > 1500 then $.addClass else $.rmClass) counter, 'warning'
+    (if count > 2000 then $.addClass else $.rmClass) counter, 'warning'
 
   getFile: ->
     $.event 'QRFile', QR.selected?.file
