@@ -12,17 +12,17 @@ Report =
 
   ready: ->
     $.addStyle Report.css
+    Report.archive() if Conf['Archive Report']
     if $.hasClass doc, 'js-enabled'
       new MutationObserver(-> Report.fit '.gc-bubbleDefault').observe d.body,
         childList:  true
         attributes: true
         subtree:    true
     else
-      Report.fit '.rules'
-    Report.archive() if Conf['Archive Report']
+      Report.fit 'body'
 
   fit: (selector) ->
-    return unless el = $ selector
+    return unless el = $ selector, doc
     dy = el.getBoundingClientRect().bottom - doc.clientHeight + 8
     window.resizeBy 0, dy if dy > 0
 
