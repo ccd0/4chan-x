@@ -1135,9 +1135,7 @@ input[name="Default Volume"] {
   display: none !important;
 }
 #qr select,
-#url-button,
-#custom-cooldown-button,
-#dump-button,
+#qr-filename-container > a,
 .remove,
 .captcha-img {
   cursor: pointer;
