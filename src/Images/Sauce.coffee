@@ -19,6 +19,12 @@ Sauce =
   sandbox: (url) ->
     E.url <%= importHTML('Features/Sandbox') %>
 
+  rmOrigin: (e) ->
+    return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+    # Work around mixed content restrictions (data: URIs have inherited origin).
+    $.open @href
+    e.preventDefault()
+
   createSauceLink: (link, post) ->
     return null unless link = link.trim()
 
@@ -65,6 +71,7 @@ Sauce =
     a.href = url
     a.textContent = parts['text']
     a.removeAttribute 'target' if /^javascript:/i.test parts['url']
+    $.on a, 'click', Sauce.rmOrigin if parts['sandbox']?
     a
 
   node: ->
