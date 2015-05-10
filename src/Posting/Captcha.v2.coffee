@@ -51,7 +51,7 @@ Captcha.v2 =
 
   setup: (focus, force) ->
     return unless @isEnabled and (@needed() or force)
-    @shouldFocus = true if focus
+    @shouldFocus = true if focus and not QR.inBubble()
     if @timeouts.destroy
       clearTimeout @timeouts.destroy
       delete @timeouts.destroy
