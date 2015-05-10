@@ -172,7 +172,7 @@ Captcha.v2 =
     @captchas = @captchas[i..]
     @count()
     $.set 'captchas', @captchas
-    @setup true
+    @setup(d.activeElement is QR.nodes.status)
 
   count: ->
     @nodes.counter.textContent = "Captchas: #{@captchas.length}"
