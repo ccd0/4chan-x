@@ -5,16 +5,18 @@ ReportLink =
     a = $.el 'a',
       className: 'report-link'
       href: 'javascript:;'
-      textContent: 'Report this post'
     $.on a, 'click', ReportLink.report
+
     Menu.menu.addEntry
       el: a
       order: 10
       open: (post) ->
         unless post.isDead or (post.thread.isDead and not post.thread.isArchived)
+          a.textContent = 'Report this post'
           ReportLink.url = "//sys.4chan.org/#{post.board}/imgboard.php?mode=report&no=#{post}"
           ReportLink.height = 200
         else if Conf['Archive Report']
+          a.textContent = 'Report to archive'
           ReportLink.url = Redirect.to 'report', {boardID: post.board.ID, postID: post.ID}
           ReportLink.height = 350
         else
