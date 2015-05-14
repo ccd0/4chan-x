@@ -146,14 +146,15 @@ Captcha.v2 =
     $.set 'captchas', @captchas
     @count()
 
+    focus = d.activeElement?.nodeName is 'IFRAME' and d.activeElement.src?[...38] is 'https://www.google.com/recaptcha/api2/'
     if @needed()
-      if QR.cooldown.auto or Conf['Post on Captcha Completion']
-        @shouldFocus = true
-      else
-        QR.nodes.status.focus()
+      if focus
+        if QR.cooldown.auto or Conf['Post on Captcha Completion']
+          @shouldFocus = true
+        else
+          QR.nodes.status.focus()
       @reload()
     else
-      focus = d.activeElement?.nodeName is 'IFRAME' and d.activeElement.src?[...38] is 'https://www.google.com/recaptcha/api2/'
       if pasted
         @destroy()
       else
