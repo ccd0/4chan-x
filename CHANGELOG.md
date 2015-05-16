@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.12
 
+**v1.10.12.6** *(2015-05-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- (Hasumi) Update archive.moe: Add /an/.
+
 **v1.10.12.5** *(2015-05-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.5/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix bug where submit button was still getting unwanted focus under certain conditions.
 
