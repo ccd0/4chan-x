@@ -75,7 +75,7 @@ QR =
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
     $.on d, 'dragenter',          QR.dragEnter
-    $.on d, 'dragleave',          QR.dragLeave
+    $.on d, 'dragleave drop',     QR.dragLeave
 
     $.on d, 'IndexRefresh', QR.generatePostableThreadsList
     $.on d, 'ThreadUpdate', QR.statusCheck
@@ -316,9 +316,6 @@ QR =
     e.dataTransfer.dropEffect = 'copy' # cursor feedback
 
   dropFile: (e) ->
-    delete QR.dragTarget
-    $.rmClass doc, 'dragging'
-
     # Let it only handle files from the desktop.
     return unless e.dataTransfer.files.length
 
@@ -331,7 +328,7 @@ QR =
     $.addClass doc, 'dragging'
 
   dragLeave: (e) ->
-    if QR.dragTarget is e.target
+    if QR.dragTarget is e.target or e.type is 'drop'
       delete QR.dragTarget
       $.rmClass doc, 'dragging'
 
