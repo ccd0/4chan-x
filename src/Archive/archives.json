@@ -5,7 +5,7 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "biz", "c", "co", "diy", "fit", "gd", "gif", "h", "i", "int", "jp", "k", "m", "mlp", "out", "po", "qa", "r9k", "s4s", "sci", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
+  "boards": ["a", "an", "biz", "c", "co", "diy", "fit", "gd", "gif", "h", "i", "int", "jp", "k", "m", "mlp", "out", "po", "qa", "r9k", "s4s", "sci", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
   "files": ["a", "biz", "c", "co", "diy", "fit", "gd", "h", "i", "jp", "k", "m", "mlp", "po", "qa", "r9k", "s4s", "sci", "tg", "u", "v", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 3,
