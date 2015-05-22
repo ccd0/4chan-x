@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.12
 
+**v1.10.12.8** *(2015-05-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.8/builds/4chan-X-noupdate.crx "Chromium version")]
+- Remove guard against dropping files into captcha due to continued reports of disabled captchas.
+
 **v1.10.12.7** *(2015-05-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.7/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix bug where dragging and dropping disabled the captcha even after the drop was complete.
 
