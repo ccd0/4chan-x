@@ -1269,11 +1269,6 @@ input.field.tripped:not(:hover):not(:focus) {
   position: static !important;
 }
 
-/* Prevent dragging files into captcha */
-:root.dragging iframe {
-  pointer-events: none;
-}
-
 /* File Input, Submit Button */
 #file-n-submit {
   display: -webkit-flex;
