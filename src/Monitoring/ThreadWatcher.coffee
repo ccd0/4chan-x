@@ -20,7 +20,7 @@ ThreadWatcher =
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on sc, 'click', @toggleWatcher
-    $.on @refreshButton, 'click', @fetchAllStatus
+    $.on @refreshButton, 'click', @buttonFetchAll
     $.on @closeButton, 'click', @toggleWatcher
 
     $.on d, '4chanXInitFinished', @ready
@@ -148,9 +148,19 @@ ThreadWatcher =
       # Update dead status.
       ThreadWatcher.add thread
 
-  fetchCount:
-    fetched:  0
-    fetching: 0
+  requests: []
+  fetched:  0
+
+  clearRequests: ->
+    ThreadWatcher.requests = []
+    ThreadWatcher.fetched = 0
+    ThreadWatcher.status.textContent = ''
+    $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
+
+  abort: ->
+    for req in ThreadWatcher.requests when req.readyState isnt 4 # DONE
+      req.abort()
+    ThreadWatcher.clearRequests()
 
   fetchAuto: ->
     clearTimeout ThreadWatcher.timeout
@@ -164,6 +174,12 @@ ThreadWatcher =
       db.save()
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
 
+  buttonFetchAll: ->
+    if ThreadWatcher.requests.length
+      ThreadWatcher.abort()
+    else
+      ThreadWatcher.fetchAllStatus()
+
   fetchAllStatus: ->
     ThreadWatcher.db.forceSync()
     ThreadWatcher.unreaddb.forceSync()
@@ -176,26 +192,20 @@ ThreadWatcher =
   fetchStatus: (thread, force) ->
     {boardID, threadID, data} = thread
     return if data.isDead and not force
-    {fetchCount} = ThreadWatcher
-    if fetchCount.fetching is 0
+    if ThreadWatcher.requests.length is 0
       ThreadWatcher.status.textContent = '...'
       $.addClass ThreadWatcher.refreshButton, 'fa-spin'
-    fetchCount.fetching++
-    $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
+    req = $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
       onloadend: ->
         ThreadWatcher.parseStatus.call @, thread
+    ThreadWatcher.requests.push req
 
   parseStatus: ({boardID, threadID, data}) ->
-    {fetchCount} = ThreadWatcher
-    fetchCount.fetched++
-    if fetchCount.fetched is fetchCount.fetching
-      fetchCount.fetched = 0
-      fetchCount.fetching = 0
-      status = ''
-      $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
+    ThreadWatcher.fetched++
+    if ThreadWatcher.fetched is ThreadWatcher.requests.length
+      ThreadWatcher.clearRequests()
     else
-      status = "#{Math.round fetchCount.fetched / fetchCount.fetching * 100}%"
-    ThreadWatcher.status.textContent = status
+      ThreadWatcher.status.textContent = "#{Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)}%"
 
     if @status is 200 and @response
       isDead = !!@response.posts[0].archived
