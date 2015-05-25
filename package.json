@@ -58,7 +58,7 @@
     "grunt-shell": "^1.1.2",
     "grunt-webstore-upload": "^0.8.2",
     "jszip": "^2.5.0",
-    "load-grunt-tasks": "^3.1.0",
+    "load-grunt-tasks": "^3.2.0",
     "npm-shrinkwrap": "^5.4.0"
   },
   "repository": {
