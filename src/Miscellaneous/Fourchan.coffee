@@ -60,9 +60,10 @@ Fourchan =
 
   code: ->
     return if @isClone
-    for pre, i in $$('.prettyprint', @nodes.comment) when not $.hasClass(pre, 'prettyprinted')
-      $.event 'prettyprint', {ID: @fullID, i: i, html: pre.innerHTML}, window
-    return
+    $.ready =>
+      for pre, i in $$('.prettyprint', @nodes.comment) when not $.hasClass(pre, 'prettyprinted')
+        $.event 'prettyprint', {ID: @fullID, i: i, html: pre.innerHTML}, window
+      return
 
   math: ->
     return if (@isClone and doc.contains @origin.nodes.root) or !$ '.math', @nodes.comment
