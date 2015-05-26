@@ -825,7 +825,7 @@ Config =
       'Pause/play videos in the gallery.'
     ]
     'Slideshow': [
-      's'
+      'Ctrl+Right'
       'Toggle the gallery slideshow mode.'
     ]
     'fappeTyme': [
