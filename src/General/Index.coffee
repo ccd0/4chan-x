@@ -431,7 +431,7 @@ Index =
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
       onloadend: (e) -> Index.load e, state
     ,
-      whenModified: true
+      whenModified: 'Index'
     $.addClass Index.button, 'fa-spin'
 
   load: (e, state) ->

@@ -241,7 +241,7 @@ ThreadUpdater =
       onloadend: ThreadUpdater.cb.load
       timeout:   $.MINUTE
     ,
-      whenModified: true
+      whenModified: 'ThreadUpdater'
 
   updateThreadStatus: (type, status) ->
     return unless hasChanged = ThreadUpdater.thread["is#{type}"] isnt status

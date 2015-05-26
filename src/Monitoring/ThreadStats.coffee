@@ -75,7 +75,7 @@ ThreadStats =
       return
     ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 2 * $.MINUTE
     $.ajax "//a.4cdn.org/#{ThreadStats.thread.board}/threads.json", onload: ThreadStats.onThreadsLoad,
-      whenModified: true
+      whenModified: 'ThreadStats'
 
   onThreadsLoad: ->
     return unless Conf["Page Count in Stats"] and @status is 200
