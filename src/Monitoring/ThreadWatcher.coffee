@@ -136,11 +136,13 @@ ThreadWatcher =
       boardID = g.BOARD.ID
       db.forceSync()
       for threadID, data of db.data.boards[boardID] when not data?.isDead and threadID not of g.BOARD.threads
-        if Conf['Auto Prune'] or not (data and typeof data is 'object')
-          ThreadWatcher.db.delete {boardID, threadID}
+        if Conf['Auto Prune'] or not (data and typeof data is 'object') # corrupt data
+          db.delete {boardID, threadID}
         else
+          if Conf['Show Unread Count']
+            ThreadWatcher.fetchStatus {boardID, threadID, data}
           data.isDead = true
-          ThreadWatcher.db.set {boardID, threadID, val: data}
+          db.set {boardID, threadID, val: data}
       ThreadWatcher.refresh()
     onThreadRefresh: (e) ->
       thread = g.threads[e.detail.threadID]
