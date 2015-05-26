@@ -143,10 +143,17 @@ ThreadWatcher =
           ThreadWatcher.db.set {boardID, threadID, val: data}
       ThreadWatcher.refresh()
     onThreadRefresh: (e) ->
-      thread = g.threads[e.detail.threadID]
-      return unless e.detail[404] and ThreadWatcher.db.get {boardID: thread.board.ID, threadID: thread.ID}
-      # Update dead status.
-      ThreadWatcher.add thread
+      [boardID, threadID] = e.detail.threadID.split '.'
+      return unless e.detail[404] and ThreadWatcher.db.get {boardID, threadID}
+      {db} = ThreadWatcher
+      db.forceSync()
+      return unless data = db.get {boardID, threadID}
+      if Conf['Auto Prune']
+        db.delete {boardID, threadID}
+      else
+        data.isDead = true
+        db.set {boardID, threadID, val: data}
+      ThreadWatcher.refresh()
 
   requests: []
   fetched:  0
