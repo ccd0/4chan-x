@@ -53,7 +53,7 @@ Captcha.fixes =
     if x < 0
       return unless $('.rc-controls').contains d.activeElement
       x = if d.activeElement is verify then 11 else 9
-    return unless dx = {38: 9, 40: 3, 37: 11, 39: 1}[e.keyCode] # Up, Down, Left, Right
+    return unless dx = {38: 9, 40: 3, 37: 11, 39: 1, 73: 9, 75: 3, 74: 11, 76: 1}[e.keyCode] # Up, Down, Left, Right, I, K, J, L
     x = (x + dx) % 12
     if x is 10
       x = if dx is 11 then 9 else 11
