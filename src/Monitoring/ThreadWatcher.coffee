@@ -200,7 +200,7 @@ ThreadWatcher =
         ThreadWatcher.parseStatus.call @, thread
       timeout: $.MINUTE
     ,
-      whenModified: 'ThreadWatcher'
+      whenModified: if force then false else 'ThreadWatcher'
     ThreadWatcher.requests.push req
 
   parseStatus: ({boardID, threadID, data}) ->
