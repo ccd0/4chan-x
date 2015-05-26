@@ -198,6 +198,9 @@ ThreadWatcher =
     req = $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
       onloadend: ->
         ThreadWatcher.parseStatus.call @, thread
+      timeout: $.MINUTE
+    ,
+      whenModified: 'ThreadWatcher'
     ThreadWatcher.requests.push req
 
   parseStatus: ({boardID, threadID, data}) ->
