@@ -84,6 +84,9 @@ ThreadWatcher =
       return unless e.button is 0 and e.altKey
       ThreadWatcher.toggle @thread
       e.preventDefault()
+    $.on @nodes.thumb.parentNode, 'mousedown', (e) ->
+      # Prevent highlighting thumbnail in Firefox.
+      e.preventDefault() if e.button is 0 and e.altKey
 
   ready: ->
     $.off d, '4chanXInitFinished', ThreadWatcher.ready
