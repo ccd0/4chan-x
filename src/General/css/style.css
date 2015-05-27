@@ -874,6 +874,9 @@ span.hide-announcement {
 :root.float #thread-stats {
   padding: 0px 3px;
 }
+#page-count {
+  cursor: pointer;
+}
 
 /* Quote */
 .catalog-thread > .comment > span.quote, #arc-list span.quote {

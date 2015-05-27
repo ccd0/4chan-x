@@ -31,6 +31,8 @@ ThreadStats =
     @ipCountEl   = $ '#ip-count',   sc
     @pageCountEl = $ '#page-count', sc
 
+    $.on @pageCountEl, 'click', ThreadStats.fetchPage if @pageCountEl
+
     Thread.callbacks.push
       name: 'Thread Stats'
       cb:   @node
