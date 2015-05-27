@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.13
 
+**v1.10.13.1** *(2015-05-27)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix manual page number updating not working when `Updater and Stats in Header` is off.
+
 **v1.10.13.0** *(2015-05-26)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.10.12.8.
 - You can now manually update the page number in thread stats by clicking on it.
