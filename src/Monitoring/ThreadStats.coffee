@@ -43,7 +43,7 @@ ThreadStats =
     @posts.forEach (post) ->
       postCount++
       fileCount++ if post.file
-      ThreadStats.lastPost = post.info.date if Conf["Page Count in Stats"] and g.BOARD.ID isnt 'f'
+      ThreadStats.lastPost = post.info.date if ThreadStats.pageCountEl
     ThreadStats.thread = @
     ThreadStats.fetchPage()
     ThreadStats.update postCount, fileCount, @ipCount
@@ -53,7 +53,7 @@ ThreadStats =
     return if e.detail[404]
     {postCount, fileCount, ipCount, newPosts} = e.detail
     ThreadStats.update postCount, fileCount, ipCount
-    return unless Conf["Page Count in Stats"] and g.BOARD.ID isnt 'f'
+    return unless ThreadStats.pageCountEl
     if newPosts.length
       ThreadStats.lastPost = g.posts[newPosts[newPosts.length - 1]].info.date
     if ThreadStats.pageCountEl?.textContent isnt '1'
@@ -63,13 +63,13 @@ ThreadStats =
     {thread, postCountEl, fileCountEl, ipCountEl} = ThreadStats
     postCountEl.textContent = postCount
     fileCountEl.textContent = fileCount
-    if ipCount? and Conf["IP Count in Stats"]
+    if ipCount? and ipCountEl
       ipCountEl.textContent = ipCount
     (if thread.postLimit and !thread.isSticky then $.addClass else $.rmClass) postCountEl, 'warning'
     (if thread.fileLimit and !thread.isSticky then $.addClass else $.rmClass) fileCountEl, 'warning'
 
   fetchPage: ->
-    return unless Conf["Page Count in Stats"] and g.BOARD.ID isnt 'f'
+    return unless ThreadStats.pageCountEl
     clearTimeout ThreadStats.timeout
     if ThreadStats.thread.isDead
       ThreadStats.pageCountEl.textContent = 'Dead'
