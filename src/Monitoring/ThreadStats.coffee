@@ -54,7 +54,7 @@ ThreadStats =
     return unless Conf["Page Count in Stats"]
     if newPosts.length
       ThreadStats.lastPost = g.posts[newPosts[newPosts.length - 1]].info.date
-    if ThreadStats.lastPost > ThreadStats.lastPageUpdate and ThreadStats.pageCountEl?.textContent isnt '1'
+    if ThreadStats.pageCountEl?.textContent isnt '1'
       ThreadStats.fetchPage()
 
   update: (postCount, fileCount, ipCount) ->
@@ -78,11 +78,20 @@ ThreadStats =
       whenModified: 'ThreadStats'
 
   onThreadsLoad: ->
-    return unless Conf["Page Count in Stats"] and @status is 200
-    for page in @response
-      for thread in page.threads when thread.no is ThreadStats.thread.ID
-        ThreadStats.pageCountEl.textContent = page.page
-        (if page.page is @response.length then $.addClass else $.rmClass) ThreadStats.pageCountEl, 'warning'
-        # Thread data may be stale (modification date given < time of last post). If so, try again on next thread update.
-        ThreadStats.lastPageUpdate = new Date thread.last_modified * $.SECOND
-        return
+    return unless Conf["Page Count in Stats"]
+    if @status is 200
+      for page in @response
+        for thread in page.threads when thread.no is ThreadStats.thread.ID
+          ThreadStats.pageCountEl.textContent = page.page
+          (if page.page is @response.length then $.addClass else $.rmClass) ThreadStats.pageCountEl, 'warning'
+          ThreadStats.lastPageUpdate = new Date thread.last_modified * $.SECOND
+          ThreadStats.retry()
+          return
+    else if @status is 304
+      ThreadStats.retry()
+
+  retry: ->
+    # If thread data is stale (modification date given < time of last post), try again.
+    if ThreadStats.lastPost > ThreadStats.lastPageUpdate and ThreadStats.pageCountEl?.textContent isnt '1'
+      clearTimeout ThreadStats.timeout
+      ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 5 * $.SECOND
