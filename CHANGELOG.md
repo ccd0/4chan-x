@@ -2,6 +2,19 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+### v1.10.13
+
+**v1.10.13.0** *(2015-05-26)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.10.12.8.
+- You can now manually update the page number in thread stats by clicking on it.
+- Page number in thread stats does not show on /f/.
+- Change default gallery slideshow toggle keybind from `s` to `Ctrl+Right`.
+- Add IJKL as an alternative to the arrow keys for the image captcha.
+- Clicking on the thread watcher refresh button while it's loading threads aborts it.
+- Make thread watcher a bit more efficient by fixing some cases where it wasn't sending `If-Modified-Since`.
+- Restore clearing the unread count in the thread watcher when a thread 404's.
+- Various minor bugfixes.
+
 ### v1.10.12
 
 **v1.10.12.8** *(2015-05-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.8/builds/4chan-X-noupdate.crx "Chromium version")]
