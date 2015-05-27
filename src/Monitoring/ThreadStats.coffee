@@ -5,11 +5,11 @@ ThreadStats =
     statsHTML = <%= html(
       '<span id="post-count">?</span> / <span id="file-count">?</span>' +
       '?{Conf["IP Count in Stats"]}{ / <span id="ip-count">?</span>}' +
-      '?{Conf["Page Count in Stats"]}{ / <span id="page-count">?</span>}'
+      '?{Conf["Page Count in Stats"] && g.BOARD.ID !== "f"}{ / <span id="page-count">?</span>}'
     ) %>
     statsTitle = 'Posts / Files'
     statsTitle += ' / IPs'  if Conf['IP Count in Stats']
-    statsTitle += ' / Page' if Conf['Page Count in Stats']
+    statsTitle += ' / Page' if Conf['Page Count in Stats'] and g.BOARD.ID isnt 'f'
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
@@ -41,7 +41,7 @@ ThreadStats =
     @posts.forEach (post) ->
       postCount++
       fileCount++ if post.file
-      ThreadStats.lastPost = post.info.date if Conf["Page Count in Stats"]
+      ThreadStats.lastPost = post.info.date if Conf["Page Count in Stats"] and g.BOARD.ID isnt 'f'
     ThreadStats.thread = @
     ThreadStats.fetchPage()
     ThreadStats.update postCount, fileCount, @ipCount
@@ -51,7 +51,7 @@ ThreadStats =
     return if e.detail[404]
     {postCount, fileCount, ipCount, newPosts} = e.detail
     ThreadStats.update postCount, fileCount, ipCount
-    return unless Conf["Page Count in Stats"]
+    return unless Conf["Page Count in Stats"] and g.BOARD.ID isnt 'f'
     if newPosts.length
       ThreadStats.lastPost = g.posts[newPosts[newPosts.length - 1]].info.date
     if ThreadStats.pageCountEl?.textContent isnt '1'
@@ -67,7 +67,7 @@ ThreadStats =
     (if thread.fileLimit and !thread.isSticky then $.addClass else $.rmClass) fileCountEl, 'warning'
 
   fetchPage: ->
-    return if !Conf["Page Count in Stats"]
+    return unless Conf["Page Count in Stats"] and g.BOARD.ID isnt 'f'
     clearTimeout ThreadStats.timeout
     if ThreadStats.thread.isDead
       ThreadStats.pageCountEl.textContent = 'Dead'
@@ -78,7 +78,6 @@ ThreadStats =
       whenModified: 'ThreadStats'
 
   onThreadsLoad: ->
-    return unless Conf["Page Count in Stats"]
     if @status is 200
       for page in @response
         for thread in page.threads when thread.no is ThreadStats.thread.ID
