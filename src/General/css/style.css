@@ -868,7 +868,7 @@ span.hide-announcement {
   border: none;
   box-shadow: none;
 }
-:root.float #thread-stats > .move > span {
+:root.float #thread-stats > .move > :not(#page-count) {
   pointer-events: none;
 }
 :root.float #thread-stats {
