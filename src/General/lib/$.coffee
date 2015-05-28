@@ -219,6 +219,27 @@ $.event = (event, detail, root=d) ->
   <% } %>
   root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
 
+<% if (type === 'userscript') { %>
+# XXX Make $.event work in Pale Moon with GM 3.x (no cloneInto function).
+unless typeof cloneInto is 'function' or /^[01]\./.test(GM_info.version) or GM_info.scriptHandler # not FF30+, GM1-, or Tampermonkey
+  do ->
+    try
+      new CustomEvent 'x', detail: {}
+    catch err
+      unsafeConstructors =
+        Object: unsafeWindow.Object
+        Array:  unsafeWindow.Array
+      clone = (obj) ->
+        if obj? and typeof obj is 'object' and (constructor = unsafeConstructors[obj.constructor.name])
+          obj2 = new constructor()
+          obj2[key] = clone val for key, val of obj
+          obj2
+        else
+          obj
+      $.event = (event, detail, root=d) ->
+        root.dispatchEvent new CustomEvent event, {bubbles: true, detail: clone detail}
+<% } %>
+
 $.open = 
 <% if (type === 'userscript') { %>
   GM_openInTab
