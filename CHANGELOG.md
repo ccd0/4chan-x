@@ -4,6 +4,10 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.13
 
+**v1.10.13.2** *(2015-06-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.12.9: Update for captcha changes.
+- Merge v1.10.12.9: Work around issue where the captcha causes scrolling to the top of the page.
+
 **v1.10.13.1** *(2015-05-27)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix manual page number updating not working when `Updater and Stats in Header` is off.
 
