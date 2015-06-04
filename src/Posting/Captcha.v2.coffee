@@ -60,6 +60,7 @@ Captcha.v2 =
     if @nodes.container
       if @shouldFocus and iframe = $ 'iframe', @nodes.container
         iframe.focus()
+        QR.focus() # Event handler not fired in Firefox
         delete @shouldFocus
       return
 

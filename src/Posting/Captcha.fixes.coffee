@@ -1,6 +1,6 @@
 Captcha.fixes =
   css: '''
-    .rc-imageselect-target > .rc-imageselect-tile > img:focus {
+    .rc-imageselect-target > div:focus {
       outline: 2px solid #4a90e2;
     }
     .rc-button-default:focus {
@@ -29,7 +29,7 @@ Captcha.fixes =
     $.on d, 'keydown', @keybinds.bind(@)
 
   fixImages: ->
-    return unless (@images = $$ '.rc-imageselect-target > .rc-imageselect-tile > img').length
+    return unless (@images = $$ '.rc-imageselect-target > div').length
     focus = @images[0].tabIndex isnt 0
     for img in @images
       img.tabIndex = 0
