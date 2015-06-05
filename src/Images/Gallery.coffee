@@ -170,8 +170,8 @@ Gallery =
       Gallery.cb.stop()
 
     # Scroll to post
-    if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
-      Header.scrollTo post
+    if Conf['Scroll to Post'] and (post = g.posts[file.dataset.post])
+      Header.scrollTo post.nodes.root
 
     # Center selected thumbnail
     nodes.thumbs.scrollTop = thumb.offsetTop + thumb.offsetHeight/2 - nodes.thumbs.clientHeight/2
