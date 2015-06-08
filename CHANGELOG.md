@@ -2,6 +2,12 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+### v1.10.14
+
+**v1.10.14.0** *(2015-06-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.10.13.4.
+- Fix board-specific filters in thread watcher (filters apply to unread posts quoting you).
+
 ### v1.10.13
 
 **v1.10.13.4** *(2015-06-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.4/builds/4chan-X-noupdate.crx "Chromium version")]
