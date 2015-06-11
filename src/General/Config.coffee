@@ -674,7 +674,9 @@ Config =
     #https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG
     #//saucenao.com/search.php?url=%IMG
     #http://3d.iqdb.org/?url=%IMG
+    # tools:
     #http://regex.info/exif.cgi?imgurl=%URL
+    #//imgops.com/%URL;types:gif,jpg,png
     # uploaders:
     #//imgur.com/upload?url=%URL;types:gif,jpg,png,pdf;text:Upload to imgur
     # "View Same" in archives:
