@@ -185,6 +185,7 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       stable:
         command: """
+          git push . HEAD:bstable
           git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git checkout gh-pages
           git pull
