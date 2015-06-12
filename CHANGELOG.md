@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.10.14
 
+**v1.10.14.2** *(2015-06-11)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Bring back workaround for scrolling to top caused by captcha as some users are still reporting it happening.
+
 **v1.10.14.1** *(2015-06-11)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Add ImgOps to default sauce examples: `//imgops.com/%URL;types:gif,jpg,png`
 
