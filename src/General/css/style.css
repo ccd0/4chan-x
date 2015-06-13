@@ -1754,6 +1754,15 @@ grunt.file.expand('src/General/img/links/*.png').map(function(file) {
 .gal-fit-height .gal-image video {
   max-height: calc(100vh - 25px);
 }
+.gal-expand-to-fill .gal-image a {
+  width: 100%;
+}
+.gal-expand-to-fill .gal-image img,
+.gal-expand-to-fill .gal-image video {
+  width: 100%;
+  height: calc(100vh - 25px);
+  object-fit: contain;
+}
 .gal-image iframe {
   width: 100%;
   height: 100%;

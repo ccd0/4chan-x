@@ -587,6 +587,9 @@ Config =
     'Fit Height': [
       true
     ]
+    'Expand to Fill': [
+      false
+    ]
     'Scroll to Post': [
       true
     ]
