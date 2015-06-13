@@ -70,6 +70,7 @@ Volume =
     $.on @nodes.thumb, 'wheel', Volume.wheel.bind(Header.hover)
 
   wheel: (e) ->
+    return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey
     return unless el = $ 'video:not([data-md5])', @
     return if el.muted or not $.hasAudio el
     volume = el.volume + 0.1
