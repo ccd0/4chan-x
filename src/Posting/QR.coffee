@@ -536,14 +536,13 @@ QR =
       event = if node.nodeName is 'SELECT' then 'change' else 'input'
       $.on nodes[name], event, save
 
-    <% if (type === 'userscript') { %>
-    if Conf['Remember QR Size']
+    # XXX Chromium treats width and height as min-width and min-height
+    if !chrome? and Conf['Remember QR Size']
       $.get 'QR Size', '', (item) ->
         nodes.com.style.cssText = item['QR Size']
       $.on nodes.com, 'mouseup', (e) ->
         return if e.button isnt 0
         $.set 'QR Size', @style.cssText
-    <% } %>
 
     QR.generatePostableThreadsList()
     QR.persona.init()

@@ -421,13 +421,11 @@ Config =
         'Open new threads or replies to a thread from the index in a new tab.'
         1
       ]
-      <% if (type === 'userscript') { %>
       'Remember QR Size': [
         false
         'Remember the size of the Quick reply.'
         1
       ]
-      <% } %>
       'Remember Spoiler': [
         false
         'Remember the spoiler state, instead of resetting after posting.'
