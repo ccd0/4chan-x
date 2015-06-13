@@ -38,7 +38,7 @@
       "dev": " dev"
     },
     "min": {
-      "chrome": "32",
+      "chrome": "34",
       "firefox": "26",
       "greasemonkey": "1.14"
     }

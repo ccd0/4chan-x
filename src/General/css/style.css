@@ -1752,13 +1752,6 @@ grunt.file.expand('src/General/img/links/*.png').map(function(file) {
 }
 .gal-fit-height .gal-image img,
 .gal-fit-height .gal-image video {
-  /*
-    Chrome doesn't support viewpoint units in calc()
-    http://bugs.chromium.org/168840
-    "It looks like the original author of viewport units in WebKit is not coming back to fix this stuff."
-    Well, fuck.
-  */
-  max-height: 95vh;
   max-height: calc(100vh - 25px);
 }
 .gal-image iframe {
