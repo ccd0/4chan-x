@@ -103,6 +103,7 @@ Settings =
         description = arr[1]
         div = $.el 'div',
           <%= html('<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>') %>
+        div.hidden = true if chrome? and key is 'Remember QR Size' # XXX not supported
         input = $ 'input', div
         $.on input, 'change', ->
           @parentNode.parentNode.dataset.checked = @checked
