@@ -128,43 +128,55 @@ Gallery =
     Gallery.images.push thumb
     $.add Gallery.nodes.thumbs, thumb
 
+  load: (thumb, errorCB) ->
+    ext = thumb.href.match /\w*$/
+    elType = {'webm': 'video', 'pdf': 'iframe'}[ext] or 'img'
+    file = $.el elType,
+      title: thumb.title
+    $.extend file.dataset, thumb.dataset
+    $.on file, 'error', errorCB
+    file.src = thumb.href
+    file
+
   open: (thumb) ->
     {nodes} = Gallery
-    {name}  = nodes
     oldID = +nodes.current.dataset.id
     newID = +thumb.dataset.id
-    slideshow = Gallery.slideshow and (newID > oldID or (oldID is Gallery.images.length-1 and newID is 0))
 
+    # Highlight, center selected thumbnail
     $.rmClass  el,    'gal-highlight' if el = $ '.gal-highlight', nodes.thumbs
     $.addClass thumb, 'gal-highlight'
+    nodes.thumbs.scrollTop = thumb.offsetTop + thumb.offsetHeight/2 - nodes.thumbs.clientHeight/2
 
-    elType = if /\.webm$/.test(thumb.href)
-      'video'
-    else if /\.pdf$/.test(thumb.href)
-      'iframe'
+    # Load image or use preloaded image
+    if Gallery.cache?.dataset.id is ''+newID
+      file = Gallery.cache
+      $.off file, 'error', Gallery.cacheError
+      $.on file, 'error', Gallery.error
     else
-      'img'
+      file = Gallery.load thumb, Gallery.error
 
-    $[if elType is 'iframe' then 'addClass' else 'rmClass'] doc, 'gal-pdf'
-    file = $.el elType,
-      title: name.download = name.textContent = thumb.title
-    $.extend file.dataset, thumb.dataset
-    $.on file, 'error', Gallery.error
-    file.src = name.href = thumb.href
-
+    # Replace old image with new one
     $.off nodes.current, 'error', Gallery.error
     ImageCommon.pause nodes.current
     $.replace nodes.current, file
-    if elType is 'video'
+    nodes.current = file
+
+    if file.nodeName is 'VIDEO'
       file.loop = true
       Volume.setup file
       file.play() if Conf['Autoplay']
       ImageCommon.addControls file if Conf['Show Controls']
+
+    doc.classList.toggle 'gal-pdf', file.nodeName is 'IFRAME'
     nodes.count.textContent = +thumb.dataset.id + 1
-    nodes.current           = file
+    nodes.name.download     = nodes.name.textContent = thumb.title
+    nodes.name.href         = thumb.href
     nodes.frame.scrollTop   = 0
     nodes.next.focus()
-    if slideshow
+
+    # Continue slideshow if moving forward, stop otherwise
+    if Gallery.slideshow and (newID > oldID or (oldID is Gallery.images.length-1 and newID is 0))
       Gallery.setupTimer()
     else
       Gallery.cb.stop()
@@ -173,8 +185,8 @@ Gallery =
     if Conf['Scroll to Post'] and (post = g.posts[file.dataset.post])
       Header.scrollTo post.nodes.root
 
-    # Center selected thumbnail
-    nodes.thumbs.scrollTop = thumb.offsetTop + thumb.offsetHeight/2 - nodes.thumbs.clientHeight/2
+    # Preload next image
+    Gallery.cache = Gallery.load Gallery.images[(newID + 1) % Gallery.images.length], Gallery.cacheError
 
   error: ->
     if @error?.code is MediaError.MEDIA_ERR_DECODE
@@ -184,6 +196,9 @@ Gallery =
       return unless url
       Gallery.images[@dataset.id].href = url
       @src = url if Gallery.nodes.current is @
+
+  cacheError: ->
+    delete Gallery.cache
 
   cleanupTimer: ->
     clearTimeout Gallery.timeoutID
