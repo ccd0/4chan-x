@@ -334,7 +334,7 @@ Gallery =
     createSubEntry: (name) ->
       label = UI.checkbox name, name
       input = label.firstElementChild
-      if name in ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Expand to Fill']
+      if name in ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Stretch to Fit']
         $.on input, 'change', Gallery.cb.setFitness
       $.event 'change', null, input
       $.on input, 'change', $.cb.checked
@@ -343,7 +343,7 @@ Gallery =
     createSubEntries: ->
       items = ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Scroll to Post']
       if CSS.supports 'object-fit', 'contain' # XXX not supported in FF < v36
-        items.splice 3, 0, 'Expand to Fill'
+        items.splice 3, 0, 'Stretch to Fit'
       subEntries = (Gallery.menu.createSubEntry item for item in items)
 
       delayLabel = $.el 'label', <%= html('Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">') %>
