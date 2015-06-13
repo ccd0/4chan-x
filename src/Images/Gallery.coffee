@@ -144,7 +144,7 @@ Gallery =
     newID = +thumb.dataset.id
 
     # Highlight, center selected thumbnail
-    $.rmClass  el,    'gal-highlight' if el = $ '.gal-highlight', nodes.thumbs
+    $.rmClass  el,    'gal-highlight' if el = Gallery.images[oldID]
     $.addClass thumb, 'gal-highlight'
     nodes.thumbs.scrollTop = thumb.offsetTop + thumb.offsetHeight/2 - nodes.thumbs.clientHeight/2
 
