@@ -169,6 +169,7 @@ Gallery =
       ImageCommon.addControls file if Conf['Show Controls']
 
     doc.classList.toggle 'gal-pdf', file.nodeName is 'IFRAME'
+    Gallery.cb.setHeight()
     nodes.count.textContent = +thumb.dataset.id + 1
     nodes.name.download     = nodes.name.textContent = thumb.title
     nodes.name.href         = thumb.href
@@ -316,6 +317,14 @@ Gallery =
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, "gal-#{@name.toLowerCase().replace /\s+/g, '-'}"
 
+    setHeight: ->
+      {current, frame} = Gallery.nodes
+      current.style.minHeight = if Conf['Stretch to Fit'] and (dim = g.posts[current.dataset.post]?.file.dimensions)
+        [width, height] = dim.split 'x'
+        Math.min(doc.clientHeight - 25, height / width * frame.clientWidth) + 'px'
+      else
+        null
+
     setDelay: -> Gallery.delay = +@value
 
   menu:
@@ -334,14 +343,14 @@ Gallery =
     createSubEntry: (name) ->
       label = UI.checkbox name, name
       input = label.firstElementChild
-      if name in ['Fit Width', 'Fit Height', 'Hide Thumbnails']
-        $.on input, 'change', Gallery.cb.setFitness
+      $.on input, 'change', Gallery.cb.setFitness if name in ['Hide Thumbnails', 'Fit Width', 'Fit Height']
       $.event 'change', null, input
       $.on input, 'change', $.cb.checked
+      $.on input, 'change', Gallery.cb.setHeight  if name in ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Stretch to Fit']
       el: label
 
     createSubEntries: ->
-      subEntries = (Gallery.menu.createSubEntry item for item in ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Scroll to Post'])
+      subEntries = (Gallery.menu.createSubEntry item for item in ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Stretch to Fit', 'Scroll to Post'])
 
       delayLabel = $.el 'label', <%= html('Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">') %>
       delayInput = delayLabel.firstElementChild
