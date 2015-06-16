@@ -301,14 +301,7 @@ Main =
     $.ready ->
       cb() if Main.isThisPageLegit()
 
-  css: `<%=
-    grunt.template.process(
-      ['font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon'].map(function(name) {
-        return grunt.file.read('src/General/css/'+name+'.css');
-      }).join(''),
-      {data: {type: type}}
-    ).trim().replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`')
-  %>`
+  css: `<%= importCSS('font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon') %>`
 
   features: [
     ['Polyfill',                  Polyfill]
