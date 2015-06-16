@@ -1,5 +1,5 @@
 Report =
-  css: `<%= importCSS('report') %>`
+  css: `<%= importCSS('noscript', 'report') %>`
 
   init: ->
     return unless /\bmode=report\b/.test(location.search) and match = location.search.match /\bno=(\d+)/

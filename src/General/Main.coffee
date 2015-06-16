@@ -9,6 +9,10 @@ Main =
             $.ready -> Captcha.fixes.init()
       return
 
+    if location.hostname is 'www.4chan.org'
+      $.onExists d.documentElement, 'body', false, -> $.addStyle Main.cssWWW
+      return
+
     g.threads = new SimpleDict()
     g.posts   = new SimpleDict()
 
@@ -301,7 +305,9 @@ Main =
     $.ready ->
       cb() if Main.isThisPageLegit()
 
-  css: `<%= importCSS('font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon') %>`
+  css: `<%= importCSS('font-awesome', 'noscript', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon') %>`
+
+  cssWWW: `<%= importCSS('noscript', 'www') %>`
 
   features: [
     ['Polyfill',                  Polyfill]
