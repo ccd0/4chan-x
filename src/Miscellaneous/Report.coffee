@@ -1,9 +1,5 @@
 Report =
-  css: '''
-    :root:not(.js-enabled) #g-recaptcha {
-      height: auto;
-    }
-  '''
+  css: `<%= importCSS('noscript', 'report') %>`
 
   init: ->
     return unless /\bmode=report\b/.test(location.search) and match = location.search.match /\bno=(\d+)/
