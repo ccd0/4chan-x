@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ## v1.11.0
 
+**v1.11.0.1** *(2015-06-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.14.3: Fix words being cut off in non-Javascript captcha.
+
 **v1.11.0.0** *(2015-06-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.10.14.2.
 - Gallery now preloads the next image in sequence.
@@ -12,6 +15,9 @@ The links to individual versions below are to copies of the script with the upda
 - Drop workarounds for old versions of Chromium (< v34).
 
 ### v1.10.14
+
+**v1.10.14.3** *(2015-06-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix words being cut off in non-Javascript captcha.
 
 **v1.10.14.2** *(2015-06-11)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Bring back workaround for scrolling to top caused by captcha as some users are still reporting it happening.
