@@ -161,7 +161,7 @@ Captcha.v2 =
     $.forceSync 'captchas'
     @captchas.push
       response: token or $('textarea', @nodes.container).value
-      timeout:  (if pasted then @setupTime else Date.now()) + @lifetime
+      timeout:  Date.now() + @lifetime
     $.set 'captchas', @captchas
     @count()
 
