@@ -189,14 +189,6 @@ Main =
       $.set 'previousversion', g.VERSION
 
     if Conf['Show Support Message']
-      <% if (type === 'userscript') { %>
-      GMver = GM_info.version.split '.'
-      for v, i in "<%= meta.min.greasemonkey %>".split '.'
-        continue if v is GMver[i]
-        (v < GMver[i]) or new Notice 'warning', "Your version of Greasemonkey is outdated (v#{GM_info.version} instead of v<%= meta.min.greasemonkey %> minimum) and <%= meta.name %> may not operate correctly.", 30
-        break
-      <% } %>
-
       try
         localStorage.getItem '4chan-settings'
       catch err
