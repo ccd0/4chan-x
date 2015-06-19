@@ -1222,24 +1222,7 @@ input.field.tripped:not(:hover):not(:focus) {
   top: 2px;
 }
 
-/* Noscript Recaptcha */
-.captcha-img {
-  margin: 0px;
-  text-align: center;
-  background-image: #fff;
-  font-size: 0px;
-  min-height: 59px;
-  min-width: 302px;
-}
-.captcha-input{
-  width: 100%;
-  margin: 1px 0 0;
-}
-#qr-captcha-iframe {
-  display: none;
-}
-
-/* Recaptcha v2 */
+/* Captcha */
 #qr .captcha-root {
   position: relative;
 }
@@ -1262,6 +1245,13 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr:not(.captcha-open) .captcha-counter > a {
   display: block;
   width: 100%;
+}
+#qr-captcha-iframe {
+  width: 302px;
+  height: 423px;
+  max-width: 100vw;
+  max-height: calc(100vh - 210px);
+  overflow: auto;
 }
 .goog-bubble-content {
   max-width: 100vw;
