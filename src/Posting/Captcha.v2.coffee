@@ -1,9 +1,14 @@
 Captcha.v2 =
   lifetime: 2 * $.MINUTE
+  noscriptURL: '//www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
     return unless @isEnabled = !!$.id 'g-recaptcha'
+
+    if @noscript = Conf['Force Noscript Captcha'] or not $.hasClass doc, 'js-enabled'
+      @conn = new Connection null, "#{location.protocol}//www.google.com",
+        token: (token) => @save true, token
 
     @captchas = []
     $.get 'captchas', [], ({captchas}) ->
@@ -70,6 +75,19 @@ Captcha.v2 =
       childList: true
       subtree: true
 
+    if @noscript
+      @setupNoscript()
+    else
+      @setupJS()
+
+  setupNoscript: ->
+    iframe = $.el 'iframe',
+      id: 'qr-captcha-iframe'
+      src: @noscriptURL
+    $.add @nodes.container, iframe
+    @conn.target = iframe.contentWindow
+
+  setupJS: ->
     $.globalEval '''
       (function() {
         function render() {
@@ -139,10 +157,10 @@ Captcha.v2 =
     else
       null
 
-  save: (pasted) ->
+  save: (pasted, token) ->
     $.forceSync 'captchas'
     @captchas.push
-      response: $('textarea', @nodes.container).value
+      response: token or $('textarea', @nodes.container).value
       timeout:  (if pasted then @setupTime else Date.now()) + @lifetime
     $.set 'captchas', @captchas
     @count()
@@ -183,9 +201,12 @@ Captcha.v2 =
       @timeouts.clear = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
 
   reload: ->
-    $.globalEval '''
-      (function() {
-        var container = document.querySelector("#qr .captcha-container");
-        window.grecaptcha.reset(container.dataset.widgetID);
-      })();
-    '''
+    if @noscript
+      $('iframe', @nodes.container).src = @noscriptURL
+    else
+      $.globalEval '''
+        (function() {
+          var container = document.querySelector("#qr .captcha-container");
+          window.grecaptcha.reset(container.dataset.widgetID);
+        })();
+      '''

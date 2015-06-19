@@ -9,8 +9,7 @@ QR =
 
     return if g.VIEW is 'archive'
 
-    noscript = Conf['Force Noscript Captcha'] or not $.hasClass doc, 'js-enabled'
-    @captcha = Captcha[if noscript then 'noscript' else 'v2']
+    @captcha = Captcha.v2
 
     $.on d, '4chanXInitFinished', @initReady
 
