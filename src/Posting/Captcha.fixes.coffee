@@ -29,21 +29,10 @@ Captcha.fixes =
     $.on d, 'keydown', @keybinds.bind(@)
 
   fixImages: ->
-    return unless (@images = $$ '.rc-imageselect-target > div').length
-    focus = @images[0].tabIndex isnt 0
+    @images = $$ '.rc-imageselect-target > div'
     for img in @images
       img.tabIndex = 0
-    if focus
-      $.queueTask => @focusImage()
-
-  focusImage: ->
-    # XXX Image is not focusable at first in Firefox; to be refactored when I figure out why.
-    img = @images[0]
-    $.asap ->
-      return true unless doc.contains img
-      img.focus()
-      d.activeElement is img
-    , ->
+    return
 
   keybinds: (e) ->
     return unless @images and doc.contains(@images[0]) and d.activeElement
