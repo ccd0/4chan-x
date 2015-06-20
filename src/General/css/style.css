@@ -1504,7 +1504,7 @@ a:only-of-type > .remove {
   height: 15px;
   text-align: center;
 }
-.menu-button + .container:not(:empty) {
+.menu-button + .container :first-child {
   margin-left: -5px;
 }
 #menu {
