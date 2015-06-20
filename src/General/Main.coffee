@@ -10,6 +10,10 @@ Main =
 
     if location.hostname is 'www.4chan.org'
       $.onExists d.documentElement, 'body', false, -> $.addStyle Main.cssWWW
+      Conf = {'captchaLanguage': Config.captchaLanguage}
+      $.get Conf, (items) ->
+        $.extend Conf, items
+        Captcha.language.fixPage()
       return
 
     g.threads = new SimpleDict()
@@ -310,6 +314,7 @@ Main =
 
   features: [
     ['Polyfill',                  Polyfill]
+    ['Captcha Language',          Captcha.language]
     ['Redirect',                  Redirect]
     ['Header',                    Header]
     ['Catalog Links',             CatalogLinks]

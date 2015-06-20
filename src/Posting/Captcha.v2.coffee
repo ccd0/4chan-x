@@ -1,6 +1,5 @@
 Captcha.v2 =
   lifetime: 2 * $.MINUTE
-  noscriptURL: '//www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
@@ -33,6 +32,12 @@ Captcha.v2 =
   shouldFocus: false
   timeouts: {}
   postsCount: 0
+
+  noscriptURL: ->
+    url = '//www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
+    if lang = Conf['captchaLanguage'].trim()
+      url += "&hl=#{encodeURIComponent lang}"
+    url
 
   needed: ->
     captchaCount = @captchas.length
@@ -83,7 +88,7 @@ Captcha.v2 =
   setupNoscript: ->
     iframe = $.el 'iframe',
       id: 'qr-captcha-iframe'
-      src: @noscriptURL
+      src: @noscriptURL()
     $.add @nodes.container, iframe
     @conn.target = iframe.contentWindow
 
@@ -120,7 +125,7 @@ Captcha.v2 =
     return
 
   setupIFrame: (iframe) ->
-    @setupTime = Date.now()
+    Captcha.language.fixIframe iframe
     $.addClass QR.nodes.el, 'captcha-open'
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
       QR.nodes.el.style.top    = null
@@ -202,7 +207,7 @@ Captcha.v2 =
 
   reload: ->
     if @noscript
-      $('iframe', @nodes.container).src = @noscriptURL
+      $('iframe', @nodes.container).src = @noscriptURL()
     else
       $.globalEval '''
         (function() {

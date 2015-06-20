@@ -741,6 +741,8 @@ Config =
       #options:"sage";boards:jp;always
     """
 
+  captchaLanguage: ''
+
   time: '%m/%d/%y(%a)%H:%M:%S'
 
   backlink: '>>%id'
