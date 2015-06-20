@@ -164,6 +164,9 @@ audio.controls-added {
 #thread-watcher {
   z-index: 10;
 }
+:root.fixed:not(.gallery-open) #header-bar:not(.autohide) {
+  z-index: 5;
+}
 
 /* Header */
 .fixed.top-header body {
