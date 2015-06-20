@@ -478,7 +478,7 @@ Config =
       ]
       'Captcha Fixes': [
         true
-        'Make captcha more keyboard-navigable.'
+        'Make captcha easier to use, especially with the keyboard.'
       ]
 
     'Quote Links':

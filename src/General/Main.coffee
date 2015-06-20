@@ -3,10 +3,9 @@ Main =
     if location.hostname is 'www.google.com'
       if location.pathname is '/recaptcha/api/fallback'
         $.ready -> Captcha.noscript.initFrame()
-      else
-        $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
-          if enabled
-            $.ready -> Captcha.fixes.init()
+      $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
+        if enabled
+          $.ready -> Captcha.fixes.init()
       return
 
     if location.hostname is 'www.4chan.org'

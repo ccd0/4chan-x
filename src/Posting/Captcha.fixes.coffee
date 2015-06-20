@@ -8,10 +8,29 @@ Captcha.fixes =
     }
   '''
 
+  cssNoscript: '''
+    .fbc-payload-imageselect {
+      position: relative;
+    }
+    .fbc-payload-imageselect > label {
+      position: absolute;
+      display: block;
+      height: 93.3px;
+      width: 93.3px;
+    }
+    label[data-row="0"] {top: 0px;}
+    label[data-row="1"] {top: 93.3px;}
+    label[data-row="2"] {top: 186.6px;}
+    label[data-col="0"] {left: 0px;}
+    label[data-col="1"] {left: 93.3px;}
+    label[data-col="2"] {left: 186.6px;}
+  '''
+
   init: ->
     switch location.pathname.split('/')[3]
-      when 'anchor' then @initMain()
-      when 'frame'  then @initPopup()
+      when 'anchor'   then @initMain()
+      when 'frame'    then @initPopup()
+      when 'fallback' then @initNoscript()
 
   initMain: ->
     $.onExists d.body, '#recaptcha-anchor', true, (checkbox) ->
@@ -28,11 +47,26 @@ Captcha.fixes =
     new MutationObserver(=> @fixImages()).observe d.body, {childList: true, subtree: true}
     $.on d, 'keydown', @keybinds.bind(@)
 
+  initNoscript: ->
+    $.addStyle @cssNoscript
+    @addLabels()
+
   fixImages: ->
     @images = $$ '.rc-imageselect-target > div'
     for img in @images
       img.tabIndex = 0
     return
+
+  addLabels: ->
+    imageSelect = $ '.fbc-payload-imageselect'
+    labels = for checkbox, i in $$ 'input', imageSelect
+      checkbox.id = "checkbox-#{i}"
+      label = $.el 'label',
+        htmlFor: checkbox.id
+      label.dataset.row = i // 3
+      label.dataset.col = i % 3
+      label
+    $.add imageSelect, labels
 
   keybinds: (e) ->
     return unless @images and doc.contains(@images[0]) and d.activeElement
