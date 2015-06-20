@@ -1153,6 +1153,10 @@ input[name="Default Volume"] {
   min-width: 300px;
   border-radius: 3px 3px 0 0;
 }
+#qr > form {
+  max-height: calc(100vh - 75px);
+  overflow-y: auto;
+}
 #qrtab {
   border-radius: 3px 3px 0 0;
 }
@@ -1252,9 +1256,9 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr-captcha-iframe {
   width: 302px;
   height: 423px;
-  max-width: 100vw;
-  max-height: calc(100vh - 210px);
-  overflow: auto;
+  border: 0;
+  display: block;
+  margin: auto;
 }
 .goog-bubble-content {
   max-width: 100vw;
@@ -1459,6 +1463,8 @@ a:only-of-type > .remove {
 }
 .textarea {
   position: relative;
+  display: -webkit-flex;
+  display: flex;
 }
 :root.webkit .textarea {
   margin-bottom: -2px;
