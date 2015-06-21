@@ -127,7 +127,7 @@ Captcha.v1 =
     else
       challenge   = @nodes.img.alt
       if response = @nodes.input.value
-        if Conf['Auto-load captcha'] then @reload() else @destroy()
+        @destroy()
     {challenge, response}
 
   save: ->
