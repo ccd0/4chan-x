@@ -175,7 +175,7 @@ Captcha.v2 =
     $.set 'captchas', @captchas
     @count()
 
-    focus = d.activeElement?.nodeName is 'IFRAME' and d.activeElement.src?[...38] is 'https://www.google.com/recaptcha/api2/'
+    focus = d.activeElement?.nodeName is 'IFRAME' and /https?:\/\/www\.google\.com\/recaptcha\//.test(d.activeElement.src)
     if @needed()
       if focus
         if QR.cooldown.auto or Conf['Post on Captcha Completion']
