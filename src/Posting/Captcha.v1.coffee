@@ -126,8 +126,10 @@ Captcha.v1 =
       $.set 'captchas', @captchas
     else
       challenge   = @nodes.img.alt
-      if response = @nodes.input.value
+      if /\S/.test(response = @nodes.input.value)
         @destroy()
+      else
+        return null
     {challenge, response}
 
   save: ->
