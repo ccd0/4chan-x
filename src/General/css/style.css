@@ -1239,9 +1239,12 @@ input.field.tripped:not(:hover):not(:focus) {
   min-height: 59px;
   min-width: 302px;
 }
-.captcha-input{
+.captcha-input {
   width: 100%;
   margin: 1px 0 0;
+}
+#qr.captcha-v1 #qr-captcha-iframe {
+  display: none;
 }
 
 /* Recaptcha v2 */
@@ -1268,7 +1271,7 @@ input.field.tripped:not(:hover):not(:focus) {
   display: block;
   width: 100%;
 }
-#qr-captcha-iframe {
+#qr.captcha-v2 #qr-captcha-iframe {
   width: 302px;
   height: 423px;
   border: 0;

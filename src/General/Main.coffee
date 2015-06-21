@@ -1,6 +1,9 @@
 Main =
   init: ->
     if location.hostname is 'www.google.com'
+      if location.pathname is '/recaptcha/api/noscript'
+        $.ready -> Captcha.noscript.initFrame()
+        return
       if location.pathname is '/recaptcha/api/fallback'
         $.ready -> Captcha.v2.initFrame()
       $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
