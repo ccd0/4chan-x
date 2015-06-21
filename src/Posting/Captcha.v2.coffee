@@ -8,6 +8,7 @@ Captcha.v2 =
     if @noscript = Conf['Force Noscript Captcha'] or not $.hasClass doc, 'js-enabled'
       @conn = new Connection null, "#{location.protocol}//www.google.com",
         token: (token) => @save true, token
+      $.addClass QR.nodes.el, 'noscript-captcha'
 
     @captchas = []
     $.get 'captchas', [], ({captchas}) ->
