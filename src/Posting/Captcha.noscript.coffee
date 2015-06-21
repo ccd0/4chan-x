@@ -1,5 +1,5 @@
 Captcha.noscript =
-  lifetime:  2 * $.MINUTE
+  lifetime: 10 * $.MINUTE
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
