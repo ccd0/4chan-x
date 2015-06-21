@@ -456,14 +456,14 @@ Config =
         'Show notifications on successful post creation or file uploading.'
         1
       ]
+      'Use Recaptcha v1': [
+        false
+        'Use the old text version of Recaptcha.'
+        1
+      ]
       'Force Noscript Captcha': [
         false
         'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled.'
-        1
-      ]
-      'Use Recaptcha v1': [
-        false
-        'Use the old version of Recaptcha before the introduction of the checkbox.'
         1
       ]
       'Auto-load captcha': [
