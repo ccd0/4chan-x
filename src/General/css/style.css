@@ -1156,6 +1156,7 @@ input[name="Default Volume"] {
 #qr > form {
   max-height: calc(100vh - 75px);
   overflow-y: auto;
+  overflow-x: hidden;
 }
 #qrtab {
   border-radius: 3px 3px 0 0;
