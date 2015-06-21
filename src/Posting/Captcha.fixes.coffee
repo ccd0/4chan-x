@@ -1,4 +1,6 @@
 Captcha.fixes =
+  imageKeys: '789456123uiojklm,.'.split('')
+
   css: '''
     .rc-imageselect-target > div:focus {
       outline: 2px solid #4a90e2;
@@ -91,7 +93,10 @@ Captcha.fixes =
 
     if !@noscript and key is 'Space' and x < 9
       @images[x].click()
-    else if dx = {'Up': 9, 'Down': 3, 'Left': 11, 'Right': 1, 'i': 9, 'k': 3, 'j': 11, 'l': 1}[key]
+    else if (i = @imageKeys.indexOf key) >= 0
+      @images[i % 9].click()
+      verify.focus()
+    else if dx = {'Up': 9, 'Down': 3, 'Left': 11, 'Right': 1}[key]
       x = (x + dx) % 12
       if x is 10
         x = if dx is 11 then 9 else 11
