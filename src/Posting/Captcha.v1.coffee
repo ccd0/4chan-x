@@ -11,8 +11,6 @@ Captcha.v1 =
       hidden: true
     $.add d.body, captchaContainer
 
-    @setup() if Conf['Auto-load captcha']
-
     imgContainer = $.el 'div',
       className: 'captcha-img'
       title: 'Reload reCAPTCHA'
@@ -43,7 +41,7 @@ Captcha.v1 =
     new MutationObserver(@afterSetup).observe $.id('captchaContainer'), childList: true
 
     @beforeSetup()
-    @afterSetup() # reCAPTCHA might have loaded before the QR.
+    @setup() if Conf['Auto-load captcha']
 
   cb:
     focus: -> QR.captcha.setup false, true
