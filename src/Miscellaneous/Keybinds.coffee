@@ -215,6 +215,8 @@ Keybinds =
       else
         if 48 <= kc <= 57 or 65 <= kc <= 90 # 0-9, A-Z
           String.fromCharCode(kc).toLowerCase()
+        else if 96 <= kc <= 105 # numpad 0-9
+          String.fromCharCode(kc - 48).toLowerCase()
         else
           null
     if key
