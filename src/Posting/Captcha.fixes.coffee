@@ -50,6 +50,8 @@ Captcha.fixes =
   initNoscript: ->
     @noscript = true
     @images = $$ '.fbc-payload-imageselect > input'
+    return unless @images.length
+
     $.addStyle @cssNoscript
     @addLabels()
     $.on d, 'keydown', @keybinds.bind(@)
