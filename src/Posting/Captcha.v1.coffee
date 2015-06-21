@@ -29,7 +29,7 @@ Captcha.v1 =
     $.on input, 'keydown', QR.captcha.keydown.bind QR.captcha
     $.on @nodes.img.parentNode, 'click', QR.captcha.reload.bind QR.captcha
 
-    $.addClass QR.nodes.el, 'has-captcha'
+    $.addClass QR.nodes.el, 'has-captcha', 'captcha-v1'
     $.after QR.nodes.com.parentNode, [imgContainer, input]
 
     @captchas = []

@@ -22,7 +22,7 @@ Captcha.v2 =
     counter   = $ '.captcha-counter > a', root
     @nodes = {root, counter}
     @count()
-    $.addClass QR.nodes.el, 'has-captcha'
+    $.addClass QR.nodes.el, 'has-captcha', 'captcha-v2'
     $.after QR.nodes.com.parentNode, root
 
     $.on counter, 'click', @toggle.bind @
