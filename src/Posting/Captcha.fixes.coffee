@@ -1,5 +1,5 @@
 Captcha.fixes =
-  imageKeys: '789456123uiojklm,.'.split('')
+  imageKeys: '789456123uiojklm'.split('').concat(['Comma', 'Period'])
 
   css: '''
     .rc-imageselect-target > div:focus {
@@ -79,7 +79,7 @@ Captcha.fixes =
 
   addTooltips: (nodes) ->
     for node, i in nodes
-      node.title = "#{@imageKeys[i]} or #{@imageKeys[i+9].toUpperCase()}"
+      node.title = "#{@imageKeys[i]} or #{@imageKeys[i+9][0].toUpperCase()}#{@imageKeys[i+9][1..]}"
     return
 
   checkForm: (e) ->

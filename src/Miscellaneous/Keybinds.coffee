@@ -215,9 +215,9 @@ Keybinds =
       when 40
         'Down'
       when 188
-        ','
+        'Comma'
       when 190
-        '.'
+        'Period'
       else
         if 48 <= kc <= 57 or 65 <= kc <= 90 # 0-9, A-Z
           String.fromCharCode(kc).toLowerCase()
