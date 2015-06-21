@@ -55,10 +55,7 @@ Captcha.fixes =
     $.addStyle @cssNoscript
     @addLabels()
     $.on d, 'keydown', @keybinds.bind(@)
-    $.on $('.fbc-imageselect-challenge > form'), 'submit', (e) =>
-      n = 0
-      n++ for checkbox in @images when checkbox.checked
-      e.preventDefault() if n is 0
+    $.on $('.fbc-imageselect-challenge > form'), 'submit', @checkForm.bind(@)
 
   fixImages: ->
     @images = $$ '.rc-imageselect-target > div'
@@ -76,6 +73,11 @@ Captcha.fixes =
       label.dataset.col = i % 3
       label
     $.add imageSelect, labels
+
+  checkForm: (e) ->
+    n = 0
+    n++ for checkbox in @images when checkbox.checked
+    e.preventDefault() if n is 0
 
   keybinds: (e) ->
     return unless @images and doc.contains(@images[0]) and d.activeElement
