@@ -63,7 +63,7 @@ Captcha.fixes =
     @images = $$ '.rc-imageselect-target > div'
     for img in @images
       img.tabIndex = 0
-    return
+    @addTooltips @images if @images.length
 
   addLabels: ->
     imageSelect = $ '.fbc-payload-imageselect'
@@ -75,6 +75,12 @@ Captcha.fixes =
       label.dataset.col = i % 3
       label
     $.add imageSelect, labels
+    @addTooltips labels
+
+  addTooltips: (nodes) ->
+    for node, i in nodes
+      node.title = "#{@imageKeys[i]} or #{@imageKeys[i+9].toUpperCase()}"
+    return
 
   checkForm: (e) ->
     n = 0
