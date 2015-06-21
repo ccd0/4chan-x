@@ -533,7 +533,7 @@ div[data-checked="false"] > .suboption-list {
 .section-filter textarea {
   height: 500px;
 }
-.section-filter a {
+.section-filter a, .section-advanced a {
   text-decoration: underline;
 }
 .section-sauce textarea {
