@@ -1870,6 +1870,6 @@ grunt.file.expand('src/General/img/links/*.png').map(function(file) {
   width: 4em;
 }
 :root.gallery-open.fixed #header-bar:not(.autohide),
-:root.gallery-open.fixed #header-bar:not(.autohide) .fa::before {
+:root.gallery-open.fixed #header-bar:not(.autohide) #shortcuts .fa::before {
   visibility: hidden;
 }
