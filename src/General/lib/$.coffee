@@ -64,8 +64,8 @@ $.ajax = do ->
       options.onerror?()
       return
     if whenModified
-      r.setRequestHeader 'If-Modified-Since', lastModified[url] if url of lastModified
-      $.on r, 'load', -> lastModified[url] = r.getResponseHeader 'Last-Modified'
+      r.setRequestHeader 'If-Modified-Since', lastModified[whenModified][url] if lastModified[whenModified]?[url]?
+      $.on r, 'load', -> (lastModified[whenModified] or= {})[url] = r.getResponseHeader 'Last-Modified'
     if /\.json$/.test url
       r.responseType = 'json'
     $.extend r, options

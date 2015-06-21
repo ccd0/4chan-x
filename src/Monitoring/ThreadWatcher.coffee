@@ -20,7 +20,7 @@ ThreadWatcher =
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on sc, 'click', @toggleWatcher
-    $.on @refreshButton, 'click', @fetchAllStatus
+    $.on @refreshButton, 'click', @buttonFetchAll
     $.on @closeButton, 'click', @toggleWatcher
 
     $.on d, '4chanXInitFinished', @ready
@@ -84,6 +84,9 @@ ThreadWatcher =
       return unless e.button is 0 and e.altKey
       ThreadWatcher.toggle @thread
       e.preventDefault()
+    $.on @nodes.thumb.parentNode, 'mousedown', (e) ->
+      # Prevent highlighting thumbnail in Firefox.
+      e.preventDefault() if e.button is 0 and e.altKey
 
   ready: ->
     $.off d, '4chanXInitFinished', ThreadWatcher.ready
@@ -136,11 +139,13 @@ ThreadWatcher =
       boardID = g.BOARD.ID
       db.forceSync()
       for threadID, data of db.data.boards[boardID] when not data?.isDead and threadID not of g.BOARD.threads
-        if Conf['Auto Prune'] or not (data and typeof data is 'object')
-          ThreadWatcher.db.delete {boardID, threadID}
+        if Conf['Auto Prune'] or not (data and typeof data is 'object') # corrupt data
+          db.delete {boardID, threadID}
         else
+          if Conf['Show Unread Count']
+            ThreadWatcher.fetchStatus {boardID, threadID, data}
           data.isDead = true
-          ThreadWatcher.db.set {boardID, threadID, val: data}
+          db.set {boardID, threadID, val: data}
       ThreadWatcher.refresh()
     onThreadRefresh: (e) ->
       thread = g.threads[e.detail.threadID]
@@ -148,9 +153,19 @@ ThreadWatcher =
       # Update dead status.
       ThreadWatcher.add thread
 
-  fetchCount:
-    fetched:  0
-    fetching: 0
+  requests: []
+  fetched:  0
+
+  clearRequests: ->
+    ThreadWatcher.requests = []
+    ThreadWatcher.fetched = 0
+    ThreadWatcher.status.textContent = ''
+    $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
+
+  abort: ->
+    for req in ThreadWatcher.requests when req.readyState isnt 4 # DONE
+      req.abort()
+    ThreadWatcher.clearRequests()
 
   fetchAuto: ->
     clearTimeout ThreadWatcher.timeout
@@ -164,6 +179,12 @@ ThreadWatcher =
       db.save()
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
 
+  buttonFetchAll: ->
+    if ThreadWatcher.requests.length
+      ThreadWatcher.abort()
+    else
+      ThreadWatcher.fetchAllStatus()
+
   fetchAllStatus: ->
     ThreadWatcher.db.forceSync()
     ThreadWatcher.unreaddb.forceSync()
@@ -176,26 +197,23 @@ ThreadWatcher =
   fetchStatus: (thread, force) ->
     {boardID, threadID, data} = thread
     return if data.isDead and not force
-    {fetchCount} = ThreadWatcher
-    if fetchCount.fetching is 0
+    if ThreadWatcher.requests.length is 0
       ThreadWatcher.status.textContent = '...'
       $.addClass ThreadWatcher.refreshButton, 'fa-spin'
-    fetchCount.fetching++
-    $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
+    req = $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
       onloadend: ->
         ThreadWatcher.parseStatus.call @, thread
+      timeout: $.MINUTE
+    ,
+      whenModified: if force then false else 'ThreadWatcher'
+    ThreadWatcher.requests.push req
 
   parseStatus: ({boardID, threadID, data}) ->
-    {fetchCount} = ThreadWatcher
-    fetchCount.fetched++
-    if fetchCount.fetched is fetchCount.fetching
-      fetchCount.fetched = 0
-      fetchCount.fetching = 0
-      status = ''
-      $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
+    ThreadWatcher.fetched++
+    if ThreadWatcher.fetched is ThreadWatcher.requests.length
+      ThreadWatcher.clearRequests()
     else
-      status = "#{Math.round fetchCount.fetched / fetchCount.fetching * 100}%"
-    ThreadWatcher.status.textContent = status
+      ThreadWatcher.status.textContent = "#{Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)}%"
 
     if @status is 200 and @response
       isDead = !!@response.posts[0].archived
@@ -214,17 +232,23 @@ ThreadWatcher =
       for postObj in @response.posts
         continue unless postObj.no > lastReadPost
         continue if QR.db?.get {boardID, threadID, postID: postObj.no}
+
         unread++
+
         continue unless QR.db and postObj.com
-        regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/(\d+))?(?:#p(\d+))?"/g
+
+        quotesYou = false
+        regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
         while match = regexp.exec postObj.com
           if QR.db.get {
             boardID:  match[1] or boardID
             threadID: match[2] or threadID
             postID:   match[3] or match[2] or threadID
           }
-            quotingYou++
-            continue
+            quotesYou = true
+            break
+        if quotesYou and not Filter.isHidden(Build.parseJSON postObj, boardID)
+          quotingYou++
 
       if isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou
         data.isDead = isDead
@@ -238,6 +262,8 @@ ThreadWatcher =
         ThreadWatcher.db.delete {boardID, threadID}
       else
         data.isDead = true
+        delete data.unread
+        delete data.quotingYou
         ThreadWatcher.db.set {boardID, threadID, val: data}
 
       ThreadWatcher.refresh()

@@ -19,3 +19,6 @@ E.cat = (templates) ->
   html = ''
   html += x.innerHTML for x in templates
   html
+
+E.url = (content) ->
+  "data:text/html;charset=utf-8,<!doctype html>#{encodeURIComponent content.innerHTML}"

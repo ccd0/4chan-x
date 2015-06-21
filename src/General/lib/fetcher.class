@@ -126,41 +126,41 @@ class Fetcher
 
     @threadID = +data.thread_num
     o =
-      # id
       postID:   @postID
       threadID: @threadID
       boardID:  @boardID
-      # info
-      name:     data.name
-      capcode:  switch data.capcode
-        when 'M' then 'mod'
-        when 'A' then 'admin'
-        when 'D' then 'developer'
-      tripcode: data.trip
-      uniqueID: data.poster_hash
-      email:    data.email or ''
+      isReply:  @postID isnt @threadID
+    o.info =
       subject:  data.title
+      email:    data.email
+      name:     data.name or ''
+      tripcode: data.trip
+      capcode:  switch data.capcode
+        when 'M' then 'Mod'
+        when 'A' then 'Admin'
+        when 'D' then 'Developer'
+      uniqueID: data.poster_hash
       flagCode: data.poster_country
-      flagName: data.poster_country_name
-      date:     data.fourchan_date
+      flag:     data.poster_country_name
       dateUTC:  data.timestamp
-      comment:  comment
-      # file
+      dateText: data.fourchan_date
+      commentHTML: comment
+    delete o.info.uniqueID if o.info.capcode
     if data.media?.media_filename
       o.file =
         name:      data.media.media_filename
-        timestamp: data.media.media_orig
         url:       data.media.media_link or data.media.remote_media_link or
-                     "//i.4cdn.org/#{@boardID}/#{encodeURIComponent data.media[if @boardID is 'f' then 'media_filename' else 'media_orig']}"
+                     "#{location.protocol}//i.4cdn.org/#{@boardID}/#{encodeURIComponent data.media[if @boardID is 'f' then 'media_filename' else 'media_orig']}"
         height:    data.media.media_h
         width:     data.media.media_w
         MD5:       data.media.media_hash
-        size:      data.media.media_size
-        turl:      data.media.thumb_link or "//i.4cdn.org/#{@boardID}/#{data.media.preview_orig}"
+        size:      $.bytesToString data.media.media_size
+        thumbURL:  data.media.thumb_link or "#{location.protocol}//i.4cdn.org/#{@boardID}/#{data.media.preview_orig}"
         theight:   data.media.preview_h
         twidth:    data.media.preview_w
         isSpoiler: data.media.spoiler is '1'
-      o.file.tag = JSON.parse(data.media.exif).Tag if @boardID is 'f'
+      o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
+      o.file.tag = JSON.parse(data.media.exif).Tag if @boardID is 'f' and data.media.exif
 
     board = g.boards[@boardID] or
       new Board @boardID
@@ -168,7 +168,7 @@ class Fetcher
       new Thread @threadID, board
     post = new Post Build.post(o), thread, board
     post.kill()
-    post.file.thumbURL = o.file.turl if post.file
+    post.file.thumbURL = o.file.thumbURL if post.file
     post.isFetchedQuote = true
     Main.callbackNodes Post, [post]
     @insert post

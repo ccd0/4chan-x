@@ -122,7 +122,7 @@ ImageExpand =
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass file.thumb,      'expanding'
     $.rm file.videoControls if file.videoControls
-    file.thumb.parentNode.href   = file.URL
+    file.thumb.parentNode.href   = file.url
     file.thumb.parentNode.target = '_blank'
     for x in ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying', 'scrollIntoView']
       delete file[x]
@@ -175,7 +175,7 @@ ImageExpand =
       el = file.fullImage = $.el (if isVideo then 'video' else 'img')
       el.dataset.fullID = post.fullID
       $.on el, 'error', ImageExpand.error
-      el.src = src or file.URL
+      el.src = src or file.url
 
     el.className = 'full-image'
     $.after thumb, el

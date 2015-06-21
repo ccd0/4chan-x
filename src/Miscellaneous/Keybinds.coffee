@@ -204,6 +204,8 @@ Keybinds =
         'Enter'
       when 27
         'Esc'
+      when 32
+        'Space'
       when 37
         'Left'
       when 38
@@ -212,9 +214,15 @@ Keybinds =
         'Right'
       when 40
         'Down'
+      when 188
+        'Comma'
+      when 190
+        'Period'
       else
         if 48 <= kc <= 57 or 65 <= kc <= 90 # 0-9, A-Z
           String.fromCharCode(kc).toLowerCase()
+        else if 96 <= kc <= 105 # numpad 0-9
+          String.fromCharCode(kc - 48).toLowerCase()
         else
           null
     if key

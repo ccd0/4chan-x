@@ -16,26 +16,35 @@ Sauce =
       name: 'Sauce'
       cb:   @node
 
+  sandbox: (url) ->
+    E.url <%= importHTML('Features/Sandbox') %>
+
+  rmOrigin: (e) ->
+    return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+    # Work around mixed content restrictions (data: URIs have inherited origin).
+    $.open @href
+    e.preventDefault()
+
   createSauceLink: (link, post) ->
     return null unless link = link.trim()
 
     parts = {}
-    for part, i in link.split /;(?=(?:text|boards|types):)/
+    for part, i in link.split /;(?=(?:text|boards|types|sandbox):?)/
       if i is 0
         parts['url'] = part
       else
-        m = part.match /^(\w*):(.*)$/
+        m = part.match /^(\w*):?(.*)$/
         parts[m[1]] = m[2]
     parts['text'] or= parts['url'].match(/(\w+)\.\w+\//)?[1] or '?'
-    ext = post.file.URL.match(/[^.]*$/)[0]
+    ext = post.file.url.match(/[^.]*$/)[0]
 
     skip = false
     for key of parts
       parts[key] = parts[key].replace /%(T?URL|IMG|MD5|board|name|%|semi)/g, (parameter) ->
         type = {
           '%TURL':  post.file.thumbURL
-          '%URL':   post.file.URL
-          '%IMG':   if ext in ['gif', 'jpg', 'png'] then post.file.URL else post.file.thumbURL
+          '%URL':   post.file.url
+          '%IMG':   if ext in ['gif', 'jpg', 'png'] then post.file.url else post.file.thumbURL
           '%MD5':   post.file.MD5
           '%board': post.board.ID
           '%name':  post.file.name
@@ -55,10 +64,14 @@ Sauce =
     return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
     return null unless !parts['types']  or ext           in parts['types'].split  ','
 
+    url = parts['url']
+    url = Sauce.sandbox url if parts['sandbox']?
+
     a = Sauce.link.cloneNode true
-    a.href = parts['url']
+    a.href = url
     a.textContent = parts['text']
     a.removeAttribute 'target' if /^javascript:/i.test parts['url']
+    $.on a, 'click', Sauce.rmOrigin if parts['sandbox']?
     a
 
   node: ->

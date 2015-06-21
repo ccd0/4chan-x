@@ -128,7 +128,7 @@ Unread =
   openNotification: (post) ->
     return unless Header.areNotificationsEnabled
     notif = new Notification "#{post.info.nameBlock} replied to you",
-      body: post.info[if Conf['Remove Spoilers'] or Conf['Reveal Spoilers'] then 'comment' else 'commentSpoilered']
+      body: post.info.commentDisplay
       icon: Favicon.logo
     notif.onclick = ->
       Header.scrollToIfNeeded post.nodes.root, true
@@ -154,6 +154,10 @@ Unread =
     Unread.update()
 
   read: $.debounce 100, (e) ->
+    # Update the lastReadPost when hidden posts are added to the thread.
+    if !Unread.posts.size and Unread.readCount isnt Unread.thread.posts.keys.length
+      Unread.saveLastReadPost()
+
     return if d.hidden or !Unread.posts.size
     height  = doc.clientHeight
 

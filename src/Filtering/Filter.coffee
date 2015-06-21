@@ -17,12 +17,10 @@ Filter =
         # Don't mix up filter flags with the regular expression.
         filter = line.replace regexp[0], ''
 
-        # Do not add this filter to the list if it's not a global one
-        # and it's not specifically applicable to the current board.
+        # Comma-separated list of the boards this filter applies to.
         # Defaults to global.
         boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
-        if boards isnt 'global' and g.BOARD.ID not in boards.split ','
-          continue
+        boards = if boards is 'global' then null else boards.split(',')
 
         if key in ['uniqueID', 'MD5']
           # MD5 filter will use strings instead of regular expressions.
@@ -66,7 +64,7 @@ Filter =
           top = filter.match(/top:(yes|no)/)?[1] or 'yes'
           top = top is 'yes' # Turn it into a boolean
 
-        @filters[key].push @createFilter regexp, op, stub, hl, top
+        @filters[key].push @createFilter regexp, boards, op, stub, hl, top
 
       # Only execute filter types that contain valid filters.
       unless @filters[key].length
@@ -77,7 +75,7 @@ Filter =
       name: 'Filter'
       cb:   @node
 
-  createFilter: (regexp, op, stub, hl, top) ->
+  createFilter: (regexp, boards, op, stub, hl, top) ->
     test =
       if typeof regexp is 'string'
         # MD5 checking
@@ -91,7 +89,9 @@ Filter =
       class: hl
       top:   top
 
-    (value, isReply) ->
+    (value, boardID, isReply) ->
+      if boards and boardID not in boards
+        return false
       if isReply and op is 'only' or !isReply and op is 'no'
         return false
       unless test value
@@ -103,7 +103,7 @@ Filter =
     for key of Filter.filters when (value = Filter[key] @)?
       # Continue if there's nothing to filter (no tripcode for example).
 
-      for filter in Filter.filters[key] when result = filter value, @isReply
+      for filter in Filter.filters[key] when result = filter value, @board.ID, @isReply
         # Hide
         if result.hide and not @isFetchedQuote
           if @isReply
@@ -121,12 +121,18 @@ Filter =
         if !@isReply and result.top
           @thread.isOnTop = true
 
+  isHidden: (post) ->
+    for key of Filter.filters when (value = Filter[key] post)?
+      for filter in Filter.filters[key] when result = filter value, post.boardID, post.isReply
+        return true if result.hide
+    false
+
   name:       (post) -> post.info.name
   uniqueID:   (post) -> post.info.uniqueID
   tripcode:   (post) -> post.info.tripcode
   capcode:    (post) -> post.info.capcode
-  subject:    (post) -> post.info.subject or undefined
-  comment:    (post) -> post.info.comment
+  subject:    (post) -> post.info.subject
+  comment:    (post) -> post.info.comment ? Build.parseComment(post)
   flag:       (post) -> post.info.flag
   filename:   (post) -> post.file?.name
   dimensions: (post) -> post.file?.dimensions

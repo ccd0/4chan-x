@@ -2,10 +2,12 @@ Build =
   staticPath: '//s.4cdn.org/image/'
   gifIcon: if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
   spoilerRange: {}
+
   unescape: (text) ->
     return text unless text?
-    text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt);/g, (c) ->
-      {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>'}[c]
+    text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt|#44);/g, (c) ->
+      {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','}[c]
+
   shortFilename: (filename) ->
     threshold = 30
     ext = filename.match(/\.?[^\.]*$/)[0]
@@ -13,93 +15,100 @@ Build =
       "#{filename[...threshold - 5]}(...)#{ext}"
     else
       filename
+
   spoilerThumb: (boardID) ->
     if spoilerRange = Build.spoilerRange[boardID]
       # Randomize the spoiler image.
       "#{Build.staticPath}spoiler-#{boardID}#{Math.floor 1 + spoilerRange * Math.random()}.png"
     else
       "#{Build.staticPath}spoiler.png"
+
   sameThread: (boardID, threadID) ->
     g.VIEW is 'thread' and g.BOARD.ID is boardID and g.THREADID is +threadID
+
   postURL: (boardID, threadID, postID) ->
     if Build.sameThread boardID, threadID
       "#p#{postID}"
     else
       "/#{boardID}/thread/#{threadID}#p#{postID}"
-  postFromObject: (data, boardID, suppressThumb) ->
+
+  parseJSON: (data, boardID) ->
     o =
       # id
       postID:   data.no
       threadID: data.resto or data.no
       boardID:  boardID
-      # info
-      name:     Build.unescape data.name
-      capcode:  data.capcode
-      tripcode: data.trip
-      uniqueID: data.id
-      email:    Build.unescape data.email
-      subject:  Build.unescape data.sub
-      flagCode: data.country
-      flagName: Build.unescape data.country_name
-      date:     data.now
-      dateUTC:  data.time
-      comment:  {innerHTML: data.com or ''}
+      isReply:  !!data.resto
       # thread status
       isSticky: !!data.sticky
       isClosed: !!data.closed
       isArchived: !!data.archived
-      # file
-    if data.filedeleted
-      o.file =
-        isDeleted: true
-    else if data.ext
+      # file status
+      fileDeleted: !!data.filedeleted
+    o.info =
+      subject:  Build.unescape data.sub
+      email:    Build.unescape data.email
+      name:     Build.unescape(data.name) or ''
+      tripcode: data.trip
+      uniqueID: data.id
+      flagCode: data.country
+      flag:     Build.unescape data.country_name
+      dateUTC:  data.time
+      dateText: data.now
+      commentHTML: {innerHTML: data.com or ''}
+    if data.capcode
+      o.info.capcode = data.capcode.replace(/_highlight$/, '').replace(/_/g, ' ').replace(/\b\w/g, (c) -> c.toUpperCase())
+      o.capcodeHighlight = /_highlight$/.test data.capcode
+      delete o.info.uniqueID
+    if data.ext
       o.file =
         name:      (Build.unescape data.filename) + data.ext
-        timestamp: "#{data.tim}#{data.ext}"
         url: if boardID is 'f'
-          "//i.4cdn.org/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
+          "#{location.protocol}//i.4cdn.org/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
         else
-          "//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
+          "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h
         width:     data.w
         MD5:       data.md5
-        size:      data.fsize
-        turl:      "//i.4cdn.org/#{boardID}/#{data.tim}s.jpg"
+        size:      $.bytesToString data.fsize
+        thumbURL:  "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
-        isDeleted: false
         tag:       data.tag
+      o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
+    o
+
+  parseComment: (o) ->
+    html = o.info.commentHTML.innerHTML
+      .replace(/<br\b[^<]*>/gi, '\n')
+      .replace(/\n\n<span\b[^<]* class="abbr"[^]*$/i, '') # EXIF data (/p/)
+      .replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '')       # Rolls (/tg/)
+      .replace(/<span\b[^<]* class="fortune"[^]*$/i, '')  # Fortunes (/s4s/)
+      .replace(/<[^>]*>/g, '')
+    o.info.comment = Build.unescape html
+
+  postFromObject: (data, boardID, suppressThumb) ->
+    o = Build.parseJSON data, boardID
     Build.post o, suppressThumb
+
   post: (o, suppressThumb) ->
-    ###
-    This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
-    @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
-    ###
-    {
-      postID, threadID, boardID
-      name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
-      comment
-      file
-    } = o
-    name    or= ''
-    subject or= ''
-    isOP = postID is threadID
+    {postID, threadID, boardID, file} = o
+    {subject, email, name, tripcode, capcode, uniqueID, flagCode, flag, dateUTC, dateText, commentHTML} = o.info
     {staticPath, gifIcon} = Build
 
     ### Post Info ###
 
     if capcode
-      capcodeLC = capcode.split('_')[0]
-      capcodeUC = capcodeLC[0].toUpperCase() + capcodeLC[1..]
-      capcodeText   = capcodeUC
-      capcodeLong   = {'Admin': 'Administrator', 'Mod': 'Moderator'}[capcodeUC] or capcodeUC
-      capcodePlural = "#{capcodeLong}s"
-      capcodeDescription = "a 4chan #{capcodeLong}"
-      if capcode is 'admin_emeritus'
-        capcodeText        = 'Admin Emeritus'
+      capcodeUC = capcode.split(' ')[0]
+      capcodeLC = capcodeUC.toLowerCase()
+      if capcode is 'Admin Emeritus'
         capcodePlural      = 'the Administrator Emeritus'
         capcodeDescription = "4chan's founding Administrator"
+      else
+        capcodeLong   = {'Admin': 'Administrator', 'Mod': 'Moderator'}[capcode] or capcode
+        capcodePlural = "#{capcodeLong}s"
+        capcodeDescription = "a 4chan #{capcodeLong}"
 
     postLink = Build.postURL boardID, threadID, postID
     quoteLink = if Build.sameThread boardID, threadID
@@ -111,17 +120,17 @@ Build =
 
     ### File Info ###
 
-    if file and not file.isDeleted
+    if file
+      protocol = /^https?:(?=\/\/i\.4cdn\.org\/)/
+      fileURL = file.url.replace protocol, ''
       shortFilename = Build.shortFilename file.name
-      fileSize = $.bytesToString file.size
-      fileDims = if file.url[-4..] is '.pdf' then 'PDF' else "#{file.width}x#{file.height}"
-      fileThumb = if file.isSpoiler then Build.spoilerThumb boardID else file.turl
+      fileThumb = if file.isSpoiler then Build.spoilerThumb(boardID) else file.thumbURL.replace(protocol, '')
 
     fileBlock = <%= importHTML('Build/File') %>
 
     ### Whole Post ###
 
-    postClass = if isOP then 'op' else 'reply'
+    postClass = if o.isReply then 'reply' else 'op'
 
     wholePost = <%= importHTML('Build/Post') %>
 
@@ -130,13 +139,15 @@ Build =
       id:        "pc#{postID}"
     $.extend container, wholePost
 
-    # Fix pathnames
+    # Fix quotelinks
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
       if (href[0] is '#') and !(Build.sameThread boardID, threadID)
         quote.href = "/#{boardID}/thread/#{threadID}" + href
       else if (match = href.match /^\/([^\/]+)\/thread\/(\d+)/) and (Build.sameThread match[1], match[2])
         quote.href = href.match(/(#[^#]*)?$/)[0] or '#'
+      else if /^\d+(#|$)/.test(href) and not (g.VIEW is 'thread' and g.BOARD.ID is boardID) # used on /f/
+        quote.href = "/#{boardID}/thread/#{href}"
 
     container
 

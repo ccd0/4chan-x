@@ -28,7 +28,8 @@ Only the latest stable version of 4chan X is available.
 ## Other browsers
 This fork of 4chan X is not guaranteed to work correctly in other browsers, but you are welcome to try your luck. Pull requests to fix the bugs you will likely find are always welcome. You may fare better with [loadletter's fork](https://github.com/loadletter/4chan-x), which has fewer features but less dependence on browser-specific APIs.
 
-- [Installing 4chan X in dwb](https://github.com/ccd0/4chan-x/wiki/Installing-4chan-X-in-dwb)
+- Some people have reported success in Safari using [JS Blocker](http://jsblocker.toggleable.com/) to install the Firefox/Greasemonkey version.
+- Instructions are available for [installing 4chan X in dwb](https://github.com/ccd0/4chan-x/wiki/Installing-4chan-X-in-dwb).
 
 ## Beta version
 New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please [report](https://github.com/ccd0/4chan-x/issues) any issues you find, and be sure to mention which version you're using. You should back up your settings regularly to prevent them from being lost due to bugs.

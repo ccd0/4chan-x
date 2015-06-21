@@ -13,6 +13,12 @@
 </fieldset>
 
 <fieldset>
+  <legend>Captcha Language</legend>
+  <div>Choose from <a href="https://developers.google.com/recaptcha/docs/language" target="_blank">list of language codes</a>. Leave blank to autoselect.</div>
+  <div><input name="captchaLanguage" class="field" spellcheck="false"></div>
+</fieldset>
+
+<fieldset>
   <legend>Custom Board Navigation</legend>
   <div><textarea name="boardnav" class="field" spellcheck="false"></textarea></div>
   <span class="note">New lines will be converted into spaces.</span><br><br>
@@ -41,7 +47,7 @@
 <fieldset>
   <legend>Time Formatting <span class="warning" data-feature="Time Formatting">is disabled.</span></legend>
   <div><input name="time" class="field" spellcheck="false">: <span class="time-preview"></span></div>
-  <div>Supported <a href="//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting">format specifiers</a>:</div>
+  <div>Supported <a href="http://man7.org/linux/man-pages/man1/date.1.html" target="_blank">format specifiers</a>:</div>
   <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>
   <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>
   <div>Year: <code>%y</code>, <code>%Y</code></div>
@@ -64,6 +70,7 @@
   <div>Spoiler indicator: <code>%p</code></div>
   <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>
   <div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div>
+  <div>Tag: <code>%g</code>
   <div>Literal <code>%</code>: <code>%%</code></div>
 </fieldset>
 

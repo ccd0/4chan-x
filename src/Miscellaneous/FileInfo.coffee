@@ -28,10 +28,10 @@ FileInfo =
     $.extend outputNode, <%= html('@{output}') %>
 
   formatters:
-    t: -> <%= html('${this.file.URL.match(/[^\/]*$/)[0]}') %>
-    T: -> <%= html('<a href="${this.file.URL}" target="_blank">&{FileInfo.formatters.t.call(this)}</a>') %>
-    l: -> <%= html('<a href="${this.file.URL}" target="_blank">&{FileInfo.formatters.n.call(this)}</a>') %>
-    L: -> <%= html('<a href="${this.file.URL}" target="_blank">&{FileInfo.formatters.N.call(this)}</a>') %>
+    t: -> <%= html('${this.file.url.match(/[^\/]*$/)[0]}') %>
+    T: -> <%= html('<a href="${this.file.url}" target="_blank">&{FileInfo.formatters.t.call(this)}</a>') %>
+    l: -> <%= html('<a href="${this.file.url}" target="_blank">&{FileInfo.formatters.n.call(this)}</a>') %>
+    L: -> <%= html('<a href="${this.file.url}" target="_blank">&{FileInfo.formatters.N.call(this)}</a>') %>
     n: ->
       fullname  = @file.name
       shortname = Build.shortFilename @file.name, @isReply
@@ -46,4 +46,5 @@ FileInfo =
     K: -> <%= html('${Math.round(this.file.sizeInBytes/1024)} KB') %>
     M: -> <%= html('${Math.round(this.file.sizeInBytes/1048576*100)/100} MB') %>
     r: -> <%= html('${this.file.dimensions || "PDF"}') %>
+    g: -> <%= html('?{this.file.tag}{, ${this.file.tag}}{}') %>
     '%': -> <%= html('%') %>

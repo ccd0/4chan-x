@@ -15,7 +15,7 @@ QuotePreview =
     return
 
   mouseover: (e) ->
-    return if $.hasClass @, 'inlined'
+    return if $.hasClass(@, 'inlined') or !d.contains(@)
 
     {boardID, threadID, postID} = Get.postDataFromLink @
 

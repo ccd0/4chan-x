@@ -9,13 +9,7 @@ QR =
 
     return if g.VIEW is 'archive'
 
-    $.globalEval 'document.documentElement.dataset.jsEnabled = true;'
-    version = if Conf['Force Noscript Captcha'] or !doc.dataset.jsEnabled
-      'noscript'
-    else if Conf['Use Recaptcha v1']
-      'v1'
-    else
-      'v2'
+    version = if Conf['Use Recaptcha v1'] then 'v1' else 'v2'
     @captcha = Captcha[version]
 
     $.on d, '4chanXInitFinished', @initReady
@@ -42,7 +36,7 @@ QR =
 
     if Conf['Hide Original Post Form']
       $.addClass doc, 'hide-original-post-form'
-      if !doc.dataset.jsEnabled
+      unless $.hasClass doc, 'js-enabled'
         # Prevent unnecessary loading of fallback iframe.
         $.onExists doc, '#postForm noscript', true, $.rm
 
@@ -136,19 +130,25 @@ QR =
 
   focus: ->
     $.queueTask ->
-      unless $$('.goog-bubble-content > iframe').some((el) -> el.getBoundingClientRect().top >= 0)
-        focus = d.activeElement and QR.nodes.el.contains(d.activeElement)
-        $[if focus then 'addClass' else 'rmClass'] QR.nodes.el, 'focus'
-    if chrome?
-      # XXX Stop anomalous scrolling on space/tab in/into captcha iframe.
-      if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
-        QR.scrollY = window.scrollY
-        $.on d, 'scroll', QR.scrollLock
-      else
-        $.off d, 'scroll', QR.scrollLock
+      unless QR.inBubble()
+        QR.hasFocus = d.activeElement and QR.nodes.el.contains(d.activeElement)
+        QR.nodes.el.classList.toggle 'focus', QR.hasFocus
+      # XXX Stop unwanted scrolling due to captcha.
+      if QR.captcha.isEnabled and !QR.captcha.noscript
+        if QR.inCaptcha()
+          QR.scrollY = window.scrollY
+          $.on d, 'scroll', QR.scrollLock
+        else
+          $.off d, 'scroll', QR.scrollLock
+
+  inBubble: ->
+    d.activeElement in $$('.goog-bubble-content > iframe')
+
+  inCaptcha: ->
+    (d.activeElement?.nodeName is 'IFRAME' and QR.nodes.el.contains(d.activeElement)) or (QR.hasFocus and QR.inBubble())
 
   scrollLock: ->
-    if d.activeElement and QR.nodes.el.contains(d.activeElement) and d.activeElement.nodeName is 'IFRAME'
+    if QR.inCaptcha()
       window.scroll window.scrollX, QR.scrollY
     else
       $.off d, 'scroll', QR.scrollLock
@@ -290,10 +290,10 @@ QR =
 
   characterCount: ->
     counter = QR.nodes.charCount
-    count   = QR.nodes.com.textLength
+    count   = QR.nodes.com.value.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length
     counter.textContent = count
     counter.hidden      = count < 1000
-    (if count > 1500 then $.addClass else $.rmClass) counter, 'warning'
+    (if count > 2000 then $.addClass else $.rmClass) counter, 'warning'
 
   getFile: ->
     $.event 'QRFile', QR.selected?.file
@@ -537,14 +537,13 @@ QR =
       event = if node.nodeName is 'SELECT' then 'change' else 'input'
       $.on nodes[name], event, save
 
-    <% if (type === 'userscript') { %>
-    if Conf['Remember QR Size']
+    # XXX Chromium treats width and height as min-width and min-height
+    if !chrome? and Conf['Remember QR Size']
       $.get 'QR Size', '', (item) ->
         nodes.com.style.cssText = item['QR Size']
       $.on nodes.com, 'mouseup', (e) ->
         return if e.button isnt 0
         $.set 'QR Size', @style.cssText
-    <% } %>
 
     QR.generatePostableThreadsList()
     QR.persona.init()

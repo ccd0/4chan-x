@@ -2,11 +2,18 @@ Main =
   init: ->
     if location.hostname is 'www.google.com'
       if location.pathname is '/recaptcha/api/fallback'
-        $.ready -> Captcha.noscript.initFrame()
-      else
-        $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
-          if enabled
-            $.ready -> Captcha.fixes.init()
+        $.ready -> Captcha.v2.initFrame()
+      $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
+        if enabled
+          $.ready -> Captcha.fixes.init()
+      return
+
+    if location.hostname is 'www.4chan.org'
+      $.onExists d.documentElement, 'body', false, -> $.addStyle Main.cssWWW
+      Conf = {'captchaLanguage': Config.captchaLanguage}
+      $.get Conf, (items) ->
+        $.extend Conf, items
+        Captcha.language.fixPage()
       return
 
     g.threads = new SimpleDict()
@@ -57,6 +64,9 @@ Main =
       $.onExists doc, 'body', false, Main.initStyle
 
   initFeatures: ->
+    if location.hostname in ['boards.4chan.org', 'sys.4chan.org']
+      $.globalEval 'document.documentElement.classList.add("js-enabled");'
+
     switch location.hostname
       when 'a.4cdn.org'
         return
@@ -298,17 +308,13 @@ Main =
     $.ready ->
       cb() if Main.isThisPageLegit()
 
-  css: `<%=
-    grunt.template.process(
-      ['font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon'].map(function(name) {
-        return grunt.file.read('src/General/css/'+name+'.css');
-      }).join(''),
-      {data: {type: type}}
-    ).trim().replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`')
-  %>`
+  css: `<%= importCSS('font-awesome', 'noscript', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon') %>`
+
+  cssWWW: `<%= importCSS('noscript', 'www') %>`
 
   features: [
     ['Polyfill',                  Polyfill]
+    ['Captcha Language',          Captcha.language]
     ['Redirect',                  Redirect]
     ['Header',                    Header]
     ['Catalog Links',             CatalogLinks]

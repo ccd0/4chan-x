@@ -105,10 +105,8 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   /* party hats */
   pointer-events: none;
 }
-marquee,
-.postMessage marquee + br,
-.postMessage marquee + br + br {
-  display: none;
+:root:not(.js-enabled) #postForm {
+  display: table;
 }
 
 /* Anti-autoplay */
@@ -165,6 +163,9 @@ audio.controls-added {
 }
 #thread-watcher {
   z-index: 10;
+}
+:root.fixed:not(.gallery-open) #header-bar:not(.autohide) {
+  z-index: 5;
 }
 
 /* Header */
@@ -532,6 +533,9 @@ div[data-checked="false"] > .suboption-list {
 .section-filter textarea {
   height: 500px;
 }
+.section-filter a, .section-advanced a {
+  text-decoration: underline;
+}
 .section-sauce textarea {
   height: 350px;
 }
@@ -867,11 +871,14 @@ span.hide-announcement {
   border: none;
   box-shadow: none;
 }
-:root.float #thread-stats > .move > span {
+:root.float #thread-stats > .move > :not(#page-count) {
   pointer-events: none;
 }
 :root.float #thread-stats {
   padding: 0px 3px;
+}
+#page-count {
+  cursor: pointer;
 }
 
 /* Quote */
@@ -1134,9 +1141,7 @@ input[name="Default Volume"] {
   display: none !important;
 }
 #qr select,
-#url-button,
-#custom-cooldown-button,
-#dump-button,
+#qr-filename-container > a,
 .remove,
 .captcha-img {
   cursor: pointer;
@@ -1148,6 +1153,10 @@ input[name="Default Volume"] {
   min-width: 300px;
   border-radius: 3px 3px 0 0;
 }
+#qr > form {
+  max-height: calc(100vh - 75px);
+  overflow-y: auto;
+}
 #qrtab {
   border-radius: 3px 3px 0 0;
 }
@@ -1157,13 +1166,6 @@ input[name="Default Volume"] {
 #qr .close {
   float: right;
   padding: 0 3px;
-}
-#qr .warning {
-  min-height: 1.6em;
-  vertical-align: middle;
-  padding: 0 1px;
-  border-width: 1px;
-  border-style: solid;
 }
 .qr-link-container {
   text-align: center;
@@ -1227,7 +1229,7 @@ input.field.tripped:not(:hover):not(:focus) {
   top: 2px;
 }
 
-/* Noscript Recaptcha */
+/* Recaptcha v1 */
 .captcha-img {
   margin: 0px;
   text-align: center;
@@ -1239,9 +1241,6 @@ input.field.tripped:not(:hover):not(:focus) {
 .captcha-input{
   width: 100%;
   margin: 1px 0 0;
-}
-#qr-captcha-iframe {
-  display: none;
 }
 
 /* Recaptcha v2 */
@@ -1268,6 +1267,21 @@ input.field.tripped:not(:hover):not(:focus) {
   display: block;
   width: 100%;
 }
+#qr-captcha-iframe {
+  width: 302px;
+  height: 423px;
+  border: 0;
+  display: block;
+  margin: auto;
+}
+.goog-bubble-content {
+  max-width: 100vw;
+  max-height: 100vh;
+  overflow: auto;
+}
+.goog-bubble-content iframe {
+  position: static !important;
+}
 
 /* File Input, Submit Button */
 #file-n-submit {
@@ -1282,6 +1296,7 @@ input.field.tripped:not(:hover):not(:focus) {
   background: linear-gradient(to bottom, #F8F8F8, #DCDCDC) no-repeat;
   border: 1px solid #BBB;
   border-radius: 2px;
+  height: 100%;
 }
 #qr-file-button {
   width: 15%;
@@ -1462,6 +1477,8 @@ a:only-of-type > .remove {
 }
 .textarea {
   position: relative;
+  display: -webkit-flex;
+  display: flex;
 }
 :root.webkit .textarea {
   margin-bottom: -2px;
@@ -1474,6 +1491,9 @@ a:only-of-type > .remove {
   bottom: 1px;
   right: 1px;
   pointer-events: none;
+}
+#char-count.warning {
+  color: red;
 }
 
 /* Menu */
@@ -1498,7 +1518,7 @@ a:only-of-type > .remove {
   height: 15px;
   text-align: center;
 }
-.menu-button + .container:not(:empty) {
+.menu-button + .container :first-child {
   margin-left: -5px;
 }
 #menu {
@@ -1745,13 +1765,6 @@ grunt.file.expand('src/General/img/links/*.png').map(function(file) {
 }
 .gal-fit-height .gal-image img,
 .gal-fit-height .gal-image video {
-  /*
-    Chrome doesn't support viewpoint units in calc()
-    http://bugs.chromium.org/168840
-    "It looks like the original author of viewport units in WebKit is not coming back to fix this stuff."
-    Well, fuck.
-  */
-  max-height: 95vh;
   max-height: calc(100vh - 25px);
 }
 .gal-image iframe {

@@ -8,6 +8,12 @@ module.exports = (grunt) ->
   json = (data) ->
     "`#{JSON.stringify(data).replace(/`/g, '\\`')}`"
 
+  importCSS = (filenames...) ->
+    grunt.template.process(
+      filenames.map((name) -> grunt.file.read "src/General/css/#{name}.css").join(''),
+      {data: grunt.config 'pkg'}
+    ).trim().replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`')
+
   importHTML = (filename) ->
     html grunt.template.process(grunt.file.read("src/General/html/#{filename}.html").replace(/^ +/gm, '').replace(/\r?\n/g, ''), data: grunt.config('pkg'))
 
@@ -16,13 +22,14 @@ module.exports = (grunt) ->
     parts = []
     text = template
     while text
-      if part = text.match /^[^{}]+(?!{)/
+      if part = text.match /^(?:[^{}\\]|\\.)+(?!{)/
         text = text[part[0].length..]
-        context = (context + part[0])
+        unescaped = part[0].replace /\\(.)/g, '$1'
+        context = (context + unescaped)
           .replace(/(=['"])[^'"<>]*/g, '$1')
           .replace(/(<\w+)( [\w-]+((?=[ >])|=''|=""))*/g, '$1')
           .replace(/^([^'"<>]+|<\/?\w+>)*/, '')
-        parts.push json part[0]
+        parts.push json unescaped
       else if part = text.match /^([^}]){([^}`]*)}/
         text = text[part[0].length..]
         unless context is '' or (part[1] is '$' and /\=['"]$/.test context) or part[1] is '?'
@@ -68,6 +75,7 @@ module.exports = (grunt) ->
       options: process: Object.create(null, data:
         get: ->
           pkg = grunt.config 'pkg'
+          pkg.importCSS  = importCSS
           pkg.importHTML = importHTML
           pkg.html = html
           pkg.assert = assert
@@ -184,6 +192,7 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       stable:
         command: """
+          git push . HEAD:bstable
           git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git checkout gh-pages
           git pull

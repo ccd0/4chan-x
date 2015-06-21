@@ -112,7 +112,7 @@ Gallery =
 
     thumb = $.el 'a',
       className: 'gal-thumb'
-      href:      post.file.URL
+      href:      post.file.url
       target:    '_blank'
       title:     post.file.name
 
@@ -128,53 +128,66 @@ Gallery =
     Gallery.images.push thumb
     $.add Gallery.nodes.thumbs, thumb
 
+  load: (thumb, errorCB) ->
+    ext = thumb.href.match /\w*$/
+    elType = {'webm': 'video', 'pdf': 'iframe'}[ext] or 'img'
+    file = $.el elType,
+      title: thumb.title
+    $.extend file.dataset, thumb.dataset
+    $.on file, 'error', errorCB
+    file.src = thumb.href
+    file
+
   open: (thumb) ->
     {nodes} = Gallery
-    {name}  = nodes
     oldID = +nodes.current.dataset.id
     newID = +thumb.dataset.id
-    slideshow = Gallery.slideshow and (newID > oldID or (oldID is Gallery.images.length-1 and newID is 0))
 
-    $.rmClass  el,    'gal-highlight' if el = $ '.gal-highlight', nodes.thumbs
+    # Highlight, center selected thumbnail
+    $.rmClass  el,    'gal-highlight' if el = Gallery.images[oldID]
     $.addClass thumb, 'gal-highlight'
+    nodes.thumbs.scrollTop = thumb.offsetTop + thumb.offsetHeight/2 - nodes.thumbs.clientHeight/2
 
-    elType = if /\.webm$/.test(thumb.href)
-      'video'
-    else if /\.pdf$/.test(thumb.href)
-      'iframe'
+    # Load image or use preloaded image
+    if Gallery.cache?.dataset.id is ''+newID
+      file = Gallery.cache
+      $.off file, 'error', Gallery.cacheError
+      $.on file, 'error', Gallery.error
     else
-      'img'
+      file = Gallery.load thumb, Gallery.error
 
-    $[if elType is 'iframe' then 'addClass' else 'rmClass'] doc, 'gal-pdf'
-    file = $.el elType,
-      title: name.download = name.textContent = thumb.title
-    $.extend file.dataset, thumb.dataset
-    $.on file, 'error', Gallery.error
-    file.src = name.href = thumb.href
-
+    # Replace old image with new one
     $.off nodes.current, 'error', Gallery.error
     ImageCommon.pause nodes.current
     $.replace nodes.current, file
-    if elType is 'video'
+    nodes.current = file
+
+    if file.nodeName is 'VIDEO'
       file.loop = true
       Volume.setup file
       file.play() if Conf['Autoplay']
       ImageCommon.addControls file if Conf['Show Controls']
+
+    doc.classList.toggle 'gal-pdf', file.nodeName is 'IFRAME'
+    Gallery.cb.setHeight()
     nodes.count.textContent = +thumb.dataset.id + 1
-    nodes.current           = file
+    nodes.name.download     = nodes.name.textContent = thumb.title
+    nodes.name.href         = thumb.href
     nodes.frame.scrollTop   = 0
     nodes.next.focus()
-    if slideshow
+
+    # Continue slideshow if moving forward, stop otherwise
+    if Gallery.slideshow and (newID > oldID or (oldID is Gallery.images.length-1 and newID is 0))
       Gallery.setupTimer()
     else
       Gallery.cb.stop()
 
     # Scroll to post
-    if Conf['Scroll to Post'] and post = (post = g.posts[file.dataset.post])?.nodes.root
-      Header.scrollTo post
+    if Conf['Scroll to Post'] and (post = g.posts[file.dataset.post])
+      Header.scrollTo post.nodes.root
 
-    # Center selected thumbnail
-    nodes.thumbs.scrollTop = thumb.offsetTop + thumb.offsetHeight/2 - nodes.thumbs.clientHeight/2
+    # Preload next image
+    Gallery.cache = Gallery.load Gallery.images[(newID + 1) % Gallery.images.length], Gallery.cacheError
 
   error: ->
     if @error?.code is MediaError.MEDIA_ERR_DECODE
@@ -184,6 +197,9 @@ Gallery =
       return unless url
       Gallery.images[@dataset.id].href = url
       @src = url if Gallery.nodes.current is @
+
+  cacheError: ->
+    delete Gallery.cache
 
   cleanupTimer: ->
     clearTimeout Gallery.timeoutID
@@ -301,6 +317,14 @@ Gallery =
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, "gal-#{@name.toLowerCase().replace /\s+/g, '-'}"
 
+    setHeight: ->
+      {current, frame} = Gallery.nodes
+      current.style.minHeight = if Conf['Stretch to Fit'] and (dim = g.posts[current.dataset.post]?.file.dimensions)
+        [width, height] = dim.split 'x'
+        Math.min(doc.clientHeight - 25, height / width * frame.clientWidth) + 'px'
+      else
+        null
+
     setDelay: -> Gallery.delay = +@value
 
   menu:
@@ -319,14 +343,14 @@ Gallery =
     createSubEntry: (name) ->
       label = UI.checkbox name, name
       input = label.firstElementChild
-      if name in ['Fit Width', 'Fit Height', 'Hide Thumbnails']
-        $.on input, 'change', Gallery.cb.setFitness
+      $.on input, 'change', Gallery.cb.setFitness if name in ['Hide Thumbnails', 'Fit Width', 'Fit Height']
       $.event 'change', null, input
       $.on input, 'change', $.cb.checked
+      $.on input, 'change', Gallery.cb.setHeight  if name in ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Stretch to Fit']
       el: label
 
     createSubEntries: ->
-      subEntries = (Gallery.menu.createSubEntry item for item in ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Scroll to Post'])
+      subEntries = (Gallery.menu.createSubEntry item for item in ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Stretch to Fit', 'Scroll to Post'])
 
       delayLabel = $.el 'label', <%= html('Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">') %>
       delayInput = delayLabel.firstElementChild

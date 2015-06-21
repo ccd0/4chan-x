@@ -103,6 +103,7 @@ Settings =
         description = arr[1]
         div = $.el 'div',
           <%= html('<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>') %>
+        div.hidden = true if chrome? and key is 'Remember QR Size' # XXX not supported
         input = $ 'input', div
         $.on input, 'change', ->
           @parentNode.parentNode.dataset.checked = @checked
@@ -314,7 +315,7 @@ Settings =
 
     items = {}
     inputs = {}
-    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss', 'customCooldown']
+    for name in ['captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss', 'customCooldown']
       input = $ "[name='#{name}']", section
       items[name]  = Conf[name]
       inputs[name] = input
@@ -323,9 +324,9 @@ Settings =
       else if name is 'favicon'
         $.on input, 'change', $.cb.value
         $.on input, 'change', Settings[name]
-       else
+      else
         $.on input, 'input', $.cb.value
-        $.on input, 'input', Settings[name]
+        $.on input, 'input', Settings[name] if name of Settings
 
     # Quick Reply Personas
     ta = $ '.personafield', section
@@ -338,8 +339,8 @@ Settings =
       for key, val of items
         input = inputs[key]
         input.value = val
-        continue if key in ['usercss', 'customCooldown']
-        Settings[key].call input
+        if key of Settings and key isnt 'usercss'
+          Settings[key].call input
       return
 
     interval  = $ 'input[name="Interval"]',   section
@@ -454,13 +455,15 @@ Settings =
     data =
       isReply: true
       file:
-        URL: '//i.4cdn.org/g/1334437723720.jpg'
+        url: '//i.4cdn.org/g/1334437723720.jpg'
         name: 'd9bb2efc98dd0df141a94399ff5880b7.jpg'
         size: '276 KB'
         sizeInBytes: 276 * 1024
         dimensions: '1280x720'
         isImage: true
+        isVideo: false
         isSpoiler: true
+        tag: 'Loop'
     FileInfo.format @value, data, @nextElementSibling
 
   favicon: ->

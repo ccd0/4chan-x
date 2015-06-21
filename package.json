@@ -3,8 +3,8 @@
   "description": "Cross-browser userscript for maximum lurking on 4chan.",
   "meta": {
     "name": "4chan X",
-    "version": "1.10.10.0",
-    "date": "2015-04-18T07:45:01.778Z",
+    "version": "1.11.0.6",
+    "date": "2015-06-21T06:05:51.745Z",
     "repo": "https://github.com/ccd0/4chan-x/",
     "page": "https://github.com/ccd0/4chan-x",
     "downloads": "https://ccd0.github.io/4chan-x/builds/",
@@ -21,9 +21,11 @@
       "*://sys.4chan.org/*",
       "*://a.4cdn.org/*",
       "*://i.4cdn.org/*",
+      "*://www.4chan.org/banned",
+      "*://www.4chan.org/feedback",
       "https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
       "https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
-      "*://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc"
+      "*://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*"
     ],
     "suffix": {
       "stable": "",
@@ -38,7 +40,7 @@
       "dev": " dev"
     },
     "min": {
-      "chrome": "32",
+      "chrome": "34",
       "firefox": "26",
       "greasemonkey": "1.14"
     }
@@ -52,14 +54,14 @@
     "grunt-contrib-coffee": "^0.13.0",
     "grunt-contrib-concat": "^0.5.1",
     "grunt-contrib-copy": "^0.8.0",
-    "grunt-contrib-jshint": "^0.11.1",
+    "grunt-contrib-jshint": "^0.11.2",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-markdown": "^0.7.0",
     "grunt-shell": "^1.1.2",
     "grunt-webstore-upload": "^0.8.2",
     "jszip": "^2.5.0",
-    "load-grunt-tasks": "^3.1.0",
-    "npm-shrinkwrap": "^5.3.0"
+    "load-grunt-tasks": "^3.2.0",
+    "npm-shrinkwrap": "^5.4.0"
   },
   "repository": {
     "type": "git",

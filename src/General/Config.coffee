@@ -421,13 +421,11 @@ Config =
         'Open new threads or replies to a thread from the index in a new tab.'
         1
       ]
-      <% if (type === 'userscript') { %>
       'Remember QR Size': [
         false
         'Remember the size of the Quick reply.'
         1
       ]
-      <% } %>
       'Remember Spoiler': [
         false
         'Remember the spoiler state, instead of resetting after posting.'
@@ -485,7 +483,7 @@ Config =
       ]
       'Captcha Fixes': [
         true
-        'Make captcha more keyboard-navigable.'
+        'Make captcha easier to use, especially with the keyboard.'
       ]
 
     'Quote Links':
@@ -592,6 +590,9 @@ Config =
     'Fit Height': [
       true
     ]
+    'Stretch to Fit': [
+      false
+    ]
     'Scroll to Post': [
       true
     ]
@@ -674,12 +675,14 @@ Config =
   sauces: """
     https://www.google.com/searchbyimage?image_url=%IMG
     http://iqdb.org/?url=%IMG
-    http://eye.swfchan.com/search/?q=%name;types:swf
+    http://eye.swfchan.com/search/?q=%name;types:swf;sandbox
     #//tineye.com/search?url=%IMG
     #https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG
     #//saucenao.com/search.php?url=%IMG
     #http://3d.iqdb.org/?url=%IMG
+    # tools:
     #http://regex.info/exif.cgi?imgurl=%URL
+    #//imgops.com/%URL;types:gif,jpg,png
     # uploaders:
     #//imgur.com/upload?url=%URL;types:gif,jpg,png,pdf;text:Upload to imgur
     # "View Same" in archives:
@@ -743,11 +746,13 @@ Config =
       #options:"sage";boards:jp;always
     """
 
+  captchaLanguage: ''
+
   time: '%m/%d/%y(%a)%H:%M:%S'
 
   backlink: '>>%id'
 
-  fileInfo: '%l (%p%s, %r)'
+  fileInfo: '%l (%p%s, %r%g)'
 
   favicon: 'ferongr'
 
@@ -830,7 +835,7 @@ Config =
       'Pause/play videos in the gallery.'
     ]
     'Slideshow': [
-      's'
+      'Ctrl+Right'
       'Toggle the gallery slideshow mode.'
     ]
     'fappeTyme': [

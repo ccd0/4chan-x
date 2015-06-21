@@ -44,7 +44,7 @@ ImageLoader =
     video.setAttribute 'muted', 'muted'
     video.dataset.md5 = thumb.dataset.md5
     video.style[attr] = thumb.style[attr] for attr in ['height', 'width', 'maxHeight', 'maxWidth']
-    video.src         = file.URL
+    video.src         = file.url
     $.replace thumb, video
     file.thumb      = video
     file.videoThumb = true
@@ -52,9 +52,9 @@ ImageLoader =
   prefetch: (post) ->
     {file} = post
     return unless file
-    {isImage, isVideo, thumb, URL} = file
+    {isImage, isVideo, thumb, url} = file
     return if file.isPrefetched or !(isImage or isVideo) or post.isHidden or post.thread.isHidden
-    type    = if (match = URL.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
+    type    = if (match = url.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
     replace = Conf["Replace #{type}"] and !/spoiler/.test(thumb.src or thumb.dataset.src)
     return unless replace or Conf['prefetch']
     return unless [post, post.clones...].some (clone) -> doc.contains clone.nodes.root
@@ -70,11 +70,11 @@ ImageLoader =
     el = $.el if isImage then 'img' else 'video'
     if replace and isImage
       $.on el, 'load', ->
-        clone.file.thumb.src = URL for clone in post.clones
-        thumb.src = URL
+        clone.file.thumb.src = url for clone in post.clones
+        thumb.src = url
         # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
         thumb.removeAttribute 'data-src'
-    el.src = URL
+    el.src = url
 
   toggle: ->
     if Conf['prefetch'] = @checked

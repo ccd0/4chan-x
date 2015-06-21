@@ -56,7 +56,7 @@ class Post
       @nodes.nameBlock.textContent.trim()
     if subject        = $ '.subject',            info
       @nodes.subject  = subject
-      @info.subject   = subject.textContent
+      @info.subject   = subject.textContent or undefined
     if name           = $ '.name',               info
       @nodes.name     = name
       @info.name      = name.textContent
@@ -106,22 +106,28 @@ class Post
     #   'Comment too long'...
     #   EXIF data. (/p/)
     #   Rolls. (/tg/)
-    #   Marquees. (/pol/)
+    #   Fortunes. (/s4s/)
+    bq = @nodes.comment.cloneNode true
+    for node in $$ '.abbr + br, .exif, b, .fortune', bq
+      $.rm node
+    if abbr = $ '.abbr', bq
+      $.rm abbr
+    @info.comment = @nodesToText bq
+    if abbr
+      @info.comment = @info.comment.replace /\n\n$/, ''
+
+    # Hide spoilers.
+    # Remove:
     #   Preceding and following new lines.
     #   Trailing spaces.
-    bq = @nodes.comment.cloneNode true
-    for node in $$ '.abbr, .exif, b, marquee', bq
-      $.rm node
-    @info.comment = @nodesToText bq
-
-    # Get the comment's text with spoilers hidden.
-    spoilers = $$ 's', bq
-    @info.commentSpoilered = if spoilers.length
-      for node in spoilers
-        $.replace node, $.tn '[spoiler]'
-      @nodesToText bq
-    else
-      @info.comment
+    commentDisplay = @info.comment
+    unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
+      spoilers = $$ 's', bq
+      if spoilers.length
+        for node in spoilers
+          $.replace node, $.tn '[spoiler]'
+        commentDisplay = @nodesToText bq
+    @info.commentDisplay = commentDisplay.trim().replace /\s+$/gm, ''
 
   nodesToText: (bq) ->
     text = ""
@@ -129,7 +135,7 @@ class Post
     i = 0
     while node = nodes.snapshotItem i++
       text += node.data or '\n'
-    text.trim().replace /\s+$/gm, ''
+    text
 
   parseQuotes: ->
     @quotes = []
@@ -170,12 +176,13 @@ class Post
     @file =
       text:       fileText
       link:       link
-      URL:        link.href
+      url:        link.href
       name:       fileText.title or link.title or link.textContent
       size:       info[1]
       isImage:    /(jpg|png|gif)$/i.test link.href
       isVideo:    /webm$/i.test link.href
       dimensions: info[0].match(/\d+x\d+/)?[0]
+      tag:        info[0].match(/,[^,]*, ([a-z]+)\)/i)?[1]
     size  = +@file.size.match(/[\d.]+/)[0]
     unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
     size *= 1024 while unit-- > 0
@@ -183,7 +190,7 @@ class Post
     if (thumb = $ '.fileThumb > [data-md5]', fileEl)
       $.extend @file,
         thumb:     thumb
-        thumbURL:  "#{location.protocol}//i.4cdn.org/#{@board}/#{link.href.match(/(\d+)\./)[1]}s.jpg"
+        thumbURL:  if m = link.href.match(/\d+(?=\.\w+$)/) then "#{location.protocol}//i.4cdn.org/#{@board}/#{m[0]}s.jpg"
         MD5:       thumb.dataset.md5
         isSpoiler: $.hasClass thumb.parentNode, 'imgspoiler'
 

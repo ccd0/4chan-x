@@ -7,7 +7,7 @@ Metadata =
       cb:   @node
 
   node: ->
-    return unless @file and /webm$/i.test @file.URL
+    return unless @file and /webm$/i.test @file.url
     if @isClone
       el = $ '.webm-title', @file.text
     else
@@ -21,7 +21,7 @@ Metadata =
   load: ->
     $.rmClass @parentNode, 'error'
     $.addClass @parentNode, 'loading'
-    CrossOrigin.binary Get.postFromNode(@).file.URL, (data) =>
+    CrossOrigin.binary Get.postFromNode(@).file.url, (data) =>
       $.rmClass @parentNode, 'loading'
       if data?
         title = Metadata.parse data
