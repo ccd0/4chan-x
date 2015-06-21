@@ -48,8 +48,11 @@ Captcha.fixes =
     $.on d, 'keydown', @keybinds.bind(@)
 
   initNoscript: ->
+    @noscript = true
+    @images = $$ '.fbc-payload-imageselect > input'
     $.addStyle @cssNoscript
     @addLabels()
+    $.on d, 'keydown', @keybinds.bind(@)
 
   fixImages: ->
     @images = $$ '.rc-imageselect-target > div'
@@ -59,7 +62,7 @@ Captcha.fixes =
 
   addLabels: ->
     imageSelect = $ '.fbc-payload-imageselect'
-    labels = for checkbox, i in $$ 'input', imageSelect
+    labels = for checkbox, i in @images
       checkbox.id = "checkbox-#{i}"
       label = $.el 'label',
         htmlFor: checkbox.id
@@ -70,13 +73,19 @@ Captcha.fixes =
 
   keybinds: (e) ->
     return unless @images and doc.contains(@images[0]) and d.activeElement
-    reload = $.id 'recaptcha-reload-button'
-    verify = $.id 'recaptcha-verify-button'
+    reload = $ '#recaptcha-reload-button, .fbc-button-reload'
+    verify = $ '#recaptcha-verify-button, .fbc-button-verify > input'
+
     x = @images.indexOf d.activeElement
     if x < 0
-      return unless $('.rc-controls').contains d.activeElement
-      x = if d.activeElement is verify then 11 else 9
-    if e.keyCode is 32 and x < 9 # space on image
+      if d.activeElement is verify
+        x = 11
+      else if $('.rc-controls, .fbc-buttons').contains d.activeElement
+        x = 9
+      else
+        return
+
+    if !@noscript and e.keyCode is 32 and x < 9 # space on image
       @images[x].click()
       e.preventDefault()
       e.stopPropagation()
