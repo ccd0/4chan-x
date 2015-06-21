@@ -133,11 +133,12 @@ QR =
         QR.hasFocus = d.activeElement and QR.nodes.el.contains(d.activeElement)
         QR.nodes.el.classList.toggle 'focus', QR.hasFocus
       # XXX Stop unwanted scrolling due to captcha.
-      if QR.inCaptcha()
-        QR.scrollY = window.scrollY
-        $.on d, 'scroll', QR.scrollLock
-      else
-        $.off d, 'scroll', QR.scrollLock
+      if QR.captcha.isEnabled and !QR.captcha.noscript
+        if QR.inCaptcha()
+          QR.scrollY = window.scrollY
+          $.on d, 'scroll', QR.scrollLock
+        else
+          $.off d, 'scroll', QR.scrollLock
 
   inBubble: ->
     d.activeElement in $$('.goog-bubble-content > iframe')
