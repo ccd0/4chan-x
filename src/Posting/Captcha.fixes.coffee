@@ -87,15 +87,17 @@ Captcha.fixes =
     x = @images.indexOf d.activeElement
     if x < 0
       x = if d.activeElement is verify then 11 else 9
+    key = Keybinds.keyCode e
 
-    if !@noscript and e.keyCode is 32 and x < 9 # space on image
+    if !@noscript and key is 'Space' and x < 9
       @images[x].click()
-      e.preventDefault()
-      e.stopPropagation()
-    else if dx = {38: 9, 40: 3, 37: 11, 39: 1, 73: 9, 75: 3, 74: 11, 76: 1}[e.keyCode] # Up, Down, Left, Right, I, K, J, L
+    else if dx = {'Up': 9, 'Down': 3, 'Left': 11, 'Right': 1, 'i': 9, 'k': 3, 'j': 11, 'l': 1}[key]
       x = (x + dx) % 12
       if x is 10
         x = if dx is 11 then 9 else 11
       (@images[x] or {9: reload, 11: verify}[x]).focus()
-      e.preventDefault()
-      e.stopPropagation()
+    else
+      return
+
+    e.preventDefault()
+    e.stopPropagation()
