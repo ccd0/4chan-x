@@ -204,6 +204,8 @@ Keybinds =
         'Enter'
       when 27
         'Esc'
+      when 32
+        'Space'
       when 37
         'Left'
       when 38
