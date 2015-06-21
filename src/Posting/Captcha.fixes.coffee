@@ -80,18 +80,13 @@ Captcha.fixes =
     e.preventDefault() if n is 0
 
   keybinds: (e) ->
-    return unless @images and doc.contains(@images[0]) and d.activeElement
+    return unless @images and doc.contains(@images[0])
+
     reload = $ '#recaptcha-reload-button, .fbc-button-reload'
     verify = $ '#recaptcha-verify-button, .fbc-button-verify > input'
-
     x = @images.indexOf d.activeElement
     if x < 0
-      if d.activeElement is verify
-        x = 11
-      else if $('.rc-controls, .fbc-buttons').contains d.activeElement
-        x = 9
-      else
-        return
+      x = if d.activeElement is verify then 11 else 9
 
     if !@noscript and e.keyCode is 32 and x < 9 # space on image
       @images[x].click()
