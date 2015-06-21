@@ -96,7 +96,7 @@ Captcha.v2 =
       id: 'qr-captcha-iframe'
       src: @noscriptURL()
     $.add @nodes.container, iframe
-    @conn.target = iframe.contentWindow
+    @conn.target = iframe
 
   setupJS: ->
     $.globalEval '''

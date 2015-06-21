@@ -98,7 +98,7 @@ Captcha.noscript =
         id: 'qr-captcha-iframe'
         src: @iframeURL()
       $.add QR.nodes.el, @nodes.iframe
-      @conn.target = @nodes.iframe.contentWindow
+      @conn.target = @nodes.iframe
     else if !@occupied or force
       @nodes.iframe.src = @iframeURL()
     @occupied = true
