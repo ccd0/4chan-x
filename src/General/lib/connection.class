@@ -3,7 +3,10 @@ class Connection
     $.on window, 'message', @onMessage
 
   targetWindow: ->
-    @target.contentWindow or @target
+    if @target instanceof window.HTMLIFrameElement
+      @target.contentWindow
+    else
+      @target
 
   send: (data) =>
     @targetWindow().postMessage "#{g.NAMESPACE}#{JSON.stringify data}", @origin
