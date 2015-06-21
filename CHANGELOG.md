@@ -4,6 +4,10 @@ The links to individual versions below are to copies of the script with the upda
 
 ## v1.11.0
 
+**v1.11.0.5** *(2015-06-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add `Captcha Language` setting in the `Advanced` panel.
+- Minor bugfixes.
+
 **v1.11.0.4** *(2015-06-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Noscript captcha improvements, including the ability to click the image rather than the little checkbox.
 
