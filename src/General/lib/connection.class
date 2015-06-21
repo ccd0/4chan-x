@@ -1,5 +1,5 @@
 class Connection
-  constructor: (@target, @origin, @cb) ->
+  constructor: (@target, @origin, @cb={}) ->
     $.on window, 'message', @onMessage
 
   send: (data) =>

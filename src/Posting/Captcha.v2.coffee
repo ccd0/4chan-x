@@ -29,6 +29,11 @@ Captcha.v2 =
       # XXX Greasemonkey 1.x workaround to gain access to GM_* functions.
       $.queueTask => @save false
 
+  initFrame: ->
+    if token = $('.fbc-verification-token > textarea')?.value
+      conn = new Connection window.parent, "#{location.protocol}//boards.4chan.org"
+      conn.send {token}
+
   shouldFocus: false
   timeouts: {}
   postsCount: 0
