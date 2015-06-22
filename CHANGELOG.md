@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.11.1
 
+**v1.11.1.1** *(2015-06-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add `Use Recaptcha v2 in Reports` option to use the image selection captcha in the report window.
+
 **v1.11.1.0** *(2015-06-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.0.9.
 - Add partial support for Midori and other browsers whose userscript engines don't implement the Greasemonkey API. Some features will not work in these browsers.
