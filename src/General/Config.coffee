@@ -396,7 +396,7 @@ Config =
         'Label each post from a new IP with the thread\'s current IP count.'
       ]
 
-    'Posting':
+    'Posting and Captchas':
       'Quick Reply': [
         true
         'All-in-one form to reply, create threads, automate dumping and more.'
@@ -484,6 +484,10 @@ Config =
       'Captcha Fixes': [
         true
         'Make captcha easier to use, especially with the keyboard.'
+      ]
+      'Use Recaptcha v2 in Reports': [
+        false
+        'Use the image selection captcha in the report window.'
       ]
 
     'Quote Links':
