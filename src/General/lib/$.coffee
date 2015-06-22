@@ -221,9 +221,12 @@ $.event = (event, detail, root=d) ->
 
 $.open = 
 <% if (type === 'userscript') { %>
-  GM_openInTab
+  if GM_openInTab?
+    GM_openInTab
+  else
+    (url) -> window.open url, '_blank'
 <% } else { %>
-  (URL) -> window.open URL, '_blank'
+  (url) -> window.open url, '_blank'
 <% } %>
 
 $.debounce = (wait, fn) ->
@@ -415,15 +418,39 @@ do ->
 # http://wiki.greasespot.net/Main_Page
 $.oldValue = {}
 
+if GM_getValue?
+  $.getValue = GM_getValue
+  $.setValue = (key, val) ->
+    GM_setValue key, val
+    if key of $.syncing
+      $.oldValue[key]   = val
+      localStorage[key] = val # for `storage` events
+  $.deleteValue = (key) ->
+    GM_deleteValue key
+    if key of $.syncing
+      delete $.oldValue[key]
+      delete localStorage[key] # for `storage` events
+  $.listValues = GM_listValues
+else
+  $.getValue = (key) -> localStorage[key]
+  $.setValue = (key, val) ->
+    $.oldValue[key]   = val if key of $.syncing
+    localStorage[key] = val
+  $.deleteValue = (key) ->
+    delete $.oldValue[key] if key of $.syncing
+    delete localStorage[key]
+  $.listValues  = ->
+    key for key of localStorage when key[...g.NAMESPACE.length] is g.NAMESPACE
+
 $.sync = (key, cb) ->
   key = g.NAMESPACE + key
   $.syncing[key] = cb
-  $.oldValue[key] = GM_getValue key
+  $.oldValue[key] = $.getValue key
 
 do ->
   onChange = (key) ->
     return unless cb = $.syncing[key]
-    newValue = GM_getValue key
+    newValue = $.getValue key
     return if newValue is $.oldValue[key]
     if newValue?
       $.oldValue[key] = newValue
@@ -443,12 +470,7 @@ $.delete = (keys) ->
   unless keys instanceof Array
     keys = [keys]
   for key in keys
-    key = g.NAMESPACE + key
-    GM_deleteValue key
-    if key of $.syncing
-      delete $.oldValue[key]
-      # for `storage` events
-      localStorage.removeItem key
+    $.deleteValue g.NAMESPACE + key
   return
 
 $.get = (key, val, cb) ->
@@ -459,27 +481,18 @@ $.get = (key, val, cb) ->
     cb = val
   $.queueTask ->
     for key of items
-      if val = GM_getValue g.NAMESPACE + key
+      if val = $.getValue g.NAMESPACE + key
         items[key] = JSON.parse val
     cb items
 
-$.set = do ->
-  set = (key, val) ->
-    key = g.NAMESPACE + key
-    val = JSON.stringify val
-    GM_setValue key, val
-    if key of $.syncing
-      $.oldValue[key] = val
-      # for `storage` events
-      localStorage.setItem key, val
-
-  (keys, val, cb) ->
-    if typeof keys is 'string'
-      set keys, val
-    else
-      set key, value for key, value of keys
-      cb = val
-    cb?()
+$.set = (keys, val, cb) ->
+  if typeof keys is 'string'
+    $.setValue(g.NAMESPACE + keys, JSON.stringify val)
+  else
+    for key, value of keys
+      $.setValue(g.NAMESPACE + key, JSON.stringify value)
+    cb = val
+  cb?()
 
 $.clear = (cb) ->
   # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
@@ -490,7 +503,7 @@ $.clear = (cb) ->
   boards.push 'qa'
   $.delete ("cooldown.#{board}" for board in boards)
   try
-    $.delete GM_listValues().map (key) -> key.replace g.NAMESPACE, ''
+    $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''
   cb?()
 <% } %>
 

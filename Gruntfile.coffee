@@ -291,7 +291,6 @@ module.exports = (grunt) ->
           GM_deleteValue: true
           GM_listValues: true
           GM_openInTab: true
-          GM_info:      true
           GM_xmlhttpRequest: true
           cloneInto:    true
           chrome:       true
