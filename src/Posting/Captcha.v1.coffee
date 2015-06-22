@@ -140,7 +140,8 @@ Captcha.v1 =
       response:  response
       timeout:   @timeout
     @count()
-    @reload()
+    @destroy()
+    @setup false, true
     $.set 'captchas', @captchas
 
   clear: ->
