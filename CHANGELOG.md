@@ -2,6 +2,12 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+### v1.11.1
+
+**v1.11.1.0** *(2015-06-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.0.9.
+- Add partial support for Midori and other browsers whose userscript engines don't implement the Greasemonkey API. Some features will not work in these browsers.
+
 ## v1.11.0
 
 **v1.11.0.9** *(2015-06-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.9/builds/4chan-X-noupdate.crx "Chromium version")]
