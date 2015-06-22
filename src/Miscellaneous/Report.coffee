@@ -59,4 +59,4 @@ Report =
 
     if types = $.id('reportTypes')
       $.on types, 'change', (e) ->
-        $('form').action = if e.target.value in ['illegal', 'spam'] then '#redirect' else ''
+        $('form').action = if e.target.value is 'illegal' then '#redirect' else ''
