@@ -33,6 +33,10 @@ Captcha.v1 =
     $.after QR.nodes.com.parentNode, [imgContainer, input]
 
     @captchas = []
+    $.get 'captchas', [], ({captchas}) ->
+      QR.captcha.sync captchas
+      QR.captcha.clear()
+    $.sync 'captchas', @sync
 
     new MutationObserver(@afterSetup).observe $.id('captchaContainer'), childList: true
 
@@ -47,6 +51,7 @@ Captcha.v1 =
     img.parentNode.hidden = true
     input.value = ''
     input.placeholder = 'Focus to load reCAPTCHA'
+    @count()
     $.on input, 'focus click', @cb.focus
 
   needed: ->
@@ -90,6 +95,7 @@ Captcha.v1 =
     {img, input} = QR.captcha.nodes
     img.parentNode.hidden = false
     input.placeholder = 'Verification'
+    QR.captcha.count()
     $.off input, 'focus click', QR.captcha.cb.focus
 
     QR.captcha.nodes.challenge = challenge
@@ -108,13 +114,45 @@ Captcha.v1 =
     $.globalEval 'Recaptcha.destroy()'
     @beforeSetup()
 
+  sync: (captchas=[]) ->
+    QR.captcha.captchas = captchas
+    QR.captcha.count()
+
   getOne: ->
-    challenge = @nodes.img.alt
-    if /\S/.test(response = @nodes.input.value)
-      @destroy()
-      {challenge, response}
+    @clear()
+    if captcha = @captchas.shift()
+      {challenge, response} = captcha
+      @count()
+      $.set 'captchas', @captchas
     else
-      null
+      challenge   = @nodes.img.alt
+      if /\S/.test(response = @nodes.input.value)
+        @destroy()
+      else
+        return null
+    {challenge, response}
+
+  save: ->
+    return unless /\S/.test(response = @nodes.input.value)
+    @nodes.input.value = ''
+    @captchas.push
+      challenge: @nodes.img.alt
+      response:  response
+      timeout:   @timeout
+    @count()
+    @reload()
+    $.set 'captchas', @captchas
+
+  clear: ->
+    return unless @captchas.length
+    $.forceSync 'captchas'
+    now = Date.now()
+    for captcha, i in @captchas
+      break if captcha.timeout > now
+    return unless i
+    @captchas = @captchas[i..]
+    @count()
+    $.set 'captchas', @captchas
 
   load: ->
     return unless @nodes.challenge.firstChild
@@ -125,6 +163,20 @@ Captcha.v1 =
     @nodes.img.alt = challenge
     @nodes.img.src = challenge_image.src
     @nodes.input.value = null
+    @clear()
+
+  count: ->
+    count = if @captchas then @captchas.length else 0
+    placeholder = @nodes.input.placeholder.replace /\ \(.*\)$/, ''
+    placeholder += switch count
+      when 0
+        if placeholder is 'Verification' then ' (Shift + Enter to cache)' else ''
+      when 1
+        ' (1 cached captcha)'
+      else
+        " (#{count} cached captchas)"
+    @nodes.input.placeholder = placeholder
+    @nodes.input.alt = count # For XTRM RICE.
 
   reload: (focus) ->
     # Hack to prevent the input from being focused
@@ -135,6 +187,8 @@ Captcha.v1 =
   keydown: (e) ->
     if e.keyCode is 8 and not @nodes.input.value
       @reload()
+    else if e.keyCode is 13 and e.shiftKey
+      @save()
     else
       return
     e.preventDefault()
