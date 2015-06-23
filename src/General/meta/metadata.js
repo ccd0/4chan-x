@@ -8,7 +8,14 @@
 // @license      MIT; <%= meta.repo %>blob/<%= meta.mainBranch %>/LICENSE 
 <%=
   meta.matches.map(function(match) {
-    return '// @match        ' + match;
+    if (/^\*/.test(match)) {
+      return (
+        '// @include      ' + match.replace(/^\*/, 'http') + '\n' +
+        '// @include      ' + match.replace(/^\*/, 'https')
+      );
+    } else {
+      return '// @include      ' + match;
+    }
   }).join('\n')
 %>
 // @grant        GM_getValue
