@@ -64,7 +64,7 @@ Main =
 
     switch location.hostname
       when 'www.4chan.org'
-        Captcha.language.init()
+        Captcha.replace.init()
         return
       when 'a.4cdn.org'
         return
@@ -307,7 +307,7 @@ Main =
 
   features: [
     ['Polyfill',                  Polyfill]
-    ['Captcha Language',          Captcha.language]
+    ['Captcha Replacement',       Captcha.replace]
     ['Redirect',                  Redirect]
     ['Header',                    Header]
     ['Catalog Links',             CatalogLinks]
