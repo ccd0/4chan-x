@@ -34,7 +34,9 @@ Captcha.replace =
     return unless old = $.id 'captchaContainerAlt'
     container = $.el 'div',
       className: 'g-recaptcha'
-    container.dataset.sitekey = '<%= meta.recaptchaKey %>'
+    $.extend container.dataset,
+      sitekey: '<%= meta.recaptchaKey %>'
+      tabindex: 3
     $.replace old, container
     url = 'https://www.google.com/recaptcha/api.js'
     if lang = Conf['captchaLanguage'].trim()
