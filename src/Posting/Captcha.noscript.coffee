@@ -3,7 +3,7 @@ Captcha.noscript =
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return unless @isEnabled = !!$.id 'g-recaptcha'
+    return unless @isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt'
 
     container = $.el 'div',
       className: 'captcha-img'

@@ -3,8 +3,14 @@ Captcha.replace =
     return unless d.cookie.indexOf('pass_enabled=1') < 0
     return if location.hostname is 'boards.4chan.org' and Conf['Hide Original Post Form']
 
-    if location.hostname is 'sys.4chan.org' and Conf['Use Recaptcha v2 in Reports']
+    jsEnabled = $.hasClass doc, 'js-enabled'
+
+    if location.hostname is 'sys.4chan.org' and Conf['Use Recaptcha v2 in Reports'] and jsEnabled
       $.ready Captcha.replace.v2
+      return
+
+    if Conf['Use Recaptcha v1'] and jsEnabled
+      $.ready Captcha.replace.v1
       return
 
     if Conf['captchaLanguage'].trim()
@@ -12,6 +18,17 @@ Captcha.replace =
         $.onExists doc, '#captchaFormPart', true, (node) -> $.onExists node, 'iframe', true, Captcha.replace.iframe
       else
         $.onExists doc, 'iframe', true, Captcha.replace.iframe
+
+  v1: ->
+    return unless old = $.id 'g-recaptcha'
+    container = $.el 'div',
+      id: 'captchaContainerAlt'
+    $.replace old, container
+    Captcha.v1.setupScript()
+    if link = $ '#togglePostFormLink > a, #form-link'
+      $.on link, 'click', -> $.event 'captcha:setup', null, container
+    else
+      $.event 'captcha:setup', null, container
 
   v2: ->
     return unless old = $.id 'captchaContainerAlt'
