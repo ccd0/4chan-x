@@ -418,7 +418,7 @@ do ->
 # http://wiki.greasespot.net/Main_Page
 $.oldValue = {}
 
-if GM_getValue?
+if GM_deleteValue?
   $.getValue = GM_getValue
   $.setValue = (key, val) ->
     GM_setValue key, val
