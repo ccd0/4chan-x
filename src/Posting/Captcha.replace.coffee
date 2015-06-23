@@ -20,15 +20,20 @@ Captcha.replace =
         $.onExists doc, 'iframe', true, Captcha.replace.iframe
 
   v1: ->
-    return unless old = $.id 'g-recaptcha'
-    container = $.el 'div',
-      id: 'captchaContainerAlt'
-    $.replace old, container
-    Captcha.v1.setupScript()
-    if link = $ '#togglePostFormLink > a, #form-link'
-      $.on link, 'click', -> $.event 'captcha:setup', null, container
+    return unless $.id 'g-recaptcha'
+    Captcha.v1.replace()
+    if link = $.id 'form-link'
+      $.on link, 'click', -> Captcha.v1.create()
+    else if location.hostname is 'boards.4chan.org'
+      form = $.id 'postForm'
+      form.addEventListener 'focus', (-> Captcha.v1.create()), true
+      form.addEventListener 'blur', ->
+        $.queueTask ->
+          unless form.contains(document.activeElement) or $.id('qr')?.contains(document.activeElement)
+            Captcha.v1.destroy()
+      , true
     else
-      $.event 'captcha:setup', null, container
+      Captcha.v1.create()
 
   v2: ->
     return unless old = $.id 'captchaContainerAlt'

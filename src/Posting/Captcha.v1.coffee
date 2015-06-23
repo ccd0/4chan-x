@@ -3,12 +3,6 @@ Captcha.v1 =
     return if d.cookie.indexOf('pass_enabled=1') >= 0
     return unless @isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt'
 
-    @setupScript()
-    captchaContainer = $.el 'div',
-      id: 'captchaContainer'
-      hidden: true
-    $.add d.body, captchaContainer
-
     imgContainer = $.el 'div',
       className: 'captcha-img'
       title: 'Reload reCAPTCHA'
@@ -21,7 +15,6 @@ Captcha.v1 =
     @nodes =
       img:       imgContainer.firstChild
       input:     input
-      container: captchaContainer
 
     $.on input, 'blur',  QR.focusout
     $.on input, 'focus', QR.focusin
@@ -37,30 +30,38 @@ Captcha.v1 =
       QR.captcha.clear()
     $.sync 'captchas', @sync
 
-    new MutationObserver(@afterSetup).observe captchaContainer, childList: true
-
     @beforeSetup()
     @setup() if Conf['Auto-load captcha']
+    new MutationObserver(@afterSetup).observe $.id('captchaContainerAlt'), childList: true
+    @afterSetup() # reCAPTCHA might have loaded before the QR.
 
-  setupScript: ->
+  replace: ->
     return if @script
     unless @script = $ 'script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]', d.head
       @script = $.el 'script',
         src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
       $.add d.head, @script
+    if old = $.id 'g-recaptcha'
+      container = $.el 'div',
+        id: 'captchaContainerAlt'
+      $.replace old, container
+
+  create: ->
+    @replace()
     $.globalEval '''
-      document.addEventListener('captcha:setup', function(e) {
-        if (e.target.firstChild) return;
+      (function() {
+        var container = document.getElementById("captchaContainerAlt");
+        if (container.firstChild) return;
         var options = {theme: "clean"};
         if (window.Recaptcha) {
-          window.Recaptcha.create("<%= meta.recaptchaKey %>", e.target, options);
+          window.Recaptcha.create("<%= meta.recaptchaKey %>", container, options);
         } else {
           var script = document.head.querySelector('script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]');
           script.addEventListener('load', function() {
-            window.Recaptcha.create("<%= meta.recaptchaKey %>", e.target, options);
+            window.Recaptcha.create("<%= meta.recaptchaKey %>", container, options);
           }, false);
         }
-      }, false);
+      })();
     '''
 
   cb:
@@ -87,7 +88,7 @@ Captcha.v1 =
 
   setup: (focus, force) ->
     return unless @isEnabled and (@needed() or force)
-    $.event 'captcha:setup', null, @nodes.container
+    @create()
     @nodes.input.focus() if focus
 
   afterSetup: ->
@@ -117,9 +118,9 @@ Captcha.v1 =
       QR.nodes.el.style.bottom = '0px'
 
   destroy: ->
-    return unless @isEnabled
+    return unless @script
     $.globalEval 'Recaptcha.destroy()'
-    @beforeSetup()
+    @beforeSetup() if @nodes
 
   sync: (captchas=[]) ->
     QR.captcha.captchas = captchas
