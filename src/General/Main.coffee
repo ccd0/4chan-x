@@ -1,5 +1,9 @@
 Main =
   init: ->
+    # XXX dwb userscripts extension reloads scripts run at document-start when replaceState/pushState is called.
+    return if window['<%= meta.name %> antidup']
+    window['<%= meta.name %> antidup'] = true
+
     if location.hostname is 'www.google.com'
       if location.pathname is '/recaptcha/api/noscript'
         $.ready -> Captcha.noscript.initFrame()
