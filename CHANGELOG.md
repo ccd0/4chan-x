@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.11.1
 
+**v1.11.1.2** *(2015-06-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Improved compatibility: Fix some issues in dwb and Midori; add partial support for Luakit.
+
 **v1.11.1.1** *(2015-06-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Add `Use Recaptcha v2 in Reports` option to use the image selection captcha in the report window.
 
