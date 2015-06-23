@@ -11,14 +11,6 @@ Main =
           $.ready -> Captcha.fixes.init()
       return
 
-    if location.hostname is 'www.4chan.org'
-      $.onExists d.documentElement, 'body', false, -> $.addStyle Main.cssWWW
-      Conf = {'captchaLanguage': Config.captchaLanguage}
-      $.get Conf, (items) ->
-        $.extend Conf, items
-        Captcha.language.fixPage()
-      return
-
     g.threads = new SimpleDict()
     g.posts   = new SimpleDict()
 
@@ -71,6 +63,9 @@ Main =
       $.globalEval 'document.documentElement.classList.add("js-enabled");'
 
     switch location.hostname
+      when 'www.4chan.org'
+        Captcha.language.fixPage()
+        return
       when 'a.4cdn.org'
         return
       when 'sys.4chan.org'
@@ -119,7 +114,10 @@ Main =
     $.ready Main.initReady
 
   initStyle: ->
+    $.addStyle Main.cssWWW if location.hostname is 'www.4chan.org'
+
     return if !Main.isThisPageLegit() or $.hasClass doc, 'fourchan-x'
+
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
     $.addClass doc, 'fourchan-x', 'seaweedchan'
