@@ -9,7 +9,7 @@ Captcha.replace =
       $.ready Captcha.replace.v2
       return
 
-    if Conf['Use Recaptcha v1'] and jsEnabled
+    if Conf['Use Recaptcha v1'] and jsEnabled and location.hostname isnt 'www.4chan.org'
       $.ready Captcha.replace.v1
       return
 
