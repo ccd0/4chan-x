@@ -3,9 +3,7 @@ Captcha.v1 =
     return if d.cookie.indexOf('pass_enabled=1') >= 0
     return unless @isEnabled = !!$.id 'g-recaptcha'
 
-    script = $.el 'script',
-      src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
-    $.add d.head, script
+    @setupScript()
     captchaContainer = $.el 'div',
       id: 'captchaContainer'
       hidden: true
@@ -23,6 +21,7 @@ Captcha.v1 =
     @nodes =
       img:       imgContainer.firstChild
       input:     input
+      container: captchaContainer
 
     $.on input, 'blur',  QR.focusout
     $.on input, 'focus', QR.focusin
@@ -38,10 +37,31 @@ Captcha.v1 =
       QR.captcha.clear()
     $.sync 'captchas', @sync
 
-    new MutationObserver(@afterSetup).observe $.id('captchaContainer'), childList: true
+    new MutationObserver(@afterSetup).observe captchaContainer, childList: true
 
     @beforeSetup()
     @setup() if Conf['Auto-load captcha']
+
+  setupScript: ->
+    return if @script
+    unless @script = $ 'script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]', d.head
+      @script = $.el 'script',
+        src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
+      $.add d.head, @script
+    $.globalEval '''
+      document.addEventListener('captcha:setup', function(e) {
+        if (e.target.firstChild) return;
+        var options = {theme: "clean"};
+        if (window.Recaptcha) {
+          window.Recaptcha.create("<%= meta.recaptchaKey %>", e.target, options);
+        } else {
+          var script = document.head.querySelector('script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]');
+          script.addEventListener('load', function() {
+            window.Recaptcha.create("<%= meta.recaptchaKey %>", e.target, options);
+          }, false);
+        }
+      }, false);
+    '''
 
   cb:
     focus: -> QR.captcha.setup false, true
@@ -67,20 +87,7 @@ Captcha.v1 =
 
   setup: (focus, force) ->
     return unless @isEnabled and (@needed() or force)
-    $.globalEval '''
-      (function() {
-        var captchaContainer = document.getElementById("captchaContainer");
-        if (captchaContainer.firstChild) return;
-        function setup() {
-          if (window.Recaptcha) {
-            Recaptcha.create(recaptchaKey, captchaContainer, {theme: "clean"});
-          } else {
-            setTimeout(setup, 25);
-          }
-        }
-        setup();
-      })()
-    '''
+    $.event 'captcha:setup', null, @nodes.container
     @nodes.input.focus() if focus
 
   afterSetup: ->
