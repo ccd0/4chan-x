@@ -430,7 +430,7 @@ if GM_getValue?
     if key of $.syncing
       delete $.oldValue[key]
       delete localStorage[key] # for `storage` events
-  $.listValues = GM_listValues
+  $.listValues = -> GM_listValues() # error when called if missing
 else
   $.getValue = (key) -> localStorage[key]
   $.setValue = (key, val) ->
@@ -496,6 +496,7 @@ $.set = (keys, val, cb) ->
 
 $.clear = (cb) ->
   # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
+  # Also support case where GM_listValues is not defined.
   $.delete Object.keys(Conf)
   $.delete ['previousversion', 'AutoWatch', 'cooldown.global', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']
   $.delete ("#{id}.position" for id in ['embedding', 'updater', 'thread-stats', 'thread-watcher', 'qr'])
