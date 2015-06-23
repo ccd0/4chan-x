@@ -64,7 +64,7 @@ Main =
 
     switch location.hostname
       when 'www.4chan.org'
-        Captcha.language.fixPage()
+        Captcha.language.init()
         return
       when 'a.4cdn.org'
         return

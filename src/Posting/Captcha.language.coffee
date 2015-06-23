@@ -1,12 +1,13 @@
 Captcha.language =
   init: ->
-    return unless Conf['captchaLanguage'].trim() and d.cookie.indexOf('pass_enabled=1') < 0 and !Conf['Hide Original Post Form']
-    $.onExists doc, '#captchaFormPart', true, (node) ->
-      $.onExists node, 'iframe', true, Captcha.language.fixIframe
+    return unless d.cookie.indexOf('pass_enabled=1') < 0
+    return if location.hostname is 'boards.4chan.org' and Conf['Hide Original Post Form']
 
-  fixPage: ->
-    return unless Conf['captchaLanguage'].trim() and d.cookie.indexOf('pass_enabled=1') < 0
-    $.onExists doc, 'iframe', true, Captcha.language.fixIframe
+    if Conf['captchaLanguage'].trim()
+      if location.hostname is 'boards.4chan.org'
+        $.onExists doc, '#captchaFormPart', true, (node) -> $.onExists node, 'iframe', true, Captcha.language.fixIframe
+      else
+        $.onExists doc, 'iframe', true, Captcha.language.fixIframe
 
   fixIframe: (el) ->
     return unless lang = Conf['captchaLanguage'].trim()

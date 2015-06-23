@@ -3,7 +3,7 @@ Report =
 
   init: ->
     return unless /\bmode=report\b/.test(location.search) and match = location.search.match /\bno=(\d+)/
-    Captcha.language.fixPage() unless Conf['Use Recaptcha v2 in Reports']
+    Captcha.language.init() unless Conf['Use Recaptcha v2 in Reports']
     @postID = +match[1]
     $.ready @ready
 
