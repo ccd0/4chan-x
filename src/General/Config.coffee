@@ -663,6 +663,8 @@ Config =
     comment: """
       # Filter Stallman copypasta on /g/:
       #/what you\'re refer+ing to as linux/i;boards:g
+      # Filter posts with 10 or more quote links:
+      #/(?:>>\\d(?:(?!>>\\d)[^])*){10}/
     """
 
     flag: ''
