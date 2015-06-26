@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.11.1
 
+**v1.11.1.3** *(2015-06-26)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.0.10: (Hasumi) Update archive list.
+
 **v1.11.1.2** *(2015-06-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Improved compatibility: Fix some issues in dwb and Midori; add partial support for Luakit.
 
