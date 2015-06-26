@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ## v1.11.0
 
+**v1.11.0.10** *(2015-06-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.10/builds/4chan-X-noupdate.crx "Chromium version")]
+- (Hasumi) Update archive list.
+
 **v1.11.0.9** *(2015-06-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.9/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix caching of v1 captchas.
 - Other minor bugfixes.
