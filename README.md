@@ -26,10 +26,24 @@ The stable and beta releases of Chrome on Windows will disable extensions not in
 Only the latest stable version of 4chan X is available.
 
 ## Other browsers
-This fork of 4chan X is not guaranteed to work correctly in other browsers, but you are welcome to try your luck. Pull requests to fix the bugs you will likely find are always welcome. You may fare better with [loadletter's fork](https://github.com/loadletter/4chan-x), which has fewer features but less dependence on browser-specific APIs.
+4chan X can be used in other browsers, but not all features will work, and you should expect some bugs. In addition, I don't regularly test in these browsers, so updates may occasionally break the script. If this happens, [open an issue](https://github.com/ccd0/4chan-x/issues), and use an old version from the [changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md) until it's fixed. You can also try [loadletter's fork](https://github.com/loadletter/4chan-x) if you're having trouble getting this one to work.
 
-- Some people have reported success in Safari using [JS Blocker](http://jsblocker.toggleable.com/) to install the Firefox/Greasemonkey version.
-- Instructions are available for [installing 4chan X in dwb](https://github.com/ccd0/4chan-x/wiki/Installing-4chan-X-in-dwb).
+In several WebKit browsers, there is currently an issue where 4chan X will crash the browser when repeatedly solving the default image-based captchas. Until this is resolved, it is recommended you enable `Use Recaptcha v1` in your settings.
+
+### dwb
+Install the userscripts extension, then save the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to the `$XDG_CONFIG_HOME/dwb/greasemonkey` or `$HOME/.config/dwb/greasemonkey` directory (creating it if necessary):
+
+        dwbem -N -i userscripts
+        wget -P ${XDG_CONFIG_HOME:-$HOME/.config}/dwb/greasemonkey/ https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
+
+### Midori
+Enable `User addons` in your preferences, under the Extensions tab. In the Privacy tab, check `Enable HTML5 local storage support`. Optionally, if you want 4chan X to be able to open new tabs when you start or reply to a thread, you will need to check `Allow scripts to open popups` under the Behavior tab. Then click the link to the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to install it.
+
+### Luakit
+Navigate to the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js), then type the command `:usi` to install it.
+
+### Safari
+Install [JS Blocker](http://jsblocker.toggleable.com/), then click the link to the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to install it. Be aware that I do not have a practical way of testing the script in Safari at the moment. If you encounter problems, it would be useful to try to reproduce the problem in another browser.
 
 ## Beta version
 New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please [report](https://github.com/ccd0/4chan-x/issues) any issues you find, and be sure to mention which version you're using. You should back up your settings regularly to prevent them from being lost due to bugs.
