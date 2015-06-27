@@ -1,21 +1,29 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.11.0.10
+// @version      1.11.1.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
 // @description  Cross-browser userscript for maximum lurking on 4chan.
 // @license      MIT; https://github.com/ccd0/4chan-x/blob/master/LICENSE 
-// @match        *://boards.4chan.org/*
-// @match        *://sys.4chan.org/*
-// @match        *://a.4cdn.org/*
-// @match        *://i.4cdn.org/*
-// @match        *://www.4chan.org/banned
-// @match        *://www.4chan.org/feedback
-// @match        https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
-// @match        https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
-// @match        *://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
-// @match        *://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      http://boards.4chan.org/*
+// @include      https://boards.4chan.org/*
+// @include      http://sys.4chan.org/*
+// @include      https://sys.4chan.org/*
+// @include      http://a.4cdn.org/*
+// @include      https://a.4cdn.org/*
+// @include      http://i.4cdn.org/*
+// @include      https://i.4cdn.org/*
+// @include      http://www.4chan.org/banned
+// @include      https://www.4chan.org/banned
+// @include      http://www.4chan.org/feedback
+// @include      https://www.4chan.org/feedback
+// @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      http://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      https://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      https://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
