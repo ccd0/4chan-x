@@ -52,7 +52,10 @@ Captcha.v1 =
       (function() {
         var container = document.getElementById("captchaContainerAlt");
         if (container.firstChild) return;
-        var options = {theme: "clean"};
+        var options = {
+          theme: "clean",
+          tabindex: {"boards.4chan.org": 5, "sys.4chan.org": 3}[location.hostname]
+        };
         if (window.Recaptcha) {
           window.Recaptcha.create("<%= meta.recaptchaKey %>", container, options);
         } else {
