@@ -15,14 +15,6 @@ Main =
           $.ready -> Captcha.fixes.init()
       return
 
-    if location.hostname is 'www.4chan.org'
-      $.onExists d.documentElement, 'body', false, -> $.addStyle Main.cssWWW
-      Conf = {'captchaLanguage': Config.captchaLanguage}
-      $.get Conf, (items) ->
-        $.extend Conf, items
-        Captcha.language.fixPage()
-      return
-
     g.threads = new SimpleDict()
     g.posts   = new SimpleDict()
 
@@ -71,10 +63,13 @@ Main =
       $.onExists doc, 'body', false, Main.initStyle
 
   initFeatures: ->
-    if location.hostname in ['boards.4chan.org', 'sys.4chan.org']
+    if location.hostname in ['boards.4chan.org', 'sys.4chan.org', 'www.4chan.org']
       $.globalEval 'document.documentElement.classList.add("js-enabled");'
 
     switch location.hostname
+      when 'www.4chan.org'
+        Captcha.replace.init()
+        return
       when 'a.4cdn.org'
         return
       when 'sys.4chan.org'
@@ -123,7 +118,10 @@ Main =
     $.ready Main.initReady
 
   initStyle: ->
+    $.addStyle Main.cssWWW if location.hostname is 'www.4chan.org'
+
     return if !Main.isThisPageLegit() or $.hasClass doc, 'fourchan-x'
+
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
     $.addClass doc, 'fourchan-x', 'seaweedchan'
@@ -313,7 +311,7 @@ Main =
 
   features: [
     ['Polyfill',                  Polyfill]
-    ['Captcha Language',          Captcha.language]
+    ['Captcha Replacement',       Captcha.replace]
     ['Redirect',                  Redirect]
     ['Header',                    Header]
     ['Catalog Links',             CatalogLinks]

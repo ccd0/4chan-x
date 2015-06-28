@@ -3,15 +3,13 @@ Report =
 
   init: ->
     return unless /\bmode=report\b/.test(location.search) and match = location.search.match /\bno=(\d+)/
-    Captcha.language.fixPage()
+    Captcha.replace.init()
     @postID = +match[1]
     $.ready @ready
 
   ready: ->
     $.addStyle Report.css
     Report.archive() if Conf['Archive Report']
-    if Conf['Use Recaptcha v2 in Reports']
-      Report.captchaV2()
     if Conf['Use Recaptcha v2 in Reports'] and $.hasClass doc, 'js-enabled'
       new MutationObserver(-> Report.fit '.gc-bubbleDefault').observe d.body,
         childList:  true
@@ -19,19 +17,6 @@ Report =
         subtree:    true
     else
       Report.fit 'body'
-
-  captchaV2: ->
-    return unless old = $.id 'captchaContainerAlt'
-    container = $.el 'div',
-      className: 'g-recaptcha'
-    container.dataset.sitekey = '<%= meta.recaptchaKey %>'
-    $.replace old, container
-    url = 'https://www.google.com/recaptcha/api.js'
-    if lang = Conf['captchaLanguage'].trim()
-      url += "?hl=#{encodeURIComponent lang}"
-    script = $.el 'script',
-      src: url
-    $.add d.head, script
 
   fit: (selector) ->
     return unless el = $ selector, doc

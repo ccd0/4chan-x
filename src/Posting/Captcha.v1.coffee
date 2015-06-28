@@ -1,15 +1,7 @@
 Captcha.v1 =
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return unless @isEnabled = !!$.id 'g-recaptcha'
-
-    script = $.el 'script',
-      src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
-    $.add d.head, script
-    captchaContainer = $.el 'div',
-      id: 'captchaContainer'
-      hidden: true
-    $.add d.body, captchaContainer
+    return unless @isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt'
 
     imgContainer = $.el 'div',
       className: 'captcha-img'
@@ -38,10 +30,39 @@ Captcha.v1 =
       QR.captcha.clear()
     $.sync 'captchas', @sync
 
-    new MutationObserver(@afterSetup).observe $.id('captchaContainer'), childList: true
-
     @beforeSetup()
     @setup() if Conf['Auto-load captcha']
+    new MutationObserver(@afterSetup).observe $.id('captchaContainerAlt'), childList: true
+    @afterSetup() # reCAPTCHA might have loaded before the QR.
+
+  replace: ->
+    return if @script
+    unless @script = $ 'script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]', d.head
+      @script = $.el 'script',
+        src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
+      $.add d.head, @script
+    if old = $.id 'g-recaptcha'
+      container = $.el 'div',
+        id: 'captchaContainerAlt'
+      $.replace old, container
+
+  create: ->
+    @replace()
+    $.globalEval '''
+      (function() {
+        var container = document.getElementById("captchaContainerAlt");
+        if (container.firstChild) return;
+        var options = {theme: "clean"};
+        if (window.Recaptcha) {
+          window.Recaptcha.create("<%= meta.recaptchaKey %>", container, options);
+        } else {
+          var script = document.head.querySelector('script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]');
+          script.addEventListener('load', function() {
+            window.Recaptcha.create("<%= meta.recaptchaKey %>", container, options);
+          }, false);
+        }
+      })();
+    '''
 
   cb:
     focus: -> QR.captcha.setup false, true
@@ -67,20 +88,7 @@ Captcha.v1 =
 
   setup: (focus, force) ->
     return unless @isEnabled and (@needed() or force)
-    $.globalEval '''
-      (function() {
-        var captchaContainer = document.getElementById("captchaContainer");
-        if (captchaContainer.firstChild) return;
-        function setup() {
-          if (window.Recaptcha) {
-            Recaptcha.create(recaptchaKey, captchaContainer, {theme: "clean"});
-          } else {
-            setTimeout(setup, 25);
-          }
-        }
-        setup();
-      })()
-    '''
+    @create()
     @nodes.input.focus() if focus
 
   afterSetup: ->
@@ -110,9 +118,9 @@ Captcha.v1 =
       QR.nodes.el.style.bottom = '0px'
 
   destroy: ->
-    return unless @isEnabled
+    return unless @script
     $.globalEval 'Recaptcha.destroy()'
-    @beforeSetup()
+    @beforeSetup() if @nodes
 
   sync: (captchas=[]) ->
     QR.captcha.captchas = captchas

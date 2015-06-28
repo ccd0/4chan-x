@@ -456,11 +456,6 @@ Config =
         'Show notifications on successful post creation or file uploading.'
         1
       ]
-      'Use Recaptcha v1': [
-        false
-        'Use the old text version of Recaptcha.'
-        1
-      ]
       'Force Noscript Captcha': [
         false
         'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled.'
@@ -484,6 +479,10 @@ Config =
       'Captcha Fixes': [
         true
         'Make captcha easier to use, especially with the keyboard.'
+      ]
+      'Use Recaptcha v1': [
+        false
+        'Use the old text version of Recaptcha.'
       ]
       'Use Recaptcha v2 in Reports': [
         false

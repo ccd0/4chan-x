@@ -3,7 +3,7 @@ Captcha.v2 =
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return unless @isEnabled = !!$.id 'g-recaptcha'
+    return unless @isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt'
 
     if @noscript = Conf['Force Noscript Captcha'] or not $.hasClass doc, 'js-enabled'
       @conn = new Connection null, "#{location.protocol}//www.google.com",
@@ -136,7 +136,7 @@ Captcha.v2 =
     return
 
   setupIFrame: (iframe) ->
-    Captcha.language.fixIframe iframe
+    Captcha.replace.iframe iframe
     $.addClass QR.nodes.el, 'captcha-open'
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
       QR.nodes.el.style.top    = null
