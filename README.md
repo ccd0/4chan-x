@@ -19,9 +19,9 @@ Greasemonkey 3.0 has a [bug](https://github.com/greasemonkey/greasemonkey/issues
 
 ## Chromium version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.crx)
 Download the file from the link above and add drag it to your `chrome://extensions` page.
-This should also work for non-Windows/dev/canary Chrome and Chromium-based versions of Opera.
+This should also work for Opera 21+, Chrome dev/canary, and Chrome on platforms other than Windows.
 
-**The above will not work in Chrome (stable or beta) users on Windows; you must install from the [Chrome store](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam).**
+**The above will not work in Chrome (stable or beta) on Windows; you must install from the [Chrome store](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam) as described below.**
 
 ## Chromium version (Chrome store): [Click to Install](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam)
 The stable and beta releases of Chrome on Windows will disable extensions not installed from the Chrome store, so users will need to install 4chan X from the link above.
