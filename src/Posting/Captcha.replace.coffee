@@ -27,11 +27,6 @@ Captcha.replace =
     else if location.hostname is 'boards.4chan.org'
       form = $.id 'postForm'
       form.addEventListener 'focus', (-> Captcha.v1.create()), true
-      form.addEventListener 'blur', ->
-        $.queueTask ->
-          unless form.contains(document.activeElement) or $.id('qr')?.contains(document.activeElement)
-            Captcha.v1.destroy()
-      , true
     else
       Captcha.v1.create()
 
