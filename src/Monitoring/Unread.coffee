@@ -127,16 +127,18 @@ Unread =
 
   openNotification: (post) ->
     return unless Header.areNotificationsEnabled
-    notif = new Notification "#{post.info.nameBlock} replied to you",
-      body: post.info.commentDisplay
-      icon: Favicon.logo
-    notif.onclick = ->
-      Header.scrollToIfNeeded post.nodes.root, true
-      window.focus()
-    notif.onshow = ->
-      setTimeout ->
-        notif.close()
-      , 7 * $.SECOND
+    # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1130502 (SeaMonkey)
+    try
+      notif = new Notification "#{post.info.nameBlock} replied to you",
+        body: post.info.commentDisplay
+        icon: Favicon.logo
+      notif.onclick = ->
+        Header.scrollToIfNeeded post.nodes.root, true
+        window.focus()
+      notif.onshow = ->
+        setTimeout ->
+          notif.close()
+        , 7 * $.SECOND
 
   onUpdate: (e) ->
     if !e.detail[404]

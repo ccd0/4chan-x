@@ -196,19 +196,21 @@ QR =
     unless Header.areNotificationsEnabled
       alert el.textContent if d.hidden and not QR.cooldown.auto
     else if d.hidden or not (focusOverride or d.hasFocus())
-      notif = new Notification el.textContent,
-        body: el.textContent
-        icon: Favicon.logo
-      notif.onclick = -> window.focus()
-      if chrome?
-        # Firefox automatically closes notifications
-        # so we can't control the onclose properly.
-        notif.onclose = -> notice.close()
-        notif.onshow  = ->
-          setTimeout ->
-            notif.onclose = null
-            notif.close()
-          , 7 * $.SECOND
+      # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1130502 (SeaMonkey)
+      try
+        notif = new Notification el.textContent,
+          body: el.textContent
+          icon: Favicon.logo
+        notif.onclick = -> window.focus()
+        if chrome?
+          # Firefox automatically closes notifications
+          # so we can't control the onclose properly.
+          notif.onclose = -> notice.close()
+          notif.onshow  = ->
+            setTimeout ->
+              notif.onclose = null
+              notif.close()
+            , 7 * $.SECOND
 
   notifications: []
 
