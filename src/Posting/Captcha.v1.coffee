@@ -1,4 +1,6 @@
 Captcha.v1 =
+  blank: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='57'/>"
+
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
     return unless @isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt'
@@ -73,7 +75,7 @@ Captcha.v1 =
   beforeSetup: ->
     {img, input} = @nodes
     img.parentNode.hidden = true
-    img.hidden = true
+    img.src = @blank
     input.value = ''
     input.placeholder = 'Focus to load reCAPTCHA'
     @count()
@@ -169,7 +171,7 @@ Captcha.v1 =
 
   load: ->
     if $('#captchaContainerAlt[class~="recaptcha_is_showing_audio"]')
-      @nodes.img.hidden = true
+      @nodes.img.src = @blank
       return
     return unless @nodes.challenge.firstChild
     return unless challenge_image = $.id 'recaptcha_challenge_image'
@@ -178,7 +180,6 @@ Captcha.v1 =
     challenge = @nodes.challenge.firstChild.value
     @nodes.img.alt = challenge
     @nodes.img.src = challenge_image.src
-    @nodes.img.hidden = false
     @nodes.input.value = ''
     @clear()
 
