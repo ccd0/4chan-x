@@ -91,7 +91,7 @@ Captcha.v1 =
   onPostChange: ->
 
   setup: (focus, force) ->
-    return unless @isEnabled and (@needed() or force)
+    return unless @isEnabled and (force or @needed())
     @create()
     @nodes.input.focus() if focus
 
@@ -123,7 +123,7 @@ Captcha.v1 =
 
   destroy: ->
     return unless @script
-    $.globalEval 'Recaptcha.destroy()'
+    $.globalEval 'window.Recaptcha.destroy();'
     @beforeSetup() if @nodes
 
   sync: (captchas=[]) ->
