@@ -73,6 +73,7 @@ Captcha.v1 =
   beforeSetup: ->
     {img, input} = @nodes
     img.parentNode.hidden = true
+    img.hidden = true
     input.value = ''
     input.placeholder = 'Focus to load reCAPTCHA'
     @count()
