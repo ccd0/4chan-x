@@ -167,6 +167,9 @@ Captcha.v1 =
     $.set 'captchas', @captchas
 
   load: ->
+    if $('#captchaContainerAlt[class~="recaptcha_is_showing_audio"]')
+      @nodes.img.hidden = true
+      return
     return unless @nodes.challenge.firstChild
     return unless challenge_image = $.id 'recaptcha_challenge_image'
     # -1 minute to give upload some time.
@@ -174,7 +177,8 @@ Captcha.v1 =
     challenge = @nodes.challenge.firstChild.value
     @nodes.img.alt = challenge
     @nodes.img.src = challenge_image.src
-    @nodes.input.value = null
+    @nodes.img.hidden = false
+    @nodes.input.value = ''
     @clear()
 
   count: ->
@@ -191,9 +195,15 @@ Captcha.v1 =
     @nodes.input.alt = count # For XTRM RICE.
 
   reload: (focus) ->
-    # Hack to prevent the input from being focused
-    $.globalEval 'Recaptcha.reload(); Recaptcha.should_focus = false;'
-    # Focus if we meant to.
+    # Recaptcha.should_focus = false: Hack to prevent the input from being focused
+    $.globalEval '''
+      if (window.Recaptcha.type === "image") {
+        window.Recaptcha.reload();
+      } else {
+        window.Recaptcha.switch_type("image");
+      }
+      window.Recaptcha.should_focus = false;
+    '''
     @nodes.input.focus() if focus
 
   keydown: (e) ->

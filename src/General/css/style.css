@@ -108,6 +108,9 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 :root:not(.js-enabled) #postForm {
   display: table;
 }
+#captchaContainerAlt td:nth-child(2) {
+  display: table-cell !important;
+}
 
 /* Anti-autoplay */
 audio.controls-added {
