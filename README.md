@@ -35,7 +35,7 @@ In several WebKit browsers, there is currently an issue where 4chan X will crash
 - **dwb**: Install the userscripts extension, then save the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to the `$XDG_CONFIG_HOME/dwb/greasemonkey` or `$HOME/.config/dwb/greasemonkey` directory (creating it if necessary):
 
         dwbem -N -i userscripts
-        wget -P ${XDG_CONFIG_HOME:-$HOME/.config}/dwb/greasemonkey/ https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
+        wget -P ${XDG_CONFIG_HOME:-$HOME/.config}/dwb/greasemonkey https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
 
 - **Midori**: Enable `User addons` in your preferences, under the Extensions tab. In the Privacy tab, check `Enable HTML5 local storage support`. Optionally, if you want 4chan X to be able to open new tabs when you start or reply to a thread, you will need to check `Allow scripts to open popups` under the Behavior tab. Then click the link to the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to install it.
 
