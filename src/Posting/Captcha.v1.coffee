@@ -32,6 +32,7 @@ Captcha.v1 =
       QR.captcha.clear()
     $.sync 'captchas', @sync
 
+    @replace()
     @beforeSetup()
     @setup() if Conf['Auto-load captcha']
     new MutationObserver(@afterSetup).observe $.id('captchaContainerAlt'), childList: true
@@ -49,7 +50,6 @@ Captcha.v1 =
       $.replace old, container
 
   create: ->
-    @replace()
     $.globalEval '''
       (function() {
         var container = document.getElementById("captchaContainerAlt");
