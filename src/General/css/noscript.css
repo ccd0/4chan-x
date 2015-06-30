@@ -1,9 +1,3 @@
-noscript > div, noscript > div > div {
-  height: 545px !important;
-}
-noscript > div > div > div:first-child, noscript iframe {
-  height: 423px !important;
-}
-:root:not(.js-enabled) #g-recaptcha {
+:root:not(.js-enabled) #captchaContainerAlt {
   height: auto;
 }
