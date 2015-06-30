@@ -305,9 +305,9 @@ Main =
     $.ready ->
       cb() if Main.isThisPageLegit()
 
-  css: `<%= importCSS('font-awesome', 'noscript', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon') %>`
+  css: `<%= importCSS('font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon') %>`
 
-  cssWWW: `<%= importCSS('noscript', 'www') %>`
+  cssWWW: `<%= importCSS('www') %>`
 
   features: [
     ['Polyfill',                  Polyfill]
