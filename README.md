@@ -35,11 +35,18 @@ In several WebKit browsers, there is currently an issue where 4chan X will crash
 - **dwb**: Install the userscripts extension, then save the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to the `$XDG_CONFIG_HOME/dwb/greasemonkey` or `$HOME/.config/dwb/greasemonkey` directory (creating it if necessary):
 
         dwbem -N -i userscripts
-        wget -P ${XDG_CONFIG_HOME:-$HOME/.config}/dwb/greasemonkey/ https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
+        wget -P ${XDG_CONFIG_HOME:-$HOME/.config}/dwb/greasemonkey https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
 
 - **Midori**: Enable `User addons` in your preferences, under the Extensions tab. In the Privacy tab, check `Enable HTML5 local storage support`. Optionally, if you want 4chan X to be able to open new tabs when you start or reply to a thread, you will need to check `Allow scripts to open popups` under the Behavior tab. Then click the link to the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to install it.
 
 - **Luakit**: Navigate to the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js), then type the command `:usi` to install it.
+
+- **uzbl**: Install the script from https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh, enable it in your config file, and then save [4chan X](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to `$XDG_DATA_HOME/uzbl/userscripts` (or `$HOME/.local/share/uzbl/userscripts`).
+
+        wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts https://raw.githubusercontent.com/singpolyma/singpolyma/master/uzbl/data/scripts/userscript.sh
+        chmod +x ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts/userscript.sh
+        echo '@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh' >> ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
+        wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
 
 - **Safari**: Install [JS Blocker](http://jsblocker.toggleable.com/), then click the link to the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to install it. Be aware that I do not have a practical way of testing the script in Safari at the moment. If you encounter problems, it would be useful to try to reproduce the problem in another browser.
 
