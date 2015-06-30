@@ -41,6 +41,13 @@ In several WebKit browsers, there is currently an issue where 4chan X will crash
 
 - **Luakit**: Navigate to the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js), then type the command `:usi` to install it.
 
+- **uzbl**: Install the script from https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh, enable it in your config file, and then save [4chan X](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to `$XDG_DATA_HOME/uzbl/userscripts` (or `$HOME/.local/share/uzbl/userscripts`).
+
+        wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts https://raw.githubusercontent.com/singpolyma/singpolyma/master/uzbl/data/scripts/userscript.sh
+        chmod +x ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts/userscript.sh
+        echo '@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh' >> ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
+        wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
+
 - **Safari**: Install [JS Blocker](http://jsblocker.toggleable.com/), then click the link to the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to install it. Be aware that I do not have a practical way of testing the script in Safari at the moment. If you encounter problems, it would be useful to try to reproduce the problem in another browser.
 
 ## Beta version
