@@ -164,10 +164,13 @@ audio.controls-added {
 #embedding {
   z-index: 11;
 }
-#thread-watcher {
+:root.fixed-watcher #thread-watcher {
   z-index: 10;
 }
 :root.fixed:not(.gallery-open) #header-bar:not(.autohide) {
+  z-index: 8;
+}
+#thread-watcher {
   z-index: 5;
 }
 
