@@ -245,7 +245,6 @@ class Post
     return
 
   collect: ->
-    @kill()
     g.posts.rm @fullID
     @thread.posts.rm @
     @board.posts.rm @
