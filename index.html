@@ -23,7 +23,7 @@ Previously developed by <a href="https://github.com/aeosynth/4chan-x">aeosynth</
 <a href="https://github.com/Nebukazar/OneeChan">https://github.com/Nebukazar/OneeChan</a>.</p>
 <h2 id="firefox-version-click-to-install-https-ccd0-github-io-4chan-x-builds-4chan-x-user-js-">Firefox version: <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">Click to Install</a></h2>
 <p>Install <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey</a>, then click the link above to install 4chan X.</p>
-<p>Pale Moon users should use <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15.1-signed">Greasemonkey 1.15</a>. A port for Seamonkey is available <a href="https://openuserjs.org/about/Greasemonkey-Port-for-SeaMonkey">here</a>; you may need to disable desktop notifications due to a <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1130502">known bug</a>.</p>
+<p>Pale Moon users should use <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15.1-signed">Greasemonkey 1.15</a>. A port for SeaMonkey is available <a href="https://openuserjs.org/about/Greasemonkey-Port-for-SeaMonkey">here</a>; you may need to disable desktop notifications due to a <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1130502">known bug</a>.</p>
 <p><strong>WARNING</strong>:
 If you&#39;re switching to this fork from someone else&#39;s fork of 4chan X, back up your old script before installing this one as the old one may be overwritten.</p>
 <p><strong>Known issues</strong>:
@@ -41,12 +41,18 @@ Only the latest stable version of 4chan X is available.</p>
 <ul>
 <li><p><strong>dwb</strong>: Install the userscripts extension, then save the <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">script</a> to the <code>$XDG_CONFIG_HOME/dwb/greasemonkey</code> or <code>$HOME/.config/dwb/greasemonkey</code> directory (creating it if necessary):</p>
 <pre><code>  dwbem -N -i userscripts
-  wget -P ${XDG_CONFIG_HOME:-$HOME/.config}/dwb/greasemonkey/ https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
+  wget -P ${XDG_CONFIG_HOME:-$HOME/.config}/dwb/greasemonkey https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
 </code></pre></li>
 <li><p><strong>Midori</strong>: Enable <code>User addons</code> in your preferences, under the Extensions tab. In the Privacy tab, check <code>Enable HTML5 local storage support</code>. Optionally, if you want 4chan X to be able to open new tabs when you start or reply to a thread, you will need to check <code>Allow scripts to open popups</code> under the Behavior tab. Then click the link to the <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">script</a> to install it.</p>
 </li>
 <li><p><strong>Luakit</strong>: Navigate to the <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">script</a>, then type the command <code>:usi</code> to install it.</p>
 </li>
+<li><p><strong>uzbl</strong>: Install the script from <a href="https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh">https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh</a>, enable it in your config file, and then save <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">4chan X</a> to <code>$XDG_DATA_HOME/uzbl/userscripts</code> (or <code>$HOME/.local/share/uzbl/userscripts</code>).</p>
+<pre><code>  wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts https://raw.githubusercontent.com/singpolyma/singpolyma/master/uzbl/data/scripts/userscript.sh
+  chmod +x ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts/userscript.sh
+  echo &#39;@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh&#39; &gt;&gt; ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
+  wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
+</code></pre></li>
 <li><p><strong>Safari</strong>: Install <a href="http://jsblocker.toggleable.com/">JS Blocker</a>, then click the link to the <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">script</a> to install it. Be aware that I do not have a practical way of testing the script in Safari at the moment. If you encounter problems, it would be useful to try to reproduce the problem in another browser.</p>
 </li>
 </ul>
