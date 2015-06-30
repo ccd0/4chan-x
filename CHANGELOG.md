@@ -2,6 +2,17 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+### v1.11.2
+
+**v1.11.2.1** *(2015-06-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- CSS bugfixes for thread watcher and header.
+
+**v1.11.2.0** *(2015-06-29)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.1.3.
+- `Use Recaptcha v1` option now works on the original post form.
+- Captcha section of QR can now be opened with the space bar.
+- Minor bugfixes.
+
 ### v1.11.1
 
 **v1.11.1.3** *(2015-06-26)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.3/builds/4chan-X-noupdate.crx "Chromium version")]
