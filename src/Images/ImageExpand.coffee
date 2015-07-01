@@ -221,7 +221,7 @@ ImageExpand =
     # Scroll to display full image.
     if file.scrollIntoView
       delete file.scrollIntoView
-      imageBottom = Header.getBottomOf(file.fullImage) - 25
+      imageBottom = Header.getBottomOf file.fullImage
       if imageBottom < 0
         window.scrollBy 0, Math.min(-imageBottom, Header.getTopOf file.fullImage)
 
