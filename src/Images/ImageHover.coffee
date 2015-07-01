@@ -46,7 +46,7 @@ ImageHover =
       el.play() if Conf['Autoplay']
     [width, height] = (+x for x in file.dimensions.split 'x')
     {left, right} = @getBoundingClientRect()
-    padding = 16
+    padding = 25
     maxWidth = Math.max left, doc.clientWidth - right
     maxHeight = doc.clientHeight - padding
     scale = Math.min 1, maxWidth / width, maxHeight / height
