@@ -126,7 +126,7 @@ Main =
     $('link[href*=mobile]', d.head)?.disabled = true
     $.addClass doc, 'fourchan-x', 'seaweedchan'
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
-    $.addClass doc, if chrome? then 'blink' else 'gecko'
+    $.addClass doc, $.engine if $.engine
     $.addStyle Main.css, 'fourchanx-css'
 
     keyboard = false
