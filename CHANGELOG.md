@@ -4,6 +4,10 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.11.2
 
+**v1.11.2.3** *(2015-06-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add 'webkit' CSS class to document when WebKit engine is detected.
+- Various CSS-related bugfixes.
+
 **v1.11.2.2** *(2015-06-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix bug from v1.11.2.0 that broke `Use Recaptcha v1` when the original post form was hidden.
 
