@@ -807,13 +807,15 @@ span.hide-announcement {
 #watched-threads {
   overflow-x: hidden;
   overflow-y: auto;
-  max-height: calc(100vh - 75px);
 }
 #thread-watcher .refresh {
   padding: 0px 3px;
 }
 :root.fixed-watcher #thread-watcher {
   position: fixed;
+}
+:root.fixed-watcher #watched-threads {
+  max-height: calc(100vh - 75px);
 }
 :root:not(.fixed-watcher) #watched-threads:not(:hover) {
   max-height: 210px;
