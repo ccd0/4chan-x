@@ -815,6 +815,8 @@ span.hide-announcement {
   position: fixed;
 }
 :root.fixed-watcher #watched-threads {
+  /* XXX https://code.google.com/p/chromium/issues/detail?id=168840, https://bugs.webkit.org/show_bug.cgi?id=94158 */
+  max-height: 85vh;
   max-height: calc(100vh - 75px);
 }
 :root:not(.fixed-watcher) #watched-threads:not(:hover) {
@@ -990,6 +992,8 @@ span.hide-announcement {
   max-height: 100vh;
 }
 :root.fit-height.fixed .full-image {
+  /* XXX https://code.google.com/p/chromium/issues/detail?id=168840, https://bugs.webkit.org/show_bug.cgi?id=94158 */
+  max-height: 93vh;
   max-height: calc(100vh - 35px);
 }
 :root.fit-width .full-image {
@@ -1167,6 +1171,8 @@ input[name="Default Volume"] {
   border-radius: 3px 3px 0 0;
 }
 #qr > form {
+  /* XXX https://code.google.com/p/chromium/issues/detail?id=168840, https://bugs.webkit.org/show_bug.cgi?id=94158 */
+  max-height: 85vh;
   max-height: calc(100vh - 75px);
   overflow-y: auto;
   overflow-x: hidden;
@@ -1782,6 +1788,8 @@ grunt.file.expand('src/General/img/links/*.png').map(function(file) {
 }
 .gal-fit-height .gal-image img,
 .gal-fit-height .gal-image video {
+  /* XXX https://code.google.com/p/chromium/issues/detail?id=168840, https://bugs.webkit.org/show_bug.cgi?id=94158 */
+  max-height: 95vh;
   max-height: calc(100vh - 25px);
 }
 .gal-image iframe {
