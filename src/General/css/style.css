@@ -988,7 +988,7 @@ span.hide-announcement {
   max-height: 100vh;
 }
 :root.fit-height.fixed .full-image {
-  max-height: calc(100vh - 25px);
+  max-height: calc(100vh - 35px);
 }
 :root.fit-width .full-image {
   max-width: 100%;
