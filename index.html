@@ -50,7 +50,8 @@ Only the latest stable version of 4chan X is available.</p>
 <li><p><strong>uzbl</strong>: Install the script from <a href="https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh">https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh</a>, enable it in your config file, and then save <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">4chan X</a> to <code>$XDG_DATA_HOME/uzbl/userscripts</code> (or <code>$HOME/.local/share/uzbl/userscripts</code>).</p>
 <pre><code>  wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts https://raw.githubusercontent.com/singpolyma/singpolyma/master/uzbl/data/scripts/userscript.sh
   chmod +x ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts/userscript.sh
-  echo &#39;@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh&#39; &gt;&gt; ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
+  echo &#39;@on_event LOAD_COMMIT spawn @scripts_dir/userscript.sh document-start&#39; &gt;&gt; ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
+  echo &#39;@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh document-end&#39;   &gt;&gt; ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
   wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
 </code></pre></li>
 <li><p><strong>Safari</strong>: Install <a href="http://jsblocker.toggleable.com/">JS Blocker</a>, then click the link to the <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">script</a> to install it. Be aware that I do not have a practical way of testing the script in Safari at the moment. If you encounter problems, it would be useful to try to reproduce the problem in another browser.</p>
