@@ -474,10 +474,10 @@ else
       return if newValue is $.oldValue[key]
       if newValue?
         $.oldValue[key] = newValue
-        cb JSON.parse(newValue), key
+        cb JSON.parse(newValue), key[g.NAMESPACE.length..]
       else
         delete $.oldValue[key]
-        cb undefined, key
+        cb undefined, key[g.NAMESPACE.length..]
     $.on window, 'storage', ({key}) -> onChange key
 
     $.forceSync = (key) ->
