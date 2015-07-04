@@ -421,10 +421,19 @@ do ->
 <% } else { %>
 
 # http://wiki.greasespot.net/Main_Page
-$.oldValue = {}
-
 if GM_deleteValue?
-  $.getValue = GM_getValue
+  $.getValue   = GM_getValue
+  $.listValues = -> GM_listValues() # error when called if missing
+else
+  $.getValue = (key) -> localStorage[key]
+  $.listValues = ->
+    key for key of localStorage when key[...g.NAMESPACE.length] is g.NAMESPACE
+
+if GM_addValueChangeListener?
+  $.setValue    = GM_setValue
+  $.deleteValue = GM_deleteValue
+else if GM_deleteValue?
+  $.oldValue = {}
   $.setValue = (key, val) ->
     GM_setValue key, val
     if key of $.syncing
@@ -435,41 +444,46 @@ if GM_deleteValue?
     if key of $.syncing
       delete $.oldValue[key]
       delete localStorage[key] # for `storage` events
-  $.listValues = -> GM_listValues() # error when called if missing
 else
-  $.getValue = (key) -> localStorage[key]
+  $.oldValue = {}
   $.setValue = (key, val) ->
     $.oldValue[key]   = val if key of $.syncing
     localStorage[key] = val
   $.deleteValue = (key) ->
     delete $.oldValue[key] if key of $.syncing
     delete localStorage[key]
-  $.listValues  = ->
-    key for key of localStorage when key[...g.NAMESPACE.length] is g.NAMESPACE
 
-$.sync = (key, cb) ->
-  key = g.NAMESPACE + key
-  $.syncing[key] = cb
-  $.oldValue[key] = $.getValue key
+if GM_addValueChangeListener?
+  $.sync = (key, cb) ->
+    $.syncing[key] = GM_addValueChangeListener g.NAMESPACE + key, (key2, oldValue, newValue, remote) ->
+      if remote
+        newValue = JSON.parse newValue unless newValue is undefined
+        cb newValue, key
+  $.forceSync = ->
+else
+  $.sync = (key, cb) ->
+    key = g.NAMESPACE + key
+    $.syncing[key] = cb
+    $.oldValue[key] = $.getValue key
 
-do ->
-  onChange = (key) ->
-    return unless cb = $.syncing[key]
-    newValue = $.getValue key
-    return if newValue is $.oldValue[key]
-    if newValue?
-      $.oldValue[key] = newValue
-      cb JSON.parse(newValue), key
-    else
-      delete $.oldValue[key]
-      cb undefined, key
-  $.on window, 'storage', ({key}) -> onChange key
+  do ->
+    onChange = (key) ->
+      return unless cb = $.syncing[key]
+      newValue = $.getValue key
+      return if newValue is $.oldValue[key]
+      if newValue?
+        $.oldValue[key] = newValue
+        cb JSON.parse(newValue), key
+      else
+        delete $.oldValue[key]
+        cb undefined, key
+    $.on window, 'storage', ({key}) -> onChange key
 
-  $.forceSync = (key) ->
-    # Storage events don't work across origins
-    # e.g. http://boards.4chan.org and https://boards.4chan.org
-    # so force a check for changes to avoid lost data.
-    onChange g.NAMESPACE + key
+    $.forceSync = (key) ->
+      # Storage events don't work across origins
+      # e.g. http://boards.4chan.org and https://boards.4chan.org
+      # so force a check for changes to avoid lost data.
+      onChange g.NAMESPACE + key
 
 $.delete = (keys) ->
   unless keys instanceof Array

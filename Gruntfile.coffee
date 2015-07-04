@@ -290,6 +290,7 @@ module.exports = (grunt) ->
           GM_setValue:  true
           GM_deleteValue: true
           GM_listValues: true
+          GM_addValueChangeListener: true
           GM_openInTab: true
           GM_xmlhttpRequest: true
           cloneInto:    true
