@@ -421,6 +421,7 @@ do ->
 <% } else { %>
 
 # http://wiki.greasespot.net/Main_Page
+# https://tampermonkey.net/documentation.php
 if GM_deleteValue?
   $.getValue   = GM_getValue
   $.listValues = -> GM_listValues() # error when called if missing
