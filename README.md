@@ -9,7 +9,7 @@ https://github.com/Nebukazar/OneeChan.
 ## Firefox version: [Click to Install](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js)
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then click the link above to install 4chan X.
 
-Pale Moon users should use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15.1-signed). A port for SeaMonkey is available [here](https://openuserjs.org/about/Greasemonkey-Port-for-SeaMonkey); you may need to disable desktop notifications due to a [known bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1130502).
+Pale Moon users should use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15.1-signed). SeaMonkey users should use [Greasemonkey 2.3](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-2.3.1-signed) and convert the extension with [this tool](http://addonconverter.fotokraina.com/).
 
 **WARNING**:
 If you're switching to this fork from someone else's fork of 4chan X, back up your old script before installing this one as the old one may be overwritten.
