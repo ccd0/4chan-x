@@ -202,7 +202,7 @@ QR =
           body: el.textContent
           icon: Favicon.logo
         notif.onclick = -> window.focus()
-        if chrome?
+        if $.engine isnt 'gecko'
           # Firefox automatically closes notifications
           # so we can't control the onclose properly.
           notif.onclose = -> notice.close()
@@ -530,7 +530,7 @@ QR =
     # We don't receive blur events from captcha iframe.
     $.on d, 'click', QR.focus
 
-    unless chrome?
+    if $.engine is 'gecko'
       nodes.pasteArea.hidden = false
       new MutationObserver(QR.pasteFF).observe nodes.pasteArea, {childList: true}
 
@@ -543,8 +543,8 @@ QR =
       event = if node.nodeName is 'SELECT' then 'change' else 'input'
       $.on nodes[name], event, save
 
-    # XXX Chromium treats width and height as min-width and min-height
-    if !chrome? and Conf['Remember QR Size']
+    # XXX Blink and WebKit treat width and height of <textarea>s as min-width and min-height
+    if $.engine is 'gecko' and Conf['Remember QR Size']
       $.get 'QR Size', '', (item) ->
         nodes.com.style.cssText = item['QR Size']
       $.on nodes.com, 'mouseup', (e) ->
