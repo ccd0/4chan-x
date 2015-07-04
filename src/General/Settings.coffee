@@ -156,11 +156,9 @@ Settings =
     a = $.el 'a',
       download: "<%= meta.name %> v#{g.VERSION}-#{data.date}.json"
       href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
-    <% if (type === 'userscript') { %>
     p = $ '.imp-exp-result', Settings.dialog
     $.rmAll p
     $.add p, a
-    <% } %>
     a.click()
   import: ->
     $('input[type=file]', @parentNode).click()
