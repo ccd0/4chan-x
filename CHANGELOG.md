@@ -2,6 +2,13 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
 
+### v1.11.3
+
+**v1.11.3.0** *(2015-07-04)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.2.4.
+- Improved Tampermonkey and WebKit support.
+- Minor bugfixes.
+
 ### v1.11.2
 
 **v1.11.2.4** *(2015-07-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.4/builds/4chan-X-noupdate.crx "Chromium version")]

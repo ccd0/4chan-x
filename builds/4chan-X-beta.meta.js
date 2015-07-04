@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.2.4
+// @version      1.11.3.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -28,6 +28,7 @@
 // @grant        GM_setValue
 // @grant        GM_deleteValue
 // @grant        GM_listValues
+// @grant        GM_addValueChangeListener
 // @grant        GM_openInTab
 // @grant        GM_xmlhttpRequest
 // @run-at       document-start
