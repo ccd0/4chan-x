@@ -31,18 +31,22 @@ CrossOrigin = do ->
         cb new Uint8Array(response), contentType, contentDisposition
     <% } %>
     <% if (type === 'userscript') { %>
-    GM_xmlhttpRequest
+    # Use workaround for binary data in Greasemonkey versions < 3.2
+    workaround = !GM_info.scriptHandler and /^[12]\.|^3\.[01](?!\d)/.test(GM_info.version)
+    options =
       method: "GET"
       url: url
       headers: headers
-      overrideMimeType: "text/plain; charset=x-user-defined"
       onload: (xhr) ->
-        r = xhr.responseText
-        data = new Uint8Array r.length
-        i = 0
-        while i < r.length
-          data[i] = r.charCodeAt i
-          i++
+        if workaround
+          r = xhr.responseText
+          data = new Uint8Array r.length
+          i = 0
+          while i < r.length
+            data[i] = r.charCodeAt i
+            i++
+        else
+          data = new Uint8Array xhr.response
         contentType        = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)?[1]
         contentDisposition = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)?[1]
         cb data, contentType, contentDisposition
@@ -50,6 +54,11 @@ CrossOrigin = do ->
         cb null
       onabort: ->
         cb null
+    if workaround
+      options.overrideMimeType = 'text/plain; charset=x-user-defined'
+    else
+      options.responseType = 'arraybuffer'
+    GM_xmlhttpRequest options
     <% } %>
 
   file: (url, cb) ->

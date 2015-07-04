@@ -293,6 +293,7 @@ module.exports = (grunt) ->
           GM_addValueChangeListener: true
           GM_openInTab: true
           GM_xmlhttpRequest: true
+          GM_info:      true
           cloneInto:    true
           chrome:       true
       script: 'tmp-<%= pkg.type %>/*.js'
