@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.11.3
 
+**v1.11.3.1** *(2015-07-04)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Make posting from URL more efficient, and make it work in Tampermonkey.
+
 **v1.11.3.0** *(2015-07-04)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.2.4.
 - Improved Tampermonkey and WebKit support.
