@@ -2,7 +2,7 @@ Keybinds =
   init: ->
     return if !Conf['Keybinds']
 
-    for hotkey of Conf.hotkeys
+    for hotkey of Config.hotkeys
       $.sync hotkey, Keybinds.sync
 
     init = ->
