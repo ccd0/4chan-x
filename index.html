@@ -37,8 +37,10 @@ This should also work for Opera 21+, Chrome dev/canary, and Chrome on platforms 
 Only the latest stable version of 4chan X is available.</p>
 <h2 id="other-browsers">Other browsers</h2>
 <p>4chan X can be used in other browsers, but not all features will work, and you should expect some bugs. In addition, I don&#39;t regularly test in these browsers, so updates may occasionally break the script. If this happens, <a href="https://github.com/ccd0/4chan-x/issues">open an issue</a>, and use an old version from the <a href="https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md">changelog</a> until it&#39;s fixed. You can also try <a href="https://github.com/loadletter/4chan-x">loadletter&#39;s fork</a> if you&#39;re having trouble getting this one to work.</p>
-<p>In several WebKit browsers, there is currently an issue where 4chan X will crash the browser when repeatedly solving the default image-based captchas. Until this is resolved, it is recommended you enable <code>Use Recaptcha v1</code> in your settings.</p>
+<p>Browsers using WebKitGTK+ (dwb, Midori, Luakit, uzbl) may crash when repeatedly solving the default image-based captchas. You can avoid this problem by enabling <code>Use Recaptcha v1</code> in your settings.</p>
 <ul>
+<li><p><strong>Safari</strong>: Install <a href="http://jsblocker.toggleable.com/">JS Blocker</a>, then click the link to the <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">script</a> to install it.</p>
+</li>
 <li><p><strong>dwb</strong>: Install the userscripts extension, then save the <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">script</a> to the <code>$XDG_CONFIG_HOME/dwb/greasemonkey</code> or <code>$HOME/.config/dwb/greasemonkey</code> directory (creating it if necessary):</p>
 <pre><code>  dwbem -N -i userscripts
   wget -P ${XDG_CONFIG_HOME:-$HOME/.config}/dwb/greasemonkey https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
@@ -54,8 +56,6 @@ Only the latest stable version of 4chan X is available.</p>
   echo &#39;@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh document-end&#39;   &gt;&gt; ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
   wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
 </code></pre></li>
-<li><p><strong>Safari</strong>: Install <a href="http://jsblocker.toggleable.com/">JS Blocker</a>, then click the link to the <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">script</a> to install it. Be aware that I do not have a practical way of testing the script in Safari at the moment. If you encounter problems, it would be useful to try to reproduce the problem in another browser.</p>
-</li>
 </ul>
 <h2 id="beta-version">Beta version</h2>
 <p>New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please <a href="https://github.com/ccd0/4chan-x/issues">report</a> any issues you find, and be sure to mention which version you&#39;re using. You should back up your settings regularly to prevent them from being lost due to bugs.</p>
