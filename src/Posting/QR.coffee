@@ -1,6 +1,15 @@
 QR =
   mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm']
 
+  typeFromExtension:
+    'jpg':  'image/jpeg'
+    'jpeg': 'image/jpeg'
+    'png':  'image/png'
+    'gif':  'image/gif'
+    'pdf':  'application/pdf'
+    'swf':  'application/vnd.adobe.flash.movie'
+    'webm': 'video/webm'
+
   init: ->
     return unless Conf['Quick Reply']
 
