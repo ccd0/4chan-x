@@ -425,6 +425,7 @@ Config =
         false
         'Remember the size of the Quick reply.'
         1
+        {supported: -> $.engine is 'gecko'}
       ]
       'Remember Spoiler': [
         false
