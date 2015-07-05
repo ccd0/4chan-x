@@ -207,6 +207,8 @@ QR.post = class
   readFile: ->
     isVideo = /^video\//.test @file.type
     el = $.el(if isVideo then 'video' else 'img')
+    return if isVideo and !el.canPlayType @file.type
+
     event = if isVideo then 'loadeddata' else 'load'
     onload = =>
       $.off el, event, onload
