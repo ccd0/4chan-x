@@ -62,7 +62,7 @@ Gallery =
     $.on nodes.frame, 'click', cb.blank
     $.on nodes.frame, 'wheel', Volume.wheel if Conf['Mouse Wheel Volume']
     $.on nodes.next,  'click', cb.click
-    $.on nodes.name,  'click', ImageCommon.download
+    $.on nodes.name,  'click', ImageCommon.download if CrossOrigin.supported
 
     $.on $('.gal-prev',  dialog), 'click', cb.prev
     $.on $('.gal-next',  dialog), 'click', cb.next

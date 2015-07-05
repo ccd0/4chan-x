@@ -1,6 +1,6 @@
 Metadata =
   init: ->
-    return unless Conf['WEBM Metadata'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
+    return unless CrossOrigin.supported and Conf['WEBM Metadata'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
 
     Post.callbacks.push
       name: 'WEBM Metadata'

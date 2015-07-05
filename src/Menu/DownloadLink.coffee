@@ -1,6 +1,6 @@
 DownloadLink =
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Download Link']
+    return unless CrossOrigin.supported and g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Download Link']
 
     a = $.el 'a',
       className: 'download-link'

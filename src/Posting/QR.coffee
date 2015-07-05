@@ -534,6 +534,8 @@ QR =
       nodes.pasteArea.hidden = false
       new MutationObserver(QR.pasteFF).observe nodes.pasteArea, {childList: true}
 
+    nodes.urlButton.hidden = !CrossOrigin.supported
+
     # save selected post's data
     items = ['thread', 'name', 'email', 'sub', 'com', 'filename']
     i = 0

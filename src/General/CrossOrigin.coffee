@@ -10,6 +10,15 @@ CrossOrigin = do ->
         callbacks[id] = cb
   <% } %>
 
+  supported:
+  <% if (type === 'crx') { %>
+    true
+  <% } %>
+  <% if (type === 'userscript') { %>
+    try
+      typeof GM_xmlhttpRequest is 'function' and !window.GM_xmlhttpRequest?.toString().match(/XMLHttpRequest/)
+  <% } %>
+
   binary: (url, cb, headers={}) ->
     <% if (type === 'crx') { %>
     if /^https:\/\//.test(url) or location.protocol is 'http:'

@@ -42,6 +42,8 @@ Config =
       'Except Archives from Encryption': [
         false
         'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'
+        0
+        {supported: -> CrossOrigin.supported}
       ]
       'Keybinds': [
         true
@@ -217,6 +219,8 @@ Config =
       'WEBM Metadata': [
         true
         'Add link to fetch title metadata from webm videos.'
+        0
+        {supported: -> CrossOrigin.supported}
       ]
       'Reveal Spoiler Thumbnails': [
         false
@@ -313,6 +317,7 @@ Config =
         true
         'Add a download with original filename link to the menu.'
         1
+        {supported: -> CrossOrigin.supported}
       ]
       'Archive Link': [
         true
