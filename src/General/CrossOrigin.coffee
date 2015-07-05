@@ -32,7 +32,7 @@ CrossOrigin = do ->
     <% } %>
     <% if (type === 'userscript') { %>
     # Use workaround for binary data in Greasemonkey versions < 3.2
-    workaround = !GM_info.scriptHandler and /^[12]\.|^3\.[01](?!\d)/.test(GM_info.version)
+    workaround = $.engine is 'gecko' and GM_info? and /^[0-2]\.|^3\.[01](?!\d)/.test(GM_info.version)
     options =
       method: "GET"
       url: url
