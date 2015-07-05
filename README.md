@@ -32,6 +32,8 @@ Only the latest stable version of 4chan X is available.
 
 Browsers using WebKitGTK+ may crash when repeatedly solving the default image-based captchas. You can avoid this problem by enabling `Use Recaptcha v1` in your settings.
 
+- **Safari**: Install [JS Blocker](http://jsblocker.toggleable.com/), then click the link to the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to install it.
+
 - **dwb**: Install the userscripts extension, then save the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to the `$XDG_CONFIG_HOME/dwb/greasemonkey` or `$HOME/.config/dwb/greasemonkey` directory (creating it if necessary):
 
         dwbem -N -i userscripts
@@ -48,8 +50,6 @@ Browsers using WebKitGTK+ may crash when repeatedly solving the default image-ba
         echo '@on_event LOAD_COMMIT spawn @scripts_dir/userscript.sh document-start' >> ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
         echo '@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh document-end'   >> ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
         wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
-
-- **Safari**: Install [JS Blocker](http://jsblocker.toggleable.com/), then click the link to the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to install it.
 
 ## Beta version
 New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please [report](https://github.com/ccd0/4chan-x/issues) any issues you find, and be sure to mention which version you're using. You should back up your settings regularly to prevent them from being lost due to bugs.
