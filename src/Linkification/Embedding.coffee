@@ -277,10 +277,12 @@ Embedding =
       regExp: /^\w+:\/\/(?:www\.)?vocaroo\.com\/i\/(\w+)/
       style: ''
       el: (a) ->
-        $.el 'audio',
+        el = $.el 'audio',
           controls: true
           preload: 'auto'
-          src: "http://vocaroo.com/media_command.php?media=#{a.dataset.uid}&command=download_ogg"
+        type = if el.canPlayType 'audio/ogg' then 'ogg' else 'mp3'
+        el.src = "http://vocaroo.com/media_command.php?media=#{a.dataset.uid}&command=download_#{type}"
+        el
     ,
       key: 'Vimeo'
       regExp:  /^\w+:\/\/(?:www\.)?vimeo\.com\/(\d+)/
@@ -360,10 +362,12 @@ Embedding =
       regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w+)/
       style: ''
       el: (a) ->
-        $.el 'audio',
+        el = $.el 'audio',
           controls: true
           preload: 'auto'
-          src: "http://clyp.it/#{a.dataset.uid}.ogg"
+        type = if el.canPlayType 'audio/ogg' then 'ogg' else 'mp3'
+        el.src = "http://clyp.it/#{a.dataset.uid}.#{type}"
+        el
     ,
       # dummy entries: not implemented but included to prevent them being wrongly embedded as a subsequent type
       key: 'Loopvid-dummy'
