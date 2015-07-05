@@ -30,7 +30,7 @@ Only the latest stable version of 4chan X is available.
 ## Other browsers
 4chan X can be used in other browsers, but not all features will work, and you should expect some bugs. In addition, I don't regularly test in these browsers, so updates may occasionally break the script. If this happens, [open an issue](https://github.com/ccd0/4chan-x/issues), and use an old version from the [changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md) until it's fixed. You can also try [loadletter's fork](https://github.com/loadletter/4chan-x) if you're having trouble getting this one to work.
 
-In several WebKit browsers, there is currently an issue where 4chan X will crash the browser when repeatedly solving the default image-based captchas. Until this is resolved, it is recommended you enable `Use Recaptcha v1` in your settings.
+Browsers using WebKitGTK+ may crash when repeatedly solving the default image-based captchas. You can avoid this problem by enabling `Use Recaptcha v1` in your settings.
 
 - **dwb**: Install the userscripts extension, then save the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to the `$XDG_CONFIG_HOME/dwb/greasemonkey` or `$HOME/.config/dwb/greasemonkey` directory (creating it if necessary):
 
