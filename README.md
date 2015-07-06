@@ -9,7 +9,7 @@ https://github.com/Nebukazar/OneeChan.
 ## Firefox
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then **[click here to install 4chan X](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js)**.
 
-- **Pale Moon** users should use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/#version-1.15.1-signed).
+- **Pale Moon** users should use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/1.15.1-signed).
 - **SeaMonkey** users should use Greasemonkey 2.3 converted with [this tool](http://addonconverter.fotokraina.com/?url=https://addons.mozilla.org/firefox/downloads/file/282084/greasemonkey-2.3-fx.xpi).
 
 ## Chromium
