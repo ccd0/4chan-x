@@ -49,6 +49,7 @@ CrossOrigin = do ->
         else
           data = new Uint8Array xhr.response
         if typeof xhr.responseHeaders is 'object'
+          # XXX https://github.com/infernoboy/JavaScript-Blocker/issues/35
           contentType        = xhr.responseHeaders['Content-Type']
           contentDisposition = xhr.responseHeaders['Content-Disposition']
         else
@@ -60,6 +61,7 @@ CrossOrigin = do ->
       onabort: ->
         cb null
     if workaround
+      # XXX https://github.com/infernoboy/JavaScript-Blocker/issues/35
       options.overrideMimeType = options.mimeType = 'text/plain; charset=x-user-defined'
     else
       options.responseType = 'arraybuffer'
