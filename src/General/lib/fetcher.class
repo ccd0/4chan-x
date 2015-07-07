@@ -81,7 +81,7 @@ class Fetcher
     return false unless url = Redirect.to 'post', {@boardID, @postID}
     if /^https:\/\//.test(url) or location.protocol is 'http:'
       $.cache url,
-        do (self = @) -> -> self.parseArchivedPost @response
+        do (self = @) -> -> self.parseArchivedPost @response, url
       ,
         responseType: 'json'
         withCredentials: url.archive.withCredentials
@@ -93,11 +93,11 @@ class Fetcher
           # Image/thumbnail URLs loaded over HTTP can be modified in transit.
           # Require them to be from a known HTTP host so that no referrer is sent to them from an HTTPS page.
           delete media[key] unless media[key]? and media[key].match(/^(http:\/\/[^\/]+\/)?/)[0] in url.archive.imagehosts
-        @parseArchivedPost response
+        @parseArchivedPost response, url
       return true
     return false
 
-  parseArchivedPost: (data) ->
+  parseArchivedPost: (data, url) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
     if post = g.posts["#{@boardID}.#{@postID}"]
@@ -147,6 +147,9 @@ class Fetcher
       commentHTML: comment
     delete o.info.uniqueID if o.info.capcode
     if data.media?.media_filename
+      # Fix URLs missing origin
+      for key, val of data.media when /_link$/.test(key) and val?[0] is '/'
+        data.media[key] = url.split('/', 3).join('/') + val
       o.file =
         name:      data.media.media_filename
         url:       data.media.media_link or data.media.remote_media_link or
