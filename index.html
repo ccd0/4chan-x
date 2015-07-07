@@ -34,7 +34,7 @@ Previously developed by <a href="https://github.com/aeosynth/4chan-x">aeosynth</
 <ul>
 <li><strong>Chromium</strong>, <strong>Chrome</strong>, and <strong>Vivaldi</strong> users can <strong><a href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam">install 4chan X from the Chrome store</a></strong>.</li>
 <li><strong>Chromium</strong> users can alternately <strong><a href="https://ccd0.github.io/4chan-x/builds/4chan-X.crx">download 4chan X from Github</a></strong>, then drag it to your <code>chrome://extensions</code> page. This will also work for Chrome dev/canary, and Chrome on platforms other than Windows.</li>
-<li><strong>Opera</strong> users can click to <strong><a href="https://ccd0.github.io/4chan-x/builds/4chan-X.crx">download 4chan X from Github</a></strong>, then follow the prompts to activate it in your extension manager. Note: This version does not work with Presto-based Opera; try <a href="https://github.com/loadletter/4chan-x">loadletter&#39;s fork</a> instead.</li>
+<li><strong>Opera</strong> users can click to <strong><a href="https://ccd0.github.io/4chan-x/builds/4chan-X.crx">download 4chan X from Github</a></strong>, then follow the prompts to activate it in your extension manager. Note: This version does not work with Opera 12; try <a href="https://github.com/loadletter/4chan-x">loadletter&#39;s fork</a> instead.</li>
 </ul>
 <p>It is also possible to use the <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">userscript version of 4chan X</a> with <a href="https://tampermonkey.net/">Tampermonkey</a>.</p>
 </div><input hidden type="checkbox" id="safari-hide"><div><label for="safari-hide"><h3 id="safari">Safari</h3></label>
@@ -104,11 +104,12 @@ var engine = (function() {
   if (/Chrome\//.test(navigator.userAgent)) return 'blink';
   if (/WebKit\//.test(navigator.userAgent)) return 'webkit';
   if (/Gecko\/|Goanna/.test(navigator.userAgent)) return 'gecko';
+  if (/Presto\//.test(navigator.userAgent)) return 'presto';
 })();
 if (engine) {
-  var engines = {'firefox': 'gecko', 'chromium': 'blink', 'safari': 'webkit', 'webkitgtk-': 'webkit'};
+  var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk-': 'webkit'};
   for (browser in engines) {
-    document.getElementById(browser + '-hide').checked = (engine !== engines[browser]);
+    document.getElementById(browser + '-hide').checked = (engines[browser].indexOf(engine) < 0);
   }
 }
 </script>
