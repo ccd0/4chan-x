@@ -79,4 +79,13 @@
   "software": "foolfuuka",
   "boards": ["mlp", "qa"],
   "files": ["mlp", "qa"]
+}, {
+  "uid": 24,
+  "name": "fireden.net",
+  "domain": "boards.fireden.net",
+  "http": false,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["cm", "ic", "vg", "y"],
+  "files": ["cm", "ic", "vg", "y"]
 }]
