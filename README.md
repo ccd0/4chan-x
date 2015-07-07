@@ -6,13 +6,17 @@ Previously developed by [aeosynth](https://github.com/aeosynth/4chan-x), [Mayhem
 If you're looking for a maintained fork of OneeChan (a style script used in addition to 4chan X), try
 https://github.com/Nebukazar/OneeChan.
 
-## Firefox
+**Note**: 4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the `[Settings]` link in the top right corner and uncheck "`Disable the native extension`" in the panel that appears.
+
+## Install
+
+### Firefox
 Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then **[click here to install 4chan X](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js)**.
 
 - **Pale Moon** users should use [Greasemonkey 1.15](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/1.15.1-signed).
 - **SeaMonkey** users should use Greasemonkey 2.3 converted with [this tool](http://addonconverter.fotokraina.com/?url=https://addons.mozilla.org/firefox/downloads/file/282084/greasemonkey-2.3-fx.xpi).
 
-## Chromium
+### Chromium
 4chan X is available as a Chrome extension. The Chrome extension has the additional feature of being able to sync your settings and data with other devices via Chrome Sync.
 
 - **Chromium**, **Chrome**, and **Vivaldi** users can **[install 4chan X from the Chrome store](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam)**.
@@ -21,10 +25,10 @@ Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonk
 
 It is also possible to use the [userscript version of 4chan X](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) with [Tampermonkey](https://tampermonkey.net/).
 
-## Safari
+### Safari
 Install [JS Blocker](http://jsblocker.toggleable.com/), then **[click here to install 4chan X](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js)**.
 
-## WebKitGTK+
+### WebKitGTK+
 Several WebKitGTK+ based browsers have support for userscripts and can run 4chan X. Due to the lack of the cross-site GM_* API, and lack of support for userscripts in iframes, not all features will work. You may experience crashes when repeatedly solving the default image-based captchas. You can avoid this problem by enabling `Use Recaptcha v1` in your settings.
 
 - **dwb**: Install the userscripts extension, then save the [script](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) to the `$XDG_CONFIG_HOME/dwb/greasemonkey` or `$HOME/.config/dwb/greasemonkey` directory (creating it if necessary):
@@ -60,9 +64,6 @@ To install the **beta** version and get updates whenever there's a new **beta** 
 
 ## Troubleshooting
 If you encounter a bug, try the steps [here](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md#reporting-bugs), then report it to the [issue tracker](https://github.com/ccd0/4chan-x/issues). If the bug seems to be caused by a script update, you can install a old version from the [changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md).
-
-## Uninstalling
-4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the `[Settings]` link in the top right corner and uncheck "`Disable the native extension`" in the panel that appears.
 
 ## More information
 - [Changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md)
