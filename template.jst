@@ -16,7 +16,14 @@
 </div>
 </div>
 <a class="screenshot" href="img/screenshot.png"><img src="img/screenshot.png" alt="Screenshot"></a>
-<%= content.match(/<\/h1>([^]*)<h2 id="more-information"/)[1] %>
+<%=
+content
+  .match(/<\/h1>([^]*)<h2 id="more-information"/)[1]
+  .replace(
+    /(<h3 id="(.*?)">.*?<\/h3>)([^]*?)(?=<h)/g,
+    '<input hidden type="checkbox" id="$2-hide"><div><label for="$2-hide">$1</label>$3</div>'
+  )
+%>
 <script>
 function imagePreview() {
   this.removeEventListener('mouseover', imagePreview, false);
@@ -40,6 +47,17 @@ for (var i = 0; i < document.links.length; i++) {
     link.addEventListener('mouseover', imagePreview, false);
   } else if (window.chrome && link.host === 'chrome.google.com') {
     link.addEventListener('click', storeInstall, false);
+  }
+}
+var engine = (function() {
+  if (/Chrome\//.test(navigator.userAgent)) return 'blink';
+  if (/WebKit\//.test(navigator.userAgent)) return 'webkit';
+  if (/Gecko\/|Goanna/.test(navigator.userAgent)) return 'gecko';
+})();
+if (engine) {
+  var engines = {'firefox': 'gecko', 'chromium': 'blink', 'safari': 'webkit', 'webkitgtk-': 'webkit'};
+  for (browser in engines) {
+    document.getElementById(browser + '-hide').checked = (engine !== engines[browser]);
   }
 }
 </script>
