@@ -4,6 +4,9 @@ The links to individual versions below are to copies of the script with the upda
 
 ### v1.11.3
 
+**v1.11.3.3** *(2015-07-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.2.5: Add fireden.net archive.
+
 **v1.11.3.2** *(2015-07-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Get posting from URLs, WebM titles, and Vocaroo/Clyp embedding working in Safari.
 
@@ -16,6 +19,9 @@ The links to individual versions below are to copies of the script with the upda
 - Minor bugfixes.
 
 ### v1.11.2
+
+**v1.11.2.5** *(2015-07-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add fireden.net archive.
 
 **v1.11.2.4** *(2015-07-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Minor bugfixes.
