@@ -21,13 +21,15 @@
 Previously developed by <a href="https://github.com/aeosynth/4chan-x">aeosynth</a>, <a href="https://github.com/MayhemYDG/4chan-x">Mayhem</a>, <a href="https://github.com/ihavenoface/4chan-x">ihavenoface</a>, <a href="https://github.com/zixaphir/appchan-x">Zixaphir</a>, <a href="https://github.com/seaweedchan/4chan-x">Seaweed</a>, and <a href="https://github.com/Spittie/4chan-x">Spittie</a>, with contributions from many others.</p>
 <p>If you&#39;re looking for a maintained fork of OneeChan (a style script used in addition to 4chan X), try
 <a href="https://github.com/Nebukazar/OneeChan">https://github.com/Nebukazar/OneeChan</a>.</p>
-<h2 id="firefox">Firefox</h2>
+<p><strong>Note</strong>: 4chan X disables the native extension, so if you uninstall 4chan X, you&#39;ll need to re-enable it. To do this, click the <code>[Settings]</code> link in the top right corner and uncheck &quot;<code>Disable the native extension</code>&quot; in the panel that appears.</p>
+<h2 id="install">Install</h2>
+<input hidden type="checkbox" id="firefox-hide"><div><label for="firefox-hide"><h3 id="firefox">Firefox</h3></label>
 <p>Install <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey</a>, then <strong><a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">click here to install 4chan X</a></strong>.</p>
 <ul>
 <li><strong>Pale Moon</strong> users should use <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/1.15.1-signed">Greasemonkey 1.15</a>.</li>
 <li><strong>SeaMonkey</strong> users should use Greasemonkey 2.3 converted with <a href="http://addonconverter.fotokraina.com/?url=https://addons.mozilla.org/firefox/downloads/file/282084/greasemonkey-2.3-fx.xpi">this tool</a>.</li>
 </ul>
-<h2 id="chromium">Chromium</h2>
+</div><input hidden type="checkbox" id="chromium-hide"><div><label for="chromium-hide"><h3 id="chromium">Chromium</h3></label>
 <p>4chan X is available as a Chrome extension. The Chrome extension has the additional feature of being able to sync your settings and data with other devices via Chrome Sync.</p>
 <ul>
 <li><strong>Chromium</strong>, <strong>Chrome</strong>, and <strong>Vivaldi</strong> users can <strong><a href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam">install 4chan X from the Chrome store</a></strong>.</li>
@@ -35,9 +37,9 @@ Previously developed by <a href="https://github.com/aeosynth/4chan-x">aeosynth</
 <li><strong>Opera</strong> users can click to <strong><a href="https://ccd0.github.io/4chan-x/builds/4chan-X.crx">download 4chan X from Github</a></strong>, then follow the prompts to activate it in your extension manager. Note: This version does not work with Presto-based Opera; try <a href="https://github.com/loadletter/4chan-x">loadletter&#39;s fork</a> instead.</li>
 </ul>
 <p>It is also possible to use the <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">userscript version of 4chan X</a> with <a href="https://tampermonkey.net/">Tampermonkey</a>.</p>
-<h2 id="safari">Safari</h2>
+</div><input hidden type="checkbox" id="safari-hide"><div><label for="safari-hide"><h3 id="safari">Safari</h3></label>
 <p>Install <a href="http://jsblocker.toggleable.com/">JS Blocker</a>, then <strong><a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">click here to install 4chan X</a></strong>.</p>
-<h2 id="webkitgtk-">WebKitGTK+</h2>
+</div><input hidden type="checkbox" id="webkitgtk--hide"><div><label for="webkitgtk--hide"><h3 id="webkitgtk-">WebKitGTK+</h3></label>
 <p>Several WebKitGTK+ based browsers have support for userscripts and can run 4chan X. Due to the lack of the cross-site GM_* API, and lack of support for userscripts in iframes, not all features will work. You may experience crashes when repeatedly solving the default image-based captchas. You can avoid this problem by enabling <code>Use Recaptcha v1</code> in your settings.</p>
 <ul>
 <li><p><strong>dwb</strong>: Install the userscripts extension, then save the <a href="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js">script</a> to the <code>$XDG_CONFIG_HOME/dwb/greasemonkey</code> or <code>$HOME/.config/dwb/greasemonkey</code> directory (creating it if necessary):</p>
@@ -56,7 +58,7 @@ Previously developed by <a href="https://github.com/aeosynth/4chan-x">aeosynth</
   wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
 </code></pre></li>
 </ul>
-<h2 id="beta-version">Beta version</h2>
+</div><h2 id="beta-version">Beta version</h2>
 <p>New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please <a href="https://github.com/ccd0/4chan-x/issues">report</a> any issues you find, and be sure to mention which version you&#39;re using. You should back up your settings regularly to prevent them from being lost due to bugs.</p>
 <p>To install the current <strong>beta</strong> version but get updates from the <strong>stable</strong> channel (recommended if you want a particular recent feature):</p>
 <ul>
@@ -72,8 +74,6 @@ Previously developed by <a href="https://github.com/aeosynth/4chan-x">aeosynth</
 <p>4chan X currently shares your settings and post history between the HTTP and HTTPS versions of 4chan. If you are concerned about protecting your privacy against a man-in-the-middle attack, you should disable 4chan X on the HTTP version of 4chan and/or install <a href="https://www.eff.org/https-everywhere">HTTPS Everywhere</a>.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>If you encounter a bug, try the steps <a href="https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md#reporting-bugs">here</a>, then report it to the <a href="https://github.com/ccd0/4chan-x/issues">issue tracker</a>. If the bug seems to be caused by a script update, you can install a old version from the <a href="https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md">changelog</a>.</p>
-<h2 id="uninstalling">Uninstalling</h2>
-<p>4chan X disables the native extension, so if you uninstall 4chan X, you&#39;ll need to re-enable it. To do this, click the <code>[Settings]</code> link in the top right corner and uncheck &quot;<code>Disable the native extension</code>&quot; in the panel that appears.</p>
 
 <script>
 function imagePreview() {
@@ -98,6 +98,17 @@ for (var i = 0; i < document.links.length; i++) {
     link.addEventListener('mouseover', imagePreview, false);
   } else if (window.chrome && link.host === 'chrome.google.com') {
     link.addEventListener('click', storeInstall, false);
+  }
+}
+var engine = (function() {
+  if (/Chrome\//.test(navigator.userAgent)) return 'blink';
+  if (/WebKit\//.test(navigator.userAgent)) return 'webkit';
+  if (/Gecko\/|Goanna/.test(navigator.userAgent)) return 'gecko';
+})();
+if (engine) {
+  var engines = {'firefox': 'gecko', 'chromium': 'blink', 'safari': 'webkit', 'webkitgtk-': 'webkit'};
+  for (browser in engines) {
+    document.getElementById(browser + '-hide').checked = (engine !== engines[browser]);
   }
 }
 </script>
