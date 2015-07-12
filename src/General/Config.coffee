@@ -962,7 +962,7 @@ Config =
         'Automatically fetch new posts.'
       ]
       'Ignore Offline Status': [
-        false
+        true
         'Update even if your browser reports you are offline.'
       ]
       'Optional Increase': [
