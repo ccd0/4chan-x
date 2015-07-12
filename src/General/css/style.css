@@ -105,6 +105,10 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   /* party hats */
   pointer-events: none;
 }
+#g-recaptcha {
+  min-height: 78px;
+  height: auto;
+}
 :root:not(.js-enabled) #postForm {
   display: table;
 }
