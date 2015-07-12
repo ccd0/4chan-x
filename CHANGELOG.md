@@ -1,8 +1,12 @@
+**Note**: Installing the script from one of the links below will disable automatic updates. If you want automatic updates, install the script from the links on the [main page](https://ccd0.github.io/4chan-x/).
+
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
-The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
-
 ### v1.11.3
+
+**v1.11.3.4** *(2015-07-12)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix captcha in original post form obscuring file field for some users.
+- Turn `Ignore Offline Status` on by default.
 
 **v1.11.3.3** *(2015-07-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.2.5: Add fireden.net archive.
