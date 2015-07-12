@@ -4,6 +4,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.3
 
+**v1.11.3.4** *(2015-07-12)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix captcha in original post form obscuring file field for some users.
+- Turn `Ignore Offline Status` on by default.
+
 **v1.11.3.3** *(2015-07-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.2.5: Add fireden.net archive.
 
