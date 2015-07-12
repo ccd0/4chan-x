@@ -76,7 +76,6 @@ ThreadUpdater =
 
     ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
 
-    $.on window, 'online offline',   ThreadUpdater.cb.online
     $.on d,      'QRPostSuccessful', ThreadUpdater.cb.checkpost
     $.on d,      'visibilitychange', ThreadUpdater.cb.visibility
 
@@ -89,18 +88,6 @@ ThreadUpdater =
   beep: 'data:audio/wav;base64,<%= grunt.file.read("src/General/audio/beep.wav", {encoding: "base64"}) %>'
 
   cb:
-    online: ->
-      return if ThreadUpdater.thread.isDead
-
-      if navigator.onLine
-        ThreadUpdater.set 'status', ''
-      else
-        ThreadUpdater.set 'status', 'Offline', 'warning'
-
-      if Conf['Auto Update'] and not Conf['Ignore Offline Status']
-        ThreadUpdater.outdateCount = 0
-        ThreadUpdater.setInterval()
-
     checkpost: (e) ->
       return if e.detail.threadID isnt ThreadUpdater.thread.ID
       ThreadUpdater.postID = e.detail.postID
@@ -188,12 +175,6 @@ ThreadUpdater =
     unless Conf['Auto Update']
       ThreadUpdater.set 'timer', 'Update'
       return
-
-    unless navigator.onLine
-      ThreadUpdater.set 'status', 'Offline', 'warning'
-      unless Conf['Ignore Offline Status']
-        ThreadUpdater.set 'timer', ''
-        return
 
     {interval} = ThreadUpdater
     if Conf['Optional Increase']
