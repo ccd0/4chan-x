@@ -81,6 +81,9 @@ ThreadUpdater =
 
     ThreadUpdater.setInterval()
 
+    # Update immediately on /f/ to add files to replies.
+    ThreadUpdater.update() if @board.ID is 'f'
+
   ###
   http://freesound.org/people/pierrecartoons1979/sounds/90112/
   cc-by-nc-3.0
@@ -269,6 +272,13 @@ ThreadUpdater =
       ID = postObject.no
       index.push ID
       files.push ID if postObject.fsize
+
+      # Add files to replies on /f/.
+      if board.ID is 'f' and postObject.fsize and (post = thread.posts[ID]) and not post.file
+        node = Build.postFromObject postObject, board.ID
+        $.after post.nodes.info, $('.file', node)
+        post.parseFile()
+        Post.callbacks.execute post, ['Filter', 'File Info Formatting', 'Fappe Tyme', 'Sauce']
 
       # Insert new posts, not older ones.
       continue if ID <= lastPost
