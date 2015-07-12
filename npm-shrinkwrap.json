@@ -768,8 +768,8 @@
                           "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-0.3.0.tgz",
                           "dependencies": {
                             "lru-cache": {
-                              "version": "2.6.4",
-                              "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.4.tgz"
+                              "version": "2.6.5",
+                              "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.5.tgz"
                             },
                             "sigmund": {
                               "version": "1.0.1",
@@ -860,8 +860,8 @@
                   "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-1.0.0.tgz",
                   "dependencies": {
                     "lru-cache": {
-                      "version": "2.6.4",
-                      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.4.tgz"
+                      "version": "2.6.5",
+                      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.5.tgz"
                     },
                     "sigmund": {
                       "version": "1.0.1",
@@ -2746,8 +2746,8 @@
                   "resolved": "https://registry.npmjs.org/cli/-/cli-0.4.5.tgz",
                   "dependencies": {
                     "glob": {
-                      "version": "5.0.12",
-                      "resolved": "https://registry.npmjs.org/glob/-/glob-5.0.12.tgz",
+                      "version": "5.0.13",
+                      "resolved": "https://registry.npmjs.org/glob/-/glob-5.0.13.tgz",
                       "dependencies": {
                         "inflight": {
                           "version": "1.0.4",
@@ -2854,8 +2854,8 @@
                   "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-0.4.0.tgz",
                   "dependencies": {
                     "lru-cache": {
-                      "version": "2.6.4",
-                      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.4.tgz"
+                      "version": "2.6.5",
+                      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.5.tgz"
                     },
                     "sigmund": {
                       "version": "1.0.1",
@@ -3188,8 +3188,8 @@
                   "resolved": "https://registry.npmjs.org/cli/-/cli-0.4.5.tgz",
                   "dependencies": {
                     "glob": {
-                      "version": "5.0.12",
-                      "resolved": "https://registry.npmjs.org/glob/-/glob-5.0.12.tgz",
+                      "version": "5.0.13",
+                      "resolved": "https://registry.npmjs.org/glob/-/glob-5.0.13.tgz",
                       "dependencies": {
                         "inflight": {
                           "version": "1.0.4",
@@ -3253,8 +3253,8 @@
                   "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-0.4.0.tgz",
                   "dependencies": {
                     "lru-cache": {
-                      "version": "2.6.4",
-                      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.4.tgz"
+                      "version": "2.6.5",
+                      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.5.tgz"
                     },
                     "sigmund": {
                       "version": "1.0.1",
@@ -3303,8 +3303,8 @@
                           "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-0.3.0.tgz",
                           "dependencies": {
                             "lru-cache": {
-                              "version": "2.6.4",
-                              "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.4.tgz"
+                              "version": "2.6.5",
+                              "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.5.tgz"
                             },
                             "sigmund": {
                               "version": "1.0.1",
@@ -3321,8 +3321,8 @@
                   "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-0.2.14.tgz",
                   "dependencies": {
                     "lru-cache": {
-                      "version": "2.6.4",
-                      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.4.tgz"
+                      "version": "2.6.5",
+                      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.5.tgz"
                     },
                     "sigmund": {
                       "version": "1.0.1",
@@ -3397,8 +3397,8 @@
       }
     },
     "grunt-webstore-upload": {
-      "version": "0.8.3",
-      "resolved": "https://registry.npmjs.org/grunt-webstore-upload/-/grunt-webstore-upload-0.8.3.tgz",
+      "version": "0.8.5",
+      "resolved": "https://registry.npmjs.org/grunt-webstore-upload/-/grunt-webstore-upload-0.8.5.tgz",
       "dependencies": {
         "lodash": {
           "version": "2.4.2",
@@ -3703,8 +3703,8 @@
                           "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-0.3.0.tgz",
                           "dependencies": {
                             "lru-cache": {
-                              "version": "2.6.4",
-                              "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.4.tgz"
+                              "version": "2.6.5",
+                              "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.5.tgz"
                             },
                             "sigmund": {
                               "version": "1.0.1",
@@ -3795,8 +3795,8 @@
                   "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-1.0.0.tgz",
                   "dependencies": {
                     "lru-cache": {
-                      "version": "2.6.4",
-                      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.4.tgz"
+                      "version": "2.6.5",
+                      "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.6.5.tgz"
                     },
                     "sigmund": {
                       "version": "1.0.1",
