@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.3
 
+**v1.11.3.5** *(2015-07-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix video not being displayed when 'Disable Autoplaying Sounds' is enabled.
+
 **v1.11.3.4** *(2015-07-12)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix captcha in original post form obscuring file field for some users.
 - Turn `Ignore Offline Status` on by default.
