@@ -127,6 +127,9 @@ audio.controls-added {
   height: auto;
   text-align: center;
 }
+:root.anti-autoplay center iframe {
+  display: block !important;
+}
 
 /* fixed, z-index */
 #overlay,
