@@ -4,6 +4,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.5
 
+**v1.11.5.2** *(2015-07-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update `Disable Autoplaying Sounds` so the video in https://boards.4chan.org/g/thread/49036627 is visible.
+- Tweak position of expanded images.
+
 **v1.11.5.1** *(2015-07-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Bugfixes.
 
