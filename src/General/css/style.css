@@ -127,8 +127,10 @@ audio.controls-added {
   height: auto;
   text-align: center;
 }
-:root.anti-autoplay center iframe {
+:root.anti-autoplay .autoplay-removed {
   display: block !important;
+  min-width: 640px;
+  min-height: 390px;
 }
 
 /* fixed, z-index */
