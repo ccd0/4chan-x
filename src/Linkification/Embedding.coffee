@@ -253,7 +253,7 @@ Embedding =
           src: "//strawpoll.me/embed_1/#{a.dataset.uid}"
     ,
       key: 'TwitchTV'
-      regExp: /^\w+:\/\/(?:www\.)?twitch\.tv\/([^#\&\?]*)/
+      regExp: /^\w+:\/\/(?:www\.)?twitch\.tv\/(\w[^#\&\?]*)/
       httpOnly: true
       style: "border: none; width: 640px; height: 360px;"
       el: (a) ->
