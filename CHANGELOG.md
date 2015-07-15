@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.5
 
+**v1.11.5.1** *(2015-07-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Bugfixes.
+
 **v1.11.5.0** *(2015-07-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.4.1.
 - When posting a reply with a file on /f/, add a link to it in the comment.
