@@ -122,6 +122,7 @@ QR.post = class
       when 'thread'
         (if @thread isnt 'new' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
         QR.status()
+        @updateFlashURL()
       when 'com'
         @nodes.span.textContent = @com
         QR.captcha.onPostChange()
