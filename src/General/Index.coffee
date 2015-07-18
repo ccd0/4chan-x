@@ -18,6 +18,11 @@ Index =
       command: location.href.match(/#(.*)/)?[1]
       replace: true
 
+    $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
+    $.on window, 'popstate', @cb.popstate
+    $.on d, 'scroll', Index.scroll
+
+    # Header refresh button
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
       title: 'Refresh'
@@ -26,6 +31,7 @@ Index =
     $.on @button, 'click', -> Index.update()
     Header.addShortcut @button, 1
 
+    # Header "Index Navigation" submenu
     repliesEntry = el: UI.checkbox 'Show Replies',          'Show replies'
     pinEntry     = el: UI.checkbox 'Pin Watched Threads',   'Pin watched threads'
     anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', 'Anchor hidden threads'
@@ -49,36 +55,43 @@ Index =
       order: 100
       subEntries: [repliesEntry, pinEntry, anchorEntry, refNavEntry]
 
-    $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
-    @root     = $.el 'div', className: 'board'
-    @cb.size()
-    @pagelist = $.el 'div', className: 'pagelist'
-    $.extend @pagelist, <%= importHTML('Features/Index-pagelist') %>
-    $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
+    # Navigation links at top of index
     @navLinks = $.el 'div', className: 'navLinks'
     $.extend @navLinks, <%= importHTML('Features/Index-navlinks') %>
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
     $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID is 'b'
+    $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
+
+    # Search field
     @searchInput = $ '#index-search', @navLinks
     @setupSearch()
-    @hideLabel   = $ '#hidden-label', @navLinks
-    @selectMode  = $ '#index-mode',   @navLinks
-    @selectSort  = $ '#index-sort',   @navLinks
-    @selectSize  = $ '#index-size',   @navLinks
-    $.on window, 'popstate', @cb.popstate
-
-    $.on d, 'scroll', Index.scroll
-    $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
-    $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
-    $.on $('#index-search-clear',   @navLinks), 'click', @clearSearch
-    $.on $('#hidden-toggle a',      @navLinks), 'click', @cb.toggleHiddenThreads
+    $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
+
+    # Hidden threads toggle
+    @hideLabel = $ '#hidden-label', @navLinks
+    $.on $('#hidden-toggle a', @navLinks), 'click', @cb.toggleHiddenThreads
+
+    # Drop-down menus
+    @selectMode  = $ '#index-mode', @navLinks
+    @selectSort  = $ '#index-sort', @navLinks
+    @selectSize  = $ '#index-size', @navLinks
     $.on @selectMode, 'change', @cb.mode
     for select in [@selectMode, @selectSort, @selectSize]
       select.value = Conf[select.name]
       $.on select, 'change', $.cb.value
     $.on @selectSort, 'change', @cb.sort
     $.on @selectSize, 'change', @cb.size
+
+    # Thread container
+    @root = $.el 'div', className: 'board'
+    @cb.size()
+
+    # Page list
+    @pagelist = $.el 'div', className: 'pagelist'
+    $.extend @pagelist, <%= importHTML('Features/Index-pagelist') %>
+    $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
+    $.on @pagelist, 'click', @cb.pageNav
 
     @update()
 
