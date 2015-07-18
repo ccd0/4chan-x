@@ -78,20 +78,17 @@ Main =
         if /\/imgboard\.php$/.test(location.pathname) and (match = location.search.match /\bres=(\d+)/)
           $.ready ->
             if $.id('errmsg')?.textContent is 'Error: Specified thread does not exist.'
-              Redirect.init()
-              Redirect.navigate Redirect.to 'thread',
+              Redirect.navigate 'thread',
                 boardID: g.BOARD.ID
                 postID:  +match[1]
         return
       when 'i.4cdn.org'
         $.asap (-> d.readyState isnt 'loading'), ->
           if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
-            Redirect.init()
             pathname = location.pathname.split '/'
-            URL = Redirect.to 'file',
+            Redirect.navigate 'file',
               boardID:  g.BOARD.ID
               filename: pathname[pathname.length - 1]
-            Redirect.navigate URL
           else if video = $ 'video'
             if Conf['Volume in New Tab']
               Volume.setup video
@@ -169,11 +166,11 @@ Main =
       if g.VIEW is 'thread'
         ThreadWatcher.set404 g.BOARD.ID, g.THREADID, ->
           if Conf['404 Redirect']
-            href = Redirect.to 'thread',
+            Redirect.navigate 'thread',
               boardID:  g.BOARD.ID
               threadID: g.THREADID
               postID:   +location.hash.match /\d+/ # post number or 0
-            Redirect.navigate href, "/#{g.BOARD}/"
+            , "/#{g.BOARD}/"
       return
 
     # 4chan Pass Link
