@@ -95,11 +95,10 @@ Index =
 
     @update()
 
-    $.asap (-> $('title + *', doc) or d.readyState isnt 'loading'), ->
+    $.onExists doc, 'title + *', true, ->
       d.title = d.title.replace /\ -\ Page\ \d+/, ''
 
-    $.asap (-> $('.board > .thread > .postContainer', doc) or d.readyState isnt 'loading'), ->
-      return unless Main.isThisPageLegit()
+    $.onExists doc, '.board > .thread > .postContainer, .board + *', true, ->
       Index.hat = $ '.board > .thread > img:first-child'
       if Index.hat and Index.nodes
         for threadRoot in Index.nodes
@@ -123,8 +122,7 @@ Index =
       $.before topNavPos, $.el 'hr'
       $.before topNavPos, Index.navLinks
 
-    $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
-      return unless Main.isThisPageLegit()
+    Main.ready ->
       if pagelist = $('.pagelist')
         $.replace pagelist, Index.pagelist
       else
