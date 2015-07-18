@@ -670,8 +670,8 @@ Index =
     Index.onSearchInput()
     Index.searchInput.focus()
 
-  setupSearch: (noUpdate) ->
-    Index.searchInput.value = Index.search unless noUpdate
+  setupSearch: ->
+    Index.searchInput.value = Index.search
     if Index.search
       Index.searchInput.dataset.searching = 1
     else
