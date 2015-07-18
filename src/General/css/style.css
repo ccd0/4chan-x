@@ -611,9 +611,9 @@ div[data-checked="false"] > .suboption-list {
 }
 
 /* Index */
-:root.index-loading .navLinks,
-:root.index-loading .board,
-:root.index-loading .pagelist,
+:root.index-loading .navLinks:not(.json-index),
+:root.index-loading .board:not(.json-index),
+:root.index-loading .pagelist:not(.json-index),
 :root.infinite-mode .pagelist,
 :root.all-pages-mode .pagelist,
 :root.catalog-mode .pagelist,

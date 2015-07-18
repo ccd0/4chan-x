@@ -56,7 +56,7 @@ Index =
       subEntries: [repliesEntry, pinEntry, anchorEntry, refNavEntry]
 
     # Navigation links at top of index
-    @navLinks = $.el 'div', className: 'navLinks'
+    @navLinks = $.el 'div', className: 'navLinks json-index'
     $.extend @navLinks, <%= importHTML('Features/Index-navlinks') %>
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
     $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID is 'b'
@@ -84,11 +84,11 @@ Index =
     $.on @selectSize, 'change', @cb.size
 
     # Thread container
-    @root = $.el 'div', className: 'board'
+    @root = $.el 'div', className: 'board json-index'
     @cb.size()
 
     # Page list
-    @pagelist = $.el 'div', className: 'pagelist'
+    @pagelist = $.el 'div', className: 'pagelist json-index'
     $.extend @pagelist, <%= importHTML('Features/Index-pagelist') %>
     $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
     $.on @pagelist, 'click', @cb.pageNav
