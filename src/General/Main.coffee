@@ -75,6 +75,13 @@ Main =
       when 'sys.4chan.org'
         Report.init()
         PostSuccessful.init() if g.VIEW is 'post'
+        if /\/imgboard\.php$/.test(location.pathname) and (match = location.search.match /\bres=(\d+)/)
+          $.ready ->
+            if $.id('errmsg')?.textContent is 'Error: Specified thread does not exist.'
+              Redirect.init()
+              Redirect.navigate Redirect.to 'thread',
+                boardID: g.BOARD.ID
+                postID:  +match[1]
         return
       when 'i.4cdn.org'
         $.asap (-> d.readyState isnt 'loading'), ->
