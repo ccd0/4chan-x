@@ -13,7 +13,4 @@ RevealSpoilers =
     thumb.removeAttribute 'style'
     # Enforce thumbnail size if thumbnail is replaced.
     thumb.style.maxHeight = thumb.style.maxWidth = if @isReply then '125px' else '250px'
-    if thumb.src
-      thumb.src = @file.thumbURL
-    else
-      thumb.dataset.src = @file.thumbURL
+    thumb.src = @file.thumbURL

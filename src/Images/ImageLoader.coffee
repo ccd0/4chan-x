@@ -38,7 +38,7 @@ ImageLoader =
       preload:     'none'
       loop:        true
       muted:       true
-      poster:      thumb.src or thumb.dataset.src
+      poster:      thumb.src
       textContent: thumb.alt
       className:   thumb.className
     video.setAttribute 'muted', 'muted'
@@ -55,7 +55,7 @@ ImageLoader =
     {isImage, isVideo, thumb, url} = file
     return if file.isPrefetched or !(isImage or isVideo) or post.isHidden or post.thread.isHidden
     type    = if (match = url.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
-    replace = Conf["Replace #{type}"] and !/spoiler/.test(thumb.src or thumb.dataset.src)
+    replace = Conf["Replace #{type}"] and !/spoiler/.test thumb.src
     return unless replace or Conf['prefetch']
     return unless [post, post.clones...].some (clone) -> doc.contains clone.nodes.root
     file.isPrefetched = true
@@ -72,8 +72,6 @@ ImageLoader =
       $.on el, 'load', ->
         clone.file.thumb.src = url for clone in post.clones
         thumb.src = url
-        # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
-        thumb.removeAttribute 'data-src'
     el.src = url
 
   toggle: ->
