@@ -1,5 +1,7 @@
 Index =
   showHiddenThreads: false
+  changed: {}
+
   init: ->
     return if g.BOARD.ID is 'f' or !Conf['JSON Navigation'] or g.VIEW isnt 'index'
 
@@ -13,10 +15,7 @@ Index =
     if history.state?.mode
       Conf['Index Mode'] = history.state?.mode
     @currentPage = @getCurrentPage()
-    @pushState
-      # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
-      command: location.href.match(/#(.*)/)?[1]
-      replace: true
+    @processHash()
 
     $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
     $.on window, 'popstate', @cb.popstate
@@ -212,7 +211,8 @@ Index =
       unless mode is 'catalog'
         Conf['Previous Index Mode'] = mode
         $.set 'Previous Index Mode', mode
-      Index.pageLoad Index.pushState {mode}
+      Index.pushState {mode}
+      Index.pageLoad false
 
     sort: ->
       Index.sort()
@@ -239,25 +239,21 @@ Index =
       if e?.state
         {search, mode} = e.state
         page = Index.getCurrentPage()
-        state = {}
         if Index.search isnt search
-          state.search = Index.search = search
+          Index.changed.search = true
+          Index.search = search
         if Conf['Index Mode'] isnt mode
-          state.mode = mode
+          Index.changed.mode = true
           Index.saveMode mode
         if Index.currentPage isnt page
-          state.page = Index.currentPage = page
-        if state.search? or state.mode? or state.page?
-          Index.pageLoad state
+          Index.changed.page = true
+          Index.currentPage = page
+        if Object.keys(Index.changed).length
+          Index.pageLoad()
       else
         # page load or hash change
-        state = Index.pushState
-          # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
-          command: location.href.match(/#(.*)/)?[1]
-          replace: true
-          scroll:  true
-        if state.command
-          Index[if Conf['Refreshed Navigation'] then 'update' else 'pageLoad'] state
+        if Index.processHash()
+          Index[if Conf['Refreshed Navigation'] then 'update' else 'pageLoad']()
 
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
@@ -274,7 +270,8 @@ Index =
       Index.userPageNav +a.pathname.split('/')[2] or 1
 
     refreshFront: ->
-      Index.update Index.pushState {page: 1, scroll: true}
+      Index.pushState {page: 1}
+      Index.update()
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.navLinks
@@ -286,53 +283,57 @@ Index =
       +window.location.pathname.split('/')[2] or 1
 
   userPageNav: (page) ->
-    state = Index.pushState {page, scroll: true}
+    Index.pushState {page}
     if Conf['Refreshed Navigation']
-      Index.update state
+      Index.update()
     else
-      Index.pageLoad state if state.page
+      Index.pageLoad() if Object.keys(Index.changed).length
 
-  pushState: (state) ->
-    {pathname, hash} = location
+  processHash: ->
+    # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
+    command = location.href.match(/#(.*)/)?[1]
+    state =
+      replace: true
+      hash:    ''
+    if command in ['paged', 'infinite', 'all-pages', 'catalog']
+      state.mode = command.replace /-/g, ' '
+    else if command is 'index'
+      state.mode = Conf['Previous Index Mode']
+      state.page = 1
+    else if /^s=/.test command
+      state.search = decodeURIComponent(command[2..]).replace(/\+/g, ' ').trim()
+    else
+      delete state.hash
+    Index.pushState state
+    state.hash is ''
+
+  pushState: ({search, mode, page, hash, replace}) ->
     pageBeforeSearch = history.state?.oldpage
-    if state.command?
-      {command} = state
-      if command in ['paged', 'infinite', 'all-pages', 'catalog']
-        state.mode = command.replace /-/g, ' '
-      else if command is 'index'
-        state.mode = Conf['Previous Index Mode']
-        state.page = 1
-      else if /^s=/.test command
-        state.search = decodeURIComponent(command[2..]).replace(/\+/g, ' ').trim()
-        hash = ''
-      else
-        delete state.command
-    if state.search?
-      {search} = state
-      state.page = if search then 1 else (pageBeforeSearch or 1)
+    if search?
+      Index.changed.search = true
+      page = if search then 1 else (pageBeforeSearch or 1)
       if !search
         pageBeforeSearch = undefined
       else if !Index.search
         pageBeforeSearch = Index.currentPage
       Index.search = search
-    if state.mode?
-      {mode} = state
-      delete state.mode if mode is Conf['Index Mode']
+    if mode?
+      Index.changed.mode = true unless mode is Conf['Index Mode']
       Index.saveMode mode
-      state.page = 1 if mode in ['all pages', 'catalog']
-      hash = ''
-    if state.page?
-      {page} = state
-      delete state.page if page is Index.currentPage
+      page = 1 if mode in ['all pages', 'catalog']
+      hash ?= ''
+    if page?
+      Index.changed.page = true unless page is Index.currentPage
       Index.currentPage = page
       pathname = if page is 1 then "/#{g.BOARD}/" else "/#{g.BOARD}/#{page}"
-      hash = ''
-    history[if state.replace then 'replaceState' else 'pushState']
+      hash ?= ''
+    pathname ?= location.pathname
+    hash     ?= location.hash
+    history[if replace then 'replaceState' else 'pushState']
       mode:    Conf['Index Mode']
       search:  Index.search
       oldpage: pageBeforeSearch
     , '', pathname + hash
-    state
 
   saveMode: (mode) ->
     unless Conf['Index Mode'] is mode
@@ -342,15 +343,17 @@ Index =
       Conf['Previous Index Mode'] = mode
       $.set 'Previous Index Mode', mode
 
-  pageLoad: ({sort, search, mode, scroll}) ->
-    if sort or search?
+  pageLoad: (scroll=true) ->
+    {threads, search, mode} = Index.changed
+    if threads or search
       Index.sort()
       Index.buildPagelist()
-    Index.setupSearch() if search?
-    Index.applyMode() if mode?
+    Index.setupSearch() if search
+    Index.applyMode() if mode
     Index.buildIndex()
     Index.setPage()
     Index.scrollToIndex() if scroll
+    Index.changed = {}
 
   applyMode: ->
     for mode in ['paged', 'infinite', 'all pages', 'catalog']
@@ -422,7 +425,7 @@ Index =
     else
       "#{hiddenCount} hidden threads"
 
-  update: (state) ->
+  update: ->
     delete Index.pageNum
     Index.req?.abort()
     Index.notice?.close()
@@ -440,12 +443,12 @@ Index =
         ), 3 * $.SECOND - (Date.now() - now)
 
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
-      onloadend: (e) -> Index.load e, state
+      onloadend: Index.load
     ,
       whenModified: 'Index'
     $.addClass Index.button, 'fa-spin'
 
-  load: (e, state) ->
+  load: (e) ->
     $.rmClass Index.button, 'fa-spin'
     {req, notice, nTimeout} = Index
     clearTimeout nTimeout if nTimeout
@@ -470,9 +473,9 @@ Index =
 
     try
       if req.status is 200
-        Index.parse req.response, state
-      else if req.status is 304 and state?
-        Index.pageLoad state
+        Index.parse req.response
+      else if req.status is 304 and Object.keys(Index.changed).length
+        Index.pageLoad()
     catch err
       c.error "Index failure: #{err.message}", err.stack
       # network error or non-JSON content for example.
@@ -497,13 +500,12 @@ Index =
     RelativeDates.update timeEl
     Index.scrollToIndex()
 
-  parse: (pages, state) ->
+  parse: (pages) ->
     $.cleanCache (url) -> /^\/\/a\.4cdn\.org\//.test url
     Index.parseThreadList pages
     Index.buildThreads()
-    state or= {}
-    state.sort = true
-    Index.pageLoad state
+    Index.changed.threads = true
+    Index.pageLoad()
 
   parseThreadList: (pages) ->
     Index.pagesNum          = pages.length
@@ -642,7 +644,9 @@ Index =
           i = 0
           i++ while Index.followedThreadID isnt Get.threadFromRoot(Index.sortedNodes[i]).ID
           page = i // Index.threadsNumPerPage + 1
-          Index.pushState {page} if page isnt Index.getCurrentPage()
+          if page isnt Index.getCurrentPage()
+            Index.currentPage = page
+            Index.pushState {page}
         nodes = Index.buildSinglePage Index.getCurrentPage()
     $.rmAll Index.root
     $.rmAll Header.hover
@@ -681,9 +685,10 @@ Index =
   onSearchInput: ->
     search = Index.searchInput.value.trim()
     return if search is Index.search
-    Index.pageLoad Index.pushState
+    Index.pushState
       search:  search
       replace: !!search is !!Index.search
+    Index.pageLoad false
 
   querySearch: (query) ->
     return unless keywords = query.toLowerCase().match /\S+/g
