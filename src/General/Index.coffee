@@ -631,7 +631,9 @@ Index =
           i = 0
           i++ while Index.followedThreadID isnt Get.threadFromRoot(Index.sortedNodes[i]).ID
           page = i // Index.threadsNumPerPage + 1
-          Index.pushState {page} if page isnt Index.getCurrentPage()
+          if page isnt Index.getCurrentPage()
+            Index.pushState {page}
+            Index.setPage()
         nodes = Index.buildSinglePage Index.getCurrentPage()
     $.rmAll Index.root
     $.rmAll Header.hover
