@@ -248,8 +248,7 @@ Index =
         if Index.currentPage isnt page
           Index.changed.page = true
           Index.currentPage = page
-        if Object.keys(Index.changed).length
-          Index.pageLoad false
+        Index.pageLoad false
       else
         # page load or hash change
         if Index.processHash()
@@ -287,7 +286,7 @@ Index =
     if Conf['Refreshed Navigation']
       Index.update()
     else
-      Index.pageLoad() if Object.keys(Index.changed).length
+      Index.pageLoad()
 
   processHash: ->
     # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
@@ -344,14 +343,15 @@ Index =
       $.set 'Previous Index Mode', mode
 
   pageLoad: (scroll=true) ->
-    {threads, search, mode} = Index.changed
+    {threads, search, mode, page} = Index.changed
     if threads or search
       Index.sort()
       Index.buildPagelist()
     Index.setupSearch() if search
     Index.applyMode() if mode
-    Index.buildIndex()
-    Index.setPage()
+    if threads or search or mode or page
+      Index.buildIndex()
+      Index.setPage()
     Index.scrollToIndex() if scroll
     Index.changed = {}
 
@@ -474,7 +474,7 @@ Index =
     try
       if req.status is 200
         Index.parse req.response
-      else if req.status is 304 and Object.keys(Index.changed).length
+      else if req.status is 304
         Index.pageLoad()
     catch err
       c.error "Index failure: #{err.message}", err.stack
@@ -498,7 +498,6 @@ Index =
     timeEl = $ '#index-last-refresh time', Index.navLinks
     timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
     RelativeDates.update timeEl
-    Index.scrollToIndex()
 
   parse: (pages) ->
     $.cleanCache (url) -> /^\/\/a\.4cdn\.org\//.test url
