@@ -130,7 +130,7 @@ Index =
 
   scroll: ->
     return if Index.req or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight))
-    Index.pageNum = Index.getCurrentPage() unless Index.pageNum? # Avoid having to pushState to keep track of the current page
+    Index.pageNum ?= Index.currentPage # Avoid having to pushState to keep track of the current page
 
     pageNum = ++Index.pageNum
     return Index.endNotice() if pageNum > Index.pagesNum
@@ -386,7 +386,7 @@ Index =
       $.add pagesRoot, nodes
 
   setPage: ->
-    pageNum    = Index.getCurrentPage()
+    pageNum    = Index.currentPage
     maxPageNum = Index.getMaxPageNum()
     pagesRoot  = $ '.pages', Index.pagelist
 
@@ -644,10 +644,10 @@ Index =
           i = 0
           i++ while Index.followedThreadID isnt Get.threadFromRoot(Index.sortedNodes[i]).ID
           page = i // Index.threadsNumPerPage + 1
-          if page isnt Index.getCurrentPage()
+          if page isnt Index.currentPage
             Index.currentPage = page
             Index.pushState {page}
-        nodes = Index.buildSinglePage Index.getCurrentPage()
+        nodes = Index.buildSinglePage Index.currentPage
     $.rmAll Index.root
     $.rmAll Header.hover
     if Conf['Index Mode'] is 'catalog'
