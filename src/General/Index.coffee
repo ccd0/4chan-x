@@ -249,7 +249,7 @@ Index =
           Index.changed.page = true
           Index.currentPage = page
         if Object.keys(Index.changed).length
-          Index.pageLoad()
+          Index.pageLoad false
       else
         # page load or hash change
         if Index.processHash()
