@@ -5,8 +5,6 @@ Index =
   init: ->
     return if g.BOARD.ID is 'f' or !Conf['JSON Navigation'] or g.VIEW isnt 'index'
 
-    @board = "#{g.BOARD}"
-
     CatalogThread.callbacks.push
       name: 'Catalog Features'
       cb:   @catalogNode
