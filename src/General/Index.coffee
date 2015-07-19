@@ -236,16 +236,8 @@ Index =
     popstate: (e) ->
       if e?.state
         {search, mode} = e.state
-        if Index.search isnt search
-          Index.changed.search = true
-          Index.search = search
-        if Conf['Index Mode'] isnt mode
-          Index.changed.mode = true
-          Index.saveMode mode
         page = Index.getCurrentPage()
-        if Index.currentPage isnt page
-          Index.changed.page = true
-          Index.currentPage = page
+        Index.setState {search, mode, page}
         Index.pageLoad false
       else
         # page load or hash change
@@ -274,10 +266,7 @@ Index =
     Header.scrollToIfNeeded Index.navLinks
 
   getCurrentPage: ->
-    if Conf['Index Mode'] in ['all pages', 'catalog']
-      1
-    else
-      +window.location.pathname.split('/')[2] or 1
+    +window.location.pathname.split('/')[2] or 1
 
   userPageNav: (page) ->
     Index.pushState {page}
@@ -288,10 +277,10 @@ Index =
 
   processHash: ->
     # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
-    command = location.href.match(/#(.*)/)?[1]
+    hash = location.href.match(/#.*/)?[0] or ''
+    command = hash[1..]
     state =
       replace: true
-      hash:    ''
     if command in ['paged', 'infinite', 'all-pages', 'catalog']
       state.mode = command.replace /-/g, ' '
     else if command is 'index'
@@ -300,45 +289,43 @@ Index =
     else if /^s=/.test command
       state.search = decodeURIComponent(command[2..]).replace(/\+/g, ' ').trim()
     else
-      delete state.hash
+      state.hash = hash
     Index.pushState state
-    state.hash is ''
+    !state.hash?
 
-  pushState: ({search, mode, page, hash, replace}) ->
+  pushState: (state) ->
+    {search, hash, replace} = state
     pageBeforeSearch = history.state?.oldpage
-    if search?
-      Index.changed.search = true
-      page = if search then 1 else (pageBeforeSearch or 1)
+    if search? and search isnt Index.search
+      state.page = if search then 1 else (pageBeforeSearch or 1)
       if !search
         pageBeforeSearch = undefined
       else if !Index.search
         pageBeforeSearch = Index.currentPage
-      Index.search = search
-    if mode?
-      Index.changed.mode = true unless mode is Conf['Index Mode']
-      Index.saveMode mode
-      page = 1 if mode in ['all pages', 'catalog']
-      hash ?= ''
-    if page?
-      Index.changed.page = true unless page is Index.currentPage
-      Index.currentPage = page
-      pathname = if page is 1 then "/#{g.BOARD}/" else "/#{g.BOARD}/#{page}"
-      hash ?= ''
-    pathname ?= location.pathname
-    hash     ?= location.hash
+    Index.setState state
+    pathname = if Index.currentPage is 1 then "/#{g.BOARD}/" else "/#{g.BOARD}/#{Index.currentPage}"
+    hash or= ''
     history[if replace then 'replaceState' else 'pushState']
       mode:    Conf['Index Mode']
       search:  Index.search
       oldpage: pageBeforeSearch
     , '', pathname + hash
 
-  saveMode: (mode) ->
-    unless Conf['Index Mode'] is mode
+  setState: ({search, mode, page}) ->
+    if search? and search isnt Index.search
+      Index.changed.search = true
+      Index.search = search
+    if mode? and mode isnt Conf['Index Mode']
+      Index.changed.mode = true
       Conf['Index Mode'] = mode
       $.set 'Index Mode', mode
-    unless mode is 'catalog' or Conf['Previous Index Mode'] is mode
-      Conf['Previous Index Mode'] = mode
-      $.set 'Previous Index Mode', mode
+      unless mode is 'catalog' or Conf['Previous Index Mode'] is mode
+        Conf['Previous Index Mode'] = mode
+        $.set 'Previous Index Mode', mode
+    page = 1 if Conf['Index Mode'] in ['all pages', 'catalog']
+    if page? and page isnt Index.currentPage
+      Index.changed.page = true
+      Index.currentPage = page
 
   pageLoad: (scroll=true) ->
     {threads, search, mode, page} = Index.changed
