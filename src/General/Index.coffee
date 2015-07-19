@@ -647,6 +647,7 @@ Index =
           if page isnt Index.currentPage
             Index.currentPage = page
             Index.pushState {page}
+            Index.setPage()
         nodes = Index.buildSinglePage Index.currentPage
     $.rmAll Index.root
     $.rmAll Header.hover
