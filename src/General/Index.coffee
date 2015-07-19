@@ -227,13 +227,13 @@ Index =
     popstate: (e) ->
       if e?.state
         {search, mode} = e.state
-        page = Index.getCurrentPage()
         state = {}
         if Index.search isnt search
           state.search = Index.search = search
         if Conf['Index Mode'] isnt mode
           state.mode = mode
           Index.saveMode mode
+        page = Index.getCurrentPage()
         if Index.currentPage isnt page
           state.page = Index.currentPage = page
         if state.search? or state.mode? or state.page?
