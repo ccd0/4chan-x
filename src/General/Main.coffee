@@ -75,7 +75,7 @@ Main =
       when 'sys.4chan.org'
         Report.init()
         PostSuccessful.init() if g.VIEW is 'post'
-        if /\/imgboard\.php$/.test(location.pathname) and (match = location.search.match /\bres=(\d+)/)
+        if Conf['404 Redirect'] and /\/imgboard\.php$/.test(location.pathname) and (match = location.search.match /\bres=(\d+)/)
           $.ready ->
             if $.id('errmsg')?.textContent is 'Error: Specified thread does not exist.'
               Redirect.navigate 'thread',
