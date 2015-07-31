@@ -117,9 +117,9 @@ Captcha.noscript =
 
   destroy: ->
     return unless @isEnabled
-    $.rm @nodes.img if @nodes.img
+    $.rm @nodes.img
     delete @nodes.img
-    $.rm @nodes.iframe if @nodes.iframe
+    $.rm @nodes.iframe
     delete @nodes.iframe
     delete @occupied
     @beforeSetup()

@@ -156,7 +156,7 @@ $.hasClass = (el, className) ->
   className in el.classList
 
 $.rm = (el) ->
-  el.remove()
+  el?.remove()
 
 $.rmAll = (root) ->
   # https://gist.github.com/MayhemYDG/8646194
