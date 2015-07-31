@@ -105,7 +105,7 @@ Index =
       d.implementation.createDocument(null, null, null).appendChild board
 
       $.rm el for el in $$ '.navLinks'
-      $.rm $.id('search-box')?.parentNode
+      $.rm $.id('ctrl-top')
       topNavPos = $.id('delform').previousElementSibling
       $.before topNavPos, $.el 'hr'
       $.before topNavPos, Index.navLinks
