@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import http.server, http.client, socketserver, threading, sys, re
 
-def proxyConfig():
+def proxyConfig(handler):
+  headers = [('Content-Type', 'application/x-javascript-config')]
   data = b'''function FindProxyForURL(url, host) {
     if (/^http:\/\/boards\.4chan\.org\//.test(url)) {
       return 'PROXY localhost:8000';
@@ -9,14 +10,18 @@ def proxyConfig():
     return 'DIRECT';
   }
   '''
-  return 'application/x-javascript-config', data
+  return headers, data
 
 def localScript(filename):
-  def handler():
+  def callback(handler):
+    headers = [
+      ('Content-Type', 'application/javascript'),
+      ('Expires', handler.date_time_string())
+    ]
     with open(filename, 'rb') as f:
       data = f.read()
-    return 'application/javascript', data
-  return handler
+    return headers, data
+  return callback
 
 resources = {'/proxy.pac': proxyConfig}
 
@@ -32,9 +37,10 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
   def local(self):
     if self.path in resources:
-      mimeType, data = resources[self.path]()
+      headers, data = resources[self.path](self)
       self.send_response(200)
-      self.send_header('Content-Type', mimeType)
+      for header in headers:
+        self.send_header(*header)
       self.send_header('Content-Length', len(data))
       self.end_headers()
       if self.command != 'HEAD':
