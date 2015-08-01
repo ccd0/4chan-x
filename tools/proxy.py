@@ -8,6 +8,7 @@ proxyConfig = b'''function FindProxyForURL(url, host) {
   return 'DIRECT';
 }
 '''
+resources = {'/proxy.pac': ('application/x-javascript-config', proxyConfig)}
 
 class ExtensionReplacer(http.server.BaseHTTPRequestHandler):
   def do_HEAD(self):
@@ -15,12 +16,14 @@ class ExtensionReplacer(http.server.BaseHTTPRequestHandler):
 
   def do_GET(self):
     if self.headers.get('Host', '').split(':')[0] == 'localhost':
-      if self.path == '/proxy.pac':
+      if self.path in resources:
+        mimeType, data = resources[self.path]
         self.send_response(200)
-        self.send_header('Content-Length', len(proxyConfig))
+        self.send_header('Content-Type', mimeType)
+        self.send_header('Content-Length', len(data))
         self.end_headers()
         if self.command != 'HEAD':
-          self.wfile.write(proxyConfig)
+          self.wfile.write(data)
       else:
         self.send_error(404)
     else:
