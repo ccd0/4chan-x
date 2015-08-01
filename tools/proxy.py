@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import http.server, http.client, sys, re
+import http.server, http.client, socketserver, threading, sys, re
 
 proxyConfig = b'''function FindProxyForURL(url, host) {
   if (/^http:\/\/boards\.4chan\.org\//.test(url)) {
@@ -43,6 +43,10 @@ class ExtensionReplacer(http.server.BaseHTTPRequestHandler):
         self.wfile.write(body)
       conn.close()
 
+class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+  pass
+
 port = int(sys.argv[1]) if 1 < len(sys.argv) else 8000
-httpd = http.server.HTTPServer(('localhost', port), ExtensionReplacer)
-httpd.serve_forever()
+server = ThreadedHTTPServer(('localhost', port), ExtensionReplacer)
+thread = threading.Thread(target=server.serve_forever)
+thread.start()
