@@ -14,12 +14,15 @@ class ExtensionReplacer(http.server.BaseHTTPRequestHandler):
     self.do_GET()
 
   def do_GET(self):
-    if self.path == '/proxy.pac':
-      self.send_response(200, 'OK')
-      self.send_header('Content-Length', len(proxyConfig))
-      self.end_headers()
-      if self.command != 'HEAD':
-        self.wfile.write(proxyConfig)
+    if self.headers.get('Host', '').split(':')[0] == 'localhost':
+      if self.path == '/proxy.pac':
+        self.send_response(200)
+        self.send_header('Content-Length', len(proxyConfig))
+        self.end_headers()
+        if self.command != 'HEAD':
+          self.wfile.write(proxyConfig)
+      else:
+        self.send_error(404)
     else:
       del self.headers['Accept-Encoding']
       conn = http.client.HTTPConnection('boards.4chan.org')
