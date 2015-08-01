@@ -28,10 +28,13 @@ class ExtensionReplacer(http.server.BaseHTTPRequestHandler):
         self.send_error(404)
     else:
       del self.headers['Accept-Encoding']
-      conn = http.client.HTTPConnection('boards.4chan.org')
-      conn.request('GET', self.path, headers=self.headers)
-      response = conn.getresponse()
-      body = response.read()
+      try:
+        conn = http.client.HTTPConnection('boards.4chan.org')
+        conn.request('GET', self.path, headers=self.headers)
+        response = conn.getresponse()
+        body = response.read()
+      finally:
+        conn.close()
       body = body.replace(b'<head>', b'<head><script src="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js"></script>', 1)
       self.send_response(response.status, response.reason)
       for header, value in response.getheaders():
@@ -41,7 +44,6 @@ class ExtensionReplacer(http.server.BaseHTTPRequestHandler):
       self.end_headers()
       if self.command != 'HEAD':
         self.wfile.write(body)
-      conn.close()
 
 class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
   pass
