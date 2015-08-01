@@ -31,7 +31,7 @@ class ExtensionReplacer(http.server.BaseHTTPRequestHandler):
       body = response.read()
       self.send_response(response.status, response.reason)
       for header, value in response.getheaders():
-        if header.lower() not in ('date', 'connection', 'content-encoding', 'transfer-encoding', 'content-length'):
+        if header.lower() not in ('date', 'connection', 'transfer-encoding', 'content-length'):
           self.send_header(header, value)
       self.send_header('Content-Length', len(body))
       self.end_headers()
