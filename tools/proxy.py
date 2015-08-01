@@ -26,14 +26,17 @@ class ExtensionReplacer(http.server.BaseHTTPRequestHandler):
       self.end_headers()
     else:
       conn = http.client.HTTPConnection('s.4cdn.org')
-      conn.request(self.command, self.path, headers=self.headers)
+      conn.request('GET', self.path, headers=self.headers)
       response = conn.getresponse()
+      body = response.read()
       self.send_response(response.status, response.reason)
       for header, value in response.getheaders():
-        if header not in ('Date', 'Connection'):
+        if header.lower() not in ('date', 'connection', 'content-encoding', 'transfer-encoding', 'content-length'):
           self.send_header(header, value)
+      self.send_header('Content-Length', len(body))
       self.end_headers()
-      self.wfile.write(response.read())
+      if self.command != 'HEAD':
+        self.wfile.write(body)
       conn.close()
 
 port = int(sys.argv[1]) if 1 < len(sys.argv) else 8000
