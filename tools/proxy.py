@@ -2,7 +2,7 @@
 import http.server, http.client, sys, re
 
 proxyConfig = b'''function FindProxyForURL(url, host) {
-  if (/^http:\/\/s\.4cdn\.org\/(js\/extension\.min\.\d+\.js)?$/.test(url)) {
+  if (/^http:\/\/boards\.4chan\.org\//.test(url)) {
     return 'PROXY localhost:8000';
   }
   return 'DIRECT';
@@ -20,15 +20,13 @@ class ExtensionReplacer(http.server.BaseHTTPRequestHandler):
       self.end_headers()
       if self.command != 'HEAD':
         self.wfile.write(proxyConfig)
-    elif re.match(r'http://s\.4cdn\.org/js/extension.min.\d+.js$', self.path):
-      self.send_response(302, 'Found')
-      self.send_header('Location', 'https://ccd0.github.io/4chan-x/builds/4chan-X.user.js')
-      self.end_headers()
     else:
-      conn = http.client.HTTPConnection('s.4cdn.org')
+      del self.headers['Accept-Encoding']
+      conn = http.client.HTTPConnection('boards.4chan.org')
       conn.request('GET', self.path, headers=self.headers)
       response = conn.getresponse()
       body = response.read()
+      body = body.replace(b'<head>', b'<head><script src="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js"></script>', 1)
       self.send_response(response.status, response.reason)
       for header, value in response.getheaders():
         if header.lower() not in ('date', 'connection', 'transfer-encoding', 'content-length'):
