@@ -10,7 +10,7 @@ proxyConfig = b'''function FindProxyForURL(url, host) {
 '''
 resources = {'/proxy.pac': ('application/x-javascript-config', proxyConfig)}
 
-class ExtensionReplacer(http.server.BaseHTTPRequestHandler):
+class RequestHandler(http.server.BaseHTTPRequestHandler):
   def do_HEAD(self):
     self.do_GET()
 
@@ -55,6 +55,6 @@ class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
   pass
 
 port = int(sys.argv[1]) if 1 < len(sys.argv) else 8000
-server = ThreadedHTTPServer(('localhost', port), ExtensionReplacer)
+server = ThreadedHTTPServer(('localhost', port), RequestHandler)
 thread = threading.Thread(target=server.serve_forever)
 thread.start()
