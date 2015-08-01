@@ -1,14 +1,24 @@
 #!/usr/bin/env python3
 import http.server, http.client, socketserver, threading, sys, re
 
-proxyConfig = b'''function FindProxyForURL(url, host) {
-  if (/^http:\/\/boards\.4chan\.org\//.test(url)) {
-    return 'PROXY localhost:8000';
+def proxyConfig():
+  data = b'''function FindProxyForURL(url, host) {
+    if (/^http:\/\/boards\.4chan\.org\//.test(url)) {
+      return 'PROXY localhost:8000';
+    }
+    return 'DIRECT';
   }
-  return 'DIRECT';
-}
-'''
-resources = {'/proxy.pac': ('application/x-javascript-config', proxyConfig)}
+  '''
+  return 'application/x-javascript-config', data
+
+def localScript(filename):
+  def handler():
+    with open(filename, 'rb') as f:
+      data = f.read()
+    return 'application/javascript', data
+  return handler
+
+resources = {'/proxy.pac': proxyConfig}
 
 class RequestHandler(http.server.BaseHTTPRequestHandler):
   def do_HEAD(self):
@@ -22,7 +32,7 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
 
   def local(self):
     if self.path in resources:
-      mimeType, data = resources[self.path]
+      mimeType, data = resources[self.path]()
       self.send_response(200)
       self.send_header('Content-Type', mimeType)
       self.send_header('Content-Length', len(data))
@@ -59,9 +69,7 @@ class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
 
 port = int(sys.argv[1]) if 1 < len(sys.argv) else 8000
 if 2 < len(sys.argv):
-  with open(sys.argv[2], 'rb') as f:
-    script = f.read()
-  resources['/script.js'] = ('application/javascript', script)
+  resources['/script.js'] = localScript(sys.argv[2])
 server = ThreadedHTTPServer(('localhost', port), RequestHandler)
 thread = threading.Thread(target=server.serve_forever)
 thread.start()
