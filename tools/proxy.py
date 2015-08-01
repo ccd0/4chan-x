@@ -41,7 +41,10 @@ class RequestHandler(http.server.BaseHTTPRequestHandler):
       body = response.read()
     finally:
       conn.close()
-    body = body.replace(b'<head>', b'<head><script src="https://ccd0.github.io/4chan-x/builds/4chan-X.user.js"></script>', 1)
+    url = b'https://ccd0.github.io/4chan-x/builds/4chan-X.user.js'
+    if '/script.js' in resources:
+      url = b'http://localhost:8000/script.js'
+    body = body.replace(b'<head>', b'<head><script src="' + url + b'"></script>', 1)
     self.send_response(response.status, response.reason)
     for header, value in response.getheaders():
       if header.lower() not in ('date', 'connection', 'transfer-encoding', 'content-length'):
@@ -55,6 +58,10 @@ class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
   pass
 
 port = int(sys.argv[1]) if 1 < len(sys.argv) else 8000
+if 2 < len(sys.argv):
+  with open(sys.argv[2], 'rb') as f:
+    script = f.read()
+  resources['/script.js'] = ('application/javascript', script)
 server = ThreadedHTTPServer(('localhost', port), RequestHandler)
 thread = threading.Thread(target=server.serve_forever)
 thread.start()
