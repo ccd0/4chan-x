@@ -105,7 +105,7 @@ QR.post = class
 
     for name in ['thread', 'name', 'email', 'sub', 'com', 'filename']
       continue unless node = QR.nodes[name]
-      node.value = @[name] or node.dataset.default or null
+      node.value = @[name] or node.dataset.default or ''
 
     (if @thread isnt 'new' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
 
