@@ -117,6 +117,11 @@ $.asap = (test, cb) ->
 $.onExists = (root, selector, subtree, cb) ->
   if el = $ selector, root
     return cb el
+  # XXX Edge doesn't notify MutationObservers of nodes added as document loads.
+  if $.engine is 'edge' and d.readyState is 'loading'
+    $.asap (-> d.readyState isnt 'loading' or $ selector, root), ->
+      $.onExists root, selector, subtree, cb
+    return
   observer = new MutationObserver ->
     if el = $ selector, root
       observer.disconnect()
