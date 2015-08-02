@@ -2,6 +2,13 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.7
+
+**v1.11.7.0** *(2015-08-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.6.0.
+- Turn `Custom Board Navigation` off by default. To turn it back on, check `Header` > `Custom board navigation` in the header menu.
+- Experimental MS Edge support via https://github.com/ccd0/4chan-x-proxy.
+
 ### v1.11.6
 
 **v1.11.6.0** *(2015-07-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.0/builds/4chan-X-noupdate.crx "Chromium version")]
