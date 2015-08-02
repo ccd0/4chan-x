@@ -19,7 +19,15 @@ class Clone extends Post
       quote: $ '.postNum > a:nth-of-type(2)', info
       comment: $ '.postMessage', post
       quotelinks: []
-      backlinks: info.getElementsByClassName 'backlink'
+
+    # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
+    if $.engine is 'edge'
+      Object.defineProperty @nodes, 'backlinks',
+        configurable: true
+        enumerable:   true
+        get: -> info.getElementsByClassName 'backlink'
+    else
+      @nodes.backlinks = info.getElementsByClassName 'backlink'
 
     # Remove inlined posts inside of this post.
     for inline  in $$ '.inline',  post

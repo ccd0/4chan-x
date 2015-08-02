@@ -40,7 +40,15 @@ class Post
       comment: $ '.postMessage', post
       links: []
       quotelinks: []
-      backlinks: info.getElementsByClassName 'backlink'
+
+    # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
+    if $.engine is 'edge'
+      Object.defineProperty @nodes, 'backlinks',
+        configurable: true
+        enumerable:   true
+        get: -> info.getElementsByClassName 'backlink'
+    else
+      @nodes.backlinks = info.getElementsByClassName 'backlink'
 
     unless @isReply = $.hasClass post, 'reply'
       @thread.OP = @
