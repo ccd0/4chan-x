@@ -1361,6 +1361,7 @@ input#qr-filename {
 .has-file #qr-filename {
   -webkit-flex: 1 1 auto;
   flex: 1 1 auto;
+  width: 0px; /* XXX Fixes filename not shrinking to allow space for buttons in Edge */
   display: inline-block;
   padding: 0;
   padding-left: 3px;
