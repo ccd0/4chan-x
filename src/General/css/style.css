@@ -336,6 +336,7 @@ audio.controls-added {
     flex: auto;
     display: -webkit-flex;
     display: flex;
+    width: 0px; /* XXX Fixes Edge not shrinking the board list below default size when needed */
   }
   :root.fixed:not(.centered-links) #full-board-list > .boardList > a,
   :root.fixed:not(.centered-links) #full-board-list > .boardList > span:not(.space):not(.spacer) {
