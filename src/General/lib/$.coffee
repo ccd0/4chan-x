@@ -303,6 +303,7 @@ $.hasAudio = (video) ->
   video.mozHasAudio or !!video.webkitAudioDecodedByteCount
 
 $.engine = do ->
+  return 'edge'   if /Edge\//.test navigator.userAgent
   return 'blink'  if /Chrome\//.test navigator.userAgent
   return 'webkit' if /WebKit\//.test navigator.userAgent
   return 'gecko'  if /Gecko\/|Goanna/.test navigator.userAgent # Goanna = Pale Moon 26+
