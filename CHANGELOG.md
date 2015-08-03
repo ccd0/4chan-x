@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.7
 
+**v1.11.7.1** *(2015-08-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge 1.11.6.1: Update banner list.
+
 **v1.11.7.0** *(2015-08-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.6.0.
 - Turn `Custom Board Navigation` off by default. To turn it back on, check `Header` > `Custom board navigation` in the header menu.
