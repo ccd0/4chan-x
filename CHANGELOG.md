@@ -11,6 +11,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.6
 
+**v1.11.6.1** *(2015-08-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update banner list.
+
 **v1.11.6.0** *(2015-07-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.5.2.
 - Implement 404 Redirect for `sys.4chan.org/board/imgboard.php?res=` URLs.
