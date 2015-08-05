@@ -1,4 +1,6 @@
 DeleteLink =
+  auto: [{}, {}]
+
   init: ->
     return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Delete Link']
 
@@ -11,19 +13,20 @@ DeleteLink =
     fileEl = $.el 'a',
       className: 'delete-file'
       href: 'javascript:;'
+    @links = [postEl, fileEl]
 
     postEntry =
       el: postEl
       open: ->
-        postEl.textContent = 'Post'
-        $.on postEl, 'click', DeleteLink.delete
+        postEl.textContent = DeleteLink.linkText false
+        $.on postEl, 'click', DeleteLink.toggle
         true
     fileEntry =
       el: fileEl
       open: ({file}) ->
         return false if !file or file.isDead
-        fileEl.textContent = 'File'
-        $.on fileEl, 'click', DeleteLink.delete
+        fileEl.textContent = DeleteLink.linkText true
+        $.on fileEl, 'click', DeleteLink.toggle
         true
 
     Menu.menu.addEntry
@@ -33,18 +36,41 @@ DeleteLink =
         return false if post.isDead
         DeleteLink.post = post
         node = div.firstChild
-        node.textContent = 'Delete'
+        node.textContent = DeleteLink.menuText()
         DeleteLink.cooldown.start post, node
         true
       subEntries: [postEntry, fileEntry]
 
-  delete: ->
-    {post} = DeleteLink
-    return if DeleteLink.cooldown.counting is post
+  menuText: ->
+    if seconds = DeleteLink.cooldown.seconds[DeleteLink.post.fullID]
+      "Delete (#{seconds})"
+    else
+      'Delete'
 
-    $.off @, 'click', DeleteLink.delete
+  linkText: (fileOnly) ->
+    text = if fileOnly then 'File' else 'Post'
+    if DeleteLink.auto[+fileOnly][DeleteLink.post.fullID]
+      text = "Deleting #{text.toLowerCase()}..."
+    text
+
+  toggle: ->
+    {post} = DeleteLink
     fileOnly = $.hasClass @, 'delete-file'
-    @textContent = "Deleting #{if fileOnly then 'file' else 'post'}..."
+    auto = DeleteLink.auto[+fileOnly]
+
+    if auto[post.fullID]
+      delete auto[post.fullID]
+    else
+      auto[post.fullID] = true
+    @textContent = DeleteLink.linkText fileOnly
+
+    unless DeleteLink.cooldown.seconds[post.fullID]
+      DeleteLink.delete post, fileOnly
+
+  delete: (post, fileOnly) ->
+    link = DeleteLink.links[+fileOnly]
+    delete DeleteLink.auto[+fileOnly][post.fullID]
+    $.off link, 'click', DeleteLink.toggle if post.fullID is DeleteLink.post.fullID
 
     form =
       mode: 'usrdel'
@@ -52,47 +78,55 @@ DeleteLink =
       pwd: QR.persona.getPassword()
     form[post.ID] = 'delete'
 
-    link = @
     $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"),
       responseType: 'document'
       withCredentials: true
       onload:  -> DeleteLink.load  link, post, fileOnly, @response
-      onerror: -> DeleteLink.error link
+      onerror: -> DeleteLink.error link, post
     ,
       form: $.formData form
+
   load: (link, post, fileOnly, resDoc) ->
+    link.textContent = DeleteLink.linkText fileOnly
     if resDoc.title is '4chan - Banned' # Ban/warn check
-      s = 'Banned!'
+      el = $.el 'span', <%= html('You can&#039;t delete posts because you are <a href="//www.4chan.org/banned" target="_blank">banned</a>.') %>
+      new Notice 'warning', el, 20
     else if msg = resDoc.getElementById 'errmsg' # error!
-      s = msg.textContent
-      $.on link, 'click', DeleteLink.delete
+      new Notice 'warning', msg.textContent, 20
+      $.on link, 'click', DeleteLink.toggle if post.fullID is DeleteLink.post.fullID
     else
       if resDoc.title is 'Updating index...'
         # We're 100% sure.
         QR.cooldown.delete post
         (post.origin or post).kill fileOnly
-      s = 'Deleted'
-    link.textContent = s
-  error: (link) ->
-    link.textContent = 'Connection error, please retry.'
-    $.on link, 'click', DeleteLink.delete
+      link.textContent = 'Deleted' if post.fullID is DeleteLink.post.fullID
+
+  error: (link, post) ->
+    new Notice 'warning', 'Connection error, please retry.', 20
+    $.on link, 'click', DeleteLink.toggle if post.fullID is DeleteLink.post.fullID
 
   cooldown:
+    seconds: {}
+
     start: (post, node) ->
-      unless QR.db?.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
-        # Only start counting on our posts.
-        delete DeleteLink.cooldown.counting
-        return
-      DeleteLink.cooldown.counting = post
+      # Already counting.
+      return if DeleteLink.cooldown.seconds[post.fullID]?
+      # Only start counting on our posts.
+      return unless QR.db?.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+
       length  = 60
-      seconds = Math.ceil (length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND
-      DeleteLink.cooldown.count post, seconds, length, node
-    count: (post, seconds, length, node) ->
-      return if DeleteLink.cooldown.counting isnt post
-      unless 0 <= seconds <= length
-        if DeleteLink.cooldown.counting is post
-          node.textContent = 'Delete'
-          delete DeleteLink.cooldown.counting
-        return
-      setTimeout DeleteLink.cooldown.count, 1000, post, seconds - 1, length, node
-      node.textContent = "Delete (#{seconds})"
+      seconds = length - (Date.now() - post.info.date) // $.SECOND
+      if 0 < seconds <= length
+        DeleteLink.cooldown.seconds[post.fullID] = seconds
+        DeleteLink.cooldown.count post, node
+
+    count: (post, node) ->
+      node.textContent = DeleteLink.menuText() if post.fullID is DeleteLink.post.fullID
+      if DeleteLink.cooldown.seconds[post.fullID] > 0
+        DeleteLink.cooldown.seconds[post.fullID]--
+        setTimeout DeleteLink.cooldown.count, 1000, post, node
+      else
+        delete DeleteLink.cooldown.seconds[post.fullID]
+        for fileOnly in [false, true] when DeleteLink.auto[+fileOnly][post.fullID]
+          DeleteLink.delete post, fileOnly
+      return
