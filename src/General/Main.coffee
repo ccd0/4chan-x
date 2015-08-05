@@ -162,16 +162,18 @@ Main =
       attributeFilter: ['href']
 
   initReady: ->
-    if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
-      if g.VIEW is 'thread'
-        ThreadWatcher.set404 g.BOARD.ID, g.THREADID, ->
-          if Conf['404 Redirect']
-            Redirect.navigate 'thread',
-              boardID:  g.BOARD.ID
-              threadID: g.THREADID
-              postID:   +location.hash.match /\d+/ # post number or 0
-            , "/#{g.BOARD}/"
+    # XXX Sometimes threads don't 404 but are left over as stubs containing one garbage reply post.
+    if g.VIEW is 'thread' and not $ '.opContainer'
+      ThreadWatcher.set404 g.BOARD.ID, g.THREADID, ->
+        if Conf['404 Redirect']
+          Redirect.navigate 'thread',
+            boardID:  g.BOARD.ID
+            threadID: g.THREADID
+            postID:   +location.hash.match /\d+/ # post number or 0
+          , "/#{g.BOARD}/"
       return
+
+    return if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
 
     # 4chan Pass Link
     if styleSelector = $.id 'styleSelector'
