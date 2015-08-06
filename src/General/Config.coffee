@@ -726,7 +726,7 @@ Config =
     'Header catalog links':       false
     'Bottom Board List':          true
     'Shortcut Icons':             true
-    'Custom Board Navigation':    false
+    'Custom Board Navigation':    true
 
   boardnav: """
     [ toggle-all ]
