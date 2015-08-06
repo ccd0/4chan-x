@@ -155,7 +155,8 @@ QR =
           $.off d, 'scroll', QR.scrollLock
 
   inBubble: ->
-    d.activeElement in $$('.goog-bubble-content > iframe')
+    bubbles = $$ '.goog-bubble-content > iframe'
+    d.activeElement in bubbles or bubbles.some((el) -> el.getBoundingClientRect().bottom > 0)
 
   inCaptcha: ->
     (d.activeElement?.nodeName is 'IFRAME' and QR.nodes.el.contains(d.activeElement)) or (QR.hasFocus and QR.inBubble())

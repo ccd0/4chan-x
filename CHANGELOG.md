@@ -14,6 +14,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.6
 
+**v1.11.6.2** *(2015-08-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix bug where clicking on scrollbar of captcha image selection bubble could mess up the captcha.
+
 **v1.11.6.1** *(2015-08-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Update banner list.
 
