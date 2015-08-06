@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.7
 
+**v1.11.7.3** *(2015-08-06)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Turn `Custom Board Navigation` back on by default for now until we support better migration of old settings.
+
 **v1.11.7.2** *(2015-08-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.6.2: Fix bug where clicking on scrollbar of captcha image selection bubble could mess up the captcha.
 - Redirect threads deleted but with stubs left behind to archive.
