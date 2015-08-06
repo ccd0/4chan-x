@@ -436,6 +436,7 @@ Config =
         'Show the option to post a new / different thread from inside a thread.'
         1
       ]
+      # XXX This has been migrated to Name Sync and will be removed from 4chan X in a future version.
       'Show Name and Subject': [
         false
         'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.'
