@@ -34,8 +34,7 @@ Main =
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
 
-    # flatten Config into Conf
-    # and get saved or default values
+    # Flatten default values from Config into Conf
     flatten = (parent, obj) ->
       if obj instanceof Array
         Conf[parent] = obj[0]
@@ -52,15 +51,49 @@ Main =
       Conf[db] = boards: {}
     Conf['selectedArchives'] = {}
 
-    $.get Conf, (items) ->
-      $.extend Conf, items
-      # XXX temporarily set here so old versions update to correct setting
-      Conf['Fixed Thread Watcher'] ?= Conf['Toggleable Thread Watcher']
-      $.asap (-> doc = d.documentElement), Main.initFeatures
+    # Get saved values as items
+    items = {}
+    items[key] = undefined for key of Conf
+    items['previousversion'] = undefined
+    $.get items, (items) ->
+      $.asap (-> doc = d.documentElement), ->
+
+        # Fresh install
+        if !items.previousversion?
+          Main.ready ->
+            $.set 'previousversion', g.VERSION
+            Settings.open()
+
+        # Migrate old settings
+        else if items.previousversion isnt g.VERSION
+          Main.upgrade items
+
+        # Combine default values with saved values
+        for key, val of Conf
+          Conf[key] = items[key] ? val
+
+        Main.initFeatures()
 
     # set up CSS when <head> is completely loaded
     $.asap (-> doc = d.documentElement), ->
       $.onExists doc, 'body', false, Main.initStyle
+
+  upgrade: (items) ->
+    {previousversion} = items
+    items2 = {previousversion: g.VERSION}
+    compareString = previousversion.replace(/\d+/g, (x) -> ('0000'+x)[-5..])
+
+    if compareString < '00001.00011.00008.00000'
+      unless items['Fixed Thread Watcher']?
+        items2['Fixed Thread Watcher']    = items['Toggleable Thread Watcher'] ? true
+      unless items['Custom Board Navigation']?
+        items2['Custom Board Navigation'] = true
+
+    $.extend items, items2
+    $.set items2, ->
+      el = $.el 'span',
+        <%= html(meta.name + ' has been updated to <a href="' + meta.repo + 'blob/' + meta.mainBranch + '/CHANGELOG.md" target="_blank">version ${g.VERSION}</a>.') %>
+      new Notice 'info', el, 15
 
   initFeatures: ->
     if location.hostname in ['boards.4chan.org', 'sys.4chan.org', 'www.4chan.org']
