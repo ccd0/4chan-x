@@ -58,6 +58,8 @@ Previously developed by <a href="https://github.com/aeosynth/4chan-x">aeosynth</
   wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
 </code></pre></li>
 </ul>
+</div><input hidden type="checkbox" id="other-browsers-hide"><div><label for="other-browsers-hide"><h3 id="other-browsers">Other browsers</h3></label>
+<p>4chan X can be used in some browsers that do not support userscripts, such as <strong>Microsoft Edge</strong>, using <a href="https://github.com/ccd0/4chan-x-proxy">a local proxy</a>. Not all features will work.</p>
 </div><h2 id="beta-version">Beta version</h2>
 <p>New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please <a href="https://github.com/ccd0/4chan-x/issues">report</a> any issues you find, and be sure to mention which version you&#39;re using. You should back up your settings regularly to prevent them from being lost due to bugs.</p>
 <p>To install the current <strong>beta</strong> version but get updates from the <strong>stable</strong> channel (recommended if you want a particular recent feature):</p>
@@ -101,13 +103,14 @@ for (var i = 0; i < document.links.length; i++) {
   }
 }
 var engine = (function() {
+  if (/Edge\//.test(navigator.userAgent)) return 'edge';
   if (/Chrome\//.test(navigator.userAgent)) return 'blink';
   if (/WebKit\//.test(navigator.userAgent)) return 'webkit';
   if (/Gecko\/|Goanna/.test(navigator.userAgent)) return 'gecko';
   if (/Presto\//.test(navigator.userAgent)) return 'presto';
 })();
 if (engine) {
-  var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk-': 'webkit'};
+  var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk-': 'webkit', 'other-browsers': 'edge'};
   for (browser in engines) {
     document.getElementById(browser + '-hide').checked = (engines[browser].indexOf(engine) < 0);
   }
