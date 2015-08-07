@@ -48,6 +48,9 @@ Several WebKitGTK+ based browsers have support for userscripts and can run 4chan
         echo '@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh document-end'   >> ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
         wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts https://ccd0.github.io/4chan-x/builds/4chan-X.user.js
 
+### Other browsers
+4chan X can be used in some browsers that do not support userscripts, such as **Microsoft Edge**, using [a local proxy](https://github.com/ccd0/4chan-x-proxy). Not all features will work.
+
 ## Beta version
 New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please [report](https://github.com/ccd0/4chan-x/issues) any issues you find, and be sure to mention which version you're using. You should back up your settings regularly to prevent them from being lost due to bugs.
 
