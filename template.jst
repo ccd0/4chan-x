@@ -50,13 +50,14 @@ for (var i = 0; i < document.links.length; i++) {
   }
 }
 var engine = (function() {
+  if (/Edge\//.test(navigator.userAgent)) return 'edge';
   if (/Chrome\//.test(navigator.userAgent)) return 'blink';
   if (/WebKit\//.test(navigator.userAgent)) return 'webkit';
   if (/Gecko\/|Goanna/.test(navigator.userAgent)) return 'gecko';
   if (/Presto\//.test(navigator.userAgent)) return 'presto';
 })();
 if (engine) {
-  var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk-': 'webkit'};
+  var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk-': 'webkit', 'other-browsers': 'edge'};
   for (browser in engines) {
     document.getElementById(browser + '-hide').checked = (engines[browser].indexOf(engine) < 0);
   }
