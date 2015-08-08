@@ -382,7 +382,7 @@ Config =
         'Bookmark threads.'
       ]
       'Fixed Thread Watcher': [
-        null # XXX temporarily set in Main.coffee so old versions update to correct setting
+        true
         'Makes the thread watcher scroll with the page.'
         1
       ]
