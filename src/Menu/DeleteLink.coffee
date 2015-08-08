@@ -111,12 +111,9 @@ DeleteLink =
     start: (post, node) ->
       # Already counting.
       return if DeleteLink.cooldown.seconds[post.fullID]?
-      # Only start counting on our posts.
-      return unless QR.db?.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
 
-      length  = 60
-      seconds = length - (Date.now() - post.info.date) // $.SECOND
-      if 0 < seconds <= length
+      seconds = QR.cooldown.secondsDeletion post
+      if seconds > 0
         DeleteLink.cooldown.seconds[post.fullID] = seconds
         DeleteLink.cooldown.count post, node
 

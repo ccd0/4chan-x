@@ -1,5 +1,13 @@
 QR.cooldown =
   seconds: 0
+  delays:
+    thread: 0
+    reply: 0
+    image: 0
+    reply_intra: 0
+    image_intra: 0
+    deletion: 60       # cooldown for deleting posts/files
+    thread_global: 300 # inter-board thread cooldown
 
   # Called from Main
   init: ->
@@ -12,18 +20,13 @@ QR.cooldown =
     return unless Conf['Cooldown']
 
     # Read cooldown times
-    QR.cooldown.delays = if m = Get.scriptData().match /\bcooldowns *= *({[^}]+})/
-      JSON.parse m[1]
-    else
-      {thread: 0, reply: 0, image: 0, reply_intra: 0, image_intra: 0}
+    if m = Get.scriptData().match /\bcooldowns *= *({[^}]+})/
+      $.extend QR.cooldown.delays, JSON.parse m[1]
 
     # The longest reply cooldown, for use in pruning old reply data
     QR.cooldown.maxDelay = 0
-    for type, delay of QR.cooldown.delays when type isnt 'thread'
+    for type, delay of QR.cooldown.delays when type not in ['thread', 'thread_global']
       QR.cooldown.maxDelay = Math.max QR.cooldown.maxDelay, delay
-
-    # There is a 300 second inter-board thread cooldown.
-    QR.cooldown.delays['thread_global'] = 300
 
     QR.cooldown.start()
 
@@ -63,6 +66,14 @@ QR.cooldown =
       if !cooldown.delay? and cooldown.threadID is post.thread.ID and cooldown.postID is post.ID
         delete cooldowns[id]
     QR.cooldown.save [post.board.ID]
+
+  secondsDeletion: (post) ->
+    cooldowns = QR.cooldown.data[post.board.ID] or {}
+    for start, cooldown of cooldowns
+      if !cooldown.delay? and cooldown.threadID is post.thread.ID and cooldown.postID is post.ID
+        seconds = QR.cooldown.delays.deletion - (Date.now() - start) // $.SECOND
+        return Math.max seconds, 0
+    0
 
   categorize: (post) ->
     if post.thread is 'new'
