@@ -39,7 +39,7 @@ Config =
         true
         'Enable reporting posts to supported archives.'
       ]
-      'Except Archives from Encryption': [
+      'Exempt Archives from Encryption': [
         false
         'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'
       ]

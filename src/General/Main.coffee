@@ -52,6 +52,9 @@ Main =
     Conf['selectedArchives'] = {}
     Conf['cooldowns'] = {}
 
+    # XXX old key names
+    Conf['Except Archives from Encryption'] = false
+
     # Get saved values as items
     items = {}
     items[key] = undefined for key of Conf
@@ -86,7 +89,9 @@ Main =
 
     if compareString < '00001.00011.00008.00000'
       unless items['Fixed Thread Watcher']?
-        items2['Fixed Thread Watcher']    = items['Toggleable Thread Watcher'] ? true
+        items2['Fixed Thread Watcher'] = items['Toggleable Thread Watcher'] ? true
+      unless items['Exempt Archives from Encryption']?
+        items2['Exempt Archives from Encryption'] = items['Except Archives from Encryption'] ? false
 
     $.extend items, items2
     $.set items2, ->
