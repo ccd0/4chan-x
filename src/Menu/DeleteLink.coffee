@@ -95,6 +95,10 @@ DeleteLink =
     else if msg = resDoc.getElementById 'errmsg' # error!
       new Notice 'warning', msg.textContent, 20
       $.on link, 'click', DeleteLink.toggle if post.fullID is DeleteLink.post.fullID
+      if /\bwait\b/i.test msg.textContent
+        DeleteLink.cooldown.start post, 5
+        DeleteLink.auto[+fileOnly][post.fullID] = true
+        DeleteLink.nodes.links[+fileOnly].textContent = DeleteLink.linkText fileOnly
     else
       if resDoc.title is 'Updating index...'
         # We're 100% sure.
@@ -109,11 +113,11 @@ DeleteLink =
   cooldown:
     seconds: {}
 
-    start: (post) ->
+    start: (post, seconds) ->
       # Already counting.
       return if DeleteLink.cooldown.seconds[post.fullID]?
 
-      seconds = QR.cooldown.secondsDeletion post
+      seconds ?= QR.cooldown.secondsDeletion post
       if seconds > 0
         DeleteLink.cooldown.seconds[post.fullID] = seconds
         DeleteLink.cooldown.count post
