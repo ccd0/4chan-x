@@ -13,7 +13,9 @@ DeleteLink =
     fileEl = $.el 'a',
       className: 'delete-file'
       href: 'javascript:;'
-    @links = [postEl, fileEl]
+    @nodes =
+      menu:  div.firstChild
+      links: [postEl, fileEl]
 
     postEntry =
       el: postEl
@@ -35,9 +37,8 @@ DeleteLink =
       open: (post) ->
         return false if post.isDead
         DeleteLink.post = post
-        node = div.firstChild
-        node.textContent = DeleteLink.menuText()
-        DeleteLink.cooldown.start post, node
+        DeleteLink.nodes.menu.textContent = DeleteLink.menuText()
+        DeleteLink.cooldown.start post
         true
       subEntries: [postEntry, fileEntry]
 
@@ -68,7 +69,7 @@ DeleteLink =
       DeleteLink.delete post, fileOnly
 
   delete: (post, fileOnly) ->
-    link = DeleteLink.links[+fileOnly]
+    link = DeleteLink.nodes.links[+fileOnly]
     delete DeleteLink.auto[+fileOnly][post.fullID]
     $.off link, 'click', DeleteLink.toggle if post.fullID is DeleteLink.post.fullID
 
@@ -108,20 +109,20 @@ DeleteLink =
   cooldown:
     seconds: {}
 
-    start: (post, node) ->
+    start: (post) ->
       # Already counting.
       return if DeleteLink.cooldown.seconds[post.fullID]?
 
       seconds = QR.cooldown.secondsDeletion post
       if seconds > 0
         DeleteLink.cooldown.seconds[post.fullID] = seconds
-        DeleteLink.cooldown.count post, node
+        DeleteLink.cooldown.count post
 
-    count: (post, node) ->
-      node.textContent = DeleteLink.menuText() if post.fullID is DeleteLink.post.fullID
+    count: (post) ->
+      DeleteLink.nodes.menu.textContent = DeleteLink.menuText() if post.fullID is DeleteLink.post.fullID
       if DeleteLink.cooldown.seconds[post.fullID] > 0
         DeleteLink.cooldown.seconds[post.fullID]--
-        setTimeout DeleteLink.cooldown.count, 1000, post, node
+        setTimeout DeleteLink.cooldown.count, 1000, post
       else
         delete DeleteLink.cooldown.seconds[post.fullID]
         for fileOnly in [false, true] when DeleteLink.auto[+fileOnly][post.fullID]
