@@ -97,7 +97,7 @@ DeleteLink =
     else
       if resDoc.title is 'Updating index...'
         # We're 100% sure.
-        QR.cooldown.delete post
+        QR.cooldown.delete post unless fileOnly
         (post.origin or post).kill fileOnly
       link.textContent = 'Deleted' if post.fullID is DeleteLink.post.fullID
 
