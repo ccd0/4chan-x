@@ -87,8 +87,6 @@ Main =
     if compareString < '00001.00011.00008.00000'
       unless items['Fixed Thread Watcher']?
         items2['Fixed Thread Watcher']    = items['Toggleable Thread Watcher'] ? true
-      unless items['Custom Board Navigation']?
-        items2['Custom Board Navigation'] = true
 
     $.extend items, items2
     $.set items2, ->
