@@ -1,7 +1,14 @@
 QR.cooldown =
   seconds: 0
 
+  # Called from Main
   init: ->
+    return unless Conf['Quick Reply'] and Conf['Cooldown']
+    @data = Conf['cooldowns']
+    $.sync 'cooldowns', @sync
+
+  # Called from QR
+  setup: ->
     return unless Conf['Cooldown']
 
     # Read cooldown times
@@ -18,17 +25,17 @@ QR.cooldown =
     # There is a 300 second inter-board thread cooldown.
     QR.cooldown.delays['thread_global'] = 300
 
-    # Retrieve recent posts and delays.
-    $.get 'cooldowns', {}, ({cooldowns}) ->
-      QR.cooldown.data = cooldowns
-      QR.cooldown.start()
-    $.sync 'cooldowns', QR.cooldown.sync
+    QR.cooldown.start()
 
   start: ->
     {data} = QR.cooldown
-    unless QR.cooldown.isCounting or Object.keys(data[g.BOARD.ID] or {}).length + Object.keys(data.global or {}).length is 0
-      QR.cooldown.isCounting = true
-      QR.cooldown.count()
+    return unless (
+      QR.cooldown.delays and
+      !QR.cooldown.isCounting and
+      Object.keys(data[g.BOARD.ID] or {}).length + Object.keys(data.global or {}).length > 0
+    )
+    QR.cooldown.isCounting = true
+    QR.cooldown.count()
 
   sync: (data) ->
     QR.cooldown.data = data or {}

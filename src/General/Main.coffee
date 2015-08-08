@@ -51,6 +51,7 @@ Main =
     for db in DataBoard.keys
       Conf[db] = boards: {}
     Conf['selectedArchives'] = {}
+    Conf['cooldowns'] = {}
 
     $.get Conf, (items) ->
       $.extend Conf, items
@@ -338,6 +339,7 @@ Main =
     ['Recursive',                 Recursive]
     ['Strike-through Quotes',     QuoteStrikeThrough]
     ['Quick Reply',               QR]
+    ['Cooldown',                  QR.cooldown]
     ['Menu',                      Menu]
     ['Index Generator (Menu)',    Index.menu]
     ['Report Link',               ReportLink]

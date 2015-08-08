@@ -565,7 +565,7 @@ QR =
     QR.persona.init()
     new QR.post true
     QR.status()
-    QR.cooldown.init()
+    QR.cooldown.setup()
     QR.captcha.init()
 
     $.add d.body, dialog
