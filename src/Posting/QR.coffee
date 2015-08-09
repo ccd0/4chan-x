@@ -793,7 +793,7 @@ QR =
       post.rm()
       QR.captcha.setup(d.activeElement is QR.nodes.status)
 
-    QR.cooldown.add req.uploadEndTime, threadID, postID
+    QR.cooldown.add Date.now(), threadID, postID
 
     URL = if threadID is postID # new thread
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}"
