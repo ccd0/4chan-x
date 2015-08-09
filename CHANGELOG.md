@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.8
 
+**v1.11.8.1** *(2015-08-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.7.4: Fix cooldown bug.
+
 **v1.11.8.0** *(2015-08-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.7.3.
 - Posts selected for deletion will now be auto-deleted when 4chan's 60-second deletion cooldown expires.
