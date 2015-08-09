@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.8
 
+**v1.11.8.3** *(2015-08-09)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix `Show Updated Notifications` setting.
+
 **v1.11.8.2** *(2015-08-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix bug in infinite scrolling causing skipped pages.
 
