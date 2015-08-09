@@ -2,6 +2,14 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.8
+
+**v1.11.8.0** *(2015-08-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.7.3.
+- Posts selected for deletion will now be auto-deleted when 4chan's 60-second deletion cooldown expires.
+- The setting `Except Archives from Encryption` has been changed to `Exempt Archives from Encryption`.
+- Bug fixes.
+
 ### v1.11.7
 
 **v1.11.7.3** *(2015-08-06)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.3/builds/4chan-X-noupdate.crx "Chromium version")]
