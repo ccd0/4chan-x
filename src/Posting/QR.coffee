@@ -665,7 +665,6 @@ QR =
         onload: ->
           # Upload done, waiting for server response.
           QR.req.isUploadFinished = true
-          QR.req.uploadEndTime    = Date.now()
           QR.req.progress = '...'
           QR.status()
         onprogress: (e) ->
@@ -793,7 +792,7 @@ QR =
       post.rm()
       QR.captcha.setup(d.activeElement is QR.nodes.status)
 
-    QR.cooldown.add Date.now(), threadID, postID
+    QR.cooldown.add threadID, postID
 
     URL = if threadID is postID # new thread
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}"

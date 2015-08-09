@@ -44,8 +44,9 @@ QR.cooldown =
     QR.cooldown.data = data or {}
     QR.cooldown.start()
 
-  add: (start, threadID, postID) ->
+  add: (threadID, postID) ->
     return unless Conf['Cooldown']
+    start = Date.now()
     boardID = g.BOARD.ID
     QR.cooldown.set boardID, start, {threadID, postID}
     QR.cooldown.set 'global', start, {boardID, threadID, postID} if threadID is postID
