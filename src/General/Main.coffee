@@ -95,9 +95,10 @@ Main =
 
     $.extend items, items2
     $.set items2, ->
-      el = $.el 'span',
-        <%= html(meta.name + ' has been updated to <a href="' + meta.repo + 'blob/' + meta.mainBranch + '/CHANGELOG.md" target="_blank">version ${g.VERSION}</a>.') %>
-      new Notice 'info', el, 15
+      if items['Show Updated Notifications'] ? true
+        el = $.el 'span',
+          <%= html(meta.name + ' has been updated to <a href="' + meta.repo + 'blob/' + meta.mainBranch + '/CHANGELOG.md" target="_blank">version ${g.VERSION}</a>.') %>
+        new Notice 'info', el, 15
 
   initFeatures: ->
     if location.hostname in ['boards.4chan.org', 'sys.4chan.org', 'www.4chan.org']
