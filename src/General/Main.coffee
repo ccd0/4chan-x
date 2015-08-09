@@ -229,16 +229,6 @@ Main =
     else
       $.event '4chanXInitFinished'
 
-    $.get 'previousversion', null, ({previousversion}) ->
-      return if previousversion is g.VERSION
-      if previousversion
-        el = $.el 'span',
-          <%= html(meta.name + ' has been updated to <a href="' + meta.repo + 'blob/' + meta.mainBranch + '/CHANGELOG.md" target="_blank">version ${g.VERSION}</a>.') %>
-        new Notice 'info', el, 15
-      else
-        Settings.open()
-      $.set 'previousversion', g.VERSION
-
     if Conf['Show Support Message']
       try
         localStorage.getItem '4chan-settings'
