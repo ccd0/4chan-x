@@ -412,7 +412,6 @@ Index =
       "#{hiddenCount} hidden threads"
 
   update: (state) ->
-    delete Index.pageNum
     Index.req?.abort()
     Index.notice?.close()
 
@@ -635,6 +634,7 @@ Index =
             Index.pushState {page}
             Index.setPage()
         nodes = Index.buildSinglePage Index.getCurrentPage()
+    delete Index.pageNum
     $.rmAll Index.root
     $.rmAll Header.hover
     if Conf['Index Mode'] is 'catalog'
