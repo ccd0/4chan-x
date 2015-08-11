@@ -215,6 +215,15 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       push:
         command: 'git push origin --tags -f && git push origin --all'
+      aws:
+        command: """
+          git checkout gh-pages
+          aws s3 cp builds s3://<%= pkg.meta.awsBucket %>/builds --recursive
+          aws s3 cp img s3://<%= pkg.meta.awsBucket %>/img --recursive
+          aws s3 cp index.html s3://<%= pkg.meta.awsBucket %>
+          aws s3 cp web.css s3://<%= pkg.meta.awsBucket %>
+          git checkout -
+        """.split('\n').join('&&')
       npm:
         command: 'npm install'
       update:

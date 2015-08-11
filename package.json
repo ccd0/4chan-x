@@ -14,6 +14,7 @@
     "chromeStoreID": "ohnjgmpcibpbafdlkimncjhflgedgpam",
     "recaptchaKey": "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc",
     "youtubeAPIKey": "AIzaSyB5_zaen_-46Uhz1xGR-lz1YoUMHqCD6CE",
+    "awsBucket": "4chan-x",
     "buildsPath": "builds/",
     "mainBranch": "master",
     "matches": [
