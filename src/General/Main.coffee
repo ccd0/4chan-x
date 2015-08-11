@@ -1,5 +1,8 @@
 Main =
   init: ->
+    # XXX Work around Pale Moon iframe bug.
+    return if d.body and not d.head.firstChild
+
     # XXX dwb userscripts extension reloads scripts run at document-start when replaceState/pushState is called.
     return if window['<%= meta.name %> antidup']
     window['<%= meta.name %> antidup'] = true
