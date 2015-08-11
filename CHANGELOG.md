@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.8
 
+**v1.11.8.4** *(2015-08-10)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.7.5: Fix captcha issues in Pale Moon.
+
 **v1.11.8.3** *(2015-08-09)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix `Show Updated Notifications` setting.
 
@@ -20,6 +23,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 - Bug fixes.
 
 ### v1.11.7
+
+**v1.11.7.5** *(2015-08-10)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix captcha issues in Pale Moon.
 
 **v1.11.7.4** *(2015-08-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix cooldown bug.
