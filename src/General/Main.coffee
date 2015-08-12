@@ -100,7 +100,7 @@ Main =
     $.set items2, ->
       if items['Show Updated Notifications'] ? true
         el = $.el 'span',
-          <%= html(meta.name + ' has been updated to <a href="' + meta.repo + 'blob/' + meta.mainBranch + '/CHANGELOG.md" target="_blank">version ${g.VERSION}</a>.') %>
+          <%= html(meta.name + ' has been updated to <a href="' + meta.changelog + '" target="_blank">version ${g.VERSION}</a>.') %>
         new Notice 'info', el, 15
 
   initFeatures: ->

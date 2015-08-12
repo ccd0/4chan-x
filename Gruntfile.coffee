@@ -173,8 +173,6 @@ module.exports = (grunt) ->
         stdout: true
         stderr: true
         failOnError: true
-      checkout:
-        command: 'git checkout <%= pkg.meta.mainBranch %>'
       commit:
         command: """
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.meta.version %>."

@@ -5,7 +5,7 @@
 // @minFFVer     <%= meta.min.firefox %>
 // @namespace    <%= name %>
 // @description  <%= description %>
-// @license      MIT; <%= meta.repo %>blob/<%= meta.mainBranch %>/LICENSE 
+// @license      MIT; <%= meta.license %> 
 <%=
   meta.matches.map(function(match) {
     if (/^\*/.test(match)) {
