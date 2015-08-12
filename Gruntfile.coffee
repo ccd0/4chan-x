@@ -216,10 +216,10 @@ module.exports = (grunt) ->
       aws:
         command: """
           git checkout gh-pages
-          aws s3 cp builds s3://<%= pkg.meta.awsBucket %>/builds --recursive
-          aws s3 cp img s3://<%= pkg.meta.awsBucket %>/img --recursive
-          aws s3 cp index.html s3://<%= pkg.meta.awsBucket %>
-          aws s3 cp web.css s3://<%= pkg.meta.awsBucket %>
+          aws s3 cp builds s3://<%= pkg.meta.awsBucket %>/builds --recursive --cache-control max-age=600
+          aws s3 cp img s3://<%= pkg.meta.awsBucket %>/img --recursive --cache-control max-age=600
+          aws s3 cp index.html s3://<%= pkg.meta.awsBucket %> --cache-control max-age=600
+          aws s3 cp web.css s3://<%= pkg.meta.awsBucket %> --cache-control max-age=600
           git checkout -
         """.split('\n').join('&&')
       npm:
