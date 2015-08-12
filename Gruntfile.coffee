@@ -447,6 +447,10 @@ module.exports = (grunt) ->
     'shell:push'
   ]
 
+  grunt.registerTask 'aws', [
+    'shell:aws'
+  ]
+
   grunt.registerTask 'store', [
     'webstore_upload'
   ]
