@@ -19,9 +19,9 @@ Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonk
 ### Chromium
 4chan X is available as a Chrome extension. The Chrome extension has the additional feature of being able to sync your settings and data with other devices via Chrome Sync.
 
-- **Chromium**, **Chrome**, and **Vivaldi** users can **[install 4chan X from the Chrome store](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam)**.
-- **Opera** users can click to **[download 4chan X from Github](https://ccd0.github.io/4chan-x/builds/4chan-X.crx)**, then follow the prompts to activate it in your extension manager. Note: This version does not work with Opera 12; try [loadletter's fork](https://github.com/loadletter/4chan-x) instead.
-- You can alternately **[download 4chan X from Github](https://ccd0.github.io/4chan-x/builds/4chan-X.crx)**, then drag it to your `chrome://extensions` page. This will not work for the stable or beta versions of Chrome on Windows, which block extensions not from the Chrome store.
+- **Chromium**: **[Download 4chan X](https://ccd0.github.io/4chan-x/builds/4chan-X.crx)**, then open `chrome://extensions` and drag the downloaded file onto the page. Alternatively, you can install 4chan X from the **[Chrome store](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam)**.
+- **Opera**: **[Click to install 4chan X](https://ccd0.github.io/4chan-x/builds/4chan-X.crx)**, then follow the prompts to activate it in your extension manager. Note: This version does not work with Opera 12; try [loadletter's fork](https://github.com/loadletter/4chan-x) instead.
+- **Chrome**, **Vivaldi**: Install 4chan X from the **[Chrome store](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam)**.
 
 You can also use the [userscript version of 4chan X](https://ccd0.github.io/4chan-x/builds/4chan-X.user.js) with [Tampermonkey](https://tampermonkey.net/).
 
