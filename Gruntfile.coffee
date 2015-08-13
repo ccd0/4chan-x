@@ -216,10 +216,13 @@ module.exports = (grunt) ->
       aws:
         command: """
           git checkout gh-pages
-          aws s3 cp builds s3://<%= pkg.meta.awsBucket %>/builds --recursive --cache-control max-age=600
-          aws s3 cp img s3://<%= pkg.meta.awsBucket %>/img --recursive --cache-control max-age=600
-          aws s3 cp index.html s3://<%= pkg.meta.awsBucket %> --cache-control max-age=600
-          aws s3 cp web.css s3://<%= pkg.meta.awsBucket %> --cache-control max-age=600
+          aws s3 cp builds/ s3://<%= pkg.meta.awsBucket %>/builds/ --recursive --exclude "*" --include "*.js" --cache-control "max-age=600" --content-type "application/javascript; charset=utf-8"
+          aws s3 cp builds/ s3://<%= pkg.meta.awsBucket %>/builds/ --recursive --exclude "*" --include "*.crx" --cache-control "max-age=600" --content-type "application/x-chrome-extension"
+          aws s3 cp builds/ s3://<%= pkg.meta.awsBucket %>/builds/ --recursive --exclude "*" --include "*.xml" --cache-control "max-age=600" --content-type "text/xml; charset=utf-8"
+          aws s3 cp builds/ s3://<%= pkg.meta.awsBucket %>/builds/ --recursive --exclude "*" --include "*.zip" --cache-control "max-age=600" --content-type "application/zip"
+          aws s3 cp img/ s3://<%= pkg.meta.awsBucket %>/img/ --recursive --cache-control "max-age=600"
+          aws s3 cp index.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=600" --content-type "text/html; charset=utf-8"
+          aws s3 cp web.css s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=600" --content-type "text/css; charset=utf-8"
           git checkout -
         """.split('\n').join('&&')
       npm:
