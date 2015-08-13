@@ -59,8 +59,8 @@ To install the current **beta** version but get updates from the **stable** chan
 - [Download Chrome extension](https://github.com/ccd0/4chan-x/raw/beta/builds/4chan-X.crx) (download and drag to `chrome://extensions`)
 
 To install the **beta** version and get updates whenever there's a new **beta** version:
-- [Install userscript](https://ccd0.github.io/4chan-x/builds/4chan-X-beta.user.js)
-- [Download Chrome extension](https://ccd0.github.io/4chan-x/builds/4chan-X-beta.crx)
+- [Install userscript](https://www.4chan-x.net/builds/4chan-X-beta.user.js)
+- [Download Chrome extension](https://www.4chan-x.net/builds/4chan-X-beta.crx)
 
 ## Security note
 4chan X currently shares your settings and post history between the HTTP and HTTPS versions of 4chan. If you are concerned about protecting your privacy against a man-in-the-middle attack, you should disable 4chan X on the HTTP version of 4chan and/or install [HTTPS Everywhere](https://www.eff.org/https-everywhere).
