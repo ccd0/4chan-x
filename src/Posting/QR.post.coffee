@@ -179,7 +179,10 @@ QR.post = class
     return
 
   setFile: (@file) ->
-    @filename = @file.name
+    @filename = if Conf['Randomize Filename'] and g.BOARD.ID isnt 'f'
+      "#{Date.now() - Math.floor(Math.random() * 365 * $.DAY)}.#{QR.extensionFromType[@file.type] or 'jpg'}"
+    else
+      @file.name
     @filesize = $.bytesToString @file.size
     @checkSize()
     @nodes.label.hidden = false if QR.spoiler
