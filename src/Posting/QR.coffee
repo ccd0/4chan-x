@@ -365,7 +365,7 @@ QR =
         for i in [0...bstr.length]
           arr[i] = bstr.charCodeAt(i)
         blob = new Blob [arr], {type: m[1]}
-        blob.name = "image.#{m[2]}"
+        blob.name = "file.#{m[2]}"
         QR.handleFiles [blob]
       else if /^https?:\/\//.test src
         QR.handleUrl src
