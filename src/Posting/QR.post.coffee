@@ -179,10 +179,11 @@ QR.post = class
     return
 
   setFile: (@file) ->
-    @filename = if Conf['Randomize Filename'] and g.BOARD.ID isnt 'f'
-      "#{Date.now() - Math.floor(Math.random() * 365 * $.DAY)}.#{QR.extensionFromType[@file.type] or 'jpg'}"
+    if Conf['Randomize Filename'] and g.BOARD.ID isnt 'f'
+      @filename  = "#{Date.now() - Math.floor(Math.random() * 365 * $.DAY)}"
+      @filename += ext[0] if ext = @file.name.match QR.validExtension
     else
-      @file.name
+      @filename  = @file.name
     @filesize = $.bytesToString @file.size
     @checkSize()
     @nodes.label.hidden = false if QR.spoiler
@@ -299,7 +300,7 @@ QR.post = class
 
   saveFilename: ->
     @file.newName = (@filename or '').replace /[/\\]/g, '-'
-    unless /\.(jpe?g|png|gif|pdf|swf|webm)$/i.test @filename
+    unless QR.validExtension.test @filename
       # 4chan will truncate the filename if it has no extension,
       # but it will always replace the extension by the correct one,
       # so we suffix it with '.jpg' when needed.
