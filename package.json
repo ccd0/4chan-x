@@ -3,8 +3,8 @@
   "description": "Cross-browser userscript for maximum lurking on 4chan.",
   "meta": {
     "name": "4chan X",
-    "version": "1.11.8.5",
-    "date": "2015-08-13T06:30:27.952Z",
+    "version": "1.11.8.6",
+    "date": "2015-08-14T10:13:05.383Z",
     "page": "https://www.4chan-x.net/",
     "downloads": "https://www.4chan-x.net/builds/",
     "oldVersions": "https://raw.githubusercontent.com/ccd0/4chan-x/",
