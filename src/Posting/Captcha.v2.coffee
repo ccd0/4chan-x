@@ -169,7 +169,7 @@ Captcha.v2 =
     if captcha = @captchas.shift()
       $.set 'captchas', @captchas
       @count()
-      captcha.response
+      captcha
     else
       null
 

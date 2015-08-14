@@ -680,7 +680,7 @@ QR =
           extra.form.append 'recaptcha_challenge_field', response.challenge
           extra.form.append 'recaptcha_response_field', response.response
         else
-          extra.form.append 'g-recaptcha-response', response
+          extra.form.append 'g-recaptcha-response', response.response
       QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
       QR.req.progress = '...'
 
