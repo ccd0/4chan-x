@@ -33,6 +33,9 @@ If you're reporting a bug, the more detail you can give, the better. If I can't 
 - Edit the sources (not the compiled scripts in the builds/ directory).
 - Compile the script with `grunt`.
 - Install the compiled script (found in the testbuilds/ directory), and test your changes.
-- Open a pull request.
+- Open a pull request by doing any of the following:
+  - Fork this repository on Github, push your changes to your fork, and make a pull request via Github's mechanism.
+  - Push your changes to any online Git repository, and [open an issue](https://gitreports.com/issue/ccd0/4chan-x) with an explanation of your changes and the URL, branch, and commit you want me to pull from.
+  - Export your changes via `git bundle` (e.g. `git bundle create file.bundle master..your-branch`), and upload them to a file host like https://jii.moe/. Then [open an issue](https://gitreports.com/issue/ccd0/4chan-x) with an explanation of your changes and the URL of the file.
 
 Archive list updates should go to https://github.com/MayhemYDG/archives.json.
