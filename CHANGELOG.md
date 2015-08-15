@@ -1,4 +1,4 @@
-**Note**: Installing the script from one of the links below will disable automatic updates. If you want automatic updates, install the script from the links on the [main page](https://ccd0.github.io/4chan-x/).
+**Note**: Installing the script from one of the links below will disable automatic updates. If you want automatic updates, install the script from the links on the [main page](https://www.4chan-x.net/).
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
