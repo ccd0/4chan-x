@@ -2,6 +2,13 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.9
+
+**v1.11.9.0** *(2015-08-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.8.8.
+- Add `Randomize Filename` option: Replaces filenames with a random timestamp from the past year.
+- Fix bugs with cached captchas when you change captcha settings.
+
 ### v1.11.8
 
 **v1.11.8.8** *(2015-08-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.8/builds/4chan-X-noupdate.crx "Chromium version")]
