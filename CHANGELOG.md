@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.8
 
+**v1.11.8.7** *(2015-08-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.7/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix captcha issues in Pale Moon in some cases where it was still not working.
+
 **v1.11.8.6** *(2015-08-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.6/builds/4chan-X-noupdate.crx "Chromium version")]
 - Add .xyz to TLDs recognized by linkifier without http://.
 
