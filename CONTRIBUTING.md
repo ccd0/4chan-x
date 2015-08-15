@@ -1,6 +1,10 @@
 ## Reporting bugs
 
-If I can't reproduce a bug, I probably won't be able to fix it. You can help by doing the following when you [report a bug](https://github.com/ccd0/4chan-x/issues):
+Bug reports and feature requests for 4chan X are tracked at **https://github.com/ccd0/4chan-x/issues**.
+
+You can submit a bug report / feature request either via your Github account or the [anonymous report form](https://gitreports.com/issue/ccd0/4chan-x).
+
+If you're reporting a bug, the more detail you can give, the better. If I can't reproduce your bug, I probably won't be able to fix it. You can help by doing the following:
 
 1. Include precise steps to reproduce the problem, with the expected and actual results.
 2. Make sure your **browser**, **4chan X**, and (if applicable) **Greasemonkey** are up to date. Include the versions you're using in bug reports.

@@ -66,11 +66,11 @@ To install the **beta** version and get updates whenever there's a new **beta** 
 4chan X currently shares your settings and post history between the HTTP and HTTPS versions of 4chan. If you are concerned about protecting your privacy against a man-in-the-middle attack, you should disable 4chan X on the HTTP version of 4chan and/or install [HTTPS Everywhere](https://www.eff.org/https-everywhere).
 
 ## Troubleshooting
-If you encounter a bug, try the steps [here](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md#reporting-bugs), then report it to the [issue tracker](https://github.com/ccd0/4chan-x/issues). If the bug seems to be caused by a script update, you can install a old version from the [changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md).
+If you encounter a bug, try the steps [here](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md#reporting-bugs), then report it to the [issue tracker](https://github.com/ccd0/4chan-x/issues). You can report bugs without a Github account via [this form](https://gitreports.com/issue/ccd0/4chan-x). If the bug seems to be caused by a script update, you can install a old version from the [changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md).
 
 ## More information
 - [Changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md)
 - [Frequently Asked Questions](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions)
-- [Report Bugs](https://github.com/ccd0/4chan-x/issues)
+- [Report Bugs](https://gitreports.com/issue/ccd0/4chan-x)
 - [Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
 
