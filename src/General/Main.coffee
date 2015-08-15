@@ -204,7 +204,7 @@ Main =
 
   initReady: ->
     # XXX Sometimes threads don't 404 but are left over as stubs containing one garbage reply post.
-    if g.VIEW is 'thread' and not $ '.opContainer'
+    if g.VIEW is 'thread' and (d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found'] or ($('.board') and not $('.opContainer')))
       ThreadWatcher.set404 g.BOARD.ID, g.THREADID, ->
         if Conf['404 Redirect']
           Redirect.navigate 'thread',
