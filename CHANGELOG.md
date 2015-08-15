@@ -1,8 +1,11 @@
-**Note**: Installing the script from one of the links below will disable automatic updates. If you want automatic updates, install the script from the links on the [main page](https://ccd0.github.io/4chan-x/).
+**Note**: Installing the script from one of the links below will disable automatic updates. If you want automatic updates, install the script from the links on the [main page](https://www.4chan-x.net/).
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
 ### v1.11.8
+
+**v1.11.8.8** *(2015-08-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.8/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add link to new anonymous bug reporting form: https://gitreports.com/issue/ccd0/4chan-x
 
 **v1.11.8.7** *(2015-08-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.7/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix captcha issues in Pale Moon in some cases where it was still not working.
