@@ -1,6 +1,8 @@
 QR =
   mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm']
 
+  validExtension: /\.(jpe?g|png|gif|pdf|swf|webm)$/i
+
   typeFromExtension:
     'jpg':  'image/jpeg'
     'jpeg': 'image/jpeg'
@@ -363,7 +365,7 @@ QR =
         for i in [0...bstr.length]
           arr[i] = bstr.charCodeAt(i)
         blob = new Blob [arr], {type: m[1]}
-        blob.name = "image.#{m[2]}"
+        blob.name = "file.#{m[2]}"
         QR.handleFiles [blob]
       else if /^https?:\/\//.test src
         QR.handleUrl src
@@ -678,7 +680,7 @@ QR =
           extra.form.append 'recaptcha_challenge_field', response.challenge
           extra.form.append 'recaptcha_response_field', response.response
         else
-          extra.form.append 'g-recaptcha-response', response
+          extra.form.append 'g-recaptcha-response', response.response
       QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
       QR.req.progress = '...'
 

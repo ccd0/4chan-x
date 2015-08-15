@@ -133,7 +133,7 @@ Captcha.noscript =
     if captcha = @captchas.shift()
       @count()
       $.set 'captchas', @captchas
-      {challenge: captcha.response, response: 'manual_challenge'}
+      captcha
     else if /\S/.test @nodes.input.value
       (cb) =>
         @submitCB = cb
@@ -149,15 +149,17 @@ Captcha.noscript =
   save: (token) ->
     delete @occupied
     @nodes.input.value = ''
+    captcha =
+      challenge: token
+      response:  'manual_challenge'
+      timeout:   @timeout
     if @submitCB
-      @submitCB {challenge: token, response: 'manual_challenge'}
+      @submitCB captcha
       delete @submitCB
       if @needed() then @reload() else @destroy()
     else
       $.forceSync 'captchas'
-      @captchas.push
-        response: token
-        timeout:  @timeout
+      @captchas.push captcha
       @count()
       $.set 'captchas', @captchas
       @reload()

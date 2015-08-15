@@ -135,16 +135,17 @@ Captcha.v1 =
   getOne: ->
     @clear()
     if captcha = @captchas.shift()
-      {challenge, response} = captcha
       @count()
       $.set 'captchas', @captchas
+      captcha
     else
-      challenge   = @nodes.img.alt
+      challenge = @nodes.img.alt
+      timeout   = @timeout
       if /\S/.test(response = @nodes.input.value)
         @destroy()
+        {challenge, response, timeout}
       else
-        return null
-    {challenge, response}
+        null
 
   save: ->
     return unless /\S/.test(response = @nodes.input.value)
