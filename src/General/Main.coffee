@@ -1,7 +1,7 @@
 Main =
   init: ->
-    # XXX Work around Pale Moon iframe bug.
-    return if d.body and not d.head.firstChild
+    # XXX Work around Pale Moon / old Firefox + GM 1.15 bug where script runs in iframe with wrong window.location.
+    return if d.body and not $ 'title', d.head
 
     # XXX dwb userscripts extension reloads scripts run at document-start when replaceState/pushState is called.
     return if window['<%= meta.name %> antidup']
