@@ -102,7 +102,13 @@ UI = do ->
 
     insertEntry: (entry, parent, data) ->
       if typeof entry.open is 'function'
-        return unless entry.open data
+        try
+          return unless entry.open data
+        catch err
+          Main.handleErrors
+            message: "\"#{entry.el.textContent}\" menu entry crashed."
+            error: err
+          return
       $.add parent, entry.el
 
       return unless entry.subEntries
