@@ -304,11 +304,11 @@ Main =
     else if errors.length is 1
       error = errors[0]
     if error
-      new Notice 'error', Main.parseError(error), 15
+      new Notice 'error', Main.parseError(error, Main.reportLink([error])), 15
       return
 
     div = $.el 'div',
-      <%= html('${errors.length} errors occurred. [<a href="javascript:;">show</a>]') %>
+      <%= html('${errors.length} errors occurred.&{Main.reportLink(errors)} [<a href="javascript:;">show</a>]') %>
     $.on div.lastElementChild, 'click', ->
       [@textContent, logs.hidden] = if @textContent is 'show'
         ['hide', false]
@@ -322,16 +322,34 @@ Main =
 
     new Notice 'error', [div, logs], 30
 
-  parseError: (data) ->
+  parseError: (data, reportLink) ->
     c.error data.message, data.error.stack
     message = $.el 'div',
-      textContent: data.message
+      <%= html('${data.message}?{reportLink}{&{reportLink}}') %>
     error = $.el 'div',
       textContent: "#{data.error.name or 'Error'}: #{data.error.message or 'see console for details'}"
     lines = data.error.stack?.match(/\d+(?=:\d+\)?$)/mg)?.join().replace(/^/, ' at ') or ''
     context = $.el 'div',
       textContent: "(<%= meta.name %> <%= meta.fork %> v#{g.VERSION} <%= type %> on #{$.engine}#{lines})"
     [message, error, context]
+
+  reportLink: (errors) ->
+    data = errors[0]
+    title  = data.message
+    title += " (+#{errors.length - 1} other errors)" if errors.length > 1
+    details = """
+      [Please describe the steps needed to reproduce this error.]
+
+      Script: <%= meta.name %> <%= meta.fork %> v#{g.VERSION} <%= type %>
+      User agent: #{navigator.userAgent}
+      URL: #{location.href}
+
+      #{data.error}
+      #{data.error.stack?.replace(data.error.toString(), '').trim() or ''}
+    """
+    details = details.replace /file:\/{3}.+\//g, '' # Remove local file paths
+    url = "<%= meta.issues %>?issue_title=#{encodeURIComponent title}&details=#{encodeURIComponent details}"
+    <%= html(' [<a href="${url}" target="_blank">report</a>]') %>
 
   isThisPageLegit: ->
     # 404 error page or similar.
