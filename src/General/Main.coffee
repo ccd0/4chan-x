@@ -328,7 +328,10 @@ Main =
       textContent: data.message
     error = $.el 'div',
       textContent: "#{data.error.name or 'Error'}: #{data.error.message or 'see console for details'}"
-    [message, error]
+    lines = data.error.stack?.match(/\d+(?=:\d+\)?$)/mg)?.join().replace(/^/, ' at ') or ''
+    context = $.el 'div',
+      textContent: "(<%= meta.name %> <%= meta.fork %> v#{g.VERSION} <%= type %> on #{$.engine}#{lines})"
+    [message, error, context]
 
   isThisPageLegit: ->
     # 404 error page or similar.
