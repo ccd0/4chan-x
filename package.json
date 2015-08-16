@@ -13,6 +13,7 @@
     "license": "https://github.com/ccd0/4chan-x/blob/master/LICENSE",
     "changelog": "https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md",
     "issues": "https://gitreports.com/issue/ccd0/4chan-x",
+    "newIssue": "https://gitreports.com/issue/ccd0/4chan-x?issue_title=%title&details=%details",
     "appid": "lacclbnghgdicfifcamcmcnilckjamag",
     "chromeStoreID": "ohnjgmpcibpbafdlkimncjhflgedgpam",
     "recaptchaKey": "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc",

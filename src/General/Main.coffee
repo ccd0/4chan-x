@@ -348,7 +348,7 @@ Main =
       #{data.error.stack?.replace(data.error.toString(), '').trim() or ''}
     """
     details = details.replace /file:\/{3}.+\//g, '' # Remove local file paths
-    url = "<%= meta.issues %>?issue_title=#{encodeURIComponent title}&details=#{encodeURIComponent details}"
+    url = "<%= meta.newIssue.replace('%title', '#{encodeURIComponent title}').replace('%details', '#{encodeURIComponent details}') %>"
     <%= html(' [<a href="${url}" target="_blank">report</a>]') %>
 
   isThisPageLegit: ->
