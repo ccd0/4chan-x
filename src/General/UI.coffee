@@ -106,7 +106,7 @@ UI = do ->
           return unless entry.open data
         catch err
           Main.handleErrors
-            message: "\"#{entry.el.textContent}\" menu entry crashed."
+            message: "Error in building the #{@type} menu."
             error: err
           return
       $.add parent, entry.el
