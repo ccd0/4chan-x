@@ -100,9 +100,9 @@ DeleteLink =
         DeleteLink.auto[+fileOnly][post.fullID] = true
         DeleteLink.nodes.links[+fileOnly].textContent = DeleteLink.linkText fileOnly
     else
+      QR.cooldown.delete post unless fileOnly
       if resDoc.title is 'Updating index...'
         # We're 100% sure.
-        QR.cooldown.delete post unless fileOnly
         (post.origin or post).kill fileOnly
       link.textContent = 'Deleted' if post.fullID is DeleteLink.post.fullID
 
