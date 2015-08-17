@@ -195,8 +195,7 @@ module.exports = (grunt) ->
           git checkout gh-pages
           git pull
           git merge --no-commit -s ours stable
-          git checkout stable builds
-          git checkout HEAD "builds/*<%= pkg.meta.suffix.beta %>.*"
+          git checkout stable "builds/<%= pkg.name %>.*" builds/updates.xml
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to stable channel."
           git checkout -
         """.split('\n').join('&&')
