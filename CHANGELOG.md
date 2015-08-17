@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.9
 
+**v1.11.9.2** *(2015-08-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.8.9: Fix regression from v1.11.8.0 that caused the cooldown to stop working in certain circumstances.
+
 **v1.11.9.1** *(2015-08-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Add more info and a reporting link to error messages.
 
@@ -13,6 +16,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 - Fix bugs with cached captchas when you change captcha settings.
 
 ### v1.11.8
+
+**v1.11.8.9** *(2015-08-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.9/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix regression from v1.11.8.0 that caused the cooldown to stop working in certain circumstances.
 
 **v1.11.8.8** *(2015-08-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.8/builds/4chan-X-noupdate.crx "Chromium version")]
 - Add link to new anonymous bug reporting form: https://gitreports.com/issue/ccd0/4chan-x
