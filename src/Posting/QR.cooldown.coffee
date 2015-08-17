@@ -28,12 +28,13 @@ QR.cooldown =
     for type, delay of QR.cooldown.delays when type not in ['thread', 'thread_global']
       QR.cooldown.maxDelay = Math.max QR.cooldown.maxDelay, delay
 
+    QR.cooldown.isSetup = true
     QR.cooldown.start()
 
   start: ->
     {data} = QR.cooldown
     return unless (
-      QR.cooldown.delays and
+      QR.cooldown.isSetup and
       !QR.cooldown.isCounting and
       Object.keys(data[g.BOARD.ID] or {}).length + Object.keys(data.global or {}).length > 0
     )
