@@ -26,7 +26,7 @@
 // @grant        GM_openInTab
 // @grant        GM_xmlhttpRequest
 // @run-at       document-start
-<% if (channel !== 'dev') { %><% if (channel !== 'noupdate') { %>// @updateURL 	 <%= meta.downloads %><%= name %><%= meta.suffix[channel] %>.meta.js
-<% } %>// @downloadURL  <%= meta.downloads %><%= name %><%= meta.suffix[channel] %>.user.js
+<% if (channel !== 'dev') { %>// @updateURL    <%= (channel !== 'noupdate') ? (meta.downloads + name + meta.suffix[channel] + '.meta.js') : 'https://noupdate.invalid/' %>
+// @downloadURL  <%= (channel !== 'noupdate') ? (meta.downloads + name + meta.suffix[channel] + '.user.js') : 'https://noupdate.invalid/' %>
 <% } %>// @icon         data:image/png;base64,<%= grunt.file.read('src/General/img/icon48.png', {encoding: 'base64'}) %>
 // ==/UserScript==
