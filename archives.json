@@ -72,8 +72,8 @@
   "files": ["sp"]
 }, {
   "uid": 23,
-  "name": "DesuStorage",
-  "domain": "archive.desustorage.org",
+  "name": "archive.horse",
+  "domain": "4ch.archive.horse",
   "http": false,
   "https": true,
   "software": "foolfuuka",
