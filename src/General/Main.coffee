@@ -1,12 +1,21 @@
 Main =
   init: ->
+    # XXX Work around Pale Moon / old Firefox + GM 1.15 bug where script runs in iframe with wrong window.location.
+    return if d.body and not $ 'title', d.head
+
+    # XXX dwb userscripts extension reloads scripts run at document-start when replaceState/pushState is called.
+    return if window['<%= meta.name %> antidup']
+    window['<%= meta.name %> antidup'] = true
+
     if location.hostname is 'www.google.com'
-      if location.pathname is '/recaptcha/api/fallback'
+      if location.pathname is '/recaptcha/api/noscript'
         $.ready -> Captcha.noscript.initFrame()
-      else
-        $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
-          if enabled
-            $.ready -> Captcha.fixes.init()
+        return
+      if location.pathname is '/recaptcha/api/fallback'
+        $.ready -> Captcha.v2.initFrame()
+      $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
+        if enabled
+          $.ready -> Captcha.fixes.init()
       return
 
     g.threads = new SimpleDict()
@@ -28,8 +37,7 @@ Main =
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
 
-    # flatten Config into Conf
-    # and get saved or default values
+    # Flatten default values from Config into Conf
     flatten = (parent, obj) ->
       if obj instanceof Array
         Conf[parent] = obj[0]
@@ -45,37 +53,83 @@ Main =
     for db in DataBoard.keys
       Conf[db] = boards: {}
     Conf['selectedArchives'] = {}
+    Conf['cooldowns'] = {}
 
-    $.get Conf, (items) ->
-      $.extend Conf, items
-      # XXX temporarily set here so old versions update to correct setting
-      Conf['Fixed Thread Watcher'] ?= Conf['Toggleable Thread Watcher']
-      $.asap (-> doc = d.documentElement), Main.initFeatures
+    # XXX old key names
+    Conf['Except Archives from Encryption'] = false
+
+    # Get saved values as items
+    items = {}
+    items[key] = undefined for key of Conf
+    items['previousversion'] = undefined
+    $.get items, (items) ->
+      $.asap (-> doc = d.documentElement), ->
+
+        # Fresh install
+        if !items.previousversion?
+          Main.ready ->
+            $.set 'previousversion', g.VERSION
+            Settings.open()
+
+        # Migrate old settings
+        else if items.previousversion isnt g.VERSION
+          Main.upgrade items
+
+        # Combine default values with saved values
+        for key, val of Conf
+          Conf[key] = items[key] ? val
+
+        Main.initFeatures()
 
     # set up CSS when <head> is completely loaded
     $.asap (-> doc = d.documentElement), ->
       $.onExists doc, 'body', false, Main.initStyle
 
+  upgrade: (items) ->
+    {previousversion} = items
+    items2 = {previousversion: g.VERSION}
+    compareString = previousversion.replace(/\d+/g, (x) -> ('0000'+x)[-5..])
+
+    if compareString < '00001.00011.00008.00000'
+      unless items['Fixed Thread Watcher']?
+        items2['Fixed Thread Watcher'] = items['Toggleable Thread Watcher'] ? true
+      unless items['Exempt Archives from Encryption']?
+        items2['Exempt Archives from Encryption'] = items['Except Archives from Encryption'] ? false
+
+    $.extend items, items2
+    $.set items2, ->
+      if items['Show Updated Notifications'] ? true
+        el = $.el 'span',
+          <%= html(meta.name + ' has been updated to <a href="' + meta.changelog + '" target="_blank">version ${g.VERSION}</a>.') %>
+        new Notice 'info', el, 15
+
   initFeatures: ->
-    if location.hostname in ['boards.4chan.org', 'sys.4chan.org']
+    if location.hostname in ['boards.4chan.org', 'sys.4chan.org', 'www.4chan.org']
       $.globalEval 'document.documentElement.classList.add("js-enabled");'
 
     switch location.hostname
+      when 'www.4chan.org'
+        Captcha.replace.init()
+        return
       when 'a.4cdn.org'
         return
       when 'sys.4chan.org'
         Report.init()
         PostSuccessful.init() if g.VIEW is 'post'
+        if Conf['404 Redirect'] and /\/imgboard\.php$/.test(location.pathname) and (match = location.search.match /\bres=(\d+)/)
+          $.ready ->
+            if $.id('errmsg')?.textContent is 'Error: Specified thread does not exist.'
+              Redirect.navigate 'thread',
+                boardID: g.BOARD.ID
+                postID:  +match[1]
         return
       when 'i.4cdn.org'
         $.asap (-> d.readyState isnt 'loading'), ->
           if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
-            Redirect.init()
             pathname = location.pathname.split '/'
-            URL = Redirect.to 'file',
+            Redirect.navigate 'file',
               boardID:  g.BOARD.ID
               filename: pathname[pathname.length - 1]
-            Redirect.navigate URL
           else if video = $ 'video'
             if Conf['Volume in New Tab']
               Volume.setup video
@@ -109,12 +163,15 @@ Main =
     $.ready Main.initReady
 
   initStyle: ->
+    $.addStyle Main.cssWWW if location.hostname is 'www.4chan.org'
+
     return if !Main.isThisPageLegit() or $.hasClass doc, 'fourchan-x'
+
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
     $.addClass doc, 'fourchan-x', 'seaweedchan'
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
-    $.addClass doc, if chrome? then 'blink' else 'gecko'
+    $.addClass doc, $.engine if $.engine
     $.addStyle Main.css, 'fourchanx-css'
 
     keyboard = false
@@ -146,16 +203,18 @@ Main =
       attributeFilter: ['href']
 
   initReady: ->
-    if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
-      if g.VIEW is 'thread'
-        ThreadWatcher.set404 g.BOARD.ID, g.THREADID, ->
-          if Conf['404 Redirect']
-            href = Redirect.to 'thread',
-              boardID:  g.BOARD.ID
-              threadID: g.THREADID
-              postID:   +location.hash.match /\d+/ # post number or 0
-            Redirect.navigate href, "/#{g.BOARD}/"
+    # XXX Sometimes threads don't 404 but are left over as stubs containing one garbage reply post.
+    if g.VIEW is 'thread' and (d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found'] or ($('.board') and not $('.opContainer')))
+      ThreadWatcher.set404 g.BOARD.ID, g.THREADID, ->
+        if Conf['404 Redirect']
+          Redirect.navigate 'thread',
+            boardID:  g.BOARD.ID
+            threadID: g.THREADID
+            postID:   +location.hash.match /\d+/ # post number or 0
+          , "/#{g.BOARD}/"
       return
+
+    return if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
 
     # 4chan Pass Link
     if styleSelector = $.id 'styleSelector'
@@ -174,25 +233,7 @@ Main =
     else
       $.event '4chanXInitFinished'
 
-    $.get 'previousversion', null, ({previousversion}) ->
-      return if previousversion is g.VERSION
-      if previousversion
-        el = $.el 'span',
-          <%= html(meta.name + ' has been updated to <a href="' + meta.repo + 'blob/' + meta.mainBranch + '/CHANGELOG.md" target="_blank">version ${g.VERSION}</a>.') %>
-        new Notice 'info', el, 15
-      else
-        Settings.open()
-      $.set 'previousversion', g.VERSION
-
     if Conf['Show Support Message']
-      <% if (type === 'userscript') { %>
-      GMver = GM_info.version.split '.'
-      for v, i in "<%= meta.min.greasemonkey %>".split '.'
-        continue if v is GMver[i]
-        (v < GMver[i]) or new Notice 'warning', "Your version of Greasemonkey is outdated (v#{GM_info.version} instead of v<%= meta.min.greasemonkey %> minimum) and <%= meta.name %> may not operate correctly.", 30
-        break
-      <% } %>
-
       try
         localStorage.getItem '4chan-settings'
       catch err
@@ -263,11 +304,11 @@ Main =
     else if errors.length is 1
       error = errors[0]
     if error
-      new Notice 'error', Main.parseError(error), 15
+      new Notice 'error', Main.parseError(error, Main.reportLink([error])), 15
       return
 
     div = $.el 'div',
-      <%= html('${errors.length} errors occurred. [<a href="javascript:;">show</a>]') %>
+      <%= html('${errors.length} errors occurred.&{Main.reportLink(errors)} [<a href="javascript:;">show</a>]') %>
     $.on div.lastElementChild, 'click', ->
       [@textContent, logs.hidden] = if @textContent is 'show'
         ['hide', false]
@@ -281,13 +322,34 @@ Main =
 
     new Notice 'error', [div, logs], 30
 
-  parseError: (data) ->
+  parseError: (data, reportLink) ->
     c.error data.message, data.error.stack
     message = $.el 'div',
-      textContent: data.message
+      <%= html('${data.message}?{reportLink}{&{reportLink}}') %>
     error = $.el 'div',
       textContent: "#{data.error.name or 'Error'}: #{data.error.message or 'see console for details'}"
-    [message, error]
+    lines = data.error.stack?.match(/\d+(?=:\d+\)?$)/mg)?.join().replace(/^/, ' at ') or ''
+    context = $.el 'div',
+      textContent: "(<%= meta.name %> <%= meta.fork %> v#{g.VERSION} <%= type %> on #{$.engine}#{lines})"
+    [message, error, context]
+
+  reportLink: (errors) ->
+    data = errors[0]
+    title  = data.message
+    title += " (+#{errors.length - 1} other errors)" if errors.length > 1
+    details = """
+      [Please describe the steps needed to reproduce this error.]
+
+      Script: <%= meta.name %> <%= meta.fork %> v#{g.VERSION} <%= type %>
+      User agent: #{navigator.userAgent}
+      URL: #{location.href}
+
+      #{data.error}
+      #{data.error.stack?.replace(data.error.toString(), '').trim() or ''}
+    """
+    details = details.replace /file:\/{3}.+\//g, '' # Remove local file paths
+    url = "<%= meta.newIssue.replace('%title', '#{encodeURIComponent title}').replace('%details', '#{encodeURIComponent details}') %>"
+    <%= html(' [<a href="${url}" target="_blank">report</a>]') %>
 
   isThisPageLegit: ->
     # 404 error page or similar.
@@ -301,17 +363,13 @@ Main =
     $.ready ->
       cb() if Main.isThisPageLegit()
 
-  css: `<%=
-    grunt.template.process(
-      ['font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon'].map(function(name) {
-        return grunt.file.read('src/General/css/'+name+'.css');
-      }).join(''),
-      {data: {type: type}}
-    ).trim().replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`')
-  %>`
+  css: `<%= importCSS('font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon') %>`
+
+  cssWWW: `<%= importCSS('www') %>`
 
   features: [
     ['Polyfill',                  Polyfill]
+    ['Captcha Replacement',       Captcha.replace]
     ['Redirect',                  Redirect]
     ['Header',                    Header]
     ['Catalog Links',             CatalogLinks]
@@ -332,6 +390,7 @@ Main =
     ['Recursive',                 Recursive]
     ['Strike-through Quotes',     QuoteStrikeThrough]
     ['Quick Reply',               QR]
+    ['Cooldown',                  QR.cooldown]
     ['Menu',                      Menu]
     ['Index Generator (Menu)',    Index.menu]
     ['Report Link',               ReportLink]

@@ -105,8 +105,15 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   /* party hats */
   pointer-events: none;
 }
+#g-recaptcha {
+  min-height: 78px;
+  height: auto;
+}
 :root:not(.js-enabled) #postForm {
   display: table;
+}
+#captchaContainerAlt td:nth-child(2) {
+  display: table-cell !important;
 }
 
 /* Anti-autoplay */
@@ -119,6 +126,11 @@ audio.controls-added {
   width: auto;
   height: auto;
   text-align: center;
+}
+:root.anti-autoplay .autoplay-removed {
+  display: block !important;
+  min-width: 640px;
+  min-height: 390px;
 }
 
 /* fixed, z-index */
@@ -161,8 +173,14 @@ audio.controls-added {
 #embedding {
   z-index: 11;
 }
-#thread-watcher {
+:root.fixed-watcher #thread-watcher {
   z-index: 10;
+}
+:root.fixed:not(.gallery-open) #header-bar:not(:hover) {
+  z-index: 8;
+}
+#thread-watcher {
+  z-index: 5;
 }
 
 /* Header */
@@ -239,7 +257,7 @@ audio.controls-added {
   height: 10px;
   position: absolute;
 }
-:root:not(.autohide) #scroll-marker {
+#header-bar:not(.autohide) #scroll-marker {
   pointer-events: none;
 }
 #header-bar #scroll-marker {
@@ -318,6 +336,7 @@ audio.controls-added {
     flex: auto;
     display: -webkit-flex;
     display: flex;
+    width: 0px; /* XXX Fixes Edge not shrinking the board list below default size when needed */
   }
   :root.fixed:not(.centered-links) #full-board-list > .boardList > a,
   :root.fixed:not(.centered-links) #full-board-list > .boardList > span:not(.space):not(.spacer) {
@@ -530,7 +549,7 @@ div[data-checked="false"] > .suboption-list {
 .section-filter textarea {
   height: 500px;
 }
-.section-filter a {
+.section-filter a, .section-advanced a {
   text-decoration: underline;
 }
 .section-sauce textarea {
@@ -621,10 +640,10 @@ div[data-checked="false"] > .suboption-list {
   left: -1em;
   width: 0;
 }
-<% if (type === 'crx') { %>
 /* ``::-webkit-*'' selectors break selector lists on Firefox. */
-#index-search::-webkit-search-cancel-button,
-<% } %>
+#index-search::-webkit-search-cancel-button {
+  display: none;
+}
 #index-search:not([data-searching]) + #index-search-clear {
   display: none;
 }
@@ -792,10 +811,11 @@ span.hide-announcement {
 #thread-watcher {
   padding-bottom: 3px;
   padding-left: 3px;
-  overflow: hidden;
   white-space: nowrap;
   min-width: 146px;
-  max-height: 92%;
+}
+#watched-threads {
+  overflow-x: hidden;
   overflow-y: auto;
 }
 #thread-watcher .refresh {
@@ -804,7 +824,12 @@ span.hide-announcement {
 :root.fixed-watcher #thread-watcher {
   position: fixed;
 }
-:root:not(.fixed-watcher) #thread-watcher:not(:hover) {
+:root.fixed-watcher #watched-threads {
+  /* XXX https://code.google.com/p/chromium/issues/detail?id=168840, https://bugs.webkit.org/show_bug.cgi?id=94158 */
+  max-height: 85vh;
+  max-height: calc(100vh - 75px);
+}
+:root:not(.fixed-watcher) #watched-threads:not(:hover) {
   max-height: 210px;
   overflow-y: hidden;
 }
@@ -975,6 +1000,11 @@ span.hide-announcement {
 }
 :root.fit-height .full-image {
   max-height: 100vh;
+}
+:root.fit-height.fixed .full-image {
+  /* XXX https://code.google.com/p/chromium/issues/detail?id=168840, https://bugs.webkit.org/show_bug.cgi?id=94158 */
+  max-height: 93vh;
+  max-height: calc(100vh - 35px);
 }
 :root.fit-width .full-image {
   max-width: 100%;
@@ -1150,6 +1180,13 @@ input[name="Default Volume"] {
   min-width: 300px;
   border-radius: 3px 3px 0 0;
 }
+#qr > form {
+  /* XXX https://code.google.com/p/chromium/issues/detail?id=168840, https://bugs.webkit.org/show_bug.cgi?id=94158 */
+  max-height: 85vh;
+  max-height: calc(100vh - 75px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 #qrtab {
   border-radius: 3px 3px 0 0;
 }
@@ -1222,7 +1259,7 @@ input.field.tripped:not(:hover):not(:focus) {
   top: 2px;
 }
 
-/* Noscript Recaptcha */
+/* Recaptcha v1 */
 .captcha-img {
   margin: 0px;
   text-align: center;
@@ -1231,11 +1268,11 @@ input.field.tripped:not(:hover):not(:focus) {
   min-height: 59px;
   min-width: 302px;
 }
-.captcha-input{
+.captcha-input {
   width: 100%;
   margin: 1px 0 0;
 }
-#qr-captcha-iframe {
+#qr.captcha-v1 #qr-captcha-iframe {
   display: none;
 }
 
@@ -1262,6 +1299,13 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr:not(.captcha-open) .captcha-counter > a {
   display: block;
   width: 100%;
+}
+#qr.captcha-v2 #qr-captcha-iframe {
+  width: 302px;
+  height: 423px;
+  border: 0;
+  display: block;
+  margin: auto;
 }
 .goog-bubble-content {
   max-width: 100vw;
@@ -1317,6 +1361,7 @@ input#qr-filename {
 .has-file #qr-filename {
   -webkit-flex: 1 1 auto;
   flex: 1 1 auto;
+  width: 0px; /* XXX Fixes filename not shrinking to allow space for buttons in Edge */
   display: inline-block;
   padding: 0;
   padding-left: 3px;
@@ -1466,6 +1511,8 @@ a:only-of-type > .remove {
 }
 .textarea {
   position: relative;
+  display: -webkit-flex;
+  display: flex;
 }
 :root.webkit .textarea {
   margin-bottom: -2px;
@@ -1505,7 +1552,7 @@ a:only-of-type > .remove {
   height: 15px;
   text-align: center;
 }
-.menu-button + .container:not(:empty) {
+.menu-button + .container :first-child {
   margin-left: -5px;
 }
 #menu {
@@ -1752,12 +1799,7 @@ grunt.file.expand('src/General/img/links/*.png').map(function(file) {
 }
 .gal-fit-height .gal-image img,
 .gal-fit-height .gal-image video {
-  /*
-    Chrome doesn't support viewpoint units in calc()
-    http://bugs.chromium.org/168840
-    "It looks like the original author of viewport units in WebKit is not coming back to fix this stuff."
-    Well, fuck.
-  */
+  /* XXX https://code.google.com/p/chromium/issues/detail?id=168840, https://bugs.webkit.org/show_bug.cgi?id=94158 */
   max-height: 95vh;
   max-height: calc(100vh - 25px);
 }
@@ -1860,6 +1902,6 @@ grunt.file.expand('src/General/img/links/*.png').map(function(file) {
   width: 4em;
 }
 :root.gallery-open.fixed #header-bar:not(.autohide),
-:root.gallery-open.fixed #header-bar:not(.autohide) .fa::before {
+:root.gallery-open.fixed #header-bar:not(.autohide) #shortcuts .fa::before {
   visibility: hidden;
 }

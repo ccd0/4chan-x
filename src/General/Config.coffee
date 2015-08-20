@@ -39,7 +39,7 @@ Config =
         true
         'Enable reporting posts to supported archives.'
       ]
-      'Except Archives from Encryption': [
+      'Exempt Archives from Encryption': [
         false
         'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'
       ]
@@ -382,7 +382,7 @@ Config =
         'Bookmark threads.'
       ]
       'Fixed Thread Watcher': [
-        null # XXX temporarily set in Main.coffee so old versions update to correct setting
+        true
         'Makes the thread watcher scroll with the page.'
         1
       ]
@@ -396,7 +396,7 @@ Config =
         'Label each post from a new IP with the thread\'s current IP count.'
       ]
 
-    'Posting':
+    'Posting and Captchas':
       'Quick Reply': [
         true
         'All-in-one form to reply, create threads, automate dumping and more.'
@@ -421,16 +421,19 @@ Config =
         'Open new threads or replies to a thread from the index in a new tab.'
         1
       ]
-      <% if (type === 'userscript') { %>
       'Remember QR Size': [
         false
         'Remember the size of the Quick reply.'
         1
       ]
-      <% } %>
       'Remember Spoiler': [
         false
         'Remember the spoiler state, instead of resetting after posting.'
+        1
+      ]
+      'Randomize Filename': [
+        false
+        'Set the filename to a random timestamp within the past year. Disabled on /f/.'
         1
       ]
       'Show New Thread Option in Threads': [
@@ -438,6 +441,7 @@ Config =
         'Show the option to post a new / different thread from inside a thread.'
         1
       ]
+      # XXX This has been migrated to Name Sync and will be removed from 4chan X in a future version.
       'Show Name and Subject': [
         false
         'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.'
@@ -480,7 +484,15 @@ Config =
       ]
       'Captcha Fixes': [
         true
-        'Make captcha more keyboard-navigable.'
+        'Make captcha easier to use, especially with the keyboard.'
+      ]
+      'Use Recaptcha v1': [
+        false
+        'Use the old text version of Recaptcha.'
+      ]
+      'Use Recaptcha v2 in Reports': [
+        false
+        'Use the image selection captcha in the report window.'
       ]
 
     'Quote Links':
@@ -587,6 +599,9 @@ Config =
     'Fit Height': [
       true
     ]
+    'Stretch to Fit': [
+      false
+    ]
     'Scroll to Post': [
       true
     ]
@@ -653,6 +668,10 @@ Config =
     comment: """
       # Filter Stallman copypasta on /g/:
       #/what you\'re refer+ing to as linux/i;boards:g
+      # Filter posts with 20 or more quote links:
+      #/(?:>>\\d(?:(?!>>\\d)[^])*){20}/
+      # Filter posts like T H I S / H / I / S:
+      #/^>?\\s?\\w\\s?(\\w)\\s?(\\w)\\s?(\\w).*$[\\s>]+\\1[\\s>]+\\2[\\s>]+\\3/im
     """
 
     flag: ''
@@ -674,7 +693,9 @@ Config =
     #https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG
     #//saucenao.com/search.php?url=%IMG
     #http://3d.iqdb.org/?url=%IMG
+    # tools:
     #http://regex.info/exif.cgi?imgurl=%URL
+    #//imgops.com/%URL;types:gif,jpg,png
     # uploaders:
     #//imgur.com/upload?url=%URL;types:gif,jpg,png,pdf;text:Upload to imgur
     # "View Same" in archives:
@@ -737,6 +758,8 @@ Config =
     'QR.personas': """
       #options:"sage";boards:jp;always
     """
+
+  captchaLanguage: ''
 
   time: '%m/%d/%y(%a)%H:%M:%S'
 
@@ -945,10 +968,6 @@ Config =
       'Auto Update': [
         true
         'Automatically fetch new posts.'
-      ]
-      'Ignore Offline Status': [
-        false
-        'Update even if your browser reports you are offline.'
       ]
       'Optional Increase': [
         false

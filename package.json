@@ -3,27 +3,33 @@
   "description": "Cross-browser userscript for maximum lurking on 4chan.",
   "meta": {
     "name": "4chan X",
-    "version": "1.10.13.1",
-    "date": "2015-05-27T18:54:32.769Z",
-    "repo": "https://github.com/ccd0/4chan-x/",
-    "page": "https://github.com/ccd0/4chan-x",
-    "downloads": "https://ccd0.github.io/4chan-x/builds/",
+    "fork": "ccd0",
+    "version": "1.11.9.2",
+    "date": "2015-08-17T01:13:28.335Z",
+    "page": "https://www.4chan-x.net/",
+    "downloads": "https://www.4chan-x.net/builds/",
     "oldVersions": "https://raw.githubusercontent.com/ccd0/4chan-x/",
     "faq": "https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions",
+    "license": "https://github.com/ccd0/4chan-x/blob/master/LICENSE",
+    "changelog": "https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md",
+    "issues": "https://gitreports.com/issue/ccd0/4chan-x",
+    "newIssue": "https://gitreports.com/issue/ccd0/4chan-x?issue_title=%title&details=%details",
     "appid": "lacclbnghgdicfifcamcmcnilckjamag",
     "chromeStoreID": "ohnjgmpcibpbafdlkimncjhflgedgpam",
     "recaptchaKey": "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc",
     "youtubeAPIKey": "AIzaSyB5_zaen_-46Uhz1xGR-lz1YoUMHqCD6CE",
-    "buildsPath": "builds/",
-    "mainBranch": "master",
+    "awsBucket": "4chan-x",
     "matches": [
       "*://boards.4chan.org/*",
       "*://sys.4chan.org/*",
       "*://a.4cdn.org/*",
       "*://i.4cdn.org/*",
+      "*://www.4chan.org/banned",
+      "*://www.4chan.org/feedback",
       "https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
       "https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
-      "*://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc"
+      "*://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
+      "*://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*"
     ],
     "suffix": {
       "stable": "",
@@ -38,16 +44,16 @@
       "dev": " dev"
     },
     "min": {
-      "chrome": "32",
+      "chrome": "33",
       "firefox": "26",
       "greasemonkey": "1.14"
     }
   },
   "devDependencies": {
-    "crx": "^3.0.2",
-    "font-awesome": "4.3.0",
+    "crx": "^3.0.3",
+    "font-awesome": "^4.4.0",
     "grunt": "^0.4.5",
-    "grunt-concurrent": "^1.0.0",
+    "grunt-concurrent": "^2.0.1",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-coffee": "^0.13.0",
     "grunt-contrib-concat": "^0.5.1",
@@ -56,7 +62,7 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-markdown": "^0.7.0",
     "grunt-shell": "^1.1.2",
-    "grunt-webstore-upload": "^0.8.2",
+    "grunt-webstore-upload": "^0.8.5",
     "jszip": "^2.5.0",
     "load-grunt-tasks": "^3.2.0",
     "npm-shrinkwrap": "^5.4.0"

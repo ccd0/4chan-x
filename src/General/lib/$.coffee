@@ -117,6 +117,11 @@ $.asap = (test, cb) ->
 $.onExists = (root, selector, subtree, cb) ->
   if el = $ selector, root
     return cb el
+  # XXX Edge doesn't notify MutationObservers of nodes added as document loads.
+  if $.engine is 'edge' and d.readyState is 'loading'
+    $.asap (-> d.readyState isnt 'loading' or $ selector, root), ->
+      $.onExists root, selector, subtree, cb
+    return
   observer = new MutationObserver ->
     if el = $ selector, root
       observer.disconnect()
@@ -156,7 +161,7 @@ $.hasClass = (el, className) ->
   className in el.classList
 
 $.rm = (el) ->
-  el.remove()
+  el?.remove()
 
 $.rmAll = (root) ->
   # https://gist.github.com/MayhemYDG/8646194
@@ -242,9 +247,12 @@ unless typeof cloneInto is 'function' or /^[01]\./.test(GM_info.version) or GM_i
 
 $.open = 
 <% if (type === 'userscript') { %>
-  GM_openInTab
+  if GM_openInTab?
+    GM_openInTab
+  else
+    (url) -> window.open url, '_blank'
 <% } else { %>
-  (URL) -> window.open URL, '_blank'
+  (url) -> window.open url, '_blank'
 <% } %>
 
 $.debounce = (wait, fn) ->
@@ -319,6 +327,12 @@ $.minmax = (value, min, max) ->
 
 $.hasAudio = (video) ->
   video.mozHasAudio or !!video.webkitAudioDecodedByteCount
+
+$.engine = do ->
+  return 'edge'   if /Edge\//.test navigator.userAgent
+  return 'blink'  if /Chrome\//.test navigator.userAgent
+  return 'webkit' if /WebKit\//.test navigator.userAgent
+  return 'gecko'  if /Gecko\/|Goanna/.test navigator.userAgent # Goanna = Pale Moon 26+
 
 $.item = (key, val) ->
   item = {}
@@ -434,42 +448,76 @@ do ->
 <% } else { %>
 
 # http://wiki.greasespot.net/Main_Page
-$.oldValue = {}
+# https://tampermonkey.net/documentation.php
+if GM_deleteValue?
+  $.getValue   = GM_getValue
+  $.listValues = -> GM_listValues() # error when called if missing
+else
+  $.getValue = (key) -> localStorage[key]
+  $.listValues = ->
+    key for key of localStorage when key[...g.NAMESPACE.length] is g.NAMESPACE
 
-$.sync = (key, cb) ->
-  key = g.NAMESPACE + key
-  $.syncing[key] = cb
-  $.oldValue[key] = GM_getValue key
-
-do ->
-  onChange = (key) ->
-    return unless cb = $.syncing[key]
-    newValue = GM_getValue key
-    return if newValue is $.oldValue[key]
-    if newValue?
-      $.oldValue[key] = newValue
-      cb JSON.parse(newValue), key
-    else
+if GM_addValueChangeListener?
+  $.setValue    = GM_setValue
+  $.deleteValue = GM_deleteValue
+else if GM_deleteValue?
+  $.oldValue = {}
+  $.setValue = (key, val) ->
+    GM_setValue key, val
+    if key of $.syncing
+      $.oldValue[key]   = val
+      localStorage[key] = val # for `storage` events
+  $.deleteValue = (key) ->
+    GM_deleteValue key
+    if key of $.syncing
       delete $.oldValue[key]
-      cb undefined, key
-  $.on window, 'storage', ({key}) -> onChange key
+      delete localStorage[key] # for `storage` events
+else
+  $.oldValue = {}
+  $.setValue = (key, val) ->
+    $.oldValue[key]   = val if key of $.syncing
+    localStorage[key] = val
+  $.deleteValue = (key) ->
+    delete $.oldValue[key] if key of $.syncing
+    delete localStorage[key]
 
-  $.forceSync = (key) ->
-    # Storage events don't work across origins
-    # e.g. http://boards.4chan.org and https://boards.4chan.org
-    # so force a check for changes to avoid lost data.
-    onChange g.NAMESPACE + key
+if GM_addValueChangeListener?
+  $.sync = (key, cb) ->
+    $.syncing[key] = GM_addValueChangeListener g.NAMESPACE + key, (key2, oldValue, newValue, remote) ->
+      if remote
+        newValue = JSON.parse newValue unless newValue is undefined
+        cb newValue, key
+  $.forceSync = ->
+else
+  $.sync = (key, cb) ->
+    key = g.NAMESPACE + key
+    $.syncing[key] = cb
+    $.oldValue[key] = $.getValue key
+
+  do ->
+    onChange = (key) ->
+      return unless cb = $.syncing[key]
+      newValue = $.getValue key
+      return if newValue is $.oldValue[key]
+      if newValue?
+        $.oldValue[key] = newValue
+        cb JSON.parse(newValue), key[g.NAMESPACE.length..]
+      else
+        delete $.oldValue[key]
+        cb undefined, key[g.NAMESPACE.length..]
+    $.on window, 'storage', ({key}) -> onChange key
+
+    $.forceSync = (key) ->
+      # Storage events don't work across origins
+      # e.g. http://boards.4chan.org and https://boards.4chan.org
+      # so force a check for changes to avoid lost data.
+      onChange g.NAMESPACE + key
 
 $.delete = (keys) ->
   unless keys instanceof Array
     keys = [keys]
   for key in keys
-    key = g.NAMESPACE + key
-    GM_deleteValue key
-    if key of $.syncing
-      delete $.oldValue[key]
-      # for `storage` events
-      localStorage.removeItem key
+    $.deleteValue g.NAMESPACE + key
   return
 
 $.get = (key, val, cb) ->
@@ -480,38 +528,27 @@ $.get = (key, val, cb) ->
     cb = val
   $.queueTask ->
     for key of items
-      if val = GM_getValue g.NAMESPACE + key
+      if val = $.getValue g.NAMESPACE + key
         items[key] = JSON.parse val
     cb items
 
-$.set = do ->
-  set = (key, val) ->
-    key = g.NAMESPACE + key
-    val = JSON.stringify val
-    GM_setValue key, val
-    if key of $.syncing
-      $.oldValue[key] = val
-      # for `storage` events
-      localStorage.setItem key, val
-
-  (keys, val, cb) ->
-    if typeof keys is 'string'
-      set keys, val
-    else
-      set key, value for key, value of keys
-      cb = val
-    cb?()
+$.set = (keys, val, cb) ->
+  if typeof keys is 'string'
+    $.setValue(g.NAMESPACE + keys, JSON.stringify val)
+  else
+    for key, value of keys
+      $.setValue(g.NAMESPACE + key, JSON.stringify value)
+    cb = val
+  cb?()
 
 $.clear = (cb) ->
   # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
+  # Also support case where GM_listValues is not defined.
   $.delete Object.keys(Conf)
-  $.delete ['previousversion', 'AutoWatch', 'cooldown.global', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']
+  $.delete ['previousversion', 'AutoWatch', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']
   $.delete ("#{id}.position" for id in ['embedding', 'updater', 'thread-stats', 'thread-watcher', 'qr'])
-  boards = (a.textContent for a in $$ '#boardNavDesktop > .boardList > a')
-  boards.push 'qa'
-  $.delete ("cooldown.#{board}" for board in boards)
   try
-    $.delete GM_listValues().map (key) -> key.replace g.NAMESPACE, ''
+    $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''
   cb?()
 <% } %>
 

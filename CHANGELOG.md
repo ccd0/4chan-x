@@ -1,8 +1,250 @@
+**Note**: Installing the script from one of the links below will disable automatic updates. If you want automatic updates, install the script from the links on the [main page](https://www.4chan-x.net/).
+
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
-The links to individual versions below are to copies of the script with the update URL removed. If you want automatic updates, install the script from the links on the [main page](https://github.com/ccd0/4chan-x).
+### v1.11.9
+
+**v1.11.9.2** *(2015-08-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.8.9: Fix regression from v1.11.8.0 that caused the cooldown to stop working in certain circumstances.
+
+**v1.11.9.1** *(2015-08-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add more info and a reporting link to error messages.
+
+**v1.11.9.0** *(2015-08-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.8.8.
+- Add `Randomize Filename` option: Replaces filenames with a random timestamp from the past year.
+- Fix bugs with cached captchas when you change captcha settings.
+
+### v1.11.8
+
+**v1.11.8.9** *(2015-08-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.9/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix regression from v1.11.8.0 that caused the cooldown to stop working in certain circumstances.
+
+**v1.11.8.8** *(2015-08-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.8/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add link to new anonymous bug reporting form: https://gitreports.com/issue/ccd0/4chan-x
+
+**v1.11.8.7** *(2015-08-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.7/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix captcha issues in Pale Moon in some cases where it was still not working.
+
+**v1.11.8.6** *(2015-08-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add .xyz to TLDs recognized by linkifier without http://.
+
+**v1.11.8.5** *(2015-08-12)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Change script home page and update URLs to the new https://www.4chan-x.net/ site.
+
+**v1.11.8.4** *(2015-08-10)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.7.5: Fix captcha issues in Pale Moon.
+
+**v1.11.8.3** *(2015-08-09)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix `Show Updated Notifications` setting.
+
+**v1.11.8.2** *(2015-08-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix bug in infinite scrolling causing skipped pages.
+
+**v1.11.8.1** *(2015-08-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.7.4: Fix cooldown bug.
+
+**v1.11.8.0** *(2015-08-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.8.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.7.3.
+- Posts selected for deletion will now be auto-deleted when 4chan's 60-second deletion cooldown expires.
+- The setting `Except Archives from Encryption` has been changed to `Exempt Archives from Encryption`.
+- Bug fixes.
+
+### v1.11.7
+
+**v1.11.7.5** *(2015-08-10)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix captcha issues in Pale Moon.
+
+**v1.11.7.4** *(2015-08-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix cooldown bug.
+
+**v1.11.7.3** *(2015-08-06)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Turn `Custom Board Navigation` back on by default for now until we support better migration of old settings.
+
+**v1.11.7.2** *(2015-08-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.6.2: Fix bug where clicking on scrollbar of captcha image selection bubble could mess up the captcha.
+- Redirect threads deleted but with stubs left behind to archive.
+
+**v1.11.7.1** *(2015-08-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.6.1: Update banner list.
+
+**v1.11.7.0** *(2015-08-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.7.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.6.0.
+- Turn `Custom Board Navigation` off by default. To turn it back on, check `Header` > `Custom board navigation` in the header menu.
+- Experimental MS Edge support via https://github.com/ccd0/4chan-x-proxy.
+
+### v1.11.6
+
+**v1.11.6.2** *(2015-08-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix bug where clicking on scrollbar of captcha image selection bubble could mess up the captcha.
+
+**v1.11.6.1** *(2015-08-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update banner list.
+
+**v1.11.6.0** *(2015-07-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.6.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.5.2.
+- Implement 404 Redirect for `sys.4chan.org/board/imgboard.php?res=` URLs.
+- Index navigation bugfixes.
+
+### v1.11.5
+
+**v1.11.5.2** *(2015-07-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update `Disable Autoplaying Sounds` so the video in https://boards.4chan.org/g/thread/49036627 is visible.
+- Tweak position of expanded images.
+
+**v1.11.5.1** *(2015-07-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Bugfixes.
+
+**v1.11.5.0** *(2015-07-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.5.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.4.1.
+- When posting a reply with a file on /f/, add a link to it in the comment.
+
+### v1.11.4
+
+**v1.11.4.1** *(2015-07-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.4.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.4.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.3.5: Fix video not being displayed when 'Disable Autoplaying Sounds' is enabled.
+
+**v1.11.4.0** *(2015-07-12)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.4.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.4.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.3.4.
+- Show files in replies on /f/.
+- Remove code that disabled the updater if you were offline since detection was too unreliable.
+
+### v1.11.3
+
+**v1.11.3.5** *(2015-07-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix video not being displayed when 'Disable Autoplaying Sounds' is enabled.
+
+**v1.11.3.4** *(2015-07-12)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix captcha in original post form obscuring file field for some users.
+- Turn `Ignore Offline Status` on by default.
+
+**v1.11.3.3** *(2015-07-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.2.5: Add fireden.net archive.
+
+**v1.11.3.2** *(2015-07-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Get posting from URLs, WebM titles, and Vocaroo/Clyp embedding working in Safari.
+
+**v1.11.3.1** *(2015-07-04)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Make posting from URL more efficient, and make it work in Tampermonkey.
+
+**v1.11.3.0** *(2015-07-04)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.3.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.2.4.
+- Improved Tampermonkey and WebKit support.
+- Minor bugfixes.
+
+### v1.11.2
+
+**v1.11.2.5** *(2015-07-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add fireden.net archive.
+
+**v1.11.2.4** *(2015-07-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Minor bugfixes.
+
+**v1.11.2.3** *(2015-06-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add 'webkit' CSS class to document when WebKit engine is detected.
+- Various CSS-related bugfixes.
+
+**v1.11.2.2** *(2015-06-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix bug from v1.11.2.0 that broke `Use Recaptcha v1` when the original post form was hidden.
+
+**v1.11.2.1** *(2015-06-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- CSS bugfixes for thread watcher and header.
+
+**v1.11.2.0** *(2015-06-29)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.2.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.1.3.
+- `Use Recaptcha v1` option now works on the original post form.
+- Captcha section of QR can now be opened with the space bar.
+- Minor bugfixes.
+
+### v1.11.1
+
+**v1.11.1.3** *(2015-06-26)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.0.10: (Hasumi) Update archive list.
+
+**v1.11.1.2** *(2015-06-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Improved compatibility: Fix some issues in dwb and Midori; add partial support for Luakit.
+
+**v1.11.1.1** *(2015-06-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add `Use Recaptcha v2 in Reports` option to use the image selection captcha in the report window.
+
+**v1.11.1.0** *(2015-06-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.1.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.0.9.
+- Add partial support for Midori and other browsers whose userscript engines don't implement the Greasemonkey API. Some features will not work in these browsers.
+
+## v1.11.0
+
+**v1.11.0.10** *(2015-06-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.10/builds/4chan-X-noupdate.crx "Chromium version")]
+- (Hasumi) Update archive list.
+
+**v1.11.0.9** *(2015-06-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.9/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix caching of v1 captchas.
+- Other minor bugfixes.
+
+**v1.11.0.8** *(2015-06-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.8/builds/4chan-X-noupdate.crx "Chromium version")]
+- Support noscript version of Recaptcha v1.
+- Captcha-related bugfixes/improvements.
+
+**v1.11.0.7** *(2015-06-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.7/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add `Use Recaptcha v1` option to use the old text-based captchas in the Quick Reply.
+
+**v1.11.0.6** *(2015-06-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Support toggling images in the captcha with the number keys (as arranged in the numpad) and the UIOJKLM,. keys.
+- Arrow key navigation now works in noscript captcha.
+- Various captcha-related improvements/bugfixes.
+- Support space bar, numbers in numpad, comma, and space in keybinds.
+
+**v1.11.0.5** *(2015-06-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add `Captcha Language` setting in the `Advanced` panel.
+- Minor bugfixes.
+
+**v1.11.0.4** *(2015-06-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Noscript captcha improvements, including the ability to click the image rather than the little checkbox.
+
+**v1.11.0.3** *(2015-06-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.14.4: Update script for new non-Javascript captcha using image selection.
+
+**v1.11.0.2** *(2015-06-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Remove code that focused on first image of the captcha as Google now focuses on the refresh button.
+
+**v1.11.0.1** *(2015-06-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.14.3: Fix words being cut off in non-Javascript captcha.
+
+**v1.11.0.0** *(2015-06-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.0.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.10.14.2.
+- Gallery now preloads the next image in sequence.
+- `Stretch to Fit` option added to gallery.
+- Various bug fixes.
+- Drop workarounds for old versions of Chromium (< v34).
+
+### v1.10.14
+
+**v1.10.14.4** *(2015-06-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update script for new non-Javascript captcha using image selection.
+
+**v1.10.14.3** *(2015-06-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix words being cut off in non-Javascript captcha.
+
+**v1.10.14.2** *(2015-06-11)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Bring back workaround for scrolling to top caused by captcha as some users are still reporting it happening.
+
+**v1.10.14.1** *(2015-06-11)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add ImgOps to default sauce examples: `//imgops.com/%URL;types:gif,jpg,png`
+
+**v1.10.14.0** *(2015-06-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.14.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.10.13.4.
+- Fix board-specific filters in thread watcher (filters apply to unread posts quoting you).
 
 ### v1.10.13
+
+**v1.10.13.4** *(2015-06-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Support selecting images in the image captcha with the space bar in addition to the enter key.
+
+**v1.10.13.3** *(2015-06-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.12.10: Revert workaround for scrolling to top as it seems to have been fixed on Google's end.
+
+**v1.10.13.2** *(2015-06-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.10.12.9: Update for captcha changes.
+- Merge v1.10.12.9: Work around issue where the captcha causes scrolling to the top of the page.
 
 **v1.10.13.1** *(2015-05-27)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.13.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix manual page number updating not working when `Updater and Stats in Header` is off.
@@ -19,6 +261,13 @@ The links to individual versions below are to copies of the script with the upda
 - Various minor bugfixes.
 
 ### v1.10.12
+
+**v1.10.12.10** *(2015-06-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.10/builds/4chan-X-noupdate.crx "Chromium version")]
+- Revert workaround for scrolling to top as it seems to have been fixed on Google's end.
+
+**v1.10.12.9** *(2015-06-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.9/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update for captcha changes.
+- Work around issue where the captcha causes scrolling to the top of the page.
 
 **v1.10.12.8** *(2015-05-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.10.12.8/builds/4chan-X-noupdate.crx "Chromium version")]
 - Remove guard against dropping files into captcha due to continued reports of disabled captchas.

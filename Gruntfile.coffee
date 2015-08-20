@@ -8,6 +8,12 @@ module.exports = (grunt) ->
   json = (data) ->
     "`#{JSON.stringify(data).replace(/`/g, '\\`')}`"
 
+  importCSS = (filenames...) ->
+    grunt.template.process(
+      filenames.map((name) -> grunt.file.read "src/General/css/#{name}.css").join(''),
+      {data: grunt.config 'pkg'}
+    ).trim().replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`')
+
   importHTML = (filename) ->
     html grunt.template.process(grunt.file.read("src/General/html/#{filename}.html").replace(/^ +/gm, '').replace(/\r?\n/g, ''), data: grunt.config('pkg'))
 
@@ -69,6 +75,7 @@ module.exports = (grunt) ->
       options: process: Object.create(null, data:
         get: ->
           pkg = grunt.config 'pkg'
+          pkg.importCSS  = importCSS
           pkg.importHTML = importHTML
           pkg.html = html
           pkg.assert = assert
@@ -166,8 +173,6 @@ module.exports = (grunt) ->
         stdout: true
         stderr: true
         failOnError: true
-      checkout:
-        command: 'git checkout <%= pkg.meta.mainBranch %>'
       commit:
         command: """
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.meta.version %>."
@@ -185,12 +190,12 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       stable:
         command: """
+          git push . HEAD:bstable
           git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git checkout gh-pages
           git pull
           git merge --no-commit -s ours stable
-          git checkout stable builds
-          git checkout HEAD "builds/*<%= pkg.meta.suffix.beta %>.*"
+          git checkout stable "builds/<%= pkg.name %>.*" builds/updates.xml
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to stable channel."
           git checkout -
         """.split('\n').join('&&')
@@ -201,12 +206,24 @@ module.exports = (grunt) ->
           git checkout gh-pages
           git pull
           git merge --no-commit -s ours -
-          git checkout - README.md index.html web.css img src/General/img/icon.gif
+          git checkout - README.md index.html web.css img
           git commit -am "Update web page."
           git checkout -
         """.split('\n').join('&&')
       push:
         command: 'git push origin --tags -f && git push origin --all'
+      aws:
+        command: """
+          git checkout gh-pages
+          aws s3 cp builds/ s3://<%= pkg.meta.awsBucket %>/builds/ --recursive --exclude "*" --include "*.js" --cache-control "max-age=600" --content-type "application/javascript; charset=utf-8"
+          aws s3 cp builds/ s3://<%= pkg.meta.awsBucket %>/builds/ --recursive --exclude "*" --include "*.crx" --cache-control "max-age=600" --content-type "application/x-chrome-extension"
+          aws s3 cp builds/ s3://<%= pkg.meta.awsBucket %>/builds/ --recursive --exclude "*" --include "*.xml" --cache-control "max-age=600" --content-type "text/xml; charset=utf-8"
+          aws s3 cp builds/ s3://<%= pkg.meta.awsBucket %>/builds/ --recursive --exclude "*" --include "*.zip" --cache-control "max-age=600" --content-type "application/zip"
+          aws s3 cp img/ s3://<%= pkg.meta.awsBucket %>/img/ --recursive --cache-control "max-age=600"
+          aws s3 cp index.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=600" --content-type "text/html; charset=utf-8"
+          aws s3 cp web.css s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=600" --content-type "text/css; charset=utf-8"
+          git checkout -
+        """.split('\n').join('&&')
       npm:
         command: 'npm install'
       update:
@@ -282,9 +299,10 @@ module.exports = (grunt) ->
           GM_setValue:  true
           GM_deleteValue: true
           GM_listValues: true
+          GM_addValueChangeListener: true
           GM_openInTab: true
-          GM_info:      true
           GM_xmlhttpRequest: true
+          GM_info:      true
           cloneInto:    true
           unsafeWindow: true
           chrome:       true
@@ -430,6 +448,10 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'push', [
     'shell:push'
+  ]
+
+  grunt.registerTask 'aws', [
+    'shell:aws'
   ]
 
   grunt.registerTask 'store', [

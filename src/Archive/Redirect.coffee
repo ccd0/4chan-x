@@ -95,11 +95,13 @@ Redirect =
     location.protocol is 'http:' or
     Conf['Except Archives from Encryption']
 
-  navigate: (URL, alternative) ->
-    if URL and (
-      Redirect.securityCheck(URL) or
-      confirm "Redirect to #{URL}?\n\nYour connection will not be encrypted."
+  navigate: (dest, data, alternative) ->
+    Redirect.init() unless Redirect.data
+    url = Redirect.to dest, data
+    if url and (
+      Redirect.securityCheck(url) or
+      confirm "Redirect to #{url}?\n\nYour connection will not be encrypted."
     )
-      location.replace URL
+      location.replace url
     else if alternative
       location.replace alternative

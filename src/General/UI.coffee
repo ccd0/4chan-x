@@ -102,7 +102,13 @@ UI = do ->
 
     insertEntry: (entry, parent, data) ->
       if typeof entry.open is 'function'
-        return unless entry.open data
+        try
+          return unless entry.open data
+        catch err
+          Main.handleErrors
+            message: "Error in building the #{@type} menu."
+            error: err
+          return
       $.add parent, entry.el
 
       return unless entry.subEntries
@@ -331,11 +337,9 @@ UI = do ->
       $.on d,    'keydown',   o.hoverend
     $.on root, 'mousemove', o.hover
 
-    <% if (type === 'userscript') { %>
     # Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=674955
     o.workaround = (e) -> o.hoverend(e) unless root.contains e.target
     $.on doc,  'mousemove', o.workaround
-    <% } %>
 
   hover = (e) ->
     @latestEvent = e
@@ -365,10 +369,8 @@ UI = do ->
     $.off @root, @endEvents,  @hoverend
     $.off d,     'keydown',   @hoverend
     $.off @root, 'mousemove', @hover
-    <% if (type === 'userscript') { %>
     # Workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=674955
     $.off doc,   'mousemove', @workaround
-    <% } %>
     @cb.call @ if @cb
 
   checkbox = (name, text, checked) ->

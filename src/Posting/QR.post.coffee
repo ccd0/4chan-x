@@ -105,7 +105,7 @@ QR.post = class
 
     for name in ['thread', 'name', 'email', 'sub', 'com', 'filename']
       continue unless node = QR.nodes[name]
-      node.value = @[name] or node.dataset.default or null
+      node.value = @[name] or node.dataset.default or ''
 
     (if @thread isnt 'new' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
 
@@ -122,6 +122,7 @@ QR.post = class
       when 'thread'
         (if @thread isnt 'new' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
         QR.status()
+        @updateFlashURL()
       when 'com'
         @nodes.span.textContent = @com
         QR.captcha.onPostChange()
@@ -132,13 +133,9 @@ QR.post = class
           QR.cooldown.auto = false
       when 'filename'
         return unless @file
-        @file.newName = @filename.replace /[/\\]/g, '-'
-        unless /\.(jpe?g|png|gif|pdf|swf|webm)$/i.test @filename
-          # 4chan will truncate the filename if it has no extension,
-          # but it will always replace the extension by the correct one,
-          # so we suffix it with '.jpg' when needed.
-          @file.newName += '.jpg'
+        @saveFilename()
         @updateFilename()
+        @updateFlashURL()
       when 'name'
         QR.persona.set @
 
@@ -182,16 +179,22 @@ QR.post = class
     return
 
   setFile: (@file) ->
-    @filename = @file.name
+    if Conf['Randomize Filename'] and g.BOARD.ID isnt 'f'
+      @filename  = "#{Date.now() - Math.floor(Math.random() * 365 * $.DAY)}"
+      @filename += ext[0] if ext = @file.name.match QR.validExtension
+    else
+      @filename  = @file.name
     @filesize = $.bytesToString @file.size
     @checkSize()
     @nodes.label.hidden = false if QR.spoiler
     QR.captcha.onPostChange()
     URL.revokeObjectURL @URL
+    @saveFilename()
     if @ is QR.selected
       @showFileData()
     else
       @updateFilename()
+    @updateFlashURL()
     @nodes.el.style.backgroundImage = null
     unless @file.type in QR.mimeTypes
       @fileError 'Unsupported file type.'
@@ -207,6 +210,8 @@ QR.post = class
   readFile: ->
     isVideo = /^video\//.test @file.type
     el = $.el(if isVideo then 'video' else 'img')
+    return if isVideo and !el.canPlayType @file.type
+
     event = if isVideo then 'loadeddata' else 'load'
     onload = =>
       $.off el, event, onload
@@ -289,8 +294,17 @@ QR.post = class
     @nodes.el.style.backgroundImage = null
     @nodes.label.hidden = true if QR.spoiler
     @showFileData()
+    @updateFlashURL()
     URL.revokeObjectURL @URL
     @dismissErrors (error) -> $.hasClass error, 'file-error'
+
+  saveFilename: ->
+    @file.newName = (@filename or '').replace /[/\\]/g, '-'
+    unless QR.validExtension.test @filename
+      # 4chan will truncate the filename if it has no extension,
+      # but it will always replace the extension by the correct one,
+      # so we suffix it with '.jpg' when needed.
+      @file.newName += '.jpg'
 
   updateFilename: ->
     long = "#{@filename} (#{@filesize})"
@@ -306,6 +320,28 @@ QR.post = class
       $.addClass QR.nodes.fileSubmit, 'has-file'
     else
       $.rmClass QR.nodes.fileSubmit, 'has-file'
+
+  updateFlashURL: ->
+    return unless g.BOARD.ID is 'f'
+    if @thread is 'new' or !@file
+      url = ''
+    else
+      url = @file.newName
+      url = url.replace(/"/g, '%22') if $.engine in ['blink', 'webkit']
+      url = url
+        .replace(/[\t\n\f\r \xa0\u200B\u2029\u3000]+/g, ' ')
+        .replace(/(^ | $)/g, '')
+        .replace(/\.[0-9A-Za-z]+$/, '')
+      url = "https://i.4cdn.org/f/#{encodeURIComponent E url}.swf\n"
+    oldURL = @flashURL or ''
+    if url isnt oldURL
+      @com or= ''
+      @com = @com[oldURL.length..] if @com[...oldURL.length] is oldURL
+      @com = (url + @com) or null
+      if @ is QR.selected
+        QR.nodes.com.value = @com
+        QR.characterCount()
+      @flashURL = url
 
   pasteText: (file) ->
     @pasting = true

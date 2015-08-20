@@ -103,6 +103,7 @@ Settings =
         description = arr[1]
         div = $.el 'div',
           <%= html('<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>') %>
+        div.hidden = true if $.engine isnt 'gecko' and key is 'Remember QR Size' # XXX not supported
         input = $ 'input', div
         $.on input, 'change', ->
           @parentNode.parentNode.dataset.checked = @checked
@@ -155,11 +156,9 @@ Settings =
     a = $.el 'a',
       download: "<%= meta.name %> v#{g.VERSION}-#{data.date}.json"
       href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
-    <% if (type === 'userscript') { %>
     p = $ '.imp-exp-result', Settings.dialog
     $.rmAll p
     $.add p, a
-    <% } %>
     a.click()
   import: ->
     $('input[type=file]', @parentNode).click()
@@ -314,7 +313,7 @@ Settings =
 
     items = {}
     inputs = {}
-    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss', 'customCooldown']
+    for name in ['captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss', 'customCooldown']
       input = $ "[name='#{name}']", section
       items[name]  = Conf[name]
       inputs[name] = input
@@ -323,9 +322,9 @@ Settings =
       else if name is 'favicon'
         $.on input, 'change', $.cb.value
         $.on input, 'change', Settings[name]
-       else
+      else
         $.on input, 'input', $.cb.value
-        $.on input, 'input', Settings[name]
+        $.on input, 'input', Settings[name] if name of Settings
 
     # Quick Reply Personas
     ta = $ '.personafield', section
@@ -338,8 +337,8 @@ Settings =
       for key, val of items
         input = inputs[key]
         input.value = val
-        continue if key in ['usercss', 'customCooldown']
-        Settings[key].call input
+        if key of Settings and key isnt 'usercss'
+          Settings[key].call input
       return
 
     interval  = $ 'input[name="Interval"]',   section

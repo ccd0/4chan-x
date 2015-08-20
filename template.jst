@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <title>4chan X</title>
 <link rel="stylesheet" href="web.css">
-<link rel="icon" href="src/General/img/icon.gif">
+<link rel="icon" href="img/icon.gif">
 <link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">
 </head><body>
 <div id="header">
@@ -12,11 +12,18 @@
 <a href="https://github.com/ccd0/4chan-x">Source Code</a>
 <a href="https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md">Changelog</a>
 <a href="https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions">FAQ</a>
-<a href="https://github.com/ccd0/4chan-x/issues">Report Bugs</a>
+<a href="https://gitreports.com/issue/ccd0/4chan-x">Report Bugs</a>
 </div>
 </div>
 <a class="screenshot" href="img/screenshot.png"><img src="img/screenshot.png" alt="Screenshot"></a>
-<%= content.match(/<\/h1>([^]*)<h2 id="more-information"/)[1] %>
+<%=
+content
+  .match(/<\/h1>([^]*)<h2 id="more-information"/)[1]
+  .replace(
+    /(<h3 id="(.*?)">.*?<\/h3>)([^]*?)(?=<h)/g,
+    '<input hidden type="checkbox" id="$2-hide"><div><label for="$2-hide">$1</label>$3</div>'
+  )
+%>
 <script>
 function imagePreview() {
   this.removeEventListener('mouseover', imagePreview, false);
@@ -30,7 +37,9 @@ function imagePreview() {
 }
 function storeInstall(e) {
   if (!e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
-    chrome.webstore.install();
+    chrome.webstore.install(this.href, function(){}, function(){
+      location.href = this.href;
+    });
     e.preventDefault();
   }
 }
@@ -40,6 +49,19 @@ for (var i = 0; i < document.links.length; i++) {
     link.addEventListener('mouseover', imagePreview, false);
   } else if (window.chrome && link.host === 'chrome.google.com') {
     link.addEventListener('click', storeInstall, false);
+  }
+}
+var engine = (function() {
+  if (/Edge\//.test(navigator.userAgent)) return 'edge';
+  if (/Chrome\//.test(navigator.userAgent)) return 'blink';
+  if (/WebKit\//.test(navigator.userAgent)) return 'webkit';
+  if (/Gecko\/|Goanna/.test(navigator.userAgent)) return 'gecko';
+  if (/Presto\//.test(navigator.userAgent)) return 'presto';
+})();
+if (engine) {
+  var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk-': 'webkit', 'other-browsers': 'edge'};
+  for (browser in engines) {
+    document.getElementById(browser + '-hide').checked = (engines[browser].indexOf(engine) < 0);
   }
 }
 </script>

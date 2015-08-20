@@ -105,7 +105,7 @@ Index =
       d.implementation.createDocument(null, null, null).appendChild board
 
       $.rm el for el in $$ '.navLinks'
-      $.id('search-box')?.parentNode.remove()
+      $.rm $.id('ctrl-top')
       topNavPos = $.id('delform').previousElementSibling
       $.before topNavPos, $.el 'hr'
       $.before topNavPos, Index.navLinks
@@ -227,13 +227,13 @@ Index =
     popstate: (e) ->
       if e?.state
         {search, mode} = e.state
-        page = Index.getCurrentPage()
         state = {}
         if Index.search isnt search
           state.search = Index.search = search
         if Conf['Index Mode'] isnt mode
           state.mode = mode
           Index.saveMode mode
+        page = Index.getCurrentPage()
         if Index.currentPage isnt page
           state.page = Index.currentPage = page
         if state.search? or state.mode? or state.page?
@@ -412,7 +412,6 @@ Index =
       "#{hiddenCount} hidden threads"
 
   update: (state) ->
-    delete Index.pageNum
     Index.req?.abort()
     Index.notice?.close()
 
@@ -631,8 +630,11 @@ Index =
           i = 0
           i++ while Index.followedThreadID isnt Get.threadFromRoot(Index.sortedNodes[i]).ID
           page = i // Index.threadsNumPerPage + 1
-          Index.pushState {page} if page isnt Index.getCurrentPage()
+          if page isnt Index.getCurrentPage()
+            Index.pushState {page}
+            Index.setPage()
         nodes = Index.buildSinglePage Index.getCurrentPage()
+    delete Index.pageNum
     $.rmAll Index.root
     $.rmAll Header.hover
     if Conf['Index Mode'] is 'catalog'

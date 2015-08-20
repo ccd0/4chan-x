@@ -14,7 +14,7 @@ ReportLink =
         unless post.isDead or (post.thread.isDead and not post.thread.isArchived)
           a.textContent = 'Report this post'
           ReportLink.url = "//sys.4chan.org/#{post.board}/imgboard.php?mode=report&no=#{post}"
-          ReportLink.height = 200
+          ReportLink.height = 180
         else if Conf['Archive Report']
           a.textContent = 'Report to archive'
           ReportLink.url = Redirect.to 'report', {boardID: post.board.ID, postID: post.ID}

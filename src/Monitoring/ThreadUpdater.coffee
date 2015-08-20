@@ -76,11 +76,13 @@ ThreadUpdater =
 
     ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
 
-    $.on window, 'online offline',   ThreadUpdater.cb.online
     $.on d,      'QRPostSuccessful', ThreadUpdater.cb.checkpost
     $.on d,      'visibilitychange', ThreadUpdater.cb.visibility
 
     ThreadUpdater.setInterval()
+
+    # Update immediately on /f/ to add files to replies.
+    ThreadUpdater.update() if @board.ID is 'f'
 
   ###
   http://freesound.org/people/pierrecartoons1979/sounds/90112/
@@ -89,18 +91,6 @@ ThreadUpdater =
   beep: 'data:audio/wav;base64,<%= grunt.file.read("src/General/audio/beep.wav", {encoding: "base64"}) %>'
 
   cb:
-    online: ->
-      return if ThreadUpdater.thread.isDead
-
-      if navigator.onLine
-        ThreadUpdater.set 'status', ''
-      else
-        ThreadUpdater.set 'status', 'Offline', 'warning'
-
-      if Conf['Auto Update'] and not Conf['Ignore Offline Status']
-        ThreadUpdater.outdateCount = 0
-        ThreadUpdater.setInterval()
-
     checkpost: (e) ->
       return if e.detail.threadID isnt ThreadUpdater.thread.ID
       ThreadUpdater.postID = e.detail.postID
@@ -188,12 +178,6 @@ ThreadUpdater =
     unless Conf['Auto Update']
       ThreadUpdater.set 'timer', 'Update'
       return
-
-    unless navigator.onLine
-      ThreadUpdater.set 'status', 'Offline', 'warning'
-      unless Conf['Ignore Offline Status']
-        ThreadUpdater.set 'timer', ''
-        return
 
     {interval} = ThreadUpdater
     if Conf['Optional Increase']
@@ -288,6 +272,13 @@ ThreadUpdater =
       ID = postObject.no
       index.push ID
       files.push ID if postObject.fsize
+
+      # Add files to replies on /f/.
+      if board.ID is 'f' and postObject.fsize and (post = thread.posts[ID]) and not post.file
+        node = Build.postFromObject postObject, board.ID
+        $.after post.nodes.info, $('.file', node)
+        post.parseFile()
+        Post.callbacks.execute post, ['Filter', 'File Info Formatting', 'Fappe Tyme', 'Sauce']
 
       # Insert new posts, not older ones.
       continue if ID <= lastPost

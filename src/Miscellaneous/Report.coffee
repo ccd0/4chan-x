@@ -1,19 +1,16 @@
 Report =
-  css: '''
-    :root:not(.js-enabled) #g-recaptcha {
-      height: auto;
-    }
-  '''
+  css: `<%= importCSS('report') %>`
 
   init: ->
     return unless /\bmode=report\b/.test(location.search) and match = location.search.match /\bno=(\d+)/
+    Captcha.replace.init()
     @postID = +match[1]
     $.ready @ready
 
   ready: ->
     $.addStyle Report.css
     Report.archive() if Conf['Archive Report']
-    if $.hasClass doc, 'js-enabled'
+    if Conf['Use Recaptcha v2 in Reports'] and $.hasClass doc, 'js-enabled'
       new MutationObserver(-> Report.fit '.gc-bubbleDefault').observe d.body,
         childList:  true
         attributes: true
@@ -47,4 +44,4 @@ Report =
 
     if types = $.id('reportTypes')
       $.on types, 'change', (e) ->
-        $('form').action = if e.target.value in ['illegal', 'spam'] then '#redirect' else ''
+        $('form').action = if e.target.value is 'illegal' then '#redirect' else ''

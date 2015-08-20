@@ -1,0 +1,6 @@
+:root:not(.js-enabled) #captchaContainerAlt {
+  height: auto;
+}
+noscript > iframe, #recaptcha_challenge_field {
+  width: 500px;
+}

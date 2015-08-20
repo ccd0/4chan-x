@@ -1,6 +1,17 @@
 QR =
   mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm']
 
+  validExtension: /\.(jpe?g|png|gif|pdf|swf|webm)$/i
+
+  typeFromExtension:
+    'jpg':  'image/jpeg'
+    'jpeg': 'image/jpeg'
+    'png':  'image/png'
+    'gif':  'image/gif'
+    'pdf':  'application/pdf'
+    'swf':  'application/vnd.adobe.flash.movie'
+    'webm': 'video/webm'
+
   init: ->
     return unless Conf['Quick Reply']
 
@@ -9,8 +20,12 @@ QR =
 
     return if g.VIEW is 'archive'
 
-    noscript = Conf['Force Noscript Captcha'] or not $.hasClass doc, 'js-enabled'
-    @captcha = Captcha[if noscript then 'noscript' else 'v2']
+    version = if Conf['Use Recaptcha v1']
+      noscript = Conf['Force Noscript Captcha'] or not $.hasClass doc, 'js-enabled'
+      if noscript then 'noscript' else 'v1'
+    else
+      'v2'
+    @captcha = Captcha[version]
 
     $.on d, '4chanXInitFinished', @initReady
 
@@ -134,14 +149,16 @@ QR =
         QR.hasFocus = d.activeElement and QR.nodes.el.contains(d.activeElement)
         QR.nodes.el.classList.toggle 'focus', QR.hasFocus
       # XXX Stop unwanted scrolling due to captcha.
-      if QR.inCaptcha()
-        QR.scrollY = window.scrollY
-        $.on d, 'scroll', QR.scrollLock
-      else
-        $.off d, 'scroll', QR.scrollLock
+      if QR.captcha.isEnabled and QR.captcha is Captcha.v2 and !QR.captcha.noscript
+        if QR.inCaptcha()
+          QR.scrollY = window.scrollY
+          $.on d, 'scroll', QR.scrollLock
+        else
+          $.off d, 'scroll', QR.scrollLock
 
   inBubble: ->
-    $$('.goog-bubble-content > iframe').some((el) -> el.getBoundingClientRect().bottom > 0)
+    bubbles = $$ '.goog-bubble-content > iframe'
+    d.activeElement in bubbles or bubbles.some((el) -> el.getBoundingClientRect().bottom > 0)
 
   inCaptcha: ->
     (d.activeElement?.nodeName is 'IFRAME' and QR.nodes.el.contains(d.activeElement)) or (QR.hasFocus and QR.inBubble())
@@ -191,19 +208,21 @@ QR =
     unless Header.areNotificationsEnabled
       alert el.textContent if d.hidden and not QR.cooldown.auto
     else if d.hidden or not (focusOverride or d.hasFocus())
-      notif = new Notification el.textContent,
-        body: el.textContent
-        icon: Favicon.logo
-      notif.onclick = -> window.focus()
-      if chrome?
-        # Firefox automatically closes notifications
-        # so we can't control the onclose properly.
-        notif.onclose = -> notice.close()
-        notif.onshow  = ->
-          setTimeout ->
-            notif.onclose = null
-            notif.close()
-          , 7 * $.SECOND
+      # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1130502 (SeaMonkey)
+      try
+        notif = new Notification el.textContent,
+          body: el.textContent
+          icon: Favicon.logo
+        notif.onclick = -> window.focus()
+        if $.engine isnt 'gecko'
+          # Firefox automatically closes notifications
+          # so we can't control the onclose properly.
+          notif.onclose = -> notice.close()
+          notif.onshow  = ->
+            setTimeout ->
+              notif.onclose = null
+              notif.close()
+            , 7 * $.SECOND
 
   notifications: []
 
@@ -346,7 +365,7 @@ QR =
         for i in [0...bstr.length]
           arr[i] = bstr.charCodeAt(i)
         blob = new Blob [arr], {type: m[1]}
-        blob.name = "image.#{m[2]}"
+        blob.name = "file.#{m[2]}"
         QR.handleFiles [blob]
       else if /^https?:\/\//.test src
         QR.handleUrl src
@@ -523,7 +542,7 @@ QR =
     # We don't receive blur events from captcha iframe.
     $.on d, 'click', QR.focus
 
-    unless chrome?
+    if $.engine is 'gecko'
       nodes.pasteArea.hidden = false
       new MutationObserver(QR.pasteFF).observe nodes.pasteArea, {childList: true}
 
@@ -536,20 +555,19 @@ QR =
       event = if node.nodeName is 'SELECT' then 'change' else 'input'
       $.on nodes[name], event, save
 
-    <% if (type === 'userscript') { %>
-    if Conf['Remember QR Size']
+    # XXX Blink and WebKit treat width and height of <textarea>s as min-width and min-height
+    if $.engine is 'gecko' and Conf['Remember QR Size']
       $.get 'QR Size', '', (item) ->
         nodes.com.style.cssText = item['QR Size']
       $.on nodes.com, 'mouseup', (e) ->
         return if e.button isnt 0
         $.set 'QR Size', @style.cssText
-    <% } %>
 
     QR.generatePostableThreadsList()
     QR.persona.init()
     new QR.post true
     QR.status()
-    QR.cooldown.init()
+    QR.cooldown.setup()
     QR.captcha.init()
 
     $.add d.body, dialog
@@ -649,7 +667,6 @@ QR =
         onload: ->
           # Upload done, waiting for server response.
           QR.req.isUploadFinished = true
-          QR.req.uploadEndTime    = Date.now()
           QR.req.progress = '...'
           QR.status()
         onprogress: (e) ->
@@ -658,7 +675,12 @@ QR =
           QR.status()
 
     cb = (response) ->
-      extra.form.append 'g-recaptcha-response', response if response?
+      if response?
+        if response.challenge?
+          extra.form.append 'recaptcha_challenge_field', response.challenge
+          extra.form.append 'recaptcha_response_field', response.response
+        else
+          extra.form.append 'g-recaptcha-response', response.response
       QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
       QR.req.progress = '...'
 
@@ -772,7 +794,7 @@ QR =
       post.rm()
       QR.captcha.setup(d.activeElement is QR.nodes.status)
 
-    QR.cooldown.add req.uploadEndTime, threadID, postID
+    QR.cooldown.add threadID, postID
 
     URL = if threadID is postID # new thread
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}"

@@ -31,25 +31,41 @@ CrossOrigin = do ->
         cb new Uint8Array(response), contentType, contentDisposition
     <% } %>
     <% if (type === 'userscript') { %>
-    GM_xmlhttpRequest
+    # Use workaround for binary data in Greasemonkey versions < 3.2 and in JS Blocker (Safari)
+    workaround = $.engine is 'gecko' and GM_info? and /^[0-2]\.|^3\.[01](?!\d)/.test(GM_info.version)
+    workaround or= GM_info?.script?.includeJSB?
+    options =
       method: "GET"
       url: url
       headers: headers
-      overrideMimeType: "text/plain; charset=x-user-defined"
       onload: (xhr) ->
-        r = xhr.responseText
-        data = new Uint8Array r.length
-        i = 0
-        while i < r.length
-          data[i] = r.charCodeAt i
-          i++
-        contentType        = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)?[1]
-        contentDisposition = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)?[1]
+        if workaround
+          r = xhr.responseText
+          data = new Uint8Array r.length
+          i = 0
+          while i < r.length
+            data[i] = r.charCodeAt i
+            i++
+        else
+          data = new Uint8Array xhr.response
+        if typeof xhr.responseHeaders is 'object'
+          # XXX https://github.com/infernoboy/JavaScript-Blocker/issues/35
+          contentType        = xhr.responseHeaders['Content-Type']
+          contentDisposition = xhr.responseHeaders['Content-Disposition']
+        else
+          contentType        = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)?[1]
+          contentDisposition = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)?[1]
         cb data, contentType, contentDisposition
       onerror: ->
         cb null
       onabort: ->
         cb null
+    if workaround
+      # XXX https://github.com/infernoboy/JavaScript-Blocker/issues/35
+      options.overrideMimeType = options.mimeType = 'text/plain; charset=x-user-defined'
+    else
+      options.responseType = 'arraybuffer'
+    GM_xmlhttpRequest options
     <% } %>
 
   file: (url, cb) ->
@@ -62,6 +78,9 @@ CrossOrigin = do ->
         contentType?.match(/\bname\s*=\s*"((\\"|[^"])+)"/i)?[1]
       if match
         name = match.replace /\\"/g, '"'
+      if GM_info?.script?.includeJSB?
+        # Content type comes back as 'text/plain; charset=x-user-defined'; guess from filename instead.
+        mime = QR.typeFromExtension[name.match(/[^.]*$/)[0].toLowerCase()] or 'application/octet-stream'
       blob = new Blob([data], {type: mime})
       blob.name = name
       cb blob

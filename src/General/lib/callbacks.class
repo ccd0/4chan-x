@@ -6,10 +6,10 @@ class Callbacks
     @keys.push name unless @[name]
     @[name] = cb
 
-  execute: (node) ->
-    for name in @keys
+  execute: (node, keys=@keys) ->
+    for name in keys
       try
-        @[name].call node
+        @[name]?.call node
       catch err
         errors = [] unless errors
         errors.push

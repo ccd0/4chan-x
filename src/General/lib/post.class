@@ -40,7 +40,16 @@ class Post
       comment: $ '.postMessage', post
       links: []
       quotelinks: []
-      backlinks: info.getElementsByClassName 'backlink'
+
+    # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
+    # https://connect.microsoft.com/IE/feedback/details/1198967/ie11-appendchild-provoke-an-error-on-an-htmlcollection
+    if $.engine is 'edge'
+      Object.defineProperty @nodes, 'backlinks',
+        configurable: true
+        enumerable:   true
+        get: -> info.getElementsByClassName 'backlink'
+    else
+      @nodes.backlinks = info.getElementsByClassName 'backlink'
 
     unless @isReply = $.hasClass post, 'reply'
       @thread.OP = @
@@ -226,7 +235,7 @@ class Post
   # XXX Workaround for 4chan's racing condition
   # giving us false-positive dead posts.
   resurrect: ->
-    delete @isDead
+    @isDead = false
     $.rmClass @nodes.root, 'deleted-post'
     strong = $ 'strong.warning', @nodes.info
     # no false-positive files
@@ -245,7 +254,6 @@ class Post
     return
 
   collect: ->
-    @kill()
     g.posts.rm @fullID
     @thread.posts.rm @
     @board.posts.rm @

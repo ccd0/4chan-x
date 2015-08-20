@@ -1,47 +1,55 @@
 QR.cooldown =
   seconds: 0
+  delays:
+    thread: 0
+    reply: 0
+    image: 0
+    reply_intra: 0
+    image_intra: 0
+    deletion: 60       # cooldown for deleting posts/files
+    thread_global: 300 # inter-board thread cooldown
 
+  # Called from Main
   init: ->
+    return unless Conf['Quick Reply'] and Conf['Cooldown']
+    @data = Conf['cooldowns']
+    $.sync 'cooldowns', @sync
+
+  # Called from QR
+  setup: ->
     return unless Conf['Cooldown']
 
     # Read cooldown times
-    QR.cooldown.delays = if m = Get.scriptData().match /\bcooldowns *= *({[^}]+})/
-      JSON.parse m[1]
-    else
-      {thread: 0, reply: 0, image: 0, reply_intra: 0, image_intra: 0}
+    if m = Get.scriptData().match /\bcooldowns *= *({[^}]+})/
+      $.extend QR.cooldown.delays, JSON.parse m[1]
 
     # The longest reply cooldown, for use in pruning old reply data
     QR.cooldown.maxDelay = 0
-    for type, delay of QR.cooldown.delays when type isnt 'thread'
+    for type, delay of QR.cooldown.delays when type not in ['thread', 'thread_global']
       QR.cooldown.maxDelay = Math.max QR.cooldown.maxDelay, delay
 
-    # There is a 300 second inter-board thread cooldown.
-    QR.cooldown.delays['thread_global'] = 300
-
-    # Retrieve recent posts and delays.
-    keys = QR.cooldown.keys =
-      local:  "cooldown.#{g.BOARD}"
-      global: 'cooldown.global'
-    items = {}
-    items[key] = {} for scope, key of keys
-    $.get items, (items) ->
-      QR.cooldown[scope] = items[key] for scope, key of keys
-      QR.cooldown.start()
-    $.sync key, QR.cooldown.sync scope for scope, key of keys
+    QR.cooldown.isSetup = true
+    QR.cooldown.start()
 
   start: ->
-    return if QR.cooldown.isCounting or Object.keys(QR.cooldown.local).length + Object.keys(QR.cooldown.global).length is 0
+    {data} = QR.cooldown
+    return unless (
+      QR.cooldown.isSetup and
+      !QR.cooldown.isCounting and
+      Object.keys(data[g.BOARD.ID] or {}).length + Object.keys(data.global or {}).length > 0
+    )
     QR.cooldown.isCounting = true
     QR.cooldown.count()
 
-  sync: (scope) -> (cooldowns) ->
-    QR.cooldown[scope] = cooldowns or {}
+  sync: (data) ->
+    QR.cooldown.data = data or {}
     QR.cooldown.start()
 
-  add: (start, threadID, postID) ->
+  add: (threadID, postID) ->
     return unless Conf['Cooldown']
+    start = Date.now()
     boardID = g.BOARD.ID
-    QR.cooldown.set 'local', start, {threadID, postID}
+    QR.cooldown.set boardID, start, {threadID, postID}
     QR.cooldown.set 'global', start, {boardID, threadID, postID} if threadID is postID
     QR.cooldown.start()
 
@@ -49,16 +57,25 @@ QR.cooldown =
     return unless Conf['Cooldown']
     cooldown = QR.cooldown.categorize post
     cooldown.delay = delay
-    QR.cooldown.set 'local', Date.now(), cooldown
+    QR.cooldown.set g.BOARD.ID, Date.now(), cooldown
     QR.cooldown.start()
 
   delete: (post) ->
-    return unless Conf['Cooldown'] and g.BOARD.ID is post.board.ID
-    $.forceSync QR.cooldown.keys.local
-    for id, cooldown of QR.cooldown.local
+    return unless Conf['Cooldown']
+    $.forceSync 'cooldowns'
+    cooldowns = (QR.cooldown.data[post.board.ID] or= {})
+    for id, cooldown of cooldowns
       if !cooldown.delay? and cooldown.threadID is post.thread.ID and cooldown.postID is post.ID
-        delete QR.cooldown.local[id]
-    QR.cooldown.save 'local'
+        delete cooldowns[id]
+    QR.cooldown.save [post.board.ID]
+
+  secondsDeletion: (post) ->
+    cooldowns = QR.cooldown.data[post.board.ID] or {}
+    for start, cooldown of cooldowns
+      if !cooldown.delay? and cooldown.threadID is post.thread.ID and cooldown.postID is post.ID
+        seconds = QR.cooldown.delays.deletion - (Date.now() - start) // $.SECOND
+        return Math.max seconds, 0
+    0
 
   categorize: (post) ->
     if post.thread is 'new'
@@ -68,38 +85,41 @@ QR.cooldown =
       threadID: +post.thread
 
   set: (scope, id, value) ->
-    $.forceSync QR.cooldown.keys[scope]
-    QR.cooldown[scope][id] = value
-    $.set QR.cooldown.keys[scope], QR.cooldown[scope]
+    $.forceSync 'cooldowns'
+    cooldowns = (QR.cooldown.data[scope] or= {})
+    cooldowns[id] = value
+    $.set 'cooldowns', QR.cooldown.data
 
-  save: (scope) ->
-    if Object.keys(QR.cooldown[scope]).length
-      $.set QR.cooldown.keys[scope], QR.cooldown[scope]
-    else
-      $.delete QR.cooldown.keys[scope]
+  save: (scopes) ->
+    {data} = QR.cooldown
+    for scope in scopes when scope of data and !Object.keys(data[scope]).length
+      delete data[scope]
+    $.set 'cooldowns', data
 
   count: ->
+    $.forceSync 'cooldowns'
+    save = []
+    nCooldowns = 0
     now = Date.now()
     {type, threadID} = QR.cooldown.categorize QR.posts[0]
     seconds = 0
 
-    for scope, key of QR.cooldown.keys
-      $.forceSync key
-      save = false
+    for scope in [g.BOARD.ID, 'global']
+      cooldowns = (QR.cooldown.data[scope] or= {})
 
-      for start, cooldown of QR.cooldown[scope]
+      for start, cooldown of cooldowns
         start = +start
         elapsed = (now - start) // $.SECOND
         if elapsed < 0 # clock changed since then?
-          delete QR.cooldown[scope][start]
-          save = true
+          delete cooldowns[start]
+          save.push scope
           continue
 
         # Explicit delays from error messages
         if cooldown.delay?
           if cooldown.delay <= elapsed
-            delete QR.cooldown[scope][start]
-            save = true
+            delete cooldowns[start]
+            save.push scope
           else if cooldown.type is type and cooldown.threadID is threadID
             # Delays only apply to the given post type and thread.
             seconds = Math.max seconds, cooldown.delay - elapsed
@@ -113,8 +133,8 @@ QR.cooldown =
         if QR.cooldown.customCooldown
           maxDelay = Math.max maxDelay, parseInt(Conf['customCooldown'], 10)
         if maxDelay <= elapsed
-          delete QR.cooldown[scope][start]
-          save = true
+          delete cooldowns[start]
+          save.push scope
           continue
 
         if (type is 'thread') is (cooldown.threadID is cooldown.postID) and cooldown.boardID isnt g.BOARD.ID
@@ -133,9 +153,11 @@ QR.cooldown =
         if QR.cooldown.customCooldown
           seconds = Math.max seconds, parseInt(Conf['customCooldown'], 10) - elapsed
 
-      QR.cooldown.save scope if save
+      nCooldowns += Object.keys(cooldowns).length
 
-    if Object.keys(QR.cooldown.local).length + Object.keys(QR.cooldown.global).length
+    QR.cooldown.save save if save.length
+
+    if nCooldowns
       clearTimeout QR.cooldown.timeout
       QR.cooldown.timeout = setTimeout QR.cooldown.count, $.SECOND
     else

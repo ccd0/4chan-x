@@ -70,6 +70,11 @@ span.hover > img {
   max-height: 100%;
   box-shadow: 5px 5px 20px rgba(0,0,0,0.4);
 }
+@media (max-width: 960px) {
+  a.screenshot:hover + span.hover {
+    display: none;
+  }
+}
 @supports not (pointer-events: auto) {
   a[href$=".png"] {
     position: relative;
@@ -84,6 +89,17 @@ span.hover > img {
     z-index: 1;
   }
 }
-h2 ~ p, h2 ~ p + ul {
+h2 ~ p, h2 ~ p + ul, input + div, div > label ~ * {
   margin-left: 1em;
+}
+input + div {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 1em;
+}
+h3 {
+  display: inline;
+}
+input:checked + div > :not(label) {
+  display: none;
 }
