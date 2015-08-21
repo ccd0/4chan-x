@@ -52,7 +52,7 @@ Captcha.fixes =
   initNoscript: ->
     @noscript = true
     @images = $$ '.fbc-payload-imageselect > input'
-    return unless @images.length
+    return unless @images.length is 9
 
     $.addStyle @cssNoscript
     @addLabels()
@@ -63,7 +63,7 @@ Captcha.fixes =
     @images = $$ '.rc-imageselect-target > div'
     for img in @images
       img.tabIndex = 0
-    @addTooltips @images if @images.length
+    @addTooltips @images if @images.length is 9
 
   addLabels: ->
     imageSelect = $ '.fbc-payload-imageselect'
@@ -89,24 +89,27 @@ Captcha.fixes =
 
   keybinds: (e) ->
     return unless @images and doc.contains(@images[0])
+    n = @images.length
+    w = Math.round Math.sqrt n
+    last = n + w - 1
 
     reload = $ '#recaptcha-reload-button, .fbc-button-reload'
     verify = $ '#recaptcha-verify-button, .fbc-button-verify > input'
     x = @images.indexOf d.activeElement
     if x < 0
-      x = if d.activeElement is verify then 11 else 9
+      x = if d.activeElement is verify then last else n
     key = Keybinds.keyCode e
 
-    if !@noscript and key is 'Space' and x < 9
+    if !@noscript and key is 'Space' and x < n
       @images[x].click()
-    else if (i = @imageKeys.indexOf key) >= 0
+    else if n is 9 and (i = @imageKeys.indexOf key) >= 0
       @images[i % 9].click()
       verify.focus()
-    else if dx = {'Up': 9, 'Down': 3, 'Left': 11, 'Right': 1}[key]
-      x = (x + dx) % 12
-      if x is 10
-        x = if dx is 11 then 9 else 11
-      (@images[x] or {9: reload, 11: verify}[x]).focus()
+    else if dx = {'Up': n, 'Down': w, 'Left': last, 'Right': 1}[key]
+      x = (x + dx) % (n + w)
+      if n < x < last
+        x = if dx is last then n else last
+      (@images[x] or (if x is n then reload) or (if x is last then verify)).focus()
     else
       return
 
