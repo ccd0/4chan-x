@@ -4,6 +4,14 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.10
 
+**v1.11.10.1** *(2015-08-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.9.3: Try to support the new non-3x3 captchas. Note: not tested on non-3x3 captchas yet.
+- Merge v1.11.9.4: Archive list update: desustorage.org -> archive.horse.
+- Fix name of archive.horse as displayed in settings.
+- Update settings import from loadletter fork.
+- Settings import bugfixes.
+- Fix posting image from URL in Pale Moon with patched GM3.
+
 **v1.11.10.0** *(2015-08-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.9.2.
 - Support [port of Greasemonkey 3 to Pale Moon](https://github.com/janekptacijarabaci/greasemonkey/releases/latest).
