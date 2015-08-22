@@ -281,6 +281,13 @@ Settings =
         changes['Fixed Thread Watcher'] = data['Toggleable Thread Watcher'] ? true
       unless data['Exempt Archives from Encryption']?
         changes['Exempt Archives from Encryption'] = data['Except Archives from Encryption'] ? false
+    if compareString < '00001.00011.00010.00001'
+      if data['selectedArchives']?
+        uids = {"Moe":0,"4plebs Archive":3,"Nyafuu Archive":4,"Love is Over":5,"Rebecca Black Tech":8,"warosu":10,"fgts":15,"not4plebs":22,"DesuStorage":23,"fireden.net":24,"disabled":null}
+        changes['selectedArchives'] = data['selectedArchives']
+        for boardID, record of changes['selectedArchives']
+          for type, name of record when name of uids
+            record[type] = uids[name]
     changes
 
   loadSettings: (data, cb) ->
@@ -378,20 +385,21 @@ Settings =
     $.on applyCSS,  'click',  Settings.usercss
 
     archBoards = {}
-    for {name, boards, files, software, withCredentials} in Redirect.archives
+    for {uid, name, boards, files, software, withCredentials} in Redirect.archives
       for boardID in boards
         o = archBoards[boardID] or=
           thread: [[], []]
           post:   [[], []]
           file:   [[], []]
         i = +!!withCredentials
-        o.thread[i].push name
-        o.post[i].push   name if software is 'foolfuuka'
-        o.file[i].push   name if boardID in files
+        archive = [uid ? name, name]
+        o.thread[i].push archive
+        o.post[i].push   archive if software is 'foolfuuka'
+        o.file[i].push   archive if boardID in files
     for boardID, o of archBoards
       for item in ['thread', 'post', 'file']
         i = if o[item][0].length then 1 else 0
-        o[item][i].push 'disabled'
+        o[item][i].push [null, 'disabled']
         o[item] = o[item][0].concat(o[item][1])
 
     rows = []
@@ -424,9 +432,9 @@ Settings =
 
     $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) ->
       for boardID, data of selectedArchives
-        for type, name of data
-          if option = $ "select[data-boardid='#{boardID}'][data-type='#{type}'] > option[value='#{name}']", section
-            option.selected = true
+        for type, id of data
+          if select = $ "select[data-boardid='#{boardID}'][data-type='#{type}']", section
+            select.value = JSON.stringify id
       return
     return
 
@@ -444,8 +452,8 @@ Settings =
     while i < length
       archive = data[type][i++]
       options.push $.el 'option',
-        textContent: archive
-        value: archive
+        value: JSON.stringify archive[0]
+        textContent: archive[1]
 
     $.extend td, <%= html('<select></select>') %>
     select = td.firstElementChild
@@ -460,7 +468,7 @@ Settings =
 
   saveSelectedArchive: ->
     $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) =>
-      (selectedArchives[@dataset.boardid] or= {})[@dataset.type] = @value
+      (selectedArchives[@dataset.boardid] or= {})[@dataset.type] = JSON.parse @value
       $.set 'selectedArchives', selectedArchives
 
   boardnav: ->

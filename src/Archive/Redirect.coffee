@@ -8,8 +8,8 @@ Redirect =
 
     archives = {}
     for data in Redirect.archives
-      {name, boards, files, software, withCredentials} = data
-      archives[name] = data
+      {uid, name, boards, files, software, withCredentials} = data
+      archives[JSON.stringify(uid ? name)] = data
       for boardID in boards
         unless withCredentials
           o.thread[boardID] = data unless boardID of o.thread
@@ -19,9 +19,9 @@ Redirect =
 
     for boardID, record of Conf['selectedArchives']
       for type, id of record
-        if id is 'disabled'
+        if id is null
           delete o[type][boardID]
-        else if archive = archives[id]
+        else if archive = archives[JSON.stringify id]
           boards = if type is 'file' then archive.files else archive.boards
           o[type][boardID] = archive if boardID in boards
 
