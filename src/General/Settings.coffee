@@ -193,7 +193,8 @@ Settings =
         data
       data = convertSettings data,
         # General confs
-        'Disable 4chan\'s extension': ''
+        'Disable 4chan\'s extension': 'Disable Native Extension'
+        'Comment Auto-Expansion': ''
         'Remove Slug': ''
         'Check for Updates': ''
         'Recursive Filtering': 'Recursive Hiding'
@@ -204,6 +205,10 @@ Settings =
         'Reveal Spoilers': 'Reveal Spoiler Thumbnails'
         'Expand From Current': 'Expand from here'
         'Post in Title': 'Thread Excerpt'
+        'Current Page': 'Page Count in Stats'
+        'Current Page Position': ''
+        'Alternative captcha': 'Use Recaptcha v1'
+        'Auto Submit': 'Post on Captcha Completion'
         'Open Reply in New Tab': 'Open Post in New Tab'
         'Remember QR size': 'Remember QR Size'
         'Remember Subject': ''
