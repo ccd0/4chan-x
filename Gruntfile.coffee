@@ -304,6 +304,7 @@ module.exports = (grunt) ->
           GM_xmlhttpRequest: true
           GM_info:      true
           cloneInto:    true
+          unsafeWindow: true
           chrome:       true
       script: 'tmp-<%= pkg.type %>/*.js'
 
