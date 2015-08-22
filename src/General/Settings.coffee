@@ -268,9 +268,21 @@ Settings =
             (data.Conf['watchedThreads'].boards[boardID] or= {})[threadID] = excerpt: threadData.textContent
       data
 
+  upgrade: (data, version) ->
+    changes = {}
+    compareString = version.replace(/\d+/g, (x) -> ('0000'+x)[-5..])
+    if compareString < '00001.00011.00008.00000'
+      unless data['Fixed Thread Watcher']?
+        changes['Fixed Thread Watcher'] = data['Toggleable Thread Watcher'] ? true
+      unless data['Exempt Archives from Encryption']?
+        changes['Exempt Archives from Encryption'] = data['Except Archives from Encryption'] ? false
+    changes
+
   loadSettings: (data, cb) ->
     if data.version.split('.')[0] is '2' # https://github.com/loadletter/4chan-x
       data = Settings.convertFrom.loadletter data
+    else if data.version isnt g.VERSION
+      $.extend data.Conf, Settings.upgrade(data.Conf, data.version)
     $.clear (err) ->
       return cb err if err
       $.set data.Conf, cb

@@ -87,17 +87,10 @@ Main =
 
   upgrade: (items) ->
     {previousversion} = items
-    items2 = {previousversion: g.VERSION}
-    compareString = previousversion.replace(/\d+/g, (x) -> ('0000'+x)[-5..])
-
-    if compareString < '00001.00011.00008.00000'
-      unless items['Fixed Thread Watcher']?
-        items2['Fixed Thread Watcher'] = items['Toggleable Thread Watcher'] ? true
-      unless items['Exempt Archives from Encryption']?
-        items2['Exempt Archives from Encryption'] = items['Except Archives from Encryption'] ? false
-
-    $.extend items, items2
-    $.set items2, ->
+    changes = {previousversion: g.VERSION}
+    $.extend changes, Settings.upgrade(items, previousversion)
+    $.extend items, changes
+    $.set changes, ->
       if items['Show Updated Notifications'] ? true
         el = $.el 'span',
           <%= html(meta.name + ' has been updated to <a href="' + meta.changelog + '" target="_blank">version ${g.VERSION}</a>.') %>
