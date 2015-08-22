@@ -401,13 +401,6 @@ ThreadWatcher =
     ThreadWatcher.db.delete {boardID, threadID}
     ThreadWatcher.refresh()
 
-  convert: (oldFormat) ->
-    newFormat = {}
-    for boardID, threads of oldFormat
-      for threadID, data of threads
-        (newFormat[boardID] or= {})[threadID] = excerpt: data.textContent
-    newFormat
-
   menu:
     refreshers: []
     init: ->

@@ -183,9 +183,8 @@ Settings =
         c.error err.stack
     reader.readAsText file
 
-  loadSettings: (data, cb) ->
-    version = data.version.split '.'
-    if version[0] is '2'
+  convertFrom:
+    loadletter: (data) ->
       convertSettings = (data, map) ->
         for prevKey, newKey of map
           data.Conf[newKey] = data.Conf[prevKey] if newKey
@@ -261,10 +260,16 @@ Settings =
       for key, val of Config.hotkeys when key of data.Conf
         data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, (s) -> "#{s[0].toUpperCase()}#{s[1..]}").replace /(^|.+\+)[A-Z]$/g, (s) ->
           "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
-      data.Conf['WatchedThreads'] = data.WatchedThreads
-    if data.Conf['WatchedThreads']
-      data.Conf['watchedThreads'] = boards: ThreadWatcher.convert data.Conf['WatchedThreads']
-      delete data.Conf['WatchedThreads']
+      if data.WatchedThreads
+        data.Conf['watchedThreads'] = boards: {}
+        for boardID, threads of data.WatchedThreads
+          for threadID, threadData of threads
+            (data.Conf['watchedThreads'].boards[boardID] or= {})[threadID] = excerpt: threadData.textContent
+      data
+
+  loadSettings: (data, cb) ->
+    if data.version.split('.')[0] is '2' # https://github.com/loadletter/4chan-x
+      data = Settings.convertFrom.loadletter data
     $.clear (err) ->
       return cb err if err
       $.set data.Conf, cb
