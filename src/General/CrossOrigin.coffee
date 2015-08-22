@@ -31,8 +31,9 @@ CrossOrigin = do ->
         cb new Uint8Array(response), contentType, contentDisposition
     <% } %>
     <% if (type === 'userscript') { %>
-    # Use workaround for binary data in Greasemonkey versions < 3.2 and in JS Blocker (Safari)
+    # Use workaround for binary data in Greasemonkey versions < 3.2, in Pale Moon for all GM versions, and in JS Blocker (Safari).
     workaround = $.engine is 'gecko' and GM_info? and /^[0-2]\.|^3\.[01](?!\d)/.test(GM_info.version)
+    workaround or= /PaleMoon\//.test(navigator.userAgent)
     workaround or= GM_info?.script?.includeJSB?
     options =
       method: "GET"
