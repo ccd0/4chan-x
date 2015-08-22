@@ -165,6 +165,7 @@ Settings =
 
   onImport: ->
     return unless file = @files[0]
+    @value = null
     output = $('.imp-exp-result')
     unless confirm 'Your current settings will be entirely overwritten, are you sure?'
       output.textContent = 'Import aborted.'
