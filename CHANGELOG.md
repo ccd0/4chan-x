@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.9
 
+**v1.11.9.4** *(2015-08-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Archive list update: desustorage.org -> archive.horse.
+
 **v1.11.9.3** *(2015-08-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Try to support the new non-3x3 captchas. Note: not tested on non-3x3 captchas yet.
 - Fix bug causing updateless versions of userscript to check for and install updates.
