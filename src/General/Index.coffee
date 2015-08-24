@@ -9,7 +9,7 @@ Index =
       name: 'Catalog Features'
       cb:   @catalogNode
 
-    @search = history.state?.search or ''
+    @search = history.state?.searched or ''
     if history.state?.mode
       Conf['Index Mode'] = history.state?.mode
     @currentPage = @getCurrentPage()
@@ -226,10 +226,10 @@ Index =
 
     popstate: (e) ->
       if e?.state
-        {search, mode} = e.state
+        {searched, mode} = e.state
         state = {}
-        if Index.search isnt search
-          state.search = Index.search = search
+        if Index.search isnt searched
+          state.search = Index.search = searched
         if Conf['Index Mode'] isnt mode
           state.mode = mode
           Index.saveMode mode
@@ -317,9 +317,9 @@ Index =
       pathname = if page is 1 then "/#{g.BOARD}/" else "/#{g.BOARD}/#{page}"
       hash = ''
     history[if state.replace then 'replaceState' else 'pushState']
-      mode:    Conf['Index Mode']
-      search:  Index.search
-      oldpage: pageBeforeSearch
+      mode:     Conf['Index Mode']
+      searched: Index.search
+      oldpage:  pageBeforeSearch
     , '', pathname + hash
     state
 
