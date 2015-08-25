@@ -20,7 +20,7 @@ Keybinds =
     return unless key = Keybinds.keyCode e
     {target} = e
     if target.nodeName in ['INPUT', 'TEXTAREA']
-      return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test key
+      return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test(key) and not /^Alt\+(\d|Up|Down|Left|Right)$/.test(key)
     unless (
       g.VIEW not in ['index', 'thread'] or
       g.VIEW is 'index' and Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog' or
