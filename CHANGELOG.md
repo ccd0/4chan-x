@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.10
 
+**v1.11.10.2** *(2015-08-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Disable Alt+Number and Alt+Arrow in text fields to fix conflict with Alt+NumPad character input.
+
 **v1.11.10.1** *(2015-08-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.9.3: Try to support the new non-3x3 captchas. Note: not tested on non-3x3 captchas yet.
 - Merge v1.11.9.4: Archive list update: desustorage.org -> archive.horse.
