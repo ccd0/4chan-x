@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.9
 
+**v1.11.9.5** *(2015-08-26)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix regression from v1.11.8.0 causing delete link not to work when Cooldown is off.
+
 **v1.11.9.4** *(2015-08-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.9.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Archive list update: desustorage.org -> archive.horse.
 
