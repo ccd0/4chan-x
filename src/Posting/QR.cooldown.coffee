@@ -70,6 +70,7 @@ QR.cooldown =
     QR.cooldown.save [post.board.ID]
 
   secondsDeletion: (post) ->
+    return 0 unless Conf['Quick Reply'] and Conf['Cooldown']
     cooldowns = QR.cooldown.data[post.board.ID] or {}
     for start, cooldown of cooldowns
       if !cooldown.delay? and cooldown.threadID is post.thread.ID and cooldown.postID is post.ID

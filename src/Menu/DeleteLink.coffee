@@ -95,7 +95,7 @@ DeleteLink =
     else if msg = resDoc.getElementById 'errmsg' # error!
       new Notice 'warning', msg.textContent, 20
       $.on link, 'click', DeleteLink.toggle if post.fullID is DeleteLink.post.fullID
-      if /\bwait\b/i.test msg.textContent
+      if Conf['Quick Reply'] and Conf['Cooldown'] and /\bwait\b/i.test(msg.textContent)
         DeleteLink.cooldown.start post, 5
         DeleteLink.auto[+fileOnly][post.fullID] = true
         DeleteLink.nodes.links[+fileOnly].textContent = DeleteLink.linkText fileOnly
