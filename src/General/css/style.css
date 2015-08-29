@@ -115,6 +115,20 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 #captchaContainerAlt td:nth-child(2) {
   display: table-cell !important;
 }
+/* Fix posts wrapping to line below side arrows / hiding button */
+.replyContainer {
+  display: -webkit-flex;
+  display: flex;
+  margin: 2px 0px 4px;
+}
+div.reply {
+  display: block;
+  margin: 0;
+  overflow: visible;
+}
+div.thread > div:nth-of-type(2) > div.reply {
+  margin-top: 0 !important;
+}
 
 /* Anti-autoplay */
 audio.controls-added {
