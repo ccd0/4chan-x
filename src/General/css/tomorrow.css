@@ -65,9 +65,9 @@
 :root.tomorrow .filter-highlight > .reply {
   box-shadow: inset 5px 0 rgba(145, 182, 214, .5);
 }
-:root.tomorrow.highlight-own .yourPost > div.sideArrows,
-:root.tomorrow.highlight-you .quotesYou > div.sideArrows,
-:root.tomorrow .filter-highlight > div.sideArrows {
+:root.tomorrow:not(.reply-hide).highlight-own .yourPost > div.sideArrows,
+:root.tomorrow:not(.reply-hide).highlight-you .quotesYou > div.sideArrows,
+:root.tomorrow:not(.reply-hide) .filter-highlight > div.sideArrows {
   color: rgb(155, 185, 210);
 }
 :root.tomorrow .filter-highlight .catalog-thumb,
@@ -77,6 +77,14 @@
 :root.tomorrow .catalog-thread.watched .catalog-thumb,
 :root.tomorrow .catalog-thread.watched .werkTyme-filename {
   border: 2px solid rgb(64, 192, 255);
+}
+
+/* Reply Hiding */
+:root.tomorrow.reply-hide div.sideArrows {
+  color: #81A2BE;
+}
+:root.tomorrow.reply-hide div.sideArrows:hover {
+  color: #5F89AC;
 }
 
 /* QR */

@@ -50,6 +50,14 @@
   background-color: rgba(255, 255, 255, .14);
 }
 
+/* Reply Hiding */
+:root.photon.reply-hide div.sideArrows {
+  color: #FF6600;
+}
+:root.photon.reply-hide div.sideArrows:hover {
+  color: #FF3300;
+}
+
 /* QR */
 .photon #dump-list::-webkit-scrollbar-thumb {
   background-color: #DDD;

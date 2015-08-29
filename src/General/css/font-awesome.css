@@ -8,7 +8,7 @@ grunt.file.read('node_modules/font-awesome/css/font-awesome.css').match(/\/\*\![
   font-weight: 400;
   font-style: normal;
 }
-.fa::before {
+.fa::before, :root.reply-hide div.sideArrows::before {
   font-family: FontAwesome;
   font-weight: 400;
   font-style: normal;
@@ -29,7 +29,7 @@ grunt.file.read('node_modules/font-awesome/css/font-awesome.css').match(/\/\*\![
   position: relative;
   top: 1px;
 }
-:root.shortcut-icons #shortcuts .fa, .menu-button .fa {
+:root.shortcut-icons #shortcuts .fa, .menu-button .fa, :root.reply-hide div.sideArrows {
   font-size: 0;
   visibility: hidden;
 }
@@ -39,7 +39,6 @@ grunt.file.read('node_modules/font-awesome/css/font-awesome.css').match(/\/\*\![
 }
 :root.shortcut-icons #shortcuts a .fa,
 .menu-button .fa,
-.hide-reply-button .fa,
 .hide-thread-button .fa {
   display: inline;
 }
@@ -47,6 +46,10 @@ grunt.file.read('node_modules/font-awesome/css/font-awesome.css').match(/\/\*\![
 <%=
 grunt.file.read('node_modules/font-awesome/css/font-awesome.css').match(/\.fa-glass:[^]*/)[0].replace(/([,{;])\s+/g, '$1').replace(/,/g, ', ')
 %>
+
+:root.reply-hide div.sideArrows::before {
+  content: "\f147";
+}
 
 .fa-spin::before {
   -webkit-animation:spin 2s infinite linear;

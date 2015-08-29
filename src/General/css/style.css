@@ -1106,9 +1106,9 @@ input[name="Default Volume"] {
 .filter-highlight > .reply {
   box-shadow: inset 5px 0 rgba(221, 0, 0, .5);
 }
-:root.highlight-own .yourPost > div.sideArrows,
-:root.highlight-you .quotesYou > div.sideArrows,
-.filter-highlight > div.sideArrows {
+:root:not(.reply-hide).highlight-own .yourPost > div.sideArrows,
+:root:not(.reply-hide).highlight-you .quotesYou > div.sideArrows,
+:root:not(.reply-hide) .filter-highlight > div.sideArrows {
   color: rgba(221, 0, 0, .8);
 }
 :root.highlight-own .yourPost.opContainer::after,
@@ -1140,17 +1140,21 @@ input[name="Default Volume"] {
 }
 
 /* Thread & Reply Hiding */
-.hide-thread-button,
-.hide-reply-button {
+.hide-thread-button {
   float: left;
+}
+.hide-thread-button,
+:root.reply-hide div.sideArrows {
+  margin-left: 0;
   margin-right: 4px;
   padding: 2px;
+  cursor: pointer;
 }
 .hide-thread-button:not(:hover),
-.hide-reply-button:not(:hover) {
+:root.reply-hide div.sideArrows:not(:hover) {
   opacity: 0.4;
 }
-.threadContainer .hide-reply-button {
+:root.reply-hide .threadContainer div.sideArrows {
   margin-left: 2px !important;
   position: relative;
   left: 1px;
@@ -1165,9 +1169,6 @@ input[name="Default Volume"] {
   display: inline-block;
 }
 .thread[hidden] + hr {
-  display: none;
-}
-:root.reply-hide div.sideArrows {
   display: none;
 }
 

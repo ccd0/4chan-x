@@ -42,6 +42,14 @@
   background-color: rgba(255, 255, 255, .14);
 }
 
+/* Reply Hiding */
+:root.yotsuba.reply-hide div.sideArrows {
+  color: #00E;
+}
+:root.yotsuba.reply-hide div.sideArrows:hover {
+  color: red;
+}
+
 /* QR */
 .yotsuba #dump-list::-webkit-scrollbar-thumb {
   background-color: #F0E0D6;
