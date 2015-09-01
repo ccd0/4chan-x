@@ -9,13 +9,13 @@
   "files": ["a", "an", "biz", "c", "co", "diy", "fit", "gd", "gif", "h", "i", "int", "jp", "k", "m", "mlp", "out", "po", "qa", "r9k", "s4s", "sci", "tg", "u", "v", "vg", "vp", "vr", "wsg"]
 }, {
   "uid": 3,
-  "name": "4plebs Archive",
+  "name": "4plebs",
   "domain": "archive.4plebs.org",
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["adv", "f", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"],
-  "files": ["adv", "f", "hr", "o", "pol", "s4s", "tg", "trv", "tv", "x"]
+  "boards": ["adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
+  "files": ["adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"]
 }, {
   "uid": 4,
   "name": "Nyafuu Archive",
@@ -61,15 +61,6 @@
   "software": "foolfuuka",
   "boards": ["asp", "b", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "y"],
   "files": ["asp", "b", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "y"]
-}, {
-  "uid": 22,
-  "name": "not4plebs",
-  "domain": "totally.not4plebs.org",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["sp"],
-  "files": ["sp"]
 }, {
   "uid": 23,
   "name": "archive.horse",
