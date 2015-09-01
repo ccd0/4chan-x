@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.10
 
+**v1.11.10.4** *(2015-09-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- (pleebe) Update archive list: Merge not4plebs with 4plebs.
+
 **v1.11.10.3** *(2015-08-26)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.9.5: Fix regression from v1.11.8.0 causing delete link not to work when Cooldown is off.
 
