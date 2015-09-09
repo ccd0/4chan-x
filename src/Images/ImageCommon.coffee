@@ -79,15 +79,6 @@ ImageCommon =
 
   # Add controls, but not until the mouse is moved over the video.
   addControls: (video) ->
-    # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1192302
-    if /Gecko\/20100101\ \w+\/42\./.test navigator.userAgent
-      video.controls = true
-      if doc.contains video
-        {parentNode, nextSibling, paused} = video
-        $.rm video
-        parentNode.insertBefore video, nextSibling
-        video.play() unless paused
-      return
     handler = ->
       $.off video, 'mouseover', handler
       # Hacky workaround for Firefox forever-loading bug for very short videos
