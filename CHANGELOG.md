@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.10
 
+**v1.11.10.5** *(2015-09-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- 4chan change: "Admin Emeritus" capcode is now "Founder".
+
 **v1.11.10.4** *(2015-09-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - (pleebe) Update archive list: Merge not4plebs with 4plebs.
 
