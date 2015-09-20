@@ -102,9 +102,9 @@ Build =
     if capcode
       capcodeUC = capcode.split(' ')[0]
       capcodeLC = capcodeUC.toLowerCase()
-      if capcode is 'Admin Emeritus'
-        capcodePlural      = 'the Administrator Emeritus'
-        capcodeDescription = "4chan's founding Administrator"
+      if capcode is 'Founder'
+        capcodePlural      = 'the Founder'
+        capcodeDescription = "4chan's Founder"
       else
         capcodeLong   = {'Admin': 'Administrator', 'Mod': 'Moderator'}[capcode] or capcode
         capcodePlural = "#{capcodeLong}s"
