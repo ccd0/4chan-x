@@ -100,8 +100,7 @@ Build =
     ### Post Info ###
 
     if capcode
-      capcodeUC = capcode.split(' ')[0]
-      capcodeLC = capcodeUC.toLowerCase()
+      capcodeLC = capcode.toLowerCase()
       if capcode is 'Founder'
         capcodePlural      = 'the Founder'
         capcodeDescription = "4chan's Founder"

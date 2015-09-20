@@ -1,14 +1,14 @@
 <div class="postInfo desktop" id="pi${postID}">
   <input type="checkbox" name="${postID}" value="delete"> 
   ?{!o.isReply || boardID === "f" || subject}{<span class="subject">${subject || ""}</span> }
-  <span class="nameBlock?{capcode}{ capcode${capcodeUC}}">
+  <span class="nameBlock?{capcode}{ capcode${capcode}}">
     ?{email}{<a href="mailto:${encodeURIComponent(email).replace(/%40/g, "@")}" class="useremail">}
       <span class="name?{capcode}{ capcode}">${name}</span>
       ?{tripcode}{ <span class="postertrip">${tripcode}</span>}
       ?{capcode}{ <strong class="capcode hand id_${capcodeLC}" title="Highlight posts by ${capcodePlural}">## ${capcode}</strong>}
     ?{email}{</a>}
     ?{boardID === "f" && !o.isReply || capcode}{}{ }
-    ?{capcode}{ <img src="${staticPath}${capcodeLC}icon${gifIcon}" alt="${capcodeUC} Icon" title="This user is ${capcodeDescription}." class="identityIcon retina">}
+    ?{capcode}{ <img src="${staticPath}${capcodeLC}icon${gifIcon}" alt="${capcode} Icon" title="This user is ${capcodeDescription}." class="identityIcon retina">}
     ?{uniqueID && !capcode}{ <span class="posteruid id_${uniqueID}">(ID: <span class="hand" title="Highlight posts by this ID">${uniqueID}</span>)</span>}
     ?{flagCode}{ <span title="${flag}" class="flag flag-${flagCode.toLowerCase()}"></span>}
   </span> 
