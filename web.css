@@ -20,7 +20,7 @@ h1 {
 #links > a {
   display: table-cell;
   vertical-align: middle;
-  width: 25%;
+  width: 20%;
   color: #000;
   text-decoration: none;
 }
