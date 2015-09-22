@@ -71,6 +71,7 @@ If you encounter a bug, try the steps [here](https://github.com/ccd0/4chan-x/blo
 ## More information
 - [Changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md)
 - [Frequently Asked Questions](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions)
+- [Privacy](https://github.com/ccd0/4chan-x/wiki/Privacy)
 - [Report Bugs](https://gitreports.com/issue/ccd0/4chan-x)
 - [Contributing](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md)
 
