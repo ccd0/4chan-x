@@ -638,6 +638,11 @@ Config =
     ]
 
   filter:
+    postID: """
+      # Highlight dubs:
+      #/(\\d)\\1$/;highlight
+    """
+
     name: """
       # Filter any namefags:
       #/^(?!Anonymous$)/
