@@ -5,6 +5,10 @@ Captcha.fixes =
     .rc-imageselect-target > div:focus {
       outline: 2px solid #4a90e2;
     }
+    .rc-imageselect-target td:focus {
+      box-shadow: inset 0 0 0 2px #4a90e2;
+      outline: none;
+    }
     .rc-button-default:focus {
       box-shadow: inset 0 0 0 2px #0063d6;
     }
@@ -60,7 +64,7 @@ Captcha.fixes =
     $.on $('.fbc-imageselect-challenge > form'), 'submit', @checkForm.bind(@)
 
   fixImages: ->
-    @images = $$ '.rc-imageselect-target > div'
+    @images = $$ '.rc-imageselect-target > div, .rc-imageselect-target td'
     for img in @images
       img.tabIndex = 0
     @addTooltips @images if @images.length is 9
