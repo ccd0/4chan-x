@@ -53,7 +53,6 @@ Quotify =
         a = $.el 'a',
           href:        Build.postURL boardID, post.thread.ID, postID
           className:   'quotelink deadlink'
-          target:      '_blank'
           textContent: "#{quote}\u00A0(Dead)"
         $.extend a.dataset, {boardID, threadID: post.thread.ID, postID}
 
@@ -65,7 +64,6 @@ Quotify =
         a = $.el 'a',
           href:        redirect or 'javascript:;'
           className:   'deadlink'
-          target:      '_blank'
           textContent: "#{quote}\u00A0(Dead)"
         if fetchable
           # Make it function as a normal quote if we can fetch the post.
