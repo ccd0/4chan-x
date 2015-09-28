@@ -2,6 +2,12 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.11
+
+**v1.11.11.0** *(2015-09-28)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.10.6.
+- (Jonathan Gawrych) Add filtering by post number.
+
 ### v1.11.10
 
 **v1.11.10.6** *(2015-09-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.6/builds/4chan-X-noupdate.crx "Chromium version")]
