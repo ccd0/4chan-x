@@ -639,8 +639,8 @@ Config =
 
   filter:
     postID: """
-      # Highlight dubs:
-      #/(\\d)\\1$/;highlight
+      # Highlight dubs on [s4s]:
+      #/(\\d)\\1$/;highlight;top:no;boards:s4s
     """
 
     name: """
