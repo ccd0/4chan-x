@@ -127,6 +127,7 @@ Filter =
         return true if result.hide
     false
 
+  postID:     (post) -> post.ID
   name:       (post) -> post.info.name
   uniqueID:   (post) -> post.info.uniqueID
   tripcode:   (post) -> post.info.tripcode
@@ -155,6 +156,7 @@ Filter =
         subEntries: []
 
       for type in [
+        ['Post number',      'postID']
         ['Name',             'name']
         ['Unique ID',        'uniqueID']
         ['Tripcode',         'tripcode']

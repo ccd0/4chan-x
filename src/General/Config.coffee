@@ -638,6 +638,11 @@ Config =
     ]
 
   filter:
+    postID: """
+      # Highlight dubs on [s4s]:
+      #/(\\d)\\1$/;highlight;top:no;boards:s4s
+    """
+
     name: """
       # Filter any namefags:
       #/^(?!Anonymous$)/
