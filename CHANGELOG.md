@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.11
 
+**v1.11.11.1** *(2015-09-28)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Resurrected quotelinks now open in the same tab, consistent with normal quotelink behavior.
+
 **v1.11.11.0** *(2015-09-28)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.10.6.
 - (Jonathan Gawrych) Add filtering by post number.
