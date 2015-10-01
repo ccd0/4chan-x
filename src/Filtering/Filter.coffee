@@ -156,7 +156,6 @@ Filter =
         subEntries: []
 
       for type in [
-        ['Post number',      'postID']
         ['Name',             'name']
         ['Unique ID',        'uniqueID']
         ['Tripcode',         'tripcode']
