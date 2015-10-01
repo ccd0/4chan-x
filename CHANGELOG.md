@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.11
 
+**v1.11.11.4** *(2015-10-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Remove post number from filter submenu.
+
 **v1.11.11.3** *(2015-10-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.10.8: (Hasumi) Update archive.moe: Add /aco/.
 
