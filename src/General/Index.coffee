@@ -88,9 +88,12 @@ Index =
     $.asap (-> $('.board > .thread > .postContainer', doc) or d.readyState isnt 'loading'), ->
       return unless Main.isThisPageLegit()
       Index.hat = $ '.board > .thread > img:first-child'
-      if Index.hat and Index.nodes
-        for threadRoot in Index.nodes
-          $.prepend threadRoot, Index.hat.cloneNode false
+      if Index.hat
+        if Index.nodes
+          for threadRoot in Index.nodes
+            $.prepend threadRoot, Index.hat.cloneNode false
+        $.addClass doc, 'hats-enabled'
+        $.addStyle ".catalog-thread::after {background-image: url(#{Index.hat.src});}"
 
       board = $ '.board'
       $.replace board, Index.root
