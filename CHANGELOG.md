@@ -13,6 +13,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.10
 
+**v1.11.10.7** *(2015-09-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.7/builds/4chan-X-noupdate.crx "Chromium version")]
+- Show party hats in 4chan X catalog view.
+
 **v1.11.10.6** *(2015-09-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.6/builds/4chan-X-noupdate.crx "Chromium version")]
 - Update 4chan banner list.
 - Update for Recaptcha changes.
