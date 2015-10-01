@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.11
 
+**v1.11.11.3** *(2015-10-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.10.8: (Hasumi) Update archive.moe: Add /aco/.
+
 **v1.11.11.2** *(2015-09-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.10.7: Show party hats in 4chan X catalog view.
 
@@ -15,6 +18,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 - (Jonathan Gawrych) Add filtering by post number.
 
 ### v1.11.10
+
+**v1.11.10.8** *(2015-10-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.8/builds/4chan-X-noupdate.crx "Chromium version")]
+- (Hasumi) Update archive.moe: Add /aco/.
 
 **v1.11.10.7** *(2015-09-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.10.7/builds/4chan-X-noupdate.crx "Chromium version")]
 - Show party hats in 4chan X catalog view.
