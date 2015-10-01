@@ -101,10 +101,6 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
   unicode-bidi: -moz-isolate;
   unicode-bidi: -webkit-isolate;
 }
-.thread > img:first-child {
-  /* party hats */
-  pointer-events: none;
-}
 #g-recaptcha {
   min-height: 78px;
   height: auto;
