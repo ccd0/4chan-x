@@ -127,7 +127,7 @@ Filter =
         return true if result.hide
     false
 
-  postID:     (post) -> post.ID ? post.postID
+  postID:     (post) -> "#{post.ID ? post.postID}"
   name:       (post) -> post.info.name
   uniqueID:   (post) -> post.info.uniqueID
   tripcode:   (post) -> post.info.tripcode
