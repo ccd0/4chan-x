@@ -43,15 +43,9 @@ Embedding =
   embed: (data) ->
     {key, uid, options, link, post} = data
     {href} = link
-    $.addClass link, key.toLowerCase()
+    return if Embedding.types[key].httpOnly and location.protocol isnt 'http:'
 
-    if Embedding.types[key].httpOnly and location.protocol isnt 'http:'
-      embed = $.el 'a',
-        href:        "http://boards.4chan.org/#{post.board}/thread/#{post.thread}#p#{post}"
-        textContent: '(HTTP)'
-        title:       "#{key} does not support HTTPS."
-      $.after link, [$.tn(' '), embed]
-      return
+    $.addClass link, key.toLowerCase()
 
     embed = $.el 'a',
       className:   'embedder'
