@@ -127,6 +127,12 @@ Linkify =
           'http://'
       ) + text
 
+    # Decode percent-encoded characters in domain so that they behave consistently across browsers.
+    if encodedDomain = text.match /^(https?:\/\/[^/]*%[0-9a-f]{2})(.*)$/i
+      text = encodedDomain[1].replace(/%([0-9a-f]{2})/ig, (x, y) ->
+        if y is '25' then x else String.fromCharCode(parseInt y, 16)
+      ) + encodedDomain[2]
+
     a = $.el 'a',
       className: 'linkify'
       rel:       'nofollow noreferrer'
