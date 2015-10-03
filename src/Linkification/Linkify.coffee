@@ -27,8 +27,8 @@ Linkify =
     Linkify.process @nodes.comment
 
   process: (node) ->
-    test     = /[^\s'"]+/g
-    space    = /[\s'"]/
+    test     = /[^\s"]+/g
+    space    = /[\s"]/
     snapshot = $.X './/br|.//text()', node
     i = 0
     links = []
@@ -80,7 +80,7 @@ Linkify =
     | # This should account for virtually all links posted without http:
     ([-a-z\d]+[.])+(
       aero|asia|biz|cat|com|coop|dance|info|int|jobs|mobi|moe|museum|name|net|org|post|pro|tel|travel|xxx|xyz|edu|gov|mil|[a-z]{2}
-    )([:/]|(?![^\s'"]))
+    )([:/]|(?![^\s"]))
     | # IPv4 Addresses
     [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}
     | # E-mails
