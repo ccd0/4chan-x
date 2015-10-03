@@ -95,6 +95,7 @@ Embedding =
   title: (data) ->
     {key, uid, options, link, post} = data
     return unless service = Embedding.types[key].title
+    $.addClass link, key.toLowerCase()
     if service.batchSize
       (service.queue or= []).push data
       if service.queue.length >= service.batchSize
