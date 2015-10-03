@@ -21,7 +21,7 @@ Main =
     g.threads = new SimpleDict()
     g.posts   = new SimpleDict()
 
-    pathname = location.pathname.split '/'
+    pathname = location.pathname.split /\/+/
     g.BOARD  = new Board pathname[1]
     return if g.BOARD.ID in ['z', 'fk']
     g.VIEW   =
@@ -119,7 +119,7 @@ Main =
       when 'i.4cdn.org'
         $.asap (-> d.readyState isnt 'loading'), ->
           if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
-            pathname = location.pathname.split '/'
+            pathname = location.pathname.split /\/+/
             Redirect.navigate 'file',
               boardID:  g.BOARD.ID
               filename: pathname[pathname.length - 1]
@@ -134,10 +134,10 @@ Main =
         return
 
     if Conf['Normalize URL'] and g.VIEW is 'thread'
-      pathname = location.pathname.split '/'
+      pathname = location.pathname.split /\/+/
       if pathname[2] isnt 'thread' or pathname.length > 4
         pathname[2] = 'thread'
-        history.replaceState null, '', pathname[0...4].join('/') + location.hash
+        history.replaceState null, '', "#{location.protocol}//#{location.host}#{pathname[0...4].join('/')}#{location.hash}"
 
     # c.time 'All initializations'
     for [name, feature] in Main.features

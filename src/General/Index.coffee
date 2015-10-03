@@ -263,7 +263,7 @@ Index =
           return
       return if a.textContent is 'Catalog'
       e.preventDefault()
-      Index.userPageNav +a.pathname.split('/')[2] or 1
+      Index.userPageNav +a.pathname.split(/\/+/)[2] or 1
 
     refreshFront: ->
       Index.update Index.pushState {page: 1, scroll: true}
@@ -275,7 +275,7 @@ Index =
     if Conf['Index Mode'] in ['all pages', 'catalog']
       1
     else
-      +window.location.pathname.split('/')[2] or 1
+      +window.location.pathname.split(/\/+/)[2] or 1
 
   userPageNav: (page) ->
     state = Index.pushState {page, scroll: true}
@@ -323,7 +323,7 @@ Index =
       mode:     Conf['Index Mode']
       searched: Index.search
       oldpage:  pageBeforeSearch
-    , '', pathname + hash
+    , '', "#{location.protocol}//#{location.host}#{pathname}#{hash}"
     state
 
   saveMode: (mode) ->
