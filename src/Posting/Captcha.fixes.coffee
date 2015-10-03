@@ -68,6 +68,17 @@ Captcha.fixes =
     for img in @images
       img.tabIndex = 0
     @addTooltips @images if @images.length is 9
+    @complaintLinks()
+
+  complaintLinks: ->
+    for errmsg in $$ '.rc-imageselect-incorrect-response, .rc-imageselect-error-select-one, .rc-imageselect-error-select-more'
+      unless $ 'a', errmsg
+        link = $.el 'a',
+          href: 'https://www.4chan.org/feedback'
+          target: '_blank'
+          textContent: '[complain]'
+        $.add errmsg, [$.tn(' '), link]
+    return
 
   addLabels: ->
     imageSelect = $ '.fbc-payload-imageselect'
