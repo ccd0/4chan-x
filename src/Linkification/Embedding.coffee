@@ -208,12 +208,10 @@ Embedding =
       key: 'LiveLeak'
       regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*i=(\w+)/
       httpOnly: true
+      style: 'border: none; width: 640px; height: 360px;'
       el: (a) ->
         el = $.el 'iframe',
-          width: "640",
-          height: "360",
           src: "http://www.liveleak.com/ll_embed?i=#{a.dataset.uid}",
-          frameborder: "0"
         el.setAttribute "allowfullscreen", "true"
         el
     ,
