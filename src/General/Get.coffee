@@ -13,7 +13,7 @@ Get =
     Get.threadFromRoot $.x 'ancestor::div[@class="thread"]', node
   postFromRoot: (root) ->
     link    = $ '.postNum > a[href*="#"]', root
-    boardID = link.pathname.split('/')[1]
+    boardID = link.pathname.split(/\/+/)[1]
     postID  = link.hash[2..]
     index   = root.dataset.clone
     post    = g.posts["#{boardID}.#{postID}"]
@@ -24,7 +24,7 @@ Get =
     Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', node
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
-      path     = link.pathname.split '/'
+      path     = link.pathname.split /\/+/
       boardID  = path[1]
       threadID = path[3]
       postID   = link.hash[2..]

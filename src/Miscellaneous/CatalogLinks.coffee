@@ -7,7 +7,7 @@ CatalogLinks =
         when 'index'             then '#ctrl-top > a, .cataloglink > a'
       $.ready ->
         for link in $$ selector
-          switch link.pathname
+          switch link.pathname.replace /\/+/g, '/'
             when "/#{g.BOARD}/"
               link.textContent = 'Index' if Conf['JSON Navigation']
               link.href = CatalogLinks.index()

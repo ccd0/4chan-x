@@ -26,7 +26,7 @@ ExpandComment =
       return
     return unless a = $ '.abbr > a', post.nodes.comment
     a.textContent = "Post No.#{post} Loading..."
-    $.cache "//a.4cdn.org#{a.pathname.split('/').splice(0,4).join('/')}.json", -> ExpandComment.parse @, a, post
+    $.cache "//a.4cdn.org#{a.pathname.split(/\/+/).splice(0,4).join('/')}.json", -> ExpandComment.parse @, a, post
 
   contract: (post) ->
     return unless post.nodes.shortComment
@@ -59,9 +59,9 @@ ExpandComment =
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
       if href[0] is '#'
-        quote.href = "#{a.pathname.split('/').splice(0,4).join('/')}#{href}"
+        quote.href = "#{a.pathname.split(/\/+/).splice(0,4).join('/')}#{href}"
       else
-        quote.href = "#{a.pathname.split('/').splice(0,3).join('/')}/#{href}"
+        quote.href = "#{a.pathname.split(/\/+/).splice(0,3).join('/')}/#{href}"
     post.nodes.shortComment = comment
     $.replace comment, clone
     post.nodes.comment = post.nodes.longComment = clone

@@ -162,9 +162,9 @@ class Post
     #  - rules links. (>>>/a/rules)
     #  - text-board quotelinks. (>>>/img/1234)
     return unless match = quotelink.href.match ///
-      boards\.4chan\.org/
+      ^https?://boards\.4chan\.org/+
       ([^/]+) # boardID
-      /(?:res|thread)/\d+(?:\/[^#]*)?#p
+      /+(?:res|thread)/+\d+(?:/[^#]*)?#p
       (\d+)   # postID
       $
     ///
