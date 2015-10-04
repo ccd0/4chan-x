@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.11
 
+**v1.11.11.5** *(2015-10-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add feedback page link to captcha error.
+
 **v1.11.11.4** *(2015-10-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Remove post number from filter submenu.
 
