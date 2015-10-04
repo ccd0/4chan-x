@@ -249,24 +249,25 @@ Embedding =
     ,
       key: 'TwitchTV'
       regExp: /^\w+:\/\/(?:www\.)?twitch\.tv\/(\w[^#\&\?]*)/
-      httpOnly: true
-      style: "border: none; width: 640px; height: 360px;"
+      style: "border: none; width: 620px; height: 378px;"
       el: (a) ->
-        if result = /(\w+)\/([bc])\/(\d+)/i.exec a.dataset.uid
+        if result = /(\w+)\/([bcv])\/(\d+)/i.exec a.dataset.uid
           [_, channel, type, id] = result
-          idparam = {'b': 'archive_id', 'c': 'chapter_id'}
-          obj = $.el 'object',
-            data: 'http://www.twitch.tv/widgets/archive_embed_player.swf'
-          $.extend obj, <%= html('<param name="allowFullScreen" value="true"><param name="flashvars">') %>
-          obj.children[1].value = "channel=#{channel}&start_volume=25&auto_play=false&#{idparam[type]}=#{id}"
-          obj
+          idprefix = if type is 'b' then 'a' else type
+          flashvars = "channel=#{channel}&start_volume=25&auto_play=false&videoId=#{idprefix}#{id}"
+          if start = a.dataset.href.match /\bt=(\w+)/
+            seconds = 0
+            for part in start[1].match /\d+[hms]/g
+              seconds += +part[...-1] * {'h': 3600, 'm': 60, 's': 1}[part[-1..]]
+            flashvars += "&initial_time=#{seconds}"
         else
           channel = (/(\w+)/.exec a.dataset.uid)[0]
-          obj = $.el 'object',
-            data: "http://www.twitch.tv/widgets/live_embed_player.swf?channel=#{channel}"
-          $.extend obj, <%= html('<param name="allowFullScreen" value="true"><param name="flashvars">') %>
-          obj.children[1].value = "hostname=www.twitch.tv&channel=#{channel}&auto_play=true&start_volume=25"
-          obj
+          flashvars = "channel=#{channel}&start_volume=25&auto_play=false"
+        obj = $.el 'object',
+          data: '//www-cdn.jtvnw.net/swflibs/TwitchPlayer.swf'
+        $.extend obj, <%= html('<param name="allowFullScreen" value="true"><param name="flashvars">') %>
+        obj.children[1].value = flashvars
+        obj
     ,
       key: 'Vocaroo'
       regExp: /^\w+:\/\/(?:www\.)?vocaroo\.com\/i\/(\w+)/
