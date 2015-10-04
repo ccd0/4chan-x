@@ -46,7 +46,7 @@ Linkify =
 
           while (saved = snapshot.snapshotItem i++)
             if saved.nodeName is 'BR'
-              if snapshot.snapshotItem(i)?.data?.match /^\.[a-z]{2,6}\//i # link deliberately split
+              if /^(https?:\/\/)?[a-z0-9\-\.]+$/i.test(word) and snapshot.snapshotItem(i)?.data?.match(/^(\.[a-z0-9\-]+)*\//i) # link deliberately split
                 continue
               else
                 break
