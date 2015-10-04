@@ -382,4 +382,5 @@ Embedding =
           controls: true
           preload:  'auto'
           src:      a.dataset.href
+          loop:     /^https?:\/\/i\.4cdn\.org\//.test a.dataset.href
   ]
