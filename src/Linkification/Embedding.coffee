@@ -360,7 +360,7 @@ Embedding =
           controls: true
           preload: 'auto'
         type = if el.canPlayType 'audio/ogg' then 'ogg' else 'mp3'
-        el.src = "http://clyp.it/#{a.dataset.uid}.#{type}"
+        el.src = "https://clyp.it/#{a.dataset.uid}.#{type}"
         el
     ,
       # dummy entries: not implemented but included to prevent them being wrongly embedded as a subsequent type
