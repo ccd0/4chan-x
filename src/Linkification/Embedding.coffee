@@ -284,7 +284,7 @@ Embedding =
         $.el 'iframe',
           src: "//player.vimeo.com/video/#{a.dataset.uid}?wmode=opaque"
       title:
-        api: (uid) -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{uid}"
+        api: (uid) -> "https://vimeo.com/api/oembed.json?url=https://vimeo.com/#{uid}"
         text: (_) -> _.title
     ,
       key: 'Vine'
