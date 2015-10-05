@@ -2,6 +2,16 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.12
+
+**v1.11.12.0** *(2015-10-04)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.11.5.
+- Update Twitch, Vocaroo, and Clyp embedding.
+- Links to images/videos on 4chan can now be embedded, with videos on 4chan set to loop by default.
+- Remove link to HTTP version of post on links that can't be embedded in HTTPS.
+- Add feedback page links to image captcha error messages.
+- Minor bugfixes.
+
 ### v1.11.11
 
 **v1.11.11.5** *(2015-10-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.5/builds/4chan-X-noupdate.crx "Chromium version")]
