@@ -10,7 +10,7 @@ Generic archive information:
   "software": "foolfuuka",
   "boards": ["a"],
   "files": ["a"],
-  "storage": ["a"]
+  "search": ["a"]
 }
 ```
 
@@ -24,4 +24,4 @@ make sure it does not overlap with an archive that previously died for example.
 
 `files` is the list of boards whose files (images, videos, pdfs) are also archived, even temporarily, and not just thumbnails.
 
-`storage` is the list of boards where search is enabled. If this field is missing then it implies that search is enabled on all boards.
+`search` is the list of boards where search is enabled. If this field is missing then it implies that search is enabled on all boards.
