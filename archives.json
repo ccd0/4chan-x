@@ -1,13 +1,4 @@
 [{
-  "uid": 0,
-  "name": "Moe",
-  "domain": "archive.moe",
-  "http": false,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["a", "aco", "an", "biz", "c", "co", "diy", "fit", "gd", "gif", "h", "i", "int", "jp", "k", "m", "mlp", "out", "po", "qa", "r9k", "s4s", "sci", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "aco", "an", "biz", "c", "co", "diy", "fit", "gd", "gif", "h", "i", "int", "jp", "k", "m", "mlp", "out", "po", "qa", "r9k", "s4s", "sci", "tg", "u", "v", "vg", "vp", "vr", "wsg"]
-}, {
   "uid": 3,
   "name": "4plebs",
   "domain": "archive.4plebs.org",
