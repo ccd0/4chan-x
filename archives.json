@@ -70,5 +70,6 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["cm", "ic", "vg", "y"],
-  "files": ["cm", "ic", "vg", "y"]
+  "files": ["cm", "ic", "vg", "y"],
+  "search": []
 }]
