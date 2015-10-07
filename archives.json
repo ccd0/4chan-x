@@ -54,8 +54,8 @@
   "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "vp", "y"]
 }, {
   "uid": 23,
-  "name": "archive.horse",
-  "domain": "4ch.archive.horse",
+  "name": "Desustorage",
+  "domain": "desustorage.org",
   "http": false,
   "https": true,
   "software": "foolfuuka",
