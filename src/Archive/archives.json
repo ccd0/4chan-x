@@ -1,13 +1,4 @@
 [{
-  "uid": 0,
-  "name": "Moe",
-  "domain": "archive.moe",
-  "http": false,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["a", "aco", "an", "biz", "c", "co", "diy", "fit", "gd", "gif", "h", "i", "int", "jp", "k", "m", "mlp", "out", "po", "qa", "r9k", "s4s", "sci", "tg", "tv", "u", "v", "vg", "vp", "vr", "wsg"],
-  "files": ["a", "aco", "an", "biz", "c", "co", "diy", "fit", "gd", "gif", "h", "i", "int", "jp", "k", "m", "mlp", "out", "po", "qa", "r9k", "s4s", "sci", "tg", "u", "v", "vg", "vp", "vr", "wsg"]
-}, {
   "uid": 3,
   "name": "4plebs",
   "domain": "archive.4plebs.org",
@@ -59,17 +50,18 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["asp", "b", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "y"],
-  "files": ["asp", "b", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "y"]
+  "boards": ["asp", "b", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "vp", "y"],
+  "files": ["asp", "b", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "vp", "y"]
 }, {
   "uid": 23,
-  "name": "archive.horse",
-  "domain": "4ch.archive.horse",
+  "name": "Desustorage",
+  "domain": "desustorage.org",
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["mlp", "qa"],
-  "files": ["mlp", "qa"]
+  "boards": ["a", "aco", "an", "c", "co", "d", "fit", "int", "k", "m", "mlp", "qa", "r9k", "tg", "wsg"],
+  "files": ["a", "aco", "an", "c", "co", "d", "fit", "int", "k", "m", "mlp", "qa", "r9k", "tg", "wsg"],
+  "search": ["mlp", "qa"]
 }, {
   "uid": 24,
   "name": "fireden.net",
@@ -78,5 +70,16 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["cm", "ic", "vg", "y"],
-  "files": ["cm", "ic", "vg", "y"]
+  "files": ["cm", "ic", "vg", "y"],
+  "search": []
+}, {
+  "uid": 25,
+  "name": "b4k.co",
+  "domain": "ff.b4k.co",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["g", "mlp", "qa", "v"],
+  "files": [],
+  "search": []
 }]
