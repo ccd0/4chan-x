@@ -59,8 +59,8 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["mlp", "qa"],
-  "files": ["mlp", "qa"]
+  "boards": ["a", "aco", "an", "co", "d", "fit", "int", "k", "mlp", "qa", "r9k", "tg", "v", "wsg"],
+  "files":["a", "aco", "an", "co", "d", "fit", "int", "k", "mlp", "qa", "r9k", "tg", "v", "wsg"]
 }, {
   "uid": 24,
   "name": "fireden.net",
