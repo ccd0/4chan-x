@@ -72,4 +72,14 @@
   "boards": ["cm", "ic", "vg", "y"],
   "files": ["cm", "ic", "vg", "y"],
   "search": []
+}, {
+  "uid": 25,
+  "name": "b4k.co",
+  "domain": "ff.b4k.co",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["g", "mlp", "qa", "v"],
+  "files": [],
+  "search": []
 }]
