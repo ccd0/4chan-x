@@ -81,4 +81,14 @@
   "boards": ["g", "mlp", "v"],
   "files": [],
   "search": []
+}, {
+  "uid": 26,
+  "name": "poweredby.moe",
+  "domain": "archive.poweredby.moe",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["a", "c", "g", "jp"],
+  "files": ["a", "c", "jp"],
+  "search": []
 }]
