@@ -73,12 +73,12 @@
   "search": []
 }, {
   "uid": 25,
-  "name": "b4k.co",
-  "domain": "ff.b4k.co",
+  "name": "arch.b4k.co",
+  "domain": "arch.b4k.co",
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["g", "mlp", "qa", "v"],
+  "boards": ["g", "mlp", "v"],
   "files": [],
   "search": []
 }]
