@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.12
 
+**v1.11.12.2** *(2015-10-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.11.7: (MayhemYDG) Update archive list: Desustorage changes including addition of /vr/.
+
 **v1.11.12.1** *(2015-10-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.11.6: (Hasumi, fgts, MayhemYDG, ccd0) Update archive list: Remove archive.moe, add boards picked up by https://desustorage.org/, https://fgts.jp/, and https://ff.b4k.co/.
 
