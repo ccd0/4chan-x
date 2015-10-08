@@ -56,7 +56,7 @@
   "uid": 23,
   "name": "Desustorage",
   "domain": "desustorage.org",
-  "http": false,
+  "http": true,
   "https": true,
   "software": "foolfuuka",
   "boards": ["a", "aco", "an", "c", "co", "d", "fit", "int", "k", "m", "mlp", "qa", "r9k", "tg", "vr", "wsg"],
