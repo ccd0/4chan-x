@@ -212,6 +212,10 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       push:
         command: 'git push origin --tags -f && git push origin --all'
+      prestore:
+        command: 'git checkout stable'
+      poststore:
+        command: 'git checkout -'
       aws:
         command: """
           git checkout gh-pages
@@ -455,7 +459,9 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'store', [
+    'shell:prestore'
     'webstore_upload'
+    'shell:poststore'
   ]
 
   grunt.registerTask 'setversion', 'Set the version number', (version) ->
