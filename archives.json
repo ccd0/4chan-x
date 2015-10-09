@@ -51,7 +51,7 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["asp", "b", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "vp", "y"],
-  "files": ["asp", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "vp", "y"]
+  "files": ["asp", "b", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "vp", "y"]
 }, {
   "uid": 23,
   "name": "Desustorage",
