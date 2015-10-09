@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.11
 
+**v1.11.11.8** *(2015-10-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.8/builds/4chan-X-noupdate.crx "Chromium version")]
+- (bakugo, MayhemYDG) Update archive list: arch.b4k.co updates and new archive archive.poweredby.moe.
+
 **v1.11.11.7** *(2015-10-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.11.7/builds/4chan-X-noupdate.crx "Chromium version")]
 - (MayhemYDG) Update archive list: Desustorage changes including addition of /vr/.
 
