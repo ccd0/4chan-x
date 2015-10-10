@@ -79,8 +79,7 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["g", "mlp", "v"],
-  "files": [],
-  "search": []
+  "files": []
 }, {
   "uid": 26,
   "name": "poweredby.moe",
