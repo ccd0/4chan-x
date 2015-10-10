@@ -89,5 +89,5 @@
   "software": "foolfuuka",
   "boards": ["a", "c", "g", "jp"],
   "files": ["a", "c", "jp"],
-  "search": []
+  "search": ["a"]
 }]
