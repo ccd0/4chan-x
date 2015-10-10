@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.12
 
+**v1.11.12.5** *(2015-10-10)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Point captcha error complaint link at https://www.4chan-x.net/captchas.html so it can be redirected as needed.
+
 **v1.11.12.4** *(2015-10-09)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Exclude Twitch from auto-embedding due to autoplay bug.
 
