@@ -57,7 +57,7 @@ Embedding =
     $.on embed, 'click', Embedding.cb.toggle
     $.after link, [$.tn(' '), embed]
 
-    if Conf['Auto-embed'] and !Conf['Floating Embeds'] and !post.isFetchedQuote
+    if Conf['Auto-embed'] and !Conf['Floating Embeds'] and !post.isFetchedQuote and key isnt 'TwitchTV' # XXX https://github.com/justintv/Twitch-API/issues/289
       $.asap (-> doc.contains embed), ->
         Embedding.cb.toggle.call embed
 
