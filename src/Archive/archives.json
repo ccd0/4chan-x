@@ -50,8 +50,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["asp", "b", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "vp", "y"],
-  "files": ["asp", "b", "cm", "h", "hc", "hm", "n", "p", "qa", "r", "s", "soc", "toy", "vp", "y"]
+  "boards": ["asp", "b", "cm", "gd", "h", "hc", "hm", "n", "out", "p", "po", "qa", "r", "s", "soc", "toy", "vp", "y"],
+  "files": ["asp", "b", "cm", "gd", "h", "hc", "hm", "n", "out", "p", "po", "qa", "r", "s", "soc", "toy", "vp", "y"]
 }, {
   "uid": 23,
   "name": "Desustorage",
@@ -79,8 +79,7 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["g", "mlp", "v"],
-  "files": [],
-  "search": []
+  "files": []
 }, {
   "uid": 26,
   "name": "poweredby.moe",
@@ -90,5 +89,5 @@
   "software": "foolfuuka",
   "boards": ["a", "c", "g", "jp"],
   "files": ["a", "c", "jp"],
-  "search": []
+  "search": ["a"]
 }]
