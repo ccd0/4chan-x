@@ -62,6 +62,16 @@
   "boards": ["a", "aco", "an", "c", "co", "d", "fit", "int", "k", "m", "mlp", "qa", "r9k", "tg", "vr", "wsg"],
   "files": ["a", "aco", "an", "c", "co", "d", "fit", "int", "k", "m", "mlp", "qa", "r9k", "tg", "vr", "wsg"]
 }, {
+  "uid": 24,
+  "name": "fireden.net",
+  "domain": "boards.fireden.net",
+  "http": false,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["cm", "ic", "vg", "y"],
+  "files": ["cm", "ic", "vg", "y"],
+  "search": []
+}, {
   "uid": 25,
   "name": "arch.b4k.co",
   "domain": "arch.b4k.co",
