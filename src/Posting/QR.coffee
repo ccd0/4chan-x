@@ -310,8 +310,8 @@ QR =
     counter = QR.nodes.charCount
     count   = QR.nodes.com.value.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length
     counter.textContent = count
-    counter.hidden      = count < 1000
-    (if count > 2000 then $.addClass else $.rmClass) counter, 'warning'
+    counter.hidden      = count < QR.max_comment/2
+    (if count > QR.max_comment then $.addClass else $.rmClass) counter, 'warning'
 
   getFile: ->
     $.event 'QRFile', QR.selected?.file
@@ -473,10 +473,9 @@ QR =
 
     nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
 
-    QR.max_size_video = if m = Get.scriptData().match /\bmaxWebmFilesize *= *(\d+)\b/
-      +m[1]
-    else
-      +nodes.fileInput.max
+    scriptData = Get.scriptData()
+    QR.max_size_video = if (m = scriptData.match /\bmaxWebmFilesize *= *(\d+)\b/) then +m[1] else +nodes.fileInput.max
+    QR.max_comment    = if (m = scriptData.match /\bcomlen *= *(\d+)\b/)          then +m[1] else 2000
 
     QR.max_width_video = QR.max_height_video = 2048
     QR.max_duration_video = if g.BOARD.ID in ['gif', 'wsg'] then 300 else 120
