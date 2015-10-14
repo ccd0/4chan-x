@@ -263,15 +263,17 @@ QR =
     if sel.toString().trim() and post is Get.postFromNode sel.anchorNode
       range = sel.getRangeAt 0
       frag  = range.cloneContents()
-      ancestor = range.commonAncestorContainer
-      # Quoting the insides of a spoiler/code tag.
-      if $.x 'ancestor-or-self::*[self::s or contains(@class,"removed-spoiler")]', ancestor
-        $.prepend frag, $.tn '[spoiler]'
-        $.add     frag, $.tn '[/spoiler]'
-      if insideCode = $.x 'ancestor-or-self::pre[contains(@class,"prettyprint")]', ancestor
-        $.prepend frag, $.tn '[code]'
-        $.add     frag, $.tn '[/code]'
-      for node in $$ (if insideCode then 'br' else '.prettyprint br'), frag
+      # Quoting the insides of a tag.
+      ancestors = $.X(
+        'ancestor-or-self::*[self::s or contains(@class,"removed-spoiler") or contains(@class,"prettyprint")]',
+        range.commonAncestorContainer
+      )
+      i = ancestors.snapshotLength
+      while i--
+        clone = ancestors.snapshotItem(i).cloneNode false
+        $.add clone, frag
+        frag = $.nodes [clone]
+      for node in $$ '.prettyprint br', frag
         $.replace node, $.tn '\n'
       for node in $$ 'br', frag
         $.replace node, $.tn '\n>' unless node is frag.lastChild
