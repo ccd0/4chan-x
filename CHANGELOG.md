@@ -2,6 +2,12 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.13
+
+**v1.11.13.0** *(2015-10-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.12.7.
+- Add button to toggle Mona font in QR on /jp/.
+
 ### v1.11.12
 
 **v1.11.12.7** *(2015-10-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.7/builds/4chan-X-noupdate.crx "Chromium version")]
