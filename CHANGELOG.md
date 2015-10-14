@@ -4,6 +4,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.12
 
+**v1.11.12.7** *(2015-10-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.7/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add keybind for `[sjis]` tags (default: `Alt+a`).
+- Update max comment length on /jp/ (now 5000, read from board).
+
 **v1.11.12.6** *(2015-10-12)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.6/builds/4chan-X-noupdate.crx "Chromium version")]
 - (fgts) Update archive list: Add /gd/, /out/, /po/ to fgts.
 
