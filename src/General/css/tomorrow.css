@@ -87,7 +87,8 @@
 :root.tomorrow .qr-preview {
   background-color: rgba(255, 255, 255, .15);
 }
-:root.tomorrow #qr .field {
+:root.tomorrow #qr .field,
+:root.tomorrow #qr #sjis-toggle {
   background-color: rgb(26, 27, 29);
   color: rgb(197,200,198);
   border-color: rgb(40, 41, 42);
@@ -96,6 +97,9 @@
 :root.tomorrow #qr .field.focus {
   border-color: rgb(129, 162, 190) !important;
   background-color: rgb(30,32,36);
+}
+:root.tomorrow #qr:not(.sjis-preview) #sjis-toggle {
+  background: linear-gradient(to bottom, #2E3035, #222427) no-repeat;
 }
 :root.tomorrow #qr select,
 :root.tomorrow #file-n-submit > input {

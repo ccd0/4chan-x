@@ -763,6 +763,7 @@ Config =
     'QR.personas': """
       #options:"sage";boards:jp;always
     """
+    sjisPreview: false
 
   captchaLanguage: ''
 
