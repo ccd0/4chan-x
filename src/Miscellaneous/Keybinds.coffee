@@ -71,6 +71,9 @@ Keybinds =
       when Conf['Math tags']
         return unless target.nodeName is 'TEXTAREA'
         Keybinds.tags 'math', target
+      when Conf['SJIS tags']
+        return unless target.nodeName is 'TEXTAREA'
+        Keybinds.tags 'sjis', target
       when Conf['Toggle sage']
         return unless QR.nodes and !QR.nodes.el.hidden
         Keybinds.sage()
@@ -243,6 +246,7 @@ Keybinds =
       when 'spoiler'     then !!$ '.postForm input[name=spoiler]'
       when 'code'        then g.BOARD.ID is 'g'
       when 'math', 'eqn' then g.BOARD.ID is 'sci'
+      when 'sjis'        then g.BOARD.ID is 'jp'
     new Notice 'warning', "[#{tag}] tags are not supported on /#{g.BOARD}/.", 20 unless supported
 
     value    = ta.value

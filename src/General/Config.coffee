@@ -818,6 +818,10 @@ Config =
       'Alt+m'
       'Insert math tags.'
     ]
+    'SJIS tags': [
+      'Alt+a'
+      'Insert SJIS tags.'
+    ]
     'Toggle sage': [
       'Alt+s'
       'Toggle sage in options field.'
