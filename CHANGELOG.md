@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.13
 
+**v1.11.13.1** *(2015-10-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- HTML/CSS tweaks for Mona font toggle button.
+
 **v1.11.13.0** *(2015-10-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.12.7.
 - Add button to toggle Mona font in QR on /jp/.
