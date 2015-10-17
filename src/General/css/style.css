@@ -1247,30 +1247,23 @@ input[name="Default Volume"] {
 #qr.forced-anon input[data-name="sub"]:not(.force-show),
 #qr.reply-to-thread input[data-name="sub"]:not(.force-show),
 #qr.reply-to-thread select[name="filetag"],
-body:not(.board_jp) #sjis-toggle,
-#sjis-toggle > input {
+body:not(.board_jp) #sjis-toggle {
   display: none;
 }
 #sjis-toggle {
+  -webkit-flex: 0 0 23px;
+  flex: 0 0 23px;
   -webkit-align-self: stretch;
   align-self: stretch;
-  width: 20px;
   border: 1px solid #BBB;
-  background-color: #DCDCDC;
-  color: #000;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-align-items: center;
-  align-items: center;
-}
-#sjis-toggle::after {
-  content: "∀";
-  margin: auto;
-}
-#qr:not(.sjis-preview) #sjis-toggle {
+  padding: 0;
   background: linear-gradient(to bottom, #F8F8F8, #DCDCDC) no-repeat;
+  color: #000;
 }
-#sjis-toggle, #qr.sjis-preview textarea {
+#qr.sjis-preview #sjis-toggle {
+  background: #DCDCDC;
+}
+#sjis-toggle, #qr.sjis-preview textarea.field {
   font-family: "IPAMonaPGothic","Mona","MS PGothic",monospace;
   font-size: 16px;
   line-height: 17px;

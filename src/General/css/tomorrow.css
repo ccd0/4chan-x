@@ -87,8 +87,7 @@
 :root.tomorrow .qr-preview {
   background-color: rgba(255, 255, 255, .15);
 }
-:root.tomorrow #qr .field,
-:root.tomorrow #qr #sjis-toggle {
+:root.tomorrow #qr .field {
   background-color: rgb(26, 27, 29);
   color: rgb(197,200,198);
   border-color: rgb(40, 41, 42);
@@ -98,8 +97,20 @@
   border-color: rgb(129, 162, 190) !important;
   background-color: rgb(30,32,36);
 }
-:root.tomorrow #qr:not(.sjis-preview) #sjis-toggle {
+:root.tomorrow #sjis-toggle {
   background: linear-gradient(to bottom, #2E3035, #222427) no-repeat;
+  color: rgb(197,200,198);
+  border-color: rgb(40, 41, 42);
+  outline: none;
+}
+:root.tomorrow #sjis-toggle::-moz-focus-inner {
+  border: none;
+}
+:root.tomorrow #sjis-toggle:focus {
+  border-color: rgb(129, 162, 190);
+}
+:root.tomorrow #qr.sjis-preview #sjis-toggle {
+  background: rgb(26, 27, 29);
 }
 :root.tomorrow #qr select,
 :root.tomorrow #file-n-submit > input {

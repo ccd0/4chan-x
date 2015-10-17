@@ -184,6 +184,12 @@ QR =
     else
       QR.unhide()
 
+  toggleSJIS: (e) ->
+    e.preventDefault()
+    Conf['sjisPreview'] = !Conf['sjisPreview']
+    $.set 'sjisPreview', Conf['sjisPreview']
+    QR.nodes.el.classList.toggle 'sjis-preview', Conf['sjisPreview']
+
   setCustomCooldown: (enabled) ->
     Conf['customCooldownEnabled'] = enabled
     QR.cooldown.customCooldown = enabled
@@ -445,7 +451,7 @@ QR =
     setNode 'dumpButton',    '#dump-button'
     setNode 'pasteArea',     '#paste-area'
     setNode 'urlButton',     '#url-button'
-    setNode 'sjisToggle',    '#sjis-toggle > input'
+    setNode 'sjisToggle',    '#sjis-toggle'
     setNode 'name',          '[data-name=name]'
     setNode 'email',         '[data-name=email]'
     setNode 'sub',           '[data-name=sub]'
@@ -500,7 +506,6 @@ QR =
       nodes.spoiler.parentElement.hidden = true
 
     if g.BOARD.ID is 'jp' and Conf['sjisPreview']
-      nodes.sjisToggle.checked = true
       $.addClass QR.nodes.el, 'sjis-preview'
 
     if parseInt(Conf['customCooldown'], 10) > 0
@@ -539,8 +544,7 @@ QR =
     $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.handleFiles
-    $.on nodes.sjisToggle, 'change', $.cb.checked
-    $.on nodes.sjisToggle, 'change', -> nodes.el.classList.toggle 'sjis-preview', @checked
+    $.on nodes.sjisToggle, 'click',  QR.toggleSJIS
     $.on nodes.customCooldown, 'click', QR.toggleCustomCooldown
 
     window.addEventListener 'focus', QR.focus, true
