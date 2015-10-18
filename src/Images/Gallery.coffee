@@ -319,11 +319,14 @@ Gallery =
 
     setHeight: ->
       {current, frame} = Gallery.nodes
-      current.style.minHeight = if Conf['Stretch to Fit'] and (dim = g.posts[current.dataset.post]?.file.dimensions)
+      {style} = current
+      if Conf['Stretch to Fit'] and (dim = g.posts[current.dataset.post]?.file.dimensions)
         [width, height] = dim.split 'x'
-        Math.min(doc.clientHeight - 25, height / width * frame.clientWidth) + 'px'
+        minHeight = Math.min(doc.clientHeight - 25, height / width * frame.clientWidth)
+        style.minHeight = minHeight + 'px'
+        style.minWidth = (width / height * minHeight) + 'px'
       else
-        null
+        style.minHeight = style.minWidth = null
 
     setDelay: -> Gallery.delay = +@value
 
