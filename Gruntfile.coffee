@@ -229,7 +229,7 @@ module.exports = (grunt) ->
           git checkout -
         """.split('\n').join('&&')
       captchas:
-        'aws s3 cp captchas.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=0" --content-type "text/html; charset=utf-8"'
+        command: 'aws s3 cp captchas.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=0" --content-type "text/html; charset=utf-8"'
       npm:
         command: 'npm install'
       update:
