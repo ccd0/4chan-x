@@ -29,6 +29,8 @@ Gallery =
       $.on @file.thumb.parentNode, 'click', Gallery.cb.image
 
   build: (image) ->
+    {cb} = Gallery
+
     if Conf['Fullscreen Gallery']
       $.one d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', ->
         $.on d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', cb.close
@@ -58,7 +60,6 @@ Gallery =
     menuButton = $ '.menu-button', dialog
     nodes.menu = new UI.Menu 'gallery'
 
-    {cb} = Gallery
     $.on nodes.frame, 'click', cb.blank
     $.on nodes.frame, 'wheel', Volume.wheel if Conf['Mouse Wheel Volume']
     $.on nodes.next,  'click', cb.click
