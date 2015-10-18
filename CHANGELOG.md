@@ -4,6 +4,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.13
 
+**v1.11.13.2** *(2015-10-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.12.8: Update to support MathJax on /sci/.
+- Gallery bugfixes.
+
 **v1.11.13.1** *(2015-10-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - HTML/CSS tweaks for Mona font toggle button.
 
