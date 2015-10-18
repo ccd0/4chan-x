@@ -26,15 +26,18 @@ Fourchan =
 
     if g.BOARD.ID is 'sci'
       $.globalEval '''
-        window.addEventListener('jsmath', function(e) {
-          if (!jsMath) return;
-          if (jsMath.loaded) {
-            // process one post
-            jsMath.ProcessBeforeShowing(e.target);
-          } else if (jsMath.Autoload && jsMath.Autoload.checked) {
-            // load jsMath and process whole document
-            jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);
-            jsMath.Autoload.LoadJsMath();
+        window.addEventListener('mathjax', function(e) {
+          if (window.MathJax) {
+            window.MathJax.Hub.Queue(function() {
+              if (!e.target.querySelector('.MathJax')) {
+                window.MathJax.Hub.Typeset(e.target);
+              }
+            });
+          } else {
+            if (!document.querySelector('script[src^="//cdn.mathjax.org/"]')) {
+              window.loadMathJax();
+              window.loadMathJax = function() {};
+            }
           }
         }, false);
       '''
@@ -66,6 +69,10 @@ Fourchan =
       return
 
   math: ->
-    return if (@isClone and doc.contains @origin.nodes.root) or !$ '.math', @nodes.comment
-    $.asap (=> doc.contains @nodes.comment), =>
-      $.event 'jsmath', null, @nodes.comment
+    return unless /\[(math|eqn)\]/.test(@nodes.comment.textContent) or $('.math:not([id])', @nodes.comment)
+    cb = =>
+      return unless doc.contains @nodes.comment
+      $.off d, 'PostsInserted', cb
+      $.event 'mathjax', null, @nodes.comment
+    $.on d, 'PostsInserted', cb
+    cb()
