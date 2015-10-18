@@ -206,7 +206,7 @@ module.exports = (grunt) ->
           git checkout gh-pages
           git pull
           git merge --no-commit -s ours -
-          git checkout - README.md index.html web.css img captchas.html
+          git checkout - README.md index.html web.css img
           git commit -am "Update web page."
           git checkout -
         """.split('\n').join('&&')
@@ -226,9 +226,10 @@ module.exports = (grunt) ->
           aws s3 cp img/ s3://<%= pkg.meta.awsBucket %>/img/ --recursive --cache-control "max-age=600"
           aws s3 cp index.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=600" --content-type "text/html; charset=utf-8"
           aws s3 cp web.css s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=600" --content-type "text/css; charset=utf-8"
-          aws s3 cp captchas.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=0" --content-type "text/html; charset=utf-8"
           git checkout -
         """.split('\n').join('&&')
+      captchas:
+        'aws s3 cp captchas.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=0" --content-type "text/html; charset=utf-8"'
       npm:
         command: 'npm install'
       update:
@@ -463,6 +464,10 @@ module.exports = (grunt) ->
     'shell:prestore'
     'webstore_upload'
     'shell:poststore'
+  ]
+
+  grunt.registerTask 'captchas', [
+    'shell:captchas'
   ]
 
   grunt.registerTask 'setversion', 'Set the version number', (version) ->

@@ -6,4 +6,5 @@ tmp-crx/
 tmp-userscript/
 testbuilds/
 test.html
+captchas-*.html
 Gruntfile.js
