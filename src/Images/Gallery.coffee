@@ -187,7 +187,8 @@ Gallery =
       Header.scrollTo post.nodes.root
 
     # Preload next image
-    Gallery.cache = Gallery.load Gallery.images[(newID + 1) % Gallery.images.length], Gallery.cacheError
+    if isNaN(oldID) or newID is (oldID + 1) % Gallery.images.length
+      Gallery.cache = Gallery.load Gallery.images[(newID + 1) % Gallery.images.length], Gallery.cacheError
 
   error: ->
     if @error?.code is MediaError.MEDIA_ERR_DECODE
