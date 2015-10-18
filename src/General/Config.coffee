@@ -661,8 +661,8 @@ Config =
     capcode: """
       # Set a custom class for mods:
       #/Mod$/;highlight:mod;op:yes
-      # Set a custom class for moot:
-      #/Admin$/;highlight:moot;op:yes
+      # Set a custom class for admins:
+      #/Admin$/;highlight:admin;op:yes
     """
 
     subject: """
