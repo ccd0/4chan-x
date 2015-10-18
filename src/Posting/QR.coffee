@@ -469,6 +469,7 @@ QR =
     setNode 'status',        '[type=submit]'
     setNode 'fileInput',     '[type=file]'
     setNode 'customCooldown', '#custom-cooldown-button'
+    setNode 'flashTag',      '[name=filetag]'
 
     rules = $('ul.rules').textContent.trim()
     match_min = rules.match(/.+smaller than (\d+)x(\d+).+/)
@@ -513,23 +514,6 @@ QR =
       $.get 'customCooldownEnabled', Conf['customCooldownEnabled'], ({customCooldownEnabled}) ->
         QR.setCustomCooldown customCooldownEnabled
         $.sync 'customCooldownEnabled', QR.setCustomCooldown
-
-    if g.BOARD.ID is 'f'
-      nodes.flashTag = $.el 'select',
-        name: 'filetag'
-
-      $.extend nodes.flashTag, <%= html(
-        '<option value="0">Hentai</option>' +
-        '<option value="6">Porn</option>' +
-        '<option value="1">Japanese</option>' +
-        '<option value="2">Anime</option>' +
-        '<option value="3">Game</option>' +
-        '<option value="5">Loop</option>' +
-        '<option value="4" selected>Other</option>'
-      ) %>
-
-      nodes.flashTag.dataset.default = '4'
-      $.add nodes.form, nodes.flashTag
 
     $.on nodes.fileButton, 'click',  QR.openFileInput
     $.on nodes.noFile,     'click',  QR.openFileInput

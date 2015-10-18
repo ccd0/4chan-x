@@ -40,6 +40,17 @@
     </span>
     <input type="submit">
   </div>
+  ?{g.BOARD.ID === 'f'}{
+    <select data-default="4" name="filetag">
+      <option value="0">Hentai</option>
+      <option value="6">Porn</option>
+      <option value="1">Japanese</option>
+      <option value="2">Anime</option>
+      <option value="3">Game</option>
+      <option value="5">Loop</option>
+      <option value="4" selected>Other</option>
+    </select>
+  }
   <input type="file" multiple>
 </form>
 <datalist id="list-name"></datalist>
