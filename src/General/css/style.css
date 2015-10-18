@@ -302,10 +302,6 @@ audio.controls-added {
 .current {
   font-weight: bold;
 }
-:root.fixed.bottom-header #jsMath_button {
-  bottom: auto;
-  top: 1px;
-}
 @media (min-width: 1300px) {
   :root.fixed:not(.centered-links) #header-bar {
     white-space: nowrap;

@@ -3,9 +3,6 @@
   background-color: #282A2E;
   border-color: #111;
 }
-:root.tomorrow img[src*="//boards.4chan.org/js/jsMath/fonts/"] {
-  filter: invert(100%);
-}
 
 /* Header */
 :root.tomorrow #header-bar.dialog {
