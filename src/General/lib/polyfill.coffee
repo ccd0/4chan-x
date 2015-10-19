@@ -2,7 +2,8 @@ Polyfill =
   init: ->
     @toBlob()
   toBlob: ->
-    HTMLCanvasElement::toBlob or= (cb) ->
+    return if HTMLCanvasElement::toBlob
+    HTMLCanvasElement::toBlob = (cb) ->
       data = atob @toDataURL()[22..]
       # DataUrl to Binary code from Aeosynth's 4chan X repo
       l = data.length
@@ -10,3 +11,4 @@ Polyfill =
       for i in [0...l] by 1
         ui8a[i] = data.charCodeAt i
       cb new Blob [ui8a], type: 'image/png'
+    $.globalEval "HTMLCanvasElement.prototype.toBlob = (#{HTMLCanvasElement::toBlob});"

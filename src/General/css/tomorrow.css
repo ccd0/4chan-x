@@ -110,7 +110,8 @@
   background: rgb(26, 27, 29);
 }
 :root.tomorrow #qr select,
-:root.tomorrow #file-n-submit > input {
+:root.tomorrow #file-n-submit > input,
+:root.tomorrow #qr-draw-button {
   border-color: rgb(40, 41, 42);
 }
 :root.tomorrow #qr-filename {

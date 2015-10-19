@@ -200,6 +200,22 @@ QR =
     QR.setCustomCooldown enabled
     $.set 'customCooldownEnabled', enabled
 
+  oekakiDraw: ->
+    $.globalEval '''
+      Tegaki.open({
+        onDone: function() {
+          Tegaki.flatten().toBlob(function (blob) {
+            var detail = {file: blob, name: 'tegaki.png'};
+            var event = new CustomEvent('QRSetFile', {bubbles: true, detail: detail});
+            document.dispatchEvent(event);
+          });
+        },
+        onCancel: function() {},
+        width: +document.querySelector('#qr [name=oekaki-width]').value,
+        height: +document.querySelector('#qr [name=oekaki-height]').value
+      });
+    '''
+
   error: (err, focusOverride) ->
     QR.open()
     if typeof err is 'string'
@@ -470,6 +486,7 @@ QR =
     setNode 'fileInput',     '[type=file]'
     setNode 'customCooldown', '#custom-cooldown-button'
     setNode 'flashTag',      '[name=filetag]'
+    setNode 'drawButton',    '#qr-draw-button'
 
     rules = $('ul.rules').textContent.trim()
     match_min = rules.match(/.+smaller than (\d+)x(\d+).+/)
@@ -530,6 +547,7 @@ QR =
     $.on nodes.fileInput,  'change', QR.handleFiles
     $.on nodes.sjisToggle, 'click',  QR.toggleSJIS
     $.on nodes.customCooldown, 'click', QR.toggleCustomCooldown
+    $.on nodes.drawButton, 'click',  QR.oekakiDraw
 
     window.addEventListener 'focus', QR.focus, true
     window.addEventListener 'blur',  QR.focus, true

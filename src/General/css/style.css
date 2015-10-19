@@ -1346,8 +1346,8 @@ input.field.tripped:not(:hover):not(:focus) {
   position: static !important;
 }
 
-/* File Input, Submit Button */
-#file-n-submit {
+/* File Input, Submit Button, Oekaki */
+#file-n-submit, .oekaki {
   display: -webkit-flex;
   display: flex;
   -webkit-align-items: stretch;
@@ -1355,13 +1355,13 @@ input.field.tripped:not(:hover):not(:focus) {
   height: 25px;
   margin-top: 1px;
 }
-#file-n-submit > input {
+#file-n-submit > input, #qr-draw-button {
   background: linear-gradient(to bottom, #F8F8F8, #DCDCDC) no-repeat;
   border: 1px solid #BBB;
   border-radius: 2px;
   height: 100%;
 }
-#qr-file-button {
+#qr-file-button, #qr-draw-button {
   width: 15%;
 }
 #file-n-submit input[type="submit"] {
@@ -1400,6 +1400,28 @@ input#qr-filename {
 }
 #qr-no-file {
   color: #AAA;
+}
+body:not(.board_i) .oekaki {
+  display: none;
+}
+.oekaki > label {
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+  width: 0;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  height: 100%;
+}
+.oekaki > label > span {
+  margin: 0 3px;
+}
+.oekaki > label > input {
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+  width: 0;
+  height: 100%;
 }
 #qr input[type="file"] {
   visibility: hidden;
