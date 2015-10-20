@@ -1248,7 +1248,7 @@ body:not(.board_i) .oekaki,
 body:not(.board_jp) #sjis-toggle {
   display: none;
 }
-#sjis-toggle {
+.persona button {
   -webkit-flex: 0 0 23px;
   flex: 0 0 23px;
   -webkit-align-self: stretch;

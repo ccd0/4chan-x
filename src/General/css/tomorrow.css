@@ -94,16 +94,16 @@
   border-color: rgb(129, 162, 190) !important;
   background-color: rgb(30,32,36);
 }
-:root.tomorrow #sjis-toggle {
+:root.tomorrow .persona button {
   background: linear-gradient(to bottom, #2E3035, #222427) no-repeat;
   color: rgb(197,200,198);
   border-color: rgb(40, 41, 42);
   outline: none;
 }
-:root.tomorrow #sjis-toggle::-moz-focus-inner {
+:root.tomorrow .persona button::-moz-focus-inner {
   border: none;
 }
-:root.tomorrow #sjis-toggle:focus {
+:root.tomorrow .persona button:focus {
   border-color: rgb(129, 162, 190);
 }
 :root.tomorrow #qr.sjis-preview #sjis-toggle {
