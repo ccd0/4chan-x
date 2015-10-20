@@ -1245,7 +1245,10 @@ input[name="Default Volume"] {
 body:not(.board_f) #qr select[name="filetag"],
 #qr.reply-to-thread select[name="filetag"],
 body:not(.board_i) .oekaki,
-body:not(.board_jp) #sjis-toggle {
+body:not(.board_jp) #sjis-toggle,
+body:not(.board_sci) #tex-preview-button,
+#qr.tex-preview .textarea > :not(#tex-preview),
+#qr:not(.tex-preview) #tex-preview {
   display: none;
 }
 .persona button {
@@ -1258,13 +1261,19 @@ body:not(.board_jp) #sjis-toggle {
   background: linear-gradient(to bottom, #F8F8F8, #DCDCDC) no-repeat;
   color: #000;
 }
-#qr.sjis-preview #sjis-toggle {
+#qr.sjis-preview #sjis-toggle, #qr.tex-preview #tex-preview-button {
   background: #DCDCDC;
 }
 #sjis-toggle, #qr.sjis-preview textarea.field {
   font-family: "IPAMonaPGothic","Mona","MS PGothic",monospace;
   font-size: 16px;
   line-height: 17px;
+}
+#tex-preview-button {
+  font-size: 10px;
+}
+#tex-preview {
+  white-space: pre-line;
 }
 #qr textarea.field {
   height: 14.8em;

@@ -190,6 +190,14 @@ QR =
     $.set 'sjisPreview', Conf['sjisPreview']
     QR.nodes.el.classList.toggle 'sjis-preview', Conf['sjisPreview']
 
+  texPreviewShow: ->
+    $.addClass QR.nodes.el, 'tex-preview'
+    QR.nodes.texPreview.textContent = QR.nodes.com.value
+    $.event 'mathjax', null, QR.nodes.texPreview
+
+  texPreviewHide: ->
+    $.rmClass QR.nodes.el, 'tex-preview'
+
   setCustomCooldown: (enabled) ->
     Conf['customCooldownEnabled'] = enabled
     QR.cooldown.customCooldown = enabled
@@ -468,10 +476,12 @@ QR =
     setNode 'pasteArea',     '#paste-area'
     setNode 'urlButton',     '#url-button'
     setNode 'sjisToggle',    '#sjis-toggle'
+    setNode 'texButton',     '#tex-preview-button'
     setNode 'name',          '[data-name=name]'
     setNode 'email',         '[data-name=email]'
     setNode 'sub',           '[data-name=sub]'
     setNode 'com',           '[data-name=com]'
+    setNode 'texPreview',    '#tex-preview'
     setNode 'dumpList',      '#dump-list'
     setNode 'addPost',       '#add-post'
     setNode 'charCount',     '#char-count'
@@ -546,6 +556,8 @@ QR =
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.handleFiles
     $.on nodes.sjisToggle, 'click',  QR.toggleSJIS
+    $.on nodes.texButton,  'mousedown', QR.texPreviewShow
+    $.on nodes.texButton,  'mouseup',   QR.texPreviewHide
     $.on nodes.customCooldown, 'click', QR.toggleCustomCooldown
     $.on nodes.drawButton, 'click',  QR.oekakiDraw
 
