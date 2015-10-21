@@ -89,7 +89,7 @@ QR.post = class
 
   select: =>
     if QR.selected
-      QR.selected.nodes.el.id = null
+      QR.selected.nodes.el.removeAttribute 'id'
       QR.selected.forceSave()
     QR.selected = @
     @lock @isLocked
@@ -289,8 +289,8 @@ QR.post = class
     delete @file
     delete @filename
     delete @filesize
-    @nodes.el.title = null
-    QR.nodes.filename.title = ''
+    @nodes.el.removeAttribute 'title'
+    QR.nodes.filename.removeAttribute 'title'
     @nodes.el.style.backgroundImage = null
     $.rmClass @nodes.el, 'has-file'
     @showFileData()
