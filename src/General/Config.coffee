@@ -464,7 +464,7 @@ Config =
       ]
       'Force Noscript Captcha': [
         false
-        'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled.'
+        'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled (Recaptcha v2 only).'
         1
       ]
       'Auto-load captcha': [
