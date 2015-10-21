@@ -1458,7 +1458,6 @@ input#qr-filename {
 }
 .checkbox-letter {
   font-weight: bold;
-  color: rgba(0,0,0,.6);
 }
 #qr-filename-container label:not(:hover) > input[type="checkbox"]:not(:focus):not(:checked),
 #qr-filename-container label:hover > .checkbox-letter,
@@ -1469,7 +1468,7 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
   opacity: 0;
   pointer-events: none;
 }
-#paste-area, #url-button, #custom-cooldown-button, #dump-button {
+.checkbox-letter, #paste-area, #url-button, #custom-cooldown-button, #dump-button {
   opacity: 0.6;
 }
 #paste-area {
