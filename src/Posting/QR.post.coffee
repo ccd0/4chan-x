@@ -4,21 +4,21 @@ QR.post = class
       className: 'qr-preview'
       draggable: true
       href: 'javascript:;'
-    $.extend el, <%= html('<a class="remove fa fa-times-circle" title="Remove"></a><label hidden><input type="checkbox"> Spoiler</label><span></span>') %>
+    $.extend el, <%= html('<a class="remove fa fa-times-circle" title="Remove"></a><label class="qr-preview-spoiler"><input type="checkbox"> Spoiler</label><span></span>') %>
 
     @nodes =
       el:      el
       rm:      el.firstChild
-      label:   $ 'label', el
-      spoiler: $ 'input', el
+      spoiler: $ '.qr-preview-spoiler input', el
       span:    el.lastChild
 
     $.on el,             'click',  @select
     $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
-    $.on @nodes.label,   'click',  (e) -> e.stopPropagation()
     $.on @nodes.spoiler, 'change', (e) =>
       @spoiler = e.target.checked
       QR.nodes.spoiler.checked = @spoiler if @ is QR.selected
+    for label in $$ 'label', el
+      $.on label, 'click', (e) -> e.stopPropagation()
     $.add QR.nodes.dumpList, el
 
     for event in ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop']
@@ -186,7 +186,7 @@ QR.post = class
       @filename  = @file.name
     @filesize = $.bytesToString @file.size
     @checkSize()
-    @nodes.label.hidden = false if QR.spoiler
+    $.addClass @nodes.el, 'has-file'
     QR.captcha.onPostChange()
     URL.revokeObjectURL @URL
     @saveFilename()
@@ -292,7 +292,7 @@ QR.post = class
     @nodes.el.title = null
     QR.nodes.filename.title = ''
     @nodes.el.style.backgroundImage = null
-    @nodes.label.hidden = true if QR.spoiler
+    $.rmClass @nodes.el, 'has-file'
     @showFileData()
     @updateFlashURL()
     URL.revokeObjectURL @URL

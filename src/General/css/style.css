@@ -1443,7 +1443,8 @@ input#qr-filename {
   margin: 0;
   margin-right: 3px;
 }
-#qr.has-spoiler #file-n-submit:not(.has-file) #qr-spoiler-label,
+#qr:not(.has-spoiler) #qr-spoiler-label,
+#file-n-submit:not(.has-file) #qr-spoiler-label,
 .has-file #paste-area,
 .has-file #url-button,
 #file-n-submit:not(.custom-cooldown) #custom-cooldown-button {
@@ -1564,6 +1565,10 @@ a:only-of-type > .remove {
 }
 .remove:hover::after {
   content: " Remove";
+}
+.qr-preview:not(.has-file) label,
+#qr:not(.has-spoiler) .qr-preview-spoiler {
+  display: none;
 }
 .qr-preview > label {
   background: rgba(0,0,0,.5);

@@ -530,8 +530,6 @@ QR =
     QR.spoiler = !!$ '.postForm input[name=spoiler]'
     if QR.spoiler
       $.addClass QR.nodes.el, 'has-spoiler'
-    else
-      nodes.spoiler.parentElement.hidden = true
 
     if g.BOARD.ID is 'jp' and Conf['sjisPreview']
       $.addClass QR.nodes.el, 'sjis-preview'
