@@ -1456,18 +1456,17 @@ input#qr-filename {
   margin: 0;
 }
 .checkbox-letter {
-  pointer-events: none;
-  position: absolute;
-  top: 2px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 11px;
   font-weight: bold;
   color: rgba(0,0,0,.6);
 }
+#qr-filename-container label:not(:hover) > input[type="checkbox"]:not(:focus):not(:checked),
+#qr-filename-container label:hover > .checkbox-letter,
+input[type="checkbox"]:focus ~ .checkbox-letter,
 input[type="checkbox"]:checked ~ .checkbox-letter {
-  display: none;
+  /* not displayed but still focusable */
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 #paste-area, #url-button, #custom-cooldown-button, #dump-button {
   opacity: 0.6;
