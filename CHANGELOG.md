@@ -4,6 +4,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.12
 
+**v1.11.12.9** *(2015-10-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.9/builds/4chan-X-noupdate.crx "Chromium version")]
+- Workarounds for Google's latest captcha bugs.
+- Ignore `Force Noscript Captcha` if Recaptcha v1 is selected.
+
 **v1.11.12.8** *(2015-10-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.12.8/builds/4chan-X-noupdate.crx "Chromium version")]
 - Update to support MathJax on /sci/.
 
