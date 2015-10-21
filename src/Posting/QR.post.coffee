@@ -315,11 +315,11 @@ QR.post = class
   showFileData: ->
     if @file
       @updateFilename()
-      QR.nodes.filename.value       = @filename
-      QR.nodes.spoiler.checked      = @spoiler
+      QR.nodes.filename.value = @filename
       $.addClass QR.nodes.fileSubmit, 'has-file'
     else
       $.rmClass QR.nodes.fileSubmit, 'has-file'
+    QR.nodes.spoiler.checked = @spoiler
 
   updateFlashURL: ->
     return unless g.BOARD.ID is 'f'
