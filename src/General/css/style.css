@@ -1461,9 +1461,11 @@ input#qr-filename {
   margin: 0;
 }
 .checkbox-letter {
+  font-size: 13px;
   font-weight: bold;
 }
 #qr-filename-container label:not(:hover) > input[type="checkbox"]:not(:focus):not(:checked),
+#qr-filename-container label:not(:hover) > input[type="checkbox"]:not(:focus):not(:checked) ~ :not(.checkbox-letter),
 #qr-filename-container label:hover > .checkbox-letter,
 input[type="checkbox"]:focus ~ .checkbox-letter,
 input[type="checkbox"]:checked ~ .checkbox-letter {
