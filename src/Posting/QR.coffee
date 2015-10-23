@@ -153,7 +153,7 @@ QR =
           $.off d, 'scroll', QR.scrollLock
 
   inBubble: ->
-    bubbles = $$ '.goog-bubble-content > iframe'
+    bubbles = $$ 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
     d.activeElement in bubbles or bubbles.some((el) -> el.getBoundingClientRect().bottom > 0)
 
   inCaptcha: ->
