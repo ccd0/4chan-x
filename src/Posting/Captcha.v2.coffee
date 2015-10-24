@@ -154,9 +154,11 @@ Captcha.v2 =
     $.rm @nodes.container if @nodes.container
     delete @nodes.container
     # Clean up abandoned iframes.
-    for garbage in $$ 'div > .gc-bubbleDefault'
-      $.rm ins if (ins = garbage.parentNode.nextSibling) and ins.nodeName is 'INS'
-      $.rm garbage.parentNode
+    garbage = $.X '//iframe[starts-with(@src, "https://www.google.com/recaptcha/api2/frame")]/ancestor-or-self::*[parent::body]'
+    i = 0
+    while node = garbage.snapshotItem i++
+      $.rm ins if (ins = node.nextSibling)?.nodeName is 'INS'
+      $.rm node
     return
 
   sync: (captchas=[]) ->
