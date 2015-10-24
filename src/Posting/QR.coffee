@@ -187,6 +187,7 @@ QR =
     QR.nodes.el.classList.toggle 'sjis-preview', Conf['sjisPreview']
 
   texPreviewShow: ->
+    return QR.texPreviewHide() if $.hasClass QR.nodes.el, 'tex-preview'
     $.addClass QR.nodes.el, 'tex-preview'
     QR.nodes.texPreview.textContent = QR.nodes.com.value
     $.event 'mathjax', null, QR.nodes.texPreview
