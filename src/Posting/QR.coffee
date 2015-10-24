@@ -12,6 +12,15 @@ QR =
     'swf':  'application/vnd.adobe.flash.movie'
     'webm': 'video/webm'
 
+  extensionFromType:
+    'image/jpeg': 'jpg'
+    'image/png': 'png'
+    'image/gif': 'gif'
+    'application/pdf': 'pdf'
+    'application/vnd.adobe.flash.movie': 'swf'
+    'application/x-shockwave-flash': 'swf'
+    'video/webm': 'webm'
+
   init: ->
     return unless Conf['Quick Reply']
 

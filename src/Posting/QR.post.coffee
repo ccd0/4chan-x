@@ -301,10 +301,8 @@ QR.post = class
   saveFilename: ->
     @file.newName = (@filename or '').replace /[/\\]/g, '-'
     unless QR.validExtension.test @filename
-      # 4chan will truncate the filename if it has no extension,
-      # but it will always replace the extension by the correct one,
-      # so we suffix it with '.jpg' when needed.
-      @file.newName += '.jpg'
+      # 4chan will truncate the filename if it has no extension.
+      @file.newName += ".#{QR.extensionFromType[@file.type] or 'jpg'}"
 
   updateFilename: ->
     long = "#{@filename} (#{@filesize})"
