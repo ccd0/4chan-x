@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.13
 
+**v1.11.13.9** *(2015-10-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.9/builds/4chan-X-noupdate.crx "Chromium version")]
+- Include /r9k/ mute time in cooldowns.
+
 **v1.11.13.8** *(2015-10-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.8/builds/4chan-X-noupdate.crx "Chromium version")]
 - Bugfix: Fix case where LaTeX preview could not be turned off.
 
