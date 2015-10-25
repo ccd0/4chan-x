@@ -1416,6 +1416,9 @@ input#qr-filename {
 #qr-no-file {
   color: #AAA;
 }
+.oekaki.has-file {
+  display: none;
+}
 .oekaki > label {
   -webkit-flex: 1 1 auto;
   flex: 1 1 auto;

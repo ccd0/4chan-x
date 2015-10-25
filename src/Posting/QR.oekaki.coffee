@@ -51,6 +51,7 @@ QR.oekaki =
   draw: ->
     $.global ->
       {Tegaki} = window
+      Tegaki.destroy() if Tegaki.bg
       Tegaki.open
         onDone: ->
           Tegaki.flatten().toBlob (file) ->

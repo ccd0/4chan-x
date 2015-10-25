@@ -474,6 +474,7 @@ QR =
     setNode 'texPreview',     '#tex-preview'
     setNode 'dumpList',       '#dump-list'
     setNode 'addPost',        '#add-post'
+    setNode 'oekaki',         '.oekaki'
     setNode 'drawButton',     '#qr-draw-button'
     setNode 'fileSubmit',     '#file-n-submit'
     setNode 'fileButton',     '#qr-file-button'

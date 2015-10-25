@@ -314,8 +314,10 @@ QR.post = class
     if @file
       @updateFilename()
       QR.nodes.filename.value = @filename
+      $.addClass QR.nodes.oekaki,     'has-file'
       $.addClass QR.nodes.fileSubmit, 'has-file'
     else
+      $.rmClass QR.nodes.oekaki,     'has-file'
       $.rmClass QR.nodes.fileSubmit, 'has-file'
     QR.nodes.spoiler.checked = @spoiler
 
