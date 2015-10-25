@@ -53,6 +53,7 @@ QR.oekaki =
             onCancel: ->
             width:  img.naturalWidth
             height: img.naturalHeight
+            bgColor: 'transparent'
           Tegaki.activeCtx.drawImage img, 0, 0
         img.src = URL.createObjectURL e.detail
       document.addEventListener 'QRFile', cb, false
