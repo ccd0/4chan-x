@@ -273,6 +273,14 @@ QR =
       value
     status.disabled = disabled or false
 
+  openPost: ->
+    QR.open()
+    if QR.selected.isLocked
+      index = QR.posts.indexOf QR.selected
+      (QR.posts[index+1] or new QR.post()).select()
+      $.addClass QR.nodes.el, 'dump'
+      QR.cooldown.auto = true
+
   quote: (e) ->
     e?.preventDefault()
     return unless QR.postingIsEnabled
@@ -306,12 +314,7 @@ QR =
         $.rm node
       text += ">#{frag.textContent.trim()}\n"
 
-    QR.open()
-    if QR.selected.isLocked
-      index = QR.posts.indexOf QR.selected
-      (QR.posts[index+1] or new QR.post()).select()
-      $.addClass QR.nodes.el, 'dump'
-      QR.cooldown.auto = true
+    QR.openPost()
     {com, thread} = QR.nodes
     thread.value = Get.threadFromNode @ unless com.value
 

@@ -210,6 +210,10 @@ Config =
         'Show PDF files in gallery.'
         1
       ]
+      'Oekaki Links': [
+        true
+        'Add links to edit images in oekaki painter.'
+      ]
       'Sauce': [
         true
         'Add sauce links to images.'

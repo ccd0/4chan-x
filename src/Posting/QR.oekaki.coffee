@@ -1,4 +1,37 @@
 QR.oekaki =
+  init: ->
+    return unless Conf['Quick Reply'] and Conf['Oekaki Links']
+    Post.callbacks.push
+      name: 'Oekaki Links'
+      cb:   @node
+
+  node: ->
+    return unless @file?.isImage
+    if @isClone
+      link = $ '.file-edit', @file.text
+    else
+      link = $.el 'a',
+        className: 'file-edit'
+        href: 'javascript:;'
+        title: 'Edit image'
+      $.extend link, <%= html('<i class="fa fa-edit"></i>') %>
+      $.add @file.text, [$.tn('\u00A0'), link]
+    $.on link, 'click', QR.oekaki.editFile
+
+  editFile: ->
+    post = Get.postFromNode @
+    CrossOrigin.file post.file.url, (blob) ->
+      QR.openPost()
+      {com, thread} = QR.nodes
+      thread.value = (post.context or post).thread.ID unless com.value
+      QR.selected.save thread
+      if blob
+        blob.name = post.file.name
+        QR.handleFiles [blob]
+        QR.oekaki.edit()
+      else
+        QR.error "Can't load image."
+
   load: (cb) ->
     if $ 'script[src^="//s.4cdn.org/js/painter"]', d.head
       cb()

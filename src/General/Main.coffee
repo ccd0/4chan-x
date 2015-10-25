@@ -387,6 +387,7 @@ Main =
     ['Strike-through Quotes',     QuoteStrikeThrough]
     ['Quick Reply',               QR]
     ['Cooldown',                  QR.cooldown]
+    ['Oekaki Links',              QR.oekaki]
     ['Menu',                      Menu]
     ['Index Generator (Menu)',    Index.menu]
     ['Report Link',               ReportLink]
