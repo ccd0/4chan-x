@@ -462,7 +462,6 @@ QR =
     setNode 'move',          '.move'
     setNode 'autohide',      '#autohide'
     setNode 'thread',        'select'
-    setNode 'threadPar',     '#qr-thread-select'
     setNode 'close',         '.close'
     setNode 'form',          'form'
     setNode 'dumpButton',    '#dump-button'
