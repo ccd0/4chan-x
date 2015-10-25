@@ -584,6 +584,7 @@ QR =
     new QR.post true
     QR.status()
     QR.cooldown.setup()
+    QR.oekaki.setup()
     QR.captcha.init()
 
     $.add d.body, dialog

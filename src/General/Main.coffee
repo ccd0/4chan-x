@@ -95,7 +95,9 @@ Main =
 
   initFeatures: ->
     if location.hostname in ['boards.4chan.org', 'sys.4chan.org', 'www.4chan.org']
-      $.globalEval 'document.documentElement.classList.add("js-enabled");'
+      $.global ->
+        document.documentElement.classList.add 'js-enabled'
+        window.FCX = {}
 
     switch location.hostname
       when 'www.4chan.org'

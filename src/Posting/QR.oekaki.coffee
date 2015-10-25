@@ -32,6 +32,15 @@ QR.oekaki =
       else
         QR.error "Can't load image."
 
+  setup: ->
+    $.global ->
+      {FCX} = window
+      FCX.oekakiCB = ->
+        window.Tegaki.flatten().toBlob (file) ->
+          document.dispatchEvent new CustomEvent 'QRSetFile',
+            bubbles: true
+            detail: {file, name: FCX.oekakiName}
+
   load: (cb) ->
     if $ 'script[src^="//s.4cdn.org/js/painter"]', d.head
       cb()
@@ -50,21 +59,18 @@ QR.oekaki =
 
   draw: ->
     $.global ->
-      {Tegaki} = window
+      {Tegaki, FCX} = window
       Tegaki.destroy() if Tegaki.bg
+      FCX.oekakiName = 'tegaki.png'
       Tegaki.open
-        onDone: ->
-          Tegaki.flatten().toBlob (file) ->
-            document.dispatchEvent new CustomEvent 'QRSetFile',
-              bubbles: true
-              detail: {file, name: 'tegaki.png'}
+        onDone: FCX.oekakiCB
         onCancel: ->
         width:  +document.querySelector('#qr [name=oekaki-width]').value
         height: +document.querySelector('#qr [name=oekaki-height]').value
 
   edit: ->
     QR.oekaki.load -> $.global ->
-      {Tegaki} = window
+      {Tegaki, FCX} = window
       name = document.getElementById('qr-filename').value.replace(/\.\w+$/, '') + '.png'
       error = (content) ->
         document.dispatchEvent new CustomEvent 'CreateNotification',
@@ -78,12 +84,9 @@ QR.oekaki =
         img.onerror = -> error 'Could not open image.'
         img.onload = ->
           Tegaki.destroy() if Tegaki.bg
+          FCX.oekakiName = name
           Tegaki.open
-            onDone: ->
-              Tegaki.flatten().toBlob (file) ->
-                document.dispatchEvent new CustomEvent 'QRSetFile',
-                  bubbles: true
-                  detail: {file, name}
+            onDone: FCX.oekakiCB
             onCancel: ->
             width:  img.naturalWidth
             height: img.naturalHeight
