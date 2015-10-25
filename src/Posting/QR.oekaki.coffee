@@ -1,4 +1,20 @@
 QR.oekaki =
+  load: (cb) ->
+    if $ 'script[src^="//s.4cdn.org/js/painter"]', d.head
+      cb()
+    else
+      style = $.el 'link',
+        rel: 'stylesheet'
+        href: "//s.4cdn.org/css/painter.#{Date.now()}.css"
+      script = $.el 'script',
+        src: "//s.4cdn.org/js/painter.min.#{Date.now()}.js"
+      n = 0
+      onload = ->
+        cb() if ++n is 2
+      $.on style,  'load', onload
+      $.on script, 'load', onload
+      $.add d.head, [style, script]
+
   draw: ->
     $.global ->
       {Tegaki} = window
@@ -13,7 +29,7 @@ QR.oekaki =
         height: +document.querySelector('#qr [name=oekaki-height]').value
 
   edit: ->
-    $.global ->
+    QR.oekaki.load -> $.global ->
       {Tegaki} = window
       name = document.getElementById('qr-filename').value.replace(/\.\w+$/, '') + '.png'
       error = (content) ->
