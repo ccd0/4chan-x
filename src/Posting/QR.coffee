@@ -484,7 +484,6 @@ QR =
     setNode 'filename',      '#qr-filename'
     setNode 'fileRM',        '#qr-filerm'
     setNode 'spoiler',       '#qr-file-spoiler'
-    setNode 'spoilerPar',    '#qr-spoiler-label'
     setNode 'status',        '[type=submit]'
     setNode 'fileInput',     '[type=file]'
     setNode 'customCooldown', '#custom-cooldown-button'
