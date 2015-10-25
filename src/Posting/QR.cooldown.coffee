@@ -60,6 +60,11 @@ QR.cooldown =
     QR.cooldown.set g.BOARD.ID, Date.now(), cooldown
     QR.cooldown.start()
 
+  addMute: (delay) ->
+    return unless Conf['Cooldown']
+    QR.cooldown.set g.BOARD.ID, Date.now(), {type: 'mute', delay}
+    QR.cooldown.start()
+
   delete: (post) ->
     return unless Conf['Cooldown']
     $.forceSync 'cooldowns'
@@ -121,7 +126,7 @@ QR.cooldown =
           if cooldown.delay <= elapsed
             delete cooldowns[start]
             save.push scope
-          else if cooldown.type is type and cooldown.threadID is threadID
+          else if (cooldown.type is type and cooldown.threadID is threadID) or cooldown.type is 'mute'
             # Delays only apply to the given post type and thread.
             seconds = Math.max seconds, cooldown.delay - elapsed
           continue
