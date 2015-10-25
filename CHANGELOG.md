@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.14
 
+**v1.11.14.1** *(2015-10-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add links to images to open them in the oekaki painter (optional, controlled by `Oekaki Links` setting).
+
 **v1.11.14.0** *(2015-10-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.13.9.
 - Allow editing Quick Reply images in the oekaki painter on all boards.
