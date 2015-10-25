@@ -68,9 +68,9 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["cm", "ic", "vg", "y"],
-  "files": ["cm", "ic", "vg", "y"],
-  "search": []
+  "boards": ["a", "cm", "ic", "sci", "tg", "v", "vg", "y"],
+  "files": ["a", "cm", "ic", "sci", "tg", "v", "vg", "y"],
+  "search": ["cm", "ic", "vg", "y"]
 }, {
   "uid": 25,
   "name": "arch.b4k.co",
@@ -80,14 +80,4 @@
   "software": "foolfuuka",
   "boards": ["g", "mlp", "v"],
   "files": []
-}, {
-  "uid": 26,
-  "name": "poweredby.moe",
-  "domain": "archive.poweredby.moe",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["a", "c", "g", "jp"],
-  "files": ["a", "c", "jp"],
-  "search": ["a"]
 }]
