@@ -299,6 +299,9 @@ $.globalEval = (code) ->
   $.add (d.head or doc), script
   $.rm script
 
+$.global = (fn) ->
+  $.globalEval "(#{fn})();"
+
 $.bytesToString = (size) ->
   unit = 0 # Bytes
   while size >= 1024

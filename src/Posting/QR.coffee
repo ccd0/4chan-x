@@ -230,6 +230,36 @@ QR =
       });
     '''
 
+  oekakiEdit: ->
+    $.global ->
+      {Tegaki} = window
+      name = document.getElementById('qr-filename').value.replace(/\.\w+$/, '') + '.png'
+      error = (content) ->
+        document.dispatchEvent new CustomEvent 'CreateNotification',
+          bubbles: true
+          detail: {type: 'warning', content, lifetime: 20}
+      cb = (e) ->
+        document.removeEventListener 'QRFile', cb, false
+        return error 'No file to edit.' unless e.detail
+        return error 'Not an image.'    unless /^image\//.test e.detail.type
+        img = new Image()
+        img.onerror = -> error 'Could not open image.'
+        img.onload = ->
+          Tegaki.destroy() if Tegaki.bg
+          Tegaki.open
+            onDone: ->
+              Tegaki.flatten().toBlob (file) ->
+                document.dispatchEvent new CustomEvent 'QRSetFile',
+                  bubbles: true
+                  detail: {file, name}
+            onCancel: ->
+            width:  img.naturalWidth
+            height: img.naturalHeight
+          Tegaki.activeCtx.drawImage img, 0, 0
+        img.src = URL.createObjectURL e.detail
+      document.addEventListener 'QRFile', cb, false
+      document.dispatchEvent new CustomEvent 'QRGetFile', {bubbles: true}
+
   error: (err, focusOverride) ->
     QR.open()
     if typeof err is 'string'
@@ -503,6 +533,7 @@ QR =
     setNode 'customCooldown', '#custom-cooldown-button'
     setNode 'flashTag',      '[name=filetag]'
     setNode 'drawButton',    '#qr-draw-button'
+    setNode 'editButton',    '#qr-edit-button'
 
     rules = $('ul.rules').textContent.trim()
     match_min = rules.match(/.+smaller than (\d+)x(\d+).+/)
@@ -564,6 +595,7 @@ QR =
     $.on nodes.texButton,  'mouseup',   QR.texPreviewHide
     $.on nodes.customCooldown, 'click', QR.toggleCustomCooldown
     $.on nodes.drawButton, 'click',  QR.oekakiDraw
+    $.on nodes.editButton, 'click',  QR.oekakiEdit
 
     window.addEventListener 'focus', QR.focus, true
     window.addEventListener 'blur',  QR.focus, true
