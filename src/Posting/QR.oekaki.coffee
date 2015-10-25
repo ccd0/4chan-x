@@ -1,19 +1,16 @@
 QR.oekaki =
   draw: ->
-    $.globalEval '''
-      Tegaki.open({
-        onDone: function() {
-          Tegaki.flatten().toBlob(function (blob) {
-            var detail = {file: blob, name: 'tegaki.png'};
-            var event = new CustomEvent('QRSetFile', {bubbles: true, detail: detail});
-            document.dispatchEvent(event);
-          });
-        },
-        onCancel: function() {},
-        width: +document.querySelector('#qr [name=oekaki-width]').value,
+    $.global ->
+      {Tegaki} = window
+      Tegaki.open
+        onDone: ->
+          Tegaki.flatten().toBlob (file) ->
+            document.dispatchEvent new CustomEvent 'QRSetFile',
+              bubbles: true
+              detail: {file, name: 'tegaki.png'}
+        onCancel: ->
+        width:  +document.querySelector('#qr [name=oekaki-width]').value
         height: +document.querySelector('#qr [name=oekaki-height]').value
-      });
-    '''
 
   edit: ->
     $.global ->
