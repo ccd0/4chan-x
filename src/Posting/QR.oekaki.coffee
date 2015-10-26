@@ -37,9 +37,11 @@ QR.oekaki =
       {FCX} = window
       FCX.oekakiCB = ->
         window.Tegaki.flatten().toBlob (file) ->
+          source = "oekaki-#{Date.now()}"
+          FCX.oekakiLatest = source
           document.dispatchEvent new CustomEvent 'QRSetFile',
             bubbles: true
-            detail: {file, name: FCX.oekakiName}
+            detail: {file, name: FCX.oekakiName, source}
 
   load: (cb) ->
     if $ 'script[src^="//s.4cdn.org/js/painter"]', d.head
@@ -71,7 +73,8 @@ QR.oekaki =
   edit: ->
     QR.oekaki.load -> $.global ->
       {Tegaki, FCX} = window
-      name = document.getElementById('qr-filename').value.replace(/\.\w+$/, '') + '.png'
+      name     = document.getElementById('qr-filename').value.replace(/\.\w+$/, '') + '.png'
+      {source} = document.getElementById('file-n-submit').dataset
       error = (content) ->
         document.dispatchEvent new CustomEvent 'CreateNotification',
           bubbles: true
@@ -93,5 +96,9 @@ QR.oekaki =
             bgColor: 'transparent'
           Tegaki.activeCtx.drawImage img, 0, 0
         img.src = URL.createObjectURL e.detail
-      document.addEventListener 'QRFile', cb, false
-      document.dispatchEvent new CustomEvent 'QRGetFile', {bubbles: true}
+      if Tegaki.bg and Tegaki.onDoneCb is FCX.oekakiCB and source is FCX.oekakiLatest
+        FCX.oekakiName = name
+        Tegaki.resume()
+      else
+        document.addEventListener 'QRFile', cb, false
+        document.dispatchEvent new CustomEvent 'QRGetFile', {bubbles: true}
