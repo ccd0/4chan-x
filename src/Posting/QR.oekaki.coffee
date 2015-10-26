@@ -104,20 +104,22 @@ QR.oekaki =
       cb = (e) ->
         document.removeEventListener 'QRFile', cb, false
         return error 'No file to edit.' unless e.detail
-        return error 'Not an image.'    unless /^image\//.test e.detail.type
-        img = new Image()
-        img.onerror = -> error 'Could not open image.'
-        img.onload = ->
+        return error 'Not an image.'    unless /^(image|video)\//.test e.detail.type
+        isVideo = /^video\//.test e.detail.type
+        file = document.createElement(if isVideo then 'video' else 'img')
+        file.addEventListener 'error', -> error 'Could not open file.', false
+        file.addEventListener (if isVideo then 'loadeddata' else 'load'), ->
           Tegaki.destroy() if Tegaki.bg
           FCX.oekakiName = name
           Tegaki.open
             onDone: FCX.oekakiCB
             onCancel: ->
-            width:  img.naturalWidth
-            height: img.naturalHeight
+            width:  file.naturalWidth  or file.videoWidth
+            height: file.naturalHeight or file.videoHeight
             bgColor: 'transparent'
-          Tegaki.activeCtx.drawImage img, 0, 0
-        img.src = URL.createObjectURL e.detail
+          Tegaki.activeCtx.drawImage file, 0, 0
+        , false
+        file.src = URL.createObjectURL e.detail
       if Tegaki.bg and Tegaki.onDoneCb is FCX.oekakiCB and source is FCX.oekakiLatest
         FCX.oekakiName = name
         Tegaki.resume()
