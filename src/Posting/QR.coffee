@@ -534,25 +534,25 @@ QR =
         QR.setCustomCooldown customCooldownEnabled
         $.sync 'customCooldownEnabled', QR.setCustomCooldown
 
-    $.on nodes.fileButton, 'click',  QR.openFileInput
-    $.on nodes.noFile,     'click',  QR.openFileInput
-    $.on nodes.filename,   'focus',  -> $.addClass @parentNode, 'focus'
-    $.on nodes.filename,   'blur',   -> $.rmClass  @parentNode, 'focus'
-    $.on nodes.autohide,   'change', QR.toggleHide
-    $.on nodes.close,      'click',  QR.close
-    $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
-    $.on nodes.urlButton,  'click',  -> QR.handleUrl ''
-    $.on nodes.addPost,    'click',  -> new QR.post true
-    $.on nodes.form,       'submit', QR.submit
-    $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
-    $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
-    $.on nodes.fileInput,  'change', QR.handleFiles
-    $.on nodes.sjisToggle, 'click',  QR.toggleSJIS
-    $.on nodes.texButton,  'mousedown', QR.texPreviewShow
-    $.on nodes.texButton,  'mouseup',   QR.texPreviewHide
-    $.on nodes.customCooldown, 'click', QR.toggleCustomCooldown
-    $.on nodes.drawButton, 'click',  QR.oekaki.draw
-    $.on nodes.oekakiButton, 'click',  QR.oekaki.edit
+    $.on nodes.autohide,       'change',    QR.toggleHide
+    $.on nodes.close,          'click',     QR.close
+    $.on nodes.form,           'submit',    QR.submit
+    $.on nodes.sjisToggle,     'click',     QR.toggleSJIS
+    $.on nodes.texButton,      'mousedown', QR.texPreviewShow
+    $.on nodes.texButton,      'mouseup',   QR.texPreviewHide
+    $.on nodes.addPost,        'click',     -> new QR.post true
+    $.on nodes.drawButton,     'click',     QR.oekaki.draw
+    $.on nodes.fileButton,     'click',     QR.openFileInput
+    $.on nodes.noFile,         'click',     QR.openFileInput
+    $.on nodes.filename,       'focus',     -> $.addClass @parentNode, 'focus'
+    $.on nodes.filename,       'blur',      -> $.rmClass  @parentNode, 'focus'
+    $.on nodes.spoiler,        'change',    -> QR.selected.nodes.spoiler.click()
+    $.on nodes.oekakiButton,   'click',     QR.oekaki.edit
+    $.on nodes.fileRM,         'click',     -> QR.selected.rmFile()
+    $.on nodes.urlButton,      'click',     -> QR.handleUrl ''
+    $.on nodes.customCooldown, 'click',     QR.toggleCustomCooldown
+    $.on nodes.dumpButton,     'click',     -> nodes.el.classList.toggle 'dump'
+    $.on nodes.fileInput,      'change',    QR.handleFiles
 
     window.addEventListener 'focus', QR.focus, true
     window.addEventListener 'blur',  QR.focus, true
