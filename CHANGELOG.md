@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.14
 
+**v1.11.14.4** *(2015-10-26)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Support drawing on frames from WebMs.
+
 **v1.11.14.3** *(2015-10-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Support opening a blank canvas from boards other than /i/. With no file selected, oekaki button in QR shows/hides the new image controls.
 - Support resume (retaining layers and undo history) in Tegaki when possible. Only available when re-opening the last image edited.
