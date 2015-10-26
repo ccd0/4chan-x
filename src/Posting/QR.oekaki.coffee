@@ -6,7 +6,7 @@ QR.oekaki =
       cb:   @node
 
   node: ->
-    return unless @file?.isImage
+    return unless @file and (@file.isImage or @file.isVideo)
     if @isClone
       link = $ '.file-oekaki', @file.text
     else
@@ -22,13 +22,29 @@ QR.oekaki =
     return unless QR.postingIsEnabled
     QR.quote.call @
     post = Get.postFromNode @
+    {isVideo} = post.file
+    currentTime = post.file.fullImage?.currentTime or 0
     CrossOrigin.file post.file.url, (blob) ->
-      if blob
+      if !blob
+        QR.error "Can't load file."
+      else if isVideo
+        video = $.el 'video'
+        $.on video, 'loadedmetadata', ->
+          $.on video, 'seeked', ->
+            canvas = $.el 'canvas',
+              width: video.videoWidth
+              height: video.videoHeight
+            canvas.getContext('2d').drawImage(video, 0, 0)
+            canvas.toBlob (snapshot) ->
+              snapshot.name = post.file.name.replace(/\.\w+$/, '') + '.png'
+              QR.handleFiles [snapshot]
+              QR.oekaki.edit()
+          video.currentTime = currentTime
+        video.src = URL.createObjectURL blob
+      else
         blob.name = post.file.name
         QR.handleFiles [blob]
         QR.oekaki.edit()
-      else
-        QR.error "Can't load image."
 
   setup: ->
     $.global ->
