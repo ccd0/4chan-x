@@ -212,7 +212,7 @@ Config =
       ]
       'Oekaki Links': [
         true
-        'Add links to edit images in Tegaki.'
+        'Add links to edit images in Tegaki, /i/\'s painting program.'
       ]
       'Sauce': [
         true
