@@ -20,12 +20,9 @@ QR.oekaki =
 
   editFile: ->
     return unless QR.postingIsEnabled
+    QR.quote.call @
     post = Get.postFromNode @
     CrossOrigin.file post.file.url, (blob) ->
-      QR.openPost()
-      {com, thread} = QR.nodes
-      thread.value = (post.context or post).thread.ID unless com.value
-      QR.selected.save thread
       if blob
         blob.name = post.file.name
         QR.handleFiles [blob]
