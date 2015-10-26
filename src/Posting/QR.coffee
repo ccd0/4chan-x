@@ -584,11 +584,11 @@ QR =
     new QR.post true
     QR.status()
     QR.cooldown.setup()
-    QR.oekaki.setup()
     QR.captcha.init()
 
     $.add d.body, dialog
     QR.captcha.setup()
+    QR.oekaki.setup()
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
