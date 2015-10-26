@@ -402,7 +402,7 @@ QR =
       if blob
         QR.handleFiles [blob]
       else
-        QR.error "Can't load image."
+        QR.error "Can't load file."
 
   handleFiles: (files) ->
     if @ isnt QR # file input
