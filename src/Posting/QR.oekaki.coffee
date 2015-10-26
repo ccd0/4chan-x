@@ -19,6 +19,7 @@ QR.oekaki =
     $.on link, 'click', QR.oekaki.editFile
 
   editFile: ->
+    return unless QR.postingIsEnabled
     post = Get.postFromNode @
     CrossOrigin.file post.file.url, (blob) ->
       QR.openPost()

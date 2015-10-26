@@ -284,7 +284,6 @@ QR =
   quote: (e) ->
     e?.preventDefault()
     return unless QR.postingIsEnabled
-
     sel  = d.getSelection()
     post = Get.postFromNode @
     text = if post.board.ID is g.BOARD.ID then ">>#{post}\n" else ">>>/#{post.board}/#{post}\n"
