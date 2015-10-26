@@ -8,11 +8,11 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 - Merge v1.11.13.10: (MayhemYDG) Update archive list: Update fireden.net and remove poweredby.moe.
 
 **v1.11.14.1** *(2015-10-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.1/builds/4chan-X-noupdate.crx "Chromium version")]
-- Add links to images to open them in the oekaki painter (optional, controlled by `Oekaki Links` setting).
+- Add links to images to edit them in Tegaki (optional, controlled by `Oekaki Links` setting).
 
 **v1.11.14.0** *(2015-10-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.13.9.
-- Allow editing Quick Reply images in the oekaki painter on all boards.
+- Allow editing Quick Reply images in 4chan's oekaki painter [Tegaki](https://github.com/desuwa/tegaki) on all boards.
 
 ### v1.11.13
 
