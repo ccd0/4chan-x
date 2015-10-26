@@ -8,10 +8,10 @@ QR.oekaki =
   node: ->
     return unless @file?.isImage
     if @isClone
-      link = $ '.file-edit', @file.text
+      link = $ '.file-oekaki', @file.text
     else
       link = $.el 'a',
-        className: 'file-edit'
+        className: 'file-oekaki'
         href: 'javascript:;'
         title: 'Edit image'
       $.extend link, <%= html('<i class="fa fa-edit"></i>') %>
