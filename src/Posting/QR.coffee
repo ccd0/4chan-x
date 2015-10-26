@@ -340,8 +340,9 @@ QR =
     $.event 'QRFile', QR.selected?.file
 
   setFile: (e) ->
-    {file, name} = e.detail
-    file.name = name if name?
+    {file, name, source} = e.detail
+    file.name   = name   if name?
+    file.source = source if source?
     QR.open()
     QR.handleFiles [file]
 

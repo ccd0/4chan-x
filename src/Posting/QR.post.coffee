@@ -319,6 +319,10 @@ QR.post = class
     else
       $.rmClass QR.nodes.oekaki,     'has-file'
       $.rmClass QR.nodes.fileSubmit, 'has-file'
+    if @file?.source?
+      QR.nodes.fileSubmit.dataset.source = @file.source
+    else
+      QR.nodes.fileSubmit.removeAttribute 'data-source'
     QR.nodes.spoiler.checked = @spoiler
 
   updateFlashURL: ->
