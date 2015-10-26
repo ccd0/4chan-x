@@ -1411,6 +1411,7 @@ input#qr-filename {
   padding-left: 3px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 #qr-no-file {
   color: #AAA;
