@@ -1452,7 +1452,7 @@ input#qr-filename {
 }
 #qr:not(.has-spoiler) #qr-spoiler-label,
 #file-n-submit:not(.has-file) #qr-spoiler-label,
-#file-n-submit:not(.has-file) #qr-edit-button,
+#file-n-submit:not(.has-file) #qr-oekaki-button,
 .has-file #paste-area,
 .has-file #url-button,
 #file-n-submit:not(.custom-cooldown) #custom-cooldown-button {

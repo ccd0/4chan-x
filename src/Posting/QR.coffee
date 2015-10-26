@@ -482,7 +482,7 @@ QR =
     setNode 'noFile',         '#qr-no-file'
     setNode 'filename',       '#qr-filename'
     setNode 'spoiler',        '#qr-file-spoiler'
-    setNode 'editButton',     '#qr-edit-button'
+    setNode 'oekakiButton',   '#qr-oekaki-button'
     setNode 'fileRM',         '#qr-filerm'
     setNode 'urlButton',      '#url-button'
     setNode 'pasteArea',      '#paste-area'
@@ -552,7 +552,7 @@ QR =
     $.on nodes.texButton,  'mouseup',   QR.texPreviewHide
     $.on nodes.customCooldown, 'click', QR.toggleCustomCooldown
     $.on nodes.drawButton, 'click',  QR.oekaki.draw
-    $.on nodes.editButton, 'click',  QR.oekaki.edit
+    $.on nodes.oekakiButton, 'click',  QR.oekaki.edit
 
     window.addEventListener 'focus', QR.focus, true
     window.addEventListener 'blur',  QR.focus, true
