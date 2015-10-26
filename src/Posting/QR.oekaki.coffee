@@ -42,6 +42,8 @@ QR.oekaki =
           document.dispatchEvent new CustomEvent 'QRSetFile',
             bubbles: true
             detail: {file, name: FCX.oekakiName, source}
+      if window.Tegaki
+        document.querySelector('#qr .oekaki').hidden = false
 
   load: (cb) ->
     if $ 'script[src^="//s.4cdn.org/js/painter"]', d.head
@@ -69,6 +71,12 @@ QR.oekaki =
         onCancel: ->
         width:  +document.querySelector('#qr [name=oekaki-width]').value
         height: +document.querySelector('#qr [name=oekaki-height]').value
+
+  button: ->
+    if QR.selected.file
+      QR.oekaki.edit()
+    else
+      QR.oekaki.toggle()
 
   edit: ->
     QR.oekaki.load -> $.global ->
@@ -102,3 +110,7 @@ QR.oekaki =
       else
         document.addEventListener 'QRFile', cb, false
         document.dispatchEvent new CustomEvent 'QRGetFile', {bubbles: true}
+
+  toggle: ->
+    QR.oekaki.load ->
+      QR.nodes.oekaki.hidden = !QR.nodes.oekaki.hidden

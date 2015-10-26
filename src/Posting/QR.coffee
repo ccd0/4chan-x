@@ -547,7 +547,7 @@ QR =
     $.on nodes.filename,       'focus',     -> $.addClass @parentNode, 'focus'
     $.on nodes.filename,       'blur',      -> $.rmClass  @parentNode, 'focus'
     $.on nodes.spoiler,        'change',    -> QR.selected.nodes.spoiler.click()
-    $.on nodes.oekakiButton,   'click',     QR.oekaki.edit
+    $.on nodes.oekakiButton,   'click',     QR.oekaki.button
     $.on nodes.fileRM,         'click',     -> QR.selected.rmFile()
     $.on nodes.urlButton,      'click',     -> QR.handleUrl ''
     $.on nodes.customCooldown, 'click',     QR.toggleCustomCooldown
