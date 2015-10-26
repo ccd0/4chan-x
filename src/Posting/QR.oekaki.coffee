@@ -13,7 +13,7 @@ QR.oekaki =
       link = $.el 'a',
         className: 'file-oekaki'
         href: 'javascript:;'
-        title: 'Edit image'
+        title: 'Edit in Tegaki'
       $.extend link, <%= html('<i class="fa fa-edit"></i>') %>
       $.add @file.text, [$.tn('\u00A0'), link]
     $.on link, 'click', QR.oekaki.editFile
