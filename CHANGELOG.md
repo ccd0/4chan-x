@@ -4,6 +4,12 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.14
 
+**v1.11.14.3** *(2015-10-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Support opening a blank canvas from boards other than /i/. With no file selected, oekaki button in QR shows/hides the new image controls.
+- Support resume (retaining layers and undo history) in Tegaki when possible. Only available when re-opening the last image edited.
+- The edit button now quotes the post with the image being edited.
+- Minor bugfixes.
+
 **v1.11.14.2** *(2015-10-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.13.10: (MayhemYDG) Update archive list: Update fireden.net and remove poweredby.moe.
 
