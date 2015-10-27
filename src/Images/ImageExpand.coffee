@@ -46,7 +46,7 @@ ImageExpand =
       {file} = post
       return if file.isExpanded and ImageCommon.onControls e
       e.preventDefault()
-      if file.fullImage?.paused
+      if !Conf['Autoplay'] and file.fullImage?.paused
         file.fullImage.play()
       else
         ImageExpand.toggle post

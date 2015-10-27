@@ -276,7 +276,7 @@ Gallery =
       e.preventDefault()
       Gallery.cb.advance()
 
-    advance:   -> if Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
+    advance:   -> if !Conf['Autoplay'] and Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
     toggleSlideshow: ->  Gallery.cb[if Gallery.slideshow then 'stop' else 'start']()
