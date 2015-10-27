@@ -89,7 +89,7 @@ span.hover > img {
     z-index: 1;
   }
 }
-h2 ~ p, h2 ~ p + ul, input + div, div > label ~ * {
+h2 ~ p, h2 ~ p + ul, input + div, div > h3 ~ * {
   margin-left: 1em;
 }
 input + div {
@@ -100,6 +100,6 @@ input + div {
 h3 {
   display: inline;
 }
-input:checked + div > :not(label) {
+input:checked + div > h3 ~ * {
   display: none;
 }
