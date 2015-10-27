@@ -150,6 +150,8 @@ module.exports = (grunt) ->
         filter: (src) ->
           pkg = grunt.config 'pkg'
           grunt.file.isFile(src) and not grunt.file.isMatch(src, "testbuilds/#{pkg.name}#{pkg.meta.suffix.dev}.user.js") and not /\.crx\.zip$/.test(src)
+      install:
+        files: if grunt.file.exists('install.json') then grunt.file.readJSON('install.json') else []
       web:
         src:  'test.html'
         dest: 'index.html'
@@ -405,6 +407,7 @@ module.exports = (grunt) ->
     'set-channel:dev'
     'concat:userscript'
     'clean:tmpuserscript'
+    'copy:install'
   ]
 
   grunt.registerTask 'build-tests', [
