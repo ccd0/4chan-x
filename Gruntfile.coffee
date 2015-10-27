@@ -469,9 +469,9 @@ module.exports = (grunt) ->
     'shell:poststore'
   ]
 
-  grunt.registerTask 'captchas', [
-    'shell:captchas'
-  ]
+  grunt.registerTask 'captchas', 'Set captcha complaints redirect.', (url='https://www.4chan.org/feedback') ->
+    grunt.file.write 'captchas.html', grunt.template.process(grunt.file.read('redirect.html'), data: {url})
+    grunt.task.run 'shell:captchas'
 
   grunt.registerTask 'setversion', 'Set the version number', (version) ->
     pkg = grunt.file.readJSON 'package.json'
