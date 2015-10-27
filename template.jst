@@ -20,8 +20,8 @@
 content
   .match(/<\/h1>([^]*)<h2 id="more-information"/)[1]
   .replace(
-    /(<h3 id="(.*?)">.*?<\/h3>)([^]*?)(?=<h)/g,
-    '<input hidden type="checkbox" id="$2-hide"><div><label for="$2-hide">$1</label>$3</div>'
+    /(<h3 id="(.*?)">)(.*?)(<\/h3>[^]*?)(?=<h)/g,
+    '<input hidden type="checkbox" id="$2-hide"><div>$1<label for="$2-hide">$3</label>$4</div>'
   )
 %>
 <script>
