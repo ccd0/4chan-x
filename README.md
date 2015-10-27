@@ -23,7 +23,7 @@ Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonk
 - **Opera**: **[Click to install 4chan X](https://www.4chan-x.net/builds/4chan-X.crx)**, then follow the prompts to activate it in your extension manager. Note: This version does not work with Opera 12; try [loadletter's fork](https://github.com/loadletter/4chan-x) instead.
 - **Chrome**: Install 4chan X from the **[Chrome store](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam)**.
 
-You can also use the [userscript version of 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js) with [Tampermonkey](https://tampermonkey.net/).
+You can also use the [userscript version of 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js) with [Tampermonkey](https://tampermonkey.net/). Note: Users of Chromium / Chrome 47+ should upgrade to Tampermonkey 3.12+ due to recent sandbox changes.
 
 ### Safari
 Install [JS Blocker](http://jsblocker.toggleable.com/), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
