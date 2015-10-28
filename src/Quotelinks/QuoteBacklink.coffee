@@ -35,7 +35,8 @@ QuoteBacklink =
         for clone in post.clones
           containers.push clone.nodes.backlinkContainer
       for container in containers
-        nodes = [$.tn(' '), link = a.cloneNode true]
+        link = a.cloneNode true
+        nodes = if container.firstChild then [$.tn(' '), link] else [link]
         if Conf['Quote Previewing']
           $.on link, 'mouseover', QuotePreview.mouseover
         if Conf['Quote Inlining']
