@@ -623,7 +623,7 @@ QR =
     else if g.BOARD.threads[threadID].isClosed
       err = 'You can\'t reply to this thread anymore.'
     else unless post.com or post.file
-      err = 'No file selected.'
+      err = 'No comment or file.'
     else if post.file and thread.fileLimit
       err = 'Max limit of image replies has been reached.'
 
