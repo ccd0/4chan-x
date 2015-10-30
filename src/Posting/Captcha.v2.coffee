@@ -241,6 +241,7 @@ Captcha.v2 =
   fixBubble: (node) ->
     {bottom, right, width} = node.getBoundingClientRect()
     if (
+      getComputedStyle(node).visibility isnt 'hidden' and
       bottom > 0 and          # not deliberately offscreen
       right > doc.clientWidth # offscreen to right
     )

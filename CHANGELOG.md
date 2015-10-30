@@ -34,6 +34,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.13
 
+**v1.11.13.12** *(2015-10-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.12/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.12/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update for captcha changes.
+
 **v1.11.13.11** *(2015-10-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.11/builds/4chan-X-noupdate.crx "Chromium version")]
 - Work around captcha bug causing captcha to go offscreen to the right.
 

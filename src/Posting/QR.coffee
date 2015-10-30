@@ -163,7 +163,8 @@ QR =
 
   inBubble: ->
     bubbles = $$ 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
-    d.activeElement in bubbles or bubbles.some((el) -> el.getBoundingClientRect().bottom > 0)
+    d.activeElement in bubbles or bubbles.some (el) ->
+      getComputedStyle(el).visibility isnt 'hidden' and el.getBoundingClientRect().bottom > 0
 
   inCaptcha: ->
     (d.activeElement?.nodeName is 'IFRAME' and QR.nodes.el.contains(d.activeElement)) or (QR.hasFocus and QR.inBubble())
