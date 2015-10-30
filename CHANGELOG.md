@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.14
 
+**v1.11.14.6** *(2015-10-29)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Check for empty or quotelink-only comments before submitting posts on /r9k/.
+
 **v1.11.14.5** *(2015-10-27)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.5/builds/4chan-X-noupdate.crx "Chromium version")]
 - Minor bugfixes.
 
