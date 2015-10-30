@@ -80,7 +80,7 @@
   "boards": ["g", "mlp", "v"],
   "files": []
 }, {
-  "uid": 26,
+  "uid": 27,
   "name": "4ch.be",
   "domain": "4ch.be",
   "http": false,
