@@ -237,6 +237,9 @@ Captcha.v2 =
         if $ 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]', node
           new MutationObserver(@fixBubble.bind(@, node)).observe node,
             attributes: true
+          # Prevent Recaptcha from keeping focus when popup dismissed.
+          if overlay = $ 'div[style*="position: fixed;"]', node
+            $.on overlay, 'click', -> $('#qr iframe')?.blur()
 
   fixBubble: (node) ->
     {bottom, right, width} = node.getBoundingClientRect()
