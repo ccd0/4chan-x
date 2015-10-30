@@ -69,8 +69,7 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["a", "cm", "ic", "sci", "tg", "v", "vg", "y"],
-  "files": ["a", "cm", "ic", "sci", "tg", "v", "vg", "y"],
-  "search": ["cm", "ic", "vg", "y"]
+  "files": ["a", "cm", "ic", "sci", "tg", "v", "vg", "y"]
 }, {
   "uid": 25,
   "name": "arch.b4k.co",
@@ -80,4 +79,14 @@
   "software": "foolfuuka",
   "boards": ["g", "mlp", "v"],
   "files": []
+}, {
+  "uid": 27,
+  "name": "4ch.be",
+  "domain": "4ch.be",
+  "http": false,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "o", "out", "p", "po", "pol", "qa", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trv", "tv", "u", "v", "vg", "vp", "vr", "w", "wg", "wsg", "x", "y"],
+  "files": [],
+  "search": ["a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "o", "out", "p", "po", "pol", "qa", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trv", "tv", "u", "v", "vg", "vp", "vr", "w", "wg", "wsg", "x", "y"]
 }]
