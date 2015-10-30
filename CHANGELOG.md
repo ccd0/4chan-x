@@ -31,6 +31,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.13
 
+**v1.11.13.11** *(2015-10-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.11/builds/4chan-X-noupdate.crx "Chromium version")]
+- Work around captcha bug causing captcha to go offscreen to the right.
+
 **v1.11.13.10** *(2015-10-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.13.10/builds/4chan-X-noupdate.crx "Chromium version")]
 - (MayhemYDG) Update archive list: Update fireden.net and remove poweredby.moe.
 
