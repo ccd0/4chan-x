@@ -37,6 +37,11 @@ Fourchan =
             if (!document.querySelector('script[src^="//cdn.mathjax.org/"]')) {
               window.loadMathJax();
               window.loadMathJax = function() {};
+              if (!e.target.classList.contains('postMessage')) {
+                document.querySelector('script[src^="//cdn.mathjax.org/"]').addEventListener('load', function() {
+                  window.MathJax.Hub.Queue(['Typeset', window.MathJax.Hub, e.target]);
+                }, false);
+              }
             }
           }
         }, false);
