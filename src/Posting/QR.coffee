@@ -627,6 +627,9 @@ QR =
     else if post.file and thread.fileLimit
       err = 'Max limit of image replies has been reached.'
 
+    if g.BOARD.ID is 'r9k' and !post.com?.match(/[a-z-]/i)
+      err or= 'Original comment required.'
+
     if QR.captcha.isEnabled and !err
       captcha = QR.captcha.getOne()
       err = 'No valid captcha.' unless captcha
