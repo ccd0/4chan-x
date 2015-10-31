@@ -956,6 +956,9 @@ span.hide-announcement {
 :root.hide-backlinks .backlink.filtered + .hashlink.filtered {
   display: none;
 }
+.postNum + .container::before {
+  content: " ";
+}
 .inline {
   border: 1px solid;
   display: table;
@@ -1633,16 +1636,11 @@ a:only-of-type > .remove {
   margin: 2px;
   vertical-align: middle;
 }
-.reply .menu-button, 
-.op .menu-button,
+.post .menu-button,
 #thread-watcher .menu-button {
-  margin-left: -1px !important;
-  width: 20px;
+  width: 18px;
   height: 15px;
   text-align: center;
-}
-.menu-button + .container :first-child {
-  margin-left: -5px;
 }
 #menu {
   position: fixed;
