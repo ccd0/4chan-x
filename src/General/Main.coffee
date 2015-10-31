@@ -190,7 +190,7 @@ Main =
     setStyle = ->
       $.rmClass doc, style
       for styleSheet in styleSheets
-        if styleSheet.href is mainStyleSheet.href
+        if styleSheet.href is mainStyleSheet?.href
           style = styleSheet.title.toLowerCase().replace('new', '').trim().replace /\s+/g, '-'
           break
       $.addClass doc, style
