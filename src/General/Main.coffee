@@ -379,6 +379,7 @@ Main =
     ['Color User IDs',            IDColor]
     ['Highlight by User ID',      IDHighlight]
     ['Custom CSS',                CustomCSS]
+    ['Thread Links',              ThreadLinks]
     ['Linkify',                   Linkify]
     ['Reveal Spoilers',           RemoveSpoilers]
     ['Resurrect Quotes',          Quotify]
