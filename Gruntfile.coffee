@@ -265,6 +265,7 @@ module.exports = (grunt) ->
           'Gruntfile.coffee'
           'package.json'
           'version.json'
+          'LICENSE'
           'src/**/*'
         ]
         tasks: 'build'
