@@ -4,6 +4,15 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.14
 
+**v1.11.14.12** *(2015-10-31)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.12/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.12/builds/4chan-X-noupdate.crx "Chromium version")]
+- (Bui, Ayylmao69) Archive list update: Add /his/.
+
+**v1.11.14.11** *(2015-10-31)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.11/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.11/builds/4chan-X-noupdate.crx "Chromium version")]
+- Match Halloween theme colors for users who haven't blocked it.
+
+**v1.11.14.10** *(2015-10-31)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.10/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix 4chan X UI elements becoming transparent during Halloween theme.
+
 **v1.11.14.9** *(2015-10-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.9/builds/4chan-X-noupdate.crx "Chromium version")]
 - (Bui) New archive: 4ch.be.
 - Minor bugfixes.

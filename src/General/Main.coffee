@@ -180,6 +180,12 @@ Main =
     Main.setClass()
 
   setClass: ->
+    if (spooky = $ 'link[rel="stylesheet"][href^="//s.4cdn.org/css/spooky."]', d.head)
+      spooky.removeAttribute 'media'
+      if getComputedStyle(d.body).color is 'rgb(196, 151, 86)' # not blocked
+        $.addClass doc, 'spooky'
+        return
+
     if g.VIEW is 'catalog'
       $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
       return
@@ -190,7 +196,7 @@ Main =
     setStyle = ->
       $.rmClass doc, style
       for styleSheet in styleSheets
-        if styleSheet.href is mainStyleSheet.href
+        if styleSheet.href is mainStyleSheet?.href
           style = styleSheet.title.toLowerCase().replace('new', '').trim().replace /\s+/g, '-'
           break
       $.addClass doc, style
@@ -361,7 +367,7 @@ Main =
     $.ready ->
       cb() if Main.isThisPageLegit()
 
-  css: `<%= importCSS('font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon') %>`
+  css: `<%= importCSS('font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon', 'spooky') %>`
 
   cssWWW: `<%= importCSS('www') %>`
 
