@@ -299,7 +299,6 @@ module.exports = (grunt) ->
         '-W093': true
         globals: do ->
           globals =
-            Notification: true
             MediaError:   true
             Set:          true
             GM_info:      true
