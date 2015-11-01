@@ -299,8 +299,6 @@ module.exports = (grunt) ->
         '-W093': true
         globals:
           Notification: true
-          webkitNotifications: true
-          HTMLDocument: true
           MediaError:   true
           Set:          true
           GM_getValue:  true
