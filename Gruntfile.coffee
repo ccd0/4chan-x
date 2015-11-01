@@ -297,21 +297,18 @@ module.exports = (grunt) ->
         '-W084': true
         '-W083': true
         '-W093': true
-        globals:
-          Notification: true
-          MediaError:   true
-          Set:          true
-          GM_getValue:  true
-          GM_setValue:  true
-          GM_deleteValue: true
-          GM_listValues: true
-          GM_addValueChangeListener: true
-          GM_openInTab: true
-          GM_xmlhttpRequest: true
-          GM_info:      true
-          cloneInto:    true
-          unsafeWindow: true
-          chrome:       true
+        globals: do ->
+          globals =
+            Notification: true
+            MediaError:   true
+            Set:          true
+            GM_info:      true
+            cloneInto:    true
+            unsafeWindow: true
+            chrome:       true
+          pkg = grunt.file.readJSON 'package.json'
+          globals[v] = true for v in pkg.meta.grants
+          globals
       script: 'tmp-<%= pkg.type %>/*.js'
 
   require('load-grunt-tasks') grunt
