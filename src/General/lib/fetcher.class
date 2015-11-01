@@ -92,8 +92,8 @@ class Fetcher
         {media} = response
         if media then for key of media when /_link$/.test key
           # Image/thumbnail URLs loaded over HTTP can be modified in transit.
-          # Require them to be from a known HTTP host so that no referrer is sent to them from an HTTPS page.
-          delete media[key] unless media[key]? and media[key].match(/^(http:\/\/[^\/]+\/)?/)[0] in archive.imagehosts
+          # Require them to be from an HTTP host so that no referrer is sent to them from an HTTPS page.
+          delete media[key] unless media[key]?.match /^http:\/\//
         @parseArchivedPost response, url
       return true
     return false
