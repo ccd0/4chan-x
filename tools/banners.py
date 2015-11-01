@@ -6,7 +6,10 @@ for ext in ['jpg', 'png', 'gif']:
     banner = str(i) + '.' + ext
     req = urllib.request.Request('http://s.4cdn.org/image/title/' + banner, method='HEAD')
     try:
-      status = urllib.request.urlopen(req).status
+      try:
+        status = urllib.request.urlopen(req).status
+      except urllib.error.URLError:
+        status = urllib.request.urlopen(req).status
     except urllib.error.HTTPError as e:
       status = e.status
     print(banner, status)
@@ -14,4 +17,3 @@ for ext in ['jpg', 'png', 'gif']:
       banners.append(banner)
 with open('src/Miscellaneous/banners.json', 'w') as f:
   f.write(json.dumps(banners))
-
