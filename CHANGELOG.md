@@ -2,6 +2,12 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.15
+
+**v1.11.15.0** *(2015-11-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.14.12.
+- Add `Open Threads in New Tab` option (off by default), which makes `[Reply]` links on threads and links in the 4chan X catalog open in a new tab.
+
 ### v1.11.14
 
 **v1.11.14.12** *(2015-10-31)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.12/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.14.12/builds/4chan-X-noupdate.crx "Chromium version")]
