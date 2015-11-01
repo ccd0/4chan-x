@@ -21,9 +21,6 @@
 :root.photon #header-bar a, :root.photon #notifications a {
   color: #FF6600;
 }
-:root.photon.fixed #custom-board-list .current:hover {
-  border-bottom-color: rgba(255,51,0,0.2);
-}
 
 /* Settings */
 :root.photon #fourchanx-settings fieldset, :root.photon .section-main div::before {

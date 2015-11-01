@@ -21,9 +21,6 @@
 :root.spooky #board-list a, :root.spooky #shortcuts a {
   color: #FE9600;
 }
-:root.spooky.fixed #custom-board-list .current:hover {
-  border-bottom-color: rgba(255,0,0,0.2);
-}
 
 /* Settings */
 :root.spooky #fourchanx-settings fieldset, :root.spooky .section-main div::before {

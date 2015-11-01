@@ -17,9 +17,6 @@
 :root.tomorrow #header-bar a, :root.tomorrow #notifications a {
   color: #81A2BE;
 }
-:root.tomorrow.fixed #custom-board-list .current:hover {
-  border-bottom-color: rgba(95,137,172,0.4);
-}
 
 /* Settings */
 :root.tomorrow #fourchanx-settings fieldset, :root.tomorrow .section-main div::before {

@@ -21,9 +21,6 @@
 :root.futaba #header-bar a, :root.futaba #notifications a {
   color: #800000;
 }
-:root.futaba.fixed #custom-board-list .current:hover {
-  border-bottom-color: rgba(255,0,0,0.2);
-}
 
 /* Settings */
 :root.futaba #fourchanx-settings fieldset, :root.futaba .section-main div::before {
