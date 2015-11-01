@@ -300,7 +300,6 @@ module.exports = (grunt) ->
         nonstandard: true
         # XXX Temporarily suppress lots of existing warnings until we fix them.
         '-W018': true
-        '-W053': true
         '-W084': true
         '-W083': true
         '-W093': true

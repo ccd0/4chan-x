@@ -59,10 +59,9 @@ Redirect =
     # For fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
     protocol = Redirect.protocol archive
-    URL = new String "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+    URL = "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
     return '' unless Redirect.securityCheck URL
 
-    URL.archive = archive
     URL
 
   file: (archive, {boardID, filename}) ->
