@@ -59,10 +59,10 @@ Redirect =
     # For fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
     protocol = Redirect.protocol archive
-    URL = "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
-    return '' unless Redirect.securityCheck URL
+    url = "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+    return '' unless Redirect.securityCheck url
 
-    URL
+    url
 
   file: (archive, {boardID, filename}) ->
     "#{Redirect.protocol archive}#{archive.domain}/#{boardID}/full_image/#{filename}"
@@ -89,8 +89,8 @@ Redirect =
   report: (archive, {boardID, postID}) ->
     "https://so.fgts.jp/report/?board=#{boardID}&no=#{postID}"
 
-  securityCheck: (URL) ->
-    /^https:\/\//.test(URL) or
+  securityCheck: (url) ->
+    /^https:\/\//.test(url) or
     location.protocol is 'http:' or
     Conf['Exempt Archives from Encryption']
 
