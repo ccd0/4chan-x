@@ -23,10 +23,10 @@ Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonk
 - **Opera**: **[Click to install 4chan X](https://www.4chan-x.net/builds/4chan-X.crx)**, then follow the prompts to activate it in your extension manager. Note: This version does not work with Opera 12; try [loadletter's fork](https://github.com/loadletter/4chan-x) instead.
 - **Chrome**: Install 4chan X from the **[Chrome store](https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam)**.
 
-You can also use the [userscript version of 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js) with [Tampermonkey](https://tampermonkey.net/). Note: Users of Chromium / Chrome 47+ should upgrade to Tampermonkey 3.12+ due to recent sandbox changes.
+You can also use the [userscript version of 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js) with [Tampermonkey](https://tampermonkey.net/). Note: Users of Chromium / Chrome 47+ should upgrade to Tampermonkey 3.12+ due to recent sandbox changes. [Violentmonkey](https://addons.opera.com/en/extensions/details/violent-monkey/) may also work, but I have yet to test it.
 
 ### Safari
-Install [JS Blocker](http://jsblocker.toggleable.com/), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
+Install [JS Blocker](http://jsblocker.toggleable.com/), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**. [Tampermonkey for Safari](http://tampermonkey.net/?browser=safari) may also work, but I have yet to test it.
 
 ### WebKitGTK+
 Several WebKitGTK+ based browsers have support for userscripts and can run 4chan X. Due to the lack of the cross-site GM_* API, and lack of support for userscripts in iframes, not all features will work. You may experience crashes when repeatedly solving the default image-based captchas. You can avoid this problem by enabling `Use Recaptcha v1` in your settings.
