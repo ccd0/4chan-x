@@ -67,9 +67,15 @@ module.exports = (grunt) ->
     return '' unless grunt.config('pkg').tests_enabled
     "throw new Error 'Assertion failed: ' + #{json statement} unless #{statement}"
 
+  loadPkg = ->
+    pkg = grunt.file.readJSON 'package.json'
+    version = grunt.file.readJSON 'version.json'
+    pkg.meta[key] = val for key, val of version
+    pkg
+
   # Project configuration.
   grunt.initConfig
-    pkg: grunt.file.readJSON 'package.json'
+    pkg: loadPkg()
 
     concat:
       options: process: Object.create(null, data:
@@ -258,6 +264,7 @@ module.exports = (grunt) ->
         files: [
           'Gruntfile.coffee'
           'package.json'
+          'version.json'
           'src/**/*'
         ]
         tasks: 'build'
@@ -297,23 +304,17 @@ module.exports = (grunt) ->
         '-W084': true
         '-W083': true
         '-W093': true
-        globals:
-          Notification: true
-          webkitNotifications: true
-          HTMLDocument: true
-          MediaError:   true
-          Set:          true
-          GM_getValue:  true
-          GM_setValue:  true
-          GM_deleteValue: true
-          GM_listValues: true
-          GM_addValueChangeListener: true
-          GM_openInTab: true
-          GM_xmlhttpRequest: true
-          GM_info:      true
-          cloneInto:    true
-          unsafeWindow: true
-          chrome:       true
+        globals: do ->
+          globals =
+            MediaError:   true
+            Set:          true
+            GM_info:      true
+            cloneInto:    true
+            unsafeWindow: true
+            chrome:       true
+          pkg = grunt.file.readJSON 'package.json'
+          globals[v] = true for v in pkg.meta.grants
+          globals
       script: 'tmp-<%= pkg.type %>/*.js'
 
   require('load-grunt-tasks') grunt
@@ -474,13 +475,13 @@ module.exports = (grunt) ->
     grunt.task.run 'shell:captchas'
 
   grunt.registerTask 'setversion', 'Set the version number', (version) ->
-    pkg = grunt.file.readJSON 'package.json'
-    oldversion = pkg.meta.version
-    pkg.meta.version = version
-    pkg.meta.date = new Date()
-    grunt.config 'pkg', pkg
-    grunt.file.write 'package.json', JSON.stringify(pkg, null, 2) + '\n'
+    data = grunt.file.readJSON 'version.json'
+    oldversion = data.version
+    data.version = version
+    data.date = new Date()
+    grunt.file.write 'version.json', JSON.stringify(data, null, 2) + '\n'
     grunt.log.ok "Version updated from v#{oldversion} to v#{version}."
+    grunt.config 'pkg', loadPkg()
 
   grunt.registerTask 'updcl', 'Update the changelog', ->
     {meta, name} = grunt.config('pkg')

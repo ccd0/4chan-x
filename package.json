@@ -4,8 +4,6 @@
   "meta": {
     "name": "4chan X",
     "fork": "ccd0",
-    "version": "1.11.14.12",
-    "date": "2015-11-01T00:02:41.314Z",
     "page": "https://www.4chan-x.net/",
     "downloads": "https://www.4chan-x.net/builds/",
     "oldVersions": "https://raw.githubusercontent.com/ccd0/4chan-x/",
@@ -30,6 +28,15 @@
       "https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
       "*://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*"
     ],
+    "grants": [
+      "GM_getValue",
+      "GM_setValue",
+      "GM_deleteValue",
+      "GM_listValues",
+      "GM_addValueChangeListener",
+      "GM_openInTab",
+      "GM_xmlhttpRequest"
+    ],
     "suffix": {
       "stable": "",
       "beta": "-beta",
@@ -52,7 +59,7 @@
     "crx": "^3.0.3",
     "font-awesome": "^4.4.0",
     "grunt": "^0.4.5",
-    "grunt-concurrent": "^2.0.3",
+    "grunt-concurrent": "^2.0.4",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-coffee": "^0.13.0",
     "grunt-contrib-concat": "^0.5.1",

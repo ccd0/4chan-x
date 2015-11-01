@@ -1,7 +1,7 @@
 {
   "name": "4chan-X",
   "npm-shrinkwrap-version": "5.4.1",
-  "node-version": "v4.1.1",
+  "node-version": "v4.2.1",
   "dependencies": {
     "crx": {
       "version": "3.0.3",
@@ -450,12 +450,12 @@
       }
     },
     "grunt-concurrent": {
-      "version": "2.0.3",
-      "resolved": "https://registry.npmjs.org/grunt-concurrent/-/grunt-concurrent-2.0.3.tgz",
+      "version": "2.0.4",
+      "resolved": "https://registry.npmjs.org/grunt-concurrent/-/grunt-concurrent-2.0.4.tgz",
       "dependencies": {
         "async": {
-          "version": "1.4.2",
-          "resolved": "https://registry.npmjs.org/async/-/async-1.4.2.tgz"
+          "version": "1.5.0",
+          "resolved": "https://registry.npmjs.org/async/-/async-1.5.0.tgz"
         },
         "indent-string": {
           "version": "2.1.0",
@@ -480,12 +480,12 @@
           }
         },
         "pad-stream": {
-          "version": "1.1.0",
-          "resolved": "https://registry.npmjs.org/pad-stream/-/pad-stream-1.1.0.tgz",
+          "version": "1.2.0",
+          "resolved": "https://registry.npmjs.org/pad-stream/-/pad-stream-1.2.0.tgz",
           "dependencies": {
             "meow": {
-              "version": "3.4.2",
-              "resolved": "https://registry.npmjs.org/meow/-/meow-3.4.2.tgz",
+              "version": "3.5.0",
+              "resolved": "https://registry.npmjs.org/meow/-/meow-3.5.0.tgz",
               "dependencies": {
                 "camelcase-keys": {
                   "version": "1.0.0",
@@ -536,12 +536,12 @@
                       "resolved": "https://registry.npmjs.org/validate-npm-package-license/-/validate-npm-package-license-3.0.1.tgz",
                       "dependencies": {
                         "spdx-correct": {
-                          "version": "1.0.1",
-                          "resolved": "https://registry.npmjs.org/spdx-correct/-/spdx-correct-1.0.1.tgz",
+                          "version": "1.0.2",
+                          "resolved": "https://registry.npmjs.org/spdx-correct/-/spdx-correct-1.0.2.tgz",
                           "dependencies": {
                             "spdx-license-ids": {
-                              "version": "1.0.2",
-                              "resolved": "https://registry.npmjs.org/spdx-license-ids/-/spdx-license-ids-1.0.2.tgz"
+                              "version": "1.1.0",
+                              "resolved": "https://registry.npmjs.org/spdx-license-ids/-/spdx-license-ids-1.1.0.tgz"
                             }
                           }
                         },
@@ -554,8 +554,8 @@
                               "resolved": "https://registry.npmjs.org/spdx-exceptions/-/spdx-exceptions-1.0.3.tgz"
                             },
                             "spdx-license-ids": {
-                              "version": "1.0.2",
-                              "resolved": "https://registry.npmjs.org/spdx-license-ids/-/spdx-license-ids-1.0.2.tgz"
+                              "version": "1.1.0",
+                              "resolved": "https://registry.npmjs.org/spdx-license-ids/-/spdx-license-ids-1.1.0.tgz"
                             }
                           }
                         }
@@ -614,8 +614,8 @@
                               }
                             },
                             "pify": {
-                              "version": "2.2.0",
-                              "resolved": "https://registry.npmjs.org/pify/-/pify-2.2.0.tgz"
+                              "version": "2.3.0",
+                              "resolved": "https://registry.npmjs.org/pify/-/pify-2.3.0.tgz"
                             },
                             "pinkie-promise": {
                               "version": "1.0.0",
@@ -648,8 +648,8 @@
                               "resolved": "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.2.tgz"
                             },
                             "pify": {
-                              "version": "2.2.0",
-                              "resolved": "https://registry.npmjs.org/pify/-/pify-2.2.0.tgz"
+                              "version": "2.3.0",
+                              "resolved": "https://registry.npmjs.org/pify/-/pify-2.3.0.tgz"
                             },
                             "pinkie-promise": {
                               "version": "1.0.0",
@@ -714,8 +714,8 @@
                       }
                     },
                     "readable-stream": {
-                      "version": "2.0.2",
-                      "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.2.tgz",
+                      "version": "2.0.4",
+                      "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.4.tgz",
                       "dependencies": {
                         "core-util-is": {
                           "version": "1.0.1",
@@ -746,8 +746,8 @@
                   }
                 },
                 "pump": {
-                  "version": "1.0.0",
-                  "resolved": "https://registry.npmjs.org/pump/-/pump-1.0.0.tgz",
+                  "version": "1.0.1",
+                  "resolved": "https://registry.npmjs.org/pump/-/pump-1.0.1.tgz",
                   "dependencies": {
                     "end-of-stream": {
                       "version": "1.1.0",
@@ -768,8 +768,8 @@
               }
             },
             "repeating": {
-              "version": "1.1.3",
-              "resolved": "https://registry.npmjs.org/repeating/-/repeating-1.1.3.tgz",
+              "version": "2.0.0",
+              "resolved": "https://registry.npmjs.org/repeating/-/repeating-2.0.0.tgz",
               "dependencies": {
                 "is-finite": {
                   "version": "1.0.1",
@@ -792,8 +792,8 @@
               "resolved": "https://registry.npmjs.org/through2/-/through2-2.0.0.tgz",
               "dependencies": {
                 "readable-stream": {
-                  "version": "2.0.2",
-                  "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.2.tgz",
+                  "version": "2.0.4",
+                  "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.4.tgz",
                   "dependencies": {
                     "core-util-is": {
                       "version": "1.0.1",

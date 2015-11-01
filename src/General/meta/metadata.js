@@ -18,13 +18,11 @@
     }
   }).join('\n')
 %>
-// @grant        GM_getValue
-// @grant        GM_setValue
-// @grant        GM_deleteValue
-// @grant        GM_listValues
-// @grant        GM_addValueChangeListener
-// @grant        GM_openInTab
-// @grant        GM_xmlhttpRequest
+<%=
+  meta.grants.map(function(grant) {
+    return '// @grant        ' + grant;
+  }).join('\n')
+%>
 // @run-at       document-start
 <% if (channel !== 'dev') { %>// @updateURL    <%= (channel !== 'noupdate') ? (meta.downloads + name + meta.suffix[channel] + '.meta.js') : 'https://noupdate.invalid/' %>
 // @downloadURL  <%= (channel !== 'noupdate') ? (meta.downloads + name + meta.suffix[channel] + '.user.js') : 'https://noupdate.invalid/' %>
