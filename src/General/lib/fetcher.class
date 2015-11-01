@@ -6,8 +6,8 @@ class Fetcher
 
     @root.textContent = "Loading post No.#{@postID}..."
     if @threadID
-      $.cache "//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json", do (self = @) -> ->
-        self.fetchedPost @
+      $.cache "//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json", (e) =>
+        @fetchedPost e.target
     else
       @archivedPost()
 
@@ -56,8 +56,8 @@ class Fetcher
       if req.cached
         api = "//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json"
         $.cleanCache (url) -> url is api
-        $.cache api, do (self = @) -> ->
-          self.fetchedPost @
+        $.cache api, (e) =>
+          @fetchedPost e.target
         return
 
       # The post can be deleted by the time we check a quote.
@@ -81,8 +81,8 @@ class Fetcher
     return false unless url = Redirect.to 'post', {@boardID, @postID}
     archive = Redirect.data.post[@boardID]
     if /^https:\/\//.test(url) or location.protocol is 'http:'
-      $.cache url,
-        do (self = @) -> -> self.parseArchivedPost @response, url
+      $.cache url, (e) =>
+        @parseArchivedPost e.target.response, url
       ,
         responseType: 'json'
         withCredentials: archive.withCredentials
