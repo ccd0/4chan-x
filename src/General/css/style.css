@@ -1367,7 +1367,7 @@ input.field.tripped:not(:hover):not(:focus) {
 }
 
 /* File Input, Submit Button, Oekaki */
-#file-n-submit, .oekaki {
+#file-n-submit, #qr .oekaki {
   display: -webkit-flex;
   display: flex;
   -webkit-align-items: stretch;
@@ -1422,10 +1422,10 @@ input#qr-filename {
 #qr-no-file {
   color: #AAA;
 }
-.oekaki.has-file {
+#qr .oekaki.has-file {
   display: none;
 }
-.oekaki > label {
+#qr .oekaki > label {
   -webkit-flex: 1 1 auto;
   flex: 1 1 auto;
   width: 0;
@@ -1435,10 +1435,10 @@ input#qr-filename {
   align-items: center;
   height: 100%;
 }
-.oekaki > label > span {
+#qr .oekaki > label > span {
   margin: 0 3px;
 }
-.oekaki > label > input {
+#qr .oekaki > label > input {
   -webkit-flex: 1 1 auto;
   flex: 1 1 auto;
   width: 0;
