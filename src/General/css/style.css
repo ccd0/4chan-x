@@ -111,6 +111,9 @@ hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
 #captchaContainerAlt td:nth-child(2) {
   display: table-cell !important;
 }
+#tegaki-canvas {
+  background: none;
+}
 /* Disable obnoxious captcha fade-in. */
 body > div:last-of-type {
   transition: none !important;

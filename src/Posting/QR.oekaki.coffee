@@ -85,6 +85,7 @@ QR.oekaki =
         onCancel: ->
         width:  +document.querySelector('#qr [name=oekaki-width]').value
         height: +document.querySelector('#qr [name=oekaki-height]').value
+        bgColor: '#ffffff'
 
   button: ->
     if QR.selected.file
@@ -113,7 +114,7 @@ QR.oekaki =
           FCX.oekakiName = name
           Tegaki.open
             onDone: FCX.oekakiCB
-            onCancel: ->
+            onCancel: -> Tegaki.bgColor = '#ffffff'
             width:  file.naturalWidth  or file.videoWidth
             height: file.naturalHeight or file.videoHeight
             bgColor: 'transparent'
