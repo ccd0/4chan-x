@@ -5,7 +5,7 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 ### v1.11.15
 
 **v1.11.15.1** *(2015-11-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.1/builds/4chan-X-noupdate.crx "Chromium version")]
-- Fix some Oekaki transparency related bugs.
+- Fix some oekaki transparency related bugs.
 
 **v1.11.15.0** *(2015-11-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.14.12.
