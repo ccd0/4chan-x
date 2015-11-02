@@ -1444,6 +1444,31 @@ input#qr-filename {
   width: 0;
   height: 100%;
 }
+#qr .oekaki-bg {
+  position: relative;
+  display: inline-block;
+  height: 100%;
+  width: 10%;
+  margin-left: 3px;
+}
+#qr .oekaki-bg > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+}
+#qr .oekaki-bg > :not([name="oekaki-bgcolor"]) {
+  z-index: 1;
+}
+#qr [name="oekaki-bgcolor"] {
+  height: 100%;
+  width: 100%;
+  border: none;
+  padding: 0;
+}
+#qr [name="oekaki-bg"]:not(:checked) ~ [name="oekaki-bgcolor"] {
+  visibility: hidden;
+}
 #qr input[type="file"] {
   visibility: hidden;
   position: absolute;

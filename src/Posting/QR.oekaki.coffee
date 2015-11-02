@@ -82,10 +82,14 @@ QR.oekaki =
       FCX.oekakiName = 'tegaki.png'
       Tegaki.open
         onDone: FCX.oekakiCB
-        onCancel: ->
+        onCancel: -> Tegaki.bgColor = '#ffffff'
         width:  +document.querySelector('#qr [name=oekaki-width]').value
         height: +document.querySelector('#qr [name=oekaki-height]').value
-        bgColor: '#ffffff'
+        bgColor:
+          if document.querySelector('#qr [name=oekaki-bg]').checked
+            document.querySelector('#qr [name=oekaki-bgcolor]').value
+          else
+            'transparent'
 
   button: ->
     if QR.selected.file
