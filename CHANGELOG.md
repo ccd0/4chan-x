@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.15
 
+**v1.11.15.2** *(2015-11-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add background color selector to oekaki controls in Quick Reply.
+
 **v1.11.15.1** *(2015-11-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix some oekaki transparency related bugs.
 
