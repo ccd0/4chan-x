@@ -11,7 +11,9 @@ Sauce =
     return unless links.length
 
     @links = links
-    @link  = $.el 'a', target: '_blank'
+    @link  = $.el 'a',
+      target:    '_blank'
+      className: 'sauce'
     Post.callbacks.push
       name: 'Sauce'
       cb:   @node
