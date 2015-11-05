@@ -145,6 +145,10 @@ Captcha.v2 =
       QR.nodes.el.style.bottom = '0px'
     iframe.focus() if @shouldFocus
     @shouldFocus = false
+    # XXX Stop Recaptcha from changing focus from iframe -> body -> iframe on submit.
+    $.global ->
+      f = document.querySelector('#qr iframe')
+      f.focus = f.blur = ->
 
   setupTextArea: (textarea) ->
     $.one textarea, 'input', => @save true
