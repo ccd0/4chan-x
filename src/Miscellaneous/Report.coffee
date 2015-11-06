@@ -11,7 +11,10 @@ Report =
     $.addStyle Report.css
     Report.archive() if Conf['Archive Report']
     if Conf['Use Recaptcha v2 in Reports'] and $.hasClass doc, 'js-enabled'
-      new MutationObserver(-> Report.fit 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]').observe d.body,
+      new MutationObserver(->
+        Report.fit 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
+        Report.fit 'body'
+      ).observe d.body,
         childList:  true
         attributes: true
         subtree:    true
