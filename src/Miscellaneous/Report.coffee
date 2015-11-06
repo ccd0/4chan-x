@@ -19,7 +19,7 @@ Report =
       Report.fit 'body'
 
   fit: (selector) ->
-    return unless el = $ selector, doc
+    return unless (el = $ selector, doc) and getComputedStyle(el).visibility isnt 'hidden'
     dy = el.getBoundingClientRect().bottom - doc.clientHeight + 8
     window.resizeBy 0, dy if dy > 0
 
