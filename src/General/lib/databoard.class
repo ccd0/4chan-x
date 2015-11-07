@@ -82,21 +82,19 @@ class DataBoard
 
   ajaxClean: (boardID) ->
     $.cache "//a.4cdn.org/#{boardID}/threads.json", (e1) =>
-      if e1.target.status is 200
-        if boardID in ['b', 'f', 'trash']
-          @ajaxCleanParse boardID, e1.target.response
-        else
-          $.cache "//a.4cdn.org/#{boardID}/archive.json", (e2) =>
-            if e2.target.status is 200
-              @ajaxCleanParse boardID, e1.target.response, e2.target.response
+      return unless e1.target.status in [200, 404]
+      $.cache "//a.4cdn.org/#{boardID}/archive.json", (e2) =>
+        return unless e2.target.status in [200, 404]
+        @ajaxCleanParse boardID, e1.target.response, e2.target.response
 
   ajaxCleanParse: (boardID, response1, response2) ->
     board   = @data.boards[boardID]
     threads = {}
-    for page in response1
-      for thread in page.threads
-        ID = thread.no
-        threads[ID] = board[ID] if ID of board
+    if response1
+      for page in response1
+        for thread in page.threads
+          ID = thread.no
+          threads[ID] = board[ID] if ID of board
     if response2
       for ID in response2
         threads[ID] = board[ID] if ID of board
