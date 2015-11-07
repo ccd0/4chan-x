@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.15
 
+**v1.11.15.7** *(2015-11-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.7/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix cleaning of post history on /trash/ and remove links to nonexistent internal archive.
+
 **v1.11.15.6** *(2015-11-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.6/builds/4chan-X-noupdate.crx "Chromium version")]
 - (desustorage, bui) Update archive list: Add /trash/.
 
