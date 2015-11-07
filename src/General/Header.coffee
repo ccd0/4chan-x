@@ -259,7 +259,7 @@ Header =
         return a.firstChild # Its text node.
 
     if /-expired/.test t
-      if boardID not in ['b', 'f']
+      if boardID not in ['b', 'f', 'trash']
         a.href = "/#{boardID}/archive"
       else
         return a.firstChild # Its text node.

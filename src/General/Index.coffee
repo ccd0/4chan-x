@@ -58,7 +58,7 @@ Index =
     @navLinks = $.el 'div', className: 'navLinks'
     $.extend @navLinks, <%= importHTML('Features/Index-navlinks') %>
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
-    $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID is 'b'
+    $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID in ['b', 'trash']
     @searchInput = $ '#index-search', @navLinks
     @setupSearch()
     @hideLabel   = $ '#hidden-label', @navLinks

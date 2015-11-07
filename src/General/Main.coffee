@@ -30,7 +30,7 @@ Main =
         else
           'index'
     return if g.VIEW is 'catalog' and g.BOARD.ID is 'f'
-    return if g.VIEW is 'archive' and g.BOARD.ID in ['b', 'f']
+    return if g.VIEW is 'archive' and g.BOARD.ID in ['b', 'f', 'trash']
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
 
