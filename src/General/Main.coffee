@@ -20,7 +20,6 @@ Main =
 
     pathname = location.pathname.split /\/+/
     g.BOARD  = new Board pathname[1]
-    return if g.BOARD.ID in ['z', 'fk']
     g.VIEW   =
       switch pathname[2]
         when 'res', 'thread'
@@ -29,8 +28,6 @@ Main =
           pathname[2]
         else
           'index'
-    return if g.VIEW is 'catalog' and g.BOARD.ID is 'f'
-    return if g.VIEW is 'archive' and g.BOARD.ID in ['b', 'f', 'trash']
     if g.VIEW is 'thread'
       g.THREADID = +pathname[3]
 

@@ -17,7 +17,7 @@ ThreadHiding =
 
   catalogWatch: ->
     @hiddenThreads = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
-    $.ready ->
+    Main.ready ->
       # 4chan's catalog sets the style to "display: none;" when hiding or unhiding a thread.
       new MutationObserver(ThreadHiding.catalogSave).observe $.id('threads'),
         attributes: true
