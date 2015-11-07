@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.15
 
+**v1.11.15.6** *(2015-11-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- (desustorage, bui) Update archive list: Add /trash/.
+
 **v1.11.15.5** *(2015-11-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.15.5/builds/4chan-X-noupdate.crx "Chromium version")]
 - Update report window resizing for recent captcha changes.
 
