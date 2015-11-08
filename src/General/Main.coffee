@@ -130,17 +130,6 @@ Main =
     # set up CSS when <head> is completely loaded
     $.onExists doc, 'body', false, Main.initStyle
 
-    if Conf['Normalize URL']
-      switch g.VIEW
-        when 'thread'
-          pathname[2] = 'thread'
-          pathname = pathname[0...4]
-        when 'index'
-          pathname = pathname[0...3]
-      pathname2 = pathname.join '/'
-      if location.pathname isnt pathname2
-        history.replaceState history.state, '', "#{location.protocol}//#{location.host}#{pathname2}#{location.hash}"
-
     # c.time 'All initializations'
     for [name, feature] in Main.features
       # c.time "#{name} initialization"
@@ -366,6 +355,7 @@ Main =
 
   features: [
     ['Polyfill',                  Polyfill]
+    ['Normalize URL',             NormalizeURL]
     ['Captcha Replacement',       Captcha.replace]
     ['Redirect',                  Redirect]
     ['Header',                    Header]
