@@ -204,17 +204,6 @@ Main =
 
     return if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
 
-    # 4chan Pass Link
-    if styleSelector = $.id 'styleSelector'
-      passLink = $.el 'a',
-        textContent: '4chan Pass'
-        href: 'javascript:;'
-      $.on passLink, 'click', ->
-        window.open '//sys.4chan.org/auth',
-          'This will steal your data.'
-          'left=0,top=0,width=500,height=255,toolbar=0,resizable=0'
-      $.before styleSelector.previousSibling, [$.tn '['; passLink, $.tn ']\u00A0\u00A0']
-
     # Parse HTML or skip it and start building from JSON.
     unless Conf['JSON Navigation'] and g.VIEW is 'index'
       Main.initThread() 
@@ -380,6 +369,7 @@ Main =
     ['Quick Reply',               QR]
     ['Cooldown',                  QR.cooldown]
     ['Oekaki Links',              QR.oekaki]
+    ['Pass Link',                 PassLink]
     ['Menu',                      Menu]
     ['Index Generator (Menu)',    Index.menu]
     ['Report Link',               ReportLink]

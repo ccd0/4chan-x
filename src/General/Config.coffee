@@ -502,6 +502,10 @@ Config =
         false
         'Use the image selection captcha in the report window.'
       ]
+      'Pass Link': [
+        true
+        'Add a 4chan Pass login link to the bottom of the page.'
+      ]
 
     'Quote Links':
       'Quote Backlinks': [
