@@ -115,7 +115,7 @@ Config =
       ]
       'Normalize URL': [
         true
-        'Rewrite the URL of the current page, removing stubs and changing /res/ to /thread/.'
+        'Rewrite the URL of the current page, removing slugs and excess slashes, and changing /res/ to /thread/.'
       ]
       'Disable Autoplaying Sounds': [
         false
