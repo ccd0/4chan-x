@@ -338,6 +338,12 @@ $.engine = do ->
   return 'webkit' if /WebKit\//.test navigator.userAgent
   return 'gecko'  if /Gecko\/|Goanna/.test navigator.userAgent # Goanna = Pale Moon 26+
 
+try
+  localStorage.getItem 'x'
+  $.hasStorage = true
+catch err
+  $.hasStorage = false
+
 $.item = (key, val) ->
   item = {}
   item[key] = val
@@ -456,10 +462,13 @@ do ->
 if GM_deleteValue?
   $.getValue   = GM_getValue
   $.listValues = -> GM_listValues() # error when called if missing
-else
+else if $.hasStorage
   $.getValue = (key) -> localStorage[key]
   $.listValues = ->
     key for key of localStorage when key[...g.NAMESPACE.length] is g.NAMESPACE
+else
+  $.getValue   = ->
+  $.listValues = -> []
 
 if GM_addValueChangeListener?
   $.setValue    = GM_setValue
@@ -470,13 +479,14 @@ else if GM_deleteValue?
     GM_setValue key, val
     if key of $.syncing
       $.oldValue[key]   = val
-      localStorage[key] = val # for `storage` events
+      localStorage[key] = val if $.hasStorage # for `storage` events
   $.deleteValue = (key) ->
     GM_deleteValue key
     if key of $.syncing
       delete $.oldValue[key]
-      delete localStorage[key] # for `storage` events
-else
+      delete localStorage[key] if $.hasStorage # for `storage` events
+  $.cantSync = true if !$.hasStorage
+else if $.hasStorage
   $.oldValue = {}
   $.setValue = (key, val) ->
     $.oldValue[key]   = val if key of $.syncing
@@ -484,6 +494,10 @@ else
   $.deleteValue = (key) ->
     delete $.oldValue[key] if key of $.syncing
     delete localStorage[key]
+else
+  $.setValue = ->
+  $.deleteValue = ->
+  $.cantSync = $.cantSet = true
 
 if GM_addValueChangeListener?
   $.sync = (key, cb) ->
@@ -492,7 +506,7 @@ if GM_addValueChangeListener?
         newValue = JSON.parse newValue unless newValue is undefined
         cb newValue, key
   $.forceSync = ->
-else
+else if $.hasStorage
   $.sync = (key, cb) ->
     key = g.NAMESPACE + key
     $.syncing[key] = cb
@@ -516,6 +530,9 @@ else
       # e.g. http://boards.4chan.org and https://boards.4chan.org
       # so force a check for changes to avoid lost data.
       onChange g.NAMESPACE + key
+else
+  $.sync = ->
+  $.forceSync = ->
 
 $.delete = (keys) ->
   unless keys instanceof Array

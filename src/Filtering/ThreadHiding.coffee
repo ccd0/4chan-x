@@ -9,6 +9,7 @@ ThreadHiding =
       cb:   @node
 
   catalogSet: (board) ->
+    return unless $.hasStorage
     hiddenThreads = ThreadHiding.db.get
       boardID: board.ID
       defaultValue: {}
@@ -16,6 +17,7 @@ ThreadHiding =
     localStorage.setItem "4chan-hide-t-#{board}", JSON.stringify hiddenThreads
 
   catalogWatch: ->
+    return unless $.hasStorage
     @hiddenThreads = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
     Main.ready ->
       # 4chan's catalog sets the style to "display: none;" when hiding or unhiding a thread.

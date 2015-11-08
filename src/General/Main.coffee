@@ -43,8 +43,12 @@ Main =
     $.get items, (items) ->
       $.asap (-> doc = d.documentElement), ->
 
+        # Don't hide the local storage warning behind a settings panel.
+        if $.cantSet
+          # pass
+
         # Fresh install
-        if !items.previousversion?
+        else if !items.previousversion?
           Main.ready ->
             $.set 'previousversion', g.VERSION
             Settings.open()
@@ -205,10 +209,16 @@ Main =
       $.event '4chanXInitFinished'
 
     if Conf['Show Support Message']
-      try
-        localStorage.getItem '4chan-settings'
-      catch err
-        new Notice 'warning', 'Cookies need to be enabled on 4chan for <%= meta.name %> to operate properly.', 30
+      if $.cantSync
+        why = if $.cantSet
+          'save your settings'
+        else
+          'synchronize data between tabs'
+        new Notice 'warning', """
+          <%= meta.name %> needs local storage to #{why}.
+          Enable it on boards.4chan.org in your browser's privacy settings
+          (may be listed as part of "local data" or "cookies").
+        """
 
   initThread: ->
     if board = $ '.board'

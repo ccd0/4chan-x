@@ -4,4 +4,7 @@ Flash =
       $.ready Flash.initReady
 
   initReady: ->
-    $.globalEval 'if (JSON.parse(localStorage["4chan-settings"] || "{}").disableAll) SWFEmbed.init();'
+    if $.hasStorage
+      $.global -> window.SWFEmbed.init() if JSON.parse(localStorage['4chan-settings'] or '{}').disableAll
+    else
+      $.global -> window.SWFEmbed.init()

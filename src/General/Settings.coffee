@@ -21,7 +21,7 @@ Settings =
     $.on d, 'AddSettingsSection',   Settings.addSection
     $.on d, 'OpenSettings', (e) -> Settings.open e.detail
 
-    if Conf['Disable Native Extension']
+    if Conf['Disable Native Extension'] and $.hasStorage
       settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
       return if settings.disableAll
       settings.disableAll = true
@@ -140,8 +140,9 @@ Settings =
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
       $.get 'hiddenThreads', {}, ({hiddenThreads}) ->
-        for boardID of hiddenThreads.boards
-          localStorage.removeItem "4chan-hide-t-#{boardID}"
+        if $.hasStorage
+          for boardID of hiddenThreads.boards
+            localStorage.removeItem "4chan-hide-t-#{boardID}"
         $.delete ['hiddenThreads', 'hiddenPosts']
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
 

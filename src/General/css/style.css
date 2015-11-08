@@ -430,6 +430,7 @@ audio.controls-added {
   max-height: 200px;
   width: 100%;
   overflow: auto;
+  white-space: pre-line;
 }
 
 /* Settings */
