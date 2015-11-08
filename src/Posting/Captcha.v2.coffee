@@ -112,7 +112,7 @@ Captcha.v2 =
           var container = document.querySelector("#qr .captcha-container");
           container.dataset.widgetID = window.grecaptcha.render(container, {
             sitekey: '<%= meta.recaptchaKey %>',
-            theme: (document.documentElement.classList.contains('tomorrow') || document.documentElement.classList.contains('spooky')) ? 'dark' : 'light',
+            theme: document.documentElement.classList.contains('tomorrow') ? 'dark' : 'light',
             callback: function(response) {
               window.dispatchEvent(new CustomEvent("captcha:success", {detail: response}));
             }
