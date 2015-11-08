@@ -85,8 +85,6 @@ Main =
         $.onExists doc, 'body', false, -> $.addStyle Main.cssWWW
         Captcha.replace.init()
         return
-      when 'a.4cdn.org'
-        return
       when 'sys.4chan.org'
         if pathname[2] is 'imgboard.php'
           if /\bmode=report\b/.test search

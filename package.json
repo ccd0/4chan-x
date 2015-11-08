@@ -20,7 +20,6 @@
     "matches": [
       "*://boards.4chan.org/*",
       "*://sys.4chan.org/*",
-      "*://a.4cdn.org/*",
       "*://i.4cdn.org/*",
       "*://www.4chan.org/banned",
       "*://www.4chan.org/feedback",
