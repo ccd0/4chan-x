@@ -15,22 +15,6 @@ Main =
           $.ready -> Captcha.fixes.init()
       return
 
-    g.threads = new SimpleDict()
-    g.posts   = new SimpleDict()
-
-    pathname = location.pathname.split /\/+/
-    g.BOARD  = new Board pathname[1]
-    g.VIEW   =
-      switch pathname[2]
-        when 'res', 'thread'
-          'thread'
-        when 'catalog', 'archive', 'post'
-          pathname[2]
-        else
-          'index'
-    if g.VIEW is 'thread'
-      g.THREADID = +pathname[3]
-
     # Flatten default values from Config into Conf
     flatten = (parent, obj) ->
       if obj instanceof Array
@@ -75,10 +59,6 @@ Main =
 
         Main.initFeatures()
 
-    # set up CSS when <head> is completely loaded
-    $.asap (-> doc = d.documentElement), ->
-      $.onExists doc, 'body', false, Main.initStyle
-
   upgrade: (items) ->
     {previousversion} = items
     changes = {previousversion: g.VERSION}
@@ -91,31 +71,39 @@ Main =
         new Notice 'info', el, 15
 
   initFeatures: ->
-    if location.hostname in ['boards.4chan.org', 'sys.4chan.org', 'www.4chan.org']
+    {hostname, search} = location
+    pathname = location.pathname.split /\/+/
+    g.BOARD = new Board pathname[1] unless hostname is 'www.4chan.org'
+
+    if hostname in ['boards.4chan.org', 'sys.4chan.org', 'www.4chan.org']
       $.global ->
         document.documentElement.classList.add 'js-enabled'
         window.FCX = {}
 
-    switch location.hostname
+    switch hostname
       when 'www.4chan.org'
+        $.onExists doc, 'body', false, -> $.addStyle Main.cssWWW
         Captcha.replace.init()
         return
       when 'a.4cdn.org'
         return
       when 'sys.4chan.org'
-        Report.init()
-        PostSuccessful.init() if g.VIEW is 'post'
-        if Conf['404 Redirect'] and /\/imgboard\.php$/.test(location.pathname) and (match = location.search.match /\bres=(\d+)/)
-          $.ready ->
-            if $.id('errmsg')?.textContent is 'Error: Specified thread does not exist.'
-              Redirect.navigate 'thread',
-                boardID: g.BOARD.ID
-                postID:  +match[1]
+        if pathname[2] is 'imgboard.php'
+          if /\bmode=report\b/.test search
+            Report.init()
+          else if (match = search.match /\bres=(\d+)/)
+            $.ready ->
+              if Conf['404 Redirect'] and $.id('errmsg')?.textContent is 'Error: Specified thread does not exist.'
+                Redirect.navigate 'thread',
+                  boardID: g.BOARD.ID
+                  postID:  +match[1]
+        else if pathname[2] is 'post'
+          PostSuccessful.init()
         return
       when 'i.4cdn.org'
+        return unless pathname[2] and not /s\.jpg$/.test(pathname[2])
         $.asap (-> d.readyState isnt 'loading'), ->
           if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
-            pathname = location.pathname.split /\/+/
             Redirect.navigate 'file',
               boardID:  g.BOARD.ID
               filename: pathname[pathname.length - 1]
@@ -129,17 +117,32 @@ Main =
               ImageCommon.addControls video
         return
 
+    if pathname[2] in ['thread', 'res']
+      g.VIEW     = 'thread'
+      g.THREADID = +pathname[3]
+    else if pathname[2] in ['catalog', 'archive']
+      g.VIEW = pathname[2]
+    else if pathname[2].match /^\d*$/
+      g.VIEW = 'index'
+    else
+      return
+
+    g.threads = new SimpleDict()
+    g.posts   = new SimpleDict()
+
+    # set up CSS when <head> is completely loaded
+    $.onExists doc, 'body', false, Main.initStyle
+
     if Conf['Normalize URL']
-      pathname = location.pathname.split /\/+/
       switch g.VIEW
         when 'thread'
           pathname[2] = 'thread'
           pathname = pathname[0...4]
         when 'index'
           pathname = pathname[0...3]
-      pathname = pathname.join '/'
-      if location.pathname isnt pathname
-        history.replaceState history.state, '', "#{location.protocol}//#{location.host}#{pathname}#{location.hash}"
+      pathname2 = pathname.join '/'
+      if location.pathname isnt pathname2
+        history.replaceState history.state, '', "#{location.protocol}//#{location.host}#{pathname2}#{location.hash}"
 
     # c.time 'All initializations'
     for [name, feature] in Main.features
@@ -158,8 +161,6 @@ Main =
     $.ready Main.initReady
 
   initStyle: ->
-    $.addStyle Main.cssWWW if location.hostname is 'www.4chan.org'
-
     return if !Main.isThisPageLegit() or $.hasClass doc, 'fourchan-x'
 
     # disable the mobile layout

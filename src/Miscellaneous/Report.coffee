@@ -2,7 +2,7 @@ Report =
   css: `<%= importCSS('report') %>`
 
   init: ->
-    return unless /\bmode=report\b/.test(location.search) and match = location.search.match /\bno=(\d+)/
+    return unless (match = location.search.match /\bno=(\d+)/)
     Captcha.replace.init()
     @postID = +match[1]
     $.ready @ready
