@@ -21,11 +21,15 @@ Settings =
     $.on d, 'AddSettingsSection',   Settings.addSection
     $.on d, 'OpenSettings', (e) -> Settings.open e.detail
 
-    if Conf['Disable Native Extension'] and $.hasStorage
-      settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
-      return if settings.disableAll
-      settings.disableAll = true
-      localStorage.setItem '4chan-settings', JSON.stringify settings
+    if Conf['Disable Native Extension']
+      if $.hasStorage
+        settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
+        return if settings.disableAll
+        settings.disableAll = true
+        localStorage.setItem '4chan-settings', JSON.stringify settings
+      else
+        $.onExists doc, 'body', false, ->
+          $.global -> window.Config.disableAll = true
 
   open: (openSection) ->
     return if Settings.overlay
