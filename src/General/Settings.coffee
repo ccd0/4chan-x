@@ -289,6 +289,10 @@ Settings =
         for boardID, record of changes['selectedArchives']
           for type, name of record when name of uids
             record[type] = uids[name]
+    if compareString < '00001.00011.00016.00000'
+      if (rice = Config['usercss'].match(/\/\* Board title rice \*\/(?:\n.+)*/)[0])
+        if data['usercss']? and data['usercss'].indexOf(rice) < 0
+          changes['usercss'] = rice + '\n\n' + data['usercss']
     changes
 
   loadSettings: (data, cb) ->

@@ -1746,9 +1746,6 @@ a:only-of-type > .remove {
 .boardSubtitle[contenteditable="true"] {
   cursor: text !important;
 }
-div.boardTitle {
-  font-weight: 400 !important;
-}
 /* Link Title Favicons */
 <%=
 grunt.file.expand('src/General/img/links/*.png').map(function(file) {

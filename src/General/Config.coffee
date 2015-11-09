@@ -728,7 +728,7 @@ Config =
   FappeT:
     werk:  false
 
-  'Custom CSS': false
+  'Custom CSS': true
 
   Index:
     'Index Mode': 'paged'
@@ -787,7 +787,7 @@ Config =
 
   favicon: 'ferongr'
 
-  usercss: ''
+  usercss: `<%= importCSS('custom') %>`
 
   hotkeys:
     # QR & Options

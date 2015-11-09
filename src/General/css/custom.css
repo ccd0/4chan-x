@@ -1,0 +1,20 @@
+/* Board title rice */
+div.boardTitle {
+  font-weight: 400 !important;
+}
+:root.yotsuba div.boardTitle {
+  font-family: sans-serif !important;
+  text-shadow: 1px 1px 1px rgba(100,0,0,0.6);
+}
+:root.yotsuba-b div.boardTitle {
+  font-family: sans-serif !important;
+  text-shadow: 1px 1px 1px rgba(105,10,15,0.6);
+}
+:root.photon div.boardTitle {
+  font-family: sans-serif !important;
+  text-shadow: 1px 1px 1px rgba(0,74,153,0.6);
+}
+:root.tomorrow div.boardTitle {
+  font-family: sans-serif !important;
+  text-shadow: 1px 1px 1px rgba(167,170,168,0.6);
+}
