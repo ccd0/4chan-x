@@ -213,7 +213,7 @@ Main =
         why = if $.cantSet
           'save your settings'
         else
-          'synchronize data between tabs'
+          'synchronize settings between tabs'
         new Notice 'warning', """
           <%= meta.name %> needs local storage to #{why}.
           Enable it on boards.4chan.org in your browser's privacy settings
