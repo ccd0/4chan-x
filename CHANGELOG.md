@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.16
 
+**v1.11.16.1** *(2015-11-09)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Remove the hopefully no longer necessary measure of preventing all scrolling while the captcha is focused.
+
 **v1.11.16.0** *(2015-11-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.15.7.
 - 4chan X no longer requires local storage to be enabled when using Chromium-based browsers. In Firefox, local storage is still needed to sync settings between tabs, but it is no longer essential. Warnings about local storage being disabled can be turned off by disabling the `Show Support Message` setting. Local storage is still required in userscript engines that do not support the Greasemonkey API.
