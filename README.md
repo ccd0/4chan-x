@@ -1,4 +1,4 @@
-![screenshot](https://www.4chan-x.net/img/screenshot.png)
+![screenshot](https://ccd0.github.io/4chan-x/img/screenshot.png)
 # 4chan X
 Adds various features to 4chan.
 Previously developed by [aeosynth](https://github.com/aeosynth/4chan-x), [Mayhem](https://github.com/MayhemYDG/4chan-x), [ihavenoface](https://github.com/ihavenoface/4chan-x), [Zixaphir](https://github.com/zixaphir/appchan-x), [Seaweed](https://github.com/seaweedchan/4chan-x), and [Spittie](https://github.com/Spittie/4chan-x), with contributions from many others.
@@ -6,7 +6,12 @@ Previously developed by [aeosynth](https://github.com/aeosynth/4chan-x), [Mayhem
 If you're looking for a maintained fork of OneeChan (a style script used in addition to 4chan X), try
 https://github.com/Nebukazar/OneeChan.
 
-**Note**: 4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the `[Settings]` link in the top right corner and uncheck "`Disable the native extension`" in the panel that appears.
+## Please note
+**Uninstalling**: 4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the `[Settings]` link in the top right corner and uncheck "`Disable the native extension`" in the panel that appears.
+
+**Private browsing**: 4chan X does not yet support private browsing mode. Although it may work in this mode, browsing data recorded by 4chan X, such as your last read post in a thread and which posts are yours, will need to be cleared manually by resetting your settings.
+
+**HTTPS**: 4chan X currently shares your settings and post history between the HTTP and HTTPS versions of 4chan. If you are concerned about protecting your privacy against a man-in-the-middle attack, you should disable 4chan X on the HTTP version of 4chan and/or install [HTTPS Everywhere](https://www.eff.org/https-everywhere).
 
 ## Install
 
@@ -61,9 +66,6 @@ To install the current **beta** version but get updates from the **stable** chan
 To install the **beta** version and get updates whenever there's a new **beta** version:
 - [Install userscript](https://www.4chan-x.net/builds/4chan-X-beta.user.js)
 - [Download Chrome extension](https://www.4chan-x.net/builds/4chan-X-beta.crx)
-
-## Security note
-4chan X currently shares your settings and post history between the HTTP and HTTPS versions of 4chan. If you are concerned about protecting your privacy against a man-in-the-middle attack, you should disable 4chan X on the HTTP version of 4chan and/or install [HTTPS Everywhere](https://www.eff.org/https-everywhere).
 
 ## Troubleshooting
 If you encounter a bug, try the steps [here](https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md#reporting-bugs), then report it to the [issue tracker](https://github.com/ccd0/4chan-x/issues). You can report bugs without a Github account via [this form](https://gitreports.com/issue/ccd0/4chan-x). If the bug seems to be caused by a script update, you can install a old version from the [changelog](https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md).
