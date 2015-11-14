@@ -56,7 +56,7 @@ Report =
 
   archive: ->
     Redirect.init()
-    return unless url = Redirect.to 'report', {boardID: g.BOARD.ID, postID: Report.postID}
+    return unless (url = Redirect.to 'report', {boardID: g.BOARD.ID, postID: Report.postID})
 
     if (message = $ 'h3') and /Report submitted!/.test(message.textContent)
       if location.hash is '#redirect'
