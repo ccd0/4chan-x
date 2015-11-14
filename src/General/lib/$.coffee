@@ -338,12 +338,11 @@ $.engine = do ->
   return 'webkit' if /WebKit\//.test navigator.userAgent
   return 'gecko'  if /Gecko\/|Goanna/.test navigator.userAgent # Goanna = Pale Moon 26+
 
-do ->
-  try
-    localStorage.getItem 'x'
-    $.hasStorage = true
-  catch err
-    $.hasStorage = false
+try
+  localStorage.getItem 'x'
+  $.hasStorage = true
+catch
+  $.hasStorage = false
 
 $.item = (key, val) ->
   item = {}
