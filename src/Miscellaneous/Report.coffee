@@ -12,6 +12,12 @@ Report =
 
     Report.archive() if Conf['Archive Report']
 
+    link = $.el 'a',
+      href:        'https://report.cybertip.org/'
+      textContent: 'Report to NCMEC'
+      target:      '_blank'
+    $.add d.body, [$.tn(' ['), link, $.tn(']')]
+
     if (passAd = $ 'a[href="https://www.4chan.org/pass"]')
       $.extend passAd,
         textContent: 'Complain'
