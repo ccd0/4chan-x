@@ -38,6 +38,12 @@ Report =
       Report.fit 'body'
 
     if !Conf['Use Recaptcha v2 in Reports'] and $.hasClass(doc, 'js-enabled') and d.cookie.indexOf('pass_enabled=1') < 0
+      $.onExists d.body, '#recaptcha_image', true, (image) ->
+        # XXX Native reload-on-click breaks audio captcha.
+        $.global -> document.getElementById('recaptcha_image').removeEventListener 'click', window.onAltCaptchaClick, false
+        $.on image, 'click', ->
+          if $.id 'recaptcha_challenge_image'
+            $.global -> window.Recaptcha.reload()
       $.onExists d.body, '#recaptcha_response_field', true, (field) ->
         $.on field, 'keydown', (e) ->
           if e.keyCode is 8 and not field.value
