@@ -9,7 +9,17 @@ Report =
 
   ready: ->
     $.addStyle Report.css
+
     Report.archive() if Conf['Archive Report']
+
+    if (passAd = $ 'a[href="https://www.4chan.org/pass"]')
+      $.extend passAd,
+        textContent: 'Complain'
+        href:        'https://www.4chan-x.net/captchas.html'
+      passAd.parentNode.normalize()
+      if (prev = passAd.previousSibling)?.nodeType is Node.TEXT_NODE
+        prev.nodeValue = prev.nodeValue.replace /4chan Pass[^\.]*\./i, 'reCAPTCHA malfunctioning?'
+
     if Conf['Use Recaptcha v2 in Reports'] and $.hasClass doc, 'js-enabled'
       new MutationObserver(->
         Report.fit 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
