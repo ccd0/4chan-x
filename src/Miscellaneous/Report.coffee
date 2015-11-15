@@ -12,12 +12,6 @@ Report =
 
     Report.archive() if Conf['Archive Report']
 
-    link = $.el 'a',
-      href:        'https://report.cybertip.org/'
-      textContent: 'Report to NCMEC'
-      target:      '_blank'
-    $.add d.body, [$.tn(' ['), link, $.tn(']')]
-
     if (passAd = $ 'a[href="https://www.4chan.org/pass"]')
       $.extend passAd,
         textContent: 'Complain'
@@ -25,6 +19,13 @@ Report =
       passAd.parentNode.normalize()
       if (prev = passAd.previousSibling)?.nodeType is Node.TEXT_NODE
         prev.nodeValue = prev.nodeValue.replace /4chan Pass[^\.]*\./i, 'reCAPTCHA malfunctioning?'
+      $.after passAd, [
+        $.tn '] ['
+        $.el 'a',
+          href:        'mailto:abuse@quadranet.com'
+          textContent: 'abuse@quadranet.com'
+          target:      '_blank'
+      ]
 
     if Conf['Use Recaptcha v2 in Reports'] and $.hasClass doc, 'js-enabled'
       new MutationObserver(->
