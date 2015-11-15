@@ -44,7 +44,7 @@ Gallery =
 
     nodes.el = dialog = $.el 'div',
       id: 'a-gallery'
-    $.extend dialog, <%= importHTML('Features/Gallery') %>
+    $.extend dialog, <%= importHTML('Images/Gallery') %>
 
     nodes[key] = $ value, dialog for key, value of {
       buttons: '.gal-buttons'

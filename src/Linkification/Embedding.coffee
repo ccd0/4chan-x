@@ -6,7 +6,7 @@ Embedding =
 
     if Conf['Floating Embeds']
       @dialog = UI.dialog 'embedding', 'top: 50px; right: 0px;',
-        <%= importHTML('Features/Embed') %>
+        <%= importHTML('Linkification/Embed') %>
       @media = $ '#media-embed', @dialog
       $.one d, '4chanXInitFinished', @ready
 

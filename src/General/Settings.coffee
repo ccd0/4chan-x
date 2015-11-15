@@ -38,7 +38,7 @@ Settings =
     Settings.dialog = dialog = $.el 'div',
       id:        'fourchanx-settings'
       className: 'dialog'
-    $.extend dialog, <%= importHTML('Settings/Settings') %>
+    $.extend dialog, <%= importHTML('General/Settings/Settings') %>
 
     Settings.overlay = overlay = $.el 'div',
       id: 'overlay'
@@ -317,7 +317,7 @@ Settings =
           window.location.reload()
 
   filter: (section) ->
-    $.extend section, <%= importHTML('Settings/Filter-select') %>
+    $.extend section, <%= importHTML('General/Settings/Filter-select') %>
     select = $ 'select', section
     $.on select, 'change', Settings.selectFilter
     Settings.selectFilter.call select
@@ -335,11 +335,11 @@ Settings =
       $.on ta, 'change', $.cb.value
       $.add div, ta
       return
-    $.extend div, <%= importHTML('Settings/Filter-guide') %>
+    $.extend div, <%= importHTML('General/Settings/Filter-guide') %>
     $('.warning', div).hidden = Conf['Filter']
 
   sauce: (section) ->
-    $.extend section, <%= importHTML('Settings/Sauce') %>
+    $.extend section, <%= importHTML('General/Settings/Sauce') %>
     $('.warning', section).hidden = Conf['Sauce']
     ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
@@ -347,7 +347,7 @@ Settings =
     $.on ta, 'change', $.cb.value
 
   advanced: (section) ->
-    $.extend section, <%= importHTML('Settings/Advanced') %>
+    $.extend section, <%= importHTML('General/Settings/Advanced') %>
     warning.hidden = Conf[warning.dataset.feature] for warning in $$ '.warning', section
 
     items = {}
@@ -524,7 +524,7 @@ Settings =
     CustomCSS.update()
 
   keybinds: (section) ->
-    $.extend section, <%= importHTML('Settings/Keybinds') %>
+    $.extend section, <%= importHTML('General/Settings/Keybinds') %>
     $('.warning', section).hidden = Conf['Keybinds']
 
     tbody  = $ 'tbody', section

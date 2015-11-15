@@ -10,12 +10,12 @@ module.exports = (grunt) ->
 
   importCSS = (filenames...) ->
     grunt.template.process(
-      filenames.map((name) -> grunt.file.read "src/General/css/#{name}.css").join(''),
+      filenames.map((name) -> grunt.file.read "src/css/#{name}.css").join(''),
       {data: grunt.config 'pkg'}
     ).trim().replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`')
 
   importHTML = (filename) ->
-    html grunt.template.process(grunt.file.read("src/General/html/#{filename}.html").replace(/^ +/gm, '').replace(/\r?\n/g, ''), data: grunt.config('pkg'))
+    html grunt.template.process(grunt.file.read("src/#{filename}.html").replace(/^ +/gm, '').replace(/\r?\n/g, ''), data: grunt.config('pkg'))
 
   parseTemplate = (template, context='') ->
     context0 = context
@@ -93,7 +93,21 @@ module.exports = (grunt) ->
         src: [
           'src/General/Config.coffee'
           'src/General/Globals.coffee'
-          'src/General/lib/*.coffee'
+          'src/General/$.coffee'
+          'src/classes/Callbacks.coffee'
+          'src/classes/Board.coffee'
+          'src/classes/Thread.coffee'
+          'src/classes/CatalogThread.coffee'
+          'src/classes/Post.coffee'
+          'src/classes/Clone.coffee'
+          'src/classes/DataBoard.coffee'
+          'src/classes/Notice.coffee'
+          'src/classes/RandomAccessList.coffee'
+          'src/classes/SimpleDict.coffee'
+          'src/classes/Set.coffee'
+          'src/classes/Connection.coffee'
+          'src/classes/Fetcher.coffee'
+          'src/General/Polyfill.coffee'
           'src/General/Header.coffee'
           'src/General/Index.coffee'
           'src/General/Build.coffee'
@@ -119,29 +133,29 @@ module.exports = (grunt) ->
         dest: 'tmp-<%= pkg.type %>/script.coffee'
       crx:
         files:
-          'testbuilds/updates<%= pkg.meta.suffix[pkg.channel] %>.xml': 'src/General/meta/updates.xml'
-          'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/manifest.json': 'src/General/meta/manifest.json'
+          'testbuilds/updates<%= pkg.meta.suffix[pkg.channel] %>.xml': 'src/meta/updates.xml'
+          'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/manifest.json': 'src/meta/manifest.json'
           'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/script.js': [
-            'src/General/meta/botproc.js'
+            'src/meta/botproc.js'
             'LICENSE'
-            'src/General/meta/usestrict.js'
+            'src/meta/usestrict.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
           'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/eventPage.js': 'tmp-<%= pkg.type %>/eventPage.js'
       userscript:
         files:
-          'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js': 'src/General/meta/metadata.js'
+          'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js': 'src/meta/metadata.js'
           'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.user.js': [
-            'src/General/meta/botproc.js'
-            'src/General/meta/metadata.js'
+            'src/meta/botproc.js'
+            'src/meta/metadata.js'
             'LICENSE'
-            'src/General/meta/usestrict.js'
+            'src/meta/usestrict.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
 
     copy:
       crx:
-        src:  'src/General/img/*.png'
+        src:  'src/meta/*.png'
         dest: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/'
         expand:  true
         flatten: true
@@ -167,7 +181,7 @@ module.exports = (grunt) ->
         src:  'tmp-<%= pkg.type %>/script.coffee'
         dest: 'tmp-<%= pkg.type %>/script.js'
       eventPage:
-        src:  'src/General/eventPage/eventPage.coffee'
+        src:  'src/General/eventPage.coffee'
         dest: 'tmp-<%= pkg.type %>/eventPage.js'
 
     concurrent:

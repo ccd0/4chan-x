@@ -1758,7 +1758,7 @@ a:only-of-type > .remove {
 }
 /* Link Title Favicons */
 <%=
-grunt.file.expand('src/General/img/links/*.png').map(function(file) {
+grunt.file.expand('src/Linkification/icons/*.png').map(function(file) {
   var key  = file.match(/(\w+)\.png/)[1];
   var data = grunt.file.read(file, {encoding: 'base64'});
   return ".linkify."+key+" {\n" +

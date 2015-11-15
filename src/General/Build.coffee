@@ -115,7 +115,7 @@ Build =
     else
       "/#{boardID}/thread/#{threadID}#q#{postID}"
 
-    postInfo = <%= importHTML('Build/PostInfo') %>
+    postInfo = <%= importHTML('General/Build/PostInfo') %>
 
     ### File Info ###
 
@@ -125,13 +125,13 @@ Build =
       shortFilename = Build.shortFilename file.name
       fileThumb = if file.isSpoiler then Build.spoilerThumb(boardID) else file.thumbURL.replace(protocol, '')
 
-    fileBlock = <%= importHTML('Build/File') %>
+    fileBlock = <%= importHTML('General/Build/File') %>
 
     ### Whole Post ###
 
     postClass = if o.isReply then 'reply' else 'op'
 
-    wholePost = <%= importHTML('Build/Post') %>
+    wholePost = <%= importHTML('General/Build/Post') %>
 
     container = $.el 'div',
       className: "postContainer #{postClass}Container"
@@ -218,7 +218,7 @@ Build =
     root = $.el 'div',
       className: 'catalog-thread'
 
-    $.extend root, <%= importHTML('Build/CatalogThread') %>
+    $.extend root, <%= importHTML('General/Build/CatalogThread') %>
 
     root.dataset.fullID = thread.fullID
     $.addClass root, thread.OP.highlights... if thread.OP.highlights

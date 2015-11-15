@@ -53,10 +53,10 @@ Index =
     @root     = $.el 'div', className: 'board'
     @cb.size()
     @pagelist = $.el 'div', className: 'pagelist'
-    $.extend @pagelist, <%= importHTML('Features/Index-pagelist') %>
+    $.extend @pagelist, <%= importHTML('General/Index/PageList') %>
     $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
     @navLinks = $.el 'div', className: 'navLinks'
-    $.extend @navLinks, <%= importHTML('Features/Index-navlinks') %>
+    $.extend @navLinks, <%= importHTML('General/Index/NavLinks') %>
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
     $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID in ['b', 'trash']
     @searchInput = $ '#index-search', @navLinks
