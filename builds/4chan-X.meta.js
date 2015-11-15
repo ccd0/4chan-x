@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.11.15.7
+// @version      1.11.16.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -10,8 +10,6 @@
 // @include      https://boards.4chan.org/*
 // @include      http://sys.4chan.org/*
 // @include      https://sys.4chan.org/*
-// @include      http://a.4cdn.org/*
-// @include      https://a.4cdn.org/*
 // @include      http://i.4cdn.org/*
 // @include      https://i.4cdn.org/*
 // @include      http://www.4chan.org/banned
