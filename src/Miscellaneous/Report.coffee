@@ -22,8 +22,8 @@ Report =
       $.after passAd, [
         $.tn '] ['
         $.el 'a',
-          href:        'mailto:abuse@quadranet.com'
-          textContent: 'abuse@quadranet.com'
+          href:        'mailto:4chanpass@4chan.org'
+          textContent: 'Email 4chan'
           target:      '_blank'
       ]
 
