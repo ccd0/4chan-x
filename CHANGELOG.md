@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.16
 
+**v1.11.16.6** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Change link again from 4chan's hosting to `4chanpass@4chan.org`.
+
 **v1.11.16.5** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.5/builds/4chan-X-noupdate.crx "Chromium version")]
 - Change report form link from NCMEC to 4chan's hosting; only show below captcha.
 
