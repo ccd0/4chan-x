@@ -297,6 +297,9 @@ Settings =
       if (rice = Config['usercss'].match(/\/\* Board title rice \*\/(?:\n.+)*/)[0])
         if data['usercss']? and data['usercss'].indexOf(rice) < 0
           changes['usercss'] = rice + '\n\n' + data['usercss']
+    if compareString < '00001.00011.00017.00000'
+      for key in ['Persistent QR', 'Color User IDs', 'Fappe Tyme', 'Werk Tyme', 'Highlight Posts Quoting You', 'Highlight Own Posts']
+        changes[key] = (key is 'Persistent QR') unless data[key]?
     changes
 
   loadSettings: (data, cb) ->

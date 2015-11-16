@@ -98,7 +98,7 @@ Config =
         'Show notifications when <%= meta.name %> is successfully updated.'
       ]
       'Color User IDs': [
-        false
+        true
         'Assign unique colors to user IDs on boards that use them'
       ]
       'Remove Spoilers': [
@@ -251,11 +251,11 @@ Config =
         'Add link in header menu to turn on image preloading.'
       ]
       'Fappe Tyme': [
-        false
+        true
         'Hide posts without images when header menu item is checked. *hint* *hint*'
       ]
       'Werk Tyme': [
-        false
+        true
         'Hide all post images when header menu item is checked.'
       ]
       'Autoplay': [
@@ -415,7 +415,7 @@ Config =
         1
       ]
       'Persistent QR': [
-        true
+        false
         'The Quick reply won\'t disappear after posting.'
         1
       ]
@@ -549,12 +549,12 @@ Config =
         'Add \'(You)\' to quotes linking to your posts.'
       ]
       'Highlight Posts Quoting You': [
-        false
+        true
         'Highlights any posts that contain a quote to your post.'
         1
       ]
       'Highlight Own Posts': [
-        false
+        true
         'Highlights own posts if Mark Quotes of You is enabled.'
         1
       ]
