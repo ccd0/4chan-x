@@ -53,7 +53,7 @@ $.ajax = do ->
       ) %>
     $('span', message).textContent = (if /^\/\//.test url then location.protocol else '') + url
     new Notice 'error', message, 30, -> delete blockedURLs[url]
-  (url, options, extra={}) ->
+  (url, options={}, extra={}) ->
     {type, whenModified, upCallbacks, form} = extra
     r = new XMLHttpRequest()
     type or= form and 'post' or 'get'
