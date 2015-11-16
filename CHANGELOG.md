@@ -15,6 +15,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.16
 
+**v1.11.16.9** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.9/builds/4chan-X-noupdate.crx "Chromium version")]
+- Nope, it's on Google's end. Bringing back scrolling prevention.
+
 **v1.11.16.8** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.8/builds/4chan-X-noupdate.crx "Chromium version")]
 - Remove obsolete captcha bug workaround that may be causing scrolling to top.
 
