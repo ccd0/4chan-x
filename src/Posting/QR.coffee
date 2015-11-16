@@ -153,27 +153,11 @@ QR =
       unless QR.inBubble()
         QR.hasFocus = d.activeElement and QR.nodes.el.contains(d.activeElement)
         QR.nodes.el.classList.toggle 'focus', QR.hasFocus
-      # XXX Stop unwanted scrolling due to captcha.
-      if QR.captcha.isEnabled and QR.captcha is Captcha.v2 and !QR.captcha.noscript
-        if QR.inCaptcha()
-          QR.scrollY = window.scrollY
-          $.on d, 'scroll', QR.scrollLock
-        else
-          $.off d, 'scroll', QR.scrollLock
 
   inBubble: ->
     bubbles = $$ 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
     d.activeElement in bubbles or bubbles.some (el) ->
       getComputedStyle(el).visibility isnt 'hidden' and el.getBoundingClientRect().bottom > 0
-
-  inCaptcha: ->
-    (d.activeElement?.nodeName is 'IFRAME' and QR.nodes.el.contains(d.activeElement)) or (QR.hasFocus and QR.inBubble())
-
-  scrollLock: ->
-    if QR.inCaptcha()
-      window.scroll window.scrollX, QR.scrollY
-    else
-      $.off d, 'scroll', QR.scrollLock
 
   hide: ->
     d.activeElement.blur()
