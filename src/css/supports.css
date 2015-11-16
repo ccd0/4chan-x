@@ -1,0 +1,10 @@
+/* XXX Moved to end of stylesheet to avoid breaking whole stylesheet in Maxthon. */
+@supports (text-decoration-style: dashed) or (-moz-text-decoration-style: dashed) {
+  .quotelink.forwardlink,
+  .backlink.forwardlink {
+    text-decoration: underline;
+    -moz-text-decoration-style: dashed;
+    text-decoration-style: dashed;
+    border-bottom: none;
+  }
+}

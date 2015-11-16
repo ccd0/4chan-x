@@ -344,7 +344,7 @@ Main =
     $.ready ->
       cb() if Main.isThisPageLegit()
 
-  css: `<%= importCSS('font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon') %>`
+  css: `<%= importCSS('font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon', 'supports') %>`
 
   features: [
     ['Polyfill',                  Polyfill]
