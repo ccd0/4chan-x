@@ -52,7 +52,6 @@ Captcha.fixes =
     @fixImages()
     new MutationObserver(=> @fixImages()).observe d.body, {childList: true, subtree: true}
     $.on d, 'keydown', @keybinds.bind(@)
-    window.focus()
 
   initNoscript: ->
     @noscript = true
