@@ -1333,10 +1333,10 @@ input.field.tripped:not(:hover):not(:focus) {
 }
 #qr .captcha-container > div {
   margin: auto;
-  width: 304px;
 }
 /* scrollable with scroll bar hidden; prevents scroll on space press */
 :root.blink #qr .captcha-container > div {
+  width: 304px;
   overflow: hidden;
 }
 :root.blink #qr .captcha-container > div > div:first-of-type {
