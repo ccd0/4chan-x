@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.17
 
+**v1.11.17.1** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.16.8: Remove obsolete captcha bug workaround that may be causing scrolling to top.
+
 **v1.11.17.0** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.16.7.
 - Experimental Maxthon support.
