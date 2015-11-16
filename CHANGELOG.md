@@ -4,6 +4,12 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.17
 
+**v1.11.17.2** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.16.9: Bring back scrolling prevention when captcha is focused.
+
+**v1.11.17.1** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.16.8: Remove obsolete captcha bug workaround that may be causing scrolling to top.
+
 **v1.11.17.0** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.16.7.
 - Experimental Maxthon support.
@@ -11,6 +17,12 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 - `Color User IDs`, `Fappe Tyme`, `Werk Tyme`, `Highlight Posts Quoting You`, and `Highlight Own Posts` are now on by default in new installs.
 
 ### v1.11.16
+
+**v1.11.16.9** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.9/builds/4chan-X-noupdate.crx "Chromium version")]
+- Nope, it's on Google's end. Bringing back scrolling prevention.
+
+**v1.11.16.8** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.8/builds/4chan-X-noupdate.crx "Chromium version")]
+- Remove obsolete captcha bug workaround that may be causing scrolling to top.
 
 **v1.11.16.7** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.7/builds/4chan-X-noupdate.crx "Chromium version")]
 - (Bui) Update archive list: Add /news/ to 4ch.be.
