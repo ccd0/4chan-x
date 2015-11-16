@@ -67,8 +67,14 @@ $.ajax = do ->
       r.setRequestHeader 'If-Modified-Since', lastModified[whenModified][url] if lastModified[whenModified]?[url]?
       $.on r, 'load', -> (lastModified[whenModified] or= {})[url] = r.getResponseHeader 'Last-Modified'
     if /\.json$/.test url
-      r.responseType = 'json'
+      options.responseType ?= 'json'
     $.extend r, options
+    # XXX https://code.google.com/p/chromium/issues/detail?id=119256 (Maxthon is still on Chromium 30)
+    if options.responseType is 'json' and r.responseType isnt 'json' and delete r.response
+      Object.defineProperty r, 'response',
+        configurable: true
+        enumerable:   true
+        get: -> return JSON.parse r.responseText
     $.extend r.upload, upCallbacks
     r.send form
     r
