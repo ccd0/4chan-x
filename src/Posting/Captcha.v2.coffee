@@ -5,6 +5,17 @@ Captcha.v2 =
     return if d.cookie.indexOf('pass_enabled=1') >= 0
     return unless @isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt'
 
+    lastActive = ''
+    setInterval ->
+      if d.activeElement.nodeName is 'IFRAME' and d.activeElement isnt lastActive
+        c.log 'activeElement', d.activeElement?.nodeName, d.activeElement?.src.match(/^[^?]*/)[0]
+        for bubble in $$ 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
+          c.log bubble.parentNode.parentNode.style
+          c.log bubble.getBoundingClientRect()
+      lastActive = d.activeElement
+      return
+    , 1
+
     if @noscript = Conf['Force Noscript Captcha'] or not $.hasClass doc, 'js-enabled'
       @conn = new Connection null, "#{location.protocol}//www.google.com",
         token: (token) => @save true, token
