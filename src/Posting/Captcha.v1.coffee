@@ -196,6 +196,9 @@ Captcha.v1 =
         " (#{count} cached captchas)"
     @nodes.input.placeholder = placeholder
     @nodes.input.alt = count # For XTRM RICE.
+    clearTimeout @timer
+    if count
+      @timer = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
 
   reload: (focus) ->
     # Recaptcha.should_focus = false: Hack to prevent the input from being focused
