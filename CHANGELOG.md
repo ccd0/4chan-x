@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.17
 
+**v1.11.17.3** *(2015-11-17)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Minor captcha fixes.
+
 **v1.11.17.2** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.16.9: Bring back scrolling prevention when captcha is focused.
 
