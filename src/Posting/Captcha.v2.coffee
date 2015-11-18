@@ -42,7 +42,6 @@ Captcha.v2 =
       conn = new Connection window.parent, "#{location.protocol}//boards.4chan.org"
       conn.send {token}
 
-  shouldFocus: false
   timeouts: {}
   postsCount: 0
 
@@ -74,17 +73,16 @@ Captcha.v2 =
 
   setup: (focus, force) ->
     return unless @isEnabled and (@needed() or force)
-    @shouldFocus = true if focus and not QR.inBubble()
+    @nodes.counter.focus() if focus and not QR.inBubble()
     if @timeouts.destroy
       clearTimeout @timeouts.destroy
       delete @timeouts.destroy
       return @reload()
 
     if @nodes.container
-      if @shouldFocus and iframe = $ 'iframe', @nodes.container
+      if d.activeElement is @nodes.counter and (iframe = $ 'iframe', @nodes.container)
         iframe.focus()
         QR.focus() # Event handler not fired in Firefox
-        delete @shouldFocus
       return
 
     @nodes.container = $.el 'div', className: 'captcha-container'
@@ -143,8 +141,7 @@ Captcha.v2 =
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
       QR.nodes.el.style.top    = null
       QR.nodes.el.style.bottom = '0px'
-    iframe.focus() if @shouldFocus
-    @shouldFocus = false
+    iframe.focus() if d.activeElement is @nodes.counter
     # XXX Stop Recaptcha from changing focus from iframe -> body -> iframe on submit.
     $.global ->
       f = document.querySelector('#qr iframe')
@@ -193,7 +190,7 @@ Captcha.v2 =
     if @needed()
       if focus
         if QR.cooldown.auto or Conf['Post on Captcha Completion']
-          @shouldFocus = true
+          @nodes.counter.focus()
         else
           QR.nodes.status.focus()
       @reload()
