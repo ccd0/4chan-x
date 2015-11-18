@@ -773,7 +773,7 @@ QR =
           QR.cooldown.addMute seconds
         else
           QR.cooldown.addDelay post, seconds
-        QR.captcha.setup (d.activeElement is QR.nodes.status)
+        QR.captcha.setup true
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.status()
@@ -815,7 +815,7 @@ QR =
       QR.close()
     else
       post.rm()
-      QR.captcha.setup(d.activeElement is QR.nodes.status)
+      QR.captcha.setup true
 
     QR.cooldown.add threadID, postID
 

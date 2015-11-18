@@ -73,7 +73,7 @@ Captcha.v2 =
 
   setup: (focus, force) ->
     return unless @isEnabled and (@needed() or force)
-    @nodes.counter.focus() if focus and not QR.inBubble()
+    @nodes.counter.focus() if focus and d.activeElement in [QR.nodes.status, d.body]
     if @timeouts.destroy
       clearTimeout @timeouts.destroy
       delete @timeouts.destroy
@@ -213,7 +213,7 @@ Captcha.v2 =
     @captchas = @captchas[i..]
     @count()
     $.set 'captchas', @captchas
-    @setup(d.activeElement is QR.nodes.status)
+    @setup true
 
   count: ->
     @nodes.counter.textContent = "Captchas: #{@captchas.length}"
