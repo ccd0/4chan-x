@@ -222,8 +222,6 @@ QR =
     else
       el = err
       el.removeAttribute 'style'
-    if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
-      QR.captcha.setup true
     notice = new Notice 'warning', el
     QR.notifications.push notice
     unless Header.areNotificationsEnabled
@@ -633,7 +631,9 @@ QR =
 
     if QR.captcha.isEnabled and !err
       captcha = QR.captcha.getOne()
-      err = 'No valid captcha.' unless captcha
+      unless captcha
+        err = 'No valid captcha.'
+        QR.captcha.setup true
 
     QR.cleanNotifications()
     if err
@@ -773,11 +773,11 @@ QR =
           QR.cooldown.addMute seconds
         else
           QR.cooldown.addDelay post, seconds
-        QR.captcha.setup true
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.status()
       QR.error err
+      QR.captcha.setup true
       return
 
     h1 = $ 'h1', resDoc
