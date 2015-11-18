@@ -95,7 +95,7 @@ Captcha.v1 =
   setup: (focus, force) ->
     return unless @isEnabled and (force or @needed())
     @create()
-    @nodes.input.focus() if focus
+    @nodes.input.focus() if focus and d.activeElement in [QR.nodes.status, d.body]
 
   afterSetup: ->
     return unless challenge = $.id 'recaptcha_challenge_field_holder'
@@ -154,6 +154,7 @@ Captcha.v1 =
       challenge: @nodes.img.alt
       response:  response
       timeout:   @timeout
+    @captchas.sort (a, b) -> a.timeout - b.timeout
     @count()
     @destroy()
     @setup false, true
@@ -196,6 +197,9 @@ Captcha.v1 =
         " (#{count} cached captchas)"
     @nodes.input.placeholder = placeholder
     @nodes.input.alt = count # For XTRM RICE.
+    clearTimeout @timer
+    if count
+      @timer = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
 
   reload: (focus) ->
     # Recaptcha.should_focus = false: Hack to prevent the input from being focused
