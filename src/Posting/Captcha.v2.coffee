@@ -149,6 +149,7 @@ Captcha.v2 =
     return
 
   setupIFrame: (iframe) ->
+    c.log 'setupIFrame', iframe
     Captcha.replace.iframe iframe
     $.addClass QR.nodes.el, 'captcha-open'
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
