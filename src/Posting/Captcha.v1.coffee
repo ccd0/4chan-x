@@ -154,6 +154,7 @@ Captcha.v1 =
       challenge: @nodes.img.alt
       response:  response
       timeout:   @timeout
+    @captchas.sort (a, b) -> a.timeout - b.timeout
     @count()
     @destroy()
     @setup false, true

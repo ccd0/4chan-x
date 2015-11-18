@@ -183,6 +183,7 @@ Captcha.v2 =
     @captchas.push
       response: token or $('textarea', @nodes.container).value
       timeout:  Date.now() + @lifetime
+    @captchas.sort (a, b) -> a.timeout - b.timeout
     $.set 'captchas', @captchas
     @count()
 
