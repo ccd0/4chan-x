@@ -5,14 +5,20 @@ Captcha.v2 =
     return if d.cookie.indexOf('pass_enabled=1') >= 0
     return unless @isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt'
 
-    lastActive = ''
+    lastActive = null
+    lastStyle = null
     setInterval ->
-      if d.activeElement.nodeName is 'IFRAME' and d.activeElement isnt lastActive
-        c.log 'activeElement', d.activeElement?.nodeName, d.activeElement?.src.match(/^[^?]*/)[0]
-        for bubble in $$ 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
-          c.log bubble.parentNode.parentNode.style
-          c.log bubble.getBoundingClientRect()
+      if (d.activeElement.nodeName is 'IFRAME' or lastActive?.nodeName is 'IFRAME') and d.activeElement isnt lastActive
+        c.log 'scrollY', window.scrollY
+        c.log 'activeElement', d.activeElement?.nodeName, d.activeElement?.src?.match(/^[^?]*/)[0]
       lastActive = d.activeElement
+      bubble = $ 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
+      style = bubble?.parentNode.parentNode.getAttribute 'style'
+      if style isnt lastStyle
+        c.log 'scrollY', window.scrollY
+        c.log style
+        c.log JSON.stringify ([k, v] for k, v of bubble?.getBoundingClientRect())
+      lastStyle = style
       return
     , 1
 
