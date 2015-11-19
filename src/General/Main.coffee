@@ -87,6 +87,7 @@ Main =
 
     switch hostname
       when 'www.4chan.org'
+        $.onExists doc, 'body', false, -> $.addStyle Main.cssWWW
         Captcha.replace.init()
         return
       when 'sys.4chan.org'
@@ -346,6 +347,8 @@ Main =
       cb() if Main.isThisPageLegit()
 
   css: `<%= importCSS('font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon', 'supports') %>`
+
+  cssWWW: `<%= importCSS('www') %>`
 
   features: [
     ['Polyfill',                  Polyfill]
