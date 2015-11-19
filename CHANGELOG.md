@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.17
 
+**v1.11.17.5** *(2015-11-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.16.10: Fix captcha on feedback page covering submit button, broken again by bug in 4chan's CSS.
+
 **v1.11.17.4** *(2015-11-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Don't record posts as yours when `Mark Quotes of You` is disabled.
 
@@ -23,6 +26,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 - `Color User IDs`, `Fappe Tyme`, `Werk Tyme`, `Highlight Posts Quoting You`, and `Highlight Own Posts` are now on by default in new installs.
 
 ### v1.11.16
+
+**v1.11.16.10** *(2015-11-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.10/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix captcha on feedback page covering submit button, broken again by bug in 4chan's CSS.
 
 **v1.11.16.9** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.9/builds/4chan-X-noupdate.crx "Chromium version")]
 - Nope, it's on Google's end. Bringing back scrolling prevention.
