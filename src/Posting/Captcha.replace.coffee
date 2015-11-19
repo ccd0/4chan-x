@@ -3,13 +3,11 @@ Captcha.replace =
     return unless d.cookie.indexOf('pass_enabled=1') < 0
     return if location.hostname is 'boards.4chan.org' and Conf['Hide Original Post Form']
 
-    jsEnabled = $.hasClass doc, 'js-enabled'
-
-    if location.hostname is 'sys.4chan.org' and Conf['Use Recaptcha v2 in Reports'] and jsEnabled
+    if location.hostname is 'sys.4chan.org' and Conf['Use Recaptcha v2 in Reports'] and Main.jsEnabled
       $.ready Captcha.replace.v2
       return
 
-    if Conf['Use Recaptcha v1'] and jsEnabled and location.hostname isnt 'www.4chan.org'
+    if Conf['Use Recaptcha v1'] and Main.jsEnabled and location.hostname isnt 'www.4chan.org'
       $.ready Captcha.replace.v1
       return
 

@@ -5,7 +5,7 @@ Captcha.v2 =
     return if d.cookie.indexOf('pass_enabled=1') >= 0
     return unless @isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt'
 
-    if @noscript = Conf['Force Noscript Captcha'] or not $.hasClass doc, 'js-enabled'
+    if @noscript = Conf['Force Noscript Captcha'] or not Main.jsEnabled
       @conn = new Connection null, "#{location.protocol}//www.google.com",
         token: (token) => @save true, token
       $.addClass QR.nodes.el, 'noscript-captcha'

@@ -83,6 +83,7 @@ Main =
       $.global ->
         document.documentElement.classList.add 'js-enabled'
         window.FCX = {}
+      Main.jsEnabled = $.hasClass doc, 'js-enabled'
 
     switch hostname
       when 'www.4chan.org'

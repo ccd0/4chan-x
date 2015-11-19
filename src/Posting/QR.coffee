@@ -56,7 +56,7 @@ QR =
 
     if Conf['Hide Original Post Form']
       $.addClass doc, 'hide-original-post-form'
-      unless $.hasClass doc, 'js-enabled'
+      unless Main.jsEnabled
         # Prevent unnecessary loading of fallback iframe.
         $.onExists doc, '#postForm noscript', true, $.rm
 
