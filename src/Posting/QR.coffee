@@ -24,7 +24,7 @@ QR =
   init: ->
     return unless Conf['Quick Reply']
 
-    @db = new DataBoard 'yourPosts'
+    @db = new DataBoard 'yourPosts' if Conf['Mark Quotes of You']
     @posts = []
 
     return if g.VIEW is 'archive'
@@ -791,7 +791,7 @@ QR =
     threadID = +threadID or postID
     isReply  = threadID isnt postID
 
-    QR.db.set
+    QR.db?.set
       boardID: g.BOARD.ID
       threadID: threadID
       postID: postID
