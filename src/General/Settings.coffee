@@ -300,6 +300,9 @@ Settings =
     if compareString < '00001.00011.00017.00000'
       for key in ['Persistent QR', 'Color User IDs', 'Fappe Tyme', 'Werk Tyme', 'Highlight Posts Quoting You', 'Highlight Own Posts']
         changes[key] = (key is 'Persistent QR') unless data[key]?
+    if compareString < '00001.00011.00017.00006'
+      if data['sauces']?
+        changes['sauces'] = data['sauces'].replace /(#?\s*)http:\/\/iqdb\.org\//g, '$1//iqdb.org/'
     changes
 
   loadSettings: (data, cb) ->
