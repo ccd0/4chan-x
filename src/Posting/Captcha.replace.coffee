@@ -25,10 +25,15 @@ Captcha.replace =
     return unless (original = $ '#g-recaptcha, #captchaContainerAlt') and (noscript = $ 'noscript')
     span = $.el 'span',
       id: 'captcha-forced-noscript'
-      innerHTML: noscript.textContent
-    Captcha.replace.iframe $('iframe', span)
     $.replace noscript, span
     $.rm original
+    insert = ->
+      span.innerHTML = noscript.textContent
+      Captcha.replace.iframe $('iframe', span)
+    if (toggle = $ '#togglePostFormLink a, #form-link')
+      $.on toggle, 'click', insert
+    else
+      insert()
 
   v1: ->
     return unless $.id 'g-recaptcha'
