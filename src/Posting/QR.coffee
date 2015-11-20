@@ -815,7 +815,7 @@ QR =
       QR.close()
     else
       post.rm()
-      QR.captcha.setup true
+      QR.captcha.setup(d.activeElement is QR.nodes.status)
 
     QR.cooldown.add threadID, postID
 
