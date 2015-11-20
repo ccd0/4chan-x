@@ -3,9 +3,9 @@ Captcha.v2 =
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return unless @isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt'
+    return unless (@isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt')
 
-    if @noscript = Conf['Force Noscript Captcha'] or not Main.jsEnabled
+    if (@noscript = Conf['Force Noscript Captcha'] or not Main.jsEnabled)
       @conn = new Connection null, "#{location.protocol}//www.google.com",
         token: (token) => @save true, token
       $.addClass QR.nodes.el, 'noscript-captcha'
@@ -38,7 +38,7 @@ Captcha.v2 =
       childList: true
 
   initFrame: ->
-    if token = $('.fbc-verification-token > textarea')?.value
+    if (token = $('.fbc-verification-token > textarea')?.value)
       conn = new Connection window.parent, "#{location.protocol}//boards.4chan.org"
       conn.send {token}
 
@@ -47,7 +47,7 @@ Captcha.v2 =
 
   noscriptURL: ->
     url = '//www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
-    if lang = Conf['captchaLanguage'].trim()
+    if (lang = Conf['captchaLanguage'].trim())
       url += "&hl=#{encodeURIComponent lang}"
     url
 
@@ -131,8 +131,8 @@ Captcha.v2 =
   afterSetup: (mutations) ->
     for mutation in mutations
       for node in mutation.addedNodes
-        @setupIFrame   iframe   if iframe   = $.x './descendant-or-self::iframe',   node
-        @setupTextArea textarea if textarea = $.x './descendant-or-self::textarea', node
+        @setupIFrame   iframe   if (iframe   = $.x './descendant-or-self::iframe',   node)
+        @setupTextArea textarea if (textarea = $.x './descendant-or-self::textarea', node)
     return
 
   setupIFrame: (iframe) ->
@@ -171,7 +171,7 @@ Captcha.v2 =
 
   getOne: ->
     @clear()
-    if captcha = @captchas.shift()
+    if (captcha = @captchas.shift())
       $.set 'captchas', @captchas
       @count()
       captcha
@@ -240,7 +240,7 @@ Captcha.v2 =
           new MutationObserver(@fixBubble.bind(@, node)).observe node,
             attributes: true
           # Prevent Recaptcha from keeping focus when popup dismissed.
-          if overlay = $ 'div[style*="position: fixed;"]', node
+          if (overlay = $ 'div[style*="position: fixed;"]', node)
             $.on overlay, 'click', -> $('#qr iframe')?.blur()
 
   fixBubble: (node) ->

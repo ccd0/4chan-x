@@ -32,7 +32,7 @@ Captcha.replace =
   v1: ->
     return unless $.id 'g-recaptcha'
     Captcha.v1.replace()
-    if link = $.id 'form-link'
+    if (link = $.id 'form-link')
       $.on link, 'click', -> Captcha.v1.create()
     else if location.hostname is 'boards.4chan.org'
       form = $.id 'postForm'
@@ -41,7 +41,7 @@ Captcha.replace =
       Captcha.v1.create()
 
   v2: ->
-    return unless old = $.id 'captchaContainerAlt'
+    return unless (old = $.id 'captchaContainerAlt')
     container = $.el 'div',
       className: 'g-recaptcha'
     $.extend container.dataset,
@@ -49,14 +49,14 @@ Captcha.replace =
       tabindex: 3
     $.replace old, container
     url = 'https://www.google.com/recaptcha/api.js'
-    if lang = Conf['captchaLanguage'].trim()
+    if (lang = Conf['captchaLanguage'].trim())
       url += "?hl=#{encodeURIComponent lang}"
     script = $.el 'script',
       src: url
     $.add d.head, script
 
   iframe: (el) ->
-    return unless lang = Conf['captchaLanguage'].trim()
+    return unless (lang = Conf['captchaLanguage'].trim())
     src = if /[?&]hl=/.test el.src
       el.src.replace(/([?&]hl=)[^&]*/, '$1' + encodeURIComponent lang)
     else
