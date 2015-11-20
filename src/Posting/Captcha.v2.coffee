@@ -218,9 +218,7 @@ Captcha.v2 =
       @timeouts.clear = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
 
   reload: ->
-    if @noscript
-      $('iframe', @nodes.container).src = @noscriptURL()
-    else if $ 'iframe[src^="https://www.google.com/recaptcha/api/fallback?"]', @nodes.container
+    if $ 'iframe[src^="https://www.google.com/recaptcha/api/fallback?"]', @nodes.container
       @destroy()
       @setup false, true
     else
