@@ -3,6 +3,10 @@ Captcha.replace =
     return unless d.cookie.indexOf('pass_enabled=1') < 0
     return if location.hostname is 'boards.4chan.org' and Conf['Hide Original Post Form']
 
+    if Conf['Force Noscript Captcha'] and Main.jsEnabled
+      $.ready Captcha.replace.noscript
+      return
+
     if location.hostname is 'sys.4chan.org' and Conf['Use Recaptcha v2 in Reports'] and Main.jsEnabled
       $.ready Captcha.replace.v2
       return
@@ -16,6 +20,14 @@ Captcha.replace =
         $.onExists doc, '#captchaFormPart', true, (node) -> $.onExists node, 'iframe', true, Captcha.replace.iframe
       else
         $.onExists doc, 'iframe', true, Captcha.replace.iframe
+
+  noscript: ->
+    return unless (original = $ '#g-recaptcha, #captchaContainerAlt') and (noscript = $ 'noscript')
+    span = $.el 'span',
+      innerHTML: noscript.textContent
+    Captcha.replace.iframe $('iframe', span)
+    $.replace noscript, span
+    original.hidden = true
 
   v1: ->
     return unless $.id 'g-recaptcha'

@@ -27,7 +27,7 @@ Report =
           target:      '_blank'
       ]
 
-    if Conf['Use Recaptcha v2 in Reports'] and Main.jsEnabled
+    if Conf['Use Recaptcha v2 in Reports'] and not Conf['Force Noscript Captcha'] and Main.jsEnabled
       new MutationObserver(->
         Report.fit 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
         Report.fit 'body'

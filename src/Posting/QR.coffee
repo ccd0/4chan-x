@@ -29,7 +29,10 @@ QR =
 
     return if g.VIEW is 'archive'
 
-    version = if Conf['Use Recaptcha v1'] then 'v1' else 'v2'
+    version = if Conf['Use Recaptcha v1'] and not Conf['Force Noscript Captcha'] and Main.jsEnabled
+      'v1'
+    else
+      'v2'
     @captcha = Captcha[version]
 
     $.on d, '4chanXInitFinished', @initReady

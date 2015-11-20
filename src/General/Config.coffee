@@ -470,11 +470,6 @@ Config =
         'Show notifications on successful post creation or file uploading.'
         1
       ]
-      'Force Noscript Captcha': [
-        false
-        'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled (Recaptcha v2 only).'
-        1
-      ]
       'Auto-load captcha': [
         false
         'Automatically load the captcha in the QR even if your post is empty.'
@@ -501,6 +496,10 @@ Config =
       'Use Recaptcha v2 in Reports': [
         false
         'Use the image selection captcha in the report window.'
+      ]
+      'Force Noscript Captcha': [
+        false
+        'Use the non-Javascript fallback captcha even if Javascript is enabled (Recaptcha v2 only).'
       ]
       'Pass Link': [
         true
