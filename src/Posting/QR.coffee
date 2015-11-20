@@ -57,12 +57,6 @@ QR =
 
       Header.addShortcut sc
 
-    if Conf['Hide Original Post Form']
-      $.addClass doc, 'hide-original-post-form'
-      unless Main.jsEnabled
-        # Prevent unnecessary loading of fallback iframe.
-        $.onExists doc, '#postForm noscript', true, $.rm
-
   initReady: ->
     $.off d, '4chanXInitFinished', @initReady
     QR.postingIsEnabled = !!$.id 'postForm'
@@ -88,7 +82,9 @@ QR =
 
       $.prepend $('.navLinksBot'), linkBot
 
-    $.before $.id('togglePostFormLink'), link
+    origToggle = $.id 'togglePostFormLink'
+    $.before origToggle, link
+    origToggle.firstElementChild.textContent = 'Original Form'
 
     $.on d, 'QRGetFile',          QR.getFile
     $.on d, 'QRSetFile',          QR.setFile

@@ -1,7 +1,6 @@
 Captcha.replace =
   init: ->
     return unless d.cookie.indexOf('pass_enabled=1') < 0
-    return if location.hostname is 'boards.4chan.org' and Conf['Hide Original Post Form']
 
     if Conf['Force Noscript Captcha'] and Main.jsEnabled
       $.ready Captcha.replace.noscript
