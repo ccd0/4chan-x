@@ -24,10 +24,11 @@ Captcha.replace =
   noscript: ->
     return unless (original = $ '#g-recaptcha, #captchaContainerAlt') and (noscript = $ 'noscript')
     span = $.el 'span',
+      id: 'captcha-forced-noscript'
       innerHTML: noscript.textContent
     Captcha.replace.iframe $('iframe', span)
     $.replace noscript, span
-    original.hidden = true
+    $.rm original
 
   v1: ->
     return unless $.id 'g-recaptcha'
