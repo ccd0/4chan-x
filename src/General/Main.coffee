@@ -8,8 +8,6 @@ Main =
     window['<%= meta.name %> antidup'] = true
 
     if location.hostname is 'www.google.com'
-      if location.pathname is '/recaptcha/api/fallback'
-        $.ready -> Captcha.v2.initFrame()
       $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
         if enabled
           $.ready -> Captcha.fixes.init()
@@ -353,7 +351,7 @@ Main =
   features: [
     ['Polyfill',                  Polyfill]
     ['Normalize URL',             NormalizeURL]
-    ['Captcha Replacement',       Captcha.replace]
+    ['Captcha Configuration',     Captcha.replace]
     ['Redirect',                  Redirect]
     ['Header',                    Header]
     ['Catalog Links',             CatalogLinks]

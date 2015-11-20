@@ -6,8 +6,6 @@ Captcha.v2 =
     return unless (@isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt')
 
     if (@noscript = Conf['Force Noscript Captcha'] or not Main.jsEnabled)
-      @conn = new Connection null, "#{location.protocol}//www.google.com",
-        token: (token) => @save true, token
       $.addClass QR.nodes.el, 'noscript-captcha'
 
     @captchas = []
@@ -37,16 +35,11 @@ Captcha.v2 =
     new MutationObserver(@watchBubbles.bind @).observe d.body,
       childList: true
 
-  initFrame: ->
-    if (token = $('.fbc-verification-token > textarea')?.value)
-      conn = new Connection window.parent, "#{location.protocol}//boards.4chan.org"
-      conn.send {token}
-
   timeouts: {}
   postsCount: 0
 
   noscriptURL: ->
-    url = '//www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
+    url = 'https://www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
     if (lang = Conf['captchaLanguage'].trim())
       url += "&hl=#{encodeURIComponent lang}"
     url
@@ -100,8 +93,10 @@ Captcha.v2 =
     iframe = $.el 'iframe',
       id: 'qr-captcha-iframe'
       src: @noscriptURL()
-    $.add @nodes.container, iframe
-    @conn.target = iframe
+    div = $.el 'div'
+    textarea = $.el 'textarea'
+    $.add div, textarea
+    $.add @nodes.container, [iframe, div]
 
   setupJS: ->
     $.globalEval '''

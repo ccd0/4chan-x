@@ -15,7 +15,7 @@ Captcha.replace =
       $.ready Captcha.replace.v1
       return
 
-    if Conf['captchaLanguage'].trim()
+    if Conf['captchaLanguage'].trim() or Conf['Captcha Fixes']
       if location.hostname is 'boards.4chan.org'
         $.onExists doc, '#captchaFormPart', true, (node) -> $.onExists node, 'iframe', true, Captcha.replace.iframe
       else
@@ -54,11 +54,26 @@ Captcha.replace =
     script = $.el 'script',
       src: url
     $.add d.head, script
+    $.onExists d.body, 'iframe', true, Captcha.replace.autocopy
 
-  iframe: (el) ->
-    return unless (lang = Conf['captchaLanguage'].trim())
-    src = if /[?&]hl=/.test el.src
-      el.src.replace(/([?&]hl=)[^&]*/, '$1' + encodeURIComponent lang)
-    else
-      el.src + "&hl=#{encodeURIComponent lang}"
-    el.src = src unless el.src is src
+  iframe: (iframe) ->
+    if (lang = Conf['captchaLanguage'].trim())
+      src = if /[?&]hl=/.test iframe.src
+        iframe.src.replace(/([?&]hl=)[^&]*/, '$1' + encodeURIComponent lang)
+      else
+        iframe.src + "&hl=#{encodeURIComponent lang}"
+      iframe.src = src unless iframe.src is src
+    Captcha.replace.autocopy iframe
+
+  autocopy: (iframe) ->
+    return unless Conf['Captcha Fixes'] and /^https:\/\/www\.google\.com\/recaptcha\/api\/fallback\?/.test(iframe.src)
+    new Connection iframe, 'https://www.google.com',
+      working: ->
+        if $.id('qr')?.contains iframe
+          $('#qr .captcha-container textarea')?.parentNode.hidden = true
+      token: (token) ->
+        node = iframe
+        while (node = node.parentNode)
+          break if (textarea = $ 'textarea', node)
+        textarea.value = token
+        $.event 'input', null, textarea
