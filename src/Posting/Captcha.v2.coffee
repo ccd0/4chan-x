@@ -220,6 +220,9 @@ Captcha.v2 =
   reload: ->
     if @noscript
       $('iframe', @nodes.container).src = @noscriptURL()
+    else if $ 'iframe[src^="https://www.google.com/recaptcha/api/fallback?"]', @nodes.container
+      @destroy()
+      @setup false, true
     else
       $.globalEval '''
         (function() {

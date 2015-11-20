@@ -757,20 +757,14 @@ QR =
             <%= html('You mistyped the CAPTCHA, or the CAPTCHA malfunctioned [<a href="https://www.4chan-x.net/captchas.html" target="_blank">complain here</a>].') %>
         else if /expired/i.test err.textContent
           err = 'This CAPTCHA is no longer valid because it has expired.'
-        # Enable auto-post if we have some cached captchas.
-        QR.cooldown.auto = if QR.captcha.isEnabled
-          !!QR.captcha.captchas.length
-        else if err is 'Connection error with sys.4chan.org.'
-          true
-        else
-          # Something must've gone terribly wrong if you get captcha errors without captchas.
-          # Don't auto-post indefinitely in that case.
-          false
+        # Something must've gone terribly wrong if you get captcha errors without captchas.
+        # Don't auto-post indefinitely in that case.
+        QR.cooldown.auto = QR.captcha.isEnabled or err is 'Connection error with sys.4chan.org.'
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
         QR.cooldown.addDelay post, 2
       else if err.textContent and (m = err.textContent.match /(?:(\d+)\s+minutes?\s+)?(\d+)\s+second/i) and !/duplicate|hour/i.test(err.textContent)
-        QR.cooldown.auto = (!QR.captcha.isEnabled or !!QR.captcha.captchas.length) and !/have\s+been\s+muted/i.test(err.textContent)
+        QR.cooldown.auto = !/have\s+been\s+muted/i.test(err.textContent)
         seconds = 60 * (+(m[1]||0)) + (+m[2])
         if /muted/i.test err.textContent
           QR.cooldown.addMute seconds
@@ -778,9 +772,10 @@ QR =
           QR.cooldown.addDelay post, seconds
       else # stop auto-posting
         QR.cooldown.auto = false
+      QR.captcha.setup QR.cooldown.auto
+      QR.cooldown.auto = false if QR.captcha.isEnabled and !QR.captcha.captchas.length
       QR.status()
       QR.error err
-      QR.captcha.setup true
       return
 
     h1 = $ 'h1', resDoc
@@ -818,7 +813,7 @@ QR =
       QR.close()
     else
       post.rm()
-      QR.captcha.setup true
+      QR.captcha.setup(d.activeElement is QR.nodes.status)
 
     QR.cooldown.add threadID, postID
 
