@@ -60,10 +60,10 @@ Captcha.fixes =
     $.on d, 'keydown', @keybinds.bind(@)
 
   initNoscript: ->
+    @noscript = true
     data = if (token = $('.fbc-verification-token > textarea')?.value) then {token} else {working: true}
     new Connection(window.parent, '*').send data
 
-    @noscript = true
     @images = $$ '.fbc-payload-imageselect > input'
     return unless @images.length is 9
 
