@@ -73,9 +73,11 @@ Captcha.v2 =
       return @reload()
 
     if @nodes.container
-      if d.activeElement is @nodes.counter and (iframe = $ 'iframe', @nodes.container)
-        iframe.focus()
-        QR.focus() # Event handler not fired in Firefox
+      # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1226835
+      $.queueTask =>
+        if @nodes.container and d.activeElement is @nodes.counter and (iframe = $ 'iframe', @nodes.container)
+          iframe.focus()
+          QR.focus() # Event handler not fired in Firefox
       return
 
     @nodes.container = $.el 'div', className: 'captcha-container'
