@@ -813,6 +813,11 @@ span.hide-announcement {
 :root.float #updater {
   padding: 0px 3px;
 }
+:root:not(.float) #updater {
+  display: inline-block;
+  min-width: 12pt;
+  text-align: right;
+}
 .new {
   color: limegreen;
 }
