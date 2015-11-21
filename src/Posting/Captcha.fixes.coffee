@@ -36,6 +36,9 @@ Captcha.fixes =
     .fbc-button-verify input:focus {
       box-shadow: inset 0 0 0 2px #0063d6;
     }
+    body.focus .fbc {
+      box-shadow: inset 0 0 0 2px #4a90e2;
+    }
   '''
 
   init: ->
@@ -63,6 +66,8 @@ Captcha.fixes =
     @noscript = true
     data = if (token = $('.fbc-verification-token > textarea')?.value) then {token} else {working: true}
     new Connection(window.parent, '*').send data
+    d.body.classList.toggle 'focus', d.hasFocus()
+    $.on window, 'focus blur', -> d.body.classList.toggle 'focus', d.hasFocus()
 
     @images = $$ '.fbc-payload-imageselect > input'
     return unless @images.length is 9
