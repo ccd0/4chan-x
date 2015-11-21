@@ -2,6 +2,15 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.18
+
+**v1.11.18.0** *(2015-11-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.17.8.
+- The `Force Noscript Captcha` option now works on the original post form, report form, /banned, and /feedback. For consistency, `Force Noscript Captcha` now overrides `Use Recaptcha v1`.
+- 4chan X will now automatically copy all the codes Recaptcha sometimes asks you to copy and paste. This is included as part of `Captcha Fixes`.
+- Other captcha-related fixes/improvements.
+- The link to open the original post form is now shown beneath the Quick Reply button in a smaller font. The `Hide Original Post Form` option has been removed. If you want to hide even the small link to the original post form, you can add `#togglePostFormLink {display: none;}` to your custom CSS.
+
 ### v1.11.17
 
 **v1.11.17.8** *(2015-11-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.8/builds/4chan-X-noupdate.crx "Chromium version")]
