@@ -633,7 +633,7 @@ QR =
       captcha = QR.captcha.getOne()
       unless captcha
         err = 'No valid captcha.'
-        QR.captcha.setup true
+        QR.captcha.setup(!QR.cooldown.auto or d.activeElement is QR.nodes.status)
 
     QR.cleanNotifications()
     if err
@@ -769,7 +769,7 @@ QR =
           QR.cooldown.addDelay post, seconds
       else # stop auto-posting
         QR.cooldown.auto = false
-      QR.captcha.setup QR.cooldown.auto
+      QR.captcha.setup(QR.cooldown.auto and d.activeElement is QR.nodes.status)
       QR.cooldown.auto = false if QR.captcha.isEnabled and !QR.captcha.captchas.length
       QR.status()
       QR.error err
