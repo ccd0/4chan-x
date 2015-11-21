@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.17
 
+**v1.11.17.8** *(2015-11-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.8/builds/4chan-X-noupdate.crx "Chromium version")]
+- A few more captcha focusing tweaks.
+
 **v1.11.17.7** *(2015-11-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.7/builds/4chan-X-noupdate.crx "Chromium version")]
 - More captcha tweaks / fixes.
 
