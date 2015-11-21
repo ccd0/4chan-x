@@ -30,6 +30,12 @@ Captcha.fixes =
     label[data-col="0"] {left: 0px;}
     label[data-col="1"] {left: 93.3px;}
     label[data-col="2"] {left: 186.6px;}
+    .fbc-payload-imageselect > input:focus + label {
+      outline: 2px solid #4a90e2;
+    }
+    .fbc-button-verify input:focus {
+      box-shadow: inset 0 0 0 2px #0063d6;
+    }
   '''
 
   init: ->
@@ -91,8 +97,8 @@ Captcha.fixes =
         htmlFor: checkbox.id
       label.dataset.row = i // 3
       label.dataset.col = i % 3
+      $.after checkbox, label
       label
-    $.add imageSelect, labels
     @addTooltips labels
 
   addTooltips: (nodes) ->
