@@ -24,12 +24,15 @@ QR =
   init: ->
     return unless Conf['Quick Reply']
 
-    @db = new DataBoard 'yourPosts'
+    @db = new DataBoard 'yourPosts' if Conf['Mark Quotes of You']
     @posts = []
 
     return if g.VIEW is 'archive'
 
-    version = if Conf['Use Recaptcha v1'] then 'v1' else 'v2'
+    version = if Conf['Use Recaptcha v1'] and not Conf['Force Noscript Captcha'] and Main.jsEnabled
+      'v1'
+    else
+      'v2'
     @captcha = Captcha[version]
 
     $.on d, '4chanXInitFinished', @initReady
@@ -53,12 +56,6 @@ QR =
           QR.close()
 
       Header.addShortcut sc
-
-    if Conf['Hide Original Post Form']
-      $.addClass doc, 'hide-original-post-form'
-      unless $.hasClass doc, 'js-enabled'
-        # Prevent unnecessary loading of fallback iframe.
-        $.onExists doc, '#postForm noscript', true, $.rm
 
   initReady: ->
     $.off d, '4chanXInitFinished', @initReady
@@ -85,7 +82,9 @@ QR =
 
       $.prepend $('.navLinksBot'), linkBot
 
-    $.before $.id('togglePostFormLink'), link
+    origToggle = $.id 'togglePostFormLink'
+    $.before origToggle, link
+    origToggle.firstElementChild.textContent = 'Original Form'
 
     $.on d, 'QRGetFile',          QR.getFile
     $.on d, 'QRSetFile',          QR.setFile
@@ -206,8 +205,6 @@ QR =
     else
       el = err
       el.removeAttribute 'style'
-    if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
-      QR.captcha.setup true
     notice = new Notice 'warning', el
     QR.notifications.push notice
     unless Header.areNotificationsEnabled
@@ -617,7 +614,9 @@ QR =
 
     if QR.captcha.isEnabled and !err
       captcha = QR.captcha.getOne()
-      err = 'No valid captcha.' unless captcha
+      unless captcha
+        err = 'No valid captcha.'
+        QR.captcha.setup(!QR.cooldown.auto or d.activeElement is QR.nodes.status)
 
     QR.cleanNotifications()
     if err
@@ -738,28 +737,23 @@ QR =
             <%= html('You mistyped the CAPTCHA, or the CAPTCHA malfunctioned [<a href="https://www.4chan-x.net/captchas.html" target="_blank">complain here</a>].') %>
         else if /expired/i.test err.textContent
           err = 'This CAPTCHA is no longer valid because it has expired.'
-        # Enable auto-post if we have some cached captchas.
-        QR.cooldown.auto = if QR.captcha.isEnabled
-          !!QR.captcha.captchas.length
-        else if err is 'Connection error with sys.4chan.org.'
-          true
-        else
-          # Something must've gone terribly wrong if you get captcha errors without captchas.
-          # Don't auto-post indefinitely in that case.
-          false
+        # Something must've gone terribly wrong if you get captcha errors without captchas.
+        # Don't auto-post indefinitely in that case.
+        QR.cooldown.auto = QR.captcha.isEnabled or err is 'Connection error with sys.4chan.org.'
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
         QR.cooldown.addDelay post, 2
       else if err.textContent and (m = err.textContent.match /(?:(\d+)\s+minutes?\s+)?(\d+)\s+second/i) and !/duplicate|hour/i.test(err.textContent)
-        QR.cooldown.auto = (!QR.captcha.isEnabled or !!QR.captcha.captchas.length) and !/have\s+been\s+muted/i.test(err.textContent)
+        QR.cooldown.auto = !/have\s+been\s+muted/i.test(err.textContent)
         seconds = 60 * (+(m[1]||0)) + (+m[2])
         if /muted/i.test err.textContent
           QR.cooldown.addMute seconds
         else
           QR.cooldown.addDelay post, seconds
-        QR.captcha.setup (d.activeElement is QR.nodes.status)
       else # stop auto-posting
         QR.cooldown.auto = false
+      QR.captcha.setup(QR.cooldown.auto and d.activeElement is QR.nodes.status)
+      QR.cooldown.auto = false if QR.captcha.isEnabled and !QR.captcha.captchas.length
       QR.status()
       QR.error err
       return
@@ -775,7 +769,7 @@ QR =
     threadID = +threadID or postID
     isReply  = threadID isnt postID
 
-    QR.db.set
+    QR.db?.set
       boardID: g.BOARD.ID
       threadID: threadID
       postID: postID

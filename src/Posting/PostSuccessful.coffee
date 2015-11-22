@@ -1,5 +1,6 @@
 PostSuccessful =
   init: ->
+    return unless Conf['Mark Quotes of You']
     $.ready @ready
 
   ready: ->

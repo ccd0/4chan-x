@@ -17,9 +17,9 @@ If you're reporting a bug, the more detail you can give, the better. If I can't 
 
 ### Get started
 
-- Install [node.js](http://nodejs.org/).
+- Install [git](https://git-scm.com/), [node.js](https://nodejs.org/), and [npm](https://www.npmjs.com/).
 - Install [Grunt's CLI](http://gruntjs.com/): `npm install -g grunt-cli`
-- Clone 4chan X: `git clone https://github.com/ccd0/4chan-x.git`
+- Clone 4chan X: `git clone https://github.com/ccd0/4chan-x.git --depth 100`
 - Open the directory: `cd 4chan-x`
 - Install/Update 4chan X dependencies: `npm install`
 
@@ -30,11 +30,14 @@ If you're reporting a bug, the more detail you can give, the better. If I can't 
 
 ### Contribute
 
-- Edit the sources (not the compiled scripts in the builds/ directory).
-- Compile the script with `grunt`.
+- 4chan X is written in [CoffeeScript](http://coffeescript.org/). If you're already familiar with Javascript, it doesn't take long to pick up.
+- Edit the sources in the src/ directory (not the compiled scripts in builds/).
+- Compile the script with: `grunt`
 - Install the compiled script (found in the testbuilds/ directory), and test your changes.
+- Make sure you have set your name and email as you want them, as they will be published in your commit message:<br>`git config user.name yourname`<br>`git config user.email youremail`
+- Commit your changes: `git commit -a`
 - Open a pull request by doing any of the following:
-  - Fork this repository on Github, push your changes to your fork, and make a pull request via Github's mechanism.
+  - Fork this repository on Github, push your changes to your fork, and make a pull request through the Github website.
   - Push your changes to any online Git repository, and [open an issue](https://gitreports.com/issue/ccd0/4chan-x) with an explanation of your changes and the URL, branch, and commit you want me to pull from.
   - Export your changes via `git bundle` (e.g. `git bundle create file.bundle master..your-branch`), and upload them to a file host like https://jii.moe/. Then [open an issue](https://gitreports.com/issue/ccd0/4chan-x) with an explanation of your changes and the URL of the file.
 

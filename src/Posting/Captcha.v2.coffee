@@ -3,7 +3,7 @@ Captcha.v2 =
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return unless @isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt'
+    return unless (@isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt, #captcha-forced-noscript')
 
     lastActive = null
     lastStyle = null
@@ -22,9 +22,7 @@ Captcha.v2 =
       return
     , 1
 
-    if @noscript = Conf['Force Noscript Captcha'] or not $.hasClass doc, 'js-enabled'
-      @conn = new Connection null, "#{location.protocol}//www.google.com",
-        token: (token) => @save true, token
+    if (@noscript = Conf['Force Noscript Captcha'] or not Main.jsEnabled)
       $.addClass QR.nodes.el, 'noscript-captcha'
 
     @captchas = []
@@ -54,18 +52,12 @@ Captcha.v2 =
     new MutationObserver(@watchBubbles.bind @).observe d.body,
       childList: true
 
-  initFrame: ->
-    if token = $('.fbc-verification-token > textarea')?.value
-      conn = new Connection window.parent, "#{location.protocol}//boards.4chan.org"
-      conn.send {token}
-
-  shouldFocus: false
   timeouts: {}
   postsCount: 0
 
   noscriptURL: ->
-    url = '//www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
-    if lang = Conf['captchaLanguage'].trim()
+    url = 'https://www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
+    if (lang = Conf['captchaLanguage'].trim())
       url += "&hl=#{encodeURIComponent lang}"
     url
 
@@ -91,17 +83,18 @@ Captcha.v2 =
 
   setup: (focus, force) ->
     return unless @isEnabled and (@needed() or force)
-    @shouldFocus = true if focus and not QR.inBubble()
+    @nodes.counter.focus() if focus
     if @timeouts.destroy
       clearTimeout @timeouts.destroy
       delete @timeouts.destroy
       return @reload()
 
     if @nodes.container
-      if @shouldFocus and iframe = $ 'iframe', @nodes.container
-        iframe.focus()
-        QR.focus() # Event handler not fired in Firefox
-        delete @shouldFocus
+      # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1226835
+      $.queueTask =>
+        if @nodes.container and d.activeElement is @nodes.counter and (iframe = $ 'iframe', @nodes.container)
+          iframe.focus()
+          QR.focus() # Event handler not fired in Firefox
       return
 
     @nodes.container = $.el 'div', className: 'captcha-container'
@@ -119,8 +112,10 @@ Captcha.v2 =
     iframe = $.el 'iframe',
       id: 'qr-captcha-iframe'
       src: @noscriptURL()
-    $.add @nodes.container, iframe
-    @conn.target = iframe
+    div = $.el 'div'
+    textarea = $.el 'textarea'
+    $.add div, textarea
+    $.add @nodes.container, [iframe, div]
 
   setupJS: ->
     $.globalEval '''
@@ -150,8 +145,8 @@ Captcha.v2 =
   afterSetup: (mutations) ->
     for mutation in mutations
       for node in mutation.addedNodes
-        @setupIFrame   iframe   if iframe   = $.x './descendant-or-self::iframe',   node
-        @setupTextArea textarea if textarea = $.x './descendant-or-self::textarea', node
+        @setupIFrame   iframe   if (iframe   = $.x './descendant-or-self::iframe',   node)
+        @setupTextArea textarea if (textarea = $.x './descendant-or-self::textarea', node)
     return
 
   setupIFrame: (iframe) ->
@@ -161,8 +156,7 @@ Captcha.v2 =
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
       QR.nodes.el.style.top    = null
       QR.nodes.el.style.bottom = '0px'
-    iframe.focus() if @shouldFocus
-    @shouldFocus = false
+    iframe.focus() if d.activeElement is @nodes.counter
     # XXX Stop Recaptcha from changing focus from iframe -> body -> iframe on submit.
     $.global ->
       f = document.querySelector('#qr iframe')
@@ -192,7 +186,7 @@ Captcha.v2 =
 
   getOne: ->
     @clear()
-    if captcha = @captchas.shift()
+    if (captcha = @captchas.shift())
       $.set 'captchas', @captchas
       @count()
       captcha
@@ -204,6 +198,7 @@ Captcha.v2 =
     @captchas.push
       response: token or $('textarea', @nodes.container).value
       timeout:  Date.now() + @lifetime
+    @captchas.sort (a, b) -> a.timeout - b.timeout
     $.set 'captchas', @captchas
     @count()
 
@@ -211,7 +206,7 @@ Captcha.v2 =
     if @needed()
       if focus
         if QR.cooldown.auto or Conf['Post on Captcha Completion']
-          @shouldFocus = true
+          @nodes.counter.focus()
         else
           QR.nodes.status.focus()
       @reload()
@@ -243,8 +238,9 @@ Captcha.v2 =
       @timeouts.clear = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
 
   reload: ->
-    if @noscript
-      $('iframe', @nodes.container).src = @noscriptURL()
+    if $ 'iframe[src^="https://www.google.com/recaptcha/api/fallback?"]', @nodes.container
+      @destroy()
+      @setup false, true
     else
       $.globalEval '''
         (function() {

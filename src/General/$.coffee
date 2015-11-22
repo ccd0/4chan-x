@@ -202,9 +202,10 @@ $.before = (root, el) ->
 $.replace = (root, el) ->
   root.parentNode.replaceChild $.nodes(el), root
 
-$.el = (tag, properties) ->
+$.el = (tag, properties, properties2) ->
   el = d.createElement tag
-  $.extend el, properties if properties
+  $.extend el, properties  if properties
+  $.extend el, properties2 if properties2
   el
 
 $.on = (el, events, handler) ->

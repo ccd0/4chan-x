@@ -2,7 +2,34 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.18
+
+**v1.11.18.0** *(2015-11-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.17.8.
+- The `Force Noscript Captcha` option now works on the original post form, report form, /banned, and /feedback. For consistency, `Force Noscript Captcha` now overrides `Use Recaptcha v1`.
+- 4chan X will now automatically copy all the codes Recaptcha sometimes asks you to copy and paste. This is included as part of `Captcha Fixes`.
+- Other captcha-related fixes/improvements.
+- The link to open the original post form is now shown beneath the Quick Reply button in a smaller font. The `Hide Original Post Form` option has been removed. If you want to hide even the small link to the original post form, you can add `#togglePostFormLink {display: none;}` to your custom CSS.
+
 ### v1.11.17
+
+**v1.11.17.8** *(2015-11-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.8/builds/4chan-X-noupdate.crx "Chromium version")]
+- A few more captcha focusing tweaks.
+
+**v1.11.17.7** *(2015-11-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.7/builds/4chan-X-noupdate.crx "Chromium version")]
+- More captcha tweaks / fixes.
+
+**v1.11.17.6** *(2015-11-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Make use of new HTTPS support on iqdb.org.
+
+**v1.11.17.5** *(2015-11-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.16.10: Fix captcha on feedback page covering submit button, broken again by bug in 4chan's CSS.
+
+**v1.11.17.4** *(2015-11-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Don't record posts as yours when `Mark Quotes of You` is disabled.
+
+**v1.11.17.3** *(2015-11-17)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Minor captcha fixes.
 
 **v1.11.17.2** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.16.9: Bring back scrolling prevention when captcha is focused.
@@ -17,6 +44,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 - `Color User IDs`, `Fappe Tyme`, `Werk Tyme`, `Highlight Posts Quoting You`, and `Highlight Own Posts` are now on by default in new installs.
 
 ### v1.11.16
+
+**v1.11.16.10** *(2015-11-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.10/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix captcha on feedback page covering submit button, broken again by bug in 4chan's CSS.
 
 **v1.11.16.9** *(2015-11-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.16.9/builds/4chan-X-noupdate.crx "Chromium version")]
 - Nope, it's on Google's end. Bringing back scrolling prevention.

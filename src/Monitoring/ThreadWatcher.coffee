@@ -42,14 +42,17 @@ ThreadWatcher =
 
     if g.VIEW is 'index' and Conf['JSON Navigation'] and Conf['Menu'] and g.BOARD.ID isnt 'f'
       Menu.menu.addEntry
-        el: $.el 'a', href: 'javascript:;'
+        el: $.el 'a',
+          href:      'javascript:;'
+          className: 'has-shortcut-text'
+        , <%= html('<span></span><span class="shortcut-text">Alt+click</span>') %>
         order: 6
         open: ({thread}) ->
           return false if Conf['Index Mode'] isnt 'catalog'
-          @el.textContent = if ThreadWatcher.isWatched thread
-            'Unwatch thread'
+          @el.firstElementChild.textContent = if ThreadWatcher.isWatched thread
+            'Unwatch'
           else
-            'Watch thread'
+            'Watch'
           $.off @el, 'click', @cb if @cb
           @cb = ->
             $.event 'CloseMenu'

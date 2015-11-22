@@ -146,14 +146,17 @@ Index =
       return if g.VIEW isnt 'index' or !Conf['JSON Navigation'] or !Conf['Menu'] or !Conf['Thread Hiding Link'] or g.BOARD.ID is 'f'
 
       Menu.menu.addEntry
-        el: $.el 'a', href: 'javascript:;'
+        el: $.el 'a',
+          href:      'javascript:;'
+          className: 'has-shortcut-text'
+        , <%= html('<span></span><span class="shortcut-text">Shift+click</span>') %>
         order: 20
         open: ({thread}) ->
           return false if Conf['Index Mode'] isnt 'catalog'
-          @el.textContent = if thread.isHidden
-            'Unhide thread'
+          @el.firstElementChild.textContent = if thread.isHidden
+            'Unhide'
           else
-            'Hide thread'
+            'Hide'
           $.off @el, 'click', @cb if @cb
           @cb = ->
             $.event 'CloseMenu'

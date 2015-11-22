@@ -455,11 +455,6 @@ Config =
         'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.'
         1
       ]
-      'Hide Original Post Form': [
-        true
-        'Hide the normal post form.'
-        1
-      ]
       'Cooldown': [
         true
         'Indicate the remaining time before posting again.'
@@ -468,11 +463,6 @@ Config =
       'Posting Success Notifications': [
         true
         'Show notifications on successful post creation or file uploading.'
-        1
-      ]
-      'Force Noscript Captcha': [
-        false
-        'Use the non-Javascript fallback captcha in the QR even if Javascript is enabled (Recaptcha v2 only).'
         1
       ]
       'Auto-load captcha': [
@@ -501,6 +491,10 @@ Config =
       'Use Recaptcha v2 in Reports': [
         false
         'Use the image selection captcha in the report window.'
+      ]
+      'Force Noscript Captcha': [
+        false
+        'Use the non-Javascript fallback captcha even if Javascript is enabled (Recaptcha v2 only).'
       ]
       'Pass Link': [
         true
@@ -704,7 +698,7 @@ Config =
 
   sauces: """
     https://www.google.com/searchbyimage?image_url=%IMG
-    http://iqdb.org/?url=%IMG
+    //iqdb.org/?url=%IMG
     http://eye.swfchan.com/search/?q=%name;types:swf;sandbox
     #//tineye.com/search?url=%IMG
     #https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG

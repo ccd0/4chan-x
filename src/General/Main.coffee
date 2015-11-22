@@ -8,8 +8,6 @@ Main =
     window['<%= meta.name %> antidup'] = true
 
     if location.hostname is 'www.google.com'
-      if location.pathname is '/recaptcha/api/fallback'
-        $.ready -> Captcha.v2.initFrame()
       $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
         if enabled
           $.ready -> Captcha.fixes.init()
@@ -83,9 +81,11 @@ Main =
       $.global ->
         document.documentElement.classList.add 'js-enabled'
         window.FCX = {}
+      Main.jsEnabled = $.hasClass doc, 'js-enabled'
 
     switch hostname
       when 'www.4chan.org'
+        $.onExists doc, 'body', false, -> $.addStyle Main.cssWWW
         Captcha.replace.init()
         return
       when 'sys.4chan.org'
@@ -346,10 +346,12 @@ Main =
 
   css: `<%= importCSS('font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon', 'supports') %>`
 
+  cssWWW: `<%= importCSS('www') %>`
+
   features: [
     ['Polyfill',                  Polyfill]
     ['Normalize URL',             NormalizeURL]
-    ['Captcha Replacement',       Captcha.replace]
+    ['Captcha Configuration',     Captcha.replace]
     ['Redirect',                  Redirect]
     ['Header',                    Header]
     ['Catalog Links',             CatalogLinks]
