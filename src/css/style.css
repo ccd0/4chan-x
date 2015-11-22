@@ -1703,6 +1703,16 @@ a:only-of-type > .remove {
   position: relative;
   top: 2px;
 }
+.entry.has-shortcut-text {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.entry .shortcut-text {
+  opacity: 0.5;
+  font-size: 70%;
+  margin-left: 5px;
+}
 .has-submenu::after {
   content: "";
   border-left: .5em solid;
