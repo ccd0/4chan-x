@@ -742,6 +742,11 @@ div[data-checked="false"] > .suboption-list {
   overflow: hidden;
   text-align: center;
 }
+.catalog-thread:hover > .comment {
+  overflow: visible;
+  z-index: 1;
+  background-color: inherit;
+}
 /* /tg/ dice rolls */
 .board_tg .catalog-thread > .comment > b {
   font-weight: normal;
