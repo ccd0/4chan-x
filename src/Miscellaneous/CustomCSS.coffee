@@ -4,7 +4,7 @@ CustomCSS =
     @addStyle()
 
   addStyle: ->
-    @style = $.addStyle Conf['usercss'], 'custom-css', -> $.id 'fourchanx-css'
+    @style = $.addStyle Conf['usercss'], 'custom-css', '#fourchanx-css'
 
   rmStyle: ->
     if @style
