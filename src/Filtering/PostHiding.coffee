@@ -32,7 +32,7 @@ PostHiding =
       # Hide
       div = $.el 'div',
         className: 'hide-reply-link'
-        textContent: 'Hide reply'
+        textContent: 'Hide'
 
       apply = $.el 'a',
         textContent: 'Apply'
@@ -64,7 +64,7 @@ PostHiding =
       # Show
       div = $.el 'div',
         className: 'show-reply-link'
-        textContent: 'Show reply'
+        textContent: 'Show'
 
       apply = $.el 'a',
         textContent: 'Apply'

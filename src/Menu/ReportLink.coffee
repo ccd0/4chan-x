@@ -12,7 +12,7 @@ ReportLink =
       order: 10
       open: (post) ->
         unless post.isDead or (post.thread.isDead and not post.thread.isArchived)
-          a.textContent = 'Report this post'
+          a.textContent = 'Report'
           ReportLink.url = "//sys.4chan.org/#{post.board}/imgboard.php?mode=report&no=#{post}"
           ReportLink.height = 180
         else if Conf['Archive Report']
