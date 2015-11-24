@@ -135,14 +135,18 @@ Captcha.v2 =
   setupIFrame: (iframe) ->
     Captcha.replace.iframe iframe
     $.addClass QR.nodes.el, 'captcha-open'
-    if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
-      QR.nodes.el.style.top    = null
-      QR.nodes.el.style.bottom = '0px'
+    @fixQRPosition()
+    $.on iframe, 'load', @fixQRPosition
     iframe.focus() if d.activeElement is @nodes.counter
     # XXX Stop Recaptcha from changing focus from iframe -> body -> iframe on submit.
     $.global ->
       f = document.querySelector('#qr iframe')
       f.focus = f.blur = ->
+
+  fixQRPosition: ->
+    if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
+      QR.nodes.el.style.top    = null
+      QR.nodes.el.style.bottom = '0px'
 
   setupTextArea: (textarea) ->
     $.one textarea, 'input', => @save true
