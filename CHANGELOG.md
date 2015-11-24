@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.18
 
+**v1.11.18.2** *(2015-11-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- The `Use Recaptcha v1` setting takes priority over `Force Noscript Captcha` again.
+
 **v1.11.18.1** *(2015-11-22)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Shorten the text of some menu items and show the Alt/Shift+click shortcuts to watch/hide threads in the catalog thread menu.
 - Minor bugfixes.
