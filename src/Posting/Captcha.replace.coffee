@@ -2,16 +2,18 @@ Captcha.replace =
   init: ->
     return unless d.cookie.indexOf('pass_enabled=1') < 0
 
-    if Conf['Force Noscript Captcha'] and Main.jsEnabled
-      $.ready Captcha.replace.noscript
-      return
-
-    if location.hostname is 'sys.4chan.org' and Conf['Use Recaptcha v2 in Reports'] and Main.jsEnabled
-      $.ready Captcha.replace.v2
+    if location.hostname is 'sys.4chan.org' and Main.jsEnabled
+      if Conf['Use Recaptcha v2 in Reports']
+        type = if Conf['Force Noscript Captcha'] then 'noscript' else 'v2'
+        $.ready Captcha.replace[type]
       return
 
     if Conf['Use Recaptcha v1'] and Main.jsEnabled and location.hostname isnt 'www.4chan.org'
       $.ready Captcha.replace.v1
+      return
+
+    if Conf['Force Noscript Captcha'] and Main.jsEnabled
+      $.ready Captcha.replace.noscript
       return
 
     if Conf['captchaLanguage'].trim() or Conf['Captcha Fixes']

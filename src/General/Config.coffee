@@ -486,7 +486,7 @@ Config =
       ]
       'Use Recaptcha v1': [
         false
-        'Use the old text version of Recaptcha.'
+        'Use the old text version of Recaptcha where possible.'
       ]
       'Use Recaptcha v2 in Reports': [
         false
