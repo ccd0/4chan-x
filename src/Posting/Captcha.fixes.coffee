@@ -1,5 +1,6 @@
 Captcha.fixes =
   imageKeys: '789456123uiojklm'.split('').concat(['Comma', 'Period'])
+  imageKeys16: '7890uiopjkl'.split('').concat(['Semicolon', 'm', 'Comma', 'Period', 'Slash'])
 
   css: '''
     .rc-imageselect-target > div:focus {
@@ -68,6 +69,7 @@ Captcha.fixes =
     for img in @images
       img.tabIndex = 0
     @addTooltips @images if @images.length is 9
+    @addTooltips16 @images if @images.length is 16
     @complaintLinks()
 
   complaintLinks: ->
@@ -97,6 +99,11 @@ Captcha.fixes =
       node.title = "#{@imageKeys[i]} or #{@imageKeys[i+9][0].toUpperCase()}#{@imageKeys[i+9][1..]}"
     return
 
+  addTooltips16: (nodes) ->
+    for node, i in nodes
+      node.title = "#{@imageKeys16[i][0].toUpperCase()}#{@imageKeys16[i][1..]}"
+    return
+
   checkForm: (e) ->
     n = 0
     n++ for checkbox in @images when checkbox.checked
@@ -119,6 +126,9 @@ Captcha.fixes =
       @images[x].click()
     else if n is 9 and (i = @imageKeys.indexOf key) >= 0
       @images[i % 9].click()
+      verify.focus()
+    else if n is 16 and (i = @imageKeys16.indexOf key) >= 0
+      @images[i].click()
       verify.focus()
     else if dx = {'Up': n, 'Down': w, 'Left': last, 'Right': 1}[key]
       x = (x + dx) % (n + w)
