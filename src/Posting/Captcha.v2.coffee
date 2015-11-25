@@ -154,6 +154,7 @@ Captcha.v2 =
     Captcha.replace.iframe iframe
     $.addClass QR.nodes.el, 'captcha-open'
     @fixQRPosition()
+    $.queueTask -> c.log 'queueTask', QR.nodes.el.getBoundingClientRect().bottom - doc.clientHeight, iframe.getBoundingClientRect().height
     $.on iframe, 'load', @fixQRPosition
     iframe.focus() if d.activeElement is @nodes.counter
     # XXX Stop Recaptcha from changing focus from iframe -> body -> iframe on submit.
@@ -162,9 +163,11 @@ Captcha.v2 =
       f.focus = f.blur = ->
 
   fixQRPosition: ->
+    $.queueTask -> c.log 'before', QR.nodes.el.getBoundingClientRect().bottom - doc.clientHeight, $('#qr iframe').getBoundingClientRect().height
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
       QR.nodes.el.style.top    = null
       QR.nodes.el.style.bottom = '0px'
+    $.queueTask -> c.log 'after', QR.nodes.el.getBoundingClientRect().bottom - doc.clientHeight, $('#qr iframe').getBoundingClientRect().height
 
   setupTextArea: (textarea) ->
     $.one textarea, 'input', => @save true
