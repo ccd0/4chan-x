@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.18
 
+**v1.11.18.3** *(2015-11-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.17.9: Support solving 4x4 image captchas with keys in 7-0-/-M square.
+
 **v1.11.18.2** *(2015-11-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - The `Use Recaptcha v1` setting takes priority over `Force Noscript Captcha` again.
 
@@ -19,6 +22,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 - The link to open the original post form is now shown beneath the Quick Reply button in a smaller font. The `Hide Original Post Form` option has been removed. If you want to hide even the small link to the original post form, you can add `#togglePostFormLink {display: none;}` to your custom CSS.
 
 ### v1.11.17
+
+**v1.11.17.9** *(2015-11-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.9/builds/4chan-X-noupdate.crx "Chromium version")]
+- Support solving 4x4 image captchas with keys in 7-0-/-M square.
 
 **v1.11.17.8** *(2015-11-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.8/builds/4chan-X-noupdate.crx "Chromium version")]
 - A few more captcha focusing tweaks.
