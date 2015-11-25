@@ -61,7 +61,7 @@ ThreadHiding =
 
       div = $.el 'div',
         className: 'hide-thread-link'
-        textContent: 'Hide thread'
+        textContent: 'Hide'
 
       apply = $.el 'a',
         textContent: 'Apply'
@@ -82,7 +82,7 @@ ThreadHiding =
 
       div = $.el 'a',
         className: 'show-thread-link'
-        textContent: 'Show thread'
+        textContent: 'Show'
         href: 'javascript:;'
       $.on div, 'click', ThreadHiding.menu.show 
 

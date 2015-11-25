@@ -221,6 +221,10 @@ Keybinds =
         'Comma'
       when 190
         'Period'
+      when 191
+        'Slash'
+      when 59, 186
+        'Semicolon'
       else
         if 48 <= kc <= 57 or 65 <= kc <= 90 # 0-9, A-Z
           String.fromCharCode(kc).toLowerCase()

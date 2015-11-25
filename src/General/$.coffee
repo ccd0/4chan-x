@@ -134,11 +134,11 @@ $.onExists = (root, selector, subtree, cb) ->
       cb el
   observer.observe root, {childList: true, subtree}
 
-$.addStyle = (css, id, test) ->
+$.addStyle = (css, id, test='head') ->
   style = $.el 'style',
     textContent: css
   style.id = id if id?
-  $.asap (-> d.head and (!test? or test())), ->
+  $.onExists doc, test, true, ->
     $.add d.head, style
   style
 
