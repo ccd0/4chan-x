@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.17
 
+**v1.11.17.9** *(2015-11-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.9/builds/4chan-X-noupdate.crx "Chromium version")]
+- Support solving 4x4 image captchas with keys in 7-0-/-M square.
+
 **v1.11.17.8** *(2015-11-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.17.8/builds/4chan-X-noupdate.crx "Chromium version")]
 - A few more captcha focusing tweaks.
 
