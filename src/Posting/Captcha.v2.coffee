@@ -66,7 +66,11 @@ Captcha.v2 =
 
   setup: (focus, force) ->
     return unless @isEnabled and (@needed() or force)
-    @nodes.counter.focus() if focus
+
+    if focus
+      $.addClass QR.nodes.el, 'focus'
+      @nodes.counter.focus()
+
     if @timeouts.destroy
       clearTimeout @timeouts.destroy
       delete @timeouts.destroy

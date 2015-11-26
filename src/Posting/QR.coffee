@@ -765,7 +765,7 @@ QR =
           QR.cooldown.addDelay post, seconds
       else # stop auto-posting
         QR.cooldown.auto = false
-      QR.captcha.setup(QR.cooldown.auto and d.activeElement is QR.nodes.status)
+      QR.captcha.setup(QR.cooldown.auto and d.activeElement in [QR.nodes.status, d.body])
       QR.cooldown.auto = false if QR.captcha.isEnabled and !QR.captcha.captchas.length
       QR.status()
       QR.error err
