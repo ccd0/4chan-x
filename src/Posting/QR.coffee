@@ -494,7 +494,7 @@ QR =
     QR.max_width  = +match_max?[1] or 10000
     QR.max_height = +match_max?[2] or 10000
 
-    nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
+    nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]')?.value or '0'
 
     scriptData = Get.scriptData()
     QR.max_size_video = if (m = scriptData.match /\bmaxWebmFilesize *= *(\d+)\b/) then +m[1] else +nodes.fileInput.max
@@ -613,7 +613,7 @@ QR =
       threadID = null
       if g.BOARD.ID is 'vg' and !post.sub
         err = 'New threads require a subject.'
-      else unless post.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
+      else unless !$.id('postFile') or post.file or (textOnly = !!$ 'input[name=textonly]', $.id 'postForm')
         err = 'No file selected.'
     else if g.BOARD.threads[threadID].isClosed
       err = 'You can\'t reply to this thread anymore.'
