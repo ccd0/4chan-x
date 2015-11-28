@@ -10,6 +10,7 @@ Unread =
     )
 
     if Conf['Remember Last Read Post']
+      $.sync 'Remember Last Read Post', (enabled) -> Conf['Remember Last Read Post'] = enabled
       @db = new DataBoard 'lastReadPosts', @sync
 
     @hr = $.el 'hr',
@@ -193,6 +194,7 @@ Unread =
     return
 
   saveLastReadPost: $.debounce 2 * $.SECOND, ->
+    $.forceSync 'Remember Last Read Post'
     return unless Conf['Remember Last Read Post'] and Unread.db
     postIDs = Unread.thread.posts.keys
     for i in [Unread.readCount...postIDs.length] by 1
@@ -230,6 +232,7 @@ Unread =
         Unread.title
       d.title = "#{titleQuotingYou}#{titleCount}#{titleDead}"
 
+    $.forceSync 'Remember Last Read Post'
     if Conf['Remember Last Read Post'] and (!Unread.thread.isDead or Unread.thread.isArchived)
       ThreadWatcher.update Unread.thread.board.ID, Unread.thread.ID,
         isDead: Unread.thread.isDead
