@@ -145,7 +145,7 @@ ThreadWatcher =
         if Conf['Auto Prune'] or not (data and typeof data is 'object') # corrupt data
           db.delete {boardID, threadID}
         else
-          if Conf['Show Unread Count']
+          if Conf['Remember Last Read Post'] and Conf['Show Unread Count']
             ThreadWatcher.fetchStatus {boardID, threadID, data}
           data.isDead = true
           db.set {boardID, threadID, val: data}
@@ -174,7 +174,7 @@ ThreadWatcher =
     clearTimeout ThreadWatcher.timeout
     return unless Conf['Auto Update Thread Watcher']
     {db} = ThreadWatcher
-    interval = if Conf['Show Unread Count'] then 5 * $.MINUTE else 2 * $.HOUR
+    interval = if Conf['Remember Last Read Post'] and Conf['Show Unread Count'] then 5 * $.MINUTE else 2 * $.HOUR
     now = Date.now()
     if now >= (db.data.lastChecked or 0) + interval
       db.data.lastChecked = now
@@ -291,7 +291,7 @@ ThreadWatcher =
       title: data.excerpt
       className: 'watcher-link'
 
-    if Conf['Show Unread Count'] and data.unread?
+    if Conf['Remember Last Read Post'] and Conf['Show Unread Count'] and data.unread?
       count = $.el 'span',
         textContent: "(#{data.unread})"
         className: 'watcher-unread'
@@ -307,7 +307,7 @@ ThreadWatcher =
     div.dataset.fullID = fullID
     $.addClass div, 'current'     if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
     $.addClass div, 'dead-thread' if data.isDead
-    if Conf['Show Unread Count']
+    if Conf['Remember Last Read Post'] and Conf['Show Unread Count']
       $.addClass div, 'replies-read'        if data.unread is 0
       $.addClass div, 'replies-unread'      if data.unread
       $.addClass div, 'replies-quoting-you' if data.quotingYou
@@ -397,7 +397,7 @@ ThreadWatcher =
     data.excerpt  = Get.threadExcerpt thread
     ThreadWatcher.db.set {boardID, threadID, val: data}
     ThreadWatcher.refresh()
-    if Conf['Show Unread Count']
+    if Conf['Remember Last Read Post'] and Conf['Show Unread Count']
       ThreadWatcher.fetchStatus {boardID, threadID, data}, true
 
   rm: (boardID, threadID) ->
@@ -473,6 +473,10 @@ ThreadWatcher =
         el: UI.checkbox name, name.replace(' Thread Watcher', '')
       entry.el.title = desc
       input = entry.el.firstElementChild
+      if name is 'Show Unread Count' and not Conf['Remember Last Read Post']
+        input.disabled = true
+        $.addClass entry.el, 'disabled'
+        entry.el.title += '\n[Remember Last Read Post is disabled.]'
       $.on input, 'change', $.cb.checked
       $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Unread Count']
       $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Unread Count', 'Auto Update Thread Watcher']

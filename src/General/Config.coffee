@@ -355,9 +355,14 @@ Config =
         true
         'Show a line to distinguish read posts from unread ones.'
       ]
+      'Remember Last Read Post': [
+        true
+        'Remember how far you\'ve read after you close the thread.'
+      ]
       'Scroll to Last Read Post': [
         true
         'Scroll back to the last read post when reopening a thread.'
+        1
       ]
       'Thread Excerpt': [
         true

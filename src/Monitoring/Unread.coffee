@@ -4,13 +4,14 @@ Unread =
       Conf['Unread Count'] or
       Conf['Unread Favicon'] or
       Conf['Unread Line'] or
-      Conf['Scroll to Last Read Post'] or
-      Conf['Thread Watcher'] or
+      Conf['Remember Last Read Post'] or
       Conf['Desktop Notifications'] or
       Conf['Quote Threading']
     )
 
-    @db = new DataBoard 'lastReadPosts', @sync
+    if Conf['Remember Last Read Post']
+      @db = new DataBoard 'lastReadPosts', @sync
+
     @hr = $.el 'hr',
       id: 'unread-line'
     @posts = new Set()
@@ -50,10 +51,10 @@ Unread =
   node: ->
     Unread.thread = @
     Unread.title  = d.title
-    Unread.lastReadPost = Unread.db.get
+    Unread.lastReadPost = Unread.db?.get(
       boardID: @board.ID
       threadID: @ID
-      defaultValue: 0
+    ) or 0
     Unread.readCount = 0
     Unread.readCount++ for ID in @posts.keys when +ID <= Unread.lastReadPost
     $.one d, '4chanXInitFinished', Unread.ready
@@ -63,7 +64,7 @@ Unread =
     Unread.setLine true
     Unread.read()
     Unread.update()
-    Unread.scroll() if Conf['Scroll to Last Read Post']
+    Unread.scroll() if Conf['Remember Last Read Post'] and Conf['Scroll to Last Read Post']
     $.on  d, 'scroll visibilitychange', Unread.read
     $.on  d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
 
@@ -192,6 +193,7 @@ Unread =
     return
 
   saveLastReadPost: $.debounce 2 * $.SECOND, ->
+    return unless Conf['Remember Last Read Post'] and Unread.db
     postIDs = Unread.thread.posts.keys
     for i in [Unread.readCount...postIDs.length] by 1
       ID = +postIDs[i]
@@ -228,7 +230,7 @@ Unread =
         Unread.title
       d.title = "#{titleQuotingYou}#{titleCount}#{titleDead}"
 
-    unless Unread.thread.isDead and !Unread.thread.isArchived
+    if Conf['Remember Last Read Post'] and (!Unread.thread.isDead or Unread.thread.isArchived)
       ThreadWatcher.update Unread.thread.board.ID, Unread.thread.ID,
         isDead: Unread.thread.isDead
         unread: count
