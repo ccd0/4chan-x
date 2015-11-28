@@ -34,7 +34,6 @@ QuoteYou =
 
   cb:
     seek: (type) ->
-      return unless Conf['Mark Quotes of You'] and Conf['Quick Reply']
       $.rmClass highlight, 'highlight' if highlight = $ '.highlight'
 
       unless QuoteYou.lastRead

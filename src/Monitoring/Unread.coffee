@@ -175,7 +175,7 @@ Unread =
       Unread.posts.delete ID
       Unread.postsQuotingYou.delete ID
 
-      if Conf['Mark Quotes of You'] and QR.db?.get {
+      if QR.db?.get {
         boardID:  data.board.ID
         threadID: data.thread.ID
         postID:   ID
