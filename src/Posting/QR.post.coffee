@@ -202,7 +202,7 @@ QR.post = class
       @readFile()
 
   checkSize: ->
-    max = QR.nodes.fileInput.max
+    max = QR.max_size
     max = Math.min(max, QR.max_size_video) if /^video\//.test @file.type
     if @file.size > max
       @fileError "File too large (file: #{@filesize}, max: #{$.bytesToString max})."
