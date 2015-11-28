@@ -24,7 +24,10 @@ QR =
   init: ->
     return unless Conf['Quick Reply']
 
-    @db = new DataBoard 'yourPosts' if Conf['Mark Quotes of You']
+    if Conf['Mark Quotes of You']
+      $.sync 'Mark Quotes of You', (enabled) -> Conf['Mark Quotes of You'] = enabled
+      @db = new DataBoard 'yourPosts'
+
     @posts = []
 
     return if g.VIEW is 'archive'
@@ -782,11 +785,13 @@ QR =
     threadID = +threadID or postID
     isReply  = threadID isnt postID
 
-    QR.db?.set
-      boardID: g.BOARD.ID
-      threadID: threadID
-      postID: postID
-      val: true
+    $.forceSync 'Mark Quotes of You'
+    if Conf['Mark Quotes of You']
+      QR.db?.set
+        boardID: g.BOARD.ID
+        threadID: threadID
+        postID: postID
+        val: true
 
     # Post/upload confirmed as successful.
     $.event 'QRPostSuccessful', {
