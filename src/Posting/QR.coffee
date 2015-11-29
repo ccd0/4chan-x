@@ -494,9 +494,8 @@ QR =
     QR.max_width  = +match_max?[1] or 10000
     QR.max_height = +match_max?[2] or 10000
 
-    QR.max_size = +($('input[name=MAX_FILE_SIZE]')?.value or '0')
-
     scriptData = Get.scriptData()
+    QR.max_size       = if (m = scriptData.match /\bmaxFilesize *= *(\d+)\b/)     then +m[1] else 4194304
     QR.max_size_video = if (m = scriptData.match /\bmaxWebmFilesize *= *(\d+)\b/) then +m[1] else QR.max_size
     QR.max_comment    = if (m = scriptData.match /\bcomlen *= *(\d+)\b/)          then +m[1] else 2000
 
