@@ -615,7 +615,7 @@ QR =
       threadID = null
       if g.BOARD.ID is 'vg' and !post.sub
         err = 'New threads require a subject.'
-      else unless !$.id('postFile') or post.file or (textOnly = !!$ 'input[name=textonly]', $.id 'postForm')
+      else unless $.hasClass(d.body, 'text_only') or post.file or (textOnly = !!$ 'input[name=textonly]', $.id 'postForm')
         err = 'No file selected.'
     else if g.BOARD.threads[threadID].isClosed
       err = 'You can\'t reply to this thread anymore.'
