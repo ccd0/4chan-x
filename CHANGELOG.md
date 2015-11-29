@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.18
 
+**v1.11.18.6** *(2015-11-28)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix max file size on /news/.
+
 **v1.11.18.5** *(2015-11-27)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.5/builds/4chan-X-noupdate.crx "Chromium version")]
 - Update Quick Reply to work on text-only boards such as /news/.
 
