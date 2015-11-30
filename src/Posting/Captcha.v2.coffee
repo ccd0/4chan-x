@@ -32,8 +32,6 @@ Captcha.v2 =
     $.on window, 'captcha:success', =>
       # XXX Greasemonkey 1.x workaround to gain access to GM_* functions.
       $.queueTask => @save false
-    new MutationObserver(@watchBubbles.bind @).observe d.body,
-      childList: true
 
   timeouts: {}
   postsCount: 0
@@ -238,21 +236,3 @@ Captcha.v2 =
           window.grecaptcha.reset(container.dataset.widgetID);
         })();
       '''
-
-  watchBubbles: (mutations) ->
-    for mutation in mutations
-      for node in mutation.addedNodes
-        if $ 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]', node
-          new MutationObserver(@fixBubble.bind(@, node)).observe node,
-            attributes: true
-
-  fixBubble: (node) ->
-    {bottom, right, width} = node.getBoundingClientRect()
-    if (
-      getComputedStyle(node).visibility isnt 'hidden' and
-      bottom > 0 and          # not deliberately offscreen
-      right > doc.clientWidth # offscreen to right
-    )
-      qrLeft = QR.nodes.el.getBoundingClientRect().left
-      newLeft = Math.max 0, qrLeft - width
-      node.style.left = "#{newLeft}px"
