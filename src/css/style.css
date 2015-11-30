@@ -118,6 +118,10 @@ canvas#tegaki-canvas {
 body > div:last-of-type {
   transition: none !important;
 }
+/* Fix captcha scrolling to top of page. */
+body > div[style*=" top: -10000px;"] {
+  visibility: hidden !important;
+}
 
 /* Anti-autoplay */
 audio.controls-added {
@@ -1333,8 +1337,18 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr .captcha-root {
   position: relative;
 }
-#qr .captcha-container > div > div {
+#qr .captcha-container > div {
   margin: auto;
+  width: 304px;
+}
+/* scrollable with scroll bar hidden; prevents scroll on space press */
+:root.blink #qr .captcha-container > div {
+  overflow: hidden;
+}
+:root.blink #qr .captcha-container > div > div:first-of-type {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding-right: 15px;
 }
 #qr .captcha-counter {
   display: block;
