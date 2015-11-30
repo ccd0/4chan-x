@@ -95,7 +95,9 @@ Captcha.v1 =
   setup: (focus, force) ->
     return unless @isEnabled and (force or @needed())
     @create()
-    @nodes.input.focus() if focus
+    if focus
+      $.addClass QR.nodes.el, 'focus'
+      @nodes.input.focus()
 
   afterSetup: ->
     return unless challenge = $.id 'recaptcha_challenge_field_holder'

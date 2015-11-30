@@ -24,7 +24,10 @@ QR =
   init: ->
     return unless Conf['Quick Reply']
 
-    @db = new DataBoard 'yourPosts' if Conf['Mark Quotes of You']
+    if Conf['Mark Quotes of You']
+      $.sync 'Mark Quotes of You', (enabled) -> Conf['Mark Quotes of You'] = enabled
+      @db = new DataBoard 'yourPosts'
+
     @posts = []
 
     return if g.VIEW is 'archive'
@@ -478,10 +481,9 @@ QR =
     QR.max_width  = +match_max?[1] or 10000
     QR.max_height = +match_max?[2] or 10000
 
-    nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
-
     scriptData = Get.scriptData()
-    QR.max_size_video = if (m = scriptData.match /\bmaxWebmFilesize *= *(\d+)\b/) then +m[1] else +nodes.fileInput.max
+    QR.max_size       = if (m = scriptData.match /\bmaxFilesize *= *(\d+)\b/)     then +m[1] else 4194304
+    QR.max_size_video = if (m = scriptData.match /\bmaxWebmFilesize *= *(\d+)\b/) then +m[1] else QR.max_size
     QR.max_comment    = if (m = scriptData.match /\bcomlen *= *(\d+)\b/)          then +m[1] else 2000
 
     QR.max_width_video = QR.max_height_video = 2048
@@ -597,7 +599,7 @@ QR =
       threadID = null
       if g.BOARD.ID is 'vg' and !post.sub
         err = 'New threads require a subject.'
-      else unless post.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
+      else unless $.hasClass(d.body, 'text_only') or post.file or (textOnly = !!$ 'input[name=textonly]', $.id 'postForm')
         err = 'No file selected.'
     else if g.BOARD.threads[threadID].isClosed
       err = 'You can\'t reply to this thread anymore.'
@@ -749,7 +751,7 @@ QR =
           QR.cooldown.addDelay post, seconds
       else # stop auto-posting
         QR.cooldown.auto = false
-      QR.captcha.setup(QR.cooldown.auto and d.activeElement is QR.nodes.status)
+      QR.captcha.setup(QR.cooldown.auto and d.activeElement in [QR.nodes.status, d.body])
       QR.cooldown.auto = false if QR.captcha.isEnabled and !QR.captcha.captchas.length
       QR.status()
       QR.error err
@@ -766,11 +768,13 @@ QR =
     threadID = +threadID or postID
     isReply  = threadID isnt postID
 
-    QR.db?.set
-      boardID: g.BOARD.ID
-      threadID: threadID
-      postID: postID
-      val: true
+    $.forceSync 'Mark Quotes of You'
+    if Conf['Mark Quotes of You']
+      QR.db?.set
+        boardID: g.BOARD.ID
+        threadID: threadID
+        postID: postID
+        val: true
 
     # Post/upload confirmed as successful.
     $.event 'QRPostSuccessful', {
