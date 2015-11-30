@@ -2,6 +2,14 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.19
+
+**v1.11.19.0** *(2015-11-29)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.18.7.
+- Add preference `Remember Last Read Post` (on by default). Turning this off disables 4chan X recording your place in threads.
+- Turning off `Mark Quotes of You` should now turn off recording your post history immediately in all tabs. Turning it back on again may require a refresh.
+- Again try removing the measure of preventing all scrolling while the captcha is focused. If you encounter anomalous scrolling while using the v2 captcha, please report it.
+
 ### v1.11.18
 
 **v1.11.18.7** *(2015-11-28)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.18.7/builds/4chan-X-noupdate.crx "Chromium version")]
