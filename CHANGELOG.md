@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.19
 
+**v1.11.19.1** *(2015-12-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Try to reduce false positives in detection of links split across two lines.
+
 **v1.11.19.0** *(2015-11-29)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.18.7.
 - Add preference `Remember Last Read Post` (on by default). Turning this off disables 4chan X recording your place in threads.
