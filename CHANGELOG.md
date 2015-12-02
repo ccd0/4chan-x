@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.19
 
+**v1.11.19.2** *(2015-12-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Minor bug fixes.
+
 **v1.11.19.1** *(2015-12-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Try to reduce false positives in detection of links split across two lines.
 
