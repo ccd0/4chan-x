@@ -823,7 +823,7 @@ QR =
       $.ajax url,
         onloadend: ->
           attempts++
-          if attempts >= 5 or @status is 200
+          if attempts >= 6 or @status is 200
             cb()
           else
             setTimeout check, attempts * $.SECOND

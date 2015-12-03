@@ -295,7 +295,7 @@ Embedding =
           src: "https://vine.co/v/#{a.dataset.uid}/card"
     ,
       key: 'YouTube'
-      regExp: /^\w+:\/\/(?:youtu.be\/|[\w\.]*youtube[\w\.]*\/.*(?:v=|\/embed\/|\/v\/|\/videos\/))([\w\-]{11})[^#\&\?]?(.*)/
+      regExp: /^\w+:\/\/(?:youtu.be\/|[\w.]*youtube[\w.]*\/.*(?:v=|\bembed\/|\bv\/))([\w\-]{11})(.*)/
       el: (a) ->
         start = a.dataset.options.match /\b(?:star)?t\=(\w+)/
         start = start[1] if start
