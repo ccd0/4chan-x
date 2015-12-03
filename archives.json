@@ -2,7 +2,7 @@
   "uid": 3,
   "name": "4plebs",
   "domain": "archive.4plebs.org",
-  "http": true,
+  "http": false,
   "https": true,
   "software": "foolfuuka",
   "boards": ["adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
