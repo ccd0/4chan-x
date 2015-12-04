@@ -4,6 +4,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.19
 
+**v1.11.19.3** *(2015-12-04)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Support warnings formerly shown on every page load have been moved to the settings panel. The `Show Support Message` option has thus been retired.
+- Add warning about the [ad situation](https://boards.4chan.org/qa/thread/362590).
+
 **v1.11.19.2** *(2015-12-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Minor bug fixes.
 
