@@ -97,19 +97,28 @@ Settings =
     $.event 'OpenSettings', null, section
 
   main: (section) ->
-    warnings = []
+    warnings = $.el 'fieldset',
+      hidden: true
+    ,
+      <%= html('<legend>Warnings</legend><ul></ul>') %>
+    addWarning = (item) ->
+      $.add $('ul', warnings), item
+      warnings.hidden = false
+    $.add section, warnings
+
     if $.cantSync
       why = if $.cantSet then 'save your settings' else 'synchronize settings between tabs'
-      warnings.push $.el 'li',
+      addWarning $.el 'li',
         textContent: """
           <%= meta.name %> needs local storage to #{why}.
           Enable it on boards.4chan.org in your browser's privacy settings (may be listed as part of "local data" or "cookies").
         """
-    if warnings.length
-      fs = $.el 'fieldset',
-        <%= html('<legend>Warnings</legend><ul></ul>') %>
-      $.add $('ul', fs), warnings
-      $.add section, fs
+    $.onExists d.body, '.ad-cnt', true, (ad) -> $.onExists ad, 'img', true, ->
+      addWarning $.el 'li',
+        <%= html(
+          'For <a href="//boards.4chan.org/qa/thread/362590" target="_blank">security reasons</a>' +
+          ' you should <a href="https://github.com/gorhill/uBlock" target="_blank">block ads</a> on 4chan.'
+        ) %>
 
     items  = {}
     inputs = {}
