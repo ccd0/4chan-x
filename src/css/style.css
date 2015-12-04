@@ -517,6 +517,7 @@ audio.controls-added {
 }
 .section-main li {
   white-space: pre-line;
+  list-style: disc;
 }
 .section-main li:not(:first-of-type) {
   margin-top: 4px;
