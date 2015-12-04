@@ -96,6 +96,23 @@ Settings =
     section.scrollTop = 0
     $.event 'OpenSettings', null, section
 
+  warnings:
+    localStorage: (cb) ->
+      if $.cantSync
+        why = if $.cantSet then 'save your settings' else 'synchronize settings between tabs'
+        cb $.el 'li',
+          textContent: """
+            <%= meta.name %> needs local storage to #{why}.
+            Enable it on boards.4chan.org in your browser's privacy settings (may be listed as part of "local data" or "cookies").
+          """
+    ads: (cb) ->
+      $.onExists doc, '.ad-cnt', true, (ad) -> $.onExists ad, 'img', true, ->
+        cb $.el 'li',
+          <%= html(
+            'For <a href="//boards.4chan.org/qa/thread/362590" target="_blank">security reasons</a>' +
+            ' you should <a href="https://github.com/gorhill/uBlock" target="_blank">block ads</a> on 4chan.'
+          ) %>
+
   main: (section) ->
     warnings = $.el 'fieldset',
       hidden: true
@@ -104,21 +121,9 @@ Settings =
     addWarning = (item) ->
       $.add $('ul', warnings), item
       warnings.hidden = false
+    for key, warning of Settings.warnings
+      warning addWarning
     $.add section, warnings
-
-    if $.cantSync
-      why = if $.cantSet then 'save your settings' else 'synchronize settings between tabs'
-      addWarning $.el 'li',
-        textContent: """
-          <%= meta.name %> needs local storage to #{why}.
-          Enable it on boards.4chan.org in your browser's privacy settings (may be listed as part of "local data" or "cookies").
-        """
-    $.onExists d.body, '.ad-cnt', true, (ad) -> $.onExists ad, 'img', true, ->
-      addWarning $.el 'li',
-        <%= html(
-          'For <a href="//boards.4chan.org/qa/thread/362590" target="_blank">security reasons</a>' +
-          ' you should <a href="https://github.com/gorhill/uBlock" target="_blank">block ads</a> on 4chan.'
-        ) %>
 
     items  = {}
     inputs = {}
@@ -326,6 +331,8 @@ Settings =
     if compareString < '00001.00011.00017.00006'
       if data['sauces']?
         changes['sauces'] = data['sauces'].replace /(#?\s*)http:\/\/iqdb\.org\//g, '$1//iqdb.org/'
+    if compareString < '00001.00011.00019.00003' and not Settings.overlay
+      $.queueTask -> Settings.warnings.ads (item) -> new Notice 'warning', [item.childNodes...]
     changes
 
   loadSettings: (data, cb) ->

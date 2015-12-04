@@ -279,7 +279,7 @@ audio.controls-added {
 .fixed.bottom-header #header-bar #scroll-marker {
   bottom: 100%;
 }
-#header-bar a:not(.entry):not(.close) {
+#board-list a, #shortcuts a:not(.entry) {
   text-decoration: none;
   padding: 1px;
 }
@@ -435,6 +435,9 @@ audio.controls-added {
   width: 100%;
   overflow: auto;
   white-space: pre-line;
+}
+.message a {
+  text-decoration: underline;
 }
 
 /* Settings */
