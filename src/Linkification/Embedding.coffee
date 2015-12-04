@@ -274,7 +274,7 @@ Embedding =
         el = $.el 'audio',
           controls: true
           preload: 'auto'
-        type = if el.canPlayType 'audio/ogg' then 'ogg' else 'mp3'
+        type = if el.canPlayType 'audio/webm' then 'webm' else 'mp3'
         el.src = "http://vocaroo.com/media_command.php?media=#{a.dataset.uid}&command=download_#{type}"
         el
     ,
