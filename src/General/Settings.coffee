@@ -97,6 +97,20 @@ Settings =
     $.event 'OpenSettings', null, section
 
   main: (section) ->
+    warnings = []
+    if $.cantSync
+      why = if $.cantSet then 'save your settings' else 'synchronize settings between tabs'
+      warnings.push $.el 'li',
+        textContent: """
+          <%= meta.name %> needs local storage to #{why}.
+          Enable it on boards.4chan.org in your browser's privacy settings (may be listed as part of "local data" or "cookies").
+        """
+    if warnings.length
+      fs = $.el 'fieldset',
+        <%= html('<legend>Warnings</legend><ul></ul>') %>
+      $.add $('ul', fs), warnings
+      $.add section, fs
+
     items  = {}
     inputs = {}
     for key, obj of Config.main

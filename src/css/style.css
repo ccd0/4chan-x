@@ -511,6 +511,16 @@ audio.controls-added {
 .section-advanced li {
   padding-left: 4px;
 }
+.section-main ul {
+  margin: 0;
+  padding: 0 0 0 16px;
+}
+.section-main li {
+  white-space: pre-line;
+}
+.section-main li:not(:first-of-type) {
+  margin-top: 4px;
+}
 .section-main label {
   text-decoration: underline;
 }

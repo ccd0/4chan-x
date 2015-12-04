@@ -109,10 +109,6 @@ Config =
         false
         'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'
       ]
-      'Show Support Message': [
-        true
-        'Warn if your browser or configuration is unsupported and may cause <%= meta.name %> to not operate correctly.'
-      ]
       'Normalize URL': [
         true
         'Rewrite the URL of the current page, removing slugs and excess slashes, and changing /res/ to /thread/.'

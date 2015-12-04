@@ -208,18 +208,6 @@ Main =
     else
       $.event '4chanXInitFinished'
 
-    if Conf['Show Support Message']
-      if $.cantSync
-        why = if $.cantSet
-          'save your settings'
-        else
-          'synchronize settings between tabs'
-        new Notice 'warning', """
-          <%= meta.name %> needs local storage to #{why}.
-          Enable it on boards.4chan.org in your browser's privacy settings
-          (may be listed as part of "local data" or "cookies").
-        """
-
   initThread: ->
     if board = $ '.board'
       threads = []
