@@ -158,6 +158,7 @@ Main =
     $.addClass doc, 'fourchan-x', 'seaweedchan'
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
     $.addClass doc, $.engine if $.engine
+    $.onExists doc, '.ad-cnt', true, (ad) -> $.onExists ad, 'img', true, -> $.addClass doc, 'ads-loaded'
     $.addStyle Main.css, 'fourchanx-css'
 
     keyboard = false
