@@ -37,8 +37,9 @@ function imagePreview() {
 }
 function storeInstall(e) {
   if (!e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
-    chrome.webstore.install(this.href, function(){}, function(){
-      location.href = this.href;
+    var url = this.href;
+    chrome.webstore.install(url, function(){}, function(){
+      location.href = url;
     });
     e.preventDefault();
   }
