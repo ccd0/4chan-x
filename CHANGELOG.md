@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.19
 
+**v1.11.19.5** *(2015-12-06)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Work around bug causing desktop notifications to not focus the window when clicked in Tampermonkey.
+
 **v1.11.19.4** *(2015-12-04)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.19.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Update Vocaroo embedding.
 
