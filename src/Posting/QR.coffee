@@ -215,7 +215,8 @@ QR =
         notif = new Notification el.textContent,
           body: el.textContent
           icon: Favicon.logo
-        notif.onclick = -> window.focus()
+        # XXX https://github.com/derjanb/tampermonkey/issues/253
+        notif.onclick = -> $.global -> window.focus()
         if $.engine isnt 'gecko'
           # Firefox automatically closes notifications
           # so we can't control the onclose properly.
