@@ -35,9 +35,9 @@ Previously developed by <a href="https://github.com/aeosynth/4chan-x">aeosynth</
 </div><input hidden type="checkbox" id="chromium-hide"><div><h3 id="chromium"><label for="chromium-hide">Chromium</label></h3>
 <p>4chan X is available as a Chrome extension. The Chrome extension has the additional feature of being able to sync your settings and data with other devices via Chrome Sync.</p>
 <ul>
-<li><strong>Chromium</strong>, <strong>Vivaldi</strong>: <strong><a href="https://www.4chan-x.net/builds/4chan-X.crx">Download 4chan X</a></strong>, then open <code>chrome://extensions</code> and drag the downloaded file onto the page. Alternatively, you can install 4chan X from the <strong><a href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam">Chrome store</a></strong>.</li>
+<li><strong>Chromium</strong>, <strong>Vivaldi</strong>: <strong><a href="https://www.4chan-x.net/builds/4chan-X.crx">Download 4chan X</a></strong>, then open <code>chrome://extensions</code> and drag the downloaded file onto the page. Alternatively, you can install 4chan X from the <strong><a href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">Chrome store</a></strong>.</li>
 <li><strong>Opera</strong>: <strong><a href="https://www.4chan-x.net/builds/4chan-X.crx">Click to install 4chan X</a></strong>, then follow the prompts to activate it in your extension manager. Note: This version does not work with Opera 12; try <a href="https://github.com/loadletter/4chan-x">loadletter&#39;s fork</a> instead.</li>
-<li><strong>Chrome</strong>: Install 4chan X from the <strong><a href="https://chrome.google.com/webstore/detail/4chan-x/ohnjgmpcibpbafdlkimncjhflgedgpam">Chrome store</a></strong>.</li>
+<li><strong>Chrome</strong>: Install 4chan X from the <strong><a href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">Chrome store</a></strong>.</li>
 </ul>
 <p>You can also use the <a href="https://www.4chan-x.net/builds/4chan-X.user.js">userscript version of 4chan X</a> with <a href="https://tampermonkey.net/">Tampermonkey</a>. Note: Users of Chromium / Chrome 47+ should upgrade to Tampermonkey 3.12+ due to recent sandbox changes. <a href="https://addons.opera.com/en/extensions/details/violent-monkey/">Violentmonkey</a> may also work, but I have yet to test it.</p>
 </div><input hidden type="checkbox" id="safari-hide"><div><h3 id="safari"><label for="safari-hide">Safari</label></h3>
@@ -91,8 +91,9 @@ function imagePreview() {
 }
 function storeInstall(e) {
   if (!e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
-    chrome.webstore.install(this.href, function(){}, function(){
-      location.href = this.href;
+    var url = this.href;
+    chrome.webstore.install(url, function(){}, function(){
+      location.href = url;
     });
     e.preventDefault();
   }
