@@ -85,7 +85,7 @@ Main =
 
     switch hostname
       when 'www.4chan.org'
-        $.onExists doc, 'body', false, -> $.addStyle Main.cssWWW
+        $.onExists doc, 'body', -> $.addStyle Main.cssWWW
         Captcha.replace.init()
         return
       when 'sys.4chan.org'
@@ -132,7 +132,7 @@ Main =
     g.posts   = new SimpleDict()
 
     # set up CSS when <head> is completely loaded
-    $.onExists doc, 'body', false, Main.initStyle
+    $.onExists doc, 'body', Main.initStyle
 
     # c.time 'All initializations'
     for [name, feature] in Main.features
@@ -158,7 +158,7 @@ Main =
     $.addClass doc, 'fourchan-x', 'seaweedchan'
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
     $.addClass doc, $.engine if $.engine
-    $.onExists doc, '.ad-cnt', true, (ad) -> $.onExists ad, 'img', true, -> $.addClass doc, 'ads-loaded'
+    $.onExists doc, '.ad-cnt', (ad) -> $.onExists ad, 'img', -> $.addClass doc, 'ads-loaded'
     $.addStyle Main.css, 'fourchanx-css'
 
     keyboard = false

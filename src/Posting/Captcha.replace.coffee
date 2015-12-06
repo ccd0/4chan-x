@@ -18,9 +18,9 @@ Captcha.replace =
 
     if Conf['captchaLanguage'].trim() or Conf['Captcha Fixes']
       if location.hostname is 'boards.4chan.org'
-        $.onExists doc, '#captchaFormPart', true, (node) -> $.onExists node, 'iframe', true, Captcha.replace.iframe
+        $.onExists doc, '#captchaFormPart', (node) -> $.onExists node, 'iframe', Captcha.replace.iframe
       else
-        $.onExists doc, 'iframe', true, Captcha.replace.iframe
+        $.onExists doc, 'iframe', Captcha.replace.iframe
 
   noscript: ->
     return unless (original = $ '#g-recaptcha, #captchaContainerAlt') and (noscript = $ 'noscript')
@@ -61,7 +61,7 @@ Captcha.replace =
     script = $.el 'script',
       src: url
     $.add d.head, script
-    $.onExists d.body, 'iframe', true, Captcha.replace.autocopy
+    $.onExists d.body, 'iframe', Captcha.replace.autocopy
 
   iframe: (iframe) ->
     if (lang = Conf['captchaLanguage'].trim())

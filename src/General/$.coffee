@@ -120,25 +120,25 @@ $.asap = (test, cb) ->
   else
     setTimeout $.asap, 25, test, cb
 
-$.onExists = (root, selector, subtree, cb) ->
+$.onExists = (root, selector, cb) ->
   if el = $ selector, root
     return cb el
   # XXX Edge doesn't notify MutationObservers of nodes added as document loads.
   if $.engine is 'edge' and d.readyState is 'loading'
     $.asap (-> d.readyState isnt 'loading' or $ selector, root), ->
-      $.onExists root, selector, subtree, cb
+      $.onExists root, selector, cb
     return
   observer = new MutationObserver ->
     if el = $ selector, root
       observer.disconnect()
       cb el
-  observer.observe root, {childList: true, subtree}
+  observer.observe root, {childList: true, subtree: true}
 
 $.addStyle = (css, id, test='head') ->
   style = $.el 'style',
     textContent: css
   style.id = id if id?
-  $.onExists doc, test, true, ->
+  $.onExists doc, test, ->
     $.add d.head, style
   style
 

@@ -28,7 +28,7 @@ Settings =
         settings.disableAll = true
         localStorage.setItem '4chan-settings', JSON.stringify settings
       else
-        $.onExists doc, 'body', false, ->
+        $.onExists doc, 'body', ->
           $.global -> window.Config.disableAll = true
 
   open: (openSection) ->
@@ -106,7 +106,7 @@ Settings =
             Enable it on boards.4chan.org in your browser's privacy settings (may be listed as part of "local data" or "cookies").
           """
     ads: (cb) ->
-      $.onExists doc, '.ad-cnt', true, (ad) -> $.onExists ad, 'img', true, ->
+      $.onExists doc, '.ad-cnt', (ad) -> $.onExists ad, 'img', ->
         cb $.el 'li',
           <%= html(
             'To protect yourself from <a href="//boards.4chan.org/qa/thread/362590" target="_blank">malicious ads</a>,' +

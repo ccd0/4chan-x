@@ -49,7 +49,7 @@ Captcha.fixes =
       when 'fallback' then @initNoscript()
 
   initMain: ->
-    $.onExists d.body, '#recaptcha-anchor', true, (checkbox) ->
+    $.onExists d.body, '#recaptcha-anchor', (checkbox) ->
       focus = ->
         if d.hasFocus() and d.activeElement isnt checkbox
           checkbox.focus()
