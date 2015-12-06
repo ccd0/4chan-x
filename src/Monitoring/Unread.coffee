@@ -136,7 +136,8 @@ Unread =
         icon: Favicon.logo
       notif.onclick = ->
         Header.scrollToIfNeeded post.nodes.root, true
-        window.focus()
+        # XXX https://github.com/derjanb/tampermonkey/issues/253
+        $.global -> window.focus()
       notif.onshow = ->
         setTimeout ->
           notif.close()
