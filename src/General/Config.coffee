@@ -516,6 +516,11 @@ Config =
         true
         'Inline quoted post on click.'
       ]
+      'Inline Cross-thread Quotes Only': [
+        false
+        'Only inline quote links when the posts are on another thread or board, or fetched from the archive.'
+        1
+      ]
       'Quote Hash Navigation': [
         false
         'Include an extra link after quotes for autoscrolling to quoted posts.'

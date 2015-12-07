@@ -17,6 +17,7 @@ QuoteInline =
     return
 
   process: (link, clone) ->
+    return if Conf['Inline Cross-thread Quotes Only'] and link.getAttribute('href')[0] is '#'
     if Conf['Quote Hash Navigation']
       $.after link, QuoteInline.qiQuote link, $.hasClass link, 'filtered' unless clone
     $.on link, 'click', QuoteInline.toggle
