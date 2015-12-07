@@ -2,15 +2,6 @@ QuoteInline =
   init: ->
     return if g.VIEW not in ['index', 'thread'] or !Conf['Quote Inlining']
 
-    @process = if Conf['Quote Hash Navigation']
-      (link, clone) ->
-        $.after link, QuoteInline.qiQuote link, $.hasClass link, 'filtered' unless clone
-        $.on link, 'click', QuoteInline.toggle
-
-    else
-      (link) ->
-        $.on link, 'click', QuoteInline.toggle
-
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
@@ -24,6 +15,11 @@ QuoteInline =
     process link, isClone for link in @nodes.quotelinks
     process link, isClone for link in @nodes.backlinks
     return
+
+  process: (link, clone) ->
+    if Conf['Quote Hash Navigation']
+      $.after link, QuoteInline.qiQuote link, $.hasClass link, 'filtered' unless clone
+    $.on link, 'click', QuoteInline.toggle
 
   qiQuote: (link, hidden) ->
     name = "hashlink"
