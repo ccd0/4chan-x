@@ -105,7 +105,8 @@ Index =
       #   will not download them.
       # - Combine the two and you get a download canceller!
       #   Does not work on Firefox unfortunately. bugzil.la/939713
-      d.implementation.createDocument(null, null, null).appendChild board
+      try
+        d.implementation.createDocument(null, null, null).appendChild board
 
       $.rm el for el in $$ '.navLinks'
       $.rm $.id('ctrl-top')
