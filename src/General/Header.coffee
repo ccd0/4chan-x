@@ -81,7 +81,7 @@ Header =
           el: editCustomNav
       ]
 
-    $.on window, 'load hashchange', Header.hashScroll
+    $.on window, 'load popstate', Header.hashScroll
     $.on d, 'CreateNotification', @createNotification
 
     $.asap (-> d.body), =>
@@ -422,11 +422,15 @@ Header =
     settings = $.id 'fourchanx-settings'
     $('[name=boardnav]', settings).focus()
 
-  hashScroll: ->
+  hashScroll: (e) ->
+    # Don't scroll when navigating to an already visited state.
+    return if e.state
+    history.replaceState {}, '' unless history.state
+
     hash = @location.hash[1..]
     return unless /^p\d+$/.test(hash) and post = $.id hash
     return if (Get.postFromRoot post).isHidden
-    Header.scrollTo post
+    $.queueTask -> Header.scrollTo post
 
   scrollTo: (root, down, needed) ->
     if down
