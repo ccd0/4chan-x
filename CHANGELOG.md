@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.20
 
+**v1.11.20.1** *(2015-12-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.20.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.20.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix 4chan X scrolling to wrong position when back button is used.
+
 **v1.11.20.0** *(2015-12-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.20.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.20.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.19.5.
 - Cosmetic fixes for blocked ads.
