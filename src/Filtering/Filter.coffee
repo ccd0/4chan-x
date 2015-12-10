@@ -22,6 +22,10 @@ Filter =
         boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
         boards = if boards is 'global' then null else boards.split(',')
 
+        # boards to exclude from an otherwise global rule
+        if boards is null
+          excludes = filter.match(/exclude:([^;]+)/)?[1].toLowerCase().split(',') or null
+
         if key in ['uniqueID', 'MD5']
           # MD5 filter will use strings instead of regular expressions.
           regexp = regexp[1]
@@ -64,7 +68,7 @@ Filter =
           top = filter.match(/top:(yes|no)/)?[1] or 'yes'
           top = top is 'yes' # Turn it into a boolean
 
-        @filters[key].push @createFilter regexp, boards, op, stub, hl, top
+        @filters[key].push @createFilter regexp, boards, excludes, op, stub, hl, top
 
       # Only execute filter types that contain valid filters.
       unless @filters[key].length
@@ -75,7 +79,7 @@ Filter =
       name: 'Filter'
       cb:   @node
 
-  createFilter: (regexp, boards, op, stub, hl, top) ->
+  createFilter: (regexp, boards, excludes, op, stub, hl, top) ->
     test =
       if typeof regexp is 'string'
         # MD5 checking
@@ -91,6 +95,8 @@ Filter =
 
     (value, boardID, isReply) ->
       if boards and boardID not in boards
+        return false
+      if excludes and boardID in excludes
         return false
       if isReply and op is 'only' or !isReply and op is 'no'
         return false
