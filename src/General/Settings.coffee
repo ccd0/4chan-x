@@ -333,6 +333,9 @@ Settings =
         changes['sauces'] = data['sauces'].replace /(#?\s*)http:\/\/iqdb\.org\//g, '$1//iqdb.org/'
     if compareString < '00001.00011.00019.00003' and not Settings.overlay
       $.queueTask -> Settings.warnings.ads (item) -> new Notice 'warning', [item.childNodes...]
+    if compareString < '00001.00011.00020.00003'
+      for key, value of {'Inline Cross-thread Quotes Only': false, 'Pass Link': true}
+        changes[key] = value unless data[key]?
     changes
 
   loadSettings: (data, cb) ->

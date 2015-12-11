@@ -498,7 +498,7 @@ Config =
         'Use the non-Javascript fallback captcha even if Javascript is enabled (Recaptcha v2 only).'
       ]
       'Pass Link': [
-        true
+        false
         'Add a 4chan Pass login link to the bottom of the page.'
       ]
 
@@ -517,7 +517,7 @@ Config =
         'Inline quoted post on click.'
       ]
       'Inline Cross-thread Quotes Only': [
-        false
+        true
         'Only inline quote links when the posts are on another thread or board, or fetched from the archive.'
         1
       ]
