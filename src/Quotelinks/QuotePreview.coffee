@@ -32,7 +32,6 @@ QuotePreview =
       latestEvent: e
       endEvents: 'mouseout click'
       cb: QuotePreview.mouseout
-      asapTest: -> qp.firstElementChild
 
     return unless origin = g.posts["#{boardID}.#{postID}"]
 

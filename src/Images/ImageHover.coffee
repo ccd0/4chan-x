@@ -57,7 +57,6 @@ ImageHover =
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      asapTest: -> true
       height: scale * height + padding
       noRemove: true
       cb: ->

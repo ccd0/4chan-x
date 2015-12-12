@@ -310,7 +310,7 @@ UI = do ->
       $.off d, 'mouseup',   @up
     $.set "#{@id}.position", @style.cssText
 
-  hoverstart = ({root, el, latestEvent, endEvents, asapTest, height, cb, noRemove}) ->
+  hoverstart = ({root, el, latestEvent, endEvents, height, cb, noRemove}) ->
     o = {
       root
       el
@@ -327,10 +327,10 @@ UI = do ->
     o.hover    = hover.bind    o
     o.hoverend = hoverend.bind o
 
-    $.asap ->
-      !el.parentNode or asapTest()
-    , ->
+    o.hover o.latestEvent
+    new MutationObserver(->
       o.hover o.latestEvent if el.parentNode
+    ).observe el, {childList: true}
 
     $.on root, endEvents,   o.hoverend
     if $.x 'ancestor::div[contains(@class,"inline")][1]', root
