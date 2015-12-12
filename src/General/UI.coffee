@@ -341,9 +341,11 @@ UI = do ->
     o.workaround = (e) -> o.hoverend(e) unless root.contains e.target
     $.on doc,  'mousemove', o.workaround
 
+  hoverstart.padding = 25
+
   hover = (e) ->
     @latestEvent = e
-    height = @height or @el.offsetHeight
+    height = (@height or @el.offsetHeight) + hoverstart.padding
     {clientX, clientY} = e
 
     top = if @isImage

@@ -46,9 +46,8 @@ ImageHover =
       el.play() if Conf['Autoplay']
     [width, height] = (+x for x in file.dimensions.split 'x')
     {left, right} = @getBoundingClientRect()
-    padding = 25
     maxWidth = Math.max left, doc.clientWidth - right
-    maxHeight = doc.clientHeight - padding
+    maxHeight = doc.clientHeight - UI.hover.padding
     scale = Math.min 1, maxWidth / width, maxHeight / height
     el.style.maxWidth  = "#{scale * width}px"
     el.style.maxHeight = "#{scale * height}px"
@@ -57,7 +56,7 @@ ImageHover =
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      height: scale * height + padding
+      height: scale * height
       noRemove: true
       cb: ->
         $.off el, 'error', error
