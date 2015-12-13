@@ -13,11 +13,8 @@ Get =
     Get.threadFromRoot $.x 'ancestor::div[@class="thread"]', node
   postFromRoot: (root) ->
     return null unless root?
-    link    = $ '.postNum > a[href*="#"]', root
-    boardID = link.pathname.split(/\/+/)[1]
-    postID  = link.hash[2..]
-    index   = root.dataset.clone
-    post    = g.posts["#{boardID}.#{postID}"]
+    post  = g.posts[root.dataset.fullID]
+    index = root.dataset.clone
     if index then post.clones[index] else post
   postFromNode: (root) ->
     Get.postFromRoot $.x '(ancestor::div[contains(@class,"postContainer")][1]|following::div[contains(@class,"postContainer")][1])', root

@@ -30,6 +30,7 @@ class Post
     @fullID  = "#{@board}.#{@ID}"
     @context = @
 
+    root.dataset.fullID = @fullID
     post = $ '.post',     root
     info = $ '.postInfo', post
     @nodes =
