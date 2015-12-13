@@ -36,8 +36,8 @@ QuoteYou =
     seek: (type) ->
       $.rmClass highlight, 'highlight' if highlight = $ '.highlight'
 
-      unless QuoteYou.lastRead
-        unless post = QuoteYou.lastRead = $ '.quotesYou'
+      unless QuoteYou.lastRead and doc.contains(QuoteYou.lastRead) and $.hasClass(QuoteYou.lastRead, 'quotesYou')
+        unless (post = QuoteYou.lastRead = $ '.quotesYou')
           new Notice 'warning', 'No posts are currently quoting you, loser.', 20
           return
         return if QuoteYou.cb.scroll post
@@ -46,7 +46,7 @@ QuoteYou =
 
       str = "#{type}::div[contains(@class,'quotesYou')]"
 
-      while post = (result = $.X(str, post)).snapshotItem(if type is 'preceding' then result.snapshotLength - 1 else 0)
+      while (post = (result = $.X(str, post)).snapshotItem(if type is 'preceding' then result.snapshotLength - 1 else 0))
         return if QuoteYou.cb.scroll post
 
       posts = $$ '.quotesYou'
