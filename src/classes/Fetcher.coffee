@@ -23,9 +23,9 @@ class Fetcher
     $.add nodes.root, nodes.post
 
     # Indicate links to the containing post.
-    quoterURL = "/#{@quoter.board}/thread/#{@quoter.thread}#p#{@quoter}"
     for quote in clone.nodes.quotelinks.concat [clone.nodes.backlinks...]
-      if quote.pathname + quote.hash is quoterURL
+      {boardID, postID} = Get.postDataFromLink quote
+      if postID is @quoter.ID and boardID is @quoter.board.ID
         $.addClass quote, 'forwardlink'
 
     $.rmAll @root
