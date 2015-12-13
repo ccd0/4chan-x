@@ -1,5 +1,5 @@
 class Fetcher
-  constructor: (@boardID, @threadID, @postID, @root, @context) ->
+  constructor: (@boardID, @threadID, @postID, @root, @quoter) ->
     if post = g.posts["#{@boardID}.#{@postID}"]
       @insert post
       return
@@ -14,13 +14,19 @@ class Fetcher
   insert: (post) ->
     # Stop here if the container has been removed while loading.
     return unless @root.parentNode
-    clone = post.addClone @context, ($.hasClass @root, 'dialog')
+    clone = post.addClone @quoter.context, ($.hasClass @root, 'dialog')
     Main.callbackNodes Clone, [clone]
 
     # Get rid of the side arrows/stubs.
     {nodes} = clone
     $.rmAll nodes.root
     $.add nodes.root, nodes.post
+
+    # Indicate links to the containing post.
+    quoterURL = "/#{@quoter.board}/thread/#{@quoter.thread}#p#{@quoter}"
+    for quote in clone.nodes.quotelinks.concat [clone.nodes.backlinks...]
+      if quote.pathname + quote.hash is quoterURL
+        $.addClass quote, 'forwardlink'
 
     $.rmAll @root
     $.add @root, nodes.root

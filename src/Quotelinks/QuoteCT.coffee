@@ -14,7 +14,7 @@ QuoteCT =
     # Stop there if it's a clone of a post in the same thread.
     return if @isClone and @thread is @context.thread
 
-    {board, thread} = if @isClone then @context else @
+    {board, thread} = @context
     for quotelink in @nodes.quotelinks
       {boardID, threadID} = Get.postDataFromLink quotelink
       continue unless threadID # deadlink

@@ -34,12 +34,13 @@ QuoteInline =
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
     {boardID, threadID, postID} = Get.postDataFromLink @
-    context = Get.contextFromNode @
+    quoter = Get.postFromNode @
+    {context} = quoter
     if $.hasClass @, 'inlined'
       QuoteInline.rm @, boardID, threadID, postID, context
     else
       return if $.x "ancestor::div[@id='pc#{postID}']", @
-      QuoteInline.add @, boardID, threadID, postID, context
+      QuoteInline.add @, boardID, threadID, postID, context, quoter
     @classList.toggle 'inlined'
 
   findRoot: (quotelink, isBacklink) ->
@@ -48,7 +49,7 @@ QuoteInline =
     else
       $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
 
-  add: (quotelink, boardID, threadID, postID, context) ->
+  add: (quotelink, boardID, threadID, postID, context, quoter) ->
     isBacklink = $.hasClass quotelink, 'backlink'
     inline = $.el 'div',
       id: "i#{postID}"
@@ -59,7 +60,7 @@ QuoteInline =
     qroot = $.x 'ancestor::*[contains(@class,"postContainer")][1]', root
 
     $.addClass qroot, 'hasInline'
-    new Fetcher boardID, threadID, postID, inline, context
+    new Fetcher boardID, threadID, postID, inline, quoter
 
     return unless (post = g.posts["#{boardID}.#{postID}"]) and
       context.thread is post.thread

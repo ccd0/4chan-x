@@ -26,8 +26,9 @@ class Post
     @normalizedOriginal = root2
     <% } %>
 
-    @ID     = +root.id[2..]
-    @fullID = "#{@board}.#{@ID}"
+    @ID      = +root.id[2..]
+    @fullID  = "#{@board}.#{@ID}"
+    @context = @
 
     post = $ '.post',     root
     info = $ '.postInfo', post

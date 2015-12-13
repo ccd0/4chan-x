@@ -24,7 +24,7 @@ QuotePreview =
       className: 'dialog'
 
     $.add Header.hover, qp
-    new Fetcher boardID, threadID, postID, qp, Get.contextFromNode @
+    new Fetcher boardID, threadID, postID, qp, Get.postFromNode(@)
 
     UI.hover
       root: @
@@ -33,20 +33,12 @@ QuotePreview =
       endEvents: 'mouseout click'
       cb: QuotePreview.mouseout
 
-    return unless origin = g.posts["#{boardID}.#{postID}"]
-
-    if Conf['Quote Highlighting']
+    if Conf['Quote Highlighting'] and (origin = g.posts["#{boardID}.#{postID}"])
       posts = [origin].concat origin.clones
       # Remove the clone that's in the qp from the array.
       posts.pop()
       for post in posts
         $.addClass post.nodes.post, 'qphl'
-
-    quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
-    clone = Get.postFromRoot qp.firstChild
-    for quote in clone.nodes.quotelinks.concat [clone.nodes.backlinks...]
-      if quote.hash[2..] is quoterID
-        $.addClass quote, 'forwardlink'
     return
 
   mouseout: ->
