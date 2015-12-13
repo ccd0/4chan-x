@@ -429,7 +429,7 @@ Header =
 
     hash = @location.hash[1..]
     return unless /^\d*p\d+$/.test(hash) and (post = $.id hash)
-    return if (Get.postFromRoot post).isHidden
+    return if !post.getBoundingClientRect().height
     $.queueTask -> Header.scrollTo post
 
   scrollTo: (root, down, needed) ->
