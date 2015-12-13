@@ -9,6 +9,10 @@ class Clone extends Post
       @cloneWithoutVideo nodes.root
     else
       nodes.root.cloneNode true
+    Clone.prefix or= 0
+    for node in [root, $$('[id]', root)...]
+      node.id = Clone.prefix + node.id
+    Clone.prefix++
     post = $ '.post',     root
     info = $ '.postInfo', post
     @nodes =

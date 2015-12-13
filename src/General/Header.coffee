@@ -428,7 +428,7 @@ Header =
     history.replaceState {}, '' unless history.state
 
     hash = @location.hash[1..]
-    return unless /^p\d+$/.test(hash) and post = $.id hash
+    return unless /^\d*p\d+$/.test(hash) and (post = $.id hash)
     return if (Get.postFromRoot post).isHidden
     $.queueTask -> Header.scrollTo post
 
