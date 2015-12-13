@@ -52,12 +52,13 @@ QuoteYou =
       posts = $$ '.quotesYou'
       QuoteYou.cb.scroll posts[if type is 'following' then 0 else posts.length - 1]
 
-    scroll: (post) ->
-      if Get.postFromRoot(post).isHidden
+    scroll: (root) ->
+      post = $ '.post', root
+      if !post.getBoundingClientRect().height
         return false
       else
-        QuoteYou.lastRead = post
+        QuoteYou.lastRead = root
         window.location = "##{post.id}"
         Header.scrollTo post
-        $.addClass $('.post', post), 'highlight'
+        $.addClass post, 'highlight'
         return true
