@@ -1,4 +1,6 @@
 class Clone extends Post
+  isClone: true
+
   constructor: (@origin, @context, contractThumb) ->
     for key in ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply']
       # Copy or point to the origin's key value.
@@ -62,6 +64,7 @@ class Clone extends Post
       @nodes.date     = $ '.dateTime',    info
 
     @parseQuotes()
+    @quotes = [@origin.quotes...]
 
     if @origin.file
       # Copy values, point to relevant elements.
@@ -87,7 +90,6 @@ class Clone extends Post
       ImageExpand.contract @ if @file.thumb and contractThumb
 
     @isDead  = true if @origin.isDead
-    @isClone = true
     root.dataset.clone = @origin.clones.push(@) - 1
 
   cloneWithoutVideo: (node) ->

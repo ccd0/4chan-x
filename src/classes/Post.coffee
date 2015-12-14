@@ -163,13 +163,14 @@ class Post
     #  - catalog links. (>>>/b/catalog or >>>/b/search)
     #  - rules links. (>>>/a/rules)
     #  - text-board quotelinks. (>>>/img/1234)
-    return unless match = quotelink.href.match ///
+    match = quotelink.href.match ///
       ^https?://boards\.4chan\.org/+
       ([^/]+) # boardID
       /+(?:res|thread)/+\d+(?:/[^#]*)?#p
       (\d+)   # postID
       $
     ///
+    return unless match or (@isClone and quotelink.dataset.postID) # normal or resurrected quote
 
     @nodes.quotelinks.push quotelink
 

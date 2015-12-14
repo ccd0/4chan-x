@@ -10,12 +10,9 @@ Quotify =
       cb:   @node
 
   node: ->
+    return if @isClone
     for deadlink in $$ '.deadlink', @nodes.comment
-      if @isClone
-        if $.hasClass deadlink, 'quotelink'
-          @nodes.quotelinks.push deadlink
-      else
-        Quotify.parseDeadlink.call @, deadlink
+      Quotify.parseDeadlink.call @, deadlink
     return
 
   parseDeadlink: (deadlink) ->
