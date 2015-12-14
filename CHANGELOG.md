@@ -2,6 +2,14 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.21
+
+**v1.11.21.0** *(2015-12-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.20.3.
+- (human) Add `exclude:` option to filters to apply filter to all boards except the specified ones.
+- The dashed underlining on the matching quotelink within a post previewed from a backlink (or vice versa) has been extended to links in inlined posts.
+- Various minor quotelink-related bugfixes.
+
 ### v1.11.20
 
 **v1.11.20.3** *(2015-12-11)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.20.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.20.3/builds/4chan-X-noupdate.crx "Chromium version")]
