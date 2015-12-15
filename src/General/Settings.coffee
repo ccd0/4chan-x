@@ -336,6 +336,9 @@ Settings =
     if compareString < '00001.00011.00020.00003'
       for key, value of {'Inline Cross-thread Quotes Only': false, 'Pass Link': true}
         changes[key] = value unless data[key]?
+    if compareString < '00001.00011.00020.00004' or compareString is '00001.00011.00021.00000'
+      if data['sauces']?
+        changes['sauces'] = data['sauces'].replace /^#?\s*https:\/\/www\.google\.com\/searchbyimage\?image_url=%(?:IMG|URL)(?=$|;)/mg, '$&%3Fs.jpg'
     changes
 
   loadSettings: (data, cb) ->
