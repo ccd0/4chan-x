@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.21
 
+**v1.11.21.1** *(2015-12-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.20.4: Make Google search for full images work again.
+
 **v1.11.21.0** *(2015-12-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.20.3.
 - (human) Add `exclude:` option to filters to apply filter to all boards except the specified ones.
@@ -11,6 +14,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 - Various minor quotelink-related bugfixes.
 
 ### v1.11.20
+
+**v1.11.20.4** *(2015-12-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.20.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.20.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Make Google search for full images work again.
 
 **v1.11.20.3** *(2015-12-11)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.20.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.20.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Turn `Pass Link` off and `Inline Cross-thread Quotes Only` on in new installs.
