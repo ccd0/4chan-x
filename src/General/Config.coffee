@@ -544,9 +544,14 @@ Config =
         true
         'Link dead quotes to the archives.'
       ]
+      'Remember Your Posts': [
+        true
+        'Remember your posting history.'
+      ]
       'Mark Quotes of You': [
         true
         'Add \'(You)\' to quotes linking to your posts.'
+        1
       ]
       'Highlight Posts Quoting You': [
         true
@@ -555,7 +560,7 @@ Config =
       ]
       'Highlight Own Posts': [
         true
-        'Highlights own posts if Mark Quotes of You is enabled.'
+        'Highlights own posts.'
         1
       ]
       'Mark OP Quotes': [

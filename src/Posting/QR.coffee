@@ -24,8 +24,8 @@ QR =
   init: ->
     return unless Conf['Quick Reply']
 
-    if Conf['Mark Quotes of You']
-      $.sync 'Mark Quotes of You', (enabled) -> Conf['Mark Quotes of You'] = enabled
+    if Conf['Remember Your Posts']
+      $.sync 'Remember Your Posts', (enabled) -> Conf['Remember Your Posts'] = enabled
       @db = new DataBoard 'yourPosts'
 
     @posts = []
@@ -769,8 +769,8 @@ QR =
     threadID = +threadID or postID
     isReply  = threadID isnt postID
 
-    $.forceSync 'Mark Quotes of You'
-    if Conf['Mark Quotes of You']
+    $.forceSync 'Remember Your Posts'
+    if Conf['Remember Your Posts']
       QR.db?.set
         boardID: g.BOARD.ID
         threadID: threadID

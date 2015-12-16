@@ -1,6 +1,6 @@
 QuoteYou =
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Mark Quotes of You'] and Conf['Quick Reply']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Remember Your Posts'] and Conf['Quick Reply']
 
     if Conf['Highlight Own Posts']
       $.addClass doc, 'highlight-own'
@@ -27,7 +27,7 @@ QuoteYou =
     return unless @quotes.length
 
     for quotelink in @nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
-        $.add quotelink, $.tn QuoteYou.text
+        $.add quotelink, $.tn QuoteYou.text if Conf['Mark Quotes of You']
         $.addClass quotelink, 'you'
         $.addClass @nodes.root, 'quotesYou'
     return

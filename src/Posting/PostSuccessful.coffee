@@ -1,6 +1,6 @@
 PostSuccessful =
   init: ->
-    return unless Conf['Mark Quotes of You']
+    return unless Conf['Remember Your Posts']
     $.ready @ready
 
   ready: ->
