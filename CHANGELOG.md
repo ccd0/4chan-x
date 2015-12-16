@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.21
 
+**v1.11.21.2** *(2015-12-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix minor bugs in migration of old sauce settings.
+
 **v1.11.21.1** *(2015-12-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.20.4: Make Google search for full images work again.
 
