@@ -330,7 +330,7 @@ Settings =
         changes[key] = (key is 'Persistent QR') unless data[key]?
     if compareString < '00001.00011.00017.00006'
       if data['sauces']?
-        changes['sauces'] = data['sauces'].replace /(#?\s*)http:\/\/iqdb\.org\//g, '$1//iqdb.org/'
+        changes['sauces'] = data['sauces'].replace /^(#?\s*)http:\/\/iqdb\.org\//mg, '$1//iqdb.org/'
     if compareString < '00001.00011.00019.00003' and not Settings.overlay
       $.queueTask -> Settings.warnings.ads (item) -> new Notice 'warning', [item.childNodes...]
     if compareString < '00001.00011.00020.00003'
@@ -338,7 +338,7 @@ Settings =
         changes[key] = value unless data[key]?
     if compareString < '00001.00011.00020.00004' or compareString is '00001.00011.00021.00000'
       if data['sauces']?
-        changes['sauces'] = data['sauces'].replace /^#?\s*https:\/\/www\.google\.com\/searchbyimage\?image_url=%(?:IMG|URL)(?=$|;)/mg, '$&%3Fs.jpg'
+        changes['sauces'] = (changes['sauces'] ? data['sauces']).replace /^#?\s*https:\/\/www\.google\.com\/searchbyimage\?image_url=%(?:IMG|URL)(?=$|;)/mg, '$&%3Fs.jpg'
     changes
 
   loadSettings: (data, cb) ->
