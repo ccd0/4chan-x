@@ -4,8 +4,11 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.21
 
+**v1.11.21.4** *(2015-12-20)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- (Bui) Update archive list: Add /wsr/ to 4ch.be.
+
 **v1.11.21.3** *(2015-12-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.3/builds/4chan-X-noupdate.crx "Chromium version")]
-- Add `Remember Your Posts` option to control enable/disable post history, previously controlled by `Mark Quotes of You`.
+- Add `Remember Your Posts` option to control enable/disable posting history, previously controlled by `Mark Quotes of You`.
 
 **v1.11.21.2** *(2015-12-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.21.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix minor bugs in migration of old sauce settings.
