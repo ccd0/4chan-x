@@ -14,8 +14,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["c", "e", "w", "wg"],
-  "files": ["c", "e", "w", "wg"]
+  "boards": ["c", "e", "w", "wg", "wsr"],
+  "files": ["c", "e", "w", "wg", "wsr"]
 }, {
   "uid": 5,
   "name": "Love is Over",
