@@ -19,7 +19,7 @@ If you're reporting a bug, the more detail you can give, the better. If I can't 
 
 - Install [git](https://git-scm.com/), [node.js](https://nodejs.org/), and [npm](https://www.npmjs.com/).
 - Install [Grunt's CLI](http://gruntjs.com/): `npm install -g grunt-cli`
-- Clone 4chan X: `git clone https://github.com/ccd0/4chan-x.git --depth 100`
+- Clone 4chan X: `git clone https://github.com/ccd0/4chan-x.git`<br>(If this is taking too long, you can add `--depth 100` to fetch only recent history.)
 - Open the directory: `cd 4chan-x`
 - Install/Update 4chan X dependencies: `npm install`
 
