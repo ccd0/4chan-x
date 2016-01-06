@@ -513,7 +513,7 @@ if GM_addValueChangeListener?
         newValue = JSON.parse newValue unless newValue is undefined
         cb newValue, key
   $.forceSync = ->
-else if $.hasStorage
+else if GM_deleteValue? or $.hasStorage
   $.sync = (key, cb) ->
     key = g.NAMESPACE + key
     $.syncing[key] = cb
