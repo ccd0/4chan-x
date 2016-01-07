@@ -22,7 +22,7 @@ Report =
       $.after passAd, [
         $.tn '] ['
         $.el 'a',
-          href:        'mailto:4chanpass@4chan.org'
+          href:        'mailto:4chanpass@4chan.org?subject=4chan%20Pass%20-%20Purchase%20Support'
           textContent: 'Email 4chan'
           target:      '_blank'
       ]
