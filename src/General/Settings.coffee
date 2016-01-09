@@ -342,6 +342,9 @@ Settings =
     if compareString < '00001.00011.00021.00003'
       unless data['Remember Your Posts']?
         changes['Remember Your Posts'] = data['Mark Quotes of You'] ? true
+    if compareString < '00001.00011.00021.00006'
+      if data['sauces']?
+        changes['sauces'] = (changes['sauces'] ? data['sauces']).replace /^(#?\s*https:\/\/)www(\.google\.com\/searchbyimage\?image_url=%(?:IMG|URL)%3Fs\.jpg)(?=$|;)/mg, '$1images$2'
     changes
 
   loadSettings: (data, cb) ->
