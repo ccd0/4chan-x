@@ -341,6 +341,9 @@ Settings =
     if compareString < '00001.00011.00021.00003'
       unless data['Remember Your Posts']?
         set 'Remember Your Posts', data['Mark Quotes of You'] ? true
+    if compareString < '00001.00011.00022.00000'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(/^(#?\s*https:\/\/www\.google\.com\/searchbyimage\?image_url=%(?:IMG|URL))%3Fs\.jpg(?=$|;)/mg, '$1')
     changes
   loadSettings: (data, cb) ->
     if data.version.split('.')[0] is '2' # https://github.com/loadletter/4chan-x
