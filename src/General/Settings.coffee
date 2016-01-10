@@ -308,47 +308,48 @@ Settings =
 
   upgrade: (data, version) ->
     changes = {}
+    set = (key, value) ->
+      data[key] = changes[key] = value
     compareString = version.replace(/\d+/g, (x) -> ('0000'+x)[-5..])
     if compareString < '00001.00011.00008.00000'
       unless data['Fixed Thread Watcher']?
-        changes['Fixed Thread Watcher'] = data['Toggleable Thread Watcher'] ? true
+        set 'Fixed Thread Watcher', data['Toggleable Thread Watcher'] ? true
       unless data['Exempt Archives from Encryption']?
-        changes['Exempt Archives from Encryption'] = data['Except Archives from Encryption'] ? false
+        set 'Exempt Archives from Encryption', data['Except Archives from Encryption'] ? false
     if compareString < '00001.00011.00010.00001'
       if data['selectedArchives']?
         uids = {"Moe":0,"4plebs Archive":3,"Nyafuu Archive":4,"Love is Over":5,"Rebecca Black Tech":8,"warosu":10,"fgts":15,"not4plebs":22,"DesuStorage":23,"fireden.net":24,"disabled":null}
-        changes['selectedArchives'] = data['selectedArchives']
-        for boardID, record of changes['selectedArchives']
+        for boardID, record of data['selectedArchives']
           for type, name of record when name of uids
             record[type] = uids[name]
+        set 'selectedArchives', data['selectedArchives']
     if compareString < '00001.00011.00016.00000'
       if (rice = Config['usercss'].match(/\/\* Board title rice \*\/(?:\n.+)*/)[0])
         if data['usercss']? and data['usercss'].indexOf(rice) < 0
-          changes['usercss'] = rice + '\n\n' + data['usercss']
+          set 'usercss', rice + '\n\n' + data['usercss']
     if compareString < '00001.00011.00017.00000'
       for key in ['Persistent QR', 'Color User IDs', 'Fappe Tyme', 'Werk Tyme', 'Highlight Posts Quoting You', 'Highlight Own Posts']
-        changes[key] = (key is 'Persistent QR') unless data[key]?
+        set key, (key is 'Persistent QR') unless data[key]?
     if compareString < '00001.00011.00017.00006'
       if data['sauces']?
-        changes['sauces'] = data['sauces'].replace /^(#?\s*)http:\/\/iqdb\.org\//mg, '$1//iqdb.org/'
+        set 'sauces', data['sauces'].replace(/^(#?\s*)http:\/\/iqdb\.org\//mg, '$1//iqdb.org/')
     if compareString < '00001.00011.00019.00003' and not Settings.overlay
       $.queueTask -> Settings.warnings.ads (item) -> new Notice 'warning', [item.childNodes...]
     if compareString < '00001.00011.00020.00003'
       for key, value of {'Inline Cross-thread Quotes Only': false, 'Pass Link': true}
-        changes[key] = value unless data[key]?
+        set key, value unless data[key]?
     if compareString < '00001.00011.00020.00004' or compareString is '00001.00011.00021.00000'
       if data['sauces']?
-        changes['sauces'] = (changes['sauces'] ? data['sauces']).replace /^#?\s*https:\/\/www\.google\.com\/searchbyimage\?image_url=%(?:IMG|URL)(?=$|;)/mg, '$&%3Fs.jpg'
+        set 'sauces', data['sauces'].replace(/^#?\s*https:\/\/www\.google\.com\/searchbyimage\?image_url=%(?:IMG|URL)(?=$|;)/mg, '$&%3Fs.jpg')
     if compareString < '00001.00011.00021.00003'
       unless data['Remember Your Posts']?
-        changes['Remember Your Posts'] = data['Mark Quotes of You'] ? true
+        set 'Remember Your Posts', data['Mark Quotes of You'] ? true
     changes
-
   loadSettings: (data, cb) ->
     if data.version.split('.')[0] is '2' # https://github.com/loadletter/4chan-x
       data = Settings.convertFrom.loadletter data
     else if data.version isnt g.VERSION
-      $.extend data.Conf, Settings.upgrade(data.Conf, data.version)
+      Settings.upgrade data.Conf, data.version
     $.clear (err) ->
       return cb err if err
       $.set data.Conf, cb

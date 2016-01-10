@@ -63,9 +63,8 @@ Main =
 
   upgrade: (items) ->
     {previousversion} = items
-    changes = {previousversion: g.VERSION}
-    $.extend changes, Settings.upgrade(items, previousversion)
-    $.extend items, changes
+    changes = Settings.upgrade items, previousversion
+    items.previousversion = changes.previousversion = g.VERSION
     $.set changes, ->
       if items['Show Updated Notifications'] ? true
         el = $.el 'span',
