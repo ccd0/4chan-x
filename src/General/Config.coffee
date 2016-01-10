@@ -708,7 +708,7 @@ Config =
     MD5: ''
 
   sauces: """
-    https://www.google.com/searchbyimage?image_url=%IMG%3Fs.jpg
+    https://www.google.com/searchbyimage?image_url=%IMG
     //iqdb.org/?url=%IMG
     http://eye.swfchan.com/search/?q=%name;types:swf;sandbox
     #//tineye.com/search?url=%IMG
