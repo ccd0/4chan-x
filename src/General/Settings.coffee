@@ -109,8 +109,8 @@ Settings =
       $.onExists doc, '.ad-cnt', (ad) -> $.onExists ad, 'img', ->
         cb $.el 'li',
           <%= html(
-            'To protect yourself from <a href="//boards.4chan.org/qa/thread/362590" target="_blank">malicious ads</a>,' +
-            ' you should <a href="https://github.com/gorhill/uBlock" target="_blank">block ads</a> on 4chan.'
+            'To protect yourself from <a href="https://archive.rebeccablacktech.com/qa/thread/362590" target="_blank">malicious ads</a>,' +
+            ' you should <a href="https://github.com/gorhill/uBlock#ublock-origin" target="_blank">block ads</a> on 4chan.'
           ) %>
 
   main: (section) ->
