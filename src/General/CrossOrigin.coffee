@@ -11,6 +11,8 @@ CrossOrigin = do ->
   <% } %>
 
   binary: (url, cb, headers={}) ->
+    # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
+    url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
     if /^https:\/\//.test(url) or location.protocol is 'http:'
       xhr = new XMLHttpRequest()

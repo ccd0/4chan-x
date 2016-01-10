@@ -56,7 +56,7 @@ $.ajax = do ->
   (url, options={}, extra={}) ->
     {type, whenModified, upCallbacks, form} = extra
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
-    url = url.replace /^\/\/a\.4cdn\.org\/adv\//, '//a.4cdn.org//adv/'
+    url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     r = new XMLHttpRequest()
     type or= form and 'post' or 'get'
     try
