@@ -42,12 +42,13 @@ Sauce =
 
     skip = false
     for key of parts
-      parts[key] = parts[key].replace /%(T?URL|IMG|MD5|board|name|%|semi)/g, (parameter) ->
+      parts[key] = parts[key].replace /%(T?URL|IMG|s?MD5|board|name|%|semi)/g, (parameter) ->
         type = {
           '%TURL':  post.file.thumbURL
           '%URL':   post.file.url
           '%IMG':   if ext in ['gif', 'jpg', 'png'] then post.file.url else post.file.thumbURL
           '%MD5':   post.file.MD5
+          '%sMD5':  post.file.MD5.replace /[+/=]/g, (c) -> {'+': '-', '/': '_', '=': ''}[c]
           '%board': post.board.ID
           '%name':  post.file.name
           '%%':     '%'

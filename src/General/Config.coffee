@@ -721,11 +721,11 @@ Config =
     # uploaders:
     #//imgur.com/upload?url=%URL;types:gif,jpg,png,pdf;text:Upload to imgur
     # "View Same" in archives:
-    #https://archive.4plebs.org/_/search/image/%MD5/;text:View same on 4plebs
-    #https://archive.4plebs.org/%board/search/image/%MD5/;text:View same on 4plebs /%board/;boards:<%=
+    #https://archive.4plebs.org/_/search/image/%sMD5/;text:View same on 4plebs
+    #https://archive.4plebs.org/%board/search/image/%sMD5/;text:View same on 4plebs /%board/;boards:<%=
       grunt.file.readJSON('src/Archive/archives.json').filter(function(x) {return x.uid === 3})[0].files.join(',')
     %>
-    #https://rbt.asia/%board/?task=search2&search_media_hash=%MD5;text:View same on RBT /%board/;boards:<%=
+    #https://rbt.asia/%board/image/%sMD5;text:View same on RBT /%board/;boards:<%=
       grunt.file.readJSON('src/Archive/archives.json').filter(function(x) {return x.uid === 8})[0].files.join(',')
     %>
   """
