@@ -42,19 +42,8 @@ Sauce =
 
     skip = false
     for key of parts
-      parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi)/g, (parameter) ->
-        type = {
-          '%TURL':  post.file.thumbURL
-          '%URL':   post.file.url
-          '%IMG':   if ext in ['gif', 'jpg', 'png'] then post.file.url else post.file.thumbURL
-          '%MD5':   post.file.MD5
-          '%sMD5':  post.file.MD5?.replace /[+/=]/g, (c) -> {'+': '-', '/': '_', '=': ''}[c]
-          '%hMD5':  if post.file.MD5 then ("0#{c.charCodeAt(0).toString(16)}"[-2..] for c in atob post.file.MD5).join('')
-          '%board': post.board.ID
-          '%name':  post.file.name
-          '%%':     '%'
-          '%semi':  ';'
-        }[parameter]
+      parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi)/g, (_, parameter) ->
+        type = Sauce.formatters[parameter] post, ext
         if not type?
           skip = true
           return ''
@@ -86,3 +75,15 @@ Sauce =
       # \u00A0 is nbsp
       nodes.push $.tn('\u00A0'), node
     $.add @file.text, nodes
+
+  formatters:
+    TURL:  (post) -> post.file.thumbURL
+    URL:   (post) -> post.file.url
+    IMG:   (post, ext) -> if ext in ['gif', 'jpg', 'png'] then post.file.url else post.file.thumbURL
+    MD5:   (post) -> post.file.MD5
+    sMD5:  (post) -> post.file.MD5?.replace /[+/=]/g, (c) -> {'+': '-', '/': '_', '=': ''}[c]
+    hMD5:  (post) -> if post.file.MD5 then ("0#{c.charCodeAt(0).toString(16)}"[-2..] for c in atob post.file.MD5).join('')
+    board: (post) -> post.board.ID
+    name:  (post) -> post.file.name
+    '%':   -> '%'
+    semi:  -> ';'
