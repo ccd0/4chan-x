@@ -48,7 +48,7 @@ Sauce =
           '%URL':   post.file.url
           '%IMG':   if ext in ['gif', 'jpg', 'png'] then post.file.url else post.file.thumbURL
           '%MD5':   post.file.MD5
-          '%sMD5':  post.file.MD5.replace /[+/=]/g, (c) -> {'+': '-', '/': '_', '=': ''}[c]
+          '%sMD5':  post.file.MD5?.replace /[+/=]/g, (c) -> {'+': '-', '/': '_', '=': ''}[c]
           '%board': post.board.ID
           '%name':  post.file.name
           '%%':     '%'
