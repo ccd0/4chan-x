@@ -79,11 +79,15 @@ Redirect =
       type
     if type is 'capcode'
       value = {'Developer': 'dev'}[value] or value.toLowerCase()
+    else if type is 'image'
+      value = value.replace /[+/=]/g, (c) -> {'+': '-', '/': '_', '=': ''}[c]
     value = encodeURIComponent value
     path  = if archive.software is 'foolfuuka'
-      "#{boardID}/search/#{type}/#{value}"
+      "#{boardID}/search/#{type}/#{value}/"
+    else if type is 'image'
+      "#{boardID}/image/#{value}"
     else
-      "#{boardID}/?task=search2&search_#{if type is 'image' then 'media_hash' else type}=#{value}"
+      "#{boardID}/?task=search2&search_#{type}=#{value}"
     "#{Redirect.protocol archive}#{archive.domain}/#{path}"
 
   report: (archive, {boardID, postID}) ->
