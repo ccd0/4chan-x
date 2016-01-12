@@ -48,7 +48,7 @@ Sauce =
           skip = true
           return ''
 
-        if key is 'url' and parameter isnt '%%' and parameter isnt '%semi'
+        if key is 'url' and parameter not in ['%', 'semi']
           type = JSON.stringify type if /^javascript:/i.test parts['url']
           type = encodeURIComponent type
         type
