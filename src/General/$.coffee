@@ -493,7 +493,7 @@ else if GM_deleteValue?
     GM_deleteValue key
     if key of $.syncing
       delete $.oldValue[key]
-      delete localStorage[key] if $.hasStorage # for `storage` events
+      localStorage.removeItem key if $.hasStorage # for `storage` events
   $.cantSync = true if !$.hasStorage
 else if $.hasStorage
   $.oldValue = {}
@@ -502,7 +502,7 @@ else if $.hasStorage
     localStorage[key] = val
   $.deleteValue = (key) ->
     delete $.oldValue[key] if key of $.syncing
-    delete localStorage[key]
+    localStorage.removeItem key
 else
   $.setValue = ->
   $.deleteValue = ->
