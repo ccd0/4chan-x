@@ -522,23 +522,24 @@ else if GM_deleteValue? or $.hasStorage
     $.oldValue[key] = $.getValue key
 
   do ->
-    onChange = (key) ->
+    onChange = ({key, newValue}) ->
       return unless cb = $.syncing[key]
-      newValue = $.getValue key
-      return if newValue is $.oldValue[key]
       if newValue?
+        return if newValue is $.oldValue[key]
         $.oldValue[key] = newValue
         cb JSON.parse(newValue), key[g.NAMESPACE.length..]
       else
+        return unless $.oldValue[key]?
         delete $.oldValue[key]
         cb undefined, key[g.NAMESPACE.length..]
-    $.on window, 'storage', ({key}) -> onChange key
+    $.on window, 'storage', onChange
 
     $.forceSync = (key) ->
       # Storage events don't work across origins
       # e.g. http://boards.4chan.org and https://boards.4chan.org
       # so force a check for changes to avoid lost data.
-      onChange g.NAMESPACE + key
+      key = g.NAMESPACE + key
+      onChange {key, newValue: $.getValue key}
 else
   $.sync = ->
   $.forceSync = ->
