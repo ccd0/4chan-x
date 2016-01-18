@@ -27,7 +27,7 @@ Report =
           target:      '_blank'
       ]
 
-    if Conf['Use Recaptcha v2 in Reports'] and not Conf['Force Noscript Captcha'] and Main.jsEnabled
+    if not Conf['Use Recaptcha v1 in Reports'] and not Conf['Force Noscript Captcha'] and Main.jsEnabled
       new MutationObserver(->
         Report.fit 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
         Report.fit 'body'
@@ -38,7 +38,7 @@ Report =
     else
       Report.fit 'body'
 
-    if !Conf['Use Recaptcha v2 in Reports'] and Main.jsEnabled and d.cookie.indexOf('pass_enabled=1') < 0
+    if Conf['Use Recaptcha v1 in Reports'] and Main.jsEnabled and d.cookie.indexOf('pass_enabled=1') < 0
       $.onExists d.body, '#recaptcha_image', (image) ->
         # XXX Native reload-on-click breaks audio captcha.
         $.global -> document.getElementById('recaptcha_image').removeEventListener 'click', window.onAltCaptchaClick, false
