@@ -14,7 +14,10 @@ ReportLink =
         unless post.isDead or (post.thread.isDead and not post.thread.isArchived)
           a.textContent = 'Report'
           ReportLink.url = "//sys.4chan.org/#{post.board}/imgboard.php?mode=report&no=#{post}"
-          ReportLink.dims = 'width=400,height=550'
+          ReportLink.dims = if Conf['Use Recaptcha v1 in Reports'] or d.cookie.indexOf('pass_enabled=1') >= 0
+            'width=350,height=275'
+          else
+            'width=400,height=550'
         else if Conf['Archive Report']
           a.textContent = 'Report to archive'
           ReportLink.url = Redirect.to 'report', {boardID: post.board.ID, postID: post.ID}
