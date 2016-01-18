@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.22
 
+**v1.11.22.3** *(2016-01-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Report captcha related bug fixes.
+
 **v1.11.22.2** *(2016-01-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Update due to 4chan changing to Recaptcha v2 on report form.
 
