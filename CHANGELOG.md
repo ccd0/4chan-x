@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.22
 
+**v1.11.22.2** *(2016-01-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update due to 4chan changing to Recaptcha v2 on report form.
+
 **v1.11.22.1** *(2016-01-12)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Update archive image search URL, avoiding problem with image search on fireden.net.
 - Add `%sMD5` (MD5 in URL-safe base64) and `%hMD5` (MD5 in hexadecimal) to available sauce parameters.
