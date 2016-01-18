@@ -40,8 +40,6 @@ Report =
 
     if Conf['Use Recaptcha v1 in Reports'] and Main.jsEnabled and d.cookie.indexOf('pass_enabled=1') < 0
       $.onExists d.body, '#recaptcha_image', (image) ->
-        # XXX Native reload-on-click breaks audio captcha.
-        $.global -> document.getElementById('recaptcha_image').removeEventListener 'click', window.onAltCaptchaClick, false
         $.on image, 'click', ->
           if $.id 'recaptcha_challenge_image'
             $.global -> window.Recaptcha.reload()
