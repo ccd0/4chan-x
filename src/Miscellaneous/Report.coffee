@@ -62,7 +62,7 @@ Report =
     if (message = $ 'h3') and /Report submitted!/.test(message.textContent)
       if location.hash is '#redirect'
         $.globalEval 'self.close = function(){};'
-        window.resizeBy 0, 350 - doc.clientHeight
+        window.resizeTo 700, 475
         location.replace url
       return
 
@@ -71,7 +71,7 @@ Report =
       textContent: 'Report to archive'
     $.on link, 'click', (e) ->
       unless e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
-        window.resizeBy 0, 350 - doc.clientHeight
+        window.resizeTo 700, 475
     $.add d.body, [$.tn(' ['), link, $.tn(']')]
 
     if types = $.id('reportTypes')

@@ -487,11 +487,11 @@ Config =
       ]
       'Use Recaptcha v1': [
         false
-        'Use the old text version of Recaptcha where possible.'
+        'Use the old text version of Recaptcha in the post form.'
       ]
-      'Use Recaptcha v2 in Reports': [
+      'Use Recaptcha v1 in Reports': [
         false
-        'Use the image selection captcha in the report window.'
+        'Use the text captcha in the report window.'
       ]
       'Force Noscript Captcha': [
         false

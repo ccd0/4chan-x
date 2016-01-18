@@ -2,13 +2,10 @@ Captcha.replace =
   init: ->
     return unless d.cookie.indexOf('pass_enabled=1') < 0
 
-    if location.hostname is 'sys.4chan.org' and Main.jsEnabled
-      if Conf['Use Recaptcha v2 in Reports']
-        type = if Conf['Force Noscript Captcha'] then 'noscript' else 'v2'
-        $.ready Captcha.replace[type]
-      return
-
-    if Conf['Use Recaptcha v1'] and Main.jsEnabled and location.hostname isnt 'www.4chan.org'
+    if (
+      (Conf['Use Recaptcha v1'] and location.hostname is 'boards.4chan.org') or
+      (Conf['Use Recaptcha v1 in Reports'] and location.hostname is 'sys.4chan.org')
+    ) and Main.jsEnabled
       $.ready Captcha.replace.v1
       return
 
@@ -46,22 +43,6 @@ Captcha.replace =
       form.addEventListener 'focus', (-> Captcha.v1.create()), true
     else
       Captcha.v1.create()
-
-  v2: ->
-    return unless (old = $.id 'captchaContainerAlt')
-    container = $.el 'div',
-      className: 'g-recaptcha'
-    $.extend container.dataset,
-      sitekey: '<%= meta.recaptchaKey %>'
-      tabindex: 3
-    $.replace old, container
-    url = 'https://www.google.com/recaptcha/api.js'
-    if (lang = Conf['captchaLanguage'].trim())
-      url += "?hl=#{encodeURIComponent lang}"
-    script = $.el 'script',
-      src: url
-    $.add d.head, script
-    $.onExists d.body, 'iframe', Captcha.replace.autocopy
 
   iframe: (iframe) ->
     if (lang = Conf['captchaLanguage'].trim())
