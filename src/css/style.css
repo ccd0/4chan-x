@@ -444,6 +444,9 @@ audio.controls-added {
 .message a {
   text-decoration: underline;
 }
+:root.tainted .report-error {
+  display: none;
+}
 
 /* Settings */
 :root.fourchan-x body {

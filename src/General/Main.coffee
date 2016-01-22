@@ -13,6 +13,14 @@ Main =
           $.ready -> Captcha.fixes.init()
       return
 
+    # Detect multiple copies of 4chan X
+    $.on d, '4chanXInitFinished', ->
+      if Main.expectInitFinished
+        delete Main.expectInitFinished
+      else
+        new Notice 'error', 'Error: Multiple copies of 4chan X are enabled.'
+        $.addClass doc, 'tainted'
+
     # Flatten default values from Config into Conf
     flatten = (parent, obj) ->
       if obj instanceof Array
@@ -150,7 +158,7 @@ Main =
     $.ready Main.initReady
 
   initStyle: ->
-    return if !Main.isThisPageLegit() or $.hasClass doc, 'fourchan-x'
+    return if !Main.isThisPageLegit()
 
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
@@ -206,6 +214,7 @@ Main =
     unless Conf['JSON Navigation'] and g.VIEW is 'index'
       Main.initThread() 
     else
+      Main.expectInitFinished = true
       $.event '4chanXInitFinished'
 
   initThread: ->
@@ -237,9 +246,11 @@ Main =
       Main.callbackNodes Thread, threads
       Main.callbackNodesDB Post, posts, ->
         QuoteThreading.insert post for post in posts
+        Main.expectInitFinished = true
         $.event '4chanXInitFinished'
 
     else
+      Main.expectInitFinished = true
       $.event '4chanXInitFinished'
 
   callbackNodes: (klass, nodes) ->
@@ -318,7 +329,7 @@ Main =
     """
     details = details.replace /file:\/{3}.+\//g, '' # Remove local file paths
     url = "<%= meta.newIssue.replace('%title', '#{encodeURIComponent title}').replace('%details', '#{encodeURIComponent details}') %>"
-    <%= html(' [<a href="${url}" target="_blank">report</a>]') %>
+    <%= html('<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>') %>
 
   isThisPageLegit: ->
     # 404 error page or similar.
