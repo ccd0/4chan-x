@@ -39,7 +39,7 @@ QuoteThreading =
   setThread: ->
     QuoteThreading.thread = @
     $.asap (-> !Conf['Thread Updater'] or $ '.navLinksBot > .updatelink'), ->
-      $.add $('.navLinksBot'), [$.tn(' '), QuoteThreading.threadNewLink]
+      $.add navLinksBot, [$.tn(' '), QuoteThreading.threadNewLink] if (navLinksBot = $ '.navLinksBot')
 
   node: ->
     return if @isFetchedQuote or @isClone or !@isReply

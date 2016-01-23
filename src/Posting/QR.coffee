@@ -80,7 +80,7 @@ QR =
         QR.open()
         QR.nodes.com.focus()
 
-      $.prepend $('.navLinksBot'), linkBot
+      $.prepend navLinksBot, linkBot if (navLinksBot = $ '.navLinksBot')
 
     origToggle = $.id 'togglePostFormLink'
     $.before origToggle, link
