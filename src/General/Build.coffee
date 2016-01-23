@@ -88,10 +88,11 @@ Build =
       .replace(/<[^>]*>/g, '')
     o.info.comment = Build.unescape html
 
-  postFromObject: (data, boardID) ->
-    Build.post Build.parseJSON data, boardID
+  postFromObject: (data, boardID, suppressThumb) ->
+    o = Build.parseJSON data, boardID
+    Build.post o, suppressThumb
 
-  post: (o) ->
+  post: (o, suppressThumb) ->
     {postID, threadID, boardID, file} = o
     {subject, email, name, tripcode, capcode, uniqueID, flagCode, flag, dateUTC, dateText, commentHTML} = o.info
     {staticPath, gifIcon} = Build
@@ -177,7 +178,7 @@ Build =
     root
 
   excerptThread: (board, data, OP) ->
-    nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID]
+    nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID, true]
     if data.omitted_posts or !Conf['Show Replies'] and data.replies
       [posts, files] = if Conf['Show Replies']
         # XXX data.omitted_images is not accurate.
