@@ -59,7 +59,7 @@ Fourchan =
         window.clickable_ids = false
         for node in document.querySelectorAll '.posteruid, .capcode'
           node.removeEventListener 'click', window.idClick, false
-        window.removeEventListener 'message', window.Report?.onMessage, false
+        return
 
   code: ->
     return if @isClone
