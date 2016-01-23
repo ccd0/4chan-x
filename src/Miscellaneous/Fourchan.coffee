@@ -55,16 +55,11 @@ Fourchan =
 
     # Disable 4chan's ID highlighting (replaced by IDHighlight) and reported post hiding.
     Main.ready ->
-      $.globalEval '''
-        (function() {
-          window.clickable_ids = false;
-          var nodes = document.querySelectorAll('.posteruid, .capcode');
-          for (var i = 0; i < nodes.length; i++) {
-            nodes[i].removeEventListener("click", window.idClick, false);
-          }
-          window.removeEventListener("message", Report.onMessage, false);
-        })();
-      '''
+      $.global ->
+        window.clickable_ids = false
+        for node in document.querySelectorAll '.posteruid, .capcode'
+          node.removeEventListener 'click', window.idClick, false
+        window.removeEventListener 'message', window.Report?.onMessage, false
 
   code: ->
     return if @isClone
