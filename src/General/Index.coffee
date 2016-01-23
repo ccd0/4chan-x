@@ -1,9 +1,9 @@
 Index =
   showHiddenThreads: false
+  changed: {}
+
   init: ->
     return if g.BOARD.ID is 'f' or !Conf['JSON Navigation'] or g.VIEW isnt 'index'
-
-    @board = "#{g.BOARD}"
 
     CatalogThread.callbacks.push
       name: 'Catalog Features'
@@ -13,11 +13,13 @@ Index =
     if history.state?.mode
       Conf['Index Mode'] = history.state?.mode
     @currentPage = @getCurrentPage()
-    @pushState
-      # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
-      command: location.href.match(/#(.*)/)?[1]
-      replace: true
+    @processHash()
 
+    $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
+    $.on window, 'popstate', @cb.popstate
+    $.on d, 'scroll', Index.scroll
+
+    # Header refresh button
     @button = $.el 'a',
       className: 'index-refresh-shortcut fa fa-refresh'
       title: 'Refresh'
@@ -26,6 +28,7 @@ Index =
     $.on @button, 'click', -> Index.update()
     Header.addShortcut @button, 1
 
+    # Header "Index Navigation" submenu
     repliesEntry = el: UI.checkbox 'Show Replies',          'Show replies'
     pinEntry     = el: UI.checkbox 'Pin Watched Threads',   'Pin watched threads'
     anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', 'Anchor hidden threads'
@@ -49,30 +52,27 @@ Index =
       order: 100
       subEntries: [repliesEntry, pinEntry, anchorEntry, refNavEntry]
 
-    $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
-    @root     = $.el 'div', className: 'board'
-    @cb.size()
-    @pagelist = $.el 'div', className: 'pagelist'
-    $.extend @pagelist, <%= importHTML('General/Index/PageList') %>
-    $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
-    @navLinks = $.el 'div', className: 'navLinks'
+    # Navigation links at top of index
+    @navLinks = $.el 'div', className: 'navLinks json-index'
     $.extend @navLinks, <%= importHTML('General/Index/NavLinks') %>
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
     $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID in ['b', 'trash']
+    $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
+
+    # Search field
     @searchInput = $ '#index-search', @navLinks
     @setupSearch()
-    @hideLabel   = $ '#hidden-label', @navLinks
-    @selectMode  = $ '#index-mode',   @navLinks
-    @selectSort  = $ '#index-sort',   @navLinks
-    @selectSize  = $ '#index-size',   @navLinks
-    $.on window, 'popstate', @cb.popstate
-
-    $.on d, 'scroll', Index.scroll
-    $.on @pagelist, 'click', @cb.pageNav
     $.on @searchInput, 'input', @onSearchInput
-    $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
-    $.on $('#index-search-clear',   @navLinks), 'click', @clearSearch
-    $.on $('#hidden-toggle a',      @navLinks), 'click', @cb.toggleHiddenThreads
+    $.on $('#index-search-clear', @navLinks), 'click', @clearSearch
+
+    # Hidden threads toggle
+    @hideLabel = $ '#hidden-label', @navLinks
+    $.on $('#hidden-toggle a', @navLinks), 'click', @cb.toggleHiddenThreads
+
+    # Drop-down menus
+    @selectMode  = $ '#index-mode', @navLinks
+    @selectSort  = $ '#index-sort', @navLinks
+    @selectSize  = $ '#index-size', @navLinks
     $.on @selectMode, 'change', @cb.mode
     for select in [@selectMode, @selectSort, @selectSize]
       select.value = Conf[select.name]
@@ -80,13 +80,22 @@ Index =
     $.on @selectSort, 'change', @cb.sort
     $.on @selectSize, 'change', @cb.size
 
+    # Thread container
+    @root = $.el 'div', className: 'board json-index'
+    @cb.size()
+
+    # Page list
+    @pagelist = $.el 'div', className: 'pagelist json-index'
+    $.extend @pagelist, <%= importHTML('General/Index/PageList') %>
+    $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
+    $.on @pagelist, 'click', @cb.pageNav
+
     @update()
 
-    $.asap (-> $('title + *', doc) or d.readyState isnt 'loading'), ->
+    $.onExists doc, 'title + *', ->
       d.title = d.title.replace /\ -\ Page\ \d+/, ''
 
-    $.asap (-> $('.board > .thread > .postContainer', doc) or d.readyState isnt 'loading'), ->
-      return unless Main.isThisPageLegit()
+    $.onExists doc, '.board > .thread > .postContainer, .board + *', ->
       Index.hat = $ '.board > .thread > img:first-child'
       if Index.hat
         if Index.nodes
@@ -114,8 +123,7 @@ Index =
       $.before topNavPos, $.el 'hr'
       $.before topNavPos, Index.navLinks
 
-    $.asap (-> $('.pagelist', doc) or d.readyState isnt 'loading'), ->
-      return unless Main.isThisPageLegit()
+    Main.ready ->
       if pagelist = $('.pagelist')
         $.replace pagelist, Index.pagelist
       else
@@ -124,7 +132,7 @@ Index =
 
   scroll: ->
     return if Index.req or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight))
-    Index.pageNum = Index.getCurrentPage() unless Index.pageNum? # Avoid having to pushState to keep track of the current page
+    Index.pageNum ?= Index.currentPage # Avoid having to pushState to keep track of the current page
 
     pageNum = ++Index.pageNum
     return Index.endNotice() if pageNum > Index.pagesNum
@@ -208,7 +216,8 @@ Index =
       unless mode is 'catalog'
         Conf['Previous Index Mode'] = mode
         $.set 'Previous Index Mode', mode
-      Index.pageLoad Index.pushState {mode}
+      Index.pushState {mode}
+      Index.pageLoad false
 
     sort: ->
       Index.sort()
@@ -234,26 +243,13 @@ Index =
     popstate: (e) ->
       if e?.state
         {searched, mode} = e.state
-        state = {}
-        if Index.search isnt searched
-          state.search = Index.search = searched
-        if Conf['Index Mode'] isnt mode
-          state.mode = mode
-          Index.saveMode mode
         page = Index.getCurrentPage()
-        if Index.currentPage isnt page
-          state.page = Index.currentPage = page
-        if state.search? or state.mode? or state.page?
-          Index.pageLoad state
+        Index.setState {search: searched, mode, page}
+        Index.pageLoad false
       else
         # page load or hash change
-        state = Index.pushState
-          # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
-          command: location.href.match(/#(.*)/)?[1]
-          replace: true
-          scroll:  true
-        if state.command
-          Index[if Conf['Refreshed Navigation'] then 'update' else 'pageLoad'] state
+        if Index.processHash()
+          Index[if Conf['Refreshed Navigation'] then 'update' else 'pageLoad']()
 
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
@@ -270,83 +266,86 @@ Index =
       Index.userPageNav +a.pathname.split(/\/+/)[2] or 1
 
     refreshFront: ->
-      Index.update Index.pushState {page: 1, scroll: true}
+      Index.pushState {page: 1}
+      Index.update()
 
   scrollToIndex: ->
     Header.scrollToIfNeeded Index.navLinks
 
   getCurrentPage: ->
-    if Conf['Index Mode'] in ['all pages', 'catalog']
-      1
-    else
-      +window.location.pathname.split(/\/+/)[2] or 1
+    +window.location.pathname.split(/\/+/)[2] or 1
 
   userPageNav: (page) ->
-    state = Index.pushState {page, scroll: true}
+    Index.pushState {page}
     if Conf['Refreshed Navigation']
-      Index.update state
+      Index.update()
     else
-      Index.pageLoad state if state.page
+      Index.pageLoad()
+
+  processHash: ->
+    # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
+    hash = location.href.match(/#.*/)?[0] or ''
+    command = hash[1..]
+    state =
+      replace: true
+    if command in ['paged', 'infinite', 'all-pages', 'catalog']
+      state.mode = command.replace /-/g, ' '
+    else if command is 'index'
+      state.mode = Conf['Previous Index Mode']
+      state.page = 1
+    else if /^s=/.test command
+      state.search = decodeURIComponent(command[2..]).replace(/\+/g, ' ').trim()
+    else
+      state.hash = hash
+    Index.pushState state
+    !state.hash?
 
   pushState: (state) ->
-    {pathname, hash} = location
+    {search, hash, replace} = state
     pageBeforeSearch = history.state?.oldpage
-    if state.command?
-      {command} = state
-      if command in ['paged', 'infinite', 'all-pages', 'catalog']
-        state.mode = command.replace /-/g, ' '
-      else if command is 'index'
-        state.mode = Conf['Previous Index Mode']
-        state.page = 1
-      else if /^s=/.test command
-        state.search = decodeURIComponent(command[2..]).replace(/\+/g, ' ').trim()
-        hash = ''
-      else
-        delete state.command
-    if state.search?
-      {search} = state
+    if search? and search isnt Index.search
       state.page = if search then 1 else (pageBeforeSearch or 1)
       if !search
         pageBeforeSearch = undefined
       else if !Index.search
         pageBeforeSearch = Index.currentPage
-      Index.search = search
-    if state.mode?
-      {mode} = state
-      delete state.mode if mode is Conf['Index Mode']
-      Index.saveMode mode
-      state.page = 1 if mode in ['all pages', 'catalog']
-      hash = ''
-    if state.page?
-      {page} = state
-      delete state.page if page is Index.currentPage
-      Index.currentPage = page
-      pathname = if page is 1 then "/#{g.BOARD}/" else "/#{g.BOARD}/#{page}"
-      hash = ''
-    history[if state.replace then 'replaceState' else 'pushState']
+    Index.setState state
+    pathname = if Index.currentPage is 1 then "/#{g.BOARD}/" else "/#{g.BOARD}/#{Index.currentPage}"
+    hash or= ''
+    history[if replace then 'replaceState' else 'pushState']
       mode:     Conf['Index Mode']
       searched: Index.search
       oldpage:  pageBeforeSearch
     , '', "#{location.protocol}//#{location.host}#{pathname}#{hash}"
-    state
 
-  saveMode: (mode) ->
-    unless Conf['Index Mode'] is mode
+  setState: ({search, mode, page}) ->
+    if search? and search isnt Index.search
+      Index.changed.search = true
+      Index.search = search
+    if mode? and mode isnt Conf['Index Mode']
+      Index.changed.mode = true
       Conf['Index Mode'] = mode
       $.set 'Index Mode', mode
-    unless mode is 'catalog' or Conf['Previous Index Mode'] is mode
-      Conf['Previous Index Mode'] = mode
-      $.set 'Previous Index Mode', mode
+      unless mode is 'catalog' or Conf['Previous Index Mode'] is mode
+        Conf['Previous Index Mode'] = mode
+        $.set 'Previous Index Mode', mode
+    page = 1 if Conf['Index Mode'] in ['all pages', 'catalog']
+    if page? and page isnt Index.currentPage
+      Index.changed.page = true
+      Index.currentPage = page
 
-  pageLoad: ({sort, search, mode, scroll}) ->
-    if sort or search?
+  pageLoad: (scroll=true) ->
+    {threads, search, mode, page} = Index.changed
+    if threads or search
       Index.sort()
       Index.buildPagelist()
-    Index.setupSearch() if search?
-    Index.applyMode() if mode?
-    Index.buildIndex()
-    Index.setPage()
+    Index.setupSearch() if search
+    Index.applyMode() if mode
+    if threads or search or mode or page
+      Index.buildIndex()
+      Index.setPage()
     Index.scrollToIndex() if scroll
+    Index.changed = {}
 
   applyMode: ->
     for mode in ['paged', 'infinite', 'all pages', 'catalog']
@@ -379,7 +378,7 @@ Index =
       $.add pagesRoot, nodes
 
   setPage: ->
-    pageNum    = Index.getCurrentPage()
+    pageNum    = Index.currentPage
     maxPageNum = Index.getMaxPageNum()
     pagesRoot  = $ '.pages', Index.pagelist
 
@@ -418,7 +417,7 @@ Index =
     else
       "#{hiddenCount} hidden threads"
 
-  update: (state) ->
+  update: ->
     Index.req?.abort()
     Index.notice?.close()
 
@@ -435,12 +434,12 @@ Index =
         ), 3 * $.SECOND - (Date.now() - now)
 
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
-      onloadend: (e) -> Index.load e, state
+      onloadend: Index.load
     ,
       whenModified: 'Index'
     $.addClass Index.button, 'fa-spin'
 
-  load: (e, state) ->
+  load: (e) ->
     $.rmClass Index.button, 'fa-spin'
     {req, notice, nTimeout} = Index
     clearTimeout nTimeout if nTimeout
@@ -465,9 +464,9 @@ Index =
 
     try
       if req.status is 200
-        Index.parse req.response, state
-      else if req.status is 304 and state?
-        Index.pageLoad state
+        Index.parse req.response
+      else if req.status is 304
+        Index.pageLoad()
     catch err
       c.error "Index failure: #{err.message}", err.stack
       # network error or non-JSON content for example.
@@ -490,15 +489,13 @@ Index =
     timeEl = $ '#index-last-refresh time', Index.navLinks
     timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
     RelativeDates.update timeEl
-    Index.scrollToIndex()
 
-  parse: (pages, state) ->
+  parse: (pages) ->
     $.cleanCache (url) -> /^\/\/a\.4cdn\.org\//.test url
     Index.parseThreadList pages
     Index.buildThreads()
-    state or= {}
-    state.sort = true
-    Index.pageLoad state
+    Index.changed.threads = true
+    Index.pageLoad()
 
   parseThreadList: (pages) ->
     Index.pagesNum          = pages.length
@@ -637,10 +634,11 @@ Index =
           i = 0
           i++ while Index.followedThreadID isnt Get.threadFromRoot(Index.sortedNodes[i]).ID
           page = i // Index.threadsNumPerPage + 1
-          if page isnt Index.getCurrentPage()
+          if page isnt Index.currentPage
+            Index.currentPage = page
             Index.pushState {page}
             Index.setPage()
-        nodes = Index.buildSinglePage Index.getCurrentPage()
+        nodes = Index.buildSinglePage Index.currentPage
     delete Index.pageNum
     $.rmAll Index.root
     $.rmAll Header.hover
@@ -672,8 +670,8 @@ Index =
     Index.onSearchInput()
     Index.searchInput.focus()
 
-  setupSearch: (noUpdate) ->
-    Index.searchInput.value = Index.search unless noUpdate
+  setupSearch: ->
+    Index.searchInput.value = Index.search
     if Index.search
       Index.searchInput.dataset.searching = 1
     else
@@ -683,9 +681,10 @@ Index =
   onSearchInput: ->
     search = Index.searchInput.value.trim()
     return if search is Index.search
-    Index.pageLoad Index.pushState
+    Index.pushState
       search:  search
       replace: !!search is !!Index.search
+    Index.pageLoad false
 
   querySearch: (query) ->
     return unless keywords = query.toLowerCase().match /\S+/g
