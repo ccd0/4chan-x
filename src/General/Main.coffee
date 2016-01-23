@@ -210,6 +210,12 @@ Main =
 
     return if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
 
+    if g.VIEW in ['index', 'thread'] and not $('.board + *')
+      msg = $.el 'div',
+        <%= html('The page didn&#039;t load completely.<br>Some features may not work unless you <a href="javascript:;">reload</a>.') %>
+      $.on $('a', msg), 'click', -> location.reload()
+      new Notice 'warning', msg
+
     # Parse HTML or skip it and start building from JSON.
     unless Conf['JSON Navigation'] and g.VIEW is 'index'
       Main.initThread() 
@@ -219,12 +225,6 @@ Main =
 
   initThread: ->
     if board = $ '.board'
-      unless $ '.board + *'
-        msg = $.el 'div',
-          <%= html('The page didn&#039;t load completely.<br>Some features may not work unless you <a href="javascript:;">reload</a>.') %>
-        $.on $('a', msg), 'click', -> location.reload()
-        new Notice 'warning', msg
-
       threads = []
       posts   = []
 
