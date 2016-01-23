@@ -153,6 +153,5 @@ Linkify =
     # Insert the range into the anchor, the anchor into the range's DOM location, and destroy the range.
     $.add a, range.extractContents()
     range.insertNode a
-    range.detach()
 
     a
