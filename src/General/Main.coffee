@@ -224,7 +224,7 @@ Main =
       $.event '4chanXInitFinished'
 
   initThread: ->
-    if board = $ '.board'
+    if (board = $ '.board')
       threads = []
       posts   = []
 
