@@ -124,10 +124,8 @@ Index =
       $.before topNavPos, Index.navLinks
 
     Main.ready ->
-      if pagelist = $('.pagelist')
+      if (pagelist = $ '.pagelist')
         $.replace pagelist, Index.pagelist
-      else
-        $.after $.id('delform'), Index.pagelist
       $.rmClass doc, 'index-loading'
 
   scroll: ->
