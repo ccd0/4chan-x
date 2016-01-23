@@ -97,10 +97,10 @@ Header =
         if a = $ "a[href*='/#{g.BOARD}/']", footer
           a.className = 'current'
         Main.ready ->
-          if oldFooter = $.id 'boardNavDesktopFoot'
+          if (oldFooter = $.id 'boardNavDesktopFoot')
             $.replace $('.boardList', oldFooter), Header.bottomBoardList
-          else
-            $.before $.id('absbot'), footer
+          else if (absbot = $.id 'absbot')
+            $.before absbot, footer
             $.globalEval 'window.cloneTopNav = function() {};'
         Header.setBoardList()
       $.prepend d.body, @bar
