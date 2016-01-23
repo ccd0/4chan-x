@@ -231,7 +231,7 @@ Main =
       for threadRoot in $$ '.board > .thread', board
         thread = new Thread +threadRoot.id[1..], g.BOARD
         threads.push thread
-        for postRoot in $$ '.thread > .postContainer', threadRoot
+        for postRoot in $$('.thread > .postContainer', threadRoot) when $('.postMessage', postRoot)
           try
             posts.push new Post postRoot, thread, g.BOARD
           catch err
