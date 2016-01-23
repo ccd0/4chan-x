@@ -90,7 +90,7 @@ Index =
     $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
     $.on @pagelist, 'click', @cb.pageNav
 
-    @update()
+    @update true
 
     $.onExists doc, 'title + *', ->
       d.title = d.title.replace /\ -\ Page\ \d+/, ''
@@ -417,7 +417,7 @@ Index =
     else
       "#{hiddenCount} hidden threads"
 
-  update: ->
+  update: (firstTime) ->
     Index.req?.abort()
     Index.notice?.close()
 
@@ -432,6 +432,11 @@ Index =
           if Index.req and !Index.notice
             Index.notice = new Notice 'info', 'Refreshing index...'
         ), 3 * $.SECOND - (Date.now() - now)
+
+    # Hard refresh in case of incomplete page load.
+    if not firstTime and d.readyState isnt 'loading' and not $('.board + *')
+      location.reload()
+      return
 
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
       onloadend: Index.load
