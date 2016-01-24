@@ -58,6 +58,7 @@ QuoteInline =
     isBacklink = $.hasClass quotelink, 'backlink'
     inline = $.el 'div',
       className: 'inline'
+    inline.dataset.fullID = "#{boardID}.#{postID}"
     root = QuoteInline.findRoot(quotelink, isBacklink)
     $.after root, inline
 
@@ -84,7 +85,7 @@ QuoteInline =
     isBacklink = $.hasClass quotelink, 'backlink'
     # Select the corresponding inlined quote, and remove it.
     root = QuoteInline.findRoot quotelink, isBacklink
-    root = $.x "following-sibling::div[div/@data-full-i-d='#{boardID}.#{postID}'][1]", root
+    root = $.x "following-sibling::div[@data-full-i-d='#{boardID}.#{postID}'][1]", root
     qroot = $.x 'ancestor::*[contains(@class,"postContainer")][1]', root
     $.rm root
 
