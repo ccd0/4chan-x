@@ -86,7 +86,7 @@ do ->
   $.cache = (url, cb, options) ->
     if req = reqs[url]
       if req.readyState is 4
-        $.queueTask -> cb.call req, req.evt
+        $.queueTask -> cb.call req, req.evt, true
       else
         req.callbacks.push cb
       return req
@@ -96,9 +96,9 @@ do ->
     catch err
       return
     $.on req, 'load', (e) ->
-      cb.call @, e for cb in @callbacks
       @evt = e
-      @cached = true
+      for cb in @callbacks
+        $.queueTask => cb.call @, e, false
       delete @callbacks
     $.on req, 'abort error', rm
     req.callbacks = [cb]

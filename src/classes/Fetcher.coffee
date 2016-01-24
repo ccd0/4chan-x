@@ -6,8 +6,8 @@ class Fetcher
 
     @root.textContent = "Loading post No.#{@postID}..."
     if @threadID
-      $.cache "//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json", (e) =>
-        @fetchedPost e.target
+      $.cache "//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json", (e, isCached) =>
+        @fetchedPost e.target, isCached
     else
       @archivedPost()
 
@@ -32,7 +32,7 @@ class Fetcher
     $.add @root, nodes.root
     $.event 'PostsInserted'
 
-  fetchedPost: (req) ->
+  fetchedPost: (req, isCached) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
     if post = g.posts["#{@boardID}.#{@postID}"]
@@ -59,11 +59,11 @@ class Fetcher
 
     if post.no isnt @postID
       # Cached requests can be stale and must be rechecked.
-      if req.cached
+      if isCached
         api = "//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json"
         $.cleanCache (url) -> url is api
         $.cache api, (e) =>
-          @fetchedPost e.target
+          @fetchedPost e.target, false
         return
 
       # The post can be deleted by the time we check a quote.
