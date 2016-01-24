@@ -88,7 +88,7 @@ class Fetcher
     archive = Redirect.data.post[@boardID]
     if /^https:\/\//.test(url) or location.protocol is 'http:'
       $.cache url, (e) =>
-        @parseArchivedPost e.target.response, url
+        @parseArchivedPost e.target.response, url, archive
       ,
         responseType: 'json'
         withCredentials: archive.withCredentials
@@ -100,15 +100,20 @@ class Fetcher
           # Image/thumbnail URLs loaded over HTTP can be modified in transit.
           # Require them to be from an HTTP host so that no referrer is sent to them from an HTTPS page.
           delete media[key] unless media[key]?.match /^http:\/\//
-        @parseArchivedPost response, url
+        @parseArchivedPost response, url, archive
       return true
     return false
 
-  parseArchivedPost: (data, url) ->
+  parseArchivedPost: (data, url, archive) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
     if post = g.posts["#{@boardID}.#{@postID}"]
       @insert post
+      return
+
+    unless data?
+      $.addClass @root, 'warning'
+      @root.textContent = "Error fetching Post No.#{@postID} from #{archive.name}."
       return
 
     if data.error
