@@ -4,6 +4,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.22
 
+**v1.11.22.4** *(2016-01-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix regression from v1.11.21.0 causing inlined quotelinks to not be removed if the inlined post failed to load.
+- Temporarily move archives experiencing downtime to the end of the list so different ones are used by default.
+
 **v1.11.22.3** *(2016-01-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Report captcha related bug fixes.
 
