@@ -287,6 +287,7 @@ module.exports = (grunt) ->
     clean:
       builds: 'builds'
       testbuilds: 'testbuilds'
+      crx: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>'
       tmpcrx: ['tmp-crx', 'testbuilds/updates<%= pkg.meta.suffix.noupdate %>.xml']
       tmpuserscript: [
         'tmp-userscript',
@@ -359,6 +360,7 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'build-crx-channel', [
+    'clean:crx'
     'concat:crx'
     'copy:crx'
     'zip-crx'
