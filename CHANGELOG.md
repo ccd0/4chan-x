@@ -2,6 +2,13 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.23
+
+**v1.11.23.0** *(2016-01-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.23.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.23.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.22.4.
+- Show warnings when running multiple copies of 4chan X or the page doesn't load completely.
+- Minor bugfixes.
+
 ### v1.11.22
 
 **v1.11.22.4** *(2016-01-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.22.4/builds/4chan-X-noupdate.crx "Chromium version")]
