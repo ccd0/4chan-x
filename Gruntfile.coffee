@@ -256,7 +256,7 @@ module.exports = (grunt) ->
         command: 'npm install'
       update:
         command: """
-          npm update --save-dev <%= Object.keys(pkg.devDependencies).filter(function(name) {return /^\\^/.test(pkg.devDependencies[name]);}).join(' ') %>
+          npm install --save-dev <%= Object.keys(pkg.devDependencies).filter(function(name) {return /^\\^/.test(pkg.devDependencies[name]);}).map(function(name) {return name+'@latest';}).join(' ') %>
           ./node_modules/.bin/npm-shrinkwrap --dev
         """.split('\n').join('&&')
 
