@@ -256,7 +256,7 @@ module.exports = (grunt) ->
         command: 'npm install'
       update:
         command: """
-          npm update --save-dev <%= Object.keys(pkg.devDependencies).filter(function(name) {return /^\\^/.test(pkg.devDependencies[name]);}).join(' ') %>
+          npm install --save-dev <%= Object.keys(pkg.devDependencies).filter(function(name) {return /^\\^/.test(pkg.devDependencies[name]);}).map(function(name) {return name+'@latest';}).join(' ') %>
           ./node_modules/.bin/npm-shrinkwrap --dev
         """.split('\n').join('&&')
 
@@ -287,6 +287,7 @@ module.exports = (grunt) ->
     clean:
       builds: 'builds'
       testbuilds: 'testbuilds'
+      crx: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>'
       tmpcrx: ['tmp-crx', 'testbuilds/updates<%= pkg.meta.suffix.noupdate %>.xml']
       tmpuserscript: [
         'tmp-userscript',
@@ -359,6 +360,7 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'build-crx-channel', [
+    'clean:crx'
     'concat:crx'
     'copy:crx'
     'zip-crx'
