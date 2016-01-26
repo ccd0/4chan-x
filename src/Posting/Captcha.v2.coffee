@@ -105,10 +105,11 @@ Captcha.v2 =
   setupJS: ->
     $.global ->
       render = ->
+        {classList} = document.documentElement
         container = document.querySelector '#qr .captcha-container'
         container.dataset.widgetID = window.grecaptcha.render container,
           sitekey:  '<%= meta.recaptchaKey %>'
-          theme:    if document.documentElement.classList.contains('tomorrow') then 'dark' else 'light'
+          theme:    if classList.contains('tomorrow') or classList.contains('dark-captcha') then 'dark' else 'light'
           callback: (response) ->
             window.dispatchEvent new CustomEvent('captcha:success', {detail: response})
       if window.grecaptcha
