@@ -222,9 +222,6 @@ Captcha.v2 =
       @destroy()
       @setup false, true
     else
-      $.globalEval '''
-        (function() {
-          var container = document.querySelector("#qr .captcha-container");
-          window.grecaptcha.reset(container.dataset.widgetID);
-        })();
-      '''
+      $.global ->
+        container = document.querySelector '#qr .captcha-container'
+        window.grecaptcha.reset container.dataset.widgetID
