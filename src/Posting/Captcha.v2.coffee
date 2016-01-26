@@ -103,29 +103,21 @@ Captcha.v2 =
     $.add @nodes.container, [iframe, div]
 
   setupJS: ->
-    $.globalEval '''
-      (function() {
-        function render() {
-          var container = document.querySelector("#qr .captcha-container");
-          container.dataset.widgetID = window.grecaptcha.render(container, {
-            sitekey: '<%= meta.recaptchaKey %>',
-            theme: document.documentElement.classList.contains('tomorrow') ? 'dark' : 'light',
-            callback: function(response) {
-              window.dispatchEvent(new CustomEvent("captcha:success", {detail: response}));
-            }
-          });
-        }
-        if (window.grecaptcha) {
-          render();
-        } else {
-          var cbNative = window.onRecaptchaLoaded;
-          window.onRecaptchaLoaded = function() {
-            render();
-            cbNative();
-          }
-        }
-      })();
-    '''
+    $.global ->
+      render = ->
+        container = document.querySelector '#qr .captcha-container'
+        container.dataset.widgetID = window.grecaptcha.render container,
+          sitekey:  '<%= meta.recaptchaKey %>'
+          theme:    if document.documentElement.classList.contains('tomorrow') then 'dark' else 'light'
+          callback: (response) ->
+            window.dispatchEvent new CustomEvent('captcha:success', {detail: response})
+      if window.grecaptcha
+        render()
+      else
+        cbNative = window.onRecaptchaLoaded
+        window.onRecaptchaLoaded = ->
+          render()
+          cbNative()
 
   afterSetup: (mutations) ->
     for mutation in mutations
