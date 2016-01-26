@@ -185,11 +185,13 @@ Main =
     styleSheets    = $$ 'link[rel="alternate stylesheet"]', d.head
     setStyle = ->
       $.rmClass doc, style
+      style = null
       for styleSheet in styleSheets
         if styleSheet.href is mainStyleSheet?.href
           style = styleSheet.title.toLowerCase().replace('new', '').trim().replace /\s+/g, '-'
           break
-      $.addClass doc, style
+      if style
+        $.addClass doc, style
     setStyle()
     return unless mainStyleSheet
     new MutationObserver(setStyle).observe mainStyleSheet,
