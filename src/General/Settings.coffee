@@ -181,8 +181,6 @@ Settings =
   export: ->
     # Make sure to export the most recent data.
     $.get Conf, (Conf) ->
-      # XXX don't export archives.
-      delete Conf['archives']
       Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf}
 
   downloadExport: (data) ->
