@@ -2,7 +2,7 @@ ExpandThread =
   statuses: {}
   init: ->
     return if g.VIEW is 'thread' or !Conf['Thread Expansion']
-    if Conf['JSON Navigation']
+    if Conf['JSON Index']
       $.on d, 'IndexRefresh', @onIndexRefresh
     else
       Thread.callbacks.push
@@ -62,7 +62,7 @@ ExpandThread =
       return
 
     replies = $$ '.thread > .replyContainer', threadRoot
-    if !Conf['JSON Navigation'] or Conf['Show Replies']
+    if !Conf['JSON Index'] or Conf['Show Replies']
       num = if thread.isSticky
         1
       else switch g.BOARD.ID

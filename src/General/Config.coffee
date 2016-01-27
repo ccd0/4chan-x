@@ -1,7 +1,7 @@
 Config =
   main:
     'Miscellaneous':
-      'JSON Navigation': [
+      'JSON Index': [
         true
         'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'
       ]
@@ -66,7 +66,7 @@ Config =
       ]
       'Comment Expansion': [
         true
-        'Expand comments that are too long to display on the index. Not applicable with JSON Navigation.'
+        'Expand comments that are too long to display on the index. Not applicable with JSON Index.'
       ]
       'File Info Formatting': [
         true

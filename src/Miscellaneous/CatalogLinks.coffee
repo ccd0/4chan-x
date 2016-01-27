@@ -1,6 +1,6 @@
 CatalogLinks =
   init: ->
-    if (Conf['External Catalog'] or Conf['JSON Navigation']) and !(Conf['JSON Navigation'] and g.VIEW is 'index')
+    if (Conf['External Catalog'] or Conf['JSON Index']) and !(Conf['JSON Index'] and g.VIEW is 'index')
       selector = switch g.VIEW
         when 'thread', 'archive' then '.navLinks.desktop > a'
         when 'catalog'           then '.navLinks > :first-child > a'
@@ -9,18 +9,18 @@ CatalogLinks =
         for link in $$ selector
           switch link.pathname.replace /\/+/g, '/'
             when "/#{g.BOARD}/"
-              link.textContent = 'Index' if Conf['JSON Navigation']
+              link.textContent = 'Index' if Conf['JSON Index']
               link.href = CatalogLinks.index()
             when "/#{g.BOARD}/catalog"
               link.href = CatalogLinks.catalog()
-          if g.VIEW is 'catalog' and Conf['JSON Navigation'] and Conf['Use <%= meta.name %> Catalog']
+          if g.VIEW is 'catalog' and Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
             catalogLink = link.parentNode.cloneNode true
             catalogLink.firstElementChild.textContent = '<%= meta.name %> Catalog'
             catalogLink.firstElementChild.href = CatalogLinks.catalog()
             $.after link.parentNode, [$.tn(' '), catalogLink]
         return
 
-    if Conf['JSON Navigation'] and Conf['Use <%= meta.name %> Catalog']
+    if Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
       Post.callbacks.push
         name: 'Catalog Link Rewrite'
         cb:   @node
@@ -73,13 +73,13 @@ CatalogLinks =
   catalog: (board=g.BOARD.ID) ->
     if Conf['External Catalog'] and board in ['a', 'c', 'g', 'biz', 'k', 'm', 'o', 'p', 'v', 'vg', 'vr', 'w', 'wg', 'cm', '3', 'adv', 'an', 'asp', 'cgl', 'ck', 'co', 'diy', 'fa', 'fit', 'gd', 'int', 'jp', 'lit', 'mlp', 'mu', 'n', 'out', 'po', 'sci', 'sp', 'tg', 'toy', 'trv', 'tv', 'vp', 'wsg', 'x', 'f', 'pol', 's4s', 'lgbt']
       "http://catalog.neet.tv/#{board}/"
-    else if Conf['JSON Navigation'] and Conf['Use <%= meta.name %> Catalog']
+    else if Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
       if g.BOARD.ID is board and g.VIEW is 'index' then '#catalog' else "/#{board}/#catalog"
     else
       "/#{board}/catalog"
 
   index: (board=g.BOARD.ID) ->
-    if Conf['JSON Navigation'] and board isnt 'f'
+    if Conf['JSON Index'] and board isnt 'f'
       if g.BOARD.ID is board and g.VIEW is 'index' then '#index' else "/#{board}/#index"
     else
       "/#{board}/"

@@ -41,7 +41,7 @@ ThreadWatcher =
 
     ThreadWatcher.fetchAuto()
 
-    if g.VIEW is 'index' and Conf['JSON Navigation'] and Conf['Menu'] and g.BOARD.ID isnt 'f'
+    if g.VIEW is 'index' and Conf['JSON Index'] and Conf['Menu'] and g.BOARD.ID isnt 'f'
       Menu.menu.addEntry
         el: $.el 'a',
           href:      'javascript:;'

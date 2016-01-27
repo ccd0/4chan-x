@@ -219,7 +219,7 @@ Main =
       new Notice 'warning', msg
 
     # Parse HTML or skip it and start building from JSON.
-    unless Conf['JSON Navigation'] and g.VIEW is 'index'
+    unless Conf['JSON Index'] and g.VIEW is 'index'
       Main.initThread() 
     else
       Main.expectInitFinished = true

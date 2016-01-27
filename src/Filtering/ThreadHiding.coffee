@@ -1,6 +1,6 @@
 ThreadHiding =
   init: ->
-    return if g.VIEW not in ['index', 'catalog'] or !Conf['Thread Hiding Buttons'] and !(Conf['Menu'] and Conf['Thread Hiding Link']) and !Conf['JSON Navigation']
+    return if g.VIEW not in ['index', 'catalog'] or !Conf['Thread Hiding Buttons'] and !(Conf['Menu'] and Conf['Thread Hiding Link']) and !Conf['JSON Index']
     @db = new DataBoard 'hiddenThreads'
     return @catalogWatch() if g.VIEW is 'catalog'
     @catalogSet g.BOARD
@@ -74,7 +74,7 @@ ThreadHiding =
         el: div
         order: 20
         open: ({thread, isReply}) ->
-          if isReply or thread.isHidden or Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog'
+          if isReply or thread.isHidden or Conf['JSON Index'] and Conf['Index Mode'] is 'catalog'
             return false
           ThreadHiding.menu.thread = thread
           true
@@ -90,7 +90,7 @@ ThreadHiding =
         el: div
         order: 20
         open: ({thread, isReply}) ->
-          if isReply or !thread.isHidden or Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog'
+          if isReply or !thread.isHidden or Conf['JSON Index'] and Conf['Index Mode'] is 'catalog'
             return false
           ThreadHiding.menu.thread = thread
           true
@@ -104,7 +104,7 @@ ThreadHiding =
         el: hideStubLink
         order: 15
         open: ({thread, isReply}) ->
-          if isReply or !thread.isHidden or Conf['JSON Navigation'] and Conf['Index Mode'] is 'catalog'
+          if isReply or !thread.isHidden or Conf['JSON Index'] and Conf['Index Mode'] is 'catalog'
             return false
           ThreadHiding.menu.thread = thread
 
@@ -176,7 +176,7 @@ ThreadHiding =
     return if thread.isHidden
     threadRoot = thread.OP.nodes.root.parentNode
     thread.isHidden = true
-    Index.updateHideLabel() if Conf['JSON Navigation']
+    Index.updateHideLabel() if Conf['JSON Index']
 
     return threadRoot.hidden = true unless makeStub
 
@@ -188,4 +188,4 @@ ThreadHiding =
       delete thread.stub
     threadRoot = thread.OP.nodes.root.parentNode
     threadRoot.hidden = thread.isHidden = false
-    Index.updateHideLabel() if Conf['JSON Navigation']
+    Index.updateHideLabel() if Conf['JSON Index']

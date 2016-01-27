@@ -3,7 +3,7 @@ Index =
   changed: {}
 
   init: ->
-    return if g.BOARD.ID is 'f' or !Conf['JSON Navigation'] or g.VIEW isnt 'index'
+    return if g.BOARD.ID is 'f' or !Conf['JSON Index'] or g.VIEW isnt 'index'
 
     CatalogThread.callbacks.push
       name: 'Catalog Features'
@@ -150,7 +150,7 @@ Index =
 
   menu:
     init: ->
-      return if g.VIEW isnt 'index' or !Conf['JSON Navigation'] or !Conf['Menu'] or !Conf['Thread Hiding Link'] or g.BOARD.ID is 'f'
+      return if g.VIEW isnt 'index' or !Conf['JSON Index'] or !Conf['Menu'] or !Conf['Thread Hiding Link'] or g.BOARD.ID is 'f'
 
       Menu.menu.addEntry
         el: $.el 'a',

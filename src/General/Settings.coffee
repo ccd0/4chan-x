@@ -348,6 +348,9 @@ Settings =
     if compareString < '00001.00011.00022.00002'
       if not data['Use Recaptcha v1 in Reports']? and data['Use Recaptcha v1'] and not data['Use Recaptcha v2 in Reports']
         set 'Use Recaptcha v1 in Reports', true
+    if compareString < '00001.00011.00024.00000'
+      if data['JSON Navigation']? and not data['JSON Index']?
+        set 'JSON Index', data['JSON Navigation']
     changes
   loadSettings: (data, cb) ->
     if data.version.split('.')[0] is '2' # https://github.com/loadletter/4chan-x
