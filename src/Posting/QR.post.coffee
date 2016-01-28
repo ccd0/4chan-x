@@ -124,10 +124,7 @@ QR.post = class
         QR.status()
         @updateFlashURL()
       when 'com'
-        @nodes.span.textContent = @com
-        # Post count temporarily off by 1 when called from QR.post.rm or QR.close
-        $.queueTask -> QR.captcha.onPostChange()
-        QR.characterCount()
+        @updateComment()
         # Disable auto-posting if you're typing in the first post
         # during the last 5 seconds of the cooldown.
         if QR.cooldown.auto and @ is QR.posts[0] and 0 < QR.cooldown.seconds <= 5
@@ -148,6 +145,19 @@ QR.post = class
       continue unless node = QR.nodes[name]
       @save node
     return
+
+  setComment: (com) ->
+    @com = com or null
+    if @ is QR.selected
+      QR.nodes.com.value = @com
+    @updateComment()
+
+  updateComment: ->
+    if @ is QR.selected
+      QR.characterCount()
+    @nodes.span.textContent = @com
+    # Post count temporarily off by 1 when called from QR.post.rm or QR.close
+    $.queueTask -> QR.captcha.onPostChange()
 
   @rmErrored: (e) ->
     e.stopPropagation()
@@ -340,26 +350,17 @@ QR.post = class
       url = "https://i.4cdn.org/f/#{encodeURIComponent E url}.swf\n"
     oldURL = @flashURL or ''
     if url isnt oldURL
-      @com or= ''
-      @com = @com[oldURL.length..] if @com[...oldURL.length] is oldURL
-      @com = (url + @com) or null
-      if @ is QR.selected
-        QR.nodes.com.value = @com
-        QR.characterCount()
+      com = @com or ''
+      if com[...oldURL.length] is oldURL
+        @setComment url + com[oldURL.length..]
       @flashURL = url
 
   pasteText: (file) ->
     @pasting = true
     reader = new FileReader()
     reader.onload = (e) =>
-      text = e.target.result
-      if @com
-        @com += "\n#{text}"
-      else
-        @com = text
-      if QR.selected is @
-        QR.nodes.com.value    = @com
-      @nodes.span.textContent = @com
+      {result} = e.target
+      @setComment (if @com then "#{@com}\n#{result}" else result)
       delete @pasting
     reader.readAsText file
 
