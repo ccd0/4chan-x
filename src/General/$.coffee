@@ -42,6 +42,7 @@ $.ajax = do ->
   # With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
   # This saves a lot of bandwidth and CPU time for both the users and the servers.
   lastModified = {}
+
   blockedURLs = {}
   blockedError = (url) ->
     return if blockedURLs[url]
@@ -52,7 +53,8 @@ $.ajax = do ->
         '[<a href="' + meta.faq + '#why-was-' + name.toLowerCase() + '-blocked-from-loading-a-url" target="_blank">More info</a>]'
       ) %>
     $('span', message).textContent = (if /^\/\//.test url then location.protocol else '') + url
-    new Notice 'error', message, 30, -> delete blockedURLs[url]
+    new Notice 'warning', message, 30, -> delete blockedURLs[url]
+
   (url, options={}, extra={}) ->
     {type, whenModified, upCallbacks, form} = extra
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
@@ -62,8 +64,11 @@ $.ajax = do ->
     try
       r.open type, url, true
     catch err
+      # XXX Some content blockers in Firefox (e.g. Adblock Plus) throw an exception here instead of dispatching an error event.
       blockedError url
-      options.onerror?()
+      for event in ['error', 'loadend']
+        r["on#{event}"] = options["on#{event}"]
+        $.queueTask $.event, event, null, r
       return
     if whenModified
       r.setRequestHeader 'If-Modified-Since', lastModified[whenModified][url] if lastModified[whenModified]?[url]?
