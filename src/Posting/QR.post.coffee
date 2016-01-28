@@ -56,7 +56,7 @@ QR.post = class
       @load() if QR.selected is @ # load persona
     @select() if select
     @unlock()
-    # Post count temporarily off by 1 when called from QR.post.rm
+    # Post count temporarily off by 1 when called from QR.post.rm or QR.close
     $.queueTask -> QR.captcha.onNewPost()
 
   rm: ->
@@ -125,7 +125,8 @@ QR.post = class
         @updateFlashURL()
       when 'com'
         @nodes.span.textContent = @com
-        QR.captcha.onPostChange()
+        # Post count temporarily off by 1 when called from QR.post.rm or QR.close
+        $.queueTask -> QR.captcha.onPostChange()
         QR.characterCount()
         # Disable auto-posting if you're typing in the first post
         # during the last 5 seconds of the cooldown.
@@ -187,7 +188,7 @@ QR.post = class
     @filesize = $.bytesToString @file.size
     @checkSize()
     $.addClass @nodes.el, 'has-file'
-    QR.captcha.onPostChange()
+    $.queueTask -> QR.captcha.onPostChange()
     URL.revokeObjectURL @URL
     @saveFilename()
     if @ is QR.selected
