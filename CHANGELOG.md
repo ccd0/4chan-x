@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.23
 
+**v1.11.23.2** *(2016-01-28)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.23.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.23.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Move fgts archive back to normal place in list (moved to end in v1.11.22.4).
+
 **v1.11.23.1** *(2016-01-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.23.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.23.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Show dark theme captcha in the Quick Reply if the document has the class `dark-captcha`.
 
