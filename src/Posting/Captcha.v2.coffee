@@ -128,6 +128,7 @@ Captcha.v2 =
     return
 
   setupIFrame: (iframe) ->
+    return unless doc.contains iframe
     Captcha.replace.iframe iframe
     $.addClass QR.nodes.el, 'captcha-open'
     @fixQRPosition()
