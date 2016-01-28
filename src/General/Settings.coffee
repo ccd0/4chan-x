@@ -193,6 +193,7 @@ Settings =
     $.rmAll p
     $.add p, a
     a.click()
+
   import: ->
     $('input[type=file]', @parentNode).click()
 
@@ -352,6 +353,7 @@ Settings =
       if data['JSON Navigation']? and not data['JSON Index']?
         set 'JSON Index', data['JSON Navigation']
     changes
+
   loadSettings: (data, cb) ->
     if data.version.split('.')[0] is '2' # https://github.com/loadletter/4chan-x
       data = Settings.convertFrom.loadletter data
