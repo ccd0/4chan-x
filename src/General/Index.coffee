@@ -437,6 +437,7 @@ Index =
       return
 
     Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
+      onabort:   Index.load
       onloadend: Index.load
     ,
       whenModified: 'Index'
