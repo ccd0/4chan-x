@@ -503,7 +503,7 @@ Index =
 
   parseThreadList: (pages) ->
     Index.pagesNum          = pages.length
-    Index.threadsNumPerPage = pages[0].threads.length
+    Index.threadsNumPerPage = pages[0]?.threads.length or 1
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
     g.BOARD.threads.forEach (thread) ->
