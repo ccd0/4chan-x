@@ -4,6 +4,6 @@ class Board
   constructor: (@ID) ->
     @threads = new SimpleDict()
     @posts   = new SimpleDict()
-    @json    = BoardsJSON.boards?[@ID]
+    @config  = BoardConfig.boards?[@ID]
 
     g.boards[@] = @

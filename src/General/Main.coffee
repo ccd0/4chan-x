@@ -36,7 +36,7 @@ Main =
 
     for db in DataBoard.keys
       Conf[db] = boards: {}
-    Conf['boardsJSON'] = boards: {}
+    Conf['boardConfig'] = boards: {}
     Conf['selectedArchives'] = {}
     Conf['cooldowns'] = {}
 
@@ -358,7 +358,7 @@ Main =
 
   features: [
     ['Polyfill',                  Polyfill]
-    ['Boards JSON',               BoardsJSON]
+    ['Board Configuration',       BoardConfig]
     ['Normalize URL',             NormalizeURL]
     ['Captcha Configuration',     Captcha.replace]
     ['Redirect',                  Redirect]
