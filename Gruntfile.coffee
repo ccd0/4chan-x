@@ -108,7 +108,6 @@ module.exports = (grunt) ->
           'src/classes/Connection.coffee'
           'src/classes/Fetcher.coffee'
           'src/General/Polyfill.coffee'
-          'src/General/BoardsJSON.coffee'
           'src/General/Header.coffee'
           'src/General/Index.coffee'
           'src/General/Build.coffee'
