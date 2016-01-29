@@ -192,7 +192,7 @@ ThreadWatcher =
   fetchAllStatus: ->
     ThreadWatcher.db.forceSync()
     ThreadWatcher.unreaddb.forceSync()
-    QR.db?.forceSync()
+    QuoteYou.db?.forceSync()
     return unless (threads = ThreadWatcher.getAll()).length
     for thread in threads
       ThreadWatcher.fetchStatus thread
@@ -235,16 +235,16 @@ ThreadWatcher =
 
       for postObj in @response.posts
         continue unless postObj.no > lastReadPost
-        continue if QR.db?.get {boardID, threadID, postID: postObj.no}
+        continue if QuoteYou.db?.get {boardID, threadID, postID: postObj.no}
 
         unread++
 
-        continue unless QR.db and postObj.com
+        continue unless QuoteYou.db and postObj.com
 
         quotesYou = false
         regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
         while match = regexp.exec postObj.com
-          if QR.db.get {
+          if QuoteYou.db.get {
             boardID:  match[1] or boardID
             threadID: match[2] or threadID
             postID:   match[3] or match[2] or threadID

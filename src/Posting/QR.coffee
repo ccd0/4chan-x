@@ -24,10 +24,6 @@ QR =
   init: ->
     return unless Conf['Quick Reply']
 
-    if Conf['Remember Your Posts']
-      $.sync 'Remember Your Posts', (enabled) -> Conf['Remember Your Posts'] = enabled
-      @db = new DataBoard 'yourPosts'
-
     @posts = []
 
     return if g.VIEW is 'archive'
@@ -768,14 +764,6 @@ QR =
     postID   = +postID
     threadID = +threadID or postID
     isReply  = threadID isnt postID
-
-    $.forceSync 'Remember Your Posts'
-    if Conf['Remember Your Posts']
-      QR.db?.set
-        boardID: g.BOARD.ID
-        threadID: threadID
-        postID: postID
-        val: true
 
     # Post/upload confirmed as successful.
     $.event 'QRPostSuccessful', {

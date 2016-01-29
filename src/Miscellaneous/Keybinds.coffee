@@ -184,10 +184,10 @@ Keybinds =
         return unless thread
         ThreadHiding.toggle thread if ThreadHiding.db
       when Conf['Previous Post Quoting You']
-        return unless threadRoot and QR.db
+        return unless threadRoot and QuoteYou.db
         QuoteYou.cb.seek 'preceding'
       when Conf['Next Post Quoting You']
-        return unless threadRoot and QR.db
+        return unless threadRoot and QuoteYou.db
         QuoteYou.cb.seek 'following'
       <% if (tests_enabled) { %>
       when 't'

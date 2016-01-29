@@ -1,6 +1,14 @@
 QuoteYou =
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Remember Your Posts'] and Conf['Quick Reply']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Remember Your Posts']
+
+    @db = new DataBoard 'yourPosts'
+    $.sync 'Remember Your Posts', (enabled) -> Conf['Remember Your Posts'] = enabled
+    $.on d, 'QRPostSuccessful', (e) ->
+      $.forceSync 'Remember Your Posts'
+      if Conf['Remember Your Posts']
+        {boardID, threadID, postID} = e.detail
+        QuoteYou.db.set {boardID, threadID, postID, val: true}
 
     if Conf['Highlight Own Posts']
       $.addClass doc, 'highlight-own'
@@ -20,13 +28,13 @@ QuoteYou =
   node: ->
     return if @isClone
 
-    if QR.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
+    if QuoteYou.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
       $.addClass @nodes.root, 'yourPost'
 
     # Stop there if there's no quotes in that post.
     return unless @quotes.length
 
-    for quotelink in @nodes.quotelinks when QR.db.get Get.postDataFromLink quotelink
+    for quotelink in @nodes.quotelinks when QuoteYou.db.get Get.postDataFromLink quotelink
         $.add quotelink, $.tn QuoteYou.text if Conf['Mark Quotes of You']
         $.addClass quotelink, 'you'
         $.addClass @nodes.root, 'quotesYou'
