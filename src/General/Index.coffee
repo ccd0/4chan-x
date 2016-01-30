@@ -268,7 +268,8 @@ Index =
       Index.update()
 
   scrollToIndex: ->
-    Header.scrollToIfNeeded Index.navLinks
+    # Scroll to navlinks, or top of board if navlinks are hidden.
+    Header.scrollToIfNeeded (if Index.navLinks.getBoundingClientRect().height then Index.navLinks else Index.root)
 
   getCurrentPage: ->
     +window.location.pathname.split(/\/+/)[2] or 1
