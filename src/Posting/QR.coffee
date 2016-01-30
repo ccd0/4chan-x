@@ -378,7 +378,7 @@ QR =
     return if url is null
     QR.nodes.fileButton.focus()
     CrossOrigin.file url, (blob) ->
-      if blob
+      if blob and not /^text\//.test blob.type
         QR.handleFiles [blob]
       else
         QR.error "Can't load file."
