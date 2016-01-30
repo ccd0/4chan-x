@@ -50,24 +50,19 @@ Captcha.v1 =
       $.replace old, container
 
   create: ->
-    $.globalEval '''
-      (function() {
-        var container = document.getElementById("captchaContainerAlt");
-        if (container.firstChild) return;
-        var options = {
-          theme: "clean",
-          tabindex: {"boards.4chan.org": 5, "sys.4chan.org": 3}[location.hostname]
-        };
-        if (window.Recaptcha) {
-          window.Recaptcha.create("<%= meta.recaptchaKey %>", container, options);
-        } else {
-          var script = document.head.querySelector('script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]');
-          script.addEventListener('load', function() {
-            window.Recaptcha.create("<%= meta.recaptchaKey %>", container, options);
-          }, false);
-        }
-      })();
-    '''
+    $.global ->
+      container = document.getElementById 'captchaContainerAlt'
+      return if container.firstChild
+      options =
+        theme: 'clean'
+        tabindex: {"boards.4chan.org": 5, "sys.4chan.org": 3}[location.hostname]
+      if window.Recaptcha
+        window.Recaptcha.create '<%= meta.recaptchaKey %>', container, options
+      else
+        script = document.head.querySelector 'script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]'
+        script.addEventListener 'load', ->
+          window.Recaptcha.create '<%= meta.recaptchaKey %>', container, options
+        , false
 
   cb:
     focus: -> QR.captcha.setup false, true
@@ -105,7 +100,7 @@ Captcha.v1 =
 
     setLifetime = (e) -> QR.captcha.lifetime = e.detail
     $.on window, 'captcha:timeout', setLifetime
-    $.globalEval 'window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))'
+    $.global -> window.dispatchEvent new CustomEvent 'captcha:timeout', {detail: window.RecaptchaState.timeout}
     $.off window, 'captcha:timeout', setLifetime
 
     {img, input} = QR.captcha.nodes
@@ -127,7 +122,7 @@ Captcha.v1 =
 
   destroy: ->
     return unless @script
-    $.globalEval 'window.Recaptcha.destroy();'
+    $.global -> window.Recaptcha.destroy()
     @beforeSetup() if @nodes
 
   sync: (captchas=[]) ->
@@ -205,14 +200,12 @@ Captcha.v1 =
 
   reload: (focus) ->
     # Recaptcha.should_focus = false: Hack to prevent the input from being focused
-    $.globalEval '''
-      if (window.Recaptcha.type === "image") {
-        window.Recaptcha.reload();
-      } else {
-        window.Recaptcha.switch_type("image");
-      }
-      window.Recaptcha.should_focus = false;
-    '''
+    $.global ->
+      if window.Recaptcha.type is 'image'
+        window.Recaptcha.reload()
+      else
+        window.Recaptcha.switch_type 'image'
+      window.Recaptcha.should_focus = false
     @nodes.input.focus() if focus
 
   keydown: (e) ->
