@@ -1,3 +1,4 @@
+:root:not(.js-enabled) #g-recaptcha,
 :root:not(.js-enabled) #captchaContainerAlt {
   height: auto;
 }
