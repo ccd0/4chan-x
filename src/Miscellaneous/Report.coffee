@@ -38,16 +38,6 @@ Report =
     else
       Report.fit 'body'
 
-    if Conf['Use Recaptcha v1 in Reports'] and Main.jsEnabled and d.cookie.indexOf('pass_enabled=1') < 0
-      $.onExists d.body, '#recaptcha_image', (image) ->
-        $.on image, 'click', ->
-          if $.id 'recaptcha_challenge_image'
-            $.global -> window.Recaptcha.reload()
-      $.onExists d.body, '#recaptcha_response_field', (field) ->
-        $.on field, 'keydown', (e) ->
-          if e.keyCode is 8 and not field.value
-            $.global -> window.Recaptcha.reload()
-
   fit: (selector) ->
     return unless (el = $ selector, doc) and getComputedStyle(el).visibility isnt 'hidden'
     dy = el.getBoundingClientRect().bottom - doc.clientHeight + 8

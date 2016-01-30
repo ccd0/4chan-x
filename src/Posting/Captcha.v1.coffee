@@ -50,12 +50,30 @@ Captcha.v1 =
       $.replace old, container
 
   create: ->
+    cont = $.id 'captchaContainerAlt'
+    return if @occupied
+
+    @occupied = true
+
+    if (lang = Conf['captchaLanguage'].trim())
+      cont.dataset.lang = lang
+
+    $.onExists cont, '#recaptcha_image', (image) ->
+      $.on image, 'click', ->
+        if $.id 'recaptcha_challenge_image'
+          $.global -> window.Recaptcha.reload()
+    $.onExists cont, '#recaptcha_response_field', (field) ->
+      $.on field, 'keydown', (e) ->
+        if e.keyCode is 8 and not field.value
+          $.global -> window.Recaptcha.reload()
+      field.focus() if location.hostname is 'sys.4chan.org'
+
     $.global ->
       container = document.getElementById 'captchaContainerAlt'
-      return if container.firstChild
       options =
-        theme: 'clean'
-        tabindex: {"boards.4chan.org": 5, "sys.4chan.org": 3}[location.hostname]
+        theme:    'clean'
+        tabindex: {"boards.4chan.org": 5}[location.hostname]
+        lang:     container.dataset.lang
       if window.Recaptcha
         window.Recaptcha.create '<%= meta.recaptchaKey %>', container, options
       else
@@ -123,6 +141,7 @@ Captcha.v1 =
   destroy: ->
     return unless @script
     $.global -> window.Recaptcha.destroy()
+    delete @occupied
     @beforeSetup() if @nodes
 
   sync: (captchas=[]) ->

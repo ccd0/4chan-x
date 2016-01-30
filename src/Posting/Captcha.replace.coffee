@@ -2,6 +2,12 @@ Captcha.replace =
   init: ->
     return unless d.cookie.indexOf('pass_enabled=1') < 0
 
+    if location.hostname is 'sys.4chan.org' and /[?&]altc\b/.test(location.search) and Main.jsEnabled
+      $.onExists doc, 'script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]', ->
+        $.global -> window.el.onload = null
+        Captcha.v1.create()
+      return
+
     if (
       (Conf['Use Recaptcha v1'] and location.hostname is 'boards.4chan.org') or
       (Conf['Use Recaptcha v1 in Reports'] and location.hostname is 'sys.4chan.org')
