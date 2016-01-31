@@ -79,14 +79,14 @@ Build =
       o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
     o
 
-  parseComment: (o) ->
-    html = o.info.commentHTML.innerHTML
+  parseComment: (html) ->
+    html = html
       .replace(/<br\b[^<]*>/gi, '\n')
       .replace(/\n\n<span\b[^<]* class="abbr"[^]*$/i, '') # EXIF data (/p/)
       .replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '')       # Rolls (/tg/)
       .replace(/<span\b[^<]* class="fortune"[^]*$/i, '')  # Fortunes (/s4s/)
       .replace(/<[^>]*>/g, '')
-    o.info.comment = Build.unescape html
+    Build.unescape html
 
   postFromObject: (data, boardID, suppressThumb) ->
     o = Build.parseJSON data, boardID
