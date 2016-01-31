@@ -595,18 +595,17 @@ Index =
 
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
-    sortedThreadIDs = {
-      lastreply:
+    sortedThreadIDs = switch Conf['Index Sort']
+      when 'lastreply'
         [liveThreadData...].sort((a, b) ->
           a = num[num.length - 1] if (num = a.last_replies)
           b = num[num.length - 1] if (num = b.last_replies)
           b.no - a.no
         ).map (post) -> post.no
-      bump:       liveThreadIDs
-      birth:      [liveThreadIDs... ].sort (a, b) -> b - a
-      replycount: [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
-      filecount:  [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
-    }[Conf['Index Sort']]
+      when 'bump'       then liveThreadIDs
+      when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
+      when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
+      when 'filecount'  then [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
     Index.sortedNodes = sortedNodes = []
     {nodes} = Index
     for threadID in sortedThreadIDs
