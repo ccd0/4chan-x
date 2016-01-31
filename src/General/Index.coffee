@@ -602,6 +602,14 @@ Index =
           b = num[num.length - 1] if (num = b.last_replies)
           b.no - a.no
         ).map (post) -> post.no
+      when 'lastlong'
+        lastlong = (thread) ->
+          for r, i in (thread.last_replies or []) by -1
+            return r if r.com and Build.parseComment(r.com).replace(/[^a-z]/ig, '').length >= 100
+          thread
+        [liveThreadData...].sort((a, b) ->
+          lastlong(b).no - lastlong(a).no
+        ).map (post) -> post.no
       when 'bump'       then liveThreadIDs
       when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
       when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
