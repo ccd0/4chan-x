@@ -41,6 +41,7 @@ Main =
 
     # XXX old key names
     Conf['Except Archives from Encryption'] = false
+    Conf['JSON Navigation'] = true
 
     # Get saved values as items
     items = {}
