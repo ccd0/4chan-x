@@ -454,7 +454,7 @@ Index =
 
     if e.type is 'abort'
       req.onloadend = null
-      notice.close()
+      notice?.close()
       return
 
     if req.status not in [200, 304]
