@@ -5,11 +5,11 @@ ThreadStats =
     statsHTML = <%= html(
       '<span id="post-count">?</span> / <span id="file-count">?</span>' +
       '?{Conf["IP Count in Stats"]}{ / <span id="ip-count">?</span>}' +
-      '?{Conf["Page Count in Stats"] && g.BOARD.ID !== "f"}{ / <span id="page-count">?</span>}'
+      '?{Conf["Page Count in Stats"]}{ / <span id="page-count">?</span>}'
     ) %>
     statsTitle = 'Posts / Files'
     statsTitle += ' / IPs'  if Conf['IP Count in Stats']
-    statsTitle += ' / Page' if Conf['Page Count in Stats'] and g.BOARD.ID isnt 'f'
+    statsTitle += (if g.BOARD.ID is 'f' then ' / Purge Position' else ' / Page') if Conf['Page Count in Stats']
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
@@ -56,7 +56,7 @@ ThreadStats =
     return unless ThreadStats.pageCountEl
     if newPosts.length
       ThreadStats.lastPost = g.posts[newPosts[newPosts.length - 1]].info.date
-    if ThreadStats.pageCountEl?.textContent isnt '1'
+    if g.BOARD.ID isnt 'f' and ThreadStats.pageCountEl?.textContent isnt '1'
       ThreadStats.fetchPage()
 
   update: (postCount, fileCount, ipCount) ->
@@ -82,17 +82,24 @@ ThreadStats =
   onThreadsLoad: ->
     if @status is 200
       for page in @response
-        for thread in page.threads when thread.no is ThreadStats.thread.ID
-          ThreadStats.pageCountEl.textContent = page.page
-          (if page.page is @response.length then $.addClass else $.rmClass) ThreadStats.pageCountEl, 'warning'
-          ThreadStats.lastPageUpdate = new Date thread.last_modified * $.SECOND
-          ThreadStats.retry()
-          return
+        if g.BOARD.ID is 'f'
+          purgePos = 1
+          for thread in page.threads
+            if thread.no < ThreadStats.thread.ID
+              purgePos++
+          ThreadStats.pageCountEl.textContent = purgePos
+        else
+          for thread in page.threads when thread.no is ThreadStats.thread.ID
+            ThreadStats.pageCountEl.textContent = page.page
+            (if page.page is @response.length then $.addClass else $.rmClass) ThreadStats.pageCountEl, 'warning'
+            ThreadStats.lastPageUpdate = new Date thread.last_modified * $.SECOND
+            ThreadStats.retry()
+            return
     else if @status is 304
       ThreadStats.retry()
 
   retry: ->
     # If thread data is stale (modification date given < time of last post), try again.
-    if ThreadStats.lastPost > ThreadStats.lastPageUpdate and ThreadStats.pageCountEl?.textContent isnt '1'
+    if g.BOARD.ID isnt 'f' and ThreadStats.lastPost > ThreadStats.lastPageUpdate and ThreadStats.pageCountEl?.textContent isnt '1'
       clearTimeout ThreadStats.timeout
       ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 5 * $.SECOND
