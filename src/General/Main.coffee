@@ -13,6 +13,18 @@ Main =
           $.ready -> Captcha.fixes.init()
       return
 
+    # Disrupt loading of ads from malicious/irresponsible providers.
+    $.global ->
+      nuke = (obj, prop) ->
+        try
+          Object.defineProperty obj, prop,
+            configurable: false
+            get: -> throw new Error()
+            set: -> throw new Error()
+      for prop in ['atOptions', 'adsterra_key', 'EpmadsConfig', 'epmads_key', 'EpomConfig', 'epom_key', 'exoDocumentProtocol']
+        nuke window, prop
+      return
+
     # Detect multiple copies of 4chan X
     $.on d, '4chanXInitFinished', ->
       if Main.expectInitFinished

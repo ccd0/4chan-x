@@ -314,7 +314,11 @@ $.globalEval = (code) ->
   $.rm script
 
 $.global = (fn) ->
-  $.globalEval "(#{fn})();"
+  if doc
+    $.globalEval "(#{fn})();"
+  else
+    # XXX dwb
+    fn()
 
 $.bytesToString = (size) ->
   unit = 0 # Bytes

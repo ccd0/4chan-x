@@ -7,16 +7,32 @@
 // @description  <%= description %>
 // @license      MIT; <%= meta.license %> 
 <%=
-  meta.matches.map(function(match) {
-    if (/^\*/.test(match)) {
-      return (
-        '// @include      ' + match.replace(/^\*/, 'http') + '\n' +
-        '// @include      ' + match.replace(/^\*/, 'https')
-      );
-    } else {
-      return '// @include      ' + match;
+  (function() {
+    function expand(items, regex, substitutions) {
+      var results = [];
+      items.forEach(function(item) {
+        if (regex.test(item)) {
+          substitutions.forEach(function(s) {
+            results.push(item.replace(regex, s));
+          });
+        } else {
+          results.push(item);
+        }
+      });
+      return results;
     }
-  }).join('\n')
+    function expandMatches(matches) {
+      return expand(matches, /^\*/, ['http', 'https']);
+    }
+    return [].concat(
+      expandMatches(meta.matches).map(function(match) {
+        return '// @include      ' + match;
+      }),
+      expandMatches(meta.exclude_matches).map(function(match) {
+        return '// @exclude      ' + match;
+      })
+    ).join('\n');
+  })()
 %>
 <%=
   meta.grants.map(function(grant) {
