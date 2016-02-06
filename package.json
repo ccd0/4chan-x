@@ -70,7 +70,7 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-markdown": "^0.7.0",
     "grunt-shell": "^1.1.2",
-    "grunt-webstore-upload": "^0.8.5",
+    "grunt-webstore-upload": "^0.8.9",
     "jszip": "^2.5.0",
     "load-grunt-tasks": "^3.4.0",
     "npm-shrinkwrap": "^5.4.1"
