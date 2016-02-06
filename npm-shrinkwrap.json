@@ -190,8 +190,8 @@
       }
     },
     "font-awesome": {
-      "version": "4.4.0",
-      "resolved": "https://registry.npmjs.org/font-awesome/-/font-awesome-4.4.0.tgz"
+      "version": "4.5.0",
+      "resolved": "https://registry.npmjs.org/font-awesome/-/font-awesome-4.5.0.tgz"
     },
     "grunt": {
       "version": "0.4.5",
