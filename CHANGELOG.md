@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.24
 
+**v1.11.24.1** *(2016-02-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.24.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.24.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Disrupt loading of ads from malicious/irresponsible providers.
+
 **v1.11.24.0** *(2016-01-31)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.24.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.24.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.23.2.
 - Bug fixes.

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.11.24.0
+// @version      1.11.24.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -10,16 +10,18 @@
 // @include      https://boards.4chan.org/*
 // @include      http://sys.4chan.org/*
 // @include      https://sys.4chan.org/*
+// @include      http://www.4chan.org/*
+// @include      https://www.4chan.org/*
 // @include      http://i.4cdn.org/*
 // @include      https://i.4cdn.org/*
-// @include      http://www.4chan.org/banned
-// @include      https://www.4chan.org/banned
-// @include      http://www.4chan.org/feedback
-// @include      https://www.4chan.org/feedback
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      http://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @exclude      http://www.4chan.org/pass
+// @exclude      https://www.4chan.org/pass
+// @exclude      http://www.4chan.org/pass?*
+// @exclude      https://www.4chan.org/pass?*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
