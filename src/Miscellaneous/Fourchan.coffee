@@ -25,27 +25,20 @@ Fourchan =
         cb:   @code
 
     if g.BOARD.ID is 'sci'
-      $.globalEval '''
-        window.addEventListener('mathjax', function(e) {
-          if (window.MathJax) {
-            window.MathJax.Hub.Queue(function() {
-              if (!e.target.querySelector('.MathJax')) {
-                window.MathJax.Hub.Typeset(e.target);
-              }
-            });
-          } else {
-            if (!document.querySelector('script[src^="//cdn.mathjax.org/"]')) {
-              window.loadMathJax();
-              window.loadMathJax = function() {};
-              if (!e.target.classList.contains('postMessage')) {
-                document.querySelector('script[src^="//cdn.mathjax.org/"]').addEventListener('load', function() {
-                  window.MathJax.Hub.Queue(['Typeset', window.MathJax.Hub, e.target]);
-                }, false);
-              }
-            }
-          }
-        }, false);
-      '''
+      $.global ->
+        window.addEventListener 'mathjax', (e) ->
+          if window.MathJax
+            window.MathJax.Hub.Queue ['Typeset', window.MathJax.Hub, e.target]
+          else
+            unless document.querySelector 'script[src^="//cdn.mathjax.org/"]' # don't load MathJax if already loading
+              window.loadMathJax()
+              window.loadMathJax = ->
+            # 4chan only handles post comments on MathJax load; anything else (e.g. the QR preview) must be queued explicitly.
+            unless e.target.classList.contains 'postMessage'
+              document.querySelector('script[src^="//cdn.mathjax.org/"]').addEventListener 'load', ->
+                window.MathJax.Hub.Queue ['Typeset', window.MathJax.Hub, e.target]
+              , false
+        , false
       Post.callbacks.push
         name: 'Parse /sci/ math'
         cb:   @math
@@ -69,7 +62,7 @@ Fourchan =
       return
 
   math: ->
-    return unless /\[(math|eqn)\]/.test(@nodes.comment.textContent) or $('.math:not([id])', @nodes.comment)
+    return unless /\[(math|eqn)\]/.test @nodes.comment.textContent
     cb = =>
       return unless doc.contains @nodes.comment
       $.off d, 'PostsInserted', cb
