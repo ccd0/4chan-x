@@ -63,6 +63,8 @@ Fourchan =
 
   math: ->
     return unless /\[(math|eqn)\]/.test @nodes.comment.textContent
+    # XXX <wbr> tags frequently break MathJax; remove them.
+    $.rm wbr for wbr in $$ 'wbr', @nodes.comment
     cb = =>
       return unless doc.contains @nodes.comment
       $.off d, 'PostsInserted', cb
