@@ -68,7 +68,7 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["g", "mlp", "v"],
+  "boards": ["g", "jp", "mlp", "v"],
   "files": []
 }, {
   "uid": 27,
