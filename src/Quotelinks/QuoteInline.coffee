@@ -17,15 +17,15 @@ QuoteInline =
     return
 
   process: (link, clone) ->
-    return if (
-      Conf['Inline Cross-thread Quotes Only'] and
-      link.pathname is location.pathname and
-      link.host     is location.host     and
-      link.protocol is location.protocol
-    )
+    return if Conf['Inline Cross-thread Quotes Only'] and not QuoteInline.isCrossThread(link)
     if Conf['Quote Hash Navigation']
       $.after link, QuoteInline.qiQuote link, $.hasClass link, 'filtered' unless clone
     $.on link, 'click', QuoteInline.toggle
+
+  isCrossThread: (link) ->
+    link.pathname   isnt location.pathname or
+      link.host     isnt location.host     or
+      link.protocol isnt location.protocol
 
   qiQuote: (link, hidden) ->
     name = "hashlink"
