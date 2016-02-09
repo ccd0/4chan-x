@@ -10,22 +10,30 @@ QuoteInline =
       cb:   @node
 
   node: ->
-    {process} = QuoteInline
+    {process, isCrossThread} = QuoteInline
     {isClone} = @
-    process link, isClone for link in @nodes.quotelinks
-    process link, isClone for link in @nodes.backlinks
+
+    if Conf['Inline Quotelinks']
+      process link, isClone for link in @nodes.quotelinks
+    else if Conf['Inline Cross-thread Links']
+      process link, isClone for link in @nodes.quotelinks when isCrossThread link
+
+    if Conf['Inline Backlinks']
+      process link, isClone for link in @nodes.backlinks
+    else if Conf['Inline Cross-thread Links']
+      process link, isClone for link in @nodes.backlinks when isCrossThread link
+
     return
 
   process: (link, clone) ->
-    return if (
-      Conf['Inline Cross-thread Quotes Only'] and
-      link.pathname is location.pathname and
-      link.host     is location.host     and
-      link.protocol is location.protocol
-    )
     if Conf['Quote Hash Navigation']
       $.after link, QuoteInline.qiQuote link, $.hasClass link, 'filtered' unless clone
     $.on link, 'click', QuoteInline.toggle
+
+  isCrossThread: (link) ->
+    link.pathname   isnt location.pathname or
+      link.host     isnt location.host     or
+      link.protocol isnt location.protocol
 
   qiQuote: (link, hidden) ->
     name = "hashlink"

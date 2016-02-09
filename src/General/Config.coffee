@@ -505,7 +505,7 @@ Config =
     'Quote Links':
       'Quote Backlinks': [
         true
-        'Add quote backlinks.'
+        'Add backlinks to the posts that quote a post.'
       ]
       'OP Backlinks': [
         true
@@ -514,16 +514,26 @@ Config =
       ]
       'Quote Inlining': [
         true
-        'Inline quoted post on click.'
+        'For selected types of links, show the quoted post beneath the link instead of navigating to it.'
       ]
-      'Inline Cross-thread Quotes Only': [
+      'Inline Quotelinks': [
+        false
+        'Apply Quote Inlining to all quotelinks in the post.'
+        1
+      ]
+      'Inline Backlinks': [
         true
-        'Only inline quote links when the posts are on another thread or board, or fetched from the archive.'
+        'Apply Quote Inlining to all backlinks.'
+        1
+      ]
+      'Inline Cross-thread Links': [
+        true
+        'Apply Quote Inlining to links to another thread or board, or to the archives.'
         1
       ]
       'Quote Hash Navigation': [
         false
-        'Include an extra link after quotes for autoscrolling to quoted posts.'
+        'Include an extra link after quotes for navigating to quoted posts.'
         1
       ]
       'Forward Hiding': [

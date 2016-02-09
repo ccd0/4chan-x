@@ -350,6 +350,9 @@ Settings =
     if compareString < '00001.00011.00024.00000'
       if data['JSON Navigation']? and not data['JSON Index']?
         set 'JSON Index', data['JSON Navigation']
+    if compareString < '00001.00011.00025.00000'
+      for key in ['Inline Quotelinks', 'Inline Backlinks']
+        set key, not (data['Inline Cross-thread Quotes Only'] ? true) unless data[key]?
     changes
 
   loadSettings: (data, cb) ->
