@@ -94,6 +94,8 @@ Keybinds =
       when Conf['Watch']
         return unless thread
         ThreadWatcher.toggle thread
+      when Conf['Update thread watcher']
+        ThreadWatcher.buttonFetchAll()
       # Images
       when Conf['Expand image']
         return unless ImageExpand.enabled and threadRoot
