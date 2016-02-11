@@ -71,6 +71,7 @@ Captcha.fixes =
     $.on window, 'focus blur', -> d.body.classList.toggle 'focus', d.hasFocus()
 
     @images = $$ '.fbc-payload-imageselect > input'
+    @width  = 3
     return unless @images.length is 9
 
     $.addStyle @cssNoscript
@@ -80,10 +81,13 @@ Captcha.fixes =
 
   fixImages: ->
     @images = $$ '.rc-imageselect-target > div, .rc-imageselect-target td'
+    @width  = $$('.rc-imageselect-target tr:first-of-type td').length or Math.round(Math.sqrt @images.length)
     for img in @images
       img.tabIndex = 0
-    @addTooltips @images if @images.length is 9
-    @addTooltips16 @images if @images.length is 16
+    if @images.length is 9
+      @addTooltips @images
+    else
+      @addTooltips16 @images
     @complaintLinks()
 
   complaintLinks: ->
@@ -114,8 +118,9 @@ Captcha.fixes =
     return
 
   addTooltips16: (nodes) ->
-    for node, i in nodes
-      node.title = "#{@imageKeys16[i][0].toUpperCase()}#{@imageKeys16[i][1..]}"
+    for key, i in @imageKeys16
+      if (node = nodes[(i // 4)*@width + (i % 4)])
+        node.title = "#{key[0].toUpperCase()}#{key[1..]}"
     return
 
   checkForm: (e) ->
@@ -126,7 +131,7 @@ Captcha.fixes =
   keybinds: (e) ->
     return unless @images and doc.contains(@images[0])
     n = @images.length
-    w = Math.round Math.sqrt n
+    w = @width
     last = n + w - 1
 
     reload = $ '#recaptcha-reload-button, .fbc-button-reload'
@@ -141,8 +146,8 @@ Captcha.fixes =
     else if n is 9 and (i = @imageKeys.indexOf key) >= 0
       @images[i % 9].click()
       verify.focus()
-    else if n is 16 and (i = @imageKeys16.indexOf key) >= 0
-      @images[i].click()
+    else if n isnt 9 and (i = @imageKeys16.indexOf key) >= 0 and (img = @images[(i // 4)*w + (i % 4)])
+      img.click()
       verify.focus()
     else if dx = {'Up': n, 'Down': w, 'Left': last, 'Right': 1}[key]
       x = (x + dx) % (n + w)
