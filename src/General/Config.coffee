@@ -857,6 +857,10 @@ Config =
       'r'
       'Update the thread / refresh the index.'
     ]
+    'Update thread watcher': [
+      'Shift+r'
+      'Manually refresh thread watcher.'
+    ]
     # Images
     'Expand image': [
       'Shift+e'
