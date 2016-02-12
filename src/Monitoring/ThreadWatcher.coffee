@@ -1,6 +1,6 @@
 ThreadWatcher =
   init: ->
-    return if !Conf['Thread Watcher']
+    return unless (@enabled = Conf['Thread Watcher'])
 
     @shortcut = sc = $.el 'a',
       id:   'watcher-link'
