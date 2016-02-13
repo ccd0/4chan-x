@@ -103,7 +103,7 @@ do ->
     $.on req, 'load', (e) ->
       @evt = e
       for cb in @callbacks
-        $.queueTask => cb.call @, e, false
+        do (cb) => $.queueTask => cb.call @, e, false
       delete @callbacks
     $.on req, 'abort error', rm
     req.callbacks = [cb]
