@@ -23,8 +23,8 @@
   "http": false,
   "https": true,
   "software": "fuuka",
-  "boards": ["cgl", "g", "mu", "qa", "w"],
-  "files": ["cgl", "g", "mu", "qa", "w"]
+  "boards": ["cgl", "g", "mu", "qa"],
+  "files": ["cgl", "g", "mu", "qa"]
 }, {
   "uid": 10,
   "name": "warosu",
