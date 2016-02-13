@@ -175,7 +175,7 @@ Embedding =
           src:         a.dataset.href
     ,
       key: 'Dailymotion'
-      regExp:  /^\w+:\/\/(?:(?:www\.)?dailymotion\.com\/(?:embed\/)?video|dai\.ly)\/([A-Za-z0-9]+).*((?:\?.*)?)/
+      regExp:  /^\w+:\/\/(?:(?:www\.)?dailymotion\.com\/(?:embed\/)?video|dai\.ly)\/([A-Za-z0-9]+)[^?]*(.*)/
       el: (a) ->
         options = if (start = a.dataset.options.match /[?&](start=\d+)/) then "?#{start[1]}" else ''
         $.el 'iframe',
