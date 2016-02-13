@@ -95,7 +95,7 @@ DeleteLink =
     else if msg = resDoc.getElementById 'errmsg' # error!
       new Notice 'warning', msg.textContent, 20
       $.on link, 'click', DeleteLink.toggle if post.fullID is DeleteLink.post.fullID
-      if Conf['Quick Reply'] and Conf['Cooldown'] and /\bwait\b/i.test(msg.textContent)
+      if QR.cooldown.data and Conf['Cooldown'] and /\bwait\b/i.test(msg.textContent)
         DeleteLink.cooldown.start post, 5
         DeleteLink.auto[+fileOnly][post.fullID] = true
         DeleteLink.nodes.links[+fileOnly].textContent = DeleteLink.linkText fileOnly
@@ -124,7 +124,7 @@ DeleteLink =
 
     count: (post) ->
       DeleteLink.nodes.menu.textContent = DeleteLink.menuText() if post.fullID is DeleteLink.post.fullID
-      if DeleteLink.cooldown.seconds[post.fullID] > 0
+      if DeleteLink.cooldown.seconds[post.fullID] > 0 and Conf['Cooldown']
         DeleteLink.cooldown.seconds[post.fullID]--
         setTimeout DeleteLink.cooldown.count, 1000, post
       else

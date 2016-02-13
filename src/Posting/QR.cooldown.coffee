@@ -11,14 +11,12 @@ QR.cooldown =
 
   # Called from Main
   init: ->
-    return unless Conf['Quick Reply'] and Conf['Cooldown']
+    return unless Conf['Quick Reply']
     @data = Conf['cooldowns']
     $.sync 'cooldowns', @sync
 
   # Called from QR
   setup: ->
-    return unless Conf['Cooldown']
-
     # Read cooldown times
     if m = Get.scriptData().match /\bcooldowns *= *({[^}]+})/
       $.extend QR.cooldown.delays, JSON.parse m[1]
@@ -34,6 +32,7 @@ QR.cooldown =
   start: ->
     {data} = QR.cooldown
     return unless (
+      Conf['Cooldown'] and
       QR.cooldown.isSetup and
       !QR.cooldown.isCounting and
       Object.keys(data[g.BOARD.ID] or {}).length + Object.keys(data.global or {}).length > 0
@@ -66,7 +65,7 @@ QR.cooldown =
     QR.cooldown.start()
 
   delete: (post) ->
-    return unless Conf['Cooldown']
+    return unless QR.cooldown.data
     $.forceSync 'cooldowns'
     cooldowns = (QR.cooldown.data[post.board.ID] or= {})
     for id, cooldown of cooldowns
@@ -75,7 +74,7 @@ QR.cooldown =
     QR.cooldown.save [post.board.ID]
 
   secondsDeletion: (post) ->
-    return 0 unless Conf['Quick Reply'] and Conf['Cooldown']
+    return 0 unless QR.cooldown.data and Conf['Cooldown']
     cooldowns = QR.cooldown.data[post.board.ID] or {}
     for start, cooldown of cooldowns
       if !cooldown.delay? and cooldown.threadID is post.thread.ID and cooldown.postID is post.ID
@@ -110,7 +109,7 @@ QR.cooldown =
     {type, threadID} = QR.cooldown.categorize QR.posts[0]
     seconds = 0
 
-    for scope in [g.BOARD.ID, 'global']
+    if Conf['Cooldown'] then for scope in [g.BOARD.ID, 'global']
       cooldowns = (QR.cooldown.data[scope] or= {})
 
       for start, cooldown of cooldowns
