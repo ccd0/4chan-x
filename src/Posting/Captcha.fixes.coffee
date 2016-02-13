@@ -119,7 +119,7 @@ Captcha.fixes =
 
   addTooltips16: (nodes) ->
     for key, i in @imageKeys16
-      if (node = nodes[(i // 4)*@width + (i % 4)])
+      if i % 4 < @width and (node = nodes[nodes.length - (4 - i//4)*@width + (i % 4)])
         node.title = "#{key[0].toUpperCase()}#{key[1..]}"
     return
 
@@ -146,7 +146,7 @@ Captcha.fixes =
     else if n is 9 and (i = @imageKeys.indexOf key) >= 0
       @images[i % 9].click()
       verify.focus()
-    else if n isnt 9 and (i = @imageKeys16.indexOf key) >= 0 and (img = @images[(i // 4)*w + (i % 4)])
+    else if n isnt 9 and (i = @imageKeys16.indexOf key) >= 0 and i % 4 < w and (img = @images[n - (4 - i//4)*w + (i % 4)])
       img.click()
       verify.focus()
     else if dx = {'Up': n, 'Down': w, 'Left': last, 'Right': 1}[key]
