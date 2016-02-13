@@ -136,7 +136,7 @@ Embedding =
       el.style.cssText = if type.style?
         type.style
       else
-        "border:0;width:640px;height:390px"
+        'border: none; width: 640px; height: 360px;'
 
       return container
 
@@ -176,7 +176,6 @@ Embedding =
     ,
       key: 'Dailymotion'
       regExp:  /^\w+:\/\/(?:(?:www\.)?dailymotion\.com\/(?:embed\/)?video|dai\.ly)\/([A-Za-z0-9]+).*((?:\?.*)?)/
-      style: 'border: none; width: 640px; height: 360px;'
       el: (a) ->
         options = if (start = a.dataset.options.match /[?&](start=\d+)/) then "?#{start[1]}" else ''
         $.el 'iframe',
@@ -219,7 +218,6 @@ Embedding =
       key: 'LiveLeak'
       regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*i=(\w+)/
       httpOnly: true
-      style: 'border: none; width: 640px; height: 360px;'
       el: (a) ->
         el = $.el 'iframe',
           src: "http://www.liveleak.com/ll_embed?i=#{a.dataset.uid}",
