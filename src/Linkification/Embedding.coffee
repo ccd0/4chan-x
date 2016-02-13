@@ -174,6 +174,17 @@ Embedding =
           preload:     'auto'
           src:         a.dataset.href
     ,
+      key: 'Dailymotion'
+      regExp:  /^\w+:\/\/(?:(?:www\.)?dailymotion\.com\/(?:embed\/)?video|dai\.ly)\/([A-Za-z0-9]+).*((?:\?.*)?)/
+      style: 'border: none; width: 640px; height: 360px;'
+      el: (a) ->
+        options = if (start = a.dataset.options.match /[?&](start=\d+)/) then "?#{start[1]}" else ''
+        $.el 'iframe',
+          src: "//www.dailymotion.com/embed/video/#{a.dataset.uid}#{options}"
+      title:
+        api: (uid) -> "https://api.dailymotion.com/video/#{uid}"
+        text: (_) -> _.title
+    ,
       key: 'Gist'
       regExp: /^\w+:\/\/gist\.github\.com\/(?:[\w\-]+\/)?(\w+)/
       el: (a) ->
