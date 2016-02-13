@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.25
 
+**v1.11.25.1** *(2016-02-12)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.25.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.25.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Bugfix for 2x4 image captcha.
+
 **v1.11.25.0** *(2016-02-11)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.25.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.25.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.24.2.
 - Support new 2x4 image captcha.
