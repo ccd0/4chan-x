@@ -1,22 +1,18 @@
 QR.oekaki =
   init: ->
-    return unless Conf['Quick Reply'] and Conf['Oekaki Links']
-    Post.callbacks.push
-      name: 'Oekaki Links'
-      cb:   @node
+    return unless Conf['Quick Reply'] and Conf['Edit Link']
 
-  node: ->
-    return unless @file and (@file.isImage or @file.isVideo)
-    if @isClone
-      link = $ '.file-oekaki', @file.text
-    else
-      link = $.el 'a',
-        className: 'file-oekaki'
-        href: 'javascript:;'
-        title: 'Edit in Tegaki'
-      $.extend link, <%= html('<i class="fa fa-edit"></i>') %>
-      $.add @file.text, [$.tn('\u00A0'), link]
-    $.on link, 'click', QR.oekaki.editFile
+    a = $.el 'a',
+      className: 'edit-link'
+      href: 'javascript:;'
+      textContent: 'Edit image'
+    $.on a, 'click', @editFile
+
+    Menu.menu.addEntry
+      el: a
+      order: 95
+      open: ({file}) ->
+        !!file and (file.isImage or file.isVideo)
 
   editFile: ->
     return unless QR.postingIsEnabled

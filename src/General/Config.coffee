@@ -210,10 +210,6 @@ Config =
         'Show PDF files in gallery.'
         1
       ]
-      'Oekaki Links': [
-        true
-        'Add links to edit images in Tegaki, /i/\'s painting program.'
-      ]
       'Sauce': [
         true
         'Add sauce links to images.'
@@ -311,6 +307,11 @@ Config =
       'Delete Link': [
         true
         'Add post and image deletion links to the menu.'
+        1
+      ]
+      'Edit Link': [
+        true
+        'Add a link to edit the image in Tegaki, /i/\'s painting program. Requires Quick Reply.'
         1
       ]
       'Download Link': [

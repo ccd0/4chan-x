@@ -350,6 +350,9 @@ Settings =
     if compareString < '00001.00011.00024.00000'
       if data['JSON Navigation']? and not data['JSON Index']?
         set 'JSON Index', data['JSON Navigation']
+    if compareString < '00001.00011.00026.00000'
+      if data['Oekaki Links']? and not data['Edit Link']?
+        set 'Edit Link', data['Oekaki Links']
     changes
 
   loadSettings: (data, cb) ->

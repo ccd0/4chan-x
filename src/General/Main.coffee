@@ -57,6 +57,7 @@ Main =
     # XXX old key names
     Conf['Except Archives from Encryption'] = false
     Conf['JSON Navigation'] = true
+    Conf['Oekaki Links'] = true
 
     # Get saved values as items
     items = {}
@@ -397,7 +398,6 @@ Main =
     ['Strike-through Quotes',     QuoteStrikeThrough]
     ['Quick Reply',               QR]
     ['Cooldown',                  QR.cooldown]
-    ['Oekaki Links',              QR.oekaki]
     ['Pass Link',                 PassLink]
     ['Menu',                      Menu]
     ['Index Generator (Menu)',    Index.menu]
@@ -406,6 +406,7 @@ Main =
     ['Reply Hiding (Menu)',       PostHiding.menu]
     ['Delete Link',               DeleteLink]
     ['Filter (Menu)',             Filter.menu]
+    ['Edit Link',                 QR.oekaki]
     ['Download Link',             DownloadLink]
     ['Archive Link',              ArchiveLink]
     ['Quote Inlining',            QuoteInline]
