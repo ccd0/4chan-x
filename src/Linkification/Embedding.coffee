@@ -253,6 +253,9 @@ Embedding =
       el: (a) ->
         $.el 'iframe',
           src: "//strawpoll.me/embed_1/#{a.dataset.uid}"
+      title:
+        api: (uid) -> "https://strawpoll.me/api/v2/polls/#{uid}"
+        text: (_) -> _.title
     ,
       key: 'TwitchTV'
       regExp: /^\w+:\/\/(?:www\.)?twitch\.tv\/(\w[^#\&\?]*)/
