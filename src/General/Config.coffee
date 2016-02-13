@@ -309,6 +309,11 @@ Config =
         'Add post and image deletion links to the menu.'
         1
       ]
+      'Archive Link': [
+        true
+        'Add an archive link to the menu.'
+        1
+      ]
       'Edit Link': [
         true
         'Add a link to edit the image in Tegaki, /i/\'s painting program. Requires Quick Reply.'
@@ -317,11 +322,6 @@ Config =
       'Download Link': [
         true
         'Add a download with original filename link to the menu.'
-        1
-      ]
-      'Archive Link': [
-        true
-        'Add an archive link to the menu.'
         1
       ]
 
