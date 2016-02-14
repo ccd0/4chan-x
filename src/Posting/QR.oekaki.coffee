@@ -11,13 +11,15 @@ QR.oekaki =
     Menu.menu.addEntry
       el: a
       order: 95
-      open: ({file}) ->
+      open: (post) ->
+        QR.oekaki.post = post
+        {file} = post
         !!file and (file.isImage or file.isVideo)
 
   editFile: ->
     return unless QR.postingIsEnabled
-    QR.quote.call @
-    post = Get.postFromNode @
+    {post} = QR.oekaki
+    QR.quote.call post.nodes.root
     {isVideo} = post.file
     currentTime = post.file.fullImage?.currentTime or 0
     CrossOrigin.file post.file.url, (blob) ->
