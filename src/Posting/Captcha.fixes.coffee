@@ -51,11 +51,16 @@ Captcha.fixes =
   initMain: ->
     $.onExists d.body, '#recaptcha-anchor', (checkbox) ->
       focus = ->
-        if d.hasFocus() and d.activeElement isnt checkbox
+        if d.hasFocus() and d.activeElement in [d.documentElement, d.body]
           checkbox.focus()
       focus()
       $.on window, 'focus', ->
         $.queueTask focus
+
+    # Remove Privacy and Terms links from tab order.
+    for a in $$ '.rc-anchor-pt a'
+      a.tabIndex = -1
+    return
 
   initPopup: ->
     $.addStyle @css
