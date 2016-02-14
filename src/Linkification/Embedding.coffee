@@ -178,8 +178,10 @@ Embedding =
       regExp:  /^\w+:\/\/(?:(?:www\.)?dailymotion\.com\/(?:embed\/)?video|dai\.ly)\/([A-Za-z0-9]+)[^?]*(.*)/
       el: (a) ->
         options = if (start = a.dataset.options.match /[?&](start=\d+)/) then "?#{start[1]}" else ''
-        $.el 'iframe',
+        el = $.el 'iframe',
           src: "//www.dailymotion.com/embed/video/#{a.dataset.uid}#{options}"
+        el.setAttribute "allowfullscreen", "true"
+        el
       title:
         api: (uid) -> "https://api.dailymotion.com/video/#{uid}"
         text: (_) -> _.title
