@@ -1,7 +1,7 @@
 QR.oekaki =
   menu:
     init: ->
-      return unless Conf['Quick Reply'] and Conf['Edit Link']
+      return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Edit Link'] and Conf['Quick Reply']
 
       a = $.el 'a',
         className: 'edit-link'
