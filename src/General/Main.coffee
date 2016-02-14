@@ -406,7 +406,7 @@ Main =
     ['Reply Hiding (Menu)',       PostHiding.menu]
     ['Delete Link',               DeleteLink]
     ['Filter (Menu)',             Filter.menu]
-    ['Edit Link',                 QR.oekaki]
+    ['Edit Link',                 QR.oekaki.menu]
     ['Download Link',             DownloadLink]
     ['Archive Link',              ArchiveLink]
     ['Quote Inlining',            QuoteInline]

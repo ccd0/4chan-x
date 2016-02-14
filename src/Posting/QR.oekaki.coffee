@@ -1,48 +1,49 @@
 QR.oekaki =
-  init: ->
-    return unless Conf['Quick Reply'] and Conf['Edit Link']
+  menu:
+    init: ->
+      return unless Conf['Quick Reply'] and Conf['Edit Link']
 
-    a = $.el 'a',
-      className: 'edit-link'
-      href: 'javascript:;'
-      textContent: 'Edit image'
-    $.on a, 'click', @editFile
+      a = $.el 'a',
+        className: 'edit-link'
+        href: 'javascript:;'
+        textContent: 'Edit image'
+      $.on a, 'click', @editFile
 
-    Menu.menu.addEntry
-      el: a
-      order: 95
-      open: (post) ->
-        QR.oekaki.post = post
-        {file} = post
-        !!file and (file.isImage or file.isVideo)
+      Menu.menu.addEntry
+        el: a
+        order: 95
+        open: (post) ->
+          QR.oekaki.menu.post = post
+          {file} = post
+          !!file and (file.isImage or file.isVideo)
 
-  editFile: ->
-    return unless QR.postingIsEnabled
-    {post} = QR.oekaki
-    QR.quote.call post.nodes.root
-    {isVideo} = post.file
-    currentTime = post.file.fullImage?.currentTime or 0
-    CrossOrigin.file post.file.url, (blob) ->
-      if !blob
-        QR.error "Can't load file."
-      else if isVideo
-        video = $.el 'video'
-        $.on video, 'loadedmetadata', ->
-          $.on video, 'seeked', ->
-            canvas = $.el 'canvas',
-              width: video.videoWidth
-              height: video.videoHeight
-            canvas.getContext('2d').drawImage(video, 0, 0)
-            canvas.toBlob (snapshot) ->
-              snapshot.name = post.file.name.replace(/\.\w+$/, '') + '.png'
-              QR.handleFiles [snapshot]
-              QR.oekaki.edit()
-          video.currentTime = currentTime
-        video.src = URL.createObjectURL blob
-      else
-        blob.name = post.file.name
-        QR.handleFiles [blob]
-        QR.oekaki.edit()
+    editFile: ->
+      return unless QR.postingIsEnabled
+      {post} = QR.oekaki.menu
+      QR.quote.call post.nodes.root
+      {isVideo} = post.file
+      currentTime = post.file.fullImage?.currentTime or 0
+      CrossOrigin.file post.file.url, (blob) ->
+        if !blob
+          QR.error "Can't load file."
+        else if isVideo
+          video = $.el 'video'
+          $.on video, 'loadedmetadata', ->
+            $.on video, 'seeked', ->
+              canvas = $.el 'canvas',
+                width: video.videoWidth
+                height: video.videoHeight
+              canvas.getContext('2d').drawImage(video, 0, 0)
+              canvas.toBlob (snapshot) ->
+                snapshot.name = post.file.name.replace(/\.\w+$/, '') + '.png'
+                QR.handleFiles [snapshot]
+                QR.oekaki.edit()
+            video.currentTime = currentTime
+          video.src = URL.createObjectURL blob
+        else
+          blob.name = post.file.name
+          QR.handleFiles [blob]
+          QR.oekaki.edit()
 
   setup: ->
     $.global ->
