@@ -19,7 +19,7 @@ QR.oekaki =
 
     editFile: ->
       {post} = QR.oekaki.menu
-      QR.quote.call post.nodes.root
+      QR.quote.call post.nodes.post
       {isVideo} = post.file
       currentTime = post.file.fullImage?.currentTime or 0
       CrossOrigin.file post.file.url, (blob) ->
