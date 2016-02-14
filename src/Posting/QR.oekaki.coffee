@@ -15,10 +15,9 @@ QR.oekaki =
         open: (post) ->
           QR.oekaki.menu.post = post
           {file} = post
-          !!file and (file.isImage or file.isVideo)
+          QR.postingIsEnabled and !!file and (file.isImage or file.isVideo)
 
     editFile: ->
-      return unless QR.postingIsEnabled
       {post} = QR.oekaki.menu
       QR.quote.call post.nodes.root
       {isVideo} = post.file
