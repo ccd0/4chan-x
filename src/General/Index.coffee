@@ -129,7 +129,7 @@ Index =
       $.rmClass doc, 'index-loading'
 
   scroll: ->
-    return if Index.req or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight))
+    return if Index.req or !Index.liveThreadData or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight))
     Index.pageNum ?= Index.currentPage # Avoid having to pushState to keep track of the current page
 
     pageNum = ++Index.pageNum
@@ -334,6 +334,7 @@ Index =
       Index.currentPage = page
 
   pageLoad: (scroll=true) ->
+    return unless Index.liveThreadData
     {threads, search, mode, page} = Index.changed
     if threads or search
       Index.sort()
@@ -512,6 +513,7 @@ Index =
     return
 
   buildThreads: ->
+    return unless Index.liveThreadData
     Index.nodes = []
     threads     = []
     posts       = []
@@ -595,6 +597,7 @@ Index =
 
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
+    return unless liveThreadData
     sortedThreadIDs = switch Conf['Index Sort']
       when 'lastreply'
         [liveThreadData...].sort((a, b) ->
@@ -627,6 +630,7 @@ Index =
     Index.sortedNodes = topNodes.concat(bottomNodes)
 
   buildIndex: ->
+    return unless Index.liveThreadData
     switch Conf['Index Mode']
       when 'all pages'
         nodes = Index.sortedNodes
