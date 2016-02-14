@@ -16,6 +16,7 @@ Report =
       $.extend passAd,
         textContent: 'Complain'
         href:        'https://www.4chan-x.net/captchas.html'
+        tabIndex:    -1
       passAd.parentNode.normalize()
       if (prev = passAd.previousSibling)?.nodeType is Node.TEXT_NODE
         prev.nodeValue = prev.nodeValue.replace /4chan Pass[^\.]*\./i, 'reCAPTCHA malfunctioning?'
@@ -25,6 +26,7 @@ Report =
           href:        'mailto:4chanpass@4chan.org?subject=4chan%20Pass%20-%20Purchase%20Support'
           textContent: 'Email 4chan'
           target:      '_blank'
+          tabIndex:    -1
       ]
 
     if not Conf['Use Recaptcha v1 in Reports'] and not Conf['Force Noscript Captcha'] and Main.jsEnabled
