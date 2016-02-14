@@ -2,6 +2,16 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.26
+
+**v1.11.26.0** *(2016-02-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.25.4.
+- (Matěj Grabovský) Add keybind for refreshing thread watcher (default: `Shift+r`).
+- Add Dailymotion embedding and StrawPoll link titles.
+- Move image editing button to the menu. It is now enabled/disables by the `Edit Link` setting.
+- Turn `Inline Cross-thread Quotes Only` back off in new installs.
+- Reduce number of tabs to get to submit button in forms using v2 Recaptcha.
+
 ### v1.11.25
 
 **v1.11.25.4** *(2016-02-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.25.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.25.4/builds/4chan-X-noupdate.crx "Chromium version")]
