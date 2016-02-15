@@ -81,6 +81,8 @@ Gallery =
     $.on  d, 'keydown', cb.keybinds
     $.off d, 'keydown', Keybinds.keydown if Conf['Keybinds']
 
+    $.on window, 'resize', Gallery.cb.setHeight
+
     for file in $$ '.post .file'
       post = Get.postFromNode file
       continue unless post.file?.thumb
@@ -314,12 +316,13 @@ Gallery =
 
       $.off d, 'keydown', Gallery.cb.keybinds
       $.on  d, 'keydown', Keybinds.keydown if Conf['Keybinds']
+      $.off window, 'resize', Gallery.cb.setHeight
       clearTimeout Gallery.timeoutID
 
     setFitness: ->
       (if @checked then $.addClass else $.rmClass) doc, "gal-#{@name.toLowerCase().replace /\s+/g, '-'}"
 
-    setHeight: ->
+    setHeight: $.debounce 100, ->
       {current, frame} = Gallery.nodes
       {style} = current
       if Conf['Stretch to Fit'] and (dim = g.posts[current.dataset.post]?.file.dimensions)
