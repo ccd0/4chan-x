@@ -256,7 +256,7 @@ Embedding =
         $.el 'iframe',
           src: "//strawpoll.me/embed_1/#{a.dataset.uid}"
       title:
-        api: (uid) -> "https://strawpoll.me/api/v2/polls/#{uid}"
+        api: (uid) -> "https://strawpoll.me/api/v2/polls/#{uid.match(/\d+/)[0]}"
         text: (_) -> _.title
     ,
       key: 'TwitchTV'
