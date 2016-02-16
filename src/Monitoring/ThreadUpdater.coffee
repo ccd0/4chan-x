@@ -90,6 +90,14 @@ ThreadUpdater =
   ###
   beep: 'data:audio/wav;base64,<%= grunt.file.read("src/Monitoring/beep.wav", {encoding: "base64"}) %>'
 
+  playBeep: ->
+    ThreadUpdater.audio or= $.el 'audio', src: ThreadUpdater.beep
+    {audio} = ThreadUpdater
+    if audio.paused
+      audio.play()
+    else
+      $.one audio, 'ended', ThreadUpdater.playBeep
+
   cb:
     checkpost: (e) ->
       return if e.detail.threadID isnt ThreadUpdater.thread.ID
@@ -314,14 +322,14 @@ ThreadUpdater =
       ThreadUpdater.set 'status', "+#{posts.length}", 'new'
       ThreadUpdater.outdateCount = 0
 
-      unreadCount = Unread.posts?.size
+      unreadCount   = Unread.posts?.size
+      unreadQYCount = Unread.postsQuotingYou?.size
 
       Main.callbackNodes Post, posts
 
-      if Conf['Beep'] and d.hidden and unreadCount is 0 and Unread.posts?.size
-        unless ThreadUpdater.audio
-          ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
-        ThreadUpdater.audio.play()
+      if d.hidden
+        ThreadUpdater.playBeep() if Conf['Beep']             and Unread.posts?.size > 0 and unreadCount is 0
+        ThreadUpdater.playBeep() if Conf['Beep Quoting You'] and Unread.postsQuotingYou?.size > unreadQYCount
 
       scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
         ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
