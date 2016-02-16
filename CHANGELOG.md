@@ -4,6 +4,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.26
 
+**v1.11.26.2** *(2016-02-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Bug fixes.
+- Drop StrawPoll link titles for now.
+
 **v1.11.26.1** *(2016-02-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix fullscreen in Dailymotion embeds.
 
