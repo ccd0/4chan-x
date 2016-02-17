@@ -1,6 +1,6 @@
 QuoteYou =
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Remember Your Posts']
+    return unless Conf['Remember Your Posts']
 
     @db = new DataBoard 'yourPosts'
     $.sync 'Remember Your Posts', (enabled) -> Conf['Remember Your Posts'] = enabled
@@ -9,6 +9,8 @@ QuoteYou =
       if Conf['Remember Your Posts']
         {boardID, threadID, postID} = e.detail
         QuoteYou.db.set {boardID, threadID, postID, val: true}
+
+    return unless g.VIEW in ['index', 'thread']
 
     if Conf['Highlight Own Posts']
       $.addClass doc, 'highlight-own'

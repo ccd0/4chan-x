@@ -21,6 +21,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.25
 
+**v1.11.25.5** *(2016-02-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.25.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.25.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix regression from v1.11.24.0 causing replies to you not to change thread watcher color on native catalog and archive pages.
+
 **v1.11.25.4** *(2016-02-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.25.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.25.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - (Bui, anounyym1) Update archive list: Remove 4ch.be and remove /w/ from RBT.
 
