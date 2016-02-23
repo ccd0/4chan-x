@@ -365,7 +365,7 @@ QR.post = class
     reader.readAsText file
 
   dragStart: (e) ->
-    e.dataTransfer.setDragImage @, e.layerX, e.layerY
+    e.dataTransfer.setDragImage @, 0, 0
     $.addClass @, 'drag'
   dragEnd:   -> $.rmClass  @, 'drag'
   dragEnter: -> $.addClass @, 'over'
