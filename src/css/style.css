@@ -7,7 +7,7 @@
 .dialog:not(#qr):not(#thread-watcher):not(#header-bar) {
   box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
 }
-#qr, 
+#qr,
 #thread-watcher {
   box-shadow: -1px 2px 2px rgba(0, 0, 0, 0.25);
 }
@@ -1585,11 +1585,20 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
 }
 #dump-list {
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
   white-space: nowrap;
   width: 248px;
+  max-height: 248px;
+  min-height: 90px;
   max-width: 100%;
   min-width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
 }
 #dump-list:hover {
   overflow-x: auto;
@@ -1665,7 +1674,7 @@ a:only-of-type > .remove {
   cursor: pointer;
   font-size: 2em;
   position: absolute;
-  top: 50%;
+  bottom: 20px;
   right: 10px;
   -moz-transform: translateY(-50%);
 }
@@ -1734,7 +1743,7 @@ a:only-of-type > .remove {
 .left>.entry.has-submenu {
   padding-right: 17px !important;
 }
-.entry input[type="checkbox"], 
+.entry input[type="checkbox"],
 .entry input[type="radio"] {
   margin: 0px;
   position: relative;
