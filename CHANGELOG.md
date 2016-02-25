@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.26
 
+**v1.11.26.4** *(2016-02-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- (desustorage) Archive list update: Add /gif/.
+
 **v1.11.26.3** *(2016-02-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.25.5: Fix regression from v1.11.24.0 causing replies to you not to change thread watcher color on native catalog and archive pages.
 
