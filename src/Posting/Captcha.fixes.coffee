@@ -3,7 +3,7 @@ Captcha.fixes =
   imageKeys16: '7890uiopjkl'.split('').concat(['Semicolon', 'm', 'Comma', 'Period', 'Slash'])
 
   css: '''
-    .rc-imageselect-target > div:focus {
+    .rc-imageselect-target > div:focus, .rc-image-tile-target:focus {
       outline: 2px solid #4a90e2;
     }
     .rc-imageselect-target td:focus {
@@ -85,7 +85,8 @@ Captcha.fixes =
     $.on $('.fbc-imageselect-challenge > form'), 'submit', @checkForm.bind(@)
 
   fixImages: ->
-    @images = $$ '.rc-imageselect-target > div, .rc-imageselect-target td'
+    @images = $$ '.rc-image-tile-target'
+    @images = $$ '.rc-imageselect-target > div, .rc-imageselect-target td' unless @images.length
     @width  = $$('.rc-imageselect-target tr:first-of-type td').length or Math.round(Math.sqrt @images.length)
     for img in @images
       img.tabIndex = 0
