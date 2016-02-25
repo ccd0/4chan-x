@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.26
 
+**v1.11.26.5** *(2016-02-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update for Recaptcha changes.
+
 **v1.11.26.4** *(2016-02-24)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - (desustorage) Archive list update: Add /gif/.
 
