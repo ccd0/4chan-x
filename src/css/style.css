@@ -7,7 +7,7 @@
 .dialog:not(#qr):not(#thread-watcher):not(#header-bar) {
   box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
 }
-#qr, 
+#qr,
 #thread-watcher {
   box-shadow: -1px 2px 2px rgba(0, 0, 0, 0.25);
 }
@@ -1585,11 +1585,20 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
 }
 #dump-list {
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
   white-space: nowrap;
   width: 248px;
+  max-height: 248px;
+  min-height: 90px;
   max-width: 100%;
   min-width: 100%;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
 }
 #dump-list:hover {
   overflow-x: auto;
@@ -1606,7 +1615,10 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
   overflow: hidden;
   position: relative;
   text-shadow: 0 0 2px #000;
-  -moz-transition: opacity .25s ease-in-out;
+  -webkit-transition: opacity .25s ease-in-out, -webkit-transform .25s ease-in-out;
+  transition: opacity .25s ease-in-out, -webkit-transform .25s ease-in-out;
+  transition: opacity .25s ease-in-out, transform .25s ease-in-out;
+  transition: opacity .25s ease-in-out, transform .25s ease-in-out, -webkit-transform .25s ease-in-out;
   vertical-align: top;
   background-size: cover;
 }
@@ -1627,9 +1639,15 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
 }
 .qr-preview.drag {
   box-shadow: 0 0 10px rgba(0,0,0,.5);
+  -webkit-transform: scale(.8);
+  transform: scale(.8);
 }
 .qr-preview.over {
   border-color: #fff;
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+  opacity: 0.9;
+  z-index: 10;
 }
 .qr-preview > span {
   color: #fff;
@@ -1665,7 +1683,7 @@ a:only-of-type > .remove {
   cursor: pointer;
   font-size: 2em;
   position: absolute;
-  top: 50%;
+  bottom: 20px;
   right: 10px;
   -moz-transform: translateY(-50%);
 }
@@ -1734,7 +1752,7 @@ a:only-of-type > .remove {
 .left>.entry.has-submenu {
   padding-right: 17px !important;
 }
-.entry input[type="checkbox"], 
+.entry input[type="checkbox"],
 .entry input[type="radio"] {
   margin: 0px;
   position: relative;
