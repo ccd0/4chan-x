@@ -327,7 +327,7 @@ ThreadUpdater =
 
       Main.callbackNodes Post, posts
 
-      if d.hidden
+      if d.hidden or not d.hasFocus()
         if Conf['Beep Quoting You'] and Unread.postsQuotingYou?.size > unreadQYCount
           ThreadUpdater.playBeep()
           ThreadUpdater.playBeep() if Conf['Beep']
