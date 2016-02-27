@@ -1592,12 +1592,9 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
   min-height: 90px;
   max-width: 100%;
   min-width: 100%;
-  display: -webkit-box;
   display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
   -webkit-flex-wrap: wrap;
-  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
 }
 #dump-list:hover {
@@ -1616,8 +1613,6 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
   position: relative;
   text-shadow: 0 0 2px #000;
   -webkit-transition: opacity .25s ease-in-out, -webkit-transform .25s ease-in-out;
-  transition: opacity .25s ease-in-out, -webkit-transform .25s ease-in-out;
-  transition: opacity .25s ease-in-out, transform .25s ease-in-out;
   transition: opacity .25s ease-in-out, transform .25s ease-in-out, -webkit-transform .25s ease-in-out;
   vertical-align: top;
   background-size: cover;
