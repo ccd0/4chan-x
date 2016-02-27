@@ -2,6 +2,8 @@ ThreadUpdater =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
 
+    @audio = $.el 'audio', src: ThreadUpdater.beep
+
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
         id:        'updater'
@@ -91,7 +93,6 @@ ThreadUpdater =
   beep: 'data:audio/wav;base64,<%= grunt.file.read("src/Monitoring/beep.wav", {encoding: "base64"}) %>'
 
   playBeep: ->
-    ThreadUpdater.audio or= $.el 'audio', src: ThreadUpdater.beep
     {audio} = ThreadUpdater
     if audio.paused
       audio.play()
