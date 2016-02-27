@@ -1621,6 +1621,8 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
   transition: opacity .25s ease-in-out, transform .25s ease-in-out, -webkit-transform .25s ease-in-out;
   vertical-align: top;
   background-size: cover;
+  -webkit-flex: none;
+  flex: none;
 }
 .qr-preview:hover,
 .qr-preview:focus {
