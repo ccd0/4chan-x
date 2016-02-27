@@ -985,6 +985,10 @@ Config =
         false
         'Beep on new post to completely read thread.'
       ]
+      'Beep Quoting You': [
+        false
+        'Beep on new post quoting you.'
+      ]
       'Auto Scroll': [
         false
         'Scroll updated posts into view. Only enabled at bottom of page.'
