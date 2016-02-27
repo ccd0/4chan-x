@@ -328,8 +328,11 @@ ThreadUpdater =
       Main.callbackNodes Post, posts
 
       if d.hidden
-        ThreadUpdater.playBeep() if Conf['Beep']             and Unread.posts?.size > 0 and unreadCount is 0
-        ThreadUpdater.playBeep() if Conf['Beep Quoting You'] and Unread.postsQuotingYou?.size > unreadQYCount
+        if Conf['Beep Quoting You'] and Unread.postsQuotingYou?.size > unreadQYCount
+          ThreadUpdater.playBeep()
+          ThreadUpdater.playBeep() if Conf['Beep']
+        else if Conf['Beep'] and Unread.posts?.size > 0 and unreadCount is 0
+          ThreadUpdater.playBeep()
 
       scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
         ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
