@@ -2,6 +2,14 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.27
+
+**v1.11.27.0** *(2016-02-27)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.27.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.27.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.26.5.
+- (paradox460) Multiline dumplist and related improvements.
+- (vampiricwulf) Show Purge Position in place of Page Count on /f/.
+- Add `Beep Quoting You` to updater options (default: off). Beeps when someone replies to you in another tab.
+
 ### v1.11.26
 
 **v1.11.26.5** *(2016-02-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.26.5/builds/4chan-X-noupdate.crx "Chromium version")]
