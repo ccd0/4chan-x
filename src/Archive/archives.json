@@ -23,8 +23,8 @@
   "http": false,
   "https": true,
   "software": "fuuka",
-  "boards": ["cgl", "g", "mu", "qa"],
-  "files": ["cgl", "g", "mu", "qa"]
+  "boards": ["cgl", "g", "mu"],
+  "files": ["cgl", "g", "mu"]
 }, {
   "uid": 15,
   "name": "fgts",
