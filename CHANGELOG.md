@@ -4,6 +4,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.27
 
+**v1.11.27.1** *(2016-03-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.27.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.27.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.26.6: (anounyym1) Archive list: remove /qa/ from RBT.
+- Merge v1.11.26.6: Fix 4chan CSS bug causing captcha to obscure report submit button.
+
 **v1.11.27.0** *(2016-02-27)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.27.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.27.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.26.5.
 - (paradox460) Multiline dumplist and related improvements.
