@@ -26,6 +26,15 @@
   "boards": ["cgl", "g", "mu"],
   "files": ["cgl", "g", "mu"]
 }, {
+  "uid": 10,
+  "name": "warosu",
+  "domain": "warosu.org",
+  "http": false,
+  "https": true,
+  "software": "fuuka",
+  "boards": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"],
+  "files": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"]
+}, {
   "uid": 15,
   "name": "fgts",
   "domain": "fgts.jp",
@@ -61,22 +70,4 @@
   "software": "foolfuuka",
   "boards": ["g", "jp", "mlp", "v"],
   "files": []
-}, {
-  "uid": 5,
-  "name": "Love is Over",
-  "domain": "archive.loveisover.me",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["c", "d", "e", "i", "lgbt", "t", "u"],
-  "files": ["c", "d", "e", "i", "lgbt", "t", "u"]
-}, {
-  "uid": 10,
-  "name": "warosu",
-  "domain": "warosu.org",
-  "http": false,
-  "https": true,
-  "software": "fuuka",
-  "boards": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"],
-  "files": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"]
 }]
