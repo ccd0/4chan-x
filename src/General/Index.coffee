@@ -44,7 +44,7 @@ Index =
         when 'Show Replies'
           $.on input, 'change', @cb.replies
         when 'Pin Watched Threads', 'Anchor Hidden Threads'
-          $.on input, 'change', @cb.sort
+          $.on input, 'change', @cb.resort
 
     Header.menu.addEntry
       el: $.el 'span',
@@ -74,12 +74,11 @@ Index =
     @selectSort  = $ '#index-sort', @navLinks
     @selectSize  = $ '#index-size', @navLinks
     $.on @selectMode, 'change', @cb.mode
+    $.on @selectSort, 'change', @cb.sort
+    $.on @selectSize, 'change', $.cb.value
+    $.on @selectSize, 'change', @cb.size
     for select in [@selectMode, @selectSort, @selectSize]
       select.value = Conf[select.name]
-    for select in [@selectSort, @selectSize]
-      $.on select, 'change', $.cb.value
-    $.on @selectSort, 'change', @cb.sort
-    $.on @selectSize, 'change', @cb.size
 
     # Thread container
     @root = $.el 'div', className: 'board json-index'
@@ -215,6 +214,10 @@ Index =
       Index.pageLoad false
 
     sort: ->
+      Index.pushState {sort: @value}
+      Index.pageLoad false
+
+    resort: ->
       Index.sort()
       Index.buildIndex()
 
@@ -237,9 +240,9 @@ Index =
 
     popstate: (e) ->
       if e?.state
-        {searched, mode} = e.state
+        {searched, mode, sort} = e.state
         page = Index.getCurrentPage()
-        Index.setState {search: searched, mode, page}
+        Index.setState {search: searched, mode, sort, page}
         Index.pageLoad false
       else
         # page load or hash change
@@ -320,11 +323,12 @@ Index =
     hash or= ''
     history[if replace then 'replaceState' else 'pushState']
       mode:     Conf['Index Mode']
+      sort:     Conf['Index Sort']
       searched: Index.search
       oldpage:  pageBeforeSearch
     , '', "#{location.protocol}//#{location.host}#{pathname}#{hash}"
 
-  setState: ({search, mode, page}) ->
+  setState: ({search, mode, sort, page}) ->
     if search? and search isnt Index.search
       Index.changed.search = true
       Index.search = search
@@ -335,6 +339,10 @@ Index =
       unless mode is 'catalog' or Conf['Previous Index Mode'] is mode
         Conf['Previous Index Mode'] = mode
         $.set 'Previous Index Mode', mode
+    if sort? and sort isnt Conf['Index Sort']
+      Index.changed.sort = true
+      Conf['Index Sort'] = sort
+      $.set 'Index Sort', sort
     page = 1 if Conf['Index Mode'] in ['all pages', 'catalog']
     if page? and page isnt Index.currentPage
       Index.changed.page = true
@@ -342,25 +350,27 @@ Index =
 
   pageLoad: (scroll=true) ->
     return unless Index.liveThreadData
-    {threads, search, mode, page} = Index.changed
-    if threads or search
-      Index.sort()
-      Index.buildPagelist()
-    Index.setupSearch() if search
-    Index.applyMode() if mode
-    if threads or search or mode or page
-      Index.buildIndex()
-      Index.setPage()
+    {threads, search, mode, sort, page} = Index.changed
+    Index.sort()          if threads or search or sort
+    Index.buildPagelist() if threads or search
+    Index.setupSearch()   if search
+    Index.setupMode()     if mode
+    Index.setupSort()     if sort
+    Index.buildIndex()    if threads or search or mode or page or sort
+    Index.setPage()       if threads or search or mode or page
     Index.scrollToIndex() if scroll
     Index.changed = {}
 
-  applyMode: ->
+  setupMode: ->
     for mode in ['paged', 'infinite', 'all pages', 'catalog']
       $[if mode is Conf['Index Mode'] then 'addClass' else 'rmClass'] doc, "#{mode.replace /\ /g, '-'}-mode"
     Index.selectMode.value = Conf['Index Mode']
     Index.cb.size()
     Index.showHiddenThreads = false
     $('#hidden-toggle a', Index.navLinks).textContent = 'Show'
+
+  setupSort: ->
+    Index.selectSort.value = Conf['Index Sort']
 
   getPagesNum: ->
     if Index.search
