@@ -281,6 +281,15 @@ Index =
     else
       Index.pageLoad()
 
+  hashCommands:
+    mode:
+      'paged':       'paged'
+      'infinite-scrolling': 'infinite'
+      'infinite':    'infinite'
+      'all-threads': 'all pages'
+      'all-pages':   'all pages'
+      'catalog':     'catalog'
+
   processHash: ->
     # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
     hash = location.href.match(/#.*/)?[0] or ''
@@ -288,8 +297,8 @@ Index =
       replace: true
     commands = hash[1..].split '/'
     for command, i in commands
-      if command in ['paged', 'infinite', 'all-pages', 'catalog']
-        state.mode = command.replace /-/g, ' '
+      if (mode = Index.hashCommands.mode[command])
+        state.mode = mode
       else if command is 'index'
         state.mode = Conf['Previous Index Mode']
         state.page = 1
