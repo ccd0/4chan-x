@@ -76,6 +76,7 @@ Index =
     $.on @selectMode, 'change', @cb.mode
     for select in [@selectMode, @selectSort, @selectSize]
       select.value = Conf[select.name]
+    for select in [@selectSort, @selectSize]
       $.on select, 'change', $.cb.value
     $.on @selectSort, 'change', @cb.sort
     $.on @selectSize, 'change', @cb.size
@@ -210,11 +211,7 @@ Index =
       Index.buildIndex()
 
     mode: ->
-      mode = @value
-      unless mode is 'catalog'
-        Conf['Previous Index Mode'] = mode
-        $.set 'Previous Index Mode', mode
-      Index.pushState {mode}
+      Index.pushState {mode: @value}
       Index.pageLoad false
 
     sort: ->
