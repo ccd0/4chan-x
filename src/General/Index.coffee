@@ -283,12 +283,18 @@ Index =
 
   hashCommands:
     mode:
-      'paged':       'paged'
+      'paged':         'paged'
       'infinite-scrolling': 'infinite'
-      'infinite':    'infinite'
-      'all-threads': 'all pages'
-      'all-pages':   'all pages'
-      'catalog':     'catalog'
+      'infinite':      'infinite'
+      'all-threads':   'all pages'
+      'all-pages':     'all pages'
+      'catalog':       'catalog'
+    sort:
+      'bump-order':    'bump'
+      'last-reply':    'lastreply'
+      'creation-date': 'birth'
+      'reply-count':   'replycount'
+      'file-count':    'filecount'
 
   processHash: ->
     # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
@@ -302,6 +308,8 @@ Index =
       else if command is 'index'
         state.mode = Conf['Previous Index Mode']
         state.page = 1
+      else if (sort = Index.hashCommands.sort[command])
+        state.sort = sort
       else if /^s=/.test command
         state.search = decodeURIComponent(command[2..]).replace(/\+/g, ' ').trim()
       else if i is commands.length - 1
