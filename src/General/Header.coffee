@@ -427,10 +427,9 @@ Header =
     return if e.state
     history.replaceState {}, '' unless history.state
 
-    hash = @location.hash[1..]
-    return unless /^\d*p\d+$/.test(hash) and (post = $.id hash)
-    return if !post.getBoundingClientRect().height
-    $.queueTask -> Header.scrollTo post
+    hash = location.hash.match /[^#/]*$/
+    if (el = $.id hash) and el.offsetParent # not hidden
+      $.queueTask -> Header.scrollTo el
 
   scrollTo: (root, down, needed) ->
     if down
