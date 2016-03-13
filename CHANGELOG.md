@@ -2,6 +2,19 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.28
+
+**v1.11.28.0** *(2016-03-13)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.28.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.28.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.27.2.
+- New sorting mode: `Last long reply` sorts threads by time of last visible reply over 100 characters, or time of creation if no such reply exists.
+- More hash commands for the JSON Index:
+  - `#bump-order`, `#last-reply`, `#last-long-reply`, `#creation-date`, `#reply-count`, and `#file-count` set the sort mode of the index.
+  - `#infinite-scrolling` and `#all-threads` added as alternatives to `#infinite` and `#all-pages`.
+  - Multiple commands may now be separated by slashes (e.g. https://boards.4chan.org/g/#catalog/s=programming switches to catalog mode and searches for "programming").
+- New option `Per-board sort type`, added under `Index Navigation` in header menu, controls whether the sorting order you set applies to individual boards or for all boards.
+- Add `mode` and `sort` options for custom header board links; for example, `g-mode:"infinite scrolling"` opens /g/ sorted in infinite scrolling mode.
+- Remove `<wbr>` tags from posts containing `[math]` or `[eqn]` tags so that the TeX equations aren't broken.
+
 ### v1.11.27
 
 **v1.11.27.2** *(2016-03-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.27.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.27.2/builds/4chan-X-noupdate.crx "Chromium version")]
