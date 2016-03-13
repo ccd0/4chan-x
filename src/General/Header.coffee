@@ -206,6 +206,7 @@ Header =
     t = t.replace /-(?:mode|sort):"([^"]+)"/g, (m0, m1) ->
       indexOptions.push m1.toLowerCase().replace(/\ /g, '-')
       ''
+    indexOptions = indexOptions.join('/')
 
     if /^toggle-all/.test t
       a = $.el 'a',
@@ -257,8 +258,10 @@ Header =
       else
         return a.firstChild # Its text node.
 
-    if Conf['JSON Index'] and indexOptions.length and a.host is location.host and /\/$/.test(a.pathname)
-      a.href += (if a.hash then '/' else '#') + indexOptions.join('/')
+    if Conf['JSON Index'] and indexOptions
+      a.dataset.indexOptions = indexOptions
+      if a.hostname is 'boards.4chan.org' and a.pathname.split('/')[2] is ''
+        a.href += (if a.hash then '/' else '#') + indexOptions
 
     if /-archive/.test t
       if href = Redirect.to 'board', {boardID}

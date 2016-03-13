@@ -67,6 +67,9 @@ CatalogLinks =
       # conditions where External Catalog has been disabled between switches.
       a.href = if useCatalog then CatalogLinks.catalog(board) else "/#{board}/"
 
+      if a.dataset.indexOptions and a.hostname is 'boards.4chan.org' and a.pathname.split('/')[2] is ''
+        a.href += (if a.hash then '/' else '#') + a.dataset.indexOptions
+
     CatalogLinks.el.title = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
     $('input', CatalogLinks.el).checked = useCatalog
 
