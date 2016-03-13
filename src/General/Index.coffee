@@ -12,8 +12,12 @@ Index =
     @search = history.state?.searched or ''
     if history.state?.mode
       Conf['Index Mode'] = history.state?.mode
-    if history.state?.sort
-      Conf['Index Sort'] = history.state?.sort
+    @currentSort = history.state?.sort
+    @currentSort or=
+      if typeof Conf['Index Sort'] is 'object'
+        Conf['Index Sort'][g.BOARD.ID] or 'bump'
+      else
+        Conf['Index Sort']
     @currentPage = @getCurrentPage()
     @processHash()
 
@@ -32,9 +36,11 @@ Index =
 
     # Header "Index Navigation" submenu
     repliesEntry = el: UI.checkbox 'Show Replies',          'Show replies'
+    sortEntry    = el: UI.checkbox 'Per-Board Sort Type',   'Per-board sort type', (typeof Conf['Index Sort'] is 'object')
     pinEntry     = el: UI.checkbox 'Pin Watched Threads',   'Pin watched threads'
     anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', 'Anchor hidden threads'
     refNavEntry  = el: UI.checkbox 'Refreshed Navigation',  'Refreshed navigation'
+    sortEntry.el.title   = 'Set the sorting order of each board independently.'
     pinEntry.el.title    = 'Move watched threads to the start of the index.'
     anchorEntry.el.title = 'Move hidden threads to the end of the index.'
     refNavEntry.el.title = 'Refresh index when navigating through pages.'
@@ -47,12 +53,13 @@ Index =
           $.on input, 'change', @cb.replies
         when 'Pin Watched Threads', 'Anchor Hidden Threads'
           $.on input, 'change', @cb.resort
+    $.on sortEntry.el.firstChild, 'change', @cb.perBoardSort
 
     Header.menu.addEntry
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 100
-      subEntries: [repliesEntry, pinEntry, anchorEntry, refNavEntry]
+      subEntries: [repliesEntry, sortEntry, pinEntry, anchorEntry, refNavEntry]
 
     # Navigation links at top of index
     @navLinks = $.el 'div', className: 'navLinks json-index'
@@ -79,8 +86,9 @@ Index =
     $.on @selectSort, 'change', @cb.sort
     $.on @selectSize, 'change', $.cb.value
     $.on @selectSize, 'change', @cb.size
-    for select in [@selectMode, @selectSort, @selectSize]
+    for select in [@selectMode, @selectSize]
       select.value = Conf[select.name]
+    @selectSort.value = Index.currentSort
 
     # Thread container
     @root = $.el 'div', className: 'board json-index'
@@ -223,6 +231,10 @@ Index =
       Index.sort()
       Index.buildIndex()
 
+    perBoardSort: ->
+      Conf['Index Sort'] = if @checked then {} else ''
+      Index.saveSort()
+
     size: (e) ->
       if Conf['Index Mode'] isnt 'catalog'
         $.rmClass Index.root, 'catalog-small'
@@ -340,7 +352,7 @@ Index =
     hash or= ''
     history[if replace then 'replaceState' else 'pushState']
       mode:     Conf['Index Mode']
-      sort:     Conf['Index Sort']
+      sort:     Index.currentSort
       searched: Index.search
       oldpage:  pageBeforeSearch
     , '', "#{location.protocol}//#{location.host}#{pathname}#{hash}"
@@ -356,16 +368,23 @@ Index =
       unless mode is 'catalog' or Conf['Previous Index Mode'] is mode
         Conf['Previous Index Mode'] = mode
         $.set 'Previous Index Mode', mode
-    if sort? and sort isnt Conf['Index Sort']
+    if sort? and sort isnt Index.currentSort
       Index.changed.sort = true
-      Conf['Index Sort'] = sort
-      $.set 'Index Sort', sort
+      Index.currentSort = sort
+      Index.saveSort()
     page = 1 if Conf['Index Mode'] in ['all pages', 'catalog']
     if page? and page isnt Index.currentPage
       Index.changed.page = true
       Index.currentPage = page
     if hash?
       Index.changed.hash = true
+
+  saveSort: ->
+    if typeof Conf['Index Sort'] is 'object'
+      Conf['Index Sort'][g.BOARD.ID] = Index.currentSort
+    else
+      Conf['Index Sort'] = Index.currentSort
+    $.set 'Index Sort', Conf['Index Sort']
 
   pageLoad: (scroll=true) ->
     return unless Index.liveThreadData
@@ -390,7 +409,7 @@ Index =
     $('#hidden-toggle a', Index.navLinks).textContent = 'Show'
 
   setupSort: ->
-    Index.selectSort.value = Conf['Index Sort']
+    Index.selectSort.value = Index.currentSort
 
   getPagesNum: ->
     if Index.search
@@ -635,7 +654,7 @@ Index =
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
     return unless liveThreadData
-    sortedThreadIDs = switch Conf['Index Sort']
+    sortedThreadIDs = switch Index.currentSort
       when 'lastreply'
         [liveThreadData...].sort((a, b) ->
           a = num[num.length - 1] if (num = a.last_replies)

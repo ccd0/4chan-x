@@ -739,7 +739,6 @@ Config =
   Index:
     'Index Mode': 'paged'
     'Previous Index Mode': 'paged'
-    'Index Sort': 'bump'
     'Index Size': 'small'
     'Show Replies': true
     'Pin Watched Threads': false

@@ -53,6 +53,7 @@ Main =
       Conf[db] = boards: {}
     Conf['selectedArchives'] = {}
     Conf['cooldowns'] = {}
+    Conf['Index Sort'] = {}
 
     # XXX old key names
     Conf['Except Archives from Encryption'] = false
