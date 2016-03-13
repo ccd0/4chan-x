@@ -12,6 +12,8 @@ Index =
     @search = history.state?.searched or ''
     if history.state?.mode
       Conf['Index Mode'] = history.state?.mode
+    if history.state?.sort
+      Conf['Index Sort'] = history.state?.sort
     @currentPage = @getCurrentPage()
     @processHash()
 
