@@ -423,15 +423,16 @@ Header =
     $('[name=boardnav]', settings).focus()
 
   hashScroll: (e) ->
-    # Don't scroll when navigating to an already visited state.
-    return if e.state
-    history.replaceState {}, '' unless history.state
+    if e
+      # Don't scroll when navigating to an already visited state.
+      return if e.state
+      history.replaceState {}, '' unless history.state
 
-    hash = location.hash.match /[^#/]*$/
-    if (el = $.id hash) and el.offsetParent # not hidden
+    if (hash = location.hash[1..]) and (el = $.id hash)
       $.queueTask -> Header.scrollTo el
 
   scrollTo: (root, down, needed) ->
+    return unless root.offsetParent # hidden or fixed
     if down
       x = Header.getBottomOf root
       if Conf['Fixed Header'] and Conf['Header auto-hide on scroll'] and Conf['Bottom header']

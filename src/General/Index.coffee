@@ -246,8 +246,11 @@ Index =
         Index.pageLoad false
       else
         # page load or hash change
-        if Index.processHash()
-          Index[if Conf['Refreshed Navigation'] then 'update' else 'pageLoad']()
+        nCommands = Index.processHash()
+        if Conf['Refreshed Navigation'] and nCommands
+          Index.update()
+        else
+          Index.pageLoad()
 
     pageNav: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
@@ -302,7 +305,8 @@ Index =
     state =
       replace: true
     commands = hash[1..].split '/'
-    for command, i in commands
+    leftover = []
+    for command in commands
       if (mode = Index.hashCommands.mode[command])
         state.mode = mode
       else if command is 'index'
@@ -312,10 +316,12 @@ Index =
         state.sort = sort
       else if /^s=/.test command
         state.search = decodeURIComponent(command[2..]).replace(/\+/g, ' ').trim()
-      else if i is commands.length - 1
-        state.hash = if command then "##{command}" else ''
+      else
+        leftover.push command
+    hash = leftover.join '/'
+    state.hash = "##{hash}" if hash
     Index.pushState state
-    hash isnt state.hash
+    commands.length - leftover.length
 
   pushState: (state) ->
     {search, hash, replace} = state
@@ -336,7 +342,7 @@ Index =
       oldpage:  pageBeforeSearch
     , '', "#{location.protocol}//#{location.host}#{pathname}#{hash}"
 
-  setState: ({search, mode, sort, page}) ->
+  setState: ({search, mode, sort, page, hash}) ->
     if search? and search isnt Index.search
       Index.changed.search = true
       Index.search = search
@@ -355,10 +361,12 @@ Index =
     if page? and page isnt Index.currentPage
       Index.changed.page = true
       Index.currentPage = page
+    if hash?
+      Index.changed.hash = true
 
   pageLoad: (scroll=true) ->
     return unless Index.liveThreadData
-    {threads, search, mode, sort, page} = Index.changed
+    {threads, search, mode, sort, page, hash} = Index.changed
     Index.sort()          if threads or search or sort
     Index.buildPagelist() if threads or search
     Index.setupSearch()   if search
@@ -366,7 +374,8 @@ Index =
     Index.setupSort()     if sort
     Index.buildIndex()    if threads or search or mode or page or sort
     Index.setPage()       if threads or search or mode or page
-    Index.scrollToIndex() if scroll
+    Index.scrollToIndex() if scroll and not hash
+    Header.hashScroll()   if hash
     Index.changed = {}
 
   setupMode: ->
