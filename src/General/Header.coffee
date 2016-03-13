@@ -186,7 +186,7 @@ Header =
     return unless boardnav
     boardnav = boardnav.replace /(\r\n|\n|\r)/g, ' '
     as = $$ '#full-board-list a[title]', Header.boardList
-    re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|text:"[^"]+"(,"[^"]+")?))*|[^\w@]+/g
+    re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g
     nodes = (Header.mapCustomNavigation t, as for t in boardnav.match re)
 
     $.add list, nodes
@@ -200,6 +200,11 @@ Header =
     t = t.replace /-text:"([^"]+)"(?:,"([^"]+)")?/g, (m0, m1, m2) ->
       text = m1
       url  = m2
+      ''
+
+    indexOptions = []
+    t = t.replace /-(?:mode|sort):"([^"]+)"/g, (m0, m1) ->
+      indexOptions.push m1.toLowerCase().replace(/\ /g, '-')
       ''
 
     if /^toggle-all/.test t
@@ -251,6 +256,9 @@ Header =
         $.addClass a, 'catalog' if m[1] is 'catalog'
       else
         return a.firstChild # Its text node.
+
+    if Conf['JSON Index'] and indexOptions.length and a.host is location.host and /\/$/.test(a.pathname)
+      a.href += (if a.hash then '/' else '#') + indexOptions.join('/')
 
     if /-archive/.test t
       if href = Redirect.to 'board', {boardID}
