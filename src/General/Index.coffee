@@ -295,6 +295,7 @@ Index =
     sort:
       'bump-order':    'bump'
       'last-reply':    'lastreply'
+      'last-long-reply': 'lastlong'
       'creation-date': 'birth'
       'reply-count':   'replycount'
       'file-count':    'filecount'
