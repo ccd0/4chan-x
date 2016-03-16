@@ -505,6 +505,10 @@ audio.controls-added {
 .credits {
   float: right;
 }
+.export, .import, .reset {
+  cursor: pointer;
+  text-decoration: none !important;
+}
 .tab-selected {
   font-weight: 700;
 }
@@ -1798,10 +1802,7 @@ a:only-of-type > .remove {
   left: 0px;
   width: 200px;
 }
-.export, .import, .reset {
-  cursor: pointer;
-  text-decoration: none !important;
-}
+
 /* Custom Board Titles */
 .boardTitle, .boardSubtitle {
   white-space: pre-line;
@@ -1810,6 +1811,7 @@ a:only-of-type > .remove {
 .boardSubtitle[contenteditable="true"] {
   cursor: text !important;
 }
+
 /* Link Title Favicons */
 <%=
 grunt.file.expand('src/Linkification/icons/*.png').map(function(file) {
