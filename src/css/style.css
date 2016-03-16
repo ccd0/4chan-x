@@ -1760,7 +1760,7 @@ a:only-of-type > .remove {
   top: 2px;
 }
 .entry input[type="number"] {
-  width: 4em;
+  width: 4.5em;
 }
 .entry.has-shortcut-text {
   display: flex;
