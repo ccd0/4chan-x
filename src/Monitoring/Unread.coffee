@@ -164,7 +164,6 @@ Unread =
       Unread.saveLastReadPost()
 
     return if d.hidden or !Unread.posts.size
-    height  = doc.clientHeight
 
     count = 0
     while Unread.position
