@@ -1,6 +1,6 @@
 ## Reporting bugs
 
-Bug reports and feature requests for 4chan X are tracked at **https://github.com/ccd0/4chan-x/issues**.
+Bug reports and feature requests for 4chan X are tracked at **https://github.com/ccd0/4chan-x/issues?q=is%3Aopen+sort%3Aupdated-desc**.
 
 You can submit a bug report / feature request either via your Github account or the [anonymous report form](https://gitreports.com/issue/ccd0/4chan-x).
 
