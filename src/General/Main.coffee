@@ -446,6 +446,7 @@ Main =
     ['Keybinds',                  Keybinds]
     ['Banner',                    Banner]
     ['Flash Features',            Flash]
+    ['Prune Replies',             PruneReplies]
     <% if (tests_enabled) { %>
     ['Build Test',                BuildTest]
     <% } %>

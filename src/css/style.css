@@ -1759,6 +1759,9 @@ a:only-of-type > .remove {
   position: relative;
   top: 2px;
 }
+.entry input[type="number"] {
+  width: 4em;
+}
 .entry.has-shortcut-text {
   display: flex;
   justify-content: space-between;
@@ -2076,9 +2079,6 @@ grunt.file.expand('src/Linkification/icons/*.png').map(function(file) {
 :root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-name,
 :root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-count {
   right: 28px !important;
-}
-.field[name="Slide Delay"] {
-  width: 4em;
 }
 :root.gallery-open.fixed #header-bar:not(.autohide),
 :root.gallery-open.fixed #header-bar:not(.autohide) #shortcuts .fa::before {
