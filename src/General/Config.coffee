@@ -1013,6 +1013,6 @@ Config =
   customCooldown: 0
   customCooldownEnabled: true
 
-  pruneReplies:
+  replyPruning:
     'Prune Replies': false
     'Max Replies': 1000
