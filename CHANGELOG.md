@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.28
 
+**v1.11.28.2** *(2016-03-17)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.28.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.28.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Minor captcha update.
+
 **v1.11.28.1** *(2016-03-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.28.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.28.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Add option to the header menu in threads to set the maximum number of replies to show. Currently off by default. Not yet compatible with `Quote Threading`.
   ![Reply pruning](img/1.9.17.3.png)
