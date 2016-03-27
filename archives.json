@@ -70,4 +70,14 @@
   "software": "foolfuuka",
   "boards": ["g", "jp", "mlp", "v"],
   "files": []
+}, {
+  "uid": 5,
+  "name": "Love is Over",
+  "domain": "deploy.loveisover.me",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["c", "d", "e", "i", "lgbt", "t", "u"],
+  "files": ["c", "d", "e", "i", "lgbt", "t", "u"],
+  "search": []
 }]
