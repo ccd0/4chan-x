@@ -1,10 +1,11 @@
 Upvotes =
-  text: '\u305D\u3046\u3060\u306D'
   count: {}
+  text: '\u305D\u3046\u3060\u306D'
+  regexp: /(?:^>.*\n)+\s*(?:\u305D\u3046\u3060\u306D|this)/gmi
 
   init: ->
     return unless g.VIEW is 'thread' and Conf['Upvotes']
-    @regexp = new RegExp "(?:^>.*\\n)+\\s*#{@text}", 'gm'
+    @textPosted = if g.BOARD.ID is 'r9k' then 'This.' else @text
     Post.callbacks.push
       name: 'Upvotes'
       cb:   @node
@@ -46,7 +47,7 @@ Upvotes =
     return unless QR.postingIsEnabled
     QR.quote.call @
     {com} = QR.nodes
-    text = "#{Upvotes.text}\n"
+    text = "#{Upvotes.textPosted}\n"
     pos = com.selectionStart
     com.value = com.value[..pos] + text + com.value[pos...]
     pos += text.length
