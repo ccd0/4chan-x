@@ -574,7 +574,7 @@ Config =
       ]
       'Quote Threading': [
         false
-        'Thread conversations'
+        'Thread conversations.'
       ]
 
   imageExpansion:
