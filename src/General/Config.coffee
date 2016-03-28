@@ -576,6 +576,10 @@ Config =
         false
         'Thread conversations'
       ]
+      'Upvotes': [
+        true
+        'Upvote posts.'
+      ]
 
   imageExpansion:
     'Fit width': [

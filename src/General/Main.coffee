@@ -410,6 +410,7 @@ Main =
     ['Edit Link',                 QR.oekaki.menu]
     ['Download Link',             DownloadLink]
     ['Archive Link',              ArchiveLink]
+    ['Upvotes',                   Upvotes]
     ['Quote Inlining',            QuoteInline]
     ['Quote Previewing',          QuotePreview]
     ['Quote Backlinks',           QuoteBacklink]
