@@ -4,6 +4,7 @@ Upvotes =
 
   init: ->
     return unless g.VIEW is 'thread' and Conf['Upvotes']
+    @regexp = new RegExp "(?:^>.*\\n)+\\s*#{@text}", 'gm'
     Post.callbacks.push
       name: 'Upvotes'
       cb:   @node
@@ -26,8 +27,12 @@ Upvotes =
 
     Upvotes.count[@fullID] = 0
 
-    if @quotes.length is 1 and @info.comment.indexOf(Upvotes.text) >= 0
-      Upvotes.increment @quotes[0]
+    quotes = {}
+    for context in @info.comment.match(Upvotes.regexp) or []
+      for quote in context.match(/>>\d+/g) or []
+        quotes[quote[2..]] = true
+    for quote of quotes
+      Upvotes.increment "#{g.BOARD}.#{quote}"
 
   increment: (fullID) ->
     return unless fullID of Upvotes.count
