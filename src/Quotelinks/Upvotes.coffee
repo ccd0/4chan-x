@@ -4,7 +4,7 @@ Upvotes =
   regexp: /(?:^>.*\n)+\s*(?:\u305D\u3046\u3060\u306D|this)/gmi
 
   init: ->
-    return unless g.VIEW is 'thread' and Conf['Upvotes']
+    return unless g.VIEW in ['thread', 'index'] and Conf['Upvotes']
     @textPosted = if g.BOARD.ID is 'r9k' then 'This.' else @text
     Post.callbacks.push
       name: 'Upvotes'
@@ -25,6 +25,8 @@ Upvotes =
     $.add @nodes.info, a
     @nodes.vote = a
     $.on a, 'click', Upvotes.vote
+
+    return unless g.VIEW is 'thread'
 
     Upvotes.count[@fullID] = 0
 
