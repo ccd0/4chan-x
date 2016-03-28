@@ -1,7 +1,7 @@
 Upvotes =
   count: {}
   text: '\u305D\u3046\u3060\u306D'
-  regexp: /(?:^>.*\n)+\s*(?:\u305D\u3046\u3060\u306D|this)/gmi
+  regexp: /(?:^>.*\n)+\s*(?:\u305D\u3046\u3060\u306D|(?:this(?!\ )|\+1|upvote(?!\ )d?|under[\ -]?rated|\/thread)\b)/gmi
 
   init: ->
     return unless g.VIEW in ['thread', 'index'] and Conf['Upvotes']
