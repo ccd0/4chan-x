@@ -2089,3 +2089,6 @@ grunt.file.expand('src/Linkification/icons/*.png').map(function(file) {
 .upvote {
   margin: 0 4px;
 }
+.post .menu-button:not(:last-of-type) {
+  margin-right: -4px;
+}
