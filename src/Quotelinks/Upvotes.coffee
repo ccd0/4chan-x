@@ -28,7 +28,8 @@ Upvotes =
       |under[\ -]?rated
       |\/thread
       |10\/10
-      |(?:lol|kek|lel|lmao|(?:ha)+)(?:'?d|[.!]?$)
+      |(?:lol|kek|lel|lmao)(?:'?d|[.!]?$)
+      |(?:ha)+[.!]?$
       |saved
       |nice(?!\ )
       |my\ sides
