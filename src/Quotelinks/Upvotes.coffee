@@ -2,7 +2,24 @@ Upvotes =
   count: {}
   text: '\u305D\u3046\u3060\u306D'
   regexp: ///
-    (?:^>.*\n)+\s*
+    (?:^>.*\n)+
+    (?:
+      i
+      |top
+      |holy
+      |shit
+      |ay*
+      |oh?
+      |omg
+      |god
+      |jesus
+      |christ
+      |fuck
+      |fukken
+      |fucking?
+      |\s
+      |[.,-]
+    )*
     (?:
       \u305D\u3046\u3060\u306D
       |this(?!\ )
@@ -11,9 +28,10 @@ Upvotes =
       |under[\ -]?rated
       |\/thread
       |10\/10
-      |(?:i\ |top\ )*(?:lol|kek)(?:'?d|\.?$)
-      |(?:fukken\ |fucking\ )?saved
+      |(?:lol|kek|lel|lmao|(?:ha)+)(?:'?d|[.!]?$)
+      |saved
       |nice(?!\ )
+      |my\ sides
     )
     (?=\b|\W|$)
   ///gmi
