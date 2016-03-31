@@ -2084,3 +2084,11 @@ grunt.file.expand('src/Linkification/icons/*.png').map(function(file) {
 :root.gallery-open.fixed #header-bar:not(.autohide) #shortcuts .fa::before {
   visibility: hidden;
 }
+
+/* Upvotes */
+.upvote {
+  margin: 0 4px;
+}
+.post .menu-button:not(:last-of-type) {
+  margin-right: -4px;
+}
