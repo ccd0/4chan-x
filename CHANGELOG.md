@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.29
 
+**v1.11.29.1** *(2016-03-31)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Remove default upvote text.
+
 **v1.11.29.0** *(2016-03-31)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.28.3.
 - Add upvote count and button.
