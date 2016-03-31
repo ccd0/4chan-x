@@ -1020,3 +1020,5 @@ Config =
   pruneReplies:
     'Prune Replies': false
     'Max Replies': 1000
+
+  upvoteText: ''

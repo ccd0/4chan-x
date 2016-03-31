@@ -39,7 +39,6 @@ Upvotes =
 
   init: ->
     return unless g.VIEW in ['thread', 'index'] and Conf['Upvotes']
-    @textPosted = if g.BOARD.ID is 'r9k' then 'This.' else @text
     Post.callbacks.push
       name: 'Upvotes'
       cb:   @node
@@ -81,11 +80,23 @@ Upvotes =
 
   vote: ->
     return unless QR.postingIsEnabled
+    $.off QR.nodes.com, 'input', Upvotes.setText if QR.nodes
     QR.quote.call @
     {com} = QR.nodes
-    text = "#{Upvotes.textPosted}\n"
+    text = "#{Conf['upvoteText']}\n"
     pos = com.selectionStart
+    Upvotes.context = com.value[...pos]
     com.value = com.value[...pos] + text + com.value[pos..]
     pos += text.length
     com.setSelectionRange pos, pos
     $.event 'input', null, com
+    Upvotes.post = $.id 'selected'
+    $.on com, 'input', Upvotes.setText
+
+  setText: ->
+    {context} = Upvotes
+    if $.id('selected') is Upvotes.post and @value[...context.length] is context
+      Conf['upvoteText'] = @value[context.length..].split('\n')[0]
+      $.set 'upvoteText', Conf['upvoteText']
+    else
+      $.off @, 'input', Upvotes.setText
