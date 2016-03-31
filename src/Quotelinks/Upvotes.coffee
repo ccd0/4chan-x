@@ -85,7 +85,7 @@ Upvotes =
     {com} = QR.nodes
     text = "#{Upvotes.textPosted}\n"
     pos = com.selectionStart
-    com.value = com.value[..pos] + text + com.value[pos...]
+    com.value = com.value[...pos] + text + com.value[pos..]
     pos += text.length
     com.setSelectionRange pos, pos
     $.event 'input', null, com
