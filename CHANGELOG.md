@@ -4,6 +4,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.29
 
+**v1.11.29.2** *(2016-04-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update archive list: Nyafuu added /news/.
+- CSS fixes for current 4chan theme.
+
 **v1.11.29.1** *(2016-03-31)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Remove default upvote text.
 
