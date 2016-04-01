@@ -14,8 +14,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["c", "e", "w", "wg", "wsr"],
-  "files": ["c", "e", "w", "wg", "wsr"]
+  "boards": ["c", "e", "news", "w", "wg", "wsr"],
+  "files": ["c", "e", "news", "w", "wg", "wsr"]
 }, {
   "uid": 8,
   "name": "Rebecca Black Tech",
