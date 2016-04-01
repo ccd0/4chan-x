@@ -13,3 +13,14 @@
   text-indent:10px;
   padding:10px 0;
 }
+
+:root.md2016 #hoverUI div.postContainer,
+:root.md2016 .inline div.postContainer {
+  width: auto;
+  margin: 0;
+}
+
+:root.md2016 #hoverUI div.post,
+:root.md2016 .inline div.post {
+  max-width: 100%;
+}
