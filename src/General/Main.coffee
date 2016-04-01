@@ -185,6 +185,7 @@ Main =
     $.addClass doc, $.engine if $.engine
     $.onExists doc, '.ad-cnt', (ad) -> $.onExists ad, 'img', -> $.addClass doc, 'ads-loaded'
     $.addStyle Main.css, 'fourchanx-css'
+    Main.bgColorStyle = $.el 'style', id: 'fourchanx-bgcolor-css'
 
     keyboard = false
     $.on d, 'mousedown', -> keyboard = false
@@ -210,6 +211,21 @@ Main =
           break
       if style
         $.addClass doc, style
+        $.rm Main.bgColorStyle
+      else
+        # Determine proper background color for dialogs if 4chan is using a special stylesheet.
+        div = $.el 'div',
+          className: 'reply'
+          style:     'position: absolute; visibility: hidden;'
+        $.add d.body, div
+        bgColor = window.getComputedStyle(div).backgroundColor
+        $.rm div
+        Main.bgColorStyle.textContent = """
+          .dialog, .suboption-list > div:last-of-type {
+            background-color: #{bgColor};
+          }
+        """
+        $.after $.id('fourchanx-css'), Main.bgColorStyle
     setStyle()
     return unless mainStyleSheet
     new MutationObserver(setStyle).observe mainStyleSheet,
