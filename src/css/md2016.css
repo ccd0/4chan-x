@@ -24,3 +24,12 @@
 :root.md2016 .inline div.post {
   max-width: 100%;
 }
+:root.md2016 #unread-line {
+  display: block;
+  position: relative;
+  top: 7.5px;
+}
+:root.md2016 .threadContainer {
+  margin-left: 26px;
+  border-left: none;
+}
