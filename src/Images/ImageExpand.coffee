@@ -178,7 +178,6 @@ ImageExpand =
       el.src = src or file.url
 
     el.className = 'full-image'
-    $.addClass el, 'expanded-thumb' if $.hasClass doc, 'md2016'
     $.after thumb, el
 
     if isVideo
