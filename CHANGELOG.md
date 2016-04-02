@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.29
 
+**v1.11.29.6** *(2016-04-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- (bstats) Archive list: add https://archive.b-stats.org/.
+
 **v1.11.29.5** *(2016-04-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.5/builds/4chan-X-noupdate.crx "Chromium version")]
 - Remove upvotes.
 
