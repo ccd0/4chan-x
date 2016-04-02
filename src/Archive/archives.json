@@ -80,4 +80,14 @@
   "boards": ["c", "d", "e", "i", "lgbt", "t", "u"],
   "files": ["c", "d", "e", "i", "lgbt", "t", "u"],
   "search": []
+}, {
+  "uid": 26,
+  "name": "bstats",
+  "domain": "archive.b-stats.org",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["f", "cm", "hm", "lgbt", "news", "trash", "y"],
+  "files": [],
+  "search": []
 }]
