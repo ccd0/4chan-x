@@ -47,7 +47,7 @@ CatalogLinks =
   # Set links on load or custom board list change.
   # Called by Header when both board lists (header and footer) are ready.
   initBoardList: ->
-    return unless Conf['Catalog Links']
+    return unless CatalogLinks.el
     CatalogLinks.set Conf['Header catalog links']
 
   toggle: ->

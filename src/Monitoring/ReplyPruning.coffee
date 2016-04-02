@@ -1,4 +1,4 @@
-PruneReplies =
+ReplyPruning =
   init: ->
     return unless g.VIEW is 'thread' and not Conf['Quote Threading']
 
@@ -21,7 +21,7 @@ PruneReplies =
       order: 190
 
     Thread.callbacks.push
-      name: 'Prune Replies'
+      name: 'Reply Pruning'
       cb:   @node
 
   position: 0
@@ -29,44 +29,44 @@ PruneReplies =
   total: 0
 
   node: ->
-    PruneReplies.thread = @
-    PruneReplies.total = @posts.keys.length - 1
-    $.on PruneReplies.inputs.enabled, 'change', PruneReplies.setEnabled
-    $.on PruneReplies.inputs.enabled, 'change', PruneReplies.update
+    ReplyPruning.thread = @
+    ReplyPruning.total = @posts.keys.length - 1
+    $.on ReplyPruning.inputs.enabled, 'change', ReplyPruning.setEnabled
+    $.on ReplyPruning.inputs.enabled, 'change', ReplyPruning.update
     if Conf['Prune Replies']
-      PruneReplies.setEnabled()
-      PruneReplies.update()
+      ReplyPruning.setEnabled()
+      ReplyPruning.update()
 
   setEnabled: ->
-    PruneReplies.container or= $.frag()
+    ReplyPruning.container or= $.frag()
     onOff = if Conf['Prune Replies'] then $.on else $.off
-    onOff PruneReplies.inputs.replies, 'change',       PruneReplies.update
-    onOff d,                           'ThreadUpdate', PruneReplies.update
+    onOff ReplyPruning.inputs.replies, 'change',       ReplyPruning.update
+    onOff d,                           'ThreadUpdate', ReplyPruning.update
 
   update: (e) ->
     if e and e.type is 'ThreadUpdate' and not e.detail[404]
-      PruneReplies.total += e.detail.newPosts.length
+      ReplyPruning.total += e.detail.newPosts.length
 
     hidden2 = if Conf['Prune Replies']
-      Math.max(PruneReplies.total - +Conf["Max Replies"], 0)
+      Math.max(ReplyPruning.total - +Conf["Max Replies"], 0)
     else
       0
 
-    {posts, OP} = PruneReplies.thread
+    {posts, OP} = ReplyPruning.thread
 
-    if PruneReplies.hidden < hidden2
-      while PruneReplies.hidden < hidden2 and PruneReplies.position < posts.keys.length
-        post = posts[posts.keys[PruneReplies.position++]]
+    if ReplyPruning.hidden < hidden2
+      while ReplyPruning.hidden < hidden2 and ReplyPruning.position < posts.keys.length
+        post = posts[posts.keys[ReplyPruning.position++]]
         if post.isReply and not post.isFetchedQuote
-          $.add PruneReplies.container, post.nodes.root
-          PruneReplies.hidden++
+          $.add ReplyPruning.container, post.nodes.root
+          ReplyPruning.hidden++
 
-    else if PruneReplies.hidden > hidden2
+    else if ReplyPruning.hidden > hidden2
       frag = $.frag()
-      while PruneReplies.hidden > hidden2 and PruneReplies.position > 0
-        post = posts[posts.keys[--PruneReplies.position]]
+      while ReplyPruning.hidden > hidden2 and ReplyPruning.position > 0
+        post = posts[posts.keys[--ReplyPruning.position]]
         if post.isReply and not post.isFetchedQuote
           $.prepend frag, post.nodes.root
-          PruneReplies.hidden--
+          ReplyPruning.hidden--
       $.after OP.nodes.root, frag
       $.event 'PostsInserted'
