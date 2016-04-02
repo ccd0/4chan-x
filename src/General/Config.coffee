@@ -576,10 +576,6 @@ Config =
         false
         'Thread conversations'
       ]
-      'Upvotes': [
-        true
-        'Upvote posts.'
-      ]
 
   imageExpansion:
     'Fit width': [
@@ -1020,5 +1016,3 @@ Config =
   pruneReplies:
     'Prune Replies': false
     'Max Replies': 1000
-
-  upvoteText: ''
