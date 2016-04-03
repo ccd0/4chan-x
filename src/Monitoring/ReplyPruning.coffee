@@ -1,6 +1,10 @@
 ReplyPruning =
   init: ->
-    return unless g.VIEW is 'thread' and Conf['Reply Pruning'] and not Conf['Quote Threading']
+    return unless g.VIEW is 'thread' and Conf['Reply Pruning']
+
+    if Conf['Quote Threading'] and Conf['Thread Quotes'] and Conf['Prune Replies']
+      Conf['Prune Replies'] = false
+      $.set 'Prune Replies', false
 
     @container = $.frag()
 
@@ -15,7 +19,7 @@ ReplyPruning =
       enabled: label.firstElementChild
       replies: el.lastElementChild
 
-    $.on @inputs.enabled, 'change', $.cb.checked
+    $.on @inputs.enabled, 'change', @setEnabled
     $.on @inputs.replies, 'change', $.cb.value
 
     Header.menu.addEntry
@@ -29,6 +33,13 @@ ReplyPruning =
   position: 0
   hidden: 0
   total: 0
+
+  setEnabled: ->
+    other = QuoteThreading.input
+    if @checked and other?.checked
+      other.checked = false
+      $.event 'change', null, other
+    $.cb.checked.call @
 
   node: ->
     ReplyPruning.thread = @

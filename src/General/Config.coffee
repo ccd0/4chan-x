@@ -407,7 +407,7 @@ Config =
       ]
       'Reply Pruning': [
         true
-        'Hide old replies in long threads. Number of replies shown can be set from header menu. Not compatible with Quote Threading.'
+        'Hide old replies in long threads. Number of replies shown can be set from header menu.'
       ]
 
     'Posting and Captchas':

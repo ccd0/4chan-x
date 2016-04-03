@@ -17,7 +17,7 @@ QuoteThreading =
     @input = $('input', @controls)
     @input.checked = Conf['Thread Quotes']
 
-    $.on @input, 'change', $.cb.checked
+    $.on @input, 'change', @setEnabled
     $.on @input, 'change', @rethread
     $.on @threadNewLink.firstElementChild, 'click', @rethread
     $.on d, '4chanXInitFinished', => @ready = true
@@ -37,6 +37,13 @@ QuoteThreading =
   parent:   {}
   children: {}
   inserted: {}
+
+  setEnabled: ->
+    other = ReplyPruning.inputs?.enabled
+    if @checked and other?.checked
+      other.checked = false
+      $.event 'change', null, other
+    $.cb.checked.call @
 
   setThread: ->
     QuoteThreading.thread = @
