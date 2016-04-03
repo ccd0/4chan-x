@@ -355,7 +355,7 @@ Settings =
         set 'Edit Link', data['Oekaki Links']
       set 'Inline Cross-thread Quotes Only', true unless data['Inline Cross-thread Quotes Only']?
     if compareString < '00001.00011.00030.00000'
-      if data['Quote Threading']
+      if data['Quote Threading'] and not data['Thread Quotes']?
         set 'Thread Quotes', true
     changes
 
