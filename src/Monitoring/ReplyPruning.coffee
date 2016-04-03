@@ -47,6 +47,7 @@ ReplyPruning =
     $.on ReplyPruning.inputs.enabled, 'change', ReplyPruning.update
     $.on ReplyPruning.inputs.replies, 'change', ReplyPruning.update
     $.on d, 'ThreadUpdate', ReplyPruning.update
+    ReplyPruning.update()
 
   update: (e) ->
     if e and e.type is 'ThreadUpdate' and not e.detail[404]
