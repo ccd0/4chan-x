@@ -129,7 +129,7 @@ class Fetcher
         @archiveTags[text]
       else
         greentext = text[0] is '>'
-        text = text.replace /(\[\/?[a-z]+):lit(\])/, '$1$2'
+        text = text.replace /(\[\/?[a-z]+):lit(\])/g, '$1$2'
         text = for text2, j in text.split /(>>(?:>\/[a-z\d]+\/)?\d+)/g
           <%= html('?{j % 2}{<span class="deadlink">${text2}</span>}{${text2}}') %>
         text = <%= html('?{greentext}{<span class="quote">@{text}</span>}{@{text}}') %>
