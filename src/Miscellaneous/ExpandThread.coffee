@@ -11,7 +11,7 @@ ExpandThread =
 
   setButton: (thread) ->
     return unless a = $.x 'following-sibling::*[contains(@class,"summary")][1]', thread.OP.nodes.root
-    a.textContent = ExpandThread.text '+', a.textContent.match(/\d+/g)...
+    a.textContent = Build.summaryText '+', a.textContent.match(/\d+/g)...
     a.style.cursor = 'pointer'
     $.on a, 'click', ExpandThread.cbToggle
   
@@ -28,11 +28,6 @@ ExpandThread =
     g.BOARD.threads.forEach (thread) ->
       ExpandThread.setButton thread
 
-  text: (status, posts, files) ->
-    "#{status} #{posts} post#{if posts > 1 then 's' else ''}" +
-    (if +files then " and #{files} image repl#{if files > 1 then 'ies' else 'y'}" else "") +
-    " #{if status is '-' then 'shown' else 'omitted'}."
-
   cbToggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
@@ -48,7 +43,7 @@ ExpandThread =
 
   expand: (thread, a) ->
     ExpandThread.statuses[thread] = status = {}
-    a.textContent = ExpandThread.text '...', a.textContent.match(/\d+/g)...
+    a.textContent = Build.summaryText '...', a.textContent.match(/\d+/g)...
     status.req = $.cache "//a.4cdn.org/#{thread.board}/thread/#{thread}.json", ->
       delete status.req
       ExpandThread.parse @, thread, a
@@ -58,7 +53,7 @@ ExpandThread =
     delete ExpandThread.statuses[thread]
     if status.req
       status.req.abort()
-      a.textContent = ExpandThread.text '+', a.textContent.match(/\d+/g)... if a
+      a.textContent = Build.summaryText '+', a.textContent.match(/\d+/g)... if a
       return
 
     replies = $$ '.thread > .replyContainer', threadRoot
@@ -79,7 +74,7 @@ ExpandThread =
       postsCount++
       filesCount++ if 'file' of Get.postFromRoot reply
       $.rm reply
-    a.textContent = ExpandThread.text '+', postsCount, filesCount
+    a.textContent = Build.summaryText '+', postsCount, filesCount
 
   parse: (req, thread, a) ->
     if req.status not in [200, 304]
@@ -107,4 +102,4 @@ ExpandThread =
     $.event 'PostsInserted'
 
     postsCount    = postsRoot.length
-    a.textContent = ExpandThread.text '-', postsCount, filesCount
+    a.textContent = Build.summaryText '-', postsCount, filesCount

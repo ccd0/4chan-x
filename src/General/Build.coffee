@@ -150,14 +150,17 @@ Build =
 
     container
 
+  summaryText: (status, posts, files) ->
+    text = ''
+    text += "#{status} " if status
+    text += "#{posts} post#{if posts > 1 then 's' else ''}"
+    text += " and #{files} image repl#{if files > 1 then 'ies' else 'y'}" if +files
+    text += " #{if status is '-' then 'shown' else 'omitted'}."
+
   summary: (boardID, threadID, posts, files) ->
-    text = []
-    text.push "#{posts} post#{if posts > 1 then 's' else ''}"
-    text.push "and #{files} image repl#{if files > 1 then 'ies' else 'y'}" if files
-    text.push 'omitted.'
     $.el 'a',
       className: 'summary'
-      textContent: text.join ' '
+      textContent: Build.summaryText '', posts, files
       href: "/#{boardID}/thread/#{threadID}"
 
   thread: (board, data, full) ->
