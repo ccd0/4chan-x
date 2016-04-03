@@ -7,7 +7,7 @@ QuoteThreading =
     return unless Conf['Quote Threading'] and g.VIEW is 'thread'
 
     @controls = $.el 'span',
-      <%= html('<label><input id="threadingControl" type="checkbox"> Threading</label>') %>
+      <%= html('<label><input id="threadingControl" name="Thread Quotes" type="checkbox"> Threading</label>') %>
 
     @threadNewLink = $.el 'span',
       className: 'brackets-wrap threadnewlink'
@@ -17,6 +17,7 @@ QuoteThreading =
     @input = $('input', @controls)
     @input.checked = Conf['Thread Quotes']
 
+    $.on @input, 'change', $.cb.checked
     $.on @input, 'change', @rethread
     $.on @threadNewLink.firstElementChild, 'click', @rethread
 
@@ -113,9 +114,6 @@ QuoteThreading =
     {posts} = thread
 
     QuoteThreading.threadNewLink.hidden = true
-
-    Conf['Thread Quotes'] = QuoteThreading.input.checked
-    $.set 'Thread Quotes', Conf['Thread Quotes']
 
     if Conf['Thread Quotes']
       posts.forEach QuoteThreading.insert
