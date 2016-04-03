@@ -8,6 +8,14 @@ ReplyPruning =
 
     @container = $.frag()
 
+    @summary = $.el 'span',
+      hidden:    true
+      className: 'summary'
+      style:     'cursor: pointer;'
+    $.on @summary, 'click', =>
+      @inputs.enabled.click()
+      $.event 'change', null, @inputs.enabled
+
     label = UI.checkbox 'Prune Replies', 'Show Last'
     el = $.el 'span',
       title: 'Maximum number of replies to show.'
@@ -32,7 +40,9 @@ ReplyPruning =
 
   position: 0
   hidden: 0
+  hiddenFiles: 0
   total: 0
+  totalFiles: 0
 
   setEnabled: ->
     other = QuoteThreading.input
@@ -43,22 +53,35 @@ ReplyPruning =
 
   node: ->
     ReplyPruning.thread = @
-    ReplyPruning.total = @posts.keys.length - 1
+
+    @posts.forEach (post) ->
+      if post.isReply
+        ReplyPruning.total++
+        ReplyPruning.totalFiles++ if post.file
+
+    $.after @OP.nodes.root, ReplyPruning.summary
+
     $.on ReplyPruning.inputs.enabled, 'change', ReplyPruning.update
     $.on ReplyPruning.inputs.replies, 'change', ReplyPruning.update
+    $.on d, 'ThreadUpdate', ReplyPruning.updateCount
     $.on d, 'ThreadUpdate', ReplyPruning.update
+
     ReplyPruning.update()
 
-  update: (e) ->
-    if e and e.type is 'ThreadUpdate' and not e.detail[404]
-      ReplyPruning.total += e.detail.newPosts.length
+  updateCount: (e) ->
+    return if e.detail[404]
+    for fullID in e.detail.newPosts
+      ReplyPruning.total++
+      ReplyPruning.totalFiles++ if g.posts[fullID].file
+    return
 
+  update: ->
     hidden2 = if Conf['Prune Replies']
       Math.max(ReplyPruning.total - +Conf["Max Replies"], 0)
     else
       0
 
-    {posts, OP} = ReplyPruning.thread
+    {posts} = ReplyPruning.thread
 
     if ReplyPruning.hidden < hidden2
       while ReplyPruning.hidden < hidden2 and ReplyPruning.position < posts.keys.length
@@ -66,6 +89,7 @@ ReplyPruning =
         if post.isReply and not post.isFetchedQuote
           $.add ReplyPruning.container, post.nodes.root
           ReplyPruning.hidden++
+          ReplyPruning.hiddenFiles++ if post.file
 
     else if ReplyPruning.hidden > hidden2
       frag = $.frag()
@@ -74,5 +98,12 @@ ReplyPruning =
         if post.isReply and not post.isFetchedQuote
           $.prepend frag, post.nodes.root
           ReplyPruning.hidden--
-      $.after OP.nodes.root, frag
+          ReplyPruning.hiddenFiles-- if post.file
+      $.after ReplyPruning.summary, frag
       $.event 'PostsInserted'
+
+    ReplyPruning.summary.textContent = if Conf['Prune Replies']
+      Build.summaryText '+', ReplyPruning.hidden, ReplyPruning.hiddenFiles
+    else
+      Build.summaryText '-', ReplyPruning.total, ReplyPruning.totalFiles
+    ReplyPruning.summary.hidden = (ReplyPruning.total <= +Conf["Max Replies"])
