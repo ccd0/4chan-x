@@ -573,8 +573,8 @@ Config =
         'Add \'(Cross-thread)\' to cross-threads quotes.'
       ]
       'Quote Threading': [
-        false
-        'Thread conversations.'
+        true
+        'Add option in header menu to thread conversations.'
       ]
 
   imageExpansion:
@@ -1012,6 +1012,8 @@ Config =
 
   customCooldown: 0
   customCooldownEnabled: true
+
+  'Thread Quotes': false
 
   replyPruning:
     'Prune Replies': false
