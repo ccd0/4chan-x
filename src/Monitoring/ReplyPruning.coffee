@@ -1,6 +1,8 @@
 ReplyPruning =
   init: ->
-    return unless g.VIEW is 'thread' and not Conf['Quote Threading']
+    return unless g.VIEW is 'thread' and Conf['Reply Pruning'] and not Conf['Quote Threading']
+
+    @container = $.frag()
 
     label = UI.checkbox 'Prune Replies', 'Show Last'
     el = $.el 'span',
@@ -38,7 +40,6 @@ ReplyPruning =
       ReplyPruning.update()
 
   setEnabled: ->
-    ReplyPruning.container or= $.frag()
     onOff = if Conf['Prune Replies'] then $.on else $.off
     onOff ReplyPruning.inputs.replies, 'change',       ReplyPruning.update
     onOff d,                           'ThreadUpdate', ReplyPruning.update

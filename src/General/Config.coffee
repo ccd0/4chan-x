@@ -405,6 +405,10 @@ Config =
         false
         'Label each post from a new IP with the thread\'s current IP count.'
       ]
+      'Reply Pruning': [
+        true
+        'Hide old replies in long threads. Number of replies shown can be set from header menu. Not compatible with Quote Threading.'
+      ]
 
     'Posting and Captchas':
       'Quick Reply': [
