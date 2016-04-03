@@ -6,8 +6,8 @@ QuoteThreading =
   init: ->
     return unless Conf['Quote Threading'] and g.VIEW is 'thread'
 
-    @controls = $.el 'span',
-      <%= html('<label><input id="threadingControl" name="Thread Quotes" type="checkbox"> Threading</label>') %>
+    @controls = $.el 'label',
+      <%= html('<input id="threadingControl" name="Thread Quotes" type="checkbox"> Threading') %>
 
     @threadNewLink = $.el 'span',
       className: 'brackets-wrap threadnewlink'
