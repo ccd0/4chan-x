@@ -20,6 +20,7 @@ QuoteThreading =
     $.on @input, 'change', $.cb.checked
     $.on @input, 'change', @rethread
     $.on @threadNewLink.firstElementChild, 'click', @rethread
+    $.on d, '4chanXInitFinished', => @ready = true
 
     Header.menu.addEntry @entry =
       el:    @controls
@@ -110,6 +111,7 @@ QuoteThreading =
     return true
 
   rethread: ->
+    return unless QuoteThreading.ready
     {thread} = QuoteThreading
     {posts} = thread
 
