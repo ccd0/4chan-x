@@ -33,16 +33,9 @@ ReplyPruning =
   node: ->
     ReplyPruning.thread = @
     ReplyPruning.total = @posts.keys.length - 1
-    $.on ReplyPruning.inputs.enabled, 'change', ReplyPruning.setEnabled
     $.on ReplyPruning.inputs.enabled, 'change', ReplyPruning.update
-    if Conf['Prune Replies']
-      ReplyPruning.setEnabled()
-      ReplyPruning.update()
-
-  setEnabled: ->
-    onOff = if Conf['Prune Replies'] then $.on else $.off
-    onOff ReplyPruning.inputs.replies, 'change',       ReplyPruning.update
-    onOff d,                           'ThreadUpdate', ReplyPruning.update
+    $.on ReplyPruning.inputs.replies, 'change', ReplyPruning.update
+    $.on d, 'ThreadUpdate', ReplyPruning.update
 
   update: (e) ->
     if e and e.type is 'ThreadUpdate' and not e.detail[404]
