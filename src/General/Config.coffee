@@ -1020,5 +1020,5 @@ Config =
   'Thread Quotes': false
 
   replyPruning:
-    'Prune Replies': false
+    'Prune Replies': true
     'Max Replies': 1000
