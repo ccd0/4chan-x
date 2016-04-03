@@ -1022,3 +1022,5 @@ Config =
   replyPruning:
     'Prune Replies': true
     'Max Replies': 1000
+
+  'Autohiding Scrollbar': false

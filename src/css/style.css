@@ -305,6 +305,9 @@ audio.controls-added {
 #shortcuts {
   float: right;
 }
+:root.autohiding-scrollbar #shortcuts {
+  margin-right: 12px;
+}
 .shortcut {
   margin-left: 3px;
   vertical-align: middle;
