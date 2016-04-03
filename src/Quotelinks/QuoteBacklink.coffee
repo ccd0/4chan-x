@@ -39,7 +39,7 @@ QuoteBacklink =
         nodes = if container.firstChild then [$.tn(' '), link] else [link]
         if Conf['Quote Previewing']
           $.on link, 'mouseover', QuotePreview.mouseover
-        if Conf['Quote Inlining'] and not (Conf['Inline Cross-thread Quotes Only'] and not QuoteInline.isCrossThread(link))
+        if Conf['Quote Inlining']
           $.on link, 'click', QuoteInline.toggle
           if Conf['Quote Hash Navigation']
             hash = QuoteInline.qiQuote link, $.hasClass link, 'filtered'

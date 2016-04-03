@@ -523,7 +523,7 @@ Config =
       ]
       'Inline Cross-thread Quotes Only': [
         false
-        'Only inline quote links when the posts are on another thread or board, or fetched from the archive.'
+        'Don\'t inline quote links when the posts are visible in the thread.'
         1
       ]
       'Quote Hash Navigation': [
