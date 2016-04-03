@@ -122,7 +122,6 @@ QR.post = class
       when 'thread'
         (if @thread isnt 'new' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
         QR.status()
-        @updateFlashURL()
       when 'com'
         @updateComment()
         # Disable auto-posting if you're typing in the first post
@@ -133,7 +132,6 @@ QR.post = class
         return unless @file
         @saveFilename()
         @updateFilename()
-        @updateFlashURL()
       when 'name'
         QR.persona.set @
 
@@ -205,7 +203,6 @@ QR.post = class
       @showFileData()
     else
       @updateFilename()
-    @updateFlashURL()
     @nodes.el.style.backgroundImage = null
     unless @file.type in QR.mimeTypes
       @fileError 'Unsupported file type.'
@@ -305,7 +302,6 @@ QR.post = class
     @nodes.el.style.backgroundImage = null
     $.rmClass @nodes.el, 'has-file'
     @showFileData()
-    @updateFlashURL()
     URL.revokeObjectURL @URL
     @dismissErrors (error) -> $.hasClass error, 'file-error'
 
@@ -335,25 +331,6 @@ QR.post = class
     else
       QR.nodes.fileSubmit.removeAttribute 'data-source'
     QR.nodes.spoiler.checked = @spoiler
-
-  updateFlashURL: ->
-    return unless g.BOARD.ID is 'f'
-    if @thread is 'new' or !@file
-      url = ''
-    else
-      url = @file.newName
-      url = url.replace(/"/g, '%22') if $.engine in ['blink', 'webkit']
-      url = url
-        .replace(/[\t\n\f\r \xa0\u200B\u2029\u3000]+/g, ' ')
-        .replace(/(^ | $)/g, '')
-        .replace(/\.[0-9A-Za-z]+$/, '')
-      url = "https://i.4cdn.org/f/#{encodeURIComponent E url}.swf\n"
-    oldURL = @flashURL or ''
-    if url isnt oldURL
-      com = @com or ''
-      if com[...oldURL.length] is oldURL
-        @setComment url + com[oldURL.length..]
-      @flashURL = url
 
   pasteText: (file) ->
     @pasting = true
