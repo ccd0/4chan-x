@@ -62,6 +62,15 @@ ReplyPruning =
         ReplyPruning.total++
         ReplyPruning.totalFiles++ if post.file
 
+    # If we're linked to a post that we would hide, don't hide the posts in the first place.
+    # Also don't hide posts if we open the thread by a link to the OP.
+    if (
+      ReplyPruning.active and
+      /^#p\d+$/.test(location.hash) and
+      0 <= @posts.keys.indexOf(location.hash[2..]) < 1 + Math.max(ReplyPruning.total - +Conf["Max Replies"], 0)
+    )
+      ReplyPruning.active = ReplyPruning.inputs.enabled.checked = false
+
     $.after @OP.nodes.root, ReplyPruning.summary
 
     $.on ReplyPruning.inputs.enabled, 'change', ReplyPruning.update
