@@ -2,6 +2,18 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.30
+
+**v1.11.30.0** *(2016-04-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.29.6.
+- 4chan X now remembers the state of the `Threading` checkbox added to the header menu by the `Quote Threading` feature. This allows you to have threading off by default, yet turn it on when you want it without reloading the page. By default `Quote Threading` will now be on with the `Threading` checkbox off.
+- Pruning threads to the last 1000 replies (number adjustable) has been improved:
+  - When the number of replies exceed the threshold, a link is placed at the top of the thread to show/hide the excess posts.
+  - While still not compatible with quote threading, you can now switch between threading and pruning in the header menu without reloading.
+  - The feature can be turned off entirely by unchecking `Reply Pruning` in the settings.
+- Pruning threads to the last 1000 replies is now on by default.
+- Various bugfixes.
+
 ### v1.11.29
 
 **v1.11.29.6** *(2016-04-02)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.29.6/builds/4chan-X-noupdate.crx "Chromium version")]
