@@ -215,7 +215,7 @@ Unread =
   setLine: (force) ->
     return unless Conf['Unread Line']
     if Unread.hr.hidden or d.hidden or (force is true)
-      if Unread.linePosition = Unread.positionPrev()
+      if (Unread.linePosition = Unread.positionPrev())
         $.after Unread.linePosition.data.nodes.root, Unread.hr
       else
         $.rm Unread.hr
