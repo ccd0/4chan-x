@@ -1019,8 +1019,6 @@ Config =
 
   'Thread Quotes': false
 
-  replyPruning:
-    'Prune Replies': true
-    'Max Replies': 1000
+  'Max Replies': 1000
 
   'Autohiding Scrollbar': false

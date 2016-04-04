@@ -2,9 +2,7 @@ ReplyPruning =
   init: ->
     return unless g.VIEW is 'thread' and Conf['Reply Pruning']
 
-    if Conf['Quote Threading'] and Conf['Thread Quotes'] and Conf['Prune Replies']
-      Conf['Prune Replies'] = false
-      $.set 'Prune Replies', false
+    @active = not (Conf['Quote Threading'] and Conf['Thread Quotes'])
 
     @container = $.frag()
 
@@ -16,7 +14,7 @@ ReplyPruning =
       @inputs.enabled.checked = !@inputs.enabled.checked
       $.event 'change', null, @inputs.enabled
 
-    label = UI.checkbox 'Prune Replies', 'Show Last'
+    label = UI.checkbox 'Prune Replies', 'Show Last', @active
     el = $.el 'span',
       title: 'Maximum number of replies to show.'
     ,
@@ -49,7 +47,7 @@ ReplyPruning =
     if @checked and other?.checked
       other.checked = false
       $.event 'change', null, other
-    $.cb.checked.call @
+    ReplyPruning.active = @checked
 
   showIfHidden: (id) ->
     if ReplyPruning.container?.getElementById id
@@ -81,7 +79,7 @@ ReplyPruning =
     return
 
   update: ->
-    hidden2 = if Conf['Prune Replies']
+    hidden2 = if ReplyPruning.active
       Math.max(ReplyPruning.total - +Conf["Max Replies"], 0)
     else
       0
@@ -107,7 +105,7 @@ ReplyPruning =
       $.after ReplyPruning.summary, frag
       $.event 'PostsInserted'
 
-    ReplyPruning.summary.textContent = if Conf['Prune Replies']
+    ReplyPruning.summary.textContent = if ReplyPruning.active
       Build.summaryText '+', ReplyPruning.hidden, ReplyPruning.hiddenFiles
     else
       Build.summaryText '-', ReplyPruning.total, ReplyPruning.totalFiles
