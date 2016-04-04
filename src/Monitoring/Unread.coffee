@@ -62,8 +62,8 @@ Unread =
     $.on  d, 'ThreadUpdate',       Unread.onUpdate
 
   ready: ->
-    Unread.setLine true
     Unread.scroll() if Conf['Remember Last Read Post'] and Conf['Scroll to Last Read Post']
+    Unread.setLine true
     Unread.read()
     Unread.update()
     $.on  d, 'scroll visibilitychange', Unread.read
