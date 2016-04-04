@@ -4,6 +4,11 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.30
 
+**v1.11.30.1** *(2016-04-04)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Scrolling to a post hidden by `Reply Pruning` unhides the posts. This includes `Scroll to Last Read Post`.
+- Opening a thread by the link to the OP turns unhides the posts hidden by `Reply Pruning`.
+- The `Show Last ___` checkbox to hide or show the posts hidden by `Reply Pruning` is no longer persistent. If `Reply Pruning` is enabled, it will be turned on when the thread is opened unless there is a reason for it to be turned off (quote threading, linking to a hidden post or the OP).
+
 **v1.11.30.0** *(2016-04-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.29.6.
 - 4chan X now remembers the state of the `Threading` checkbox added to the header menu by the `Quote Threading` feature. This allows you to have threading off by default, yet turn it on when you want it without reloading the page. By default `Quote Threading` will now be on with the `Threading` checkbox off.
