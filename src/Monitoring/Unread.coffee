@@ -63,9 +63,9 @@ Unread =
 
   ready: ->
     Unread.setLine true
+    Unread.scroll() if Conf['Remember Last Read Post'] and Conf['Scroll to Last Read Post']
     Unread.read()
     Unread.update()
-    Unread.scroll() if Conf['Remember Last Read Post'] and Conf['Scroll to Last Read Post']
     $.on  d, 'scroll visibilitychange', Unread.read
     $.on  d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
 
@@ -75,6 +75,8 @@ Unread =
   scroll: ->
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
+
+    ReplyPruning.showIfHidden Unread.position?.data.nodes.root.id
 
     position = Unread.positionPrev()
     while position

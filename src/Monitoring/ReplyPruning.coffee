@@ -51,6 +51,11 @@ ReplyPruning =
       $.event 'change', null, other
     $.cb.checked.call @
 
+  showIfHidden: (id) ->
+    if ReplyPruning.container?.getElementById id
+      ReplyPruning.inputs.enabled.checked = false
+      $.event 'change', null, ReplyPruning.inputs.enabled
+
   node: ->
     ReplyPruning.thread = @
 

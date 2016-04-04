@@ -439,8 +439,10 @@ Header =
       return if e.state
       history.replaceState {}, '' unless history.state
 
-    if (hash = location.hash[1..]) and (el = $.id hash)
-      $.queueTask -> Header.scrollTo el
+    if (hash = location.hash[1..])
+      ReplyPruning.showIfHidden hash
+      if (el = $.id hash)
+        $.queueTask -> Header.scrollTo el
 
   scrollTo: (root, down, needed) ->
     return unless root.offsetParent # hidden or fixed
