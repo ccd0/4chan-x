@@ -13,7 +13,7 @@ ReplyPruning =
       className: 'summary'
       style:     'cursor: pointer;'
     $.on @summary, 'click', =>
-      @inputs.enabled.click()
+      @inputs.enabled.checked = !@inputs.enabled.checked
       $.event 'change', null, @inputs.enabled
 
     label = UI.checkbox 'Prune Replies', 'Show Last'
