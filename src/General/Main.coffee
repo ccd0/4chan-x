@@ -221,7 +221,7 @@ Main =
         # Determine proper background color for dialogs if 4chan is using a special stylesheet.
         div = $.el 'div',
           className: 'reply'
-          style:     'position: absolute; visibility: hidden;'
+        div.style.cssText = 'position: absolute; visibility: hidden;'
         $.add d.body, div
         bgColor = window.getComputedStyle(div).backgroundColor
         $.rm div
