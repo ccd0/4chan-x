@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.30
 
+**v1.11.30.2** *(2016-04-04)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix Reply Pruning bug from v1.11.30.0 causing errors in older browsers.
+
 **v1.11.30.1** *(2016-04-04)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Scrolling to a post hidden by `Reply Pruning` unhides the posts. This includes `Scroll to Last Read Post`.
 - Opening a thread by the link to the OP turns unhides the posts hidden by `Reply Pruning`.
