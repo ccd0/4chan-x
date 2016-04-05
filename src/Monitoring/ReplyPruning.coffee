@@ -9,7 +9,7 @@ ReplyPruning =
     @summary = $.el 'span',
       hidden:    true
       className: 'summary'
-      style:     'cursor: pointer;'
+    @summary.style.cursor = 'pointer'
     $.on @summary, 'click', =>
       @inputs.enabled.checked = !@inputs.enabled.checked
       $.event 'change', null, @inputs.enabled
