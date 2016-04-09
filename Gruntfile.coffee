@@ -306,7 +306,6 @@ module.exports = (grunt) ->
     clean:
       builds: 'builds'
       testbuilds: 'testbuilds'
-      crx: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>'
       tmpcrx: ['tmp-crx', 'testbuilds/updates<%= pkg.meta.suffix.noupdate %>.xml']
       tmpuserscript: [
         'tmp-userscript',
@@ -379,7 +378,6 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'build-crx-channel', [
-    'clean:crx'
     'concat:crx'
     'copy:crx'
     'zip-crx'
@@ -404,8 +402,8 @@ module.exports = (grunt) ->
   grunt.registerTask 'zip-crx', 'Pack CRX contents in ZIP file', ->
     pkg = grunt.config 'pkg'
     zip = new JSZip()
-    for file in grunt.file.expand "testbuilds/crx#{pkg.meta.suffix[pkg.channel]}/*"
-      zip.file path.basename(file), grunt.file.read(file, {encoding: null}), {date: new Date(pkg.meta.date)}
+    for file in ['eventPage.js', 'icon128.png', 'icon16.png', 'icon48.png', 'manifest.json', 'script.js']
+      zip.file file, grunt.file.read("testbuilds/crx#{pkg.meta.suffix[pkg.channel]}/#{file}", {encoding: null}), {date: new Date(pkg.meta.date)}
     output = zip.generate
       type: 'nodebuffer'
       compression: 'DEFLATE'
