@@ -4,8 +4,8 @@
   "node-version": "v4.3.1",
   "dependencies": {
     "coffee-script": {
-      "version": "1.10.0",
-      "resolved": "https://registry.npmjs.org/coffee-script/-/coffee-script-1.10.0.tgz"
+      "version": "1.9.3",
+      "resolved": "https://registry.npmjs.org/coffee-script/-/coffee-script-1.9.3.tgz"
     },
     "crx": {
       "version": "3.0.3",
@@ -1252,62 +1252,6 @@
               }
             }
           }
-        }
-      }
-    },
-    "grunt-contrib-coffee": {
-      "version": "0.13.0",
-      "resolved": "https://registry.npmjs.org/grunt-contrib-coffee/-/grunt-contrib-coffee-0.13.0.tgz",
-      "dependencies": {
-        "chalk": {
-          "version": "0.5.1",
-          "resolved": "https://registry.npmjs.org/chalk/-/chalk-0.5.1.tgz",
-          "dependencies": {
-            "ansi-styles": {
-              "version": "1.1.0",
-              "resolved": "https://registry.npmjs.org/ansi-styles/-/ansi-styles-1.1.0.tgz"
-            },
-            "escape-string-regexp": {
-              "version": "1.0.5",
-              "resolved": "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz"
-            },
-            "has-ansi": {
-              "version": "0.1.0",
-              "resolved": "https://registry.npmjs.org/has-ansi/-/has-ansi-0.1.0.tgz",
-              "dependencies": {
-                "ansi-regex": {
-                  "version": "0.2.1",
-                  "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-0.2.1.tgz"
-                }
-              }
-            },
-            "strip-ansi": {
-              "version": "0.3.0",
-              "resolved": "https://registry.npmjs.org/strip-ansi/-/strip-ansi-0.3.0.tgz",
-              "dependencies": {
-                "ansi-regex": {
-                  "version": "0.2.1",
-                  "resolved": "https://registry.npmjs.org/ansi-regex/-/ansi-regex-0.2.1.tgz"
-                }
-              }
-            },
-            "supports-color": {
-              "version": "0.2.0",
-              "resolved": "https://registry.npmjs.org/supports-color/-/supports-color-0.2.0.tgz"
-            }
-          }
-        },
-        "coffee-script": {
-          "version": "1.9.3",
-          "resolved": "https://registry.npmjs.org/coffee-script/-/coffee-script-1.9.3.tgz"
-        },
-        "lodash": {
-          "version": "3.10.1",
-          "resolved": "https://registry.npmjs.org/lodash/-/lodash-3.10.1.tgz"
-        },
-        "uri-path": {
-          "version": "0.0.2",
-          "resolved": "https://registry.npmjs.org/uri-path/-/uri-path-0.0.2.tgz"
         }
       }
     },

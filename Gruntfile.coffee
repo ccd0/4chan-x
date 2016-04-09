@@ -100,14 +100,6 @@ module.exports = (grunt) ->
         src:  'test.html'
         dest: 'index.html'
 
-    coffee:
-      script:
-        src:  'tmp/script-<%= pkg.type %>.coffee'
-        dest: 'tmp/script-<%= pkg.type %>.js'
-      eventPage:
-        src:  'src/General/eventPage.coffee'
-        dest: 'tmp/eventPage.js'
-
     concurrent:
       build: [
         'build-crx'
@@ -119,15 +111,22 @@ module.exports = (grunt) ->
         stdout: true
         stderr: true
         failOnError: true
-      'templates-crx':
-        command: 'node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee crx - <%= pkg.tests_enabled || "" %>'.replace(/\//g, path.sep)
+      crx:
+        command: """
+          node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee crx - <%= pkg.tests_enabled || "" %>
+          node_modules/.bin/coffee --no-header -c tmp/script-crx.coffee
+          node_modules/.bin/coffee --no-header -o tmp -c src/General/eventPage.coffee
+        """.split('\n').join('&&').replace(/\//g, path.sep)
       'templates-crx-meta':
         command: """
           node_modules/.bin/coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates<%= pkg.meta.suffix[pkg.channel] %>.xml crx <%= pkg.channel %>
           node_modules/.bin/coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/manifest.json crx <%= pkg.channel %>
         """.split('\n').join('&&').replace(/\//g, path.sep)
-      'templates-userscript':
-        command: 'node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee userscript - <%= pkg.tests_enabled || "" %>'.replace(/\//g, path.sep)
+      userscript:
+        command: """
+          node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee userscript - <%= pkg.tests_enabled || "" %>
+          node_modules/.bin/coffee --no-header -c tmp/script-userscript.coffee
+        """.split('\n').join('&&').replace(/\//g, path.sep)
       'templates-userscript-meta':
         command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js userscript <%= pkg.channel %>'.replace(/\//g, path.sep)
       commit:
@@ -323,9 +322,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build-crx', [
     'set-build:crx'
-    'shell:templates-crx'
-    'coffee:script'
-    'coffee:eventPage'
+    'shell:crx'
     'jshint:crx'
     'set-channel:stable'
     'build-crx-channel'
@@ -372,8 +369,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build-userscript', [
     'set-build:userscript'
-    'shell:templates-userscript'
-    'coffee:script'
+    'shell:userscript'
     'jshint:userscript'
     'set-channel:stable'
     'build-userscript-channel'

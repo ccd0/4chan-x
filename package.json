@@ -59,14 +59,13 @@
     }
   },
   "devDependencies": {
-    "coffee-script": "^1.10.0",
+    "coffee-script": "1.9.3",
     "crx": "^3.0.3",
     "font-awesome": "4.5.0",
     "glob": "^7.0.3",
     "grunt": "^1.0.1",
     "grunt-concurrent": "^2.3.0",
     "grunt-contrib-clean": "^1.0.0",
-    "grunt-contrib-coffee": "^0.13.0",
     "grunt-contrib-concat": "^1.0.0",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jshint": "^1.0.0",
