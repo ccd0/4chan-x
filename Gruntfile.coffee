@@ -203,43 +203,61 @@ module.exports = (grunt) ->
       beta:
         command: """
           git tag -af beta -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
+          cd ..
+          cd "<%= pkg.meta.path %>.gh-pages"
           git checkout gh-pages
           git pull
           git merge --no-commit -s ours beta
           git checkout beta "builds/*<%= pkg.meta.suffix.beta %>.*" LICENSE CHANGELOG.md img .gitignore .gitattributes
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to beta channel."
-          git checkout -
+          cd ..
+          cd "<%= pkg.meta.path %>"
         """.split('\n').join('&&')
       stable:
         command: """
           git push . HEAD:bstable
           git tag -af stable -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
+          cd ..
+          cd "<%= pkg.meta.path %>.gh-pages"
           git checkout gh-pages
           git pull
           git merge --no-commit -s ours stable
           git checkout stable "builds/<%= pkg.name %>.*" builds/updates.xml
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to stable channel."
-          git checkout -
+          cd ..
+          cd "<%= pkg.meta.path %>"
         """.split('\n').join('&&')
       'commit-web':
         command: 'git commit -am "Build web page."'
       web:
         command: """
+          cd ..
+          cd "<%= pkg.meta.path %>.gh-pages"
           git checkout gh-pages
           git pull
           git merge --no-commit -s ours -
           git checkout - README.md index.html web.css img
           git commit -am "Update web page."
-          git checkout -
+          cd ..
+          cd "<%= pkg.meta.path %>"
         """.split('\n').join('&&')
       push:
         command: 'git push origin --tags -f && git push origin --all'
       prestore:
-        command: 'git checkout stable'
+        command: """
+          cd ..
+          cd "<%= pkg.meta.path %>.gh-pages"
+          git checkout gh-pages
+        """
       poststore:
-        command: 'git checkout -'
+        command: """
+          cd ..
+          cd "<%= pkg.meta.path %>"
+        """
       aws:
         command: """
+          cd ..
+          cd "<%= pkg.meta.path %>.gh-pages"
           git checkout gh-pages
           aws s3 cp builds/ s3://<%= pkg.meta.awsBucket %>/builds/ --recursive --exclude "*" --include "*.js" --cache-control "max-age=600" --content-type "application/javascript; charset=utf-8"
           aws s3 cp builds/ s3://<%= pkg.meta.awsBucket %>/builds/ --recursive --exclude "*" --include "*.crx" --cache-control "max-age=600" --content-type "application/x-chrome-extension"
@@ -248,7 +266,8 @@ module.exports = (grunt) ->
           aws s3 cp img/ s3://<%= pkg.meta.awsBucket %>/img/ --recursive --cache-control "max-age=600"
           aws s3 cp index.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=600" --content-type "text/html; charset=utf-8"
           aws s3 cp web.css s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=600" --content-type "text/css; charset=utf-8"
-          git checkout -
+          cd ..
+          cd "<%= pkg.meta.path %>"
         """.split('\n').join('&&')
       captchas:
         command: 'aws s3 cp captchas.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=0" --content-type "text/html; charset=utf-8"'
