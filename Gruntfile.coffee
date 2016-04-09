@@ -67,7 +67,6 @@ module.exports = (grunt) ->
             'src/meta/usestrict.js'
             'tmp/script-crx.js'
           ]
-          'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/eventPage.js': 'tmp/eventPage-crx.js'
       userscript:
         files:
           'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.user.js': [
@@ -80,7 +79,7 @@ module.exports = (grunt) ->
 
     copy:
       crx:
-        src:  'src/meta/*.png'
+        src:  ['src/meta/*.png', 'tmp/eventPage.js']
         dest: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/'
         expand:  true
         flatten: true
@@ -107,7 +106,7 @@ module.exports = (grunt) ->
         dest: 'tmp/script-<%= pkg.type %>.js'
       eventPage:
         src:  'src/General/eventPage.coffee'
-        dest: 'tmp/eventPage-crx.js'
+        dest: 'tmp/eventPage.js'
 
     concurrent:
       build: [
@@ -284,7 +283,8 @@ module.exports = (grunt) ->
           pkg = grunt.file.readJSON 'package.json'
           globals[v] = true for v in pkg.meta.grants
           globals
-      script: 'tmp/*-<%= pkg.type %>.js'
+      crx: ['tmp/script-crx.js', 'tmp/eventPage.js']
+      userscript: 'tmp/script-userscript.js'
 
   require('load-grunt-tasks') grunt
 
@@ -326,7 +326,7 @@ module.exports = (grunt) ->
     'shell:templates-crx'
     'coffee:script'
     'coffee:eventPage'
-    'jshint:script'
+    'jshint:crx'
     'set-channel:stable'
     'build-crx-channel'
     'set-channel:beta'
@@ -374,7 +374,7 @@ module.exports = (grunt) ->
     'set-build:userscript'
     'shell:templates-userscript'
     'coffee:script'
-    'jshint:script'
+    'jshint:userscript'
     'set-channel:stable'
     'build-userscript-channel'
     'set-channel:beta'
