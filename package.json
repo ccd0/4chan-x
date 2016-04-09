@@ -59,8 +59,10 @@
     }
   },
   "devDependencies": {
+    "coffee-script": "^1.10.0",
     "crx": "^3.0.3",
     "font-awesome": "4.5.0",
+    "glob": "^7.0.3",
     "grunt": "^1.0.1",
     "grunt-concurrent": "^2.3.0",
     "grunt-contrib-clean": "^1.0.0",
@@ -74,6 +76,7 @@
     "grunt-webstore-upload": "^0.8.10",
     "jszip": "^2.6.0",
     "load-grunt-tasks": "^3.5.0",
+    "lodash": "^4.9.0",
     "npm-shrinkwrap": "^200.5.1"
   },
   "repository": {

@@ -5,68 +5,6 @@ JSZip = require 'jszip'
 module.exports = (grunt) ->
   grunt.util.linefeed = '\n'
 
-  json = (data) ->
-    "`#{JSON.stringify(data).replace(/`/g, '\\`')}`"
-
-  importCSS = (filenames...) ->
-    grunt.template.process(
-      filenames.map((name) -> grunt.file.read "src/css/#{name}.css").join(''),
-      {data: grunt.config 'pkg'}
-    ).trim().replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`')
-
-  importHTML = (filename) ->
-    html grunt.template.process(grunt.file.read("src/#{filename}.html").replace(/^ +/gm, '').replace(/\r?\n/g, ''), data: grunt.config('pkg'))
-
-  parseTemplate = (template, context='') ->
-    context0 = context
-    parts = []
-    text = template
-    while text
-      if part = text.match /^(?:[^{}\\]|\\.)+(?!{)/
-        text = text[part[0].length..]
-        unescaped = part[0].replace /\\(.)/g, '$1'
-        context = (context + unescaped)
-          .replace(/(=['"])[^'"<>]*/g, '$1')
-          .replace(/(<\w+)( [\w-]+((?=[ >])|=''|=""))*/g, '$1')
-          .replace(/^([^'"<>]+|<\/?\w+>)*/, '')
-        parts.push json unescaped
-      else if part = text.match /^([^}]){([^}`]*)}/
-        text = text[part[0].length..]
-        unless context is '' or (part[1] is '$' and /\=['"]$/.test context) or part[1] is '?'
-          throw new Error "Illegal insertion into HTML template (at #{context}): #{template}"
-        parts.push switch part[1]
-          when '$' then "E(`#{part[2]}`)"
-          when '&' then "`#{part[2]}`.innerHTML"
-          when '@' then "E.cat(`#{part[2]}`)"
-          when '?'
-            args = ['""', '""']
-            for i in [0...2]
-              break if text[0] isnt '{'
-              text = text[1..]
-              [args[i], text] = parseTemplate text, context
-              if text[0] isnt '}'
-                throw new Error "Unexpected characters in subtemplate (#{text}): #{template}"
-              text = text[1..]
-            "(if `#{part[2]}` then #{args[0]} else #{args[1]})"
-          else
-            throw new Error "Unrecognized substitution operator (#{part[1]}): #{template}"
-      else
-        break
-    if context isnt context0
-      throw new Error "HTML template is ill-formed (at #{context}): #{template}"
-    output = if parts.length is 0 then '""' else parts.join ' + '
-    [output, text]
-
-  html = (template) ->
-    [output, remaining] = parseTemplate template
-    if remaining
-      throw new Error "Unexpected characters in template (#{remaining}): #{template}"
-    "(innerHTML: #{output})"
-
-  assert = (statement, objs...) ->
-    return '' unless grunt.config('pkg').tests_enabled
-    "throw new Error 'Assertion failed: ' + #{json statement} unless #{statement}"
-
   loadPkg = ->
     pkg = grunt.file.readJSON 'package.json'
     version = grunt.file.readJSON 'version.json'
@@ -78,17 +16,6 @@ module.exports = (grunt) ->
     pkg: loadPkg()
 
     concat:
-      options: process: Object.create(null, data:
-        get: ->
-          pkg = grunt.config 'pkg'
-          pkg.importCSS  = importCSS
-          pkg.importHTML = importHTML
-          pkg.html = html
-          pkg.assert = assert
-          pkg.tests_enabled or= false
-          pkg
-        enumerable: true
-      )
       coffee:
         src: [
           'src/General/Config.coffee'
@@ -130,11 +57,9 @@ module.exports = (grunt) ->
           'src/General/Settings.coffee'
           'src/General/Main.coffee'
         ]
-        dest: 'tmp/script-<%= pkg.type %>.coffee'
+        dest: 'tmp/script.coffee'
       crx:
         files:
-          'testbuilds/updates<%= pkg.meta.suffix[pkg.channel] %>.xml': 'src/meta/updates.xml'
-          'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/manifest.json': 'src/meta/manifest.json'
           'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/script.js': [
             'src/meta/botproc.js'
             'LICENSE'
@@ -144,10 +69,9 @@ module.exports = (grunt) ->
           'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/eventPage.js': 'tmp/eventPage-crx.js'
       userscript:
         files:
-          'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js': 'src/meta/metadata.js'
           'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.user.js': [
             'src/meta/botproc.js'
-            'src/meta/metadata.js'
+            'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js'
             'LICENSE'
             'src/meta/usestrict.js'
             'tmp/script-userscript.js'
@@ -195,6 +119,17 @@ module.exports = (grunt) ->
         stdout: true
         stderr: true
         failOnError: true
+      'templates-crx':
+        command: 'node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee crx - <%= pkg.tests_enabled || "" %>'
+      'templates-crx-meta':
+        command: """
+          node_modules/.bin/coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates<%= pkg.meta.suffix[pkg.channel] %>.xml crx <%= pkg.channel %>
+          node_modules/.bin/coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/manifest.json crx <%= pkg.channel %>
+        """.split('\n').join('&&')
+      'templates-userscript':
+        command: 'node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee userscript - <%= pkg.tests_enabled || "" %>'
+      'templates-userscript-meta':
+        command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js userscript <%= pkg.channel %>'
       commit:
         command: """
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.meta.version %>."
@@ -374,10 +309,12 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build', [
     'shell:npm'
+    'concat:coffee'
     'concurrent:build'
   ]
 
   grunt.registerTask 'build-crx-channel', [
+    'shell:templates-crx-meta'
     'concat:crx'
     'copy:crx'
     'zip-crx'
@@ -385,7 +322,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build-crx', [
     'set-build:crx'
-    'concat:coffee'
+    'shell:templates-crx'
     'coffee:script'
     'coffee:eventPage'
     'jshint:script'
@@ -427,27 +364,34 @@ module.exports = (grunt) ->
     'sign-channel:noupdate'
   ]
 
+  grunt.registerTask 'build-userscript-channel', [
+    'shell:templates-userscript-meta'
+    'concat:userscript'
+  ]
+
   grunt.registerTask 'build-userscript', [
     'set-build:userscript'
-    'concat:coffee'
+    'shell:templates-userscript'
     'coffee:script'
     'jshint:script'
     'set-channel:stable'
-    'concat:userscript'
+    'build-userscript-channel'
     'set-channel:beta'
-    'concat:userscript'
+    'build-userscript-channel'
     'set-channel:noupdate'
-    'concat:userscript'
+    'build-userscript-channel'
     'set-channel:dev'
-    'concat:userscript'
+    'build-userscript-channel'
     'clean:tmpuserscript'
     'copy:install'
   ]
 
   grunt.registerTask 'build-tests', [
+    'shell:npm'
     'enable-tests'
-    'build-userscript'
+    'concat:coffee'
     'build-crx'
+    'build-userscript'
   ]
 
   grunt.registerTask 'full', [
