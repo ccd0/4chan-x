@@ -306,9 +306,9 @@ module.exports = (grunt) ->
     clean:
       builds: 'builds'
       testbuilds: 'testbuilds'
-      tmpcrx: ['tmp-crx', 'testbuilds/updates<%= pkg.meta.suffix.noupdate %>.xml']
+      tmp: ['tmp-crx', 'tmp-userscript']
+      tmpcrx: 'testbuilds/updates<%= pkg.meta.suffix.noupdate %>.xml'
       tmpuserscript: [
-        'tmp-userscript',
         'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.noupdate %>.meta.js',
         'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.dev %>.meta.js'
       ]
