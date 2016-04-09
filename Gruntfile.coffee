@@ -130,7 +130,7 @@ module.exports = (grunt) ->
           'src/General/Settings.coffee'
           'src/General/Main.coffee'
         ]
-        dest: 'tmp-<%= pkg.type %>/script.coffee'
+        dest: 'tmp/script-<%= pkg.type %>.coffee'
       crx:
         files:
           'testbuilds/updates<%= pkg.meta.suffix[pkg.channel] %>.xml': 'src/meta/updates.xml'
@@ -139,9 +139,9 @@ module.exports = (grunt) ->
             'src/meta/botproc.js'
             'LICENSE'
             'src/meta/usestrict.js'
-            'tmp-<%= pkg.type %>/script.js'
+            'tmp/script-crx.js'
           ]
-          'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/eventPage.js': 'tmp-<%= pkg.type %>/eventPage.js'
+          'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/eventPage.js': 'tmp/eventPage-crx.js'
       userscript:
         files:
           'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js': 'src/meta/metadata.js'
@@ -150,7 +150,7 @@ module.exports = (grunt) ->
             'src/meta/metadata.js'
             'LICENSE'
             'src/meta/usestrict.js'
-            'tmp-<%= pkg.type %>/script.js'
+            'tmp/script-userscript.js'
           ]
 
     copy:
@@ -178,11 +178,11 @@ module.exports = (grunt) ->
 
     coffee:
       script:
-        src:  'tmp-<%= pkg.type %>/script.coffee'
-        dest: 'tmp-<%= pkg.type %>/script.js'
+        src:  'tmp/script-<%= pkg.type %>.coffee'
+        dest: 'tmp/script-<%= pkg.type %>.js'
       eventPage:
         src:  'src/General/eventPage.coffee'
-        dest: 'tmp-<%= pkg.type %>/eventPage.js'
+        dest: 'tmp/eventPage-crx.js'
 
     concurrent:
       build: [
@@ -306,7 +306,7 @@ module.exports = (grunt) ->
     clean:
       builds: 'builds'
       testbuilds: 'testbuilds'
-      tmp: ['tmp-crx', 'tmp-userscript']
+      tmp: 'tmp'
       tmpcrx: 'testbuilds/updates<%= pkg.meta.suffix.noupdate %>.xml'
       tmpuserscript: [
         'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.noupdate %>.meta.js',
@@ -348,7 +348,7 @@ module.exports = (grunt) ->
           pkg = grunt.file.readJSON 'package.json'
           globals[v] = true for v in pkg.meta.grants
           globals
-      script: 'tmp-<%= pkg.type %>/*.js'
+      script: 'tmp/*-<%= pkg.type %>.js'
 
   require('load-grunt-tasks') grunt
 
