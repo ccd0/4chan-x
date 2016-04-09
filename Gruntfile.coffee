@@ -164,8 +164,8 @@ module.exports = (grunt) ->
         command: 'git commit -am "Build web page."'
       web:
         command: """
-          git merge --no-commit -s ours -
-          git checkout - README.md index.html web.css img
+          git merge --no-commit -s ours master
+          git checkout master README.md index.html web.css img
           git commit -am "Update web page."
         """.split('\n').join('&&')
       push:
