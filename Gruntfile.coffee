@@ -283,8 +283,8 @@ module.exports = (grunt) ->
       accounts:
         default:
           publish: true
-          client_id: '<%= grunt.file.readJSON("../"+pkg.name+"-keys/chrome-store.json").installed.client_id %>'
-          client_secret: '<%= grunt.file.readJSON("../"+pkg.name+"-keys/chrome-store.json").installed.client_secret %>'
+          client_id: '<%= grunt.file.readJSON("../"+pkg.meta.path+".keys/chrome-store.json").installed.client_id %>'
+          client_secret: '<%= grunt.file.readJSON("../"+pkg.meta.path+".keys/chrome-store.json").installed.client_secret %>'
       extensions:
         extension:
           appID: '<%= pkg.meta.chromeStoreID %>'
@@ -415,7 +415,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'sign-channel', 'Sign CRX package', (channel) ->
     done = @async()
     pkg = grunt.config 'pkg'
-    privateKey = grunt.file.read "../#{pkg.name}-keys/#{pkg.name}.pem"
+    privateKey = grunt.file.read "../#{pkg.meta.path}.keys/#{pkg.name}.pem"
     archive    = grunt.file.read "testbuilds/#{pkg.name}#{pkg.meta.suffix[channel]}.crx.zip", {encoding: null}
     extension = new crx {privateKey, loaded: true}
     extension.pack(archive).then((data) ->
