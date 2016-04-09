@@ -180,6 +180,8 @@ module.exports = (grunt) ->
           aws s3 cp index.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=600" --content-type "text/html; charset=utf-8"
           aws s3 cp web.css s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=600" --content-type "text/css; charset=utf-8"
         """.split('\n').join('&&')
+      store:
+        command: 'node tools/webstore.js'
       captchas:
         command: 'aws s3 cp captchas.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=0" --content-type "text/html; charset=utf-8"'
       npm:
@@ -189,17 +191,6 @@ module.exports = (grunt) ->
           npm install --save-dev <%= Object.keys(pkg.devDependencies).filter(function(name) {return /^\\^/.test(pkg.devDependencies[name]);}).map(function(name) {return name+'@latest';}).join(' ') %>
           ./node_modules/.bin/npm-shrinkwrap --dev
         """.split('\n').join('&&').replace(/\//g, path.sep)
-
-    webstore_upload:
-      accounts:
-        default:
-          publish: true
-          client_id: '<%= grunt.file.readJSON("../"+pkg.meta.path+".keys/chrome-store.json").installed.client_id %>'
-          client_secret: '<%= grunt.file.readJSON("../"+pkg.meta.path+".keys/chrome-store.json").installed.client_secret %>'
-      extensions:
-        extension:
-          appID: '<%= pkg.meta.chromeStoreID %>'
-          zip: 'builds/<%= pkg.name %>.zip'
 
     watch:
       options:
@@ -438,8 +429,8 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'store', [
     'pushd'
-    'webstore_upload'
     'popd'
+    'shell:store'
   ]
 
   grunt.registerTask 'captchas', 'Set captcha complaints redirect.', (url='https://www.4chan.org/feedback') ->
