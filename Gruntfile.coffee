@@ -16,6 +16,7 @@ module.exports = (grunt) ->
     pkg: loadPkg()
 
     concat:
+      options: process: (src) -> src.replace /\r\n/g, '\n'
       coffee:
         src: [
           'src/General/Config.coffee'
@@ -120,16 +121,16 @@ module.exports = (grunt) ->
         stderr: true
         failOnError: true
       'templates-crx':
-        command: 'node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee crx - <%= pkg.tests_enabled || "" %>'
+        command: 'node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee crx - <%= pkg.tests_enabled || "" %>'.replace(/\//g, path.sep)
       'templates-crx-meta':
         command: """
           node_modules/.bin/coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates<%= pkg.meta.suffix[pkg.channel] %>.xml crx <%= pkg.channel %>
           node_modules/.bin/coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/manifest.json crx <%= pkg.channel %>
-        """.split('\n').join('&&')
+        """.split('\n').join('&&').replace(/\//g, path.sep)
       'templates-userscript':
-        command: 'node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee userscript - <%= pkg.tests_enabled || "" %>'
+        command: 'node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee userscript - <%= pkg.tests_enabled || "" %>'.replace(/\//g, path.sep)
       'templates-userscript-meta':
-        command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js userscript <%= pkg.channel %>'
+        command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js userscript <%= pkg.channel %>'.replace(/\//g, path.sep)
       commit:
         command: """
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.meta.version %>."
@@ -212,7 +213,7 @@ module.exports = (grunt) ->
         command: """
           npm install --save-dev <%= Object.keys(pkg.devDependencies).filter(function(name) {return /^\\^/.test(pkg.devDependencies[name]);}).map(function(name) {return name+'@latest';}).join(' ') %>
           ./node_modules/.bin/npm-shrinkwrap --dev
-        """.split('\n').join('&&')
+        """.split('\n').join('&&').replace(/\//g, path.sep)
 
     webstore_upload:
       accounts:

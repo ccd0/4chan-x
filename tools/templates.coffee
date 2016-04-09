@@ -6,7 +6,7 @@ glob = require 'glob'
 # disable ES6 delimiters
 _.templateSettings.interpolate = /<%=([\s\S]+?)%>/g
 
-read = (filename) -> fs.readFileSync filename, 'utf8'
+read = (filename) -> fs.readFileSync(filename, 'utf8').replace(/\r\n/g, '\n')
 
 pkg = JSON.parse(read 'package.json')
 _.assign pkg.meta, JSON.parse(read 'version.json')
