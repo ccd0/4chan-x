@@ -129,6 +129,8 @@ module.exports = (grunt) ->
         """.split('\n').join('&&').replace(/\//g, path.sep)
       'templates-userscript-meta':
         command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js userscript <%= pkg.channel %>'.replace(/\//g, path.sep)
+      markdown:
+        command: 'node tools/markdown.js'
       commit:
         command: """
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.meta.version %>."
@@ -214,13 +216,6 @@ module.exports = (grunt) ->
         'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.noupdate %>.meta.js',
         'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.dev %>.meta.js'
       ]
-
-    markdown:
-      web:
-        src: 'README.md'
-        dest: 'test.html'
-      options:
-        template: 'template.jst'
 
     jshint:
       options:
@@ -404,8 +399,13 @@ module.exports = (grunt) ->
     'popd'
   ]
 
+  grunt.registerTask 'markdown', [
+    'shell:markdown'
+  ]
+
   grunt.registerTask 'web', 'Move website changes to gh-pages.', ->
-    grunt.task.run 'markdown:web'
+    grunt.task.run 'shell:markdown'
+    # XXX Grunt seems to see test.html as nonexistent when it was just created.
     if not grunt.file.exists('test.html') or grunt.file.read('test.html') isnt grunt.file.read('index.html')
       grunt.task.run [
         'copy:web'
