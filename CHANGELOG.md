@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.30
 
+**v1.11.30.3** *(2016-04-09)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Remove CSS fixes specific to April 1 theme.
+
 **v1.11.30.2** *(2016-04-04)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.30.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix Reply Pruning bug from v1.11.30.0 causing errors in older browsers.
 
