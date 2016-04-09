@@ -201,11 +201,6 @@ Main =
     Main.setClass()
 
   setClass: ->
-    if (md2016 = $ 'link[rel="stylesheet"][href^="//s.4cdn.org/css/md2016."]', d.head)
-      md2016.removeAttribute 'media'
-      if getComputedStyle(d.body).backgroundColor is 'rgb(245, 245, 245)' # not blocked
-        $.addClass doc, 'md2016'
-
     if g.VIEW is 'catalog'
       $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
       return
@@ -396,7 +391,7 @@ Main =
     $.ready ->
       cb() if Main.isThisPageLegit()
 
-  css: `<%= importCSS('font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon', 'md2016', 'supports') %>`
+  css: `<%= importCSS('font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon', 'supports') %>`
 
   cssWWW: `<%= importCSS('www') %>`
 
