@@ -134,6 +134,11 @@ module.exports = (grunt) ->
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.meta.version %>."
           git tag -a <%= pkg.meta.version %> -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
         """.split('\n').join('&&')
+      'gh-pages':
+        command: """
+          git checkout gh-pages
+          git pull
+        """.split('\n').join('&&')
       beta:
         command: """
           git tag -af beta -m "<%= pkg.meta.name %> v<%= pkg.meta.version %>."
@@ -177,17 +182,6 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       push:
         command: 'git push origin --tags -f && git push origin --all'
-      prestore:
-        command: """
-          cd ..
-          cd "<%= pkg.meta.path %>.gh-pages"
-          git checkout gh-pages
-        """
-      poststore:
-        command: """
-          cd ..
-          cd "<%= pkg.meta.path %>"
-        """
       aws:
         command: """
           cd ..
@@ -413,6 +407,15 @@ module.exports = (grunt) ->
     parts[i] = 0 for i in [level...parts.length]
     grunt.task.run "tag:#{parts.join '.'}"
 
+  grunt.registerTask 'pushd', 'Change directory to the distribution worktree and check out gh-pages branch.', ->
+    pkg = grunt.config 'pkg'
+    grunt.file.setBase "../#{pkg.meta.path}.gh-pages"
+    grunt.task.run 'shell:gh-pages'
+
+  grunt.registerTask 'popd', 'Return to the normal working directory.', ->
+    pkg = grunt.config 'pkg'
+    grunt.file.setBase "../#{pkg.meta.path}"
+
   grunt.registerTask 'beta', [
     'shell:beta'
   ]
@@ -439,9 +442,9 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'store', [
-    'shell:prestore'
+    'pushd'
     'webstore_upload'
-    'shell:poststore'
+    'popd'
   ]
 
   grunt.registerTask 'captchas', 'Set captcha complaints redirect.', (url='https://www.4chan.org/feedback') ->
