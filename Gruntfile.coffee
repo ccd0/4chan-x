@@ -415,7 +415,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'web', 'Move website changes to gh-pages.', ->
     grunt.task.run 'markdown:web'
-    if grunt.file.read('test.html') isnt grunt.file.read('index.html')
+    if not grunt.file.exists('test.html') or grunt.file.read('test.html') isnt grunt.file.read('index.html')
       grunt.task.run [
         'copy:web'
         'shell:commit-web'
