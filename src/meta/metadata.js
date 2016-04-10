@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         <%= meta.name %><%= meta.namesuffix[channel] %>
+// @name         <%= meta.name %><%= (channel === '-beta') ? ' beta' : '' %>
 // @version      <%= meta.version %>
 // @minGMVer     <%= meta.min.greasemonkey %>
 // @minFFVer     <%= meta.min.firefox %>
@@ -40,7 +40,7 @@
   }).join('\n')
 %>
 // @run-at       document-start
-// @updateURL    <%= (channel !== 'noupdate') ? (meta.downloads + name + meta.suffix[channel] + '.meta.js') : 'https://noupdate.invalid/' %>
-// @downloadURL  <%= (channel !== 'noupdate') ? (meta.downloads + name + meta.suffix[channel] + '.user.js') : 'https://noupdate.invalid/' %>
+// @updateURL    <%= (channel !== '-noupdate') ? `${meta.downloads}${name}${channel}.meta.js` : 'https://noupdate.invalid/' %>
+// @downloadURL  <%= (channel !== '-noupdate') ? `${meta.downloads}${name}${channel}.user.js` : 'https://noupdate.invalid/' %>
 // @icon         data:image/png;base64,<%= grunt.file.read('src/meta/icon48.png', {encoding: 'base64'}) %>
 // ==/UserScript==

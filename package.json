@@ -40,16 +40,6 @@
       "GM_openInTab",
       "GM_xmlhttpRequest"
     ],
-    "suffix": {
-      "stable": "",
-      "beta": "-beta",
-      "noupdate": "-noupdate"
-    },
-    "namesuffix": {
-      "stable": "",
-      "beta": " beta",
-      "noupdate": ""
-    },
     "min": {
       "chrome": "33",
       "firefox": "26",

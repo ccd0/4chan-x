@@ -61,7 +61,7 @@ module.exports = (grunt) ->
         dest: 'tmp/script.coffee'
       crx:
         files:
-          'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/script.js': [
+          'testbuilds/crx<%= pkg.channel %>/script.js': [
             'src/meta/botproc.js'
             'LICENSE'
             'src/meta/usestrict.js'
@@ -69,9 +69,9 @@ module.exports = (grunt) ->
           ]
       userscript:
         files:
-          'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.user.js': [
+          'testbuilds/<%= pkg.name %><%= pkg.channel %>.user.js': [
             'src/meta/botproc.js'
-            'testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js'
+            'testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js'
             'LICENSE'
             'src/meta/usestrict.js'
             'tmp/script-userscript.js'
@@ -80,11 +80,11 @@ module.exports = (grunt) ->
     copy:
       crx:
         src:  ['src/meta/*.png', 'tmp/eventPage.js']
-        dest: 'testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/'
+        dest: 'testbuilds/crx<%= pkg.channel %>/'
         expand:  true
         flatten: true
       zip:
-        src:  'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.noupdate %>.crx.zip'
+        src:  'testbuilds/<%= pkg.name %>-noupdate.crx.zip'
         dest: 'testbuilds/<%= pkg.name %>.zip'
       builds:
         src: ['testbuilds/*.js', 'testbuilds/*.crx', 'testbuilds/*.xml', 'testbuilds/<%= pkg.name %>.zip']
@@ -119,8 +119,8 @@ module.exports = (grunt) ->
         """.split('\n').join('&&').replace(/\//g, path.sep)
       'templates-crx-meta':
         command: """
-          node_modules/.bin/coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates<%= pkg.meta.suffix[pkg.channel] %>.xml type=crx channel=<%= pkg.channel %>
-          node_modules/.bin/coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/manifest.json type=crx channel=<%= pkg.channel %>
+          node_modules/.bin/coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates<%= pkg.channel %>.xml type=crx channel=<%= pkg.channel %>
+          node_modules/.bin/coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx<%= pkg.channel %>/manifest.json type=crx channel=<%= pkg.channel %>
         """.split('\n').join('&&').replace(/\//g, path.sep)
       userscript:
         command: """
@@ -129,7 +129,7 @@ module.exports = (grunt) ->
           node_modules/.bin/jshint tmp/script-userscript.js
         """.split('\n').join('&&').replace(/\//g, path.sep)
       'templates-userscript-meta':
-        command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js type=userscript channel=<%= pkg.channel %>'.replace(/\//g, path.sep)
+        command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js type=userscript channel=<%= pkg.channel %>'.replace(/\//g, path.sep)
       markdown:
         command: 'node tools/markdown.js'
       commit:
@@ -149,7 +149,7 @@ module.exports = (grunt) ->
       beta:
         command: """
           git merge --no-commit -s ours beta
-          git checkout beta "builds/*<%= pkg.meta.suffix.beta %>.*" LICENSE CHANGELOG.md img .gitignore .gitattributes
+          git checkout beta "builds/*-beta.*" LICENSE CHANGELOG.md img .gitignore .gitattributes
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to beta channel."
         """.split('\n').join('&&')
       'tag-stable':
@@ -217,8 +217,8 @@ module.exports = (grunt) ->
       builds: 'builds'
       testbuilds: 'testbuilds'
       tmp: 'tmp'
-      tmpcrx: 'testbuilds/updates<%= pkg.meta.suffix.noupdate %>.xml'
-      tmpuserscript: 'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.noupdate %>.meta.js'
+      tmpcrx: 'testbuilds/updates-noupdate.xml'
+      tmpuserscript: 'testbuilds/<%= pkg.name %>-noupdate.meta.js'
 
   require('load-grunt-tasks') grunt
 
@@ -226,7 +226,7 @@ module.exports = (grunt) ->
     'build'
   ]
 
-  grunt.registerTask 'set-channel', 'Set the update channel', (channel) ->
+  grunt.registerTask 'set-channel', 'Set the update channel', (channel='') ->
     pkg = grunt.config 'pkg'
     pkg.channel = channel
     grunt.config 'pkg', pkg
@@ -252,11 +252,11 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build-crx', [
     'shell:crx'
-    'set-channel:stable'
+    'set-channel'
     'build-crx-channel'
-    'set-channel:beta'
+    'set-channel:-beta'
     'build-crx-channel'
-    'set-channel:noupdate'
+    'set-channel:-noupdate'
     'build-crx-channel'
     'copy:zip'
     'clean:tmpcrx'
@@ -266,28 +266,28 @@ module.exports = (grunt) ->
     pkg = grunt.config 'pkg'
     zip = new JSZip()
     for file in ['eventPage.js', 'icon128.png', 'icon16.png', 'icon48.png', 'manifest.json', 'script.js']
-      zip.file file, grunt.file.read("testbuilds/crx#{pkg.meta.suffix[pkg.channel]}/#{file}", {encoding: null}), {date: new Date(pkg.meta.date)}
+      zip.file file, grunt.file.read("testbuilds/crx#{pkg.channel}/#{file}", {encoding: null}), {date: new Date(pkg.meta.date)}
     output = zip.generate
       type: 'nodebuffer'
       compression: 'DEFLATE'
       compressionOptions: {level: 9}
-    grunt.file.write "testbuilds/#{pkg.name}#{pkg.meta.suffix[pkg.channel]}.crx.zip", output
+    grunt.file.write "testbuilds/#{pkg.name}#{pkg.channel}.crx.zip", output
 
-  grunt.registerTask 'sign-channel', 'Sign CRX package', (channel) ->
+  grunt.registerTask 'sign-channel', 'Sign CRX package', (channel='') ->
     done = @async()
     pkg = grunt.config 'pkg'
     privateKey = grunt.file.read "../#{pkg.meta.path}.keys/#{pkg.name}.pem"
-    archive    = grunt.file.read "testbuilds/#{pkg.name}#{pkg.meta.suffix[channel]}.crx.zip", {encoding: null}
+    archive    = grunt.file.read "testbuilds/#{pkg.name}#{channel}.crx.zip", {encoding: null}
     extension = new crx {privateKey, loaded: true}
     extension.pack(archive).then((data) ->
-      grunt.file.write "testbuilds/#{pkg.name}#{pkg.meta.suffix[channel]}.crx", data
+      grunt.file.write "testbuilds/#{pkg.name}#{channel}.crx", data
       done()
     ).catch(done)
 
   grunt.registerTask 'sign', [
-    'sign-channel:stable'
-    'sign-channel:beta'
-    'sign-channel:noupdate'
+    'sign-channel'
+    'sign-channel:-beta'
+    'sign-channel:-noupdate'
   ]
 
   grunt.registerTask 'build-userscript-channel', [
@@ -297,11 +297,11 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build-userscript', [
     'shell:userscript'
-    'set-channel:stable'
+    'set-channel'
     'build-userscript-channel'
-    'set-channel:beta'
+    'set-channel:-beta'
     'build-userscript-channel'
-    'set-channel:noupdate'
+    'set-channel:-noupdate'
     'build-userscript-channel'
     'clean:tmpuserscript'
     'copy:install'
@@ -410,7 +410,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'updcl', 'Update the changelog', ->
     {meta, name} = grunt.config('pkg')
-    {version, oldVersions, suffix} = meta
+    {version, oldVersions} = meta
 
     branch       = version.replace /\.\d+$/, ''
     headerLevel  = branch.replace(/(\.0)*$/, '').split('.').length
@@ -418,7 +418,7 @@ module.exports = (grunt) ->
     separator    = "#{headerPrefix} v#{branch}"
 
     today    = grunt.template.today 'yyyy-mm-dd'
-    filename = "/builds/#{name}#{suffix.noupdate}"
+    filename = "/builds/#{name}-noupdate"
     ffLink   = "#{oldVersions}#{version}#{filename}.user.js"
     crLink   = "#{oldVersions}#{version}#{filename}.crx"
     line     = "**v#{version}** *(#{today})* - [[Firefox](#{ffLink} \"Firefox version\")] [[Chromium](#{crLink} \"Chromium version\")]"
