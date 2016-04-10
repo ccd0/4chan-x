@@ -116,8 +116,6 @@ module.exports = (grunt) ->
         command: (channel='') -> "node tools/sign.js #{channel}"
       'copy-builds':
         command: '<%= builds.map(file => `node tools/cp.js testbuilds/${file} builds/${file}`).join("&&") %>'
-      bump:
-        command: (channel='') -> "<%= BIN %>coffee tools/bump.coffee #{channel}"
       markdown:
         command: 'node tools/markdown.js'
       commit:
@@ -234,16 +232,21 @@ module.exports = (grunt) ->
     'shell:copy-builds'
   ]
 
-  grunt.registerTask 'bump', 'Bump the version number and tag a new release', (level) ->
+  grunt.registerTask 'tag', 'Tag a new release', (version) ->
     grunt.task.run [
-      "shell:bump:#{level}"
-      'update-version'
+      "setversion:#{version}"
+      'updcl'
       'full'
       'shell:commit'
     ]
 
-  grunt.registerTask 'update-version', 'Re-read the version from version.json', ->
-    grunt.config 'pkg', loadPkg()
+  grunt.registerTask 'bump', 'Bump the version number and tag a new release', (level) ->
+    pkg = grunt.config 'pkg'
+    parts = pkg.meta.version.split '.'
+    parts[i] or= '0' for i in [0...level]
+    parts[level-1] = +parts[level-1] + 1
+    parts[i] = 0 for i in [level...parts.length]
+    grunt.task.run "tag:#{parts.join '.'}"
 
   grunt.registerTask 'pushd', 'Change directory to the distribution worktree and check out gh-pages branch.', ->
     pkg = grunt.config 'pkg'
@@ -298,3 +301,40 @@ module.exports = (grunt) ->
   grunt.registerTask 'captchas', [
     'shell:captchas'
   ]
+
+  grunt.registerTask 'setversion', 'Set the version number', (version) ->
+    data = grunt.file.readJSON 'version.json'
+    oldversion = data.version
+    data.version = version
+    data.date = new Date()
+    grunt.file.write 'version.json', JSON.stringify(data, null, 2) + '\n'
+    grunt.log.ok "Version updated from v#{oldversion} to v#{version}."
+    grunt.config 'pkg', loadPkg()
+
+  grunt.registerTask 'updcl', 'Update the changelog', ->
+    {meta, name} = grunt.config('pkg')
+    {version, oldVersions} = meta
+
+    branch       = version.replace /\.\d+$/, ''
+    headerLevel  = branch.replace(/(\.0)*$/, '').split('.').length
+    headerPrefix = new Array(headerLevel + 1).join '#'
+    separator    = "#{headerPrefix} v#{branch}"
+
+    today    = grunt.template.today 'yyyy-mm-dd'
+    filename = "/builds/#{name}-noupdate"
+    ffLink   = "#{oldVersions}#{version}#{filename}.user.js"
+    crLink   = "#{oldVersions}#{version}#{filename}.crx"
+    line     = "**v#{version}** *(#{today})* - [[Firefox](#{ffLink} \"Firefox version\")] [[Chromium](#{crLink} \"Chromium version\")]"
+
+    changelog = grunt.file.read 'CHANGELOG.md'
+
+    breakPos = changelog.indexOf(separator)
+    throw new Error 'Separator not found.' if breakPos is -1
+    breakPos += separator.length
+
+    prevVersion = changelog[breakPos..].match(/\*\*v([\d\.]+)\*\*/)[1]
+    unless prevVersion.replace(/\.\d+$/, '') is branch
+      line += "\n- Based on v#{prevVersion}."
+
+    grunt.file.write 'CHANGELOG.md', "#{changelog[...breakPos]}\n\n#{line}#{changelog[breakPos..]}"
+    grunt.log.ok "Changelog updated for v#{version}."
