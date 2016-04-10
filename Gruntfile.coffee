@@ -76,6 +76,8 @@ module.exports = (grunt) ->
         stdout: true
         stderr: true
         failOnError: true
+      clean:
+        command: 'node tools/clean.js'
       general:
         command: """
           <%= BIN %>coffee tools/templates.coffee src/meta/jshint.json .jshintrc
@@ -185,9 +187,6 @@ module.exports = (grunt) ->
       shrinkwrap:
         command: '<%= BIN %>npm-shrinkwrap --dev'
 
-    clean:
-      builds: ['tmp', 'testbuilds', 'builds']
-
   require('load-grunt-tasks') grunt
 
   grunt.registerTask 'default', [
@@ -271,6 +270,10 @@ module.exports = (grunt) ->
     'shell:general'
     'build-crx'
     'build-userscript'
+  ]
+
+  grunt.registerTask 'clean', [
+    'shell:clean'
   ]
 
   grunt.registerTask 'full', [

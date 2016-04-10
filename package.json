@@ -54,7 +54,6 @@
     "glob": "^7.0.3",
     "grunt": "^1.0.1",
     "grunt-concurrent": "^2.3.0",
-    "grunt-contrib-clean": "^1.0.0",
     "grunt-shell": "^1.2.1",
     "jshint": "^2.9.1",
     "jszip": "^2.6.0",
