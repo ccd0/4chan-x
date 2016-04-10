@@ -119,7 +119,7 @@ module.exports = (grunt) ->
           node_modules/.bin/coffee --no-header -o tmp -c src/General/eventPage.coffee
           node_modules/.bin/jshint tmp/script-crx.js tmp/eventPage.js
         """.split('\n').join('&&').replace(/\//g, path.sep)
-      'templates-crx-meta':
+      'crx-meta':
         command: """
           node_modules/.bin/coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates<%= pkg.channel %>.xml type=crx channel=<%= pkg.channel %>
           node_modules/.bin/coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx<%= pkg.channel %>/manifest.json type=crx channel=<%= pkg.channel %>
@@ -130,7 +130,7 @@ module.exports = (grunt) ->
           node_modules/.bin/coffee --no-header -c tmp/script-userscript.coffee
           node_modules/.bin/jshint tmp/script-userscript.js
         """.split('\n').join('&&').replace(/\//g, path.sep)
-      'templates-userscript-meta':
+      'userscript-meta':
         command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js type=userscript channel=<%= pkg.channel %>'.replace(/\//g, path.sep)
       markdown:
         command: 'node tools/markdown.js'
@@ -227,7 +227,7 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'build-crx-channel', [
-    'shell:templates-crx-meta'
+    'shell:crx-meta'
     'concat:crx'
     'copy:crx'
     'zip-crx'
@@ -273,7 +273,7 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'build-userscript-channel', [
-    'shell:templates-userscript-meta'
+    'shell:userscript-meta'
     'concat:userscript'
   ]
 
