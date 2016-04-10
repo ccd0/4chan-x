@@ -17,66 +17,46 @@ module.exports = (grunt) ->
 
     BIN: ['node_modules', '.bin', ''].join(path.sep)
 
-    concat:
-      coffee:
-        src: [
-          'src/General/Config.coffee'
-          'src/General/Globals.coffee'
-          'src/General/$.coffee'
-          'src/classes/Callbacks.coffee'
-          'src/classes/Board.coffee'
-          'src/classes/Thread.coffee'
-          'src/classes/CatalogThread.coffee'
-          'src/classes/Post.coffee'
-          'src/classes/Clone.coffee'
-          'src/classes/DataBoard.coffee'
-          'src/classes/Notice.coffee'
-          'src/classes/RandomAccessList.coffee'
-          'src/classes/SimpleDict.coffee'
-          'src/classes/Set.coffee'
-          'src/classes/Connection.coffee'
-          'src/classes/Fetcher.coffee'
-          'src/General/Polyfill.coffee'
-          'src/General/Header.coffee'
-          'src/General/Index.coffee'
-          'src/General/Build.coffee'
-          'src/General/Get.coffee'
-          'src/General/UI.coffee'
-          'src/General/Notice.coffee'
-          'src/General/CrossOrigin.coffee'
-          'src/General/BuildTest.coffee'
-          'src/Filtering/*.coffee'
-          'src/Quotelinks/*.coffee'
-          'src/Posting/QR.coffee'
-          'src/Posting/Captcha.coffee'
-          'src/Posting/*.coffee'
-          'src/Images/*.coffee'
-          'src/Linkification/*.coffee'
-          'src/Menu/*.coffee'
-          'src/Monitoring/*.coffee'
-          'src/Archive/*.coffee'
-          'src/Miscellaneous/*.coffee'
-          'src/General/Settings.coffee'
-          'src/General/Main.coffee'
-        ]
-        dest: 'tmp/script.coffee'
-      crx:
-        files:
-          'testbuilds/crx<%= pkg.channel %>/script.js': [
-            'tmp/botproc.js'
-            'tmp/LICENSE'
-            'tmp/usestrict.js'
-            'tmp/script-crx.js'
-          ]
-      userscript:
-        files:
-          'testbuilds/<%= pkg.name %><%= pkg.channel %>.user.js': [
-            'tmp/botproc.js'
-            'testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js'
-            'tmp/LICENSE'
-            'tmp/usestrict.js'
-            'tmp/script-userscript.js'
-          ]
+    sources: grunt.file.expand [
+      'src/General/Config.coffee'
+      'src/General/Globals.coffee'
+      'src/General/$.coffee'
+      'src/classes/Callbacks.coffee'
+      'src/classes/Board.coffee'
+      'src/classes/Thread.coffee'
+      'src/classes/CatalogThread.coffee'
+      'src/classes/Post.coffee'
+      'src/classes/Clone.coffee'
+      'src/classes/DataBoard.coffee'
+      'src/classes/Notice.coffee'
+      'src/classes/RandomAccessList.coffee'
+      'src/classes/SimpleDict.coffee'
+      'src/classes/Set.coffee'
+      'src/classes/Connection.coffee'
+      'src/classes/Fetcher.coffee'
+      'src/General/Polyfill.coffee'
+      'src/General/Header.coffee'
+      'src/General/Index.coffee'
+      'src/General/Build.coffee'
+      'src/General/Get.coffee'
+      'src/General/UI.coffee'
+      'src/General/Notice.coffee'
+      'src/General/CrossOrigin.coffee'
+      'src/General/BuildTest.coffee'
+      'src/Filtering/*.coffee'
+      'src/Quotelinks/*.coffee'
+      'src/Posting/QR.coffee'
+      'src/Posting/Captcha.coffee'
+      'src/Posting/*.coffee'
+      'src/Images/*.coffee'
+      'src/Linkification/*.coffee'
+      'src/Menu/*.coffee'
+      'src/Monitoring/*.coffee'
+      'src/Archive/*.coffee'
+      'src/Miscellaneous/*.coffee'
+      'src/General/Settings.coffee'
+      'src/General/Main.coffee'
+    ]
 
     copy:
       crx:
@@ -112,9 +92,7 @@ module.exports = (grunt) ->
       general:
         command: """
           <%= BIN %>coffee tools/templates.coffee src/meta/jshint.json .jshintrc
-          <%= BIN %>coffee tools/templates.coffee src/meta/botproc.js tmp/botproc.js
-          <%= BIN %>coffee tools/templates.coffee LICENSE tmp/LICENSE
-          <%= BIN %>coffee tools/templates.coffee src/meta/usestrict.js tmp/usestrict.js
+          node tools/cat.js <%= sources.join(' ') %> tmp/script.coffee
         """.split('\n').join('&&')
       crx:
         command: """
@@ -123,10 +101,11 @@ module.exports = (grunt) ->
           <%= BIN %>coffee --no-header -o tmp -c src/General/eventPage.coffee
           <%= BIN %>jshint tmp/script-crx.js tmp/eventPage.js
         """.split('\n').join('&&')
-      'crx-meta':
+      'crx-channel':
         command: """
           <%= BIN %>coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates<%= pkg.channel %>.xml type=crx channel=<%= pkg.channel %>
           <%= BIN %>coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx<%= pkg.channel %>/manifest.json type=crx channel=<%= pkg.channel %>
+          node tools/cat.js src/meta/botproc.js LICENSE src/meta/usestrict.js tmp/script-crx.js testbuilds/crx<%= pkg.channel %>/script.js
         """.split('\n').join('&&')
       userscript:
         command: """
@@ -134,8 +113,11 @@ module.exports = (grunt) ->
           <%= BIN %>coffee --no-header -c tmp/script-userscript.coffee
           <%= BIN %>jshint tmp/script-userscript.js
         """.split('\n').join('&&')
-      'userscript-meta':
-        command: '<%= BIN %>coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js type=userscript channel=<%= pkg.channel %>'
+      'userscript-channel':
+        command: """
+          <%= BIN %>coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js type=userscript channel=<%= pkg.channel %>
+          node tools/cat.js src/meta/botproc.js testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js LICENSE src/meta/usestrict.js tmp/script-userscript.js testbuilds/<%= pkg.name %><%= pkg.channel %>.user.js
+        """.split('\n').join('&&')
       markdown:
         command: 'node tools/markdown.js'
       commit:
@@ -229,13 +211,11 @@ module.exports = (grunt) ->
   grunt.registerTask 'build', [
     'shell:npm'
     'shell:general'
-    'concat:coffee'
     'concurrent:build'
   ]
 
   grunt.registerTask 'build-crx-channel', [
-    'shell:crx-meta'
-    'concat:crx'
+    'shell:crx-channel'
     'copy:crx'
     'zip-crx'
   ]
@@ -279,19 +259,14 @@ module.exports = (grunt) ->
     'sign-channel:-noupdate'
   ]
 
-  grunt.registerTask 'build-userscript-channel', [
-    'shell:userscript-meta'
-    'concat:userscript'
-  ]
-
   grunt.registerTask 'build-userscript', [
     'shell:userscript'
     'set-channel'
-    'build-userscript-channel'
+    'shell:userscript-channel'
     'set-channel:-beta'
-    'build-userscript-channel'
+    'shell:userscript-channel'
     'set-channel:-noupdate'
-    'build-userscript-channel'
+    'shell:userscript-channel'
     'copy:install'
   ]
 
@@ -299,7 +274,6 @@ module.exports = (grunt) ->
     'shell:npm'
     'enable-tests'
     'shell:general'
-    'concat:coffee'
     'build-crx'
     'build-userscript'
   ]
