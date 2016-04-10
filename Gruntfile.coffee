@@ -16,7 +16,6 @@ module.exports = (grunt) ->
     pkg: loadPkg()
 
     concat:
-      options: process: (src) -> src.replace /\r\n/g, '\n'
       coffee:
         src: [
           'src/General/Config.coffee'
@@ -63,7 +62,7 @@ module.exports = (grunt) ->
         files:
           'testbuilds/crx<%= pkg.channel %>/script.js': [
             'src/meta/botproc.js'
-            'LICENSE'
+            'tmp/LICENSE'
             'src/meta/usestrict.js'
             'tmp/script-crx.js'
           ]
@@ -72,7 +71,7 @@ module.exports = (grunt) ->
           'testbuilds/<%= pkg.name %><%= pkg.channel %>.user.js': [
             'src/meta/botproc.js'
             'testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js'
-            'LICENSE'
+            'tmp/LICENSE'
             'src/meta/usestrict.js'
             'tmp/script-userscript.js'
           ]
@@ -110,8 +109,11 @@ module.exports = (grunt) ->
         stdout: true
         stderr: true
         failOnError: true
-      'templates-jshint':
-        command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/jshint.json .jshintrc'.replace(/\//g, path.sep)
+      general:
+        command: """
+          node_modules/.bin/coffee tools/templates.coffee src/meta/jshint.json .jshintrc
+          node_modules/.bin/coffee tools/templates.coffee LICENSE tmp/LICENSE
+        """.split('\n').join('&&').replace(/\//g, path.sep)
       crx:
         command: """
           node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee type=crx tests_enabled=<%= pkg.tests_enabled || "" %>
@@ -221,7 +223,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build', [
     'shell:npm'
-    'shell:templates-jshint'
+    'shell:general'
     'concat:coffee'
     'concurrent:build'
   ]
@@ -291,7 +293,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'build-tests', [
     'shell:npm'
     'enable-tests'
-    'shell:templates-jshint'
+    'shell:general'
     'concat:coffee'
     'build-crx'
     'build-userscript'
