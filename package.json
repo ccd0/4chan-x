@@ -43,14 +43,12 @@
     "suffix": {
       "stable": "",
       "beta": "-beta",
-      "noupdate": "-noupdate",
-      "dev": "-dev"
+      "noupdate": "-noupdate"
     },
     "namesuffix": {
       "stable": "",
       "beta": " beta",
-      "noupdate": "",
-      "dev": " dev"
+      "noupdate": ""
     },
     "min": {
       "chrome": "33",

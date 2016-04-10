@@ -93,7 +93,7 @@ module.exports = (grunt) ->
         expand: true
         filter: (src) ->
           pkg = grunt.config 'pkg'
-          grunt.file.isFile(src) and not grunt.file.isMatch(src, "testbuilds/#{pkg.name}#{pkg.meta.suffix.dev}.user.js") and not /\.crx\.zip$/.test(src)
+          grunt.file.isFile(src) and not /\.crx\.zip$/.test(src)
       install:
         files: if grunt.file.exists('install.json') then grunt.file.readJSON('install.json') else []
       web:
@@ -221,10 +221,7 @@ module.exports = (grunt) ->
       testbuilds: 'testbuilds'
       tmp: 'tmp'
       tmpcrx: 'testbuilds/updates<%= pkg.meta.suffix.noupdate %>.xml'
-      tmpuserscript: [
-        'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.noupdate %>.meta.js',
-        'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.dev %>.meta.js'
-      ]
+      tmpuserscript: 'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.noupdate %>.meta.js'
 
   require('load-grunt-tasks') grunt
 
@@ -308,8 +305,6 @@ module.exports = (grunt) ->
     'set-channel:beta'
     'build-userscript-channel'
     'set-channel:noupdate'
-    'build-userscript-channel'
-    'set-channel:dev'
     'build-userscript-channel'
     'clean:tmpuserscript'
     'copy:install'
