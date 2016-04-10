@@ -56,7 +56,6 @@
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-concat": "^1.0.0",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-watch": "^1.0.0",
     "grunt-shell": "^1.2.1",
     "jshint": "^2.9.1",
     "jszip": "^2.6.0",

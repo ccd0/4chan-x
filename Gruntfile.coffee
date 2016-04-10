@@ -200,19 +200,6 @@ module.exports = (grunt) ->
       shrinkwrap:
         command: 'node_modules/.bin/npm-shrinkwrap --dev'.replace(/\//g, path.sep)
 
-    watch:
-      options:
-        interrupt: true
-      all:
-        files: [
-          'Gruntfile.coffee'
-          'package.json'
-          'version.json'
-          'LICENSE'
-          'src/**/*'
-        ]
-        tasks: 'build'
-
     clean:
       builds: ['tmp', 'testbuilds', 'builds']
 

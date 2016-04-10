@@ -26,7 +26,6 @@ If you're reporting a bug, the more detail you can give, the better. If I can't 
 ### Build
 
 - Build with `grunt`.
-- You can continuously build with `grunt watch`.
 
 ### Contribute
 
