@@ -89,13 +89,13 @@ module.exports = (grunt) ->
           <%= BIN %>jshint tmp/script-crx.js tmp/eventPage.js
         """.split('\n').join('&&')
       'crx-channel':
-        command: """
-          <%= BIN %>coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates<%= pkg.channel %>.xml type=crx channel=<%= pkg.channel %>
-          <%= BIN %>coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx<%= pkg.channel %>/manifest.json type=crx channel=<%= pkg.channel %>
-          node tools/cat.js src/meta/botproc.js LICENSE src/meta/usestrict.js tmp/script-crx.js testbuilds/crx<%= pkg.channel %>/script.js
-          <%= icons.map(file => `node tools/cp.js src/meta/${file} testbuilds/crx${pkg.channel}/${file}`).join('&&') %>
-          node tools/cp.js tmp/eventPage.js testbuilds/crx<%= pkg.channel %>/eventPage.js
-          node tools/zip-crx.js <%= pkg.channel %>
+        command: (channel='') -> """
+          <%= BIN %>coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates#{channel}.xml type=crx channel=#{channel}
+          <%= BIN %>coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx#{channel}/manifest.json type=crx channel=#{channel}
+          node tools/cat.js src/meta/botproc.js LICENSE src/meta/usestrict.js tmp/script-crx.js testbuilds/crx#{channel}/script.js
+          <%= icons.map(file => `node tools/cp.js src/meta/${file} testbuilds/crx#{channel}/${file}`).join('&&') %>
+          node tools/cp.js tmp/eventPage.js testbuilds/crx#{channel}/eventPage.js
+          node tools/zip-crx.js #{channel}
         """.split('\n').join('&&')
       'copy-zip':
         command: 'node tools/cp.js testbuilds/<%= pkg.name %>-noupdate.crx.zip testbuilds/<%= pkg.name %>.zip'
@@ -106,9 +106,9 @@ module.exports = (grunt) ->
           <%= BIN %>jshint tmp/script-userscript.js
         """.split('\n').join('&&')
       'userscript-channel':
-        command: """
-          <%= BIN %>coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js type=userscript channel=<%= pkg.channel %>
-          node tools/cat.js src/meta/botproc.js testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js LICENSE src/meta/usestrict.js tmp/script-userscript.js testbuilds/<%= pkg.name %><%= pkg.channel %>.user.js
+        command: (channel='') -> """
+          <%= BIN %>coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %>#{channel}.meta.js type=userscript channel=#{channel}
+          node tools/cat.js src/meta/botproc.js testbuilds/<%= pkg.name %>#{channel}.meta.js LICENSE src/meta/usestrict.js tmp/script-userscript.js testbuilds/<%= pkg.name %>#{channel}.user.js
         """.split('\n').join('&&')
       install:
         command: 'node tools/install.js'
@@ -196,11 +196,6 @@ module.exports = (grunt) ->
     'build'
   ]
 
-  grunt.registerTask 'set-channel', 'Set the update channel', (channel='') ->
-    pkg = grunt.config 'pkg'
-    pkg.channel = channel
-    grunt.config 'pkg', pkg
-
   grunt.registerTask 'build', [
     'shell:npm'
     'shell:general'
@@ -209,12 +204,9 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build-crx', [
     'shell:crx'
-    'set-channel'
     'shell:crx-channel'
-    'set-channel:-beta'
-    'shell:crx-channel'
-    'set-channel:-noupdate'
-    'shell:crx-channel'
+    'shell:crx-channel:-beta'
+    'shell:crx-channel:-noupdate'
     'shell:copy-zip'
   ]
 
@@ -226,12 +218,9 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build-userscript', [
     'shell:userscript'
-    'set-channel'
     'shell:userscript-channel'
-    'set-channel:-beta'
-    'shell:userscript-channel'
-    'set-channel:-noupdate'
-    'shell:userscript-channel'
+    'shell:userscript-channel:-beta'
+    'shell:userscript-channel:-noupdate'
     'shell:install'
   ]
 
