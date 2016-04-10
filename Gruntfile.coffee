@@ -61,18 +61,18 @@ module.exports = (grunt) ->
       crx:
         files:
           'testbuilds/crx<%= pkg.channel %>/script.js': [
-            'src/meta/botproc.js'
+            'tmp/botproc.js'
             'tmp/LICENSE'
-            'src/meta/usestrict.js'
+            'tmp/usestrict.js'
             'tmp/script-crx.js'
           ]
       userscript:
         files:
           'testbuilds/<%= pkg.name %><%= pkg.channel %>.user.js': [
-            'src/meta/botproc.js'
+            'tmp/botproc.js'
             'testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js'
             'tmp/LICENSE'
-            'src/meta/usestrict.js'
+            'tmp/usestrict.js'
             'tmp/script-userscript.js'
           ]
 
@@ -112,7 +112,9 @@ module.exports = (grunt) ->
       general:
         command: """
           node_modules/.bin/coffee tools/templates.coffee src/meta/jshint.json .jshintrc
+          node_modules/.bin/coffee tools/templates.coffee src/meta/botproc.js tmp/botproc.js
           node_modules/.bin/coffee tools/templates.coffee LICENSE tmp/LICENSE
+          node_modules/.bin/coffee tools/templates.coffee src/meta/usestrict.js tmp/usestrict.js
         """.split('\n').join('&&').replace(/\//g, path.sep)
       crx:
         command: """
