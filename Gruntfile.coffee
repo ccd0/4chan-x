@@ -96,7 +96,7 @@ module.exports = (grunt) ->
       install:
         files: if grunt.file.exists('install.json') then grunt.file.readJSON('install.json') else []
       web:
-        src:  'test.html'
+        src:  '../<%= pkg.meta.path %>/test.html'
         dest: 'index.html'
 
     concurrent:
@@ -165,12 +165,10 @@ module.exports = (grunt) ->
           git checkout stable "builds/<%= pkg.name %>.*" builds/updates.xml
           git commit -am "Move <%= pkg.meta.name %> v<%= pkg.meta.version %> to stable channel."
         """.split('\n').join('&&')
-      'commit-web':
-        command: 'git commit -am "Build web page."'
       web:
         command: """
           git merge --no-commit -s ours master
-          git checkout master README.md index.html web.css img
+          git checkout master README.md web.css img
           git commit -am "Update web page."
         """.split('\n').join('&&')
       push:
@@ -363,19 +361,13 @@ module.exports = (grunt) ->
     'shell:markdown'
   ]
 
-  grunt.registerTask 'web', 'Move website changes to gh-pages.', ->
-    grunt.task.run 'shell:markdown'
-    # XXX Grunt seems to see test.html as nonexistent when it was just created.
-    if not grunt.file.exists('test.html') or grunt.file.read('test.html') isnt grunt.file.read('index.html')
-      grunt.task.run [
-        'copy:web'
-        'shell:commit-web'
-      ]
-    grunt.task.run [
-      'pushd'
-      'shell:web'
-      'popd'
-    ]
+  grunt.registerTask 'web', [
+    'shell:markdown'
+    'pushd'
+    'copy:web'
+    'shell:web'
+    'popd'
+  ]
 
   grunt.registerTask 'push', [
     'shell:push'
