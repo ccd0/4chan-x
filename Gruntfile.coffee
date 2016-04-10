@@ -232,12 +232,6 @@ module.exports = (grunt) ->
     'build'
   ]
 
-  grunt.registerTask 'set-build', 'Set the build type variable', (type) ->
-    pkg = grunt.config 'pkg'
-    pkg.type = type
-    grunt.config 'pkg', pkg
-    grunt.log.ok 'pkg.type = %s', type
-
   grunt.registerTask 'set-channel', 'Set the update channel', (channel) ->
     pkg = grunt.config 'pkg'
     pkg.channel = channel
@@ -263,7 +257,6 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'build-crx', [
-    'set-build:crx'
     'shell:crx'
     'set-channel:stable'
     'build-crx-channel'
@@ -309,7 +302,6 @@ module.exports = (grunt) ->
   ]
 
   grunt.registerTask 'build-userscript', [
-    'set-build:userscript'
     'shell:userscript'
     'set-channel:stable'
     'build-userscript-channel'
