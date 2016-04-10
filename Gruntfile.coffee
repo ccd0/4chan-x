@@ -87,13 +87,10 @@ module.exports = (grunt) ->
         src:  'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.noupdate %>.crx.zip'
         dest: 'testbuilds/<%= pkg.name %>.zip'
       builds:
-        cwd: 'testbuilds/'
-        src: '*'
+        src: ['testbuilds/*.js', 'testbuilds/*.crx', 'testbuilds/*.xml', 'testbuilds/<%= pkg.name %>.zip']
         dest: 'builds/'
         expand: true
-        filter: (src) ->
-          pkg = grunt.config 'pkg'
-          grunt.file.isFile(src) and not /\.crx\.zip$/.test(src)
+        flatten: true
       install:
         files: if grunt.file.exists('install.json') then grunt.file.readJSON('install.json') else []
       web:
