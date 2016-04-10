@@ -58,25 +58,16 @@ module.exports = (grunt) ->
       'src/General/Main.coffee'
     ]
 
+    icons: ['icon128.png', 'icon16.png', 'icon48.png']
+
+    builds:
+      ("4chan-X#{c}.crx updates#{c}.xml 4chan-X#{c}.user.js 4chan-X#{c}.meta.js" for c in ['', '-beta']).join(' ').split(' ').concat [
+        '4chan-X-noupdate.crx', '4chan-X-noupdate.user.js', '4chan-X.zip'
+      ]
+
     copy:
-      crx:
-        src:  ['src/meta/*.png', 'tmp/eventPage.js']
-        dest: 'testbuilds/crx<%= pkg.channel %>/'
-        expand:  true
-        flatten: true
-      zip:
-        src:  'testbuilds/<%= pkg.name %>-noupdate.crx.zip'
-        dest: 'testbuilds/<%= pkg.name %>.zip'
-      builds:
-        cwd: 'testbuilds/'
-        src: ['*.js', '*.crx', '*.xml', '<%= pkg.name %>.zip', '!*-noupdate.xml', '!*-noupdate.meta.js']
-        dest: 'builds/'
-        expand: true
       install:
         files: if grunt.file.exists('install.json') then grunt.file.readJSON('install.json') else []
-      web:
-        src:  '../<%= pkg.meta.path %>/test.html'
-        dest: 'index.html'
 
     concurrent:
       build: [
@@ -106,7 +97,11 @@ module.exports = (grunt) ->
           <%= BIN %>coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates<%= pkg.channel %>.xml type=crx channel=<%= pkg.channel %>
           <%= BIN %>coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx<%= pkg.channel %>/manifest.json type=crx channel=<%= pkg.channel %>
           node tools/cat.js src/meta/botproc.js LICENSE src/meta/usestrict.js tmp/script-crx.js testbuilds/crx<%= pkg.channel %>/script.js
+          <%= icons.map(file => `node tools/cp.js src/meta/${file} testbuilds/crx${pkg.channel}/${file}`).join('&&') %>
+          node tools/cp.js tmp/eventPage.js testbuilds/crx<%= pkg.channel %>/eventPage.js
         """.split('\n').join('&&')
+      'copy-zip':
+        command: 'node tools/cp.js testbuilds/<%= pkg.name %>-noupdate.crx.zip testbuilds/<%= pkg.name %>.zip'
       userscript:
         command: """
           <%= BIN %>coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee type=userscript tests_enabled=<%= pkg.tests_enabled || "" %>
@@ -118,6 +113,8 @@ module.exports = (grunt) ->
           <%= BIN %>coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js type=userscript channel=<%= pkg.channel %>
           node tools/cat.js src/meta/botproc.js testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js LICENSE src/meta/usestrict.js tmp/script-userscript.js testbuilds/<%= pkg.name %><%= pkg.channel %>.user.js
         """.split('\n').join('&&')
+      'copy-builds':
+        command: '<%= builds.map(file => `node tools/cp.js testbuilds/${file} builds/${file}`).join("&&") %>'
       markdown:
         command: 'node tools/markdown.js'
       commit:
@@ -153,6 +150,7 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       web:
         command: """
+          node ../<%= pkg.meta.path %>/tools/cp.js ../<%= pkg.meta.path %>/test.html index.html
           git merge --no-commit -s ours master
           git checkout master README.md web.css img
           git commit -am "Update web page."
@@ -216,7 +214,6 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build-crx-channel', [
     'shell:crx-channel'
-    'copy:crx'
     'zip-crx'
   ]
 
@@ -228,7 +225,7 @@ module.exports = (grunt) ->
     'build-crx-channel'
     'set-channel:-noupdate'
     'build-crx-channel'
-    'copy:zip'
+    'shell:copy-zip'
   ]
 
   grunt.registerTask 'zip-crx', 'Pack CRX contents in ZIP file', ->
@@ -281,7 +278,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'full', [
     'build'
     'sign'
-    'copy:builds'
+    'shell:copy-builds'
   ]
 
   grunt.registerTask 'tag', 'Tag a new release', (version) ->
@@ -330,7 +327,6 @@ module.exports = (grunt) ->
   grunt.registerTask 'web', [
     'shell:markdown'
     'pushd'
-    'copy:web'
     'shell:web'
     'popd'
   ]

@@ -50,6 +50,7 @@
     "coffee-script": "1.9.3",
     "crx": "^3.0.3",
     "font-awesome": "4.5.0",
+    "fs-extra": "^0.26.7",
     "glob": "^7.0.3",
     "grunt": "^1.0.1",
     "grunt-concurrent": "^2.3.0",
