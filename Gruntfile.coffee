@@ -87,10 +87,12 @@ module.exports = (grunt) ->
         src:  'testbuilds/<%= pkg.name %>-noupdate.crx.zip'
         dest: 'testbuilds/<%= pkg.name %>.zip'
       builds:
-        src: ['testbuilds/*.js', 'testbuilds/*.crx', 'testbuilds/*.xml', 'testbuilds/<%= pkg.name %>.zip']
+        cwd: 'testbuilds/'
+        src: ['*.js', '*.crx', '*.xml', '<%= pkg.name %>.zip']
         dest: 'builds/'
         expand: true
-        flatten: true
+        filter: (src) ->
+          not /-noupdate\.(xml|meta\.js)$/.test src
       install:
         files: if grunt.file.exists('install.json') then grunt.file.readJSON('install.json') else []
       web:
@@ -217,8 +219,6 @@ module.exports = (grunt) ->
       builds: 'builds'
       testbuilds: 'testbuilds'
       tmp: 'tmp'
-      tmpcrx: 'testbuilds/updates-noupdate.xml'
-      tmpuserscript: 'testbuilds/<%= pkg.name %>-noupdate.meta.js'
 
   require('load-grunt-tasks') grunt
 
@@ -259,7 +259,6 @@ module.exports = (grunt) ->
     'set-channel:-noupdate'
     'build-crx-channel'
     'copy:zip'
-    'clean:tmpcrx'
   ]
 
   grunt.registerTask 'zip-crx', 'Pack CRX contents in ZIP file', ->
@@ -303,7 +302,6 @@ module.exports = (grunt) ->
     'build-userscript-channel'
     'set-channel:-noupdate'
     'build-userscript-channel'
-    'clean:tmpuserscript'
     'copy:install'
   ]
 
