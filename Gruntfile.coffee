@@ -65,10 +65,6 @@ module.exports = (grunt) ->
         '4chan-X-noupdate.crx', '4chan-X-noupdate.user.js', '4chan-X.zip'
       ]
 
-    copy:
-      install:
-        files: if grunt.file.exists('install.json') then grunt.file.readJSON('install.json') else []
-
     concurrent:
       build: [
         'build-crx'
@@ -113,6 +109,8 @@ module.exports = (grunt) ->
           <%= BIN %>coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js type=userscript channel=<%= pkg.channel %>
           node tools/cat.js src/meta/botproc.js testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js LICENSE src/meta/usestrict.js tmp/script-userscript.js testbuilds/<%= pkg.name %><%= pkg.channel %>.user.js
         """.split('\n').join('&&')
+      install:
+        command: 'node tools/install.js'
       'copy-builds':
         command: '<%= builds.map(file => `node tools/cp.js testbuilds/${file} builds/${file}`).join("&&") %>'
       markdown:
@@ -264,7 +262,7 @@ module.exports = (grunt) ->
     'shell:userscript-channel'
     'set-channel:-noupdate'
     'shell:userscript-channel'
-    'copy:install'
+    'shell:install'
   ]
 
   grunt.registerTask 'build-tests', [
