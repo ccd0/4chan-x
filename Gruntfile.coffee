@@ -193,6 +193,8 @@ module.exports = (grunt) ->
           npm install --save-dev <%= Object.keys(pkg.devDependencies).filter(function(name) {return /^\\^/.test(pkg.devDependencies[name]);}).map(function(name) {return name+'@latest';}).join(' ') %>
           ./node_modules/.bin/npm-shrinkwrap --dev
         """.split('\n').join('&&').replace(/\//g, path.sep)
+      shrinkwrap:
+        command: './node_modules/.bin/npm-shrinkwrap --dev'
 
     watch:
       options:
