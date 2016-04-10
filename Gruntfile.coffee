@@ -115,24 +115,24 @@ module.exports = (grunt) ->
         command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/jshint.json .jshintrc'.replace(/\//g, path.sep)
       crx:
         command: """
-          node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee crx - <%= pkg.tests_enabled || "" %>
+          node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee type=crx tests_enabled=<%= pkg.tests_enabled || "" %>
           node_modules/.bin/coffee --no-header -c tmp/script-crx.coffee
           node_modules/.bin/coffee --no-header -o tmp -c src/General/eventPage.coffee
           node_modules/.bin/jshint tmp/script-crx.js tmp/eventPage.js
         """.split('\n').join('&&').replace(/\//g, path.sep)
       'templates-crx-meta':
         command: """
-          node_modules/.bin/coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates<%= pkg.meta.suffix[pkg.channel] %>.xml crx <%= pkg.channel %>
-          node_modules/.bin/coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/manifest.json crx <%= pkg.channel %>
+          node_modules/.bin/coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates<%= pkg.meta.suffix[pkg.channel] %>.xml type=crx channel=<%= pkg.channel %>
+          node_modules/.bin/coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx<%= pkg.meta.suffix[pkg.channel] %>/manifest.json type=crx channel=<%= pkg.channel %>
         """.split('\n').join('&&').replace(/\//g, path.sep)
       userscript:
         command: """
-          node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee userscript - <%= pkg.tests_enabled || "" %>
+          node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee type=userscript tests_enabled=<%= pkg.tests_enabled || "" %>
           node_modules/.bin/coffee --no-header -c tmp/script-userscript.coffee
           node_modules/.bin/jshint tmp/script-userscript.js
         """.split('\n').join('&&').replace(/\//g, path.sep)
       'templates-userscript-meta':
-        command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js userscript <%= pkg.channel %>'.replace(/\//g, path.sep)
+        command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js type=userscript channel=<%= pkg.channel %>'.replace(/\//g, path.sep)
       markdown:
         command: 'node tools/markdown.js'
       commit:

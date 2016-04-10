@@ -85,9 +85,9 @@ pkg.grunt = file:
   readJSON: (filename) -> JSON.parse read filename
   expand: glob.sync
 
-pkg.type = process.argv[4]
-pkg.channel = process.argv[5]
-pkg.tests_enabled = !!process.argv[6]
+for arg in process.argv[4..]
+  [key, val] = arg.match(/(.*?)=(.*)/)[1..]
+  pkg[key] = val
 
 dir = path.dirname process.argv[3]
 fs.mkdirSync dir unless fs.existsSync dir
