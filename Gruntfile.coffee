@@ -1,5 +1,4 @@
 path = require 'path'
-crx = require 'crx'
 
 module.exports = (grunt) ->
   grunt.util.linefeed = '\n'
@@ -113,6 +112,8 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       install:
         command: 'node tools/install.js'
+      sign:
+        command: (channel='') -> "node tools/sign.js #{channel}"
       'copy-builds':
         command: '<%= builds.map(file => `node tools/cp.js testbuilds/${file} builds/${file}`).join("&&") %>'
       markdown:
@@ -215,21 +216,10 @@ module.exports = (grunt) ->
     'shell:copy-zip'
   ]
 
-  grunt.registerTask 'sign-channel', 'Sign CRX package', (channel='') ->
-    done = @async()
-    pkg = grunt.config 'pkg'
-    privateKey = grunt.file.read "../#{pkg.meta.path}.keys/#{pkg.name}.pem"
-    archive    = grunt.file.read "testbuilds/#{pkg.name}#{channel}.crx.zip", {encoding: null}
-    extension = new crx {privateKey, loaded: true}
-    extension.pack(archive).then((data) ->
-      grunt.file.write "testbuilds/#{pkg.name}#{channel}.crx", data
-      done()
-    ).catch(done)
-
   grunt.registerTask 'sign', [
-    'sign-channel'
-    'sign-channel:-beta'
-    'sign-channel:-noupdate'
+    'shell:sign'
+    'shell:sign:-beta'
+    'shell:sign:-noupdate'
   ]
 
   grunt.registerTask 'build-userscript', [
