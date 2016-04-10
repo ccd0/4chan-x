@@ -189,7 +189,10 @@ module.exports = (grunt) ->
       store:
         command: 'node tools/webstore.js'
       captchas:
-        command: 'aws s3 cp captchas.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=0" --content-type "text/html; charset=utf-8"'
+        command: """
+          #{'node_modules/.bin/coffee tools/templates.coffee'.replace(/\//g, path.sep)} redirect.html captchas.html url=#{process.env.url || 'https://www.4chan.org/feedback'}
+          aws s3 cp captchas.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=0" --content-type "text/html; charset=utf-8"
+        """.split('\n').join('&&')
       npm:
         command: 'npm install'
       update:
@@ -408,9 +411,9 @@ module.exports = (grunt) ->
     'shell:store'
   ]
 
-  grunt.registerTask 'captchas', 'Set captcha complaints redirect.', (url='https://www.4chan.org/feedback') ->
-    grunt.file.write 'captchas.html', grunt.template.process(grunt.file.read('redirect.html'), data: {url})
-    grunt.task.run 'shell:captchas'
+  grunt.registerTask 'captchas', [
+    'shell:captchas'
+  ]
 
   grunt.registerTask 'setversion', 'Set the version number', (version) ->
     data = grunt.file.readJSON 'version.json'
