@@ -174,7 +174,10 @@ module.exports = (grunt) ->
           git commit -am "Update web page."
         """.split('\n').join('&&')
       push:
-        command: 'git push origin --tags -f && git push origin --all'
+        command: """
+          git push origin --tags -f
+          git push origin --all
+        """.split('\n').join('&&')
       aws:
         command: """
           aws s3 cp builds/ s3://<%= pkg.meta.awsBucket %>/builds/ --recursive --exclude "*" --include "*.js" --cache-control "max-age=600" --content-type "application/javascript; charset=utf-8"
