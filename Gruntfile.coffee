@@ -1,6 +1,5 @@
 path = require 'path'
 crx = require 'crx'
-JSZip = require 'jszip'
 
 module.exports = (grunt) ->
   grunt.util.linefeed = '\n'
@@ -97,6 +96,7 @@ module.exports = (grunt) ->
           node tools/cat.js src/meta/botproc.js LICENSE src/meta/usestrict.js tmp/script-crx.js testbuilds/crx<%= pkg.channel %>/script.js
           <%= icons.map(file => `node tools/cp.js src/meta/${file} testbuilds/crx${pkg.channel}/${file}`).join('&&') %>
           node tools/cp.js tmp/eventPage.js testbuilds/crx<%= pkg.channel %>/eventPage.js
+          node tools/zip-crx.js <%= pkg.channel %>
         """.split('\n').join('&&')
       'copy-zip':
         command: 'node tools/cp.js testbuilds/<%= pkg.name %>-noupdate.crx.zip testbuilds/<%= pkg.name %>.zip'
@@ -204,32 +204,16 @@ module.exports = (grunt) ->
     'concurrent:build'
   ]
 
-  grunt.registerTask 'build-crx-channel', [
-    'shell:crx-channel'
-    'zip-crx'
-  ]
-
   grunt.registerTask 'build-crx', [
     'shell:crx'
     'set-channel'
-    'build-crx-channel'
+    'shell:crx-channel'
     'set-channel:-beta'
-    'build-crx-channel'
+    'shell:crx-channel'
     'set-channel:-noupdate'
-    'build-crx-channel'
+    'shell:crx-channel'
     'shell:copy-zip'
   ]
-
-  grunt.registerTask 'zip-crx', 'Pack CRX contents in ZIP file', ->
-    pkg = grunt.config 'pkg'
-    zip = new JSZip()
-    for file in ['eventPage.js', 'icon128.png', 'icon16.png', 'icon48.png', 'manifest.json', 'script.js']
-      zip.file file, grunt.file.read("testbuilds/crx#{pkg.channel}/#{file}", {encoding: null}), {date: new Date(pkg.meta.date)}
-    output = zip.generate
-      type: 'nodebuffer'
-      compression: 'DEFLATE'
-      compressionOptions: {level: 9}
-    grunt.file.write "testbuilds/#{pkg.name}#{pkg.channel}.crx.zip", output
 
   grunt.registerTask 'sign-channel', 'Sign CRX package', (channel='') ->
     done = @async()
