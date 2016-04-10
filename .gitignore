@@ -8,3 +8,4 @@ test.html
 captchas.html
 install.json
 Gruntfile.js
+.jshintrc

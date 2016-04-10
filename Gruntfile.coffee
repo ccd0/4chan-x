@@ -111,11 +111,14 @@ module.exports = (grunt) ->
         stdout: true
         stderr: true
         failOnError: true
+      'templates-jshint':
+        command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/jshint.json .jshintrc'.replace(/\//g, path.sep)
       crx:
         command: """
           node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee crx - <%= pkg.tests_enabled || "" %>
           node_modules/.bin/coffee --no-header -c tmp/script-crx.coffee
           node_modules/.bin/coffee --no-header -o tmp -c src/General/eventPage.coffee
+          node_modules/.bin/jshint tmp/script-crx.js tmp/eventPage.js
         """.split('\n').join('&&').replace(/\//g, path.sep)
       'templates-crx-meta':
         command: """
@@ -126,6 +129,7 @@ module.exports = (grunt) ->
         command: """
           node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee userscript - <%= pkg.tests_enabled || "" %>
           node_modules/.bin/coffee --no-header -c tmp/script-userscript.coffee
+          node_modules/.bin/jshint tmp/script-userscript.js
         """.split('\n').join('&&').replace(/\//g, path.sep)
       'templates-userscript-meta':
         command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.meta.suffix[pkg.channel] %>.meta.js userscript <%= pkg.channel %>'.replace(/\//g, path.sep)
@@ -219,37 +223,6 @@ module.exports = (grunt) ->
         'testbuilds/<%= pkg.name %><%= pkg.meta.suffix.dev %>.meta.js'
       ]
 
-    jshint:
-      options:
-        undef:   true
-        unused:  true
-        eqnull:  true
-        expr:    true
-        shadow:  true
-        sub:     true
-        scripturl: true
-        browser: true
-        devel:   true
-        nonstandard: true
-        # XXX Temporarily suppress lots of existing warnings until we fix them.
-        '-W018': true
-        '-W084': true
-        '-W083': true
-        '-W093': true
-        globals: do ->
-          globals =
-            MediaError:   true
-            Set:          true
-            GM_info:      true
-            cloneInto:    true
-            unsafeWindow: true
-            chrome:       true
-          pkg = grunt.file.readJSON 'package.json'
-          globals[v] = true for v in pkg.meta.grants
-          globals
-      crx: ['tmp/script-crx.js', 'tmp/eventPage.js']
-      userscript: 'tmp/script-userscript.js'
-
   require('load-grunt-tasks') grunt
 
   grunt.registerTask 'default', [
@@ -274,6 +247,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build', [
     'shell:npm'
+    'shell:templates-jshint'
     'concat:coffee'
     'concurrent:build'
   ]
@@ -288,7 +262,6 @@ module.exports = (grunt) ->
   grunt.registerTask 'build-crx', [
     'set-build:crx'
     'shell:crx'
-    'jshint:crx'
     'set-channel:stable'
     'build-crx-channel'
     'set-channel:beta'
@@ -335,7 +308,6 @@ module.exports = (grunt) ->
   grunt.registerTask 'build-userscript', [
     'set-build:userscript'
     'shell:userscript'
-    'jshint:userscript'
     'set-channel:stable'
     'build-userscript-channel'
     'set-channel:beta'
@@ -351,6 +323,7 @@ module.exports = (grunt) ->
   grunt.registerTask 'build-tests', [
     'shell:npm'
     'enable-tests'
+    'shell:templates-jshint'
     'concat:coffee'
     'build-crx'
     'build-userscript'
