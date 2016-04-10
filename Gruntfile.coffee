@@ -15,6 +15,8 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: loadPkg()
 
+    BIN: ['node_modules', '.bin', ''].join(path.sep)
+
     concat:
       coffee:
         src: [
@@ -109,31 +111,31 @@ module.exports = (grunt) ->
         failOnError: true
       general:
         command: """
-          node_modules/.bin/coffee tools/templates.coffee src/meta/jshint.json .jshintrc
-          node_modules/.bin/coffee tools/templates.coffee src/meta/botproc.js tmp/botproc.js
-          node_modules/.bin/coffee tools/templates.coffee LICENSE tmp/LICENSE
-          node_modules/.bin/coffee tools/templates.coffee src/meta/usestrict.js tmp/usestrict.js
-        """.split('\n').join('&&').replace(/\//g, path.sep)
+          <%= BIN %>coffee tools/templates.coffee src/meta/jshint.json .jshintrc
+          <%= BIN %>coffee tools/templates.coffee src/meta/botproc.js tmp/botproc.js
+          <%= BIN %>coffee tools/templates.coffee LICENSE tmp/LICENSE
+          <%= BIN %>coffee tools/templates.coffee src/meta/usestrict.js tmp/usestrict.js
+        """.split('\n').join('&&')
       crx:
         command: """
-          node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee type=crx tests_enabled=<%= pkg.tests_enabled || "" %>
-          node_modules/.bin/coffee --no-header -c tmp/script-crx.coffee
-          node_modules/.bin/coffee --no-header -o tmp -c src/General/eventPage.coffee
-          node_modules/.bin/jshint tmp/script-crx.js tmp/eventPage.js
-        """.split('\n').join('&&').replace(/\//g, path.sep)
+          <%= BIN %>coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee type=crx tests_enabled=<%= pkg.tests_enabled || "" %>
+          <%= BIN %>coffee --no-header -c tmp/script-crx.coffee
+          <%= BIN %>coffee --no-header -o tmp -c src/General/eventPage.coffee
+          <%= BIN %>jshint tmp/script-crx.js tmp/eventPage.js
+        """.split('\n').join('&&')
       'crx-meta':
         command: """
-          node_modules/.bin/coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates<%= pkg.channel %>.xml type=crx channel=<%= pkg.channel %>
-          node_modules/.bin/coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx<%= pkg.channel %>/manifest.json type=crx channel=<%= pkg.channel %>
-        """.split('\n').join('&&').replace(/\//g, path.sep)
+          <%= BIN %>coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates<%= pkg.channel %>.xml type=crx channel=<%= pkg.channel %>
+          <%= BIN %>coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx<%= pkg.channel %>/manifest.json type=crx channel=<%= pkg.channel %>
+        """.split('\n').join('&&')
       userscript:
         command: """
-          node_modules/.bin/coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee type=userscript tests_enabled=<%= pkg.tests_enabled || "" %>
-          node_modules/.bin/coffee --no-header -c tmp/script-userscript.coffee
-          node_modules/.bin/jshint tmp/script-userscript.js
-        """.split('\n').join('&&').replace(/\//g, path.sep)
+          <%= BIN %>coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee type=userscript tests_enabled=<%= pkg.tests_enabled || "" %>
+          <%= BIN %>coffee --no-header -c tmp/script-userscript.coffee
+          <%= BIN %>jshint tmp/script-userscript.js
+        """.split('\n').join('&&')
       'userscript-meta':
-        command: 'node_modules/.bin/coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js type=userscript channel=<%= pkg.channel %>'.replace(/\//g, path.sep)
+        command: '<%= BIN %>coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %><%= pkg.channel %>.meta.js type=userscript channel=<%= pkg.channel %>'
       markdown:
         command: 'node tools/markdown.js'
       commit:
@@ -192,7 +194,7 @@ module.exports = (grunt) ->
         command: 'node tools/webstore.js'
       captchas:
         command: """
-          #{'node_modules/.bin/coffee tools/templates.coffee'.replace(/\//g, path.sep)} redirect.html captchas.html url=#{process.env.url || 'https://www.4chan.org/feedback'}
+          <%= BIN %>coffee tools/templates.coffee redirect.html captchas.html url=#{process.env.url || 'https://www.4chan.org/feedback'}
           aws s3 cp captchas.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=0" --content-type "text/html; charset=utf-8"
         """.split('\n').join('&&')
       npm:
@@ -200,10 +202,10 @@ module.exports = (grunt) ->
       update:
         command: """
           npm install --save-dev <%= Object.keys(pkg.devDependencies).filter(function(name) {return /^\\^/.test(pkg.devDependencies[name]);}).map(function(name) {return name+'@latest';}).join(' ') %>
-          node_modules/.bin/npm-shrinkwrap --dev
-        """.split('\n').join('&&').replace(/\//g, path.sep)
+          <%= BIN %>npm-shrinkwrap --dev
+        """.split('\n').join('&&')
       shrinkwrap:
-        command: 'node_modules/.bin/npm-shrinkwrap --dev'.replace(/\//g, path.sep)
+        command: '<%= BIN %>npm-shrinkwrap --dev'
 
     clean:
       builds: ['tmp', 'testbuilds', 'builds']
