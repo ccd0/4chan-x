@@ -171,8 +171,6 @@ module.exports = (grunt) ->
           aws s3 cp index.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=600" --content-type "text/html; charset=utf-8"
           aws s3 cp web.css s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=600" --content-type "text/css; charset=utf-8"
         """.split('\n').join('&&')
-      store:
-        command: 'node tools/webstore.js'
       captchas:
         command: """
           <%= BIN %>coffee tools/templates.coffee redirect.html captchas.html url=#{process.env.url || 'https://www.4chan.org/feedback'}
@@ -187,6 +185,17 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       shrinkwrap:
         command: '<%= BIN %>npm-shrinkwrap --dev'
+
+    webstore_upload:
+      accounts:
+        default:
+          publish: true
+          client_id: '<%= grunt.file.readJSON("../"+pkg.meta.path+".keys/chrome-store.json").installed.client_id %>'
+          client_secret: '<%= grunt.file.readJSON("../"+pkg.meta.path+".keys/chrome-store.json").installed.client_secret %>'
+      extensions:
+        extension:
+          appID: '<%= pkg.meta.chromeStoreID %>'
+          zip: 'builds/<%= pkg.name %>.zip'
 
   require('load-grunt-tasks') grunt
 
@@ -294,8 +303,8 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'store', [
     'pushd'
+    'webstore_upload'
     'popd'
-    'shell:store'
   ]
 
   grunt.registerTask 'captchas', [

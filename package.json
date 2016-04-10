@@ -55,13 +55,13 @@
     "grunt": "^1.0.1",
     "grunt-concurrent": "^2.3.0",
     "grunt-shell": "^1.2.1",
+    "grunt-webstore-upload": "^0.8.10",
     "jshint": "^2.9.1",
     "jszip": "^2.6.0",
     "load-grunt-tasks": "^3.5.0",
     "lodash": "^4.9.0",
     "marked": "^0.3.5",
-    "npm-shrinkwrap": "^200.5.1",
-    "webstore-upload": "^0.0.7"
+    "npm-shrinkwrap": "^200.5.1"
   },
   "repository": {
     "type": "git",
