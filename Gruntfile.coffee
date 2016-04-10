@@ -214,9 +214,7 @@ module.exports = (grunt) ->
         tasks: 'build'
 
     clean:
-      builds: 'builds'
-      testbuilds: 'testbuilds'
-      tmp: 'tmp'
+      builds: ['tmp', 'testbuilds', 'builds']
 
   require('load-grunt-tasks') grunt
 
