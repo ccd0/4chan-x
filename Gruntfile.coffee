@@ -85,7 +85,7 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       crx:
         command: """
-          <%= BIN %>coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee type=crx tests_enabled=<%= pkg.tests_enabled || "" %>
+          <%= BIN %>coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee type=crx
           <%= BIN %>coffee --no-header -c tmp/script-crx.coffee
           <%= BIN %>coffee --no-header -o tmp -c src/General/eventPage.coffee
           <%= BIN %>jshint tmp/script-crx.js tmp/eventPage.js
@@ -102,7 +102,7 @@ module.exports = (grunt) ->
         command: 'node tools/cp.js testbuilds/<%= pkg.name %>-noupdate.crx.zip testbuilds/<%= pkg.name %>.zip'
       userscript:
         command: """
-          <%= BIN %>coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee type=userscript tests_enabled=<%= pkg.tests_enabled || "" %>
+          <%= BIN %>coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee type=userscript
           <%= BIN %>coffee --no-header -c tmp/script-userscript.coffee
           <%= BIN %>jshint tmp/script-userscript.js
         """.split('\n').join('&&')
@@ -198,11 +198,6 @@ module.exports = (grunt) ->
     pkg.channel = channel
     grunt.config 'pkg', pkg
 
-  grunt.registerTask 'enable-tests', 'Include testing code', () ->
-    pkg = grunt.config 'pkg'
-    pkg.tests_enabled = true
-    grunt.config 'pkg', pkg
-
   grunt.registerTask 'build', [
     'shell:npm'
     'shell:general'
@@ -262,14 +257,6 @@ module.exports = (grunt) ->
     'set-channel:-noupdate'
     'shell:userscript-channel'
     'shell:install'
-  ]
-
-  grunt.registerTask 'build-tests', [
-    'shell:npm'
-    'enable-tests'
-    'shell:general'
-    'build-crx'
-    'build-userscript'
   ]
 
   grunt.registerTask 'clean', [

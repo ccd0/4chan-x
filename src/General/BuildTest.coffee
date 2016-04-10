@@ -1,4 +1,4 @@
-<% if (tests_enabled) { %>
+<% if (process.env.tests_enabled) { %>
 BuildTest =
   init: ->
     return if !Conf['Menu'] or g.VIEW not in ['index', 'thread']

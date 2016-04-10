@@ -3,7 +3,7 @@ class Post
   toString: -> @ID
 
   constructor: (root, @thread, @board) ->
-    <% if (tests_enabled) { %>
+    <% if (process.env.tests_enabled) { %>
     root2 = root.cloneNode true
     for el in $$ '.mobile', root2
       $.rm el

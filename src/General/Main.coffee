@@ -469,7 +469,7 @@ Main =
     ['Banner',                    Banner]
     ['Flash Features',            Flash]
     ['Reply Pruning',             ReplyPruning]
-    <% if (tests_enabled) { %>
+    <% if (process.env.tests_enabled) { %>
     ['Build Test',                BuildTest]
     <% } %>
   ]
