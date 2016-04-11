@@ -21,11 +21,11 @@ module.exports = (grunt) ->
         stderr: true
         failOnError: true
       build:
-        command: 'make'
+        command: 'make -j'
       full:
         command: """
           make clean
-          make all
+          make -j all
         """.split('\n').join('&&')
       clean:
         command: 'make clean'
