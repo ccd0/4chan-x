@@ -1,5 +1,4 @@
-fs = require 'fs'
-path = require 'path'
+fs = require 'fs-extra'
 _ = require 'lodash'
 glob = require 'glob'
 
@@ -89,9 +88,6 @@ for arg in process.argv[4..]
   [key, val] = arg.match(/(.*?)=(.*)/)[1..]
   pkg[key] = val
 
-dir = path.dirname process.argv[3]
-fs.mkdirSync dir unless fs.existsSync dir
-
 text = read process.argv[2]
 text = _.template(text)(pkg)
-fs.writeFileSync process.argv[3], text
+fs.outputFileSync process.argv[3], text
