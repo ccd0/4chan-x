@@ -1,5 +1,11 @@
 name := 4chan-X
-BIN := node_modules/.bin/
+
+ifeq "$(OS)" "Windows_NT"
+  BIN := $(subst /,\,node_modules/.bin/)
+else
+  BIN := node_modules/.bin/
+endif
+
 coffee := $(BIN)coffee -c --no-header
 coffee_deps := node_modules/coffee-script/package.json
 template := $(BIN)coffee tools/templates.coffee
