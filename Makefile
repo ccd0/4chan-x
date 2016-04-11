@@ -163,12 +163,15 @@ builds/% : testbuilds/% $(jshint) $(cp_deps)
 test.html : README.md template.jst tools/markdown.js node_modules/marked/package.json node_modules/lodash/package.json
 	node tools/markdown.js
 
-.jshintrc: tools/templates.coffee src/meta/jshint.json $(template_deps)
+.jshintrc : tools/templates.coffee src/meta/jshint.json $(template_deps)
 	$(template) src/meta/jshint.json .jshintrc
 
 .events/jshint.% : tmp/%.js $(jshint_deps) | .events
 	$(BIN)jshint $<
 	echo -> $@
+
+install.json :
+	echo {}> $@
 
 .events/install : $(testbuilds) $(jshint) install.json tools/install.js node_modules/fs-extra/package.json | .events
 	node tools/install.js
