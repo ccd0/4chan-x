@@ -92,10 +92,8 @@ module.exports = (grunt) ->
       update:
         command: """
           npm install --save-dev <%= Object.keys(pkg.devDependencies).filter(function(name) {return /^\\^/.test(pkg.devDependencies[name]);}).map(function(name) {return name+'@latest';}).join(' ') %>
-          <%= BIN %>npm-shrinkwrap --dev
+          npm shrinkwrap --dev
         """.split('\n').join('&&')
-      shrinkwrap:
-        command: '<%= BIN %>npm-shrinkwrap --dev'
 
     webstore_upload:
       accounts:
