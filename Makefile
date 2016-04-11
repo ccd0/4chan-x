@@ -4,10 +4,12 @@ ifeq "$(OS)" "Windows_NT"
   BIN := $(subst /,\,node_modules/.bin/)
   RMDIR := -rmdir /s /q
   RM := -del
+  CP = mkdir $(subst /,\,$(dir $@)) & copy /y $(subst /,\,$<) $(subst /,\,$@)
 else
   BIN := node_modules/.bin/
   RMDIR := rm -rf
   RM := rm -rf
+  CP = mkdir -p $(dir $@) && cp $< $@
 endif
 
 coffee := $(BIN)coffee -c --no-header
@@ -17,8 +19,6 @@ template_deps := \
  package.json version.json \
  tools/templates.coffee \
  node_modules/coffee-script/package.json node_modules/fs-extra/package.json node_modules/lodash/package.json node_modules/glob/package.json
-cp := node tools/cp.js
-cp_deps := tools/cp.js node_modules/fs-extra/package.json
 cat := node tools/cat.js
 cat_deps := tools/cat.js node_modules/fs-extra/package.json
 jshint_deps := .jshintrc node_modules/jshint/package.json
@@ -126,11 +126,11 @@ define rules_channel
 testbuilds/crx$1/script.js : src/meta/botproc.js LICENSE src/meta/usestrict.js tmp/script-crx.js $(cat_deps)
 	$(cat) src/meta/botproc.js LICENSE src/meta/usestrict.js tmp/script-crx.js $$@
 
-testbuilds/crx$1/eventPage.js : tmp/eventPage.js $(cp_deps)
-	$(cp) $$< $$@
+testbuilds/crx$1/eventPage.js : tmp/eventPage.js
+	$$(CP)
 
-testbuilds/crx$1/icon%.png : src/meta/icon%.png $(cp_deps)
-	$(cp) $$< $$@
+testbuilds/crx$1/icon%.png : src/meta/icon%.png
+	$$(CP)
 
 testbuilds/crx$1/manifest.json : src/meta/manifest.json $(template_deps)
 	$(template) $$< $$@ type=crx channel=$1
@@ -158,11 +158,11 @@ $(eval $(call rules_channel,))
 $(eval $(call rules_channel,-beta))
 $(eval $(call rules_channel,-noupdate))
 
-testbuilds/$(name).zip : testbuilds/$(name)-noupdate.crx.zip $(cp_deps)
-	$(cp) $< $@
+testbuilds/$(name).zip : testbuilds/$(name)-noupdate.crx.zip
+	$(CP)
 
-builds/% : testbuilds/% $(jshint) $(cp_deps)
-	$(cp) $< $@
+builds/% : testbuilds/% $(jshint)
+	$(CP)
 
 test.html : README.md template.jst tools/markdown.js node_modules/marked/package.json node_modules/lodash/package.json
 	node tools/markdown.js

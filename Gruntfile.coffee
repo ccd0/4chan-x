@@ -64,7 +64,6 @@ module.exports = (grunt) ->
         """.split('\n').join('&&')
       web:
         command: """
-          node ../<%= pkg.meta.path %>/tools/cp.js ../<%= pkg.meta.path %>/test.html index.html
           git merge --no-commit -s ours master
           git checkout master README.md web.css img
           git commit -am "Update web page."
@@ -176,9 +175,14 @@ module.exports = (grunt) ->
     'popd'
   ]
 
+  grunt.registerTask 'copy-web', 'Copy test.html into distribution worktree.', ->
+    pkg = grunt.config('pkg')
+    grunt.file.copy "../#{pkg.meta.path}/test.html", 'index.html'
+
   grunt.registerTask 'web', [
     'shell:markdown'
     'pushd'
+    'copy-web'
     'shell:web'
     'popd'
   ]
