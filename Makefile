@@ -2,8 +2,12 @@ name := 4chan-X
 
 ifeq "$(OS)" "Windows_NT"
   BIN := $(subst /,\,node_modules/.bin/)
+  RMDIR := -rmdir /s /q
+  RM := -del
 else
   BIN := node_modules/.bin/
+  RMDIR := rm -rf
+  RM := rm -rf
 endif
 
 coffee := $(BIN)coffee -c --no-header
@@ -179,16 +183,14 @@ install.json :
 
 .SECONDARY :
 
-.PHONY: default all clean testbuilds builds jshint install
+.PHONY: default all clean cleanall testbuilds builds jshint install
 
-ifeq "$(OS)" "Windows_NT"
-  clean :
-	-rmdir /s /q tmp testbuilds builds .events
-	-del .jshintrc .tests_enabled
-else
-  clean :
-	rm -rf tmp testbuilds builds .events .jshintrc .tests_enabled
-endif
+clean :
+	$(RMDIR) tmp testbuilds .events
+	$(RM) .jshintrc .tests_enabled
+
+cleanall : clean
+	$(RMDIR) builds
 
 testbuilds : $(testbuilds)
 

@@ -24,7 +24,7 @@ module.exports = (grunt) ->
         command: 'make -j'
       full:
         command: """
-          make clean
+          make cleanall
           make -j all
         """.split('\n').join('&&')
       clean:
