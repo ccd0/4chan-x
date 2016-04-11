@@ -84,7 +84,7 @@ builds := \
 
 default : install
 
-all : builds
+all : builds install
 
 node_modules/%/package.json : npm-shrinkwrap.json
 	npm install $*
