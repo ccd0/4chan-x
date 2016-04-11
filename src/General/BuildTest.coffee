@@ -1,4 +1,4 @@
-<% if (process.env.tests_enabled) { %>
+<% if (grunt.file.readJSON('.tests_enabled')) { %>
 BuildTest =
   init: ->
     return if !Conf['Menu'] or g.VIEW not in ['index', 'thread']

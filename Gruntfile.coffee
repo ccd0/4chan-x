@@ -76,6 +76,10 @@ module.exports = (grunt) ->
         failOnError: true
       clean:
         command: 'node tools/clean.js'
+      'tests-false':
+        command: 'echo false> .tests_enabled'
+      'tests-true':
+        command: 'echo true> .tests_enabled'
       general:
         command: """
           <%= BIN %>coffee tools/templates.coffee src/meta/jshint.json .jshintrc
@@ -205,6 +209,14 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build', [
     'shell:npm'
+    'shell:tests-false'
+    'shell:general'
+    'concurrent:build'
+  ]
+
+  grunt.registerTask 'build-tests', [
+    'shell:npm'
+    'shell:tests-true'
     'shell:general'
     'concurrent:build'
   ]

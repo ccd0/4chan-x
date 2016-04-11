@@ -3,7 +3,7 @@ class Post
   toString: -> @ID
 
   constructor: (root, @thread, @board) ->
-    <% if (process.env.tests_enabled) { %>
+    <% if (grunt.file.readJSON('.tests_enabled')) { %>
     root2 = root.cloneNode true
     for el in $$ '.mobile', root2
       $.rm el

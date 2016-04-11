@@ -9,3 +9,4 @@ captchas.html
 install.json
 Gruntfile.js
 .jshintrc
+.tests_enabled
