@@ -76,10 +76,6 @@ module.exports = (grunt) ->
         failOnError: true
       clean:
         command: 'node tools/clean.js'
-      'tests-false':
-        command: 'echo false> .tests_enabled'
-      'tests-true':
-        command: 'echo true> .tests_enabled'
       general:
         command: """
           <%= BIN %>coffee tools/templates.coffee src/meta/jshint.json .jshintrc
@@ -207,16 +203,23 @@ module.exports = (grunt) ->
     'build'
   ]
 
+  grunt.registerTask 'set-tests', 'Set whether to include testing code', (value) ->
+    try
+      oldValue = grunt.file.readJSON '.tests_enabled'
+    catch
+    unless oldValue is JSON.parse value
+      grunt.file.write '.tests_enabled', value
+
   grunt.registerTask 'build', [
     'shell:npm'
-    'shell:tests-false'
+    'set-tests:false'
     'shell:general'
     'concurrent:build'
   ]
 
   grunt.registerTask 'build-tests', [
     'shell:npm'
-    'shell:tests-true'
+    'set-tests:true'
     'shell:general'
     'concurrent:build'
   ]
