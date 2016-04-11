@@ -1,9 +1,13 @@
 name := 4chan-X
 
+clean := tmp testbuilds builds .jshintrc .tests_enabled .events
+
 ifeq "$(OS)" "Windows_NT"
   BIN := $(subst /,\,node_modules/.bin/)
+  clean : ; del /s /q $(clean)
 else
   BIN := node_modules/.bin/
+  clean : ; rm -r $(clean)
 endif
 
 coffee := $(BIN)coffee -c --no-header
@@ -177,9 +181,6 @@ test.html : README.md template.jst tools/markdown.js node_modules/marked/package
 .SECONDARY :
 
 .PHONY: default all clean testbuilds builds jshint install
-
-clean : tools/clean.js node_modules/fs-extra/package.json
-	node tools/clean.js
 
 testbuilds : $(testbuilds)
 
