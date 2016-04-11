@@ -97,7 +97,7 @@ default : install
 all : builds install
 
 .events :
-	mkdir .events
+	mkdir $@
 
 .events/npm : npm-shrinkwrap.json | .events
 	npm install
