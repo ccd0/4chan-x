@@ -3,12 +3,12 @@ name := 4chan-X
 ifeq "$(OS)" "Windows_NT"
   BIN := $(subst /,\,node_modules/.bin/)
   clean :
-	rmdir /s /q tmp testbuilds builds .events
-	del .jshintrc .tests_enabled
+	-rmdir /s /q tmp testbuilds builds .events
+	-del .jshintrc .tests_enabled
 else
   BIN := node_modules/.bin/
   clean :
-	rm -r tmp testbuilds builds .events .jshintrc .tests_enabled
+	rm -rf tmp testbuilds builds .events .jshintrc .tests_enabled
 endif
 
 coffee := $(BIN)coffee -c --no-header
