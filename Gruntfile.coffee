@@ -15,109 +15,22 @@ module.exports = (grunt) ->
 
     BIN: ['node_modules', '.bin', ''].join(path.sep)
 
-    sources: grunt.file.expand [
-      'src/General/Config.coffee'
-      'src/General/Globals.coffee'
-      'src/General/$.coffee'
-      'src/classes/Callbacks.coffee'
-      'src/classes/Board.coffee'
-      'src/classes/Thread.coffee'
-      'src/classes/CatalogThread.coffee'
-      'src/classes/Post.coffee'
-      'src/classes/Clone.coffee'
-      'src/classes/DataBoard.coffee'
-      'src/classes/Notice.coffee'
-      'src/classes/RandomAccessList.coffee'
-      'src/classes/SimpleDict.coffee'
-      'src/classes/Set.coffee'
-      'src/classes/Connection.coffee'
-      'src/classes/Fetcher.coffee'
-      'src/General/Polyfill.coffee'
-      'src/General/Header.coffee'
-      'src/General/Index.coffee'
-      'src/General/Build.coffee'
-      'src/General/Get.coffee'
-      'src/General/UI.coffee'
-      'src/General/Notice.coffee'
-      'src/General/CrossOrigin.coffee'
-      'src/General/BuildTest.coffee'
-      'src/Filtering/*.coffee'
-      'src/Quotelinks/*.coffee'
-      'src/Posting/QR.coffee'
-      'src/Posting/Captcha.coffee'
-      'src/Posting/*.coffee'
-      'src/Images/*.coffee'
-      'src/Linkification/*.coffee'
-      'src/Menu/*.coffee'
-      'src/Monitoring/*.coffee'
-      'src/Archive/*.coffee'
-      'src/Miscellaneous/*.coffee'
-      'src/General/Settings.coffee'
-      'src/General/Main.coffee'
-    ]
-
-    icons: ['icon128.png', 'icon16.png', 'icon48.png']
-
-    builds:
-      ("4chan-X#{c}.crx updates#{c}.xml 4chan-X#{c}.user.js 4chan-X#{c}.meta.js" for c in ['', '-beta']).join(' ').split(' ').concat [
-        '4chan-X-noupdate.crx', '4chan-X-noupdate.user.js', '4chan-X.zip'
-      ]
-
-    concurrent:
-      build: [
-        'build-crx'
-        'build-userscript'
-      ]
-
     shell:
       options:
         stdout: true
         stderr: true
         failOnError: true
+      build:
+        command: 'make'
+      full:
+        command: """
+          make clean
+          make all
+        """.split('\n').join('&&')
       clean:
-        command: 'node tools/clean.js'
-      general:
-        command: """
-          <%= BIN %>coffee tools/templates.coffee src/meta/jshint.json .jshintrc
-          node tools/cat.js <%= sources.join(' ') %> tmp/script.coffee
-        """.split('\n').join('&&')
-      crx:
-        command: """
-          <%= BIN %>coffee tools/templates.coffee tmp/script.coffee tmp/script-crx.coffee type=crx
-          <%= BIN %>coffee --no-header -c tmp/script-crx.coffee
-          <%= BIN %>coffee --no-header -o tmp -c src/General/eventPage.coffee
-          <%= BIN %>jshint tmp/script-crx.js tmp/eventPage.js
-        """.split('\n').join('&&')
-      'crx-channel':
-        command: (channel='') -> """
-          <%= BIN %>coffee tools/templates.coffee src/meta/updates.xml testbuilds/updates#{channel}.xml type=crx channel=#{channel}
-          <%= BIN %>coffee tools/templates.coffee src/meta/manifest.json testbuilds/crx#{channel}/manifest.json type=crx channel=#{channel}
-          node tools/cat.js src/meta/botproc.js LICENSE src/meta/usestrict.js tmp/script-crx.js testbuilds/crx#{channel}/script.js
-          <%= icons.map(file => `node tools/cp.js src/meta/${file} testbuilds/crx#{channel}/${file}`).join('&&') %>
-          node tools/cp.js tmp/eventPage.js testbuilds/crx#{channel}/eventPage.js
-          node tools/zip-crx.js #{channel}
-        """.split('\n').join('&&')
-      'copy-zip':
-        command: 'node tools/cp.js testbuilds/<%= pkg.name %>-noupdate.crx.zip testbuilds/<%= pkg.name %>.zip'
-      userscript:
-        command: """
-          <%= BIN %>coffee tools/templates.coffee tmp/script.coffee tmp/script-userscript.coffee type=userscript
-          <%= BIN %>coffee --no-header -c tmp/script-userscript.coffee
-          <%= BIN %>jshint tmp/script-userscript.js
-        """.split('\n').join('&&')
-      'userscript-channel':
-        command: (channel='') -> """
-          <%= BIN %>coffee tools/templates.coffee src/meta/metadata.js testbuilds/<%= pkg.name %>#{channel}.meta.js type=userscript channel=#{channel}
-          node tools/cat.js src/meta/botproc.js testbuilds/<%= pkg.name %>#{channel}.meta.js LICENSE src/meta/usestrict.js tmp/script-userscript.js testbuilds/<%= pkg.name %>#{channel}.user.js
-        """.split('\n').join('&&')
-      install:
-        command: 'node tools/install.js'
-      sign:
-        command: (channel='') -> "node tools/sign.js #{channel}"
-      'copy-builds':
-        command: '<%= builds.map(file => `node tools/cp.js testbuilds/${file} builds/${file}`).join("&&") %>'
+        command: 'make clean'
       markdown:
-        command: 'node tools/markdown.js'
+        command: 'make test.html'
       commit:
         command: """
           git commit -am "Release <%= pkg.meta.name %> v<%= pkg.meta.version %>."
@@ -176,8 +89,6 @@ module.exports = (grunt) ->
           <%= BIN %>coffee tools/templates.coffee redirect.html captchas.html url=#{process.env.url || 'https://www.4chan.org/feedback'}
           aws s3 cp captchas.html s3://<%= pkg.meta.awsBucket %> --cache-control "max-age=0" --content-type "text/html; charset=utf-8"
         """.split('\n').join('&&')
-      npm:
-        command: 'npm install'
       update:
         command: """
           npm install --save-dev <%= Object.keys(pkg.devDependencies).filter(function(name) {return /^\\^/.test(pkg.devDependencies[name]);}).map(function(name) {return name+'@latest';}).join(' ') %>
@@ -203,6 +114,9 @@ module.exports = (grunt) ->
     'build'
   ]
 
+  for task in ['clean', 'markdown', 'push', 'captchas']
+    grunt.registerTask task, ["shell:#{task}"]
+
   grunt.registerTask 'set-tests', 'Set whether to include testing code', (value) ->
     try
       oldValue = grunt.file.readJSON '.tests_enabled'
@@ -211,49 +125,18 @@ module.exports = (grunt) ->
       grunt.file.write '.tests_enabled', value
 
   grunt.registerTask 'build', [
-    'shell:npm'
     'set-tests:false'
-    'shell:general'
-    'concurrent:build'
+    'shell:build'
   ]
 
   grunt.registerTask 'build-tests', [
-    'shell:npm'
     'set-tests:true'
-    'shell:general'
-    'concurrent:build'
-  ]
-
-  grunt.registerTask 'build-crx', [
-    'shell:crx'
-    'shell:crx-channel'
-    'shell:crx-channel:-beta'
-    'shell:crx-channel:-noupdate'
-    'shell:copy-zip'
-  ]
-
-  grunt.registerTask 'sign', [
-    'shell:sign'
-    'shell:sign:-beta'
-    'shell:sign:-noupdate'
-  ]
-
-  grunt.registerTask 'build-userscript', [
-    'shell:userscript'
-    'shell:userscript-channel'
-    'shell:userscript-channel:-beta'
-    'shell:userscript-channel:-noupdate'
-    'shell:install'
-  ]
-
-  grunt.registerTask 'clean', [
-    'shell:clean'
+    'shell:build'
   ]
 
   grunt.registerTask 'full', [
-    'build'
-    'sign'
-    'shell:copy-builds'
+    'set-tests:false'
+    'shell:full'
   ]
 
   grunt.registerTask 'tag', 'Tag a new release', (version) ->
@@ -295,19 +178,11 @@ module.exports = (grunt) ->
     'popd'
   ]
 
-  grunt.registerTask 'markdown', [
-    'shell:markdown'
-  ]
-
   grunt.registerTask 'web', [
     'shell:markdown'
     'pushd'
     'shell:web'
     'popd'
-  ]
-
-  grunt.registerTask 'push', [
-    'shell:push'
   ]
 
   grunt.registerTask 'aws', [
@@ -320,10 +195,6 @@ module.exports = (grunt) ->
     'pushd'
     'webstore_upload'
     'popd'
-  ]
-
-  grunt.registerTask 'captchas', [
-    'shell:captchas'
   ]
 
   grunt.registerTask 'setversion', 'Set the version number', (version) ->
