@@ -112,7 +112,7 @@ module.exports = (grunt) ->
     'build'
   ]
 
-  for task in ['clean', 'markdown', 'push', 'captchas']
+  for task in ['clean', 'markdown', 'push', 'captchas', 'update']
     grunt.registerTask task, ["shell:#{task}"]
 
   grunt.registerTask 'set-tests', 'Set whether to include testing code', (value) ->
