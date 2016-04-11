@@ -10,3 +10,4 @@ install.json
 Gruntfile.js
 .jshintrc
 .tests_enabled
+.events

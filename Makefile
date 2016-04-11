@@ -77,17 +77,30 @@ imports := \
  .tests_enabled
 
 builds := \
- $(foreach c,. -beta.,$(name)$(c)crx updates$(c)xml $(name)$(c)user.js $(name)$(c)meta.js) \
- $(name)-noupdate.crx \
- $(name)-noupdate.user.js \
- $(name).zip
+ $(foreach f, \
+  $(foreach c,. -beta.,$(name)$(c)crx updates$(c)xml $(name)$(c)user.js $(name)$(c)meta.js) \
+  $(name)-noupdate.crx \
+  $(name)-noupdate.user.js \
+  $(name).zip \
+ ,builds/$(f))
+
+testbuilds := $(foreach f,$(subst .crx,.crx.zip,$(builds)),test$(f))
+
+jshint := $(foreach f,script-crx eventPage script-userscript,.events/jshint.$(f))
 
 default : install
 
 all : builds install
 
-node_modules/%/package.json : npm-shrinkwrap.json
-	npm install $*
+.events :
+	mkdir .events
+
+.events/npm : npm-shrinkwrap.json | .events
+	npm install
+	echo -> $@
+
+node_modules/%/package.json : .events/npm
+	
 
 .tests_enabled :
 	echo false> .tests_enabled
@@ -144,7 +157,7 @@ $(eval $(call rules_channel,-noupdate))
 testbuilds/$(name).zip : testbuilds/$(name)-noupdate.crx.zip $(cp_deps)
 	$(cp) $< $@
 
-builds/% : testbuilds/% jshint $(cp_deps)
+builds/% : testbuilds/% $(jshint) $(cp_deps)
 	$(cp) $< $@
 
 test.html : README.md template.jst tools/markdown.js node_modules/marked/package.json node_modules/lodash/package.json
@@ -153,6 +166,14 @@ test.html : README.md template.jst tools/markdown.js node_modules/marked/package
 .jshintrc: tools/templates.coffee src/meta/jshint.json $(template_deps)
 	$(template) src/meta/jshint.json .jshintrc
 
+.events/jshint.% : tmp/%.js $(jshint_deps) | .events
+	$(BIN)jshint $<
+	echo -> $@
+
+.events/install : $(testbuilds) $(jshint) install.json tools/install.js node_modules/fs-extra/package.json | .events
+	node tools/install.js
+	echo -> $@
+
 .SECONDARY :
 
 .PHONY: default all clean testbuilds builds jshint install
@@ -160,12 +181,10 @@ test.html : README.md template.jst tools/markdown.js node_modules/marked/package
 clean : tools/clean.js node_modules/fs-extra/package.json
 	node tools/clean.js
 
-testbuilds : $(foreach f,$(subst .crx,.crx.zip,$(builds)),testbuilds/$(f))
+testbuilds : $(testbuilds)
 
-builds : $(foreach f,$(builds),builds/$(f))
+builds : $(builds)
 
-jshint : tmp/script-crx.js tmp/eventPage.js tmp/script-userscript.js $(jshint_deps)
-	$(BIN)jshint tmp/script-crx.js tmp/eventPage.js tmp/script-userscript.js
+jshint : $(jshint)
 
-install : testbuilds jshint install.json tools/install.js node_modules/fs-extra/package.json
-	node tools/install.js
+install : .events/install
