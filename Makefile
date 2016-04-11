@@ -160,7 +160,7 @@ test.html : README.md template.jst tools/markdown.js node_modules/marked/package
 clean : tools/clean.js node_modules/fs-extra/package.json
 	node tools/clean.js
 
-testbuilds : $(foreach f,$(builds),testbuilds/$(f))
+testbuilds : $(foreach f,$(subst .crx,.crx.zip,$(builds)),testbuilds/$(f))
 
 builds : $(foreach f,$(builds),builds/$(f))
 
