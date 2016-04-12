@@ -186,7 +186,7 @@ test.html : README.md template.jst tools/markdown.js node_modules/marked/package
 install.json :
 	echo {}> $@
 
-.events/install : $(testbds) $(jshint) install.json tools/install.js node_modules/fs-extra/package.json | .events
+.events/install : $(testbds) $(jshint) install.json tools/install.js | .events
 	node tools/install.js
 	echo -> $@
 
