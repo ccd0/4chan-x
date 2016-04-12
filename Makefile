@@ -22,7 +22,7 @@ cat := node tools/cat.js
 cat_deps := tools/cat.js
 jshint_deps := .jshintrc node_modules/jshint/package.json
 
-groups := 0 1 2 3 4 5 6 7 8 9 10 11 12 13
+parts := 0 1 2 3 4 5 6 7 8 9 10 11 12 13
 
 sources0 := \
  src/General/Config.coffee \
@@ -79,7 +79,7 @@ sources13 := \
  src/General/Settings.coffee \
  src/General/Main.coffee
 
-sources := $(foreach i,$(groups),$(sources$(i)))
+sources := $(foreach i,$(parts),$(sources$(i)))
 
 imports := \
  node_modules/font-awesome/package.json \
@@ -127,7 +127,7 @@ node_modules/%/package.json : .events/npm
 .tests_enabled :
 	echo false> .tests_enabled
 
-define rules_group
+define rules_part
 
 tmp/parts/script$1.coffee : $$(sources$1) $(cat_deps) | tmp/parts
 	$(cat) $$(sources$1) $$@
@@ -140,10 +140,10 @@ tmp/parts/script$1-%.js : tmp/parts/script$1-%.coffee $(coffee_deps)
 
 endef
 
-$(foreach i,$(groups),$(eval $(call rules_group,$(i))))
+$(foreach i,$(parts),$(eval $(call rules_part,$(i))))
 
-tmp/script-%.js : $(foreach i,$(groups),tmp/parts/script$(i)-%.js) tools/cat-coffee.js
-	node tools/cat-coffee.js $(foreach i,$(groups),tmp/parts/script$(i)-$*.js) $@
+tmp/script-%.js : $(foreach i,$(parts),tmp/parts/script$(i)-%.js) tools/cat-coffee.js
+	node tools/cat-coffee.js $(foreach i,$(parts),tmp/parts/script$(i)-$*.js) $@
 
 tmp/eventPage.js : src/General/eventPage.coffee $(coffee_deps) | tmp
 	$(coffee) -o tmp src/General/eventPage.coffee
@@ -207,7 +207,7 @@ tmp/parts/.jshintrc : src/meta/jshint.json $(template_deps) | tmp/parts
 	$(BIN)jshint $<
 	echo -> $@
 
-.events/jshint_parts.% : tmp/parts/%.js tmp/parts/.jshintrc node_modules/jshint/package.json | .events
+.events/jshint.% : tmp/parts/%.js tmp/parts/.jshintrc node_modules/jshint/package.json | .events
 	$(BIN)jshint $<
 	echo -> $@
 
