@@ -80,7 +80,7 @@ imports := \
  $(wildcard src/css/*.css) \
  .tests_enabled
 
-builds := \
+bds := \
  $(foreach f, \
   $(foreach c,. -beta.,$(name)$(c)crx updates$(c)xml $(name)$(c)user.js $(name)$(c)meta.js) \
   $(name)-noupdate.crx \
@@ -88,13 +88,13 @@ builds := \
   $(name).zip \
  ,builds/$(f))
 
-testbuilds := $(foreach f,$(subst .crx,.crx.zip,$(builds)),test$(f))
+testbds := $(foreach f,$(subst .crx,.crx.zip,$(bds)),test$(f))
 
 jshint := $(foreach f,script-crx eventPage script-userscript,.events/jshint.$(f))
 
 default : install
 
-all : builds install
+all : bds install
 
 .events :
 	mkdir $@
@@ -177,13 +177,13 @@ test.html : README.md template.jst tools/markdown.js node_modules/marked/package
 install.json :
 	echo {}> $@
 
-.events/install : $(testbuilds) $(jshint) install.json tools/install.js node_modules/fs-extra/package.json | .events
+.events/install : $(testbds) $(jshint) install.json tools/install.js node_modules/fs-extra/package.json | .events
 	node tools/install.js
 	echo -> $@
 
 .SECONDARY :
 
-.PHONY: default all clean cleanall testbuilds builds jshint install
+.PHONY: default all clean cleanall testbds bds jshint install
 
 clean :
 	$(RMDIR) tmp testbuilds .events
@@ -192,9 +192,9 @@ clean :
 cleanall : clean
 	$(RMDIR) builds
 
-testbuilds : $(testbuilds)
+testbds : $(testbds)
 
-builds : $(builds)
+bds : $(bds)
 
 jshint : $(jshint)
 
