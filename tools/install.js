@@ -1,8 +1,8 @@
-var fs = require('fs-extra');
+var fs = require('fs');
 
-var installMap = fs.readJsonSync('install.json');
+var installMap = JSON.parse(fs.readFileSync('install.json', 'utf8'));
 for (var src in installMap) {
   for (var dest of installMap[src]) {
-    fs.copySync(src, dest);
+    fs.writeFileSync(dest, fs.readFileSync(src));
   }
 }
