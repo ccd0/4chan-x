@@ -36,7 +36,7 @@ sources00 := \
 sources01 := \
  src/General/$$.coffee \
  src/General/CrossOrigin.coffee \
-  src/Images/ImageCommon.coffee
+ src/Images/ImageCommon.coffee
 sources02 := \
  src/classes/Callbacks.coffee \
  src/classes/Board.coffee \
