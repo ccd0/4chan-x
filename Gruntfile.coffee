@@ -105,7 +105,8 @@ module.exports = (grunt) ->
           appID: '<%= pkg.meta.chromeStoreID %>'
           zip: 'builds/<%= pkg.name %>.zip'
 
-  require('load-grunt-tasks') grunt
+  grunt.loadNpmTasks 'grunt-shell'
+  grunt.loadNpmTasks 'grunt-webstore-upload'
 
   grunt.registerTask 'default', [
     'build'

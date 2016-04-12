@@ -55,7 +55,6 @@
     "grunt-webstore-upload": "^0.8.10",
     "jshint": "^2.9.1",
     "jszip": "^2.6.0",
-    "load-grunt-tasks": "^3.5.0",
     "lodash": "^4.10.0",
     "marked": "^0.3.5"
   },
