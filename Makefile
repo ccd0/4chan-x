@@ -22,11 +22,15 @@ cat := node tools/cat.js
 cat_deps := tools/cat.js
 jshint_deps := .jshintrc node_modules/jshint/package.json
 
-sources := \
+groups := 0 1 2 3 4 5 6 7 8 9 10 11 12 13
+
+sources0 := \
  src/General/Config.coffee \
- src/General/Globals.coffee \
+ src/General/Globals.coffee
+sources1 := \
  src/General/$$.coffee \
- src/General/CrossOrigin.coffee \
+ src/General/CrossOrigin.coffee
+sources2 := \
  src/classes/Callbacks.coffee \
  src/classes/Board.coffee \
  src/classes/Thread.coffee \
@@ -39,30 +43,43 @@ sources := \
  src/classes/SimpleDict.coffee \
  src/classes/ShimSet.coffee \
  src/classes/Connection.coffee \
- src/classes/Fetcher.coffee \
+ src/classes/Fetcher.coffee
+sources3 := \
  src/General/Polyfill.coffee \
  src/General/Header.coffee \
  src/General/Index.coffee \
  src/General/Build.coffee \
  src/General/Get.coffee \
  src/General/UI.coffee \
- src/General/BuildTest.coffee \
- $(sort $(wildcard src/Filtering/*.coffee)) \
- $(sort $(wildcard src/Quotelinks/*.coffee)) \
+ src/General/BuildTest.coffee
+sources4 := \
+ $(sort $(wildcard src/Filtering/*.coffee))
+sources5 := \
+ $(sort $(wildcard src/Quotelinks/*.coffee))
+sources6 := \
  src/Posting/QR.coffee \
  src/Posting/Captcha.coffee \
  $(sort $(wildcard src/Posting/Captcha.*.coffee)) \
  src/Posting/PassLink.coffee \
  src/Posting/PostSuccessful.coffee \
- $(sort $(wildcard src/Posting/QR.*.coffee)) \
- $(sort $(wildcard src/Images/*.coffee)) \
- $(sort $(wildcard src/Linkification/*.coffee)) \
- $(sort $(wildcard src/Menu/*.coffee)) \
- $(sort $(wildcard src/Monitoring/*.coffee)) \
- $(sort $(wildcard src/Archive/*.coffee)) \
- $(sort $(wildcard src/Miscellaneous/*.coffee)) \
+ $(sort $(wildcard src/Posting/QR.*.coffee))
+sources7 := \
+ $(sort $(wildcard src/Images/*.coffee))
+sources8 := \
+ $(sort $(wildcard src/Linkification/*.coffee))
+sources9 := \
+ $(sort $(wildcard src/Menu/*.coffee))
+sources10 := \
+ $(sort $(wildcard src/Monitoring/*.coffee))
+sources11 := \
+ $(sort $(wildcard src/Archive/*.coffee))
+sources12 := \
+ $(sort $(wildcard src/Miscellaneous/*.coffee))
+sources13 := \
  src/General/Settings.coffee \
  src/General/Main.coffee
+
+sources := $(foreach i,$(groups),$(sources$(i)))
 
 imports := \
  node_modules/font-awesome/package.json \
@@ -91,11 +108,13 @@ testbds := $(foreach f,$(subst .crx,.crx.zip,$(bds)),test$(f))
 
 jshint := $(foreach f,script-crx eventPage script-userscript,.events/jshint.$(f))
 
+jshint_parts := $(foreach t,crx userscript,$(foreach i,$(parts),.events/jshint.script$(i)-$(t))) .events/jshint.eventPage
+
 default : install
 
 all : bds install
 
-.events tmp testbuilds builds :
+.events tmp tmp/parts testbuilds builds :
 	$(MKDIR)
 
 .events/npm : npm-shrinkwrap.json | .events
@@ -108,14 +127,23 @@ node_modules/%/package.json : .events/npm
 .tests_enabled :
 	echo false> .tests_enabled
 
-tmp/script.coffee : $(sources) $(cat_deps) | tmp
-	$(cat) $(sources) $@
+define rules_group
 
-tmp/script-%.coffee : tmp/script.coffee $(imports) $(template_deps)
-	$(template) $< $@ type=$*
+tmp/parts/script$1.coffee : $$(sources$1) $(cat_deps) | tmp/parts
+	$(cat) $$(sources$1) $$@
 
-tmp/script-%.js : tmp/script-%.coffee $(coffee_deps)
-	$(coffee) $<
+tmp/parts/script$1-%.coffee : tmp/parts/script$1.coffee $(imports) $(template_deps)
+	$(template) $$< $$@ type=$$*
+
+tmp/parts/script$1-%.js : tmp/parts/script$1-%.coffee $(coffee_deps)
+	$(coffee) $$<
+
+endef
+
+$(foreach i,$(groups),$(eval $(call rules_group,$(i))))
+
+tmp/script-%.js : $(foreach i,$(groups),tmp/parts/script$(i)-%.js) tools/cat-coffee.js
+	node tools/cat-coffee.js $(foreach i,$(groups),tmp/parts/script$(i)-$*.js) $@
 
 tmp/eventPage.js : src/General/eventPage.coffee $(coffee_deps) | tmp
 	$(coffee) -o tmp src/General/eventPage.coffee
@@ -169,23 +197,30 @@ builds/% : testbuilds/% $(jshint) | builds
 test.html : README.md template.jst tools/markdown.js node_modules/marked/package.json node_modules/lodash/package.json
 	node tools/markdown.js
 
-.jshintrc : src/meta/jshint.json $(template_deps)
-	$(template) $< .jshintrc
+tmp/parts/.jshintrc : src/meta/jshint.json $(template_deps) | tmp/parts
+	$(template) $< $@ stage=parts
 
-.events/jshint.% : tmp/%.js $(jshint_deps) | .events
+.jshintrc : src/meta/jshint.json $(template_deps)
+	$(template) $< $@ stage=full
+
+.events/jshint.% : tmp/%.js .jshintrc node_modules/jshint/package.json | .events
+	$(BIN)jshint $<
+	echo -> $@
+
+.events/jshint_parts.% : tmp/parts/%.js tmp/parts/.jshintrc node_modules/jshint/package.json | .events
 	$(BIN)jshint $<
 	echo -> $@
 
 install.json :
 	echo {}> $@
 
-.events/install : $(testbds) $(jshint) install.json tools/install.js | .events
+.events/install : $(testbds) $(jshint_parts) install.json tools/install.js | .events
 	node tools/install.js
 	echo -> $@
 
 .SECONDARY :
 
-.PHONY: default all clean cleanall testbds bds jshint install
+.PHONY: default all clean cleanall testbds bds jshint jshint_parts install
 
 clean :
 	$(RMDIR) tmp testbuilds .events
@@ -199,5 +234,7 @@ testbds : $(testbds)
 bds : $(bds)
 
 jshint : $(jshint)
+
+jshint_parts : $(jshint_parts)
 
 install : .events/install

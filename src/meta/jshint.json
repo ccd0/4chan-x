@@ -19,7 +19,17 @@
     "cloneInto":    true,
     "unsafeWindow": true,
     "chrome":       true<%=
-  readJSON('package.json').meta.grants.map(x => `,\n    "${x}": true`).join('')
-%>
+  meta.grants.map(x => `,\n    "${x}": true`
+).join('')
+%><% if (stage === 'parts') { %>
+  meta.globals.map(x => `,\n    "${x}": true`
+<% } %><% if (stage === 'parts') { %>
+  fs.readdirSync('src')
+    .map(x => fs.readdirSync(`src/${x}`))
+    .reduce((x,y) => x.concat(y))
+    .filter(x => /^[$A-Z]\w*\.coffee/.test(x))
+    .map(x => x.split('.')[0])
+    .map(x => `,\n    "${x}": true`
+<% } %>
   }
 }

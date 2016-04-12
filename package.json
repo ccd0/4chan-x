@@ -40,6 +40,15 @@
       "GM_openInTab",
       "GM_xmlhttpRequest"
     ],
+    "globals": [
+      "$$",
+      "c",
+      "Conf",
+      "d",
+      "doc",
+      "E",
+      "g"
+    ],
     "min": {
       "chrome": "33",
       "firefox": "26",
