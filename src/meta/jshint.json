@@ -3,7 +3,6 @@
   "unused":  true,
   "eqnull":  true,
   "expr":    true,
-  "shadow":  true,
   "sub":     true,
   "scripturl": true,
   "browser": true,
