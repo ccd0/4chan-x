@@ -24,7 +24,7 @@ jshint_deps := .jshintrc node_modules/jshint/package.json
 
 parts := 00 01 02 03 04 05 06 07 08 09 10 11 12 13
 
-parts_type := 01 07 13
+parts_type := 01 13
 parts_common := $(filter-out $(parts_type),$(parts))
 parts_crx        := $(sort $(foreach i,$(parts_common),$(i)-common) $(foreach i,$(parts_type),$(i)-crx))
 parts_userscript := $(sort $(foreach i,$(parts_common),$(i)-common) $(foreach i,$(parts_type),$(i)-userscript))
@@ -35,7 +35,8 @@ sources00 := \
  src/General/Globals.coffee
 sources01 := \
  src/General/$$.coffee \
- src/General/CrossOrigin.coffee
+ src/General/CrossOrigin.coffee \
+  src/Images/ImageCommon.coffee
 sources02 := \
  src/classes/Callbacks.coffee \
  src/classes/Board.coffee \
@@ -70,7 +71,7 @@ sources06 := \
  src/Posting/PostSuccessful.coffee \
  $(sort $(wildcard src/Posting/QR.*.coffee))
 sources07 := \
- $(sort $(wildcard src/Images/*.coffee))
+ $(sort $(filter-out %/ImageCommon.coffee,$(wildcard src/Images/*.coffee)))
 sources08 := \
  $(sort $(wildcard src/Linkification/*.coffee))
 sources09 := \
