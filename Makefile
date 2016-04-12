@@ -5,11 +5,13 @@ ifeq "$(OS)" "Windows_NT"
   RMDIR := -rmdir /s /q
   RM := -del
   CP = copy /y $(subst /,\,$<) $(subst /,\,$@)
+  MKDIR = mkdir $(subst /,\,$@)
 else
   BIN := node_modules/.bin/
   RMDIR := rm -rf
   RM := rm -rf
   CP = cp $< $@
+  MKDIR = mkdir $@
 endif
 
 coffee := $(BIN)coffee -c --no-header
@@ -93,8 +95,8 @@ default : install
 
 all : bds install
 
-.events :
-	mkdir $@
+.events tmp testbuilds builds :
+	$(MKDIR)
 
 .events/npm : npm-shrinkwrap.json | .events
 	npm install
@@ -105,9 +107,6 @@ node_modules/%/package.json : .events/npm
 
 .tests_enabled :
 	echo false> .tests_enabled
-
-tmp :
-	mkdir $@
 
 tmp/script.coffee : $(sources) $(cat_deps) | tmp
 	$(cat) $(sources) $@
@@ -121,13 +120,10 @@ tmp/script-%.js : tmp/script-%.coffee $(coffee_deps)
 tmp/eventPage.js : src/General/eventPage.coffee $(coffee_deps) | tmp
 	$(coffee) -o tmp src/General/eventPage.coffee
 
-testbuilds :
-	mkdir $@
-
 define rules_channel
 
 testbuilds/crx$1 : | testbuilds
-	mkdir $$@
+	$$(MKDIR)
 
 testbuilds/crx$1/script.js : src/meta/botproc.js LICENSE src/meta/usestrict.js tmp/script-crx.js $(cat_deps) | testbuilds/crx$1
 	$(cat) src/meta/botproc.js LICENSE src/meta/usestrict.js tmp/script-crx.js $$@
@@ -166,9 +162,6 @@ $(eval $(call rules_channel,-noupdate))
 
 testbuilds/$(name).zip : testbuilds/$(name)-noupdate.crx.zip
 	$(CP)
-
-builds :
-	mkdir $@
 
 builds/% : testbuilds/% $(jshint) | builds
 	$(CP)
