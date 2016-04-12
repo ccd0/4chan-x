@@ -26,6 +26,7 @@ sources := \
  src/General/Config.coffee \
  src/General/Globals.coffee \
  src/General/$$.coffee \
+ src/General/CrossOrigin.coffee \
  src/classes/Callbacks.coffee \
  src/classes/Board.coffee \
  src/classes/Thread.coffee \
@@ -45,7 +46,6 @@ sources := \
  src/General/Build.coffee \
  src/General/Get.coffee \
  src/General/UI.coffee \
- src/General/CrossOrigin.coffee \
  src/General/BuildTest.coffee \
  $(sort $(wildcard src/Filtering/*.coffee)) \
  $(sort $(wildcard src/Quotelinks/*.coffee)) \
@@ -60,8 +60,7 @@ sources := \
  $(sort $(wildcard src/Menu/*.coffee)) \
  $(sort $(wildcard src/Monitoring/*.coffee)) \
  $(sort $(wildcard src/Archive/*.coffee)) \
- src/Miscellaneous/PSAHiding.coffee \
- $(filter-out src/Miscellaneous/PSAHiding.coffee,$(sort $(wildcard src/Miscellaneous/*.coffee))) \
+ $(sort $(wildcard src/Miscellaneous/*.coffee)) \
  src/General/Settings.coffee \
  src/General/Main.coffee
 
