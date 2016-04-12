@@ -11,7 +11,7 @@ else
   RMDIR := rm -rf
   RM := rm -rf
   CP = cp $< $@
-  MKDIR = mkdir $@
+  MKDIR = mkdir -p $@
 endif
 
 coffee := $(BIN)coffee -c --no-header
@@ -122,7 +122,7 @@ tmp/eventPage.js : src/General/eventPage.coffee $(coffee_deps) | tmp
 
 define rules_channel
 
-testbuilds/crx$1 : | testbuilds
+testbuilds/crx$1 :
 	$$(MKDIR)
 
 testbuilds/crx$1/script.js : src/meta/botproc.js LICENSE src/meta/usestrict.js tmp/script-crx.js $(cat_deps) | testbuilds/crx$1
