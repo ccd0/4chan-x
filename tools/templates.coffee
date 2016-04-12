@@ -1,4 +1,4 @@
-fs = require 'fs-extra'
+fs = require 'fs'
 _ = require 'lodash'
 
 # disable ES6 delimiters
@@ -84,4 +84,4 @@ for arg in process.argv[4..]
 
 text = read process.argv[2]
 text = _.template(text)(pkg)
-fs.outputFileSync process.argv[3], text
+fs.writeFileSync process.argv[3], text
