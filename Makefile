@@ -96,6 +96,8 @@ imports := \
  $(wildcard src/css/*.css) \
  .tests_enabled
 
+crx_contents := script.js eventPage.js icon16.png icon48.png icon128.png manifest.json
+
 bds := \
  $(foreach f, \
   $(foreach c,. -beta.,$(name)$(c)crx updates$(c)xml $(name)$(c)user.js $(name)$(c)meta.js) \
@@ -104,7 +106,7 @@ bds := \
   $(name).zip \
  ,builds/$(f))
 
-testbds := $(foreach f,$(subst .crx,.crx.zip,$(bds)),test$(f))
+testbds := $(foreach f,$(filter-out %.crx %.zip,$(bds)),test$(f)) $(foreach t,crx crx-beta crx-noupdate,$(foreach f,$(crx_contents),testbuilds/$(t)/$(f)))
 
 jshint := $(foreach f,script-crx eventPage script-userscript,.events/jshint.$(f))
 
@@ -169,7 +171,7 @@ testbuilds/updates$1.xml : src/meta/updates.xml $(template_deps) | testbuilds/cr
 	$(template) $$< $$@ type=crx channel=$1
 
 testbuilds/$(name)$1.crx.zip : \
- $(foreach f,script.js eventPage.js icon16.png icon48.png icon128.png manifest.json,testbuilds/crx$1/$(f)) \
+ $(foreach f,$(crx_contents),testbuilds/crx$1/$(f)) \
  package.json version.json tools/zip-crx.js node_modules/jszip/package.json
 	node tools/zip-crx.js $1
 
