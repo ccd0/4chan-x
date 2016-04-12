@@ -115,6 +115,8 @@ bds := \
 
 testbds := $(foreach f,$(filter-out %.crx %.zip,$(bds)),test$(f)) $(foreach t,crx crx-beta crx-noupdate,$(foreach f,$(crx_contents),testbuilds/$(t)/$(f)))
 
+testcrx := $(foreach f,$(filter %.crx %.zip,$(bds)),test$(f))
+
 jshint := $(foreach f,script-crx eventPage script-userscript,.events/jshint.$(f))
 
 jshint_parts := $(foreach p,$(parts_userscript),.events/jshint.script$(p))
@@ -242,6 +244,8 @@ cleanall : clean
 	$(RMDIR) builds
 
 testbds : $(testbds)
+
+testcrx : $(testcrx)
 
 bds : $(bds)
 
