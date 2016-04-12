@@ -18,7 +18,7 @@ template := $(BIN)coffee tools/templates.coffee
 template_deps := \
  package.json version.json \
  tools/templates.coffee \
- node_modules/coffee-script/package.json node_modules/fs-extra/package.json node_modules/lodash/package.json node_modules/glob/package.json
+ node_modules/coffee-script/package.json node_modules/fs-extra/package.json node_modules/lodash/package.json
 cat := node tools/cat.js
 cat_deps := tools/cat.js node_modules/fs-extra/package.json
 jshint_deps := .jshintrc node_modules/jshint/package.json
