@@ -36,7 +36,7 @@ sources := \
  src/classes/Notice.coffee \
  src/classes/RandomAccessList.coffee \
  src/classes/SimpleDict.coffee \
- src/classes/Set.coffee \
+ src/classes/ShimSet.coffee \
  src/classes/Connection.coffee \
  src/classes/Fetcher.coffee \
  src/General/Polyfill.coffee \
@@ -60,7 +60,8 @@ sources := \
  $(sort $(wildcard src/Menu/*.coffee)) \
  $(sort $(wildcard src/Monitoring/*.coffee)) \
  $(sort $(wildcard src/Archive/*.coffee)) \
- $(sort $(wildcard src/Miscellaneous/*.coffee)) \
+ src/Miscellaneous/PSAHiding.coffee \
+ $(filter-out src/Miscellaneous/PSAHiding.coffee,$(sort $(wildcard src/Miscellaneous/*.coffee))) \
  src/General/Settings.coffee \
  src/General/Main.coffee
 
