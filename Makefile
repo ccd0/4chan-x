@@ -22,15 +22,21 @@ cat := node tools/cat.js
 cat_deps := tools/cat.js
 jshint_deps := .jshintrc node_modules/jshint/package.json
 
-parts := 0 1 2 3 4 5 6 7 8 9 10 11 12 13
+parts := 00 01 02 03 04 05 06 07 08 09 10 11 12 13
 
-sources0 := \
+parts_type := 01 07 13
+parts_common := $(filter-out $(parts_type),$(parts))
+parts_crx        := $(sort $(foreach i,$(parts_common),$(i)-common) $(foreach i,$(parts_type),$(i)-crx))
+parts_userscript := $(sort $(foreach i,$(parts_common),$(i)-common) $(foreach i,$(parts_type),$(i)-userscript))
+parts_both       := $(sort $(foreach i,$(parts_common),$(i)-common) $(foreach i,$(parts_type),$(i)-crx $(i)-userscript))
+
+sources00 := \
  src/General/Config.coffee \
  src/General/Globals.coffee
-sources1 := \
+sources01 := \
  src/General/$$.coffee \
  src/General/CrossOrigin.coffee
-sources2 := \
+sources02 := \
  src/classes/Callbacks.coffee \
  src/classes/Board.coffee \
  src/classes/Thread.coffee \
@@ -44,7 +50,7 @@ sources2 := \
  src/classes/ShimSet.coffee \
  src/classes/Connection.coffee \
  src/classes/Fetcher.coffee
-sources3 := \
+sources03 := \
  src/General/Polyfill.coffee \
  src/General/Header.coffee \
  src/General/Index.coffee \
@@ -52,22 +58,22 @@ sources3 := \
  src/General/Get.coffee \
  src/General/UI.coffee \
  src/General/BuildTest.coffee
-sources4 := \
+sources04 := \
  $(sort $(wildcard src/Filtering/*.coffee))
-sources5 := \
+sources05 := \
  $(sort $(wildcard src/Quotelinks/*.coffee))
-sources6 := \
+sources06 := \
  src/Posting/QR.coffee \
  src/Posting/Captcha.coffee \
  $(sort $(wildcard src/Posting/Captcha.*.coffee)) \
  src/Posting/PassLink.coffee \
  src/Posting/PostSuccessful.coffee \
  $(sort $(wildcard src/Posting/QR.*.coffee))
-sources7 := \
+sources07 := \
  $(sort $(wildcard src/Images/*.coffee))
-sources8 := \
+sources08 := \
  $(sort $(wildcard src/Linkification/*.coffee))
-sources9 := \
+sources09 := \
  $(sort $(wildcard src/Menu/*.coffee))
 sources10 := \
  $(sort $(wildcard src/Monitoring/*.coffee))
@@ -110,7 +116,7 @@ testbds := $(foreach f,$(filter-out %.crx %.zip,$(bds)),test$(f)) $(foreach t,cr
 
 jshint := $(foreach f,script-crx eventPage script-userscript,.events/jshint.$(f))
 
-jshint_parts := $(foreach t,crx userscript,$(foreach i,$(parts),.events/jshint.script$(i)-$(t))) .events/jshint.eventPage
+jshint_parts := $(foreach p,$(parts_userscript),.events/jshint.script$(p))
 
 default : install
 
@@ -144,8 +150,11 @@ endef
 
 $(foreach i,$(parts),$(eval $(call rules_part,$(i))))
 
-tmp/script-%.js : $(foreach i,$(parts),tmp/parts/script$(i)-%.js) tools/cat-coffee.js
-	node tools/cat-coffee.js $(foreach i,$(parts),tmp/parts/script$(i)-$*.js) $@
+tmp/script-crx.js : $(foreach p,$(parts_crx),tmp/parts/script$(p).js) tools/cat-coffee.js
+	node tools/cat-coffee.js $(foreach p,$(parts_crx),tmp/parts/script$(p).js) $@
+
+tmp/script-userscript.js : $(foreach p,$(parts_userscript),tmp/parts/script$(p).js) tools/cat-coffee.js
+	node tools/cat-coffee.js $(foreach p,$(parts_userscript),tmp/parts/script$(p).js) $@
 
 tmp/eventPage.js : src/General/eventPage.coffee $(coffee_deps) | tmp
 	$(coffee) -o tmp src/General/eventPage.coffee
