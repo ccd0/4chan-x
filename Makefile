@@ -5,7 +5,7 @@ ifeq "$(OS)" "Windows_NT"
   RMDIR := -rmdir /s /q
   RM := -del
   CP = copy /y $(subst /,\,$<) $(subst /,\,$@)
-  MKDIR = mkdir $(subst /,\,$@)
+  MKDIR = -mkdir $(subst /,\,$@)
 else
   BIN := node_modules/.bin/
   RMDIR := rm -rf
