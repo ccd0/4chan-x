@@ -14,11 +14,8 @@ endif
 
 coffee := $(BIN)coffee -c --no-header
 coffee_deps := node_modules/coffee-script/package.json
-template := $(BIN)coffee tools/templates.coffee
-template_deps := \
- package.json version.json \
- tools/templates.coffee \
- node_modules/coffee-script/package.json node_modules/lodash/package.json
+template := node tools/template.js
+template_deps := package.json version.json tools/template.js node_modules/lodash/package.json
 cat := node tools/cat.js
 cat_deps := tools/cat.js
 jshint_deps := .jshintrc node_modules/jshint/package.json
@@ -179,8 +176,8 @@ builds/% : testbuilds/% $(jshint) | builds
 test.html : README.md template.jst tools/markdown.js node_modules/marked/package.json node_modules/lodash/package.json
 	node tools/markdown.js
 
-.jshintrc : tools/templates.coffee src/meta/jshint.json $(template_deps)
-	$(template) src/meta/jshint.json .jshintrc
+.jshintrc : src/meta/jshint.json $(template_deps)
+	$(template) $< .jshintrc
 
 .events/jshint.% : tmp/%.js $(jshint_deps) | .events
 	$(BIN)jshint $<
