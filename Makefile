@@ -24,7 +24,7 @@ jshint_deps := .jshintrc node_modules/jshint/package.json
 
 parts := 00 01 02 03 04 05 06 07 08 09 10 11 12 13
 
-parts_type := 01 13
+parts_type := 01
 parts_common := $(filter-out $(parts_type),$(parts))
 parts_crx        := $(sort $(foreach i,$(parts_common),$(i)-common) $(foreach i,$(parts_type),$(i)-crx))
 parts_userscript := $(sort $(foreach i,$(parts_common),$(i)-common) $(foreach i,$(parts_type),$(i)-userscript))
