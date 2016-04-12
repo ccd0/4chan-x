@@ -20,7 +20,7 @@
     "cloneInto":    true,
     "unsafeWindow": true,
     "chrome":       true<%=
-  grunt.file.readJSON('package.json').meta.grants.map(x => `,\n    "${x}": true`).join('')
+  readJSON('package.json').meta.grants.map(x => `,\n    "${x}": true`).join('')
 %>
   }
 }

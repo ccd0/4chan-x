@@ -1,14 +1,15 @@
 fs = require 'fs-extra'
 _ = require 'lodash'
-glob = require 'glob'
 
 # disable ES6 delimiters
 _.templateSettings.interpolate = /<%=([\s\S]+?)%>/g
 
 read = (filename) -> fs.readFileSync(filename, 'utf8').replace(/\r\n/g, '\n')
+readJSON = (filename) -> JSON.parse read filename
+readBase64 = (filename) -> fs.readFileSync(filename).toString('base64')
 
-pkg = JSON.parse(read 'package.json')
-_.assign pkg.meta, JSON.parse(read 'version.json')
+pkg = readJSON 'package.json'
+_.assign pkg.meta, readJSON 'version.json'
 
 json = (data) ->
   "`#{JSON.stringify(data).replace(/`/g, '\\`')}`"
@@ -73,16 +74,9 @@ assert = (statement, objs...) ->
   return '' unless pkg.tests_enabled
   "throw new Error 'Assertion failed: ' + #{json statement} unless #{statement}"
 
-_.assign pkg, {importCSS, importHTML, html, assert}
+ls = (pathname) -> fs.readdirSync pathname
 
-pkg.grunt = file:
-  read: (filename, options) ->
-    if options?.encoding is 'base64'
-      fs.readFileSync(filename).toString('base64')
-    else
-      read filename
-  readJSON: (filename) -> JSON.parse read filename
-  expand: glob.sync
+_.assign pkg, {read, readJSON, readBase64, importCSS, importHTML, html, assert, ls}
 
 for arg in process.argv[4..]
   [key, val] = arg.match(/(.*?)=(.*)/)[1..]

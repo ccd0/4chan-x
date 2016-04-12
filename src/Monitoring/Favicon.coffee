@@ -12,52 +12,52 @@ Favicon =
   switch: ->
     items = {
       ferongr: [
-        '<%= grunt.file.read("src/Monitoring/Favicon/ferongr/unreadDead.png",   {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/ferongr/unreadDeadY.png",  {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/ferongr/unreadSFW.png",    {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/ferongr/unreadSFWY.png",   {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/ferongr/unreadNSFW.png",   {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/ferongr/unreadNSFWY.png",  {encoding: "base64"}) %>'
+        '<%= readBase64("src/Monitoring/Favicon/ferongr/unreadDead.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/ferongr/unreadDeadY.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/ferongr/unreadSFW.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/ferongr/unreadSFWY.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/ferongr/unreadNSFW.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/ferongr/unreadNSFWY.png") %>'
       ]
       'xat-': [
-        '<%= grunt.file.read("src/Monitoring/Favicon/xat-/unreadDead.png",      {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/xat-/unreadDeadY.png",     {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/xat-/unreadSFW.png",       {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/xat-/unreadSFWY.png",      {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/xat-/unreadNSFW.png",      {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/xat-/unreadNSFWY.png",     {encoding: "base64"}) %>'
+        '<%= readBase64("src/Monitoring/Favicon/xat-/unreadDead.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/xat-/unreadDeadY.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/xat-/unreadSFW.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/xat-/unreadSFWY.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/xat-/unreadNSFW.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/xat-/unreadNSFWY.png") %>'
       ]
       Mayhem: [
-        '<%= grunt.file.read("src/Monitoring/Favicon/Mayhem/unreadDead.png",    {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Mayhem/unreadDeadY.png",   {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Mayhem/unreadSFW.png",     {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Mayhem/unreadSFWY.png",    {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Mayhem/unreadNSFW.png",    {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Mayhem/unreadNSFWY.png",   {encoding: "base64"}) %>'
+        '<%= readBase64("src/Monitoring/Favicon/Mayhem/unreadDead.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Mayhem/unreadDeadY.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Mayhem/unreadSFW.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Mayhem/unreadSFWY.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Mayhem/unreadNSFW.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Mayhem/unreadNSFWY.png") %>'
       ]
       '4chanJS': [
-        '<%= grunt.file.read("src/Monitoring/Favicon/4chanJS/unreadDead.png",   {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/4chanJS/unreadDeadY.png",  {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/4chanJS/unreadSFW.png",    {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/4chanJS/unreadSFWY.png",   {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/4chanJS/unreadNSFW.png",   {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/4chanJS/unreadNSFWY.png",  {encoding: "base64"}) %>'
+        '<%= readBase64("src/Monitoring/Favicon/4chanJS/unreadDead.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/4chanJS/unreadDeadY.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/4chanJS/unreadSFW.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/4chanJS/unreadSFWY.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/4chanJS/unreadNSFW.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/4chanJS/unreadNSFWY.png") %>'
       ]
       Original: [
-        '<%= grunt.file.read("src/Monitoring/Favicon/Original/unreadDead.png",  {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Original/unreadDeadY.png", {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Original/unreadSFW.png",   {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Original/unreadSFWY.png",  {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Original/unreadNSFW.png",  {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Original/unreadNSFWY.png", {encoding: "base64"}) %>'
+        '<%= readBase64("src/Monitoring/Favicon/Original/unreadDead.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Original/unreadDeadY.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Original/unreadSFW.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Original/unreadSFWY.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Original/unreadNSFW.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Original/unreadNSFWY.png") %>'
       ]
       'Metro': [
-        '<%= grunt.file.read("src/Monitoring/Favicon/Metro/unreadDead.png",     {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Metro/unreadDeadY.png",    {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Metro/unreadSFW.png",      {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Metro/unreadSFWY.png",     {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Metro/unreadNSFW.png",     {encoding: "base64"}) %>'
-        '<%= grunt.file.read("src/Monitoring/Favicon/Metro/unreadNSFWY.png",    {encoding: "base64"}) %>'
+        '<%= readBase64("src/Monitoring/Favicon/Metro/unreadDead.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Metro/unreadDeadY.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Metro/unreadSFW.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Metro/unreadSFWY.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Metro/unreadNSFW.png") %>'
+        '<%= readBase64("src/Monitoring/Favicon/Metro/unreadNSFWY.png") %>'
       ]
     }[Conf['favicon']]
 
@@ -78,5 +78,5 @@ Favicon =
       @unread  = @unreadNSFW
       @unreadY = @unreadNSFWY
 
-  dead:  'data:image/gif;base64,<%= grunt.file.read("src/Monitoring/Favicon/dead.gif", {encoding: "base64"}) %>'
-  logo:  'data:image/png;base64,<%= grunt.file.read("src/meta/icon128.png",       {encoding: "base64"}) %>'
+  dead:  'data:image/gif;base64,<%= readBase64("src/Monitoring/Favicon/dead.gif") %>'
+  logo:  'data:image/png;base64,<%= readBase64("src/meta/icon128.png") %>'

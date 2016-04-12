@@ -192,7 +192,7 @@ Keybinds =
       when Conf['Next Post Quoting You']
         return unless threadRoot and QuoteYou.db
         QuoteYou.cb.seek 'following'
-      <% if (grunt.file.readJSON('.tests_enabled')) { %>
+      <% if (readJSON('.tests_enabled')) { %>
       when 't'
         return unless threadRoot
         BuildTest.testAll()

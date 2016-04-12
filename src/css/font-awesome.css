@@ -1,10 +1,10 @@
 <%=
-grunt.file.read('node_modules/font-awesome/css/font-awesome.css').match(/\/\*\![^]*?\*\//)[0]
+read('node_modules/font-awesome/css/font-awesome.css').match(/\/\*\![^]*?\*\//)[0]
 %>
 
 @font-face {
   font-family: FontAwesome;
-  src: url('data:application/font-woff;base64,<%= grunt.file.read('node_modules/font-awesome/fonts/fontawesome-webfont.woff', {encoding: 'base64'}) %>') format('woff');
+  src: url('data:application/font-woff;base64,<%= readBase64('node_modules/font-awesome/fonts/fontawesome-webfont.woff') %>') format('woff');
   font-weight: 400;
   font-style: normal;
 }
@@ -45,7 +45,7 @@ grunt.file.read('node_modules/font-awesome/css/font-awesome.css').match(/\/\*\![
 }
 
 <%=
-grunt.file.read('node_modules/font-awesome/css/font-awesome.css').match(/\.fa-glass:[^]*/)[0].replace(/([,{;])\s+/g, '$1').replace(/,/g, ', ')
+read('node_modules/font-awesome/css/font-awesome.css').match(/\.fa-glass:[^]*/)[0].replace(/([,{;])\s+/g, '$1').replace(/,/g, ', ')
 %>
 
 .fa-spin::before {

@@ -469,7 +469,7 @@ Main =
     ['Banner',                    Banner]
     ['Flash Features',            Flash]
     ['Reply Pruning',             ReplyPruning]
-    <% if (grunt.file.readJSON('.tests_enabled')) { %>
+    <% if (readJSON('.tests_enabled')) { %>
     ['Build Test',                BuildTest]
     <% } %>
   ]

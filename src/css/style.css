@@ -1822,9 +1822,9 @@ a:only-of-type > .remove {
 
 /* Link Title Favicons */
 <%=
-grunt.file.expand('src/Linkification/icons/*.png').map(function(file) {
+ls('src/Linkification/icons').map(function(file) {
   var key  = file.match(/(\w+)\.png/)[1];
-  var data = grunt.file.read(file, {encoding: 'base64'});
+  var data = readBase64(`src/Linkification/icons/${file}`, {encoding: 'base64'});
   return ".linkify."+key+" {\n" +
   "  background: transparent url('data:image/png;base64,"+data+"') center left no-repeat!important;\n" +
   "  padding-left: 18px;\n" +

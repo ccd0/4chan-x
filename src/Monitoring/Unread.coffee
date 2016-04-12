@@ -28,7 +28,7 @@ Unread =
       name: 'Unread'
       cb:   @addPost
 
-    <% if (grunt.file.readJSON('.tests_enabled')) { %>
+    <% if (readJSON('.tests_enabled')) { %>
     testLink = $.el 'a',
       textContent: 'Test Post Order'
     $.on testLink, 'click', ->
