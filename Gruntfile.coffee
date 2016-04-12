@@ -1,4 +1,5 @@
 path = require 'path'
+os = require 'os'
 
 module.exports = (grunt) ->
   grunt.util.linefeed = '\n'
@@ -14,6 +15,7 @@ module.exports = (grunt) ->
     pkg: loadPkg()
 
     BIN: ['node_modules', '.bin', ''].join(path.sep)
+    ncpus: os.cpus().length
 
     shell:
       options:
@@ -21,11 +23,11 @@ module.exports = (grunt) ->
         stderr: true
         failOnError: true
       build:
-        command: 'make -j'
+        command: 'make -j<%= ncpus %>'
       full:
         command: """
           make cleanall
-          make -j all
+          make -j<%= ncpus %> all
         """.split('\n').join('&&')
       clean:
         command: 'make clean'
