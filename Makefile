@@ -92,9 +92,9 @@ testbds := $(foreach f,$(subst .crx,.crx.zip,$(bds)),test$(f))
 
 jshint := $(foreach f,script-crx eventPage script-userscript,.events/jshint.$(f))
 
-default : install
+default : jshint install
 
-all : bds install
+all : jshint bds install
 
 .events tmp testbuilds builds :
 	$(MKDIR)
@@ -180,7 +180,7 @@ test.html : README.md template.jst tools/markdown.js node_modules/marked/package
 install.json :
 	echo {}> $@
 
-.events/install : $(testbds) $(jshint) install.json tools/install.js | .events
+.events/install : $(testbds) install.json tools/install.js | .events
 	node tools/install.js
 	echo -> $@
 
