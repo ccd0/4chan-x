@@ -121,9 +121,9 @@ jshint := $(foreach f,script-crx eventPage script-userscript,.events/jshint.$(f)
 
 jshint_parts := $(foreach p,$(parts_userscript),.events/jshint.script$(p))
 
-default : install
+default : jshint_parts install
 
-all : bds install
+all : jshint bds install
 
 .events tmp tmp/parts testbuilds builds :
 	$(MKDIR)
@@ -228,7 +228,7 @@ tmp/parts/.jshintrc : src/meta/jshint.json $(template_deps) | tmp/parts
 install.json :
 	echo {}> $@
 
-.events/install : $(testbds) $(jshint_parts) install.json tools/install.js | .events
+.events/install : $(testbds) install.json tools/install.js | .events
 	node tools/install.js
 	echo -> $@
 
