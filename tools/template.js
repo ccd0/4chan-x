@@ -161,8 +161,8 @@ obj.html = function(template) {
   return `(innerHTML: ${output})`;
 };
 
-obj.assert = function(statement) {
-  if (!obj.tests_enabled) return '';
+obj.assert = function(flagFile, statement) {
+  if (!readJSON(flagFile)) return '';
   return `throw new Error 'Assertion failed: ' + ${constExpression(statement)} unless ${statement}`;
 };
 
