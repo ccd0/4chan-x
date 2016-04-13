@@ -72,20 +72,18 @@ sources_bottom := \
  src/General/Settings.coffee \
  src/General/Main.coffee
 
-imports := \
- tmp/font-awesome.css \
- tmp/style.css \
+imports_top := \
  src/Archive/archives.json \
- src/meta/icon48.png \
- $(wildcard src/Monitoring/Favicon/*/*.png) \
- src/Monitoring/Favicon/dead.gif \
- src/meta/icon128.png \
- src/Monitoring/beep.wav \
- src/Miscellaneous/banners.json \
- $(wildcard src/*/*.html) \
- $(wildcard src/*/*/*.html) \
- $(wildcard src/css/*.css) \
- .tests_enabled
+ src/css/custom.css
+imports_Monitoring := \
+ src/meta/icon128.png
+imports_Miscellaneous := \
+ src/css/report.css
+imports_bottom := \
+ $(wildcard src/General/Settings/*.html) \
+ $(filter-out src/css/custom.css src/css/report.css,$(wildcard src/css/*.css)) \
+ tmp/font-awesome.css \
+ tmp/style.css
 
 imports_font_awesome := \
  node_modules/font-awesome/css/font-awesome.css \
@@ -139,7 +137,7 @@ define rules_part
 tmp/parts/$1.jst : $$(sources_$1) $(cat_deps) | tmp/parts
 	$(cat) $$(sources_$1) $$@
 
-tmp/parts/$1.coffee : tmp/parts/$1.jst $(imports) $(template_deps)
+tmp/parts/$1.coffee : tmp/parts/$1.jst $$(filter-out %.coffee,$$(wildcard src/$1/*.* src/$1/*/*.* src/$1/*/*/*.*)) $$(imports_$1) .tests_enabled $(template_deps)
 	$(template) $$< $$@
 
 tmp/parts/$1.js : tmp/parts/$1.coffee $(coffee_deps)
@@ -149,7 +147,7 @@ endef
 
 $(foreach i,$(parts),$(eval $(call rules_part,$(i))))
 
-tmp/parts/API_%.coffee : tmp/parts/API.jst $(imports) $(template_deps)
+tmp/parts/API_%.coffee : tmp/parts/API.jst $(template_deps)
 	$(template) $< $@ type=$*
 
 tmp/parts/API_%.js : tmp/parts/API_%.coffee $(coffee_deps)
