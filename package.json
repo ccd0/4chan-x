@@ -41,13 +41,13 @@
       "GM_xmlhttpRequest"
     ],
     "globals": [
-      "$$",
-      "c",
       "Conf",
+      "c",
       "d",
       "doc",
+      "g",
       "E",
-      "g"
+      "$$"
     ],
     "min": {
       "chrome": "33",

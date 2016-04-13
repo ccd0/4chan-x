@@ -195,7 +195,7 @@ Keybinds =
       <% if (readJSON('.tests_enabled')) { %>
       when 't'
         return unless threadRoot
-        BuildTest.testAll()
+        Build.Test.testAll()
       <% } %>
       else
         return

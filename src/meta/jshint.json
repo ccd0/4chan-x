@@ -20,16 +20,10 @@
     "unsafeWindow": true,
     "chrome":       true<%=
   meta.grants.map(x => `,\n    "${x}": true`).join('')
-%><% if (stage === 'parts') { %><%=
-  meta.globals.map(x => `,\n    "${x}": true`).join('')
 %><%=
-  (ls('src')
-    .map(x => ls(`src/${x}`))
-    .reduce((x,y) => x.concat(y))
-    .filter(x => /^[$A-Z]\w*\.coffee/.test(x))
-    .map(x => x.split('.')[0])
-    .map(x => `,\n    "${x}": true`).join('')
-  )
-%><% } %>
+  read('tmp/declaration.js').match(/^var (.*);/)[1].split(', ').map(x => `,\n    "${x}": true`).join('')
+%><%=
+  read('src/meta/helpers.js').split('\n').map(x => x.match(/^ *(?:var )?(\S+) = /)).filter(x => x).map(x => x[1]).map(x => `,\n    "${x}": true`).join('')
+%>
   }
 }
