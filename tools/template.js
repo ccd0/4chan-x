@@ -4,29 +4,26 @@ var _ = require('lodash');
 // disable ES6 delimiters
 _.templateSettings.interpolate = /<%=([\s\S]+?)%>/g;
 
-var pkg = {};
+var obj = {};
 
-var read     = pkg.read     = filename => fs.readFileSync(filename, 'utf8').replace(/\r\n/g, '\n');
-var readJSON = pkg.readJSON = filename => JSON.parse(read(filename));
-pkg.readBase64              = filename => fs.readFileSync(filename).toString('base64');
-pkg.ls                      = pathname => fs.readdirSync(pathname);
-
-_.assign(pkg,      readJSON('package.json'));
-_.assign(pkg.meta, readJSON('version.json'));
+var read     = obj.read     = filename => fs.readFileSync(filename, 'utf8').replace(/\r\n/g, '\n');
+var readJSON = obj.readJSON = filename => JSON.parse(read(filename));
+obj.readBase64              = filename => fs.readFileSync(filename).toString('base64');
+obj.ls                      = pathname => fs.readdirSync(pathname);
 
 // Convert JSON object to Coffeescript expression (via embedded JS).
 var constExpression = data => '`' + JSON.stringify(data).replace(/`/g, '\\`') + '`';
 
-pkg.importCSS = function() {
+obj.importCSS = function() {
   var text = Array.prototype.slice.call(arguments).map(name => read(`src/css/${name}.css`)).join('');
-  text = _.template(text)(pkg);
+  text = _.template(text)(pkg); // variables only; no recursive imports
   return text.trim().replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`');
 };
 
-pkg.importHTML = function(filename) {
+obj.importHTML = function(filename) {
   var text = read(`src/${filename}.html`).replace(/^ +/gm, '').replace(/\r?\n/g, '');
-  text = _.template(text)(pkg);
-  return pkg.html(text);
+  text = _.template(text)(pkg); // variables only; no recursive imports
+  return obj.html(text);
 };
 
 function TextStream(text) {
@@ -155,7 +152,7 @@ Placeholder.prototype.build = function() {
 
 // HTML template generator with placeholders of forms ${}, &{}, @{}, and ?{}{}{} (see Placeholder.prototype.build)
 // that checks safety of generated expressions at compile time.
-pkg.html = function(template) {
+obj.html = function(template) {
   var stream = new TextStream(template);
   var output = parseHTMLTemplate(stream);
   if (stream.text) {
@@ -164,16 +161,23 @@ pkg.html = function(template) {
   return `(innerHTML: ${output})`;
 };
 
-pkg.assert = function(statement) {
-  if (!pkg.tests_enabled) return '';
+obj.assert = function(flagFile, statement) {
+  if (!readJSON(flagFile)) return '';
   return `throw new Error 'Assertion failed: ' + ${constExpression(statement)} unless ${statement}`;
 };
 
+// Import variables from package.json and version.json.
+var pkg = readJSON('package.json');
+_.assign(pkg.meta, readJSON('version.json'));
+
+// Take variables from command line.
 for (var i = 4; i < process.argv.length; i++) {
   var m = process.argv[i].match(/(.*?)=(.*)/);
   pkg[m[1]] = m[2];
 }
 
+_.assign(obj, pkg);
+
 var text = read(process.argv[2]);
-text = _.template(text)(pkg);
+text = _.template(text)(obj);
 fs.writeFileSync(process.argv[3], text);

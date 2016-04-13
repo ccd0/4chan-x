@@ -74,7 +74,7 @@ Linkify =
 
         if Linkify.regString.test word
           links.push Linkify.makeRange node, endNode, index, length
-          <%= assert('word is links[links.length-1].toString()') %>
+          <%= assert('.tests_enabled', 'word is links[links.length-1].toString()') %>
 
         break unless test.lastIndex and node is endNode
 
