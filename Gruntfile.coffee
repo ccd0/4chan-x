@@ -15,7 +15,7 @@ module.exports = (grunt) ->
     pkg: loadPkg()
 
     BIN: ['node_modules', '.bin', ''].join(path.sep)
-    ncpus: os.cpus().length
+    MAKEFLAGS: if process.platform is 'linux' then "-j#{os.cpus().length}" else ''
 
     shell:
       options:
@@ -23,11 +23,11 @@ module.exports = (grunt) ->
         stderr: true
         failOnError: true
       build:
-        command: 'make -j<%= ncpus %>'
+        command: 'make <%= MAKEFLAGS %>'
       full:
         command: """
           make cleanall
-          make -j<%= ncpus %> all
+          make <%= MAKEFLAGS %> all
         """.split('\n').join('&&')
       clean:
         command: 'make clean'
