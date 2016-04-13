@@ -1,4 +1,5 @@
 path = require 'path'
+os = require 'os'
 
 module.exports = (grunt) ->
   grunt.util.linefeed = '\n'
@@ -14,6 +15,7 @@ module.exports = (grunt) ->
     pkg: loadPkg()
 
     BIN: ['node_modules', '.bin', ''].join(path.sep)
+    MAKEFLAGS: if process.platform is 'linux' then "-j#{os.cpus().length}" else ''
 
     shell:
       options:
@@ -21,11 +23,11 @@ module.exports = (grunt) ->
         stderr: true
         failOnError: true
       build:
-        command: 'make -j'
+        command: 'make <%= MAKEFLAGS %>'
       full:
         command: """
           make cleanall
-          make -j all
+          make <%= MAKEFLAGS %> all
         """.split('\n').join('&&')
       clean:
         command: 'make clean'
