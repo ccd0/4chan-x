@@ -20,19 +20,17 @@ template := node tools/template.js
 template_deps := package.json tools/template.js node_modules/lodash/package.json
 cat := node tools/cat.js
 cat_deps := tools/cat.js
-jshint_deps := .jshintrc node_modules/jshint/package.json
 
-parts := top API classes General Filtering Quotelinks Posting Images Linkification Menu Monitoring Archive Miscellaneous bottom
+parts := Config API classes General Filtering Quotelinks Posting Images Linkification Menu Monitoring Archive Miscellaneous bottom
 
-js_parts := $(foreach p,$(subst API,API_crx API_userscript,$(parts)),tmp/parts/$(p).js)
+intermediate := LICENSE src/meta/fbegin.js tmp/declaration.js tmp/globals.js $(foreach p,$(parts),tmp/$(p).js) src/meta/fend.js
 
 define sorted_dir
 sources_$1 := $$(sort $$(wildcard src/$1/*.coffee))
 endef
 
-sources_top := \
- src/General/Config.coffee \
- src/General/Globals.coffee
+sources_Config := \
+ src/General/Config.coffee
 
 sources_API := \
  src/General/$$.coffee \
@@ -46,7 +44,7 @@ sources_classes := \
 
 sources_General := \
  $(foreach n, \
-  Polyfill Header Index Build Get UI BuildTest \
+  Polyfill Header Index Build Get UI Build.Test \
  ,src/General/$(n).coffee)
 
 $(foreach d, \
@@ -72,10 +70,9 @@ sources_bottom := \
  src/General/Settings.coffee \
  src/General/Main.coffee
 
-imports_top := \
+imports_Config := \
  src/Archive/archives.json \
- src/css/custom.css \
- version.json
+ src/css/custom.css
 imports_Monitoring := \
  src/meta/icon128.png
 imports_Miscellaneous := \
@@ -106,15 +103,13 @@ testbds := $(foreach f,$(filter-out %.crx %.zip,$(bds)),test$(f)) $(foreach t,cr
 
 testcrx := $(foreach f,$(filter %.crx %.zip,$(bds)),test$(f))
 
-jshint := $(foreach f,script-crx eventPage script-userscript,.events/jshint.$(f))
+jshint := $(foreach f,globals $(subst API,API_crx API_userscript,$(parts)),.events/jshint.$(f))
 
-jshint_parts := $(foreach p,$(subst API,API_crx API_userscript,$(parts)),.events/jshint_p.$(p))
-
-default : jshint_parts install
+default : jshint install
 
 all : jshint bds install
 
-.events tmp tmp/parts testbuilds builds :
+.events tmp testbuilds builds :
 	$(MKDIR)
 
 .events/npm : npm-shrinkwrap.json | .events
@@ -133,32 +128,34 @@ tmp/font-awesome.css : src/css/font-awesome.css $(imports_font_awesome) $(templa
 tmp/style.css : src/css/style.css $(imports_style) $(template_deps) | tmp
 	$(template) $< $@
 
+tmp/declaration.js : $(wildcard src/*/*.coffee) tools/declare.js | tmp
+	node tools/declare.js
+
+tmp/globals.js : src/General/globals.js version.json $(template_deps) | tmp
+	$(template) $< $@
+
 define rules_part
 
-tmp/parts/$1.jst : $$(sources_$1) $(cat_deps) | tmp/parts
+tmp/$1.jst : $$(sources_$1) $(cat_deps) | tmp
 	$(cat) $$(sources_$1) $$@
 
-tmp/parts/$1.coffee : tmp/parts/$1.jst $$(filter-out %.coffee,$$(wildcard src/$1/*.* src/$1/*/*.* src/$1/*/*/*.*)) $$(imports_$1) .tests_enabled $(template_deps)
+tmp/$1.coffee : tmp/$1.jst $$(filter-out %.coffee,$$(wildcard src/$1/*.* src/$1/*/*.* src/$1/*/*/*.*)) $$(imports_$1) .tests_enabled $(template_deps)
 	$(template) $$< $$@
 
-tmp/parts/$1.js : tmp/parts/$1.coffee $(coffee_deps)
+tmp/$1.js : tmp/$1.coffee $(coffee_deps) tools/globalize.js
 	$(coffee) $$<
+	node tools/globalize.js $$@ $$(sources_$1)
 
 endef
 
 $(foreach i,$(parts),$(eval $(call rules_part,$(i))))
 
-tmp/parts/API_%.coffee : tmp/parts/API.jst $(template_deps)
+tmp/API_%.coffee : tmp/API.jst $(template_deps)
 	$(template) $< $@ type=$*
 
-tmp/parts/API_%.js : tmp/parts/API_%.coffee $(coffee_deps)
+tmp/API_%.js : tmp/API_%.coffee $(coffee_deps)
 	$(coffee) $<
-
-tmp/script-crx.js : $(filter-out tmp/parts/API_userscript.js,$(js_parts)) tools/cat-coffee.js
-	node tools/cat-coffee.js $(filter-out tmp/parts/API_userscript.js,$(js_parts)) $@
-
-tmp/script-userscript.js : $(filter-out tmp/parts/API_crx.js,$(js_parts)) tools/cat-coffee.js
-	node tools/cat-coffee.js $(filter-out tmp/parts/API_crx.js,$(js_parts)) $@
+	node tools/globalize.js $@ $(sources_API)
 
 tmp/eventPage.js : src/General/eventPage.coffee $(coffee_deps) | tmp
 	$(coffee) -o tmp src/General/eventPage.coffee
@@ -168,8 +165,8 @@ define rules_channel
 testbuilds/crx$1 :
 	$$(MKDIR)
 
-testbuilds/crx$1/script.js : src/meta/botproc.js LICENSE src/meta/usestrict.js tmp/script-crx.js $(cat_deps) | testbuilds/crx$1
-	$(cat) src/meta/botproc.js LICENSE src/meta/usestrict.js tmp/script-crx.js $$@
+testbuilds/crx$1/script.js : src/meta/botproc.js $(subst API,API_crx,$(intermediate)) $(cat_deps) | testbuilds/crx$1
+	$(cat) src/meta/botproc.js $(subst API,API_crx,$(intermediate)) $$@
 
 testbuilds/crx$1/eventPage.js : tmp/eventPage.js | testbuilds/crx$1
 	$$(CP)
@@ -194,8 +191,8 @@ testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.
 testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.json $(template_deps) | testbuilds
 	$(template) $$< $$@ type=userscript channel=$1
 
-testbuilds/$(name)$1.user.js : src/meta/botproc.js testbuilds/$(name)$1.meta.js LICENSE src/meta/usestrict.js tmp/script-userscript.js $(cat_deps)
-	$(cat) src/meta/botproc.js testbuilds/$(name)$1.meta.js LICENSE src/meta/usestrict.js tmp/script-userscript.js $$@
+testbuilds/$(name)$1.user.js : src/meta/botproc.js testbuilds/$(name)$1.meta.js $(subst API,API_userscript,$(intermediate)) $(cat_deps)
+	$(cat) src/meta/botproc.js testbuilds/$(name)$1.meta.js $(subst API,API_userscript,$(intermediate)) $$@
 
 endef
 
@@ -212,17 +209,10 @@ builds/% : testbuilds/% $(jshint) | builds
 test.html : README.md template.jst tools/markdown.js node_modules/marked/package.json node_modules/lodash/package.json
 	node tools/markdown.js
 
-tmp/parts/.jshintrc : src/meta/jshint.json $(template_deps) | tmp/parts
-	$(template) $< $@ stage=parts
+tmp/.jshintrc : src/meta/jshint.json tmp/declaration.js tmp/globals.js $(template_deps) | tmp
+	$(template) $< $@
 
-.jshintrc : src/meta/jshint.json $(template_deps)
-	$(template) $< $@ stage=full
-
-.events/jshint.% : tmp/%.js .jshintrc node_modules/jshint/package.json | .events
-	$(BIN)jshint $<
-	echo -> $@
-
-.events/jshint_p.% : tmp/parts/%.js tmp/parts/.jshintrc node_modules/jshint/package.json | .events
+.events/jshint.% : tmp/%.js tmp/.jshintrc node_modules/jshint/package.json | .events
 	$(BIN)jshint $<
 	echo -> $@
 
@@ -235,11 +225,11 @@ install.json :
 
 .SECONDARY :
 
-.PHONY: default all clean cleanall testbds bds jshint jshint_parts install
+.PHONY: default all clean cleanall testbds bds jshint install
 
 clean :
 	$(RMDIR) tmp testbuilds .events
-	$(RM) .jshintrc .tests_enabled
+	$(RM) .tests_enabled
 
 cleanall : clean
 	$(RMDIR) builds
@@ -251,7 +241,5 @@ testcrx : $(testcrx)
 bds : $(bds)
 
 jshint : $(jshint)
-
-jshint_parts : $(jshint_parts)
 
 install : .events/install

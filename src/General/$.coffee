@@ -593,6 +593,3 @@ $.clear = (cb) ->
     $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''
   cb?()
 <% } %>
-
-$$ = (selector, root=d.body) ->
-  [root.querySelectorAll(selector)...]
