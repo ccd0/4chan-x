@@ -22,71 +22,55 @@ cat := node tools/cat.js
 cat_deps := tools/cat.js
 jshint_deps := .jshintrc node_modules/jshint/package.json
 
-parts := 00 01 02 03 04 05 06 07 08 09 10 11 12 13
+parts := top API classes General Filtering Quotelinks Posting Images Linkification Menu Monitoring Archive Miscellaneous bottom
 
-parts_type := 01
-parts_common := $(filter-out $(parts_type),$(parts))
-parts_crx        := $(sort $(foreach i,$(parts_common),$(i)-common) $(foreach i,$(parts_type),$(i)-crx))
-parts_userscript := $(sort $(foreach i,$(parts_common),$(i)-common) $(foreach i,$(parts_type),$(i)-userscript))
-parts_both       := $(sort $(foreach i,$(parts_common),$(i)-common) $(foreach i,$(parts_type),$(i)-crx $(i)-userscript))
+js_parts := $(foreach p,$(subst API,API_crx API_userscript,$(parts)),tmp/parts/$(p).js)
 
-sources00 := \
+define sorted_dir
+sources_$1 := $$(sort $$(wildcard src/$1/*.coffee))
+endef
+
+sources_top := \
  src/General/Config.coffee \
  src/General/Globals.coffee
-sources01 := \
+
+sources_API := \
  src/General/$$.coffee \
  src/General/CrossOrigin.coffee \
  src/Images/ImageCommon.coffee
-sources02 := \
- src/classes/Callbacks.coffee \
- src/classes/Board.coffee \
- src/classes/Thread.coffee \
- src/classes/CatalogThread.coffee \
- src/classes/Post.coffee \
- src/classes/Clone.coffee \
- src/classes/DataBoard.coffee \
- src/classes/Notice.coffee \
- src/classes/RandomAccessList.coffee \
- src/classes/SimpleDict.coffee \
- src/classes/ShimSet.coffee \
- src/classes/Connection.coffee \
- src/classes/Fetcher.coffee
-sources03 := \
- src/General/Polyfill.coffee \
- src/General/Header.coffee \
- src/General/Index.coffee \
- src/General/Build.coffee \
- src/General/Get.coffee \
- src/General/UI.coffee \
- src/General/BuildTest.coffee
-sources04 := \
- $(sort $(wildcard src/Filtering/*.coffee))
-sources05 := \
- $(sort $(wildcard src/Quotelinks/*.coffee))
-sources06 := \
+
+sources_classes := \
+ $(foreach n, \
+  Callbacks Board Thread CatalogThread Post Clone DataBoard Notice RandomAccessList SimpleDict ShimSet Connection Fetcher \
+ ,src/classes/$(n).coffee)
+
+sources_General := \
+ $(foreach n, \
+  Polyfill Header Index Build Get UI BuildTest \
+ ,src/General/$(n).coffee)
+
+$(foreach d, \
+ Filtering Quotelinks \
+ ,$(eval $(call sorted_dir,$(d))))
+
+sources_Posting := \
  src/Posting/QR.coffee \
  src/Posting/Captcha.coffee \
  $(sort $(wildcard src/Posting/Captcha.*.coffee)) \
  src/Posting/PassLink.coffee \
  src/Posting/PostSuccessful.coffee \
  $(sort $(wildcard src/Posting/QR.*.coffee))
-sources07 := \
+
+sources_Images := \
  $(sort $(filter-out %/ImageCommon.coffee,$(wildcard src/Images/*.coffee)))
-sources08 := \
- $(sort $(wildcard src/Linkification/*.coffee))
-sources09 := \
- $(sort $(wildcard src/Menu/*.coffee))
-sources10 := \
- $(sort $(wildcard src/Monitoring/*.coffee))
-sources11 := \
- $(sort $(wildcard src/Archive/*.coffee))
-sources12 := \
- $(sort $(wildcard src/Miscellaneous/*.coffee))
-sources13 := \
+
+$(foreach d, \
+ Linkification Menu Monitoring Archive Miscellaneous \
+S ,$(eval $(call sorted_dir,$(d))))
+
+sources_bottom := \
  src/General/Settings.coffee \
  src/General/Main.coffee
-
-sources := $(foreach i,$(parts),$(sources$(i)))
 
 imports := \
  tmp/font-awesome.css \
@@ -125,7 +109,7 @@ testcrx := $(foreach f,$(filter %.crx %.zip,$(bds)),test$(f))
 
 jshint := $(foreach f,script-crx eventPage script-userscript,.events/jshint.$(f))
 
-jshint_parts := $(foreach p,$(parts_userscript),.events/jshint.script$(p))
+jshint_parts := $(foreach p,$(subst API,API_crx API_userscript,$(parts)),.events/jshint_p.$(p))
 
 default : jshint_parts install
 
@@ -152,24 +136,30 @@ tmp/style.css : src/css/style.css $(imports_style) $(template_deps) | tmp
 
 define rules_part
 
-tmp/parts/script$1.coffee : $$(sources$1) $(cat_deps) | tmp/parts
-	$(cat) $$(sources$1) $$@
+tmp/parts/$1.jst : $$(sources_$1) $(cat_deps) | tmp/parts
+	$(cat) $$(sources_$1) $$@
 
-tmp/parts/script$1-%.coffee : tmp/parts/script$1.coffee $(imports) $(template_deps)
-	$(template) $$< $$@ type=$$*
+tmp/parts/$1.coffee : tmp/parts/$1.jst $(imports) $(template_deps)
+	$(template) $$< $$@
 
-tmp/parts/script$1-%.js : tmp/parts/script$1-%.coffee $(coffee_deps)
+tmp/parts/$1.js : tmp/parts/$1.coffee $(coffee_deps)
 	$(coffee) $$<
 
 endef
 
 $(foreach i,$(parts),$(eval $(call rules_part,$(i))))
 
-tmp/script-crx.js : $(foreach p,$(parts_crx),tmp/parts/script$(p).js) tools/cat-coffee.js
-	node tools/cat-coffee.js $(foreach p,$(parts_crx),tmp/parts/script$(p).js) $@
+tmp/parts/API_%.coffee : tmp/parts/API.jst $(imports) $(template_deps)
+	$(template) $< $@ type=$*
 
-tmp/script-userscript.js : $(foreach p,$(parts_userscript),tmp/parts/script$(p).js) tools/cat-coffee.js
-	node tools/cat-coffee.js $(foreach p,$(parts_userscript),tmp/parts/script$(p).js) $@
+tmp/parts/API_%.js : tmp/parts/API_%.coffee $(coffee_deps)
+	$(coffee) $<
+
+tmp/script-crx.js : $(filter-out tmp/parts/API_userscript.js,$(js_parts)) tools/cat-coffee.js
+	node tools/cat-coffee.js $(filter-out tmp/parts/API_userscript.js,$(js_parts)) $@
+
+tmp/script-userscript.js : $(filter-out tmp/parts/API_crx.js,$(js_parts)) tools/cat-coffee.js
+	node tools/cat-coffee.js $(filter-out tmp/parts/API_crx.js,$(js_parts)) $@
 
 tmp/eventPage.js : src/General/eventPage.coffee $(coffee_deps) | tmp
 	$(coffee) -o tmp src/General/eventPage.coffee
@@ -233,7 +223,7 @@ tmp/parts/.jshintrc : src/meta/jshint.json $(template_deps) | tmp/parts
 	$(BIN)jshint $<
 	echo -> $@
 
-.events/jshint.% : tmp/parts/%.js tmp/parts/.jshintrc node_modules/jshint/package.json | .events
+.events/jshint_p.% : tmp/parts/%.js tmp/parts/.jshintrc node_modules/jshint/package.json | .events
 	$(BIN)jshint $<
 	echo -> $@
 
