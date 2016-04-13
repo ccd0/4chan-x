@@ -66,8 +66,8 @@ sources := \
  src/General/Main.coffee
 
 imports := \
- node_modules/font-awesome/package.json \
- $(wildcard src/Linkification/icons/*.png) \
+ tmp/font-awesome.css \
+ tmp/style.css \
  src/Archive/archives.json \
  src/meta/icon48.png \
  $(wildcard src/Monitoring/Favicon/*/*.png) \
@@ -79,6 +79,12 @@ imports := \
  $(wildcard src/*/*/*.html) \
  $(wildcard src/css/*.css) \
  .tests_enabled
+
+imports_font_awesome := \
+ node_modules/font-awesome/css/font-awesome.css \
+ node_modules/font-awesome/fonts/fontawesome-webfont.woff
+imports_style := \
+ $(wildcard src/Linkification/icons/*.png)
 
 bds := \
  $(foreach f, \
@@ -103,11 +109,17 @@ all : jshint bds install
 	npm install
 	echo -> $@
 
-node_modules/%/package.json : .events/npm
+node_modules/% : .events/npm
 	
 
 .tests_enabled :
 	echo false> .tests_enabled
+
+tmp/font-awesome.css : src/css/font-awesome.css $(imports_font_awesome) $(template_deps) | tmp
+	$(template) $< $@
+
+tmp/style.css : src/css/style.css $(imports_style) $(template_deps) | tmp
+	$(template) $< $@
 
 tmp/script.coffee : $(sources) $(cat_deps) | tmp
 	$(cat) $(sources) $@

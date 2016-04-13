@@ -391,7 +391,7 @@ Main =
     $.ready ->
       cb() if Main.isThisPageLegit()
 
-  css: `<%= importCSS('font-awesome', 'style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon', 'supports') %>`
+  css: `<%= importCSS('../../tmp/font-awesome', '../../tmp/style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon', 'supports') %>`
 
   cssWWW: `<%= importCSS('www') %>`
 
