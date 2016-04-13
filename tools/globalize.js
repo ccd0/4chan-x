@@ -9,7 +9,7 @@ var sources = process.argv.slice(3);
 var names = [];
 for (var f of sources) {
   f = f.match(/[^/]*$/)[0];
-  var m = f.match(/^([$A-Z]\w*)\.coffee$/);
+  var m = f.match(/^([$A-Z][$\w]*)\.coffee$/);
   if (m) names.push(m[1]);
 }
 
@@ -20,10 +20,10 @@ var replaced = 0;
 script = script.replace(
 
   // matches declaration at the start of the function, not including helper function assignments
-  / *\bvar\s+[\w$]+(,\s*[\w$]+)*(,\s*|;\n)/,
+  / *\bvar\s+[$\w]+(,\s*[$\w]+)*(,\s*|;\n)/,
 
   function(declaration) {
-    var parts = declaration.split(/([\w$]+)(?=[,;])/);
+    var parts = declaration.split(/([$\w]+)(?=[,;])/);
 
     for (var name of names) {
       var i = parts.indexOf(name);

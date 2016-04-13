@@ -6,12 +6,14 @@ ifeq "$(OS)" "Windows_NT"
   RM := -del
   CP = copy /y $(subst /,\,$<) $(subst /,\,$@)
   MKDIR = -mkdir $(subst /,\,$@)
+  ESC_DOLLAR = $$
 else
   BIN := node_modules/.bin/
   RMDIR := rm -rf
   RM := rm -rf
   CP = cp $< $@
   MKDIR = mkdir -p $@
+  ESC_DOLLAR = \$$
 endif
 
 coffee := $(BIN)coffee -c --no-header
@@ -34,6 +36,7 @@ sources_Config := \
 
 sources_API := \
  src/General/$$.coffee \
+ src/General/$$$$.coffee \
  src/General/CrossOrigin.coffee \
  src/Images/ImageCommon.coffee
 
@@ -148,14 +151,17 @@ tmp/$1.js : tmp/$1.coffee $(coffee_deps) tools/globalize.js
 
 endef
 
-$(foreach i,$(parts),$(eval $(call rules_part,$(i))))
+$(foreach i,$(filter-out API,$(parts)),$(eval $(call rules_part,$(i))))
+
+tmp/API.jst : $(sources_API) $(cat_deps) | tmp
+	$(cat) $(subst $$,$(ESC_DOLLAR),$(sources_API)) $@
 
 tmp/API_%.coffee : tmp/API.jst $(template_deps)
 	$(template) $< $@ type=$*
 
 tmp/API_%.js : tmp/API_%.coffee $(coffee_deps)
 	$(coffee) $<
-	node tools/globalize.js $@ $(sources_API)
+	node tools/globalize.js $@ $(subst $$,$(ESC_DOLLAR),$(sources_API))
 
 tmp/eventPage.js : src/General/eventPage.coffee $(coffee_deps) | tmp
 	$(coffee) -o tmp src/General/eventPage.coffee
