@@ -1824,7 +1824,7 @@ a:only-of-type > .remove {
 <%=
 ls('src/Linkification/icons').map(function(file) {
   var key  = file.match(/(\w+)\.png/)[1];
-  var data = readBase64(`src/Linkification/icons/${file}`, {encoding: 'base64'});
+  var data = readBase64(`src/Linkification/icons/${file}`);
   return ".linkify."+key+" {\n" +
   "  background: transparent url('data:image/png;base64,"+data+"') center left no-repeat!important;\n" +
   "  padding-left: 18px;\n" +
