@@ -17,7 +17,7 @@ endif
 coffee := $(BIN)coffee -c --no-header
 coffee_deps := node_modules/coffee-script/package.json
 template := node tools/template.js
-template_deps := package.json version.json tools/template.js node_modules/lodash/package.json
+template_deps := package.json tools/template.js node_modules/lodash/package.json
 cat := node tools/cat.js
 cat_deps := tools/cat.js
 jshint_deps := .jshintrc node_modules/jshint/package.json
@@ -74,7 +74,8 @@ sources_bottom := \
 
 imports_top := \
  src/Archive/archives.json \
- src/css/custom.css
+ src/css/custom.css \
+ version.json
 imports_Monitoring := \
  src/meta/icon128.png
 imports_Miscellaneous := \
@@ -176,10 +177,10 @@ testbuilds/crx$1/eventPage.js : tmp/eventPage.js | testbuilds/crx$1
 testbuilds/crx$1/icon%.png : src/meta/icon%.png | testbuilds/crx$1
 	$$(CP)
 
-testbuilds/crx$1/manifest.json : src/meta/manifest.json $(template_deps) | testbuilds/crx$1
+testbuilds/crx$1/manifest.json : src/meta/manifest.json version.json $(template_deps) | testbuilds/crx$1
 	$(template) $$< $$@ type=crx channel=$1
 
-testbuilds/updates$1.xml : src/meta/updates.xml $(template_deps) | testbuilds/crx$1
+testbuilds/updates$1.xml : src/meta/updates.xml version.json $(template_deps) | testbuilds/crx$1
 	$(template) $$< $$@ type=crx channel=$1
 
 testbuilds/$(name)$1.crx.zip : \
@@ -190,7 +191,7 @@ testbuilds/$(name)$1.crx.zip : \
 testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.js node_modules/crx/package.json
 	node tools/sign.js $1
 
-testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png $(template_deps) | testbuilds
+testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.json $(template_deps) | testbuilds
 	$(template) $$< $$@ type=userscript channel=$1
 
 testbuilds/$(name)$1.user.js : src/meta/botproc.js testbuilds/$(name)$1.meta.js LICENSE src/meta/usestrict.js tmp/script-userscript.js $(cat_deps)

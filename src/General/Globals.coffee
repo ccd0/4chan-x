@@ -3,7 +3,7 @@ c    = console
 d    = document
 doc  = d.documentElement
 g    =
-  VERSION:   '<%= meta.version %>'
+  VERSION:   '<%= readJSON('version.json').version %>'
   NAMESPACE: '<%= meta.name %>.'
   boards:    {}
 

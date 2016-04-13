@@ -166,9 +166,8 @@ obj.assert = function(flagFile, statement) {
   return `throw new Error 'Assertion failed: ' + ${constExpression(statement)} unless ${statement}`;
 };
 
-// Import variables from package.json and version.json.
+// Import variables from package.json.
 var pkg = readJSON('package.json');
-_.assign(pkg.meta, readJSON('version.json'));
 
 // Take variables from command line.
 for (var i = 4; i < process.argv.length; i++) {

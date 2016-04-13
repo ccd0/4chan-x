@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         <%= meta.name %><%= (channel === '-beta') ? ' beta' : '' %>
-// @version      <%= meta.version %>
+// @version      <%= readJSON('version.json').version %>
 // @minGMVer     <%= meta.min.greasemonkey %>
 // @minFFVer     <%= meta.min.firefox %>
 // @namespace    <%= name %>

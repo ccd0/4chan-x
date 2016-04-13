@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
   <app appid='<%= meta.appid %>'>
-    <updatecheck codebase='<%= meta.downloads %><%= name %><%= channel %>.crx' version='<%= meta.version %>' />
+    <updatecheck codebase='<%= meta.downloads %><%= name %><%= channel %>.crx' version='<%= readJSON('version.json').version %>' />
   </app>
 </gupdate>
 
