@@ -87,7 +87,8 @@ imports_bottom := \
  tmp/style.css
 
 imports_font_awesome := \
- node_modules/font-awesome/package.json
+ node_modules/font-awesome/css/font-awesome.css \
+ node_modules/font-awesome/fonts/fontawesome-webfont.woff
 imports_style := \
  $(wildcard src/Linkification/icons/*.png)
 
@@ -114,11 +115,11 @@ all : bds jshint install
 .events tmp testbuilds builds :
 	$(MKDIR)
 
-.events/npm.% : npm-shrinkwrap.json | .events
-	npm install $*
+.events/npm : npm-shrinkwrap.json | .events
+	npm install
 	echo -> $@
 
-node_modules/%/package.json : .events/npm.%
+node_modules/% : .events/npm
 	
 
 .tests_enabled :
