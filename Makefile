@@ -108,9 +108,9 @@ testcrx := $(foreach f,$(filter %.crx %.zip,$(bds)),test$(f))
 
 jshint := $(foreach f,globals $(subst API,API_crx API_userscript,$(parts)),.events/jshint.$(f))
 
-default : jshint install
+default : testbds jshint install
 
-all : jshint bds install
+all : bds jshint install
 
 .events tmp testbuilds builds :
 	$(MKDIR)
