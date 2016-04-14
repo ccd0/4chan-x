@@ -1,6 +1,6 @@
 name := 4chan-X
 
-ifeq "$(OS)" "Windows_NT"
+ifdef ComSpec
   BIN := $(subst /,\,node_modules/.bin/)
   RMDIR := -rmdir /s /q
   RM := -del
