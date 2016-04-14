@@ -20,29 +20,13 @@ var replaced = 0;
 script = script.replace(
 
   // matches declaration at the start of the function, not including helper function assignments
-  / *\bvar\s+[$\w]+(,\s*[$\w]+)*(,\s*|;\n)/,
+  /^( *var )(.*)(,\n *|;\n)/m,
 
-  function(declaration) {
-    var parts = declaration.split(/([$\w]+)(?=[,;])/);
-
-    for (var name of names) {
-      var i = parts.indexOf(name);
-      if (i < 0) {
-        throw new Error(`${filename}: ${name} not found`);
-      } else if (i !== 1) {
-        // not first: remove variable and separator before it
-        parts.splice(i - 1, 2);
-      } else if (!(i === parts.length - 2 && parts[parts.length - 1][0] === ';')) {
-        // not last: remove variable and separator after it
-        parts.splice(i, 2);
-      } else {
-        // removing only variable: nuke whole declaration
-        parts = [];
-      }
-    }
-
+  function(declaration, v, n, e) {
     replaced++;
-    return parts.join('');
+    var n0 = names.sort().join(', ');
+    if (n0 !== n) throw new Error(`${filename}: expected variables (${n0}) found (${n})`);
+    return (e[0] === ',') ? v : '';
   }
 
 );
