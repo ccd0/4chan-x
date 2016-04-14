@@ -7,6 +7,5 @@ node_modules/
 /test.html
 /captchas.html
 /install.json
-/.jshintrc
 /.tests_enabled
 /.events
