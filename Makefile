@@ -23,7 +23,7 @@ template_deps := package.json tools/template.js node_modules/lodash/package.json
 cat := node tools/cat.js
 cat_deps := tools/cat.js
 
-parts := Config API classes General Filtering Quotelinks Posting Images Linkification Menu Monitoring Archive Miscellaneous Main
+parts := Config API classes General Archive Filtering Images Linkification Menu Miscellaneous Monitoring Posting Quotelinks Main
 
 intermediate := LICENSE src/meta/fbegin.js tmp/declaration.js tmp/globals.js $(foreach p,$(parts),tmp/$(p).js) src/meta/fend.js
 
@@ -40,32 +40,28 @@ sources_API := \
  src/Images/ImageCommon.coffee
 
 sources_classes := \
- $(foreach n, \
-  Callbacks Board Thread CatalogThread Post Clone DataBoard Notice RandomAccessList SimpleDict ShimSet Connection Fetcher \
- ,src/classes/$(n).coffee)
+ src/classes/Callbacks.coffee \
+ src/classes/CatalogThread.coffee \
+ src/classes/Post.coffee src/classes/Clone.coffee \
+ src/classes/Thread.coffee \
+ $(filter-out \
+  %/Callbacks.coffee %/CatalogThread.coffee %/Post.coffee %/Clone.coffee %/Thread.coffee \
+  ,$(call sort_dir,classes))
 
 sources_General := \
- $(foreach n, \
-  Polyfill Header Index Build Get UI Build.Test Settings \
- ,src/General/$(n).coffee)
+ $(filter-out \
+  %/$$.coffee %/$$$$.coffee %/CrossOrigin.coffee %/Main.coffee %/eventPage.coffee \
+  ,$(call sort_dir,General))
 
 $(foreach d, \
- Filtering Quotelinks \
+ Archive Filtering \
  ,$(eval sources_$(d) := $(call sort_dir,$(d))))
-
-sources_Posting := \
- src/Posting/QR.coffee \
- src/Posting/Captcha.coffee \
- $(sort $(wildcard src/Posting/Captcha.*.coffee)) \
- src/Posting/PassLink.coffee \
- src/Posting/PostSuccessful.coffee \
- $(sort $(wildcard src/Posting/QR.*.coffee))
 
 sources_Images := \
  $(filter-out %/ImageCommon.coffee,$(call sort_dir,Images))
 
 $(foreach d, \
- Linkification Menu Monitoring Archive Miscellaneous \
+ Linkification Menu Miscellaneous Monitoring Posting Quotelinks \
 S ,$(eval sources_$(d) := $(call sort_dir,$(d))))
 
 sources_Main := \
