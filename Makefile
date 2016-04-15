@@ -43,7 +43,7 @@ sources_classes := $(call sort_dir,classes)
 
 sources_General := \
  $(filter-out \
-  %/$$.coffee %/$$$$.coffee %/CrossOrigin.coffee %/Main.coffee %/eventPage.coffee \
+  %/$$.coffee %/$$$$.coffee %/Config.coffee %/CrossOrigin.coffee %/Main.coffee %/eventPage.coffee \
   ,$(call sort_dir,General))
 
 $(foreach d, \
