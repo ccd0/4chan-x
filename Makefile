@@ -23,7 +23,7 @@ template_deps := package.json tools/template.js node_modules/lodash/package.json
 cat := node tools/cat.js
 cat_deps := tools/cat.js
 
-parts := Config API classes General Filtering Quotelinks Posting Images Linkification Menu Monitoring Archive Miscellaneous bottom
+parts := Config API classes General Filtering Quotelinks Posting Images Linkification Menu Monitoring Archive Miscellaneous Main
 
 intermediate := LICENSE src/meta/fbegin.js tmp/declaration.js tmp/globals.js $(foreach p,$(parts),tmp/$(p).js) src/meta/fend.js
 
@@ -47,7 +47,7 @@ sources_classes := \
 
 sources_General := \
  $(foreach n, \
-  Polyfill Header Index Build Get UI Build.Test \
+  Polyfill Header Index Build Get UI Build.Test Settings \
  ,src/General/$(n).coffee)
 
 $(foreach d, \
@@ -69,8 +69,7 @@ $(foreach d, \
  Linkification Menu Monitoring Archive Miscellaneous \
 S ,$(eval $(call sorted_dir,$(d))))
 
-sources_bottom := \
- src/General/Settings.coffee \
+sources_Main := \
  src/General/Main.coffee
 
 imports_Config := \
@@ -80,8 +79,7 @@ imports_Monitoring := \
  src/meta/icon128.png
 imports_Miscellaneous := \
  src/css/report.css
-imports_bottom := \
- $(wildcard src/General/Settings/*.html) \
+imports_Main := \
  $(filter-out src/css/custom.css src/css/report.css,$(wildcard src/css/*.css)) \
  tmp/font-awesome.css \
  tmp/style.css
