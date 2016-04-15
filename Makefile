@@ -117,8 +117,12 @@ tmp/font-awesome.css : src/css/font-awesome.css $(imports_font_awesome) $(templa
 tmp/style.css : src/css/style.css $(imports_style) $(template_deps) | tmp
 	$(template) $< $@
 
-tmp/declaration.js : $(wildcard src/*/*.coffee) tools/declare.js | tmp
+.events/declare : $(wildcard src/*/*.coffee) tools/declare.js | .events tmp
 	node tools/declare.js
+	echo -> $@
+
+tmp/declaration.js : .events/declare
+	
 
 tmp/globals.js : src/General/globals.js version.json $(template_deps) | tmp
 	$(template) $< $@

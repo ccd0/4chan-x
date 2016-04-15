@@ -7,4 +7,12 @@ for (var d of fs.readdirSync('src')) {
     if (m) names.push(m[1]);
   }
 }
-fs.writeFileSync('tmp/declaration.js', `var ${names.sort().join(', ')};\n`);
+var decl = `var ${names.sort().join(', ')};\n`;
+var oldDecl;
+try {
+  oldDecl = fs.readFileSync('tmp/declaration.js', 'utf8');
+} catch(err) {
+}
+if (decl !== oldDecl) {
+  fs.writeFileSync('tmp/declaration.js', decl, 'utf8');
+}
