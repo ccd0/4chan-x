@@ -27,9 +27,8 @@ parts := Config API classes General Filtering Quotelinks Posting Images Linkific
 
 intermediate := LICENSE src/meta/fbegin.js tmp/declaration.js tmp/globals.js $(foreach p,$(parts),tmp/$(p).js) src/meta/fend.js
 
-define sorted_dir
-sources_$1 := $$(sort $$(wildcard src/$1/*.coffee))
-endef
+# remove extension when sorting so X.coffee comes before X.Y.coffee
+sort_dir = $(subst !,.coffee,$(sort $(subst .coffee,!,$(wildcard src/$1/*.coffee))))
 
 sources_Config := \
  src/General/Config.coffee
@@ -52,7 +51,7 @@ sources_General := \
 
 $(foreach d, \
  Filtering Quotelinks \
- ,$(eval $(call sorted_dir,$(d))))
+ ,$(eval sources_$(d) := $(call sort_dir,$(d))))
 
 sources_Posting := \
  src/Posting/QR.coffee \
@@ -63,11 +62,11 @@ sources_Posting := \
  $(sort $(wildcard src/Posting/QR.*.coffee))
 
 sources_Images := \
- $(sort $(filter-out %/ImageCommon.coffee,$(wildcard src/Images/*.coffee)))
+ $(filter-out %/ImageCommon.coffee,$(call sort_dir,Images))
 
 $(foreach d, \
  Linkification Menu Monitoring Archive Miscellaneous \
-S ,$(eval $(call sorted_dir,$(d))))
+S ,$(eval sources_$(d) := $(call sort_dir,$(d))))
 
 sources_Main := \
  src/General/Main.coffee
