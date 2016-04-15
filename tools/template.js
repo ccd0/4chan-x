@@ -1,5 +1,6 @@
 var fs = require('fs');
 var _ = require('lodash');
+var esprima = require('esprima');
 
 // disable ES6 delimiters
 _.templateSettings.interpolate = /<%=([\s\S]+?)%>/g;
@@ -138,14 +139,23 @@ Placeholder.prototype.allowed = function(context) {
 };
 
 Placeholder.prototype.build = function() {
-  // first argument is always JS expression; add backticks for embedding it in Coffeescript
-  var expr = '`'+this.args[0]+'`';
+  // first argument is always JS expression; validate it so we don't accidentally break out of placeholders
+  var expr = this.args[0];
+  var ast;
+  try {
+    ast = esprima.parse(expr);
+  } catch (err) {
+    throw new Error(`Invalid JavaScript in template (${expr})`);
+  }
+  if (!(ast.type === 'Program' && ast.body.length == 1 && ast.body[0].type === 'ExpressionStatement')) {
+    throw new Error(`JavaScript in template is not an expression (${expr})`);
+  }
   switch(this.type) {
-    case '$': return `E(${expr})`;        // $ : escaped text
-    case '&': return `${expr}.innerHTML`; // & : contents of HTML element or template (of form {innerHTML: "safeHTML"})
-    case '@': return `E.cat(${expr})`;    // @ : contents of array of HTML elements or templates (see src/General/Globals.coffee for E.cat)
+    case '$': return `\`E(${expr})\``;        // $ : escaped text
+    case '&': return `\`(${expr}).innerHTML\``; // & : contents of HTML element or template (of form {innerHTML: "safeHTML"})
+    case '@': return `\`E.cat(${expr})\``;    // @ : contents of array of HTML elements or templates (see src/General/Globals.coffee for E.cat)
     case '?':
-      return `(if ${expr} then ${this.args[1] || '""'} else ${this.args[2] || '""'})`; // ? : conditional expression
+      return `(if \`(${expr})\` then ${this.args[1] || '""'} else ${this.args[2] || '""'})`; // ? : conditional expression
   }
   throw new Error(`Unrecognized placeholder type (${this.type})`);
 };

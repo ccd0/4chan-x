@@ -19,7 +19,7 @@ endif
 coffee := $(BIN)coffee -c --no-header
 coffee_deps := node_modules/coffee-script/package.json
 template := node tools/template.js
-template_deps := package.json tools/template.js node_modules/lodash/package.json
+template_deps := package.json tools/template.js node_modules/lodash/package.json node_modules/esprima/package.json
 cat := node tools/cat.js
 cat_deps := tools/cat.js
 

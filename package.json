@@ -49,6 +49,7 @@
   "devDependencies": {
     "coffee-script": "1.9.3",
     "crx": "^3.0.3",
+    "esprima": "^2.7.2",
     "font-awesome": "4.5.0",
     "grunt": "^1.0.1",
     "grunt-shell": "^1.2.1",
