@@ -23,7 +23,7 @@ QuoteYou =
 
     # \u00A0 is nbsp
     @text = '\u00A0(You)'
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Mark Quotes of You'
       cb:   @node
 

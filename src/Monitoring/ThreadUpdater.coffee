@@ -58,7 +58,7 @@ ThreadUpdater =
       order: 110
       subEntries: subEntries
 
-    Thread.callbacks.push
+    Callbacks.Thread.push
       name: 'Thread Updater'
       cb:   @node
   
@@ -316,7 +316,7 @@ ThreadUpdater =
       unreadCount   = Unread.posts?.size
       unreadQYCount = Unread.postsQuotingYou?.size
 
-      Main.callbackNodes Post, posts
+      Main.callbackNodes 'Post', posts
 
       if d.hidden or not d.hasFocus()
         if Conf['Beep Quoting You'] and Unread.postsQuotingYou?.size > unreadQYCount

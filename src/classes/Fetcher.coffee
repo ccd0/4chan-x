@@ -15,7 +15,7 @@ class Fetcher
     # Stop here if the container has been removed while loading.
     return unless @root.parentNode
     clone = post.addClone @quoter.context, ($.hasClass @root, 'dialog')
-    Main.callbackNodes Clone, [clone]
+    Main.callbackNodes 'Post', [clone]
 
     # Get rid of the side arrows/stubs.
     {nodes} = clone
@@ -79,7 +79,7 @@ class Fetcher
       new Thread @threadID, board
     post = new Post Build.postFromObject(post, @boardID), thread, board
     post.isFetchedQuote = true
-    Main.callbackNodes Post, [post]
+    Main.callbackNodes 'Post', [post]
     @insert post
 
   archivedPost: ->
@@ -185,7 +185,7 @@ class Fetcher
     post.kill()
     post.file.thumbURL = o.file.thumbURL if post.file
     post.isFetchedQuote = true
-    Main.callbackNodes Post, [post]
+    Main.callbackNodes 'Post', [post]
     @insert post
 
   archiveTags:

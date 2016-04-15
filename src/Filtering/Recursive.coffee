@@ -2,7 +2,7 @@ Recursive =
   recursives: {}
   init: ->
     return unless g.VIEW in ['index', 'thread']
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Recursive'
       cb:   @node
 

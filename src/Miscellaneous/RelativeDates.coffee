@@ -9,7 +9,7 @@ RelativeDates =
       $.on d, 'visibilitychange ThreadUpdate', @flush
 
     if Conf['Relative Post Dates']
-      Post.callbacks.push
+      Callbacks.Post.push
         name: 'Relative Post Dates'
         cb:   @node
 

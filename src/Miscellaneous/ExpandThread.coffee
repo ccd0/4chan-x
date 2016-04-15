@@ -5,7 +5,7 @@ ExpandThread =
     if Conf['JSON Index']
       $.on d, 'IndexRefresh', @onIndexRefresh
     else
-      Thread.callbacks.push
+      Callbacks.Thread.push
         name: 'Expand Thread'
         cb: -> ExpandThread.setButton @
 
@@ -97,7 +97,7 @@ ExpandThread =
       filesCount++ if 'file' of post
       posts.push post
       postsRoot.push root
-    Main.callbackNodes Post, posts
+    Main.callbackNodes 'Post', posts
     $.after a, postsRoot
     $.event 'PostsInserted'
 

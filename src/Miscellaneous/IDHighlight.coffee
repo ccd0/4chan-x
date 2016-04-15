@@ -2,7 +2,7 @@ IDHighlight =
   init: ->
     return unless g.VIEW in ['index', 'thread']
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Highlight by User ID'
       cb:   @node
 

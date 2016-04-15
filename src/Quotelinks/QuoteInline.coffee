@@ -5,7 +5,7 @@ QuoteInline =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Quote Inlining'
       cb:   @node
 

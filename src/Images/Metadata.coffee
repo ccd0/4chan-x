@@ -2,7 +2,7 @@ Metadata =
   init: ->
     return unless Conf['WEBM Metadata'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'WEBM Metadata'
       cb:   @node
 

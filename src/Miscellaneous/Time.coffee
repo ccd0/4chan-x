@@ -2,7 +2,7 @@ Time =
   init: ->
     return unless g.VIEW in ['index', 'thread'] and Conf['Time Formatting']
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Time Formatting'
       cb:   @node
 

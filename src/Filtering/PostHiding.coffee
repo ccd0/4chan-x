@@ -6,7 +6,7 @@ PostHiding =
       $.addClass doc, "reply-hide"
 
     @db = new DataBoard 'hiddenPosts'
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Reply Hiding'
       cb:   @node
 

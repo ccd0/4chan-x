@@ -40,12 +40,9 @@ sources_API := \
  src/Images/ImageCommon.coffee
 
 sources_classes := \
- src/classes/Callbacks.coffee \
- src/classes/CatalogThread.coffee \
  src/classes/Post.coffee src/classes/Clone.coffee \
- src/classes/Thread.coffee \
  $(filter-out \
-  %/Callbacks.coffee %/CatalogThread.coffee %/Post.coffee %/Clone.coffee %/Thread.coffee \
+  %/Post.coffee %/Clone.coffee \
   ,$(call sort_dir,classes))
 
 sources_General := \

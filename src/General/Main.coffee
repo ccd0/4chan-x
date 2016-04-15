@@ -291,8 +291,8 @@ Main =
         threads[0].fileLimit = /\bimagelimit *= *1\b/.test scriptData
         threads[0].ipCount   = if m = scriptData.match /\bunique_ips *= *(\d+)\b/ then +m[1]
 
-      Main.callbackNodes Thread, threads
-      Main.callbackNodesDB Post, posts, ->
+      Main.callbackNodes 'Thread', threads
+      Main.callbackNodesDB 'Post', posts, ->
         QuoteThreading.insert post for post in posts
         Main.expectInitFinished = true
         $.event '4chanXInitFinished'
@@ -303,14 +303,14 @@ Main =
 
   callbackNodes: (klass, nodes) ->
     i = 0
-    cb = klass.callbacks
+    cb = Callbacks[klass]
     while node = nodes[i++]
       cb.execute node
     return
 
   callbackNodesDB: (klass, nodes, cb) ->
     i   = 0
-    cbs = klass.callbacks
+    cbs = Callbacks[klass]
     fn  = ->
       return false unless node = nodes[i]
       cbs.execute node

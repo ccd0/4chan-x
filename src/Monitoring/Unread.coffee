@@ -20,11 +20,11 @@ Unread =
     @order = new RandomAccessList()
     @position = null
 
-    Thread.callbacks.push
+    Callbacks.Thread.push
       name: 'Unread'
       cb:   @node
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Unread'
       cb:   @addPost
 

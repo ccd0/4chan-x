@@ -33,7 +33,7 @@ ThreadStats =
 
     $.on @pageCountEl, 'click', ThreadStats.fetchPage if @pageCountEl
 
-    Thread.callbacks.push
+    Callbacks.Thread.push
       name: 'Thread Stats'
       cb:   @node
 

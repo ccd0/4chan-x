@@ -3,7 +3,7 @@ QuoteStrikeThrough =
     return unless g.VIEW in ['index', 'thread'] and
       (Conf['Reply Hiding Buttons'] or (Conf['Menu'] and Conf['Reply Hiding Link']) or Conf['Filter'])
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Strike-through Quotes'
       cb:   @node
 

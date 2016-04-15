@@ -33,7 +33,7 @@ QR =
 
     $.on d, '4chanXInitFinished', @initReady
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Quick Reply'
       cb:   @node
 

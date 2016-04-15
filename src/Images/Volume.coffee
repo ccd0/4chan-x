@@ -12,14 +12,14 @@ Volume =
       Volume.inputs?.volume.value = x
 
     if Conf['Mouse Wheel Volume']
-      Post.callbacks.push
+      Callbacks.Post.push
         name: 'Mouse Wheel Volume'
         cb:   @node
 
     return unless g.BOARD.ID in ['gif', 'wsg']
 
     if Conf['Mouse Wheel Volume']
-      CatalogThread.callbacks.push
+      Callbacks.CatalogThread.push
         name: 'Mouse Wheel Volume'
         cb:   @catalogNode
 

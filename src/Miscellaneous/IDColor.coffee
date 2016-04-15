@@ -5,7 +5,7 @@ IDColor =
       Heaven: [0, 0, 0, '#fff']
     }
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Color User IDs'
       cb:   @node
 

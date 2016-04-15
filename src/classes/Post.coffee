@@ -1,5 +1,4 @@
 class Post
-  @callbacks = new Callbacks 'Post'
   toString: -> @ID
 
   constructor: (root, @thread, @board) ->

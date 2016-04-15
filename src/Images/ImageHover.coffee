@@ -2,11 +2,11 @@ ImageHover =
   init: ->
     return if g.VIEW not in ['index', 'thread']
     if Conf['Image Hover']
-      Post.callbacks.push
+      Callbacks.Post.push
         name: 'Image Hover'
         cb:   @node
     if Conf['Image Hover in Catalog']
-      CatalogThread.callbacks.push
+      Callbacks.CatalogThread.push
         name: 'Image Hover'
         cb:   @catalogNode
 

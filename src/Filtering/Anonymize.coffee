@@ -3,7 +3,7 @@ Anonymize =
     return unless g.VIEW in ['index', 'thread', 'archive'] and Conf['Anonymize']
     return @archive() if g.VIEW is 'archive'
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Anonymize'
       cb:   @node
 

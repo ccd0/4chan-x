@@ -15,7 +15,7 @@ Gallery =
 
     Header.addShortcut el
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Gallery'
       cb:   @node
 

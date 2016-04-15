@@ -1,5 +1,4 @@
 class CatalogThread
-  @callbacks = new Callbacks 'Catalog Thread'
   toString: -> @ID
 
   constructor: (root, @thread) ->

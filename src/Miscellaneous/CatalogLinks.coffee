@@ -21,10 +21,10 @@ CatalogLinks =
         return
 
     if Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
-      Post.callbacks.push
+      Callbacks.Post.push
         name: 'Catalog Link Rewrite'
         cb:   @node
-      CatalogThread.callbacks.push
+      Callbacks.CatalogThread.push
         name: 'Catalog Link Rewrite'
         cb:   @node
 

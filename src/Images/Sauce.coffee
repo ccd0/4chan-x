@@ -14,7 +14,7 @@ Sauce =
     @link  = $.el 'a',
       target:    '_blank'
       className: 'sauce'
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Sauce'
       cb:   @node
 

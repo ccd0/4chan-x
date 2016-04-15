@@ -9,11 +9,11 @@ Menu =
     $.extend @button, <%= html('<i class="fa fa-angle-down"></i>') %>
 
     @menu = new UI.Menu 'post'
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Menu'
       cb:   @node
 
-    CatalogThread.callbacks.push
+    Callbacks.CatalogThread.push
       name: 'Menu'
       cb:   @catalogNode
 

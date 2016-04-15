@@ -5,7 +5,7 @@ Index =
   init: ->
     return if g.BOARD.ID is 'f' or !Conf['JSON Index'] or g.VIEW isnt 'index'
 
-    CatalogThread.callbacks.push
+    Callbacks.CatalogThread.push
       name: 'Catalog Features'
       cb:   @catalogNode
 
@@ -599,8 +599,8 @@ Index =
 
     # Add the threads in a container to make sure all features work.
     $.nodes Index.nodes
-    Main.callbackNodes Thread, threads
-    Main.callbackNodes Post,   posts
+    Main.callbackNodes 'Thread', threads
+    Main.callbackNodes 'Post',   posts
     Index.updateHideLabel()
     $.event 'IndexRefresh'
 
@@ -627,7 +627,7 @@ Index =
       $.add threadRoot, nodes
 
     Main.handleErrors errors if errors
-    Main.callbackNodes Post, posts
+    Main.callbackNodes 'Post', posts
 
   buildCatalogViews: ->
     threads = Index.sortedNodes
@@ -636,7 +636,7 @@ Index =
     catalogThreads = []
     for thread in threads when !thread.catalogView
       catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
-    Main.callbackNodes CatalogThread, catalogThreads
+    Main.callbackNodes 'CatalogThread', catalogThreads
     threads.map (thread) -> thread.catalogView.nodes.root
 
   sizeCatalogViews: (nodes) ->

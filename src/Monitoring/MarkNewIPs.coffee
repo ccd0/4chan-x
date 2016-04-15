@@ -1,7 +1,7 @@
 MarkNewIPs =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Mark New IPs']
-    Thread.callbacks.push
+    Callbacks.Thread.push
       name: 'Mark New IPs'
       cb:   @node
 

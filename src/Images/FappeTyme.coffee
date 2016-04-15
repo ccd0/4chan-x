@@ -23,11 +23,11 @@ FappeTyme =
     if Conf['Werk Tyme']
       $.sync 'werk', @set.bind(@, 'werk')
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Fappe Tyme'
       cb:   @node
 
-    CatalogThread.callbacks.push
+    Callbacks.CatalogThread.push
       name: 'Werk Tyme'
       cb:   @catalogNode
 

@@ -32,7 +32,7 @@ ReplyPruning =
       el:    el
       order: 190
 
-    Thread.callbacks.push
+    Callbacks.Thread.push
       name: 'Reply Pruning'
       cb:   @node
 

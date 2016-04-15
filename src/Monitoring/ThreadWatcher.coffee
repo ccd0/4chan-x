@@ -61,10 +61,10 @@ ThreadWatcher =
           $.on @el, 'click', @cb
           true
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Thread Watcher'
       cb:   @node
-    CatalogThread.callbacks.push
+    Callbacks.CatalogThread.push
       name: 'Thread Watcher'
       cb:   @catalogNode
 

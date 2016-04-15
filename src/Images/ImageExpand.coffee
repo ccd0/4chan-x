@@ -14,7 +14,7 @@ ImageExpand =
     @videoControls = $.el 'span', className: 'video-controls'
     $.extend @videoControls, <%= html('\u00A0<a href="javascript:;" title="You can also contract the video by dragging it to the left.">contract</a>') %>
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Image Expansion'
       cb: @node
 

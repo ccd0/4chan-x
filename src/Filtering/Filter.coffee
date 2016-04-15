@@ -75,7 +75,7 @@ Filter =
         delete @filters[key]
 
     return unless Object.keys(@filters).length
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Filter'
       cb:   @node
 

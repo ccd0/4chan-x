@@ -5,7 +5,7 @@ QuotePreview =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Quote Previewing'
       cb:   @node
 

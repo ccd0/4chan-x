@@ -20,7 +20,7 @@ Fourchan =
           }));
         }, false);
       '''
-      Post.callbacks.push
+      Callbacks.Post.push
         name: 'Parse /g/ code'
         cb:   @code
 
@@ -39,10 +39,10 @@ Fourchan =
                 window.MathJax.Hub.Queue ['Typeset', window.MathJax.Hub, e.target]
               , false
         , false
-      Post.callbacks.push
+      Callbacks.Post.push
         name: 'Parse /sci/ math'
         cb:   @math
-      CatalogThread.callbacks.push
+      Callbacks.CatalogThread.push
         name: 'Parse /sci/ math'
         cb:   @math
 

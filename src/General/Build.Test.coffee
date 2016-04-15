@@ -72,7 +72,7 @@ Build.Test =
           Build.Test.postsRemaining--
           Build.Test.report() if Build.Test.postsRemaining is 0
           post2.isFetchedQuote = true
-          Main.callbackNodes Post, [post2]
+          Main.callbackNodes 'Post', [post2]
 
   testAll: ->
     g.posts.forEach (post) ->

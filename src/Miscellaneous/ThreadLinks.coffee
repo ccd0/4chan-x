@@ -2,10 +2,10 @@ ThreadLinks =
   init: ->
     return unless g.VIEW is 'index' and Conf['Open Threads in New Tab']
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Thread Links'
       cb:   @node
-    CatalogThread.callbacks.push
+    Callbacks.CatalogThread.push
       name: 'Thread Links'
       cb:   @catalogNode
 

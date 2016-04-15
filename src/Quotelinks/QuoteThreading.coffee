@@ -26,11 +26,11 @@ QuoteThreading =
       el:    @controls
       order: 99
 
-    Thread.callbacks.push
+    Callbacks.Thread.push
       name: 'Quote Threading'
       cb:   @setThread
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Quote Threading'
       cb:   @node
 

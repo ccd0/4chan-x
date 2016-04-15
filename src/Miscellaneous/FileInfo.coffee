@@ -2,7 +2,7 @@ FileInfo =
   init: ->
     return if g.VIEW not in ['index', 'thread'] or !Conf['File Info Formatting']
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'File Info Formatting'
       cb:   @node
 

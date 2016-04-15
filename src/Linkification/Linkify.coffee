@@ -5,11 +5,11 @@ Linkify =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Linkify'
       cb:   @node
 
-    CatalogThread.callbacks.push
+    Callbacks.CatalogThread.push
       name: 'Linkify'
       cb:   @catalogNode
 

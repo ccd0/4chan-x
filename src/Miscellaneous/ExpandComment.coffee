@@ -5,7 +5,7 @@ ExpandComment =
     @callbacks.push Fourchan.code if g.BOARD.ID is 'g'
     @callbacks.push Fourchan.math if g.BOARD.ID is 'sci'
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Comment Expansion'
       cb:   @node
 

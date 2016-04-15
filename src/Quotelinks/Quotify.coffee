@@ -5,7 +5,7 @@ Quotify =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Resurrect Quotes'
       cb:   @node
 

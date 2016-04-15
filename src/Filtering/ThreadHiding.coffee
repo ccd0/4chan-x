@@ -4,7 +4,7 @@ ThreadHiding =
     @db = new DataBoard 'hiddenThreads'
     return @catalogWatch() if g.VIEW is 'catalog'
     @catalogSet g.BOARD
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Thread Hiding'
       cb:   @node
 

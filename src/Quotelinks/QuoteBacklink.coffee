@@ -14,10 +14,10 @@ QuoteBacklink =
   init: ->
     return if g.VIEW not in ['index', 'thread'] or !Conf['Quote Backlinks']
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Quote Backlinking Part 1'
       cb:   @firstNode
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Quote Backlinking Part 2'
       cb:   @secondNode
   firstNode: ->

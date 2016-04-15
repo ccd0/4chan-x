@@ -2,7 +2,7 @@ RevealSpoilers =
   init: ->
     return unless g.VIEW in ['index', 'thread'] and Conf['Reveal Spoiler Thumbnails']
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Reveal Spoiler Thumbnails'
       cb:   @node
 

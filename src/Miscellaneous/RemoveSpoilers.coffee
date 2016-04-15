@@ -5,11 +5,11 @@ RemoveSpoilers =
 
     return unless Conf['Remove Spoilers']
 
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Reveal Spoilers'
       cb:   @node
 
-    CatalogThread.callbacks.push
+    Callbacks.CatalogThread.push
       name: 'Reveal Spoilers'
       cb:   @node
 

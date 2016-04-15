@@ -4,10 +4,10 @@ AntiAutoplay =
     $.addClass doc, 'anti-autoplay'
     @stop audio for audio in $$ 'audio[autoplay]', doc
     window.addEventListener 'loadstart', ((e) => @stop e.target), true
-    Post.callbacks.push
+    Callbacks.Post.push
       name: 'Disable Autoplaying Sounds'
       cb:   @node
-    CatalogThread.callbacks.push
+    Callbacks.CatalogThread.push
       name: 'Disable Autoplaying Sounds'
       cb:   @node
     $.ready => @process d.body
