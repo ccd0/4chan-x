@@ -94,7 +94,7 @@ imports_style := \
 
 crx_contents := script.js eventPage.js icon16.png icon48.png icon128.png manifest.json
 
-bds := \
+release := \
  $(foreach f, \
   $(foreach c,. -beta.,$(name)$(c)crx updates$(c)xml $(name)$(c)user.js $(name)$(c)meta.js) \
   $(name)-noupdate.crx \
@@ -102,15 +102,15 @@ bds := \
   $(name).zip \
  ,builds/$(f))
 
-testbds := $(foreach f,$(filter-out %.crx %.zip,$(bds)),test$(f)) $(foreach t,crx crx-beta crx-noupdate,$(foreach f,$(crx_contents),testbuilds/$(t)/$(f)))
+script := $(foreach f,$(filter-out %.crx %.zip,$(release)),test$(f)) $(foreach t,crx crx-beta crx-noupdate,$(foreach f,$(crx_contents),testbuilds/$(t)/$(f)))
 
-testcrx := $(foreach f,$(filter %.crx %.zip,$(bds)),test$(f))
+crx := $(foreach f,$(filter %.crx %.zip,$(release)),test$(f))
 
 jshint := $(foreach f,globals $(subst API,API_crx API_userscript,$(parts)),.events/jshint.$(f))
 
-default : testbds jshint install
+default : script jshint install
 
-all : bds jshint install
+all : release jshint install
 
 .events tmp testbuilds builds :
 	$(MKDIR)
@@ -225,13 +225,13 @@ tmp/.jshintrc : src/meta/jshint.json tmp/declaration.js tmp/globals.js $(templat
 install.json :
 	echo {}> $@
 
-.events/install : $(testbds) install.json tools/install.js | .events
+.events/install : $(script) install.json tools/install.js | .events
 	node tools/install.js
 	echo -> $@
 
 .SECONDARY :
 
-.PHONY: default all clean cleanall testbds bds jshint install
+.PHONY: default all clean cleanall script crx release jshint install
 
 clean :
 	$(RMDIR) tmp testbuilds .events
@@ -240,11 +240,11 @@ clean :
 cleanall : clean
 	$(RMDIR) builds
 
-testbds : $(testbds)
+script : $(script)
 
-testcrx : $(testcrx)
+crx : $(crx)
 
-bds : $(bds)
+release : $(release)
 
 jshint : $(jshint)
 
