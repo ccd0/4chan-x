@@ -39,11 +39,7 @@ sources_API := \
  src/General/CrossOrigin.coffee \
  src/Images/ImageCommon.coffee
 
-sources_classes := \
- src/classes/Post.coffee src/classes/Clone.coffee \
- $(filter-out \
-  %/Post.coffee %/Clone.coffee \
-  ,$(call sort_dir,classes))
+sources_classes := $(call sort_dir,classes)
 
 sources_General := \
  $(filter-out \

@@ -1,4 +1,4 @@
-class Clone extends Post
+Post.Clone = class extends Post
   isClone: true
 
   constructor: (@origin, @context, contractThumb) ->
@@ -11,10 +11,10 @@ class Clone extends Post
       @cloneWithoutVideo nodes.root
     else
       nodes.root.cloneNode true
-    Clone.prefix or= 0
+    Post.Clone.prefix or= 0
     for node in [root, $$('[id]', root)...]
-      node.id = Clone.prefix + node.id
-    Clone.prefix++
+      node.id = Post.Clone.prefix + node.id
+    Post.Clone.prefix++
     post = $ '.post',     root
     info = $ '.postInfo', post
     @nodes =

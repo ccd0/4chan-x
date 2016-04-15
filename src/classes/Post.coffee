@@ -261,7 +261,7 @@ class Post
     @board.posts.rm @
 
   addClone: (context, contractThumb) ->
-    new Clone @, context, contractThumb
+    new Post.Clone @, context, contractThumb
 
   rmClone: (index) ->
     @clones.splice index, 1
