@@ -209,7 +209,7 @@ $(eval $(call rules_channel,-noupdate))
 testbuilds/$(name).zip : testbuilds/$(name)-noupdate.crx.zip
 	$(CP)
 
-builds/% : testbuilds/% $(jshint) | builds
+builds/% : testbuilds/% | builds
 	$(CP)
 
 test.html : README.md template.jst tools/markdown.js node_modules/marked/package.json node_modules/lodash/package.json
