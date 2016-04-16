@@ -163,8 +163,8 @@ define rules_channel
 testbuilds/crx$1 :
 	$$(MKDIR)
 
-testbuilds/crx$1/script.js : src/meta/botproc.js $(call intermediate,crx) $(cat_deps) | testbuilds/crx$1
-	$(cat) src/meta/botproc.js $(call intermediate,crx) $$@
+testbuilds/crx$1/script.js : $(call intermediate,crx) $(cat_deps) | testbuilds/crx$1
+	$(cat) $(call intermediate,crx) $$@
 
 testbuilds/crx$1/eventPage.js : tmp/eventPage.js | testbuilds/crx$1
 	$$(CP)
@@ -189,8 +189,8 @@ testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.
 testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.json $(template_deps) | testbuilds
 	$(template) $$< $$@ type=userscript channel=$1
 
-testbuilds/$(name)$1.user.js : src/meta/botproc.js testbuilds/$(name)$1.meta.js $(call intermediate,userscript) $(cat_deps)
-	$(cat) src/meta/botproc.js testbuilds/$(name)$1.meta.js $(call intermediate,userscript) $$@
+testbuilds/$(name)$1.user.js : testbuilds/$(name)$1.meta.js $(call intermediate,userscript) $(cat_deps)
+	$(cat) testbuilds/$(name)$1.meta.js $(call intermediate,userscript) $$@
 
 endef
 
