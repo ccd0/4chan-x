@@ -27,7 +27,13 @@ Redirect =
 
     Redirect.data = o
 
-  archives: `<%= JSON.stringify(readJSON('src/Archive/archives.json')) %>`
+  archives:
+    `<%=
+      JSON.stringify(readJSON('src/Archive/archives.json'), null, 2)
+        .replace(/\n {2,}(?!{)/g, ' ')
+        .replace(/\n/g, '\n    ')
+        .replace(/`/g, '\\`')
+    %>`
 
   to: (dest, data) ->
     archive = (if dest in ['search', 'board'] then Redirect.data.thread else Redirect.data[dest])[data.boardID]
