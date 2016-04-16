@@ -207,18 +207,18 @@ class Post
 
   kill: (file) ->
     if file
-      return if @file.isDead
+      return if @isDead or @file.isDead
       @file.isDead = true
       $.addClass @nodes.root, 'deleted-file'
     else
       return if @isDead
       @isDead = true
+      $.rmClass  @nodes.root, 'deleted-file'
       $.addClass @nodes.root, 'deleted-post'
 
-    unless strong = $ 'strong.warning', @nodes.info
+    unless (strong = $ 'strong.warning', @nodes.info)
       strong = $.el 'strong',
-          className: 'warning'
-          textContent: if @isReply then '[Deleted]' else '[Dead]'
+        className: 'warning'
       $.after $('input', @nodes.info), strong
     strong.textContent = if file then '[File deleted]' else '[Deleted]'
 

@@ -50,20 +50,8 @@ ImageCommon =
         clearTimeout timeoutID if delay?
         cb URL
 
-    <% if (type === 'crx') { %>
-    $.ajax post.file.url,
-      onloadend: ->
-        if @status is 200
-          URL = post.file.url
-        else
-          post.kill true if @status is 404
-          redirect()
-    ,
-      type: 'head'
-    <% } else { %>
-    # XXX CORS for i.4cdn.org WHEN?
     $.ajax "//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
-      post.kill() if @status is 404
+      post.kill !post.isClone if @status is 404
       return redirect() if @status isnt 200
       for postObj in @response.posts
         break if postObj.no is post.ID
@@ -75,7 +63,6 @@ ImageCommon =
         redirect()
       else
         URL = post.file.url
-    <% } %>
 
   # Add controls, but not until the mouse is moved over the video.
   addControls: (video) ->

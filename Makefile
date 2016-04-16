@@ -36,8 +36,7 @@ sources_Config := \
 sources_API := \
  src/General/$$.coffee \
  src/General/$$$$.coffee \
- src/General/CrossOrigin.coffee \
- src/Images/ImageCommon.coffee
+ src/General/CrossOrigin.coffee
 
 sources_classes := $(call sort_dir,classes)
 
@@ -47,15 +46,8 @@ sources_General := \
   ,$(call sort_dir,General))
 
 $(foreach d, \
- Archive Filtering \
+ Archive Filtering Images Linkification Menu Miscellaneous Monitoring Posting Quotelinks \
  ,$(eval sources_$(d) := $(call sort_dir,$(d))))
-
-sources_Images := \
- $(filter-out %/ImageCommon.coffee,$(call sort_dir,Images))
-
-$(foreach d, \
- Linkification Menu Miscellaneous Monitoring Posting Quotelinks \
-S ,$(eval sources_$(d) := $(call sort_dir,$(d))))
 
 sources_Main := \
  src/General/Main.coffee
