@@ -23,7 +23,14 @@ template_deps := package.json tools/template.js node_modules/lodash/package.json
 cat := node tools/cat.js
 cat_deps := tools/cat.js
 
-parts := Config platform classes General Archive Filtering Images Linkification Menu Miscellaneous Monitoring Posting Quotelinks Main
+capitalized = $(filter-out a,$(foreach x,$1,$(subst a $(x),,$(sort a $(x)))))
+
+parts := \
+ Config platform classes \
+ $(sort $(call capitalized, \
+  $(subst src/,,$(wildcard src/*)) \
+ )) \
+ Main
 
 intermediate := LICENSE src/meta/fbegin.js tmp/declaration.js tmp/globals.js $(foreach p,$(parts),tmp/$(p).js) src/meta/fend.js
 
