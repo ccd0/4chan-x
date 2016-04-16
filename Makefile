@@ -26,19 +26,28 @@ cat_deps := tools/cat.js
 capitalized = $(filter-out a,$(foreach x,$1,$(subst a $(x),,$(sort a $(x)))))
 
 parts := \
- Config platform classes \
+ globals Config platform classes \
  $(sort $(call capitalized, \
   $(subst src/,,$(wildcard src/*)) \
  )) \
  Main
 
-intermediate := LICENSE src/meta/fbegin.js tmp/declaration.js tmp/globals.js $(foreach p,$(parts),tmp/$(p).js) src/meta/fend.js
+lang = $(if $(filter globals,$1),js,coffee)
 
 # remove extension when sorting so X.coffee comes before X.Y.coffee
-sources = \
- $(subst !,.coffee,$(sort $(subst .coffee,!, \
-  $(wildcard src/$1/*.coffee src/main/$1.coffee))))
+sources_lang = \
+ $(subst !,.$2,$(sort $(subst .$2,!, \
+  $(wildcard src/$1/*.$2 src/main/$1.$2))))
 
+sources = $(call sources_lang,$1,$(call lang,$1))
+
+imports = \
+ $(filter-out %.coffee %.js,$(wildcard src/$1/*.* src/$1/*/*.* src/$1/*/*/*.*)) \
+ .tests_enabled \
+ $(imports_$1)
+
+imports_globals := \
+ version.json
 imports_Config := \
  src/Archive/archives.json \
  src/css/custom.css
@@ -57,6 +66,15 @@ imports_font_awesome := \
 imports_style := \
  $(wildcard src/css/linkIcons/*.png)
 
+intermediate = \
+ LICENSE \
+ src/meta/fbegin.js \
+ tmp/declaration.js \
+ $(foreach p, \
+  $(subst platform,platform_$1,$(parts)) \
+  ,tmp/$(p).js) \
+ src/meta/fend.js
+
 crx_contents := script.js eventPage.js icon16.png icon48.png icon128.png manifest.json
 
 release := \
@@ -71,7 +89,7 @@ script := $(foreach f,$(filter-out %.crx %.zip,$(release)),test$(f)) $(foreach t
 
 crx := $(foreach f,$(filter %.crx %.zip,$(release)),test$(f))
 
-jshint := $(foreach f,globals $(subst platform,platform_crx platform_userscript,$(parts)),.events/jshint.$(f))
+jshint := $(foreach f,$(subst platform,platform_crx platform_userscript,$(parts)),.events/jshint.$(f))
 
 default : script jshint install
 
@@ -103,34 +121,39 @@ tmp/style.css : src/css/style.css $(imports_style) $(template_deps) | tmp
 tmp/declaration.js : .events/declare
 	
 
-tmp/globals.js : src/main/globals.js version.json $(template_deps) | tmp
-	$(template) $< $@
-
-define rules_part
-
+define concatenate
 tmp/$1.jst : $$(call sources,$1) $(cat_deps) | tmp
-	$(cat) $$(call sources,$1) $$@
-
-tmp/$1.coffee : tmp/$1.jst $$(filter-out %.coffee,$$(wildcard src/$1/*.* src/$1/*/*.* src/$1/*/*/*.*)) $$(imports_$1) .tests_enabled $(template_deps)
-	$(template) $$< $$@
-
-tmp/$1.js : tmp/$1.coffee $(coffee_deps) tools/globalize.js
-	$(coffee) $$<
-	node tools/globalize.js $$@ $$(call sources,$1)
-
+	$(cat) $$(subst $$$$,$$(ESC_DOLLAR),$$(call sources,$1)) $$@
 endef
 
-$(foreach i,$(filter-out platform,$(parts)),$(eval $(call rules_part,$(i))))
+$(foreach p, \
+ $(parts), \
+ $(eval $(call concatenate,$(p))) \
+)
 
-tmp/platform.jst : $(call sources,platform) $(cat_deps) | tmp
-	$(cat) $(subst $$,$(ESC_DOLLAR),$(call sources,platform)) $@
+define interpolate
+tmp/$1.$$(call lang,$1) : tmp/$1.jst $$(call imports,$1) $(template_deps)
+	$(template) $$< $$@
+endef
 
-tmp/platform_%.coffee : tmp/platform.jst $(template_deps)
+$(foreach p, \
+ $(filter-out platform,$(parts)), \
+ $(eval $(call interpolate,$(p))) \
+)
+
+tmp/platform_%.coffee : tmp/platform.jst $(call imports,platform) $(template_deps)
 	$(template) $< $@ type=$*
 
-tmp/platform_%.js : tmp/platform_%.coffee $(coffee_deps)
-	$(coffee) $<
-	node tools/globalize.js $@ $(subst $$,$(ESC_DOLLAR),$(call sources,platform))
+define compile
+tmp/$1.js : tmp/$1.coffee $(coffee_deps) tools/globalize.js
+	$(coffee) $$<
+	node tools/globalize.js $1
+endef
+
+$(foreach p, \
+ $(filter-out globals platform,$(parts)) platform_crx platform_userscript, \
+ $(eval $(call compile,$(p))) \
+)
 
 tmp/eventPage.js : src/main/eventPage.coffee $(coffee_deps) | tmp
 	$(coffee) -o tmp src/main/eventPage.coffee
@@ -140,8 +163,8 @@ define rules_channel
 testbuilds/crx$1 :
 	$$(MKDIR)
 
-testbuilds/crx$1/script.js : src/meta/botproc.js $(subst platform,platform_crx,$(intermediate)) $(cat_deps) | testbuilds/crx$1
-	$(cat) src/meta/botproc.js $(subst platform,platform_crx,$(intermediate)) $$@
+testbuilds/crx$1/script.js : src/meta/botproc.js $(call intermediate,crx) $(cat_deps) | testbuilds/crx$1
+	$(cat) src/meta/botproc.js $(call intermediate,crx) $$@
 
 testbuilds/crx$1/eventPage.js : tmp/eventPage.js | testbuilds/crx$1
 	$$(CP)
@@ -166,8 +189,8 @@ testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.
 testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.json $(template_deps) | testbuilds
 	$(template) $$< $$@ type=userscript channel=$1
 
-testbuilds/$(name)$1.user.js : src/meta/botproc.js testbuilds/$(name)$1.meta.js $(subst platform,platform_userscript,$(intermediate)) $(cat_deps)
-	$(cat) src/meta/botproc.js testbuilds/$(name)$1.meta.js $(subst platform,platform_userscript,$(intermediate)) $$@
+testbuilds/$(name)$1.user.js : src/meta/botproc.js testbuilds/$(name)$1.meta.js $(call intermediate,userscript) $(cat_deps)
+	$(cat) src/meta/botproc.js testbuilds/$(name)$1.meta.js $(call intermediate,userscript) $$@
 
 endef
 

@@ -1,14 +1,16 @@
 var fs = require('fs');
 
-var filename = process.argv[2];
-var sources = process.argv.slice(3);
+var basename = process.argv[2].split('_')[0]; // e.g. template_crx -> template
+var filename = `tmp/${process.argv[2]}.js`;
+
+// If it's not a collection of files in src/, it's a single file in src/main/
+var sources = (fs.readdirSync('src').indexOf(basename) >= 0) ? fs.readdirSync(`src/${basename}`) : [`${basename}.coffee`];
 
 // Extract variables to be made global from source file list
 // e.g. ImageExpand from src/Images/ImageExpand.coffee
 // but not QR.post or eventPage
 var names = [];
 for (var f of sources) {
-  f = f.match(/[^/]*$/)[0];
   var m = f.match(/^([$A-Z][$\w]*)\.coffee$/);
   if (m) names.push(m[1]);
 }
