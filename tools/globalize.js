@@ -1,10 +1,8 @@
 var fs = require('fs');
 
-var basename = process.argv[2].split('_')[0]; // e.g. template_crx -> template
 var filename = `tmp/${process.argv[2]}.js`;
-
-// If it's not a collection of files in src/, it's a single file in src/main/
-var sources = (fs.readdirSync('src').indexOf(basename) >= 0) ? fs.readdirSync(`src/${basename}`) : [`${basename}.coffee`];
+var basename = process.argv[2].split('_')[0]; // e.g. template_crx -> template
+var sources  = fs.readdirSync(`src/${basename}`);
 
 // Extract variables to be made global from source file list
 // e.g. ImageExpand from src/Images/ImageExpand.coffee

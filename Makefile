@@ -26,29 +26,29 @@ cat_deps := tools/cat.js
 capitalized = $(filter-out a,$(foreach x,$1,$(subst a $(x),,$(sort a $(x)))))
 
 parts := \
- globals Config css platform classes \
+ globals config css platform classes \
  $(sort $(call capitalized, \
   $(subst src/,,$(wildcard src/*)) \
  )) \
- Main
+ main
 
 lang = $(if $(filter globals css,$1),js,coffee)
 
 # remove extension when sorting so X.coffee comes before X.Y.coffee
 sources_lang = \
  $(subst !,.$2,$(sort $(subst .$2,!, \
-  $(wildcard src/$1/*.$2 src/main/$1.$2))))
+  $(wildcard src/$1/*.$2))))
 
 sources = $(call sources_lang,$1,$(call lang,$1))
 
 imports = \
- $(filter-out %.coffee %.js,$(wildcard src/$1/*.* src/$1/*/*.* src/$1/*/*/*.* src/main/$1.*)) \
+ $(filter-out %.coffee %.js,$(wildcard src/$1/*.* src/$1/*/*.* src/$1/*/*/*.*)) \
  .tests_enabled \
  $(imports_$1)
 
 imports_globals := \
  version.json
-imports_Config := \
+imports_config := \
  src/Archive/archives.json
 imports_css := \
  tools/style.js \
@@ -140,8 +140,8 @@ $(foreach p, \
  $(eval $(call compile,$(p))) \
 )
 
-tmp/eventPage.js : src/main/eventPage.coffee $(coffee_deps) | tmp
-	$(coffee) -o tmp src/main/eventPage.coffee
+tmp/eventPage.js : src/meta/eventPage.coffee $(coffee_deps) | tmp
+	$(coffee) -o tmp src/meta/eventPage.coffee
 
 define rules_channel
 
