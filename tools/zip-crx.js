@@ -6,7 +6,7 @@ var v = JSON.parse(fs.readFileSync('version.json', 'utf8'));
 var channel = process.argv[2] || '';
 
 var zip = new JSZip();
-for (var file of ['eventPage.js', 'icon128.png', 'icon16.png', 'icon48.png', 'manifest.json', 'script.js']) {
+for (var file of ['script.js', 'eventPage.js', 'icon16.png', 'icon48.png', 'icon128.png', 'manifest.json']) {
   zip.file(
     file,
     fs.readFileSync(`testbuilds/crx${channel}/${file}`),
