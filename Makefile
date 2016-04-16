@@ -48,7 +48,7 @@ imports_font_awesome := \
  node_modules/font-awesome/css/font-awesome.css \
  node_modules/font-awesome/fonts/fontawesome-webfont.woff
 imports_style := \
- $(wildcard src/Linkification/icons/*.png)
+ $(wildcard src/css/linkIcons/*.png)
 
 crx_contents := script.js eventPage.js icon16.png icon48.png icon128.png manifest.json
 
