@@ -23,7 +23,7 @@ template_deps := package.json tools/template.js node_modules/lodash/package.json
 cat := node tools/cat.js
 cat_deps := tools/cat.js
 
-parts := Config API classes General Archive Filtering Images Linkification Menu Miscellaneous Monitoring Posting Quotelinks Main
+parts := Config platform classes General Archive Filtering Images Linkification Menu Miscellaneous Monitoring Posting Quotelinks Main
 
 intermediate := LICENSE src/meta/fbegin.js tmp/declaration.js tmp/globals.js $(foreach p,$(parts),tmp/$(p).js) src/meta/fend.js
 
@@ -33,7 +33,7 @@ sort_dir = $(subst !,.coffee,$(sort $(subst .coffee,!,$(wildcard src/$1/*.coffee
 sources_Config := \
  src/General/Config.coffee
 
-sources_API := \
+sources_platform := \
  src/General/$$.coffee \
  src/General/$$$$.coffee \
  src/General/CrossOrigin.coffee
@@ -84,7 +84,7 @@ script := $(foreach f,$(filter-out %.crx %.zip,$(release)),test$(f)) $(foreach t
 
 crx := $(foreach f,$(filter %.crx %.zip,$(release)),test$(f))
 
-jshint := $(foreach f,globals $(subst API,API_crx API_userscript,$(parts)),.events/jshint.$(f))
+jshint := $(foreach f,globals $(subst platform,platform_crx platform_userscript,$(parts)),.events/jshint.$(f))
 
 default : script jshint install
 
@@ -133,17 +133,17 @@ tmp/$1.js : tmp/$1.coffee $(coffee_deps) tools/globalize.js
 
 endef
 
-$(foreach i,$(filter-out API,$(parts)),$(eval $(call rules_part,$(i))))
+$(foreach i,$(filter-out platform,$(parts)),$(eval $(call rules_part,$(i))))
 
-tmp/API.jst : $(sources_API) $(cat_deps) | tmp
-	$(cat) $(subst $$,$(ESC_DOLLAR),$(sources_API)) $@
+tmp/platform.jst : $(sources_platform) $(cat_deps) | tmp
+	$(cat) $(subst $$,$(ESC_DOLLAR),$(sources_platform)) $@
 
-tmp/API_%.coffee : tmp/API.jst $(template_deps)
+tmp/platform_%.coffee : tmp/platform.jst $(template_deps)
 	$(template) $< $@ type=$*
 
-tmp/API_%.js : tmp/API_%.coffee $(coffee_deps)
+tmp/platform_%.js : tmp/platform_%.coffee $(coffee_deps)
 	$(coffee) $<
-	node tools/globalize.js $@ $(subst $$,$(ESC_DOLLAR),$(sources_API))
+	node tools/globalize.js $@ $(subst $$,$(ESC_DOLLAR),$(sources_platform))
 
 tmp/eventPage.js : src/General/eventPage.coffee $(coffee_deps) | tmp
 	$(coffee) -o tmp src/General/eventPage.coffee
@@ -153,8 +153,8 @@ define rules_channel
 testbuilds/crx$1 :
 	$$(MKDIR)
 
-testbuilds/crx$1/script.js : src/meta/botproc.js $(subst API,API_crx,$(intermediate)) $(cat_deps) | testbuilds/crx$1
-	$(cat) src/meta/botproc.js $(subst API,API_crx,$(intermediate)) $$@
+testbuilds/crx$1/script.js : src/meta/botproc.js $(subst platform,platform_crx,$(intermediate)) $(cat_deps) | testbuilds/crx$1
+	$(cat) src/meta/botproc.js $(subst platform,platform_crx,$(intermediate)) $$@
 
 testbuilds/crx$1/eventPage.js : tmp/eventPage.js | testbuilds/crx$1
 	$$(CP)
@@ -179,8 +179,8 @@ testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.
 testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.json $(template_deps) | testbuilds
 	$(template) $$< $$@ type=userscript channel=$1
 
-testbuilds/$(name)$1.user.js : src/meta/botproc.js testbuilds/$(name)$1.meta.js $(subst API,API_userscript,$(intermediate)) $(cat_deps)
-	$(cat) src/meta/botproc.js testbuilds/$(name)$1.meta.js $(subst API,API_userscript,$(intermediate)) $$@
+testbuilds/$(name)$1.user.js : src/meta/botproc.js testbuilds/$(name)$1.meta.js $(subst platform,platform_userscript,$(intermediate)) $(cat_deps)
+	$(cat) src/meta/botproc.js testbuilds/$(name)$1.meta.js $(subst platform,platform_userscript,$(intermediate)) $$@
 
 endef
 
