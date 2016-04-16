@@ -358,7 +358,7 @@ Main =
       textContent: "#{data.error.name or 'Error'}: #{data.error.message or 'see console for details'}"
     lines = data.error.stack?.match(/\d+(?=:\d+\)?$)/mg)?.join().replace(/^/, ' at ') or ''
     context = $.el 'div',
-      textContent: "(<%= meta.name %> <%= meta.fork %> v#{g.VERSION} #{$.buildType} on #{$.engine}#{lines})"
+      textContent: "(<%= meta.name %> <%= meta.fork %> v#{g.VERSION} #{$.platform} on #{$.engine}#{lines})"
     [message, error, context]
 
   reportLink: (errors) ->
@@ -368,7 +368,7 @@ Main =
     details = """
       [Please describe the steps needed to reproduce this error.]
 
-      Script: <%= meta.name %> <%= meta.fork %> v#{g.VERSION} #{$.buildType}
+      Script: <%= meta.name %> <%= meta.fork %> v#{g.VERSION} #{$.platform}
       User agent: #{navigator.userAgent}
       URL: #{location.href}
 

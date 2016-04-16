@@ -356,7 +356,7 @@ $.engine = do ->
   return 'webkit' if /WebKit\//.test navigator.userAgent
   return 'gecko'  if /Gecko\/|Goanna/.test navigator.userAgent # Goanna = Pale Moon 26+
 
-$.buildType = '<%= type %>';
+$.platform = '<%= type %>';
 
 try
   localStorage.getItem 'x'
