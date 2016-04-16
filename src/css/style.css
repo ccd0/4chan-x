@@ -1820,18 +1820,6 @@ a:only-of-type > .remove {
   cursor: text !important;
 }
 
-/* Link Title Favicons */
-<%=
-ls('src/css/linkIcons').map(function(file) {
-  var key  = file.match(/(\w+)\.png/)[1];
-  var data = readBase64(`src/css/linkIcons/${file}`);
-  return ".linkify."+key+" {\n" +
-  "  background: transparent url('data:image/png;base64,"+data+"') center left no-repeat!important;\n" +
-  "  padding-left: 18px;\n" +
-  "}";
-}).join('\n')
-%>
-
 /* Embedding */
 #embedding {
   padding: 1px 4px 1px 4px;

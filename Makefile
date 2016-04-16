@@ -26,13 +26,13 @@ cat_deps := tools/cat.js
 capitalized = $(filter-out a,$(foreach x,$1,$(subst a $(x),,$(sort a $(x)))))
 
 parts := \
- globals Config platform classes \
+ globals Config css platform classes \
  $(sort $(call capitalized, \
   $(subst src/,,$(wildcard src/*)) \
  )) \
  Main
 
-lang = $(if $(filter globals,$1),js,coffee)
+lang = $(if $(filter globals css,$1),js,coffee)
 
 # remove extension when sorting so X.coffee comes before X.Y.coffee
 sources_lang = \
@@ -42,29 +42,20 @@ sources_lang = \
 sources = $(call sources_lang,$1,$(call lang,$1))
 
 imports = \
- $(filter-out %.coffee %.js,$(wildcard src/$1/*.* src/$1/*/*.* src/$1/*/*/*.*)) \
+ $(filter-out %.coffee %.js,$(wildcard src/$1/*.* src/$1/*/*.* src/$1/*/*/*.* src/main/$1.*)) \
  .tests_enabled \
  $(imports_$1)
 
 imports_globals := \
  version.json
 imports_Config := \
- src/Archive/archives.json \
- src/css/custom.css
-imports_Monitoring := \
- src/meta/icon128.png
-imports_Miscellaneous := \
- src/css/report.css
-imports_Main := \
- $(filter-out src/css/custom.css src/css/report.css,$(wildcard src/css/*.css)) \
- tmp/font-awesome.css \
- tmp/style.css
-
-imports_font_awesome := \
+ src/Archive/archives.json
+imports_css := \
+ tools/style.js \
  node_modules/font-awesome/css/font-awesome.css \
  node_modules/font-awesome/fonts/fontawesome-webfont.woff
-imports_style := \
- $(wildcard src/css/linkIcons/*.png)
+imports_Monitoring := \
+ src/meta/icon128.png
 
 intermediate = \
  LICENSE \
@@ -108,12 +99,6 @@ node_modules/% : .events/npm
 .tests_enabled :
 	echo false> .tests_enabled
 
-tmp/font-awesome.css : src/css/font-awesome.css $(imports_font_awesome) $(template_deps) | tmp
-	$(template) $< $@
-
-tmp/style.css : src/css/style.css $(imports_style) $(template_deps) | tmp
-	$(template) $< $@
-
 .events/declare : $(wildcard src/*/*.coffee) tools/declare.js | .events tmp
 	node tools/declare.js
 	echo -> $@
@@ -151,7 +136,7 @@ tmp/$1.js : tmp/$1.coffee $(coffee_deps) tools/globalize.js
 endef
 
 $(foreach p, \
- $(filter-out globals platform,$(parts)) platform_crx platform_userscript, \
+ $(filter-out globals css platform,$(parts)) platform_crx platform_userscript, \
  $(eval $(call compile,$(p))) \
 )
 

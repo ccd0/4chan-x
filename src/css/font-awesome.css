@@ -1,13 +1,3 @@
-<%=
-read('node_modules/font-awesome/css/font-awesome.css').match(/\/\*\![^]*?\*\//)[0]
-%>
-
-@font-face {
-  font-family: FontAwesome;
-  src: url('data:application/font-woff;base64,<%= readBase64('node_modules/font-awesome/fonts/fontawesome-webfont.woff') %>') format('woff');
-  font-weight: 400;
-  font-style: normal;
-}
 .fa::before {
   font-family: FontAwesome;
   font-weight: 400;
@@ -43,10 +33,6 @@ read('node_modules/font-awesome/css/font-awesome.css').match(/\/\*\![^]*?\*\//)[
 .hide-thread-button .fa {
   display: inline;
 }
-
-<%=
-read('node_modules/font-awesome/css/font-awesome.css').match(/\.fa-glass:[^]*/)[0].replace(/([,{;])\s+/g, '$1').replace(/,/g, ', ')
-%>
 
 .fa-spin::before {
   -webkit-animation:spin 2s infinite linear;

@@ -7,18 +7,19 @@ _.templateSettings.interpolate = /<%=([\s\S]+?)%>/g;
 
 var obj = {};
 
+for (var m of ['style']) {
+  obj[`require_${m}`] = () => require(`./${m}`);
+}
+
 var read     = obj.read     = filename => fs.readFileSync(filename, 'utf8').replace(/\r\n/g, '\n');
 var readJSON = obj.readJSON = filename => JSON.parse(read(filename));
 obj.readBase64              = filename => fs.readFileSync(filename).toString('base64');
-obj.ls                      = pathname => fs.readdirSync(pathname);
 
 // Convert JSON object to Coffeescript expression (via embedded JS).
 var constExpression = data => '`' + JSON.stringify(data).replace(/`/g, '\\`') + '`';
 
-obj.importCSS = function() {
-  var text = Array.prototype.slice.call(arguments).map(name => read(`src/css/${name}.css`)).join('');
-  text = _.template(text)(pkg); // variables only; no recursive imports
-  return text.trim().replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`');
+obj.multiline = function(text) {
+  return text.replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`');
 };
 
 obj.importHTML = function(filename) {

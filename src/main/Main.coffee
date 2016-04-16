@@ -110,7 +110,7 @@ Main =
 
     switch hostname
       when 'www.4chan.org'
-        $.onExists doc, 'body', -> $.addStyle Main.cssWWW
+        $.onExists doc, 'body', -> $.addStyle CSS.www
         Captcha.replace.init()
         return
       when 'sys.4chan.org'
@@ -190,7 +190,7 @@ Main =
         Conf['Autohiding Scrollbar'] = !Conf['Autohiding Scrollbar']
         $.set 'Autohiding Scrollbar', Conf['Autohiding Scrollbar']
         $.toggleClass doc, 'autohiding-scrollbar'
-    $.addStyle Main.css, 'fourchanx-css'
+    $.addStyle CSS.boards, 'fourchanx-css'
     Main.bgColorStyle = $.el 'style', id: 'fourchanx-bgcolor-css'
 
     keyboard = false
@@ -390,10 +390,6 @@ Main =
   ready: (cb) ->
     $.ready ->
       cb() if Main.isThisPageLegit()
-
-  css: `<%= importCSS('../../tmp/font-awesome', '../../tmp/style', 'yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'tomorrow', 'photon', 'supports') %>`
-
-  cssWWW: `<%= importCSS('www') %>`
 
   features: [
     ['Polyfill',                  Polyfill]

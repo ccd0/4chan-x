@@ -796,7 +796,7 @@ Config =
 
   favicon: 'ferongr'
 
-  usercss: `<%= importCSS('custom') %>`
+  usercss: `<%= multiline(read('src/main/Config.usercss.css')) %>`
 
   hotkeys:
     # QR & Options

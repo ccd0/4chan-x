@@ -1,6 +1,4 @@
 Report =
-  css: `<%= importCSS('report') %>`
-
   init: ->
     return unless (match = location.search.match /\bno=(\d+)/)
     Captcha.replace.init()
@@ -8,7 +6,7 @@ Report =
     $.ready @ready
 
   ready: ->
-    $.addStyle Report.css
+    $.addStyle CSS.report
 
     Report.archive() if Conf['Archive Report']
 
