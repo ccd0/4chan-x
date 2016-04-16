@@ -28,29 +28,9 @@ parts := Config platform classes General Archive Filtering Images Linkification 
 intermediate := LICENSE src/meta/fbegin.js tmp/declaration.js tmp/globals.js $(foreach p,$(parts),tmp/$(p).js) src/meta/fend.js
 
 # remove extension when sorting so X.coffee comes before X.Y.coffee
-sort_dir = $(subst !,.coffee,$(sort $(subst .coffee,!,$(wildcard src/$1/*.coffee))))
-
-sources_Config := \
- src/General/Config.coffee
-
-sources_platform := \
- src/General/$$.coffee \
- src/General/$$$$.coffee \
- src/General/CrossOrigin.coffee
-
-sources_classes := $(call sort_dir,classes)
-
-sources_General := \
- $(filter-out \
-  %/$$.coffee %/$$$$.coffee %/Config.coffee %/CrossOrigin.coffee %/Main.coffee %/eventPage.coffee \
-  ,$(call sort_dir,General))
-
-$(foreach d, \
- Archive Filtering Images Linkification Menu Miscellaneous Monitoring Posting Quotelinks \
- ,$(eval sources_$(d) := $(call sort_dir,$(d))))
-
-sources_Main := \
- src/General/Main.coffee
+sources = \
+ $(subst !,.coffee,$(sort $(subst .coffee,!, \
+  $(wildcard src/$1/*.coffee src/main/$1.coffee))))
 
 imports_Config := \
  src/Archive/archives.json \
@@ -116,37 +96,37 @@ tmp/style.css : src/css/style.css $(imports_style) $(template_deps) | tmp
 tmp/declaration.js : .events/declare
 	
 
-tmp/globals.js : src/General/globals.js version.json $(template_deps) | tmp
+tmp/globals.js : src/main/globals.js version.json $(template_deps) | tmp
 	$(template) $< $@
 
 define rules_part
 
-tmp/$1.jst : $$(sources_$1) $(cat_deps) | tmp
-	$(cat) $$(sources_$1) $$@
+tmp/$1.jst : $$(call sources,$1) $(cat_deps) | tmp
+	$(cat) $$(call sources,$1) $$@
 
 tmp/$1.coffee : tmp/$1.jst $$(filter-out %.coffee,$$(wildcard src/$1/*.* src/$1/*/*.* src/$1/*/*/*.*)) $$(imports_$1) .tests_enabled $(template_deps)
 	$(template) $$< $$@
 
 tmp/$1.js : tmp/$1.coffee $(coffee_deps) tools/globalize.js
 	$(coffee) $$<
-	node tools/globalize.js $$@ $$(sources_$1)
+	node tools/globalize.js $$@ $$(call sources,$1)
 
 endef
 
 $(foreach i,$(filter-out platform,$(parts)),$(eval $(call rules_part,$(i))))
 
-tmp/platform.jst : $(sources_platform) $(cat_deps) | tmp
-	$(cat) $(subst $$,$(ESC_DOLLAR),$(sources_platform)) $@
+tmp/platform.jst : $(call sources,platform) $(cat_deps) | tmp
+	$(cat) $(subst $$,$(ESC_DOLLAR),$(call sources,platform)) $@
 
 tmp/platform_%.coffee : tmp/platform.jst $(template_deps)
 	$(template) $< $@ type=$*
 
 tmp/platform_%.js : tmp/platform_%.coffee $(coffee_deps)
 	$(coffee) $<
-	node tools/globalize.js $@ $(subst $$,$(ESC_DOLLAR),$(sources_platform))
+	node tools/globalize.js $@ $(subst $$,$(ESC_DOLLAR),$(call sources,platform))
 
-tmp/eventPage.js : src/General/eventPage.coffee $(coffee_deps) | tmp
-	$(coffee) -o tmp src/General/eventPage.coffee
+tmp/eventPage.js : src/main/eventPage.coffee $(coffee_deps) | tmp
+	$(coffee) -o tmp src/main/eventPage.coffee
 
 define rules_channel
 
