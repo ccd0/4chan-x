@@ -219,7 +219,7 @@ install.json :
 	node tools/install.js
 	echo -> $@
 
-.events/CHANGELOG : version.json | .events
+.events/CHANGELOG : version.json | .events node_modules/dateformat/package.json
 	node tools/updcl.js
 	echo -> $@
 
@@ -248,7 +248,7 @@ distready : dist $(wildcard dist/* dist/*/*)
 	aws s3 cp web.css s3://$(awsBucket) --cache-control "max-age=600" --content-type "text/css; charset=utf-8"
 	echo -> $@
 
-.events2/push-store : .git/refs/tags/stable | .events2 distready
+.events2/push-store : .git/refs/tags/stable | .events2 distready node_modules/webstore-upload/package.json
 	node tools/webstore.js
 	echo -> $@
 
