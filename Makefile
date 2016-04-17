@@ -31,7 +31,7 @@ name := $(call pkg,name)
 nameHuman := $(call pkg,meta.name)
 distBranch := $(call pkg,meta.distBranch)
 awsBucket := $(call pkg,meta.awsBucket)
-version := $(shell node -p "JSON.parse(require('fs').readFileSync('version.json')).version")
+version = $(shell node -p "JSON.parse(require('fs').readFileSync('version.json')).version")
 
 capitalized = $(filter-out a,$(foreach x,$1,$(subst a $(x),,$(sort a $(x)))))
 
