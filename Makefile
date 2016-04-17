@@ -14,7 +14,7 @@ else
   ESC_DOLLAR = \$$
 endif
 
-npgoals := clean cleanrel cleanweb cleanfull tag $(foreach i,1 2 3 4,bump$(i)) beta stable web update
+npgoals := clean cleanrel cleanweb cleanfull withtests tag $(foreach i,1 2 3 4,bump$(i)) beta stable web update
 ifneq "$(filter $(npgoals),$(MAKECMDGOALS))" ""
 .NOTPARALLEL :
 endif
@@ -281,6 +281,11 @@ cleanweb :
 cleanfull : clean cleanweb
 	$(RMDIR) .events2 dist node_modules
 	git worktree prune
+
+withtests :
+	echo true> .tests_enabled
+	-$(MAKE)
+	echo false> .tests_enabled
 
 tag : .events/CHANGELOG jshint release
 	git commit -am "Release $(name) v$(version)."
