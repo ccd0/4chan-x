@@ -14,6 +14,11 @@ else
   ESC_DOLLAR = \$$
 endif
 
+npgoals := clean cleanall $(foreach i,1 2 3 4,bump$(i)) beta stable web
+ifneq "$(filter $(npgoals),$(MAKECMDGOALS))" ""
+.NOTPARALLEL :
+endif
+
 coffee := $(BIN)coffee -c --no-header
 coffee_deps := node_modules/coffee-script/package.json
 template := node tools/template.js
@@ -219,17 +224,7 @@ dist :
 
 .SECONDARY :
 
-.PHONY: \
- default all clean cleanall script crx release jshint install \
- tag $(foreach i,1 2 3 4,$(bump$(i))) distready beta stable web
-
-clean :
-	$(RMDIR) tmp testbuilds .events dist
-	$(RM) .tests_enabled
-	git worktree prune
-
-cleanall : clean
-	$(RMDIR) builds
+.PHONY: default all script crx release jshint install tag distready $(npgoals)
 
 script : $(script)
 
@@ -245,17 +240,24 @@ tag : .events/CHANGELOG $(jshint) $(release)
 	git commit -am "Release $(name) v$(version)."
 	git tag -a $(version) -m "$(name) v$(version)."
 
-bump% :
-	$(MAKE) cleanall
-	node tools/bump.js $*
-	$(MAKE) tag install
-
 distready : | dist
 	cd dist && git checkout $(distBranch)
 	cd dist && git pull
 
 dist/index.html : test.html distready
 	$(CP)
+
+clean :
+	$(RMDIR) tmp testbuilds .events dist
+	$(RM) .tests_enabled
+	git worktree prune
+
+cleanall : clean
+	$(RMDIR) builds
+
+$(foreach i,1 2 3 4,bump$(i)) : cleanall
+	node tools/bump.js $(subst bump,,$@)
+	$(MAKE) tag install
 
 beta : distready
 	git tag -af beta -m "$(nameHuman) v$(version)."
