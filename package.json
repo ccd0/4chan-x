@@ -55,7 +55,7 @@
     "font-awesome": "4.5.0",
     "jshint": "^2.9.1",
     "jszip": "^3.0.0",
-    "lodash": "^4.10.0",
+    "lodash": "^4.11.1",
     "marked": "^0.3.5",
     "webstore-upload": "0.0.7"
   },
