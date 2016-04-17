@@ -229,17 +229,16 @@ dist :
 $(wildcard dist/* dist/*/*) : dist
 	
 
-.events/dist : dist $(wildcard dist/* dist/*/*)
+distready : dist $(wildcard dist/* dist/*/*)
 	cd dist && git checkout $(distBranch)
 	cd dist && git pull
-	echo -> $@
 
-.events2/push-git : .events/dist .git/refs/heads .git/refs/tags $(wildcard .git/refs/heads/* .git/refs/tags/*) | .events2
+.events2/push-git : .git/refs/heads .git/refs/tags $(wildcard .git/refs/heads/* .git/refs/tags/*) | .events2 distready
 	git push origin --tags -f
 	git push origin --all
 	echo -> $@
 
-.events2/push-web : .events/dist .git/refs/heads/$(distBranch) | .events2
+.events2/push-web : .git/refs/heads/$(distBranch) | .events2 distready
 	aws s3 cp builds/ s3://$(awsBucket)/builds/ --recursive --exclude "*" --include "*.js" --cache-control "max-age=600" --content-type "application/javascript; charset=utf-8"
 	aws s3 cp builds/ s3://$(awsBucket)/builds/ --recursive --exclude "*" --include "*.crx" --cache-control "max-age=600" --content-type "application/x-chrome-extension"
 	aws s3 cp builds/ s3://$(awsBucket)/builds/ --recursive --exclude "*" --include "*.xml" --cache-control "max-age=600" --content-type "text/xml; charset=utf-8"
@@ -249,13 +248,13 @@ $(wildcard dist/* dist/*/*) : dist
 	aws s3 cp web.css s3://$(awsBucket) --cache-control "max-age=600" --content-type "text/css; charset=utf-8"
 	echo -> $@
 
-.events2/push-store : .events/dist .git/refs/tags/stable | .events2
+.events2/push-store : .git/refs/tags/stable | .events2 distready
 	node tools/webstore.js
 	echo -> $@
 
 .SECONDARY :
 
-.PHONY: default all script crx release jshint install push $(npgoals)
+.PHONY: default all distready script crx release jshint install push $(npgoals)
 
 script : $(script)
 
@@ -292,20 +291,20 @@ $(foreach i,1 2 3 4,bump$(i)) : cleanrel
 	$(MAKE) all
 	$(MAKE) tag
 
-beta : .events/dist
+beta : distready
 	git tag -af beta -m "$(nameHuman) v$(version)."
 	cd dist && git merge --no-commit -s ours beta
 	cd dist && git checkout beta "builds/*-beta.*" LICENSE CHANGELOG.md img .gitignore .gitattributes
 	cd dist && git commit -am "Move $(nameHuman) v$(version) to beta channel."
 
-stable : .events/dist
+stable : distready
 	git push . HEAD:bstable
 	git tag -af stable -m "$(nameHuman) v$(version)."
 	cd dist && git merge --no-commit -s ours stable
 	cd dist && git checkout stable "builds/$(name).*" builds/updates.xml
 	cd dist && git commit -am "Move $(nameHuman) v$(version) to stable channel."
 
-web : index.html .events/dist
+web : index.html distready
 	-git commit -am "Build web page."
 	cd dist && git merge --no-commit -s ours master
 	cd dist && git checkout master README.md index.html web.css img
