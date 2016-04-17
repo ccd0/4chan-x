@@ -9,3 +9,4 @@ node_modules/
 /install.json
 /.tests_enabled
 /.events
+/dist/

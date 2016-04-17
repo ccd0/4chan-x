@@ -21,7 +21,10 @@ template_deps := package.json tools/template.js node_modules/lodash/package.json
 cat := node tools/cat.js
 cat_deps := tools/cat.js
 
-name := $(shell node -p "JSON.parse(require('fs').readFileSync('package.json')).name")
+pkg = $(shell node -p "JSON.parse(require('fs').readFileSync('package.json')).$1")
+name := $(call pkg,name)
+nameHuman := $(call pkg,meta.name)
+distBranch := $(call pkg,meta.distBranch)
 version := $(shell node -p "JSON.parse(require('fs').readFileSync('version.json')).version")
 
 capitalized = $(filter-out a,$(foreach x,$1,$(subst a $(x),,$(sort a $(x)))))
@@ -211,13 +214,19 @@ install.json :
 	node tools/updcl.js
 	echo -> $@
 
+dist :
+	git worktree add $@ $(distBranch)
+
 .SECONDARY :
 
-.PHONY: default all clean cleanall script crx release jshint install tag $(foreach i,1 2 3 4,$(bump$(i)))
+.PHONY: \
+ default all clean cleanall script crx release jshint install \
+ tag $(foreach i,1 2 3 4,$(bump$(i))) distready beta stable web
 
 clean :
-	$(RMDIR) tmp testbuilds .events
+	$(RMDIR) tmp testbuilds .events dist
 	$(RM) .tests_enabled
+	git worktree prune
 
 cleanall : clean
 	$(RMDIR) builds
@@ -240,3 +249,28 @@ bump% :
 	$(MAKE) cleanall
 	node tools/bump.js $*
 	$(MAKE) tag install
+
+distready : | dist
+	cd dist && git checkout $(distBranch)
+	cd dist && git pull
+
+dist/index.html : test.html distready
+	$(CP)
+
+beta : distready
+	git tag -af beta -m "$(nameHuman) v$(version)."
+	cd dist && git merge --no-commit -s ours beta
+	cd dist && git checkout beta "builds/*-beta.*" LICENSE CHANGELOG.md img .gitignore .gitattributes
+	cd dist && git commit -am "Move $(nameHuman) v$(version) to beta channel."
+
+stable : distready
+	git push . HEAD:bstable
+	git tag -af stable -m "$(nameHuman) v$(version)."
+	cd dist && git merge --no-commit -s ours stable
+	cd dist && git checkout stable "builds/$(name).*" builds/updates.xml
+	cd dist && git commit -am "Move $(nameHuman) v$(version) to stable channel."
+
+web : dist/index.html
+	cd dist && git merge --no-commit -s ours master
+	cd dist && git checkout master README.md web.css img
+	cd dist && git commit -am "Update web page."
