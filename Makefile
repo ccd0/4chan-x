@@ -62,8 +62,7 @@ imports_config := \
  src/Archive/archives.json
 imports_css := \
  tools/style.js \
- node_modules/font-awesome/css/font-awesome.css \
- node_modules/font-awesome/fonts/fontawesome-webfont.woff
+ node_modules/font-awesome/package.json
 imports_Monitoring := \
  src/meta/icon128.png
 
@@ -103,7 +102,7 @@ all : default release
 	npm install
 	echo -> $@
 
-node_modules/% : .events/npm
+node_modules/%/package.json : .events/npm
 	$(if $(wildcard $@),,npm install && echo -> $^)
 
 .tests_enabled :
