@@ -14,7 +14,7 @@ else
   ESC_DOLLAR = \$$
 endif
 
-npgoals := clean cleanrel cleanweb cleanfull tag $(foreach i,1 2 3 4,bump$(i)) beta stable web
+npgoals := clean cleanrel cleanweb cleanfull tag $(foreach i,1 2 3 4,bump$(i)) beta stable web update
 ifneq "$(filter $(npgoals),$(MAKECMDGOALS))" ""
 .NOTPARALLEL :
 endif
@@ -309,3 +309,7 @@ web : index.html distready
 	cd dist && git merge --no-commit -s ours master
 	cd dist && git checkout master README.md index.html web.css img
 	cd dist && git commit -am "Update web page."
+
+update :
+	npm install --save-dev $(shell node tools/unpinned.js)
+	npm shrinkwrap --dev
