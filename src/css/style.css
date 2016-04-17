@@ -847,7 +847,7 @@ span.hide-announcement {
 :root.float #updater {
   padding: 0px 3px;
 }
-:root:not(.float) #updater {
+:root:not(.float).shortcut-icons #updater {
   display: inline-block;
   min-width: 12pt;
   text-align: right;
