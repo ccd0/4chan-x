@@ -18,7 +18,10 @@ read('node_modules/font-awesome/css/font-awesome.css').match(/\/\*\![^]*?\*\//)[
 ` +
 
 // fa-[icon name] classes
-read('node_modules/font-awesome/css/font-awesome.css').match(/\.fa-glass:[^]*/)[0].replace(/([,{;])\s+/g, '$1').replace(/,/g, ', ') +
+read('node_modules/font-awesome/css/font-awesome.css')
+  .match(/(\.fa-[^{]*{\s*content:[^}]*}\s*)+/)[0]
+  .replace(/([,{;])\s+/g, '$1')
+  .replace(/,/g, ', ') +
 
 [
   'font-awesome',
