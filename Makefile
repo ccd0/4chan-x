@@ -1,5 +1,3 @@
-name := 4chan-X
-
 ifdef ComSpec
   BIN := $(subst /,\,node_modules/.bin/)
   RMDIR := -rmdir /s /q
@@ -22,6 +20,9 @@ template := node tools/template.js
 template_deps := package.json tools/template.js node_modules/lodash/package.json node_modules/esprima/package.json
 cat := node tools/cat.js
 cat_deps := tools/cat.js
+
+name := $(shell node -p "JSON.parse(require('fs').readFileSync('package.json')).name")
+version := $(shell node -p "JSON.parse(require('fs').readFileSync('version.json')).version")
 
 capitalized = $(filter-out a,$(foreach x,$1,$(subst a $(x),,$(sort a $(x)))))
 
@@ -206,9 +207,13 @@ install.json :
 	node tools/install.js
 	echo -> $@
 
+.events/CHANGELOG : version.json | .events
+	node tools/updcl.js
+	echo -> $@
+
 .SECONDARY :
 
-.PHONY: default all clean cleanall script crx release jshint install
+.PHONY: default all clean cleanall script crx release jshint install tag $(foreach i,1 2 3 4,$(bump$(i)))
 
 clean :
 	$(RMDIR) tmp testbuilds .events
@@ -226,3 +231,12 @@ release : $(release)
 jshint : $(jshint)
 
 install : .events/install
+
+tag : .events/CHANGELOG $(jshint) $(release)
+	git commit -am "Release $(name) v$(version)."
+	git tag -a $(version) -m "$(name) v$(version)."
+
+bump% :
+	$(MAKE) cleanall
+	node tools/bump.js $*
+	$(MAKE) tag install

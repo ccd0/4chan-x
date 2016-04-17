@@ -49,6 +49,7 @@
   "devDependencies": {
     "coffee-script": "1.9.3",
     "crx": "^3.0.3",
+    "dateformat": "^1.0.12",
     "esprima": "^2.7.2",
     "font-awesome": "4.5.0",
     "grunt": "^1.0.1",
