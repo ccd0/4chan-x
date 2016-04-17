@@ -59,7 +59,8 @@
     "jshint": "^2.9.1",
     "jszip": "^2.6.0",
     "lodash": "^4.10.0",
-    "marked": "^0.3.5"
+    "marked": "^0.3.5",
+    "webstore-upload": "0.0.7"
   },
   "repository": {
     "type": "git",

@@ -26,7 +26,7 @@ module.exports = (grunt) ->
         command: 'make <%= MAKEFLAGS %>'
       full:
         command: """
-          make cleanall
+          make cleanrel
           make <%= MAKEFLAGS %> all
         """.split('\n').join('&&')
       clean:

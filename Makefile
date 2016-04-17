@@ -14,7 +14,7 @@ else
   ESC_DOLLAR = \$$
 endif
 
-npgoals := clean cleanall $(foreach i,1 2 3 4,bump$(i)) beta stable web
+npgoals := clean cleanrel cleanweb cleanfull tag $(foreach i,1 2 3 4,bump$(i)) beta stable web
 ifneq "$(filter $(npgoals),$(MAKECMDGOALS))" ""
 .NOTPARALLEL :
 endif
@@ -30,6 +30,7 @@ pkg = $(shell node -p "JSON.parse(require('fs').readFileSync('package.json')).$1
 name := $(call pkg,name)
 nameHuman := $(call pkg,meta.name)
 distBranch := $(call pkg,meta.distBranch)
+awsBucket := $(call pkg,meta.awsBucket)
 version := $(shell node -p "JSON.parse(require('fs').readFileSync('version.json')).version")
 
 capitalized = $(filter-out a,$(foreach x,$1,$(subst a $(x),,$(sort a $(x)))))
@@ -93,9 +94,9 @@ jshint := $(foreach f,$(subst platform,platform_crx platform_userscript,$(parts)
 
 default : script jshint install
 
-all : release jshint install
+all : default release
 
-.events tmp testbuilds builds :
+.events .events2 tmp testbuilds builds :
 	$(MKDIR)
 
 .events/npm : npm-shrinkwrap.json | .events
@@ -201,6 +202,9 @@ builds/% : testbuilds/% | builds
 test.html : README.md template.jst tools/markdown.js node_modules/marked/package.json node_modules/lodash/package.json
 	node tools/markdown.js
 
+index.html : test.html
+	$(CP)
+
 tmp/.jshintrc : src/meta/jshint.json tmp/declaration.js tmp/globals.js $(template_deps) | tmp
 	$(template) $< $@
 
@@ -222,9 +226,36 @@ install.json :
 dist :
 	git worktree add $@ $(distBranch)
 
+$(wildcard dist/* dist/*/*) : dist
+	
+
+.events/dist : dist $(wildcard dist/* dist/*/*)
+	cd dist && git checkout $(distBranch)
+	cd dist && git pull
+	echo -> $@
+
+.events2/push-git : .events/dist .git/refs/heads .git/refs/tags $(wildcard .git/refs/heads/* .git/refs/tags/*) | .events2
+	git push origin --tags -f
+	git push origin --all
+	echo -> $@
+
+.events2/push-web : .events/dist .git/refs/heads/$(distBranch) | .events2
+	aws s3 cp builds/ s3://$(awsBucket)/builds/ --recursive --exclude "*" --include "*.js" --cache-control "max-age=600" --content-type "application/javascript; charset=utf-8"
+	aws s3 cp builds/ s3://$(awsBucket)/builds/ --recursive --exclude "*" --include "*.crx" --cache-control "max-age=600" --content-type "application/x-chrome-extension"
+	aws s3 cp builds/ s3://$(awsBucket)/builds/ --recursive --exclude "*" --include "*.xml" --cache-control "max-age=600" --content-type "text/xml; charset=utf-8"
+	aws s3 cp builds/ s3://$(awsBucket)/builds/ --recursive --exclude "*" --include "*.zip" --cache-control "max-age=600" --content-type "application/zip"
+	aws s3 cp img/ s3://$(awsBucket)/img/ --recursive --cache-control "max-age=600"
+	aws s3 cp index.html s3://$(awsBucket) --cache-control "max-age=600" --content-type "text/html; charset=utf-8"
+	aws s3 cp web.css s3://$(awsBucket) --cache-control "max-age=600" --content-type "text/css; charset=utf-8"
+	echo -> $@
+
+.events2/push-store : .events/dist .git/refs/tags/stable | .events2
+	node tools/webstore.js
+	echo -> $@
+
 .SECONDARY :
 
-.PHONY: default all script crx release jshint install tag distready $(npgoals)
+.PHONY: default all script crx release jshint install push $(npgoals)
 
 script : $(script)
 
@@ -236,43 +267,46 @@ jshint : $(jshint)
 
 install : .events/install
 
-tag : .events/CHANGELOG $(jshint) $(release)
+push : .events2/push-git .events2/push-web .events2/push-store
+
+clean :
+	$(RMDIR) tmp testbuilds .events
+	$(RM) .tests_enabled
+
+cleanrel : clean
+	$(RMDIR) builds
+
+cleanweb :
+	$(RM) test.html captchas.html
+
+cleanfull : clean cleanweb
+	$(RMDIR) .events2 dist node_modules
+	git worktree prune
+
+tag : .events/CHANGELOG jshint release
 	git commit -am "Release $(name) v$(version)."
 	git tag -a $(version) -m "$(name) v$(version)."
 
-distready : | dist
-	cd dist && git checkout $(distBranch)
-	cd dist && git pull
-
-dist/index.html : test.html distready
-	$(CP)
-
-clean :
-	$(RMDIR) tmp testbuilds .events dist
-	$(RM) .tests_enabled
-	git worktree prune
-
-cleanall : clean
-	$(RMDIR) builds
-
-$(foreach i,1 2 3 4,bump$(i)) : cleanall
+$(foreach i,1 2 3 4,bump$(i)) : cleanrel
 	node tools/bump.js $(subst bump,,$@)
-	$(MAKE) tag install
+	$(MAKE) all
+	$(MAKE) tag
 
-beta : distready
+beta : .events/dist
 	git tag -af beta -m "$(nameHuman) v$(version)."
 	cd dist && git merge --no-commit -s ours beta
 	cd dist && git checkout beta "builds/*-beta.*" LICENSE CHANGELOG.md img .gitignore .gitattributes
 	cd dist && git commit -am "Move $(nameHuman) v$(version) to beta channel."
 
-stable : distready
+stable : .events/dist
 	git push . HEAD:bstable
 	git tag -af stable -m "$(nameHuman) v$(version)."
 	cd dist && git merge --no-commit -s ours stable
 	cd dist && git checkout stable "builds/$(name).*" builds/updates.xml
 	cd dist && git commit -am "Move $(nameHuman) v$(version) to stable channel."
 
-web : dist/index.html
+web : index.html .events/dist
+	-git commit -am "Build web page."
 	cd dist && git merge --no-commit -s ours master
-	cd dist && git checkout master README.md web.css img
+	cd dist && git checkout master README.md index.html web.css img
 	cd dist && git commit -am "Update web page."

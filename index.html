@@ -1,0 +1,124 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8">
+<title>4chan X</title>
+<link rel="stylesheet" href="web.css">
+<link rel="icon" href="img/icon.gif">
+<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">
+</head><body>
+<div id="header">
+<h1 id="4chan-x">4chan X</h1>
+<div id="links">
+<a href="https://github.com/ccd0/4chan-x">Source Code</a>
+<a href="https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md">Changelog</a>
+<a href="https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions">FAQ</a>
+<a href="https://gitreports.com/issue/ccd0/4chan-x">Report Bugs</a>
+</div>
+</div>
+<a class="screenshot" href="img/screenshot.png"><img src="img/screenshot.png" alt="Screenshot"></a>
+
+<p>Adds various features to 4chan.
+Previously developed by <a href="https://github.com/aeosynth/4chan-x">aeosynth</a>, <a href="https://github.com/MayhemYDG/4chan-x">Mayhem</a>, <a href="https://github.com/ihavenoface/4chan-x">ihavenoface</a>, <a href="https://github.com/zixaphir/appchan-x">Zixaphir</a>, <a href="https://github.com/seaweedchan/4chan-x">Seaweed</a>, and <a href="https://github.com/Spittie/4chan-x">Spittie</a>, with contributions from many others.</p>
+<p>If you&#39;re looking for a maintained fork of OneeChan (a style script used in addition to 4chan X), try
+<a href="https://github.com/Nebukazar/OneeChan">https://github.com/Nebukazar/OneeChan</a>.</p>
+<h2 id="please-note">Please note</h2>
+<p><strong>Uninstalling</strong>: 4chan X disables the native extension, so if you uninstall 4chan X, you&#39;ll need to re-enable it. To do this, click the <code>[Settings]</code> link in the top right corner and uncheck &quot;<code>Disable the native extension</code>&quot; in the panel that appears.</p>
+<p><strong>Private browsing</strong>: 4chan X does not yet support private browsing / incognito mode. Although it may work in this mode, browsing data recorded by 4chan X, such as your last read post in a thread and which posts are yours, will still need to be cleared manually by resetting your settings. To control what browsing data 4chan X records, use the <code>Remember Last Read Post</code> and <code>Mark Quotes of You</code> options in the settings panel.</p>
+<p><strong>HTTPS</strong>: 4chan X currently shares your settings and post history between the HTTP and HTTPS versions of 4chan. If you are concerned about protecting your privacy against a man-in-the-middle attack, you should disable 4chan X on the HTTP version of 4chan and/or install <a href="https://www.eff.org/https-everywhere">HTTPS Everywhere</a>.</p>
+<h2 id="install">Install</h2>
+<input hidden type="checkbox" id="firefox-hide"><div><h3 id="firefox"><label for="firefox-hide">Firefox</label></h3>
+<p>Install <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey</a>, then <strong><a href="https://www.4chan-x.net/builds/4chan-X.user.js">click here to install 4chan X</a></strong>.</p>
+<ul>
+<li><strong>Pale Moon</strong> users should use <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/versions/1.15.1-signed">Greasemonkey 1.15</a>. If your other scripts require a more recent version, try <a href="https://github.com/janekptacijarabaci/greasemonkey/releases/latest">this port</a>.</li>
+<li><strong>SeaMonkey</strong> users should use Greasemonkey 2.3 converted with <a href="http://addonconverter.fotokraina.com/?url=https://addons.mozilla.org/firefox/downloads/file/282084/greasemonkey-2.3-fx.xpi">this tool</a>.</li>
+</ul>
+</div><input hidden type="checkbox" id="chromium-hide"><div><h3 id="chromium"><label for="chromium-hide">Chromium</label></h3>
+<p><strong>Userscript</strong>: Install Violentmonkey (<a href="https://addons.opera.com/en/extensions/details/violent-monkey/">Opera store</a> / <a href="https://chrome.google.com/webstore/detail/violent-monkey/jinjaccalgkegednnccohejagnlnfdag">Chrome store</a>) or <a href="https://tampermonkey.net/">Tampermonkey</a>, then <strong><a href="https://www.4chan-x.net/builds/4chan-X.user.js">click here to install 4chan X</a></strong>.</p>
+<p><strong>Chrome extension</strong>: 4chan X is also available as a standalone Chrome extension. The Chrome extension has the additional feature of being able to sync your settings and data with other devices via Chrome Sync. But there is an issue when the script updates: Whenever the Chrome extension is updated, until you hard refresh (F5) the tab, 4chan X is unable to save any data (such as posts marked as yours and settings changes). The userscript version above does not have this problem when 4chan X updates, only when Violentmonkey / Tampermonkey is updated. To install as a Chrome extension:</p>
+<ul>
+<li><strong>Chromium</strong>, <strong>Vivaldi</strong>: <strong><a href="https://www.4chan-x.net/builds/4chan-X.crx">Download 4chan X</a></strong>, then open <code>chrome://extensions</code> and drag the downloaded file onto the page. Alternatively, you can install 4chan X from the <strong><a href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">Chrome store</a></strong>.</li>
+<li><strong>Opera</strong>: <strong><a href="https://www.4chan-x.net/builds/4chan-X.crx">Click to install 4chan X</a></strong>, then follow the prompts to activate it in your extension manager.</li>
+<li><strong>Chrome</strong>: Install 4chan X from the <strong><a href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">Chrome store</a></strong>.</li>
+</ul>
+<p>Note: This version of 4chan X does not work with Opera 12. If you need Opera 12 support, try <a href="https://github.com/loadletter/4chan-x">loadletter&#39;s fork</a> instead.</p>
+</div><input hidden type="checkbox" id="safari-hide"><div><h3 id="safari"><label for="safari-hide">Safari</label></h3>
+<p>Install <a href="http://jsblocker.toggleable.com/">JS Blocker</a>, then <strong><a href="https://www.4chan-x.net/builds/4chan-X.user.js">click here to install 4chan X</a></strong>. <a href="http://tampermonkey.net/?browser=safari">Tampermonkey for Safari</a> may also work, but I have yet to test it.</p>
+</div><input hidden type="checkbox" id="webkitgtk--hide"><div><h3 id="webkitgtk-"><label for="webkitgtk--hide">WebKitGTK+</label></h3>
+<p>Several WebKitGTK+ based browsers have support for userscripts and can run 4chan X. Due to the lack of the cross-site GM_* API, and lack of support for userscripts in iframes, not all features will work. You may experience crashes when repeatedly solving the default image-based captchas. You can avoid this problem by enabling <code>Use Recaptcha v1</code> in your settings.</p>
+<ul>
+<li><p><strong>dwb</strong>: Install the userscripts extension, then save the <a href="https://www.4chan-x.net/builds/4chan-X.user.js">script</a> to the <code>$XDG_CONFIG_HOME/dwb/greasemonkey</code> or <code>$HOME/.config/dwb/greasemonkey</code> directory (creating it if necessary):</p>
+<pre><code>  dwbem -N -i userscripts
+  wget -P ${XDG_CONFIG_HOME:-$HOME/.config}/dwb/greasemonkey https://www.4chan-x.net/builds/4chan-X.user.js
+</code></pre></li>
+<li><p><strong>Midori</strong>: Enable <code>User addons</code> in your preferences, under the Extensions tab. In the Privacy tab, check <code>Enable HTML5 local storage support</code>. Optionally, if you want 4chan X to be able to open new tabs when you start or reply to a thread, you will need to check <code>Allow scripts to open popups</code> under the Behavior tab. Then click the link to the <a href="https://www.4chan-x.net/builds/4chan-X.user.js">script</a> to install it.</p>
+</li>
+<li><p><strong>Luakit</strong>: Navigate to the <a href="https://www.4chan-x.net/builds/4chan-X.user.js">script</a>, then type the command <code>:usi</code> to install it.</p>
+</li>
+<li><p><strong>uzbl</strong>: Install the script from <a href="https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh">https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh</a>, enable it in your config file, and then save <a href="https://www.4chan-x.net/builds/4chan-X.user.js">4chan X</a> to <code>$XDG_DATA_HOME/uzbl/userscripts</code> (or <code>$HOME/.local/share/uzbl/userscripts</code>).</p>
+<pre><code>  wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts https://raw.githubusercontent.com/singpolyma/singpolyma/master/uzbl/data/scripts/userscript.sh
+  chmod +x ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts/userscript.sh
+  echo &#39;@on_event LOAD_COMMIT spawn @scripts_dir/userscript.sh document-start&#39; &gt;&gt; ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
+  echo &#39;@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh document-end&#39;   &gt;&gt; ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
+  wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts https://www.4chan-x.net/builds/4chan-X.user.js
+</code></pre></li>
+</ul>
+</div><input hidden type="checkbox" id="other-browsers-hide"><div><h3 id="other-browsers"><label for="other-browsers-hide">Other browsers</label></h3>
+<p>4chan X can be used in some browsers that do not support userscripts, such as <strong>Microsoft Edge</strong>, using <a href="https://github.com/ccd0/4chan-x-proxy">a local proxy</a>. Not all features will work.</p>
+</div><h2 id="beta-version">Beta version</h2>
+<p>New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please <a href="https://github.com/ccd0/4chan-x/issues?q=is%3Aopen+sort%3Aupdated-desc">report</a> any issues you find, and be sure to mention which version you&#39;re using. You should back up your settings regularly to prevent them from being lost due to bugs.</p>
+<p>To install the current <strong>beta</strong> version but get updates from the <strong>stable</strong> channel (for example, if just you want a particular recent feature):</p>
+<ul>
+<li><a href="https://github.com/ccd0/4chan-x/raw/beta/builds/4chan-X.user.js">Install userscript</a> (use with Greasemonkey / Tampermonkey / JS Blocker / etc.)</li>
+<li><a href="https://github.com/ccd0/4chan-x/raw/beta/builds/4chan-X.crx">Download Chrome extension</a> (download and drag to <code>chrome://extensions</code>)</li>
+</ul>
+<p>To install the <strong>beta</strong> version and get updates whenever there&#39;s a new <strong>beta</strong> version:</p>
+<ul>
+<li><a href="https://www.4chan-x.net/builds/4chan-X-beta.user.js">Install userscript</a></li>
+<li><a href="https://www.4chan-x.net/builds/4chan-X-beta.crx">Download Chrome extension</a></li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p>If you encounter a bug, try the steps <a href="https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md#reporting-bugs">here</a>, then report it to the <a href="https://github.com/ccd0/4chan-x/issues?q=is%3Aopen+sort%3Aupdated-desc">issue tracker</a>. You can report bugs without a Github account via <a href="https://gitreports.com/issue/ccd0/4chan-x">this form</a>. If the bug seems to be caused by a script update, you can install a old version from the <a href="https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md">changelog</a>.</p>
+
+<script>
+function imagePreview() {
+  this.removeEventListener('mouseover', imagePreview, false);
+  var img = new Image();
+  img.src = this.href;
+  img.alt = 'preview';
+  var span = document.createElement('span');
+  span.className = 'hover';
+  span.appendChild(img);
+  this.parentNode.insertBefore(span, this.nextSibling);
+}
+function storeInstall(e) {
+  if (!e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
+    var url = this.href;
+    chrome.webstore.install(url, function(){}, function(){
+      location.href = url;
+    });
+    e.preventDefault();
+  }
+}
+for (var i = 0; i < document.links.length; i++) {
+  var link = document.links[i];
+  if (/\.png$/.test(link.pathname) && !link.querySelector('.hover')) {
+    link.addEventListener('mouseover', imagePreview, false);
+  } else if (window.chrome && link.host === 'chrome.google.com') {
+    link.addEventListener('click', storeInstall, false);
+  }
+}
+var engine = (function() {
+  if (/Edge\//.test(navigator.userAgent)) return 'edge';
+  if (/Chrome\//.test(navigator.userAgent)) return 'blink';
+  if (/WebKit\//.test(navigator.userAgent)) return 'webkit';
+  if (/Gecko\/|Goanna/.test(navigator.userAgent)) return 'gecko';
+  if (/Presto\//.test(navigator.userAgent)) return 'presto';
+})();
+if (engine) {
+  var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk-': 'webkit', 'other-browsers': 'edge'};
+  for (browser in engines) {
+    document.getElementById(browser + '-hide').checked = (engines[browser].indexOf(engine) < 0);
+  }
+}
+</script>
+</body></html>
