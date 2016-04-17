@@ -13,9 +13,12 @@ for (var file of ['script.js', 'eventPage.js', 'icon16.png', 'icon48.png', 'icon
     {date: new Date(v.date)}
   );
 }
-var output = zip.generate({
+zip.generateAsync({
   type: 'nodebuffer',
   compression: 'DEFLATE',
   compressionOptions: {level: 9},
+}).then(function(output) {
+  fs.writeFileSync(`testbuilds/${pkg.name}${channel}.crx.zip`, output);
+}, function() {
+  process.exit(1);
 });
-fs.writeFileSync(`testbuilds/${pkg.name}${channel}.crx.zip`, output);

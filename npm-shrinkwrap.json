@@ -28,6 +28,11 @@
       "from": "array-find-index@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/array-find-index/-/array-find-index-1.0.1.tgz"
     },
+    "asap": {
+      "version": "2.0.3",
+      "from": "asap@>=2.0.3 <2.1.0",
+      "resolved": "https://registry.npmjs.org/asap/-/asap-2.0.3.tgz"
+    },
     "asn1": {
       "version": "0.2.3",
       "from": "asn1@0.2.3",
@@ -537,9 +542,26 @@
       "resolved": "https://registry.npmjs.org/jsprim/-/jsprim-1.2.2.tgz"
     },
     "jszip": {
-      "version": "2.6.0",
-      "from": "jszip@>=2.6.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/jszip/-/jszip-2.6.0.tgz"
+      "version": "3.0.0",
+      "from": "jszip@latest",
+      "resolved": "https://registry.npmjs.org/jszip/-/jszip-3.0.0.tgz",
+      "dependencies": {
+        "es6-promise": {
+          "version": "3.0.2",
+          "from": "es6-promise@>=3.0.2 <3.1.0",
+          "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.0.2.tgz"
+        },
+        "isarray": {
+          "version": "1.0.0",
+          "from": "isarray@>=1.0.0 <1.1.0",
+          "resolved": "https://registry.npmjs.org/isarray/-/isarray-1.0.0.tgz"
+        },
+        "readable-stream": {
+          "version": "2.0.6",
+          "from": "readable-stream@>=2.0.6 <2.1.0",
+          "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.0.6.tgz"
+        }
+      }
     },
     "lazystream": {
       "version": "0.1.0",
