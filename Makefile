@@ -104,7 +104,7 @@ all : default release
 	echo -> $@
 
 node_modules/% : .events/npm
-	
+	$(if $(wildcard $@),,npm install && echo -> $^)
 
 .tests_enabled :
 	echo false> .tests_enabled
@@ -114,7 +114,7 @@ node_modules/% : .events/npm
 	echo -> $@
 
 tmp/declaration.js : .events/declare
-	
+	$(if $(wildcard $@),,node tools/declare.js && echo -> $^)
 
 define concatenate
 tmp/$1.jst : $$(call sources,$1) $(cat_deps) | tmp
@@ -227,7 +227,7 @@ dist :
 	git worktree add $@ $(distBranch)
 
 $(wildcard dist/* dist/*/*) : dist
-	
+	@
 
 distready : dist $(wildcard dist/* dist/*/*)
 	cd dist && git checkout $(distBranch)
