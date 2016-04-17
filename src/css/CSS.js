@@ -1,7 +1,7 @@
 CSS = {
 
 boards:
-<%= multiline(require_style()()) %>,
+<%= multiline(require['style']()()) %>,
 
 report:
 <%= multiline(read('src/css/report.css')) %>,

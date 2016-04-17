@@ -7,8 +7,9 @@ _.templateSettings.interpolate = /<%=([\s\S]+?)%>/g;
 
 var obj = {};
 
+obj.require = {};
 for (var m of ['style']) {
-  obj[`require_${m}`] = () => require(`./${m}`);
+  obj.require[m] = () => require(`./${m}`);
 }
 
 var read     = obj.read     = filename => fs.readFileSync(filename, 'utf8').replace(/\r\n/g, '\n');
