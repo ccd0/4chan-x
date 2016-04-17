@@ -1,9 +1,8 @@
 var fs = require('fs');
-var path = require('path');
 var webstore_upload = require('webstore-upload');
 
 var pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-var secrets = JSON.parse(fs.readFileSync(`../${path.basename(process.cwd())}.keys/chrome-store.json`, 'utf8'));
+var secrets = JSON.parse(fs.readFileSync(`../${pkg.meta.path}.keys/chrome-store.json`, 'utf8'));
 
 webstore_upload({
   accounts: {
