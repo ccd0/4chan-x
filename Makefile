@@ -254,7 +254,7 @@ distready : dist $(wildcard dist/* dist/*/*)
 
 .SECONDARY :
 
-.PHONY: default all distready script crx release jshint install push $(npgoals)
+.PHONY: default all distready script crx release jshint install push captchas $(npgoals)
 
 script : $(script)
 
@@ -267,6 +267,10 @@ jshint : $(jshint)
 install : .events/install
 
 push : .events2/push-git .events2/push-web .events2/push-store
+
+captchas : redirect.html $(template_deps)
+	$(template) redirect.html captchas.html url="$(url)"
+	aws s3 cp captchas.html s3://$(awsBucket) --cache-control "max-age=0" --content-type "text/html; charset=utf-8"
 
 clean :
 	$(RMDIR) tmp testbuilds .events
