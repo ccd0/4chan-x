@@ -6,6 +6,6 @@ console.log(
   Object.keys(pkg.devDependencies).filter(
     name => /^\^/.test(pkg.devDependencies[name])
   ).map(
-    name => `${name}@latest`
+    name => `${name}@${process.argv[2] || pkg.devDependencies[name]}`
   ).join(' ')
 );
