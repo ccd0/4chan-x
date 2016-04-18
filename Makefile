@@ -316,6 +316,7 @@ endif
 
 $(foreach i,1 2 3 4,bump$(i)) : cleanrel
 	$(MAKE) npm-shrinkwrap.json
+	npm install
 	node tools/bump.js $(subst bump,,$@)
 	$(MAKE) all
 	$(MAKE) tag
