@@ -1,16 +1,18 @@
 var fs = require('fs');
 
 var filename = `tmp/${process.argv[2]}.js`;
-var basename = process.argv[2].split('_')[0]; // e.g. template_crx -> template
-var sources  = fs.readdirSync(`src/${basename}`);
 
 // Extract variables to be made global from source file list
 // e.g. ImageExpand from src/Images/ImageExpand.coffee
 // but not QR.post or eventPage
 var names = [];
-for (var f of sources) {
-  var m = f.match(/^([$A-Z][$\w]*)\.coffee$/);
-  if (m) names.push(m[1]);
+for (var word of process.argv[2].split('-')) {
+  var base    =  word.split('_')[0]; // e.g. template_crx -> template
+  var sources = fs.readdirSync(`src/${base}`);
+  for (var f of sources) {
+    var m = f.match(/^([$A-Z][$\w]*)\.coffee$/);
+    if (m) names.push(m[1]);
+  }
 }
 
 var script = fs.readFileSync(filename, 'utf8').replace(/\r\n/g, '\n');
