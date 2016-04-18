@@ -1,5 +1,4 @@
 var fs = require('fs');
-var dateFormat = require('dateformat');
 
 var pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 var v   = JSON.parse(fs.readFileSync('version.json', 'utf8'));
@@ -14,7 +13,7 @@ var headerLevel  = branch.replace(/(\.0)*$/, '').split('.').length;
 var headerPrefix = new Array(headerLevel + 1).join('#');
 var separator    = `${headerPrefix} v${branch}`;
 
-var today    = dateFormat(date, 'yyyy-mm-dd');
+var today    = date.split('T')[0];
 var filename = `/builds/${name}-noupdate`;
 var ffLink   = `${oldVersions}${version}${filename}.user.js`;
 var crLink   = `${oldVersions}${version}${filename}.crx`;
