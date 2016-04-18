@@ -3,6 +3,7 @@ ifdef ComSpec
   RMDIR := -rmdir /s /q
   RM := -del
   CP = copy /y $(subst /,\,$<) $(subst /,\,$@)
+  CP2 = copy /y $(subst /,\,$1) $(subst /,\,$2)
   MKDIR = -mkdir $(subst /,\,$@)
   ESC_DOLLAR = $$
 else
@@ -10,12 +11,13 @@ else
   RMDIR := rm -rf
   RM := rm -rf
   CP = cp $< $@
+  CP2 = cp $1 $2
   MKDIR = mkdir -p $@
   ESC_DOLLAR = \$$
 endif
 
 npgoals := clean cleanrel cleanweb cleanfull withtests tag $(foreach i,1 2 3 4,bump$(i)) beta stable web update updatehard
-ifneq "$(filter $(npgoals),$(MAKECMDGOALS))" ""
+ifneq "$(filter $(npgoals) npm-shrinkwrap.json,$(MAKECMDGOALS))" ""
 .NOTPARALLEL :
 endif
 
@@ -97,12 +99,21 @@ all : default release
 .events .events2 tmp testbuilds builds :
 	$(MKDIR)
 
+ifneq "$(wildcard npm-shrinkwrap.json)" ""
+
 .events/npm : npm-shrinkwrap.json | .events
 	npm install
 	echo -> $@
 
 node_modules/%/package.json : .events/npm
 	$(if $(wildcard $@),,npm install && echo -> $^)
+
+else
+
+node_modules/%/package.json :
+	npm install $*
+
+endif
 
 .tests_enabled :
 	echo false> .tests_enabled
@@ -282,6 +293,7 @@ cleanweb :
 
 cleanfull : clean cleanweb
 	$(RMDIR) .events2 dist node_modules
+	$(RM) npm-shrinkwrap.json
 	git worktree prune
 
 withtests :
@@ -289,11 +301,21 @@ withtests :
 	-$(MAKE)
 	echo false> .tests_enabled
 
+ifneq "$(wildcard npm-shrinkwrap.json)" ""
+
 tag : .events/CHANGELOG jshint release
 	git commit -am "Release $(name) v$(version)."
 	git tag -a $(version) -m "$(name) v$(version)."
 
+else
+
+npm-shrinkwrap.json : src/meta/npm-shrinkwrap.json
+	$(CP)
+
+endif
+
 $(foreach i,1 2 3 4,bump$(i)) : cleanrel
+	$(MAKE) npm-shrinkwrap.json
 	node tools/bump.js $(subst bump,,$@)
 	$(MAKE) all
 	$(MAKE) tag
@@ -320,7 +342,9 @@ web : index.html distready
 update :
 	npm install --save-dev $(shell node tools/unpinned.js)
 	npm shrinkwrap --dev
+	$(call CP2,npm-shrinkwrap.json,src/meta/npm-shrinkwrap.json)
 
 updatehard :
 	npm install --save-dev $(shell node tools/unpinned.js latest)
 	npm shrinkwrap --dev
+	$(call CP2,npm-shrinkwrap.json,src/meta/npm-shrinkwrap.json)
