@@ -1,9 +1,9 @@
 var fs = require('fs');
-var _ = require('lodash');
+var template = require('lodash.template');
 var esprima = require('esprima');
 
 // disable ES6 delimiters
-_.templateSettings.interpolate = /<%=([\s\S]+?)%>/g;
+var templateSettings = {interpolate: /<%=([\s\S]+?)%>/g};
 
 var obj = {};
 
@@ -25,7 +25,7 @@ obj.multiline = function(text) {
 
 obj.importHTML = function(filename) {
   var text = read(`src/${filename}.html`).replace(/^ +/gm, '').replace(/\r?\n/g, '');
-  text = _.template(text)(pkg); // variables only; no recursive imports
+  text = template(text, templateSettings)(pkg); // variables only; no recursive imports
   return obj.html(text);
 };
 
@@ -187,8 +187,10 @@ for (var i = 4; i < process.argv.length; i++) {
   pkg[m[1]] = m[2];
 }
 
-_.assign(obj, pkg);
+for (var key in pkg) {
+  obj[key] = pkg[key];
+}
 
 var text = read(process.argv[2]);
-text = _.template(text)(obj);
+text = template(text, templateSettings)(obj);
 fs.writeFileSync(process.argv[3], text);

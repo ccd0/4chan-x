@@ -24,7 +24,7 @@ endif
 coffee := $(BIN)coffee -c --no-header
 coffee_deps := node_modules/coffee-script/package.json
 template := node tools/template.js
-template_deps := package.json tools/template.js node_modules/lodash/package.json node_modules/esprima/package.json
+template_deps := package.json tools/template.js node_modules/lodash.template/package.json node_modules/esprima/package.json
 cat := node tools/cat.js
 cat_deps := tools/cat.js
 
@@ -208,7 +208,7 @@ testbuilds/$(name).zip : testbuilds/$(name)-noupdate.crx.zip
 builds/% : testbuilds/% | builds
 	$(CP)
 
-test.html : README.md template.jst tools/markdown.js node_modules/marked/package.json node_modules/lodash/package.json
+test.html : README.md template.jst tools/markdown.js node_modules/marked/package.json node_modules/lodash.template/package.json
 	node tools/markdown.js
 
 index.html : test.html
