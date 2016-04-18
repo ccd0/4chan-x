@@ -341,10 +341,12 @@ web : index.html distready
 
 update :
 	npm install --save-dev $(shell node tools/unpinned.js)
+	npm install
 	npm shrinkwrap --dev
 	$(call CP2,npm-shrinkwrap.json,src/meta/npm-shrinkwrap.json)
 
 updatehard :
 	npm install --save-dev $(shell node tools/unpinned.js latest)
+	npm install
 	npm shrinkwrap --dev
 	$(call CP2,npm-shrinkwrap.json,src/meta/npm-shrinkwrap.json)
