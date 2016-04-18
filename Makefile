@@ -2,8 +2,8 @@ ifdef ComSpec
   BIN := $(subst /,\,node_modules/.bin/)
   RMDIR := -rmdir /s /q
   RM := -del
-  CP = copy /y $(subst /,\,$<) $(subst /,\,$@)
-  CP2 = copy /y $(subst /,\,$1) $(subst /,\,$2)
+  CP = copy /y $(subst /,\,$<)+ $(subst /,\,$@)
+  CP2 = copy /y $(subst /,\,$1)+ $(subst /,\,$2)
   MKDIR = -mkdir $(subst /,\,$@)
   ESC_DOLLAR = $$
 else
