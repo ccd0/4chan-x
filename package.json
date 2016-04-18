@@ -57,7 +57,7 @@
     "lodash": "^4.11.1",
     "marked": "^0.3.5",
     "request": "^2.72.0",
-    "webstore-upload": "0.0.7"
+    "webstore-upload": "^0.0.7"
   },
   "repository": {
     "type": "git",
