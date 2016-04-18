@@ -15,6 +15,7 @@ class Notice
     @el.className = "notification #{type}"
 
   add: =>
+    return if @closed
     if d.hidden
       $.on d, 'visibilitychange', @add
       return
@@ -25,6 +26,7 @@ class Notice
     setTimeout @close, @timeout * $.SECOND if @timeout
 
   close: =>
+    @closed = true
     $.off d, 'visibilitychange', @add
     $.rm @el
     @onclose?()
