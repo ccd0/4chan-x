@@ -149,16 +149,19 @@ $(foreach p, \
 tmp/platform_%.coffee : tmp/platform.jst $(call imports,platform) $(template_deps)
 	$(template) $< $@ type=$*
 
+to_compile := $(filter-out globals css platform,$(parts)) platform_crx platform_userscript
+
 define compile
 tmp/$1.js : tmp/$1.coffee $(coffee_deps) tools/globalize.js
-	$(coffee) $$<
-	node tools/globalize.js $1
+	$(RM) $$@
 endef
 
-$(foreach p, \
- $(filter-out globals css platform,$(parts)) platform_crx platform_userscript, \
- $(eval $(call compile,$(p))) \
-)
+$(foreach p, $(to_compile), $(eval $(call compile,$(p))))
+
+.events/compile : $(foreach p, $(to_compile), tmp/$(p).js) | .events
+	$(coffee) $(subst .js,.coffee,$?)
+	node tools/globalize.js $(subst tmp/,,$(subst .js,,$?))
+	echo -> $@
 
 tmp/eventPage.js : src/meta/eventPage.coffee $(coffee_deps) | tmp
 	$(coffee) -o tmp src/meta/eventPage.coffee
@@ -168,7 +171,7 @@ define rules_channel
 testbuilds/crx$1 :
 	$$(MKDIR)
 
-testbuilds/crx$1/script.js : $(call intermediate,crx) $(cat_deps) | testbuilds/crx$1
+testbuilds/crx$1/script.js : $(call intermediate,crx) $(cat_deps) | testbuilds/crx$1 .events/compile
 	$(cat) $(call intermediate,crx) $$@
 
 testbuilds/crx$1/eventPage.js : tmp/eventPage.js | testbuilds/crx$1
@@ -194,7 +197,7 @@ testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.
 testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.json $(template_deps) | testbuilds
 	$(template) $$< $$@ type=userscript channel=$1
 
-testbuilds/$(name)$1.user.js : testbuilds/$(name)$1.meta.js $(call intermediate,userscript) $(cat_deps)
+testbuilds/$(name)$1.user.js : testbuilds/$(name)$1.meta.js $(call intermediate,userscript) $(cat_deps) | .events/compile
 	$(cat) testbuilds/$(name)$1.meta.js $(call intermediate,userscript) $$@
 
 endef
@@ -218,7 +221,7 @@ index.html : test.html
 tmp/.jshintrc : src/meta/jshint.json tmp/declaration.js tmp/globals.js $(template_deps) | tmp
 	$(template) $< $@
 
-.events/jshint.% : tmp/%.js tmp/.jshintrc node_modules/jshint/package.json | .events
+.events/jshint.% : tmp/%.js tmp/.jshintrc node_modules/jshint/package.json | .events/compile
 	$(BIN)jshint $<
 	echo -> $@
 
