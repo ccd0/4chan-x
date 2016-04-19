@@ -23,7 +23,7 @@
 %><%=
   read('tmp/declaration.js').match(/^var (.*);/)[1].split(', ').map(x => `,\n    "${x}": true`).join('')
 %><%=
-  read('tmp/globals.js').match(/^var (.*);/)[1].split(', ').map(x => `,\n    "${x}": true`).join('')
+  read('tmp/globals-globals.js').match(/^var (.*);/)[1].split(', ').map(x => `,\n    "${x}": true`).join('')
 %>
   }
 }

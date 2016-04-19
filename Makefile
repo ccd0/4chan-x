@@ -47,11 +47,13 @@ parts := \
 lang = $(if $(filter globals css,$1),js,coffee)
 
 # remove extension when sorting so X.coffee comes before X.Y.coffee
-sources_lang = \
- $(subst !,.$2,$(sort $(subst .$2,!, \
-  $(wildcard src/$1/*.$2))))
+sources_part = \
+ $(subst !c,.coffee,$(subst !j,.js,$(sort $(subst .coffee,!c,$(subst .js,!j, \
+  $(wildcard src/$1/*.coffee src/$1/*.js))))))
 
-sources = $(call sources_lang,$1,$(call lang,$1))
+sources := $(foreach p,$(parts),$(call sources_part,$(p)))
+
+part_of = $(patsubst src/%/,%,$(dir $1))
 
 imports = \
  $(filter-out %.coffee %.js,$(wildcard src/$1/*.* src/$1/*/*.* src/$1/*/*/*.*)) \
@@ -68,13 +70,17 @@ imports_css := \
 imports_Monitoring := \
  src/meta/icon128.png
 
-intermediate = \
+dests_platform = $(addprefix tmp/,$(subst /,-,$(subst src/,,$(subst platform,platform_$2,$(subst .coffee,.js,$1)))))
+
+dests_of = $(sort $(call dests_platform,$1,crx) $(call dests_platform,$1,userscript))
+
+dests = $(foreach s,$(sources),$(call dests_of,$(s)))
+
+pieces = \
  LICENSE \
  src/meta/fbegin.js \
  tmp/declaration.js \
- $(foreach p, \
-  $(subst platform,platform_$1,$(parts)) \
-  ,tmp/$(p).js) \
+ $(foreach s,$(sources),$(call dests_platform,$(s),$1)) \
  src/meta/fend.js
 
 crx_contents := script.js eventPage.js icon16.png icon48.png icon128.png manifest.json
@@ -90,8 +96,6 @@ release := \
 script := $(foreach f,$(filter-out %.crx %.zip,$(release)),test$(f)) $(foreach t,crx crx-beta crx-noupdate,$(foreach f,$(crx_contents),testbuilds/$(t)/$(f)))
 
 crx := $(foreach f,$(filter %.crx %.zip,$(release)),test$(f))
-
-jshint := $(foreach f,$(subst platform,platform_crx platform_userscript,$(parts)),.events/jshint.$(f))
 
 default : script jshint install
 
@@ -126,27 +130,15 @@ endif
 tmp/declaration.js : .events/declare
 	$(if $(wildcard $@),,node tools/declare.js && echo -> $^)
 
-define concatenate
-tmp/$1.jst : $$(call sources,$1) $(cat_deps) | tmp
-	$(cat) $$(subst $$$$,$$(ESC_DOLLAR),$$(call sources,$1)) $$@
-endef
-
-$(foreach p, \
- $(parts), \
- $(eval $(call concatenate,$(p))) \
-)
-
-to_compile := $(subst platform,platform_crx platform_userscript,$(parts))
-
 define force_compile
-tmp/$1.js : tmp/$$(firstword $$(subst _, ,$1)).jst $$(call imports, $$(firstword $$(subst _, ,$1)))
-	$(RM) $$@
+$$(call dests_of,$1) : $1 $$(call imports,$$(call part_of,$1)) $$(template_deps) $$(coffee_deps) tools/globalize.js tools/chain.js
+	$(RM) $$(subst $$$$,$$(ESC_DOLLAR),$$@)
 endef
 
-$(foreach p, $(to_compile), $(eval $(call force_compile,$(p))))
+$(foreach s,$(sources),$(eval $(call force_compile,$(subst $$,$$$$,$(s)))))
 
-.events/compile : $(patsubst %,tmp/%.js,$(to_compile)) $(template_deps) $(coffee_deps) tools/globalize.js tools/chain.js | .events
-	node tools/chain.js $(filter $(to_compile),$(patsubst tmp/%.js,%,$?))
+.events/compile : $(dests) | .events
+	node tools/chain.js $(subst $$,$(ESC_DOLLAR),$?)
 	echo -> $@
 
 tmp/eventPage.js : src/meta/eventPage.coffee $(coffee_deps) | tmp
@@ -157,8 +149,8 @@ define rules_channel
 testbuilds/crx$1 :
 	$$(MKDIR)
 
-testbuilds/crx$1/script.js : $(call intermediate,crx) $(cat_deps) | testbuilds/crx$1 .events/compile
-	$(cat) $(call intermediate,crx) $$@
+testbuilds/crx$1/script.js : $$(call pieces,crx) $(cat_deps) | testbuilds/crx$1 .events/compile
+	$(cat) $$(subst $$$$,$$(ESC_DOLLAR),$$(call pieces,crx)) $$@
 
 testbuilds/crx$1/eventPage.js : tmp/eventPage.js | testbuilds/crx$1
 	$$(CP)
@@ -183,8 +175,8 @@ testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.
 testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.json $(template_deps) | testbuilds
 	$(template) $$< $$@ type=userscript channel=$1
 
-testbuilds/$(name)$1.user.js : testbuilds/$(name)$1.meta.js $(call intermediate,userscript) $(cat_deps) | .events/compile
-	$(cat) testbuilds/$(name)$1.meta.js $(call intermediate,userscript) $$@
+testbuilds/$(name)$1.user.js : testbuilds/$(name)$1.meta.js $$(call pieces,userscript) $(cat_deps) | .events/compile
+	$(cat) testbuilds/$(name)$1.meta.js $$(subst $$$$,$$(ESC_DOLLAR),$$(call pieces,userscript)) $$@
 
 endef
 
@@ -204,12 +196,15 @@ test.html : README.md template.jst tools/markdown.js node_modules/marked/package
 index.html : test.html
 	$(CP)
 
-tmp/.jshintrc : src/meta/jshint.json tmp/declaration.js tmp/globals.js $(template_deps) | tmp
+tmp/.jshintrc : src/meta/jshint.json tmp/declaration.js tmp/globals-globals.js $(template_deps) | tmp
 	$(template) $< $@
 
 .events/jshint.% : tmp/%.js tmp/.jshintrc node_modules/jshint/package.json | .events/compile
-	$(BIN)jshint $<
-	echo -> $@
+	$(RM) $(subst $$,$(ESC_DOLLAR),$@)
+
+.events/jshint : $(patsubst tmp/%.js,.events/jshint.%,$(dests))
+	$(BIN)jshint $(subst $$,$(ESC_DOLLAR),$(patsubst .events/jshint.%,tmp/%.js,$?))
+	echo -> $@ $(addprefix  && echo -> ,$(subst $$,$(ESC_DOLLAR),$?))
 
 install.json :
 	echo {}> $@
@@ -261,7 +256,7 @@ crx : $(crx)
 
 release : $(release)
 
-jshint : $(jshint)
+jshint : .events/jshint
 
 install : .events/install
 

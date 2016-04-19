@@ -5,17 +5,18 @@ var globalize = require('./globalize');
 
 for (var name of process.argv.slice(2)) {
   try {
-    var parts = name.split('_');
-    var basename = parts[0]; // e.g. template_crx -> template
-    var script = fs.readFileSync(`tmp/${basename}.jst`, 'utf8');
+    var parts = name.match(/^tmp\/([^_]*)(?:_(.*))?-(.*)\.js$/);
+    var basename = fs.readdirSync(`src/${parts[1]}`).filter(x => (x === `${parts[3]}.coffee` || x === `${parts[3]}.js`))[0];
+    var script = fs.readFileSync(`src/${parts[1]}/${basename}`, 'utf8');
     script = script.replace(/\r\n/g, '\n');
-    script = template(script, {type: parts[1]});
-    if (fs.readdirSync(`src/${basename}`).some(f => /\.coffee$/.test(f))) {
+    script = template(script, {type: parts[2]});
+    if (/\.coffee$/.test(basename)) {
       script = coffee.compile(script);
-      var varNames = globalize.getNames(name);
-      script = globalize.globalize(script, varNames);
+      if (/^([$A-Z][$\w]*)\.coffee$/.test(basename)) {
+        script = globalize.globalize(script, [parts[3]]);
+      }
     }
-    fs.writeFileSync(`tmp/${name}.js`, script);
+    fs.writeFileSync(name, script);
   } catch (err) {
     console.error(`Error processing ${name}`);
     throw err;
