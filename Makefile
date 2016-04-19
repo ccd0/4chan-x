@@ -35,15 +35,16 @@ distBranch := $(call pkg,meta.distBranch)
 awsBucket := $(call pkg,meta.awsBucket)
 version = $(shell node -p "JSON.parse(require('fs').readFileSync('version.json')).version")
 
+capitalized = $(filter-out a,$(foreach x,$1,$(subst a $(x),,$(sort a $(x)))))
+
 parts := \
- globals config css platform classes Archive Filtering General Images Linkification Menu Miscellaneous Monitoring Posting Quotelinks main
+ globals config css platform classes \
+ $(sort $(call capitalized, \
+  $(subst src/,,$(wildcard src/*)) \
+ )) \
+ main
 
-lang = $(if $(filter globals css,$(subst -, ,$1)),js,coffee)
-
-map = \
- $(foreach x, \
-  $(subst -, ,$2) \
-  ,$(call $1,$(x)))
+lang = $(if $(filter globals css,$1),js,coffee)
 
 # remove extension when sorting so X.coffee comes before X.Y.coffee
 sources_lang = \
@@ -126,8 +127,8 @@ tmp/declaration.js : .events/declare
 	$(if $(wildcard $@),,node tools/declare.js && echo -> $^)
 
 define concatenate
-tmp/$1.jst : $$(call map,sources,$1) $(cat_deps) | tmp
-	$(cat) $$(subst $$$$,$$(ESC_DOLLAR),$$(call map,sources,$1)) $$@
+tmp/$1.jst : $$(call sources,$1) $(cat_deps) | tmp
+	$(cat) $$(subst $$$$,$$(ESC_DOLLAR),$$(call sources,$1)) $$@
 endef
 
 $(foreach p, \
@@ -136,7 +137,7 @@ $(foreach p, \
 )
 
 define interpolate
-tmp/$1.$$(call lang,$1) : tmp/$1.jst $$(call map,imports,$1) $(template_deps)
+tmp/$1.$$(call lang,$1) : tmp/$1.jst $$(call imports,$1) $(template_deps)
 	$(template) $$< $$@
 endef
 
