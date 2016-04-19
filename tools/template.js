@@ -1,32 +1,32 @@
 var fs = require('fs');
-var template = require('lodash.template');
+var _template = require('lodash.template');
 var esprima = require('esprima');
 
 // disable ES6 delimiters
-var templateSettings = {interpolate: /<%=([\s\S]+?)%>/g};
+var _templateSettings = {interpolate: /<%=([\s\S]+?)%>/g};
 
-var obj = {};
+var tools = {};
 
-obj.require = {};
+tools.require = {};
 for (var m of ['style']) {
-  obj.require[m] = () => require(`./${m}`);
+  tools.require[m] = () => require(`./${m}`);
 }
 
-var read     = obj.read     = filename => fs.readFileSync(filename, 'utf8').replace(/\r\n/g, '\n');
-var readJSON = obj.readJSON = filename => JSON.parse(read(filename));
-obj.readBase64              = filename => fs.readFileSync(filename).toString('base64');
+var read     = tools.read     = filename => fs.readFileSync(filename, 'utf8').replace(/\r\n/g, '\n');
+var readJSON = tools.readJSON = filename => JSON.parse(read(filename));
+tools.readBase64              = filename => fs.readFileSync(filename).toString('base64');
 
 // Convert JSON object to Coffeescript expression (via embedded JS).
 var constExpression = data => '`' + JSON.stringify(data).replace(/`/g, '\\`') + '`';
 
-obj.multiline = function(text) {
+tools.multiline = function(text) {
   return text.replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`');
 };
 
-obj.importHTML = function(filename) {
+tools.importHTML = function(filename) {
   var text = read(`src/${filename}.html`).replace(/^ +/gm, '').replace(/\r?\n/g, '');
-  text = template(text, templateSettings)(pkg); // variables only; no recursive imports
-  return obj.html(text);
+  text = _template(text, _templateSettings)(pkg); // variables only; no recursive imports
+  return tools.html(text);
 };
 
 function TextStream(text) {
@@ -164,7 +164,7 @@ Placeholder.prototype.build = function() {
 
 // HTML template generator with placeholders of forms ${}, &{}, @{}, and ?{}{}{} (see Placeholder.prototype.build)
 // that checks safety of generated expressions at compile time.
-obj.html = function(template) {
+tools.html = function(template) {
   var stream = new TextStream(template);
   var output = parseHTMLTemplate(stream);
   if (stream.text) {
@@ -173,7 +173,7 @@ obj.html = function(template) {
   return `(innerHTML: ${output})`;
 };
 
-obj.assert = function(flagFile, statement) {
+tools.assert = function(flagFile, statement) {
   if (!readJSON(flagFile)) return '';
   return `throw new Error 'Assertion failed: ' + ${constExpression(statement)} unless ${statement}`;
 };
@@ -181,16 +181,29 @@ obj.assert = function(flagFile, statement) {
 // Import variables from package.json.
 var pkg = readJSON('package.json');
 
-// Take variables from command line.
-for (var i = 4; i < process.argv.length; i++) {
-  var m = process.argv[i].match(/(.*?)=(.*)/);
-  pkg[m[1]] = m[2];
+function interpolate(text, data) {
+  var context = {}, key;
+  for (key in tools) context[key] = tools[key];
+  for (key in pkg) context[key] = pkg[key];
+  if (data) {
+    for (key in data) context[key] = data[key];
+  }
+  return _template(text, _templateSettings)(context);
 }
 
-for (var key in pkg) {
-  obj[key] = pkg[key];
-}
+module.exports = interpolate;
 
-var text = read(process.argv[2]);
-text = template(text, templateSettings)(obj);
-fs.writeFileSync(process.argv[3], text);
+if (require.main === module) {
+  (function() {
+    // Take variables from command line.
+    var data = {};
+    for (var i = 4; i < process.argv.length; i++) {
+      var m = process.argv[i].match(/(.*?)=(.*)/);
+      data[m[1]] = m[2];
+    }
+
+    var text = read(process.argv[2]);
+    text = interpolate(text, data);
+    fs.writeFileSync(process.argv[3], text);
+  })();
+}
