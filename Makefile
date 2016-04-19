@@ -5,7 +5,7 @@ ifdef ComSpec
   CP = type $(subst /,\,$<) > $(subst /,\,$@)
   CP2 = type $(subst /,\,$1) > $(subst /,\,$2)
   MKDIR = -mkdir $(subst /,\,$@)
-  ESC_DOLLAR = $$
+  QUOTE = $(patsubst %,"%",$1)
 else
   BIN := node_modules/.bin/
   RMDIR := rm -rf
@@ -13,7 +13,7 @@ else
   CP = cp $< $@
   CP2 = cp $1 $2
   MKDIR = mkdir -p $@
-  ESC_DOLLAR = \$$
+  QUOTE = $(patsubst %,'%',$1)
 endif
 
 npgoals := clean cleanrel cleanweb cleanfull withtests tag $(foreach i,1 2 3 4,bump$(i)) beta stable web update updatehard
@@ -132,13 +132,13 @@ tmp/declaration.js : .events/declare
 
 define force_compile
 $$(call dests_of,$1) : $1 $$(call imports,$$(call part_of,$1)) $$(template_deps) $$(coffee_deps) tools/chain.js
-	$(RM) $$(subst $$$$,$$(ESC_DOLLAR),$$@)
+	$(RM) $$(call QUOTE,$$@)
 endef
 
 $(foreach s,$(sources),$(eval $(call force_compile,$(subst $$,$$$$,$(s)))))
 
 .events/compile : $(dests) | .events
-	node tools/chain.js $(subst $$,$(ESC_DOLLAR),$?)
+	node tools/chain.js $(call QUOTE,$?)
 	echo -> $@
 
 tmp/eventPage.js : src/meta/eventPage.coffee $(coffee_deps) | tmp
@@ -150,7 +150,7 @@ testbuilds/crx$1 :
 	$$(MKDIR)
 
 testbuilds/crx$1/script.js : $$(call pieces,crx) $(cat_deps) | testbuilds/crx$1 .events/compile
-	$(cat) $$(subst $$$$,$$(ESC_DOLLAR),$$(call pieces,crx)) $$@
+	$(cat) $$(call QUOTE,$$(call pieces,crx) $$@)
 
 testbuilds/crx$1/eventPage.js : tmp/eventPage.js | testbuilds/crx$1
 	$$(CP)
@@ -176,7 +176,7 @@ testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.
 	$(template) $$< $$@ type=userscript channel=$1
 
 testbuilds/$(name)$1.user.js : testbuilds/$(name)$1.meta.js $$(call pieces,userscript) $(cat_deps) | .events/compile
-	$(cat) testbuilds/$(name)$1.meta.js $$(subst $$$$,$$(ESC_DOLLAR),$$(call pieces,userscript)) $$@
+	$(cat) testbuilds/$(name)$1.meta.js $$(call QUOTE,$$(call pieces,userscript) $$@)
 
 endef
 
@@ -200,11 +200,11 @@ tmp/.jshintrc : src/meta/jshint.json tmp/declaration.js tmp/globals-globals.js $
 	$(template) $< $@
 
 .events/jshint.% : tmp/%.js tmp/.jshintrc node_modules/jshint/package.json | .events/compile
-	$(RM) $(subst $$,$(ESC_DOLLAR),$@)
+	$(RM) $(call QUOTE,$@)
 
 .events/jshint : $(patsubst tmp/%.js,.events/jshint.%,$(dests))
-	$(BIN)jshint $(subst $$,$(ESC_DOLLAR),$(patsubst .events/jshint.%,tmp/%.js,$?))
-	echo -> $@ $(addprefix  && echo -> ,$(subst $$,$(ESC_DOLLAR),$?))
+	$(BIN)jshint $(call QUOTE,$(patsubst .events/jshint.%,tmp/%.js,$?))
+	echo -> $@ $(addprefix  && echo -> ,$(call QUOTE,$?))
 
 install.json :
 	echo {}> $@
