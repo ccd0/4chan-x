@@ -53,3 +53,5 @@ QuotePreview =
     for post in [post].concat post.clones
       $.rmClass post.nodes.post, 'qphl'
     return
+
+return QuotePreview

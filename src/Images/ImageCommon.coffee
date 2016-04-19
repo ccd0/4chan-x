@@ -88,3 +88,5 @@ ImageCommon =
         @click()
       else
         new Notice 'error', "Could not download #{@href}", 30
+
+return ImageCommon

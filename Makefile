@@ -131,7 +131,7 @@ tmp/declaration.js : .events/declare
 	$(if $(wildcard $@),,node tools/declare.js && echo -> $^)
 
 define force_compile
-$$(call dests_of,$1) : $1 $$(call imports,$$(call part_of,$1)) $$(template_deps) $$(coffee_deps) tools/globalize.js tools/chain.js
+$$(call dests_of,$1) : $1 $$(call imports,$$(call part_of,$1)) $$(template_deps) $$(coffee_deps) tools/chain.js
 	$(RM) $$(subst $$$$,$$(ESC_DOLLAR),$$@)
 endef
 

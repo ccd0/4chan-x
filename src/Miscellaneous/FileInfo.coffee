@@ -48,3 +48,5 @@ FileInfo =
     r: -> <%= html('${this.file.dimensions || "PDF"}') %>
     g: -> <%= html('?{this.file.tag}{, ${this.file.tag}}{}') %>
     '%': -> <%= html('%') %>
+
+return FileInfo

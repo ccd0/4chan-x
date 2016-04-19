@@ -12,3 +12,5 @@ NormalizeURL =
     pathname = pathname.join '/'
     if location.pathname isnt pathname
       history.replaceState history.state, '', "#{location.protocol}//#{location.host}#{pathname}#{location.hash}"
+
+return NormalizeURL

@@ -1,15 +1,15 @@
-CrossOrigin = do ->
-  <% if (type === 'crx') { %>
-  eventPageRequest = do ->
-    callbacks = []
-    chrome.runtime.onMessage.addListener (data) ->
-      callbacks[data.id] data
-      delete callbacks[data.id]
-    (url, responseType, cb) ->
-      chrome.runtime.sendMessage {url, responseType}, (id) ->
-        callbacks[id] = cb
-  <% } %>
+<% if (type === 'crx') { %>
+eventPageRequest = do ->
+  callbacks = []
+  chrome.runtime.onMessage.addListener (data) ->
+    callbacks[data.id] data
+    delete callbacks[data.id]
+  (url, responseType, cb) ->
+    chrome.runtime.sendMessage {url, responseType}, (id) ->
+      callbacks[id] = cb
 
+<% } %>
+CrossOrigin =
   binary: (url, cb, headers={}) ->
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
@@ -126,3 +126,5 @@ CrossOrigin = do ->
           delete callbacks[url]
           responses[url] = response
       <% } %>
+
+return CrossOrigin

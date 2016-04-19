@@ -17,3 +17,5 @@ RevealSpoilers =
       thumb.src = @file.thumbURL
     else
       thumb.dataset.src = @file.thumbURL
+
+return RevealSpoilers

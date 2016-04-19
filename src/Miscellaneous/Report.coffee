@@ -65,3 +65,5 @@ Report =
     if types = $.id('reportTypes')
       $.on types, 'change', (e) ->
         $('form').action = if e.target.value is 'illegal' then '#redirect' else ''
+
+return Report

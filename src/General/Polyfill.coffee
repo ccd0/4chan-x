@@ -13,3 +13,5 @@ Polyfill =
         ui8a[i] = data.charCodeAt i
       cb new Blob [ui8a], {type}
     $.globalEval "HTMLCanvasElement.prototype.toBlob = (#{HTMLCanvasElement::toBlob});"
+
+return Polyfill

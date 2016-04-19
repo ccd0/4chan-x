@@ -14,3 +14,5 @@ class ShimSet
     @size--
 
 window.Set = ShimSet unless 'Set' of window
+
+return ShimSet

@@ -6,3 +6,5 @@ class Board
     @posts   = new SimpleDict()
 
     g.boards[@] = @
+
+return Board

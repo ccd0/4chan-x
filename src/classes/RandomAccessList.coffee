@@ -87,3 +87,5 @@ class RandomAccessList
       next.prev = prev
     else
       @last = prev
+
+return RandomAccessList

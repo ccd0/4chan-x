@@ -1,7 +1,6 @@
 var fs = require('fs');
 var template = require('./template');
 var coffee = require('coffee-script');
-var globalize = require('./globalize');
 
 for (var name of process.argv.slice(2)) {
   try {
@@ -12,8 +11,8 @@ for (var name of process.argv.slice(2)) {
     script = template(script, {type: parts[2]});
     if (/\.coffee$/.test(basename)) {
       script = coffee.compile(script);
-      if (/^([$A-Z][$\w]*)\.coffee$/.test(basename)) {
-        script = globalize.globalize(script, [parts[3]]);
+      if (/^[$A-Z][$\w]*$/.test(parts[3])) {
+        script = `${parts[3]} = ${script}`;
       }
     }
     fs.writeFileSync(name, script);

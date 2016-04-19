@@ -110,3 +110,5 @@ QuoteInline =
       QuoteInline.rm inlined, boardID, threadID, postID, context
       $.rmClass inlined, 'inlined'
     return
+
+return QuoteInline

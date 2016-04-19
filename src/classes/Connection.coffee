@@ -20,3 +20,5 @@ class Connection
     for type, value of data
       @cb[type]? value
     return
+
+return Connection

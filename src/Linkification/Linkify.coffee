@@ -155,3 +155,5 @@ Linkify =
     range.insertNode a
 
     a
+
+return Linkify

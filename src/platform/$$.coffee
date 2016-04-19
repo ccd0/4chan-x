@@ -1,2 +1,2 @@
-$$ = (selector, root=d.body) ->
+return (selector, root=d.body) ->
   [root.querySelectorAll(selector)...]

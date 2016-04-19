@@ -60,3 +60,5 @@ Metadata =
       else unless element in [0x8538067, 0x549A966] # Segment, Info
         i += size
     null
+
+return Metadata

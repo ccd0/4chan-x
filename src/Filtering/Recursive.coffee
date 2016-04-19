@@ -32,3 +32,5 @@ Recursive =
     g.posts.forEach (post) ->
       if fullID in post.quotes
         recursive post, args...
+
+return Recursive

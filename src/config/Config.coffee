@@ -1022,3 +1022,5 @@ Config =
   'Max Replies': 1000
 
   'Autohiding Scrollbar': false
+
+return Config

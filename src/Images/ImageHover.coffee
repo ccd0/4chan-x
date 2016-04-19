@@ -72,3 +72,5 @@ ImageHover =
         @src = URL + if @src is URL then '?' + Date.now() else ''
       else
         $.rm @
+
+return ImageHover

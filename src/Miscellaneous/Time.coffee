@@ -62,3 +62,5 @@ Time =
     y: -> @getFullYear().toString()[2..]
     Y: -> @getFullYear()
     '%': -> '%'
+
+return Time

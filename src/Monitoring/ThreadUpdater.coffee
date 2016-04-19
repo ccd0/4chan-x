@@ -356,3 +356,5 @@ ThreadUpdater =
       postCount: OP.replies + 1
       fileCount: OP.images + !!OP.fsize
       ipCount: OP.unique_ips
+
+return ThreadUpdater

@@ -71,3 +71,5 @@ ExpandComment =
     for callback in ExpandComment.callbacks
       callback.call post
     return
+
+return ExpandComment

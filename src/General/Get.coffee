@@ -67,3 +67,5 @@ Get =
     for script in $$ 'script:not([src])', d.head
       return script.textContent if /\bcooldowns *=/.test script.textContent
     ''
+
+return Get

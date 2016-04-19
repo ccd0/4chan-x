@@ -470,4 +470,4 @@ Main =
     <% } %>
   ]
 
-Main.init()
+return Main

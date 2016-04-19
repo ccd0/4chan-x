@@ -827,3 +827,5 @@ QR =
       QR.cooldown.auto = false
       QR.notifications.push new Notice 'info', 'QR upload aborted.', 5
     QR.status()
+
+return QR

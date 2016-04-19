@@ -34,3 +34,5 @@ QuoteOP =
       if "#{boardID}.#{postID}" is fullID
         $.add quotelink, $.tn QuoteOP.text
     return
+
+return QuoteOP

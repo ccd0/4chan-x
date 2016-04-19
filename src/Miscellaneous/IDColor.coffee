@@ -47,3 +47,5 @@ IDColor =
     while i < 8
       msg = (msg << 5) - msg + uid.charCodeAt i++
     msg
+
+return IDColor

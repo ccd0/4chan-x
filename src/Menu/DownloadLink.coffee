@@ -17,3 +17,5 @@ DownloadLink =
         a.href     = file.url
         a.download = file.name
         true
+
+return DownloadLink

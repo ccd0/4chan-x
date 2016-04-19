@@ -51,3 +51,5 @@ ArchiveLink =
       el: el
       open: open
     }
+
+return ArchiveLink

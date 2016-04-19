@@ -18,3 +18,5 @@ ThreadLinks =
 
   process: (link) ->
     link.target = '_blank'
+
+return ThreadLinks

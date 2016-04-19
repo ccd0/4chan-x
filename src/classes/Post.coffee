@@ -268,3 +268,5 @@ class Post
     for clone in @clones[index..]
       clone.nodes.root.dataset.clone = index++
     return
+
+return Post

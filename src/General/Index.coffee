@@ -773,3 +773,5 @@ Index =
     for keyword in keywords
       return false if -1 is text.indexOf keyword
     return true
+
+return Index

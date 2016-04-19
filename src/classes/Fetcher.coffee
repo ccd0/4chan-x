@@ -200,3 +200,5 @@ class Fetcher
     '[/moot]':    <%= html('</div>') %>
     '[banned]':   <%= html('<strong style="color: red;">') %>
     '[/banned]':  <%= html('</strong>') %>
+
+return Fetcher

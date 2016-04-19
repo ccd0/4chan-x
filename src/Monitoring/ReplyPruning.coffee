@@ -119,3 +119,5 @@ ReplyPruning =
     else
       Build.summaryText '-', ReplyPruning.total, ReplyPruning.totalFiles
     ReplyPruning.summary.hidden = (ReplyPruning.total <= +Conf["Max Replies"])
+
+return ReplyPruning

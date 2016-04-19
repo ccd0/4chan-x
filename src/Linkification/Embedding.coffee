@@ -395,3 +395,5 @@ Embedding =
           src:      a.dataset.href
           loop:     /^https?:\/\/i\.4cdn\.org\//.test a.dataset.href
   ]
+
+return Embedding

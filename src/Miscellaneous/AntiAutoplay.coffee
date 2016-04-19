@@ -31,3 +31,5 @@ AntiAutoplay =
       object.data = object.data.replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', '')
       $.addClass object, 'autoplay-removed'
     return
+
+return AntiAutoplay

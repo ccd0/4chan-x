@@ -107,3 +107,5 @@ Banner =
         child.textContent = data.title
       else
         Banner.db.delete {boardID: g.BOARD.ID, threadID: className}
+
+return Banner

@@ -215,3 +215,5 @@ PostHiding =
     for quotelink in Get.allQuotelinksLinkingTo post
       $.rmClass quotelink, 'filtered'
     return
+
+return PostHiding

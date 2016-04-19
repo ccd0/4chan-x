@@ -252,3 +252,5 @@ Unread =
           Favicon[if isDead then 'dead' else 'default']
       # `favicon.href = href` doesn't work on Firefox.
       $.add d.head, Favicon.el
+
+return Unread

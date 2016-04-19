@@ -105,3 +105,5 @@ class DataBoard
   onSync: (data) =>
     @data = data or boards: {}
     @sync?()
+
+return DataBoard

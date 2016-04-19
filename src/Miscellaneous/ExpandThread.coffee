@@ -103,3 +103,5 @@ ExpandThread =
 
     postsCount    = postsRoot.length
     a.textContent = Build.summaryText '-', postsCount, filesCount
+
+return ExpandThread

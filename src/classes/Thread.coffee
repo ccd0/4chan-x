@@ -76,3 +76,5 @@ class Thread
     @posts.forEach (post) -> post.collect()
     g.threads.rm @fullID
     @board.threads.rm @
+
+return Thread

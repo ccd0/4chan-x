@@ -21,3 +21,5 @@ class Callbacks
           error: err
 
     Main.handleErrors errors if errors
+
+return Callbacks
