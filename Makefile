@@ -136,33 +136,17 @@ $(foreach p, \
  $(eval $(call concatenate,$(p))) \
 )
 
-tmp/platform_crx.jst tmp/platform_userscript.jst : tmp/platform.jst
-	$(CP)
+to_compile := $(subst platform,platform_crx platform_userscript,$(parts))
 
-to_interpolate := $(filter-out platform,$(parts)) platform_crx platform_userscript
-
-define interpolate
-tmp/$1.$$(call lang,$1) : tmp/$1.jst $$(call imports,$1) $(template_deps)
-	$(template) $$< $$@ $$(if $$(findstring platform_,$1),type=$$(subst platform_,,$1))
-endef
-
-$(foreach p, $(to_interpolate), $(eval $(call interpolate,$(p))))
-
-tmp/platform_%.coffee : tmp/platform.jst $(call imports,platform) $(template_deps)
-	$(template) $< $@ type=$*
-
-to_compile := $(filter-out globals css platform,$(parts)) platform_crx platform_userscript
-
-define compile
-tmp/$1.js : tmp/$1.coffee $(coffee_deps) tools/globalize.js
+define force_compile
+tmp/$1.js : tmp/$$(firstword $$(subst _, ,$1)).jst $$(call imports, $$(firstword $$(subst _, ,$1)))
 	$(RM) $$@
 endef
 
-$(foreach p, $(to_compile), $(eval $(call compile,$(p))))
+$(foreach p, $(to_compile), $(eval $(call force_compile,$(p))))
 
-.events/compile : $(foreach p, $(to_compile), tmp/$(p).js) | .events
-	$(coffee) $(subst .js,.coffee,$?)
-	node tools/globalize.js $(subst tmp/,,$(subst .js,,$?))
+.events/compile : $(patsubst %,tmp/%.js,$(to_compile)) $(template_deps) $(coffee_deps) tools/globalize.js tools/chain.js | .events
+	node tools/chain.js $(filter $(to_compile),$(patsubst tmp/%.js,%,$?))
 	echo -> $@
 
 tmp/eventPage.js : src/meta/eventPage.coffee $(coffee_deps) | tmp
