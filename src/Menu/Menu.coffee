@@ -1,4 +1,4 @@
-Menu = 
+Menu =
   init: ->
     return unless g.VIEW in ['index', 'thread'] and Conf['Menu']
 

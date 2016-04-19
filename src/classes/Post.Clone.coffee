@@ -101,4 +101,3 @@ Post.Clone = class extends Post
       clone
     else
       node.cloneNode true
-

@@ -16,4 +16,3 @@ class SimpleDict
   forEach: (fn) -> 
     fn @[key] for key in [@keys...]
     return
-
