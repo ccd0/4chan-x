@@ -136,15 +136,17 @@ $(foreach p, \
  $(eval $(call concatenate,$(p))) \
 )
 
+tmp/platform_crx.jst tmp/platform_userscript.jst : tmp/platform.jst
+	$(CP)
+
+to_interpolate := $(filter-out platform,$(parts)) platform_crx platform_userscript
+
 define interpolate
 tmp/$1.$$(call lang,$1) : tmp/$1.jst $$(call imports,$1) $(template_deps)
-	$(template) $$< $$@
+	$(template) $$< $$@ $$(if $$(findstring platform_,$1),type=$$(subst platform_,,$1))
 endef
 
-$(foreach p, \
- $(filter-out platform,$(parts)), \
- $(eval $(call interpolate,$(p))) \
-)
+$(foreach p, $(to_interpolate), $(eval $(call interpolate,$(p))))
 
 tmp/platform_%.coffee : tmp/platform.jst $(call imports,platform) $(template_deps)
 	$(template) $< $@ type=$*
