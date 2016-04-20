@@ -73,11 +73,13 @@ imports = \
  $(if $(filter $(uses_tests_enabled),$1),.tests_enabled) \
  $(imports_$1)
 
-dests_platform = $(addprefix tmp/,$(subst /,-,$(subst src/,,$(subst platform,platform_$2,$(subst .coffee,.js,$1)))))
+dests_platform = $(addprefix tmp/,$(subst /,-,$(patsubst src/%,%.js,$(subst platform,platform_$2,$1))))
 
 dests_of = $(sort $(call dests_platform,$1,crx) $(call dests_platform,$1,userscript))
 
-dests = $(foreach s,$(sources),$(call dests_of,$(s)))
+dests := $(foreach s,$(sources),$(call dests_of,$(s)))
+
+updates := $(subst tmp/,.events/,$(dests))
 
 pieces = \
  tmp/LICENSE \
@@ -117,7 +119,7 @@ ifneq "$(wildcard npm-shrinkwrap.json)" ""
 	echo -> $@
 
 node_modules/%/package.json : .events/npm
-	$(if $(wildcard $@),,npm install && echo -> $^)
+	$(if $(wildcard $@),,npm install && echo -> $<)
 
 else
 
@@ -134,18 +136,31 @@ endif
 	echo -> $@
 
 tmp/declaration.js : .events/declare
-	$(if $(wildcard $@),,node tools/declare.js && echo -> $^)
+	$(if $(wildcard $@),,node tools/declare.js && echo -> $<)
 
-define force_compile
-$$(call dests_of,$1) : $1 $$(call imports,$1) $$(template_deps) $$(coffee_deps) tools/chain.js
+define check_source
+$$(subst tmp/,.events/,$(call dests_of,$1)) : $1 $$(call imports,$1) | .events
 	echo -> $$(call QUOTE,$$@)
 endef
 
-$(foreach s,$(sources),$(eval $(call force_compile,$(subst $$,$$$$,$(s)))))
+$(foreach s,$(sources),$(eval $(call check_source,$(subst $$,$$$$,$(s)))))
 
-.events/compile : $(dests) | .events
-	node tools/chain.js $(call QUOTE,$?)
+.events/compile : $(updates) $(template_deps) $(coffee_deps) tools/chain.js
+	node tools/chain.js $(call QUOTE, \
+	  $(subst .events/,tmp/, \
+	   $(if $(filter-out $(updates),$?), \
+	    $(updates), \
+	    $(filter $(updates),$?) \
+	   ) \
+	  ) \
+	 )
 	echo -> $@
+
+$(dests) : .events/compile
+	$(if $(wildcard $@),, \
+	 node tools/chain.js $(filter-out $(wildcard $(dests)),$(dests)) \
+	 && echo -> $< \
+	)
 
 tmp/eventPage.js : src/meta/eventPage.coffee $(coffee_deps) | tmp
 	$(coffee) -o tmp src/meta/eventPage.coffee
@@ -211,12 +226,13 @@ index.html : test.html
 tmp/.jshintrc : src/meta/jshint.json tmp/declaration.js src/globals/globals.js $(template_deps) | tmp
 	$(template) $< $@
 
-.events/jshint.% : tmp/%.js tmp/.jshintrc node_modules/jshint/package.json | .events/compile
-	echo -> $(call QUOTE,$@)
-
-.events/jshint : $(patsubst tmp/%.js,.events/jshint.%,$(dests))
-	$(BIN)jshint $(call QUOTE,$(patsubst .events/jshint.%,tmp/%.js,$?))
-	echo - $(addprefix  && echo -> ,$(call QUOTE,$?))
+.events/jshint : $(dests) tmp/.jshintrc node_modules/jshint/package.json
+	$(BIN)jshint $(call QUOTE, \
+	 $(if $(filter-out $(dests),$?), \
+	  $(dests), \
+	  $(filter $(dests),$?) \
+	 ) \
+	)
 	echo -> $@
 
 install.json :
