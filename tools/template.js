@@ -1,3 +1,4 @@
+/* jshint evil: true */
 var fs = require('fs');
 var path = require('path');
 var _template = require('lodash.template');
@@ -8,11 +9,6 @@ var _templateSettings = {interpolate: /<%=([\s\S]+?)%>/g};
 
 // Functions used in templates.
 var tools = {};
-
-tools.require = {};
-for (var m of ['style']) {
-  tools.require[m] = () => require(`./${m}`);
-}
 
 var read     = tools.read     = filename => fs.readFileSync(filename, 'utf8').replace(/\r\n/g, '\n');
 var readJSON = tools.readJSON = filename => JSON.parse(read(filename));
@@ -179,23 +175,41 @@ tools.assert = function(statement) {
   return `throw new Error 'Assertion failed: ' + ${constExpression(statement)} unless ${statement}`;
 };
 
-function resolvePath(filename, templateName) {
-  if (filename[0] === '/') {
-    return path.join(process.cwd(), filename);
-  }
+function includesDir(templateName) {
   var dir = path.dirname(templateName);
   var subdir = path.basename(templateName).replace(/\.[^.]+$/, '');
   if (fs.readdirSync(dir).indexOf(subdir) >= 0) {
-    return path.join(dir, subdir, filename);
+    return path.join(dir, subdir);
   } else {
-    return path.join(dir, filename);
+    return dir;
   }
 }
 
+function resolvePath(includeName, templateName) {
+  var dir;
+  if (includeName[0] === '/') {
+    dir = process.cwd();
+  } else {
+    dir = includesDir(templateName);
+  }
+  return path.join(dir, includeName);
+}
+
 function wrapTool(tool, templateName) {
-  return function(filename) {
-    return tool(resolvePath(filename, templateName));
+  return function(includeName) {
+    return tool(resolvePath(includeName, templateName));
   };
+}
+
+function loadModules(templateName) {
+  var dir = includesDir(templateName);
+  var moduleNames = fs.readdirSync(dir).filter(f => /\.inc$/.test(f));
+  var modules = {};
+  for (var name of moduleNames) {
+    var code = read(path.join(dir, name));
+    modules[name.replace(/\.inc$/, '')] = new Function(code)();
+  }
+  return modules;
 }
 
 // Import variables from package.json.
@@ -214,6 +228,8 @@ function interpolate(text, data, filename) {
       context[key] = data[key];
     }
   }
+  context.files = fs.readdirSync(includesDir(filename));
+  context.require = loadModules(filename);
   return _template(text, _templateSettings)(context);
 }
 

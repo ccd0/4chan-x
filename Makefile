@@ -62,7 +62,6 @@ imports_src/globals/globals.js := \
 imports_src/config/Config.coffee := \
  src/Archive/archives.json
 imports_src/css/CSS.js := \
- tools/style.js \
  node_modules/font-awesome/package.json
 imports_src/Monitoring/Favicon.coffee := \
  src/meta/icon128.png
