@@ -138,7 +138,7 @@ tmp/declaration.js : .events/declare
 
 define force_compile
 $$(call dests_of,$1) : $1 $$(call imports,$1) $$(template_deps) $$(coffee_deps) tools/chain.js
-	$(RM) $$(call QUOTE,$$@)
+	echo -> $$(call QUOTE,$$@)
 endef
 
 $(foreach s,$(sources),$(eval $(call force_compile,$(subst $$,$$$$,$(s)))))
@@ -212,7 +212,7 @@ tmp/.jshintrc : src/meta/jshint.json tmp/declaration.js src/globals/globals.js $
 	$(template) $< $@
 
 .events/jshint.% : tmp/%.js tmp/.jshintrc node_modules/jshint/package.json | .events/compile
-	$(RM) $(call QUOTE,$@)
+	echo -> $(call QUOTE,$@)
 
 .events/jshint : $(patsubst tmp/%.js,.events/jshint.%,$(dests))
 	$(BIN)jshint $(call QUOTE,$(patsubst .events/jshint.%,tmp/%.js,$?))
