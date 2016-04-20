@@ -315,13 +315,11 @@ tag : .events/CHANGELOG jshint release
 	git commit -am "Release $(meta_name) v$(version)."
 	git tag -a $(version) -m "$(meta_name) v$(version)."
 
-else
+endif
 
 wrapped : src/meta/npm-shrinkwrap.json
 	$(call CAT,$<,npm-shrinkwrap.json)
 	npm install
-
-endif
 
 $(foreach i,1 2 3 4,bump$(i)) : cleanrel
 	$(MAKE) wrapped
