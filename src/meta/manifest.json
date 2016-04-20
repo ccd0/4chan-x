@@ -1,6 +1,6 @@
 {
   "name": "<%= meta.name %>",
-  "version": "<%= readJSON('version.json').version %>",
+  "version": "<%= readJSON('/version.json').version %>",
   "manifest_version": 2,
   "description": "<%= description %>",
   "icons": {

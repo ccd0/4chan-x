@@ -19,7 +19,7 @@ Sauce =
       cb:   @node
 
   sandbox: (url) ->
-    E.url <%= importHTML('Images/Sandbox') %>
+    E.url <%= readHTML('Sandbox.html') %>
 
   rmOrigin: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0

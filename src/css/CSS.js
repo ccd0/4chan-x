@@ -4,9 +4,9 @@ boards:
 <%= multiline(require['style']()()) %>,
 
 report:
-<%= multiline(read('src/css/report.css')) %>,
+<%= multiline(read('report.css')) %>,
 
 www:
-<%= multiline(read('src/css/www.css')) %>
+<%= multiline(read('www.css')) %>
 
 };

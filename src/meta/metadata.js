@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         <%= meta.name %><%= (channel === '-beta') ? ' beta' : '' %>
-// @version      <%= readJSON('version.json').version %>
+// @version      <%= readJSON('/version.json').version %>
 // @minGMVer     <%= meta.min.greasemonkey %>
 // @minFFVer     <%= meta.min.firefox %>
 // @namespace    <%= name %>
@@ -42,5 +42,5 @@
 // @run-at       document-start
 // @updateURL    <%= (channel !== '-noupdate') ? `${meta.downloads}${name}${channel}.meta.js` : 'https://noupdate.invalid/' %>
 // @downloadURL  <%= (channel !== '-noupdate') ? `${meta.downloads}${name}${channel}.user.js` : 'https://noupdate.invalid/' %>
-// @icon         data:image/png;base64,<%= readBase64('src/meta/icon48.png') %>
+// @icon         data:image/png;base64,<%= readBase64('/src/meta/icon48.png') %>
 // ==/UserScript==

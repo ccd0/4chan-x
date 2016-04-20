@@ -2,7 +2,7 @@ class Post
   toString: -> @ID
 
   constructor: (root, @thread, @board) ->
-    <% if (readJSON('.tests_enabled')) { %>
+    <% if (readJSON('/.tests_enabled')) { %>
     root2 = root.cloneNode true
     for el in $$ '.mobile', root2
       $.rm el

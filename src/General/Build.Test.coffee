@@ -1,4 +1,4 @@
-<% if (readJSON('.tests_enabled')) { %>
+<% if (readJSON('/.tests_enabled')) { %>
 Build.Test =
   init: ->
     return if !Conf['Menu'] or g.VIEW not in ['index', 'thread']

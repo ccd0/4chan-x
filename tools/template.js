@@ -1,10 +1,12 @@
 var fs = require('fs');
+var path = require('path');
 var _template = require('lodash.template');
 var esprima = require('esprima');
 
 // disable ES6 delimiters
 var _templateSettings = {interpolate: /<%=([\s\S]+?)%>/g};
 
+// Functions used in templates.
 var tools = {};
 
 tools.require = {};
@@ -16,18 +18,18 @@ var read     = tools.read     = filename => fs.readFileSync(filename, 'utf8').re
 var readJSON = tools.readJSON = filename => JSON.parse(read(filename));
 tools.readBase64              = filename => fs.readFileSync(filename).toString('base64');
 
-// Convert JSON object to Coffeescript expression (via embedded JS).
-var constExpression = data => '`' + JSON.stringify(data).replace(/`/g, '\\`') + '`';
+tools.readHTML = function(filename) {
+  var text = read(filename).replace(/^ +/gm, '').replace(/\r?\n/g, '');
+  text = _template(text, _templateSettings)(pkg); // package.json data only; no recursive imports
+  return tools.html(text);
+};
 
 tools.multiline = function(text) {
   return text.replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`');
 };
 
-tools.importHTML = function(filename) {
-  var text = read(`src/${filename}.html`).replace(/^ +/gm, '').replace(/\r?\n/g, '');
-  text = _template(text, _templateSettings)(pkg); // variables only; no recursive imports
-  return tools.html(text);
-};
+// Convert JSON object to Coffeescript expression (via embedded JS).
+var constExpression = data => '`' + JSON.stringify(data).replace(/`/g, '\\`') + '`';
 
 function TextStream(text) {
   this.text = text;
@@ -173,20 +175,44 @@ tools.html = function(template) {
   return `(innerHTML: ${output})`;
 };
 
-tools.assert = function(flagFile, statement) {
-  if (!readJSON(flagFile)) return '';
+tools.assert = function(statement) {
   return `throw new Error 'Assertion failed: ' + ${constExpression(statement)} unless ${statement}`;
 };
+
+function resolvePath(filename, templateName) {
+  if (filename[0] === '/') {
+    return path.join(process.cwd(), filename);
+  }
+  var dir = path.dirname(templateName);
+  var subdir = path.basename(templateName).replace(/\.[^.]+$/, '');
+  if (fs.readdirSync(dir).indexOf(subdir) >= 0) {
+    return path.join(dir, subdir, filename);
+  } else {
+    return path.join(dir, filename);
+  }
+}
+
+function wrapTool(tool, templateName) {
+  return function(filename) {
+    return tool(resolvePath(filename, templateName));
+  };
+}
 
 // Import variables from package.json.
 var pkg = readJSON('package.json');
 
-function interpolate(text, data) {
+function interpolate(text, data, filename) {
   var context = {}, key;
-  for (key in tools) context[key] = tools[key];
-  for (key in pkg) context[key] = pkg[key];
+  for (key in tools) {
+    context[key] = /^read/.test(key) ? wrapTool(tools[key], filename) : tools[key];
+  }
+  for (key in pkg) {
+    context[key] = pkg[key];
+  }
   if (data) {
-    for (key in data) context[key] = data[key];
+    for (key in data) {
+      context[key] = data[key];
+    }
   }
   return _template(text, _templateSettings)(context);
 }
@@ -203,7 +229,7 @@ if (require.main === module) {
     }
 
     var text = read(process.argv[2]);
-    text = interpolate(text, data);
+    text = interpolate(text, data, process.argv[2]);
     fs.writeFileSync(process.argv[3], text);
   })();
 }

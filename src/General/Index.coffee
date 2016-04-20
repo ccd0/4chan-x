@@ -63,7 +63,7 @@ Index =
 
     # Navigation links at top of index
     @navLinks = $.el 'div', className: 'navLinks json-index'
-    $.extend @navLinks, <%= importHTML('General/Index/NavLinks') %>
+    $.extend @navLinks, <%= readHTML('NavLinks.html') %>
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
     $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID in ['b', 'trash']
     $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
@@ -96,7 +96,7 @@ Index =
 
     # Page list
     @pagelist = $.el 'div', className: 'pagelist json-index'
-    $.extend @pagelist, <%= importHTML('General/Index/PageList') %>
+    $.extend @pagelist, <%= readHTML('PageList.html') %>
     $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
     $.on @pagelist, 'click', @cb.pageNav
 

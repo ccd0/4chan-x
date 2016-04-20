@@ -32,9 +32,11 @@ read('node_modules/font-awesome/css/font-awesome.css')
 ).join('') +
 
 '/* Link Title Favicons */\n' +
-fs.readdirSync('src/css/linkIcons').map(file =>
-`.linkify.${file.split('.')[0]} {
-  background: transparent url('data:image/png;base64,${readBase64(`src/css/linkIcons/${file}`)}') center left no-repeat!important;
+fs.readdirSync('src/css').filter(file =>
+  /^linkify\.[^.]+\.png$/.test(file)
+).map(file =>
+`.linkify.${file.split('.')[1]} {
+  background: transparent url('data:image/png;base64,${readBase64(`src/css/${file}`)}') center left no-repeat!important;
   padding-left: 18px;
 }
 `

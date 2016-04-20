@@ -44,8 +44,6 @@ parts := \
  )) \
  main
 
-lang = $(if $(filter globals css,$1),js,coffee)
-
 # remove extension when sorting so X.coffee comes before X.Y.coffee
 sources_part = \
  $(subst !c,.coffee,$(subst !j,.js,$(sort $(subst .coffee,!c,$(subst .js,!j, \
@@ -55,20 +53,29 @@ sources := $(foreach p,$(parts),$(call sources_part,$(p)))
 
 part_of = $(patsubst src/%/,%,$(dir $1))
 
-imports = \
- $(filter-out %.coffee %.js,$(wildcard src/$1/*.* src/$1/*/*.* src/$1/*/*/*.*)) \
- .tests_enabled \
- $(imports_$1)
+uses_tests_enabled := \
+ src/classes/Post.coffee \
+ src/General/Build.Test.coffee \
+ src/Linkification/Linkify.coffee \
+ src/Miscellaneous/Keybinds.coffee \
+ src/Monitoring/Unread.coffee \
+ src/main/Main.coffee
 
-imports_globals := \
+imports_src/globals/globals.js := \
  version.json
-imports_config := \
+imports_src/config/Config.coffee := \
  src/Archive/archives.json
-imports_css := \
+imports_src/css/CSS.js := \
  tools/style.js \
  node_modules/font-awesome/package.json
-imports_Monitoring := \
+imports_src/Monitoring/Favicon.coffee := \
  src/meta/icon128.png
+
+imports = \
+ $(filter-out %.coffee %.js,$(wildcard $(dir $1)*.*)) \
+ $(wildcard $(basename $1)/*.*) \
+ $(if $(filter $(uses_tests_enabled),$1),.tests_enabled) \
+ $(imports_$1)
 
 dests_platform = $(addprefix tmp/,$(subst /,-,$(subst src/,,$(subst platform,platform_$2,$(subst .coffee,.js,$1)))))
 
@@ -131,7 +138,7 @@ tmp/declaration.js : .events/declare
 	$(if $(wildcard $@),,node tools/declare.js && echo -> $^)
 
 define force_compile
-$$(call dests_of,$1) : $1 $$(call imports,$$(call part_of,$1)) $$(template_deps) $$(coffee_deps) tools/chain.js
+$$(call dests_of,$1) : $1 $$(call imports,$1) $$(template_deps) $$(coffee_deps) tools/chain.js
 	$(RM) $$(call QUOTE,$$@)
 endef
 

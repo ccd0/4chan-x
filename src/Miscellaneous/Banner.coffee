@@ -1,5 +1,5 @@
 Banner =
-  banners: `<%= JSON.stringify(readJSON('src/Miscellaneous/banners.json')) %>`
+  banners: `<%= JSON.stringify(readJSON('banners.json')) %>`
 
   init: ->
     if Conf['Custom Board Titles']

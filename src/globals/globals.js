@@ -6,7 +6,7 @@ d    = document;
 doc  = d.documentElement;
 
 g = {
-  VERSION:   '<%= readJSON('version.json').version %>',
+  VERSION:   '<%= readJSON('/version.json').version %>',
   NAMESPACE: '<%= meta.name %>.',
   boards:    {}
 };
