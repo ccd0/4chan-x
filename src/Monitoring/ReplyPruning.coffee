@@ -93,6 +93,11 @@ ReplyPruning =
     else
       0
 
+    # Record position from bottom of document
+    oldPos = d.body.clientHeight - window.scrollY
+    # Prevent header menu from closing due to scroll
+    $.off d, 'scroll', Header.menu.close if Header.menu.menu
+
     {posts} = ReplyPruning.thread
 
     if ReplyPruning.hidden < hidden2
@@ -119,5 +124,8 @@ ReplyPruning =
     else
       Build.summaryText '-', ReplyPruning.total, ReplyPruning.totalFiles
     ReplyPruning.summary.hidden = (ReplyPruning.total <= +Conf["Max Replies"])
+
+    # Maintain position in thread when posts are added/removed above
+    window.scroll window.scrollX, Math.max(d.body.clientHeight - oldPos, window.scrollY + Header.getTopOf $('.board'))
 
 return ReplyPruning
