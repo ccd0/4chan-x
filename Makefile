@@ -211,7 +211,8 @@ tmp/.jshintrc : src/meta/jshint.json tmp/declaration.js tmp/globals-globals.js $
 
 .events/jshint : $(patsubst tmp/%.js,.events/jshint.%,$(dests))
 	$(BIN)jshint $(call QUOTE,$(patsubst .events/jshint.%,tmp/%.js,$?))
-	echo -> $@ $(addprefix  && echo -> ,$(call QUOTE,$?))
+	echo - $(addprefix  && echo -> ,$(call QUOTE,$?))
+	echo -> $@
 
 install.json :
 	echo {}> $@
