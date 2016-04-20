@@ -47,8 +47,6 @@ sources_part = \
 
 sources := $(foreach p,$(parts),$(call sources_part,$(p)))
 
-part_of = $(patsubst src/%/,%,$(dir $1))
-
 uses_tests_enabled := \
  src/classes/Post.coffee \
  src/General/Build.Test.coffee \
