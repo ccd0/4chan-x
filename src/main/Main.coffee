@@ -415,6 +415,7 @@ Main =
     ['Reply Hiding Buttons',      PostHiding]
     ['Recursive',                 Recursive]
     ['Strike-through Quotes',     QuoteStrikeThrough]
+    ['Quick Reply Personas',      QR.persona]
     ['Quick Reply',               QR]
     ['Cooldown',                  QR.cooldown]
     ['Pass Link',                 PassLink]

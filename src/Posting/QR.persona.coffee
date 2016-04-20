@@ -1,20 +1,17 @@
 QR.persona =
-  pwd: ''
   always: {}
-  init: ->
-    QR.persona.getPassword()
-    $.get 'QR.personas', Conf['QR.personas'], ({'QR.personas': personas}) ->
-      types =
-        name:  []
-        email: []
-        sub:   []
-      for item in personas.split '\n'
-        QR.persona.parseItem item.trim(), types
-      for type, arr of types
-        QR.persona.loadPersonas type, arr
-      return
+  types:
+    name:  []
+    email: []
+    sub:   []
 
-  parseItem: (item, types) ->
+  init: ->
+    return unless Conf['Quick Reply'] or (Conf['Menu'] and Conf['Delete Link'])
+    for item in Conf['QR.personas'].split '\n'
+      QR.persona.parseItem item.trim()
+    return
+
+  parseItem: (item) ->
     return if item[0] is '#'
     return unless match = item.match /(name|options|email|subject|password):"(.*)"/i
     [match, type, val]  = match
@@ -36,28 +33,24 @@ QR.persona =
     if /always/i.test item
       QR.persona.always[type] = val
 
-    unless val in types[type]
-      types[type].push val
+    unless val in QR.persona.types[type]
+      QR.persona.types[type].push val
 
-  loadPersonas: (type, arr) ->
-    list = $ "#list-#{type}", QR.nodes.el
-    for val in arr when val
-      $.add list, $.el 'option',
-        textContent: val
+  load: ->
+    for type, arr of QR.persona.types
+      list = $ "#list-#{type}", QR.nodes.el
+      for val in arr when val
+        $.add list, $.el 'option',
+          textContent: val
     return
 
   getPassword: ->
-    unless QR.persona.pwd
-      QR.persona.pwd = if m = d.cookie.match /4chan_pass=([^;]+)/
-        decodeURIComponent m[1]
-      else if input = $.id 'postPassword'
-        input.value
-      else
-        # If we're in a closed thread, #postPassword isn't available.
-        # And since #delPassword.value is only filled on window.onload
-        # we'd rather use #postPassword when we can.
-        $.id('delPassword')?.value or ''
-    return QR.persona.pwd
+    if QR.persona.pwd?
+      QR.persona.pwd
+    else if (m = d.cookie.match /4chan_pass=([^;]+)/)
+      decodeURIComponent m[1]
+    else
+      ''
 
   get: (cb) ->
     $.get 'QR.persona', {}, ({'QR.persona': persona}) ->

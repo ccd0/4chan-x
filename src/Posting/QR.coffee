@@ -558,7 +558,7 @@ QR =
         $.set 'QR Size', @style.cssText
 
     QR.generatePostableThreadsList()
-    QR.persona.init()
+    QR.persona.load()
     new QR.post true
     QR.status()
     QR.cooldown.setup()
@@ -643,7 +643,7 @@ QR =
       spoiler:  post.spoiler
       textonly: textOnly
       mode:     'regist'
-      pwd:      QR.persona.pwd
+      pwd:      QR.persona.getPassword()
 
     options =
       responseType: 'document'
