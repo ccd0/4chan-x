@@ -208,7 +208,7 @@ test.html : README.md template.jst tools/markdown.js node_modules/marked/package
 index.html : test.html
 	$(CP)
 
-tmp/.jshintrc : src/meta/jshint.json tmp/declaration.js tmp/globals-globals.js $(template_deps) | tmp
+tmp/.jshintrc : src/meta/jshint.json tmp/declaration.js src/globals/globals.js $(template_deps) | tmp
 	$(template) $< $@
 
 .events/jshint.% : tmp/%.js tmp/.jshintrc node_modules/jshint/package.json | .events/compile
