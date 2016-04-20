@@ -31,21 +31,18 @@ $(eval $(shell node tools/pkgvars.js))
 # must be read in when needed to prevent out-of-date version
 version = $(shell node -p "JSON.parse(require('fs').readFileSync('version.json')).version")
 
-capitalized = $(filter-out a,$(foreach x,$1,$(subst a $(x),,$(sort a $(x)))))
-
-parts := \
+source_directories := \
  globals config css platform classes \
- $(sort $(call capitalized, \
-  $(subst src/,,$(wildcard src/*)) \
- )) \
+ Archive Filtering General Images Linkification \
+ Menu Miscellaneous Monitoring Posting Quotelinks \
  main
 
 # remove extension when sorting so X.coffee comes before X.Y.coffee
-sources_part = \
+sort_directory = \
  $(subst !c,.coffee,$(subst !j,.js,$(sort $(subst .coffee,!c,$(subst .js,!j, \
   $(wildcard src/$1/*.coffee src/$1/*.js))))))
 
-sources := $(foreach p,$(parts),$(call sources_part,$(p)))
+sources := $(foreach d,$(source_directories),$(call sort_directory,$(d)))
 
 uses_tests_enabled := \
  src/classes/Post.coffee \
