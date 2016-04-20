@@ -16,6 +16,7 @@ for (var name of process.argv.slice(2)) {
         script = `${parts[3]} = ${script}`;
       }
     }
+    script += '\n';
     fs.writeFileSync(name, script);
   } catch (err) {
     console.error(`Error processing ${name}`);

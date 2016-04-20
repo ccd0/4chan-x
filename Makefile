@@ -2,19 +2,18 @@ ifdef ComSpec
   BIN := $(subst /,\,node_modules/.bin/)
   RMDIR := -rmdir /s /q
   RM := -del
-  CP = type $(subst /,\,$<) > $(subst /,\,$@)
-  CP2 = type $(subst /,\,$1) > $(subst /,\,$2)
+  CAT = type $(subst /,\,$1) > $(subst /,\,$2)
   MKDIR = -mkdir $(subst /,\,$@)
   QUOTE = $(patsubst %,"%",$1)
 else
   BIN := node_modules/.bin/
   RMDIR := rm -rf
   RM := rm -rf
-  CP = cp $< $@
-  CP2 = cp $1 $2
+  CAT = cat $1 > $2
   MKDIR = mkdir -p $@
   QUOTE = $(patsubst %,'%',$1)
 endif
+CP = $(call CAT,$<,$@)
 
 npgoals := clean cleanrel cleanweb cleanfull withtests tag $(foreach i,1 2 3 4,bump$(i)) beta stable web update updatehard
 ifneq "$(filter $(npgoals) npm-shrinkwrap.json,$(MAKECMDGOALS))" ""
@@ -25,8 +24,6 @@ coffee := $(BIN)coffee -c --no-header
 coffee_deps := node_modules/coffee-script/package.json
 template := node tools/template.js
 template_deps := package.json tools/template.js node_modules/lodash.template/package.json node_modules/esprima/package.json
-cat := node tools/cat.js
-cat_deps := tools/cat.js
 
 pkg = $(shell node -p "JSON.parse(require('fs').readFileSync('package.json')).$1")
 name := $(call pkg,name)
@@ -84,11 +81,14 @@ dests_of = $(sort $(call dests_platform,$1,crx) $(call dests_platform,$1,userscr
 dests = $(foreach s,$(sources),$(call dests_of,$(s)))
 
 pieces = \
- LICENSE \
- src/meta/fbegin.js \
+ tmp/LICENSE \
+ tmp/meta-newline.js \
+ tmp/meta-fbegin.js \
+ tmp/meta-newline.js \
  tmp/declaration.js \
+ tmp/meta-newline.js \
  $(foreach s,$(sources),$(call dests_platform,$(s),$1)) \
- src/meta/fend.js
+ tmp/meta-fend.js
 
 crx_contents := script.js eventPage.js icon16.png icon48.png icon128.png manifest.json
 
@@ -151,13 +151,19 @@ $(foreach s,$(sources),$(eval $(call force_compile,$(subst $$,$$$$,$(s)))))
 tmp/eventPage.js : src/meta/eventPage.coffee $(coffee_deps) | tmp
 	$(coffee) -o tmp src/meta/eventPage.coffee
 
+tmp/LICENSE : LICENSE tools/newlinefix.js | tmp
+	node tools/newlinefix.js $< $@
+
+tmp/meta-%.js : src/meta/%.js tools/newlinefix.js | tmp
+	node tools/newlinefix.js $< $@
+
 define rules_channel
 
 testbuilds/crx$1 :
 	$$(MKDIR)
 
-testbuilds/crx$1/script.js : $$(call pieces,crx) $(cat_deps) | testbuilds/crx$1 .events/compile
-	$(cat) $$(call QUOTE,$$(call pieces,crx) $$@)
+testbuilds/crx$1/script.js : $$(call pieces,crx) | testbuilds/crx$1 .events/compile
+	$(call CAT,$$(call QUOTE,$$(call pieces,crx)),$$@)
 
 testbuilds/crx$1/eventPage.js : tmp/eventPage.js | testbuilds/crx$1
 	$$(CP)
@@ -182,8 +188,8 @@ testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.
 testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.json $(template_deps) | testbuilds
 	$(template) $$< $$@ type=userscript channel=$1
 
-testbuilds/$(name)$1.user.js : testbuilds/$(name)$1.meta.js $$(call pieces,userscript) $(cat_deps) | .events/compile
-	$(cat) testbuilds/$(name)$1.meta.js $$(call QUOTE,$$(call pieces,userscript) $$@)
+testbuilds/$(name)$1.user.js : testbuilds/$(name)$1.meta.js tmp/meta-newline.js $$(call pieces,userscript) | .events/compile
+	$(call CAT,testbuilds/$(name)$1.meta.js tmp/meta-newline.js $$(call QUOTE,$$(call pieces,userscript)),$$@)
 
 endef
 
@@ -337,10 +343,10 @@ update :
 	npm install --save-dev $(shell node tools/unpinned.js)
 	npm install
 	npm shrinkwrap --dev
-	$(call CP2,npm-shrinkwrap.json,src/meta/npm-shrinkwrap.json)
+	$(call CAT,npm-shrinkwrap.json,src/meta/npm-shrinkwrap.json)
 
 updatehard :
 	npm install --save-dev $(shell node tools/unpinned.js latest)
 	npm install
 	npm shrinkwrap --dev
-	$(call CP2,npm-shrinkwrap.json,src/meta/npm-shrinkwrap.json)
+	$(call CAT,npm-shrinkwrap.json,src/meta/npm-shrinkwrap.json)
