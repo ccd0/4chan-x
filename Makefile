@@ -25,11 +25,10 @@ coffee_deps := node_modules/coffee-script/package.json
 template := node tools/template.js
 template_deps := package.json tools/template.js node_modules/lodash.template/package.json node_modules/esprima/package.json
 
-pkg = $(shell node -p "JSON.parse(require('fs').readFileSync('package.json')).$1")
-name := $(call pkg,name)
-nameHuman := $(call pkg,meta.name)
-distBranch := $(call pkg,meta.distBranch)
-awsBucket := $(call pkg,meta.awsBucket)
+# read name meta_name meta_distBranch meta_awsBucket
+$(eval $(shell node tools/pkgvars.js))
+
+# must be read in when needed to prevent out-of-date version
 version = $(shell node -p "JSON.parse(require('fs').readFileSync('version.json')).version")
 
 capitalized = $(filter-out a,$(foreach x,$1,$(subst a $(x),,$(sort a $(x)))))
@@ -232,13 +231,13 @@ install.json :
 	echo -> $@
 
 dist :
-	git worktree add $@ $(distBranch)
+	git worktree add $@ $(meta_distBranch)
 
 $(wildcard dist/* dist/*/*) : dist
 	@
 
 distready : dist $(wildcard dist/* dist/*/*)
-	cd dist && git checkout $(distBranch)
+	cd dist && git checkout $(meta_distBranch)
 	cd dist && git pull
 
 .events2/push-git : .git/refs/heads .git/refs/tags $(wildcard .git/refs/heads/* .git/refs/tags/*) | .events2 distready
@@ -246,14 +245,14 @@ distready : dist $(wildcard dist/* dist/*/*)
 	git push origin --all
 	echo -> $@
 
-.events2/push-web : .git/refs/heads/$(distBranch) | .events2 distready
-	aws s3 cp builds/ s3://$(awsBucket)/builds/ --recursive --exclude "*" --include "*.js" --cache-control "max-age=600" --content-type "application/javascript; charset=utf-8"
-	aws s3 cp builds/ s3://$(awsBucket)/builds/ --recursive --exclude "*" --include "*.crx" --cache-control "max-age=600" --content-type "application/x-chrome-extension"
-	aws s3 cp builds/ s3://$(awsBucket)/builds/ --recursive --exclude "*" --include "*.xml" --cache-control "max-age=600" --content-type "text/xml; charset=utf-8"
-	aws s3 cp builds/ s3://$(awsBucket)/builds/ --recursive --exclude "*" --include "*.zip" --cache-control "max-age=600" --content-type "application/zip"
-	aws s3 cp img/ s3://$(awsBucket)/img/ --recursive --cache-control "max-age=600"
-	aws s3 cp index.html s3://$(awsBucket) --cache-control "max-age=600" --content-type "text/html; charset=utf-8"
-	aws s3 cp web.css s3://$(awsBucket) --cache-control "max-age=600" --content-type "text/css; charset=utf-8"
+.events2/push-web : .git/refs/heads/$(meta_distBranch) | .events2 distready
+	aws s3 cp builds/ s3://$(meta_awsBucket)/builds/ --recursive --exclude "*" --include "*.js" --cache-control "max-age=600" --content-type "application/javascript; charset=utf-8"
+	aws s3 cp builds/ s3://$(meta_awsBucket)/builds/ --recursive --exclude "*" --include "*.crx" --cache-control "max-age=600" --content-type "application/x-chrome-extension"
+	aws s3 cp builds/ s3://$(meta_awsBucket)/builds/ --recursive --exclude "*" --include "*.xml" --cache-control "max-age=600" --content-type "text/xml; charset=utf-8"
+	aws s3 cp builds/ s3://$(meta_awsBucket)/builds/ --recursive --exclude "*" --include "*.zip" --cache-control "max-age=600" --content-type "application/zip"
+	aws s3 cp img/ s3://$(meta_awsBucket)/img/ --recursive --cache-control "max-age=600"
+	aws s3 cp index.html s3://$(meta_awsBucket) --cache-control "max-age=600" --content-type "text/html; charset=utf-8"
+	aws s3 cp web.css s3://$(meta_awsBucket) --cache-control "max-age=600" --content-type "text/css; charset=utf-8"
 	echo -> $@
 
 .events2/push-store : .git/refs/tags/stable | .events2 distready node_modules/webstore-upload/package.json
@@ -278,7 +277,7 @@ push : .events2/push-git .events2/push-web .events2/push-store
 
 captchas : redirect.html $(template_deps)
 	$(template) redirect.html captchas.html url="$(url)"
-	aws s3 cp captchas.html s3://$(awsBucket) --cache-control "max-age=0" --content-type "text/html; charset=utf-8"
+	aws s3 cp captchas.html s3://$(meta_awsBucket) --cache-control "max-age=0" --content-type "text/html; charset=utf-8"
 
 clean :
 	$(RMDIR) tmp testbuilds .events
@@ -321,17 +320,17 @@ $(foreach i,1 2 3 4,bump$(i)) : cleanrel
 	$(MAKE) tag
 
 beta : distready
-	git tag -af beta -m "$(nameHuman) v$(version)."
+	git tag -af beta -m "$(meta_name) v$(version)."
 	cd dist && git merge --no-commit -s ours beta
 	cd dist && git checkout beta "builds/*-beta.*" LICENSE CHANGELOG.md img .gitignore .gitattributes
-	cd dist && git commit -am "Move $(nameHuman) v$(version) to beta channel."
+	cd dist && git commit -am "Move $(meta_name) v$(version) to beta channel."
 
 stable : distready
 	git push . HEAD:bstable
-	git tag -af stable -m "$(nameHuman) v$(version)."
+	git tag -af stable -m "$(meta_name) v$(version)."
 	cd dist && git merge --no-commit -s ours stable
 	cd dist && git checkout stable "builds/$(name).*" builds/updates.xml
-	cd dist && git commit -am "Move $(nameHuman) v$(version) to stable channel."
+	cd dist && git commit -am "Move $(meta_name) v$(version) to stable channel."
 
 web : index.html distready
 	-git commit -am "Build web page."
