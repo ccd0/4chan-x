@@ -302,8 +302,8 @@ withtests :
 ifneq "$(wildcard npm-shrinkwrap.json)" ""
 
 tag : .events/CHANGELOG jshint release
-	git commit -am "Release $(name) v$(version)."
-	git tag -a $(version) -m "$(name) v$(version)."
+	git commit -am "Release $(meta_name) v$(version)."
+	git tag -a $(version) -m "$(meta_name) v$(version)."
 
 else
 
