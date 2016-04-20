@@ -65,31 +65,11 @@ class Menu
     $.addClass lastToggledButton, 'active'
 
     $.on d, 'click CloseMenu', @close
-    $.on d, 'scroll', @close unless @type is 'gallery'
+    $.on d, 'scroll', @setPosition
+    $.on window, 'resize', @setPosition
     $.add button, menu
 
-    # Position
-    mRect   = menu.getBoundingClientRect()
-    bRect   = button.getBoundingClientRect()
-    bTop    = window.scrollY + bRect.top
-    bLeft   = window.scrollX + bRect.left
-    cHeight = doc.clientHeight
-    cWidth  = doc.clientWidth
-    [top, bottom] = if bRect.top + bRect.height + mRect.height < cHeight
-      [bRect.bottom, null]
-    else
-      [null, cHeight - bRect.top]
-    [left, right] = if bRect.left + mRect.width < cWidth
-      [bRect.left, null]
-    else
-      [null, cWidth - bRect.right]
-    {style} = menu
-    style.top    = "#{top}px"
-    style.right  = "#{right}px"
-    style.bottom = "#{bottom}px"
-    style.left   = "#{left}px"
-    if right
-      $.addClass menu, 'left'
+    @setPosition()
 
     entry = $ '.entry', menu
     # We've removed flexbox, so we don't use order anymore.
@@ -98,6 +78,24 @@ class Menu
     @focus entry
 
     menu.focus()
+
+  setPosition: =>
+    mRect   = @menu.getBoundingClientRect()
+    bRect   = lastToggledButton.getBoundingClientRect()
+    bTop    = window.scrollY + bRect.top
+    bLeft   = window.scrollX + bRect.left
+    cHeight = doc.clientHeight
+    cWidth  = doc.clientWidth
+    [top, bottom] = if bRect.top + bRect.height + mRect.height < cHeight
+      ["#{bRect.bottom}px", '']
+    else
+      ['', "#{cHeight - bRect.top}px"]
+    [left, right] = if bRect.left + mRect.width < cWidth
+      ["#{bRect.left}px", '']
+    else
+      ['', "#{cWidth - bRect.right}px"]
+    $.extend @menu.style, {top, right, bottom, left}
+    @menu.classList.toggle 'left', right
 
   insertEntry: (entry, parent, data) ->
     if typeof entry.open is 'function'
@@ -128,6 +126,8 @@ class Menu
     currentMenu       = null
     lastToggledButton = null
     $.off d, 'click scroll CloseMenu', @close
+    $.off d, 'scroll', @setPosition
+    $.off window, 'resize', @setPosition
 
   findNextEntry: (entry, direction) ->
     entries = [entry.parentNode.children...]

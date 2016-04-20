@@ -95,8 +95,6 @@ ReplyPruning =
 
     # Record position from bottom of document
     oldPos = d.body.clientHeight - window.scrollY
-    # Prevent header menu from closing due to scroll
-    $.off d, 'scroll', Header.menu.close if Header.menu.menu
 
     {posts} = ReplyPruning.thread
 
