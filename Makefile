@@ -15,8 +15,8 @@ else
 endif
 CP = $(call CAT,$<,$@)
 
-npgoals := clean cleanrel cleanweb cleanfull withtests tag $(foreach i,1 2 3 4,bump$(i)) beta stable web update updatehard
-ifneq "$(filter $(npgoals) npm-shrinkwrap.json,$(MAKECMDGOALS))" ""
+npgoals := clean cleanrel cleanweb cleanfull withtests tag wrapped $(foreach i,1 2 3 4,bump$(i)) beta stable web update updatehard
+ifneq "$(filter $(npgoals),$(MAKECMDGOALS))" ""
 .NOTPARALLEL :
 endif
 
@@ -317,14 +317,14 @@ tag : .events/CHANGELOG jshint release
 
 else
 
-npm-shrinkwrap.json : src/meta/npm-shrinkwrap.json
-	$(CP)
+wrapped : src/meta/npm-shrinkwrap.json
+	$(call CAT,$<,npm-shrinkwrap.json)
+	npm install
 
 endif
 
 $(foreach i,1 2 3 4,bump$(i)) : cleanrel
-	$(MAKE) npm-shrinkwrap.json
-	npm install
+	$(MAKE) wrapped
 	node tools/bump.js $(subst bump,,$@)
 	$(MAKE) all
 	$(MAKE) tag
