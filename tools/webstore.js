@@ -1,9 +1,10 @@
 var fs = require('fs');
+var child_process = require('child_process');
 var webstore_upload = require('webstore-upload');
 var request = require('request');
 
 var pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-var v = JSON.parse(fs.readFileSync('version.json', 'utf8'));
+var v = JSON.parse(child_process.execSync('git show stable:version.json').toString());
 var secrets = JSON.parse(fs.readFileSync(`../${pkg.meta.path}.keys/chrome-store.json`, 'utf8'));
 
 request(`https://chrome.google.com/webstore/detail/${pkg.meta.chromeStoreID}`, function (error, response, body) {
