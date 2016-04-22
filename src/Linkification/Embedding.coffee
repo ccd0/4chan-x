@@ -292,8 +292,10 @@ Embedding =
       key: 'Vimeo'
       regExp:  /^\w+:\/\/(?:www\.)?vimeo\.com\/(\d+)/
       el: (a) ->
-        $.el 'iframe',
+        el = $.el 'iframe',
           src: "//player.vimeo.com/video/#{a.dataset.uid}?wmode=opaque"
+        el.setAttribute "allowfullscreen", "true"
+        el
       title:
         api: (uid) -> "https://vimeo.com/api/oembed.json?url=https://vimeo.com/#{uid}"
         text: (_) -> _.title
