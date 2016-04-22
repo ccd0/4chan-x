@@ -754,10 +754,6 @@ QR =
       return
 
     h1 = $ 'h1', resDoc
-    QR.cleanNotifications()
-
-    if Conf['Posting Success Notifications']
-      QR.notifications.push new Notice 'success', h1.textContent, 5
 
     [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
     postID   = +postID
@@ -783,6 +779,10 @@ QR =
     else
       post.rm()
       QR.captcha.setup(d.activeElement is QR.nodes.status)
+
+    QR.cleanNotifications()
+    if Conf['Posting Success Notifications']
+      QR.notifications.push new Notice 'success', h1.textContent, 5
 
     QR.cooldown.add threadID, postID
 
