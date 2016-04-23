@@ -57,7 +57,7 @@ Embedding =
     $.on embed, 'click', Embedding.cb.toggle
     $.after link, [$.tn(' '), embed]
 
-    if Conf['Auto-embed'] and !Conf['Floating Embeds'] and !post.isFetchedQuote and key isnt 'TwitchTV' # XXX https://github.com/justintv/Twitch-API/issues/289
+    if Conf['Auto-embed'] and !Conf['Floating Embeds'] and !post.isFetchedQuote
       $.asap (-> doc.contains embed), ->
         Embedding.cb.toggle.call embed
 
@@ -257,26 +257,16 @@ Embedding =
           src: "//strawpoll.me/embed_1/#{a.dataset.uid}"
     ,
       key: 'TwitchTV'
-      regExp: /^\w+:\/\/(?:www\.)?twitch\.tv\/(\w[^#\&\?]*)/
-      style: "border: none; width: 620px; height: 378px;"
+      regExp: /^\w+:\/\/(?:www\.|secure\.)?twitch\.tv\/(\w[^#\&\?]*)/
       el: (a) ->
-        if result = /(\w+)\/([bcv])\/(\d+)/i.exec a.dataset.uid
-          [_, channel, type, id] = result
-          idprefix = if type is 'b' then 'a' else type
-          flashvars = "channel=#{channel}&start_volume=25&auto_play=false&videoId=#{idprefix}#{id}"
-          if start = a.dataset.href.match /\bt=(\w+)/
-            seconds = 0
-            for part in start[1].match /\d+[hms]/g
-              seconds += +part[...-1] * {'h': 3600, 'm': 60, 's': 1}[part[-1..]]
-            flashvars += "&initial_time=#{seconds}"
-        else
-          channel = (/(\w+)/.exec a.dataset.uid)[0]
-          flashvars = "channel=#{channel}&start_volume=25&auto_play=false"
-        obj = $.el 'object',
-          data: '//www-cdn.jtvnw.net/swflibs/TwitchPlayer.swf'
-        $.extend obj, <%= html('<param name="allowFullScreen" value="true"><param name="flashvars">') %>
-        obj.children[1].value = flashvars
-        obj
+        m = a.dataset.uid.match /(\w+)(?:\/v\/(\d+))?/
+        url = "//player.twitch.tv/?#{if m[2] then "video=v#{m[2]}" else "channel=#{m[1]}"}&autoplay=false"
+        if (time = a.dataset.href.match /\bt=(\w+)/)
+          url += "&time=#{time[1]}"
+        el = $.el 'iframe',
+          src: url
+        el.setAttribute "allowfullscreen", "true"
+        el
     ,
       key: 'Vocaroo'
       regExp: /^\w+:\/\/(?:www\.)?vocaroo\.com\/i\/(\w+)/
