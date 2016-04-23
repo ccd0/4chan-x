@@ -4,6 +4,11 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.31
 
+**v1.11.31.1** *(2016-04-23)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.31.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.31.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix regression from v1.11.31.0 causing "Post successful" notifications not to appear.
+- Fix fullscreen for Vimeo embeds.
+- Update Twitch embedding.
+
 **v1.11.31.0** *(2016-04-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.31.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.31.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.30.3.
 - Fix scrolling issue that happened when `Reply Pruning` removes posts from above you in a thread.

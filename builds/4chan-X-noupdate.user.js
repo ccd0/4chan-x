@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.11.31.0
+// @version      1.11.31.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -129,7 +129,7 @@ d    = document;
 doc  = d.documentElement;
 
 g = {
-  VERSION:   '1.11.31.0',
+  VERSION:   '1.11.31.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -12872,7 +12872,7 @@ Embedding = (function() {
       }
       $.on(embed, 'click', Embedding.cb.toggle);
       $.after(link, [$.tn(' '), embed]);
-      if (Conf['Auto-embed'] && !Conf['Floating Embeds'] && !post.isFetchedQuote && key !== 'TwitchTV') {
+      if (Conf['Auto-embed'] && !Conf['Floating Embeds'] && !post.isFetchedQuote) {
         return $.asap((function() {
           return doc.contains(embed);
         }), function() {
@@ -13177,39 +13177,19 @@ Embedding = (function() {
         }
       }, {
         key: 'TwitchTV',
-        regExp: /^\w+:\/\/(?:www\.)?twitch\.tv\/(\w[^#\&\?]*)/,
-        style: "border: none; width: 620px; height: 378px;",
+        regExp: /^\w+:\/\/(?:www\.|secure\.)?twitch\.tv\/(\w[^#\&\?]*)/,
         el: function(a) {
-          var _, channel, flashvars, id, idprefix, j, len, obj, part, ref, result, seconds, start, type;
-          if (result = /(\w+)\/([bcv])\/(\d+)/i.exec(a.dataset.uid)) {
-            _ = result[0], channel = result[1], type = result[2], id = result[3];
-            idprefix = type === 'b' ? 'a' : type;
-            flashvars = "channel=" + channel + "&start_volume=25&auto_play=false&videoId=" + idprefix + id;
-            if (start = a.dataset.href.match(/\bt=(\w+)/)) {
-              seconds = 0;
-              ref = start[1].match(/\d+[hms]/g);
-              for (j = 0, len = ref.length; j < len; j++) {
-                part = ref[j];
-                seconds += +part.slice(0, -1) * {
-                  'h': 3600,
-                  'm': 60,
-                  's': 1
-                }[part.slice(-1)];
-              }
-              flashvars += "&initial_time=" + seconds;
-            }
-          } else {
-            channel = (/(\w+)/.exec(a.dataset.uid))[0];
-            flashvars = "channel=" + channel + "&start_volume=25&auto_play=false";
+          var el, m, time, url;
+          m = a.dataset.uid.match(/(\w+)(?:\/v\/(\d+))?/);
+          url = "//player.twitch.tv/?" + (m[2] ? "video=v" + m[2] : "channel=" + m[1]) + "&autoplay=false";
+          if ((time = a.dataset.href.match(/\bt=(\w+)/))) {
+            url += "&time=" + time[1];
           }
-          obj = $.el('object', {
-            data: '//www-cdn.jtvnw.net/swflibs/TwitchPlayer.swf'
+          el = $.el('iframe', {
+            src: url
           });
-          $.extend(obj, {
-            innerHTML: "<param name=\"allowFullScreen\" value=\"true\"><param name=\"flashvars\">"
-          });
-          obj.children[1].value = flashvars;
-          return obj;
+          el.setAttribute("allowfullscreen", "true");
+          return el;
         }
       }, {
         key: 'Vocaroo',
@@ -13229,9 +13209,12 @@ Embedding = (function() {
         key: 'Vimeo',
         regExp: /^\w+:\/\/(?:www\.)?vimeo\.com\/(\d+)/,
         el: function(a) {
-          return $.el('iframe', {
+          var el;
+          el = $.el('iframe', {
             src: "//player.vimeo.com/video/" + a.dataset.uid + "?wmode=opaque"
           });
+          el.setAttribute("allowfullscreen", "true");
+          return el;
         },
         title: {
           api: function(uid) {
@@ -20077,10 +20060,6 @@ QR = (function() {
         return;
       }
       h1 = $('h1', resDoc);
-      QR.cleanNotifications();
-      if (Conf['Posting Success Notifications']) {
-        QR.notifications.push(new Notice('success', h1.textContent, 5));
-      }
       ref2 = h1.nextSibling.textContent.match(/thread:(\d+),no:(\d+)/), _ = ref2[0], threadID = ref2[1], postID = ref2[2];
       postID = +postID;
       threadID = +threadID || postID;
@@ -20112,6 +20091,10 @@ QR = (function() {
       } else {
         post.rm();
         QR.captcha.setup(d.activeElement === QR.nodes.status);
+      }
+      QR.cleanNotifications();
+      if (Conf['Posting Success Notifications']) {
+        QR.notifications.push(new Notice('success', h1.textContent, 5));
       }
       QR.cooldown.add(threadID, postID);
       URL = threadID === postID ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID : g.VIEW === 'index' && lastPostToThread && Conf['Open Post in New Tab'] ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID + "#p" + postID : void 0;
