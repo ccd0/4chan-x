@@ -32,7 +32,7 @@ $(eval $(shell node tools/pkgvars.js))
 version = $(shell node -p "JSON.parse(require('fs').readFileSync('version.json')).version")
 
 source_directories := \
- globals config css platform classes \
+ globals config platform classes css \
  Archive Filtering General Images Linkification \
  Menu Miscellaneous Monitoring Posting Quotelinks \
  main

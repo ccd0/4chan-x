@@ -141,7 +141,7 @@ $.onExists = (root, selector, cb) ->
       cb el
   observer.observe root, {childList: true, subtree: true}
 
-$.addStyle = (css, id, test='head') ->
+$.addStyle = (css, id, test='body') ->
   style = $.el 'style',
     textContent: css
   style.id = id if id?

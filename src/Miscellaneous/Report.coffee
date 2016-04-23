@@ -1,13 +1,15 @@
 Report =
+  css:
+    `<%= multiline(read('report.css')) %>`
+
   init: ->
     return unless (match = location.search.match /\bno=(\d+)/)
     Captcha.replace.init()
+    $.addStyle Report.css
     @postID = +match[1]
     $.ready @ready
 
   ready: ->
-    $.addStyle CSS.report
-
     Report.archive() if Conf['Archive Report']
 
     if (passAd = $ 'a[href="https://www.4chan.org/pass"]')

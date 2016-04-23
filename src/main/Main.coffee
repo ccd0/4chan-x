@@ -110,7 +110,7 @@ Main =
 
     switch hostname
       when 'www.4chan.org'
-        $.onExists doc, 'body', -> $.addStyle CSS.www
+        $.addStyle `<%= multiline(read('www.css')) %>`
         Captcha.replace.init()
         return
       when 'sys.4chan.org'
@@ -156,9 +156,6 @@ Main =
     g.threads = new SimpleDict()
     g.posts   = new SimpleDict()
 
-    # set up CSS when <head> is completely loaded
-    $.onExists doc, 'body', Main.initStyle
-
     # c.time 'All initializations'
     for [name, feature] in Main.features
       # c.time "#{name} initialization"
@@ -174,69 +171,6 @@ Main =
     # c.timeEnd 'All initializations'
 
     $.ready Main.initReady
-
-  initStyle: ->
-    return if !Main.isThisPageLegit()
-
-    # disable the mobile layout
-    $('link[href*=mobile]', d.head)?.disabled = true
-    $.addClass doc, 'fourchan-x', 'seaweedchan'
-    $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
-    $.addClass doc, $.engine if $.engine
-    $.onExists doc, '.ad-cnt', (ad) -> $.onExists ad, 'img', -> $.addClass doc, 'ads-loaded'
-    $.addClass doc, 'autohiding-scrollbar' if Conf['Autohiding Scrollbar']
-    $.ready ->
-      if d.body.clientHeight > doc.clientHeight and (window.innerWidth is doc.clientWidth) isnt Conf['Autohiding Scrollbar']
-        Conf['Autohiding Scrollbar'] = !Conf['Autohiding Scrollbar']
-        $.set 'Autohiding Scrollbar', Conf['Autohiding Scrollbar']
-        $.toggleClass doc, 'autohiding-scrollbar'
-    $.addStyle CSS.boards, 'fourchanx-css'
-    Main.bgColorStyle = $.el 'style', id: 'fourchanx-bgcolor-css'
-
-    keyboard = false
-    $.on d, 'mousedown', -> keyboard = false
-    $.on d, 'keydown', (e) -> keyboard = true if e.keyCode is 9 # tab
-    window.addEventListener 'focus', (-> doc.classList.toggle 'keyboard-focus', keyboard), true
-
-    Main.setClass()
-
-  setClass: ->
-    if g.VIEW is 'catalog'
-      $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
-      return
-
-    style          = 'yotsuba-b'
-    mainStyleSheet = $ 'link[title=switch]', d.head
-    styleSheets    = $$ 'link[rel="alternate stylesheet"]', d.head
-    setStyle = ->
-      $.rmClass doc, style
-      style = null
-      for styleSheet in styleSheets
-        if styleSheet.href is mainStyleSheet?.href
-          style = styleSheet.title.toLowerCase().replace('new', '').trim().replace /\s+/g, '-'
-          break
-      if style
-        $.addClass doc, style
-        $.rm Main.bgColorStyle
-      else
-        # Determine proper background color for dialogs if 4chan is using a special stylesheet.
-        div = $.el 'div',
-          className: 'reply'
-        div.style.cssText = 'position: absolute; visibility: hidden;'
-        $.add d.body, div
-        bgColor = window.getComputedStyle(div).backgroundColor
-        $.rm div
-        Main.bgColorStyle.textContent = """
-          .dialog, .suboption-list > div:last-of-type {
-            background-color: #{bgColor};
-          }
-        """
-        $.after $.id('fourchanx-css'), Main.bgColorStyle
-    setStyle()
-    return unless mainStyleSheet
-    new MutationObserver(setStyle).observe mainStyleSheet,
-      attributes: true
-      attributeFilter: ['href']
 
   initReady: ->
     # XXX Sometimes threads don't 404 but are left over as stubs containing one garbage reply post.
@@ -396,6 +330,7 @@ Main =
     ['Normalize URL',             NormalizeURL]
     ['Captcha Configuration',     Captcha.replace]
     ['Redirect',                  Redirect]
+    ['CSS Setup',                 CSS]
     ['Header',                    Header]
     ['Catalog Links',             CatalogLinks]
     ['Settings',                  Settings]
