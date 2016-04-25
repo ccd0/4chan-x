@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.11.31.1
+// @version      1.11.31.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -121,15 +121,20 @@
 
 var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, Sauce, Settings, ShimSet, SimpleDict, Thread, ThreadExcerpt, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, Volume;
 
-var Conf, E, c, d, doc, g;
+var Conf, E, c, d, doc, docSet, g;
 
 Conf = {};
 c    = console;
 d    = document;
 doc  = d.documentElement;
 
+// Workaround for userscript managers that run script before document.documentElement is set
+docSet = function() {
+  return (doc = d.documentElement);
+};
+
 g = {
-  VERSION:   '1.11.31.1',
+  VERSION:   '1.11.31.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -22198,10 +22203,7 @@ Main = (function() {
       }
       items['previousversion'] = void 0;
       return $.get(items, function(items) {
-        return $.asap((function() {
-          var doc;
-          return doc = d.documentElement;
-        }), function() {
+        return $.asap(docSet, function() {
           var ref1, val;
           if ($.cantSet) {
 
