@@ -1,9 +1,14 @@
-var Conf, E, c, d, doc, g;
+var Conf, E, c, d, doc, docSet, g;
 
 Conf = {};
 c    = console;
 d    = document;
 doc  = d.documentElement;
+
+// Workaround for userscript managers that run script before document.documentElement is set
+docSet = function() {
+  return (doc = d.documentElement);
+};
 
 g = {
   VERSION:   '<%= readJSON('/version.json').version %>',

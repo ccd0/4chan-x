@@ -65,7 +65,7 @@ Main =
     items[key] = undefined for key of Conf
     items['previousversion'] = undefined
     $.get items, (items) ->
-      $.asap (-> doc = d.documentElement), ->
+      $.asap docSet, ->
 
         # Don't hide the local storage warning behind a settings panel.
         if $.cantSet
