@@ -256,13 +256,13 @@ distready : dist $(wildcard dist/* dist/*/*)
 	echo -> $@
 
 .events2/push-web : .git/refs/heads/$(meta_distBranch) | .events2 distready
-	aws s3 cp builds/ s3://$(meta_awsBucket)/builds/ --recursive --exclude "*" --include "*.js" --cache-control "max-age=600" --content-type "application/javascript; charset=utf-8"
-	aws s3 cp builds/ s3://$(meta_awsBucket)/builds/ --recursive --exclude "*" --include "*.crx" --cache-control "max-age=600" --content-type "application/x-chrome-extension"
-	aws s3 cp builds/ s3://$(meta_awsBucket)/builds/ --recursive --exclude "*" --include "*.xml" --cache-control "max-age=600" --content-type "text/xml; charset=utf-8"
-	aws s3 cp builds/ s3://$(meta_awsBucket)/builds/ --recursive --exclude "*" --include "*.zip" --cache-control "max-age=600" --content-type "application/zip"
-	aws s3 cp img/ s3://$(meta_awsBucket)/img/ --recursive --cache-control "max-age=600"
-	aws s3 cp index.html s3://$(meta_awsBucket) --cache-control "max-age=600" --content-type "text/html; charset=utf-8"
-	aws s3 cp web.css s3://$(meta_awsBucket) --cache-control "max-age=600" --content-type "text/css; charset=utf-8"
+	aws s3 cp dist/builds/ s3://$(meta_awsBucket)/builds/ --recursive --exclude "*" --include "*.js" --cache-control "max-age=600" --content-type "application/javascript; charset=utf-8"
+	aws s3 cp dist/builds/ s3://$(meta_awsBucket)/builds/ --recursive --exclude "*" --include "*.crx" --cache-control "max-age=600" --content-type "application/x-chrome-extension"
+	aws s3 cp dist/builds/ s3://$(meta_awsBucket)/builds/ --recursive --exclude "*" --include "*.xml" --cache-control "max-age=600" --content-type "text/xml; charset=utf-8"
+	aws s3 cp dist/builds/ s3://$(meta_awsBucket)/builds/ --recursive --exclude "*" --include "*.zip" --cache-control "max-age=600" --content-type "application/zip"
+	aws s3 cp dist/img/ s3://$(meta_awsBucket)/img/ --recursive --cache-control "max-age=600"
+	aws s3 cp dist/index.html s3://$(meta_awsBucket) --cache-control "max-age=600" --content-type "text/html; charset=utf-8"
+	aws s3 cp dist/web.css s3://$(meta_awsBucket) --cache-control "max-age=600" --content-type "text/css; charset=utf-8"
 	echo -> $@
 
 .events2/push-store : .git/refs/tags/stable | .events2 distready node_modules/webstore-upload/package.json
