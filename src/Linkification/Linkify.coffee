@@ -146,7 +146,7 @@ Linkify =
 
     a = $.el 'a',
       className: 'linkify'
-      rel:       'nofollow noreferrer'
+      rel:       'noreferrer noopener'
       target:    '_blank'
       href:      text
 
