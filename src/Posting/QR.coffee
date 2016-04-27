@@ -51,7 +51,7 @@ QR =
         else
           QR.close()
 
-      Header.addShortcut sc
+      Header.addShortcut sc, 540
 
   initReady: ->
     $.off d, '4chanXInitFinished', @initReady

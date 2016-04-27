@@ -55,7 +55,7 @@ Header =
     $.sync 'Centered links',             @setLinkJustify
     $.sync 'Bottom Board List',          @setFooterVisibility
 
-    @addShortcut menuButton
+    @addShortcut menuButton, 900
 
     @menu.addEntry
       el: $.el 'span',
@@ -119,7 +119,7 @@ Header =
           cs.className = 'fa fa-leaf'
         $.on cs, 'click', () ->
           $.id('settingsWindowLink').click()
-        @addShortcut cs
+        @addShortcut cs, 810
 
     @enableDesktopNotifications()
 
@@ -495,11 +495,15 @@ Header =
     else
       top < 0
 
-  addShortcut: (el) ->
+  addShortcut: (el, index) ->
     shortcut = $.el 'span',
       className: 'shortcut brackets-wrap'
     $.add shortcut, el
-    $.prepend Header.shortcuts, shortcut
+    shortcut.dataset.index = index
+    for item in $$('[data-index]', Header.shortcuts) when +item.dataset.index > +index
+      $.before item, shortcut
+      return
+    $.add Header.shortcuts, shortcut
 
   rmShortcut: (el) ->
     $.rm el.parentElement

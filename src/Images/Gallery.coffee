@@ -13,7 +13,7 @@ Gallery =
 
     $.on el, 'click', @cb.toggle
 
-    Header.addShortcut el
+    Header.addShortcut el, 530
 
     Callbacks.Post.push
       name: 'Gallery'

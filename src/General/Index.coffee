@@ -32,7 +32,7 @@ Index =
       href: 'javascript:;'
       textContent: 'Refresh Index'
     $.on @button, 'click', -> Index.update()
-    Header.addShortcut @button, 1
+    Header.addShortcut @button, 590
 
     # Header "Index Navigation" submenu
     repliesEntry = el: UI.checkbox 'Show Replies',          'Show replies'
