@@ -47,6 +47,11 @@
   background-color: rgba(255, 255, 255, .14);
 }
 
+/* Fappe and Werk Tyme */
+:root.photon .indicator {
+  color: #DDD;
+}
+
 /* QR */
 .photon #dump-list::-webkit-scrollbar-thumb {
   background-color: #DDD;

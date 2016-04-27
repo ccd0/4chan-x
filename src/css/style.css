@@ -1108,12 +1108,11 @@ input[name="Default Volume"] {
   vertical-align: middle;
   margin: 0px;
 }
-/* Fappe Tyme */
+/* Fappe and Werk Tyme */
 :root.fappeTyme .thread > .noFile,
 :root.fappeTyme .threadContainer > .noFile {
   display: none;
 }
-/* Werk Tyme */
 :root.werkTyme .postContainer:not(.noFile) .fileThumb,
 :root.werkTyme .catalog-thumb:not(.deleted-file):not(.no-file),
 :root:not(.werkTyme) .werkTyme-filename {
@@ -1126,6 +1125,21 @@ input[name="Default Volume"] {
   text-align: center;
   -webkit-align-self: stretch;
   align-self: stretch;
+}
+.indicator {
+  background: rgba(255,0,0,0.8);
+  font-weight: bold;
+  display: inline-block;
+  min-width: 9px;
+  padding: 0px 2px;
+  text-align: center;
+  color: white;
+  border-radius: 2px;
+  cursor: pointer;
+}
+:root:not(.fappeTyme) #fappe-indicator,
+:root:not(.werkTyme) #werk-indicator {
+  display: none;
 }
 
 /* Index/Reply Navigation */

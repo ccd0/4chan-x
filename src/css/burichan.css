@@ -39,6 +39,11 @@
   background-color: rgba(255, 255, 255, .14);
 }
 
+/* Fappe and Werk Tyme */
+:root.burichan .indicator {
+  color: #D6DAF0;
+}
+
 /* QR */
 .burichan #dump-list::-webkit-scrollbar-thumb {
   background-color: #D6DAF0;

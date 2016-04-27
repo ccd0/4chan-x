@@ -20,6 +20,17 @@ FappeTyme =
         el:    el
         order: 97
 
+      indicator = $.el 'span',
+        className: 'indicator'
+        textContent: type[0]
+        title: "#{type} Tyme active"
+      $.on indicator, 'click', ->
+        check = FappeTyme.nodes[@parentNode.id.split('-')[0]]
+        check.checked = !check.checked
+        $.event 'change', null, check
+      Header.addShortcut indicator, 410
+      indicator.parentNode.id = "#{lc}-indicator"
+
     if Conf['Werk Tyme']
       $.sync 'werk', @set.bind(@, 'werk')
 
