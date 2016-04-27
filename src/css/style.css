@@ -312,6 +312,15 @@ audio.controls-added {
   margin-left: 3px;
   vertical-align: middle;
 }
+:root.shortcut-icons .native-settings {
+  font-size: 0;
+  color: transparent;
+  display: inline-block;
+  vertical-align: top;
+  height: 12px;
+  width: 14px;
+  background: url('//s.4cdn.org/image/favicon.ico') 0px -1px no-repeat;
+}
 #navbotright,
 #navtopright {
   display: none;

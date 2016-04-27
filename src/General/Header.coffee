@@ -116,7 +116,7 @@ Header =
           cs.className = 'fa fa-book'
         else
           cs.title = cs.textContent = '4chan Settings'
-          cs.className = 'fa fa-leaf'
+          cs.className = 'native-settings'
         $.on cs, 'click', () ->
           $.id('settingsWindowLink').click()
         @addShortcut cs, 810
