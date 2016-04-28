@@ -5,8 +5,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
-  "files": ["adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"]
+  "boards": ["adv", "f", "film", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
+  "files": ["adv", "f", "film", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"]
 }, {
   "uid": 4,
   "name": "Nyafuu Archive",
@@ -87,6 +87,6 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["f", "cm", "hm", "lgbt", "news", "trash", "y"],
+  "boards": ["f", "cm", "hm", "lgbt", "news", "qst", "trash", "y"],
   "files": []
 }]
