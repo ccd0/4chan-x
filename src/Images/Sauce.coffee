@@ -72,8 +72,7 @@ Sauce =
 
     nodes = []
     for link in Sauce.links when node = Sauce.createSauceLink link, @
-      # \u00A0 is nbsp
-      nodes.push $.tn('\u00A0'), node
+      nodes.push $.tn(' '), node
     $.add @file.text, nodes
 
   formatters:
