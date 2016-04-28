@@ -25,7 +25,6 @@ class Post
       nameBlock: if Conf['Anonymize'] then 'Anonymous' else @nodes.nameBlock.textContent.trim()
       subject:   @nodes.subject?.textContent or undefined
       name:      @nodes.name?.textContent
-      email:     if @nodes.email then decodeURIComponent @nodes.email.href[7..]
       tripcode:  @nodes.tripcode?.textContent
       uniqueID:  @nodes.uniqueID?.firstElementChild.textContent
       capcode:   @nodes.capcode?.textContent.replace '## ', ''

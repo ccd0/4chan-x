@@ -15,7 +15,7 @@ Anonymize =
     if tripcode
       $.rm tripcode
       delete @nodes.tripcode
-    if @info.email
+    if email
       $.replace email, name
       delete @nodes.email
 
