@@ -87,6 +87,6 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["f", "cm", "hm", "lgbt", "news", "trash", "y"],
+  "boards": ["f", "cm", "hm", "lgbt", "news", "qst", "trash", "y"],
   "files": []
 }]
