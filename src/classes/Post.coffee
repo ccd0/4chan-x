@@ -102,6 +102,9 @@ class Post
     @isHidden = false
 
     @clones = []
+    <% if (readJSON('/.tests_enabled')) { %>
+    return if arguments[3] is 'forBuildTest'
+    <% } %>
     if g.posts[@fullID]
       @isRebuilt = true
       @clones = g.posts[@fullID].clones

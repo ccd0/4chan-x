@@ -42,7 +42,7 @@ Build.Test =
           root = Build.post obj
           t2 = new Date().getTime()
           Build.Test.time += t2 - t1
-          post2 = new Post root, post.thread, post.board
+          post2 = new Post root, post.thread, post.board, 'forBuildTest'
           fail = false
 
           x = post.normalizedOriginal
@@ -71,8 +71,6 @@ Build.Test =
             c.log "#{post.fullID} correct"
           Build.Test.postsRemaining--
           Build.Test.report() if Build.Test.postsRemaining is 0
-          post2.isFetchedQuote = true
-          Main.callbackNodes 'Post', [post2]
 
   testAll: ->
     g.posts.forEach (post) ->
