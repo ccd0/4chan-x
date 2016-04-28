@@ -25,7 +25,7 @@ class Post
     textNodes = $.X './/text()', root2
     i = 0
     while node = textNodes.snapshotItem i++
-      node.data = node.data.replace /\s+/g, ' '
+      node.data = node.data.replace /\ +/g, ' '
       $.rm node if node.data is ''
     @normalizedOriginal = root2
     <% } %>
