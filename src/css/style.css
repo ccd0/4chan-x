@@ -89,9 +89,6 @@ body.hasDropDownNav{
 [hidden] {
   display: none !important;
 }
-.page-num {
-  margin-right: -8px;
-}
 .fileText a {
   unicode-bidi: -moz-isolate;
   unicode-bidi: -webkit-isolate;

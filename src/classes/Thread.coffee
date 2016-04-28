@@ -21,10 +21,10 @@ class Thread
     g.threads.push  @fullID, @
 
   setPage: (pageNum) ->
-    {info, quote} = @OP.nodes
-    unless icon = $ '.page-num', info
+    {info, reply} = @OP.nodes
+    unless (icon = $ '.page-num', info)
       icon = $.el 'span', className: 'page-num'
-      $.after quote, [$.tn(' '), icon]
+      $.replace reply.parentNode.previousSibling, [$.tn(' '), icon, $.tn(' ')]
     icon.title       = "This thread is on page #{pageNum} in the original index."
     icon.textContent = "[#{pageNum}]"
     @catalogView.nodes.pageCount.textContent = pageNum if @catalogView
