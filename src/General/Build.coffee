@@ -163,7 +163,7 @@ Build =
       textContent: Build.summaryText '', posts, files
       href: "/#{boardID}/thread/#{threadID}"
 
-  thread: (board, data, full) ->
+  thread: (board, data) ->
     Build.spoilerRange[board] = data.custom_spoiler
 
     if OP = board.posts[data.no]
@@ -176,7 +176,7 @@ Build =
         className: 'thread'
         id: "t#{data.no}"
 
-    $.add root, Build[if full then 'fullThread' else 'excerptThread'] board, data, OP
+    $.add root, Build.excerptThread(board, data, OP)
     root
 
   excerptThread: (board, data, OP) ->
@@ -189,8 +189,6 @@ Build =
         [data.replies, data.images]
       nodes.push Build.summary board.ID, data.no, posts, files
     nodes
-
-  fullThread: (board, data) -> Build.postFromObject data, board.ID
 
   catalogThread: (thread) ->
     {staticPath, gifIcon} = Build
