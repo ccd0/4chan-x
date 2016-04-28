@@ -12,7 +12,14 @@ class Post
       el.setAttribute 'href', href
     for el in $$ 'img[src]', root2
       el.src = el.src.replace /(spoiler-\w+)\d(\.png)$/, '$11$2'
-    Fourchan.code.call nodes: comment: $ '.postMessage', root2
+    for el in $$ 'pre.prettyprinted', root2
+      nodes = $.X './/br|.//wbr|.//text()', el
+      i = 0
+      nodes = (node while (node = nodes.snapshotItem i++))
+      $.rmAll el
+      $.add el, nodes
+      el.normalize()
+      $.rmClass el, 'prettyprinted'
     for el in $$ 'pre[style=""]', root2
       el.removeAttribute 'style'
     textNodes = $.X './/text()', root2
