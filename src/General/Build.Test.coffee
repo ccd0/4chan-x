@@ -5,7 +5,7 @@ Build.Test =
 
     a = $.el 'a',
       textContent: 'Test HTML building'
-    $.on a, 'click', @testOne
+    $.on a, 'click', @cb.testOne
     Menu.menu.addEntry
       el: a
       open: (post) ->
@@ -14,7 +14,7 @@ Build.Test =
 
     a2 = $.el 'a',
       textContent: 'Test HTML building'
-    $.on a2, 'click', @testAll
+    $.on a2, 'click', @cb.testAll
     Header.menu.addEntry
       el: a2
 
