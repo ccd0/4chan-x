@@ -15,56 +15,18 @@ Post.Clone = class extends Post
     for node in [root, $$('[id]', root)...]
       node.id = Post.Clone.prefix + node.id
     Post.Clone.prefix++
-    post = $ '.post',     root
-    info = $ '.postInfo', post
-    @nodes =
-      root: root
-      post: post
-      info: info
-      nameBlock: $ '.nameBlock', info
-      quote: $ '.postNum > a:nth-of-type(2)', info
-      comment: $ '.postMessage', post
-      quotelinks: []
 
-    # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
-    # https://connect.microsoft.com/IE/feedback/details/1198967/ie11-appendchild-provoke-an-error-on-an-htmlcollection
-    if $.engine is 'edge'
-      Object.defineProperty @nodes, 'backlinks',
-        configurable: true
-        enumerable:   true
-        get: -> info.getElementsByClassName 'backlink'
-    else
-      @nodes.backlinks = info.getElementsByClassName 'backlink'
-
-    unless @isReply
-      @nodes.reply = $ '.replylink', info
+    @nodes = @parseNodes root
 
     # Remove inlined posts inside of this post.
-    for inline  in $$ '.inline',  post
+    for inline  in $$ '.inline',  @nodes.post
       $.rm inline
-    for inlined in $$ '.inlined', post
+    for inlined in $$ '.inlined', @nodes.post
       $.rmClass inlined, 'inlined'
 
     root.hidden = false # post hiding
-    $.rmClass root, 'forwarded' # quote inlining
-    $.rmClass post, 'highlight' # keybind navigation, ID highlighting
-
-    if nodes.subject
-      @nodes.subject  = $ '.subject',     info
-    if nodes.name
-      @nodes.name     = $ '.name',        info
-    if nodes.email
-      @nodes.email    = $ '.useremail',   info
-    if nodes.tripcode
-      @nodes.tripcode = $ '.postertrip',  info
-    if nodes.uniqueID
-      @nodes.uniqueID = $ '.posteruid',   info
-    if nodes.capcode
-      @nodes.capcode  = $ '.capcode.hand', info
-    if nodes.flag
-      @nodes.flag     = $ '.flag, .countryFlag', info
-    if nodes.date
-      @nodes.date     = $ '.dateTime',    info
+    $.rmClass root,        'forwarded' # quote inlining
+    $.rmClass @nodes.post, 'highlight' # keybind navigation, ID highlighting
 
     @parseQuotes()
     @quotes = [@origin.quotes...]
@@ -75,7 +37,7 @@ Post.Clone = class extends Post
       @file = {}
       for key, val of @origin.file
         @file[key] = val
-      file = $ '.file', post
+      file = $ '.file', @nodes.post
       @file.text  = file.firstElementChild
       @file.link  = $ '.fileText > a, .fileText-original', file
       @file.thumb = $ '.fileThumb > [data-md5]', file

@@ -11,65 +11,26 @@ class Post
     @context = @
 
     root.dataset.fullID = @fullID
-    post = $ '.post',     root
-    info = $ '.postInfo', post
-    @nodes =
-      root: root
-      post: post
-      info: info
-      nameBlock: $ '.nameBlock', info
-      quote: $ '.postNum > a:nth-of-type(2)', info
-      comment: $ '.postMessage', post
-      links: []
-      quotelinks: []
 
-    # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
-    # https://connect.microsoft.com/IE/feedback/details/1198967/ie11-appendchild-provoke-an-error-on-an-htmlcollection
-    if $.engine is 'edge'
-      Object.defineProperty @nodes, 'backlinks',
-        configurable: true
-        enumerable:   true
-        get: -> info.getElementsByClassName 'backlink'
-    else
-      @nodes.backlinks = info.getElementsByClassName 'backlink'
+    @nodes = @parseNodes root
 
-    unless (@isReply = $.hasClass post, 'reply')
+    unless (@isReply = $.hasClass @nodes.post, 'reply')
       @thread.OP = @
-      @thread.isArchived = !!$ '.archivedIcon', info
-      @thread.isSticky   = !!$ '.stickyIcon', info
-      @thread.isClosed   = @thread.isArchived or !!$ '.closedIcon', info
+      @thread.isArchived = !!$ '.archivedIcon', @nodes.info
+      @thread.isSticky   = !!$ '.stickyIcon', @nodes.info
+      @thread.isClosed   = @thread.isArchived or !!$ '.closedIcon', @nodes.info
       @thread.kill() if @thread.isArchived
-      @nodes.reply = $ '.replylink', info
 
-    @info = {}
-    @info.nameBlock = if Conf['Anonymize']
-      'Anonymous'
-    else
-      @nodes.nameBlock.textContent.trim()
-    if subject        = $ '.subject',            info
-      @nodes.subject  = subject
-      @info.subject   = subject.textContent or undefined
-    if name           = $ '.name',               info
-      @nodes.name     = name
-      @info.name      = name.textContent
-    if email          = $ '.useremail',          info
-      @nodes.email    = email
-      @info.email     = decodeURIComponent email.href[7..]
-    if tripcode       = $ '.postertrip',         info
-      @nodes.tripcode = tripcode
-      @info.tripcode  = tripcode.textContent
-    if uniqueID       = $ '.posteruid',          info
-      @nodes.uniqueID = uniqueID
-      @info.uniqueID  = uniqueID.firstElementChild.textContent
-    if capcode        = $ '.capcode.hand',       info
-      @nodes.capcode  = capcode
-      @info.capcode   = capcode.textContent.replace '## ', ''
-    if flag           = $ '.flag, .countryFlag', info
-      @nodes.flag     = flag
-      @info.flag      = flag.title
-    if date           = $ '.dateTime',           info
-      @nodes.date     = date
-      @info.date      = new Date date.dataset.utc * 1000
+    @info =
+      nameBlock: if Conf['Anonymize'] then 'Anonymous' else @nodes.nameBlock.textContent.trim()
+      subject:   @nodes.subject?.textContent or undefined
+      name:      @nodes.name?.textContent
+      email:     if @nodes.email then decodeURIComponent @nodes.email.href[7..]
+      tripcode:  @nodes.tripcode?.textContent
+      uniqueID:  @nodes.uniqueID?.firstElementChild.textContent
+      capcode:   @nodes.capcode?.textContent.replace '## ', ''
+      flag:      @nodes.flag?.title
+      date:      if @nodes.date then new Date(@nodes.date.dataset.utc * 1000)
 
     @parseComment()
     @parseQuotes()
@@ -90,6 +51,40 @@ class Post
     @board.posts.push  @ID, @
     @thread.posts.push @ID, @
     g.posts.push   @fullID, @
+
+  parseNodes: (root) ->
+    post = $ '.post',     root
+    info = $ '.postInfo', post
+    nodes =
+      root:       root
+      post:       post
+      info:       info
+      subject:    $ '.subject',            info
+      name:       $ '.name',               info
+      email:      $ '.useremail',          info
+      tripcode:   $ '.postertrip',         info
+      uniqueID:   $ '.posteruid',          info
+      capcode:    $ '.capcode.hand',       info
+      flag:       $ '.flag, .countryFlag', info
+      date:       $ '.dateTime',           info
+      nameBlock:  $ '.nameBlock',          info
+      quote:      $ '.postNum > a:nth-of-type(2)', info
+      reply:      $ '.replylink',          info
+      comment:    $ '.postMessage', post
+      links:      []
+      quotelinks: []
+
+    # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
+    # https://connect.microsoft.com/IE/feedback/details/1198967/ie11-appendchild-provoke-an-error-on-an-htmlcollection
+    if $.engine is 'edge'
+      Object.defineProperty nodes, 'backlinks',
+        configurable: true
+        enumerable:   true
+        get: -> info.getElementsByClassName 'backlink'
+    else
+      nodes.backlinks = info.getElementsByClassName 'backlink'
+
+    nodes
 
   parseComment: ->
     # Merge text nodes and remove empty ones.
