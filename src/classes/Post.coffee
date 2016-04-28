@@ -3,31 +3,7 @@ class Post
 
   constructor: (root, @thread, @board) ->
     <% if (readJSON('/.tests_enabled')) { %>
-    root2 = root.cloneNode true
-    for el in $$ '.mobile', root2
-      $.rm el
-    for el in $$ 'a[href]', root2
-      href = el.href
-      href = href.replace /(^\w+:\/\/boards.4chan.org\/[^\/]+\/thread\/\d+)\/.*/, '$1'
-      el.setAttribute 'href', href
-    for el in $$ 'img[src]', root2
-      el.src = el.src.replace /(spoiler-\w+)\d(\.png)$/, '$11$2'
-    for el in $$ 'pre.prettyprinted', root2
-      nodes = $.X './/br|.//wbr|.//text()', el
-      i = 0
-      nodes = (node while (node = nodes.snapshotItem i++))
-      $.rmAll el
-      $.add el, nodes
-      el.normalize()
-      $.rmClass el, 'prettyprinted'
-    for el in $$ 'pre[style=""]', root2
-      el.removeAttribute 'style'
-    textNodes = $.X './/text()', root2
-    i = 0
-    while node = textNodes.snapshotItem i++
-      node.data = node.data.replace /\ +/g, ' '
-      $.rm node if node.data is ''
-    @normalizedOriginal = root2
+    @normalizedOriginal = Build.Test.normalize root
     <% } %>
 
     @ID      = +root.id[2..]
