@@ -60,7 +60,7 @@ Sauce =
     url = parts['url']
     url = Sauce.sandbox url if parts['sandbox']?
 
-    a = Sauce.link.cloneNode true
+    a = Sauce.link.cloneNode false
     a.href = url
     a.textContent = parts['text']
     a.removeAttribute 'target' if /^javascript:/i.test parts['url']
@@ -71,9 +71,21 @@ Sauce =
     return if @isClone or !@file
 
     nodes = []
-    for link in Sauce.links when node = Sauce.createSauceLink link, @
+    skipped = []
+    for link in Sauce.links
+      unless (node = Sauce.createSauceLink link, @)
+        node = Sauce.link.cloneNode false
+        skipped.push [link, node]
       nodes.push $.tn(' '), node
     $.add @file.text, nodes
+
+    if @board.ID is 'f'
+      observer = new MutationObserver =>
+        if @file.text.dataset.md5
+          for [link, node] in skipped when (node2 = Sauce.createSauceLink link, @)
+            $.replace node, node2
+          observer.disconnect()
+      observer.observe @file.text, {attributes: true}
 
   formatters:
     TURL:  (post) -> post.file.thumbURL
