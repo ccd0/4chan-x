@@ -309,6 +309,11 @@ Settings =
     changes = {}
     set = (key, value) ->
       data[key] = changes[key] = value
+    addSauces = (sauces) ->
+      if data['sauces']?
+        sauces = sauces.filter (s) -> data['sauces'].indexOf(s.match(/[^#;\s]+|$/)[0]) < 0
+        if sauces.length
+          set 'sauces', data['sauces'] + '\n\n' + sauces.join('\n')
     compareString = version.replace(/\d+/g, (x) -> ('0000'+x)[-5..])
     if compareString < '00001.00011.00008.00000'
       unless data['Fixed Thread Watcher']?
@@ -357,6 +362,15 @@ Settings =
     if compareString < '00001.00011.00030.00000'
       if data['Quote Threading'] and not data['Thread Quotes']?
         set 'Thread Quotes', true
+    if compareString < '00001.00011.00032.00000'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(/^(#?\s*)http:\/\/3d\.iqdb\.org\//mg, '$1//3d.iqdb.org/')
+      addSauces [
+        '#https://desustorage.org/_/search/image/%sMD5/'
+        '#https://boards.fireden.net/_/search/image/%sMD5/'
+        '#https://foolz.fireden.net/_/search/image/%sMD5/'
+        '#//www.gif-explode.com/%URL;types:gif'
+      ]
     changes
 
   loadSettings: (data, cb) ->

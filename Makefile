@@ -54,8 +54,6 @@ uses_tests_enabled := \
 
 imports_src/globals/globals.js := \
  version.json
-imports_src/config/Config.coffee := \
- src/Archive/archives.json
 imports_src/css/CSS.js := \
  node_modules/font-awesome/package.json
 imports_src/Monitoring/Favicon.coffee := \

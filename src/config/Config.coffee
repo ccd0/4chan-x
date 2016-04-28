@@ -713,26 +713,27 @@ Config =
     MD5: ''
 
   sauces: """
+    # Reverse image search:
     https://www.google.com/searchbyimage?image_url=%IMG&safe=off
-    //iqdb.org/?url=%IMG
-    http://eye.swfchan.com/search/?q=%name;types:swf;sandbox
-    #//tineye.com/search?url=%IMG
     #https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG
+    #//tineye.com/search?url=%IMG
+
+    # Specialized reverse image search:
+    //iqdb.org/?url=%IMG
+    #//3d.iqdb.org/?url=%IMG
     #//saucenao.com/search.php?url=%IMG
-    #http://3d.iqdb.org/?url=%IMG
-    # tools:
+
+    # "View Same" in archives:
+    http://eye.swfchan.com/search/?q=%name;types:swf;sandbox
+    #https://desustorage.org/_/search/image/%sMD5/
+    #https://archive.4plebs.org/_/search/image/%sMD5/
+    #https://boards.fireden.net/_/search/image/%sMD5/
+    #https://foolz.fireden.net/_/search/image/%sMD5/
+
+    # Other tools:
     #http://regex.info/exif.cgi?imgurl=%URL
     #//imgops.com/%URL;types:gif,jpg,png
-    # uploaders:
-    #//imgur.com/upload?url=%URL;types:gif,jpg,png,pdf;text:Upload to imgur
-    # "View Same" in archives:
-    #https://archive.4plebs.org/_/search/image/%sMD5/;text:View same on 4plebs
-    #https://archive.4plebs.org/%board/search/image/%sMD5/;text:View same on 4plebs /%board/;boards:<%=
-      readJSON('/src/Archive/archives.json').filter(function(x) {return x.uid === 3})[0].files.join(',')
-    %>
-    #https://rbt.asia/%board/image/%sMD5;text:View same on RBT /%board/;boards:<%=
-      readJSON('/src/Archive/archives.json').filter(function(x) {return x.uid === 8})[0].files.join(',')
-    %>
+    #//www.gif-explode.com/%URL;types:gif
   """
 
   FappeT:
