@@ -10,8 +10,6 @@ class Post
       href = el.href
       href = href.replace /(^\w+:\/\/boards.4chan.org\/[^\/]+\/thread\/\d+)\/.*/, '$1'
       el.setAttribute 'href', href
-    for el in $$ 'a[rel=canonical]', root2
-      el.removeAttribute 'rel'
     for el in $$ 'img[src]', root2
       el.src = el.src.replace /(spoiler-\w+)\d(\.png)$/, '$11$2'
     Fourchan.code.call nodes: comment: $ '.postMessage', root2
