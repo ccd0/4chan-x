@@ -330,7 +330,7 @@ $(foreach i,1 2 3 4,bump$(i)) : cleanrel
 beta : distready
 	git tag -af beta -m "$(meta_name) v$(version)."
 	cd dist && git merge --no-commit -s ours beta
-	cd dist && git checkout beta "builds/*-beta.*" LICENSE CHANGELOG.md img .gitignore .gitattributes
+	cd dist && git checkout beta "builds/*-beta.*" img .gitignore .gitattributes
 	cd dist && git commit -am "Move $(meta_name) v$(version) to beta channel."
 
 stable : distready
