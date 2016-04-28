@@ -33,12 +33,13 @@ class Post
     else
       @nodes.backlinks = info.getElementsByClassName 'backlink'
 
-    unless @isReply = $.hasClass post, 'reply'
+    unless (@isReply = $.hasClass post, 'reply')
       @thread.OP = @
       @thread.isArchived = !!$ '.archivedIcon', info
       @thread.isSticky   = !!$ '.stickyIcon', info
       @thread.isClosed   = @thread.isArchived or !!$ '.closedIcon', info
       @thread.kill() if @thread.isArchived
+      @nodes.reply = $ '.replylink', info
 
     @info = {}
     @info.nameBlock = if Conf['Anonymize']

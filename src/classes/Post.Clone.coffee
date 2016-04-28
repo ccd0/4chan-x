@@ -36,6 +36,9 @@ Post.Clone = class extends Post
     else
       @nodes.backlinks = info.getElementsByClassName 'backlink'
 
+    unless @isReply
+      @nodes.reply = $ '.replylink', info
+
     # Remove inlined posts inside of this post.
     for inline  in $$ '.inline',  post
       $.rm inline

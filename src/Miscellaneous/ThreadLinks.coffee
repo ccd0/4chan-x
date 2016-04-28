@@ -11,7 +11,7 @@ ThreadLinks =
 
   node: ->
     return if @isReply or @isClone
-    ThreadLinks.process $('.replylink', @nodes.info)
+    ThreadLinks.process @nodes.reply
 
   catalogNode: ->
     ThreadLinks.process @nodes.thumb.parentNode
