@@ -5,6 +5,7 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 ### v1.11.31
 
 **v1.11.31.3** *(2016-04-28)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.31.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.31.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- (pleebe) Archive list: add /film/ (board has since been deleted on 4chan).
 - (bstats) Archive list: add /qst/.
 
 **v1.11.31.2** *(2016-04-25)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.31.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.31.2/builds/4chan-X-noupdate.crx "Chromium version")]
