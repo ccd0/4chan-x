@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.31.2
+// @version      1.11.31.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.31.2',
+  VERSION:   '1.11.31.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -362,7 +362,7 @@ Config = (function() {
       filesize: '',
       MD5: ''
     },
-    sauces: "https://www.google.com/searchbyimage?image_url=%IMG&safe=off\n//iqdb.org/?url=%IMG\nhttp://eye.swfchan.com/search/?q=%name;types:swf;sandbox\n#//tineye.com/search?url=%IMG\n#https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//saucenao.com/search.php?url=%IMG\n#http://3d.iqdb.org/?url=%IMG\n# tools:\n#http://regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n# uploaders:\n#//imgur.com/upload?url=%URL;types:gif,jpg,png,pdf;text:Upload to imgur\n# \"View Same\" in archives:\n#https://archive.4plebs.org/_/search/image/%sMD5/;text:View same on 4plebs\n#https://archive.4plebs.org/%board/search/image/%sMD5/;text:View same on 4plebs /%board/;boards:adv,f,hr,o,pol,s4s,sp,tg,trv,tv,x\n#https://rbt.asia/%board/image/%sMD5;text:View same on RBT /%board/;boards:cgl,g,mu",
+    sauces: "https://www.google.com/searchbyimage?image_url=%IMG&safe=off\n//iqdb.org/?url=%IMG\nhttp://eye.swfchan.com/search/?q=%name;types:swf;sandbox\n#//tineye.com/search?url=%IMG\n#https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//saucenao.com/search.php?url=%IMG\n#http://3d.iqdb.org/?url=%IMG\n# tools:\n#http://regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n# uploaders:\n#//imgur.com/upload?url=%URL;types:gif,jpg,png,pdf;text:Upload to imgur\n# \"View Same\" in archives:\n#https://archive.4plebs.org/_/search/image/%sMD5/;text:View same on 4plebs\n#https://archive.4plebs.org/%board/search/image/%sMD5/;text:View same on 4plebs /%board/;boards:adv,f,film,hr,o,pol,s4s,sp,tg,trv,tv,x\n#https://rbt.asia/%board/image/%sMD5;text:View same on RBT /%board/;boards:cgl,g,mu",
     FappeT: {
       werk: false
     },
@@ -6272,7 +6272,7 @@ Redirect = (function() {
       return Redirect.data = o;
     },
     archives: [
-      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ] },
+      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "film", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "film", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ] },
       { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "c", "e", "news", "w", "wg", "wsr" ], "files": [ "c", "e", "news", "w", "wg", "wsr" ] },
       { "uid": 8, "name": "Rebecca Black Tech", "domain": "rbt.asia", "http": false, "https": true, "software": "fuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ] },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
@@ -6281,7 +6281,7 @@ Redirect = (function() {
       { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ], "files": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ] },
       { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v" ], "files": [] },
       { "uid": 5, "name": "Love is Over", "domain": "deploy.loveisover.me", "http": true, "https": false, "software": "foolfuuka", "boards": [ "c", "d", "e", "i", "lgbt", "t", "u" ], "files": [ "c", "d", "e", "i", "lgbt", "t", "u" ], "search": [] },
-      { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "trash", "y" ], "files": [] }
+      { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] }
     ],
     to: function(dest, data) {
       var archive;
