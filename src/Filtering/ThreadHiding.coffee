@@ -178,6 +178,8 @@ ThreadHiding =
     thread.isHidden = true
     Index.updateHideLabel() if Conf['JSON Index']
 
+    Header.scrollTo threadRoot
+
     return threadRoot.hidden = true unless makeStub
 
     ThreadHiding.makeStub thread, threadRoot
