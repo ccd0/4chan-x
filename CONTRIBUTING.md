@@ -7,11 +7,11 @@ You can submit a bug report / feature request either via your Github account or 
 If you're reporting a bug, the more detail you can give, the better. If I can't reproduce your bug, I probably won't be able to fix it. You can help by doing the following:
 
 1. Include precise steps to reproduce the problem, with the expected and actual results.
-2. Make sure your **browser**, **4chan X**, and (if applicable) **Greasemonkey** are up to date. Include the versions you're using in bug reports.
-3. Test if the bug occurs with 4chan X disabled and using the native extension. If it does, it's likely a problem with 4chan or your browser rather than with 4chan X.
-4. Open your console with Shift+Control+J (⇧⌘J on OS X Firefox, ⌘⌥J on OS X Chromium), and look for any error messages, especially ones that occur at the same time as the bug. Include these in your bug report. If you're using Firefox, be sure to check the browser console (Shift+Control+J), not the web console (Shift+Control+K) as errors may not show up in the latter.
-5. To test if the bug occurs under the default settings or only with specific settings, back up your settings and reset them using the **Export** and **Reset Settings** links in the settings panel. If the bug only occurs under specific settings, upload your exported settings to a site like https://paste.installgentoo.com/, and link to it in your bug report. If your settings contains sensitive information (e.g. personas), edit the text file manually.
-6. To check if a bug is due to a conflict with another extension, temporarily disable any other extensions and userscripts. If the bug goes away, turn them back on one by one until you find the one causing the problem.
+2. **Please mention any other extensions / scripts you are using.** To check if a bug is due to a conflict with another extension, temporarily disable any other extensions and userscripts. If the bug goes away, turn them back on one by one until you find the one causing the problem.
+3. Make sure your **browser**, **4chan X**, and (if applicable) **Greasemonkey** are up to date. Include the versions you're using in bug reports.
+4. Test if the bug occurs with 4chan X disabled and using the native extension. If it does, it's likely a problem with 4chan or your browser rather than with 4chan X.
+5. Open your console with Shift+Control+J (⇧⌘J on OS X Firefox, ⌘⌥J on OS X Chromium), and look for any error messages, especially ones that occur at the same time as the bug. Include these in your bug report. If you're using Firefox, be sure to check the browser console (Shift+Control+J), not the web console (Shift+Control+K) as errors may not show up in the latter.
+6. To test if the bug occurs under the default settings or only with specific settings, back up your settings and reset them using the **Export** and **Reset Settings** links in the settings panel. If the bug only occurs under specific settings, upload your exported settings to a site like https://paste.installgentoo.com/, and link to it in your bug report. If your settings contains sensitive information (e.g. personas), edit the text file manually.
 
 ## Development & Contribution
 
