@@ -187,7 +187,7 @@ Embedding =
         text: (_) -> _.title
     ,
       key: 'Gist'
-      regExp: /^\w+:\/\/gist\.github\.com\/(?:[\w\-]+\/)?(\w+)/
+      regExp: /^\w+:\/\/gist\.github\.com\/[\w\-]+\/(\w+)/
       el: (a) ->
         el = $.el 'iframe'
         el.setAttribute 'sandbox', 'allow-scripts'
