@@ -184,8 +184,9 @@ Keybinds =
         return unless threadRoot
         Keybinds.hl  0, threadRoot
       when Conf['Hide']
-        return unless thread
-        ThreadHiding.toggle thread if ThreadHiding.db
+        return unless thread and ThreadHiding.db
+        Header.scrollTo threadRoot
+        ThreadHiding.toggle thread
       when Conf['Previous Post Quoting You']
         return unless threadRoot and QuoteYou.db
         QuoteYou.cb.seek 'preceding'
