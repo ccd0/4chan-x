@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.31.3
+// @version      1.11.31.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.31.3',
+  VERSION:   '1.11.31.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1320,6 +1320,7 @@ boards:
 "}\n" +
 ":root.anti-autoplay .autoplay-removed {\n" +
 "  display: block !important;\n" +
+"  visibility: visible !important;\n" +
 "  min-width: 640px;\n" +
 "  min-height: 390px;\n" +
 "}\n" +
