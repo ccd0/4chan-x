@@ -2,6 +2,15 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.32
+
+**v1.11.32.0** *(2016-04-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.31.4.
+- Support searching the archive by MD5 on /f/, and using MD5 in Sauce links there.
+- Add indicator in header bar when Fappe or Werk Tyme are on.
+- Edit list of Sauce examples, and update 3d.iqdb.org links (no longer HTTP-only).
+- Bug fixes.
+
 ### v1.11.31
 
 **v1.11.31.4** *(2016-04-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.31.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.31.4/builds/4chan-X-noupdate.crx "Chromium version")]
