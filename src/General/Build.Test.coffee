@@ -40,8 +40,11 @@ Build.Test =
       el.removeAttribute 'style'
     textNodes = $.X './/text()', root2
     i = 0
-    while node = textNodes.snapshotItem i++
+    while (node = textNodes.snapshotItem i++)
       node.data = node.data.replace /\ +/g, ' '
+      # XXX https://a.4cdn.org/sci/thread/5942502.json, https://a.4cdn.org/news/thread/6.json, https://a.4cdn.org/wsg/thread/957536.json
+      node.data = node.data.replace /^\n+/g, '' if node.previousSibling?.nodeName is 'BR'
+      node.data = node.data.replace /\n+$/g, '' if node.nextSibling?.nodeName is 'BR'
       $.rm node if node.data is ''
     root2
 
