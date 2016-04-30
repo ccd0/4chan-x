@@ -1,11 +1,9 @@
 Flash =
   init: ->
     if g.BOARD.ID is 'f' and Conf['Enable Native Flash Embedding']
-      Callbacks.Thread.push
-        name: 'Flash Embedding'
-        cb:   @node
+      $.ready Flash.initReady
 
-  node: ->
+  initReady: ->
     if $.hasStorage
       $.global -> window.SWFEmbed.init() if JSON.parse(localStorage['4chan-settings'] or '{}').disableAll
     else
