@@ -142,6 +142,7 @@ audio.controls-added {
 }
 :root.anti-autoplay .autoplay-removed {
   display: block !important;
+  visibility: visible !important;
   min-width: 640px;
   min-height: 390px;
 }
