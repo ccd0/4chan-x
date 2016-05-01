@@ -166,7 +166,7 @@ Embedding =
 
   ordered_types: [
       key: 'audio'
-      regExp: /\.(?:mp3|ogg|wav)(?:\?|$)/i
+      regExp: /\.(?:mp3|oga|wav)(?:\?|$)/i
       style: ''
       el: (a) ->
         $.el 'audio',
@@ -378,14 +378,21 @@ Embedding =
       dummy: true
     ,
       key: 'video'
-      regExp: /\.(?:ogv|webm|mp4)(?:\?|$)/i
+      regExp: /\.(?:og[gv]|webm|mp4)(?:\?|$)/i
       style: 'max-width: 80vw; max-height: 80vh;'
       el: (a) ->
-        $.el 'video',
+        el = $.el 'video',
+          hidden:   true
           controls: true
           preload:  'auto'
           src:      a.dataset.href
           loop:     /^https?:\/\/i\.4cdn\.org\//.test a.dataset.href
+        $.on el, 'loadedmetadata', ->
+          if el.videoHeight is 0 and el.parentNode
+            $.replace el, Embedding.types.audio.el(a)
+          else
+            el.hidden = false
+        el
   ]
 
 return Embedding
