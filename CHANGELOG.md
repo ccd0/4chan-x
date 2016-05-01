@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.32
 
+**v1.11.32.1** *(2016-05-01)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Support embedding of .ogg files as either video or audio, as appropriate, and add embedding for .oga files.
+
 **v1.11.32.0** *(2016-04-30)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.31.4.
 - Support searching the archive by MD5 on /f/, and using MD5 in Sauce links there.
