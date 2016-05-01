@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.32.0
+// @version      1.11.32.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.32.0',
+  VERSION:   '1.11.32.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -13091,7 +13091,7 @@ Embedding = (function() {
     ordered_types: [
       {
         key: 'audio',
-        regExp: /\.(?:mp3|ogg|wav)(?:\?|$)/i,
+        regExp: /\.(?:mp3|oga|wav)(?:\?|$)/i,
         style: '',
         el: function(a) {
           return $.el('audio', {
@@ -13423,15 +13423,25 @@ Embedding = (function() {
         dummy: true
       }, {
         key: 'video',
-        regExp: /\.(?:ogv|webm|mp4)(?:\?|$)/i,
+        regExp: /\.(?:og[gv]|webm|mp4)(?:\?|$)/i,
         style: 'max-width: 80vw; max-height: 80vh;',
         el: function(a) {
-          return $.el('video', {
+          var el;
+          el = $.el('video', {
+            hidden: true,
             controls: true,
             preload: 'auto',
             src: a.dataset.href,
             loop: /^https?:\/\/i\.4cdn\.org\//.test(a.dataset.href)
           });
+          $.on(el, 'loadedmetadata', function() {
+            if (el.videoHeight === 0 && el.parentNode) {
+              return $.replace(el, Embedding.types.audio.el(a));
+            } else {
+              return el.hidden = false;
+            }
+          });
+          return el;
         }
       }
     ]
