@@ -382,8 +382,11 @@ Main =
       #{data.error}
       #{data.error.stack?.replace(data.error.toString(), '').trim() or ''}
     """
+    details += "\n\n#{data.html}" if data.html
     details = details.replace /file:\/{3}.+\//g, '' # Remove local file paths
+    details = details.trim()
     url = "<%= meta.newIssue.replace('%title', '#{encodeURIComponent title}').replace('%details', '#{encodeURIComponent details}') %>"
+    url = url[...<%= meta.newIssueMaxLength %>]
     <%= html('<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>') %>
 
   isThisPageLegit: ->

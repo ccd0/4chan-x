@@ -19,6 +19,7 @@ class Callbacks
         errors.push
           message: ['"', name, '" crashed on node ', @type, ' No.', node.ID, ' (', node.board, ').'].join('')
           error: err
+          html: node.nodes?.root?.outerHTML
 
     Main.handleErrors errors if errors
 
