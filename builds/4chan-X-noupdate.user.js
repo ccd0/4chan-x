@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.11.32.1
+// @version      1.11.32.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.32.1',
+  VERSION:   '1.11.32.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -4787,7 +4787,7 @@ Callbacks = (function() {
     };
 
     Callbacks.prototype.execute = function(node, keys) {
-      var err, errors, i, len, name, ref;
+      var err, errors, i, len, name, ref, ref1, ref2;
       if (keys == null) {
         keys = this.keys;
       }
@@ -4804,7 +4804,8 @@ Callbacks = (function() {
           }
           errors.push({
             message: ['"', name, '" crashed on node ', this.type, ' No.', node.ID, ' (', node.board, ').'].join(''),
-            error: err
+            error: err,
+            html: (ref1 = node.nodes) != null ? (ref2 = ref1.root) != null ? ref2.outerHTML : void 0 : void 0
           });
         }
       }
@@ -5250,7 +5251,7 @@ Fetcher = (function() {
     };
 
     Fetcher.prototype.parseArchivedPost = function(data, url, archive) {
-      var board, comment, greentext, i, j, key, o, post, ref, ref1, text, text2, thread, val;
+      var board, comment, greentext, i, j, key, o, post, ref, ref1, tag, text, text2, thread, val;
       if (post = g.posts[this.boardID + "." + this.postID]) {
         this.insert(post);
         return;
@@ -5265,14 +5266,19 @@ Fetcher = (function() {
         this.root.textContent = data.error;
         return;
       }
-      comment = (data.comment || '').split(/(\n|\[\/?(?:b|spoiler|code|moot|banned)\])/);
+      comment = (data.comment || '').split(/(\n|\[\/?(?:b|spoiler|code|moot|banned|fortune(?: color="#\w+")?|i|red|green|blue)\])/);
       comment = (function() {
         var k, len, results;
         results = [];
         for (i = k = 0, len = comment.length; k < len; i = ++k) {
           text = comment[i];
           if (i % 2 === 1) {
-            results.push(this.archiveTags[text]);
+            tag = this.archiveTags[text.replace(/\ .*\]/, ']')];
+            if (typeof tag === 'function') {
+              results.push(tag(text));
+            } else {
+              results.push(tag);
+            }
           } else {
             greentext = text[0] === '>';
             text = text.replace(/(\[\/?[a-z]+):lit(\])/g, '$1$2');
@@ -5403,6 +5409,38 @@ Fetcher = (function() {
       },
       '[/banned]': {
         innerHTML: "</strong>"
+      },
+      '[fortune]': function(text) {
+        return {
+          innerHTML: "<span class=\"fortune\" style=\"color:" + E(text.match(/#\w+|$/)[0]) + "\"><b>"
+        };
+      },
+      '[/fortune]': {
+        innerHTML: "</b></span>"
+      },
+      '[i]': {
+        innerHTML: "<span class=\"mu-i\">"
+      },
+      '[/i]': {
+        innerHTML: "</span>"
+      },
+      '[red]': {
+        innerHTML: "<span class=\"mu-r\">"
+      },
+      '[/red]': {
+        innerHTML: "</span>"
+      },
+      '[green]': {
+        innerHTML: "<span class=\"mu-g\">"
+      },
+      '[/green]': {
+        innerHTML: "</span>"
+      },
+      '[blue]': {
+        innerHTML: "<span class=\"mu-b\">"
+      },
+      '[/blue]': {
+        innerHTML: "</span>"
       }
     };
 
@@ -22657,8 +22695,13 @@ Main = (function() {
         title += " (+" + (errors.length - 1) + " other errors)";
       }
       details = "[Please describe the steps needed to reproduce this error.]\n\nScript: 4chan X ccd0 v" + g.VERSION + " " + $.platform + "\nUser agent: " + navigator.userAgent + "\nURL: " + location.href + "\n\n" + data.error + "\n" + (((ref = data.error.stack) != null ? ref.replace(data.error.toString(), '').trim() : void 0) || '');
+      if (data.html) {
+        details += "\n\n" + data.html;
+      }
       details = details.replace(/file:\/{3}.+\//g, '');
+      details = details.trim();
       url = "https://gitreports.com/issue/ccd0/4chan-x?issue_title=" + (encodeURIComponent(title)) + "&details=" + (encodeURIComponent(details));
+      url = url.slice(0, 8200);
       return {
         innerHTML: "<span class=\"report-error\"> [<a href=\"" + E(url) + "\" target=\"_blank\">report</a>]</span>"
       };
