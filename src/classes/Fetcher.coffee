@@ -123,10 +123,11 @@ class Fetcher
 
     # https://github.com/eksopl/fuuka/blob/master/Board/Yotsuba.pm#L413-452
     # https://github.com/eksopl/asagi/blob/master/src/main/java/net/easymodo/asagi/Yotsuba.java#L109-138
-    comment = (data.comment or '').split /(\n|\[\/?(?:b|spoiler|code|moot|banned|i|red|green|blue)\])/
+    comment = (data.comment or '').split /(\n|\[\/?(?:b|spoiler|code|moot|banned|fortune(?: color="#\w+")?|i|red|green|blue)\])/
     comment = for text, i in comment
       if i % 2 is 1
-        @archiveTags[text]
+        tag = @archiveTags[text.replace(/\ .*\]/, ']')]
+        if typeof tag is 'function' then tag(text) else tag
       else
         greentext = text[0] is '>'
         text = text.replace /(\[\/?[a-z]+):lit(\])/g, '$1$2'
@@ -200,6 +201,8 @@ class Fetcher
     '[/moot]':    <%= html('</div>') %>
     '[banned]':   <%= html('<strong style="color: red;">') %>
     '[/banned]':  <%= html('</strong>') %>
+    '[fortune]':  (text) -> <%= html('<span class="fortune" style="color:${text.match(/#\\w+|$/)[0]}"><b>') %>
+    '[/fortune]': <%= html('</b></span>') %>
     '[i]':        <%= html('<span class="mu-i">') %>
     '[/i]':       <%= html('</span>') %>
     '[red]':      <%= html('<span class="mu-r">') %>
