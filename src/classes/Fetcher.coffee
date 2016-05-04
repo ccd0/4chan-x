@@ -123,7 +123,7 @@ class Fetcher
 
     # https://github.com/eksopl/fuuka/blob/master/Board/Yotsuba.pm#L413-452
     # https://github.com/eksopl/asagi/blob/master/src/main/java/net/easymodo/asagi/Yotsuba.java#L109-138
-    comment = (data.comment or '').split /(\n|\[\/?(?:b|spoiler|code|moot|banned)\])/
+    comment = (data.comment or '').split /(\n|\[\/?(?:b|spoiler|code|moot|banned|i|red|green|blue)\])/
     comment = for text, i in comment
       if i % 2 is 1
         @archiveTags[text]
@@ -200,5 +200,13 @@ class Fetcher
     '[/moot]':    <%= html('</div>') %>
     '[banned]':   <%= html('<strong style="color: red;">') %>
     '[/banned]':  <%= html('</strong>') %>
+    '[i]':        <%= html('<span class="mu-i">') %>
+    '[/i]':       <%= html('</span>') %>
+    '[red]':      <%= html('<span class="mu-r">') %>
+    '[/red]':     <%= html('</span>') %>
+    '[green]':    <%= html('<span class="mu-g">') %>
+    '[/green]':   <%= html('</span>') %>
+    '[blue]':     <%= html('<span class="mu-b">') %>
+    '[/blue]':    <%= html('</span>') %>
 
 return Fetcher
