@@ -6,5 +6,5 @@ console.log(
 `$(eval name := ${pkg.name})
 $(eval meta_name := ${pkg.meta.name})
 $(eval meta_distBranch := ${pkg.meta.distBranch})
-$(eval meta_awsBucket := ${pkg.meta.awsBucket})
+$(eval meta_uploadPath := ${pkg.meta.uploadPath})
 `);

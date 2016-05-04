@@ -18,7 +18,7 @@
     "recaptchaKey": "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc",
     "youtubeAPIKey": "AIzaSyB5_zaen_-46Uhz1xGR-lz1YoUMHqCD6CE",
     "distBranch": "gh-pages",
-    "awsBucket": "4chan-x",
+    "uploadPath": "www.4chan-x.net:/var/www/html/",
     "matches": [
       "*://boards.4chan.org/*",
       "*://sys.4chan.org/*",
