@@ -121,8 +121,9 @@ class Fetcher
       @root.textContent = data.error
       return
 
-    # https://github.com/eksopl/fuuka/blob/master/Board/Yotsuba.pm#L413-452
-    # https://github.com/eksopl/asagi/blob/master/src/main/java/net/easymodo/asagi/Yotsuba.java#L109-138
+    # https://github.com/eksopl/asagi/blob/v0.4.0b74/src/main/java/net/easymodo/asagi/YotsubaAbstract.java#L82-L129
+    # https://github.com/FoolCode/FoolFuuka/blob/800bd090835489e7e24371186db6e336f04b85c0/src/Model/Comment.php#L368-L428
+    # https://github.com/bstats/b-stats/blob/6abe7bffaf6e5f523498d760e54b110df5331fbb/inc/classes/Yotsuba.php#L157-L168
     comment = (data.comment or '').split /(\n|\[\/?(?:b|spoiler|code|moot|banned|fortune(?: color="#\w+")?|i|red|green|blue)\])/
     comment = for text, i in comment
       if i % 2 is 1
