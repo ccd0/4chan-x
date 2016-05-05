@@ -226,6 +226,16 @@ Embedding =
         el.setAttribute "allowfullscreen", "true"
         el
     ,
+      key: 'openings.moe'
+      regExp: /^\w+:\/\/openings.moe\/\?video=([^&=]+\.webm)/
+      style: 'max-width: 80vw; max-height: 80vh;'
+      el: (a) ->
+        $.el 'video',
+          controls: true
+          preload:  'auto'
+          src:      "//openings.moe/video/#{a.dataset.uid}"
+          loop:     true
+    ,
       key: 'Pastebin'
       regExp: /^\w+:\/\/(?:\w+\.)?pastebin\.com\/(?!u\/)(?:[\w\.]+\?i\=)?(\w+)/
       httpOnly: true
