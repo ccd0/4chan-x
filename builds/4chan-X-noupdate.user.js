@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.11.32.2
+// @version      1.11.32.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.32.2',
+  VERSION:   '1.11.32.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -22688,20 +22688,28 @@ Main = (function() {
       return [message, error, context];
     },
     reportLink: function(errors) {
-      var data, details, ref, title, url;
+      var addDetails, data, details, title, url;
       data = errors[0];
       title = data.message;
       if (errors.length > 1) {
         title += " (+" + (errors.length - 1) + " other errors)";
       }
-      details = "[Please describe the steps needed to reproduce this error.]\n\nScript: 4chan X ccd0 v" + g.VERSION + " " + $.platform + "\nUser agent: " + navigator.userAgent + "\nURL: " + location.href + "\n\n" + data.error + "\n" + (((ref = data.error.stack) != null ? ref.replace(data.error.toString(), '').trim() : void 0) || '');
+      details = '';
+      addDetails = function(text) {
+        if (!(encodeURIComponent(title + details + text + '\n').length > 8110)) {
+          return details += text + '\n';
+        }
+      };
+      addDetails("[Please describe the steps needed to reproduce this error.]\n\nScript: 4chan X ccd0 v" + g.VERSION + " " + $.platform + "\nUser agent: " + navigator.userAgent + "\nURL: " + location.href);
+      addDetails('\n' + data.error);
+      if (data.error.stack) {
+        addDetails(data.error.stack.replace(data.error.toString(), '').trim());
+      }
       if (data.html) {
-        details += "\n\n" + data.html;
+        addDetails('\n' + data.html);
       }
       details = details.replace(/file:\/{3}.+\//g, '');
-      details = details.trim();
       url = "https://gitreports.com/issue/ccd0/4chan-x?issue_title=" + (encodeURIComponent(title)) + "&details=" + (encodeURIComponent(details));
-      url = url.slice(0, 8200);
       return {
         innerHTML: "<span class=\"report-error\"> [<a href=\"" + E(url) + "\" target=\"_blank\">report</a>]</span>"
       };
