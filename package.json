@@ -13,7 +13,7 @@
     "changelog": "https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md",
     "issues": "https://gitreports.com/issue/ccd0/4chan-x",
     "newIssue": "https://gitreports.com/issue/ccd0/4chan-x?issue_title=%title&details=%details",
-    "newIssueMaxLength": 8200,
+    "newIssueMaxLength": 8181,
     "appid": "lacclbnghgdicfifcamcmcnilckjamag",
     "chromeStoreID": "ohnjgmpcibpbafdlkimncjhflgedgpam",
     "recaptchaKey": "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc",

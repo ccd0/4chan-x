@@ -372,21 +372,22 @@ Main =
     data = errors[0]
     title  = data.message
     title += " (+#{errors.length - 1} other errors)" if errors.length > 1
-    details = """
+    details = ''
+    addDetails = (text) ->
+      unless encodeURIComponent(title + details + text + '\n').length > <%= meta.newIssueMaxLength - meta.newIssue.replace(/%(title|details)/, '').length %>
+        details += text + '\n'
+    addDetails """
       [Please describe the steps needed to reproduce this error.]
 
       Script: <%= meta.name %> <%= meta.fork %> v#{g.VERSION} #{$.platform}
       User agent: #{navigator.userAgent}
       URL: #{location.href}
-
-      #{data.error}
-      #{data.error.stack?.replace(data.error.toString(), '').trim() or ''}
     """
-    details += "\n\n#{data.html}" if data.html
+    addDetails '\n' + data.error
+    addDetails data.error.stack.replace(data.error.toString(), '').trim() if data.error.stack
+    addDetails '\n' + data.html if data.html
     details = details.replace /file:\/{3}.+\//g, '' # Remove local file paths
-    details = details.trim()
     url = "<%= meta.newIssue.replace('%title', '#{encodeURIComponent title}').replace('%details', '#{encodeURIComponent details}') %>"
-    url = url[...<%= meta.newIssueMaxLength %>]
     <%= html('<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>') %>
 
   isThisPageLegit: ->
