@@ -254,6 +254,7 @@ distready : dist $(wildcard dist/* dist/*/*)
 	echo -> $@
 
 .events2/push-web : .git/refs/heads/$(meta_distBranch) | .events2 distready
+	git push web --tags -f
 	git push web $(meta_distBranch)
 	echo -> $@
 
