@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.32
 
+**v1.11.32.4** *(2016-05-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Increase margin on Fappe/Werk Tyme indicators.
+
 **v1.11.32.3** *(2016-05-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix bug in crash reporting from v1.11.32.2.
 
