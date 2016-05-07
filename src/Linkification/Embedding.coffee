@@ -166,13 +166,36 @@ Embedding =
 
   ordered_types: [
       key: 'audio'
-      regExp: /\.(?:mp3|oga|wav)(?:\?|$)/i
+      regExp: /^[^?#]+\.(?:mp3|oga|wav)(?:[?#]|$)/i
       style: ''
       el: (a) ->
         $.el 'audio',
           controls:    true
           preload:     'auto'
           src:         a.dataset.href
+    ,
+      key: 'image'
+      regExp: /^[^?#]+\.(?:gif|png|jpg|jpeg|bmp)(?:[?#]|$)/i
+      style: ''
+      el: (a) ->
+        $.el 'div', <%= html('<a target="_blank" href="${a.dataset.href}"><img src="${a.dataset.href}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
+    ,
+      key: 'video'
+      regExp: /^[^?#]+\.(?:og[gv]|webm|mp4)(?:[?#]|$)/i
+      style: 'max-width: 80vw; max-height: 80vh;'
+      el: (a) ->
+        el = $.el 'video',
+          hidden:   true
+          controls: true
+          preload:  'auto'
+          src:      a.dataset.href
+          loop:     /^https?:\/\/i\.4cdn\.org\//.test a.dataset.href
+        $.on el, 'loadedmetadata', ->
+          if el.videoHeight is 0 and el.parentNode
+            $.replace el, Embedding.types.audio.el(a)
+          else
+            el.hidden = false
+        el
     ,
       key: 'Dailymotion'
       regExp:  /^\w+:\/\/(?:(?:www\.)?dailymotion\.com\/(?:embed\/)?video|dai\.ly)\/([A-Za-z0-9]+)[^?]*(.*)/
@@ -198,12 +221,6 @@ Embedding =
         api: (uid) -> "https://api.github.com/gists/#{uid}"
         text: ({files}) ->
           return file for file of files when files.hasOwnProperty file
-    ,
-      key: 'image'
-      regExp: /\.(?:gif|png|jpg|jpeg|bmp)(?:\?|$)/i
-      style: ''
-      el: (a) ->
-        $.el 'div', <%= html('<a target="_blank" href="${a.dataset.href}"><img src="${a.dataset.href}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
     ,
       key: 'InstallGentoo'
       regExp: /^\w+:\/\/paste\.installgentoo\.com\/view\/(?:raw\/|download\/|embed\/)?(\w+)/
@@ -376,28 +393,6 @@ Embedding =
           preload: 'auto'
         type = if el.canPlayType 'audio/ogg' then 'ogg' else 'mp3'
         el.src = "https://clyp.it/#{a.dataset.uid}.#{type}"
-        el
-    ,
-      # dummy entries: not implemented but included to prevent them being wrongly embedded as a subsequent type
-      key: 'Loopvid-dummy'
-      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\//
-      dummy: true
-    ,
-      key: 'video'
-      regExp: /\.(?:og[gv]|webm|mp4)(?:\?|$)/i
-      style: 'max-width: 80vw; max-height: 80vh;'
-      el: (a) ->
-        el = $.el 'video',
-          hidden:   true
-          controls: true
-          preload:  'auto'
-          src:      a.dataset.href
-          loop:     /^https?:\/\/i\.4cdn\.org\//.test a.dataset.href
-        $.on el, 'loadedmetadata', ->
-          if el.videoHeight is 0 and el.parentNode
-            $.replace el, Embedding.types.audio.el(a)
-          else
-            el.hidden = false
         el
   ]
 
