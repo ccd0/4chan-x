@@ -196,6 +196,17 @@ Embedding =
             el.hidden = false
         el
     ,
+      key: 'Clyp'
+      regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w+)/
+      style: ''
+      el: (a) ->
+        el = $.el 'audio',
+          controls: true
+          preload: 'auto'
+        type = if el.canPlayType 'audio/ogg' then 'ogg' else 'mp3'
+        el.src = "https://clyp.it/#{a.dataset.uid}.#{type}"
+        el
+    ,
       key: 'Dailymotion'
       regExp:  /^\w+:\/\/(?:(?:www\.)?dailymotion\.com\/(?:embed\/)?video|dai\.ly)\/([A-Za-z0-9]+)[^?]*(.*)/
       el: (a) ->
@@ -207,6 +218,12 @@ Embedding =
       title:
         api: (uid) -> "https://api.dailymotion.com/video/#{uid}"
         text: (_) -> _.title
+    ,
+      key: 'Gfycat'
+      regExp: /^\w+:\/\/(?:www\.)?gfycat\.com\/(?:iframe\/)?(\w+)/
+      el: (a) ->
+        div = $.el 'iframe',
+          src: "//gfycat.com/iframe/#{a.dataset.uid}"
     ,
       key: 'Gist'
       regExp: /^\w+:\/\/gist\.github\.com\/[\w\-]+\/(\w+)/
@@ -227,12 +244,6 @@ Embedding =
         $.el 'iframe',
           src: "https://paste.installgentoo.com/view/embed/#{a.dataset.uid}"
     ,
-      key: 'Twitter'
-      regExp: /^\w+:\/\/(?:www\.)?twitter\.com\/(\w+\/status\/\d+)/
-      el: (a) -> 
-        $.el 'iframe',
-          src: "https://twitframe.com/show?url=https://twitter.com/#{a.dataset.uid}"
-    ,
       key: 'LiveLeak'
       regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*i=(\w+)/
       httpOnly: true
@@ -242,7 +253,44 @@ Embedding =
         el.setAttribute "allowfullscreen", "true"
         el
     ,
-      key: 'openings.moe'
+      key: 'Loopvid'
+      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|pc|gc)\/[\w\-\/]+(,[\w\-\/]+)*|fc\/\w+\/\d+)/
+      style: 'max-width: 80vw; max-height: 80vh;'
+      el: (a) ->
+        el = $.el 'video',
+          controls: true
+          preload:  'auto'
+          loop:     true
+        [_, host, names] = a.dataset.uid.match /(\w+)\/(.*)/
+        types = switch host
+          when 'gd', 'wu', 'fc' then ['']
+          when 'gc' then ['giant', 'fat', 'zippy']
+          else ['.webm', '.mp4']
+        for name in names.split ','
+          for type in types
+            base = "#{name}#{type}"
+            url = switch host
+              # list from src/common.py at http://loopvid.appspot.com/source.html
+              when 'pf' then "https://web.archive.org/web/2/http://a.pomf.se/#{base}"
+              when 'kd' then "http://kastden.org/loopvid/#{base}"
+              when 'lv' then "http://kastden.org/_loopvid_media/lv/#{base}"
+              when 'gd' then "https://docs.google.com/uc?export=download&id=#{base}"
+              when 'gh' then "https://googledrive.com/host/#{base}"
+              when 'db' then "https://dl.dropboxusercontent.com/u/#{base}"
+              when 'dx' then "https://dl.dropboxusercontent.com/#{base}"
+              when 'nn' then "http://naenara.eu/loopvids/#{base}"
+              when 'cp' then "https://copy.com/#{base}"
+              when 'wu' then "http://webmup.com/#{base}/vid.webm"
+              when 'ig' then "https://i.imgur.com/#{base}"
+              when 'ky' then "https://kiyo.me/#{base}"
+              when 'mf' then "https://d.maxfile.ro/#{base}"
+              when 'pc' then "http://a.pomf.cat/#{base}"
+              when 'fc' then "//i.4cdn.org/#{base}.webm"
+              when 'gc' then "https://#{type}.gfycat.com/#{name}.webm"
+            $.add el, $.el 'source', src: url
+        el
+    ,
+      key: 'Openings.moe'
       regExp: /^\w+:\/\/openings.moe\/\?video=([^&=]+\.webm)/
       style: 'max-width: 80vw; max-height: 80vh;'
       el: (a) ->
@@ -258,12 +306,6 @@ Embedding =
       el: (a) ->
         div = $.el 'iframe',
           src: "http://pastebin.com/embed_iframe.php?i=#{a.dataset.uid}"
-    ,
-      key: 'Gfycat'
-      regExp: /^\w+:\/\/(?:www\.)?gfycat\.com\/(?:iframe\/)?(\w+)/
-      el: (a) ->
-        div = $.el 'iframe',
-          src: "//gfycat.com/iframe/#{a.dataset.uid}"
     ,
       key: 'SoundCloud'
       regExp: /^\w+:\/\/(?:www\.)?(?:soundcloud\.com\/|snd\.sc\/)([\w\-\/]+)/
@@ -293,6 +335,12 @@ Embedding =
           src: url
         el.setAttribute "allowfullscreen", "true"
         el
+    ,
+      key: 'Twitter'
+      regExp: /^\w+:\/\/(?:www\.)?twitter\.com\/(\w+\/status\/\d+)/
+      el: (a) ->
+        $.el 'iframe',
+          src: "https://twitframe.com/show?url=https://twitter.com/#{a.dataset.uid}"
     ,
       key: 'Vocaroo'
       regExp: /^\w+:\/\/(?:www\.)?vocaroo\.com\/i\/(\w+)/
@@ -345,54 +393,6 @@ Embedding =
           for item in data.items when item.id is uid
             return item.snippet.title
           'Not Found'
-    ,
-      key: 'Loopvid'
-      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|pc|gc)\/[\w\-\/]+(,[\w\-\/]+)*|fc\/\w+\/\d+)/
-      style: 'max-width: 80vw; max-height: 80vh;'
-      el: (a) ->
-        el = $.el 'video',
-          controls: true
-          preload:  'auto'
-          loop:     true
-        [_, host, names] = a.dataset.uid.match /(\w+)\/(.*)/
-        types = switch host
-          when 'gd', 'wu', 'fc' then ['']
-          when 'gc' then ['giant', 'fat', 'zippy']
-          else ['.webm', '.mp4']
-        for name in names.split ','
-          for type in types
-            base = "#{name}#{type}"
-            url = switch host
-              # list from src/common.py at http://loopvid.appspot.com/source.html
-              when 'pf' then "https://web.archive.org/web/2/http://a.pomf.se/#{base}"
-              when 'kd' then "http://kastden.org/loopvid/#{base}"
-              when 'lv' then "http://kastden.org/_loopvid_media/lv/#{base}"
-              when 'gd' then "https://docs.google.com/uc?export=download&id=#{base}"
-              when 'gh' then "https://googledrive.com/host/#{base}"
-              when 'db' then "https://dl.dropboxusercontent.com/u/#{base}"
-              when 'dx' then "https://dl.dropboxusercontent.com/#{base}"
-              when 'nn' then "http://naenara.eu/loopvids/#{base}"
-              when 'cp' then "https://copy.com/#{base}"
-              when 'wu' then "http://webmup.com/#{base}/vid.webm"
-              when 'ig' then "https://i.imgur.com/#{base}"
-              when 'ky' then "https://kiyo.me/#{base}"
-              when 'mf' then "https://d.maxfile.ro/#{base}"
-              when 'pc' then "http://a.pomf.cat/#{base}"
-              when 'fc' then "//i.4cdn.org/#{base}.webm"
-              when 'gc' then "https://#{type}.gfycat.com/#{name}.webm"
-            $.add el, $.el 'source', src: url
-        el
-    ,
-      key: 'Clyp'
-      regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w+)/
-      style: ''
-      el: (a) ->
-        el = $.el 'audio',
-          controls: true
-          preload: 'auto'
-        type = if el.canPlayType 'audio/ogg' then 'ogg' else 'mp3'
-        el.src = "https://clyp.it/#{a.dataset.uid}.#{type}"
-        el
   ]
 
 return Embedding
