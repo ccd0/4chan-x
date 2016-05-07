@@ -383,10 +383,6 @@ Embedding =
       regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\//
       dummy: true
     ,
-      key: 'MediaFire-dummy'
-      regExp: /^\w+:\/\/(?:www\.)?mediafire.com\//
-      dummy: true
-    ,
       key: 'video'
       regExp: /\.(?:og[gv]|webm|mp4)(?:\?|$)/i
       style: 'max-width: 80vw; max-height: 80vh;'
