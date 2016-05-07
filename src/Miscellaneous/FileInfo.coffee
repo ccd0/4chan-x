@@ -26,6 +26,9 @@ FileInfo =
         <%= html('${s}') %>
       ''
     $.extend outputNode, <%= html('@{output}') %>
+    for a in $$ '.download-button', outputNode
+      $.on a, 'click', ImageCommon.download
+    return
 
   formatters:
     t: -> <%= html('${this.file.url.match(/[^\/]*$/)[0]}') %>
@@ -40,6 +43,7 @@ FileInfo =
       else
         <%= html('<span class="fnswitch"><span class="fntrunc">${shortname}</span><span class="fnfull">${fullname}</span></span>') %>
     N: -> <%= html('${this.file.name}') %>
+    d: -> <%= html('<a href="${this.file.url}" download="${this.file.name}" class="fa fa-download download-button"></a>') %>
     p: -> <%= html('?{this.file.isSpoiler}{Spoiler, }') %>
     s: -> <%= html('${this.file.size}') %>
     B: -> <%= html('${Math.round(this.file.sizeInBytes)} Bytes') %>
