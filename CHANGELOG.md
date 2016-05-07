@@ -129,7 +129,7 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 **v1.11.27.0** *(2016-02-27)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.27.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.27.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.26.5.
-- (paradox460) Multiline dumplist and related improvements.
+- (paradox460) Multiline dumplist and related improvements. (If you prefer the old single-line dumplist, add `#dump-list {flex-wrap: nowrap;}` to custom CSS.)
 - (vampiricwulf) Show Purge Position in place of Page Count on /f/.
 - Add `Beep Quoting You` to updater options (default: off). Beeps when someone replies to you in another tab.
 
