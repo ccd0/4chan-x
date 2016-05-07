@@ -9,10 +9,9 @@ Build =
       {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','}[c]
 
   shortFilename: (filename) ->
-    threshold = 30
     ext = filename.match(/\.?[^\.]*$/)[0]
-    if filename.length - ext.length > threshold
-      "#{filename[...threshold - 5]}(...)#{ext}"
+    if filename.length - ext.length > 30
+      "#{filename.match(/(?:[\uD800-\uDBFF][\uDC00-\uDFFF]|[^]){0,25}/)[0]}(...)#{ext}"
     else
       filename
 
