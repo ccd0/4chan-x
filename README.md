@@ -62,7 +62,7 @@ Several WebKitGTK+ based browsers have support for userscripts and can run 4chan
 New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please [report](https://github.com/ccd0/4chan-x/issues?q=is%3Aopen+sort%3Aupdated-desc) any issues you find, and be sure to mention which version you're using. You should back up your settings regularly to prevent them from being lost due to bugs.
 
 To install the current **beta** version but get updates from the **stable** channel (for example, if just you want a particular recent feature):
-- [Install userscript](https://github.com/ccd0/4chan-x/raw/beta/builds/4chan-X.user.js) (use with Greasemonkey / Tampermonkey / JS Blocker / etc.)
+- [Install userscript](https://github.com/ccd0/4chan-x/raw/beta/builds/4chan-X.user.js) (use with Greasemonkey / Violentmonkey / Tampermonkey / JS Blocker / etc.)
 - [Download Chrome extension](https://github.com/ccd0/4chan-x/raw/beta/builds/4chan-X.crx) (download and drag to `chrome://extensions`)
 
 To install the **beta** version and get updates whenever there's a new **beta** version:
