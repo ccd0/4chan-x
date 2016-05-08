@@ -8,7 +8,7 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 - Based on v1.11.32.5.
 - Add new option `%d` to `File Info Formatting` to add a one-click download button.
 - Add openings.moe embedding, and update embedding in general.
-- Work around issue causing scrolling to the top of the page on thread updates / expanding all images for Chrome Dev + Tampermonkey users.
+- Work around issue causing scrolling to the top of the page on thread updates / expanding all images for Chrome 52 + Tampermonkey 4.0 users.
 - Minor bugfixes.
 
 ### v1.11.32
