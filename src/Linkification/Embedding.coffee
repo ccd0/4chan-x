@@ -318,6 +318,7 @@ Embedding =
     ,
       key: 'StrawPoll'
       regExp: /^\w+:\/\/(?:www\.)?strawpoll\.me\/(?:embed_\d+\/)?(\d+(?:\/r)?)/
+      httpOnly: true
       style: 'border: 0; width: 600px; height: 406px;'
       el: (a) ->
         $.el 'iframe',
