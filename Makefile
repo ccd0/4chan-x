@@ -314,10 +314,14 @@ wrapped : src/meta/npm-shrinkwrap.json
 	$(call CAT,$<,npm-shrinkwrap.json)
 	npm install
 
-$(foreach i,1 2 3 4,bump$(i)) : cleanrel
-	$(MAKE) wrapped
+$(foreach i,1 2 3 4,bump$(i)) :
 	node tools/bump.js $(subst bump,,$@)
 	$(MAKE) all
+	git add builds
+	$(MAKE) cleanrel
+	$(MAKE) wrapped
+	$(MAKE) all
+	git diff --quiet -- builds
 	$(MAKE) tag
 
 beta : distready
