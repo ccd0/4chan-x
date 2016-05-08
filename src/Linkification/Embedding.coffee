@@ -35,7 +35,7 @@ Embedding =
 
   services: (link) ->
     {href} = link
-    for type in Embedding.ordered_types when match = type.regExp.exec href
+    for type in Embedding.ordered_types when (match = type.regExp.exec href)
       return {key: type.key, uid: match[1], options: match[2], link}
     return
 
