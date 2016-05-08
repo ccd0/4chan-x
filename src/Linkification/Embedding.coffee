@@ -302,10 +302,9 @@ Embedding =
     ,
       key: 'Pastebin'
       regExp: /^\w+:\/\/(?:\w+\.)?pastebin\.com\/(?!u\/)(?:[\w\.]+\?i\=)?(\w+)/
-      httpOnly: true
       el: (a) ->
         div = $.el 'iframe',
-          src: "http://pastebin.com/embed_iframe.php?i=#{a.dataset.uid}"
+          src: "//pastebin.com/embed_iframe.php?i=#{a.dataset.uid}"
     ,
       key: 'SoundCloud'
       regExp: /^\w+:\/\/(?:www\.)?(?:soundcloud\.com\/|snd\.sc\/)([\w\-\/]+)/
