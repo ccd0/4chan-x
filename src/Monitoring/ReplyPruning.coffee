@@ -88,6 +88,7 @@ ReplyPruning =
     return
 
   update: ->
+    hidden1 = ReplyPruning.hidden
     hidden2 = if ReplyPruning.active
       Math.max(ReplyPruning.total - +Conf["Max Replies"], 0)
     else
@@ -124,7 +125,7 @@ ReplyPruning =
     ReplyPruning.summary.hidden = (ReplyPruning.total <= +Conf["Max Replies"])
 
     # Maintain position in thread when posts are added/removed above
-    if (boardTop = Header.getTopOf $('.board')) < 0
-      window.scroll window.scrollX, Math.max(d.body.clientHeight - oldPos, window.scrollY + boardTop)
+    if hidden1 isnt hidden2 and (boardTop = Header.getTopOf $('.board')) < 0
+      window.scrollBy 0, Math.max(d.body.clientHeight - oldPos, window.scrollY + boardTop) - window.scrollY
 
 return ReplyPruning
