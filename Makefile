@@ -209,7 +209,7 @@ testbuilds/$(name).zip : testbuilds/$(name)-noupdate.crx.zip
 builds/% : testbuilds/% | builds
 	$(CP)
 
-test.html : README.md template.jst tools/markdown.js node_modules/marked/package.json node_modules/lodash.template/package.json
+test.html : README.md template.jst tools/markdown.js node_modules/markdown-it/package.json node_modules/markdown-it-anchor/package.json node_modules/lodash.template/package.json
 	node tools/markdown.js
 
 index.html : test.html
