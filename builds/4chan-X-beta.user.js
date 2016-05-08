@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.32.5
+// @version      1.11.33.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.32.5',
+  VERSION:   '1.11.33.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -7429,11 +7429,10 @@ Build = (function() {
       });
     },
     shortFilename: function(filename) {
-      var ext, threshold;
-      threshold = 30;
+      var ext;
       ext = filename.match(/\.?[^\.]*$/)[0];
-      if (filename.length - ext.length > threshold) {
-        return filename.slice(0, threshold - 5) + "(...)" + ext;
+      if (filename.length - ext.length > 30) {
+        return (filename.match(/(?:[\uD800-\uDBFF][\uDC00-\uDFFF]|[^]){0,25}/)[0]) + "(...)" + ext;
       } else {
         return filename;
       }
@@ -10225,7 +10224,7 @@ Settings = (function() {
     advanced: function(section) {
       var applyCSS, archBoards, archive, boardID, boardOptions, boardSelect, boards, customCSS, files, i, input, inputs, interval, item, items, j, k, l, len, len1, len2, len3, len4, len5, len6, m, n, name, o, q, r, ref, ref1, ref2, ref3, ref4, ref5, ref6, row, rows, software, ta, table, uid, warning, withCredentials;
       $.extend(section, {
-        innerHTML: "<fieldset><legend>Archiver</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><button id=\"apply-css\">Apply CSS</button><textarea name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"
+        innerHTML: "<fieldset><legend>Archiver</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><button id=\"apply-css\">Apply CSS</button><textarea name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"
       });
       ref = $$('.warning', section);
       for (j = 0, len = ref.length; j < len; j++) {
@@ -11695,7 +11694,7 @@ ImageCommon = (function() {
             _this.href = URL.createObjectURL(blob);
             return _this.click();
           } else {
-            return new Notice('error', "Could not download " + _this.href, 30);
+            return new Notice('warning', "Could not download " + _this.href, 30);
           }
         };
       })(this));
@@ -11875,12 +11874,12 @@ ImageExpand = (function() {
       }
       if (doc.contains(el)) {
         if (bottom <= 0) {
-          window.scroll(0, scrollY + d.body.clientHeight - oldHeight);
+          window.scrollBy(0, scrollY - window.scrollY + d.body.clientHeight - oldHeight);
         } else {
           Header.scrollToIfNeeded(post.nodes.root);
         }
         if (window.scrollX > 0) {
-          window.scroll(0, window.scrollY);
+          window.scrollBy(-window.scrollX, 0);
         }
       }
       $.off(el, 'error', ImageExpand.error);
@@ -11973,7 +11972,7 @@ ImageExpand = (function() {
       file.isExpanded = true;
       delete file.isExpanding;
       if (doc.contains(post.nodes.root) && bottom <= 0) {
-        window.scroll(window.scrollX, scrollY + d.body.clientHeight - oldHeight);
+        window.scrollBy(0, scrollY - window.scrollY + d.body.clientHeight - oldHeight);
       }
       if (file.scrollIntoView) {
         delete file.scrollIntoView;
@@ -12925,18 +12924,14 @@ Embedding = (function() {
       ref = Embedding.ordered_types;
       for (j = 0, len = ref.length; j < len; j++) {
         type = ref[j];
-        if (!(match = type.regExp.exec(href))) {
-          continue;
+        if ((match = type.regExp.exec(href))) {
+          return {
+            key: type.key,
+            uid: match[1],
+            options: match[2],
+            link: link
+          };
         }
-        if (type.dummy) {
-          return;
-        }
-        return {
-          key: type.key,
-          uid: match[1],
-          options: match[2],
-          link: link
-        };
       }
     },
     embed: function(data) {
@@ -13129,7 +13124,7 @@ Embedding = (function() {
     ordered_types: [
       {
         key: 'audio',
-        regExp: /\.(?:mp3|oga|wav)(?:\?|$)/i,
+        regExp: /^[^?#]+\.(?:mp3|oga|wav)(?:[?#]|$)/i,
         style: '',
         el: function(a) {
           return $.el('audio', {
@@ -13137,6 +13132,51 @@ Embedding = (function() {
             preload: 'auto',
             src: a.dataset.href
           });
+        }
+      }, {
+        key: 'image',
+        regExp: /^[^?#]+\.(?:gif|png|jpg|jpeg|bmp)(?:[?#]|$)/i,
+        style: '',
+        el: function(a) {
+          return $.el('div', {
+            innerHTML: "<a target=\"_blank\" href=\"" + E(a.dataset.href) + "\"><img src=\"" + E(a.dataset.href) + "\" style=\"max-width: 80vw; max-height: 80vh;\"></a>"
+          });
+        }
+      }, {
+        key: 'video',
+        regExp: /^[^?#]+\.(?:og[gv]|webm|mp4)(?:[?#]|$)/i,
+        style: 'max-width: 80vw; max-height: 80vh;',
+        el: function(a) {
+          var el;
+          el = $.el('video', {
+            hidden: true,
+            controls: true,
+            preload: 'auto',
+            src: a.dataset.href,
+            loop: /^https?:\/\/i\.4cdn\.org\//.test(a.dataset.href)
+          });
+          $.on(el, 'loadedmetadata', function() {
+            if (el.videoHeight === 0 && el.parentNode) {
+              return $.replace(el, Embedding.types.audio.el(a));
+            } else {
+              return el.hidden = false;
+            }
+          });
+          return el;
+        }
+      }, {
+        key: 'Clyp',
+        regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w+)/,
+        style: '',
+        el: function(a) {
+          var el, type;
+          el = $.el('audio', {
+            controls: true,
+            preload: 'auto'
+          });
+          type = el.canPlayType('audio/ogg') ? 'ogg' : 'mp3';
+          el.src = "https://clyp.it/" + a.dataset.uid + "." + type;
+          return el;
         }
       }, {
         key: 'Dailymotion',
@@ -13157,6 +13197,15 @@ Embedding = (function() {
           text: function(_) {
             return _.title;
           }
+        }
+      }, {
+        key: 'Gfycat',
+        regExp: /^\w+:\/\/(?:www\.)?gfycat\.com\/(?:iframe\/)?(\w+)/,
+        el: function(a) {
+          var div;
+          return div = $.el('iframe', {
+            src: "//gfycat.com/iframe/" + a.dataset.uid
+          });
         }
       }, {
         key: 'Gist',
@@ -13186,28 +13235,11 @@ Embedding = (function() {
           }
         }
       }, {
-        key: 'image',
-        regExp: /\.(?:gif|png|jpg|jpeg|bmp)(?:\?|$)/i,
-        style: '',
-        el: function(a) {
-          return $.el('div', {
-            innerHTML: "<a target=\"_blank\" href=\"" + E(a.dataset.href) + "\"><img src=\"" + E(a.dataset.href) + "\" style=\"max-width: 80vw; max-height: 80vh;\"></a>"
-          });
-        }
-      }, {
         key: 'InstallGentoo',
         regExp: /^\w+:\/\/paste\.installgentoo\.com\/view\/(?:raw\/|download\/|embed\/)?(\w+)/,
         el: function(a) {
           return $.el('iframe', {
             src: "https://paste.installgentoo.com/view/embed/" + a.dataset.uid
-          });
-        }
-      }, {
-        key: 'Twitter',
-        regExp: /^\w+:\/\/(?:www\.)?twitter\.com\/(\w+\/status\/\d+)/,
-        el: function(a) {
-          return $.el('iframe', {
-            src: "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid
           });
         }
       }, {
@@ -13223,22 +13255,97 @@ Embedding = (function() {
           return el;
         }
       }, {
-        key: 'Pastebin',
-        regExp: /^\w+:\/\/(?:\w+\.)?pastebin\.com\/(?!u\/)(?:[\w\.]+\?i\=)?(\w+)/,
-        httpOnly: true,
+        key: 'Loopvid',
+        regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|pc|gc)\/[\w\-\/]+(,[\w\-\/]+)*|fc\/\w+\/\d+)/,
+        style: 'max-width: 80vw; max-height: 80vh;',
         el: function(a) {
-          var div;
-          return div = $.el('iframe', {
-            src: "http://pastebin.com/embed_iframe.php?i=" + a.dataset.uid
+          var _, base, el, host, j, k, len, len1, name, names, ref, ref1, type, types, url;
+          el = $.el('video', {
+            controls: true,
+            preload: 'auto',
+            loop: true
+          });
+          ref = a.dataset.uid.match(/(\w+)\/(.*)/), _ = ref[0], host = ref[1], names = ref[2];
+          types = (function() {
+            switch (host) {
+              case 'gd':
+              case 'wu':
+              case 'fc':
+                return [''];
+              case 'gc':
+                return ['giant', 'fat', 'zippy'];
+              default:
+                return ['.webm', '.mp4'];
+            }
+          })();
+          ref1 = names.split(',');
+          for (j = 0, len = ref1.length; j < len; j++) {
+            name = ref1[j];
+            for (k = 0, len1 = types.length; k < len1; k++) {
+              type = types[k];
+              base = "" + name + type;
+              url = (function() {
+                switch (host) {
+                  case 'pf':
+                    return "https://web.archive.org/web/2/http://a.pomf.se/" + base;
+                  case 'kd':
+                    return "http://kastden.org/loopvid/" + base;
+                  case 'lv':
+                    return "http://kastden.org/_loopvid_media/lv/" + base;
+                  case 'gd':
+                    return "https://docs.google.com/uc?export=download&id=" + base;
+                  case 'gh':
+                    return "https://googledrive.com/host/" + base;
+                  case 'db':
+                    return "https://dl.dropboxusercontent.com/u/" + base;
+                  case 'dx':
+                    return "https://dl.dropboxusercontent.com/" + base;
+                  case 'nn':
+                    return "http://naenara.eu/loopvids/" + base;
+                  case 'cp':
+                    return "https://copy.com/" + base;
+                  case 'wu':
+                    return "http://webmup.com/" + base + "/vid.webm";
+                  case 'ig':
+                    return "https://i.imgur.com/" + base;
+                  case 'ky':
+                    return "https://kiyo.me/" + base;
+                  case 'mf':
+                    return "https://d.maxfile.ro/" + base;
+                  case 'pc':
+                    return "http://a.pomf.cat/" + base;
+                  case 'fc':
+                    return "//i.4cdn.org/" + base + ".webm";
+                  case 'gc':
+                    return "https://" + type + ".gfycat.com/" + name + ".webm";
+                }
+              })();
+              $.add(el, $.el('source', {
+                src: url
+              }));
+            }
+          }
+          return el;
+        }
+      }, {
+        key: 'Openings.moe',
+        regExp: /^\w+:\/\/openings.moe\/\?video=([^&=]+\.webm)/,
+        style: 'max-width: 80vw; max-height: 80vh;',
+        el: function(a) {
+          return $.el('video', {
+            controls: true,
+            preload: 'auto',
+            src: "//openings.moe/video/" + a.dataset.uid,
+            loop: true
           });
         }
       }, {
-        key: 'Gfycat',
-        regExp: /^\w+:\/\/(?:www\.)?gfycat\.com\/(?:iframe\/)?(\w+)/,
+        key: 'Pastebin',
+        regExp: /^\w+:\/\/(?:\w+\.)?pastebin\.com\/(?!u\/)(?:[\w\.]+\?i\=)?(\w+)/,
         el: function(a) {
           var div;
           return div = $.el('iframe', {
-            src: "//gfycat.com/iframe/" + a.dataset.uid
+            src: "//pastebin.com/embed_iframe.php?i=" + a.dataset.uid
           });
         }
       }, {
@@ -13261,6 +13368,7 @@ Embedding = (function() {
       }, {
         key: 'StrawPoll',
         regExp: /^\w+:\/\/(?:www\.)?strawpoll\.me\/(?:embed_\d+\/)?(\d+(?:\/r)?)/,
+        httpOnly: true,
         style: 'border: 0; width: 600px; height: 406px;',
         el: function(a) {
           return $.el('iframe', {
@@ -13282,6 +13390,14 @@ Embedding = (function() {
           });
           el.setAttribute("allowfullscreen", "true");
           return el;
+        }
+      }, {
+        key: 'Twitter',
+        regExp: /^\w+:\/\/(?:www\.)?twitter\.com\/(\w+\/status\/\d+)/,
+        el: function(a) {
+          return $.el('iframe', {
+            src: "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid
+          });
         }
       }, {
         key: 'Vocaroo',
@@ -13363,123 +13479,6 @@ Embedding = (function() {
             }
             return 'Not Found';
           }
-        }
-      }, {
-        key: 'Loopvid',
-        regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|pc|gc)\/[\w\-\/]+(,[\w\-\/]+)*|fc\/\w+\/\d+)/,
-        style: 'max-width: 80vw; max-height: 80vh;',
-        el: function(a) {
-          var _, base, el, host, j, k, len, len1, name, names, ref, ref1, type, types, url;
-          el = $.el('video', {
-            controls: true,
-            preload: 'auto',
-            loop: true
-          });
-          ref = a.dataset.uid.match(/(\w+)\/(.*)/), _ = ref[0], host = ref[1], names = ref[2];
-          types = (function() {
-            switch (host) {
-              case 'gd':
-              case 'wu':
-              case 'fc':
-                return [''];
-              case 'gc':
-                return ['giant', 'fat', 'zippy'];
-              default:
-                return ['.webm', '.mp4'];
-            }
-          })();
-          ref1 = names.split(',');
-          for (j = 0, len = ref1.length; j < len; j++) {
-            name = ref1[j];
-            for (k = 0, len1 = types.length; k < len1; k++) {
-              type = types[k];
-              base = "" + name + type;
-              url = (function() {
-                switch (host) {
-                  case 'pf':
-                    return "https://web.archive.org/web/2/http://a.pomf.se/" + base;
-                  case 'kd':
-                    return "http://kastden.org/loopvid/" + base;
-                  case 'lv':
-                    return "http://kastden.org/_loopvid_media/lv/" + base;
-                  case 'gd':
-                    return "https://docs.google.com/uc?export=download&id=" + base;
-                  case 'gh':
-                    return "https://googledrive.com/host/" + base;
-                  case 'db':
-                    return "https://dl.dropboxusercontent.com/u/" + base;
-                  case 'dx':
-                    return "https://dl.dropboxusercontent.com/" + base;
-                  case 'nn':
-                    return "http://naenara.eu/loopvids/" + base;
-                  case 'cp':
-                    return "https://copy.com/" + base;
-                  case 'wu':
-                    return "http://webmup.com/" + base + "/vid.webm";
-                  case 'ig':
-                    return "https://i.imgur.com/" + base;
-                  case 'ky':
-                    return "https://kiyo.me/" + base;
-                  case 'mf':
-                    return "https://d.maxfile.ro/" + base;
-                  case 'pc':
-                    return "http://a.pomf.cat/" + base;
-                  case 'fc':
-                    return "//i.4cdn.org/" + base + ".webm";
-                  case 'gc':
-                    return "https://" + type + ".gfycat.com/" + name + ".webm";
-                }
-              })();
-              $.add(el, $.el('source', {
-                src: url
-              }));
-            }
-          }
-          return el;
-        }
-      }, {
-        key: 'Clyp',
-        regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w+)/,
-        style: '',
-        el: function(a) {
-          var el, type;
-          el = $.el('audio', {
-            controls: true,
-            preload: 'auto'
-          });
-          type = el.canPlayType('audio/ogg') ? 'ogg' : 'mp3';
-          el.src = "https://clyp.it/" + a.dataset.uid + "." + type;
-          return el;
-        }
-      }, {
-        key: 'Loopvid-dummy',
-        regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\//,
-        dummy: true
-      }, {
-        key: 'MediaFire-dummy',
-        regExp: /^\w+:\/\/(?:www\.)?mediafire.com\//,
-        dummy: true
-      }, {
-        key: 'video',
-        regExp: /\.(?:og[gv]|webm|mp4)(?:\?|$)/i,
-        style: 'max-width: 80vw; max-height: 80vh;',
-        el: function(a) {
-          var el;
-          el = $.el('video', {
-            hidden: true,
-            controls: true,
-            preload: 'auto',
-            src: a.dataset.href,
-            loop: /^https?:\/\/i\.4cdn\.org\//.test(a.dataset.href)
-          });
-          $.on(el, 'loadedmetadata', function() {
-            if (el.videoHeight === 0 && el.parentNode) {
-              return $.replace(el, Embedding.types.audio.el(a));
-            } else {
-              return el.hidden = false;
-            }
-          });
-          return el;
         }
       }
     ]
@@ -14777,7 +14776,7 @@ FileInfo = (function() {
       return $.prepend(this.file.text, info);
     },
     format: function(formatString, post, outputNode) {
-      var output;
+      var a, i, len, output, ref;
       output = [];
       formatString.replace(/%(.)|[^%]+/g, function(s, c) {
         output.push(c in FileInfo.formatters ? FileInfo.formatters[c].call(post) : {
@@ -14785,9 +14784,14 @@ FileInfo = (function() {
         });
         return '';
       });
-      return $.extend(outputNode, {
+      $.extend(outputNode, {
         innerHTML: E.cat(output)
       });
+      ref = $$('.download-button', outputNode);
+      for (i = 0, len = ref.length; i < len; i++) {
+        a = ref[i];
+        $.on(a, 'click', ImageCommon.download);
+      }
     },
     formatters: {
       t: function() {
@@ -14827,6 +14831,11 @@ FileInfo = (function() {
       N: function() {
         return {
           innerHTML: E(this.file.name)
+        };
+      },
+      d: function() {
+        return {
+          innerHTML: "<a href=\"" + E(this.file.url) + "\" download=\"" + E(this.file.name) + "\" class=\"fa fa-download download-button\"></a>"
         };
       },
       p: function() {
@@ -16456,7 +16465,8 @@ ReplyPruning = (function() {
       }
     },
     update: function() {
-      var boardTop, frag, hidden2, oldPos, post, posts;
+      var boardTop, frag, hidden1, hidden2, oldPos, post, posts;
+      hidden1 = ReplyPruning.hidden;
       hidden2 = ReplyPruning.active ? Math.max(ReplyPruning.total - +Conf["Max Replies"], 0) : 0;
       oldPos = d.body.clientHeight - window.scrollY;
       posts = ReplyPruning.thread.posts;
@@ -16488,8 +16498,8 @@ ReplyPruning = (function() {
       }
       ReplyPruning.summary.textContent = ReplyPruning.active ? Build.summaryText('+', ReplyPruning.hidden, ReplyPruning.hiddenFiles) : Build.summaryText('-', ReplyPruning.total, ReplyPruning.totalFiles);
       ReplyPruning.summary.hidden = ReplyPruning.total <= +Conf["Max Replies"];
-      if ((boardTop = Header.getTopOf($('.board'))) < 0) {
-        return window.scroll(window.scrollX, Math.max(d.body.clientHeight - oldPos, window.scrollY + boardTop));
+      if (hidden1 !== hidden2 && (boardTop = Header.getTopOf($('.board'))) < 0) {
+        return window.scrollBy(0, Math.max(d.body.clientHeight - oldPos, window.scrollY + boardTop) - window.scrollY);
       }
     }
   };

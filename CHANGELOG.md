@@ -2,6 +2,15 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.33
+
+**v1.11.33.0** *(2016-05-08)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.32.5.
+- Add new option `%d` to `File Info Formatting` to add a one-click download button.
+- Add openings.moe embedding, and update embedding in general.
+- Work around issue causing scrolling to the top of the page on thread updates / expanding all images for Chrome Dev + Tampermonkey users.
+- Minor bugfixes.
+
 ### v1.11.32
 
 **v1.11.32.5** *(2016-05-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.5/builds/4chan-X-noupdate.crx "Chromium version")]
