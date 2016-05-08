@@ -132,13 +132,13 @@ ImageExpand =
     if doc.contains el
       if bottom <= 0
         # For images entirely above us, scroll to remain in place.
-        window.scroll 0, scrollY + d.body.clientHeight - oldHeight
+        window.scrollBy 0, scrollY - window.scrollY + d.body.clientHeight - oldHeight
       else
         # For images not above us that would be moved above us, scroll to the thumbnail.
         Header.scrollToIfNeeded post.nodes.root
       if window.scrollX > 0
         # If we have scrolled right viewing an expanded image, return to the left.
-        window.scroll 0, window.scrollY
+        window.scrollBy -window.scrollX, 0
 
     $.off el, 'error', ImageExpand.error
     ImageCommon.pushCache el
@@ -216,7 +216,7 @@ ImageExpand =
 
     # Scroll to keep our place in the thread when images are expanded above us.
     if doc.contains(post.nodes.root) and bottom <= 0
-      window.scroll window.scrollX, scrollY + d.body.clientHeight - oldHeight
+      window.scrollBy 0, scrollY - window.scrollY + d.body.clientHeight - oldHeight
 
     # Scroll to display full image.
     if file.scrollIntoView
