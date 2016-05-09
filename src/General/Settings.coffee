@@ -107,9 +107,10 @@ Settings =
           """
     ads: (cb) ->
       $.onExists doc, '.ad-cnt', (ad) -> $.onExists ad, 'img', ->
+        url = Redirect.to 'thread', {boardID: 'qa', threadID: 362590}
         cb $.el 'li',
           <%= html(
-            'To protect yourself from <a href="https://archive.rebeccablacktech.com/qa/thread/362590" target="_blank">malicious ads</a>,' +
+            'To protect yourself from <a href="${url}" target="_blank">malicious ads</a>,' +
             ' you should <a href="https://github.com/gorhill/uBlock#ublock-origin" target="_blank">block ads</a> on 4chan.'
           ) %>
 
