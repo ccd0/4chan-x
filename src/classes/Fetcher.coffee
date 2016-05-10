@@ -28,6 +28,14 @@ class Fetcher
       if postID is @quoter.ID and boardID is @quoter.board.ID
         $.addClass quote, 'forwardlink'
 
+    # Set up flag CSS for cross-board links to boards with flags
+    if clone.nodes.flag and not (Fetcher.flagCSS or= $ 'link[href^="//s.4cdn.org/css/flags."]')
+      cssVersion = $('link[href^="//s.4cdn.org/css/"]')?.href.match(/\d+(?=\.css$)|$/)[0] or Date.now()
+      Fetcher.flagCSS = $.el 'link',
+        rel: 'stylesheet'
+        href: "//s.4cdn.org/css/flags.#{cssVersion}.css"
+      $.add d.head, Fetcher.flagCSS
+
     $.rmAll @root
     $.add @root, nodes.root
     $.event 'PostsInserted'
