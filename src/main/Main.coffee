@@ -385,7 +385,7 @@ Main =
     """
     addDetails '\n' + data.error
     addDetails data.error.stack.replace(data.error.toString(), '').trim() if data.error.stack
-    addDetails '\n' + data.html if data.html
+    addDetails '\n`' + data.html + '`' if data.html
     details = details.replace /file:\/{3}.+\//g, '' # Remove local file paths
     url = "<%= meta.newIssue.replace('%title', '#{encodeURIComponent title}').replace('%details', '#{encodeURIComponent details}') %>"
     <%= html('<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>') %>
