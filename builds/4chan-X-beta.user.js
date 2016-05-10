@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.33.0
+// @version      1.11.33.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.33.0',
+  VERSION:   '1.11.33.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -9738,8 +9738,13 @@ Settings = (function() {
       ads: function(cb) {
         return $.onExists(doc, '.ad-cnt', function(ad) {
           return $.onExists(ad, 'img', function() {
+            var url;
+            url = Redirect.to('thread', {
+              boardID: 'qa',
+              threadID: 362590
+            });
             return cb($.el('li', {
-              innerHTML: "To protect yourself from <a href=\"https://archive.rebeccablacktech.com/qa/thread/362590\" target=\"_blank\">malicious ads</a>, you should <a href=\"https://github.com/gorhill/uBlock#ublock-origin\" target=\"_blank\">block ads</a> on 4chan."
+              innerHTML: "To protect yourself from <a href=\"" + E(url) + "\" target=\"_blank\">malicious ads</a>, you should <a href=\"https://github.com/gorhill/uBlock#ublock-origin\" target=\"_blank\">block ads</a> on 4chan."
             }));
           });
         });
@@ -22716,7 +22721,7 @@ Main = (function() {
         addDetails(data.error.stack.replace(data.error.toString(), '').trim());
       }
       if (data.html) {
-        addDetails('\n' + data.html);
+        addDetails('\n`' + data.html + '`');
       }
       details = details.replace(/file:\/{3}.+\//g, '');
       url = "https://gitreports.com/issue/ccd0/4chan-x?issue_title=" + (encodeURIComponent(title)) + "&details=" + (encodeURIComponent(details));
