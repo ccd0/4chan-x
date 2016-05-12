@@ -547,7 +547,7 @@ Config =
       ]
       'Resurrect Quotes': [
         true
-        'Link dead quotes to the archives.'
+        'Link dead quotes to the archives, and support inlining/previewing of archive links like quote links.'
       ]
       'Remember Your Posts': [
         true
