@@ -18,8 +18,7 @@ Quotify =
     return
 
   parseArchiveLink: (link) ->
-    return unless Redirect.archives.some (o) -> link.host is o.domain
-    return unless (m = link.pathname.match /^\/([^/]+)\/thread\/S?(\d+)\/?/)
+    return unless (m = link.pathname.match /^\/([^/]+)\/thread\/S?(\d+)\/?$/)
     boardID  = m[1]
     threadID = m[2]
     postID   = link.hash.match(/^#p?(\d+)$|$/)[1] or threadID
