@@ -12,8 +12,8 @@ QuoteInline =
   node: ->
     {process} = QuoteInline
     {isClone} = @
-    process link, isClone for link in @nodes.quotelinks
-    process link, isClone for link in @nodes.backlinks
+    for link in @nodes.quotelinks.concat [@nodes.backlinks...], @nodes.archivelinks
+      process link, isClone
     return
 
   process: (link, clone) ->

@@ -10,14 +10,16 @@ Quotify =
       cb:   @node
 
   node: ->
-    return if @isClone
+    if @isClone
+      @nodes.archivelinks = $$ 'a.linkify.quotelink', @nodes.comment
+      return
     for link in $$ 'a.linkify', @nodes.comment
-      Quotify.parseArchiveLink.call @, link
+      Quotify.parseArchivelink.call @, link
     for deadlink in $$ '.deadlink', @nodes.comment
       Quotify.parseDeadlink.call @, deadlink
     return
 
-  parseArchiveLink: (link) ->
+  parseArchivelink: (link) ->
     return unless (m = link.pathname.match /^\/([^/]+)\/thread\/S?(\d+)\/?$/)
     boardID  = m[1]
     threadID = m[2]
@@ -25,7 +27,7 @@ Quotify =
     if Redirect.to 'post', {boardID, postID}
       $.addClass link, 'quotelink'
       $.extend link.dataset, {boardID, threadID, postID}
-      @nodes.quotelinks.push link
+      @nodes.archivelinks.push link
 
   parseDeadlink: (deadlink) ->
     if $.hasClass deadlink.parentNode, 'prettyprint'

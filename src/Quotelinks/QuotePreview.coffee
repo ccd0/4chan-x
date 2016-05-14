@@ -10,7 +10,7 @@ QuotePreview =
       cb:   @node
 
   node: ->
-    for link in @nodes.quotelinks.concat [@nodes.backlinks...]
+    for link in @nodes.quotelinks.concat [@nodes.backlinks...], @nodes.archivelinks
       $.on link, 'mouseover', QuotePreview.mouseover
     return
 
