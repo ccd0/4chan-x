@@ -1,1 +1,3 @@
+Main.init();
+
 }).call(this);
