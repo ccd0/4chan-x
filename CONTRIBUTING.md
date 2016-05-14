@@ -41,3 +41,7 @@ If you're reporting a bug, the more detail you can give, the better. If I can't 
   - Export your changes via `git bundle` (e.g. `git bundle create file.bundle master..your-branch`), and upload them to a file host like https://jii.moe/. Then [open an issue](https://gitreports.com/issue/ccd0/4chan-x) with an explanation of your changes and the URL of the file.
 
 Archive list updates should go to https://github.com/MayhemYDG/archives.json.
+
+### More info
+
+Further documentation is available at https://github.com/ccd0/4chan-x/wiki/Developer-Documentation.
