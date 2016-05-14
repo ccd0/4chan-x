@@ -17,7 +17,7 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 ### v1.11.32
 
 **v1.11.32.5** *(2016-05-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.5/builds/4chan-X-noupdate.crx "Chromium version")]
-- (r3c0d3x) Archive list: temporarily remove waruso.org.
+- (r3c0d3x) Archive list: temporarily remove waruso.org due to downtime.
 
 **v1.11.32.4** *(2016-05-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.32.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Increase margin on Fappe/Werk Tyme indicators.
