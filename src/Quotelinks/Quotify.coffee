@@ -21,6 +21,7 @@ Quotify =
 
   parseArchivelink: (link) ->
     return unless (m = link.pathname.match /^\/([^/]+)\/thread\/S?(\d+)\/?$/)
+    return if link.hostname is 'boards.4chan.org'
     boardID  = m[1]
     threadID = m[2]
     postID   = link.hash.match(/^#p?(\d+)$|$/)[1] or threadID
