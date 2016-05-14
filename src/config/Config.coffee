@@ -255,7 +255,7 @@ Config =
         'Videos begin playing immediately when opened.'
       ]
       'Restart when Opened': [
-        true
+        false
         'Restart GIFs and WebMs when you hover over or expand them.'
       ]
       'Show Controls': [
@@ -547,7 +547,7 @@ Config =
       ]
       'Resurrect Quotes': [
         true
-        'Link dead quotes to the archives.'
+        'Link dead quotes to the archives, and support inlining/previewing of archive links like quote links.'
       ]
       'Remember Your Posts': [
         true
