@@ -254,13 +254,16 @@ Embedding =
         el
     ,
       key: 'Loopvid'
-      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|pc|gc)\/[\w\-\/]+(,[\w\-\/]+)*|fc\/\w+\/\d+)/
+      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|m2|pc|1c|pi|wl|ko|gc)\/[\w\-\/]+(?:,[\w\-\/]+)*|fc\/\w+\/\d+|https?:\/\/.+)/
       style: 'max-width: 80vw; max-height: 80vh;'
       el: (a) ->
         el = $.el 'video',
           controls: true
           preload:  'auto'
           loop:     true
+        if /^http/.test a.dataset.uid
+          $.add el, $.el 'source', src: a.dataset.uid
+          return el
         [_, host, names] = a.dataset.uid.match /(\w+)\/(.*)/
         types = switch host
           when 'gd', 'wu', 'fc' then ['']
@@ -269,25 +272,31 @@ Embedding =
         for name in names.split ','
           for type in types
             base = "#{name}#{type}"
-            url = switch host
+            urls = switch host
               # list from src/common.py at http://loopvid.appspot.com/source.html
-              when 'pf' then "https://web.archive.org/web/2/http://a.pomf.se/#{base}"
-              when 'kd' then "http://kastden.org/loopvid/#{base}"
-              when 'lv' then "http://kastden.org/_loopvid_media/lv/#{base}"
-              when 'gd' then "https://docs.google.com/uc?export=download&id=#{base}"
-              when 'gh' then "https://googledrive.com/host/#{base}"
-              when 'db' then "https://dl.dropboxusercontent.com/u/#{base}"
-              when 'dx' then "https://dl.dropboxusercontent.com/#{base}"
-              when 'nn' then "http://naenara.eu/loopvids/#{base}"
-              when 'cp' then "https://copy.com/#{base}"
-              when 'wu' then "http://webmup.com/#{base}/vid.webm"
-              when 'ig' then "https://i.imgur.com/#{base}"
-              when 'ky' then "https://kiyo.me/#{base}"
-              when 'mf' then "https://d.maxfile.ro/#{base}"
-              when 'pc' then "http://a.pomf.cat/#{base}"
-              when 'fc' then "//i.4cdn.org/#{base}.webm"
-              when 'gc' then "https://#{type}.gfycat.com/#{name}.webm"
-            $.add el, $.el 'source', src: url
+              when 'pf' then ["https://kastden.org/_loopvid_media/pf/#{base}", "https://web.archive.org/web/2/http://a.pomf.se/#{base}"]
+              when 'kd' then ["http://kastden.org/loopvid/#{base}"]
+              when 'lv' then ["http://lv.kastden.org/#{base}"]
+              when 'gd' then ["https://docs.google.com/uc?export=download&id=#{base}"]
+              when 'gh' then ["https://googledrive.com/host/#{base}"]
+              when 'db' then ["https://dl.dropboxusercontent.com/u/#{base}"]
+              when 'dx' then ["https://dl.dropboxusercontent.com/#{base}"]
+              when 'nn' then ["http://naenara.eu/loopvids/#{base}"]
+              when 'cp' then ["https://copy.com/#{base}"]
+              when 'wu' then ["http://webmup.com/#{base}/vid.webm"]
+              when 'ig' then ["https://i.imgur.com/#{base}"]
+              when 'ky' then ["https://kiyo.me/#{base}"]
+              when 'mf' then ["https://kastden.org/_loopvid_media/mf/#{base}", "https://web.archive.org/web/2/https://d.maxfile.ro/#{base}"]
+              when 'm2' then ["https://kastden.org/_loopvid_media/m2/#{base}"]
+              when 'pc' then ["http://a.pomf.cat/#{base}"]
+              when '1c' then ["http://b.1339.cf/#{base}"]
+              when 'pi' then ["https://u.pomf.is/#{base}"]
+              when 'wl' then ["http://webm.land/media/#{base}"]
+              when 'ko' then ["https://kordy.kastden.org/loopvid/#{base}"]
+              when 'fc' then ["//i.4cdn.org/#{base}.webm"]
+              when 'gc' then ["https://#{type}.gfycat.com/#{name}.webm"]
+            for url in urls
+              $.add el, $.el 'source', src: url
         el
     ,
       key: 'Openings.moe'
