@@ -74,7 +74,7 @@ class Post
       quotelinks: []
 
     # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
-    # https://connect.microsoft.com/IE/feedback/details/1198967/ie11-appendchild-provoke-an-error-on-an-htmlcollection
+    # https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/7560353/
     if $.engine is 'edge'
       Object.defineProperty nodes, 'backlinks',
         configurable: true
