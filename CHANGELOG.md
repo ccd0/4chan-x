@@ -4,6 +4,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.33
 
+**v1.11.33.3** *(2016-05-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix StrawPoll embedding on HTTPS pages.
+- (pleebe) Archive list: remove /film/ from 4plebs.
+
 **v1.11.33.2** *(2016-05-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - (r3c0d3x) Archive list: temporarily remove fgts.jp due to downtime.
 
