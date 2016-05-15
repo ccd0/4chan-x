@@ -351,17 +351,6 @@ Embedding =
         $.el 'iframe',
           src: "https://twitframe.com/show?url=https://twitter.com/#{a.dataset.uid}"
     ,
-      key: 'Vocaroo'
-      regExp: /^\w+:\/\/(?:www\.)?vocaroo\.com\/i\/(\w+)/
-      style: ''
-      el: (a) ->
-        el = $.el 'audio',
-          controls: true
-          preload: 'auto'
-        type = if el.canPlayType 'audio/webm' then 'webm' else 'mp3'
-        el.src = "http://vocaroo.com/media_command.php?media=#{a.dataset.uid}&command=download_#{type}"
-        el
-    ,
       key: 'Vimeo'
       regExp:  /^\w+:\/\/(?:www\.)?vimeo\.com\/(\d+)/
       el: (a) ->
@@ -379,6 +368,17 @@ Embedding =
       el: (a) ->
         $.el 'iframe',
           src: "https://vine.co/v/#{a.dataset.uid}/card"
+    ,
+      key: 'Vocaroo'
+      regExp: /^\w+:\/\/(?:www\.)?vocaroo\.com\/i\/(\w+)/
+      style: ''
+      el: (a) ->
+        el = $.el 'audio',
+          controls: true
+          preload: 'auto'
+        type = if el.canPlayType 'audio/webm' then 'webm' else 'mp3'
+        el.src = "http://vocaroo.com/media_command.php?media=#{a.dataset.uid}&command=download_#{type}"
+        el
     ,
       key: 'YouTube'
       regExp: /^\w+:\/\/(?:youtu.be\/|[\w.]*youtube[\w.]*\/.*(?:v=|\bembed\/|\bv\/))([\w\-]{11})(.*)/
