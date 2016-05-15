@@ -602,7 +602,7 @@ div[data-checked="false"] > .suboption-list {
 .section-advanced textarea {
   height: 150px;
 }
-.section-advanced textarea[name="archiveSources"] {
+.section-advanced textarea[name="archiveLists"] {
   height: 75px;
 }
 .section-advanced .archive-cell {

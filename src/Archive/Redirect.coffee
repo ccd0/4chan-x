@@ -45,7 +45,7 @@ Redirect =
     urls = []
     responses = []
     nloaded = 0
-    for url in Conf['archiveSources'].split('\n') when url[0] isnt '#'
+    for url in Conf['archiveLists'].split('\n') when url[0] isnt '#'
       url = url.trim()
       urls.push url if url
 
