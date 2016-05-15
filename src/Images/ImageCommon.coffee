@@ -87,6 +87,6 @@ ImageCommon =
         @href = URL.createObjectURL blob
         @click()
       else
-        new Notice 'warning', "Could not download #{@href}", 30
+        new Notice 'warning', "Could not download #{@href}", 20
 
 return ImageCommon
