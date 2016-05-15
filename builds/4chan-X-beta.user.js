@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.33.2
+// @version      1.11.33.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.33.2',
+  VERSION:   '1.11.33.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -6302,7 +6302,7 @@ Redirect = (function() {
       return Redirect.data = o;
     },
     archives: [
-      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "film", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "film", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ] },
+      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ] },
       { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "c", "e", "news", "w", "wg", "wsr" ], "files": [ "c", "e", "news", "w", "wg", "wsr" ] },
       { "uid": 8, "name": "Rebecca Black Tech", "domain": "rbt.asia", "http": false, "https": true, "software": "fuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ] },
       { "uid": 23, "name": "Desustorage", "domain": "desustorage.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ] },
@@ -13372,11 +13372,10 @@ Embedding = (function() {
       }, {
         key: 'StrawPoll',
         regExp: /^\w+:\/\/(?:www\.)?strawpoll\.me\/(?:embed_\d+\/)?(\d+(?:\/r)?)/,
-        httpOnly: true,
         style: 'border: 0; width: 600px; height: 406px;',
         el: function(a) {
           return $.el('iframe', {
-            src: "//strawpoll.me/embed_1/" + a.dataset.uid
+            src: "//www.strawpoll.me/embed_1/" + a.dataset.uid
           });
         }
       }, {
