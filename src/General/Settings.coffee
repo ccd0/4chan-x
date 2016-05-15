@@ -582,6 +582,7 @@ Settings =
       (selectedArchives[@dataset.boardid] or= {})[@dataset.type] = JSON.parse @value
       $.set 'selectedArchives', selectedArchives
       Conf['selectedArchives'] = selectedArchives
+      Redirect.selectArchives()
 
   boardnav: ->
     Header.generateBoardList @value
