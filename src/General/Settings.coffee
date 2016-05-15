@@ -425,39 +425,29 @@ Settings =
     $.extend section, <%= readHTML('Advanced.html') %>
     warning.hidden = Conf[warning.dataset.feature] for warning in $$ '.warning', section
 
-    items = {}
     inputs = {}
-    for name in ['captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss', 'customCooldown']
-      input = $ "[name='#{name}']", section
-      items[name]  = Conf[name]
-      inputs[name] = input
-      if name is 'usercss'
-        $.on input, 'change', $.cb.value
-      else if name is 'favicon'
-        $.on input, 'change', $.cb.value
-        $.on input, 'change', Settings[name]
-      else
-        $.on input, 'input', $.cb.value
-        $.on input, 'input', Settings[name] if name of Settings
+    for input in $$ '[name]', section
+      inputs[input.name] = input
 
-    # Quick Reply Personas
-    ta = $ '.personafield', section
-
-    $.get 'QR.personas', Conf['QR.personas'], (item) ->
-      ta.value = item['QR.personas']
-    $.on ta, 'change', $.cb.value
+    items = {}
+    for name in ['captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown']
+      items[name] = Conf[name]
+      input = inputs[name]
+      event = if name in ['QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
+      $.on input, event, $.cb.value
+      $.on input, event, Settings[name] if name of Settings
 
     $.get items, (items) ->
       for key, val of items
         input = inputs[key]
         input.value = val
-        if key of Settings and key isnt 'usercss'
+        if key of Settings
           Settings[key].call input
       return
 
-    interval  = $ 'input[name="Interval"]',   section
-    customCSS = $ 'input[name="Custom CSS"]', section
-    applyCSS  = $ '#apply-css',               section
+    interval  = inputs['Interval']
+    customCSS = inputs['Custom CSS']
+    applyCSS  = $ '#apply-css', section
 
     interval.value             =  Conf['Interval']
     customCSS.checked          =  Conf['Custom CSS']
@@ -466,7 +456,7 @@ Settings =
 
     $.on interval,  'change', ThreadUpdater.cb.interval
     $.on customCSS, 'change', Settings.togglecss
-    $.on applyCSS,  'click',  Settings.usercss
+    $.on applyCSS,  'click',  -> CustomCSS.update()
 
     archBoards = {}
     for {uid, name, boards, files, software, withCredentials} in Redirect.archives
@@ -594,9 +584,6 @@ Settings =
     else
       CustomCSS.addStyle()
     $.cb.checked.call @
-
-  usercss: ->
-    CustomCSS.update()
 
   keybinds: (section) ->
     $.extend section, <%= readHTML('Keybinds.html') %>
