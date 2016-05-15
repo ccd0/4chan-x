@@ -51,6 +51,7 @@ Main =
 
     for db in DataBoard.keys
       Conf[db] = boards: {}
+    Conf['archives'] = Redirect.archives
     Conf['selectedArchives'] = {}
     Conf['cooldowns'] = {}
     Conf['Index Sort'] = {}

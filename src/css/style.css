@@ -602,6 +602,9 @@ div[data-checked="false"] > .suboption-list {
 .section-advanced textarea {
   height: 150px;
 }
+.section-advanced textarea[name="archiveSources"] {
+  height: 75px;
+}
 .section-advanced .archive-cell {
   min-width: 160px;
   text-align: center;

@@ -1,5 +1,5 @@
 <fieldset>
-  <legend>Archiver</legend>
+  <legend>Archives</legend>
   <div class="warning" data-feature="404 Redirect"><code>404 Redirect</code> is disabled.</div>
   <select id="archive-board-select"></select>
   <table id="archive-table">
@@ -10,6 +10,13 @@
     </thead>
     <tbody></tbody>
   </table>
+  <br>
+  <div>
+    Each line below should be an archive list in <a href="https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md" target="_blank">this format</a> or a URL to load an archive list from.<br>
+    Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).
+  </div>
+  <textarea name="archiveSources" class="field" spellcheck="false"></textarea>
+  <button id="update-archives">Update now</button> Last updated: <time id="lastarchivecheck"></time> <label><input type="checkbox" name="archiveAutoUpdate"> Auto-update</label>
 </fieldset>
 
 <fieldset>

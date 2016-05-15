@@ -430,20 +430,25 @@ Settings =
       inputs[input.name] = input
 
     items = {}
-    for name in ['captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown']
+    for name in ['archiveSources', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown']
       items[name] = Conf[name]
       input = inputs[name]
-      event = if name in ['QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
-      $.on input, event, $.cb.value
+      event = if name in ['archiveSources', 'archiveAutoUpdate', 'QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
+      $.on input, event, $.cb[if input.type is 'checkbox' then 'checked' else 'value']
       $.on input, event, Settings[name] if name of Settings
 
     $.get items, (items) ->
       for key, val of items
         input = inputs[key]
-        input.value = val
+        input[if input.type is 'checkbox' then 'checked' else 'value'] = val
         if key of Settings
           Settings[key].call input
       return
+
+    $.on inputs['archiveSources'], 'change', ->
+      $.set 'lastarchivecheck', 0
+      Conf['lastarchivecheck'] = 0
+      $.id('lastarchivecheck').textContent = 'never'
 
     interval  = inputs['Interval']
     customCSS = inputs['Custom CSS']
@@ -458,8 +463,41 @@ Settings =
     $.on customCSS, 'change', Settings.togglecss
     $.on applyCSS,  'click',  -> CustomCSS.update()
 
+    itemsArchive = {}
+    itemsArchive[name] = Conf[name] for name in ['archives', 'selectedArchives', 'lastarchivecheck']
+    $.get itemsArchive, (itemsArchive) ->
+      $.extend Conf, itemsArchive
+      Settings.addArchiveTable section
+
+    boardSelect    = $ '#archive-board-select', section
+    table          = $ '#archive-table', section
+    updateArchives = $ '#update-archives', section
+
+    $.on boardSelect, 'change', ->
+      $('tbody > :not([hidden])', table).hidden = true
+      $("tbody > .#{@value}", table).hidden = false
+
+    $.on updateArchives, 'click', ->
+      Redirect.update ->
+        Settings.addArchiveTable section
+
+  addArchiveTable: (section) ->
+    $('#lastarchivecheck', section).textContent = if Conf['lastarchivecheck'] is 0
+      'never'
+    else
+      new Date(Conf['lastarchivecheck']).toLocaleString()
+
+    boardSelect = $ '#archive-board-select', section
+    table       = $ '#archive-table', section
+    tbody       = $ 'tbody', section
+
+    $.rmAll boardSelect
+    $.rmAll tbody
+
     archBoards = {}
-    for {uid, name, boards, files, software, withCredentials} in Redirect.archives
+    for {uid, name, boards, files, software, withCredentials} in Conf['archives']
+      boards = [] unless boards instanceof Array
+      files  = [] unless files  instanceof Array
       for boardID in boards
         o = archBoards[boardID] or=
           thread: [[], []]
@@ -492,24 +530,23 @@ Settings =
       $.add row, Settings.addArchiveCell boardID, o, item for item in ['thread', 'post', 'file']
       rows.push row
 
+    if rows.length is 0
+      boardSelect.hidden = table.hidden = true
+      return
+
+    boardSelect.hidden = table.hidden = false
+
     unless g.BOARD.ID of archBoards
       rows[0].hidden = false
 
-    $.add $('tbody', section), rows
-
-    boardSelect = $('#archive-board-select', section)
     $.add boardSelect, boardOptions
-    table = $('#archive-table', section)
-    $.on boardSelect, 'change', ->
-      $('tbody > :not([hidden])', table).hidden = true
-      $("tbody > .#{@value}", table).hidden = false
+    $.add tbody, rows
 
-    $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) ->
-      for boardID, data of selectedArchives
-        for type, id of data
-          if select = $ "select[data-boardid='#{boardID}'][data-type='#{type}']", section
-            select.value = JSON.stringify id
-      return
+    for boardID, data of Conf['selectedArchives']
+      for type, id of data
+        if (select = $ "select[data-boardid='#{boardID}'][data-type='#{type}']", tbody)
+          select.value = JSON.stringify id
+          select.value = select.firstChild.value unless select.value
     return
 
   addArchiveCell: (boardID, data, type) ->
@@ -544,6 +581,7 @@ Settings =
     $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) =>
       (selectedArchives[@dataset.boardid] or= {})[@dataset.type] = JSON.parse @value
       $.set 'selectedArchives', selectedArchives
+      Conf['selectedArchives'] = selectedArchives
 
   boardnav: ->
     Header.generateBoardList @value

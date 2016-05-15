@@ -1,5 +1,17 @@
 Redirect =
+  archives:
+    `<%=
+      JSON.stringify(readJSON('archives.json'), null, 2)
+        .replace(/\n {2,}(?!{)/g, ' ')
+        .replace(/\n/g, '\n    ')
+        .replace(/`/g, '\\`')
+    %>`
+
   init: ->
+    @selectArchives()
+    @update() if Conf['archiveAutoUpdate'] and Conf['lastarchivecheck'] < Date.now() - 2 * $.DAY
+
+  selectArchives: ->
     o =
       thread: {}
       post:   {}
@@ -7,8 +19,10 @@ Redirect =
       report: {}
 
     archives = {}
-    for data in Redirect.archives
+    for data in Conf['archives']
       {uid, name, boards, files, software, withCredentials} = data
+      boards = [] unless boards instanceof Array
+      files  = [] unless files  instanceof Array
       archives[JSON.stringify(uid ? name)] = data
       for boardID in boards
         unless withCredentials
@@ -27,13 +41,57 @@ Redirect =
 
     Redirect.data = o
 
-  archives:
-    `<%=
-      JSON.stringify(readJSON('archives.json'), null, 2)
-        .replace(/\n {2,}(?!{)/g, ' ')
-        .replace(/\n/g, '\n    ')
-        .replace(/`/g, '\\`')
-    %>`
+  update: (cb) ->
+    urls = []
+    responses = []
+    nloaded = 0
+    for url in Conf['archiveSources'].split('\n') when url[0] isnt '#'
+      url = url.trim()
+      urls.push url if url
+
+    load = (i) -> ->
+      fail = (action, msg) -> new Notice 'warning', "Error #{action} archive data from #{urls[i]}\n#{msg}", 20
+      return fail 'fetching', (if @status then "#{@status} #{@statusText}" else 'Connection Error') unless @status is 200
+      try
+        response = JSON.parse @response
+      catch err
+        return fail 'parsing', err.message
+      response = [response] unless response instanceof Array
+      responses[i] = response
+      nloaded++
+      if nloaded is urls.length
+        Redirect.parse responses, cb
+
+    if urls.length
+      for url, i in urls
+        if url[0] in ['[', '{']
+          load(i).call
+            status:   200
+            response: url
+        else
+          $.ajax url,
+            responseType: 'text'
+            onloadend: load(i)
+    else
+      Redirect.parse [], cb
+    return
+
+  parse: (responses, cb) ->
+    archives = []
+    archiveUIDs = {}
+    for response in responses
+      for data in response
+        uid = JSON.stringify(data.uid ? data.name)
+        if uid of archiveUIDs
+          $.extend archiveUIDs[uid], data
+        else
+          archiveUIDs[uid] = data
+          archives.push data
+    items = {archives, lastarchivecheck: Date.now()}
+    $.set items
+    $.extend Conf, items
+    Redirect.selectArchives()
+    cb?()
 
   to: (dest, data) ->
     archive = (if dest in ['search', 'board'] then Redirect.data.thread else Redirect.data[dest])[data.boardID]

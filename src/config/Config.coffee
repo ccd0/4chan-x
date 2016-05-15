@@ -761,6 +761,11 @@ Config =
     'Shortcut Icons':             true
     'Custom Board Navigation':    true
 
+  archives:
+    archiveSources:    'https://4chan-x.just-believe.in/json/archives.json'
+    lastarchivecheck:  0
+    archiveAutoUpdate: true
+
   boardnav: """
     [ toggle-all ]
     a-replace
