@@ -429,6 +429,11 @@ Settings =
     for input in $$ '[name]', section
       inputs[input.name] = input
 
+    $.on inputs['archiveLists'], 'change', ->
+      $.set 'lastarchivecheck', 0
+      Conf['lastarchivecheck'] = 0
+      $.id('lastarchivecheck').textContent = 'never'
+
     items = {}
     for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown']
       items[name] = Conf[name]
@@ -444,11 +449,6 @@ Settings =
         if key of Settings
           Settings[key].call input
       return
-
-    $.on inputs['archiveLists'], 'change', ->
-      $.set 'lastarchivecheck', 0
-      Conf['lastarchivecheck'] = 0
-      $.id('lastarchivecheck').textContent = 'never'
 
     interval  = inputs['Interval']
     customCSS = inputs['Custom CSS']
