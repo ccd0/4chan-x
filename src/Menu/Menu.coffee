@@ -19,7 +19,10 @@ Menu =
 
   node: ->
     if @isClone
-      Menu.makeButton @, $('.menu-button', @nodes.info)
+      button = $ '.menu-button', @nodes.info
+      $.rmClass button, 'active'
+      $.rm $('.dialog', button)
+      Menu.makeButton @, button
       return
     $.add @nodes.info, Menu.makeButton @
 
