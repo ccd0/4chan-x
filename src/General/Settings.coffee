@@ -467,6 +467,7 @@ Settings =
     itemsArchive[name] = Conf[name] for name in ['archives', 'selectedArchives', 'lastarchivecheck']
     $.get itemsArchive, (itemsArchive) ->
       $.extend Conf, itemsArchive
+      Redirect.selectArchives()
       Settings.addArchiveTable section
 
     boardSelect    = $ '#archive-board-select', section
@@ -496,8 +497,6 @@ Settings =
 
     archBoards = {}
     for {uid, name, boards, files, software, withCredentials} in Conf['archives']
-      boards = [] unless boards instanceof Array
-      files  = [] unless files  instanceof Array
       for boardID in boards
         o = archBoards[boardID] or=
           thread: [[], []]

@@ -20,9 +20,9 @@ Redirect =
 
     archives = {}
     for data in Conf['archives']
+      for key in ['boards', 'files']
+        data[key] = [] unless data[key] instanceof Array
       {uid, name, boards, files, software, withCredentials} = data
-      boards = [] unless boards instanceof Array
-      files  = [] unless files  instanceof Array
       archives[JSON.stringify(uid ? name)] = data
       for boardID in boards
         unless withCredentials
