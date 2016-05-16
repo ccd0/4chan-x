@@ -62,7 +62,8 @@ Settings =
     (if sectionToOpen then sectionToOpen else links[0]).click() unless openSection is 'none'
 
     $.on $('.close', dialog), 'click', Settings.close
-    $.on overlay,             'click', Settings.close
+    $.on overlay, 'click', Settings.close
+    $.on window, 'beforeunload', Settings.close
 
     $.add d.body, [overlay, dialog]
 
