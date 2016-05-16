@@ -2,6 +2,22 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.34
+
+**v1.11.34.0** *(2016-05-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.33.3.
+- The archive list will now auto-update separately from the script. Archive updating settings are in the `Advanced` settings tab in the `Archives` section.
+  - Automatic archive list updating can be turned off by unchecking `Auto-update`.
+  - By default the updates come from https://4chan-x.just-believe.in/json/archives.json, but you can change the URL, add additional URLs, and add your own list locally. This is set by the `Archive Lists` field.
+  - The canonical `archive.rebeccablacktech.com` domain will once again be used for Rebecca Black Tech by default. If you want to use `rbt.asia`, add `{"uid": 8, "domain": "rbt.asia"}` to your `Archive Lists` field.
+
+  ![Archive List settings](img/1.11.34.0.png)
+
+- Direct links to the archives can now be previewed and inlined like quote links.
+- `Restart when Opened` is now off by default.
+- Menus now have a `data-type` attribute to indicate what type (post, header, thread watcher, gallery) they are.
+- Minor bugfixes and embedding updates.
+
 ### v1.11.33
 
 **v1.11.33.3** *(2016-05-15)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.3/builds/4chan-X-noupdate.crx "Chromium version")]
