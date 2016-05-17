@@ -340,7 +340,7 @@ stable : distready
 web : index.html distready
 	-git commit -am "Build web page."
 	cd dist && git merge --no-commit -s ours master
-	cd dist && git checkout master README.md index.html web.css img
+	cd dist && git checkout master README.md index.html web.css img .gitignore .gitattributes
 	cd dist && git commit -am "Update web page."
 
 update :
