@@ -26,6 +26,15 @@
   "boards": ["cgl", "g", "mu"],
   "files": ["cgl", "g", "mu"]
 }, {
+  "uid": 10,
+  "name": "warosu",
+  "domain": "warosu.org",
+  "http": false,
+  "https": true,
+  "software": "fuuka",
+  "boards": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"],
+  "files": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"]
+}, {
   "uid": 23,
   "name": "Desustorage",
   "domain": "desustorage.org",
