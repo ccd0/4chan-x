@@ -486,11 +486,6 @@ QR =
     if Conf['Show New Thread Option in Threads']
       $.addClass QR.nodes.el, 'show-new-thread-option'
 
-    if Conf['Show Name and Subject']
-      $.addClass QR.nodes.name, 'force-show'
-      $.addClass QR.nodes.sub, 'force-show'
-      QR.nodes.email.placeholder = 'E-mail'
-
     QR.forcedAnon = !!$ 'form[name="post"] input[name="name"][type="hidden"]'
     if QR.forcedAnon
       $.addClass QR.nodes.el, 'forced-anon'
