@@ -82,11 +82,17 @@ ImageCommon =
   download: (e) ->
     return true if @protocol is 'blob:'
     e.preventDefault()
-    CrossOrigin.file @href, (blob) =>
+    {href, download} = @
+    CrossOrigin.file href, (blob) ->
       if blob
-        @href = URL.createObjectURL blob
-        @click()
+        a = $.el 'a',
+          href: URL.createObjectURL(blob)
+          download: download
+          hidden: true
+        $.add d.body, a
+        a.click()
+        $.rm a
       else
-        new Notice 'warning', "Could not download #{@href}", 20
+        new Notice 'warning', "Could not download #{href}", 20
 
 return ImageCommon
