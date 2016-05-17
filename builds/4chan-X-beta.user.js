@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.34.0
+// @version      1.11.34.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.34.0',
+  VERSION:   '1.11.34.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -11836,20 +11836,27 @@ ImageCommon = (function() {
       return (Conf['Show Controls'] && Conf['Click Passthrough'] && e.target.nodeName === 'VIDEO') || (e.target.controls && e.target.getBoundingClientRect().bottom - e.clientY < 35);
     },
     download: function(e) {
+      var download, href;
       if (this.protocol === 'blob:') {
         return true;
       }
       e.preventDefault();
-      return CrossOrigin.file(this.href, (function(_this) {
-        return function(blob) {
-          if (blob) {
-            _this.href = URL.createObjectURL(blob);
-            return _this.click();
-          } else {
-            return new Notice('warning', "Could not download " + _this.href, 20);
-          }
-        };
-      })(this));
+      href = this.href, download = this.download;
+      return CrossOrigin.file(href, function(blob) {
+        var a;
+        if (blob) {
+          a = $.el('a', {
+            href: URL.createObjectURL(blob),
+            download: download,
+            hidden: true
+          });
+          $.add(d.body, a);
+          a.click();
+          return $.rm(a);
+        } else {
+          return new Notice('warning', "Could not download " + href, 20);
+        }
+      });
     }
   };
 
@@ -14934,8 +14941,16 @@ FileInfo = (function() {
       });
     },
     node: function() {
-      var info, oldInfo;
-      if (!this.file || this.isClone) {
+      var a, i, info, len, oldInfo, ref;
+      if (!this.file) {
+        return;
+      }
+      if (this.isClone) {
+        ref = $$('.file-info .download-button', this.file.text);
+        for (i = 0, len = ref.length; i < len; i++) {
+          a = ref[i];
+          $.on(a, 'click', ImageCommon.download);
+        }
         return;
       }
       oldInfo = $.el('span', {
