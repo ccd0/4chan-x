@@ -7,7 +7,11 @@ FileInfo =
       cb:   @node
 
   node: ->
-    return if !@file or @isClone
+    return unless @file
+    if @isClone
+      for a in $$ '.file-info .download-button', @file.text
+        $.on a, 'click', ImageCommon.download
+      return
 
     oldInfo = $.el 'span', {className: 'fileText-original'}
     $.prepend @file.link.parentNode, oldInfo
