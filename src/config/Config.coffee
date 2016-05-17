@@ -762,7 +762,7 @@ Config =
     'Custom Board Navigation':    true
 
   archives:
-    archiveLists:      'https://4chan-x.just-believe.in/json/archives.json'
+    archiveLists:      'https://mayhemydg.github.io/archives.json/archives.json'
     lastarchivecheck:  0
     archiveAutoUpdate: true
 
