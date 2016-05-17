@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.34
 
+**v1.11.34.1** *(2016-05-17)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix some download button / menu item bugs.
+
 **v1.11.34.0** *(2016-05-16)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.0/builds/4chan-X-noupdate.crx "Chromium version")]
 - Based on v1.11.33.3.
 - The archive list will now auto-update separately from the script. Archive updating settings are in the `Advanced` settings tab in the `Archives` section.
