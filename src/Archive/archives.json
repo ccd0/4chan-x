@@ -26,6 +26,15 @@
   "boards": ["cgl", "g", "mu"],
   "files": ["cgl", "g", "mu"]
 }, {
+  "uid": 10,
+  "name": "warosu",
+  "domain": "warosu.org",
+  "http": false,
+  "https": true,
+  "software": "fuuka",
+  "boards": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"],
+  "files": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"]
+}, {
   "uid": 23,
   "name": "Desustorage",
   "domain": "desustorage.org",
@@ -71,4 +80,13 @@
   "software": "foolfuuka",
   "boards": ["f", "cm", "hm", "lgbt", "news", "qst", "trash", "y"],
   "files": []
+}, {
+  "uid": 15,
+  "name": "fgts",
+  "domain": "fgts.jp",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["asp", "b", "cm", "gd", "h", "hc", "hm", "n", "out", "p", "po", "qa", "r", "s", "soc", "toy", "vp", "y"],
+  "files": ["asp", "b", "cm", "gd", "h", "hc", "hm", "n", "out", "p", "po", "qa", "r", "s", "soc", "toy", "vp", "y"]
 }]
