@@ -515,7 +515,7 @@ Index =
       return
 
     if req.status not in [200, 304]
-      err = "Index refresh failed. Error #{req.statusText} (#{req.status})"
+      err = "Index refresh failed. #{if req.status then "Error #{req.statusText} (#{req.status})" else 'Connection Error'}"
       if notice
         notice.setType 'warning'
         notice.el.lastElementChild.textContent = err
