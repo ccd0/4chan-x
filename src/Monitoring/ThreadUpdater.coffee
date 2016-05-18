@@ -162,7 +162,7 @@ ThreadUpdater =
       ThreadUpdater.set 'status', ''
     ThreadUpdater.setInterval()
     unless req.status
-      ThreadUpdater.set 'status', 'Connection Failed', 'warning'
+      ThreadUpdater.set 'status', 'Connection Error', 'warning'
     else if req.status isnt 304
       ThreadUpdater.set 'status', "#{req.statusText} (#{req.status})", 'warning'
 

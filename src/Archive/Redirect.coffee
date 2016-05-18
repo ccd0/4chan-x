@@ -50,8 +50,8 @@ Redirect =
       urls.push url if url
 
     load = (i) -> ->
-      fail = (action, msg) -> new Notice 'warning', "Error #{action} archive data from #{urls[i]}\n#{msg}", 20
-      return fail 'fetching', (if @status then "#{@status} #{@statusText}" else 'Connection Error') unless @status is 200
+      fail = (action, msg) -> new Notice 'warning', "Error #{action} archive data from\n#{urls[i]}\n#{msg}", 20
+      return fail 'fetching', (if @status then "Error #{@statusText} (#{@status})" else 'Connection Error') unless @status is 200
       try
         response = JSON.parse @response
       catch err
