@@ -43,18 +43,6 @@ $.ajax = do ->
   # This saves a lot of bandwidth and CPU time for both the users and the servers.
   lastModified = {}
 
-  blockedURLs = {}
-  blockedError = (url) ->
-    return if blockedURLs[url]
-    blockedURLs[url] = true
-    message = $.el 'div',
-      <%= html(
-        meta.name + ' was blocked from loading the following URL:<br><span></span><br>' +
-        '[<a href="' + meta.faq + '#why-was-' + name.toLowerCase() + '-blocked-from-loading-a-url" target="_blank">More info</a>]'
-      ) %>
-    $('span', message).textContent = (if /^\/\//.test url then location.protocol else '') + url
-    new Notice 'warning', message, 30, -> delete blockedURLs[url]
-
   (url, options={}, extra={}) ->
     {type, whenModified, upCallbacks, form} = extra
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
@@ -63,27 +51,28 @@ $.ajax = do ->
     type or= form and 'post' or 'get'
     try
       r.open type, url, true
+      if whenModified
+        r.setRequestHeader 'If-Modified-Since', lastModified[whenModified][url] if lastModified[whenModified]?[url]?
+        $.on r, 'load', -> (lastModified[whenModified] or= {})[url] = r.getResponseHeader 'Last-Modified'
+      if /\.json$/.test url
+        options.responseType ?= 'json'
+      $.extend r, options
+      # XXX https://code.google.com/p/chromium/issues/detail?id=119256 (Maxthon is still on Chromium 30)
+      if options.responseType is 'json' and r.responseType isnt 'json' and delete r.response
+        Object.defineProperty r, 'response',
+          configurable: true
+          enumerable:   true
+          get: -> return JSON.parse r.responseText
+      $.extend r.upload, upCallbacks
+      # connection error or content blocker
+      $.on r, 'error', -> c.error "4chan X failed to load: #{url}" unless r.status
+      r.send form
     catch err
-      # XXX Some content blockers in Firefox (e.g. Adblock Plus) throw an exception here instead of dispatching an error event.
-      blockedError url
+      # XXX Some content blockers in Firefox (e.g. Adblock Plus and NoScript) throw an exception instead of simulating a connection error.
+      throw err unless err.result is 0x805e0006
       for event in ['error', 'loadend']
         r["on#{event}"] = options["on#{event}"]
         $.queueTask $.event, event, null, r
-      return
-    if whenModified
-      r.setRequestHeader 'If-Modified-Since', lastModified[whenModified][url] if lastModified[whenModified]?[url]?
-      $.on r, 'load', -> (lastModified[whenModified] or= {})[url] = r.getResponseHeader 'Last-Modified'
-    if /\.json$/.test url
-      options.responseType ?= 'json'
-    $.extend r, options
-    # XXX https://code.google.com/p/chromium/issues/detail?id=119256 (Maxthon is still on Chromium 30)
-    if options.responseType is 'json' and r.responseType isnt 'json' and delete r.response
-      Object.defineProperty r, 'response',
-        configurable: true
-        enumerable:   true
-        get: -> return JSON.parse r.responseText
-    $.extend r.upload, upCallbacks
-    r.send form
     r
 
 do ->
