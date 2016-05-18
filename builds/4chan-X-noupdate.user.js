@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.11.34.2
+// @version      1.11.34.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.34.2',
+  VERSION:   '1.11.34.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -3938,23 +3938,8 @@ $ = (function() {
   };
 
   $.ajax = (function() {
-    var blockedError, blockedURLs, lastModified;
+    var lastModified;
     lastModified = {};
-    blockedURLs = {};
-    blockedError = function(url) {
-      var message;
-      if (blockedURLs[url]) {
-        return;
-      }
-      blockedURLs[url] = true;
-      message = $.el('div', {
-        innerHTML: "4chan X was blocked from loading the following URL:<br><span></span><br>[<a href=\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#why-was-4chan-x-blocked-from-loading-a-url\" target=\"_blank\">More info</a>]"
-      });
-      $('span', message).textContent = (/^\/\//.test(url) ? location.protocol : '') + url;
-      return new Notice('warning', message, 30, function() {
-        return delete blockedURLs[url];
-      });
-    };
     return function(url, options, extra) {
       var err, event, form, i, len, r, ref, ref1, type, upCallbacks, whenModified;
       if (options == null) {
@@ -3969,42 +3954,48 @@ $ = (function() {
       type || (type = form && 'post' || 'get');
       try {
         r.open(type, url, true);
+        if (whenModified) {
+          if (((ref = lastModified[whenModified]) != null ? ref[url] : void 0) != null) {
+            r.setRequestHeader('If-Modified-Since', lastModified[whenModified][url]);
+          }
+          $.on(r, 'load', function() {
+            return (lastModified[whenModified] || (lastModified[whenModified] = {}))[url] = r.getResponseHeader('Last-Modified');
+          });
+        }
+        if (/\.json$/.test(url)) {
+          if (options.responseType == null) {
+            options.responseType = 'json';
+          }
+        }
+        $.extend(r, options);
+        if (options.responseType === 'json' && r.responseType !== 'json' && delete r.response) {
+          Object.defineProperty(r, 'response', {
+            configurable: true,
+            enumerable: true,
+            get: function() {
+              return JSON.parse(r.responseText);
+            }
+          });
+        }
+        $.extend(r.upload, upCallbacks);
+        $.on(r, 'error', function() {
+          if (!r.status) {
+            return c.error("4chan X failed to load: " + url);
+          }
+        });
+        r.send(form);
       } catch (_error) {
         err = _error;
-        blockedError(url);
-        ref = ['error', 'loadend'];
-        for (i = 0, len = ref.length; i < len; i++) {
-          event = ref[i];
+        if (err.result !== 0x805e0006) {
+          throw err;
+        }
+        ref1 = ['error', 'loadend'];
+        for (i = 0, len = ref1.length; i < len; i++) {
+          event = ref1[i];
           r["on" + event] = options["on" + event];
           $.queueTask($.event, event, null, r);
         }
-        return;
       }
-      if (whenModified) {
-        if (((ref1 = lastModified[whenModified]) != null ? ref1[url] : void 0) != null) {
-          r.setRequestHeader('If-Modified-Since', lastModified[whenModified][url]);
-        }
-        $.on(r, 'load', function() {
-          return (lastModified[whenModified] || (lastModified[whenModified] = {}))[url] = r.getResponseHeader('Last-Modified');
-        });
-      }
-      if (/\.json$/.test(url)) {
-        if (options.responseType == null) {
-          options.responseType = 'json';
-        }
-      }
-      $.extend(r, options);
-      if (options.responseType === 'json' && r.responseType !== 'json' && delete r.response) {
-        Object.defineProperty(r, 'response', {
-          configurable: true,
-          enumerable: true,
-          get: function() {
-            return JSON.parse(r.responseText);
-          }
-        });
-      }
-      $.extend(r.upload, upCallbacks);
-      r.send(form);
       return r;
     };
   })();
@@ -6362,10 +6353,10 @@ Redirect = (function() {
         return function() {
           var err, fail, response;
           fail = function(action, msg) {
-            return new Notice('warning', "Error " + action + " archive data from " + urls[i] + "\n" + msg, 20);
+            return new Notice('warning', "Error " + action + " archive data from\n" + urls[i] + "\n" + msg, 20);
           };
           if (this.status !== 200) {
-            return fail('fetching', (this.status ? this.status + " " + this.statusText : 'Connection Error'));
+            return fail('fetching', (this.status ? "Error " + this.statusText + " (" + this.status + ")" : 'Connection Error'));
           }
           try {
             response = JSON.parse(this.response);
@@ -9271,7 +9262,7 @@ Index = (function() {
         return;
       }
       if ((ref = req.status) !== 200 && ref !== 304) {
-        err = "Index refresh failed. Error " + req.statusText + " (" + req.status + ")";
+        err = "Index refresh failed. " + (req.status ? "Error " + req.statusText + " (" + req.status + ")" : 'Connection Error');
         if (notice) {
           notice.setType('warning');
           notice.el.lastElementChild.textContent = err;
@@ -17096,7 +17087,7 @@ ThreadUpdater = (function() {
       }
       ThreadUpdater.setInterval();
       if (!req.status) {
-        return ThreadUpdater.set('status', 'Connection Failed', 'warning');
+        return ThreadUpdater.set('status', 'Connection Error', 'warning');
       } else if (req.status !== 304) {
         return ThreadUpdater.set('status', req.statusText + " (" + req.status + ")", 'warning');
       }

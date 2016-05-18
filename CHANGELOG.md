@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.34
 
+**v1.11.34.3** *(2016-05-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Improve handling of errors due to interaction of 4chan X with ad blockers and NoScript.
+
 **v1.11.34.2** *(2016-05-17)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.2/builds/4chan-X-noupdate.crx "Chromium version")]
 - Approximately sync replaced WebM thumbnails with hover preview.
 - Change default archive list update URL to https://mayhemydg.github.io/archives.json/archives.json.
