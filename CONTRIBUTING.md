@@ -1,7 +1,5 @@
 ## Reporting bugs
 
-**If you have recently started seeing errors about "File Info Formatting" crashing, check if you have the Chrome extension "Emoji Input by EmojiStuff.com", and if so, disable or uninstall it.**
-
 Bug reports and feature requests for 4chan X are tracked at **https://github.com/ccd0/4chan-x/issues?q=is%3Aopen+sort%3Aupdated-desc**.
 
 You can submit a bug report / feature request either via your Github account or the [anonymous report form](https://gitreports.com/issue/ccd0/4chan-x).
@@ -9,7 +7,7 @@ You can submit a bug report / feature request either via your Github account or 
 If you're reporting a bug, the more detail you can give, the better. If I can't reproduce your bug, I probably won't be able to fix it. You can help by doing the following:
 
 1. Include precise steps to reproduce the problem, with the expected and actual results.
-2. Please mention any other extensions / scripts you are using. To check if a bug is due to a conflict with another extension, temporarily disable any other extensions and userscripts. If the bug goes away, turn them back on one by one until you find the one causing the problem.
+2. **Please mention any other extensions / scripts you are using.** To check if a bug is due to a conflict with another extension, temporarily disable any other extensions and userscripts. If the bug goes away, turn them back on one by one until you find the one causing the problem.
 3. Make sure your **browser**, **4chan X**, and (if applicable) **Greasemonkey** are up to date. Include the versions you're using in bug reports.
 4. Test if the bug occurs with 4chan X disabled and using the native extension. If it does, it's likely a problem with 4chan or your browser rather than with 4chan X.
 5. Open your console with Shift+Control+J (⇧⌘J on OS X Firefox, ⌘⌥J on OS X Chromium), and look for any error messages, especially ones that occur at the same time as the bug. Include these in your bug report. If you're using Firefox, be sure to check the browser console (Shift+Control+J), not the web console (Shift+Control+K) as errors may not show up in the latter.
