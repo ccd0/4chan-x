@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.34
 
+**v1.11.34.4** *(2016-05-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add search by flag to archive link menu.
+
 **v1.11.34.3** *(2016-05-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.3/builds/4chan-X-noupdate.crx "Chromium version")]
 - Improve handling of errors due to interaction of 4chan X with ad blockers and NoScript.
 

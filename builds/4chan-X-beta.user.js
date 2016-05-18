@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.34.3
+// @version      1.11.34.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.34.3',
+  VERSION:   '1.11.34.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5529,7 +5529,7 @@ Post = (function() {
     };
 
     function Post(root, thread, board) {
-      var clone, j, len, ref, ref1, ref2, ref3, ref4, ref5, ref6;
+      var clone, j, len, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8;
       this.thread = thread;
       this.board = board;
       this.ID = +root.id.slice(2);
@@ -5553,7 +5553,8 @@ Post = (function() {
         tripcode: (ref2 = this.nodes.tripcode) != null ? ref2.textContent : void 0,
         uniqueID: (ref3 = this.nodes.uniqueID) != null ? ref3.firstElementChild.textContent : void 0,
         capcode: (ref4 = this.nodes.capcode) != null ? ref4.textContent.replace('## ', '') : void 0,
-        flag: (ref5 = this.nodes.flag) != null ? ref5.title : void 0,
+        flagCode: (ref5 = this.nodes.flag) != null ? (ref6 = ref5.className.match(/flag-(\w+)/)) != null ? ref6[1].toUpperCase() : void 0 : void 0,
+        flag: (ref7 = this.nodes.flag) != null ? ref7.title : void 0,
         date: this.nodes.date ? new Date(this.nodes.date.dataset.utc * 1000) : void 0
       };
       this.parseComment();
@@ -5565,9 +5566,9 @@ Post = (function() {
       if (g.posts[this.fullID]) {
         this.isRebuilt = true;
         this.clones = g.posts[this.fullID].clones;
-        ref6 = this.clones;
-        for (j = 0, len = ref6.length; j < len; j++) {
-          clone = ref6[j];
+        ref8 = this.clones;
+        for (j = 0, len = ref8.length; j < len; j++) {
+          clone = ref8[j];
           clone.origin = this;
         }
       }
@@ -13852,7 +13853,7 @@ ArchiveLink = (function() {
         },
         subEntries: []
       };
-      ref1 = [['Post', 'post'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['Capcode', 'capcode'], ['Subject', 'subject'], ['Filename', 'filename'], ['Image MD5', 'MD5']];
+      ref1 = [['Post', 'post'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['Capcode', 'capcode'], ['Subject', 'subject'], ['Flag', 'country'], ['Filename', 'filename'], ['Image MD5', 'MD5']];
       for (i = 0, len = ref1.length; i < len; i++) {
         type = ref1[i];
         entry.subEntries.push(this.createSubEntry(type[0], type[1]));
@@ -13876,7 +13877,7 @@ ArchiveLink = (function() {
         return true;
       } : function(post) {
         var value;
-        value = Filter[type](post);
+        value = type === 'country' ? post.info.flagCode : Filter[type](post);
         if (!value) {
           return false;
         }
