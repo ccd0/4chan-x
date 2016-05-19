@@ -21,12 +21,12 @@ Main =
             configurable: false
             get: -> throw new Error()
             set: -> throw new Error()
-      for prop in ['atOptions', 'adsterra_key', 'EpmadsConfig', 'epmads_key', 'EpomConfig', 'epom_key', 'exoDocumentProtocol']
+      for prop in ['atOptions', 'adsterra_key', 'EpmadsConfig', 'epmads_key', 'EpomConfig', 'epom_key', 'exoDocumentProtocol', 'supp_key']
         nuke window, prop
       return
     $.on window, 'beforescriptexecute', (e) ->
       host = e.target.src.split('/')[2]?.match(/[^.]+\.[^.]+$/)?[0]
-      e.preventDefault() if host in ['bnhtml.com', 'ecpmrocks.com', 'advertisation.com', 'exoclick.com']
+      e.preventDefault() if host in ['bnhtml.com', 'ecpmrocks.com', 'advertisation.com', 'exoclick.com', 'n298adserv.com']
 
     # Detect multiple copies of 4chan X
     $.on d, '4chanXInitFinished', ->
