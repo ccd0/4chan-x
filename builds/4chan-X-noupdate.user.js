@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.11.33.4
+// @version      1.11.33.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.33.4',
+  VERSION:   '1.11.33.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -22256,7 +22256,7 @@ Main = (function() {
             });
           } catch (_error) {}
         };
-        ref = ['atOptions', 'adsterra_key', 'EpmadsConfig', 'epmads_key', 'EpomConfig', 'epom_key', 'exoDocumentProtocol'];
+        ref = ['atOptions', 'adsterra_key', 'EpmadsConfig', 'epmads_key', 'EpomConfig', 'epom_key', 'exoDocumentProtocol', 'supp_key'];
         for (j = 0, len = ref.length; j < len; j++) {
           prop = ref[j];
           nuke(window, prop);
@@ -22265,7 +22265,7 @@ Main = (function() {
       $.on(window, 'beforescriptexecute', function(e) {
         var host, ref, ref1;
         host = (ref = e.target.src.split('/')[2]) != null ? (ref1 = ref.match(/[^.]+\.[^.]+$/)) != null ? ref1[0] : void 0 : void 0;
-        if (host === 'bnhtml.com' || host === 'ecpmrocks.com' || host === 'advertisation.com' || host === 'exoclick.com') {
+        if (host === 'bnhtml.com' || host === 'ecpmrocks.com' || host === 'advertisation.com' || host === 'exoclick.com' || host === 'n298adserv.com') {
           return e.preventDefault();
         }
       });

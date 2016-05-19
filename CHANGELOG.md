@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.33
 
+**v1.11.33.5** *(2016-05-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update ad server blacklist.
+
 **v1.11.33.4** *(2016-05-17)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Archive list: waruso.org is back; also temporarily add fgts.jp (still down) as last option in list.
 
