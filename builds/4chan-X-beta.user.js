@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.34.6
+// @version      1.11.34.7
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.34.6',
+  VERSION:   '1.11.34.7',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1299,8 +1299,9 @@ boards:
 "body > div[style*=\" top: -10000px;\"] {\n" +
 "  visibility: hidden !important;\n" +
 "}\n" +
-".blink {\n" +
-"  animation: none !important;\n" +
+":root.blink {\n" +
+"  -webkit-animation: none;\n" +
+"  animation: none;\n" +
 "}\n" +
 "/* Ads */\n" +
 ":root:not(.ads-loaded) .ad-cnt,\n" +
