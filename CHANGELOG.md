@@ -40,6 +40,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.33
 
+**v1.11.33.7** *(2016-05-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.7/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix blinking in older browsers.
+- Allow 4chan's blinking animations to work.
+
 **v1.11.33.6** *(2016-05-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.6/builds/4chan-X-noupdate.crx "Chromium version")]
 - Quick fix for blinking.
 
