@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.34
 
+**v1.11.34.6** *(2016-05-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.33.6: Quick fix for blinking.
+
 **v1.11.34.5** *(2016-05-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.5/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.33.5: Update ad server blacklist.
 - Change link on report form to 4chan IRC.
