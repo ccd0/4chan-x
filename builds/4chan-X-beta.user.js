@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.33.5
+// @version      1.11.33.6
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.33.5',
+  VERSION:   '1.11.33.6',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1293,6 +1293,9 @@ boards:
 "/* Fix captcha scrolling to top of page. */\n" +
 "body > div[style*=\" top: -10000px;\"] {\n" +
 "  visibility: hidden !important;\n" +
+"}\n" +
+".blink {\n" +
+"  animation: none !important;\n" +
 "}\n" +
 "/* Ads */\n" +
 ":root:not(.ads-loaded) .ad-cnt,\n" +
