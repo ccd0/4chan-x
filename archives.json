@@ -64,13 +64,12 @@
 }, {
   "uid": 5,
   "name": "Love is Over",
-  "domain": "deploy.loveisover.me",
+  "domain": "archive.loveisover.me",
   "http": true,
   "https": false,
   "software": "foolfuuka",
   "boards": ["c", "d", "e", "i", "lgbt", "t", "u"],
-  "files": ["c", "d", "e", "i", "lgbt", "t", "u"],
-  "search": []
+  "files": ["c", "d", "e", "i", "lgbt", "t", "u"]
 }, {
   "uid": 28,
   "name": "bstats",
