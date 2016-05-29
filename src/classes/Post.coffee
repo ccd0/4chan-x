@@ -146,7 +146,7 @@ class Post
     match = quotelink.href.match ///
       ^https?://boards\.4chan\.org/+
       ([^/]+) # boardID
-      /+(?:res|thread)/+\d+(?:/[^#]*)?#p
+      /+(?:res|thread)/+\d+(?:[/?][^#]*)?#p
       (\d+)   # postID
       $
     ///
