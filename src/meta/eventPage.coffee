@@ -1,6 +1,8 @@
+handlers = {}
+
 requestID = 0
 
-chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
+handlers.ajax = (request, sender, sendResponse) ->
   id = requestID
   requestID++
   sendResponse id
@@ -26,3 +28,6 @@ chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
     chrome.tabs.sendMessage sender.tab.id, {id, error: true}
   , false
   xhr.send()
+
+chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
+  handlers[request.type] request, sender, sendResponse

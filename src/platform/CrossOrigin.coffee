@@ -5,7 +5,7 @@ eventPageRequest = do ->
     callbacks[data.id] data
     delete callbacks[data.id]
   (url, responseType, cb) ->
-    chrome.runtime.sendMessage {url, responseType}, (id) ->
+    chrome.runtime.sendMessage {type: 'ajax', url, responseType}, (id) ->
       callbacks[id] = cb
 
 <% } %>
