@@ -275,9 +275,9 @@
       "resolved": "https://registry.npmjs.org/findup-sync/-/findup-sync-0.1.3.tgz"
     },
     "font-awesome": {
-      "version": "4.6.1",
-      "from": "font-awesome@4.6.1",
-      "resolved": "https://registry.npmjs.org/font-awesome/-/font-awesome-4.6.1.tgz"
+      "version": "4.6.3",
+      "from": "font-awesome@latest",
+      "resolved": "https://registry.npmjs.org/font-awesome/-/font-awesome-4.6.3.tgz"
     },
     "forever-agent": {
       "version": "0.6.1",

@@ -52,7 +52,7 @@
     "coffee-script": "=1.9.3",
     "crx": "^3.0.3",
     "esprima": "^2.7.2",
-    "font-awesome": "=4.6.1",
+    "font-awesome": "=4.6.3",
     "jshint": "^2.9.2",
     "jszip": "^3.0.0",
     "lodash.template": "^4.2.5",
