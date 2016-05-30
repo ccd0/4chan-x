@@ -343,12 +343,14 @@ web : index.html distready
 	cd dist && git commit -am "Update web page."
 
 update :
+	$(RM) npm-shrinkwrap.json
 	npm install --save-dev $(shell node tools/unpinned.js)
 	npm install
 	npm shrinkwrap --dev
 	$(call CAT,npm-shrinkwrap.json,src/meta/npm-shrinkwrap.json)
 
 updatehard :
+	$(RM) npm-shrinkwrap.json
 	npm install --save-dev $(shell node tools/unpinned.js latest)
 	npm install
 	npm shrinkwrap --dev
