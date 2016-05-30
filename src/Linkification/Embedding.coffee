@@ -310,7 +310,7 @@ Embedding =
           loop:     true
     ,
       key: 'Pastebin'
-      regExp: /^\w+:\/\/(?:\w+\.)?pastebin\.com\/(?!u\/)(?:[\w\.]+\?i\=)?(\w+)/
+      regExp: /^\w+:\/\/(?:\w+\.)?pastebin\.com\/(?!u\/)(?:[\w.]+(?:\/|\?i\=))?(\w+)/
       el: (a) ->
         div = $.el 'iframe',
           src: "//pastebin.com/embed_iframe.php?i=#{a.dataset.uid}"
