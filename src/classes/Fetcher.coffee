@@ -48,7 +48,7 @@ class Fetcher
       return
 
     {status} = req
-    unless status in [200, 304]
+    unless status is 200
       # The thread can die by the time we check a quote.
       return if @archivedPost()
 
