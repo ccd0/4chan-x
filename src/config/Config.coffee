@@ -722,6 +722,7 @@ Config =
     //iqdb.org/?url=%IMG
     #//3d.iqdb.org/?url=%IMG
     #//saucenao.com/search.php?url=%IMG
+    #//whatanime.ga/?auto&url=%IMG
 
     # "View Same" in archives:
     http://eye.swfchan.com/search/?q=%name;types:swf;sandbox
