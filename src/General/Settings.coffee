@@ -372,6 +372,7 @@ Settings =
         '#https://boards.fireden.net/_/search/image/%sMD5/'
         '#https://foolz.fireden.net/_/search/image/%sMD5/'
         '#//www.gif-explode.com/%URL;types:gif'
+        '#//whatanime.ga/?auto&url=%IMG'
       ]
     changes
 
