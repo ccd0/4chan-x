@@ -10,7 +10,7 @@ uid | name | domain | software
 ``7``|``Install Gentoo``|[archive.installgentoo.net](http://archive.installgentoo.net)|[Fuuka](https://github.com/eksopl/fuuka)
 ``8``|``Rebecca Black Tech``|[archive.rebeccablacktech.com](http://archive.rebeccablacktech.com) & [rbt.asia](http://rbt.asia)|[Fuuka](https://github.com/eksopl/fuuka)
 ``9``|``Heinessen``|[archive.heinessen.com](http://archive.heinessen.com)|[Fuuka](https://github.com/eksopl/fuuka)
-``10``|``warosu``|[warosu.org](http://warosu.org) (previously [fuuka.warosu.org](http://fuuka.warosu.org)|[Fuuka](https://github.com/eksopl/fuuka)
+``10``|``warosu``|[warosu.org](http://warosu.org) (previously [fuuka.warosu.org](http://fuuka.warosu.org))|[Fuuka](https://github.com/eksopl/fuuka)
 ``11``|``Foolz a Shit``|[archive.foolzashit.com](http://archive.foolzashit.com)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 ``12``|``FapArchive`` (previously ``worldathleticproject.org`` & ``fap archive``)|[fuuka.worldathleticproject.org](http://fuuka.worldathleticproject.org)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 ``13``|``Foolz Beta``|[beta.foolz.us](http://beta.foolz.us)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
@@ -25,7 +25,7 @@ uid | name | domain | software
 ``22``|``not4plebs``|[totally.not4plebs.org](http://totally.not4plebs.org)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 ``23``|``Desustorage`` (previously ``DesuStorage`` & ``archive.horse``)|[desustorage.org](http://desustorage.org) (previously [archive.desustorage.org](http://archive.desustorage.org) & [4ch.archive.horse](http://4ch.archive.horse))|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 ``24``|``fireden.net``|[boards.fireden.net](http://boards.fireden.net)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
-``25``|``arch.b4k.co`` (previously ``b4k.co``)|[arch.b4k.co](http://arch.b4k.co) (previously [ff.b4k.co](http://ff.b4k.co)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
+``25``|``arch.b4k.co`` (previously ``b4k.co``)|[arch.b4k.co](http://arch.b4k.co) (previously [ff.b4k.co](http://ff.b4k.co))|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 ``26``|``poweredby.moe``|[archive.poweredby.moe](http://archive.poweredby.moe)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 ``27``|``4ch.be``|[4ch.be](http://4ch.be)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 ``28``|``bstats``|[archive.b-stats.org](http://archive.b-stats.org)|[b-stats](https://github.com/bstats/b-stats) (supports [FoolFuuka](https://github.com/FoolCode/FoolFuuka) API
