@@ -13,21 +13,6 @@ Main =
           $.ready -> Captcha.fixes.init()
       return
 
-    # Disrupt loading of ads from malicious/irresponsible providers.
-    $.global ->
-      nuke = (obj, prop) ->
-        try
-          Object.defineProperty obj, prop,
-            configurable: false
-            get: -> throw new Error()
-            set: -> throw new Error()
-      for prop in ['atOptions', 'adsterra_key', 'EpmadsConfig', 'epmads_key', 'EpomConfig', 'epom_key', 'exoDocumentProtocol', 'supp_key']
-        nuke window, prop
-      return
-    $.on window, 'beforescriptexecute', (e) ->
-      host = e.target.src.split('/')[2]?.match(/[^.]+\.[^.]+$/)?[0]
-      e.preventDefault() if host in ['bnhtml.com', 'ecpmrocks.com', 'advertisation.com', 'exoclick.com', 'n298adserv.com']
-
     # Detect multiple copies of 4chan X
     $.on d, '4chanXInitFinished', ->
       if Main.expectInitFinished
@@ -61,11 +46,35 @@ Main =
     Conf['JSON Navigation'] = true
     Conf['Oekaki Links'] = true
 
+    # Pseudo-enforce default whitelist while configuration loads
+    $.global ->
+      {whitelist} = document.currentScript.dataset
+      whitelist = whitelist.split('\n').filter (x) -> x[0] isnt "'"
+      oldFun = {}
+      for key in ['createElement', 'write']
+        oldFun[key] = document[key]
+        document[key] = do (key) -> (arg) ->
+          s = document.currentScript
+          if s and s.src and whitelist.indexOf(s.src.split('/')[..2].join('/')) < 0
+            throw Error()
+          oldFun[key].call document, arg
+      document.addEventListener 'csp-ready', ->
+        document[key] = oldFun[key] for key of oldFun
+      , false
+    ,
+      whitelist: Conf['jsWhitelist']
+
     # Get saved values as items
     items = {}
     items[key] = undefined for key of Conf
     items['previousversion'] = undefined
     $.get items, (items) ->
+
+      # Enforce JS whitelist
+      jsWhitelist = items['jsWhitelist'] ? Conf['jsWhitelist']
+      $.addCSP "script-src #{jsWhitelist.replace(/[\s;]+/g, ' ')}"
+      $.event 'csp-ready'
+
       $.asap docSet, ->
 
         # Don't hide the local storage warning behind a settings panel.
