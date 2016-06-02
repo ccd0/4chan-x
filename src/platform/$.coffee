@@ -138,6 +138,18 @@ $.addStyle = (css, id, test='head') ->
     $.add d.head, style
   style
 
+$.addCSP = (policy) ->
+  meta = $.el 'meta',
+    httpEquiv: 'Content-Security-Policy'
+    content:   policy
+  if d.head
+    $.add d.head, meta
+    $.rm meta
+  else
+    head = $.add (doc or d), $.el('head')
+    $.add head, meta
+    $.rm head
+
 $.x = (path, root) ->
   root or= d.body
   # XPathResult.ANY_UNORDERED_NODE_TYPE === 8
@@ -296,15 +308,16 @@ $.queueTask = do ->
       taskQueue.push arguments
       setTimeout execTask, 0
 
-$.globalEval = (code) ->
+$.globalEval = (code, data) ->
   script = $.el 'script',
     textContent: code
+  $.extend script.dataset, data if data
   $.add (d.head or doc), script
   $.rm script
 
-$.global = (fn) ->
+$.global = (fn, data) ->
   if doc
-    $.globalEval "(#{fn})();"
+    $.globalEval "(#{fn})();", data
   else
     # XXX dwb
     fn()

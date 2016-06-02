@@ -792,6 +792,16 @@ Config =
     """
     sjisPreview: false
 
+  jsWhitelist: '''
+    http://s.4cdn.org
+    https://s.4cdn.org
+    http://www.google.com
+    https://www.google.com
+    https://www.gstatic.com
+    'unsafe-inline'
+    'unsafe-eval'
+  '''
+
   captchaLanguage: ''
 
   time: '%m/%d/%y(%a)%H:%M:%S'
