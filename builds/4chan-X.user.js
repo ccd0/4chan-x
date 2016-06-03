@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.11.34.8
+// @version      1.11.34.9
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.34.8',
+  VERSION:   '1.11.34.9',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -16907,9 +16907,10 @@ ThreadUpdater = (function() {
       if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
         return;
       }
-      this.audio = $.el('audio', {
-        src: ThreadUpdater.beep
-      });
+      this.audio = $.el('audio');
+      if ($.engine !== 'gecko') {
+        this.audio.src = this.beep;
+      }
       if (Conf['Updater and Stats in Header']) {
         this.dialog = sc = $.el('span', {
           id: 'updater'
@@ -17010,6 +17011,7 @@ ThreadUpdater = (function() {
     playBeep: function() {
       var audio;
       audio = ThreadUpdater.audio;
+      audio.src || (audio.src = ThreadUpdater.beep);
       if (audio.paused) {
         return audio.play();
       } else {
