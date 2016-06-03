@@ -29,3 +29,4 @@ uid | name | domain | software
 ``26``|``poweredby.moe``|[archive.poweredby.moe](http://archive.poweredby.moe)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 ``27``|``4ch.be``|[4ch.be](http://4ch.be)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 ``28``|``bstats``|[archive.b-stats.org](http://archive.b-stats.org)|[b-stats](https://github.com/bstats/b-stats) (supports [FoolFuuka](https://github.com/FoolCode/FoolFuuka) API
+``29``|``Archived.Moe``|[archived.moe](http://archived.moe)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
