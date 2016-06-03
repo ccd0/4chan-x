@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.34
 
+**v1.11.34.9** *(2016-06-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.9/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix loading icon getting stuck on in Firefox.
+
 **v1.11.34.8** *(2016-06-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.8/builds/4chan-X-noupdate.crx "Chromium version")]
 - Replace malicious ad blacklist with a Javascript whitelist, which can be configured on the `Advanced` settings tab.
 
