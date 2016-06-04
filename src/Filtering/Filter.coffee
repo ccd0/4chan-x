@@ -23,8 +23,10 @@ Filter =
         boards = if boards is 'global' then null else boards.split(',')
 
         # boards to exclude from an otherwise global rule
-        if boards is null
-          excludes = filter.match(/exclude:([^;]+)/)?[1].toLowerCase().split(',') or null
+        excludes = if boards is null
+          filter.match(/exclude:([^;]+)/)?[1].toLowerCase().split(',') or null
+        else
+          null
 
         if key in ['uniqueID', 'MD5']
           # MD5 filter will use strings instead of regular expressions.
