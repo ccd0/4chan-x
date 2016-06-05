@@ -50,7 +50,7 @@ Main =
     Conf['Oekaki Links'] = true
 
     # Pseudo-enforce default whitelist while configuration loads
-    $.global ->
+    if $.platform is 'crx' then $.global ->
       {whitelist} = document.currentScript.dataset
       whitelist = whitelist.split('\n').filter (x) -> x[0] isnt "'"
       oldFun = {}
@@ -72,11 +72,10 @@ Main =
     items[key] = undefined for key of Conf
     items['previousversion'] = undefined
     ($.getSync or $.get) items, (items) ->
-
       # Enforce JS whitelist
       jsWhitelist = items['jsWhitelist'] ? Conf['jsWhitelist']
       $.addCSP "script-src #{jsWhitelist.replace(/[\s;]+/g, ' ')}"
-      $.event 'csp-ready'
+      $.event 'csp-ready' if $.platform is 'crx'
 
       $.asap docSet, ->
 
