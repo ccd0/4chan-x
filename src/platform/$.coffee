@@ -570,11 +570,12 @@ $.get = (key, val, cb) ->
   else
     items = key
     cb = val
-  $.queueTask ->
-    for key of items
-      if val = $.getValue g.NAMESPACE + key
-        items[key] = JSON.parse val
-    cb items
+  $.queueTask $.getSync, items, cb
+
+$.getSync = (items, cb) ->
+  for key of items when (val2 = $.getValue g.NAMESPACE + key)
+    items[key] = JSON.parse val2
+  cb items
 
 $.set = (keys, val, cb) ->
   if typeof keys is 'string'

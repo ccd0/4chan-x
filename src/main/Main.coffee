@@ -71,7 +71,7 @@ Main =
     items = {}
     items[key] = undefined for key of Conf
     items['previousversion'] = undefined
-    $.get items, (items) ->
+    ($.getSync or $.get) items, (items) ->
 
       # Enforce JS whitelist
       jsWhitelist = items['jsWhitelist'] ? Conf['jsWhitelist']
