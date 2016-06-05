@@ -28,8 +28,8 @@ Settings =
         settings.disableAll = true
         localStorage.setItem '4chan-settings', JSON.stringify settings
       else
-        $.onExists doc, 'body', ->
-          $.global -> window.Config.disableAll = true
+        $.global ->
+          Object.defineProperty window, 'Config', {value: {disableAll: true}}
 
   open: (openSection) ->
     return if Settings.overlay
