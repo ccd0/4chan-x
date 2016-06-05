@@ -2,6 +2,14 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.35
+
+**v1.11.35.0** *(2016-06-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.34.9.
+- Prefix the `gecko`, `blink`, `webkit`, and `edge` classes added to the document depending on the detected browser engine with `ua-`. The old versions are still available for now, but will be removed in the near future.
+- Add https://whatanime.ga/ to the Sauce list.
+- Various minor bugfixes.
+
 ### v1.11.34
 
 **v1.11.34.9** *(2016-06-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.9/builds/4chan-X-noupdate.crx "Chromium version")]
