@@ -3,9 +3,6 @@ Main =
     # XXX Work around Pale Moon / old Firefox + GM 1.15 bug where script runs in iframe with wrong window.location.
     return if d.body and not $ 'title', d.head
 
-    # Don't run inside ad iframes.
-    return if window.frameElement and window.frameElement.src is ''
-
     # XXX dwb userscripts extension reloads scripts run at document-start when replaceState/pushState is called.
     return if window['<%= meta.name %> antidup']
     window['<%= meta.name %> antidup'] = true
@@ -15,6 +12,9 @@ Main =
         if enabled
           $.ready -> Captcha.fixes.init()
       return
+
+    # Don't run inside ad iframes.
+    return if window.frameElement and window.frameElement.src is ''
 
     # Detect multiple copies of 4chan X
     $.on d, '4chanXInitFinished', ->
