@@ -14,7 +14,8 @@ Main =
       return
 
     # Don't run inside ad iframes.
-    return if window.frameElement and window.frameElement.src is ''
+    try
+      return if window.frameElement and window.frameElement.src is ''
 
     # Detect multiple copies of 4chan X
     $.on d, '4chanXInitFinished', ->
