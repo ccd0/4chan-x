@@ -373,6 +373,8 @@ Settings =
         '#https://foolz.fireden.net/_/search/image/%sMD5/'
         '#//www.gif-explode.com/%URL;types:gif'
       ]
+    if compareString < '00001.00011.00035.00000'
+      addSauces ['https://whatanime.ga/?auto&url=%IMG;text:wait']
     changes
 
   loadSettings: (data, cb) ->
