@@ -498,6 +498,7 @@ Settings =
 
     archBoards = {}
     for {uid, name, boards, files, software, withCredentials} in Conf['archives']
+      continue unless software in ['fuuka', 'foolfuuka']
       for boardID in boards
         o = archBoards[boardID] or=
           thread: [[], []]

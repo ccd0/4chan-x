@@ -23,6 +23,7 @@ Redirect =
       for key in ['boards', 'files']
         data[key] = [] unless data[key] instanceof Array
       {uid, name, boards, files, software, withCredentials} = data
+      continue unless software in ['fuuka', 'foolfuuka']
       archives[JSON.stringify(uid ? name)] = data
       for boardID in boards
         unless withCredentials
