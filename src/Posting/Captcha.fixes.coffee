@@ -100,7 +100,7 @@ Captcha.fixes =
     for errmsg in $$ '.rc-imageselect-incorrect-response, .rc-imageselect-error-select-one, .rc-imageselect-error-select-more, .rc-imageselect-error-dynamic-more'
       unless $ 'a', errmsg
         link = $.el 'a',
-          href: 'https://www.4chan-x.net/captchas.html'
+          href: 'https://www.4chan.org/feedback'
           target: '_blank'
           textContent: '[complain]'
         $.add errmsg, [$.tn(' '), link]
