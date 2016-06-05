@@ -194,7 +194,7 @@ Main =
     $('link[href*=mobile]', d.head)?.disabled = true
     $.addClass doc, 'fourchan-x', 'seaweedchan'
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
-    $.addClass doc, $.engine if $.engine
+    $.addClass doc, "ua-#{$.engine}", $.engine if $.engine
     $.onExists doc, '.ad-cnt', (ad) -> $.onExists ad, 'img', -> $.addClass doc, 'ads-loaded'
     $.addClass doc, 'autohiding-scrollbar' if Conf['Autohiding Scrollbar']
     $.ready ->

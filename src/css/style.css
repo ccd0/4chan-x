@@ -1077,7 +1077,7 @@ span.hide-announcement {
 :root.fit-width .full-image {
   max-width: 100%;
 }
-:root.gecko.fit-width .full-image {
+:root.ua-gecko.fit-width .full-image {
   width: 100%;
 }
 .fileThumb > .warning {
@@ -1403,10 +1403,10 @@ input.field.tripped:not(:hover):not(:focus) {
   width: 304px;
 }
 /* scrollable with scroll bar hidden; prevents scroll on space press */
-:root.blink #qr .captcha-container > div {
+:root.ua-blink #qr .captcha-container > div {
   overflow: hidden;
 }
-:root.blink #qr .captcha-container > div > div:first-of-type {
+:root.ua-blink #qr .captcha-container > div > div:first-of-type {
   overflow-y: scroll;
   overflow-x: hidden;
   padding-right: 15px;
@@ -1727,7 +1727,7 @@ a:only-of-type > .remove {
   display: -webkit-flex;
   display: flex;
 }
-:root.webkit .textarea {
+:root.ua-webkit .textarea {
   margin-bottom: -2px;
 }
 #char-count {
