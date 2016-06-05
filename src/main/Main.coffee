@@ -346,6 +346,11 @@ Main =
     softTask()
 
   handleErrors: (errors) ->
+    # Detect conflicts with 4chan X v2
+    if d.body and $.hasClass(d.body, 'fourchan_x') and not $.hasClass(doc, 'tainted')
+      new Notice 'error', 'Error: Multiple copies of 4chan X are enabled.'
+      $.addClass doc, 'tainted'
+
     unless errors instanceof Array
       error = errors
     else if errors.length is 1
