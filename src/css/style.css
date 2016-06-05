@@ -1727,9 +1727,6 @@ a:only-of-type > .remove {
   display: -webkit-flex;
   display: flex;
 }
-:root.ua-webkit .textarea {
-  margin-bottom: -2px;
-}
 #char-count {
   color: #000;
   background: hsla(0, 0%, 100%, .5);
