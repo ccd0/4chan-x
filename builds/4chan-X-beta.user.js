@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.35.0
+// @version      1.11.35.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -134,7 +134,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.35.0',
+  VERSION:   '1.11.35.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -397,7 +397,7 @@ Config = (function() {
       'QR.personas': "#options:\"sage\";boards:jp;always",
       sjisPreview: false
     },
-    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\n\'unsafe-inline\'\n\'unsafe-eval\'',
+    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'',
     captchaLanguage: '',
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
@@ -22535,6 +22535,7 @@ Main = (function() {
           whitelist = whitelist.split('\n').filter(function(x) {
             return x[0] !== "'";
           });
+          whitelist.push(location.protocol + "//" + location.host);
           oldFun = {};
           ref1 = ['createElement', 'write'];
           for (k = 0, len1 = ref1.length; k < len1; k++) {
