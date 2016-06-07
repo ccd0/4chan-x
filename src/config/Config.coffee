@@ -799,6 +799,7 @@ Config =
     http://www.google.com
     https://www.google.com
     https://www.gstatic.com
+    'self'
     'unsafe-inline'
     'unsafe-eval'
   '''

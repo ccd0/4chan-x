@@ -54,6 +54,7 @@ Main =
     if $.platform is 'crx' then $.global ->
       {whitelist} = document.currentScript.dataset
       whitelist = whitelist.split('\n').filter (x) -> x[0] isnt "'"
+      whitelist.push "#{location.protocol}//#{location.host}"
       oldFun = {}
       for key in ['createElement', 'write']
         oldFun[key] = document[key]

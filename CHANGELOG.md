@@ -12,6 +12,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.34
 
+**v1.11.34.10** *(2016-06-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.10/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix blocking of CloudFlare scripts.
+
 **v1.11.34.9** *(2016-06-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.9/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix loading icon getting stuck on in Firefox.
 
