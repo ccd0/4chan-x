@@ -19,7 +19,7 @@ uid | name | domain | software
 `16`|`maware`|[archive.mawa.re](http://archive.mawa.re)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `17`|`installgentoo.com`|[chan.installgentoo.com](http://chan.installgentoo.com)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `18`|`4plebs Flash Archive`|[flash.4plebs.org](http://flash.4plebs.org)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
-`19`|`Deniable Plausibility` (previously `Innovandalism Archive`)|[boards.deniableplausibility.net](http://boards.deniableplausibility.net) (previously [boards.innovandalism.eu](https:boards.innovandalism.eu))|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
+`19`|`Deniable Plausibility` (previously `Innovandalism Archive`)|[boards.deniableplausibility.net](http://boards.deniableplausibility.net) (previously [boards.innovandalism.eu](https://boards.innovandalism.eu))|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `20`|`/v/idya archive`|[archive.vidya.moe](http://archive.vidya.moe)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `21`|`imcute`|[imcute.yt](http://imcute.yt)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `22`|`not4plebs`|[totally.not4plebs.org](http://totally.not4plebs.org)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
