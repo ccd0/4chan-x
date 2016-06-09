@@ -32,7 +32,7 @@ Ports of Greasemonkey are available for [SeaMonkey](https://sourceforge.net/proj
 Note: This version of 4chan X does not work with Opera 12. If you need Opera 12 support, try [loadletter's fork](https://github.com/loadletter/4chan-x) instead.
 
 ### Safari
-Install [JS Blocker](http://jsblocker.toggleable.com/), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**. [Tampermonkey for Safari](http://tampermonkey.net/?browser=safari) may also work, but I have yet to test it.
+Install [JS Blocker](http://jsblocker.toggleable.com/) or [Tampermonkey](http://tampermonkey.net/?browser=safari), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
 
 ### WebKitGTK+
 Several WebKitGTK+ based browsers have support for userscripts and can run 4chan X. Due to the lack of the cross-site GM_* API, and lack of support for userscripts in iframes, not all features will work. You may experience crashes when repeatedly solving the default image-based captchas. You can avoid this problem by enabling `Use Recaptcha v1` in your settings.
