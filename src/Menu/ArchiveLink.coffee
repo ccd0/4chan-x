@@ -18,6 +18,7 @@ ArchiveLink =
       ['Tripcode',  'tripcode']
       ['Capcode',   'capcode']
       ['Subject',   'subject']
+      ['Flag',      'country']
       ['Filename',  'filename']
       ['Image MD5', 'MD5']
     ]
@@ -37,7 +38,10 @@ ArchiveLink =
         true
     else
       (post) ->
-        value = Filter[type] post
+        value = if type is 'country'
+          post.info.flagCode
+        else
+          Filter[type] post
         # We want to parse the exact same stuff as the filter does already.
         return false unless value
         el.href = Redirect.to 'search',

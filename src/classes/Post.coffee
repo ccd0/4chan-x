@@ -28,6 +28,7 @@ class Post
       tripcode:  @nodes.tripcode?.textContent
       uniqueID:  @nodes.uniqueID?.firstElementChild.textContent
       capcode:   @nodes.capcode?.textContent.replace '## ', ''
+      flagCode:  @nodes.flag?.className.match(/flag-(\w+)/)?[1].toUpperCase()
       flag:      @nodes.flag?.title
       date:      if @nodes.date then new Date(@nodes.date.dataset.utc * 1000)
 
@@ -145,7 +146,7 @@ class Post
     match = quotelink.href.match ///
       ^https?://boards\.4chan\.org/+
       ([^/]+) # boardID
-      /+(?:res|thread)/+\d+(?:/[^#]*)?#p
+      /+(?:res|thread)/+\d+(?:[/?][^#]*)?#p
       (\d+)   # postID
       $
     ///

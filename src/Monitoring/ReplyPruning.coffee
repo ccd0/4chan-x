@@ -50,7 +50,7 @@ ReplyPruning =
     ReplyPruning.active = @checked
 
   showIfHidden: (id) ->
-    if ReplyPruning.container?.getElementById id
+    if ReplyPruning.container and $("##{id}", ReplyPruning.container)
       ReplyPruning.inputs.enabled.checked = false
       $.event 'change', null, ReplyPruning.inputs.enabled
 

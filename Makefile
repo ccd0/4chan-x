@@ -15,7 +15,7 @@ else
 endif
 CP = $(call CAT,$<,$@)
 
-npgoals := clean cleanrel cleanweb cleanfull withtests tag wrapped $(foreach i,1 2 3 4,bump$(i)) beta stable web update updatehard
+npgoals := clean cleanrel cleanweb cleanfull withtests wrapped $(foreach i,1 2 3 4,bump$(i)) tag tagcommit beta stable web update updatehard
 ifneq "$(filter $(npgoals),$(MAKECMDGOALS))" ""
 .NOTPARALLEL :
 endif
@@ -302,27 +302,26 @@ withtests :
 	-$(MAKE)
 	echo false> .tests_enabled
 
-ifneq "$(wildcard npm-shrinkwrap.json)" ""
-
-tag : .events/CHANGELOG jshint release
-	git commit -am "Release $(meta_name) v$(version)."
-	git tag -a $(version) -m "$(meta_name) v$(version)."
-
-endif
-
 wrapped : src/meta/npm-shrinkwrap.json
 	$(call CAT,$<,npm-shrinkwrap.json)
 	npm install
 
 $(foreach i,1 2 3 4,bump$(i)) :
 	node tools/bump.js $(subst bump,,$@)
+	$(MAKE) .events/CHANGELOG
+
+tag :
 	$(MAKE) all
 	git add builds
 	$(MAKE) cleanrel
 	$(MAKE) wrapped
 	$(MAKE) all
 	git diff --quiet -- builds
-	$(MAKE) tag
+	$(MAKE) tagcommit
+
+tagcommit :
+	git commit -am "Release $(meta_name) v$(version)."
+	git tag -a $(version) -m "$(meta_name) v$(version)."
 
 beta : distready
 	git tag -af beta -m "$(meta_name) v$(version)."
@@ -340,16 +339,18 @@ stable : distready
 web : index.html distready
 	-git commit -am "Build web page."
 	cd dist && git merge --no-commit -s ours master
-	cd dist && git checkout master README.md index.html web.css img
+	cd dist && git checkout master README.md index.html web.css img .gitignore .gitattributes
 	cd dist && git commit -am "Update web page."
 
 update :
+	$(RM) npm-shrinkwrap.json
 	npm install --save-dev $(shell node tools/unpinned.js)
 	npm install
 	npm shrinkwrap --dev
 	$(call CAT,npm-shrinkwrap.json,src/meta/npm-shrinkwrap.json)
 
 updatehard :
+	$(RM) npm-shrinkwrap.json
 	npm install --save-dev $(shell node tools/unpinned.js latest)
 	npm install
 	npm shrinkwrap --dev

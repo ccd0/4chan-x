@@ -40,7 +40,9 @@ ImageHover =
       el.loop     = true
       el.controls = false
       Volume.setup el
-      el.play() if Conf['Autoplay']
+      if Conf['Autoplay']
+        el.play()
+        @currentTime = el.currentTime if @nodeName is 'VIDEO'
     [width, height] = (+x for x in file.dimensions.split 'x')
     {left, right} = @getBoundingClientRect()
     maxWidth = Math.max left, doc.clientWidth - right

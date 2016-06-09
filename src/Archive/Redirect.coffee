@@ -23,6 +23,7 @@ Redirect =
       for key in ['boards', 'files']
         data[key] = [] unless data[key] instanceof Array
       {uid, name, boards, files, software, withCredentials} = data
+      continue unless software in ['fuuka', 'foolfuuka']
       archives[JSON.stringify(uid ? name)] = data
       for boardID in boards
         unless withCredentials
@@ -50,8 +51,8 @@ Redirect =
       urls.push url if url
 
     load = (i) -> ->
-      fail = (action, msg) -> new Notice 'warning', "Error #{action} archive data from #{urls[i]}\n#{msg}", 20
-      return fail 'fetching', (if @status then "#{@status} #{@statusText}" else 'Connection Error') unless @status is 200
+      fail = (action, msg) -> new Notice 'warning', "Error #{action} archive data from\n#{urls[i]}\n#{msg}", 20
+      return fail 'fetching', (if @status then "Error #{@statusText} (#{@status})" else 'Connection Error') unless @status is 200
       try
         response = JSON.parse @response
       catch err

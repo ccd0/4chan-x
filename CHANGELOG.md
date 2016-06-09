@@ -2,7 +2,48 @@
 
 Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.11.35
+
+**v1.11.35.1** *(2016-06-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.1/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.34.10: Fix blocking of CloudFlare scripts.
+
+**v1.11.35.0** *(2016-06-05)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.34.9.
+- Prefix the `gecko`, `blink`, `webkit`, and `edge` classes added to the document depending on the detected browser engine with `ua-`. The old versions are still available for now, but will be removed in the near future.
+- Add https://whatanime.ga/ to the Sauce list.
+- Various minor bugfixes.
+
 ### v1.11.34
+
+**v1.11.34.10** *(2016-06-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.10/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.10/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix blocking of CloudFlare scripts.
+
+**v1.11.34.9** *(2016-06-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.9/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.9/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix loading icon getting stuck on in Firefox.
+
+**v1.11.34.8** *(2016-06-03)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.8/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.8/builds/4chan-X-noupdate.crx "Chromium version")]
+- Replace malicious ad blacklist with a Javascript whitelist, which can be configured on the `Advanced` settings tab.
+
+**v1.11.34.7** *(2016-05-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.7/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.33.7: Fix blinking in older browsers.
+- Merge v1.11.33.7: Allow 4chan's blinking animations to work.
+
+**v1.11.34.6** *(2016-05-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.33.6: Quick fix for blinking.
+
+**v1.11.34.5** *(2016-05-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Merge v1.11.33.5: Update ad server blacklist.
+- Change link on report form to 4chan IRC.
+
+**v1.11.34.4** *(2016-05-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.4/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add search by flag to archive link menu.
+
+**v1.11.34.3** *(2016-05-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.3/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.3/builds/4chan-X-noupdate.crx "Chromium version")]
+- Improve handling of errors due to interaction of 4chan X with ad blockers and NoScript.
+
+**v1.11.34.2** *(2016-05-17)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Approximately sync replaced WebM thumbnails with hover preview.
+- Change default archive list update URL to https://mayhemydg.github.io/archives.json/archives.json.
 
 **v1.11.34.1** *(2016-05-17)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.34.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix some download button / menu item bugs.
@@ -22,6 +63,16 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 - Minor bugfixes and embedding updates.
 
 ### v1.11.33
+
+**v1.11.33.7** *(2016-05-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.7/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.7/builds/4chan-X-noupdate.crx "Chromium version")]
+- Fix blinking in older browsers.
+- Allow 4chan's blinking animations to work.
+
+**v1.11.33.6** *(2016-05-21)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Quick fix for blinking.
+
+**v1.11.33.5** *(2016-05-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.5/builds/4chan-X-noupdate.crx "Chromium version")]
+- Update ad server blacklist.
 
 **v1.11.33.4** *(2016-05-17)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.4/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.33.4/builds/4chan-X-noupdate.crx "Chromium version")]
 - Archive list: waruso.org is back; also temporarily add fgts.jp (still down) as last option in list.

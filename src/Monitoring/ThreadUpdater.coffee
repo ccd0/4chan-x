@@ -2,7 +2,11 @@ ThreadUpdater =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
 
-    @audio = $.el 'audio', src: ThreadUpdater.beep
+    # Chromium won't play audio created in an inactive tab until the tab has been focused, so set it up now.
+    # XXX Sometimes the loading stalls in Firefox, esp. when opening in private browsing window followed by normal window.
+    # Don't let it keep the loading icon on indefinitely.
+    @audio = $.el 'audio'
+    @audio.src = @beep unless $.engine is 'gecko'
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
@@ -90,6 +94,7 @@ ThreadUpdater =
 
   playBeep: ->
     {audio} = ThreadUpdater
+    audio.src or= ThreadUpdater.beep
     if audio.paused
       audio.play()
     else
@@ -162,7 +167,7 @@ ThreadUpdater =
       ThreadUpdater.set 'status', ''
     ThreadUpdater.setInterval()
     unless req.status
-      ThreadUpdater.set 'status', 'Connection Failed', 'warning'
+      ThreadUpdater.set 'status', 'Connection Error', 'warning'
     else if req.status isnt 304
       ThreadUpdater.set 'status', "#{req.statusText} (#{req.status})", 'warning'
 

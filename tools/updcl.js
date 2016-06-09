@@ -1,4 +1,5 @@
 var fs = require('fs');
+var child_process = require('child_process');
 
 var pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 var v   = JSON.parse(fs.readFileSync('version.json', 'utf8'));
@@ -29,6 +30,7 @@ var prevVersion = changelog.substr(breakPos).match(/\*\*v([\d\.]+)\*\*/)[1];
 if (prevVersion.replace(/\.\d+$/, '') !== branch) {
   line += `\n- Based on v${prevVersion}.`;
 }
+line += '\n- ' + child_process.execSync(`git log --pretty=format:%s ${prevVersion}..HEAD`).toString().replace(/\n/g, '\n- ');
 
 fs.writeFileSync('CHANGELOG.md', `${changelog.substr(0, breakPos)}\n\n${line}${changelog.substr(breakPos)}`, 'utf8');
 console.log(`Changelog updated for v${version}.`);

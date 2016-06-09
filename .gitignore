@@ -12,3 +12,4 @@ node_modules/
 /.events
 /.events2
 /dist/
+/builds/*.gz

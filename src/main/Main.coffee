@@ -13,20 +13,9 @@ Main =
           $.ready -> Captcha.fixes.init()
       return
 
-    # Disrupt loading of ads from malicious/irresponsible providers.
-    $.global ->
-      nuke = (obj, prop) ->
-        try
-          Object.defineProperty obj, prop,
-            configurable: false
-            get: -> throw new Error()
-            set: -> throw new Error()
-      for prop in ['atOptions', 'adsterra_key', 'EpmadsConfig', 'epmads_key', 'EpomConfig', 'epom_key', 'exoDocumentProtocol']
-        nuke window, prop
-      return
-    $.on window, 'beforescriptexecute', (e) ->
-      host = e.target.src.split('/')[2]?.match(/[^.]+\.[^.]+$/)?[0]
-      e.preventDefault() if host in ['bnhtml.com', 'ecpmrocks.com', 'advertisation.com', 'exoclick.com']
+    # Don't run inside ad iframes.
+    try
+      return if window.frameElement and window.frameElement.src is ''
 
     # Detect multiple copies of 4chan X
     $.on d, '4chanXInitFinished', ->
@@ -61,11 +50,35 @@ Main =
     Conf['JSON Navigation'] = true
     Conf['Oekaki Links'] = true
 
+    # Pseudo-enforce default whitelist while configuration loads
+    if $.platform is 'crx' then $.global ->
+      {whitelist} = document.currentScript.dataset
+      whitelist = whitelist.split('\n').filter (x) -> x[0] isnt "'"
+      whitelist.push "#{location.protocol}//#{location.host}"
+      oldFun = {}
+      for key in ['createElement', 'write']
+        oldFun[key] = document[key]
+        document[key] = do (key) -> (arg) ->
+          s = document.currentScript
+          if s and s.src and whitelist.indexOf(s.src.split('/')[..2].join('/')) < 0
+            throw Error()
+          oldFun[key].call document, arg
+      document.addEventListener 'csp-ready', ->
+        document[key] = oldFun[key] for key of oldFun
+      , false
+    ,
+      whitelist: Conf['jsWhitelist']
+
     # Get saved values as items
     items = {}
     items[key] = undefined for key of Conf
     items['previousversion'] = undefined
-    $.get items, (items) ->
+    ($.getSync or $.get) items, (items) ->
+      # Enforce JS whitelist
+      jsWhitelist = items['jsWhitelist'] ? Conf['jsWhitelist']
+      $.addCSP "script-src #{jsWhitelist.replace(/[\s;]+/g, ' ')}"
+      $.event 'csp-ready' if $.platform is 'crx'
+
       $.asap docSet, ->
 
         # Don't hide the local storage warning behind a settings panel.
@@ -183,7 +196,7 @@ Main =
     $('link[href*=mobile]', d.head)?.disabled = true
     $.addClass doc, 'fourchan-x', 'seaweedchan'
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
-    $.addClass doc, $.engine if $.engine
+    $.addClass doc, "ua-#{$.engine}", $.engine if $.engine
     $.onExists doc, '.ad-cnt', (ad) -> $.onExists ad, 'img', -> $.addClass doc, 'ads-loaded'
     $.addClass doc, 'autohiding-scrollbar' if Conf['Autohiding Scrollbar']
     $.ready ->
@@ -335,6 +348,11 @@ Main =
     softTask()
 
   handleErrors: (errors) ->
+    # Detect conflicts with 4chan X v2
+    if d.body and $.hasClass(d.body, 'fourchan_x') and not $.hasClass(doc, 'tainted')
+      new Notice 'error', 'Error: Multiple copies of 4chan X are enabled.'
+      $.addClass doc, 'tainted'
+
     unless errors instanceof Array
       error = errors
     else if errors.length is 1

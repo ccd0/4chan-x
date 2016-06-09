@@ -28,8 +28,8 @@ Settings =
         settings.disableAll = true
         localStorage.setItem '4chan-settings', JSON.stringify settings
       else
-        $.onExists doc, 'body', ->
-          $.global -> window.Config.disableAll = true
+        $.global ->
+          Object.defineProperty window, 'Config', {value: {disableAll: true}}
 
   open: (openSection) ->
     return if Settings.overlay
@@ -373,6 +373,8 @@ Settings =
         '#https://foolz.fireden.net/_/search/image/%sMD5/'
         '#//www.gif-explode.com/%URL;types:gif'
       ]
+    if compareString < '00001.00011.00035.00000'
+      addSauces ['https://whatanime.ga/?auto&url=%IMG;text:wait']
     changes
 
   loadSettings: (data, cb) ->
@@ -436,7 +438,7 @@ Settings =
       $.id('lastarchivecheck').textContent = 'never'
 
     items = {}
-    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown']
+    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
       items[name] = Conf[name]
       input = inputs[name]
       event = if name in ['archiveLists', 'archiveAutoUpdate', 'QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
@@ -498,6 +500,7 @@ Settings =
 
     archBoards = {}
     for {uid, name, boards, files, software, withCredentials} in Conf['archives']
+      continue unless software in ['fuuka', 'foolfuuka']
       for boardID in boards
         o = archBoards[boardID] or=
           thread: [[], []]

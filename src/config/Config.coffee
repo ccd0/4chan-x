@@ -710,6 +710,7 @@ Config =
 
     # Specialized reverse image search:
     //iqdb.org/?url=%IMG
+    https://whatanime.ga/?auto&url=%IMG;text:wait
     #//3d.iqdb.org/?url=%IMG
     #//saucenao.com/search.php?url=%IMG
 
@@ -752,7 +753,7 @@ Config =
     'Custom Board Navigation':    true
 
   archives:
-    archiveLists:      'https://4chan-x.just-believe.in/json/archives.json'
+    archiveLists:      'https://mayhemydg.github.io/archives.json/archives.json'
     lastarchivecheck:  0
     archiveAutoUpdate: true
 
@@ -781,6 +782,17 @@ Config =
       #options:"sage";boards:jp;always
     """
     sjisPreview: false
+
+  jsWhitelist: '''
+    http://s.4cdn.org
+    https://s.4cdn.org
+    http://www.google.com
+    https://www.google.com
+    https://www.gstatic.com
+    'self'
+    'unsafe-inline'
+    'unsafe-eval'
+  '''
 
   captchaLanguage: ''
 
