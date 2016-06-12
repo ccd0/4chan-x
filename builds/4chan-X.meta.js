@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.11.35.1
+// @version      1.11.35.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -22,6 +22,8 @@
 // @exclude      https://www.4chan.org/pass
 // @exclude      http://www.4chan.org/pass?*
 // @exclude      https://www.4chan.org/pass?*
+// @connect      i.4cdn.org
+// @connect      *
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue

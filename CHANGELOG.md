@@ -4,6 +4,10 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.35
 
+**v1.11.35.2** *(2016-06-12)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.2/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.2/builds/4chan-X-noupdate.crx "Chromium version")]
+- Add @connect to userscript metadata to reduce annoying permission requests in Tampermonkey.
+- Switch [complain] links back to https://www.4chan.org/feedback.
+
 **v1.11.35.1** *(2016-06-07)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.1/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.1/builds/4chan-X-noupdate.crx "Chromium version")]
 - Merge v1.11.34.10: Fix blocking of CloudFlare scripts.
 

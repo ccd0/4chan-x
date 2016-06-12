@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.35.1
+// @version      1.11.35.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -22,6 +22,8 @@
 // @exclude      https://www.4chan.org/pass
 // @exclude      http://www.4chan.org/pass?*
 // @exclude      https://www.4chan.org/pass?*
+// @connect      i.4cdn.org
+// @connect      *
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
@@ -134,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.35.1',
+  VERSION:   '1.11.35.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -16252,7 +16254,7 @@ Report = (function() {
       if ((passAd = $('a[href="https://www.4chan.org/pass"]'))) {
         $.extend(passAd, {
           textContent: 'Complain',
-          href: 'https://www.4chan-x.net/captchas.html',
+          href: 'https://www.4chan.org/feedback',
           tabIndex: -1
         });
         passAd.parentNode.normalize();
@@ -18514,7 +18516,7 @@ Captcha = {};
         errmsg = ref[j];
         if (!$('a', errmsg)) {
           link = $.el('a', {
-            href: 'https://www.4chan-x.net/captchas.html',
+            href: 'https://www.4chan.org/feedback',
             target: '_blank',
             textContent: '[complain]'
           });
@@ -20365,7 +20367,7 @@ QR = (function() {
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
           if (/mistyped/i.test(err.textContent)) {
             err = $.el('span', {
-              innerHTML: "You mistyped the CAPTCHA, or the CAPTCHA malfunctioned [<a href=\"https://www.4chan-x.net/captchas.html\" target=\"_blank\">complain here</a>]."
+              innerHTML: "You mistyped the CAPTCHA, or the CAPTCHA malfunctioned [<a href=\"https://www.4chan.org/feedback\" target=\"_blank\">complain here</a>]."
             });
           } else if (/expired/i.test(err.textContent)) {
             err = 'This CAPTCHA is no longer valid because it has expired.';
