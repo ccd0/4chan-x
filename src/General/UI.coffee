@@ -382,9 +382,11 @@ checkbox = (name, text, checked) ->
   $.add label, [input, $.tn " #{text}"]
   label
 
-return {
+UI = {
   dialog:   dialog
   Menu:     Menu
   hover:    hoverstart
   checkbox: checkbox
 }
+
+return UI
