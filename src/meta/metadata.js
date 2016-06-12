@@ -34,6 +34,8 @@
     ).join('\n');
   })()
 %>
+// @connect      i.4cdn.org
+// @connect      *
 <%=
   meta.grants.map(function(grant) {
     return '// @grant        ' + grant;
