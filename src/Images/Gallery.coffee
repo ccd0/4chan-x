@@ -368,5 +368,3 @@ Gallery =
       subEntries.push el: delayLabel
 
       subEntries
-
-return Gallery

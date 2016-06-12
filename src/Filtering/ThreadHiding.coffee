@@ -189,5 +189,3 @@ ThreadHiding =
     threadRoot = thread.OP.nodes.root.parentNode
     threadRoot.hidden = thread.isHidden = false
     Index.updateHideLabel() if Conf['JSON Index']
-
-return ThreadHiding

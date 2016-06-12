@@ -98,5 +98,3 @@ Sauce =
     name:  (post) -> post.file.name
     '%':   -> '%'
     semi:  -> ';'
-
-return Sauce

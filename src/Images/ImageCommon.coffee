@@ -94,5 +94,3 @@ ImageCommon =
         $.rm a
       else
         new Notice 'warning', "Could not download #{href}", 20
-
-return ImageCommon

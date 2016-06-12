@@ -99,5 +99,3 @@ Quotify =
       $.before deadlink, green
       $.add green, deadlink
     $.replace deadlink, [deadlink.childNodes...]
-
-return Quotify

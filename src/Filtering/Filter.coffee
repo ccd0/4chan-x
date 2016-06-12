@@ -249,5 +249,3 @@ Filter =
         tl = ta.textLength
         ta.setSelectionRange tl, tl
         ta.focus()
-
-return Filter

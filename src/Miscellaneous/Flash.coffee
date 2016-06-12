@@ -10,5 +10,3 @@ Flash =
       if g.VIEW is 'thread'
         $.global -> window.Main.tid = location.pathname.split(/\/+/)[3]
       $.global -> window.SWFEmbed.init()
-
-return Flash

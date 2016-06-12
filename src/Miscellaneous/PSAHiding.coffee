@@ -54,5 +54,3 @@ PSAHiding =
       $.after $.id('globalToggle'), psa
     PSAHiding.hr?.hidden = PSAHiding.hidden
     return
-
-return PSAHiding

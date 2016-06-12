@@ -302,5 +302,3 @@ ImageExpand =
       $.event 'change', null, input
       $.on input, 'change', $.cb.checked
       el: label
-
-return ImageExpand

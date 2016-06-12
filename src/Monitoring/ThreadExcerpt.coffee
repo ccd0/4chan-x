@@ -6,5 +6,3 @@ ThreadExcerpt =
       name: 'Thread Excerpt'
       cb:   @node
   node: -> d.title = Get.threadExcerpt @
-
-return ThreadExcerpt

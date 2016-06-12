@@ -80,5 +80,3 @@ Favicon =
 
   dead:  'data:image/gif;base64,<%= readBase64('dead.gif') %>'
   logo:  'data:image/png;base64,<%= readBase64('/src/meta/icon128.png') %>'
-
-return Favicon

@@ -14,5 +14,3 @@ PassLink =
         Date.now()
         'width=500,height=280,toolbar=0'
     $.before styleSelector.previousSibling, [passLink, $.tn('\u00A0\u00A0')]
-
-return PassLink

@@ -596,5 +596,3 @@ $.clear = (cb) ->
     $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''
   cb?()
 <% } %>
-
-return $

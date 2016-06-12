@@ -126,5 +126,3 @@ CrossOrigin =
           delete callbacks[url]
           responses[url] = response
       <% } %>
-
-return CrossOrigin

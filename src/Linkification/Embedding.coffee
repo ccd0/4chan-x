@@ -402,5 +402,3 @@ Embedding =
             return item.snippet.title
           'Not Found'
   ]
-
-return Embedding

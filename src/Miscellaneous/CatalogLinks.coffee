@@ -86,5 +86,3 @@ CatalogLinks =
       if g.BOARD.ID is board and g.VIEW is 'index' then '#index' else "/#{board}/#index"
     else
       "/#{board}/"
-
-return CatalogLinks

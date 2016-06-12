@@ -30,5 +30,3 @@ class Notice
     $.off d, 'visibilitychange', @add
     $.rm @el
     @onclose?()
-
-return Notice

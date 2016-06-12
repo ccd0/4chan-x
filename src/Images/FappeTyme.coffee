@@ -60,5 +60,3 @@ FappeTyme =
   toggle: (type) ->
     @set type, !@enabled[type]
     $.cb.checked.call @nodes[type] if type is 'werk'
-
-return FappeTyme

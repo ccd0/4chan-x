@@ -24,5 +24,3 @@ Anonymize =
       name.textContent = 'Anonymous' for name in $$ '.name'
       $.rm trip for trip in $$ '.postertrip'
       return
-
-return Anonymize

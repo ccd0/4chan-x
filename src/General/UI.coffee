@@ -388,5 +388,3 @@ UI = {
   hover:    hoverstart
   checkbox: checkbox
 }
-
-return UI

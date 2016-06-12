@@ -325,5 +325,3 @@ Keybinds =
 
   focus: (post) ->
     $.addClass post, 'highlight'
-
-return Keybinds

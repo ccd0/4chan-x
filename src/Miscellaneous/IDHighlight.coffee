@@ -21,5 +21,3 @@ IDHighlight =
     uniqueID = post.info.uniqueID or post.info.capcode
     IDHighlight.uniqueID = if IDHighlight.uniqueID is uniqueID then null else uniqueID
     g.posts.forEach IDHighlight.set
-
-return IDHighlight

@@ -127,5 +127,3 @@ ReplyPruning =
     # Maintain position in thread when posts are added/removed above
     if hidden1 isnt hidden2 and (boardTop = Header.getTopOf $('.board')) < 0
       window.scrollBy 0, Math.max(d.body.clientHeight - oldPos, window.scrollY + boardTop) - window.scrollY
-
-return ReplyPruning

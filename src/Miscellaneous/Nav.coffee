@@ -77,5 +77,3 @@ Nav =
       d.body.style.marginBottom = null
       delete Nav.haveExtra
       $.off d, 'scroll', Nav.removeExtra
-
-return Nav
