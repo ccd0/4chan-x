@@ -461,6 +461,11 @@ Config =
         'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.'
         1
       ]
+      'Show Upload Progress': [
+        true
+        'Track progress of file uploads as percentage in submit button.'
+        1
+      ]
       'Cooldown': [
         true
         'Indicate the remaining time before posting again.'
