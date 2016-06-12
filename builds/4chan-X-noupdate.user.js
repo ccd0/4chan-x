@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.11.35.2
+// @version      1.11.35.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.35.2',
+  VERSION:   '1.11.35.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -294,6 +294,7 @@ Config = (function() {
         'Randomize Filename': [false, 'Set the filename to a random timestamp within the past year. Disabled on /f/.', 1],
         'Show New Thread Option in Threads': [false, 'Show the option to post a new / different thread from inside a thread.', 1],
         'Show Name and Subject': [false, 'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.', 1],
+        'Show Upload Progress': [true, 'Track progress of file uploads as percentage in submit button.', 1],
         'Cooldown': [true, 'Indicate the remaining time before posting again.', 1],
         'Posting Success Notifications': [true, 'Show notifications on successful post creation or file uploading.', 1],
         'Auto-load captcha': [false, 'Automatically load the captcha in the QR even if your post is empty.', 1],
@@ -20294,8 +20295,10 @@ QR = (function() {
         }
       };
       extra = {
-        form: $.formData(formData),
-        upCallbacks: {
+        form: $.formData(formData)
+      };
+      if (Conf['Show Upload Progress']) {
+        extra.upCallbacks = {
           onload: function() {
             QR.req.isUploadFinished = true;
             QR.req.progress = '...';
@@ -20305,8 +20308,8 @@ QR = (function() {
             QR.req.progress = (Math.round(e.loaded / e.total * 100)) + "%";
             return QR.status();
           }
-        }
-      };
+        };
+      }
       cb = function(response) {
         if (response != null) {
           if (response.challenge != null) {
