@@ -137,7 +137,7 @@ endef
 
 $(foreach s,$(sources),$(eval $(call check_source,$(subst $$,$$$$,$(s)))))
 
-.events/compile : $(updates) $(template_deps) $(coffee_deps) tools/chain.js
+.events/compile : $(updates) $(template_deps) $(coffee_deps) node_modules/decaffeinate/package.json tools/chain.js
 	node tools/chain.js $(call QUOTE, \
 	  $(subst .events/,tmp/, \
 	   $(if $(filter-out $(updates),$?), \

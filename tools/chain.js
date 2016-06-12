@@ -1,6 +1,7 @@
 var fs = require('fs');
 var template = require('./template');
 var coffee = require('coffee-script');
+var decaffeinate = require('decaffeinate');
 
 for (var name of process.argv.slice(2)) {
   try {
@@ -11,10 +12,22 @@ for (var name of process.argv.slice(2)) {
     script = template(script, {type: parts[2]}, sourceName);
     if (parts[4] === 'coffee') {
       var definesVar = /^[$A-Z][$\w]*$/.test(parts[3]);
-      if (definesVar) {
-        script = `${script}\nreturn ${parts[3]};\n`;
+      try {
+        script = decaffeinate.convert(script).code;
+        script = script.trim()
+        if (definesVar) {
+          script += `\n\nreturn ${parts[3]};`;
+        }
+        script = script.replace(/^(?!$)/gm, '  ');
+        script = `(function() {\n${script}\n})();\n`;
+        console.log(`decaffeinate succeeded for ${name}`);
+      } catch(err) {
+        console.log(`decaffeinate failed for ${name}: ${err.message}`);
+        if (definesVar) {
+          script = `${script}\nreturn ${parts[3]};\n`;
+        }
+        script = coffee.compile(script);
       }
-      script = coffee.compile(script);
       if (definesVar) {
         script = `${parts[3]} = ${script}`;
       }
