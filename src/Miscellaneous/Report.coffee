@@ -13,7 +13,7 @@ Report =
     if (passAd = $ 'a[href="https://www.4chan.org/pass"]')
       $.extend passAd,
         textContent: 'Complain'
-        href:        'https://www.4chan-x.net/captchas.html'
+        href:        'https://www.4chan.org/feedback'
         tabIndex:    -1
       passAd.parentNode.normalize()
       if (prev = passAd.previousSibling)?.nodeType is Node.TEXT_NODE
