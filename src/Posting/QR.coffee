@@ -662,7 +662,8 @@ QR =
           ) %>
     extra =
       form: $.formData formData
-      upCallbacks:
+    if Conf['Show Upload Progress']
+      extra.upCallbacks =
         onload: ->
           # Upload done, waiting for server response.
           QR.req.isUploadFinished = true
