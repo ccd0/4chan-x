@@ -309,9 +309,9 @@ wrapped : src/meta/npm-shrinkwrap.json
 $(foreach i,1 2 3 4,bump$(i)) :
 	node tools/bump.js $(subst bump,,$@)
 	$(MAKE) .events/CHANGELOG
+	$(MAKE) all
 
 tag :
-	$(MAKE) all
 	git add builds
 	$(MAKE) cleanrel
 	$(MAKE) wrapped
