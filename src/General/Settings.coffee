@@ -375,6 +375,8 @@ Settings =
       ]
     if compareString < '00001.00011.00035.00000'
       addSauces ['https://whatanime.ga/?auto&url=%IMG;text:wait']
+    if compareString < '00001.00012.00000.00000'
+      set 'Exempt Archives from Encryption', false unless data['Exempt Archives from Encryption']?
     changes
 
   loadSettings: (data, cb) ->
