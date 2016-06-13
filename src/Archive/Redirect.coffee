@@ -22,23 +22,19 @@ Redirect =
     for data in Conf['archives']
       for key in ['boards', 'files']
         data[key] = [] unless data[key] instanceof Array
-      {uid, name, boards, files, software, withCredentials} = data
+      {uid, name, boards, files, software} = data
       continue unless software in ['fuuka', 'foolfuuka']
       archives[JSON.stringify(uid ? name)] = data
       for boardID in boards
-        unless withCredentials
-          o.thread[boardID] = data unless boardID of o.thread
-          o.post[boardID]   = data unless boardID of o.post   or software isnt 'foolfuuka'
-          o.file[boardID]   = data unless boardID of o.file   or boardID  not in files
-        o.report[boardID]   = data if name is 'fgts'
+        o.thread[boardID] = data unless boardID of o.thread
+        o.post[boardID]   = data unless boardID of o.post   or software isnt 'foolfuuka'
+        o.file[boardID]   = data unless boardID of o.file   or boardID  not in files
+        o.report[boardID] = data if name is 'fgts'
 
     for boardID, record of Conf['selectedArchives']
-      for type, id of record
-        if id is null
-          delete o[type][boardID]
-        else if archive = archives[JSON.stringify id]
-          boards = if type is 'file' then archive.files else archive.boards
-          o[type][boardID] = archive if boardID in boards
+      for type, id of record when (archive = archives[JSON.stringify id])
+        boards = if type is 'file' then archive.files else archive.boards
+        o[type][boardID] = archive if boardID in boards
 
     Redirect.data = o
 

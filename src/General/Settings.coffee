@@ -499,23 +499,17 @@ Settings =
     $.rmAll tbody
 
     archBoards = {}
-    for {uid, name, boards, files, software, withCredentials} in Conf['archives']
+    for {uid, name, boards, files, software} in Conf['archives']
       continue unless software in ['fuuka', 'foolfuuka']
       for boardID in boards
         o = archBoards[boardID] or=
-          thread: [[], []]
-          post:   [[], []]
-          file:   [[], []]
-        i = +!!withCredentials
+          thread: []
+          post:   []
+          file:   []
         archive = [uid ? name, name]
-        o.thread[i].push archive
-        o.post[i].push   archive if software is 'foolfuuka'
-        o.file[i].push   archive if boardID in files
-    for boardID, o of archBoards
-      for item in ['thread', 'post', 'file']
-        i = if o[item][0].length then 1 else 0
-        o[item][i].push [null, 'disabled']
-        o[item] = o[item][0].concat(o[item][1])
+        o.thread.push archive
+        o.post.push   archive if software is 'foolfuuka'
+        o.file.push   archive if boardID in files
 
     rows = []
     boardOptions = []
