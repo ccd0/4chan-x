@@ -10,23 +10,6 @@ Report =
 
     Report.archive() if Conf['Archive Report']
 
-    if (passAd = $ 'a[href="https://www.4chan.org/pass"]')
-      $.extend passAd,
-        textContent: 'Complain'
-        href:        'https://www.4chan.org/feedback'
-        tabIndex:    -1
-      passAd.parentNode.normalize()
-      if (prev = passAd.previousSibling)?.nodeType is Node.TEXT_NODE
-        prev.nodeValue = prev.nodeValue.replace /4chan Pass[^\.]*\./i, 'reCAPTCHA malfunctioning?'
-      $.after passAd, [
-        $.tn '] ['
-        $.el 'a',
-          href:        'irc://irc.rizon.net/4chan'
-          textContent: '4chan IRC'
-          target:      '_blank'
-          tabIndex:    -1
-      ]
-
     if not Conf['Use Recaptcha v1 in Reports'] and not Conf['Force Noscript Captcha'] and Main.jsEnabled
       new MutationObserver(->
         Report.fit 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'

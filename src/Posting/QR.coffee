@@ -721,8 +721,7 @@ QR =
       if /captcha|verification/i.test(err.textContent) or err is 'Connection error with sys.4chan.org.'
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent
-          err = $.el 'span',
-            <%= html('You mistyped the CAPTCHA, or the CAPTCHA malfunctioned [<a href="https://www.4chan.org/feedback" target="_blank">complain here</a>].') %>
+          err = 'You mistyped the CAPTCHA, or the CAPTCHA malfunctioned.'
         else if /expired/i.test err.textContent
           err = 'This CAPTCHA is no longer valid because it has expired.'
         # Something must've gone terribly wrong if you get captcha errors without captchas.
