@@ -720,7 +720,7 @@ Config =
     #//saucenao.com/search.php?url=%IMG
 
     # "View Same" in archives:
-    http://eye.swfchan.com/search/?q=%name;types:swf;sandbox
+    http://eye.swfchan.com/search/?q=%name;types:swf
     #https://desustorage.org/_/search/image/%sMD5/
     #https://archive.4plebs.org/_/search/image/%sMD5/
     #https://boards.fireden.net/_/search/image/%sMD5/
