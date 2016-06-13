@@ -16,7 +16,6 @@ Redirect =
       thread: {}
       post:   {}
       file:   {}
-      report: {}
 
     archives = {}
     for data in Conf['archives']
@@ -29,7 +28,6 @@ Redirect =
         o.thread[boardID] = data unless boardID of o.thread
         o.post[boardID]   = data unless boardID of o.post   or software isnt 'foolfuuka'
         o.file[boardID]   = data unless boardID of o.file   or boardID  not in files
-        o.report[boardID] = data if name is 'fgts'
 
     for boardID, record of Conf['selectedArchives']
       for type, id of record when (archive = archives[JSON.stringify id])
@@ -150,9 +148,6 @@ Redirect =
     else
       "#{boardID}/?task=search2&search_#{type}=#{value}"
     "#{Redirect.protocol archive}#{archive.domain}/#{path}"
-
-  report: (archive, {boardID, postID}) ->
-    "https://so.fgts.jp/report/?board=#{boardID}&no=#{postID}"
 
   securityCheck: (url) ->
     /^https:\/\//.test(url) or

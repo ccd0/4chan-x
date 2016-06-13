@@ -19,10 +19,6 @@ ReportLink =
             ReportLink.dims = 'width=350,height=275'
           else
             ReportLink.dims = 'width=400,height=550'
-        else if Conf['Archive Report']
-          a.textContent = 'Report to archive'
-          ReportLink.url = Redirect.to 'report', {boardID: post.board.ID, postID: post.ID}
-          ReportLink.dims = 'width=700,height=475'
         else
           ReportLink.url = ''
         !!ReportLink.url

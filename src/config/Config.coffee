@@ -39,10 +39,6 @@ Config =
         true
         'Redirect dead threads and images to the archives.'
       ]
-      'Archive Report': [
-        true
-        'Enable reporting posts to supported archives.'
-      ]
       'Exempt Archives from Encryption': [
         true
         'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'
