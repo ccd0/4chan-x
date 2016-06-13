@@ -206,22 +206,19 @@ QR =
     unless Header.areNotificationsEnabled
       alert el.textContent if d.hidden and not QR.cooldown.auto
     else if d.hidden or not (focusOverride or d.hasFocus())
-      # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1130502 (SeaMonkey)
-      try
-        notif = new Notification el.textContent,
-          body: el.textContent
-          icon: Favicon.logo
-        # XXX https://github.com/derjanb/tampermonkey/issues/253
-        notif.onclick = -> $.global -> window.focus()
-        if $.engine isnt 'gecko'
-          # Firefox automatically closes notifications
-          # so we can't control the onclose properly.
-          notif.onclose = -> notice.close()
-          notif.onshow  = ->
-            setTimeout ->
-              notif.onclose = null
-              notif.close()
-            , 7 * $.SECOND
+      notif = new Notification el.textContent,
+        body: el.textContent
+        icon: Favicon.logo
+      notif.onclick = -> window.focus()
+      if $.engine isnt 'gecko'
+        # Firefox automatically closes notifications
+        # so we can't control the onclose properly.
+        notif.onclose = -> notice.close()
+        notif.onshow  = ->
+          setTimeout ->
+            notif.onclose = null
+            notif.close()
+          , 7 * $.SECOND
 
   notifications: []
 
@@ -488,11 +485,6 @@ QR =
 
     if Conf['Show New Thread Option in Threads']
       $.addClass QR.nodes.el, 'show-new-thread-option'
-
-    if Conf['Show Name and Subject']
-      $.addClass QR.nodes.name, 'force-show'
-      $.addClass QR.nodes.sub, 'force-show'
-      QR.nodes.email.placeholder = 'E-mail'
 
     QR.forcedAnon = !!$ 'form[name="post"] input[name="name"][type="hidden"]'
     if QR.forcedAnon

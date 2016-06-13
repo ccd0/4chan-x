@@ -57,12 +57,6 @@ $.ajax = do ->
       if /\.json$/.test url
         options.responseType ?= 'json'
       $.extend r, options
-      # XXX https://code.google.com/p/chromium/issues/detail?id=119256 (Maxthon is still on Chromium 30)
-      if options.responseType is 'json' and r.responseType isnt 'json' and delete r.response
-        Object.defineProperty r, 'response',
-          configurable: true
-          enumerable:   true
-          get: -> return JSON.parse r.responseText
       $.extend r.upload, upCallbacks
       # connection error or content blocker
       $.on r, 'error', -> c.error "4chan X failed to load: #{url}" unless r.status
@@ -119,11 +113,6 @@ $.asap = (test, cb) ->
 $.onExists = (root, selector, cb) ->
   if el = $ selector, root
     return cb el
-  # XXX Edge doesn't notify MutationObservers of nodes added as document loads.
-  if $.engine is 'edge' and d.readyState is 'loading'
-    $.asap (-> d.readyState isnt 'loading' or $ selector, root), ->
-      $.onExists root, selector, cb
-    return
   observer = new MutationObserver ->
     if el = $ selector, root
       observer.disconnect()

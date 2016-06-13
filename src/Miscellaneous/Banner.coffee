@@ -87,20 +87,6 @@ Banner =
     for event in ['click', 'keydown', 'blur']
       $.on child, event, Banner.cb[event]
 
-    # XXX Migrate old settings.
-    string = "#{g.BOARD}.#{className}"
-    string2 = "#{string}.orig"
-    items = {}
-    items[string] = ''
-    items[string2] = child.textContent
-    $.get items, (items) ->
-      if items[string]
-        Banner.db.set
-          boardID:  g.BOARD.ID
-          threadID: className
-          val:      {title: items[string], orig: items[string2]}
-      $.delete [string, string2]
-
     if data = Banner.db.get {boardID: g.BOARD.ID, threadID: className}
       if Conf['Persistent Custom Board Titles'] or data.orig is child.textContent
         Banner.original[className] = child.cloneNode true

@@ -51,21 +51,15 @@ CrossOrigin =
             i++
         else
           data = new Uint8Array xhr.response
-        if typeof xhr.responseHeaders is 'object'
-          # XXX https://github.com/infernoboy/JavaScript-Blocker/issues/35
-          contentType        = xhr.responseHeaders['Content-Type']
-          contentDisposition = xhr.responseHeaders['Content-Disposition']
-        else
-          contentType        = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)?[1]
-          contentDisposition = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)?[1]
+        contentType        = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)?[1]
+        contentDisposition = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)?[1]
         cb data, contentType, contentDisposition
       onerror: ->
         cb null
       onabort: ->
         cb null
     if workaround
-      # XXX https://github.com/infernoboy/JavaScript-Blocker/issues/35
-      options.overrideMimeType = options.mimeType = 'text/plain; charset=x-user-defined'
+      options.overrideMimeType = 'text/plain; charset=x-user-defined'
     else
       options.responseType = 'arraybuffer'
     GM_xmlhttpRequest options
