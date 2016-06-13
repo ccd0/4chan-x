@@ -115,11 +115,6 @@ body > div[style*=" top: -10000px;"] {
   visibility: hidden !important;
 }
 
-:root.blink {
-  -webkit-animation: none;
-  animation: none;
-}
-
 /* Ads */
 :root:not(.ads-loaded) .ad-cnt,
 :root:not(.ads-loaded) .ad-plea,
