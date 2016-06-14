@@ -31,3 +31,4 @@ uid | name | domain | software
 `28`|`bstats`|[archive.b-stats.org](http://archive.b-stats.org)|[b-stats](https://github.com/bstats/b-stats) (supports [FoolFuuka](https://github.com/FoolCode/FoolFuuka) API
 `29`|`Archived.Moe`|[archived.moe](http://archived.moe)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `30`|`TheBArchive.com`|[thebarchive.com](http://thebarchive.com)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
+`31`|`Archive Of Sins`|[archiveofsins.com](http://archiveofsins.com)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)

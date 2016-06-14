@@ -97,4 +97,13 @@
   "software": "foolfuuka",
   "boards": ["b"],
   "files": ["b"]
+}, {
+  "uid": 31,
+  "name": "Archive Of Sins",
+  "domain": "archiveofsins.com",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["h","hc","hm","r","s","soc"],
+  "files": ["h","hc","hm","r","s","soc"]
 }]
