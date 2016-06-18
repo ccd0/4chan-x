@@ -382,6 +382,7 @@ Settings =
     if compareString < '00001.00012.00000.00000'
       set 'Exempt Archives from Encryption', false unless data['Exempt Archives from Encryption']?
       addCSS '#qr .persona .field {display: block !important;}' if data['Show Name and Subject']
+      addCSS '#shortcut-qr {display: none;}' if data['QR Shortcut'] is false
     changes
 
   loadSettings: (data, cb) ->

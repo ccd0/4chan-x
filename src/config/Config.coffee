@@ -407,11 +407,6 @@ Config =
         true
         'All-in-one form to reply, create threads, automate dumping and more.'
       ]
-      'QR Shortcut': [
-        true
-        'Add a shortcut to the header to toggle the QR.'
-        1
-      ]
       'Persistent QR': [
         false
         'The Quick reply won\'t disappear after posting.'

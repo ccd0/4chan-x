@@ -37,21 +37,20 @@ QR =
       name: 'Quick Reply'
       cb:   @node
 
-    if Conf['QR Shortcut']
-      @shortcut = sc = $.el 'a',
-        className: 'fa fa-comment-o disabled'
-        textContent: 'QR' 
-        title: 'Quick Reply'
-        href: 'javascript:;'
-      $.on sc, 'click', ->
-        return unless QR.postingIsEnabled
-        if Conf['Persistent QR'] or !QR.nodes or QR.nodes.el.hidden
-          QR.open()
-          QR.nodes.com.focus()
-        else
-          QR.close()
+    @shortcut = sc = $.el 'a',
+      className: 'fa fa-comment-o disabled'
+      textContent: 'QR'
+      title: 'Quick Reply'
+      href: 'javascript:;'
+    $.on sc, 'click', ->
+      return unless QR.postingIsEnabled
+      if Conf['Persistent QR'] or !QR.nodes or QR.nodes.el.hidden
+        QR.open()
+        QR.nodes.com.focus()
+      else
+        QR.close()
 
-      Header.addShortcut 'qr', sc, 540
+    Header.addShortcut 'qr', sc, 540
 
   initReady: ->
     $.off d, '4chanXInitFinished', @initReady
@@ -123,8 +122,7 @@ QR =
           message: 'Quick Reply dialog creation crashed.'
           error: err
         return
-    if Conf['QR Shortcut']
-      $.rmClass QR.shortcut, 'disabled'
+    $.rmClass QR.shortcut, 'disabled'
 
   close: ->
     if QR.req
@@ -134,8 +132,7 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
-    if Conf['QR Shortcut']
-      $.addClass QR.shortcut, 'disabled'
+    $.addClass QR.shortcut, 'disabled'
     new QR.post true
     for post in QR.posts.splice 0, QR.posts.length - 1
       post.delete()
