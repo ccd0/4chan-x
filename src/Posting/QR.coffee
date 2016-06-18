@@ -66,7 +66,7 @@ QR =
       QR.open()
       QR.nodes.com.focus()
 
-    if Conf['Bottom QR Link'] and g.VIEW is 'thread'
+    if g.VIEW is 'thread'
       linkBot = $.el 'div',
         className: "brackets-wrap qr-link-container-bottom"
       $.extend linkBot, <%= html('<a href="javascript:;" class="qr-link-bottom">Reply to Thread</a>') %>

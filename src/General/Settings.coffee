@@ -383,6 +383,7 @@ Settings =
       set 'Exempt Archives from Encryption', false unless data['Exempt Archives from Encryption']?
       addCSS '#qr .persona .field {display: block !important;}' if data['Show Name and Subject']
       addCSS '#shortcut-qr {display: none;}' if data['QR Shortcut'] is false
+      addCSS '.qr-link-container-bottom {display: none;}' if data['Bottom QR Link'] is false
     changes
 
   loadSettings: (data, cb) ->

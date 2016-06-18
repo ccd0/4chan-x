@@ -467,11 +467,6 @@ Config =
         'Submit the post immediately when the captcha is completed.'
         1
       ]
-      'Bottom QR Link': [
-        true
-        'Places a link on the bottom of threads to open the QR.'
-        1
-      ]
       'Captcha Fixes': [
         true
         'Make captcha easier to use, especially with the keyboard.'

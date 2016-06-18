@@ -51,6 +51,7 @@ Main =
     Conf['Oekaki Links'] = true
     Conf['Show Name and Subject'] = false
     Conf['QR Shortcut'] = true
+    Conf['Bottom QR Link'] = true
 
     # Pseudo-enforce default whitelist while configuration loads
     if $.platform is 'crx' then $.global ->
