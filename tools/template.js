@@ -21,7 +21,7 @@ tools.readHTML = function(filename) {
 };
 
 tools.multiline = function(text) {
-  return text.replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join(' +\n').replace(/`/g, '\\`');
+  return text.replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join('+').replace(/"\+"/g, '\\\n');
 };
 
 // Convert JSON object to Coffeescript expression (via embedded JS).
