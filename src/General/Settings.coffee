@@ -380,6 +380,7 @@ Settings =
       addSauces ['https://whatanime.ga/?auto&url=%IMG;text:wait']
     if compareString < '00001.00012.00000.00000'
       set 'Exempt Archives from Encryption', false unless data['Exempt Archives from Encryption']?
+      set 'Show New Thread Option in Threads', false unless data['Show New Thread Option in Threads']?
       addCSS '#qr .persona .field {display: block !important;}' if data['Show Name and Subject']
       addCSS '#shortcut-qr {display: none;}' if data['QR Shortcut'] is false
       addCSS '.qr-link-container-bottom {display: none;}' if data['Bottom QR Link'] is false

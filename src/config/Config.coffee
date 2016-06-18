@@ -425,7 +425,7 @@ Config =
         1
       ]
       'Show New Thread Option in Threads': [
-        false
+        true
         'Show the option to post a new / different thread from inside a thread.'
         1
       ]
