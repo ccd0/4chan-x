@@ -238,7 +238,6 @@ Settings =
         'Image Auto-Gif': 'Replace GIF'
         'Reveal Spoilers': 'Reveal Spoiler Thumbnails'
         'Expand From Current': 'Expand from here'
-        'Post in Title': 'Thread Excerpt'
         'Current Page': 'Page Count in Stats'
         'Current Page Position': ''
         'Alternative captcha': 'Use Recaptcha v1'

@@ -485,7 +485,6 @@ Main =
     ['WEBM Metadata',             Metadata]
     ['Comment Expansion',         ExpandComment]
     ['Thread Expansion',          ExpandThread]
-    ['Thread Excerpt',            ThreadExcerpt]
     ['Favicon',                   Favicon]
     ['Unread',                    Unread]
     ['Quote Threading',           QuoteThreading]
