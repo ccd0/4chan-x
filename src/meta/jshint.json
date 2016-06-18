@@ -5,6 +5,7 @@
   "expr":    true,
   "sub":     true,
   "scripturl": true,
+  "multistr": true,
   "browser": true,
   "devel":   true,
   "nonstandard": true,
