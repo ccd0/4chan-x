@@ -4,6 +4,9 @@ Sometimes the changelog has notes (not comprehensive) acknowledging people's wor
 
 ### v1.11.35
 
+**v1.11.35.6** *(2016-06-18)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.6/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.6/builds/4chan-X-noupdate.crx "Chromium version")]
+- Use backslashes instead of concatenation for multiline strings. Fixes issue causing script to stop working for some users in Chrome 53.
+
 **v1.11.35.5** *(2016-06-14)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.5/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.5/builds/4chan-X-noupdate.crx "Chromium version")]
 - Fix blocking of MathJax script on /sci/.
 
