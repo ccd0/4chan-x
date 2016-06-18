@@ -417,11 +417,6 @@ Config =
         'Automatically hide the quick reply when posting.'
         1
       ]
-      'Open Post in New Tab': [
-        true
-        'Open new threads or replies to a thread from the index in a new tab.'
-        1
-      ]
       'Remember QR Size': [
         false
         'Remember the size of the Quick reply.'

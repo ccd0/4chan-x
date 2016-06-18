@@ -775,33 +775,28 @@ QR =
 
     QR.cooldown.add threadID, postID
 
-    URL = if threadID is postID # new thread
+    url = if threadID is postID # new thread
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}"
-    else if g.VIEW is 'index' and lastPostToThread and Conf['Open Post in New Tab'] # replying from the index
+    else if g.VIEW is 'index' and lastPostToThread # replying from the index
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}#p#{postID}"
 
-    if URL
-      open = if Conf['Open Post in New Tab'] or postsCount
-        -> $.open URL
-      else
-        -> window.location = URL
-
+    if url
       if threadID is postID
         # XXX 4chan sometimes responds before the thread exists.
-        QR.waitForThread URL, open
+        QR.waitForThread url
       else
-        open()
+        $.open url
 
     QR.status()
 
-  waitForThread: (url, cb) ->
+  waitForThread: (url) ->
     attempts = 0
     check = ->
       $.ajax url,
         onloadend: ->
           attempts++
           if attempts >= 6 or @status is 200
-            cb()
+            $.open url
           else
             setTimeout check, attempts * $.SECOND
       ,
