@@ -16,9 +16,6 @@ Banner =
     banner = $ ".boardBanner"
     {children} = banner
 
-    if g.BOARD.ID isnt 'f' and g.VIEW is 'thread' and Conf['Remove Thread Excerpt']
-      Banner.setTitle children[1].textContent
-
     children[0].title = "Click to change"
     $.on children[0], 'click', Banner.cb.toggle
 
