@@ -16,7 +16,7 @@ ThreadStats =
         id:    'thread-stats'
         title: statsTitle
       $.extend sc, statsHTML
-      Header.addShortcut sc, 200
+      Header.addShortcut 'stats', sc, 200
 
     else
       @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',

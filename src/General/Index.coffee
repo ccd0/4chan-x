@@ -27,12 +27,12 @@ Index =
 
     # Header refresh button
     @button = $.el 'a',
-      className: 'index-refresh-shortcut fa fa-refresh'
+      className: 'fa fa-refresh'
       title: 'Refresh'
       href: 'javascript:;'
       textContent: 'Refresh Index'
     $.on @button, 'click', -> Index.update()
-    Header.addShortcut @button, 590
+    Header.addShortcut 'index-refresh', @button, 590
 
     # Header "Index Navigation" submenu
     repliesEntry = el: UI.checkbox 'Show Replies',          'Show replies'

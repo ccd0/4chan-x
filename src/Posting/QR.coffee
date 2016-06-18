@@ -39,7 +39,7 @@ QR =
 
     if Conf['QR Shortcut']
       @shortcut = sc = $.el 'a',
-        className: 'qr-shortcut fa fa-comment-o disabled'
+        className: 'fa fa-comment-o disabled'
         textContent: 'QR' 
         title: 'Quick Reply'
         href: 'javascript:;'
@@ -51,7 +51,7 @@ QR =
         else
           QR.close()
 
-      Header.addShortcut sc, 540
+      Header.addShortcut 'qr', sc, 540
 
   initReady: ->
     $.off d, '4chanXInitFinished', @initReady

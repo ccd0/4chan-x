@@ -6,14 +6,13 @@ Gallery =
 
     el = $.el 'a',
       href: 'javascript:;'
-      id:   'appchan-gal'
       title: 'Gallery'
       className: 'fa fa-picture-o'
       textContent: 'Gallery'
 
     $.on el, 'click', @cb.toggle
 
-    Header.addShortcut el, 530
+    Header.addShortcut 'gallery', el, 530
 
     Callbacks.Post.push
       name: 'Gallery'

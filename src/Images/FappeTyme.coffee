@@ -25,11 +25,10 @@ FappeTyme =
         textContent: type[0]
         title: "#{type} Tyme active"
       $.on indicator, 'click', ->
-        check = FappeTyme.nodes[@parentNode.id.split('-')[0]]
+        check = FappeTyme.nodes[@parentNode.id.replace('shortcut-', '')]
         check.checked = !check.checked
         $.event 'change', null, check
-      Header.addShortcut indicator, 410
-      indicator.parentNode.id = "#{lc}-indicator"
+      Header.addShortcut lc, indicator, 410
 
     if Conf['Werk Tyme']
       $.sync 'werk', @set.bind(@, 'werk')

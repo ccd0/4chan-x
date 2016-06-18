@@ -1139,8 +1139,8 @@ input[name="Default Volume"] {
   border-radius: 2px;
   cursor: pointer;
 }
-:root:not(.fappeTyme) #fappe-indicator,
-:root:not(.werkTyme) #werk-indicator {
+:root:not(.fappeTyme) #shortcut-fappe,
+:root:not(.werkTyme) #shortcut-werk {
   display: none;
 }
 

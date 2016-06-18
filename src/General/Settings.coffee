@@ -8,7 +8,7 @@ Settings =
       href:        'javascript:;'
     $.on link, 'click', Settings.open
 
-    Header.addShortcut link, 820
+    Header.addShortcut 'settings', link, 820
 
     add = @addSection
 

@@ -55,7 +55,7 @@ Header =
     $.sync 'Centered links',             @setLinkJustify
     $.sync 'Bottom Board List',          @setFooterVisibility
 
-    @addShortcut menuButton, 900
+    @addShortcut 'menu', menuButton, 900
 
     @menu.addEntry
       el: $.el 'span',
@@ -119,7 +119,7 @@ Header =
           cs.className = 'native-settings'
         $.on cs, 'click', () ->
           $.id('settingsWindowLink').click()
-        @addShortcut cs, 810
+        @addShortcut 'native', cs, 810
 
     @enableDesktopNotifications()
 
@@ -495,8 +495,9 @@ Header =
     else
       top < 0
 
-  addShortcut: (el, index) ->
+  addShortcut: (id, el, index) ->
     shortcut = $.el 'span',
+      id: "shortcut-#{id}"
       className: 'shortcut brackets-wrap'
     $.add shortcut, el
     shortcut.dataset.index = index

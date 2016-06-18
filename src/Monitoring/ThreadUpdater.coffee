@@ -12,7 +12,7 @@ ThreadUpdater =
       @dialog = sc = $.el 'span',
         id:        'updater'
       $.extend sc, <%= html('<span id="update-status" class="empty"></span><span id="update-timer" class="empty" title="Update now"></span>') %>
-      Header.addShortcut sc, 100
+      Header.addShortcut 'updater', sc, 100
     else
       @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
         <%= html('<div class="move"></div><span id="update-status"></span><span id="update-timer" title="Update now"></span>') %>

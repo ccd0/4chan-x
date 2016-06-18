@@ -36,7 +36,7 @@ ThreadWatcher =
       $.addClass doc, 'fixed-watcher'
     if Conf['Toggleable Thread Watcher']
       @dialog.hidden = true
-      Header.addShortcut sc, 510
+      Header.addShortcut 'watcher', sc, 510
       $.addClass doc, 'toggleable-watcher'
 
     ThreadWatcher.fetchAuto()
