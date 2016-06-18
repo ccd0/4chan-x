@@ -316,6 +316,10 @@ Settings =
         sauces = sauces.filter (s) -> data['sauces'].indexOf(s.match(/[^#;\s]+|$/)[0]) < 0
         if sauces.length
           set 'sauces', data['sauces'] + '\n\n' + sauces.join('\n')
+    addCSS = (css) ->
+      set 'usercss', Config['usercss'] unless data['usercss']?
+      if data['usercss'].indexOf(css) < 0
+        set 'usercss', css + '\n\n' + data['usercss']
     compareString = version.replace(/\d+/g, (x) -> ('0000'+x)[-5..])
     if compareString < '00001.00011.00008.00000'
       unless data['Fixed Thread Watcher']?
@@ -377,6 +381,7 @@ Settings =
       addSauces ['https://whatanime.ga/?auto&url=%IMG;text:wait']
     if compareString < '00001.00012.00000.00000'
       set 'Exempt Archives from Encryption', false unless data['Exempt Archives from Encryption']?
+      addCSS '#qr .persona .field {display: block !important;}' if data['Show Name and Subject']
     changes
 
   loadSettings: (data, cb) ->

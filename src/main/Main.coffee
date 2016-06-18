@@ -49,6 +49,7 @@ Main =
     Conf['Except Archives from Encryption'] = false
     Conf['JSON Navigation'] = true
     Conf['Oekaki Links'] = true
+    Conf['Show Name and Subject'] = false
 
     # Pseudo-enforce default whitelist while configuration loads
     if $.platform is 'crx' then $.global ->
