@@ -1,32 +1,6 @@
 Config =
   main:
     'Miscellaneous':
-      'JSON Index': [
-        true
-        'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'
-      ]
-      'Use <%= meta.name %> Catalog': [
-        true
-        'Link to <%= meta.name %>\'s catalog instead of the native 4chan one.'
-        1
-      ]
-      'Index Refresh Notifications': [
-        false
-        'Show a notice at the top of the page when the index is refreshed.'
-        1
-      ]
-      'Open Threads in New Tab': [
-        false
-        'Make links to threads in the index / <%= meta.name %> catalog open in a new tab.'
-      ]
-      'External Catalog': [
-        false
-        'Link to external catalog instead of the internal one.'
-      ]
-      'Catalog Links': [
-        false
-        'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'
-      ]
       'Announcement Hiding': [
         true
         'Add button to hide 4chan announcements.'
@@ -47,22 +21,6 @@ Config =
         true
         'Show Relative Post Date only when hovering over dates.'
         1
-      ]
-      'Comment Expansion': [
-        true
-        'Expand comments that are too long to display on the index. Not applicable with JSON Index.'
-      ]
-      'Thread Expansion': [
-        true
-        'Add buttons to expand threads.'
-      ]
-      'Index Navigation': [
-        false
-        'Add buttons to navigate between threads.'
-      ]
-      'Reply Navigation': [
-        false
-        'Add buttons to navigate to top / bottom of thread.'
       ]
       'Custom Board Titles': [
         true
@@ -89,10 +47,6 @@ Config =
         false
         'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'
       ]
-      'Normalize URL': [
-        true
-        'Rewrite the URL of the current page, removing slugs and excess slashes, and changing /res/ to /thread/.'
-      ]
       'Disable Autoplaying Sounds': [
         false
         'Prevent sounds on the page from autoplaying.'
@@ -104,6 +58,54 @@ Config =
       'Enable Native Flash Embedding': [
         true
         'Activate the native extension\'s Flash embedding if the native extension is disabled.'
+      ]
+
+    'Navigation':
+      'JSON Index': [
+        true
+        'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'
+      ]
+      'Use <%= meta.name %> Catalog': [
+        true
+        'Link to <%= meta.name %>\'s catalog instead of the native 4chan one.'
+        1
+      ]
+      'Index Refresh Notifications': [
+        false
+        'Show a notice at the top of the page when the index is refreshed.'
+        1
+      ]
+      'Open Threads in New Tab': [
+        false
+        'Make links to threads in the index / <%= meta.name %> catalog open in a new tab.'
+      ]
+      'External Catalog': [
+        false
+        'Link to external catalog instead of the internal one.'
+      ]
+      'Catalog Links': [
+        false
+        'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'
+      ]
+      'Comment Expansion': [
+        true
+        'Expand comments that are too long to display on the index. Not applicable with JSON Index.'
+      ]
+      'Thread Expansion': [
+        true
+        'Add buttons to expand threads.'
+      ]
+      'Index Navigation': [
+        false
+        'Add buttons to navigate between threads.'
+      ]
+      'Reply Navigation': [
+        false
+        'Add buttons to navigate to top / bottom of thread.'
+      ]
+      'Normalize URL': [
+        true
+        'Rewrite the URL of the current page, removing slugs and excess slashes, and changing /res/ to /thread/.'
       ]
 
     'Linkification':
