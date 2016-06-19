@@ -1,37 +1,42 @@
-<div class="warning"><code>Filter</code> is disabled.</div>
-<p>
-  Use <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions" target="_blank">regular expressions</a>, one per line.<br>
-  Lines starting with a <code>#</code> will be ignored.<br>
-  For example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>
-  MD5 filtering uses exact string matching, not regular expressions.
-</p>
-<ul>You can use these settings with each regular expression, separate them with semicolons:
-  <li>
-    Per boards, separate them with commas. It is global if not specified.<br>
-    For example: <code>boards:a,jp;</code>.
-  </li>
-  <li>
-    In case of a global rule, select boards to be excluded from the filter.<br>
-    For example: <code>exclude:vg,v;</code>.
-  </li>
-  <li>
-    Filter OPs only along with their threads (`only`), replies only (`no`), or both (`yes`, this is default).<br>
-    For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.
-  </li>
-  <li>
-    Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>
-    For example: <code>stub:yes;</code> or <code>stub:no;</code>.
-  </li>
-  <li>
-    Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>
-    For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.
-  </li>
-  <li>
-    Highlighted OPs will have their threads put on top of the board index by default.<br>
-    For example: <code>top:yes;</code> or <code>top:no;</code>.
-  </li>
-</ul>
-<p>
-  Note: If you&#039;re using the native catalog rather than <%= meta.name %>&#039;s catalog, <%= meta.name %>&#039;s filters do not apply there.<br>
-  The native catalog has its own separate filter list.
-</p>
+<fieldset name="filterSettings" class="settings-tree">
+  <legend>Settings</legend>
+</fieldset>
+<fieldset>
+  <legend>Guide</legend>
+  <p>
+    Use <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions" target="_blank">regular expressions</a>, one per line.<br>
+    Lines starting with a <code>#</code> will be ignored.<br>
+    For example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>
+    MD5 filtering uses exact string matching, not regular expressions.
+  </p>
+  <ul>You can use these settings with each regular expression, separate them with semicolons:
+    <li>
+      Per boards, separate them with commas. It is global if not specified.<br>
+      For example: <code>boards:a,jp;</code>.
+    </li>
+    <li>
+      In case of a global rule, select boards to be excluded from the filter.<br>
+      For example: <code>exclude:vg,v;</code>.
+    </li>
+    <li>
+      Filter OPs only along with their threads (`only`), replies only (`no`), or both (`yes`, this is default).<br>
+      For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.
+    </li>
+    <li>
+      Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>
+      For example: <code>stub:yes;</code> or <code>stub:no;</code>.
+    </li>
+    <li>
+      Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>
+      For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.
+    </li>
+    <li>
+      Highlighted OPs will have their threads put on top of the board index by default.<br>
+      For example: <code>top:yes;</code> or <code>top:no;</code>.
+    </li>
+  </ul>
+  <p>
+    Note: If you&#039;re using the native catalog rather than <%= meta.name %>&#039;s catalog, <%= meta.name %>&#039;s filters do not apply there.<br>
+    The native catalog has its own separate filter list.
+  </p>
+</fieldset>

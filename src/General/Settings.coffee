@@ -115,6 +115,37 @@ Settings =
             ' you should <a href="https://github.com/gorhill/uBlock#ublock-origin" target="_blank">block ads</a> on 4chan.'
           ) %>
 
+  addCheckboxes: (root, obj) ->
+    items  = {}
+    inputs = {}
+    containers = [root]
+
+    for key, arr of obj
+      description = arr[1]
+      div = $.el 'div',
+        <%= html('<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>') %>
+      div.hidden = true if $.engine isnt 'gecko' and key is 'Remember QR Size' # XXX not supported
+      input = $ 'input', div
+      $.on input, 'change', ->
+        @parentNode.parentNode.dataset.checked = @checked
+        $.cb.checked.call @
+      items[key]  = Conf[key]
+      inputs[key] = input
+      level = arr[2] or 0
+      if containers.length <= level
+        container = $.el 'div', className: 'suboption-list'
+        $.add containers[containers.length-1].lastElementChild, container
+        containers[level] = container
+      else if containers.length > level+1
+        containers.splice level+1, containers.length - (level+1)
+      $.add containers[level], div
+
+    $.get items, (items) ->
+      for key, val of items
+        inputs[key].checked = val
+        inputs[key].parentNode.parentNode.dataset.checked = val
+      return
+
   main: (section) ->
     warnings = $.el 'fieldset',
       hidden: true
@@ -127,58 +158,13 @@ Settings =
       warning addWarning
     $.add section, warnings
 
-    items  = {}
-    inputs = {}
     for key, obj of Config.main
       fs = $.el 'fieldset',
-        <%= html('<legend>${key}</legend>') %>
-      containers = [fs]
-      for key, arr of obj
-        description = arr[1]
-        div = $.el 'div',
-          <%= html('<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>') %>
-        div.hidden = true if $.engine isnt 'gecko' and key is 'Remember QR Size' # XXX not supported
-        input = $ 'input', div
-        $.on input, 'change', ->
-          @parentNode.parentNode.dataset.checked = @checked
-          $.cb.checked.call @
-        items[key]  = Conf[key]
-        inputs[key] = input
-        level = arr[2] or 0
-        if containers.length <= level
-          container = $.el 'div', className: 'suboption-list'
-          $.add containers[containers.length-1].lastElementChild, container
-          containers[level] = container
-        else if containers.length > level+1
-          containers.splice level+1, containers.length - (level+1)
-        $.add containers[level], div
+        className: 'settings-tree'
+      , <%= html('<legend>${key}</legend>') %>
+      Settings.addCheckboxes fs, obj
       $.add section, fs
-
-    $.get items, (items) ->
-      for key, val of items
-        inputs[key].checked = val
-        inputs[key].parentNode.parentNode.dataset.checked = val
-      return
-
-    div = $.el 'div',
-      <%= html('<button></button><span class="description">: Clear manually-hidden threads and posts on all boards. Reload the page to apply.') %>
-    button = $ 'button', div
-    $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
-      hiddenNum = 0
-      for ID, board of hiddenThreads.boards
-        hiddenNum += Object.keys(board).length
-      for ID, board of hiddenPosts.boards
-        for ID, thread of board
-          hiddenNum += Object.keys(thread).length
-      button.textContent = "Hidden: #{hiddenNum}"
-    $.on button, 'click', ->
-      @textContent = 'Hidden: 0'
-      $.get 'hiddenThreads', {}, ({hiddenThreads}) ->
-        if $.hasStorage
-          for boardID of hiddenThreads.boards
-            localStorage.removeItem "4chan-hide-t-#{boardID}"
-        $.delete ['hiddenThreads', 'hiddenPosts']
-    $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
+    return
 
   export: ->
     # Make sure to export the most recent data.
@@ -411,7 +397,9 @@ Settings =
 
   selectFilter: ->
     div = @nextElementSibling
-    if (name = @value) isnt 'guide'
+    if (name = @value) is 'guide'
+      Settings.filterGuide div
+    else
       $.rmAll div
       ta = $.el 'textarea',
         name: name
@@ -421,9 +409,30 @@ Settings =
         ta.value = item[name]
       $.on ta, 'change', $.cb.value
       $.add div, ta
-      return
-    $.extend div, <%= readHTML('Filter-guide.html') %>
-    $('.warning', div).hidden = Conf['Filter']
+
+  filterGuide: (root) ->
+    $.extend root, <%= readHTML('Filter-guide.html') %>
+    settings = $ '[name=filterSettings]', root
+    Settings.addCheckboxes settings, Config.filterSettings
+    div = $.el 'div',
+      <%= html('<button></button><span class="description">: Clear manually-hidden threads and posts on all boards. Reload the page to apply.') %>
+    button = $ 'button', div
+    $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
+      hiddenNum = 0
+      for ID, board of hiddenThreads.boards
+        hiddenNum += Object.keys(board).length
+      for ID, board of hiddenPosts.boards
+        for ID, thread of board
+          hiddenNum += Object.keys(thread).length
+      button.textContent = "Hidden: #{hiddenNum}"
+    $.on button, 'click', ->
+      @textContent = 'Hidden: 0'
+      $.get 'hiddenThreads', {}, ({hiddenThreads}) ->
+        if $.hasStorage
+          for boardID of hiddenThreads.boards
+            localStorage.removeItem "4chan-hide-t-#{boardID}"
+        $.delete ['hiddenThreads', 'hiddenPosts']
+    $.add settings, div
 
   sauce: (section) ->
     $.extend section, <%= readHTML('Sauce.html') %>

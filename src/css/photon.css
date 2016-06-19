@@ -23,7 +23,7 @@
 }
 
 /* Settings */
-:root.photon #fourchanx-settings fieldset, :root.photon .section-main div::before {
+:root.photon #fourchanx-settings fieldset, :root.photon .settings-tree div::before {
   border-color: #CCC;
 }
 :root.photon .suboption-list > div:last-of-type {

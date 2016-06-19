@@ -23,7 +23,7 @@
 }
 
 /* Settings */
-:root.burichan #fourchanx-settings fieldset, :root.burichan .section-main div::before {
+:root.burichan #fourchanx-settings fieldset, :root.burichan .settings-tree div::before {
   border-color: #B7C5D9;
 }
 :root.burichan .suboption-list > div:last-of-type {

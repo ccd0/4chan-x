@@ -508,6 +508,9 @@ audio.controls-added {
   left: 5px;
   padding-right: 5px;
 }
+.section-container a {
+  text-decoration: underline;
+}
 .sections-list {
   padding: 0 3px;
   float: left;
@@ -522,33 +525,7 @@ audio.controls-added {
 .tab-selected {
   font-weight: 700;
 }
-.section-sauce ul,
-.section-advanced ul {
-  list-style: none;
-  margin: 0;
-}
-.section-sauce ul {
-  padding: 8px;
-}
-.section-advanced ul {
-  padding: 0px;
-}
-.section-sauce li,
-.section-advanced li {
-  padding-left: 4px;
-}
-.section-main ul {
-  margin: 0;
-  padding: 0 0 0 16px;
-}
-.section-main li {
-  white-space: pre-line;
-  list-style: disc;
-}
-.section-main li:not(:first-of-type) {
-  margin-top: 4px;
-}
-.section-main label {
+.settings-tree label {
   text-decoration: underline;
 }
 div[data-checked="false"] > .suboption-list {
@@ -580,6 +557,32 @@ div[data-checked="false"] > .suboption-list {
   border-left: 1px solid;
   border-bottom: 1px solid;
 }
+.section-sauce ul,
+.section-advanced ul {
+  list-style: none;
+  margin: 0;
+}
+.section-sauce ul {
+  padding: 8px;
+}
+.section-advanced ul {
+  padding: 0px;
+}
+.section-sauce li,
+.section-advanced li {
+  padding-left: 4px;
+}
+.section-main ul {
+  margin: 0;
+  padding: 0 0 0 16px;
+}
+.section-main li {
+  white-space: pre-line;
+  list-style: disc;
+}
+.section-main li:not(:first-of-type) {
+  margin-top: 4px;
+}
 .section-filter ul {
   padding: 0;
 }
@@ -589,9 +592,6 @@ div[data-checked="false"] > .suboption-list {
 }
 .section-filter textarea {
   height: 500px;
-}
-.section-main a, .section-filter a, .section-advanced a {
-  text-decoration: underline;
 }
 .section-sauce textarea {
   height: 350px;

@@ -22,7 +22,7 @@
 }
 
 /* Settings */
-:root.tomorrow #fourchanx-settings fieldset, :root.tomorrow .section-main div::before {
+:root.tomorrow #fourchanx-settings fieldset, :root.tomorrow .settings-tree div::before {
   border-color: #111;
 }
 :root.tomorrow .suboption-list > div:last-of-type {

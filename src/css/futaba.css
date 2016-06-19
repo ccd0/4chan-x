@@ -23,7 +23,7 @@
 }
 
 /* Settings */
-:root.futaba #fourchanx-settings fieldset, :root.futaba .section-main div::before {
+:root.futaba #fourchanx-settings fieldset, :root.futaba .settings-tree div::before {
   border-color: #D9BFB7;
 }
 :root.futaba .suboption-list > div:last-of-type {

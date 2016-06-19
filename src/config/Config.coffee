@@ -140,37 +140,6 @@ Config =
         2
       ]
 
-    'Filtering':
-      'Anonymize': [
-        false
-        'Make everyone Anonymous.'
-      ]
-      'Filter': [
-        true
-        'Self-moderation placebo.'
-      ]
-      'Filtered Backlinks': [
-        false
-        'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'
-        1
-      ]
-      'Recursive Hiding': [
-        true
-        'Hide replies of hidden posts, recursively.'
-      ]
-      'Thread Hiding Buttons': [
-        true
-        'Add buttons to hide entire threads.'
-      ]
-      'Reply Hiding Buttons': [
-        true
-        'Add buttons to hide single replies.'
-      ]
-      'Stubs': [
-        true
-        'Show stubs of hidden threads / replies.'
-      ]
-
     'Images and Videos':
       'Image Expansion': [
         true
@@ -617,6 +586,37 @@ Config =
     'Show Unread Count': [
       true
       'Show number of unread posts in watched threads.'
+    ]
+
+  filterSettings:
+    'Anonymize': [
+      false
+      'Make everyone Anonymous.'
+    ]
+    'Filter': [
+      true
+      'Self-moderation placebo.'
+    ]
+    'Filtered Backlinks': [
+      false
+      'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'
+      1
+    ]
+    'Recursive Hiding': [
+      true
+      'Hide replies of hidden posts, recursively.'
+    ]
+    'Thread Hiding Buttons': [
+      true
+      'Add buttons to hide entire threads.'
+    ]
+    'Reply Hiding Buttons': [
+      true
+      'Add buttons to hide single replies.'
+    ]
+    'Stubs': [
+      true
+      'Show stubs of hidden threads / replies.'
     ]
 
   filter:

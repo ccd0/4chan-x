@@ -23,7 +23,7 @@
 }
 
 /* Settings */
-:root.yotsuba-b #fourchanx-settings fieldset, :root.yotsuba-b .section-main div::before {
+:root.yotsuba-b #fourchanx-settings fieldset, :root.yotsuba-b .settings-tree div::before {
   border-color: #B7C5D9;
 }
 :root.yotsuba-b .suboption-list > div:last-of-type {
