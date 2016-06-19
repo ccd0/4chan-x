@@ -35,14 +35,6 @@ Config =
         true
         'Enables desktop notifications across various <%= meta.name %> features.'
       ]
-      '404 Redirect': [
-        true
-        'Redirect dead threads and images to the archives.'
-      ]
-      'Exempt Archives from Encryption': [
-        true
-        'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'
-      ]
       'Keybinds': [
         true
         'Bind actions to keyboard shortcuts.'
@@ -474,10 +466,6 @@ Config =
         'Highlight the previewed post.'
         1
       ]
-      'Resurrect Quotes': [
-        true
-        'Link dead quotes to the archives, and support inlining/previewing of archive links like quote links.'
-      ]
       'Remember Your Posts': [
         true
         'Remember your posting history.'
@@ -726,6 +714,20 @@ Config =
     archiveLists:      'https://mayhemydg.github.io/archives.json/archives.json'
     lastarchivecheck:  0
     archiveAutoUpdate: true
+
+  archiveSettings:
+    '404 Redirect': [
+      true
+      'Redirect dead threads and images to the archives.'
+    ]
+    'Resurrect Quotes': [
+      true
+      'Link dead quotes to the archives, and support inlining/previewing of archive links like quote links.'
+    ]
+    'Exempt Archives from Encryption': [
+      true
+      'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'
+    ]
 
   boardnav: """
     [ toggle-all ]

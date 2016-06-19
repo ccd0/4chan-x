@@ -484,6 +484,8 @@ Settings =
     $.on customCSS, 'change', Settings.togglecss
     $.on applyCSS,  'click',  -> CustomCSS.update()
 
+    Settings.addCheckboxes $('#archive-settings', section), Config.archiveSettings
+
     itemsArchive = {}
     itemsArchive[name] = Conf[name] for name in ['archives', 'selectedArchives', 'lastarchivecheck']
     $.get itemsArchive, (itemsArchive) ->
