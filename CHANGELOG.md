@@ -1,6 +1,30 @@
 **Note**: Installing the script from one of the links below will disable automatic updates. If you want automatic updates, install the script from the links on the [main page](https://www.4chan-x.net/).
 
-Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
+## v1.12.0
+
+**v1.12.0.0** *(2016-06-19)* - [[Firefox](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.0/builds/4chan-X-noupdate.user.js "Firefox version")] [[Chromium](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.0/builds/4chan-X-noupdate.crx "Chromium version")]
+- Based on v1.11.35.6.
+- Some workarounds for old browsers have been dropped. Those using versions older than Chromium/Chrome 38, Maxthon 4.9, or SeaMonkey 2.35 may need to upgrade for 4chan X to work.
+- Some obsolete or not-often-used options have been removed:
+  - `Archive Report`, `Restart when Opened`, `Show Name and Subject`, `Thread Excerpt`, and `Remove Thread Excerpt` have been removed.
+  - The options to disable `QR Shortcut`, `Bottom QR Link`, and `Open Post in New Tab` have been removed.
+  - The `disabled` option in the archive choices section of the Advanced settings have been removed. A better way to disable access to a particular archive is to add (using 4plebs as an example) `{"uid": 3, "boards": []}` to the `Archive Lists` setting.
+  - The `sandbox` setting for Sauce links has been removed. Its purpose is better served by ad blockers.
+  - In some cases, the behavior of the removed options can be emulated by adding lines to your custom CSS (on the `Advanced` settings tab). These will also be automatically added when you upgrade.
+    - `Show Name and Subject` enabled: `#qr .persona .field {display: block !important;}`
+    - `QR Shortcut` disabled: `#shortcut-qr {display: none;}`
+    - `Bottom QR Link` disabled: `.qr-link-container-bottom {display: none;}`
+- You may need to make some changes to your custom CSS:
+  - The non-prefixed `blink`, `webkit`, `gecko`, and `edge` classes added to the document based on detected user agent, which were replaced by `ua-blink`, `ua-webkit`, `ua-gecko`, and `ua-edge`, have now been removed.
+  - `.index-refresh-shortcut` is now `#shortcut-index-refresh > a`
+  - `#fappe-indicator` is now `#shortcut-fappe`
+  - `#werk-indicator` is now `#shortcut-werk`
+  - `#appchan-gal` is now `#shortcut-gallery > a`
+  - `.qr-shortcut` is now `#shortcut-qr > a`
+- The captcha complaint links have been removed.
+- The options `Exempt Archives from Encryption` and `Show New Thread Option in Threads` will be enabled by default in new installs.
+
+**Note**: Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (currently ccd0). (This practice was abandoned starting in v1.12.0; in general it's better to check the git logs.)
 
 ### v1.11.35
 

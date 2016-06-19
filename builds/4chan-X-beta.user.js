@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.11.35.6
+// @version      1.12.0.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -121,7 +121,7 @@
 
 'use strict';
 
-var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, Sauce, Settings, ShimSet, SimpleDict, Thread, ThreadExcerpt, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, Volume;
+var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, Sauce, Settings, SimpleDict, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, Volume;
 
 var Conf, E, c, d, doc, docSet, g;
 
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.11.35.6',
+  VERSION:   '1.12.0.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -188,8 +188,7 @@ Config = (function() {
         'Announcement Hiding': [true, 'Add button to hide 4chan announcements.'],
         'Desktop Notifications': [true, 'Enables desktop notifications across various 4chan X features.'],
         '404 Redirect': [true, 'Redirect dead threads and images to the archives.'],
-        'Archive Report': [true, 'Enable reporting posts to supported archives.'],
-        'Exempt Archives from Encryption': [false, 'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'],
+        'Exempt Archives from Encryption': [true, 'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps.'],
         'Relative Post Dates': [true, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.'],
@@ -244,7 +243,6 @@ Config = (function() {
         'Fappe Tyme': [true, 'Hide posts without images when header menu item is checked. *hint* *hint*'],
         'Werk Tyme': [true, 'Hide all post images when header menu item is checked.'],
         'Autoplay': [true, 'Videos begin playing immediately when opened.'],
-        'Restart when Opened': [false, 'Restart GIFs and WebMs when you hover over or expand them.'],
         'Show Controls': [true, 'Show controls on videos expanded inline.'],
         'Click Passthrough': [false, 'Clicks on videos trigger your browser\'s default behavior. Videos can be contracted with button / dragging to the left.', 1],
         'Allow Sound': [true, 'Open videos with the sound unmuted.'],
@@ -271,8 +269,6 @@ Config = (function() {
         'Unread Line': [true, 'Show a line to distinguish read posts from unread ones.'],
         'Remember Last Read Post': [true, 'Remember how far you\'ve read after you close the thread.'],
         'Scroll to Last Read Post': [true, 'Scroll back to the last read post when reopening a thread.', 1],
-        'Thread Excerpt': [true, 'Show an excerpt of the thread in the tab title for threads in /f/.'],
-        'Remove Thread Excerpt': [false, 'Replace the excerpt of the thread in the tab title with the board title.'],
         'Thread Stats': [true, 'Display reply and image count.'],
         'IP Count in Stats': [true, 'Display the unique IP count in the thread stats.', 1],
         'Page Count in Stats': [true, 'Display the page count in the thread stats.', 1],
@@ -285,21 +281,17 @@ Config = (function() {
       },
       'Posting and Captchas': {
         'Quick Reply': [true, 'All-in-one form to reply, create threads, automate dumping and more.'],
-        'QR Shortcut': [true, 'Add a shortcut to the header to toggle the QR.', 1],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.', 1],
         'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.', 1],
-        'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.', 1],
         'Remember QR Size': [false, 'Remember the size of the Quick reply.', 1],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.', 1],
         'Randomize Filename': [false, 'Set the filename to a random timestamp within the past year. Disabled on /f/.', 1],
-        'Show New Thread Option in Threads': [false, 'Show the option to post a new / different thread from inside a thread.', 1],
-        'Show Name and Subject': [false, 'Show the classic name, email, and subject fields in the QR, even when 4chan doesn\'t use them all.', 1],
+        'Show New Thread Option in Threads': [true, 'Show the option to post a new / different thread from inside a thread.', 1],
         'Show Upload Progress': [true, 'Track progress of file uploads as percentage in submit button.', 1],
         'Cooldown': [true, 'Indicate the remaining time before posting again.', 1],
         'Posting Success Notifications': [true, 'Show notifications on successful post creation or file uploading.', 1],
         'Auto-load captcha': [false, 'Automatically load the captcha in the QR even if your post is empty.', 1],
         'Post on Captcha Completion': [false, 'Submit the post immediately when the captcha is completed.', 1],
-        'Bottom QR Link': [true, 'Places a link on the bottom of threads to open the QR.', 1],
         'Captcha Fixes': [true, 'Make captcha easier to use, especially with the keyboard.'],
         'Use Recaptcha v1': [false, 'Use the old text version of Recaptcha in the post form.'],
         'Use Recaptcha v1 in Reports': [false, 'Use the text captcha in the report window.'],
@@ -365,7 +357,7 @@ Config = (function() {
       filesize: '',
       MD5: ''
     },
-    sauces: "# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\n#https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//tineye.com/search?url=%IMG\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://whatanime.ga/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf;sandbox\n#https://desustorage.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
+    sauces: "# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\n#https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//tineye.com/search?url=%IMG\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://whatanime.ga/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desustorage.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
     FappeT: {
       werk: false
     },
@@ -1290,10 +1282,6 @@ body > div:last-of-type {\n\
 body > div[style*=\" top: -10000px;\"] {\n\
   visibility: hidden !important;\n\
 }\n\
-:root.blink {\n\
-  -webkit-animation: none;\n\
-  animation: none;\n\
-}\n\
 /* Ads */\n\
 :root:not(.ads-loaded) .ad-cnt,\n\
 :root:not(.ads-loaded) .ad-plea,\n\
@@ -1590,7 +1578,7 @@ audio.controls-added {\n\
   box-shadow: 0 1px 2px rgba(0, 0, 0, .15);\n\
   border-radius: 2px;\n\
   margin: 1px auto;\n\
-  width: 500px;\n\
+  width: 550px;\n\
   max-width: 100%;\n\
   position: relative;\n\
   transition: all .25s ease-in-out;\n\
@@ -2303,8 +2291,8 @@ input[name=\"Default Volume\"] {\n\
   border-radius: 2px;\n\
   cursor: pointer;\n\
 }\n\
-:root:not(.fappeTyme) #fappe-indicator,\n\
-:root:not(.werkTyme) #werk-indicator {\n\
+:root:not(.fappeTyme) #shortcut-fappe,\n\
+:root:not(.werkTyme) #shortcut-werk {\n\
   display: none;\n\
 }\n\
 /* Index/Reply Navigation */\n\
@@ -3960,15 +3948,6 @@ $ = (function() {
           }
         }
         $.extend(r, options);
-        if (options.responseType === 'json' && r.responseType !== 'json' && delete r.response) {
-          Object.defineProperty(r, 'response', {
-            configurable: true,
-            enumerable: true,
-            get: function() {
-              return JSON.parse(r.responseText);
-            }
-          });
-        }
         $.extend(r.upload, upCallbacks);
         $.on(r, 'error', function() {
           if (!r.status) {
@@ -4072,14 +4051,6 @@ $ = (function() {
     var el, observer;
     if (el = $(selector, root)) {
       return cb(el);
-    }
-    if ($.engine === 'edge' && d.readyState === 'loading') {
-      $.asap((function() {
-        return d.readyState !== 'loading' || $(selector, root);
-      }), function() {
-        return $.onExists(root, selector, cb);
-      });
-      return;
     }
     observer = new MutationObserver(function() {
       if (el = $(selector, root)) {
@@ -4665,13 +4636,8 @@ CrossOrigin = (function() {
           } else {
             data = new Uint8Array(xhr.response);
           }
-          if (typeof xhr.responseHeaders === 'object') {
-            contentType = xhr.responseHeaders['Content-Type'];
-            contentDisposition = xhr.responseHeaders['Content-Disposition'];
-          } else {
-            contentType = (ref1 = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)) != null ? ref1[1] : void 0;
-            contentDisposition = (ref2 = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)) != null ? ref2[1] : void 0;
-          }
+          contentType = (ref1 = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)) != null ? ref1[1] : void 0;
+          contentDisposition = (ref2 = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)) != null ? ref2[1] : void 0;
           return cb(data, contentType, contentDisposition);
         },
         onerror: function() {
@@ -4682,7 +4648,7 @@ CrossOrigin = (function() {
         }
       };
       if (workaround) {
-        options.overrideMimeType = options.mimeType = 'text/plain; charset=x-user-defined';
+        options.overrideMimeType = 'text/plain; charset=x-user-defined';
       } else {
         options.responseType = 'arraybuffer';
       }
@@ -6068,47 +6034,6 @@ RandomAccessList = (function() {
 
 }).call(this);
 
-ShimSet = (function() {
-  var ShimSet;
-
-  ShimSet = (function() {
-    function ShimSet() {
-      this.elements = {};
-      this.size = 0;
-    }
-
-    ShimSet.prototype.has = function(value) {
-      return value in this.elements;
-    };
-
-    ShimSet.prototype.add = function(value) {
-      if (this.elements[value]) {
-        return;
-      }
-      this.elements[value] = true;
-      return this.size++;
-    };
-
-    ShimSet.prototype["delete"] = function(value) {
-      if (!this.elements[value]) {
-        return;
-      }
-      delete this.elements[value];
-      return this.size--;
-    };
-
-    return ShimSet;
-
-  })();
-
-  if (!('Set' in window)) {
-    window.Set = ShimSet;
-  }
-
-  return ShimSet;
-
-}).call(this);
-
 SimpleDict = (function() {
   var SimpleDict,
     slice = [].slice;
@@ -6295,12 +6220,11 @@ Redirect = (function() {
       }
     },
     selectArchives: function() {
-      var archive, archives, boardID, boards, data, files, id, j, k, key, l, len, len1, len2, name, o, record, ref, ref1, ref2, software, type, uid, withCredentials;
+      var archive, archives, boardID, boards, data, files, id, j, k, key, l, len, len1, len2, name, o, record, ref, ref1, ref2, software, type, uid;
       o = {
         thread: {},
         post: {},
-        file: {},
-        report: {}
+        file: {}
       };
       archives = {};
       ref = Conf['archives'];
@@ -6313,26 +6237,21 @@ Redirect = (function() {
             data[key] = [];
           }
         }
-        uid = data.uid, name = data.name, boards = data.boards, files = data.files, software = data.software, withCredentials = data.withCredentials;
+        uid = data.uid, name = data.name, boards = data.boards, files = data.files, software = data.software;
         if (software !== 'fuuka' && software !== 'foolfuuka') {
           continue;
         }
         archives[JSON.stringify(uid != null ? uid : name)] = data;
         for (l = 0, len2 = boards.length; l < len2; l++) {
           boardID = boards[l];
-          if (!withCredentials) {
-            if (!(boardID in o.thread)) {
-              o.thread[boardID] = data;
-            }
-            if (!(boardID in o.post || software !== 'foolfuuka')) {
-              o.post[boardID] = data;
-            }
-            if (!(boardID in o.file || indexOf.call(files, boardID) < 0)) {
-              o.file[boardID] = data;
-            }
+          if (!(boardID in o.thread)) {
+            o.thread[boardID] = data;
           }
-          if (name === 'fgts') {
-            o.report[boardID] = data;
+          if (!(boardID in o.post || software !== 'foolfuuka')) {
+            o.post[boardID] = data;
+          }
+          if (!(boardID in o.file || indexOf.call(files, boardID) < 0)) {
+            o.file[boardID] = data;
           }
         }
       }
@@ -6341,13 +6260,12 @@ Redirect = (function() {
         record = ref2[boardID];
         for (type in record) {
           id = record[type];
-          if (id === null) {
-            delete o[type][boardID];
-          } else if (archive = archives[JSON.stringify(id)]) {
-            boards = type === 'file' ? archive.files : archive.boards;
-            if (indexOf.call(boards, boardID) >= 0) {
-              o[type][boardID] = archive;
-            }
+          if (!((archive = archives[JSON.stringify(id)]))) {
+            continue;
+          }
+          boards = type === 'file' ? archive.files : archive.boards;
+          if (indexOf.call(boards, boardID) >= 0) {
+            o[type][boardID] = archive;
           }
         }
       }
@@ -6507,11 +6425,6 @@ Redirect = (function() {
       value = encodeURIComponent(value);
       path = archive.software === 'foolfuuka' ? boardID + "/search/" + type + "/" + value + "/" : type === 'image' ? boardID + "/image/" + value : boardID + "/?task=search2&search_" + type + "=" + value;
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + path;
-    },
-    report: function(archive, arg) {
-      var boardID, postID;
-      boardID = arg.boardID, postID = arg.postID;
-      return "https://so.fgts.jp/report/?board=" + boardID + "&no=" + postID;
     },
     securityCheck: function(url) {
       return /^https:\/\//.test(url) || location.protocol === 'http:' || Conf['Exempt Archives from Encryption'];
@@ -8014,7 +7927,7 @@ Header = (function() {
       $.sync('Header auto-hide', this.setBarVisibility);
       $.sync('Centered links', this.setLinkJustify);
       $.sync('Bottom Board List', this.setFooterVisibility);
-      this.addShortcut(menuButton, 900);
+      this.addShortcut('menu', menuButton, 900);
       this.menu.addEntry({
         el: $.el('span', {
           textContent: 'Header'
@@ -8097,7 +8010,7 @@ Header = (function() {
             $.on(cs, 'click', function() {
               return $.id('settingsWindowLink').click();
             });
-            return _this.addShortcut(cs, 810);
+            return _this.addShortcut('native', cs, 810);
           }
         };
       })(this));
@@ -8539,9 +8452,10 @@ Header = (function() {
         return top < 0;
       }
     },
-    addShortcut: function(el, index) {
+    addShortcut: function(id, el, index) {
       var i, item, len, ref, shortcut;
       shortcut = $.el('span', {
+        id: "shortcut-" + id,
         className: 'shortcut brackets-wrap'
       });
       $.add(shortcut, el);
@@ -8635,7 +8549,7 @@ Index = (function() {
       $.on(window, 'popstate', this.cb.popstate);
       $.on(d, 'scroll', Index.scroll);
       this.button = $.el('a', {
-        className: 'index-refresh-shortcut fa fa-refresh',
+        className: 'fa fa-refresh',
         title: 'Refresh',
         href: 'javascript:;',
         textContent: 'Refresh Index'
@@ -8643,7 +8557,7 @@ Index = (function() {
       $.on(this.button, 'click', function() {
         return Index.update();
       });
-      Header.addShortcut(this.button, 590);
+      Header.addShortcut('index-refresh', this.button, 590);
       repliesEntry = {
         el: UI.checkbox('Show Replies', 'Show replies')
       };
@@ -9738,7 +9652,7 @@ Settings = (function() {
         href: 'javascript:;'
       });
       $.on(link, 'click', Settings.open);
-      Header.addShortcut(link, 820);
+      Header.addShortcut('settings', link, 820);
       add = this.addSection;
       add('Main', this.main);
       add('Filter', this.filter);
@@ -10062,7 +9976,6 @@ Settings = (function() {
           'Image Auto-Gif': 'Replace GIF',
           'Reveal Spoilers': 'Reveal Spoiler Thumbnails',
           'Expand From Current': 'Expand from here',
-          'Post in Title': 'Thread Excerpt',
           'Current Page': 'Page Count in Stats',
           'Current Page Position': '',
           'Alternative captcha': 'Use Recaptcha v1',
@@ -10151,7 +10064,7 @@ Settings = (function() {
       }
     },
     upgrade: function(data, version) {
-      var addSauces, boardID, changes, compareString, j, key, len, name, record, ref, ref1, ref2, ref3, ref4, ref5, rice, set, type, uids, value;
+      var addCSS, addSauces, boardID, changes, compareString, j, key, len, name, record, ref, ref1, ref2, ref3, ref4, ref5, rice, set, type, uids, value;
       changes = {};
       set = function(key, value) {
         return data[key] = changes[key] = value;
@@ -10164,6 +10077,14 @@ Settings = (function() {
           if (sauces.length) {
             return set('sauces', data['sauces'] + '\n\n' + sauces.join('\n'));
           }
+        }
+      };
+      addCSS = function(css) {
+        if (data['usercss'] == null) {
+          set('usercss', Config['usercss']);
+        }
+        if (data['usercss'].indexOf(css) < 0) {
+          return set('usercss', css + '\n\n' + data['usercss']);
         }
       };
       compareString = version.replace(/\d+/g, function(x) {
@@ -10288,6 +10209,23 @@ Settings = (function() {
       if (compareString < '00001.00011.00035.00000') {
         addSauces(['https://whatanime.ga/?auto&url=%IMG;text:wait']);
       }
+      if (compareString < '00001.00012.00000.00000') {
+        if (data['Exempt Archives from Encryption'] == null) {
+          set('Exempt Archives from Encryption', false);
+        }
+        if (data['Show New Thread Option in Threads'] == null) {
+          set('Show New Thread Option in Threads', false);
+        }
+        if (data['Show Name and Subject']) {
+          addCSS('#qr .persona .field {display: block !important;}');
+        }
+        if (data['QR Shortcut'] === false) {
+          addCSS('#shortcut-qr {display: none;}');
+        }
+        if (data['Bottom QR Link'] === false) {
+          addCSS('.qr-link-container-bottom {display: none;}');
+        }
+      }
       return changes;
     },
     loadSettings: function(data, cb) {
@@ -10348,7 +10286,7 @@ Settings = (function() {
     sauce: function(section) {
       var ta;
       $.extend(section, {
-        innerHTML: "<div class=\"warning\"><code>Sauce</code> is disabled.</div><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><div>You can specify the applicable boards by appending <code>;boards:[board1],[board2]</code>.</div><div>You can specify the applicable file types by appending <code>;types:[extension1],[extension2]</code>.</div><div>You can open links with scripts and popups disabled by appending <code>;sandbox</code>.</div><ul>These parameters will be replaced by their corresponding values:<li><code>%TURL</code>: Thumbnail URL.</li><li><code>%URL</code>: Full image URL.</li><li><code>%IMG</code>: Full image URL for GIF, JPG, and PNG; thumbnail URL for other types.</li><li><code>%MD5</code>: MD5 hash in base64.</li><li><code>%sMD5</code>: MD5 hash in base64 using <code>-</code> and <code>_</code>.</li><li><code>%hMD5</code>: MD5 hash in hexadecimal.</li><li><code>%name</code>: Original file name.</li><li><code>%board</code>: Current board.</li><li><code>%%</code>, <code>%semi</code>: Literal <code>%</code> and <code>;</code>.</li></ul><textarea name=\"sauces\" class=\"field\" spellcheck=\"false\"></textarea>"
+        innerHTML: "<div class=\"warning\"><code>Sauce</code> is disabled.</div><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><div>You can specify the applicable boards by appending <code>;boards:[board1],[board2]</code>.</div><div>You can specify the applicable file types by appending <code>;types:[extension1],[extension2]</code>.</div><ul>These parameters will be replaced by their corresponding values:<li><code>%TURL</code>: Thumbnail URL.</li><li><code>%URL</code>: Full image URL.</li><li><code>%IMG</code>: Full image URL for GIF, JPG, and PNG; thumbnail URL for other types.</li><li><code>%MD5</code>: MD5 hash in base64.</li><li><code>%sMD5</code>: MD5 hash in base64 using <code>-</code> and <code>_</code>.</li><li><code>%hMD5</code>: MD5 hash in hexadecimal.</li><li><code>%name</code>: Original file name.</li><li><code>%board</code>: Current board.</li><li><code>%%</code>, <code>%semi</code>: Literal <code>%</code> and <code>;</code>.</li></ul><textarea name=\"sauces\" class=\"field\" spellcheck=\"false\"></textarea>"
       });
       $('.warning', section).hidden = Conf['Sauce'];
       ta = $('textarea', section);
@@ -10438,7 +10376,7 @@ Settings = (function() {
       });
     },
     addArchiveTable: function(section) {
-      var archBoards, archive, boardID, boardOptions, boardSelect, boards, data, files, i, id, item, j, k, l, len, len1, len2, len3, len4, m, n, name, o, ref, ref1, ref2, ref3, ref4, ref5, row, rows, select, software, table, tbody, type, uid, withCredentials;
+      var archBoards, archive, boardID, boardOptions, boardSelect, boards, data, files, id, item, j, k, l, len, len1, len2, len3, m, name, o, ref, ref1, ref2, ref3, ref4, row, rows, select, software, table, tbody, type, uid;
       $('#lastarchivecheck', section).textContent = Conf['lastarchivecheck'] === 0 ? 'never' : new Date(Conf['lastarchivecheck']).toLocaleString();
       boardSelect = $('#archive-board-select', section);
       table = $('#archive-table', section);
@@ -10448,43 +10386,32 @@ Settings = (function() {
       archBoards = {};
       ref = Conf['archives'];
       for (j = 0, len = ref.length; j < len; j++) {
-        ref1 = ref[j], uid = ref1.uid, name = ref1.name, boards = ref1.boards, files = ref1.files, software = ref1.software, withCredentials = ref1.withCredentials;
+        ref1 = ref[j], uid = ref1.uid, name = ref1.name, boards = ref1.boards, files = ref1.files, software = ref1.software;
         if (software !== 'fuuka' && software !== 'foolfuuka') {
           continue;
         }
         for (k = 0, len1 = boards.length; k < len1; k++) {
           boardID = boards[k];
           o = archBoards[boardID] || (archBoards[boardID] = {
-            thread: [[], []],
-            post: [[], []],
-            file: [[], []]
+            thread: [],
+            post: [],
+            file: []
           });
-          i = +(!!withCredentials);
           archive = [uid != null ? uid : name, name];
-          o.thread[i].push(archive);
+          o.thread.push(archive);
           if (software === 'foolfuuka') {
-            o.post[i].push(archive);
+            o.post.push(archive);
           }
           if (indexOf.call(files, boardID) >= 0) {
-            o.file[i].push(archive);
+            o.file.push(archive);
           }
-        }
-      }
-      for (boardID in archBoards) {
-        o = archBoards[boardID];
-        ref2 = ['thread', 'post', 'file'];
-        for (l = 0, len2 = ref2.length; l < len2; l++) {
-          item = ref2[l];
-          i = o[item][0].length ? 1 : 0;
-          o[item][i].push([null, 'disabled']);
-          o[item] = o[item][0].concat(o[item][1]);
         }
       }
       rows = [];
       boardOptions = [];
-      ref3 = Object.keys(archBoards).sort();
-      for (m = 0, len3 = ref3.length; m < len3; m++) {
-        boardID = ref3[m];
+      ref2 = Object.keys(archBoards).sort();
+      for (l = 0, len2 = ref2.length; l < len2; l++) {
+        boardID = ref2[l];
         row = $.el('tr', {
           className: "board-" + boardID
         });
@@ -10495,9 +10422,9 @@ Settings = (function() {
           selected: boardID === g.BOARD.ID
         }));
         o = archBoards[boardID];
-        ref4 = ['thread', 'post', 'file'];
-        for (n = 0, len4 = ref4.length; n < len4; n++) {
-          item = ref4[n];
+        ref3 = ['thread', 'post', 'file'];
+        for (m = 0, len3 = ref3.length; m < len3; m++) {
+          item = ref3[m];
           $.add(row, Settings.addArchiveCell(boardID, o, item));
         }
         rows.push(row);
@@ -10512,9 +10439,9 @@ Settings = (function() {
       }
       $.add(boardSelect, boardOptions);
       $.add(tbody, rows);
-      ref5 = Conf['selectedArchives'];
-      for (boardID in ref5) {
-        data = ref5[boardID];
+      ref4 = Conf['selectedArchives'];
+      for (boardID in ref4) {
+        data = ref4[boardID];
         for (type in data) {
           id = data[type];
           if ((select = $("select[data-boardid='" + boardID + "'][data-type='" + type + "']", tbody))) {
@@ -11188,12 +11115,11 @@ FappeTyme = (function() {
         });
         $.on(indicator, 'click', function() {
           var check;
-          check = FappeTyme.nodes[this.parentNode.id.split('-')[0]];
+          check = FappeTyme.nodes[this.parentNode.id.replace('shortcut-', '')];
           check.checked = !check.checked;
           return $.event('change', null, check);
         });
-        Header.addShortcut(indicator, 410);
-        indicator.parentNode.id = lc + "-indicator";
+        Header.addShortcut(lc, indicator, 410);
       }
       if (Conf['Werk Tyme']) {
         $.sync('werk', this.set.bind(this, 'werk'));
@@ -11250,13 +11176,12 @@ Gallery = (function() {
       this.delay = Conf['Slide Delay'];
       el = $.el('a', {
         href: 'javascript:;',
-        id: 'appchan-gal',
         title: 'Gallery',
         className: 'fa fa-picture-o',
         textContent: 'Gallery'
       });
       $.on(el, 'click', this.cb.toggle);
-      Header.addShortcut(el, 530);
+      Header.addShortcut('gallery', el, 530);
       return Callbacks.Post.push({
         name: 'Gallery',
         cb: this.node
@@ -11738,17 +11663,6 @@ ImageCommon = (function() {
       $.off(video, 'volumechange', Volume.change);
       return video.muted = true;
     },
-    rewind: function(el) {
-      if (el.nodeName === 'VIDEO') {
-        if (el.readyState >= el.HAVE_METADATA) {
-          return el.currentTime = 0;
-        }
-      } else if (/\.gif$/.test(el.src)) {
-        return $.queueTask(function() {
-          return el.src = el.src;
-        });
-      }
-    },
     pushCache: function(el) {
       ImageCommon.cache = el;
       return $.on(el, 'error', ImageCommon.cacheError);
@@ -11899,7 +11813,7 @@ ImageExpand = (function() {
         href: 'javascript:;'
       });
       $.on(this.EAI, 'click', this.cb.toggleAll);
-      Header.addShortcut(this.EAI, 520);
+      Header.addShortcut('expand-all', this.EAI, 520);
       $.on(d, 'scroll visibilitychange', this.cb.playVideos);
       this.videoControls = $.el('span', {
         className: 'video-controls'
@@ -12069,9 +11983,6 @@ ImageExpand = (function() {
           $.off(el, eventName, cb);
         }
       }
-      if (Conf['Restart when Opened']) {
-        ImageCommon.rewind(file.thumb);
-      }
       delete file.fullImage;
       return $.queueTask(function() {
         if (file.isExpanding || file.isExpanded) {
@@ -12098,9 +12009,6 @@ ImageExpand = (function() {
       } else if (((ref = ImageCommon.cache) != null ? ref.dataset.fullID : void 0) === post.fullID) {
         el = file.fullImage = ImageCommon.popCache();
         $.on(el, 'error', ImageExpand.error);
-        if (Conf['Restart when Opened'] && el.id !== 'ihover') {
-          ImageCommon.rewind(el);
-        }
         el.removeAttribute('id');
       } else {
         el = file.fullImage = $.el((isVideo ? 'video' : 'img'));
@@ -12343,10 +12251,6 @@ ImageHover = (function() {
           el.dataset.fullID = post.fullID;
           $.on(el, 'error', error);
           el.src = file.url;
-        }
-        if (Conf['Restart when Opened']) {
-          ImageCommon.rewind(el);
-          ImageCommon.rewind(this);
         }
         el.id = 'ihover';
         $.add(Header.hover, el);
@@ -12736,20 +12640,8 @@ Sauce = (function() {
         cb: this.node
       });
     },
-    sandbox: function(url) {
-      return E.url({
-        innerHTML: "<html><head><title>[sb] " + E(url) + "</title><style>iframe {width: 100vw;height: 100vh;border: 0;}body {margin: 0;overflow: hidden;}</style></head><body><iframe sandbox=\"allow-forms\" src=\"" + E(url) + "\"></iframe></body></html>"
-      });
-    },
-    rmOrigin: function(e) {
-      if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
-        return;
-      }
-      $.open(this.href);
-      return e.preventDefault();
-    },
     createSauceLink: function(link, post) {
-      var a, ext, i, j, key, len, m, part, parts, ref, ref1, ref2, skip, url;
+      var a, ext, i, j, key, len, m, part, parts, ref, ref1, ref2, skip;
       if (!(link = link.trim())) {
         return null;
       }
@@ -12793,18 +12685,11 @@ Sauce = (function() {
       if (!(!parts['types'] || indexOf.call(parts['types'].split(','), ext) >= 0)) {
         return null;
       }
-      url = parts['url'];
-      if (parts['sandbox'] != null) {
-        url = Sauce.sandbox(url);
-      }
       a = Sauce.link.cloneNode(false);
-      a.href = url;
+      a.href = parts['url'];
       a.textContent = parts['text'];
       if (/^javascript:/i.test(parts['url'])) {
         a.removeAttribute('target');
-      }
-      if (parts['sandbox'] != null) {
-        $.on(a, 'click', Sauce.rmOrigin);
       }
       return a;
     },
@@ -14235,13 +14120,6 @@ ReportLink = (function() {
             } else {
               ReportLink.dims = 'width=400,height=550';
             }
-          } else if (Conf['Archive Report']) {
-            a.textContent = 'Report to archive';
-            ReportLink.url = Redirect.to('report', {
-              boardID: post.board.ID,
-              postID: post.ID
-            });
-            ReportLink.dims = 'width=700,height=475';
           } else {
             ReportLink.url = '';
           }
@@ -14359,9 +14237,6 @@ Banner = (function() {
       var banner, children;
       banner = $(".boardBanner");
       children = banner.children;
-      if (g.BOARD.ID !== 'f' && g.VIEW === 'thread' && Conf['Remove Thread Excerpt']) {
-        Banner.setTitle(children[1].textContent);
-      }
       children[0].title = "Click to change";
       $.on(children[0], 'click', Banner.cb.toggle);
       if (Conf['Custom Board Titles']) {
@@ -14451,7 +14326,7 @@ Banner = (function() {
     },
     original: {},
     custom: function(child) {
-      var className, data, event, items, j, len, ref, string, string2;
+      var className, data, event, j, len, ref;
       className = child.className;
       child.title = "Ctrl/\u2318+click to edit board " + (className.slice(5).toLowerCase());
       child.spellcheck = false;
@@ -14460,24 +14335,6 @@ Banner = (function() {
         event = ref[j];
         $.on(child, event, Banner.cb[event]);
       }
-      string = g.BOARD + "." + className;
-      string2 = string + ".orig";
-      items = {};
-      items[string] = '';
-      items[string2] = child.textContent;
-      $.get(items, function(items) {
-        if (items[string]) {
-          Banner.db.set({
-            boardID: g.BOARD.ID,
-            threadID: className,
-            val: {
-              title: items[string],
-              orig: items[string2]
-            }
-          });
-        }
-        return $["delete"]([string, string2]);
-      });
       if (data = Banner.db.get({
         boardID: g.BOARD.ID,
         threadID: className
@@ -16230,30 +16087,7 @@ Report = (function() {
       return $.ready(this.ready);
     },
     ready: function() {
-      var passAd, prev, ref;
       $.addStyle(CSS.report);
-      if (Conf['Archive Report']) {
-        Report.archive();
-      }
-      if ((passAd = $('a[href="https://www.4chan.org/pass"]'))) {
-        $.extend(passAd, {
-          textContent: 'Complain',
-          href: 'https://www.4chan.org/feedback',
-          tabIndex: -1
-        });
-        passAd.parentNode.normalize();
-        if (((ref = (prev = passAd.previousSibling)) != null ? ref.nodeType : void 0) === Node.TEXT_NODE) {
-          prev.nodeValue = prev.nodeValue.replace(/4chan Pass[^\.]*\./i, 'reCAPTCHA malfunctioning?');
-        }
-        $.after(passAd, [
-          $.tn('] ['), $.el('a', {
-            href: 'irc://irc.rizon.net/4chan',
-            textContent: '4chan IRC',
-            target: '_blank',
-            tabIndex: -1
-          })
-        ]);
-      }
       if (!Conf['Use Recaptcha v1 in Reports'] && !Conf['Force Noscript Captcha'] && Main.jsEnabled) {
         return new MutationObserver(function() {
           Report.fit('iframe[src^="https://www.google.com/recaptcha/api2/frame"]');
@@ -16275,39 +16109,6 @@ Report = (function() {
       dy = el.getBoundingClientRect().bottom - doc.clientHeight + 8;
       if (dy > 0) {
         return window.resizeBy(0, dy);
-      }
-    },
-    archive: function() {
-      var link, message, types, url;
-      Redirect.init();
-      if (!(url = Redirect.to('report', {
-        boardID: g.BOARD.ID,
-        postID: Report.postID
-      }))) {
-        return;
-      }
-      if ((message = $('h3')) && /Report submitted!/.test(message.textContent)) {
-        if (location.hash === '#redirect') {
-          $.globalEval('self.close = function(){};');
-          window.resizeTo(700, 475);
-          location.replace(url);
-        }
-        return;
-      }
-      link = $.el('a', {
-        href: url,
-        textContent: 'Report to archive'
-      });
-      $.on(link, 'click', function(e) {
-        if (!(e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0)) {
-          return window.resizeTo(700, 475);
-        }
-      });
-      $.add(d.body, [$.tn(' ['), link, $.tn(']')]);
-      if (types = $.id('reportTypes')) {
-        return $.on(types, 'change', function(e) {
-          return $('form').action = e.target.value === 'illegal' ? '#redirect' : '';
-        });
       }
     }
   };
@@ -16717,28 +16518,6 @@ ReplyPruning = (function() {
 
 }).call(this);
 
-ThreadExcerpt = (function() {
-  var ThreadExcerpt;
-
-  ThreadExcerpt = {
-    init: function() {
-      if (g.BOARD.ID !== 'f' || g.VIEW !== 'thread' || !Conf['Thread Excerpt']) {
-        return;
-      }
-      return Callbacks.Thread.push({
-        name: 'Thread Excerpt',
-        cb: this.node
-      });
-    },
-    node: function() {
-      return d.title = Get.threadExcerpt(this);
-    }
-  };
-
-  return ThreadExcerpt;
-
-}).call(this);
-
 ThreadStats = (function() {
   var ThreadStats;
 
@@ -16764,7 +16543,7 @@ ThreadStats = (function() {
           title: statsTitle
         });
         $.extend(sc, statsHTML);
-        Header.addShortcut(sc, 200);
+        Header.addShortcut('stats', sc, 200);
       } else {
         this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', {
           innerHTML: "<div class=\"move\" title=\"" + E(statsTitle) + "\">" + (statsHTML).innerHTML + "</div>"
@@ -16918,7 +16697,7 @@ ThreadUpdater = (function() {
         $.extend(sc, {
           innerHTML: "<span id=\"update-status\" class=\"empty\"></span><span id=\"update-timer\" class=\"empty\" title=\"Update now\"></span>"
         });
-        Header.addShortcut(sc, 100);
+        Header.addShortcut('updater', sc, 100);
       } else {
         this.dialog = sc = UI.dialog('updater', 'bottom: 0px; left: 0px;', {
           innerHTML: "<div class=\"move\"></div><span id=\"update-status\"></span><span id=\"update-timer\" title=\"Update now\"></span>"
@@ -17369,7 +17148,7 @@ ThreadWatcher = (function() {
       }
       if (Conf['Toggleable Thread Watcher']) {
         this.dialog.hidden = true;
-        Header.addShortcut(sc, 510);
+        Header.addShortcut('watcher', sc, 510);
         $.addClass(doc, 'toggleable-watcher');
       }
       ThreadWatcher.fetchAuto();
@@ -18251,23 +18030,19 @@ Unread = (function() {
       if (!Header.areNotificationsEnabled) {
         return;
       }
-      try {
-        notif = new Notification(post.info.nameBlock + " replied to you", {
-          body: post.info.commentDisplay,
-          icon: Favicon.logo
-        });
-        notif.onclick = function() {
-          Header.scrollToIfNeeded(post.nodes.root, true);
-          return $.global(function() {
-            return window.focus();
-          });
-        };
-        return notif.onshow = function() {
-          return setTimeout(function() {
-            return notif.close();
-          }, 7 * $.SECOND);
-        };
-      } catch (_error) {}
+      notif = new Notification(post.info.nameBlock + " replied to you", {
+        body: post.info.commentDisplay,
+        icon: Favicon.logo
+      });
+      notif.onclick = function() {
+        Header.scrollToIfNeeded(post.nodes.root, true);
+        return window.focus();
+      };
+      return notif.onshow = function() {
+        return setTimeout(function() {
+          return notif.close();
+        }, 7 * $.SECOND);
+      };
     },
     onUpdate: function(e) {
       if (!e.detail[404]) {
@@ -18487,25 +18262,9 @@ Captcha = {};
         img.tabIndex = 0;
       }
       if (this.images.length === 9) {
-        this.addTooltips(this.images);
+        return this.addTooltips(this.images);
       } else {
-        this.addTooltips16(this.images);
-      }
-      return this.complaintLinks();
-    },
-    complaintLinks: function() {
-      var errmsg, j, len, link, ref;
-      ref = $$('.rc-imageselect-incorrect-response, .rc-imageselect-error-select-one, .rc-imageselect-error-select-more, .rc-imageselect-error-dynamic-more');
-      for (j = 0, len = ref.length; j < len; j++) {
-        errmsg = ref[j];
-        if (!$('a', errmsg)) {
-          link = $.el('a', {
-            href: 'https://www.4chan.org/feedback',
-            target: '_blank',
-            textContent: '[complain]'
-          });
-          $.add(errmsg, [$.tn(' '), link]);
-        }
+        return this.addTooltips16(this.images);
       }
     },
     addLabels: function() {
@@ -19509,26 +19268,24 @@ QR = (function() {
         name: 'Quick Reply',
         cb: this.node
       });
-      if (Conf['QR Shortcut']) {
-        this.shortcut = sc = $.el('a', {
-          className: 'qr-shortcut fa fa-comment-o disabled',
-          textContent: 'QR',
-          title: 'Quick Reply',
-          href: 'javascript:;'
-        });
-        $.on(sc, 'click', function() {
-          if (!QR.postingIsEnabled) {
-            return;
-          }
-          if (Conf['Persistent QR'] || !QR.nodes || QR.nodes.el.hidden) {
-            QR.open();
-            return QR.nodes.com.focus();
-          } else {
-            return QR.close();
-          }
-        });
-        return Header.addShortcut(sc, 540);
-      }
+      this.shortcut = sc = $.el('a', {
+        className: 'fa fa-comment-o disabled',
+        textContent: 'QR',
+        title: 'Quick Reply',
+        href: 'javascript:;'
+      });
+      $.on(sc, 'click', function() {
+        if (!QR.postingIsEnabled) {
+          return;
+        }
+        if (Conf['Persistent QR'] || !QR.nodes || QR.nodes.el.hidden) {
+          QR.open();
+          return QR.nodes.com.focus();
+        } else {
+          return QR.close();
+        }
+      });
+      return Header.addShortcut('qr', sc, 540);
     },
     initReady: function() {
       var link, linkBot, navLinksBot, origToggle;
@@ -19548,7 +19305,7 @@ QR = (function() {
         QR.open();
         return QR.nodes.com.focus();
       });
-      if (Conf['Bottom QR Link'] && g.VIEW === 'thread') {
+      if (g.VIEW === 'thread') {
         linkBot = $.el('div', {
           className: "brackets-wrap qr-link-container-bottom"
         });
@@ -19621,9 +19378,7 @@ QR = (function() {
           return;
         }
       }
-      if (Conf['QR Shortcut']) {
-        return $.rmClass(QR.shortcut, 'disabled');
-      }
+      return $.rmClass(QR.shortcut, 'disabled');
     },
     close: function() {
       var j, len, post, ref;
@@ -19635,9 +19390,7 @@ QR = (function() {
       QR.cleanNotifications();
       d.activeElement.blur();
       $.rmClass(QR.nodes.el, 'dump');
-      if (Conf['QR Shortcut']) {
-        $.addClass(QR.shortcut, 'disabled');
-      }
+      $.addClass(QR.shortcut, 'disabled');
       new QR.post(true);
       ref = QR.posts.splice(0, QR.posts.length - 1);
       for (j = 0, len = ref.length; j < len; j++) {
@@ -19723,28 +19476,24 @@ QR = (function() {
           return alert(el.textContent);
         }
       } else if (d.hidden || !(focusOverride || d.hasFocus())) {
-        try {
-          notif = new Notification(el.textContent, {
-            body: el.textContent,
-            icon: Favicon.logo
-          });
-          notif.onclick = function() {
-            return $.global(function() {
-              return window.focus();
-            });
+        notif = new Notification(el.textContent, {
+          body: el.textContent,
+          icon: Favicon.logo
+        });
+        notif.onclick = function() {
+          return window.focus();
+        };
+        if ($.engine !== 'gecko') {
+          notif.onclose = function() {
+            return notice.close();
           };
-          if ($.engine !== 'gecko') {
-            notif.onclose = function() {
-              return notice.close();
-            };
-            return notif.onshow = function() {
-              return setTimeout(function() {
-                notif.onclose = null;
-                return notif.close();
-              }, 7 * $.SECOND);
-            };
-          }
-        } catch (_error) {}
+          return notif.onshow = function() {
+            return setTimeout(function() {
+              notif.onclose = null;
+              return notif.close();
+            }, 7 * $.SECOND);
+          };
+        }
       }
     },
     notifications: [],
@@ -20089,11 +19838,6 @@ QR = (function() {
       if (Conf['Show New Thread Option in Threads']) {
         $.addClass(QR.nodes.el, 'show-new-thread-option');
       }
-      if (Conf['Show Name and Subject']) {
-        $.addClass(QR.nodes.name, 'force-show');
-        $.addClass(QR.nodes.sub, 'force-show');
-        QR.nodes.email.placeholder = 'E-mail';
-      }
       QR.forcedAnon = !!$('form[name="post"] input[name="name"][type="hidden"]');
       if (QR.forcedAnon) {
         $.addClass(QR.nodes.el, 'forced-anon');
@@ -20328,7 +20072,7 @@ QR = (function() {
       return QR.status();
     },
     response: function() {
-      var URL, _, ban, err, h1, isReply, lastPostToThread, m, open, post, postID, postsCount, ref, ref1, ref2, req, resDoc, seconds, threadID;
+      var _, ban, err, h1, isReply, lastPostToThread, m, post, postID, postsCount, ref, ref1, ref2, req, resDoc, seconds, threadID, url;
       req = QR.req;
       delete QR.req;
       post = QR.posts[0];
@@ -20352,9 +20096,7 @@ QR = (function() {
       if (err) {
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
           if (/mistyped/i.test(err.textContent)) {
-            err = $.el('span', {
-              innerHTML: "You mistyped the CAPTCHA, or the CAPTCHA malfunctioned [<a href=\"https://www.4chan.org/feedback\" target=\"_blank\">complain here</a>]."
-            });
+            err = 'You mistyped the CAPTCHA, or the CAPTCHA malfunctioned.';
           } else if (/expired/i.test(err.textContent)) {
             err = 'This CAPTCHA is no longer valid because it has expired.';
           }
@@ -20417,22 +20159,17 @@ QR = (function() {
         QR.notifications.push(new Notice('success', h1.textContent, 5));
       }
       QR.cooldown.add(threadID, postID);
-      URL = threadID === postID ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID : g.VIEW === 'index' && lastPostToThread && Conf['Open Post in New Tab'] ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID + "#p" + postID : void 0;
-      if (URL) {
-        open = Conf['Open Post in New Tab'] || postsCount ? function() {
-          return $.open(URL);
-        } : function() {
-          return window.location = URL;
-        };
+      url = threadID === postID ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID : threadID !== g.THREADID && lastPostToThread ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID + "#p" + postID : void 0;
+      if (url) {
         if (threadID === postID) {
-          QR.waitForThread(URL, open);
+          QR.waitForThread(url);
         } else {
-          open();
+          $.open(url);
         }
       }
       return QR.status();
     },
-    waitForThread: function(url, cb) {
+    waitForThread: function(url) {
       var attempts, check;
       attempts = 0;
       check = function() {
@@ -20440,7 +20177,7 @@ QR = (function() {
           onloadend: function() {
             attempts++;
             if (attempts >= 6 || this.status === 200) {
-              return cb();
+              return $.open(url);
             } else {
               return setTimeout(check, attempts * $.SECOND);
             }
@@ -22516,6 +22253,9 @@ Main = (function() {
       Conf['Except Archives from Encryption'] = false;
       Conf['JSON Navigation'] = true;
       Conf['Oekaki Links'] = true;
+      Conf['Show Name and Subject'] = false;
+      Conf['QR Shortcut'] = true;
+      Conf['Bottom QR Link'] = true;
       if ($.platform === 'crx') {
         $.global(function() {
           var k, key, len1, oldFun, ref1, whitelist;
@@ -22705,7 +22445,7 @@ Main = (function() {
       $.addClass(doc, 'fourchan-x', 'seaweedchan');
       $.addClass(doc, g.VIEW === 'thread' ? 'thread-view' : g.VIEW);
       if ($.engine) {
-        $.addClass(doc, "ua-" + $.engine, $.engine);
+        $.addClass(doc, "ua-" + $.engine);
       }
       $.onExists(doc, '.ad-cnt', function(ad) {
         return $.onExists(ad, 'img', function() {
@@ -23001,7 +22741,7 @@ Main = (function() {
         }
       });
     },
-    features: [['Polyfill', Polyfill], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Thread Excerpt', ThreadExcerpt], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning]]
+    features: [['Polyfill', Polyfill], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning]]
   };
 
   return Main;
