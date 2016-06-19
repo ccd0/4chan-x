@@ -438,6 +438,7 @@ Main =
     ['Fourchan thingies',         Fourchan]
     ['Color User IDs',            IDColor]
     ['Highlight by User ID',      IDHighlight]
+    ['Count Posts by ID',         IDPostCount]
     ['Custom CSS',                CustomCSS]
     ['Thread Links',              ThreadLinks]
     ['Linkify',                   Linkify]

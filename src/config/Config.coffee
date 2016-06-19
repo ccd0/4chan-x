@@ -97,6 +97,10 @@ Config =
         true
         'Assign unique colors to user IDs on boards that use them'
       ]
+      'Count Posts by ID': [
+        true
+        'Display number of posts in the thread when hovering over an ID.'
+      ]
       'Remove Spoilers': [
         false
         'Remove all spoilers in text.'
