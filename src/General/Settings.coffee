@@ -447,10 +447,10 @@ Settings =
       $.id('lastarchivecheck').textContent = 'never'
 
     items = {}
-    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
+    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'Time Formatting', 'time', 'backlink', 'File Info Formatting', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
       items[name] = Conf[name]
       input = inputs[name]
-      event = if name in ['archiveLists', 'archiveAutoUpdate', 'QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
+      event = if name in ['archiveLists', 'archiveAutoUpdate', 'Time Formatting', 'File Info Formatting', 'QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
       $.on input, event, $.cb[if input.type is 'checkbox' then 'checked' else 'value']
       $.on input, event, Settings[name] if name of Settings
 

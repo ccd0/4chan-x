@@ -47,10 +47,6 @@ Config =
         true
         'Bind actions to keyboard shortcuts.'
       ]
-      'Time Formatting': [
-        true
-        'Localize and format timestamps.'
-      ]
       'Relative Post Dates': [
         true
         'Display dates like "3 minutes ago". Tooltip shows the timestamp.'
@@ -63,10 +59,6 @@ Config =
       'Comment Expansion': [
         true
         'Expand comments that are too long to display on the index. Not applicable with JSON Index.'
-      ]
-      'File Info Formatting': [
-        true
-        'Reformat the file information.'
       ]
       'Thread Expansion': [
         true
@@ -776,10 +768,12 @@ Config =
 
   captchaLanguage: ''
 
+  'Time Formatting': true
   time: '%m/%d/%y(%a)%H:%M:%S'
 
   backlink: '>>%id'
 
+  'File Info Formatting': true
   fileInfo: '%l (%p%s, %r%g)'
 
   favicon: 'ferongr'
