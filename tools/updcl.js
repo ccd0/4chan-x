@@ -18,7 +18,7 @@ var today    = date.split('T')[0];
 var filename = `/builds/${name}-noupdate`;
 var ffLink   = `${oldVersions}${version}${filename}.user.js`;
 var crLink   = `${oldVersions}${version}${filename}.crx`;
-var line     = `**v${version}** *(${today})* - [[Firefox](${ffLink} \"Firefox version\")] [[Chromium](${crLink} \"Chromium version\")]`;
+var line     = `**v${version}** *(${today})* - [[Userscript](${ffLink})] [[Chrome extension](${crLink})]`;
 
 var changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
 
