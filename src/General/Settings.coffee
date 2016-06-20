@@ -23,10 +23,16 @@ Settings =
 
     if Conf['Disable Native Extension']
       if $.hasStorage
-        settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
-        return if settings.disableAll
-        settings.disableAll = true
-        localStorage.setItem '4chan-settings', JSON.stringify settings
+        # Run in page context to handle case where 4chan X has localStorage access but not the page.
+        # (e.g. Pale Moon 26.2.2, GM 3.8, cookies disabled for 4chan only)
+        $.global ->
+          try
+            settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
+            return if settings.disableAll
+            settings.disableAll = true
+            localStorage.setItem '4chan-settings', JSON.stringify settings
+          catch
+            Object.defineProperty window, 'Config', {value: {disableAll: true}}
       else
         $.global ->
           Object.defineProperty window, 'Config', {value: {disableAll: true}}
