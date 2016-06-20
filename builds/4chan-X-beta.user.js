@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.12.0.1
+// @version      1.12.0.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.0.1',
+  VERSION:   '1.12.0.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -9646,7 +9646,7 @@ Settings = (function() {
 
   Settings = {
     init: function() {
-      var add, link, settings;
+      var add, link;
       link = $.el('a', {
         className: 'settings-link fa fa-wrench',
         textContent: 'Settings',
@@ -9667,12 +9667,23 @@ Settings = (function() {
       });
       if (Conf['Disable Native Extension']) {
         if ($.hasStorage) {
-          settings = JSON.parse(localStorage.getItem('4chan-settings')) || {};
-          if (settings.disableAll) {
-            return;
-          }
-          settings.disableAll = true;
-          return localStorage.setItem('4chan-settings', JSON.stringify(settings));
+          return $.global(function() {
+            var settings;
+            try {
+              settings = JSON.parse(localStorage.getItem('4chan-settings')) || {};
+              if (settings.disableAll) {
+                return;
+              }
+              settings.disableAll = true;
+              return localStorage.setItem('4chan-settings', JSON.stringify(settings));
+            } catch (_error) {
+              return Object.defineProperty(window, 'Config', {
+                value: {
+                  disableAll: true
+                }
+              });
+            }
+          });
         } else {
           return $.global(function() {
             return Object.defineProperty(window, 'Config', {
