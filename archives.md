@@ -23,7 +23,7 @@ uid | name | domain | software
 `20`|`/v/idya archive`|[archive.vidya.moe](http://archive.vidya.moe)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `21`|`imcute`|[imcute.yt](http://imcute.yt)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `22`|`not4plebs`|[totally.not4plebs.org](http://totally.not4plebs.org)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
-`23`|`Desustorage` (previously `DesuStorage` & `archive.horse`)|[desustorage.org](http://desustorage.org) (previously [archive.desustorage.org](http://archive.desustorage.org) & [4ch.archive.horse](http://4ch.archive.horse))|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
+`23`|`Desustorage` (previously `DesuStorage` & `archive.horse`)|[cuckchan.org](http://cuckchan.org) (previously [archive.desustorage.org](http://archive.desustorage.org), [4ch.archive.horse](http://4ch.archive.horse), and [desustorage.org](http://desustorage.org))|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `24`|`fireden.net`|[boards.fireden.net](http://boards.fireden.net)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `25`|`arch.b4k.co` (previously `b4k.co`)|[arch.b4k.co](http://arch.b4k.co) (previously [ff.b4k.co](http://ff.b4k.co))|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `26`|`poweredby.moe`|[archive.poweredby.moe](http://archive.poweredby.moe)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
