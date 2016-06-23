@@ -34,6 +34,9 @@
 
 ### v1.11.35
 
+**v1.11.35.7** *(2016-06-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.7/builds/4chan-X-noupdate.crx)]
+- Fix banner contest form not showing up with JS disabled.
+
 **v1.11.35.6** *(2016-06-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.6/builds/4chan-X-noupdate.crx)]
 - Use backslashes instead of concatenation for multiline strings. Fixes issue causing script to stop working for some users in Chrome 53.
 

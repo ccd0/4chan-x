@@ -1,3 +1,6 @@
 #captcha-cnt {
   height: auto;
 }
+:root:not(.js-enabled) #form {
+  display: block;
+}
