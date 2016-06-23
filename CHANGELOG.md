@@ -2,6 +2,9 @@
 
 ## v1.12.0
 
+**v1.12.0.3** *(2016-06-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.3/builds/4chan-X-noupdate.crx)]
+- Merge v1.11.35.7: Fix banner contest form not showing up with JS disabled.
+
 **v1.12.0.2** *(2016-06-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.2/builds/4chan-X-noupdate.crx)]
 - Fix issue with disabling native extension on Pale Moon with cookies disabled on 4chan.
 

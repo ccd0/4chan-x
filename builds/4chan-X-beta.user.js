@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.12.0.2
+// @version      1.12.0.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.0.2',
+  VERSION:   '1.12.0.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -3856,6 +3856,9 @@ report:
 www:
 "#captcha-cnt {\n\
   height: auto;\n\
+}\n\
+:root:not(.js-enabled) #form {\n\
+  display: block;\n\
 }\n"
 
 };
