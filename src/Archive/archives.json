@@ -14,8 +14,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["c", "e", "news", "w", "wg", "wsr"],
-  "files": ["c", "e", "news", "w", "wg", "wsr"]
+  "boards": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr"],
+  "files": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr"]
 }, {
   "uid": 8,
   "name": "Rebecca Black Tech",
@@ -37,7 +37,7 @@
 }, {
   "uid": 23,
   "name": "Desustorage",
-  "domain": "desustorage.org",
+  "domain": "cuckchan.org",
   "http": true,
   "https": true,
   "software": "foolfuuka",
