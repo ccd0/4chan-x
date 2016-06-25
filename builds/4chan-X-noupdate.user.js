@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.12.0.4
+// @version      1.12.0.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.0.4',
+  VERSION:   '1.12.0.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -358,7 +358,7 @@ Config = (function() {
       filesize: '',
       MD5: ''
     },
-    sauces: "# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\n#https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//tineye.com/search?url=%IMG\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://whatanime.ga/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desustorage.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
+    sauces: "# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\n#https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//tineye.com/search?url=%IMG\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://whatanime.ga/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://cuckchan.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
     FappeT: {
       werk: false
     },
@@ -10240,6 +10240,11 @@ Settings = (function() {
         }
         if (data['Bottom QR Link'] === false) {
           addCSS('.qr-link-container-bottom {display: none;}');
+        }
+      }
+      if (compareString < '00001.00012.00000.00005') {
+        if (data['sauces'] != null) {
+          set('sauces', data['sauces'].replace(/^(#?\s*)https:\/\/desustorage\.org\//mg, '$1https://cuckchan.org/'));
         }
       }
       return changes;
