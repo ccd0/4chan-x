@@ -15,7 +15,7 @@ else
 endif
 CP = $(call CAT,$<,$@)
 
-npgoals := clean cleanrel cleanweb cleanfull withtests wrapped $(foreach i,1 2 3 4,bump$(i)) tag tagcommit beta stable web update updatehard
+npgoals := clean cleanrel cleanweb cleanfull withtests wrapped archives $(foreach i,1 2 3 4,bump$(i)) tag tagcommit beta stable web update updatehard
 ifneq "$(filter $(npgoals),$(MAKECMDGOALS))" ""
 .NOTPARALLEL :
 endif
@@ -306,7 +306,14 @@ wrapped : src/meta/npm-shrinkwrap.json
 	$(call CAT,$<,npm-shrinkwrap.json)
 	npm install
 
+archives :
+	git fetch -n archives
+	git merge --no-commit -s ours archives/gh-pages
+	git show archives/gh-pages:archives.json > src/Archive/archives.json
+	-git commit -am 'Update archive list.'
+
 $(foreach i,1 2 3 4,bump$(i)) :
+	$(MAKE) archives
 	node tools/bump.js $(subst bump,,$@)
 	$(MAKE) .events/CHANGELOG
 	$(MAKE) all
