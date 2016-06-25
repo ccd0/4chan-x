@@ -2,6 +2,9 @@
 
 ## v1.12.0
 
+**v1.12.0.4** *(2016-06-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.4/builds/4chan-X-noupdate.crx)]
+- Update default archive list.
+
 **v1.12.0.3** *(2016-06-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.3/builds/4chan-X-noupdate.crx)]
 - Merge v1.11.35.7: Fix banner contest form not showing up with JS disabled.
 
