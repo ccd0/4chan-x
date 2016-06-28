@@ -36,8 +36,8 @@
   "files": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"]
 }, {
   "uid": 23,
-  "name": "Desustorage",
-  "domain": "cuckchan.org",
+  "name": "Desuarchive",
+  "domain": "desuarchive.org",
   "http": true,
   "https": true,
   "software": "foolfuuka",
