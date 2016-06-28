@@ -43,6 +43,10 @@
 
 ### v1.11.35
 
+**v1.11.35.9** *(2016-06-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.9/builds/4chan-X-noupdate.crx)]
+- Update default archive list.
+- Update cuckchan.org -> desuarchive.org in sauce examples.
+
 **v1.11.35.8** *(2016-06-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.11.35.8/builds/4chan-X-noupdate.crx)]
 - Update default archive list.
 - Update desustorage.org -> cuckchan.org in sauce examples.

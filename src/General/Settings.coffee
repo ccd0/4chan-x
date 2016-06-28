@@ -390,9 +390,9 @@ Settings =
       addCSS '#qr .persona .field {display: block !important;}' if data['Show Name and Subject']
       addCSS '#shortcut-qr {display: none;}' if data['QR Shortcut'] is false
       addCSS '.qr-link-container-bottom {display: none;}' if data['Bottom QR Link'] is false
-    if compareString < '00001.00012.00000.00005'
+    if compareString < '00001.00012.00000.00006'
       if data['sauces']?
-        set 'sauces', data['sauces'].replace(/^(#?\s*)https:\/\/desustorage\.org\//mg, '$1https://cuckchan.org/')
+        set 'sauces', data['sauces'].replace(/^(#?\s*)https:\/\/(?:desustorage|cuckchan)\.org\//mg, '$1https://desuarchive.org/')
     changes
 
   loadSettings: (data, cb) ->
