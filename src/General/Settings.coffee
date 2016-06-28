@@ -375,9 +375,9 @@ Settings =
       ]
     if compareString < '00001.00011.00035.00000'
       addSauces ['https://whatanime.ga/?auto&url=%IMG;text:wait']
-    if compareString < '00001.00011.00035.00008'
+    if compareString < '00001.00011.00035.00009'
       if data['sauces']?
-        set 'sauces', data['sauces'].replace(/^(#?\s*)https:\/\/desustorage\.org\//mg, '$1https://cuckchan.org/')
+        set 'sauces', data['sauces'].replace(/^(#?\s*)https:\/\/(?:desustorage|cuckchan)\.org\//mg, '$1https://desuarchive.org/')
     changes
 
   loadSettings: (data, cb) ->
