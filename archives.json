@@ -36,7 +36,7 @@
   "files": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"]
 }, {
   "uid": 23,
-  "name": "Desustorage",
+  "name": "Desuarchive",
   "domain": "desuarchive.org",
   "http": true,
   "https": true,
