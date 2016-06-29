@@ -35,7 +35,8 @@ ThreadWatcher =
     if Conf['Fixed Thread Watcher']
       $.addClass doc, 'fixed-watcher'
     if Conf['Toggleable Thread Watcher']
-      @dialog.hidden = true
+      if !Conf['Watcher Defaults to Visible']
+        @dialog.hidden = true
       Header.addShortcut 'watcher', sc, 510
       $.addClass doc, 'toggleable-watcher'
 

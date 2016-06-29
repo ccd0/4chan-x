@@ -389,6 +389,11 @@ Config =
         'Adds a shortcut for the thread watcher and hides the watcher by default.'
         1
       ]
+      'Watcher Defaults to Visible': [
+        false
+        'Displays the thread watcher by default, rather than hiding it.'
+        2
+      ]
       'Mark New IPs': [
         false
         'Label each post from a new IP with the thread\'s current IP count.'
@@ -856,6 +861,10 @@ Config =
     'Update thread watcher': [
       'Shift+r'
       'Manually refresh thread watcher.'
+    ]
+    'Toggle thread watcher': [
+      't'
+      'Toggle visibility of thread watcher when toggle is enabled'
     ]
     # Images
     'Expand image': [
