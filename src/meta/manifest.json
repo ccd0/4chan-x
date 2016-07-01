@@ -25,7 +25,9 @@
 <% } %>  "minimum_chrome_version": "<%= meta.min.chrome %>",
   "permissions": [
     "storage",
-    "http://*/",
-    "https://*/"
+    "*://a.4cdn.org/"
+  ],
+  "optional_permissions": [
+    "*://*/"
   ]
 }
