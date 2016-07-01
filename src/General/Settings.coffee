@@ -393,6 +393,9 @@ Settings =
     if compareString < '00001.00012.00000.00006'
       if data['sauces']?
         set 'sauces', data['sauces'].replace(/^(#?\s*)https:\/\/(?:desustorage|cuckchan)\.org\//mg, '$1https://desuarchive.org/')
+    if compareString < '00001.00012.00001.00000'
+      if not data['Persistent Thread Watcher']? and data['Toggleable Thread Watcher']?
+        set 'Persistent Thread Watcher', not data['Toggleable Thread Watcher']
     changes
 
   loadSettings: (data, cb) ->

@@ -36,7 +36,7 @@ ThreadWatcher =
       $.addClass doc, 'fixed-watcher'
     if !Conf['Persistent Thread Watcher']
       @dialog.hidden = true
-    
+
     Header.addShortcut 'watcher', sc, 510
 
     ThreadWatcher.fetchAuto()

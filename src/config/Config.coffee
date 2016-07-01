@@ -385,7 +385,7 @@ Config =
         1
       ]
       'Persistent Thread Watcher': [
-        true
+        false
         'The thread watcher will be visible when the page is loaded.'
         1
       ]
