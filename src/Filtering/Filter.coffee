@@ -6,6 +6,9 @@ Filter =
     unless Conf['Filtered Backlinks']
       $.addClass doc, 'hide-backlinks'
 
+    nsfwBoards = 'aco,b,d,e,f,gif,h,hc,hm,hr,i,ic,pol,r,r9k,s,s4s,soc,t,trash,u,wg,y'
+    sfwBoards = '3,a,adv,an,asp,biz,c,cgl,ck,cm,co,diy,fa,fit,g,gd,his,int,jp,k,lgbt,lit,m,mlp,mu,n,news,o,out,p,po,qa,qst,sci,sp,tg,toy,trv,tv,v,vg,vp,vr,w,wsg,wsr,x'
+    
     for key of Config.filter
       @filters[key] = []
       for line in Conf[key].split '\n'
@@ -20,13 +23,14 @@ Filter =
         # Comma-separated list of the boards this filter applies to.
         # Defaults to global.
         boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
+        boards = boards.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards)
         boards = if boards is 'global' then null else boards.split(',')
 
         # boards to exclude from an otherwise global rule
-        excludes = if boards is null
-          filter.match(/exclude:([^;]+)/)?[1].toLowerCase().split(',') or null
-        else
-          null
+        # due to the sfw and nsfw keywords, also works on all filters
+        # replaces 'nsfw' and 'sfw' for consistency
+        excludes = filter.match(/exclude:([^;]+)/)?[1].toLowerCase() or null
+        excludes = if excludes is null then null else excludes.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards).split(',')
 
         if key in ['uniqueID', 'MD5']
           # MD5 filter will use strings instead of regular expressions.
