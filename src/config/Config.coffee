@@ -384,9 +384,9 @@ Config =
         'Makes the thread watcher scroll with the page.'
         1
       ]
-      'Toggleable Thread Watcher': [
-        true
-        'Adds a shortcut for the thread watcher and hides the watcher by default.'
+      'Persistent Thread Watcher': [
+        false
+        'The thread watcher will be visible when the page is loaded.'
         1
       ]
       'Mark New IPs': [
@@ -861,6 +861,10 @@ Config =
     'Update thread watcher': [
       'Shift+r'
       'Manually refresh thread watcher.'
+    ]
+    'Toggle thread watcher': [
+      't'
+      'Toggle visibility of thread watcher.'
     ]
     # Images
     'Expand image': [
