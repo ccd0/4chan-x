@@ -2,6 +2,9 @@
 
 ## v1.12.0
 
+**v1.12.0.7** *(2016-07-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.7/builds/4chan-X-noupdate.crx)]
+- Restore `Open Post in New Tab` option.
+
 **v1.12.0.6** *(2016-06-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.6/builds/4chan-X-noupdate.crx)]
 - Merge v1.11.35.9: Update archive list, and update cuckchan.org -> desuarchive.org in sauce examples.
 

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.12.0.6
+// @version      1.12.0.7
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.0.6',
+  VERSION:   '1.12.0.7',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -284,6 +284,7 @@ Config = (function() {
         'Quick Reply': [true, 'All-in-one form to reply, create threads, automate dumping and more.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.', 1],
         'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.', 1],
+        'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.', 1],
         'Remember QR Size': [false, 'Remember the size of the Quick reply.', 1],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.', 1],
         'Randomize Filename': [false, 'Set the filename to a random timestamp within the past year. Disabled on /f/.', 1],
@@ -20134,7 +20135,7 @@ QR = (function() {
       return QR.status();
     },
     response: function() {
-      var _, ban, err, h1, isReply, lastPostToThread, m, post, postID, postsCount, ref, ref1, ref2, req, resDoc, seconds, threadID, url;
+      var URL, _, ban, err, h1, isReply, lastPostToThread, m, open, post, postID, postsCount, ref, ref1, ref2, req, resDoc, seconds, threadID;
       req = QR.req;
       delete QR.req;
       post = QR.posts[0];
@@ -20221,17 +20222,22 @@ QR = (function() {
         QR.notifications.push(new Notice('success', h1.textContent, 5));
       }
       QR.cooldown.add(threadID, postID);
-      url = threadID === postID ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID : threadID !== g.THREADID && lastPostToThread ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID + "#p" + postID : void 0;
-      if (url) {
+      URL = threadID === postID ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID : g.VIEW === 'index' && lastPostToThread && Conf['Open Post in New Tab'] ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID + "#p" + postID : void 0;
+      if (URL) {
+        open = Conf['Open Post in New Tab'] || postsCount ? function() {
+          return $.open(URL);
+        } : function() {
+          return window.location = URL;
+        };
         if (threadID === postID) {
-          QR.waitForThread(url);
+          QR.waitForThread(URL, open);
         } else {
-          $.open(url);
+          open();
         }
       }
       return QR.status();
     },
-    waitForThread: function(url) {
+    waitForThread: function(url, cb) {
       var attempts, check;
       attempts = 0;
       check = function() {
@@ -20239,7 +20245,7 @@ QR = (function() {
           onloadend: function() {
             attempts++;
             if (attempts >= 6 || this.status === 200) {
-              return $.open(url);
+              return cb();
             } else {
               return setTimeout(check, attempts * $.SECOND);
             }
