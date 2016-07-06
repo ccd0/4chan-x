@@ -777,7 +777,7 @@ QR =
 
     URL = if threadID is postID # new thread
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}"
-    else if g.VIEW is 'index' and lastPostToThread and Conf['Open Post in New Tab'] # replying from the index
+    else if threadID isnt g.THREADID and lastPostToThread and Conf['Open Post in New Tab'] # replying from the index or a different thread
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}#p#{postID}"
 
     if URL

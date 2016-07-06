@@ -415,7 +415,7 @@ Config =
       ]
       'Open Post in New Tab': [
         true
-        'Open new threads or replies to a thread from the index in a new tab.'
+        'Open new threads in a new tab, and open replies in a new tab if you\'re not already in the thread.'
         1
       ]
       'Remember QR Size': [
