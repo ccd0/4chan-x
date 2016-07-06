@@ -23,8 +23,12 @@ var line     = `**v${version}** *(${today})* - [[Userscript](${ffLink})] [[Chrom
 var changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
 
 var breakPos = changelog.indexOf(separator);
-if (breakPos < 0) throw new Error('Separator not found.');
-breakPos += separator.length;
+if (breakPos >= 0) {
+  breakPos += separator.length;
+} else {
+  breakPos = Math.max(changelog.indexOf('\n\n#'), 0);
+  line = `${separator}\n\n${line}`;
+}
 
 var prevVersion = changelog.substr(breakPos).match(/\*\*v([\d\.]+)\*\*/)[1];
 if (prevVersion.replace(/\.\d+$/, '') !== branch) {
