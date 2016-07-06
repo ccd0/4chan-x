@@ -777,7 +777,7 @@ QR =
 
     url = if threadID is postID # new thread
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}"
-    else if threadID isnt g.THREADID and lastPostToThread # replying from the index or a different thread
+    else if g.VIEW is 'index' and lastPostToThread # replying from the index
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}#p#{postID}"
 
     if url
