@@ -23,7 +23,7 @@
 **v1.12.0.0** *(2016-06-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.11.35.6.
 - Some workarounds for old browsers have been dropped. Those using versions older than Chromium/Chrome 38, Maxthon 4.9, or SeaMonkey 2.35 may need to upgrade for 4chan X to work.
-- Some obsolete or not-often-used options have been removed:
+- Some obsolete or not-often-used options have been removed.  Please speak up if you want any of these options restored by [opening an issue](https://gitreports.com/issue/ccd0/4chan-x).
   - `Archive Report`, `Restart when Opened`, `Show Name and Subject`, `Thread Excerpt`, and `Remove Thread Excerpt` have been removed.
   - The options to disable `QR Shortcut`, `Bottom QR Link`, and `Open Post in New Tab` have been removed.
   - The `disabled` option in the archive choices section of the Advanced settings have been removed. A better way to disable access to a particular archive is to add (using 4plebs as an example) `{"uid": 3, "boards": []}` to the `Archive Lists` setting.
