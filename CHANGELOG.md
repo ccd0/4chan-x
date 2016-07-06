@@ -1,5 +1,13 @@
 **Note**: Installing the script from one of the links below will disable automatic updates. If you want automatic updates, install the script from the links on the [main page](https://www.4chan-x.net/).
 
+### v1.12.1
+
+**v1.12.1.0** *(2016-07-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.12.0.7.
+- Replace `Toggleable Thread Watcher` setting with `Persistent Thread Watcher` setting (off by default). With `Persistent Thread Watcher` on, the thread watcher is shown by default, but can still be hidden.
+- Add `Toggle thread watcher` keybind (default: "t").
+- Make 'all websites' permission optional for Chrome extension.
+
 ## v1.12.0
 
 **v1.12.0.7** *(2016-07-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.7/builds/4chan-X-noupdate.crx)]
