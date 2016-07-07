@@ -2,6 +2,13 @@
 
 ### v1.12.1
 
+**v1.12.1.2** *(2016-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.2/builds/4chan-X-noupdate.crx)]
+- Merge branch 'bstable'
+- Release 4chan X v1.12.0.9.
+- Revert "Remove crude shim for ES6 Set. #904"
+- Merge branch 'bstable'
+- Update devDependencies.
+
 **v1.12.1.1** *(2016-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.1/builds/4chan-X-noupdate.crx)]
 - Merge v1.12.0.8: Restore `Restart when Opened` option.
 
