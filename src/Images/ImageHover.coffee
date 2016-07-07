@@ -34,6 +34,9 @@ ImageHover =
       $.on el, 'error', error
       el.src = file.url
 
+    if Conf['Restart when Opened']
+      ImageCommon.rewind el
+      ImageCommon.rewind @
     el.id = 'ihover'
     $.add Header.hover, el
     if isVideo
