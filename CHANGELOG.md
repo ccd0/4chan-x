@@ -2,6 +2,9 @@
 
 ### v1.12.1
 
+**v1.12.1.1** *(2016-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.0.8: Restore `Restart when Opened` option.
+
 **v1.12.1.0** *(2016-07-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.12.0.7.
 - Replace `Toggleable Thread Watcher` setting with `Persistent Thread Watcher` setting (off by default). With `Persistent Thread Watcher` on, the thread watcher is shown by default, but can still be hidden.
