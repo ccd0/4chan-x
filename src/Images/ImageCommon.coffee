@@ -6,6 +6,12 @@ ImageCommon =
     $.off video, 'volumechange', Volume.change
     video.muted = true
 
+  rewind: (el) ->
+    if el.nodeName is 'VIDEO'
+      el.currentTime = 0 if el.readyState >= el.HAVE_METADATA
+    else if /\.gif$/.test el.src
+      $.queueTask -> el.src = el.src
+
   pushCache: (el) ->
     ImageCommon.cache = el
     $.on el, 'error', ImageCommon.cacheError
