@@ -2,6 +2,9 @@
 
 ### v1.12.1
 
+**v1.12.1.3** *(2016-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.3/builds/4chan-X-noupdate.crx)]
+- Fix error message in MathJax popups in Firefox.
+
 **v1.12.1.2** *(2016-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.2/builds/4chan-X-noupdate.crx)]
 - Merge branch 'bstable'
 - Release 4chan X v1.12.0.9.
