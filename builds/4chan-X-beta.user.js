@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.12.0.7
+// @version      1.12.0.8
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.0.7',
+  VERSION:   '1.12.0.8',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -244,6 +244,7 @@ Config = (function() {
         'Fappe Tyme': [true, 'Hide posts without images when header menu item is checked. *hint* *hint*'],
         'Werk Tyme': [true, 'Hide all post images when header menu item is checked.'],
         'Autoplay': [true, 'Videos begin playing immediately when opened.'],
+        'Restart when Opened': [false, 'Restart GIFs and WebMs when you hover over or expand them.'],
         'Show Controls': [true, 'Show controls on videos expanded inline.'],
         'Click Passthrough': [false, 'Clicks on videos trigger your browser\'s default behavior. Videos can be contracted with button / dragging to the left.', 1],
         'Allow Sound': [true, 'Open videos with the sound unmuted.'],
@@ -11685,6 +11686,17 @@ ImageCommon = (function() {
       $.off(video, 'volumechange', Volume.change);
       return video.muted = true;
     },
+    rewind: function(el) {
+      if (el.nodeName === 'VIDEO') {
+        if (el.readyState >= el.HAVE_METADATA) {
+          return el.currentTime = 0;
+        }
+      } else if (/\.gif$/.test(el.src)) {
+        return $.queueTask(function() {
+          return el.src = el.src;
+        });
+      }
+    },
     pushCache: function(el) {
       ImageCommon.cache = el;
       return $.on(el, 'error', ImageCommon.cacheError);
@@ -12005,6 +12017,9 @@ ImageExpand = (function() {
           $.off(el, eventName, cb);
         }
       }
+      if (Conf['Restart when Opened']) {
+        ImageCommon.rewind(file.thumb);
+      }
       delete file.fullImage;
       return $.queueTask(function() {
         if (file.isExpanding || file.isExpanded) {
@@ -12031,6 +12046,9 @@ ImageExpand = (function() {
       } else if (((ref = ImageCommon.cache) != null ? ref.dataset.fullID : void 0) === post.fullID) {
         el = file.fullImage = ImageCommon.popCache();
         $.on(el, 'error', ImageExpand.error);
+        if (Conf['Restart when Opened'] && el.id !== 'ihover') {
+          ImageCommon.rewind(el);
+        }
         el.removeAttribute('id');
       } else {
         el = file.fullImage = $.el((isVideo ? 'video' : 'img'));
@@ -12273,6 +12291,10 @@ ImageHover = (function() {
           el.dataset.fullID = post.fullID;
           $.on(el, 'error', error);
           el.src = file.url;
+        }
+        if (Conf['Restart when Opened']) {
+          ImageCommon.rewind(el);
+          ImageCommon.rewind(this);
         }
         el.id = 'ihover';
         $.add(Header.hover, el);

@@ -2,6 +2,9 @@
 
 ## v1.12.0
 
+**v1.12.0.8** *(2016-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.8/builds/4chan-X-noupdate.crx)]
+- Restore `Restart when Opened` option.
+
 **v1.12.0.7** *(2016-07-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.7/builds/4chan-X-noupdate.crx)]
 - Restore `Open Post in New Tab` option.
 
