@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.12.0.7
+// @version      1.12.1.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.0.7',
+  VERSION:   '1.12.1.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -244,6 +244,7 @@ Config = (function() {
         'Fappe Tyme': [true, 'Hide posts without images when header menu item is checked. *hint* *hint*'],
         'Werk Tyme': [true, 'Hide all post images when header menu item is checked.'],
         'Autoplay': [true, 'Videos begin playing immediately when opened.'],
+        'Restart when Opened': [false, 'Restart GIFs and WebMs when you hover over or expand them.'],
         'Show Controls': [true, 'Show controls on videos expanded inline.'],
         'Click Passthrough': [false, 'Clicks on videos trigger your browser\'s default behavior. Videos can be contracted with button / dragging to the left.', 1],
         'Allow Sound': [true, 'Open videos with the sound unmuted.'],
@@ -276,7 +277,7 @@ Config = (function() {
         'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
         'Fixed Thread Watcher': [true, 'Makes the thread watcher scroll with the page.', 1],
-        'Toggleable Thread Watcher': [true, 'Adds a shortcut for the thread watcher and hides the watcher by default.', 1],
+        'Persistent Thread Watcher': [false, 'The thread watcher will be visible when the page is loaded.', 1],
         'Mark New IPs': [false, 'Label each post from a new IP with the thread\'s current IP count.'],
         'Reply Pruning': [true, 'Hide old replies in long threads. Number of replies shown can be set from header menu.']
       },
@@ -284,7 +285,7 @@ Config = (function() {
         'Quick Reply': [true, 'All-in-one form to reply, create threads, automate dumping and more.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.', 1],
         'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.', 1],
-        'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.', 1],
+        'Open Post in New Tab': [true, 'Open new threads in a new tab, and open replies in a new tab if you\'re not already in the thread.', 1],
         'Remember QR Size': [false, 'Remember the size of the Quick reply.', 1],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.', 1],
         'Randomize Filename': [false, 'Set the filename to a random timestamp within the past year. Disabled on /f/.', 1],
@@ -418,6 +419,7 @@ Config = (function() {
       'Watch': ['w', 'Watch thread.'],
       'Update': ['r', 'Update the thread / refresh the index.'],
       'Update thread watcher': ['Shift+r', 'Manually refresh thread watcher.'],
+      'Toggle thread watcher': ['t', 'Toggle visibility of thread watcher.'],
       'Expand image': ['Shift+e', 'Expand selected image.'],
       'Expand images': ['e', 'Expand all images.'],
       'Open Gallery': ['g', 'Opens the gallery.'],
@@ -2089,9 +2091,6 @@ span.hide-announcement {\n\
 }\n\
 #thread-watcher a {\n\
   text-decoration: none;\n\
-}\n\
-:root:not(.toggleable-watcher) #thread-watcher .move > .close {\n\
-  display: none;\n\
 }\n\
 #thread-watcher .move > .close {\n\
   position: absolute;\n\
@@ -10248,6 +10247,11 @@ Settings = (function() {
           set('sauces', data['sauces'].replace(/^(#?\s*)https:\/\/(?:desustorage|cuckchan)\.org\//mg, '$1https://desuarchive.org/'));
         }
       }
+      if (compareString < '00001.00012.00001.00000') {
+        if ((data['Persistent Thread Watcher'] == null) && (data['Toggleable Thread Watcher'] != null)) {
+          set('Persistent Thread Watcher', !data['Toggleable Thread Watcher']);
+        }
+      }
       return changes;
     },
     loadSettings: function(data, cb) {
@@ -11685,6 +11689,17 @@ ImageCommon = (function() {
       $.off(video, 'volumechange', Volume.change);
       return video.muted = true;
     },
+    rewind: function(el) {
+      if (el.nodeName === 'VIDEO') {
+        if (el.readyState >= el.HAVE_METADATA) {
+          return el.currentTime = 0;
+        }
+      } else if (/\.gif$/.test(el.src)) {
+        return $.queueTask(function() {
+          return el.src = el.src;
+        });
+      }
+    },
     pushCache: function(el) {
       ImageCommon.cache = el;
       return $.on(el, 'error', ImageCommon.cacheError);
@@ -12005,6 +12020,9 @@ ImageExpand = (function() {
           $.off(el, eventName, cb);
         }
       }
+      if (Conf['Restart when Opened']) {
+        ImageCommon.rewind(file.thumb);
+      }
       delete file.fullImage;
       return $.queueTask(function() {
         if (file.isExpanding || file.isExpanded) {
@@ -12031,6 +12049,9 @@ ImageExpand = (function() {
       } else if (((ref = ImageCommon.cache) != null ? ref.dataset.fullID : void 0) === post.fullID) {
         el = file.fullImage = ImageCommon.popCache();
         $.on(el, 'error', ImageExpand.error);
+        if (Conf['Restart when Opened'] && el.id !== 'ihover') {
+          ImageCommon.rewind(el);
+        }
         el.removeAttribute('id');
       } else {
         el = file.fullImage = $.el((isVideo ? 'video' : 'img'));
@@ -12273,6 +12294,10 @@ ImageHover = (function() {
           el.dataset.fullID = post.fullID;
           $.on(el, 'error', error);
           el.src = file.url;
+        }
+        if (Conf['Restart when Opened']) {
+          ImageCommon.rewind(el);
+          ImageCommon.rewind(this);
         }
         el.id = 'ihover';
         $.add(Header.hover, el);
@@ -15425,6 +15450,12 @@ Keybinds = (function() {
           }
           ThreadWatcher.buttonFetchAll();
           break;
+        case Conf['Toggle thread watcher']:
+          if (!ThreadWatcher.enabled) {
+            return;
+          }
+          ThreadWatcher.toggleWatcher();
+          break;
         case Conf['Expand image']:
           if (!(ImageExpand.enabled && threadRoot)) {
             return;
@@ -17209,11 +17240,10 @@ ThreadWatcher = (function() {
       if (Conf['Fixed Thread Watcher']) {
         $.addClass(doc, 'fixed-watcher');
       }
-      if (Conf['Toggleable Thread Watcher']) {
+      if (!Conf['Persistent Thread Watcher']) {
         this.dialog.hidden = true;
-        Header.addShortcut('watcher', sc, 510);
-        $.addClass(doc, 'toggleable-watcher');
       }
+      Header.addShortcut('watcher', sc, 510);
       ThreadWatcher.fetchAuto();
       if (g.VIEW === 'index' && Conf['JSON Index'] && Conf['Menu'] && g.BOARD.ID !== 'f') {
         Menu.menu.addEntry({
@@ -20222,7 +20252,7 @@ QR = (function() {
         QR.notifications.push(new Notice('success', h1.textContent, 5));
       }
       QR.cooldown.add(threadID, postID);
-      URL = threadID === postID ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID : g.VIEW === 'index' && lastPostToThread && Conf['Open Post in New Tab'] ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID + "#p" + postID : void 0;
+      URL = threadID === postID ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID : threadID !== g.THREADID && lastPostToThread && Conf['Open Post in New Tab'] ? window.location.origin + "/" + g.BOARD + "/thread/" + threadID + "#p" + postID : void 0;
       if (URL) {
         open = Conf['Open Post in New Tab'] || postsCount ? function() {
           return $.open(URL);
@@ -22324,6 +22354,7 @@ Main = (function() {
       Conf['Show Name and Subject'] = false;
       Conf['QR Shortcut'] = true;
       Conf['Bottom QR Link'] = true;
+      Conf['Toggleable Thread Watcher'] = true;
       if ($.platform === 'crx') {
         $.global(function() {
           var k, key, len1, oldFun, ref1, whitelist;
