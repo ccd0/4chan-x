@@ -1394,7 +1394,7 @@ input.field.tripped:not(:hover):not(:focus) {
   margin: auto;
   width: 304px;
 }
-/* scrollable with scroll bar hidden; prevents scroll on space press */
+/* XXX scrollable with scroll bar hidden; prevents scroll on space press */
 :root.ua-blink #qr .captcha-container > div {
   overflow: hidden;
 }
@@ -1402,6 +1402,8 @@ input.field.tripped:not(:hover):not(:focus) {
   overflow-y: scroll;
   overflow-x: hidden;
   padding-right: 15px;
+  height: 99%;
+  width: 100%;
 }
 #qr .captcha-counter {
   display: block;
