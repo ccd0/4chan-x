@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.12.1.3
+// @version      1.12.1.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.1.3',
+  VERSION:   '1.12.1.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -2543,7 +2543,7 @@ input.field.tripped:not(:hover):not(:focus) {\n\
   margin: auto;\n\
   width: 304px;\n\
 }\n\
-/* scrollable with scroll bar hidden; prevents scroll on space press */\n\
+/* XXX scrollable with scroll bar hidden; prevents scroll on space press */\n\
 :root.ua-blink #qr .captcha-container > div {\n\
   overflow: hidden;\n\
 }\n\
@@ -2551,6 +2551,8 @@ input.field.tripped:not(:hover):not(:focus) {\n\
   overflow-y: scroll;\n\
   overflow-x: hidden;\n\
   padding-right: 15px;\n\
+  height: 99%;\n\
+  width: 100%;\n\
 }\n\
 #qr .captcha-counter {\n\
   display: block;\n\
@@ -18957,6 +18959,8 @@ Captcha = {};
 }).call(this);
 
 (function() {
+  var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
   Captcha.v2 = {
     lifetime: 2 * $.MINUTE,
     init: function() {
@@ -19145,6 +19149,7 @@ Captcha = {};
       }
     },
     setupIFrame: function(iframe) {
+      var ref;
       if (!doc.contains(iframe)) {
         return;
       }
@@ -19155,11 +19160,16 @@ Captcha = {};
       if (d.activeElement === this.nodes.counter) {
         iframe.focus();
       }
-      return $.global(function() {
+      $.global(function() {
         var f;
         f = document.querySelector('#qr iframe');
         return f.focus = f.blur = function() {};
       });
+      if ($.engine === 'blink' && (ref = iframe.parentNode, indexOf.call($$('#qr .captcha-container > div > div:first-of-type'), ref) >= 0)) {
+        return $.on(iframe.parentNode, 'scroll', function() {
+          return this.scrollTop = 0;
+        });
+      }
     },
     fixQRPosition: function() {
       if (QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight) {
