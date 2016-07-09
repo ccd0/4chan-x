@@ -2,6 +2,9 @@
 
 ### v1.12.1
 
+**v1.12.1.4** *(2016-07-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.4/builds/4chan-X-noupdate.crx)]
+- Re-fix scrolling on space in captcha in Chromium-based browsers.
+
 **v1.12.1.3** *(2016-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.3/builds/4chan-X-noupdate.crx)]
 - Fix error message in MathJax popups in Firefox.
 
