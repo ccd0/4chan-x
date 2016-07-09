@@ -146,5 +146,3 @@ QuoteThreading =
     Unread.setLine true
     Unread.read()
     Unread.update()
-
-return QuoteThreading

@@ -58,5 +58,3 @@ QuoteBacklink =
   getContainer: (id) ->
     @containers[id] or=
       $.el 'span', className: 'container'
-
-return QuoteBacklink

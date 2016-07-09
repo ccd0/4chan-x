@@ -507,5 +507,3 @@ Main =
     ['Build Test',                Build.Test]
     <% } %>
   ]
-
-return Main

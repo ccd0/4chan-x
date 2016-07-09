@@ -164,5 +164,3 @@ Redirect =
       location.replace url
     else if alternative
       location.replace alternative
-
-return Redirect

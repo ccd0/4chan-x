@@ -257,5 +257,3 @@ Build =
       $.addClass $('.file-count', root), 'warning'
 
     root
-
-return Build

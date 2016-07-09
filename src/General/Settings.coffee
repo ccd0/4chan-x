@@ -672,5 +672,3 @@ Settings =
     return unless (key = Keybinds.keyCode e)?
     @value = key
     $.cb.value.call @
-
-return Settings

@@ -72,5 +72,3 @@ QuoteYou =
         Header.scrollTo post
         $.addClass post, 'highlight'
         return true
-
-return QuoteYou

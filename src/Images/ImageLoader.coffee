@@ -89,5 +89,3 @@ ImageLoader =
         {thumb} = post.file
         if Header.isNodeVisible(thumb) or post.nodes.root is qpClone then thumb.play() else thumb.pause()
       return
-
-return ImageLoader

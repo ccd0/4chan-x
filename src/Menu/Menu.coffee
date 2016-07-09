@@ -34,5 +34,3 @@ Menu =
     $.on button, 'click', (e) ->
       Menu.menu.toggle e, @, post
     button
-
-return Menu

@@ -482,5 +482,3 @@ ThreadWatcher =
       $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Unread Count']
       $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Unread Count', 'Auto Update Thread Watcher']
       entry
-
-return ThreadWatcher

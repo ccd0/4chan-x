@@ -73,5 +73,3 @@ Fourchan =
       $.event 'mathjax', null, @nodes.comment
     $.on d, 'PostsInserted', cb
     cb()
-
-return Fourchan

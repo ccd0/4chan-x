@@ -16,5 +16,3 @@ PostSuccessful =
       threadID: threadID
       postID: postID
       val: true
-
-return PostSuccessful

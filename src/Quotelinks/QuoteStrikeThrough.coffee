@@ -14,5 +14,3 @@ QuoteStrikeThrough =
       if g.posts["#{boardID}.#{postID}"]?.isHidden
         $.addClass quotelink, 'filtered'
     return
-
-return QuoteStrikeThrough

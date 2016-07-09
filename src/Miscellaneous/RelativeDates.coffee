@@ -119,5 +119,3 @@ RelativeDates =
     return if data in RelativeDates.stale # We can call RelativeDates.update() multiple times.
     return if data instanceof Post and !g.posts[data.fullID] # collected post.
     RelativeDates.stale.push data
-
-return RelativeDates

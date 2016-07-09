@@ -220,5 +220,3 @@ class Fetcher
     '[/green]':   <%= html('</span>') %>
     '[blue]':     <%= html('<span class="mu-b">') %>
     '[/blue]':    <%= html('</span>') %>
-
-return Fetcher

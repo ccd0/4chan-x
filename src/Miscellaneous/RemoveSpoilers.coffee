@@ -26,5 +26,3 @@ RemoveSpoilers =
       $.replace spoiler, span
       $.add span, [spoiler.childNodes...]
     return
-
-return RemoveSpoilers

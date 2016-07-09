@@ -102,5 +102,3 @@ ThreadStats =
     if g.BOARD.ID isnt 'f' and ThreadStats.lastPost > ThreadStats.lastPageUpdate and ThreadStats.pageCountEl?.textContent isnt '1'
       clearTimeout ThreadStats.timeout
       ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 5 * $.SECOND
-
-return ThreadStats

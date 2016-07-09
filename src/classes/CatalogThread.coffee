@@ -13,5 +13,3 @@ class CatalogThread
       pageCount: $ '.page-count',    root
       comment:   $ '.comment',       root
     @thread.catalogView = @
-
-return CatalogThread

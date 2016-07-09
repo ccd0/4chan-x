@@ -10,8 +10,12 @@ for (var name of process.argv.slice(2)) {
     script = script.replace(/\r\n/g, '\n');
     script = template(script, {type: parts[2]}, sourceName);
     if (parts[4] === 'coffee') {
+      var definesVar = /^[$A-Z][$\w]*$/.test(parts[3]);
+      if (definesVar) {
+        script = `${script}\nreturn ${parts[3]};\n`;
+      }
       script = coffee.compile(script);
-      if (/^[$A-Z][$\w]*$/.test(parts[3])) {
+      if (definesVar) {
         script = `${parts[3]} = ${script}`;
       }
     }

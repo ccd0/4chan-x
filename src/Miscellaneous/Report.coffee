@@ -23,5 +23,3 @@ Report =
     return unless (el = $ selector, doc) and getComputedStyle(el).visibility isnt 'hidden'
     dy = el.getBoundingClientRect().bottom - doc.clientHeight + 8
     window.resizeBy 0, dy if dy > 0
-
-return Report

@@ -78,5 +78,3 @@ Volume =
     volume /= 1.1 if e.deltaY > 0
     el.volume = $.minmax volume - 0.1, 0, 1
     e.preventDefault()
-
-return Volume

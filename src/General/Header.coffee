@@ -544,5 +544,3 @@ Header =
       $.set 'Desktop Notifications', false
       notice.close()
     notice = new Notice 'info', el
-
-return Header

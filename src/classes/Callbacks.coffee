@@ -22,5 +22,3 @@ class Callbacks
           html: node.nodes?.root?.outerHTML
 
     Main.handleErrors errors if errors
-
-return Callbacks

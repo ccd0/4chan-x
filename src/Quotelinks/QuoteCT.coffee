@@ -23,5 +23,3 @@ QuoteCT =
       if boardID is board.ID and threadID isnt thread.ID
         $.add quotelink, $.tn QuoteCT.text
     return
-
-return QuoteCT
