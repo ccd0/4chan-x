@@ -1314,8 +1314,8 @@ input[name="Default Volume"] {
 #qr.reply-to-thread input[data-name="sub"]:not(.force-show),
 body:not(.board_f) #qr select[name="filetag"],
 #qr.reply-to-thread select[name="filetag"],
-body:not(.board_jp) #sjis-toggle,
-body:not(.board_sci) #tex-preview-button,
+#qr:not(.has-sjis) #sjis-toggle,
+#qr:not(.has-math) #tex-preview-button,
 #qr.tex-preview .textarea > :not(#tex-preview),
 #qr:not(.tex-preview) #tex-preview {
   display: none;

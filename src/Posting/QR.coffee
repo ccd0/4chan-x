@@ -31,7 +31,7 @@ QR =
     version = if Conf['Use Recaptcha v1'] and Main.jsEnabled then 'v1' else 'v2'
     @captcha = Captcha[version]
 
-    $.on d, '4chanXInitFinished', @initReady
+    $.on d, '4chanXInitFinished', -> BoardConfig.ready QR.initReady
 
     Callbacks.Post.push
       name: 'Quick Reply'
@@ -53,7 +53,6 @@ QR =
     Header.addShortcut 'qr', sc, 540
 
   initReady: ->
-    $.off d, '4chanXInitFinished', @initReady
     QR.postingIsEnabled = !!$.id 'postForm'
     return unless QR.postingIsEnabled
 
@@ -483,16 +482,15 @@ QR =
     if Conf['Show New Thread Option in Threads']
       $.addClass QR.nodes.el, 'show-new-thread-option'
 
+    {config}      = g.BOARD
+    {classList}   = QR.nodes.el
     QR.forcedAnon = !!$ 'form[name="post"] input[name="name"][type="hidden"]'
-    if QR.forcedAnon
-      $.addClass QR.nodes.el, 'forced-anon'
-
-    QR.spoiler = !!$ '.postForm input[name=spoiler]'
-    if QR.spoiler
-      $.addClass QR.nodes.el, 'has-spoiler'
-
-    if g.BOARD.ID is 'jp' and Conf['sjisPreview']
-      $.addClass QR.nodes.el, 'sjis-preview'
+    QR.spoiler    = !!config.spoilers
+    classList.toggle 'forced-anon',  QR.forcedAnon
+    classList.toggle 'has-spoiler',  QR.spoiler
+    classList.toggle 'has-sjis',     !!config.sjis_tags
+    classList.toggle 'has-math',     !!config.math_tags
+    classList.toggle 'sjis-preview', !!config.sjis_tags and Conf['sjisPreview']
 
     if parseInt(Conf['customCooldown'], 10) > 0
       $.addClass QR.nodes.fileSubmit, 'custom-cooldown'

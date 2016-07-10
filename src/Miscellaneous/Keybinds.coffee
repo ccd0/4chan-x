@@ -253,12 +253,14 @@ Keybinds =
     QR.nodes.com.focus()
 
   tags: (tag, ta) ->
-    supported = switch tag
-      when 'spoiler'     then !!$ '.postForm input[name=spoiler]'
-      when 'code'        then g.BOARD.ID is 'g'
-      when 'math', 'eqn' then g.BOARD.ID is 'sci'
-      when 'sjis'        then g.BOARD.ID is 'jp'
-    new Notice 'warning', "[#{tag}] tags are not supported on /#{g.BOARD}/.", 20 unless supported
+    BoardConfig.ready ->
+      {config} = g.BOARD
+      supported = switch tag
+        when 'spoiler'     then !!config.spoilers
+        when 'code'        then !!config.code_tags
+        when 'math', 'eqn' then !!config.math_tags
+        when 'sjis'        then !!config.sjis_tags
+      new Notice 'warning', "[#{tag}] tags are not supported on /#{g.BOARD}/.", 20 unless supported
 
     value    = ta.value
     selStart = ta.selectionStart
