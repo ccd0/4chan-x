@@ -2,6 +2,9 @@
 
 ### v1.12.1
 
+**v1.12.1.5** *(2016-07-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.5/builds/4chan-X-noupdate.crx)]
+- Restore `Remove Thread Excerpt` option.
+
 **v1.12.1.4** *(2016-07-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.4/builds/4chan-X-noupdate.crx)]
 - Re-fix scrolling on space in captcha in Chromium-based browsers.
 

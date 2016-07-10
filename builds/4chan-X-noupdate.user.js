@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.12.1.4
+// @version      1.12.1.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.1.4',
+  VERSION:   '1.12.1.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -271,6 +271,7 @@ Config = (function() {
         'Unread Line': [true, 'Show a line to distinguish read posts from unread ones.'],
         'Remember Last Read Post': [true, 'Remember how far you\'ve read after you close the thread.'],
         'Scroll to Last Read Post': [true, 'Scroll back to the last read post when reopening a thread.', 1],
+        'Remove Thread Excerpt': [false, 'Replace the excerpt of the thread in the tab title with the board title.'],
         'Thread Stats': [true, 'Display reply and image count.'],
         'IP Count in Stats': [true, 'Display the unique IP count in the thread stats.', 1],
         'Page Count in Stats': [true, 'Display the page count in the thread stats.', 1],
@@ -14327,6 +14328,9 @@ Banner = (function() {
       var banner, children;
       banner = $(".boardBanner");
       children = banner.children;
+      if (g.VIEW === 'thread' && Conf['Remove Thread Excerpt']) {
+        Banner.setTitle(children[1].textContent);
+      }
       children[0].title = "Click to change";
       $.on(children[0], 'click', Banner.cb.toggle);
       if (Conf['Custom Board Titles']) {
