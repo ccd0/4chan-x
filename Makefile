@@ -2,7 +2,7 @@ ifdef ComSpec
   BIN := $(subst /,\,node_modules/.bin/)
   RMDIR := -rmdir /s /q
   RM := -del
-  CAT = type $(subst /,\,$1) > $(subst /,\,$2)
+  CAT = type $(subst /,\,$1) > $(subst /,\,$2) 2>NUL
   MKDIR = -mkdir $(subst /,\,$@)
   QUOTE = $(patsubst %,"%",$1)
 else
