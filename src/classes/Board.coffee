@@ -4,6 +4,6 @@ class Board
   constructor: (@ID) ->
     @threads = new SimpleDict()
     @posts   = new SimpleDict()
-    @config  = BoardConfig.boards?[@ID]
+    @config  = BoardConfig.boards?[@ID] or {}
 
     g.boards[@] = @
