@@ -577,9 +577,9 @@ QR =
     # prevent errors
     if threadID is 'new'
       threadID = null
-      if g.BOARD.ID is 'vg' and !post.sub
+      if !!g.BOARD.config.require_subject and !post.sub
         err = 'New threads require a subject.'
-      else unless $.hasClass(d.body, 'text_only') or post.file or (textOnly = !!$ 'input[name=textonly]', $.id 'postForm')
+      else unless !!g.BOARD.config.text_only or post.file
         err = 'No file selected.'
     else if g.BOARD.threads[threadID].isClosed
       err = 'You can\'t reply to this thread anymore.'
@@ -624,7 +624,6 @@ QR =
       upfile:   post.file
       filetag:  filetag
       spoiler:  post.spoiler
-      textonly: textOnly
       mode:     'regist'
       pwd:      QR.persona.getPassword()
 
