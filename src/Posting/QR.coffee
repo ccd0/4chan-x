@@ -56,6 +56,23 @@ QR =
     QR.postingIsEnabled = !!$.id 'postForm'
     return unless QR.postingIsEnabled
 
+    {config} = g.BOARD
+    prop = (key, def) -> +(config[key] ? def)
+
+    QR.min_width  = prop 'min_image_width',  1
+    QR.min_height = prop 'min_image_height', 1
+    QR.max_width  = QR.max_height = 10000
+
+    QR.max_size       = prop 'max_filesize',      4194304
+    QR.max_size_video = prop 'max_webm_filesize', QR.max_size
+    QR.max_comment    = prop 'max_comment_chars', 2000
+
+    QR.max_width_video = QR.max_height_video = 2048
+    QR.max_duration_video = prop 'max_webm_duration', 120
+
+    QR.forcedAnon = !!config.forced_anon
+    QR.spoiler    = !!config.spoilers
+
     link = $.el 'h1',
       className: "qr-link-container"
     $.extend link, <%= html('<a href="javascript:;" class="qr-link">?{g.VIEW === "thread"}{Reply to Thread}{Start a Thread}</a>') %>
@@ -464,22 +481,6 @@ QR =
     setNode 'fileInput',      '[type=file]'
 
     {config} = g.BOARD
-    prop = (key, def) -> +(config[key] ? def)
-
-    QR.min_width  = prop 'min_image_width',  1
-    QR.min_height = prop 'min_image_height', 1
-    QR.max_width  = QR.max_height = 10000
-
-    QR.max_size       = prop 'max_filesize',      4194304
-    QR.max_size_video = prop 'max_webm_filesize', QR.max_size
-    QR.max_comment    = prop 'max_comment_chars', 2000
-
-    QR.max_width_video = QR.max_height_video = 2048
-    QR.max_duration_video = prop 'max_webm_duration', 120
-
-    QR.forcedAnon = !!config.forced_anon
-    QR.spoiler    = !!config.spoilers
-
     {classList} = QR.nodes.el
     classList.toggle 'forced-anon',  QR.forcedAnon
     classList.toggle 'has-spoiler',  QR.spoiler
