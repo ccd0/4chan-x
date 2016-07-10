@@ -169,7 +169,8 @@ testbuilds/crx$1 :
 	$$(MKDIR)
 
 testbuilds/crx$1/script.js : $$(call pieces,crx) | testbuilds/crx$1 .events/compile
-	$$(call CAT,$$(call QUOTE,$$(call pieces,crx)),$$@)
+	@echo Concatenating: $$@
+	@$$(call CAT,$$(call QUOTE,$$(call pieces,crx)),$$@)
 
 testbuilds/crx$1/eventPage.js : tmp/eventPage.js | testbuilds/crx$1
 	$$(CP)
@@ -195,7 +196,8 @@ testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.
 	$(template) $$< $$@ type=userscript channel=$1
 
 testbuilds/$(name)$1.user.js : testbuilds/$(name)$1.meta.js tmp/meta-newline.js $$(call pieces,userscript) | .events/compile
-	$$(call CAT,testbuilds/$(name)$1.meta.js tmp/meta-newline.js $$(call QUOTE,$$(call pieces,userscript)),$$@)
+	@echo Concatenating: $$@
+	@$$(call CAT,testbuilds/$(name)$1.meta.js tmp/meta-newline.js $$(call QUOTE,$$(call pieces,userscript)),$$@)
 
 endef
 
