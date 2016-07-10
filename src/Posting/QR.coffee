@@ -749,6 +749,7 @@ QR =
       threadID
       postID
     }
+    # XXX deprecated
     $.event 'QRPostSuccessful_', {boardID: g.BOARD.ID, threadID, postID}
 
     # Enable auto-posting if we have stuff left to post, disable it otherwise.
