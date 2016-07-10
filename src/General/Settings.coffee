@@ -190,7 +190,7 @@ Settings =
     # Make sure to export the most recent data.
     $.get Conf, (Conf) ->
       # Don't export cached JSON data.
-      delete Conf['boardsJSON']
+      delete Conf['boardConfig']
       Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf}
 
   downloadExport: (data) ->
