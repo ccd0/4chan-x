@@ -463,34 +463,30 @@ QR =
     setNode 'flashTag',       '[name=filetag]'
     setNode 'fileInput',      '[type=file]'
 
-    rules = $('ul.rules').textContent.trim()
-    match_min = rules.match(/.+smaller than (\d+)x(\d+).+/)
-    match_max = rules.match(/.+greater than (\d+)x(\d+).+/)
-    QR.min_width  = +match_min?[1] or 1
-    QR.min_height = +match_min?[2] or 1
-    QR.max_width  = +match_max?[1] or 10000
-    QR.max_height = +match_max?[2] or 10000
+    {config} = g.BOARD
+    prop = (key, def) -> +(config[key] ? def)
 
-    scriptData = Get.scriptData()
-    QR.max_size       = if (m = scriptData.match /\bmaxFilesize *= *(\d+)\b/)     then +m[1] else 4194304
-    QR.max_size_video = if (m = scriptData.match /\bmaxWebmFilesize *= *(\d+)\b/) then +m[1] else QR.max_size
-    QR.max_comment    = if (m = scriptData.match /\bcomlen *= *(\d+)\b/)          then +m[1] else 2000
+    QR.min_width  = prop 'min_image_width',  1
+    QR.min_height = prop 'min_image_height', 1
+    QR.max_width  = QR.max_height = 10000
+
+    QR.max_size       = prop 'max_filesize',      4194304
+    QR.max_size_video = prop 'max_webm_filesize', QR.max_size
+    QR.max_comment    = prop 'max_comment_chars', 2000
 
     QR.max_width_video = QR.max_height_video = 2048
-    QR.max_duration_video = if g.BOARD.ID in ['gif', 'wsg'] then 300 else 120
+    QR.max_duration_video = prop 'max_webm_duration', 120
 
-    if Conf['Show New Thread Option in Threads']
-      $.addClass QR.nodes.el, 'show-new-thread-option'
-
-    {config}      = g.BOARD
-    {classList}   = QR.nodes.el
-    QR.forcedAnon = !!$ 'form[name="post"] input[name="name"][type="hidden"]'
+    QR.forcedAnon = !!config.forced_anon
     QR.spoiler    = !!config.spoilers
+
+    {classList} = QR.nodes.el
     classList.toggle 'forced-anon',  QR.forcedAnon
     classList.toggle 'has-spoiler',  QR.spoiler
     classList.toggle 'has-sjis',     !!config.sjis_tags
     classList.toggle 'has-math',     !!config.math_tags
     classList.toggle 'sjis-preview', !!config.sjis_tags and Conf['sjisPreview']
+    classList.toggle 'show-new-thread-option', Conf['Show New Thread Option in Threads']
 
     if parseInt(Conf['customCooldown'], 10) > 0
       $.addClass QR.nodes.fileSubmit, 'custom-cooldown'
