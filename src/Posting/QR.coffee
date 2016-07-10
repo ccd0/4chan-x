@@ -353,16 +353,21 @@ QR =
 
   paste: (e) ->
     return unless e.clipboardData.items
-    files = []
-    for item in e.clipboardData.items when item.kind is 'file'
-      blob = item.getAsFile()
-      blob.name  = 'file'
-      blob.name += '.' + blob.type.split('/')[1] if blob.type
-      files.push blob
-    return unless files.length
-    QR.open()
-    QR.handleFiles files
-    $.addClass QR.nodes.el, 'dump'
+    file = null
+    score = -1
+    for item in e.clipboardData.items when item.kind is 'file' and (file2 = item.getAsFile())
+      score2 = 2*(file2.size <= QR.max_size) + (file2.type is 'image/png')
+      if score2 > score
+        file = file2
+        score = score2
+    if file
+      {type} = file
+      blob = new Blob [file], {type}
+      blob.name = "file.#{QR.extensionFromType[type] or 'jpg'}"
+      QR.open()
+      QR.handleFiles [blob]
+      $.addClass QR.nodes.el, 'dump'
+    return
 
   pasteFF: ->
     {pasteArea} = QR.nodes
@@ -520,7 +525,9 @@ QR =
     # We don't receive blur events from captcha iframe.
     $.on d, 'click', QR.focus
 
-    if $.engine is 'gecko'
+    # XXX Workaround for image pasting in Firefox, obsolete as of v50.
+    # https://bugzilla.mozilla.org/show_bug.cgi?id=906420
+    if $.engine is 'gecko' and not window.DataTransferItemList
       nodes.pasteArea.hidden = false
       new MutationObserver(QR.pasteFF).observe nodes.pasteArea, {childList: true}
 
