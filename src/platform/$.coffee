@@ -388,6 +388,8 @@ $.get = (key, val, cb) ->
     data = key
     cb = val
 
+  return $.storageWorkaround 'get', data, cb unless chrome.runtime.getManifest()
+
   results = {}
   get = (area) ->
     chrome.storage[area].get Object.keys(data), (result) ->
@@ -451,6 +453,7 @@ do ->
     else
       data = key
       cb = val
+    return $.storageWorkaround 'set', data, cb unless chrome.runtime.getManifest()
     $.extend items.local, data
     setArea 'local', cb
 
@@ -466,6 +469,28 @@ do ->
       cb? err unless --count
     chrome.storage.local.clear done
     chrome.storage.sync.clear  done
+
+# XXX Work around for chrome.storage inavailability after updates
+# https://bugs.chromium.org/p/chromium/issues/detail?id=626952
+$.storageWorkaround = (action, data, cb) ->
+  iframe = $.el 'iframe', hidden: true
+  conn = new Connection iframe, chrome.extension.getURL('').replace(/\/*$/, ''),
+    ready: ->
+      conn.send $.item(action, data)
+    finished: (data2) ->
+      $.rm iframe
+      cb? data2
+  protocol = +(location.protocol is 'https:')
+  iframe.src = chrome.extension.getURL('storage.html') + '#' + protocol
+  $.onExists doc, 'body', -> $.add d.body, iframe
+
+$.storageWorkaroundListener = ->
+  conn = new Connection window.top, "#{if +location.hash[1..] then 'https:' else 'http:'}//boards.4chan.org",
+    set: (data) ->
+      $.set data, -> conn.send {finished: null}
+    get: (data) ->
+      $.get data, (data2) -> conn.send {finished: data2}
+  conn.send {ready: null}
 <% } else { %>
 
 # http://wiki.greasespot.net/Main_Page

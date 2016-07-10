@@ -83,7 +83,7 @@ pieces = \
  $(foreach s,$(sources),$(call dests_platform,$(s),$1)) \
  tmp/meta-fend.js
 
-crx_contents := script.js eventPage.js icon16.png icon48.png icon128.png manifest.json
+crx_contents := script.js eventPage.js storage.html icon16.png icon48.png icon128.png manifest.json
 
 release := \
  $(foreach f, \
@@ -173,6 +173,9 @@ testbuilds/crx$1/script.js : $$(call pieces,crx) | testbuilds/crx$1 .events/comp
 	@$$(call CAT,$$(call QUOTE,$$(call pieces,crx)),$$@)
 
 testbuilds/crx$1/eventPage.js : tmp/eventPage.js | testbuilds/crx$1
+	$$(CP)
+
+testbuilds/crx$1/storage.html : src/meta/storage.html | testbuilds/crx$1
 	$$(CP)
 
 testbuilds/crx$1/icon%.png : src/meta/icon%.png | testbuilds/crx$1

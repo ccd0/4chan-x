@@ -7,6 +7,12 @@ Main =
     return if window['<%= meta.name %> antidup']
     window['<%= meta.name %> antidup'] = true
 
+    # XXX Work around for chrome.storage inavailability after updates
+    # https://bugs.chromium.org/p/chromium/issues/detail?id=626952
+    if location.protocol is 'chrome-extension:'
+      $.storageWorkaroundListener()
+      return
+
     if location.hostname is 'www.google.com'
       $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
         if enabled

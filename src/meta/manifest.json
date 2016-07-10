@@ -19,6 +19,9 @@
     "scripts": ["eventPage.js"],
     "persistent": false
   },
+  "web_accessible_resources": [
+    "storage.html"
+  ],
   "homepage_url": "<%= meta.page %>",
 <% if (channel !== '-noupdate') { %>  "update_url": "<%= meta.downloads %>updates<%= channel %>.xml",
   "key": "<%= meta.appid %>",
