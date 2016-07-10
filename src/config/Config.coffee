@@ -361,6 +361,10 @@ Config =
         'Scroll back to the last read post when reopening a thread.'
         1
       ]
+      'Remove Thread Excerpt': [
+        false
+        'Replace the excerpt of the thread in the tab title with the board title.'
+      ]
       'Thread Stats': [
         true
         'Display reply and image count.'
