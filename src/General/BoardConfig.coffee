@@ -5,7 +5,6 @@ BoardConfig =
     if (Conf['boardConfig'].lastChecked or 0) < Date.now() - 2 * $.HOUR
       $.ajax '//a.4cdn.org/boards.json',
         onloadend: @load
-        timeout:   5 * $.SECOND
     else
       @set Conf['boardConfig'].boards
 
