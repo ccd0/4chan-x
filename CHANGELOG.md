@@ -1,5 +1,12 @@
 **Note**: Installing the script from one of the links below will disable automatic updates. If you want automatic updates, install the script from the links on the [main page](https://www.4chan-x.net/).
 
+### v1.12.2
+
+**v1.12.2.0** *(2016-07-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.2.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.2.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.12.1.5.
+- Support image pasting in Firefox 50+ without selecting paste icon in Quick Reply.
+- Improve 4chan X's ability to deal with 4chan changes without a script update.
+
 ### v1.12.1
 
 **v1.12.1.5** *(2016-07-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.5/builds/4chan-X-noupdate.crx)]

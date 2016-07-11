@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.12.1.5
+// @version      1.12.2.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -121,7 +121,7 @@
 
 'use strict';
 
-var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, Sauce, Settings, ShimSet, SimpleDict, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, Volume;
+var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, Sauce, Settings, ShimSet, SimpleDict, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, Volume;
 
 var Conf, E, c, d, doc, docSet, g;
 
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.1.5',
+  VERSION:   '1.12.2.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -2466,8 +2466,8 @@ input[name=\"Default Volume\"] {\n\
 #qr.reply-to-thread input[data-name=\"sub\"]:not(.force-show),\n\
 body:not(.board_f) #qr select[name=\"filetag\"],\n\
 #qr.reply-to-thread select[name=\"filetag\"],\n\
-body:not(.board_jp) #sjis-toggle,\n\
-body:not(.board_sci) #tex-preview-button,\n\
+#qr:not(.has-sjis) #sjis-toggle,\n\
+#qr:not(.has-math) #tex-preview-button,\n\
 #qr.tex-preview .textarea > :not(#tex-preview),\n\
 #qr:not(.tex-preview) #tex-preview {\n\
   display: none;\n\
@@ -4602,14 +4602,17 @@ $ = (function() {
 }).call(this);
 
 $$ = (function() {
-  var slice = [].slice;
+  var $$,
+    slice = [].slice;
 
-  return function(selector, root) {
+  $$ = function(selector, root) {
     if (root == null) {
       root = d.body;
     }
     return slice.call(root.querySelectorAll(selector));
   };
+
+  return $$;
 
 }).call(this);
 
@@ -4735,9 +4738,11 @@ Board = (function() {
     };
 
     function Board(ID) {
+      var ref;
       this.ID = ID;
       this.threads = new SimpleDict();
       this.posts = new SimpleDict();
+      this.config = ((ref = BoardConfig.boards) != null ? ref[this.ID] : void 0) || {};
       g.boards[this] = this;
     }
 
@@ -7492,6 +7497,77 @@ ThreadHiding = (function() {
 
 }).call(this);
 
+BoardConfig = (function() {
+  var BoardConfig;
+
+  BoardConfig = {
+    cbs: [],
+    init: function() {
+      if ((Conf['boardConfig'].lastChecked || 0) < Date.now() - 2 * $.HOUR) {
+        return $.ajax('//a.4cdn.org/boards.json', {
+          onloadend: this.load,
+          timeout: 5 * $.SECOND
+        });
+      } else {
+        return this.set(Conf['boardConfig'].boards);
+      }
+    },
+    load: function() {
+      var board, boards, err, i, len, ref;
+      if (this.status === 200 && this.response && this.response.boards) {
+        boards = {};
+        ref = this.response.boards;
+        for (i = 0, len = ref.length; i < len; i++) {
+          board = ref[i];
+          boards[board.board] = board;
+        }
+        $.set('boardConfig', {
+          boards: boards,
+          lastChecked: Date.now()
+        });
+      } else {
+        boards = Conf['boardConfig'].boards;
+        err = (function() {
+          switch (this.status) {
+            case 0:
+              return 'Connection Error';
+            case 200:
+              return 'Invalid Data';
+            default:
+              return "Error " + this.statusText + " (" + this.status + ")";
+          }
+        }).call(this);
+        new Notice('warning', "Failed to load board configuration. " + err, 20);
+      }
+      return BoardConfig.set(boards);
+    },
+    set: function(boards1) {
+      var ID, board, cb, i, len, ref, ref1;
+      this.boards = boards1;
+      ref = g.boards;
+      for (ID in ref) {
+        board = ref[ID];
+        board.config = this.boards[ID] || {};
+      }
+      ref1 = this.cbs;
+      for (i = 0, len = ref1.length; i < len; i++) {
+        cb = ref1[i];
+        $.queueTask(cb);
+      }
+    },
+    ready: function(cb) {
+      if (this.boards) {
+        return cb();
+      } else {
+        return this.cbs.push(cb);
+      }
+    }
+  };
+
+  return BoardConfig;
+
+}).call(this);
+
 Build = (function() {
   var Build,
     slice = [].slice;
@@ -9656,7 +9732,8 @@ Polyfill = (function() {
 
   Polyfill = {
     init: function() {
-      return this.toBlob();
+      this.toBlob();
+      $.global(this.toBlob);
     },
     toBlob: function() {
       if (HTMLCanvasElement.prototype.toBlob) {
@@ -9664,9 +9741,6 @@ Polyfill = (function() {
       }
       HTMLCanvasElement.prototype.toBlob = function(cb, type, encoderOptions) {
         var data, i, j, l, ref, ui8a, url;
-        if (type == null) {
-          type = 'image/png';
-        }
         url = this.toDataURL(type, encoderOptions);
         data = atob(url.slice(url.indexOf(',') + 1));
         l = data.length;
@@ -9675,10 +9749,9 @@ Polyfill = (function() {
           ui8a[i] = data.charCodeAt(i);
         }
         return cb(new Blob([ui8a], {
-          type: type
+          type: type || 'image/png'
         }));
       };
-      return $.globalEval("HTMLCanvasElement.prototype.toBlob = (" + HTMLCanvasElement.prototype.toBlob + ");");
     }
   };
 
@@ -9959,6 +10032,7 @@ Settings = (function() {
     },
     "export": function() {
       return $.get(Conf, function(Conf) {
+        delete Conf['boardConfig'];
         return Settings.downloadExport({
           version: g.VERSION,
           date: Date.now(),
@@ -10669,7 +10743,7 @@ Settings = (function() {
 }).call(this);
 
 UI = (function() {
-  var Menu, checkbox, dialog, drag, dragend, dragstart, hover, hoverend, hoverstart, touchend, touchmove,
+  var Menu, UI, checkbox, dialog, drag, dragend, dragstart, hover, hoverend, hoverstart, touchend, touchmove,
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     slice = [].slice;
 
@@ -11137,12 +11211,14 @@ UI = (function() {
     return label;
   };
 
-  return {
+  UI = {
     dialog: dialog,
     Menu: Menu,
     hover: hoverstart,
     checkbox: checkbox
   };
+
+  return UI;
 
 }).call(this);
 
@@ -15747,23 +15823,27 @@ Keybinds = (function() {
       return QR.nodes.com.focus();
     },
     tags: function(tag, ta) {
-      var range, selEnd, selStart, supported, value;
-      supported = (function() {
-        switch (tag) {
-          case 'spoiler':
-            return !!$('.postForm input[name=spoiler]');
-          case 'code':
-            return g.BOARD.ID === 'g';
-          case 'math':
-          case 'eqn':
-            return g.BOARD.ID === 'sci';
-          case 'sjis':
-            return g.BOARD.ID === 'jp';
+      var range, selEnd, selStart, value;
+      BoardConfig.ready(function() {
+        var config, supported;
+        config = g.BOARD.config;
+        supported = (function() {
+          switch (tag) {
+            case 'spoiler':
+              return !!config.spoilers;
+            case 'code':
+              return !!config.code_tags;
+            case 'math':
+            case 'eqn':
+              return !!config.math_tags;
+            case 'sjis':
+              return !!config.sjis_tags;
+          }
+        })();
+        if (!supported) {
+          return new Notice('warning', "[" + tag + "] tags are not supported on /" + g.BOARD + "/.", 20);
         }
-      })();
-      if (!supported) {
-        new Notice('warning', "[" + tag + "] tags are not supported on /" + g.BOARD + "/.", 20);
-      }
+      });
       value = ta.value;
       selStart = ta.selectionStart;
       selEnd = ta.selectionEnd;
@@ -19411,7 +19491,9 @@ QR = (function() {
       }
       version = Conf['Use Recaptcha v1'] && Main.jsEnabled ? 'v1' : 'v2';
       this.captcha = Captcha[version];
-      $.on(d, '4chanXInitFinished', this.initReady);
+      $.on(d, '4chanXInitFinished', function() {
+        return BoardConfig.ready(QR.initReady);
+      });
       Callbacks.Post.push({
         name: 'Quick Reply',
         cb: this.node
@@ -19436,12 +19518,26 @@ QR = (function() {
       return Header.addShortcut('qr', sc, 540);
     },
     initReady: function() {
-      var link, linkBot, navLinksBot, origToggle;
-      $.off(d, '4chanXInitFinished', this.initReady);
+      var config, link, linkBot, navLinksBot, origToggle, prop;
       QR.postingIsEnabled = !!$.id('postForm');
       if (!QR.postingIsEnabled) {
         return;
       }
+      config = g.BOARD.config;
+      prop = function(key, def) {
+        var ref;
+        return +((ref = config[key]) != null ? ref : def);
+      };
+      QR.min_width = prop('min_image_width', 1);
+      QR.min_height = prop('min_image_height', 1);
+      QR.max_width = QR.max_height = 10000;
+      QR.max_size = prop('max_filesize', 4194304);
+      QR.max_size_video = prop('max_webm_filesize', QR.max_size);
+      QR.max_comment = prop('max_comment_chars', 2000);
+      QR.max_width_video = QR.max_height_video = 2048;
+      QR.max_duration_video = prop('max_webm_duration', 120);
+      QR.forcedAnon = !!config.forced_anon;
+      QR.spoiler = !!config.spoilers;
       link = $.el('h1', {
         className: "qr-link-container"
       });
@@ -19796,30 +19892,34 @@ QR = (function() {
       return QR.handleFiles(e.dataTransfer.files);
     },
     paste: function(e) {
-      var blob, files, item, j, len, ref;
+      var blob, file, file2, item, j, len, ref, score, score2, type;
       if (!e.clipboardData.items) {
         return;
       }
-      files = [];
+      file = null;
+      score = -1;
       ref = e.clipboardData.items;
       for (j = 0, len = ref.length; j < len; j++) {
         item = ref[j];
-        if (!(item.kind === 'file')) {
+        if (!(item.kind === 'file' && (file2 = item.getAsFile()))) {
           continue;
         }
-        blob = item.getAsFile();
-        blob.name = 'file';
-        if (blob.type) {
-          blob.name += '.' + blob.type.split('/')[1];
+        score2 = 2 * (file2.size <= QR.max_size) + (file2.type === 'image/png');
+        if (score2 > score) {
+          file = file2;
+          score = score2;
         }
-        files.push(blob);
       }
-      if (!files.length) {
-        return;
+      if (file) {
+        type = file.type;
+        blob = new Blob([file], {
+          type: type
+        });
+        blob.name = "file." + (QR.extensionFromType[type] || 'jpg');
+        QR.open();
+        QR.handleFiles([blob]);
+        $.addClass(QR.nodes.el, 'dump');
       }
-      QR.open();
-      QR.handleFiles(files);
-      return $.addClass(QR.nodes.el, 'dump');
     },
     pasteFF: function() {
       var arr, blob, bstr, i, images, img, j, k, len, m, pasteArea, ref, src;
@@ -19930,7 +20030,7 @@ QR = (function() {
       return (g.VIEW === 'thread' ? $.addClass : $.rmClass)(QR.nodes.el, 'reply-to-thread');
     },
     dialog: function() {
-      var dialog, event, i, items, m, match_max, match_min, name, node, nodes, ref, rules, save, scriptData, setNode;
+      var classList, config, dialog, event, i, items, name, node, nodes, save, setNode;
       QR.nodes = nodes = {
         el: dialog = UI.dialog('qr', 'top: 50px; right: 0px;', {
           innerHTML: "<div class=\"move\"><label><input type=\"checkbox\" id=\"autohide\" title=\"Auto-hide\">Quick Reply</label><a href=\"javascript:;\" class=\"close\" title=\"Close\">×</a><select data-name=\"thread\" title=\"Create a new thread / Reply\"><option value=\"new\">New thread</option></select></div><form><div class=\"persona\"><button type=\"button\" id=\"sjis-toggle\" title=\"Toggle Mona font\">∀</button><button type=\"button\" id=\"tex-preview-button\" title=\"Preview TeX\">T<sub>E</sub>X</button><input name=\"name\" data-name=\"name\" list=\"list-name\" placeholder=\"Name\" class=\"field\" size=\"1\"><input name=\"email\" data-name=\"email\" list=\"list-email\" placeholder=\"Options\" class=\"field\" size=\"1\"><input name=\"sub\" data-name=\"sub\" list=\"list-sub\" placeholder=\"Subject\" class=\"field\" size=\"1\"></div><div class=\"textarea\"><textarea data-name=\"com\" placeholder=\"Comment\" class=\"field\"></textarea><span id=\"char-count\"></span><div id=\"tex-preview\"></div></div><div id=\"dump-list-container\"><div id=\"dump-list\"></div><a id=\"add-post\" href=\"javascript:;\" title=\"Add a post\">+</a></div><div class=\"oekaki\" hidden><input type=\"button\" id=\"qr-draw-button\" value=\"Draw\"><label><span>Width:</span><input name=\"oekaki-width\" value=\"400\" type=\"number\" class=\"field\" size=\"1\"></label><label><span>Height:</span><input name=\"oekaki-height\" value=\"400\" type=\"number\" class=\"field\" size=\"1\"></label><span class=\"oekaki-bg\" title=\"Background Color\"><input name=\"oekaki-bg\" type=\"checkbox\" checked><input name=\"oekaki-bgcolor\" type=\"color\" value=\"#ffffff\"></span></div><div id=\"file-n-submit\"><input type=\"button\" id=\"qr-file-button\" value=\"Files\"><span id=\"qr-filename-container\" class=\"field\"><span id=\"qr-no-file\">No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><label id=\"qr-spoiler-label\"><input type=\"checkbox\" id=\"qr-file-spoiler\" title=\"Spoiler image\"><a class=\"checkbox-letter\">S</a></label><a id=\"qr-oekaki-button\" title=\"Edit in Tegaki\"><i class=\"fa fa-edit\"></i></a><a href=\"javascript:;\" id=\"qr-filerm\" title=\"Remove file\"><i class=\"fa fa-times-circle\"></i></a><a id=\"url-button\" title=\"Post from url\"><i class=\"fa fa-link\"></i></a><a hidden id=\"paste-area\" title=\"Select to paste images\" class=\"fa fa-clipboard\" tabindex=\"-1\" contentEditable=\"true\"></a><a id=\"custom-cooldown-button\" title=\"Toggle custom cooldown\" class=\"disabled\"><i class=\"fa fa-clock-o\"></i></a><a id=\"dump-button\" title=\"Dump list\"><i class=\"fa fa-plus-square\"></i></a></span><input type=\"submit\"></div><select data-default=\"4\" name=\"filetag\"><option value=\"0\">Hentai</option><option value=\"6\">Porn</option><option value=\"1\">Japanese</option><option value=\"2\">Anime</option><option value=\"3\">Game</option><option value=\"5\">Loop</option><option value=\"4\" selected>Other</option></select><input type=\"file\" multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist> "
@@ -19970,33 +20070,14 @@ QR = (function() {
       setNode('status', '[type=submit]');
       setNode('flashTag', '[name=filetag]');
       setNode('fileInput', '[type=file]');
-      rules = $('ul.rules').textContent.trim();
-      match_min = rules.match(/.+smaller than (\d+)x(\d+).+/);
-      match_max = rules.match(/.+greater than (\d+)x(\d+).+/);
-      QR.min_width = +(match_min != null ? match_min[1] : void 0) || 1;
-      QR.min_height = +(match_min != null ? match_min[2] : void 0) || 1;
-      QR.max_width = +(match_max != null ? match_max[1] : void 0) || 10000;
-      QR.max_height = +(match_max != null ? match_max[2] : void 0) || 10000;
-      scriptData = Get.scriptData();
-      QR.max_size = (m = scriptData.match(/\bmaxFilesize *= *(\d+)\b/)) ? +m[1] : 4194304;
-      QR.max_size_video = (m = scriptData.match(/\bmaxWebmFilesize *= *(\d+)\b/)) ? +m[1] : QR.max_size;
-      QR.max_comment = (m = scriptData.match(/\bcomlen *= *(\d+)\b/)) ? +m[1] : 2000;
-      QR.max_width_video = QR.max_height_video = 2048;
-      QR.max_duration_video = (ref = g.BOARD.ID) === 'gif' || ref === 'wsg' ? 300 : 120;
-      if (Conf['Show New Thread Option in Threads']) {
-        $.addClass(QR.nodes.el, 'show-new-thread-option');
-      }
-      QR.forcedAnon = !!$('form[name="post"] input[name="name"][type="hidden"]');
-      if (QR.forcedAnon) {
-        $.addClass(QR.nodes.el, 'forced-anon');
-      }
-      QR.spoiler = !!$('.postForm input[name=spoiler]');
-      if (QR.spoiler) {
-        $.addClass(QR.nodes.el, 'has-spoiler');
-      }
-      if (g.BOARD.ID === 'jp' && Conf['sjisPreview']) {
-        $.addClass(QR.nodes.el, 'sjis-preview');
-      }
+      config = g.BOARD.config;
+      classList = QR.nodes.el.classList;
+      classList.toggle('forced-anon', QR.forcedAnon);
+      classList.toggle('has-spoiler', QR.spoiler);
+      classList.toggle('has-sjis', !!config.sjis_tags);
+      classList.toggle('has-math', !!config.math_tags);
+      classList.toggle('sjis-preview', !!config.sjis_tags && Conf['sjisPreview']);
+      classList.toggle('show-new-thread-option', Conf['Show New Thread Option in Threads']);
       if (parseInt(Conf['customCooldown'], 10) > 0) {
         $.addClass(QR.nodes.fileSubmit, 'custom-cooldown');
         $.get('customCooldownEnabled', Conf['customCooldownEnabled'], function(arg) {
@@ -20042,7 +20123,7 @@ QR = (function() {
       window.addEventListener('focus', QR.focus, true);
       window.addEventListener('blur', QR.focus, true);
       $.on(d, 'click', QR.focus);
-      if ($.engine === 'gecko') {
+      if ($.engine === 'gecko' && !window.DataTransferItemList) {
         nodes.pasteArea.hidden = false;
         new MutationObserver(QR.pasteFF).observe(nodes.pasteArea, {
           childList: true
@@ -20083,7 +20164,7 @@ QR = (function() {
       return $.event('QRDialogCreation', null, dialog);
     },
     submit: function(e) {
-      var captcha, cb, err, extra, filetag, formData, options, post, ref, textOnly, thread, threadID;
+      var captcha, cb, err, extra, filetag, formData, options, post, ref, thread, threadID;
       if (e != null) {
         e.preventDefault();
       }
@@ -20105,9 +20186,9 @@ QR = (function() {
       }
       if (threadID === 'new') {
         threadID = null;
-        if (g.BOARD.ID === 'vg' && !post.sub) {
+        if (!!g.BOARD.config.require_subject && !post.sub) {
           err = 'New threads require a subject.';
-        } else if (!($.hasClass(d.body, 'text_only') || post.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
+        } else if (!(!!g.BOARD.config.text_only || post.file)) {
           err = 'No file selected.';
         }
       } else if (g.BOARD.threads[threadID].isClosed) {
@@ -20151,7 +20232,6 @@ QR = (function() {
         upfile: post.file,
         filetag: filetag,
         spoiler: post.spoiler,
-        textonly: textOnly,
         mode: 'regist',
         pwd: QR.persona.getPassword()
       };
@@ -22402,6 +22482,9 @@ Main = (function() {
           boards: {}
         };
       }
+      Conf['boardConfig'] = {
+        boards: {}
+      };
       Conf['archives'] = Redirect.archives;
       Conf['selectedArchives'] = {};
       Conf['cooldowns'] = {};
@@ -22898,7 +22981,7 @@ Main = (function() {
         }
       });
     },
-    features: [['Polyfill', Polyfill], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning]]
+    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning]]
   };
 
   return Main;
