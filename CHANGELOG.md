@@ -2,6 +2,9 @@
 
 ### v1.12.2
 
+**v1.12.2.1** *(2016-07-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.2.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.2.1/builds/4chan-X-noupdate.crx)]
+- Fix frequent connection errors from timeout fetching board configuration.
+
 **v1.12.2.0** *(2016-07-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.2.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.2.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.12.1.5.
 - Support image pasting in Firefox 50+ without selecting paste icon in Quick Reply.
