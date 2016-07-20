@@ -349,11 +349,13 @@ $.engine = do ->
 
 $.platform = '<%= type %>';
 
-try
-  localStorage.getItem 'x'
-  $.hasStorage = true
-catch
-  $.hasStorage = false
+$.hasStorage = do ->
+  try
+    return true if localStorage[g.NAMESPACE + 'hasStorage'] is 'true'
+    localStorage[g.NAMESPACE + 'hasStorage'] = 'true'
+    return localStorage[g.NAMESPACE + 'hasStorage'] is 'true'
+  catch
+    false
 
 $.item = (key, val) ->
   item = {}
