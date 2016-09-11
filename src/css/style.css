@@ -1419,6 +1419,7 @@ input.field.tripped:not(:hover):not(:focus) {
 }
 #qr .captcha-counter > a {
   pointer-events: auto;
+  display: inline-block; /* XXX https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/8851747/ */
 }
 #qr:not(.captcha-open) .captcha-counter > a {
   display: block;
