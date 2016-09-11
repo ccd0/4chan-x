@@ -329,7 +329,7 @@ Gallery =
         style.minHeight = minHeight + 'px'
         style.minWidth = (width / height * minHeight) + 'px'
       else
-        style.minHeight = style.minWidth = null
+        style.minHeight = style.minWidth = ''
 
     setDelay: -> Gallery.delay = +@value
 

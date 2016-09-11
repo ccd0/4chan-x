@@ -203,7 +203,7 @@ QR.post = class
       @showFileData()
     else
       @updateFilename()
-    @nodes.el.style.backgroundImage = null
+    @nodes.el.style.backgroundImage = ''
     unless @file.type in QR.mimeTypes
       @fileError 'Unsupported file type.'
     else if /^(image|video)\//.test @file.type
@@ -299,7 +299,7 @@ QR.post = class
     delete @filesize
     @nodes.el.removeAttribute 'title'
     QR.nodes.filename.removeAttribute 'title'
-    @nodes.el.style.backgroundImage = null
+    @nodes.el.style.backgroundImage = ''
     $.rmClass @nodes.el, 'has-file'
     @showFileData()
     URL.revokeObjectURL @URL

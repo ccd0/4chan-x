@@ -74,6 +74,6 @@ Nav =
     if extra > 0
       d.body.style.marginBottom = "#{extra}px"
     else
-      d.body.style.marginBottom = null
+      d.body.style.marginBottom = ''
       delete Nav.haveExtra
       $.off d, 'scroll', Nav.removeExtra

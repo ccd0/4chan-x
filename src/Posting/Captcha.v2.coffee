@@ -144,7 +144,7 @@ Captcha.v2 =
 
   fixQRPosition: ->
     if QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight
-      QR.nodes.el.style.top    = null
+      QR.nodes.el.style.top    = ''
       QR.nodes.el.style.bottom = '0px'
 
   setupTextArea: (textarea) ->
