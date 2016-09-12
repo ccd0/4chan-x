@@ -45,8 +45,11 @@ $.ajax = do ->
 
   (url, options={}, extra={}) ->
     {type, whenModified, upCallbacks, form} = extra
+    options.responseType ?= 'json' if /\.json$/.test url
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
+    # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
+    url += "?s=#{whenModified}" if $.engine is 'blink' and whenModified
     r = new XMLHttpRequest()
     type or= form and 'post' or 'get'
     try
@@ -54,8 +57,6 @@ $.ajax = do ->
       if whenModified
         r.setRequestHeader 'If-Modified-Since', lastModified[whenModified][url] if lastModified[whenModified]?[url]?
         $.on r, 'load', -> (lastModified[whenModified] or= {})[url] = r.getResponseHeader 'Last-Modified'
-      if /\.json$/.test url
-        options.responseType ?= 'json'
       $.extend r, options
       $.extend r.upload, upCallbacks
       # connection error or content blocker
