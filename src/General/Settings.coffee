@@ -318,6 +318,8 @@ Settings =
     changes = {}
     set = (key, value) ->
       data[key] = changes[key] = value
+    setD = (key, value) ->
+      set key, value unless data[key]?
     addSauces = (sauces) ->
       if data['sauces']?
         sauces = sauces.filter (s) -> data['sauces'].indexOf(s.match(/[^#;\s]+|$/)[0]) < 0
@@ -398,6 +400,9 @@ Settings =
     if compareString < '00001.00012.00001.00000'
       if not data['Persistent Thread Watcher']? and data['Toggleable Thread Watcher']?
         set 'Persistent Thread Watcher', not data['Toggleable Thread Watcher']
+    if compareString < '00001.00012.00003.00000'
+      for key in ['Image Hover in Catalog', 'Auto Watch', 'Auto Watch Reply', 'Auto Prune']
+        setD key, false
     changes
 
   loadSettings: (data, cb) ->

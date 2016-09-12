@@ -193,7 +193,7 @@ Config =
         'Show full image / video on mouseover.'
       ]
       'Image Hover in Catalog': [
-        false
+        true
         'Show full image / video on mouseover in <%= meta.name %> catalog.'
       ]
       'Gallery': [
@@ -628,15 +628,15 @@ Config =
       'Periodically check status of watched threads.'
     ]
     'Auto Watch': [
-      false
+      true
       'Automatically watch threads you start.'
     ]
     'Auto Watch Reply': [
-      false
+      true
       'Automatically watch threads you reply to.'
     ]
     'Auto Prune': [
-      false
+      true
       'Automatically remove dead threads.'
     ]
     'Show Unread Count': [
