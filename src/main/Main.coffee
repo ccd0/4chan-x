@@ -58,35 +58,15 @@ Main =
     Conf['Bottom QR Link'] = true
     Conf['Toggleable Thread Watcher'] = true
 
-    # Pseudo-enforce default whitelist while configuration loads
-    if $.platform is 'crx' then $.global ->
-      {whitelist} = document.currentScript.dataset
-      whitelist = whitelist.split('\n').filter (x) -> x[0] isnt "'"
-      whitelist.push "#{location.protocol}//#{location.host}"
-      oldFun = {}
-      for key in ['createElement', 'write']
-        oldFun[key] = document[key]
-        document[key] = do (key) -> (arg) ->
-          s = document.currentScript
-          if s and s.src and whitelist.indexOf(s.src.split('/')[..2].join('/')) < 0
-            throw Error()
-          oldFun[key].call document, arg
-      document.addEventListener 'csp-ready', ->
-        document[key] = oldFun[key] for key of oldFun
-      , false
-    ,
-      whitelist: Conf['jsWhitelist']
+    # Enforce JS whitelist
+    ($.getSync or $.get) {'jsWhitelist': Conf['jsWhitelist']}, ({jsWhitelist}) ->
+      $.addCSP "script-src #{jsWhitelist.replace(/[\s;]+/g, ' ')}"
 
     # Get saved values as items
     items = {}
     items[key] = undefined for key of Conf
     items['previousversion'] = undefined
     ($.getSync or $.get) items, (items) ->
-      # Enforce JS whitelist
-      jsWhitelist = items['jsWhitelist'] ? Conf['jsWhitelist']
-      $.addCSP "script-src #{jsWhitelist.replace(/[\s;]+/g, ' ')}"
-      $.event 'csp-ready' if $.platform is 'crx'
-
       $.asap docSet, ->
 
         # Don't hide the local storage warning behind a settings panel.
