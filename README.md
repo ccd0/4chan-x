@@ -54,8 +54,11 @@ Several WebKitGTK+ based browsers have support for userscripts and can run 4chan
         echo '@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh document-end'   >> ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
         wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts https://www.4chan-x.net/builds/4chan-X.user.js
 
+### MS Edge
+Install [Tampermonkey](https://www.microsoft.com/en-us/store/p/tampermonkey/9nblggh5162s), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
+
 ### Other browsers
-4chan X can be used in some browsers that do not support userscripts, such as **Microsoft Edge**, using [a local proxy](https://github.com/ccd0/4chan-x-proxy). Not all features will work.
+4chan X can be used in some browsers that do not support userscripts using [a local proxy](https://github.com/ccd0/4chan-x-proxy). Not all features will work.
 
 ## Beta version
 New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please [report](https://github.com/ccd0/4chan-x/issues?q=is%3Aopen+sort%3Aupdated-desc) any issues you find, and be sure to mention which version you're using. You should back up your settings regularly to prevent them from being lost due to bugs.
