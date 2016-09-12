@@ -60,7 +60,7 @@ Main =
 
     # Enforce JS whitelist
     ($.getSync or $.get) {'jsWhitelist': Conf['jsWhitelist']}, ({jsWhitelist}) ->
-      $.addCSP "script-src #{jsWhitelist.replace(/[\s;]+/g, ' ')}"
+      $.addCSP "script-src #{jsWhitelist.replace(/^#.*$/mg, '').replace(/[\s;]+/g, ' ').trim()}"
 
     # Get saved values as items
     items = {}
