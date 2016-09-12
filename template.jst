@@ -60,7 +60,7 @@ var engine = (function() {
   if (/Presto\//.test(navigator.userAgent)) return 'presto';
 })();
 if (engine) {
-  var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk': 'webkit', 'other-browsers': 'edge'};
+  var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk': 'webkit', 'ms-edge': 'edge', 'other-browsers': ''};
   for (browser in engines) {
     document.getElementById(browser + '-hide').checked = (engines[browser].indexOf(engine) < 0);
   }
