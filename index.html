@@ -65,8 +65,10 @@ Previously developed by <a href="https://github.com/aeosynth/4chan-x">aeosynth</
 </code></pre>
 </li>
 </ul>
+</div><input hidden type="checkbox" id="ms-edge-hide"><div><h3 id="ms-edge"><label for="ms-edge-hide">MS Edge</label></h3>
+<p>Install <a href="https://www.microsoft.com/en-us/store/p/tampermonkey/9nblggh5162s">Tampermonkey</a>, then <strong><a href="https://www.4chan-x.net/builds/4chan-X.user.js">click here to install 4chan X</a></strong>.</p>
 </div><input hidden type="checkbox" id="other-browsers-hide"><div><h3 id="other-browsers"><label for="other-browsers-hide">Other browsers</label></h3>
-<p>4chan X can be used in some browsers that do not support userscripts, such as <strong>Microsoft Edge</strong>, using <a href="https://github.com/ccd0/4chan-x-proxy">a local proxy</a>. Not all features will work.</p>
+<p>4chan X can be used in some browsers that do not support userscripts using <a href="https://github.com/ccd0/4chan-x-proxy">a local proxy</a>. Not all features will work.</p>
 </div><h2 id="beta-version">Beta version</h2>
 <p>New features and non-urgent bugfixes are released on the beta channel for further testing before they are moved the stable version. Please <a href="https://github.com/ccd0/4chan-x/issues?q=is%3Aopen+sort%3Aupdated-desc">report</a> any issues you find, and be sure to mention which version you're using. You should back up your settings regularly to prevent them from being lost due to bugs.</p>
 <p>To install the <strong>beta</strong> version and get updates whenever there's a new <strong>beta</strong> version:</p>
@@ -118,7 +120,7 @@ var engine = (function() {
   if (/Presto\//.test(navigator.userAgent)) return 'presto';
 })();
 if (engine) {
-  var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk': 'webkit', 'other-browsers': 'edge'};
+  var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk': 'webkit', 'ms-edge': 'edge', 'other-browsers': ''};
   for (browser in engines) {
     document.getElementById(browser + '-hide').checked = (engines[browser].indexOf(engine) < 0);
   }
