@@ -1,5 +1,13 @@
 **Note**: Installing the script from one of the links below will disable automatic updates. If you want automatic updates, install the script from the links on the [main page](https://www.4chan-x.net/).
 
+### v1.12.3
+
+**v1.12.3.0** *(2016-09-12)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.12.2.1.
+- Support comments in `Javascript Whitelist`.
+- `Image Hover in Catalog`, `Auto Watch`, `Auto Watch Reply`, and `Auto Prune` are now on by default in new installs.
+- Various bug fixes.
+
 ### v1.12.2
 
 **v1.12.2.1** *(2016-07-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.2.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.2.1/builds/4chan-X-noupdate.crx)]
