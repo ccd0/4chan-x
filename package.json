@@ -56,7 +56,7 @@
     "jshint": "^2.9.3",
     "jszip": "^3.1.2",
     "lodash.template": "^4.4.0",
-    "markdown-it": "^7.0.1",
+    "markdown-it": "^8.0.0",
     "markdown-it-anchor": "^2.5.0",
     "request": "^2.74.0",
     "webstore-upload": "0.0.7"
