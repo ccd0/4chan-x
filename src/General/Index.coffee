@@ -693,14 +693,6 @@ Index =
       when 'all pages', 'catalog'
         threads = Index.sortedThreads
       else
-        if Index.followedThreadID?
-          i = 0
-          i++ while Index.followedThreadID isnt Index.sortedThreads[i].ID
-          page = i // Index.threadsNumPerPage + 1
-          if page isnt Index.currentPage
-            Index.currentPage = page
-            Index.pushState {page}
-            Index.setPage()
         threads = Index.threadsOnPage Index.currentPage
     delete Index.pageNum
     $.rmAll Index.root
@@ -714,8 +706,6 @@ Index =
     else
       Index.buildReplies   threads if Conf['Show Replies']
       Index.buildStructure threads
-      if Index.followedThreadID? and (post = g.posts["#{g.BOARD}.#{Index.followedThreadID}"])
-        Header.scrollTo post.nodes.root
 
   threadsOnPage: (pageNum) ->
     nodesPerPage = Index.threadsNumPerPage

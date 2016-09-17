@@ -125,9 +125,7 @@ ThreadWatcher =
       $.event 'CloseMenu'
     toggle: ->
       {thread} = Get.postFromNode @
-      Index.followedThreadID = thread.ID
       ThreadWatcher.toggle thread
-      delete Index.followedThreadID
     rm: ->
       [boardID, threadID] = @parentNode.dataset.fullID.split '.'
       ThreadWatcher.rm boardID, +threadID
@@ -338,7 +336,7 @@ ThreadWatcher =
     for refresher in ThreadWatcher.menu.refreshers
       refresher()
 
-    if Index.nodes and Conf['Pin Watched Threads']
+    if Index.nodes and Conf['Pin Watched Threads'] and Conf['Index Mode'] is 'catalog'
       Index.sort()
       Index.buildIndex()
 
