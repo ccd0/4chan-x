@@ -116,7 +116,9 @@ Index =
 
       board = $ '.board'
       $.replace board, Index.root
-      $.event 'PostsInserted'
+      if Index.nodes
+        $.event 'PostsInserted'
+        $.event 'IndexBuild'
       # Hacks:
       # - When removing an element from the document during page load,
       #   its ancestors will still be correctly created inside of it.
@@ -707,6 +709,8 @@ Index =
       nodes = Index.buildCatalogViews()
       Index.sizeCatalogViews nodes
       $.add Index.root, nodes
+      if doc.contains Index.root
+        $.event 'IndexBuild'
     else
       Index.buildReplies   threads if Conf['Show Replies']
       Index.buildStructure threads
@@ -726,8 +730,9 @@ Index =
         # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
         thumb.removeAttribute 'data-src'
       $.add Index.root, [node, $.el 'hr']
-    $.event 'PostsInserted' if doc.contains Index.root
-    ThreadHiding.onIndexBuild nodes
+    if doc.contains Index.root
+      $.event 'PostsInserted'
+      $.event 'IndexBuild'
 
   clearSearch: ->
     Index.searchInput.value = ''
