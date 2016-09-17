@@ -24,6 +24,7 @@ ThreadWatcher =
     $.on @refreshButton, 'click', @buttonFetchAll
     $.on @closeButton, 'click', @toggleWatcher
 
+    $.onExists doc, 'body', @addDialog
     $.on d, '4chanXInitFinished', @ready
 
     switch g.VIEW
@@ -69,7 +70,11 @@ ThreadWatcher =
       cb:   @catalogNode
 
   isWatched: (thread) ->
-    ThreadWatcher.db?.get {boardID: thread.board.ID, threadID: thread.ID}
+    !!ThreadWatcher.db?.get {boardID: thread.board.ID, threadID: thread.ID}
+
+  setToggler: (toggler, isWatched) ->
+    toggler.classList.toggle 'watched', isWatched
+    toggler.title = "#{if isWatched then 'Unwatch' else 'Watch'} Thread"
 
   node: ->
     return if @isReply
@@ -80,6 +85,7 @@ ThreadWatcher =
         href: 'javascript:;'
         className: 'watch-thread-link'
       $.before $('input', @nodes.post), toggler
+    ThreadWatcher.setToggler toggler, ThreadWatcher.isWatched(@thread)
     $.on toggler, 'click', ThreadWatcher.cb.toggle
 
   catalogNode: ->
@@ -92,13 +98,14 @@ ThreadWatcher =
       # Prevent highlighting thumbnail in Firefox.
       e.preventDefault() if e.button is 0 and e.altKey
 
+  addDialog: ->
+    return unless Main.isThisPageLegit()
+    ThreadWatcher.build()
+    $.add Header.hover, ThreadWatcher.dialog
+
   ready: ->
     $.off d, '4chanXInitFinished', ThreadWatcher.ready
-    return unless Main.isThisPageLegit()
-    ThreadWatcher.refresh()
-    $.add d.body, ThreadWatcher.dialog
-
-    return unless Conf['Auto Watch']
+    return unless Main.isThisPageLegit() and Conf['Auto Watch']
     $.get 'AutoWatch', 0, ({AutoWatch}) ->
       return unless thread = g.BOARD.threads[AutoWatch]
       ThreadWatcher.add thread
@@ -140,7 +147,9 @@ ThreadWatcher =
       {db}    = ThreadWatcher
       boardID = g.BOARD.ID
       db.forceSync()
+      nKilled = 0
       for threadID, data of db.data.boards[boardID] when not data?.isDead and threadID not of g.BOARD.threads
+        nKilled++
         if Conf['Auto Prune'] or not (data and typeof data is 'object') # corrupt data
           db.delete {boardID, threadID}
         else
@@ -148,7 +157,7 @@ ThreadWatcher =
             ThreadWatcher.fetchStatus {boardID, threadID, data}
           data.isDead = true
           db.set {boardID, threadID, val: data}
-      ThreadWatcher.refresh()
+      ThreadWatcher.refresh() if nKilled
     onThreadRefresh: (e) ->
       thread = g.threads[e.detail.threadID]
       return unless e.detail[404] and ThreadWatcher.db.get {boardID: thread.board.ID, threadID: thread.ID}
@@ -313,28 +322,29 @@ ThreadWatcher =
     $.add div, [x, $.tn(' '), link]
     div
 
-  refresh: ->
+  build: ->
     nodes = []
     for {boardID, threadID, data} in ThreadWatcher.getAll()
       nodes.push ThreadWatcher.makeLine boardID, threadID, data
-
     {list} = ThreadWatcher
     $.rmAll list
     $.add list, nodes
 
+    ThreadWatcher.refreshIcon()
+    for refresher in ThreadWatcher.menu.refreshers
+      refresher()
+    return
+
+  refresh: ->
+    ThreadWatcher.build()
+
     g.threads.forEach (thread) ->
-      helper = if ThreadWatcher.isWatched thread then ['addClass', 'Unwatch'] else ['rmClass', 'Watch']
+      isWatched = ThreadWatcher.isWatched thread
       if thread.OP
         for post in [thread.OP, thread.OP.clones...]
           toggler = $ '.watch-thread-link', post.nodes.post
-          $[helper[0]] toggler, 'watched'
-          toggler.title = "#{helper[1]} Thread"
-      $[helper[0]] thread.catalogView.nodes.root, 'watched' if thread.catalogView
-
-    ThreadWatcher.refreshIcon()
-
-    for refresher in ThreadWatcher.menu.refreshers
-      refresher()
+          ThreadWatcher.setToggler toggler, isWatched
+      thread.catalogView.nodes.root.classList.toggle 'watched', isWatched if thread.catalogView
 
     if Conf['Pin Watched Threads']
       $.event 'SortIndex', {deferred: Conf['Index Mode'] isnt 'catalog'}
