@@ -109,7 +109,7 @@ Index =
       Index.hat = $ '.board > .thread > img:first-child'
       if Index.hat
         if Index.nodes
-          for threadRoot in Index.nodes
+          for ID, threadRoot of Index.nodes
             $.prepend threadRoot, Index.hat.cloneNode false
         $.addClass doc, 'hats-enabled'
         $.addStyle ".catalog-thread::after {background-image: url(#{Index.hat.src});}"
@@ -413,7 +413,7 @@ Index =
 
   getPagesNum: ->
     if Index.search
-      Math.ceil Index.sortedNodes.length / Index.threadsNumPerPage
+      Math.ceil Index.sortedThreads.length / Index.threadsNumPerPage
     else
       Index.pagesNum
 
@@ -570,14 +570,14 @@ Index =
 
   buildThreads: ->
     return unless Index.liveThreadData
-    Index.nodes = []
+    Index.nodes = {}
     threads     = []
     posts       = []
     for threadData, i in Index.liveThreadData
       try
         threadRoot = Build.thread g.BOARD, threadData
         $.prepend threadRoot, Index.hat.cloneNode false if Index.hat
-        if thread = g.BOARD.threads[threadData.no]
+        if (thread = g.BOARD.threads[threadData.no])
           thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
           thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
           thread.setStatus 'Sticky', !!threadData.sticky
@@ -585,7 +585,7 @@ Index =
         else
           thread = new Thread threadData.no, g.BOARD
           threads.push thread
-        Index.nodes.push threadRoot
+        Index.nodes[thread.ID] = threadRoot
         unless thread.OP and not thread.OP.isFetchedQuote
           posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
         thread.setPage i // Index.threadsNumPerPage + 1
@@ -628,9 +628,7 @@ Index =
     Main.callbackNodes 'Post', posts
 
   buildCatalogViews: ->
-    threads = Index.sortedNodes
-      .map((threadRoot) -> Get.threadFromRoot threadRoot)
-      .filter (thread) -> !thread.isHidden isnt Index.showHiddenThreads
+    threads = Index.sortedThreads.filter (thread) -> !thread.isHidden isnt Index.showHiddenThreads
     catalogThreads = []
     for thread in threads when !thread.catalogView
       catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
@@ -671,12 +669,9 @@ Index =
       when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
       when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
       when 'filecount'  then [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
-    Index.sortedNodes = sortedNodes = []
-    {nodes} = Index
-    for threadID in sortedThreadIDs
-      sortedNodes.push nodes[Index.liveThreadIDs.indexOf(threadID)]
-    if Index.search and nodes = Index.querySearch(Index.search)
-      Index.sortedNodes = nodes
+    Index.sortedThreads = sortedThreadIDs.map (threadID) -> g.BOARD.threads[threadID]
+    if Index.search and (threads = Index.querySearch Index.search)
+      Index.sortedThreads = threads
     # Sticky threads
     Index.sortOnTop (thread) -> thread.isSticky
     # Highlighted threads
@@ -685,24 +680,24 @@ Index =
     Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
 
   sortOnTop: (match) ->
-    topNodes    = []
-    bottomNodes = []
-    for threadRoot in Index.sortedNodes
-      (if match Get.threadFromRoot threadRoot then topNodes else bottomNodes).push threadRoot
-    Index.sortedNodes = topNodes.concat(bottomNodes)
+    topThreads    = []
+    bottomThreads = []
+    for thread in Index.sortedThreads
+      (if match thread then topThreads else bottomThreads).push thread
+    Index.sortedThreads = topThreads.concat bottomThreads
 
   buildIndex: ->
     return unless Index.liveThreadData
     switch Conf['Index Mode']
       when 'all pages'
-        nodes = Index.sortedNodes
+        nodes = Index.sortedThreads.map (thread) -> Index.nodes[thread.ID]
       when 'catalog'
         nodes = Index.buildCatalogViews()
         Index.sizeCatalogViews nodes
       else
         if Index.followedThreadID?
           i = 0
-          i++ while Index.followedThreadID isnt Get.threadFromRoot(Index.sortedNodes[i]).ID
+          i++ while Index.followedThreadID isnt Index.sortedThreads[i].ID
           page = i // Index.threadsNumPerPage + 1
           if page isnt Index.currentPage
             Index.currentPage = page
@@ -723,7 +718,7 @@ Index =
   buildSinglePage: (pageNum) ->
     nodesPerPage = Index.threadsNumPerPage
     offset = nodesPerPage * (pageNum - 1)
-    Index.sortedNodes.slice offset, offset + nodesPerPage
+    Index.sortedThreads[offset ... offset + nodesPerPage].map (thread) -> Index.nodes[thread.ID]
 
   buildStructure: (nodes) ->
     for node in nodes
@@ -758,8 +753,8 @@ Index =
 
   querySearch: (query) ->
     return unless keywords = query.toLowerCase().match /\S+/g
-    Index.sortedNodes.filter (threadRoot) ->
-      Index.searchMatch Get.threadFromRoot(threadRoot), keywords
+    Index.sortedThreads.filter (thread) ->
+      Index.searchMatch thread, keywords
 
   searchMatch: (thread, keywords) ->
     {info, file} = thread.OP
