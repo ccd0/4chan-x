@@ -23,7 +23,8 @@ Index =
 
     $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
     $.on window, 'popstate', @cb.popstate
-    $.on d, 'scroll', Index.scroll
+    $.on d, 'scroll', @scroll
+    $.on d, 'SortIndex', @cb.resort
 
     # Header refresh button
     @button = $.el 'a',
