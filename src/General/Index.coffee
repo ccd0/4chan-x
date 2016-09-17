@@ -230,8 +230,8 @@ Index =
       Index.pageLoad false
 
     resort: ->
-      Index.sort()
-      Index.buildIndex()
+      Index.changed.order = true
+      Index.pageLoad false
 
     perBoardSort: ->
       Conf['Index Sort'] = if @checked then {} else ''
@@ -390,14 +390,15 @@ Index =
 
   pageLoad: (scroll=true) ->
     return unless Index.liveThreadData
-    {threads, search, mode, sort, page, hash} = Index.changed
+    {threads, order, search, mode, sort, page, hash} = Index.changed
     threads or= search
-    Index.sort()          if threads or sort
+    order   or= sort
+    Index.sort()          if threads or order
     Index.buildPagelist() if threads
     Index.setupSearch()   if search
     Index.setupMode()     if mode
     Index.setupSort()     if sort
-    Index.buildIndex()    if threads or mode or page or sort
+    Index.buildIndex()    if threads or mode or page or order
     Index.setPage()       if threads or page
     Index.scrollToIndex() if scroll and not hash
     Header.hashScroll()   if hash
