@@ -336,8 +336,8 @@ ThreadWatcher =
     for refresher in ThreadWatcher.menu.refreshers
       refresher()
 
-    if Conf['Pin Watched Threads'] and Conf['Index Mode'] is 'catalog'
-      $.event 'SortIndex'
+    if Conf['Pin Watched Threads']
+      $.event 'SortIndex', {deferred: Conf['Index Mode'] isnt 'catalog'}
 
   refreshIcon: ->
     for className in ['replies-unread', 'replies-quoting-you']

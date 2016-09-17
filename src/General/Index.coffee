@@ -229,9 +229,9 @@ Index =
       Index.pushState {sort: @value}
       Index.pageLoad false
 
-    resort: ->
+    resort: (e) ->
       Index.changed.order = true
-      Index.pageLoad false
+      Index.pageLoad false unless e?.detail?.deferred
 
     perBoardSort: ->
       Conf['Index Sort'] = if @checked then {} else ''
