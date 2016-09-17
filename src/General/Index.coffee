@@ -597,8 +597,6 @@ Index =
           error: err
     Main.handleErrors errors if errors
 
-    # Add the threads in a container to make sure all features work.
-    $.nodes Index.nodes
     Main.callbackNodes 'Thread', threads
     Main.callbackNodes 'Post',   posts
     Index.updateHideLabel()
