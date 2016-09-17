@@ -145,9 +145,9 @@ Index =
     pageNum = ++Index.pageNum
     return Index.endNotice() if pageNum > Index.pagesNum
 
-    nodes = Index.buildSinglePage pageNum
-    Index.buildReplies   nodes if Conf['Show Replies']
-    Index.buildStructure nodes
+    threads = Index.threadsOnPage pageNum
+    Index.buildReplies   threads if Conf['Show Replies']
+    Index.buildStructure threads
     
   endNotice: do ->
     notify = false
@@ -602,10 +602,9 @@ Index =
     Index.updateHideLabel()
     $.event 'IndexRefresh'
 
-  buildReplies: (threadRoots) ->
+  buildReplies: (threads) ->
     posts = []
-    for threadRoot in threadRoots
-      thread = Get.threadFromRoot threadRoot
+    for thread in threads
       i = Index.liveThreadIDs.indexOf thread.ID
       continue unless lastReplies = Index.liveThreadData[i].last_replies
       nodes = []
@@ -622,7 +621,7 @@ Index =
           errors.push
             message: "Parsing of Post No.#{data.no} failed. Post will be skipped."
             error: err
-      $.add threadRoot, nodes
+      $.add Index.nodes[thread.ID], nodes
 
     Main.handleErrors errors if errors
     Main.callbackNodes 'Post', posts
@@ -689,11 +688,8 @@ Index =
   buildIndex: ->
     return unless Index.liveThreadData
     switch Conf['Index Mode']
-      when 'all pages'
-        nodes = Index.sortedThreads.map (thread) -> Index.nodes[thread.ID]
-      when 'catalog'
-        nodes = Index.buildCatalogViews()
-        Index.sizeCatalogViews nodes
+      when 'all pages', 'catalog'
+        threads = Index.sortedThreads
       else
         if Index.followedThreadID?
           i = 0
@@ -703,24 +699,27 @@ Index =
             Index.currentPage = page
             Index.pushState {page}
             Index.setPage()
-        nodes = Index.buildSinglePage Index.currentPage
+        threads = Index.threadsOnPage Index.currentPage
     delete Index.pageNum
     $.rmAll Index.root
     $.rmAll Header.hover
     if Conf['Index Mode'] is 'catalog'
+      nodes = Index.buildCatalogViews()
+      Index.sizeCatalogViews nodes
       $.add Index.root, nodes
     else
-      Index.buildReplies nodes if Conf['Show Replies']
-      Index.buildStructure nodes
+      Index.buildReplies   threads if Conf['Show Replies']
+      Index.buildStructure threads
       if Index.followedThreadID? and (post = g.posts["#{g.BOARD}.#{Index.followedThreadID}"])
         Header.scrollTo post.nodes.root
 
-  buildSinglePage: (pageNum) ->
+  threadsOnPage: (pageNum) ->
     nodesPerPage = Index.threadsNumPerPage
     offset = nodesPerPage * (pageNum - 1)
-    Index.sortedThreads[offset ... offset + nodesPerPage].map (thread) -> Index.nodes[thread.ID]
+    Index.sortedThreads[offset ... offset + nodesPerPage]
 
-  buildStructure: (nodes) ->
+  buildStructure: (threads) ->
+    nodes = threads.map (thread) -> Index.nodes[thread.ID]
     for node in nodes
       if thumb = $ 'img[data-src]', node
         thumb.src = thumb.dataset.src
