@@ -397,7 +397,7 @@ Index =
     Index.setupMode()     if mode
     Index.setupSort()     if sort
     Index.buildIndex()    if threads or search or mode or page or sort
-    Index.setPage()       if threads or search or mode or page
+    Index.setPage()       if threads or search or page
     Index.scrollToIndex() if scroll and not hash
     Header.hashScroll()   if hash
     Index.changed = {}
