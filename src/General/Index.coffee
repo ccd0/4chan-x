@@ -715,13 +715,12 @@ Index =
     Index.sortedThreads[offset ... offset + nodesPerPage]
 
   buildStructure: (threads) ->
-    nodes = threads.map (thread) -> Index.nodes[thread.ID]
-    for node in nodes
-      if thumb = $ 'img[data-src]', node
+    for thread in threads
+      if (file = thread.OP.file) and (thumb = thread.OP.file.thumb) and thumb.dataset.src
         thumb.src = thumb.dataset.src
         # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
         thumb.removeAttribute 'data-src'
-      $.add Index.root, [node, $.el 'hr']
+      $.add Index.root, [Index.nodes[thread.ID], $.el 'hr']
     if doc.contains Index.root
       $.event 'PostsInserted'
       $.event 'IndexBuild'
