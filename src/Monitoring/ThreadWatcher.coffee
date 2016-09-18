@@ -108,7 +108,7 @@ ThreadWatcher =
   addDialog: ->
     return unless Main.isThisPageLegit()
     ThreadWatcher.build()
-    $.add Header.hover, ThreadWatcher.dialog
+    $.prepend d.body, ThreadWatcher.dialog
 
   toggleWatcher: ->
     $.toggleClass ThreadWatcher.shortcut, 'disabled'
