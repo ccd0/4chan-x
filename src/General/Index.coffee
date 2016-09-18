@@ -716,6 +716,7 @@ Index =
     $.rmAll Header.hover
     if Conf['Index Mode'] is 'catalog'
       $.add Index.root, nodes
+      $.event 'PostsInserted' if doc.contains Index.root
     else
       Index.buildReplies nodes if Conf['Show Replies']
       Index.buildStructure nodes
