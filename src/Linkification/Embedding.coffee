@@ -4,7 +4,7 @@ Embedding =
     @types = {}
     @types[type.key] = type for type in @ordered_types
 
-    if Conf['Floating Embeds']
+    if Conf['Embedding']
       @dialog = UI.dialog 'embedding', 'top: 50px; right: 0px;',
         <%= readHTML('Embed.html') %>
       @media = $ '#media-embed', @dialog
@@ -21,7 +21,7 @@ Embedding =
     i = 0
     items = $$ '.embedder', post.nodes.comment
     while el = items[i++]
-      $.on el, 'click', Embedding.cb.toggle
+      $.on el, 'click', Embedding.cb.click
       Embedding.cb.toggle.call el if $.hasClass el, 'embedded'
     return
 
@@ -49,16 +49,20 @@ Embedding =
     embed = $.el 'a',
       className:   'embedder'
       href:        'javascript:;'
-      textContent: '(embed)'
+    ,
+      <%= html('(<span>un</span>embed)') %>
 
     embed.dataset[name] = value for name, value of {key, uid, options, href}
 
-    $.on embed, 'click', Embedding.cb.toggle
+    $.on embed, 'click', Embedding.cb.click
     $.after link, [$.tn(' '), embed]
 
     if Conf['Auto-embed'] and !Conf['Floating Embeds'] and !post.isFetchedQuote
-      $.asap (-> doc.contains embed), ->
-        Embedding.cb.toggle.call embed
+      autoEmbed = ->
+        if doc.contains(embed) and not $.hasClass(doc, 'catalog-mode')
+          $.off d, 'PostsInserted', autoEmbed
+          Embedding.cb.toggle.call embed
+      $.on d, 'PostsInserted', autoEmbed
 
   ready: ->
     $.addClass Embedding.dialog, 'empty'
@@ -110,25 +114,26 @@ Embedding =
     return
 
   cb:
-    toggle: (e) ->
-      e?.preventDefault()
-      if Conf['Floating Embeds']
+    click: (e) ->
+      e.preventDefault()
+      if Conf['Floating Embeds'] or $.hasClass(doc, 'catalog-mode')
         return unless div = Embedding.media.firstChild
         $.replace div, Embedding.cb.embed @
         Embedding.lastEmbed = Get.postFromNode(@).nodes.root
         $.rmClass Embedding.dialog, 'empty'
-        return
+      else
+        Embedding.cb.toggle.call @
+
+    toggle: ->
       if $.hasClass @, "embedded"
         $.rm @nextElementSibling
-        @textContent = '(embed)'
       else
         $.after @, Embedding.cb.embed @
-        @textContent = '(unembed)'
       $.toggleClass @, 'embedded'
 
     embed: (a) ->
       # We create an element to embed
-      container = $.el 'div'
+      container = $.el 'div', {className: 'media-embed'}
       $.add container, el = (type = Embedding.types[a.dataset.key]).el a
 
       # Set style values.

@@ -785,6 +785,7 @@ div[data-checked="false"] > .suboption-list {
   align-self: stretch;
   overflow: hidden;
   text-align: center;
+  margin: 0;
 }
 /* /tg/ dice rolls */
 .board_tg .catalog-thread > .comment > b {
@@ -980,7 +981,7 @@ span.hide-announcement {
 .quotelink.deadlink:not(.forwardlink) {
   text-decoration: underline !important;
 }
-.inlined {
+:root:not(.catalog-mode) .inlined {
   opacity: .5;
 }
 #qp input, .forwarded {
@@ -1005,6 +1006,9 @@ span.hide-announcement {
   border: 1px solid;
   display: table;
   margin: 2px 0;
+}
+:root.catalog-mode .inline {
+  display: none;
 }
 .inline .post {
   border: 0 !important;
@@ -1845,6 +1849,11 @@ a:only-of-type > .remove {
 }
 
 /* Embedding */
+.embedder:not(.embedded) > span,
+:root.catalog-mode .embedder > span,
+:root.catalog-mode .board .media-embed {
+  display: none;
+}
 #embedding {
   padding: 1px 4px 1px 4px;
   position: fixed;

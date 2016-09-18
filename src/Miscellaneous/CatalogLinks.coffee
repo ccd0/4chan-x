@@ -24,9 +24,6 @@ CatalogLinks =
       Callbacks.Post.push
         name: 'Catalog Link Rewrite'
         cb:   @node
-      Callbacks.CatalogThread.push
-        name: 'Catalog Link Rewrite'
-        cb:   @node
 
     if Conf['Catalog Links']
       CatalogLinks.el = el = UI.checkbox 'Header catalog links', 'Catalog Links'

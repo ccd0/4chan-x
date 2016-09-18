@@ -9,10 +9,6 @@ RemoveSpoilers =
       name: 'Reveal Spoilers'
       cb:   @node
 
-    Callbacks.CatalogThread.push
-      name: 'Reveal Spoilers'
-      cb:   @node
-
     if g.VIEW is 'archive'
       $.ready -> RemoveSpoilers.unspoiler $.id 'arc-list'
 

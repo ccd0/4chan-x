@@ -9,10 +9,6 @@ Linkify =
       name: 'Linkify'
       cb:   @node
 
-    Callbacks.CatalogThread.push
-      name: 'Linkify'
-      cb:   @catalogNode
-
     Embedding.init()
 
   node: ->
@@ -24,10 +20,6 @@ Linkify =
     links = Linkify.process @nodes.comment
     Embedding.process link, @ for link in links
     return
-
-  catalogNode: ->
-    return unless Linkify.regString.test @thread.OP.info.comment
-    Linkify.process @nodes.comment
 
   process: (node) ->
     test     = /[^\s"]+/g

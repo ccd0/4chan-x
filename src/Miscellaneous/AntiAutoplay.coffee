@@ -7,9 +7,6 @@ AntiAutoplay =
     Callbacks.Post.push
       name: 'Disable Autoplaying Sounds'
       cb:   @node
-    Callbacks.CatalogThread.push
-      name: 'Disable Autoplaying Sounds'
-      cb:   @node
     $.ready => @process d.body
 
   stop: (audio) ->
@@ -21,7 +18,7 @@ AntiAutoplay =
     $.addClass audio, 'controls-added'
 
   node: ->
-    AntiAutoplay.process @nodes.root
+    AntiAutoplay.process @nodes.comment
 
   process: (root) ->
     for iframe in $$ 'iframe[src*="youtube"][src*="autoplay=1"]', root

@@ -42,9 +42,6 @@ Fourchan =
       Callbacks.Post.push
         name: 'Parse /sci/ math'
         cb:   @math
-      Callbacks.CatalogThread.push
-        name: 'Parse /sci/ math'
-        cb:   @math
 
     # Disable 4chan's ID highlighting (replaced by IDHighlight) and reported post hiding.
     Main.ready ->

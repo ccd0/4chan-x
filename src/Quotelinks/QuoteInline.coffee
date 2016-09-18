@@ -34,6 +34,7 @@ QuoteInline =
 
     {boardID, threadID, postID} = Get.postDataFromLink @
     return if Conf['Inline Cross-thread Quotes Only'] and g.VIEW is 'thread' and g.posts["#{boardID}.#{postID}"]?.nodes.root.offsetParent # exists and not hidden
+    return if $.hasClass(doc, 'catalog-mode')
 
     e.preventDefault()
     quoter = Get.postFromNode @

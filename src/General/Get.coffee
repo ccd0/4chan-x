@@ -18,7 +18,7 @@ Get =
     index = root.dataset.clone
     if index then post.clones[index] else post
   postFromNode: (root) ->
-    Get.postFromRoot $.x '(ancestor::div[contains(@class,"postContainer")][1]|following::div[contains(@class,"postContainer")][1])', root
+    Get.postFromRoot $.x '(ancestor::div[contains(@class,"postContainer") or contains(@class,"catalog-thread")][1]|following::div[contains(@class,"postContainer")][1])', root
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
       path     = link.pathname.split /\/+/

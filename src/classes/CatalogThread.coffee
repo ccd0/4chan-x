@@ -11,5 +11,4 @@ class CatalogThread
       postCount: $ '.post-count',    root
       fileCount: $ '.file-count',    root
       pageCount: $ '.page-count',    root
-      comment:   $ '.comment',       root
     @thread.catalogView = @
