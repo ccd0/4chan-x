@@ -704,6 +704,7 @@ Index =
       Index.sizeCatalogViews nodes
       $.add Index.root, nodes
       if doc.contains Index.root
+        $.event 'PostsInserted'
         $.event 'IndexBuild'
     else
       Index.buildReplies   threads if Conf['Show Replies']
