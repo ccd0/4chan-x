@@ -38,8 +38,11 @@ class DataBoard
     else unless Object.keys(@data.boards[boardID]).length
       delete @data.boards[boardID]
 
-  set: ({boardID, threadID, postID, val}, cb) ->
+  set: (data, cb) ->
     $.forceSync @key
+    @setUnsafe data, cb
+
+  setUnsafe: ({boardID, threadID, postID, val}, cb) ->
     if postID isnt undefined
       ((@data.boards[boardID] or= {})[threadID] or= {})[postID] = val
     else if threadID isnt undefined
@@ -47,6 +50,12 @@ class DataBoard
     else
       @data.boards[boardID] = val
     @save cb
+
+  extend: ({boardID, threadID, postID, val}, cb) ->
+    $.forceSync @key
+    oldVal = @get {boardID, threadID, postID, val: {}}
+    $.extend oldVal, val
+    @setUnsafe {boardID, threadID, postID, val: oldVal}, cb
 
   get: ({boardID, threadID, postID, defaultValue}) ->
     if board = @data.boards[boardID]

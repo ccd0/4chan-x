@@ -582,7 +582,7 @@ $.clear = (cb) ->
   # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
   # Also support case where GM_listValues is not defined.
   $.delete Object.keys(Conf)
-  $.delete ['previousversion', 'AutoWatch', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']
+  $.delete ['previousversion', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']
   $.delete ("#{id}.position" for id in ['embedding', 'updater', 'thread-stats', 'thread-watcher', 'qr'])
   try
     $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''

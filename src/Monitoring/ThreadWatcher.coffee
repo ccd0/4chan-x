@@ -25,7 +25,6 @@ ThreadWatcher =
     $.on @closeButton, 'click', @toggleWatcher
 
     $.onExists doc, 'body', @addDialog
-    $.on d, '4chanXInitFinished', @ready
 
     switch g.VIEW
       when 'index'
@@ -85,8 +84,14 @@ ThreadWatcher =
         href: 'javascript:;'
         className: 'watch-thread-link'
       $.before $('input', @nodes.post), toggler
-    ThreadWatcher.setToggler toggler, ThreadWatcher.isWatched(@thread)
+    boardID = @board.ID
+    threadID = @thread.ID
+    data = ThreadWatcher.db.get {boardID, threadID}
+    ThreadWatcher.setToggler toggler, !!data
     $.on toggler, 'click', ThreadWatcher.cb.toggle
+    # Add missing excerpt for threads added by Auto Watch
+    if data and not data.excerpt?
+      ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt @thread}}
 
   catalogNode: ->
     $.addClass @nodes.root, 'watched' if ThreadWatcher.isWatched @thread
@@ -102,14 +107,6 @@ ThreadWatcher =
     return unless Main.isThisPageLegit()
     ThreadWatcher.build()
     $.add Header.hover, ThreadWatcher.dialog
-
-  ready: ->
-    $.off d, '4chanXInitFinished', ThreadWatcher.ready
-    return unless Main.isThisPageLegit() and Conf['Auto Watch']
-    $.get 'AutoWatch', 0, ({AutoWatch}) ->
-      return unless thread = g.BOARD.threads[AutoWatch]
-      ThreadWatcher.add thread
-      $.delete 'AutoWatch'
 
   toggleWatcher: ->
     $.toggleClass ThreadWatcher.shortcut, 'disabled'
@@ -140,7 +137,7 @@ ThreadWatcher =
       {boardID, threadID, postID} = e.detail
       if postID is threadID
         if Conf['Auto Watch']
-          $.set 'AutoWatch', threadID
+          ThreadWatcher.addRaw boardID, threadID, {}
       else if Conf['Auto Watch Reply']
         ThreadWatcher.add g.threads[boardID + '.' + threadID]
     onIndexRefresh: ->
@@ -294,9 +291,12 @@ ThreadWatcher =
       href: 'javascript:;'
     $.on x, 'click', ThreadWatcher.cb.rm
 
+    {excerpt} = data
+    excerpt or= "/#{boardID}/ - No.#{threadID}"
+
     link = $.el 'a',
       href: "/#{boardID}/thread/#{threadID}"
-      title: data.excerpt
+      title: excerpt
       className: 'watcher-link'
 
     if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] and data.unread?
@@ -306,7 +306,7 @@ ThreadWatcher =
       $.add link, count
 
     title = $.el 'span',
-      textContent: data.excerpt
+      textContent: excerpt
       className: 'watcher-title'
     $.add link, title
 
@@ -325,6 +325,9 @@ ThreadWatcher =
   build: ->
     nodes = []
     for {boardID, threadID, data} in ThreadWatcher.getAll()
+      # Add missing excerpt for threads added by Auto Watch
+      if not data.excerpt? and (thread = g.threads["#{boardID}.#{threadID}"])
+        ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt thread}}
       nodes.push ThreadWatcher.makeLine boardID, threadID, data
     {list} = ThreadWatcher
     $.rmAll list
@@ -403,6 +406,9 @@ ThreadWatcher =
         return
       data.isDead = true
     data.excerpt  = Get.threadExcerpt thread
+    ThreadWatcher.addRaw boardID, threadID, data
+
+  addRaw: (boardID, threadID, data) ->
     ThreadWatcher.db.set {boardID, threadID, val: data}
     ThreadWatcher.refresh()
     if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
