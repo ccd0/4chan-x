@@ -72,7 +72,7 @@
 }
 
 /* Thread Watcher */
-:root.yotsuba .replies-quoting-you > a, :root.yotsuba #watcher-link.disabled.replies-quoting-you {
+:root.yotsuba .replies-quoting-you > a, :root.yotsuba #watcher-link.replies-quoting-you {
   color: #F00;
 }
 

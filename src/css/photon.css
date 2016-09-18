@@ -80,7 +80,7 @@
 }
 
 /* Thread Watcher */
-:root.photon .replies-quoting-you > a, :root.photon #watcher-link.disabled.replies-quoting-you {
+:root.photon .replies-quoting-you > a, :root.photon #watcher-link.replies-quoting-you {
   color: #00F !important;
 }
 

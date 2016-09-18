@@ -148,7 +148,7 @@
 }
 
 /* Thread Watcher */
-:root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.disabled.replies-quoting-you {
+:root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.replies-quoting-you {
   color: #F00 !important;
 }
 

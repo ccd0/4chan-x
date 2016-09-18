@@ -72,7 +72,7 @@
 }
 
 /* Thread Watcher */
-:root.futaba .replies-quoting-you > a, :root.futaba #watcher-link.disabled.replies-quoting-you {
+:root.futaba .replies-quoting-you > a, :root.futaba #watcher-link.replies-quoting-you {
   color: #F00;
 }
 
