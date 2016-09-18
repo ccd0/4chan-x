@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.12.3.1
+// @version      1.12.3.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.3.1',
+  VERSION:   '1.12.3.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -9640,7 +9640,10 @@ Index = (function() {
       $.rmAll(Index.root);
       $.rmAll(Header.hover);
       if (Conf['Index Mode'] === 'catalog') {
-        return $.add(Index.root, nodes);
+        $.add(Index.root, nodes);
+        if (doc.contains(Index.root)) {
+          return $.event('PostsInserted');
+        }
       } else {
         if (Conf['Show Replies']) {
           Index.buildReplies(nodes);
@@ -17358,7 +17361,7 @@ ThreadWatcher = (function() {
         textContent: 'Watcher',
         title: 'Thread Watcher',
         href: 'javascript:;',
-        className: 'disabled fa fa-eye'
+        className: 'fa fa-eye'
       });
       this.db = new DataBoard('watchedThreads', this.refresh, true);
       this.dialog = UI.dialog('thread-watcher', 'top: 50px; left: 0px;', {
@@ -17386,6 +17389,7 @@ ThreadWatcher = (function() {
         $.addClass(doc, 'fixed-watcher');
       }
       if (!Conf['Persistent Thread Watcher']) {
+        $.addClass(ThreadWatcher.shortcut, 'disabled');
         this.dialog.hidden = true;
       }
       Header.addShortcut('watcher', sc, 510);

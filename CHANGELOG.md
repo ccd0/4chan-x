@@ -2,6 +2,10 @@
 
 ### v1.12.3
 
+**v1.12.3.2** *(2016-09-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.2/builds/4chan-X-noupdate.crx)]
+- Fix Thread Watcher icon not lighting up when `Persistent Thread Watcher` is enabled.
+- Fix TeX sometimes not working in /sci/ catalog.
+
 **v1.12.3.1** *(2016-09-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.1/builds/4chan-X-noupdate.crx)]
 - Fix scrollbar in captcha bug.
 
