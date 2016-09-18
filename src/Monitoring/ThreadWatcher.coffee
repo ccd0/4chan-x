@@ -7,7 +7,7 @@ ThreadWatcher =
       textContent: 'Watcher'
       title: 'Thread Watcher'
       href: 'javascript:;'
-      className: 'disabled fa fa-eye'
+      className: 'fa fa-eye'
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
     @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', <%= readHTML('ThreadWatcher.html') %>
@@ -35,6 +35,7 @@ ThreadWatcher =
     if Conf['Fixed Thread Watcher']
       $.addClass doc, 'fixed-watcher'
     if !Conf['Persistent Thread Watcher']
+      $.addClass ThreadWatcher.shortcut, 'disabled'
       @dialog.hidden = true
 
     Header.addShortcut 'watcher', sc, 510
