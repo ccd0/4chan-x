@@ -93,6 +93,7 @@ ThreadWatcher =
     # Add missing excerpt for threads added by Auto Watch
     if data and not data.excerpt?
       ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt @thread}}
+      ThreadWatcher.refresh()
 
   catalogNode: ->
     $.addClass @nodes.root, 'watched' if ThreadWatcher.isWatched @thread
