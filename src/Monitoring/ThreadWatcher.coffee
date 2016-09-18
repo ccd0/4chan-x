@@ -122,11 +122,8 @@ ThreadWatcher =
       $.event 'CloseMenu'
     pruneDeads: ->
       return if $.hasClass @, 'disabled'
-      ThreadWatcher.db.forceSync()
       for {boardID, threadID, data} in ThreadWatcher.getAll() when data.isDead
-        delete ThreadWatcher.db.data.boards[boardID][threadID]
-        ThreadWatcher.db.deleteIfEmpty {boardID}
-      ThreadWatcher.db.save()
+        ThreadWatcher.db.delete {boardID, threadID}
       ThreadWatcher.refresh()
       $.event 'CloseMenu'
     toggle: ->
@@ -145,21 +142,19 @@ ThreadWatcher =
     onIndexRefresh: ->
       {db}    = ThreadWatcher
       boardID = g.BOARD.ID
-      db.forceSync()
       nKilled = 0
       for threadID, data of db.data.boards[boardID] when not data?.isDead and threadID not of g.BOARD.threads
         nKilled++
         if Conf['Auto Prune'] or not (data and typeof data is 'object') # corrupt data
           db.delete {boardID, threadID}
         else
+          db.extend {boardID, threadID, val: {isDead: true}}
           if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
             ThreadWatcher.fetchStatus {boardID, threadID, data}
-          data.isDead = true
-          db.set {boardID, threadID, val: data}
       ThreadWatcher.refresh() if nKilled
     onThreadRefresh: (e) ->
       thread = g.threads[e.detail.threadID]
-      return unless e.detail[404] and ThreadWatcher.db.get {boardID: thread.board.ID, threadID: thread.ID}
+      return unless e.detail[404] and ThreadWatcher.isWatched thread
       # Update dead status.
       ThreadWatcher.add thread
 
@@ -184,8 +179,8 @@ ThreadWatcher =
     interval = if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] then 5 * $.MINUTE else 2 * $.HOUR
     now = Date.now()
     if now >= (db.data.lastChecked or 0) + interval
+      ThreadWatcher.fetchAllStatus() # calls forceSync
       db.data.lastChecked = now
-      ThreadWatcher.fetchAllStatus()
       db.save()
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
 
@@ -261,20 +256,14 @@ ThreadWatcher =
           quotingYou++
 
       if isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou
-        data.isDead = isDead
-        data.unread = unread
-        data.quotingYou = quotingYou
-        ThreadWatcher.db.set {boardID, threadID, val: data}
+        ThreadWatcher.db.extend {boardID, threadID, val: {isDead, unread, quotingYou}}
         ThreadWatcher.refresh()
 
     else if @status is 404
       if Conf['Auto Prune']
         ThreadWatcher.db.delete {boardID, threadID}
       else
-        data.isDead = true
-        delete data.unread
-        delete data.quotingYou
-        ThreadWatcher.db.set {boardID, threadID, val: data}
+        ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true}, rm: ['unread', 'quotingYou']}
 
       ThreadWatcher.refresh()
 
@@ -368,10 +357,8 @@ ThreadWatcher =
     n = 0
     n++ for key, val of newData when data[key] isnt val
     return unless n
-    ThreadWatcher.db.forceSync()
-    return unless data = ThreadWatcher.db.get {boardID, threadID}
-    $.extend data, newData
-    ThreadWatcher.db.set {boardID, threadID, val: data}
+    return unless (data = ThreadWatcher.db.get {boardID, threadID})
+    ThreadWatcher.db.extend {boardID, threadID, val: newData}
     if line = $ "#watched-threads > [data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
       newLine = ThreadWatcher.makeLine boardID, threadID, data
       $.replace line, newLine
@@ -385,10 +372,7 @@ ThreadWatcher =
       ThreadWatcher.db.delete {boardID, threadID}
       return cb()
     return cb() if data.isDead and not (data.unread? or data.quotingYou?)
-    data.isDead = true
-    delete data.unread
-    delete data.quotingYou
-    ThreadWatcher.db.set {boardID, threadID, val: data}, cb
+    ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true}, rm: ['unread', 'quotingYou']}, cb
 
   toggle: (thread) ->
     boardID  = thread.board.ID

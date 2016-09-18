@@ -51,9 +51,10 @@ class DataBoard
       @data.boards[boardID] = val
     @save cb
 
-  extend: ({boardID, threadID, postID, val}, cb) ->
+  extend: ({boardID, threadID, postID, val, rm}, cb) ->
     $.forceSync @key
     oldVal = @get {boardID, threadID, postID, val: {}}
+    delete oldVal[key] for key in rm or []
     $.extend oldVal, val
     @setUnsafe {boardID, threadID, postID, val: oldVal}, cb
 
