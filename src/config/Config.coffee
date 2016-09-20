@@ -803,7 +803,7 @@ Config =
 
   backlink: '>>%id'
 
-  fileInfo: '%l (%p%s, %r%g)'
+  fileInfo: '%l %d (%p%s, %r%g)'
 
   favicon: 'ferongr'
 
