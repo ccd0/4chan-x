@@ -630,8 +630,7 @@ Index =
     Main.handleErrors errors if errors
     Main.callbackNodes 'Post', posts
 
-  buildCatalogViews: ->
-    threads = Index.sortedThreads.filter (thread) -> !thread.isHidden isnt Index.showHiddenThreads
+  buildCatalogViews: (threads) ->
     catalogThreads = []
     for thread in threads when !thread.catalogView
       catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
@@ -692,15 +691,17 @@ Index =
   buildIndex: ->
     return unless Index.liveThreadData
     switch Conf['Index Mode']
-      when 'all pages', 'catalog'
+      when 'all pages'
         threads = Index.sortedThreads
+      when 'catalog'
+        threads = Index.sortedThreads.filter (thread) -> !thread.isHidden isnt Index.showHiddenThreads
       else
         threads = Index.threadsOnPage Index.currentPage
     delete Index.pageNum
     $.rmAll Index.root
     $.rmAll Header.hover
     if Conf['Index Mode'] is 'catalog'
-      nodes = Index.buildCatalogViews()
+      nodes = Index.buildCatalogViews threads
       Index.sizeCatalogViews nodes
     Index.moveComments threads
     if Conf['Index Mode'] is 'catalog'
