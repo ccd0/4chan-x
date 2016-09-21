@@ -15,7 +15,7 @@ QuotePreview =
     return
 
   mouseover: (e) ->
-    return if $.hasClass(@, 'inlined') or !d.contains(@)
+    return if ($.hasClass(@, 'inlined') and not $.hasClass(doc, 'catalog-mode')) or not d.contains(@)
 
     {boardID, threadID, postID} = Get.postDataFromLink @
 
