@@ -30,6 +30,12 @@
   background-color: #F0E0D6;
 }
 
+/* Catalog */
+:root.futaba .catalog-thread:hover, :root.futaba .catalog-thread:hover > .comment {
+  background-color: #F0E0D6;
+  border-color: #D9BFB7;
+}
+
 /* Quote */
 :root.futaba .backlink.deadlink {
   color: #00E !important;
