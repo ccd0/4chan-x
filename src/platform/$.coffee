@@ -384,7 +384,18 @@ $.sync = (key, cb) ->
   $.syncing[key] = cb
 $.forceSync = -> return
 
+$.crxWorking = ->
+  if chrome.runtime.getManifest()
+    true
+  else
+    msg = $.el 'div',
+      <%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>
+    $.on $('a', msg), 'click', -> location.reload()
+    new Notice 'warning', msg, 20
+    false
+
 $.get = (key, val, cb) ->
+  return unless $.crxWorking()
   if typeof cb is 'function'
     data = $.item key, val
   else
@@ -416,6 +427,7 @@ do ->
     unescape(encodeURIComponent(JSON.stringify(key))).length + unescape(encodeURIComponent(JSON.stringify(value))).length > chrome.storage.sync.QUOTA_BYTES_PER_ITEM
 
   $.delete = (keys) ->
+    return unless $.crxWorking()
     if typeof keys is 'string'
       keys = [keys]
     for key in keys
@@ -449,6 +461,7 @@ do ->
     setArea 'sync'
 
   $.set = (key, val, cb) ->
+    return unless $.crxWorking()
     if typeof key is 'string'
       data = $.item key, val
     else
@@ -458,6 +471,7 @@ do ->
     setArea 'local', cb
 
   $.clear = (cb) ->
+    return unless $.crxWorking()
     items.local = {}
     items.sync  = {}
     count = 2
