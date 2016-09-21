@@ -30,10 +30,6 @@
 }
 
 /* Catalog */
-:root.tomorrow .catalog-thread:hover, :root.tomorrow .catalog-thread:hover > .comment {
-  background-color: #282A2E;
-  border-color: #111;
-}
 :root.tomorrow .catalog-code {
   background-color: rgba(255, 255, 255, 0.1);
 }

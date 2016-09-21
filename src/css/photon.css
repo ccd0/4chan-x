@@ -31,10 +31,6 @@
 }
 
 /* Catalog */
-:root.photon .catalog-thread:hover, :root.photon .catalog-thread:hover > .comment {
-  background-color: #DDD;
-  border-color: #CCC;
-}
 :root.photon .catalog-code {
   background-color: rgba(150, 150, 150, 0.2);
 }
