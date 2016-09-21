@@ -186,6 +186,12 @@ class Post
         MD5:       thumb.dataset.md5
         isSpoiler: $.hasClass thumb.parentNode, 'imgspoiler'
 
+  @deadMark =
+    # \u00A0 is nbsp
+    $.el 'span',
+      textContent: '\u00A0(Dead)'
+      className:   'qmark-dead'
+
   kill: (file) ->
     if file
       return if @isDead or @file.isDead
@@ -211,7 +217,7 @@ class Post
     # Get quotelinks/backlinks to this post
     # and paint them (Dead).
     for quotelink in Get.allQuotelinksLinkingTo @ when not $.hasClass quotelink, 'deadlink'
-      quotelink.textContent = quotelink.textContent + '\u00A0(Dead)'
+      $.add quotelink, Post.deadMark.cloneNode(true)
       $.addClass quotelink, 'deadlink'
     return
 
@@ -232,7 +238,7 @@ class Post
       clone.resurrect()
 
     for quotelink in Get.allQuotelinksLinkingTo @ when $.hasClass quotelink, 'deadlink'
-      quotelink.textContent = quotelink.textContent.replace '\u00A0(Dead)', ''
+      $.rm $('.qmark-dead', quotelink)
       $.rmClass quotelink, 'deadlink'
     return
 

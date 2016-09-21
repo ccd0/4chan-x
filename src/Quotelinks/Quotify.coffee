@@ -65,7 +65,8 @@ Quotify =
         a = $.el 'a',
           href:        Build.postURL boardID, post.thread.ID, postID
           className:   'quotelink deadlink'
-          textContent: "#{quote}\u00A0(Dead)"
+          textContent: quote
+        $.add a, Post.deadMark.cloneNode(true)
         $.extend a.dataset, {boardID, threadID: post.thread.ID, postID}
 
     else
@@ -76,7 +77,8 @@ Quotify =
         a = $.el 'a',
           href:        redirect or 'javascript:;'
           className:   'deadlink'
-          textContent: "#{quote}\u00A0(Dead)"
+          textContent: quote
+        $.add a, Post.deadMark.cloneNode(true)
         if fetchable
           # Make it function as a normal quote if we can fetch the post.
           $.addClass a, 'quotelink'
@@ -85,7 +87,7 @@ Quotify =
     @quotes.push quoteID unless quoteID in @quotes
 
     unless a
-      deadlink.textContent = "#{quote}\u00A0(Dead)"
+      $.add deadlink, Post.deadMark.cloneNode(true)
       return
 
     $.replace deadlink, a

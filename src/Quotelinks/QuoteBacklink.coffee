@@ -26,7 +26,8 @@ QuoteBacklink =
     a = $.el 'a',
       href: Build.postURL @board.ID, @thread.ID, @ID
       className: if @isHidden then 'filtered backlink' else 'backlink'
-      textContent: Conf['backlink'].replace(/%(?:id|%)/g, (x) => {'%id': @ID, '%%': '%'}[x]) + (if markYours then '\u00A0(You)' else '')
+      textContent: Conf['backlink'].replace(/%(?:id|%)/g, (x) => {'%id': @ID, '%%': '%'}[x])
+    $.add a, QuoteYou.mark.cloneNode(true) if markYours
     for quote in @quotes
       containers = [QuoteBacklink.getContainer quote]
       if (post = g.posts[quote]) and post.nodes.backlinkContainer

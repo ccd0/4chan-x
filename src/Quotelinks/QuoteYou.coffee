@@ -22,7 +22,9 @@ QuoteYou =
       ExpandComment.callbacks.push @node
 
     # \u00A0 is nbsp
-    @text = '\u00A0(You)'
+    @mark = $.el 'span',
+      textContent: '\u00A0(You)'
+      className:   'qmark-you'
     Callbacks.Post.push
       name: 'Mark Quotes of You'
       cb:   @node
@@ -37,7 +39,7 @@ QuoteYou =
     return unless @quotes.length
 
     for quotelink in @nodes.quotelinks when QuoteYou.db.get Get.postDataFromLink quotelink
-        $.add quotelink, $.tn QuoteYou.text if Conf['Mark Quotes of You']
+        $.add quotelink, QuoteYou.mark.cloneNode(true) if Conf['Mark Quotes of You']
         $.addClass quotelink, 'you'
         $.addClass @nodes.root, 'quotesYou'
     return

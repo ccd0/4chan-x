@@ -6,7 +6,9 @@ QuoteCT =
       ExpandComment.callbacks.push @node
 
     # \u00A0 is nbsp
-    @text = '\u00A0(Cross-thread)'
+    @mark = $.el 'span',
+      textContent: '\u00A0(Cross-thread)'
+      className:   'qmark-ct'
     Callbacks.Post.push
       name: 'Mark Cross-thread Quotes'
       cb:   @node
@@ -19,7 +21,7 @@ QuoteCT =
       {boardID, threadID} = Get.postDataFromLink quotelink
       continue unless threadID # deadlink
       if @isClone
-        quotelink.textContent = quotelink.textContent.replace QuoteCT.text, ''
+        $.rm $('.qmark-ct', quotelink)
       if boardID is board.ID and threadID isnt thread.ID
-        $.add quotelink, $.tn QuoteCT.text
+        $.add quotelink, QuoteCT.mark.cloneNode(true)
     return
