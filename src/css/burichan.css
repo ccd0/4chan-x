@@ -30,6 +30,12 @@
   background-color: #D6DAF0;
 }
 
+/* Catalog */
+:root.burichan .catalog-thread:hover {
+  background-color: #D6DAF0;
+  outline: 1px solid #B7C5D9;
+}
+
 /* Quote */
 :root.burichan .backlink.deadlink {
   color: #34345C !important;

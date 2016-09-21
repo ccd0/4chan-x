@@ -30,6 +30,12 @@
   background-color: #D6DAF0;
 }
 
+/* Catalog */
+:root.yotsuba-b .catalog-thread:hover {
+  background-color: #D6DAF0;
+  outline: 1px solid #B7C5D9;
+}
+
 /* Quote */
 :root.yotsuba-b .backlink.deadlink {
   color: #34345C !important;

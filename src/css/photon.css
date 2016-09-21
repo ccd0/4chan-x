@@ -31,6 +31,10 @@
 }
 
 /* Catalog */
+:root.photon .catalog-thread:hover {
+  background-color: #DDD;
+  outline: 1px solid #CCC;
+}
 :root.photon .catalog-code {
   background-color: rgba(150, 150, 150, 0.2);
 }

@@ -787,6 +787,13 @@ div[data-checked="false"] > .suboption-list {
   text-align: center;
   margin: 0;
 }
+[name="delform"], .board, .catalog-thread, .catalog-thread:hover > .comment {
+  background-color: inherit;
+}
+.catalog-thread:hover > .comment {
+  overflow: visible;
+  z-index: 1;
+}
 /* /tg/ dice rolls */
 .board_tg .catalog-thread > .comment > b {
   font-weight: normal;
