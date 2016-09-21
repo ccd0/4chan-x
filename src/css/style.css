@@ -114,6 +114,15 @@ body > div:last-of-type {
 body > div[style*=" top: -10000px;"] {
   visibility: hidden !important;
 }
+/* Make long filenames wrap properly: https://github.com/ccd0/4chan-x/issues/1082 */
+.post > .file {
+  /* currently nonstandard but may be added: https://lists.w3.org/Archives/Public/www-style/2016Mar/0352.html, https://bugzilla.mozilla.org/show_bug.cgi?id=1296042 */
+  word-break: break-word;
+}
+:root:not(.ua-webkit):not(.ua-blink) .post > .file {
+  word-wrap: break-word;
+  max-width: calc(100vw - 50px);
+}
 
 /* Ads */
 :root:not(.ads-loaded) .ad-cnt,
