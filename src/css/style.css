@@ -983,7 +983,7 @@ span.hide-announcement {
 .catalog-thread > .comment > span.quote, #arc-list span.quote {
   color: #789922;
 }
-:root:not(.catalog-mode) .deadlink {
+:root.resurrect-quotes .deadlink {
   text-decoration: none !important;
 }
 .backlink.deadlink:not(.forwardlink),

@@ -2,6 +2,8 @@ Quotify =
   init: ->
     return if g.VIEW not in ['index', 'thread'] or !Conf['Resurrect Quotes']
 
+    $.addClass doc, 'resurrect-quotes'
+
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
