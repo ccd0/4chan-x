@@ -31,7 +31,7 @@
 }
 
 /* Catalog */
-:root.yotsuba .catalog-thread:hover, :root.yotsuba .catalog-thread:hover > .comment {
+:root.yotsuba .catalog-thread:hover > * {
   background-color: #F0E0D6;
   border-color: #D9BFB7;
 }

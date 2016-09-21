@@ -31,7 +31,7 @@
 }
 
 /* Catalog */
-:root.burichan .catalog-thread:hover, :root.burichan .catalog-thread:hover > .comment {
+:root.burichan .catalog-thread:hover > * {
   background-color: #D6DAF0;
   border-color: #B7C5D9;
 }

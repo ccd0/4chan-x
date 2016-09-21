@@ -712,30 +712,25 @@ div[data-checked="false"] > .suboption-list {
   text-align: center;
 }
 .catalog-thread {
-  display: -webkit-inline-flex;
-  display: inline-flex;
-  text-align: left;
-  -webkit-flex-direction: column;
-  flex-direction: column;
-  -webkit-align-items: center;
-  align-items: center;
+  display: inline-block;
+  text-align: center;
   margin: 0 2px 5px;
   word-wrap: break-word;
   vertical-align: top;
   position: relative;
+  overflow: hidden;
 }
 .catalog-thread > a {
-  flex-shrink: 0;
-  -webkit-flex-shrink: 0;
+  display: block;
   position: relative;
 }
 .catalog-small .catalog-thread {
   width: 165px;
-  max-height: 320px;
+  height: 320px;
 }
 .catalog-large .catalog-thread {
   width: 270px;
-  max-height: 410px;
+  height: 410px;
 }
 .catalog-thumb {
   border-radius: 2px;
@@ -771,45 +766,39 @@ div[data-checked="false"] > .suboption-list {
   line-height: 11px;
 }
 .catalog-stats {
-  -webkit-flex-shrink: 0;
-  flex-shrink: 0;
   cursor: help;
   font-size: 10px;
   font-weight: 700;
-  margin-top: 2px;
+  padding-top: 2px;
 }
 .catalog-thread > .subject {
-  -webkit-flex-shrink: 0;
-  flex-shrink: 0;
-  -webkit-align-self: stretch;
-  align-self: stretch;
   font-weight: 700;
   line-height: 1;
   text-align: center;
 }
 .catalog-thread > .comment {
-  -webkit-flex-shrink: 1;
-  flex-shrink: 1;
-  -webkit-align-self: stretch;
-  align-self: stretch;
-  overflow: hidden;
   text-align: center;
   margin: 0;
 }
-[name="delform"], .board, .catalog-thread, .catalog-thread:hover > .comment {
+[name="delform"], .board, .catalog-thread, .catalog-thread:hover > * {
   background-color: inherit;
 }
 .catalog-thread:hover {
-  margin: -1px 1px 4px;
-  border: 1px solid transparent;
+  overflow: visible;
   z-index: 1;
 }
-.catalog-thread:hover > .comment {
-  margin: 0 -1px -1px;
-  border: 1px solid transparent;
-  border-top: none;
-  -webkit-flex-shrink: 0;
-  flex-shrink: 0;
+.catalog-thread:hover > * {
+  margin: 0 -1px;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+}
+.catalog-thread:hover > :first-child {
+  margin-top: -1px;
+  border-top: 1px solid transparent;
+}
+.catalog-thread:hover > :last-child {
+  margin-bottom: -1px;
+  border-bottom: 1px solid transparent;
 }
 /* /tg/ dice rolls */
 .board_tg .catalog-thread > .comment > b {
