@@ -986,6 +986,9 @@ span.hide-announcement {
 :root.resurrect-quotes .deadlink {
   text-decoration: none !important;
 }
+.catalog-thread .qmark-ct {
+  display: none;
+}
 .backlink.deadlink:not(.forwardlink),
 .quotelink.deadlink:not(.forwardlink) {
   text-decoration: underline !important;
