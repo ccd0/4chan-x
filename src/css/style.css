@@ -710,7 +710,7 @@ div[data-checked="false"] > .suboption-list {
 /* Catalog */
 :root.catalog-mode .board {
   text-align: center;
-  padding: 0 75px;
+  padding: 0 60px;
 }
 .catalog-thread {
   display: inline-block;
@@ -795,7 +795,7 @@ div[data-checked="false"] > .suboption-list {
   z-index: 1;
 }
 .catalog-thread:hover > * {
-  margin: 0 -76px;
+  margin: 0 -61px;
 }
 /* /tg/ dice rolls */
 .board_tg .catalog-thread > .comment > b {
