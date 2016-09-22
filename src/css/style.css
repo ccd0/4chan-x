@@ -818,6 +818,9 @@ div.catalog-thread {
   max-width: 100%;
   box-sizing: border-box;
 }
+.catalog-thread .MathJax_Display {
+  text-align: center !important;
+}
 .catalog-thread table.exif {
   border-collapse: collapse;
 }
