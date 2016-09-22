@@ -714,12 +714,14 @@ div[data-checked="false"] > .suboption-list {
 }
 .catalog-thread {
   display: inline-block;
-  margin: 1px;
   border: 1px solid transparent;
   word-wrap: break-word;
   vertical-align: top;
   position: relative;
   overflow: hidden;
+}
+div.catalog-thread {
+  margin: 1px;
 }
 .catalog-thread > * {
   margin: 0 -1px;
@@ -786,9 +788,20 @@ div[data-checked="false"] > .suboption-list {
 .catalog-stats > [title] {
   cursor: help;
 }
-.catalog-thread > .subject {
-  font-weight: 700;
-  line-height: 1;
+#delform .catalog-thread > .postInfo {
+  width: auto;
+}
+#delform .catalog-thread > .postInfo > * {
+  display: none;
+}
+#delform .catalog-thread > .postInfo > .subject {
+  display: block;
+}
+.catalog-thread .dateTime {
+  font-style: italic;
+}
+.catalog-thread .posteruid {
+  display: none;
 }
 .catalog-thread:hover {
   overflow: visible;
@@ -797,9 +810,9 @@ div[data-checked="false"] > .suboption-list {
 .catalog-thread:hover > * {
   margin: 0 -61px;
 }
-/* /tg/ dice rolls */
-.board_tg .catalog-thread > .comment > b {
-  font-weight: normal;
+#delform .catalog-thread:hover > .postInfo > .nameBlock,
+#delform .catalog-thread:hover > .postInfo > .dateTime {
+  display: inline-block;
 }
 .catalog-thread .prettyprinted {
   max-width: 100%;
@@ -1782,7 +1795,7 @@ a:only-of-type > .remove {
   margin: 2px;
   vertical-align: middle;
 }
-.post .menu-button,
+.postInfo > .menu-button,
 #thread-watcher .menu-button {
   width: 18px;
   height: 15px;

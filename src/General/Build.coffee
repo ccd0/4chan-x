@@ -216,7 +216,7 @@ Build =
     comment = innerHTML: data.com or ''
 
     root = $.el 'div',
-      className: 'catalog-thread'
+      className: 'catalog-thread post' # post added to make 4chan postInfo CSS work
 
     $.extend root, <%= readHTML('CatalogThread.html') %>
 

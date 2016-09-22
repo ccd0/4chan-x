@@ -716,10 +716,10 @@ Index =
     isCatalog = (Conf['Index Mode'] is 'catalog')
     for thread in threads
       node = if isCatalog then thread.catalogView.nodes.root else thread.OP.nodes.post
-      {comment} = thread.OP.nodes
+      {info, comment} = thread.OP.nodes
       unless node.contains comment
         comment.className = if isCatalog then 'comment' else 'postMessage'
-        $.add node, comment
+        $.add node, [info, comment]
     return
 
   buildStructure: (threads) ->
