@@ -185,16 +185,10 @@ Index =
           true
 
   catalogNode: ->
-    $.on @nodes.thumb.parentNode, 'click', Index.onClick
-
-  onClick: (e) ->
-    return if e.button isnt 0
-    thread = g.threads[@parentNode.dataset.fullID]
-    if e.shiftKey
-      Index.toggleHide thread
-    else
-      return
-    e.preventDefault()
+    $.on @nodes.root, 'mousedown click', (e) ->
+      return unless e.button is 0 and e.shiftKey
+      Index.toggleHide g.threads[@dataset.fullID] if e.type is 'click'
+      e.preventDefault() # Also on mousedown to prevent highlighting text.
 
   toggleHide: (thread) ->
     $.rm thread.catalogView.nodes.root
