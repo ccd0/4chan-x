@@ -714,12 +714,24 @@ div[data-checked="false"] > .suboption-list {
 }
 .catalog-thread {
   display: inline-block;
-  text-align: center;
   margin: 0 2px 5px;
   word-wrap: break-word;
   vertical-align: top;
   position: relative;
   overflow: hidden;
+}
+.catalog-thread > * {
+  margin: 0 -1px;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+}
+.catalog-thread > :first-child {
+  margin-top: -1px;
+  border-top: 1px solid transparent;
+}
+.catalog-thread > :last-child {
+  margin-bottom: -1px;
+  border-bottom: 1px solid transparent;
 }
 .catalog-thread > a {
   display: block;
@@ -760,7 +772,6 @@ div[data-checked="false"] > .suboption-list {
   padding-left: 2px;
 }
 .catalog-stats > .menu-button {
-  text-align: center;
   font-weight: normal;
 }
 .catalog-stats > .menu-button > i::before {
@@ -777,36 +788,13 @@ div[data-checked="false"] > .suboption-list {
 .catalog-thread > .subject {
   font-weight: 700;
   line-height: 1;
-  text-align: center;
-}
-.catalog-thread > .comment {
-  text-align: center;
-  margin: 0;
 }
 .catalog-thread:hover {
   overflow: visible;
   z-index: 1;
-  margin-left: -73px;
-  margin-right: -73px;
 }
 .catalog-thread:hover > * {
-  margin: 0 -1px;
-  border-left: 1px solid transparent;
-  border-right: 1px solid transparent;
-}
-.catalog-thread:hover > :first-child {
-  margin-top: -1px;
-  border-top: 1px solid transparent;
-}
-.catalog-thread:hover > :last-child {
-  margin-bottom: -1px;
-  border-bottom: 1px solid transparent;
-}
-.catalog-small .catalog-thread:hover {
-  width: 315px
-}
-.catalog-large .catalog-thread:hover {
-  width: 420px
+  margin: 0 -76px;
 }
 /* /tg/ dice rolls */
 .board_tg .catalog-thread > .comment > b {
