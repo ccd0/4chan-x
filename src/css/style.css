@@ -801,10 +801,24 @@ div[data-checked="false"] > .suboption-list {
 .board_tg .catalog-thread > .comment > b {
   font-weight: normal;
 }
-.catalog-code {
-  background-color: #FFF;
-  display: inline-block;
+.catalog-thread .prettyprinted {
   max-width: 100%;
+  box-sizing: border-box;
+}
+.catalog-thread table.exif {
+  border-collapse: collapse;
+}
+.catalog-thread table.exif[style*="display: block;"] {
+  display: inline-block !important;
+}
+.catalog-thread table.exif, .catalog-thread table.exif > tbody {
+  background-color: inherit;
+}
+.catalog-thread table.exif, .catalog-thread table.exif td {
+  min-width: 0;
+}
+.catalog-thread table.exif td {
+  padding-top: 1px;
 }
 :root.hats-enabled .catalog-thread::after {
   content: '';

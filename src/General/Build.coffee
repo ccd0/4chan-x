@@ -223,21 +223,6 @@ Build =
     root.dataset.fullID = thread.fullID
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
 
-    for quote in $$ '.quotelink', root.lastElementChild
-      href = quote.getAttribute 'href'
-      quote.href = "/#{thread.board}/thread/#{thread.ID}" + href if href[0] is '#'
-
-    for exif in $$ '.abbr, .exif', root.lastElementChild
-      $.rm exif
-
-    for pp in $$ '.prettyprint', root.lastElementChild
-      cc = $.el 'span', className: 'catalog-code'
-      $.add cc, [pp.childNodes...]
-      $.replace pp, cc
-
-    for br in $$ 'br', root.lastElementChild when br.previousSibling?.nodeName is 'BR'
-      $.rm br
-
     if thread.isSticky
       $.add $('.catalog-icons', root), $.el 'img',
         src: "#{staticPath}sticky#{gifIcon}"
