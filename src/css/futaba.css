@@ -33,6 +33,8 @@
 /* Catalog */
 :root.futaba .catalog-thread:hover > * {
   background-color: #F0E0D6;
+}
+:root.futaba .catalog-thread:not(:hover), :root.futaba .catalog-thread:hover > * {
   border-color: #D9BFB7;
 }
 

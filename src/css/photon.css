@@ -33,6 +33,8 @@
 /* Catalog */
 :root.photon .catalog-thread:hover > * {
   background-color: #DDD;
+}
+:root.photon .catalog-thread:not(:hover), :root.photon .catalog-thread:hover > * {
   border-color: #CCC;
 }
 :root.photon .catalog-code {

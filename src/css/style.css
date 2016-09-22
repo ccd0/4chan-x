@@ -714,7 +714,8 @@ div[data-checked="false"] > .suboption-list {
 }
 .catalog-thread {
   display: inline-block;
-  margin: 0 2px 5px;
+  margin: 1px;
+  border: 1px solid transparent;
   word-wrap: break-word;
   vertical-align: top;
   position: relative;

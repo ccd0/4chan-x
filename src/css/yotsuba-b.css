@@ -33,6 +33,8 @@
 /* Catalog */
 :root.yotsuba-b .catalog-thread:hover > * {
   background-color: #D6DAF0;
+}
+:root.yotsuba-b .catalog-thread:not(:hover), :root.yotsuba-b .catalog-thread:hover > * {
   border-color: #B7C5D9;
 }
 
