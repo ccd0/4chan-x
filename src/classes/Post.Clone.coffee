@@ -7,10 +7,14 @@ Post.Clone = class extends Post
       @[key] = @origin[key]
 
     {nodes} = @origin
-    root = if contractThumb
-      @cloneWithoutVideo nodes.root
+    cloneNode = if contractThumb
+      @cloneWithoutVideo
     else
-      nodes.root.cloneNode true
+      (node) -> node.cloneNode true
+    root = cloneNode nodes.root
+    # Handle case where comment has been moved into catalog thread
+    if nodes.comment.parentNode isnt nodes.post
+      $.add $('.post', root), cloneNode(nodes.comment)
     Post.Clone.prefix or= 0
     for node in [root, $$('[id]', root)...]
       node.id = Post.Clone.prefix + node.id
