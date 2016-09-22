@@ -808,7 +808,8 @@ div.catalog-thread {
   z-index: 1;
 }
 .catalog-thread:hover > * {
-  margin: 0 -61px;
+  margin-left: -61px;
+  margin-right: -61px;
 }
 #delform .catalog-thread:hover > .postInfo > .nameBlock,
 #delform .catalog-thread:hover > .postInfo > .dateTime {
