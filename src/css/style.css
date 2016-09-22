@@ -767,10 +767,12 @@ div[data-checked="false"] > .suboption-list {
   line-height: 11px;
 }
 .catalog-stats {
-  cursor: help;
   font-size: 10px;
   font-weight: 700;
   padding-top: 2px;
+}
+.catalog-stats > [title] {
+  cursor: help;
 }
 .catalog-thread > .subject {
   font-weight: 700;
