@@ -70,6 +70,7 @@ class Post
       nameBlock:  $ '.nameBlock',          info
       quote:      $ '.postNum > a:nth-of-type(2)', info
       reply:      $ '.replylink',          info
+      fileRoot:   $ '.file',        post
       comment:    $ '.postMessage', post
       links:      []
       quotelinks: []
@@ -161,10 +162,11 @@ class Post
     @quotes.push fullID unless fullID in @quotes
 
   parseFile: ->
-    return unless fileEl = $ '.file', @nodes.post
-    return unless link   = $ '.fileText > a, .fileText-original > a', fileEl
-    return unless info   = link.nextSibling?.textContent.match /\(([\d.]+ [KMG]?B).*\)/
-    fileText = fileEl.firstElementChild
+    {fileRoot} = @nodes
+    return unless fileRoot
+    return unless (link = $ '.fileText > a, .fileText-original > a', fileRoot)
+    return unless (info = link.nextSibling?.textContent.match /\(([\d.]+ [KMG]?B).*\)/)
+    fileText = fileRoot.firstElementChild
     @file =
       text:       fileText
       link:       link
@@ -179,7 +181,7 @@ class Post
     unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
     size *= 1024 while unit-- > 0
     @file.sizeInBytes = size
-    if (thumb = $ '.fileThumb > [data-md5]', fileEl)
+    if (thumb = $ '.fileThumb > [data-md5]', fileRoot)
       $.extend @file,
         thumb:     thumb
         thumbURL:  if m = link.href.match(/\d+(?=\.\w+$)/) then "#{location.protocol}//i.4cdn.org/#{@board}/#{m[0]}s.jpg"

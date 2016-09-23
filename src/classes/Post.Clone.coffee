@@ -41,11 +41,11 @@ Post.Clone = class extends Post
       @file = {}
       for key, val of @origin.file
         @file[key] = val
-      file = $ '.file', @nodes.post
-      @file.text  = file.firstElementChild
-      @file.link  = $ '.fileText > a, .fileText-original', file
-      @file.thumb = $ '.fileThumb > [data-md5]', file
-      @file.fullImage = $ '.full-image', file
+      {fileRoot} = @nodes
+      @file.text  = fileRoot.firstElementChild
+      @file.link  = $ '.fileText > a, .fileText-original', fileRoot
+      @file.thumb = $ '.fileThumb > [data-md5]', fileRoot
+      @file.fullImage = $ '.full-image', fileRoot
       @file.videoControls = $ '.video-controls', @file.text
 
       @file.thumb.muted = true if @file.videoThumb
