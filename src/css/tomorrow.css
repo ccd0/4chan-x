@@ -33,7 +33,7 @@
 :root.tomorrow .catalog-thread:hover > * {
   background-color: #282A2E;
 }
-:root.tomorrow .catalog-thread:not(:hover), :root.tomorrow .catalog-thread:hover > * {
+:root.tomorrow.werkTyme .catalog-thread:not(:hover), :root.tomorrow .catalog-thread:hover > * {
   border-color: #111;
 }
 :root.tomorrow .catalog-code {
