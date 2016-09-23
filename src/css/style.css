@@ -729,8 +729,11 @@ div.catalog-thread {
   border-right: 1px solid transparent;
 }
 .catalog-thread > :first-child {
-  margin-top: -1px;
+  margin-top: -21px;
   border-top: 1px solid transparent;
+}
+.catalog-thread.noFile > :first-child {
+  padding-top: 20px;
 }
 .catalog-thread > :last-child {
   margin-bottom: -1px;
@@ -788,20 +791,29 @@ div.catalog-thread {
 .catalog-stats > [title] {
   cursor: help;
 }
+#delform .catalog-thread:not(:hover) > .file,
+#delform .catalog-thread:not(:hover) > .postInfo,
+#delform .catalog-thread > .file > :not(.fileText),
+#delform .catalog-thread > .file > .fileText > :not(:first-child),
+#delform .catalog-thread > .postInfo > :not(.nameBlock):not(.dateTime),
+#delform .catalog-thread .posteruid {
+  display: none;
+}
+.catalog-thread .fileText {
+  min-height: 16px;
+  font-size: 10px;
+  line-height: 1;
+  padding: 2px;
+}
 #delform .catalog-thread > .postInfo {
   width: auto;
 }
-#delform .catalog-thread > .postInfo > * {
-  display: none;
-}
-#delform .catalog-thread > .postInfo > .subject {
+.catalog-thread .subject {
   display: block;
 }
 .catalog-thread .dateTime {
+  display: inline-block;
   font-style: italic;
-}
-.catalog-thread .posteruid {
-  display: none;
 }
 .catalog-thread:hover {
   overflow: visible;
@@ -810,10 +822,6 @@ div.catalog-thread {
 .catalog-thread:hover > * {
   margin-left: -61px;
   margin-right: -61px;
-}
-#delform .catalog-thread:hover > .postInfo > .nameBlock,
-#delform .catalog-thread:hover > .postInfo > .dateTime {
-  display: inline-block;
 }
 .catalog-thread .prettyprinted {
   max-width: 100%;

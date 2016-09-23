@@ -14,6 +14,7 @@ Post.Clone = class extends Post
     root = cloneNode nodes.root
     # Handle case where comment has been moved into catalog thread
     if nodes.comment.parentNode isnt nodes.post
+      $.prepend $('.post', root), cloneNode(nodes.fileRoot) if nodes.fileRoot
       $.add $('.post', root), [cloneNode(nodes.info), cloneNode(nodes.comment)]
     Post.Clone.prefix or= 0
     for node in [root, $$('[id]', root)...]

@@ -222,6 +222,7 @@ Build =
 
     root.dataset.fullID = thread.fullID
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
+    $.addClass root, 'noFile' unless thread.OP.file
 
     if thread.isSticky
       $.add $('.catalog-icons', root), $.el 'img',

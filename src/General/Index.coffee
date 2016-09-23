@@ -716,9 +716,10 @@ Index =
     isCatalog = (Conf['Index Mode'] is 'catalog')
     for thread in threads
       node = if isCatalog then thread.catalogView.nodes.root else thread.OP.nodes.post
-      {info, comment} = thread.OP.nodes
+      {fileRoot, info, comment} = thread.OP.nodes
       unless node.contains comment
         comment.className = if isCatalog then 'comment' else 'postMessage'
+        $.prepend node, fileRoot if fileRoot
         $.add node, [info, comment]
     return
 
