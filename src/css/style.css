@@ -721,7 +721,7 @@ div[data-checked="false"] > .suboption-list {
   overflow: hidden;
 }
 div.catalog-thread {
-  margin: 1px;
+  margin: 4px;
 }
 .catalog-thread > * {
   margin: 0 -1px;
