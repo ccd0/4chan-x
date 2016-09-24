@@ -175,6 +175,7 @@ class Post
       size:       info[1]
       isImage:    /(jpg|png|gif)$/i.test link.href
       isVideo:    /webm$/i.test link.href
+      isSpoiler:  '.' not in link.textContent
       dimensions: info[0].match(/\d+x\d+/)?[0]
       tag:        info[0].match(/,[^,]*, ([a-z]+)\)/i)?[1]
     size  = +@file.size.match(/[\d.]+/)[0]
@@ -186,7 +187,6 @@ class Post
         thumb:     thumb
         thumbURL:  if m = link.href.match(/\d+(?=\.\w+$)/) then "#{location.protocol}//i.4cdn.org/#{@board}/#{m[0]}s.jpg"
         MD5:       thumb.dataset.md5
-        isSpoiler: $.hasClass thumb.parentNode, 'imgspoiler'
 
   @deadMark =
     # \u00A0 is nbsp
