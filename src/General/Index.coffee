@@ -700,7 +700,8 @@ Index =
     if Conf['Index Mode'] is 'catalog'
       nodes = Index.buildCatalogViews threads
       Index.sizeCatalogViews nodes
-    Index.moveComments threads
+    for thread in threads
+      thread.OP.setCatalogOP (Conf['Index Mode'] is 'catalog')
     if Conf['Index Mode'] is 'catalog'
       $.add Index.root, nodes
       if doc.contains Index.root
@@ -714,17 +715,6 @@ Index =
     nodesPerPage = Index.threadsNumPerPage
     offset = nodesPerPage * (pageNum - 1)
     Index.sortedThreads[offset ... offset + nodesPerPage]
-
-  moveComments: (threads) ->
-    isCatalog = (Conf['Index Mode'] is 'catalog')
-    for thread in threads
-      node = if isCatalog then thread.catalogView.nodes.root else thread.OP.nodes.post
-      {fileRoot, info, comment} = thread.OP.nodes
-      unless node.contains comment
-        comment.className = if isCatalog then 'comment' else 'postMessage'
-        $.prepend node, fileRoot if fileRoot
-        $.add node, [info, comment]
-    return
 
   buildStructure: (threads) ->
     for thread in threads
