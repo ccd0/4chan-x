@@ -265,6 +265,5 @@ class Post
     @isCatalogOP = isCatalogOP
     node = if isCatalogOP then @thread.catalogView.nodes.root else @nodes.post
     {fileRoot, info, comment} = @nodes
-    comment.className = if isCatalogOP then 'comment' else 'postMessage'
     $.prepend node, fileRoot if fileRoot
     $.add node, [info, comment]
