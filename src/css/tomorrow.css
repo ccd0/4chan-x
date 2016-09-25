@@ -41,7 +41,7 @@
 }
 
 /* Quote */
-:root.tomorrow .catalog-thread > .comment > span.quote, :root.tomorrow #arc-list span.quote {
+:root.tomorrow #arc-list span.quote {
   color: #B5BD68;
 }
 :root.tomorrow .backlink.deadlink {

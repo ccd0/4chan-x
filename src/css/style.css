@@ -1020,7 +1020,7 @@ span.hide-announcement {
 }
 
 /* Quote */
-.catalog-thread > .comment > span.quote, #arc-list span.quote {
+#arc-list span.quote {
   color: #789922;
 }
 :root.resurrect-quotes .deadlink {
