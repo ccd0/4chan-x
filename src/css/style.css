@@ -739,7 +739,7 @@ div.catalog-thread {
   margin-bottom: -1px;
   border-bottom: 1px solid transparent;
 }
-.catalog-thread > a {
+.catalog-link {
   display: block;
   position: relative;
 }
@@ -1175,7 +1175,7 @@ input[name="Default Volume"] {
 .werkTyme-filename {
   font-weight: bold;
 }
-:root.werkTyme .catalog-thread > a {
+:root.werkTyme .catalog-link {
   text-align: center;
   -webkit-align-self: stretch;
   align-self: stretch;
