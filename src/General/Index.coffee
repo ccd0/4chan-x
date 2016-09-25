@@ -149,7 +149,6 @@ Index =
     return Index.endNotice() if pageNum > Index.pagesNum
 
     threads = Index.threadsOnPage pageNum
-    Index.buildReplies   threads if Conf['Show Replies']
     Index.buildStructure threads
     
   endNotice: do ->
@@ -636,13 +635,12 @@ Index =
       root = Build.catalogThread thread, Index.liveThreadData[i], i // Index.threadsNumPerPage + 1
       catalogThreads.push new CatalogThread root, thread
     Main.callbackNodes 'CatalogThread', catalogThreads
-    threads.map (thread) -> thread.catalogView.nodes.root
 
-  sizeCatalogViews: (nodes) ->
+  sizeCatalogViews: (threads) ->
     # XXX When browsers support CSS3 attr(), use it instead.
     size = if Conf['Index Size'] is 'small' then 150 else 250
-    for node in nodes
-      thumb = $ '.catalog-thumb', node
+    for thread in threads
+      {thumb} = thread.catalogView.nodes
       {width, height} = thumb.dataset
       continue unless width
       ratio = size / Math.max width, height
@@ -702,17 +700,8 @@ Index =
     $.rmAll Index.root
     $.rmAll Header.hover
     if Conf['Index Mode'] is 'catalog'
-      nodes = Index.buildCatalogViews threads
-      Index.sizeCatalogViews nodes
-    if Conf['Index Mode'] is 'catalog'
-      for thread in threads
-        thread.OP.setCatalogOP true
-      $.add Index.root, nodes
-      if doc.contains Index.root
-        $.event 'PostsInserted'
-        $.event 'IndexBuild'
+      Index.buildCatalog threads
     else
-      Index.buildReplies   threads if Conf['Show Replies']
       Index.buildStructure threads
 
   threadsOnPage: (pageNum) ->
@@ -721,13 +710,28 @@ Index =
     Index.sortedThreads[offset ... offset + nodesPerPage]
 
   buildStructure: (threads) ->
+    Index.buildReplies threads if Conf['Show Replies']
+    nodes = []
     for thread in threads
       thread.OP.setCatalogOP false
       if (file = thread.OP.file) and (thumb = thread.OP.file.thumb) and thumb.dataset.src
         thumb.src = thumb.dataset.src
         # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
         thumb.removeAttribute 'data-src'
-      $.add Index.root, [Index.nodes[thread.ID], $.el 'hr']
+      nodes.push Index.nodes[thread.ID], $.el('hr')
+    $.add Index.root, nodes
+    if doc.contains Index.root
+      $.event 'PostsInserted'
+      $.event 'IndexBuild'
+
+  buildCatalog: (threads) ->
+    Index.buildCatalogViews threads
+    Index.sizeCatalogViews threads
+    nodes = []
+    for thread in threads
+      thread.OP.setCatalogOP true
+      nodes.push thread.catalogView.nodes.root
+    $.add Index.root, nodes
     if doc.contains Index.root
       $.event 'PostsInserted'
       $.event 'IndexBuild'
