@@ -205,8 +205,6 @@ Build =
     fileCount = data.images  + !!data.ext
     pageCount = Index.liveThreadIDs.indexOf(thread.ID) // Index.threadsNumPerPage + 1
 
-    comment = innerHTML: data.com or ''
-
     root = $.el 'div',
       className: 'catalog-thread post' # post added to make 4chan postInfo CSS work
 
