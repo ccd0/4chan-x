@@ -17,6 +17,9 @@ class Thread
     @OP = null
     @catalogView = null
 
+    @nodes =
+      root: null
+
     @board.threads.push @ID, @
     g.threads.push  @fullID, @
 

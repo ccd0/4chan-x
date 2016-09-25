@@ -163,10 +163,10 @@ Build =
       href: "/#{boardID}/thread/#{threadID}"
 
   thread: (thread, data) ->
-    if (root = thread.OP.nodes.root.parentNode)
+    if (root = thread.nodes.root)
       $.rmAll root
     else
-      root = $.el 'div',
+      thread.nodes.root = root = $.el 'div',
         className: 'thread'
         id: "t#{data.no}"
     $.add root, Build.hat.cloneNode(false) if Build.hat

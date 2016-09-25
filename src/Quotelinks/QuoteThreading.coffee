@@ -139,7 +139,7 @@ QuoteThreading =
           $.rmClass post.nodes.root, 'threadOP'
           $.rm post.nodes.threadContainer
           delete post.nodes.threadContainer
-      $.add thread.OP.nodes.root.parentNode, nodes
+      $.add thread.nodes.root, nodes
 
     Unread.position = Unread.order.first
     Unread.updatePosition()

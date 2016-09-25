@@ -67,7 +67,7 @@ ThreadUpdater =
   
   node: ->
     ThreadUpdater.thread       = @
-    ThreadUpdater.root         = @OP.nodes.root.parentNode
+    ThreadUpdater.root         = @nodes.root
     ThreadUpdater.outdateCount = 0
 
     # We must keep track of our own list of live posts/files

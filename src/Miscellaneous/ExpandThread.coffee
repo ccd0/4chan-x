@@ -10,7 +10,7 @@ ExpandThread =
         cb: -> ExpandThread.setButton @
 
   setButton: (thread) ->
-    return unless a = $.x 'following-sibling::*[contains(@class,"summary")][1]', thread.OP.nodes.root
+    return unless thread.nodes.root and (a = $ '.summary', thread.nodes.root)
     a.textContent = Build.summaryText '+', a.textContent.match(/\d+/g)...
     a.style.cursor = 'pointer'
     $.on a, 'click', ExpandThread.cbToggle
@@ -34,7 +34,7 @@ ExpandThread =
     ExpandThread.toggle Get.threadFromNode @
 
   toggle: (thread) ->
-    threadRoot = thread.OP.nodes.root.parentNode
+    threadRoot = thread.nodes.root
     return unless a = $ '.summary', threadRoot
     if thread.ID of ExpandThread.statuses
       ExpandThread.contract thread, a, threadRoot

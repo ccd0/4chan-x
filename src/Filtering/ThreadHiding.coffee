@@ -175,7 +175,7 @@ ThreadHiding =
 
   hide: (thread, makeStub=Conf['Stubs']) ->
     return if thread.isHidden
-    threadRoot = thread.OP.nodes.root.parentNode
+    threadRoot = thread.nodes.root
     thread.isHidden = true
     Index.updateHideLabel() if Conf['JSON Index']
 
@@ -187,6 +187,6 @@ ThreadHiding =
     if thread.stub
       $.rm thread.stub
       delete thread.stub
-    threadRoot = thread.OP.nodes.root.parentNode
+    threadRoot = thread.nodes.root
     threadRoot.hidden = thread.isHidden = false
     Index.updateHideLabel() if Conf['JSON Index']
