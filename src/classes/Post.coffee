@@ -182,9 +182,10 @@ class Post
     unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
     size *= 1024 while unit-- > 0
     @file.sizeInBytes = size
-    if (thumb = $ '.fileThumb > [data-md5]', fileRoot)
+    if (thumb = $ 'a.fileThumb > [data-md5]', fileRoot)
       $.extend @file,
         thumb:     thumb
+        thumbLink: thumb.parentNode
         thumbURL:  if m = link.href.match(/\d+(?=\.\w+$)/) then "#{location.protocol}//i.4cdn.org/#{@board}/#{m[0]}s.jpg"
         MD5:       thumb.dataset.md5
         isSpoiler: $.hasClass thumb.parentNode, 'imgspoiler'

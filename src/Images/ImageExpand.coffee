@@ -20,7 +20,7 @@ ImageExpand =
 
   node: ->
     return unless @file and (@file.isImage or @file.isVideo)
-    $.on @file.thumb.parentNode, 'click', ImageExpand.cb.toggle
+    $.on @file.thumbLink, 'click', ImageExpand.cb.toggle
 
     if @isClone 
       if @file.isExpanding
@@ -122,8 +122,8 @@ ImageExpand =
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass file.thumb,      'expanding'
     $.rm file.videoControls
-    file.thumb.parentNode.href   = file.url
-    file.thumb.parentNode.target = '_blank'
+    file.thumbLink.href   = file.url
+    file.thumbLink.target = '_blank'
     for x in ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying', 'scrollIntoView']
       delete file[x]
 
@@ -158,7 +158,7 @@ ImageExpand =
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
     {file} = post
-    {thumb, isVideo} = file
+    {thumb, thumbLink, isVideo} = file
     return if post.isHidden or file.isExpanding or file.isExpanded
 
     $.addClass thumb, 'expanding'
@@ -187,8 +187,8 @@ ImageExpand =
         $.add file.text, file.videoControls
 
       # disable link to file so native controls can work
-      thumb.parentNode.removeAttribute 'href'
-      thumb.parentNode.removeAttribute 'target'
+      thumbLink.removeAttribute 'href'
+      thumbLink.removeAttribute 'target'
 
       el.loop = true
       Volume.setup el

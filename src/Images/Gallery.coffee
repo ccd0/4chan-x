@@ -25,7 +25,7 @@ Gallery =
       Gallery.nodes.total.textContent = Gallery.images.length
 
     unless Conf['Image Expansion']
-      $.on @file.thumb.parentNode, 'click', Gallery.cb.image
+      $.on @file.thumbLink, 'click', Gallery.cb.image
 
   build: (image) ->
     {cb} = Gallery
@@ -88,7 +88,7 @@ Gallery =
       Gallery.generateThumb post
       # If no image to open is given, pick image we have scrolled to.
       if !image and Gallery.fullIDs[post.fullID]
-        candidate = post.file.thumb.parentNode
+        candidate = post.file.thumbLink
         if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
           image = candidate
     $.addClass doc, 'gallery-open'

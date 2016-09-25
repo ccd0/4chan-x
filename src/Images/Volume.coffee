@@ -62,7 +62,7 @@ Volume =
   node: ->
     return unless @board.ID in ['gif', 'wsg'] and @file?.isVideo
     $.on @file.thumb,        'wheel', Volume.wheel.bind(Header.hover)
-    $.on $('a', @file.text), 'wheel', Volume.wheel.bind(@file.thumb.parentNode)
+    $.on $('a', @file.text), 'wheel', Volume.wheel.bind(@file.thumbLink)
 
   catalogNode: ->
     {file} = @thread.OP
