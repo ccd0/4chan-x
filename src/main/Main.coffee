@@ -18,7 +18,7 @@ Main =
       return if window.frameElement and window.frameElement.src is ''
 
     # Don't run inside MathJax popups.
-    return if d.documentElement and not d.doctype
+    return if location.hostname is 'boards.4chan.org' and d.documentElement and not d.doctype
 
     # Detect multiple copies of 4chan X
     $.on d, '4chanXInitFinished', ->

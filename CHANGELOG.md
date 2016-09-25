@@ -2,6 +2,9 @@
 
 ### v1.12.3
 
+**v1.12.3.3** *(2016-09-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.3/builds/4chan-X-noupdate.crx)]
+- Fix `Loop in New Tab` and `Volume in New Tab` which were broken by a regression in v1.12.1.3.
+
 **v1.12.3.2** *(2016-09-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.2/builds/4chan-X-noupdate.crx)]
 - Fix Thread Watcher icon not lighting up when `Persistent Thread Watcher` is enabled.
 - Fix TeX sometimes not working in /sci/ catalog.

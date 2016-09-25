@@ -236,7 +236,7 @@ install.json :
 	node tools/install.js
 	echo -> $@
 
-.events/CHANGELOG : version.json | .events node_modules/dateformat/package.json
+.events/CHANGELOG : version.json | .events
 	node tools/updcl.js
 	echo -> $@
 

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.12.3.2
+// @version      1.12.3.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.3.2',
+  VERSION:   '1.12.3.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -22472,7 +22472,7 @@ Main = (function() {
           return;
         }
       } catch (_error) {}
-      if (d.documentElement && !d.doctype) {
+      if (location.hostname === 'boards.4chan.org' && d.documentElement && !d.doctype) {
         return;
       }
       $.on(d, '4chanXInitFinished', function() {
