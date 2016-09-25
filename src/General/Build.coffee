@@ -214,22 +214,4 @@ Build =
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
     $.addClass root, 'noFile' unless thread.OP.file
 
-    if thread.isSticky
-      $.add $('.catalog-icons', root), $.el 'img',
-        src: "#{staticPath}sticky#{gifIcon}"
-        className: 'stickyIcon'
-        title: 'Sticky'
-
-    if thread.isClosed
-      $.add $('.catalog-icons', root), $.el 'img',
-        src: "#{staticPath}closed#{gifIcon}"
-        className: 'closedIcon'
-        title: 'Closed'
-
-    if data.bumplimit
-      $.addClass $('.post-count', root), 'warning'
-
-    if data.imagelimit
-      $.addClass $('.file-count', root), 'warning'
-
     root

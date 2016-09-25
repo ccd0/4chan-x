@@ -3,7 +3,12 @@
 </a>
 <div class="catalog-stats">
   <span title="Posts / Files / Page">
-    <span class="post-count">${postCount}</span> / <span class="file-count">${fileCount}</span> / <span class="page-count">${pageCount}</span>
+    <span class="post-count?{data.bumplimit}{ warning}">${postCount}</span> / 
+    <span class="file-count?{data.imagelimit}{ warning}">${fileCount}</span> / 
+    <span class="page-count">${pageCount}</span>
   </span>
-  <span class="catalog-icons"></span>
+  <span class="catalog-icons">
+    ?{thread.isSticky}{<img src="${staticPath}sticky${gifIcon}" class="stickyIcon" title="Sticky">}
+    ?{thread.isClosed}{<img src="${staticPath}closed${gifIcon}" class="closedIcon" title="Closed">}
+  </span>
 </div>
