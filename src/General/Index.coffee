@@ -702,9 +702,9 @@ Index =
     if Conf['Index Mode'] is 'catalog'
       nodes = Index.buildCatalogViews threads
       Index.sizeCatalogViews nodes
-    for thread in threads
-      thread.OP.setCatalogOP (Conf['Index Mode'] is 'catalog')
     if Conf['Index Mode'] is 'catalog'
+      for thread in threads
+        thread.OP.setCatalogOP true
       $.add Index.root, nodes
       if doc.contains Index.root
         $.event 'PostsInserted'
@@ -720,6 +720,7 @@ Index =
 
   buildStructure: (threads) ->
     for thread in threads
+      thread.OP.setCatalogOP false
       if (file = thread.OP.file) and (thumb = thread.OP.file.thumb) and thumb.dataset.src
         thumb.src = thumb.dataset.src
         # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
