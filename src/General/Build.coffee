@@ -162,22 +162,22 @@ Build =
       textContent: Build.summaryText '', posts, files
       href: "/#{boardID}/thread/#{threadID}"
 
-  thread: (board, data, OP) ->
-    if (root = OP.nodes.root.parentNode)
+  thread: (thread, data) ->
+    if (root = thread.OP.nodes.root.parentNode)
       $.rmAll root
     else
       root = $.el 'div',
         className: 'thread'
         id: "t#{data.no}"
     $.add root, Build.hat.cloneNode(false) if Build.hat
-    $.add root, OP.nodes.root
+    $.add root, thread.OP.nodes.root
     if data.omitted_posts or !Conf['Show Replies'] and data.replies
       [posts, files] = if Conf['Show Replies']
         # XXX data.omitted_images is not accurate.
         [data.omitted_posts, data.images - data.last_replies.filter((data) -> !!data.ext).length]
       else
         [data.replies, data.images]
-      summary = Build.summary board.ID, data.no, posts, files
+      summary = Build.summary thread.board.ID, data.no, posts, files
       $.add root, summary
     root
 

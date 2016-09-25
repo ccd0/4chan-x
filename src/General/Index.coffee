@@ -592,7 +592,7 @@ Index =
           posts.push OP
         thread.setPage i // Index.threadsNumPerPage + 1
 
-        Index.nodes[thread.ID] = Build.thread g.BOARD, threadData, OP
+        Index.nodes[thread.ID] = Build.thread thread, threadData
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
