@@ -9,8 +9,6 @@ RevealSpoilers =
   node: ->
     return unless not @isClone and @file and @file.thumb and @file.isSpoiler
     {thumb} = @file
-    $.rmClass thumb.parentNode, 'imgspoiler'
-    $.addClass thumb.parentNode, 'imgspoiler-revealed'
     # Remove old width and height.
     thumb.removeAttribute 'style'
     # Enforce thumbnail size if thumbnail is replaced.
