@@ -181,9 +181,8 @@ Build =
       $.add root, summary
     root
 
-  catalogThread: (thread) ->
+  catalogThread: (thread, data, pageCount) ->
     {staticPath, gifIcon} = Build
-    data = Index.liveThreadDict[thread.ID]
 
     if data.spoiler and !Conf['Reveal Spoiler Thumbnails']
       src = "#{staticPath}spoiler"
@@ -203,7 +202,6 @@ Build =
 
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
-    pageCount = Index.liveThreadIDs.indexOf(thread.ID) // Index.threadsNumPerPage + 1
 
     root = $.el 'div',
       className: 'catalog-thread post' # post added to make 4chan postInfo CSS work

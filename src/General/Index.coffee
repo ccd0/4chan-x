@@ -632,7 +632,9 @@ Index =
   buildCatalogViews: (threads) ->
     catalogThreads = []
     for thread in threads when !thread.catalogView
-      catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
+      i = Index.liveThreadIDs.indexOf thread.ID
+      root = Build.catalogThread thread, Index.liveThreadData[i], i // Index.threadsNumPerPage + 1
+      catalogThreads.push new CatalogThread root, thread
     Main.callbackNodes 'CatalogThread', catalogThreads
     threads.map (thread) -> thread.catalogView.nodes.root
 
