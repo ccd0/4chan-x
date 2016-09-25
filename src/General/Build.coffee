@@ -183,7 +183,7 @@ Build =
 
   catalogThread: (thread) ->
     {staticPath, gifIcon} = Build
-    data = Index.liveThreadData[Index.liveThreadIDs.indexOf thread.ID]
+    data = Index.liveThreadDict[thread.ID]
 
     if data.spoiler and !Conf['Reveal Spoiler Thumbnails']
       src = "#{staticPath}spoiler"

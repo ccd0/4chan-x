@@ -562,6 +562,9 @@ Index =
     Index.threadsNumPerPage = pages[0]?.threads.length or 1
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
+    Index.liveThreadDict    = {}
+    for data in Index.liveThreadData
+      Index.liveThreadDict[data.no] = data
     if Index.liveThreadData[0]
       Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler
     g.BOARD.threads.forEach (thread) ->
@@ -606,8 +609,7 @@ Index =
   buildReplies: (threads) ->
     posts = []
     for thread in threads
-      i = Index.liveThreadIDs.indexOf thread.ID
-      continue unless lastReplies = Index.liveThreadData[i].last_replies
+      continue unless lastReplies = Index.liveThreadDict[thread.ID].last_replies
       nodes = []
       for data in lastReplies
         if (post = thread.posts[data.no]) and not post.isFetchedQuote
