@@ -107,13 +107,13 @@ Index =
       d.title = d.title.replace /\ -\ Page\ \d+/, ''
 
     $.onExists doc, '.board > .thread > .postContainer, .board + *', ->
-      Index.hat = $ '.board > .thread > img:first-child'
-      if Index.hat
+      Build.hat = $ '.board > .thread > img:first-child'
+      if Build.hat
         if Index.nodes
           for ID, threadRoot of Index.nodes
-            $.prepend threadRoot, Index.hat.cloneNode false
+            $.prepend threadRoot, Build.hat.cloneNode false
         $.addClass doc, 'hats-enabled'
-        $.addStyle ".catalog-thread::after {background-image: url(#{Index.hat.src});}"
+        $.addStyle ".catalog-thread::after {background-image: url(#{Build.hat.src});}"
 
       board = $ '.board'
       $.replace board, Index.root
@@ -562,6 +562,8 @@ Index =
     Index.threadsNumPerPage = pages[0]?.threads.length or 1
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
+    if Index.liveThreadData[0]
+      Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler
     g.BOARD.threads.forEach (thread) ->
       thread.collect() unless thread.ID in Index.liveThreadIDs
     return
@@ -573,8 +575,6 @@ Index =
     posts       = []
     for threadData, i in Index.liveThreadData
       try
-        threadRoot = Build.thread g.BOARD, threadData
-        $.prepend threadRoot, Index.hat.cloneNode false if Index.hat
         if (thread = g.BOARD.threads[threadData.no])
           thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
           thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
@@ -583,10 +583,13 @@ Index =
         else
           thread = new Thread threadData.no, g.BOARD
           threads.push thread
-        Index.nodes[thread.ID] = threadRoot
-        unless thread.OP and not thread.OP.isFetchedQuote
-          posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
+
+        unless (OP = thread.OP) and not OP.isFetchedQuote
+          OP = new Post Build.postFromObject(threadData, g.BOARD.ID, true), thread, g.BOARD
+          posts.push OP
         thread.setPage i // Index.threadsNumPerPage + 1
+
+        Index.nodes[thread.ID] = Build.thread g.BOARD, threadData, OP
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors

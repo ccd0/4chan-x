@@ -162,32 +162,24 @@ Build =
       textContent: Build.summaryText '', posts, files
       href: "/#{boardID}/thread/#{threadID}"
 
-  thread: (board, data) ->
-    Build.spoilerRange[board] = data.custom_spoiler
-
-    if OP = board.posts[data.no]
-      OP = null if OP.isFetchedQuote
-
-    if OP and (root = OP.nodes.root.parentNode)
+  thread: (board, data, OP) ->
+    if (root = OP.nodes.root.parentNode)
       $.rmAll root
     else
       root = $.el 'div',
         className: 'thread'
         id: "t#{data.no}"
-
-    $.add root, Build.excerptThread(board, data, OP)
-    root
-
-  excerptThread: (board, data, OP) ->
-    nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID, true]
+    $.add root, Build.hat.cloneNode(false) if Build.hat
+    $.add root, OP.nodes.root
     if data.omitted_posts or !Conf['Show Replies'] and data.replies
       [posts, files] = if Conf['Show Replies']
         # XXX data.omitted_images is not accurate.
         [data.omitted_posts, data.images - data.last_replies.filter((data) -> !!data.ext).length]
       else
         [data.replies, data.images]
-      nodes.push Build.summary board.ID, data.no, posts, files
-    nodes
+      summary = Build.summary board.ID, data.no, posts, files
+      $.add root, summary
+    root
 
   catalogThread: (thread) ->
     {staticPath, gifIcon} = Build
