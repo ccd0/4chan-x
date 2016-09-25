@@ -845,6 +845,14 @@ div.catalog-thread {
 .catalog-thread table.exif td {
   padding-top: 1px;
 }
+:root.hats-enabled .catalog-thread {
+  padding-top: 105px;
+  margin-top: -101px;
+  pointer-events: none;
+}
+:root.hats-enabled .catalog-thread > * {
+  pointer-events: auto;
+}
 :root.hats-enabled .catalog-thread::after {
   content: '';
   pointer-events: none;
@@ -853,13 +861,13 @@ div.catalog-thread {
 }
 :root.hats-enabled .catalog-small .catalog-thread::after {
   left: -10px;
-  top: -65px;
+  top: 40px;
   width: 100px;
   height: 100px;
 }
 :root.hats-enabled .catalog-large .catalog-thread::after {
   left: -15px;
-  top: -105px;
+  top: 0;
   width: 160px;
   height: 160px;
 }
