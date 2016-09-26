@@ -808,11 +808,11 @@ div.catalog-thread {
   margin: 0;
 }
 #delform .catalog-thread > .postContainer:not(:hover) .file,
-#delform .catalog-thread > .postContainer:not(:hover) .postInfo,
+#delform .catalog-thread > .postContainer:not(:hover) .postInfo > :not(.subject),
 #delform .catalog-thread > .postContainer > :not(.post),
 #delform .catalog-thread .file > :not(.fileText),
 #delform .catalog-thread .file > .fileText > :not(:first-child),
-#delform .catalog-thread .postInfo > :not(.nameBlock):not(.dateTime),
+#delform .catalog-thread .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),
 #delform .catalog-thread .posteruid,
 .thread:not(.catalog-thread) .catalog-link,
 .thread:not(.catalog-thread) .catalog-stats {
