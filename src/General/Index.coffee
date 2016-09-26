@@ -184,9 +184,9 @@ Index =
           true
 
   catalogNode: ->
-    $.on @nodes.root, 'mousedown click', (e) ->
+    $.on @nodes.root, 'mousedown click', (e) =>
       return unless e.button is 0 and e.shiftKey
-      Index.toggleHide g.threads[@dataset.fullID] if e.type is 'click'
+      Index.toggleHide @thread if e.type is 'click'
       e.preventDefault() # Also on mousedown to prevent highlighting text.
 
   toggleHide: (thread) ->

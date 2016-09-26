@@ -97,9 +97,9 @@ ThreadWatcher =
 
   catalogNode: ->
     $.addClass @nodes.root, 'watched' if ThreadWatcher.isWatched @thread
-    $.on @nodes.root, 'mousedown click', (e) ->
+    $.on @nodes.root, 'mousedown click', (e) =>
       return unless e.button is 0 and e.altKey
-      ThreadWatcher.toggle g.threads[@dataset.fullID] if e.type is 'click'
+      ThreadWatcher.toggle @thread if e.type is 'click'
       e.preventDefault() # Also on mousedown to prevent highlighting thumbnail in Firefox.
 
   addDialog: ->
