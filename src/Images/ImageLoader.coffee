@@ -57,6 +57,7 @@ ImageLoader =
     type    = if (match = url.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
     replace = Conf["Replace #{type}"] and !/spoiler/.test(thumb.src or thumb.dataset.src)
     return unless replace or Conf['prefetch']
+    return if $.hasClass doc, 'catalog-mode'
     return unless [post, post.clones...].some (clone) -> doc.contains clone.nodes.root
     file.isPrefetched = true
     if file.videoThumb
