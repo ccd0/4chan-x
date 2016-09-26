@@ -834,13 +834,13 @@ div.catalog-thread {
   min-height: 16px;
   padding: 2px;
 }
+.catalog-small .fileText {
+  font-size: 10px;
+}
 .catalog-thread .file:not(:hover) .fileText {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-.catalog-small .file:not(:hover) .fileText {
-  font-size: 10px;
 }
 .catalog-thread .file:hover {
   z-index: 2;
