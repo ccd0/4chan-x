@@ -754,8 +754,8 @@ div.catalog-thread {
   padding-bottom: 2px;
 }
 .catalog-thread.noFile .post {
-  margin-top: -5px;
-  padding-top: 4px;
+  margin-top: -7px;
+  padding-top: 6px;
 }
 .catalog-thread > .postContainer:hover .post {
   margin-left: -61px;
@@ -1207,11 +1207,18 @@ input[name="Default Volume"] {
 }
 .werkTyme-filename {
   font-weight: bold;
+  font-size: 110%;
 }
 :root.werkTyme .catalog-link {
+  box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+  padding: 8px;
+  margin: 0 -2px;
   text-align: center;
-  -webkit-align-self: stretch;
-  align-self: stretch;
+}
+:root.werkTyme .catalog-thumb {
+  box-shadow: none;
+  padding: 0;
+  vertical-align: middle;
 }
 .indicator {
   background: rgba(255,0,0,0.8);
