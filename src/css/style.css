@@ -739,6 +739,10 @@ div.catalog-thread {
   margin: -1px;
   border: 1px solid transparent;
 }
+.catalog-thread:not(.noFile) .post {
+  margin-top: -21px;
+  padding-top: 20px;
+}
 .catalog-link {
   display: block;
   position: relative;
@@ -797,11 +801,29 @@ div.catalog-thread {
 .thread:not(.catalog-thread) .catalog-stats {
   display: none;
 }
+.catalog-thread .file {
+  position: absolute;
+  left: -60px;
+  top: -20px;
+}
+.catalog-small .catalog-thread .file {
+  width: 285px;
+}
+.catalog-large .catalog-thread .file {
+  width: 390px;
+}
 .catalog-thread .fileText {
-  min-height: 16px;
   font-size: 10px;
-  line-height: 1;
   padding: 2px;
+}
+.catalog-thread .file:not(:hover) .fileText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.catalog-thread .file:hover {
+  z-index: 2;
+  background-color: inherit;
 }
 #delform .catalog-thread .postInfo {
   width: auto;
@@ -820,10 +842,8 @@ div.catalog-thread {
   overflow: visible;
 }
 .catalog-thread:hover .post {
-  margin: -21px -61px -1px;
-}
-.catalog-thread.noFile:hover .post {
-  margin-top: -1px;
+  margin-left: -61px;
+  margin-right: -61px;
 }
 .catalog-thread .prettyprinted {
   max-width: 100%;
