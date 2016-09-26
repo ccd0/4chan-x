@@ -31,10 +31,10 @@
 }
 
 /* Catalog */
-:root.burichan .catalog-thread:hover .post {
+:root.burichan .catalog-thread > .postContainer:hover > .post {
   background-color: #D6DAF0;
 }
-:root.burichan.werkTyme .catalog-thread:not(:hover), :root.burichan .catalog-thread:hover .post {
+:root.burichan.werkTyme .catalog-thread:not(:hover), :root.burichan .catalog-thread > .postContainer:hover > .post {
   border-color: #B7C5D9;
 }
 
