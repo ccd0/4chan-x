@@ -165,7 +165,7 @@ Build =
   thread: (thread, data) ->
     if (root = thread.nodes.root)
       $.rmAll root
-      delete thread.nodes.placeholder
+      thread.nodes.placeholder = null
     else
       thread.nodes.root = root = $.el 'div',
         className: 'thread'

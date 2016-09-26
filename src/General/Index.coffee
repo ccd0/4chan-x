@@ -715,7 +715,7 @@ Index =
     for thread in threads
       if thread.nodes.placeholder
         $.replace thread.nodes.placeholder, thread.OP.nodes.root
-        delete thread.nodes.placeholder
+        thread.nodes.placeholder = null
       if (file = thread.OP.file) and (thumb = thread.OP.file.thumb) and thumb.dataset.src
         thumb.src = thumb.dataset.src
         # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
