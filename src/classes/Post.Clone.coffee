@@ -7,14 +7,10 @@ Post.Clone = class extends Post
       @[key] = @origin[key]
 
     {nodes} = @origin
-    cloneNode = if contractThumb
-      @cloneWithoutVideo
+    root = if contractThumb
+      @cloneWithoutVideo nodes.root
     else
-      (node) -> node.cloneNode true
-    root = cloneNode nodes.root
-    if @origin.isCatalogOP
-      $.prepend $('.post', root), cloneNode(nodes.fileRoot) if nodes.fileRoot
-      $.add $('.post', root), [cloneNode(nodes.info), cloneNode(nodes.comment)]
+      nodes.root.cloneNode true
     Post.Clone.prefix or= 0
     for node in [root, $$('[id]', root)...]
       node.id = Post.Clone.prefix + node.id
@@ -31,6 +27,10 @@ Post.Clone = class extends Post
     root.hidden = false # post hiding
     $.rmClass root,        'forwarded' # quote inlining
     $.rmClass @nodes.post, 'highlight' # keybind navigation, ID highlighting
+
+    # Remove catalog stuff.
+    $.rm $('.catalog-link', @nodes.post)
+    $.rm $('.catalog-stats', @nodes.post)
 
     @parseQuotes()
     @quotes = [@origin.quotes...]

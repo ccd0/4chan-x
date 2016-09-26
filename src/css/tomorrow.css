@@ -30,10 +30,10 @@
 }
 
 /* Catalog */
-:root.tomorrow .catalog-thread:hover > * {
+:root.tomorrow .catalog-thread:hover .post {
   background-color: #282A2E;
 }
-:root.tomorrow.werkTyme .catalog-thread:not(:hover), :root.tomorrow .catalog-thread:hover > * {
+:root.tomorrow.werkTyme .catalog-thread:not(:hover), :root.tomorrow .catalog-thread:hover .post {
   border-color: #111;
 }
 :root.tomorrow .catalog-code {

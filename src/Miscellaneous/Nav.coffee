@@ -39,6 +39,7 @@ Nav =
       Nav.scroll +1
 
   getThread: ->
+    return $ '.board' if $.hasClass doc, 'catalog-mode'
     for threadRoot in $$ '.thread'
       thread = Get.threadFromRoot threadRoot
       continue if thread.isHidden and !thread.stub

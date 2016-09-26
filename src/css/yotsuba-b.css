@@ -31,10 +31,10 @@
 }
 
 /* Catalog */
-:root.yotsuba-b .catalog-thread:hover > * {
+:root.yotsuba-b .catalog-thread:hover .post {
   background-color: #D6DAF0;
 }
-:root.yotsuba-b.werkTyme .catalog-thread:not(:hover), :root.yotsuba-b .catalog-thread:hover > * {
+:root.yotsuba-b.werkTyme .catalog-thread:not(:hover), :root.yotsuba-b .catalog-thread:hover .post {
   border-color: #B7C5D9;
 }
 

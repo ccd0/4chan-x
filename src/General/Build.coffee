@@ -165,6 +165,7 @@ Build =
   thread: (thread, data) ->
     if (root = thread.nodes.root)
       $.rmAll root
+      delete thread.nodes.placeholder
     else
       thread.nodes.root = root = $.el 'div',
         className: 'thread'
@@ -203,12 +204,11 @@ Build =
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
 
+    container = $.el 'div', <%= readHTML('CatalogThread.html') %>
+    $.before thread.OP.nodes.info, [container.childNodes...]
+
     root = $.el 'div',
-      className: 'catalog-thread post' # post added to make 4chan postInfo CSS work
-
-    $.extend root, <%= readHTML('CatalogThread.html') %>
-
-    root.dataset.fullID = thread.fullID
+      className: 'thread catalog-thread'
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
     $.addClass root, 'noFile' unless thread.OP.file
 

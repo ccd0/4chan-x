@@ -31,10 +31,10 @@
 }
 
 /* Catalog */
-:root.photon .catalog-thread:hover > * {
+:root.photon .catalog-thread:hover .post {
   background-color: #DDD;
 }
-:root.photon.werkTyme .catalog-thread:not(:hover), :root.photon .catalog-thread:hover > * {
+:root.photon.werkTyme .catalog-thread:not(:hover), :root.photon .catalog-thread:hover .post {
   border-color: #CCC;
 }
 :root.photon .catalog-code {

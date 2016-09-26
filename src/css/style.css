@@ -718,38 +718,30 @@ div[data-checked="false"] > .suboption-list {
   word-wrap: break-word;
   vertical-align: top;
   position: relative;
-  overflow: hidden;
 }
 div.catalog-thread {
   margin: 4px;
 }
-.catalog-thread > * {
-  margin: 0 -1px;
-  border-left: 1px solid transparent;
-  border-right: 1px solid transparent;
+.catalog-thread > .postContainer {
+  overflow: hidden;
 }
-.catalog-thread > :first-child {
-  margin-top: -21px;
-  border-top: 1px solid transparent;
+.catalog-small .catalog-thread,
+.catalog-small .catalog-thread > .postContainer {
+  width: 165px;
+  height: 320px;
 }
-.catalog-thread.noFile > :first-child {
-  padding-top: 20px;
+.catalog-large .catalog-thread,
+.catalog-large .catalog-thread > .postContainer {
+  width: 270px;
+  height: 410px;
 }
-.catalog-thread > :last-child {
-  margin-bottom: -1px;
-  border-bottom: 1px solid transparent;
+.catalog-thread .post {
+  margin: -1px;
+  border: 1px solid transparent;
 }
 .catalog-link {
   display: block;
   position: relative;
-}
-.catalog-small .catalog-thread {
-  width: 165px;
-  height: 320px;
-}
-.catalog-large .catalog-thread {
-  width: 270px;
-  height: 410px;
 }
 .catalog-thumb {
   border-radius: 2px;
@@ -791,12 +783,18 @@ div.catalog-thread {
 .catalog-stats > [title] {
   cursor: help;
 }
-#delform .catalog-thread:not(:hover) > .file,
-#delform .catalog-thread:not(:hover) > .postInfo,
-#delform .catalog-thread > .file > :not(.fileText),
-#delform .catalog-thread > .file > .fileText > :not(:first-child),
-#delform .catalog-thread > .postInfo > :not(.nameBlock):not(.dateTime),
-#delform .catalog-thread .posteruid {
+.catalog-thread blockquote {
+  margin: 0;
+}
+#delform .catalog-thread:not(:hover) .file,
+#delform .catalog-thread:not(:hover) .postInfo,
+#delform .catalog-thread > .postContainer > :not(.post),
+#delform .catalog-thread .file > :not(.fileText),
+#delform .catalog-thread .file > .fileText > :not(:first-child),
+#delform .catalog-thread .postInfo > :not(.nameBlock):not(.dateTime),
+#delform .catalog-thread .posteruid,
+.thread:not(.catalog-thread) .catalog-link,
+.thread:not(.catalog-thread) .catalog-stats {
   display: none;
 }
 .catalog-thread .fileText {
@@ -805,7 +803,7 @@ div.catalog-thread {
   line-height: 1;
   padding: 2px;
 }
-#delform .catalog-thread > .postInfo {
+#delform .catalog-thread .postInfo {
   width: auto;
 }
 .catalog-thread .subject {
@@ -816,12 +814,16 @@ div.catalog-thread {
   font-style: italic;
 }
 .catalog-thread:hover {
-  overflow: visible;
   z-index: 1;
 }
-.catalog-thread:hover > * {
-  margin-left: -61px;
-  margin-right: -61px;
+.catalog-thread:hover > .postContainer {
+  overflow: visible;
+}
+.catalog-thread:hover .post {
+  margin: -21px -61px -1px;
+}
+.catalog-thread.noFile:hover .post {
+  margin-top: -1px;
 }
 .catalog-thread .prettyprinted {
   max-width: 100%;

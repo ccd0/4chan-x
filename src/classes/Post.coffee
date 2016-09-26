@@ -36,9 +36,8 @@ class Post
     @parseQuotes()
     @parseFile()
 
-    @isDead      = false
-    @isHidden    = false
-    @isCatalogOP = false
+    @isDead   = false
+    @isHidden = false
 
     @clones = []
     <% if (readJSON('/.tests_enabled')) { %>
@@ -259,11 +258,3 @@ class Post
     for clone in @clones[index..]
       clone.nodes.root.dataset.clone = index++
     return
-
-  setCatalogOP: (isCatalogOP) ->
-    return if @isCatalogOP is isCatalogOP
-    @isCatalogOP = isCatalogOP
-    node = if isCatalogOP then @thread.catalogView.nodes.root else @nodes.post
-    {fileRoot, info, comment} = @nodes
-    $.prepend node, fileRoot if fileRoot
-    $.add node, [info, comment]

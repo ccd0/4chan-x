@@ -713,7 +713,9 @@ Index =
     Index.buildReplies threads if Conf['Show Replies']
     nodes = []
     for thread in threads
-      thread.OP.setCatalogOP false
+      if thread.nodes.placeholder
+        $.replace thread.nodes.placeholder, thread.OP.nodes.root
+        delete thread.nodes.placeholder
       if (file = thread.OP.file) and (thumb = thread.OP.file.thumb) and thumb.dataset.src
         thumb.src = thumb.dataset.src
         # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
@@ -729,7 +731,10 @@ Index =
     Index.sizeCatalogViews threads
     nodes = []
     for thread in threads
-      thread.OP.setCatalogOP true
+      unless thread.nodes.placeholder
+        thread.nodes.placeholder = $.el 'div'
+        $.replace thread.OP.nodes.root, thread.nodes.placeholder
+        $.add thread.catalogView.nodes.root, thread.OP.nodes.root
       nodes.push thread.catalogView.nodes.root
     $.add Index.root, nodes
     if doc.contains Index.root
