@@ -849,6 +849,10 @@ div.catalog-thread {
   display: inline-block;
   font-style: italic;
 }
+.catalog-thread .postInfo > :not(.subject),
+.catalog-thread > .postContainer:hover .postMessage:not(:empty) {
+  margin-top: .3em;
+}
 .catalog-thread .prettyprinted {
   max-width: 100%;
   box-sizing: border-box;
