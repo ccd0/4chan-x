@@ -74,9 +74,9 @@ body.hasDropDownNav{
 }
 
 /* 4chan style fixes */
-.opContainer, .op {
-  display: block !important;
-  overflow: visible !important;
+div.opContainer, div.op {
+  display: block;
+  overflow: visible;
 }
 .reply > .file > .fileText {
   margin: 0 20px;
