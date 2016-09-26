@@ -804,13 +804,8 @@ div.catalog-thread {
 .catalog-thread .file {
   position: absolute;
   left: -60px;
+  right: -60px;
   top: -20px;
-}
-.catalog-small .catalog-thread .file {
-  width: 285px;
-}
-.catalog-large .catalog-thread .file {
-  width: 390px;
 }
 .catalog-thread .fileText {
   padding: 2px;
