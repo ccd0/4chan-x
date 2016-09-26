@@ -751,15 +751,16 @@ div.catalog-thread {
   margin: -21px -1px -1px;
   border: 1px solid transparent;
   padding-top: 20px;
-  padding-bottom: 2px;
 }
 .catalog-thread.noFile .post {
   margin-top: -7px;
   padding-top: 6px;
 }
-.catalog-thread > .postContainer:hover .post {
+.catalog-thread > .postContainer:hover > .post {
   margin-left: -61px;
   margin-right: -61px;
+}
+.catalog-thread > .postContainer:hover > .post > * {
   padding-left: 2px;
   padding-right: 2px;
 }
@@ -770,6 +771,7 @@ div.catalog-thread {
 .catalog-thumb {
   border-radius: 2px;
   box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+  vertical-align: top;
 }
 .catalog-thumb.spoiler-file {
   width: 100px;
@@ -807,8 +809,9 @@ div.catalog-thread {
 .catalog-stats > [title] {
   cursor: help;
 }
-.catalog-thread blockquote {
+.catalog-thread .postMessage {
   margin: 0;
+  padding-bottom: 2px;
 }
 #delform .catalog-thread > .postContainer:not(:hover) .file,
 #delform .catalog-thread > .postContainer:not(:hover) .postInfo > :not(.subject),
@@ -828,6 +831,7 @@ div.catalog-thread {
   top: 0;
 }
 .catalog-thread .fileText {
+  min-height: 16px;
   padding: 2px;
 }
 .catalog-thread .file:not(:hover) .fileText {
@@ -854,7 +858,7 @@ div.catalog-thread {
 }
 .catalog-thread .postInfo > :not(.subject),
 .catalog-thread > .postContainer:hover .postMessage:not(:empty) {
-  margin-top: .3em;
+  padding-top: .3em;
 }
 .catalog-thread .prettyprinted {
   max-width: 100%;
@@ -1212,7 +1216,6 @@ input[name="Default Volume"] {
 :root.werkTyme .catalog-link {
   box-shadow: 0 0 5px rgba(0, 0, 0, .25);
   padding: 8px;
-  margin: 0 -2px;
   text-align: center;
 }
 :root.werkTyme .catalog-thumb {
