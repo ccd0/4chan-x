@@ -813,10 +813,10 @@ div.catalog-thread {
   width: 390px;
 }
 .catalog-thread .fileText {
-  font-size: 10px;
   padding: 2px;
 }
 .catalog-thread .file:not(:hover) .fileText {
+  font-size: 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
