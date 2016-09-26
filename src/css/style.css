@@ -751,6 +751,7 @@ div.catalog-thread {
   margin: -21px -1px -1px;
   border: 1px solid transparent;
   padding-top: 20px;
+  padding-bottom: 2px;
 }
 .catalog-thread.noFile .post {
   margin-top: -5px;
@@ -759,6 +760,8 @@ div.catalog-thread {
 .catalog-thread > .postContainer:hover .post {
   margin-left: -61px;
   margin-right: -61px;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 .catalog-link {
   display: block;
