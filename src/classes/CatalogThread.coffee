@@ -6,10 +6,11 @@ class CatalogThread
     @board = @thread.board
     {post} = @thread.OP.nodes
     @nodes =
-      root: root
+      root:      root
       thumb:     $ '.catalog-thumb', post
       icons:     $ '.catalog-icons', post
       postCount: $ '.post-count',    post
       fileCount: $ '.file-count',    post
       pageCount: $ '.page-count',    post
+      replies:   null
     @thread.catalogView = @

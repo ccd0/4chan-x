@@ -34,7 +34,9 @@
 :root.yotsuba .catalog-thread > .postContainer:hover > .post {
   background-color: #F0E0D6;
 }
-:root.yotsuba.werkTyme .catalog-thread:not(:hover), :root.yotsuba .catalog-thread > .postContainer:hover > .post {
+:root.yotsuba.werkTyme .catalog-thread:not(:hover),
+:root.yotsuba .catalog-thread > .postContainer:hover > .post,
+:root.yotsuba .catalog-thread > .postContainer:hover .catalog-reply {
   border-color: #D9BFB7;
 }
 

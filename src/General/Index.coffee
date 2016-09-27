@@ -37,20 +37,22 @@ Index =
 
     # Header "Index Navigation" submenu
     repliesEntry = el: UI.checkbox 'Show Replies',          'Show replies'
+    hoverEntry   = el: UI.checkbox 'Catalog Reply Hover',   'Catalog reply hover'
     sortEntry    = el: UI.checkbox 'Per-Board Sort Type',   'Per-board sort type', (typeof Conf['Index Sort'] is 'object')
     pinEntry     = el: UI.checkbox 'Pin Watched Threads',   'Pin watched threads'
     anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', 'Anchor hidden threads'
     refNavEntry  = el: UI.checkbox 'Refreshed Navigation',  'Refreshed navigation'
+    hoverEntry.el.title  = 'Show full replies in catalog on mouseover of excerpts.'
     sortEntry.el.title   = 'Set the sorting order of each board independently.'
     pinEntry.el.title    = 'Move watched threads to the start of the index.'
     anchorEntry.el.title = 'Move hidden threads to the end of the index.'
     refNavEntry.el.title = 'Refresh index when navigating through pages.'
-    for label in [repliesEntry, pinEntry, anchorEntry, refNavEntry]
+    for label in [repliesEntry, hoverEntry, pinEntry, anchorEntry, refNavEntry]
       input = label.el.firstChild
       {name} = input
       $.on input, 'change', $.cb.checked
       switch name
-        when 'Show Replies'
+        when 'Show Replies', 'Catalog Reply Hover'
           $.on input, 'change', @cb.replies
         when 'Pin Watched Threads', 'Anchor Hidden Threads'
           $.on input, 'change', @cb.resort
@@ -60,7 +62,7 @@ Index =
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 100
-      subEntries: [repliesEntry, sortEntry, pinEntry, anchorEntry, refNavEntry]
+      subEntries: [repliesEntry, hoverEntry, sortEntry, pinEntry, anchorEntry, refNavEntry]
 
     # Navigation links at top of index
     @navLinks = $.el 'div', className: 'navLinks json-index'
@@ -582,6 +584,9 @@ Index =
           thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
           thread.setStatus 'Sticky', !!threadData.sticky
           thread.setStatus 'Closed', !!threadData.closed
+          if thread.catalogView
+            $.rm thread.catalogView.nodes.replies
+            thread.catalogView.nodes.replies = null
         else
           thread = new Thread threadData.no, g.BOARD
           threads.push thread
@@ -608,7 +613,7 @@ Index =
   buildReplies: (threads) ->
     posts = []
     for thread in threads
-      continue unless lastReplies = Index.liveThreadDict[thread.ID].last_replies
+      continue unless (lastReplies = Index.liveThreadDict[thread.ID].last_replies)
       nodes = []
       for data in lastReplies
         if (post = thread.posts[data.no]) and not post.isFetchedQuote
@@ -646,6 +651,40 @@ Index =
       ratio = size / Math.max width, height
       thumb.style.width  = width  * ratio + 'px'
       thumb.style.height = height * ratio + 'px'
+    return
+
+  buildCatalogReplies: (threads) ->
+    for thread in threads
+      {nodes} = thread.catalogView
+      continue unless (lastReplies = Index.liveThreadDict[thread.ID].last_replies)
+
+      if nodes.replies
+        # RelativeDates will stop updating elements if they go out of document.
+        RelativeDates.update timeEl for timeEl in $$ 'time', nodes.replies
+        continue
+
+      replies = []
+      for data in lastReplies
+        excerpt = ''
+        if data.com
+          excerpt = Build.parseCommentDisplay(data.com).replace(/>>\d+/g, '').trim().replace(/\n+/g, ' // ')
+        if data.ext
+          excerpt or= "#{data.filename}#{data.ext}"
+        if data.com
+          excerpt or= Build.unescape data.com.replace(/<br\b[^<]*>/gi, ' // ')
+        excerpt or= '\xA0'
+        excerpt = "#{excerpt[...70]}..." if excerpt.length > 73
+
+        link = Build.postURL thread.board.ID, thread.ID, data.no
+        reply = $.el 'div', {className: 'catalog-reply'},
+          <%= html('<span><time data-utc="${data.time * 1000}" data-abbrev="1">...</time>: </span><a href="${link}">${excerpt}</a>') %>
+        RelativeDates.update $('time', reply)
+        $.on $('a', reply), 'mouseover', QuotePreview.mouseover if Conf['Catalog Reply Hover']
+        replies.push reply
+
+      nodes.replies = $.el 'div', className: 'catalog-replies'
+      $.add nodes.replies, replies
+      $.add thread.OP.nodes.post, nodes.replies
     return
 
   sort: ->
@@ -729,6 +768,7 @@ Index =
   buildCatalog: (threads) ->
     Index.buildCatalogViews threads
     Index.sizeCatalogViews threads
+    Index.buildCatalogReplies threads if Conf['Show Replies']
     nodes = []
     for thread in threads
       unless thread.nodes.placeholder

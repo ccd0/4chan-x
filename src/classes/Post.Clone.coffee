@@ -31,6 +31,7 @@ Post.Clone = class extends Post
     # Remove catalog stuff.
     $.rm $('.catalog-link', @nodes.post)
     $.rm $('.catalog-stats', @nodes.post)
+    $.rm $('.catalog-replies', @nodes.post)
 
     @parseQuotes()
     @quotes = [@origin.quotes...]

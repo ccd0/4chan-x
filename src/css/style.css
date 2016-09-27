@@ -760,7 +760,7 @@ div.catalog-thread {
   margin-left: -61px;
   margin-right: -61px;
 }
-.catalog-thread > .postContainer:hover > .post > * {
+.catalog-thread > .postContainer:hover > .post > :not(.catalog-replies) {
   padding-left: 2px;
   padding-right: 2px;
 }
@@ -811,7 +811,7 @@ div.catalog-thread {
 }
 .catalog-thread .postMessage {
   margin: 0;
-  padding-bottom: 2px;
+  padding-bottom: .3em;
 }
 #delform .catalog-thread > .postContainer:not(:hover) .file,
 #delform .catalog-thread > .postContainer:not(:hover) .postInfo > :not(.subject),
@@ -821,7 +821,9 @@ div.catalog-thread {
 #delform .catalog-thread .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),
 #delform .catalog-thread .posteruid,
 .thread:not(.catalog-thread) .catalog-link,
-.thread:not(.catalog-thread) .catalog-stats {
+.thread:not(.catalog-thread) .catalog-stats,
+.thread:not(.catalog-thread) .catalog-replies,
+.catalog-thread > .postContainer:not(:hover) .catalog-replies {
   display: none;
 }
 .catalog-thread .file {
@@ -859,6 +861,24 @@ div.catalog-thread {
 .catalog-thread .postInfo > :not(.subject),
 .catalog-thread > .postContainer:hover .postMessage:not(:empty) {
   padding-top: .3em;
+}
+.catalog-reply {
+  text-align: left;
+  margin: -1px;
+  border: 1px solid transparent;
+}
+.catalog-reply > span {
+  font-style: italic;
+  font-weight: bold;
+  float: left;
+  padding: 3px;
+}
+.catalog-reply > a {
+  display: block;
+  padding: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .catalog-thread .prettyprinted {
   max-width: 100%;

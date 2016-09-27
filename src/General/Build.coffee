@@ -87,6 +87,14 @@ Build =
       .replace(/<[^>]*>/g, '')
     Build.unescape html
 
+  parseCommentDisplay: (html) ->
+    # Hide spoilers.
+    unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
+      while (html2 = html.replace /<s>(?:(?!<\/?s>).)*<\/s>/g, '[spoiler]') isnt html
+        html = html2
+    # Remove preceding and following new lines, trailing spaces.
+    Build.parseComment(html).trim().replace(/\s+$/gm, '')
+
   postFromObject: (data, boardID, suppressThumb) ->
     o = Build.parseJSON data, boardID
     Build.post o, suppressThumb

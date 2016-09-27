@@ -732,6 +732,7 @@ Config =
     'Previous Index Mode': 'paged'
     'Index Size': 'small'
     'Show Replies': true
+    'Catalog Reply Hover': true
     'Pin Watched Threads': false
     'Anchor Hidden Threads': true
     'Refreshed Navigation': false

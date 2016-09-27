@@ -1,5 +1,6 @@
 RelativeDates =
   INTERVAL: $.MINUTE / 2
+
   init: ->
     if (
       g.VIEW in ['index', 'thread'] and Conf['Relative Post Dates'] and !Conf['Relative Date Title'] or
@@ -28,7 +29,7 @@ RelativeDates =
     RelativeDates.update @
 
   # diff is milliseconds from now.
-  relative: (diff, now, date) ->
+  relative: (diff, now, date, abbrev) ->
     unit = if (number = (diff / $.DAY)) >= 1
       years  = now.getYear()  - date.getYear()
       months = now.getMonth() - date.getMonth()
@@ -57,9 +58,13 @@ RelativeDates =
       'second'
 
     rounded = Math.round number
-    unit += 's' if rounded isnt 1 # pluralize
 
-    "#{rounded} #{unit} ago"
+    if abbrev
+      unit = if unit is 'month' then 'mo' else unit[0]
+    else
+      unit += 's' if rounded isnt 1 # pluralize
+
+    if abbrev then "#{rounded}#{unit}" else "#{rounded} #{unit} ago"
 
   # Changing all relative dates as soon as possible incurs many annoying
   # redraws and scroll stuttering. Thus, sacrifice accuracy for UX/CPU economy,
@@ -92,19 +97,22 @@ RelativeDates =
   # and re-calls `setOwnTimeout()` to re-add `data` to the stale list later.
   update: (data, now) ->
     isPost = data instanceof Post
-    date = if isPost
-      data.info.date
+    if isPost
+      date = data.info.date
+      abbrev = false
     else
-      new Date +data.dataset.utc
+      date = new Date +data.dataset.utc
+      abbrev = !!data.dataset.abbrev
     now or= new Date()
     diff = now - date
-    relative = RelativeDates.relative diff, now, date
+    relative = RelativeDates.relative diff, now, date, abbrev
     if isPost
       for singlePost in [data].concat data.clones
         singlePost.nodes.date.firstChild.textContent = relative
     else
       data.firstChild.textContent = relative
     RelativeDates.setOwnTimeout diff, data
+
   setOwnTimeout: (diff, data) ->
     delay = if diff < $.MINUTE
       $.SECOND - (diff + $.SECOND / 2) % $.SECOND
@@ -115,7 +123,9 @@ RelativeDates =
     else
       $.DAY - (diff + $.DAY / 2) % $.DAY
     setTimeout RelativeDates.markStale, delay, data
+
   markStale: (data) ->
     return if data in RelativeDates.stale # We can call RelativeDates.update() multiple times.
     return if data instanceof Post and !g.posts[data.fullID] # collected post.
+    return if data instanceof Element and !doc.contains(data) # removed catalog reply.
     RelativeDates.stale.push data
