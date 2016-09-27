@@ -28,7 +28,7 @@ ThreadWatcher =
 
     switch g.VIEW
       when 'index'
-        $.on d, 'IndexRefresh', @cb.onIndexRefresh
+        $.on d, 'IndexRefreshInternal', @cb.onIndexRefresh
       when 'thread'
         $.on d, 'ThreadUpdate', @cb.onThreadRefresh
 
