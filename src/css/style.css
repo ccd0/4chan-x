@@ -871,21 +871,29 @@ div.catalog-post > div.postInfo {
 }
 .catalog-reply {
   text-align: left;
+  white-space: nowrap;
   margin: -1px;
   border: 1px solid transparent;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  -webkit-align-items: stretch;
+  align-items: stretch;
+}
+.catalog-reply > * {
+  padding: 3px;
+  overflow: hidden;
+  -webkit-flex: none;
+  flex: none;
 }
 .catalog-reply > span {
   font-style: italic;
   font-weight: bold;
-  float: left;
-  padding: 3px;
 }
-.catalog-reply > a {
-  display: block;
-  padding: 3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.catalog-reply-excerpt {
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 .catalog-post .prettyprinted {
   max-width: 100%;

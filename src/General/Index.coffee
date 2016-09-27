@@ -685,9 +685,9 @@ Index =
 
         link = Build.postURL thread.board.ID, thread.ID, data.no
         reply = $.el 'div', {className: 'catalog-reply'},
-          <%= html('<span><time data-utc="${data.time * 1000}" data-abbrev="1">...</time>: </span><a href="${link}">${excerpt}</a>') %>
+          <%= readHTML('CatalogReply.html') %>
         RelativeDates.update $('time', reply)
-        $.on $('a', reply), 'mouseover', QuotePreview.mouseover if Conf['Catalog Reply Hover']
+        $.on $('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover if Conf['Catalog Reply Hover']
         replies.push reply
 
       nodes.replies = $.el 'div', className: 'catalog-replies'
