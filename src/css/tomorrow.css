@@ -80,14 +80,17 @@
 :root.tomorrow .filter-highlight > div.sideArrows {
   color: rgb(155, 185, 210);
 }
-:root.tomorrow .filter-highlight .catalog-thumb,
-:root.tomorrow .filter-highlight .werkTyme-filename {
+:root.tomorrow .catalog-thread.filter-highlight .catalog-thumb,
+:root.tomorrow.werkTyme .catalog-thread.filter-highlight:not(:hover),
+:root.tomorrow.werkTyme .catalog-thread.filter-highlight > .catalog-postContainer:hover > .catalog-post {
   box-shadow: 0 0 3px 3px rgba(64, 192, 255, .7);
 }
 :root.tomorrow .catalog-thread.watched .catalog-thumb,
-:root.tomorrow .catalog-thread.watched .werkTyme-filename {
-  border: 2px solid rgb(64, 192, 255);
+:root.tomorrow.werkTyme .catalog-thread.watched:not(:hover),
+:root.tomorrow.werkTyme .catalog-thread.watched > .catalog-postContainer:hover > .catalog-post {
+  outline: 2px solid rgb(64, 192, 255);
 }
+
 
 /* QR */
 .tomorrow #dump-list::-webkit-scrollbar-thumb {

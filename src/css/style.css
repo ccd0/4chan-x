@@ -1303,13 +1303,15 @@ input[name="Default Volume"] {
   display: block;
   clear: both;
 }
-.filter-highlight .catalog-thumb,
-.filter-highlight .werkTyme-filename {
+.catalog-thread.filter-highlight .catalog-thumb,
+:root.werkTyme .catalog-thread.filter-highlight:not(:hover),
+:root.werkTyme .catalog-thread.filter-highlight > .catalog-postContainer:hover > .catalog-post {
   box-shadow: 0 0 3px 3px rgba(255, 0, 0, .5);
 }
 .catalog-thread.watched .catalog-thumb,
-.catalog-thread.watched .werkTyme-filename {
-  border: 2px solid rgba(255, 0, 0, .75);
+:root.werkTyme .catalog-thread.watched:not(:hover),
+:root.werkTyme .catalog-thread.watched > .catalog-postContainer:hover > .catalog-post {
+  outline: 2px solid rgba(255, 0, 0, .75);
 }
 
 /* Spoiler text */
