@@ -31,12 +31,13 @@
 }
 
 /* Catalog */
-:root.futaba .catalog-postContainer:hover > .post {
+:root.futaba.catalog-hover-expand .catalog-postContainer:hover > .post {
   background-color: #F0E0D6;
 }
 :root.futaba.werkTyme .catalog-thread:not(:hover),
-:root.futaba .catalog-postContainer:hover > .post,
-:root.futaba .catalog-postContainer:hover .catalog-reply {
+:root.futaba.werkTyme:not(.catalog-hover-expand) .catalog-thread,
+:root.futaba.catalog-hover-expand .catalog-postContainer:hover > .post,
+:root.futaba.catalog-hover-expand .catalog-postContainer:hover .catalog-reply {
   border-color: #D9BFB7;
 }
 
