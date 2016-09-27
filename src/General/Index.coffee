@@ -755,6 +755,8 @@ Index =
       if thread.nodes.placeholder
         $.replace thread.nodes.placeholder, thread.OP.nodes.root
         thread.nodes.placeholder = null
+        $.rmClass thread.OP.nodes.root, 'catalog-postContainer'
+        $.rmClass thread.OP.nodes.post, 'catalog-post'
       if (file = thread.OP.file) and (thumb = thread.OP.file.thumb) and thumb.dataset.src
         thumb.src = thumb.dataset.src
         # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
@@ -775,6 +777,8 @@ Index =
         thread.nodes.placeholder = $.el 'div'
         $.replace thread.OP.nodes.root, thread.nodes.placeholder
         $.add thread.catalogView.nodes.root, thread.OP.nodes.root
+        $.addClass thread.OP.nodes.root, 'catalog-postContainer'
+        $.addClass thread.OP.nodes.post, 'catalog-post'
       nodes.push thread.catalogView.nodes.root
     $.add Index.root, nodes
     if doc.contains Index.root

@@ -31,12 +31,12 @@
 }
 
 /* Catalog */
-:root.photon .catalog-thread > .postContainer:hover > .post {
+:root.photon .catalog-postContainer:hover > .post {
   background-color: #DDD;
 }
 :root.photon.werkTyme .catalog-thread:not(:hover),
-:root.photon .catalog-thread > .postContainer:hover > .post,
-:root.photon .catalog-thread > .postContainer:hover .catalog-reply {
+:root.photon .catalog-postContainer:hover > .post,
+:root.photon .catalog-postContainer:hover .catalog-reply {
   border-color: #CCC;
 }
 :root.photon .catalog-code {

@@ -30,12 +30,12 @@
 }
 
 /* Catalog */
-:root.tomorrow .catalog-thread > .postContainer:hover > .post {
+:root.tomorrow .catalog-postContainer:hover > .post {
   background-color: #282A2E;
 }
 :root.tomorrow.werkTyme .catalog-thread:not(:hover),
-:root.tomorrow .catalog-thread > .postContainer:hover > .post,
-:root.tomorrow .catalog-thread > .postContainer:hover .catalog-reply {
+:root.tomorrow .catalog-postContainer:hover > .post,
+:root.tomorrow .catalog-postContainer:hover .catalog-reply {
   border-color: #111;
 }
 :root.tomorrow .catalog-code {

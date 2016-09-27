@@ -31,12 +31,12 @@
 }
 
 /* Catalog */
-:root.yotsuba-b .catalog-thread > .postContainer:hover > .post {
+:root.yotsuba-b .catalog-postContainer:hover > .post {
   background-color: #D6DAF0;
 }
 :root.yotsuba-b.werkTyme .catalog-thread:not(:hover),
-:root.yotsuba-b .catalog-thread > .postContainer:hover > .post,
-:root.yotsuba-b .catalog-thread > .postContainer:hover .catalog-reply {
+:root.yotsuba-b .catalog-postContainer:hover > .post,
+:root.yotsuba-b .catalog-postContainer:hover .catalog-reply {
   border-color: #B7C5D9;
 }
 

@@ -722,45 +722,47 @@ div[data-checked="false"] > .suboption-list {
 div.catalog-thread {
   margin: 4px;
 }
-.catalog-small .catalog-thread {
+.catalog-small > .catalog-thread {
   width: 165px;
   height: 320px;
 }
-.catalog-large .catalog-thread {
+.catalog-large > .catalog-thread {
   width: 270px;
   height: 410px;
 }
-.catalog-thread > .postContainer {
+.catalog-postContainer {
   position: absolute;
   top: -4px;
   left: 0;
   right: 0;
   bottom: 0;
 }
-.catalog-thread > .postContainer:not(:hover) {
+.catalog-postContainer:not(:hover) {
   overflow: hidden;
 }
-.catalog-thread > .postContainer:hover {
+.catalog-postContainer:hover {
   z-index: 1;
 }
-.catalog-thread .post {
+.catalog-post {
   position: absolute;
   top: 4px;
   left: 0;
   right: 0;
-  margin: -21px -1px -1px;
   border: 1px solid transparent;
   padding-top: 20px;
 }
-.catalog-thread.noFile .post {
+div.catalog-post {
+  margin: -21px -1px -1px;
+}
+.catalog-thread.noFile > * > .catalog-post {
   margin-top: -7px;
   padding-top: 6px;
 }
-.catalog-thread > .postContainer:hover > .post {
+.catalog-postContainer:hover > .catalog-post {
   margin-left: -61px;
   margin-right: -61px;
 }
-.catalog-thread > .postContainer:hover > .post > :not(.catalog-replies) {
+.catalog-postContainer:hover > * > :not(.catalog-replies) {
   padding-left: 2px;
   padding-right: 2px;
 }
@@ -809,57 +811,58 @@ div.catalog-thread {
 .catalog-stats > [title] {
   cursor: help;
 }
-.catalog-thread .postMessage {
+.catalog-post > .postMessage {
   margin: 0;
   padding-bottom: .3em;
 }
-#delform .catalog-thread > .postContainer:not(:hover) .file,
-#delform .catalog-thread > .postContainer:not(:hover) .postInfo > :not(.subject),
-#delform .catalog-thread > .postContainer > :not(.post),
-#delform .catalog-thread .file > :not(.fileText),
-#delform .catalog-thread .file > .fileText > :not(:first-child),
-#delform .catalog-thread .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),
-#delform .catalog-thread .posteruid,
-.thread:not(.catalog-thread) .catalog-link,
-.thread:not(.catalog-thread) .catalog-stats,
-.thread:not(.catalog-thread) .catalog-replies,
-.catalog-thread > .postContainer:not(:hover) .catalog-replies {
+.catalog-postContainer:not(:hover) > * > .file,
+.catalog-postContainer:not(:hover) > * > .postInfo > :not(.subject),
+.catalog-postContainer:not(:hover) > * > .catalog-replies,
+.catalog-thread > .catalog-postContainer > :not(.catalog-post),
+.catalog-post > .file > :not(.fileText),
+.catalog-post > * > .fileText > :not(:first-child),
+.catalog-post > .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),
+.catalog-post > * > * > .posteruid,
+.post:not(.catalog-post) > .catalog-link,
+.post:not(.catalog-post) > .catalog-stats,
+.post:not(.catalog-post) > .catalog-replies {
   display: none;
 }
-.catalog-thread .file {
+.catalog-post > .file {
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
 }
-.catalog-thread .fileText {
+.catalog-post > * > .fileText {
   min-height: 16px;
   padding: 2px;
 }
-.catalog-small .fileText {
+.catalog-small .catalog-post > * .fileText {
   font-size: 10px;
 }
-.catalog-thread .file:not(:hover) .fileText {
+.catalog-post > .file:not(:hover) > .fileText {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.catalog-thread .file:hover {
+.catalog-post > .file:hover {
   z-index: 2;
   background-color: inherit;
 }
-#delform .catalog-thread .postInfo {
+div.catalog-post > div.postInfo {
   width: auto;
 }
-.catalog-thread .subject {
+.catalog-post > * > .subject {
   display: block;
 }
-.catalog-thread .dateTime {
+.catalog-post > * > .dateTime {
   display: inline-block;
   font-style: italic;
 }
-.catalog-thread .postInfo > :not(.subject),
-.catalog-thread > .postContainer:hover .postMessage:not(:empty) {
+.catalog-post > * > .nameBlock,
+.catalog-post > * > .dateTime,
+.catalog-postContainer:hover > * > .postMessage:not(:empty) {
   padding-top: .3em;
 }
 .catalog-reply {
@@ -880,26 +883,28 @@ div.catalog-thread {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.catalog-thread .prettyprinted {
+.catalog-post .prettyprinted {
   max-width: 100%;
   box-sizing: border-box;
 }
-.catalog-thread .MathJax_Display {
+.catalog-post .MathJax_Display {
   text-align: center !important;
 }
-.catalog-thread table.exif {
+.catalog-post > * > .exif {
   border-collapse: collapse;
 }
-.catalog-thread table.exif[style*="display: block;"] {
+.catalog-post > * > .exif[style*="display: block;"] {
   display: inline-block !important;
 }
-.catalog-thread table.exif, .catalog-thread table.exif > tbody {
+.catalog-post > * > .exif,
+.catalog-post > * > .exif > tbody {
   background-color: inherit;
 }
-.catalog-thread table.exif, .catalog-thread table.exif td {
+.catalog-post > * > .exif,
+.catalog-post > * > .exif td {
   min-width: 0;
 }
-.catalog-thread table.exif td {
+.catalog-post > * > .exif td {
   padding-top: 1px;
 }
 :root.hats-enabled .catalog-thread::after {
@@ -908,13 +913,13 @@ div.catalog-thread {
   position: absolute;
   background-size: contain;
 }
-:root.hats-enabled .catalog-small .catalog-thread::after {
+:root.hats-enabled .catalog-small > .catalog-thread::after {
   left: -10px;
   top: -65px;
   width: 100px;
   height: 100px;
 }
-:root.hats-enabled .catalog-large .catalog-thread::after {
+:root.hats-enabled .catalog-large > .catalog-thread::after {
   left: -15px;
   top: -105px;
   width: 160px;
@@ -1083,7 +1088,7 @@ span.hide-announcement {
 :root.resurrect-quotes .deadlink {
   text-decoration: none !important;
 }
-.catalog-thread .qmark-ct {
+.catalog-post .qmark-ct {
   display: none;
 }
 .backlink.deadlink:not(.forwardlink),
