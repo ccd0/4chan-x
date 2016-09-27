@@ -38,9 +38,6 @@
 :root.tomorrow .catalog-postContainer:hover .catalog-reply {
   border-color: #111;
 }
-:root.tomorrow .catalog-code {
-  background-color: rgba(255, 255, 255, 0.1);
-}
 
 /* Quote */
 :root.tomorrow #arc-list span.quote {

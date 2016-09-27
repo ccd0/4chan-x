@@ -39,9 +39,6 @@
 :root.photon .catalog-postContainer:hover .catalog-reply {
   border-color: #CCC;
 }
-:root.photon .catalog-code {
-  background-color: rgba(150, 150, 150, 0.2);
-}
 
 /* Quote */
 :root.photon #arc-list tr:nth-of-type(odd) span.quote {
