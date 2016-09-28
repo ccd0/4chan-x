@@ -125,8 +125,7 @@ Index =
       board = $ '.board'
       $.replace board, Index.root
       if Index.nodes
-        $.event 'PostsInserted'
-        $.event 'IndexRefresh'
+        Index.events()
       # Hacks:
       # - When removing an element from the document during page load,
       #   its ancestors will still be correctly created inside of it.
@@ -147,6 +146,15 @@ Index =
       if (pagelist = $ '.pagelist')
         $.replace pagelist, Index.pagelist
       $.rmClass doc, 'index-loading'
+
+    $.one d, '4chanXInitFinished', -> Index.initFinishedFired = true
+
+  events: ->
+    $.event 'PostsInserted'
+    if Index.initFinishedFired
+      $.event 'IndexRefresh'
+    else
+      $.one d, '4chanXInitFinished', -> $.queueTask $.event, 'IndexRefresh'
 
   scroll: ->
     return if Index.req or !Index.liveThreadData or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight))
@@ -772,8 +780,7 @@ Index =
       nodes.push Index.nodes[thread.ID], $.el('hr')
     $.add Index.root, nodes
     if doc.contains Index.root
-      $.event 'PostsInserted'
-      $.event 'IndexRefresh'
+      Index.events()
 
   buildCatalog: (threads) ->
     Index.buildCatalogViews threads
@@ -790,8 +797,7 @@ Index =
       nodes.push thread.catalogView.nodes.root
     $.add Index.root, nodes
     if doc.contains Index.root
-      $.event 'PostsInserted'
-      $.event 'IndexRefresh'
+      Index.events()
 
   clearSearch: ->
     Index.searchInput.value = ''
