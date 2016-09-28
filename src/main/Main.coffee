@@ -261,11 +261,15 @@ Main =
       new Notice 'warning', msg
 
     # Parse HTML or skip it and start building from JSON.
-    unless Conf['JSON Index'] and g.VIEW is 'index'
-      Main.initThread() 
-    else
+    unless Index.root
+      Main.initThread()
+    else if Index.root.firstElementChild and doc.contains(Index.root)
       Main.expectInitFinished = true
       $.event '4chanXInitFinished'
+    else
+      $.one d, 'PostsInserted', ->
+        Main.expectInitFinished = true
+        $.event '4chanXInitFinished'
 
   initThread: ->
     if (board = $ '.board')
