@@ -173,7 +173,10 @@ Build =
   thread: (thread, data) ->
     if (root = thread.nodes.root)
       $.rmAll root
-      thread.nodes.placeholder = null
+      if thread.nodes.placeholder
+        thread.nodes.placeholder = null
+        $.rmClass thread.OP.nodes.root, 'catalog-postContainer'
+        $.rmClass thread.OP.nodes.post, 'catalog-post'
     else
       thread.nodes.root = root = $.el 'div',
         className: 'thread'
