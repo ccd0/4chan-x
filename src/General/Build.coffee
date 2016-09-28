@@ -220,6 +220,7 @@ Build =
 
     root = $.el 'div',
       className: 'thread catalog-thread'
+      id: "t#{thread}"
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
     $.addClass root, 'noFile' unless thread.OP.file
 
