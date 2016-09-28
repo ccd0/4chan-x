@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.12.3.3
+// @version      1.12.3.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.3.3',
+  VERSION:   '1.12.3.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -396,7 +396,7 @@ Config = (function() {
       'QR.personas': "#options:\"sage\";boards:jp;always",
       sjisPreview: false
     },
-    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'\n\n# Banner ads\n#http://s.zkcdn.net/ados.js\n#https://s.zkcdn.net/ados.js\n#http://engine.4chan-ads.org\n#https://engine.4chan-ads.org',
+    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'',
     captchaLanguage: '',
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
@@ -1288,7 +1288,9 @@ body > div[style*=\" top: -10000px;\"] {\n\
   visibility: hidden !important;\n\
 }\n\
 /* Ads */\n\
-:root:not(.ads-loaded) .ad-cnt,\n\
+:root:not(.ads-loaded) .ad-cnt > * {\n\
+  height: auto;\n\
+}\n\
 :root:not(.ads-loaded) .ad-plea,\n\
 :root:not(.ads-loaded) hr.abovePostForm,\n\
 :root:not(.ads-loaded) .ad-plea-bottom + hr {\n\
