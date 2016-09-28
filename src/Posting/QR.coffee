@@ -105,7 +105,7 @@ QR =
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
 
-    $.on d, 'IndexRefresh', QR.generatePostableThreadsList
+    $.on d, 'IndexRefreshInternal', QR.generatePostableThreadsList
     $.on d, 'ThreadUpdate', QR.statusCheck
 
     return if !Conf['Persistent QR']

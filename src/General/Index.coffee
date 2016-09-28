@@ -126,7 +126,7 @@ Index =
       $.replace board, Index.root
       if Index.nodes
         $.event 'PostsInserted'
-        $.event 'IndexBuild'
+        $.event 'IndexRefresh'
       # Hacks:
       # - When removing an element from the document during page load,
       #   its ancestors will still be correctly created inside of it.
@@ -616,7 +616,7 @@ Index =
     Main.callbackNodes 'Thread', threads
     Main.callbackNodes 'Post',   posts
     Index.updateHideLabel()
-    $.event 'IndexRefresh'
+    $.event 'IndexRefreshInternal'
 
   buildReplies: (threads) ->
     posts = []
@@ -773,7 +773,7 @@ Index =
     $.add Index.root, nodes
     if doc.contains Index.root
       $.event 'PostsInserted'
-      $.event 'IndexBuild'
+      $.event 'IndexRefresh'
 
   buildCatalog: (threads) ->
     Index.buildCatalogViews threads
@@ -791,7 +791,7 @@ Index =
     $.add Index.root, nodes
     if doc.contains Index.root
       $.event 'PostsInserted'
-      $.event 'IndexBuild'
+      $.event 'IndexRefresh'
 
   clearSearch: ->
     Index.searchInput.value = ''

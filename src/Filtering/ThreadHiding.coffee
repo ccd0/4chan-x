@@ -4,7 +4,7 @@ ThreadHiding =
     @db = new DataBoard 'hiddenThreads'
     return @catalogWatch() if g.VIEW is 'catalog'
     @catalogSet g.BOARD
-    $.on d, 'IndexRefresh', @onIndexRefresh
+    $.on d, 'IndexRefreshInternal', @onIndexRefresh
     Callbacks.Post.push
       name: 'Thread Hiding'
       cb:   @node

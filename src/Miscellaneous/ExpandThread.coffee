@@ -3,7 +3,7 @@ ExpandThread =
   init: ->
     return if g.VIEW is 'thread' or !Conf['Thread Expansion']
     if Conf['JSON Index']
-      $.on d, 'IndexRefresh', @onIndexRefresh
+      $.on d, 'IndexRefreshInternal', @onIndexRefresh
     else
       Callbacks.Thread.push
         name: 'Expand Thread'
@@ -21,7 +21,7 @@ ExpandThread =
       status.req?.abort()
       delete ExpandThread.statuses[threadID]
 
-    $.off d, 'IndexRefresh', @onIndexRefresh unless refresh
+    $.off d, 'IndexRefreshInternal', @onIndexRefresh unless refresh
 
   onIndexRefresh: ->
     ExpandThread.disconnect true
