@@ -791,12 +791,6 @@ Config =
     'self'
     'unsafe-inline'
     'unsafe-eval'
-
-    # Banner ads
-    #http://s.zkcdn.net/ados.js
-    #https://s.zkcdn.net/ados.js
-    #http://engine.4chan-ads.org
-    #https://engine.4chan-ads.org
   '''
 
   captchaLanguage: ''
