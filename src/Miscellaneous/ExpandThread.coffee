@@ -1,7 +1,7 @@
 ExpandThread =
   statuses: {}
   init: ->
-    return if g.VIEW is 'thread' or !Conf['Thread Expansion']
+    return unless g.VIEW is 'index' and Conf['Thread Expansion']
     if Conf['JSON Index']
       $.on d, 'IndexRefreshInternal', @onIndexRefresh
     else
