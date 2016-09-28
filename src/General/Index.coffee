@@ -3,7 +3,13 @@ Index =
   changed: {}
 
   init: ->
-    return if g.BOARD.ID is 'f' or !Conf['JSON Index'] or g.VIEW isnt 'index'
+    return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
+
+    # For IndexRefresh events
+    $.one d, '4chanXInitFinished', @cb.initFinished
+    $.on  d, 'PostsInserted',      @cb.postsInserted
+
+    return unless Conf['JSON Index']
 
     Callbacks.CatalogThread.push
       name: 'Catalog Features'
@@ -125,7 +131,7 @@ Index =
       board = $ '.board'
       $.replace board, Index.root
       if Index.nodes
-        Index.events()
+        $.event 'PostsInserted'
       # Hacks:
       # - When removing an element from the document during page load,
       #   its ancestors will still be correctly created inside of it.
@@ -146,15 +152,6 @@ Index =
       if (pagelist = $ '.pagelist')
         $.replace pagelist, Index.pagelist
       $.rmClass doc, 'index-loading'
-
-    $.one d, '4chanXInitFinished', -> Index.initFinishedFired = true
-
-  events: ->
-    $.event 'PostsInserted'
-    if Index.initFinishedFired
-      $.event 'IndexRefresh'
-    else
-      $.one d, '4chanXInitFinished', -> $.queueTask $.event, 'IndexRefresh'
 
   scroll: ->
     return if Index.req or !Index.liveThreadData or Conf['Index Mode'] isnt 'infinite' or (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight))
@@ -222,6 +219,19 @@ Index =
     $.event 'change', null, Index.selectSort
 
   cb:
+    initFinished: ->
+      Index.initFinishedFired = true
+      $.queueTask -> Index.cb.postsInserted()
+
+    postsInserted: ->
+      return unless Index.initFinishedFired
+      n = 0
+      g.posts.forEach (post) ->
+        if !post.isFetchedQuote and !post.indexRefreshSeen and doc.contains(post.nodes.root)
+          post.indexRefreshSeen = true
+          n++
+      $.event 'IndexRefresh' if n
+
     toggleHiddenThreads: ->
       $('#hidden-toggle a', Index.navLinks).textContent = if Index.showHiddenThreads = !Index.showHiddenThreads
         'Hide'
@@ -780,7 +790,7 @@ Index =
       nodes.push Index.nodes[thread.ID], $.el('hr')
     $.add Index.root, nodes
     if doc.contains Index.root
-      Index.events()
+      $.event 'PostsInserted'
 
   buildCatalog: (threads) ->
     Index.buildCatalogViews threads
@@ -797,7 +807,7 @@ Index =
       nodes.push thread.catalogView.nodes.root
     $.add Index.root, nodes
     if doc.contains Index.root
-      Index.events()
+      $.event 'PostsInserted'
 
   clearSearch: ->
     Index.searchInput.value = ''
