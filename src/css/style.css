@@ -839,22 +839,24 @@ div.catalog-post {
   left: 0;
   right: 0;
   top: 0;
+  min-height: 20px;
+  background-color: inherit;
 }
 .catalog-post > * > .fileText {
-  min-height: 16px;
+  position: relative;
   padding: 2px;
+  background-color: inherit;
 }
 .catalog-small .catalog-post > * .fileText {
   font-size: 10px;
 }
-.catalog-post > .file:not(:hover) > .fileText {
+.catalog-post > * > .fileText:not(:hover) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.catalog-post > .file:hover {
+.catalog-post > * > .fileText:hover {
   z-index: 2;
-  background-color: inherit;
 }
 div.catalog-post > div.postInfo {
   width: auto;
