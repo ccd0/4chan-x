@@ -175,8 +175,7 @@ Build =
       $.rmAll root
       if thread.nodes.placeholder
         thread.nodes.placeholder = null
-        $.rmClass thread.OP.nodes.root, 'catalog-postContainer'
-        $.rmClass thread.OP.nodes.post, 'catalog-post'
+        thread.OP.setCatalogOP false
     else
       thread.nodes.root = root = $.el 'div',
         className: 'thread'

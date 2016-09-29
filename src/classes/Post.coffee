@@ -258,3 +258,7 @@ class Post
     for clone in @clones[index..]
       clone.nodes.root.dataset.clone = index++
     return
+
+  setCatalogOP: (isCatalogOP) ->
+    @nodes.root.classList.toggle 'catalog-postContainer', isCatalogOP
+    @nodes.post.classList.toggle 'catalog-post',          isCatalogOP

@@ -29,11 +29,11 @@ Post.Clone = class extends Post
     $.rmClass @nodes.post, 'highlight' # keybind navigation, ID highlighting
 
     # Remove catalog stuff.
-    $.rmClass @nodes.root, 'catalog-postContainer'
-    $.rmClass @nodes.post, 'catalog-post'
-    $.rm $('.catalog-link', @nodes.post)
-    $.rm $('.catalog-stats', @nodes.post)
-    $.rm $('.catalog-replies', @nodes.post)
+    unless @isReply
+      @setCatalogOP false
+      $.rm $('.catalog-link', @nodes.post)
+      $.rm $('.catalog-stats', @nodes.post)
+      $.rm $('.catalog-replies', @nodes.post)
 
     @parseQuotes()
     @quotes = [@origin.quotes...]
