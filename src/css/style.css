@@ -74,7 +74,8 @@ body.hasDropDownNav{
 }
 
 /* 4chan style fixes */
-div.opContainer, div.op {
+/* overrides 4chan CSS on div.opContainer, div.op */
+.opContainer.opContainer, .op.op {
   display: block;
   overflow: visible;
 }
@@ -721,7 +722,8 @@ div[data-checked="false"] > .suboption-list {
   vertical-align: top;
   position: relative;
 }
-div.catalog-thread {
+/* overrides 4chan CSS on div.thread */
+.catalog-thread.catalog-thread {
   margin: 4px;
 }
 .catalog-small > .catalog-thread {
@@ -754,7 +756,8 @@ div.catalog-thread {
   border: 1px solid transparent;
   padding-top: 20px;
 }
-div.catalog-post {
+/* overrides 4chan CSS on div.post */
+.catalog-post.catalog-post {
   margin: -21px -1px -1px;
 }
 .catalog-thread.noFile > * > .catalog-post {
@@ -858,7 +861,8 @@ div.catalog-post {
 .catalog-post > * > .fileText:hover {
   z-index: 2;
 }
-div.catalog-post > div.postInfo {
+/* overrides 4chan CSS on div.post div.postInfo */
+.catalog-post > .postInfo.postInfo {
   width: auto;
 }
 .catalog-post > * > .subject {
