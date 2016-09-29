@@ -46,13 +46,13 @@ Several WebKitGTK+ based browsers have support for userscripts and can run 4chan
 
 - **Luakit**: Navigate to the [script](https://www.4chan-x.net/builds/4chan-X.user.js), then type the command `:usi` to install it.
 
-- **uzbl**: Install the script from https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh, enable it in your config file, and then save [4chan X](https://www.4chan-x.net/builds/4chan-X.user.js) to `$XDG_DATA_HOME/uzbl/userscripts` (or `$HOME/.local/share/uzbl/userscripts`).
+- **uzbl**: Install the script from https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh, enable it in your config file, and then save [4chan X](https://www.4chan-x.net/builds/4chan-X.user.js) to `$XDG_DATA_HOME/uzbl/userscripts` (or `$HOME/.local/share/uzbl/userscripts`). The commands below assume you have run uzbl at least once to create its config file.
 
-        wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts https://raw.githubusercontent.com/singpolyma/singpolyma/master/uzbl/data/scripts/userscript.sh
-        chmod +x ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts/userscript.sh
-        echo '@on_event LOAD_COMMIT spawn @scripts_dir/userscript.sh document-start' >> ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
-        echo '@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh document-end'   >> ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
-        wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts https://www.4chan-x.net/builds/4chan-X.user.js
+        wget -P "${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts" https://raw.githubusercontent.com/singpolyma/singpolyma/master/uzbl/data/scripts/userscript.sh
+        chmod +x "${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts/userscript.sh"
+        echo '@on_event LOAD_COMMIT spawn @scripts_dir/userscript.sh document-start' >> "${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config"
+        echo '@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh document-end'   >> "${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config"
+        wget -P "${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts" https://www.4chan-x.net/builds/4chan-X.user.js
 
 ### MS Edge
 Install [Tampermonkey](https://www.microsoft.com/en-us/store/p/tampermonkey/9nblggh5162s), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
