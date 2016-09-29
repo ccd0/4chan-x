@@ -261,4 +261,5 @@ class Post
 
   setCatalogOP: (isCatalogOP) ->
     @nodes.root.classList.toggle 'catalog-postContainer', isCatalogOP
-    @nodes.post.classList.toggle 'catalog-post',          isCatalogOP
+    @nodes.root.classList.toggle 'opContainer', !isCatalogOP
+    @nodes.post.classList.toggle 'catalog-post', isCatalogOP
