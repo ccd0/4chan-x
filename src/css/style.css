@@ -1324,13 +1324,13 @@ input[name="Default Volume"] {
   display: block;
   clear: both;
 }
-.catalog-thread.filter-highlight .catalog-thumb,
+:root:not(.werkTyme) .catalog-thread.filter-highlight .catalog-thumb,
 :root.werkTyme .catalog-thread.filter-highlight:not(:hover),
 :root.werkTyme:not(.catalog-hover-expand) .catalog-thread.filter-highlight,
 :root.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-container:hover > .catalog-post {
   box-shadow: 0 0 3px 3px rgba(255, 0, 0, .5);
 }
-.catalog-thread.watched .catalog-thumb,
+:root:not(.werkTyme) .catalog-thread.watched .catalog-thumb,
 :root.werkTyme .catalog-thread.watched:not(:hover),
 :root.werkTyme:not(.catalog-hover-expand) .catalog-thread.watched,
 :root.werkTyme.catalog-hover-expand .catalog-thread.watched > .catalog-container:hover > .catalog-post {
