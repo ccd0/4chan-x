@@ -224,3 +224,18 @@ Build =
     $.addClass root, 'noFile' unless thread.OP.file
 
     root
+
+  catalogReply: (thread, data) ->
+    excerpt = ''
+    if data.com
+      excerpt = Build.parseCommentDisplay(data.com).replace(/>>\d+/g, '').trim().replace(/\n+/g, ' // ')
+    if data.ext
+      excerpt or= "#{data.filename}#{data.ext}"
+    if data.com
+      excerpt or= Build.unescape data.com.replace(/<br\b[^<]*>/gi, ' // ')
+    excerpt or= '\xA0'
+    excerpt = "#{excerpt[...70]}..." if excerpt.length > 73
+
+    link = Build.postURL thread.board.ID, thread.ID, data.no
+    $.el 'div', {className: 'catalog-reply'},
+      <%= readHTML('CatalogReply.html') %>
