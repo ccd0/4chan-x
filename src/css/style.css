@@ -859,7 +859,7 @@ div[data-checked="false"] > .suboption-list {
   text-overflow: ellipsis;
 }
 .catalog-post > * > .fileText:hover {
-  z-index: 2;
+  z-index: 1;
 }
 /* overrides 4chan CSS on div.post div.postInfo */
 .catalog-post > .postInfo.postInfo {
