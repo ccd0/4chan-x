@@ -1,5 +1,24 @@
 **Note**: Installing the script from one of the links below will disable automatic updates. If you want automatic updates, install the script from the links on the [main page](https://www.4chan-x.net/).
 
+## v1.13.0
+
+**v1.13.0.0** *(2016-09-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.12.3.4.
+- Major rework of the 4chan X catalog:
+  - Hovering over a thread in the catalog now shows the full comment, as well as the poster name, flag (if available), post date, file info, and if `Show replies` is checked in the `Index Navigation` submenu in the header, excerpts of the last few replies along with how long ago they were made. The full reply can be shown by hovering over the "..." at the end of the excerpt. This can all be disabled by unchecking `Catalog hover expand`, also under `Index Navigation` in the header menu.
+  - The `Quote Preview`, `Resurrect Quotes` (from the archives), `Mark Quotes of You`, `Embedding` (via floating embeds), and `Gallery` features now work in the catalog, and the `File Info Formatting`, `Time Formatting`, `Relative Post Dates`, and `Relative Date Title` settings apply to the extra details shown on hover.
+  - The appearance of the catalog when `Werk Tyme` (thumbnail hiding) is enabled has been redesigned.
+  - HTML-wise, the posts shown in the catalog are now normal posts that have been restyled, and to which `.catalog-link`, `.catalog-stats`, and `.catalog-replies` elements have been added. The class names on the post and its immediate ancestors are `post catalog-post`, `postContainer catalog-container`, and `thread catalog-thread` (only the last of which is a newly created element for the catalog). You may need to update your custom CSS due to the changes.
+- The default `File Info Formatting` setting has been changed to "%L %d (%p%s, %r%g)". It now includes a download button by default (the "%d").
+- The `(You)`, `(OP)`, `(Cross-thread)` and `(Dead)` quote markers are now inside `<span>` elements with the CSS classes `qmark-you`, `qmark-op`, `qmark-ct`, and `qmark-dead`, respectively, making it possible to style them.
+- 4chan's default strikethrough is only removed from dead quotelinks if `Resurrect Quotes` is enabled.
+- The thread watcher header icon, which lights up when you are replied to, will no longer go out when the thread watcher is opened.
+- The index is no longer immedately resorted when `Pin watched threads` is enabled and you watch/unwatch a thread, and is only resorted when you refresh. The catalog is still immediately resorted.
+- The `Persistent Thread Watcher` loads a little quicker.
+- Very long filenames in posts now wrap properly, at least in Webkit-based browsers, and possibly at a later date in others.
+- The error messages displayed when the Chrome extension updates but the tab has not been reloaded have been replaced with a single warning message asking you to reload the tab.
+- API change: The conditions under which the `IndexRefresh` event is fired have changed to better serve the needs of clients (particularly Name Sync, which is the only extension I know of using this). It now fires whenever new posts are added to the index (including the initial ones, and including posts in the non-JSON index), and always fires after `4chanXInitFinished`.
+
 ### v1.12.3
 
 **v1.12.3.4** *(2016-09-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.4/builds/4chan-X-noupdate.crx)]
