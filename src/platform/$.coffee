@@ -388,10 +388,12 @@ $.crxWorking = ->
   if chrome.runtime.getManifest()
     true
   else
-    msg = $.el 'div',
-      <%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>
-    $.on $('a', msg), 'click', -> location.reload()
-    new Notice 'warning', msg, 20
+    unless $.crxWarningShown
+      msg = $.el 'div',
+        <%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>
+      $.on $('a', msg), 'click', -> location.reload()
+      new Notice 'warning', msg
+      $.crxWarningShown = true
     false
 
 $.get = (key, val, cb) ->
