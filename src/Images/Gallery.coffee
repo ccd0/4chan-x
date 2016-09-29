@@ -123,6 +123,10 @@ Gallery =
 
     thumbImg = post.file.thumb.cloneNode false
     thumbImg.style.cssText = ''
+    if thumbImg.dataset.src
+      thumbImg.src = thumbImg.dataset.src
+      # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
+      thumbImg.removeAttribute 'data-src'
     $.add thumb, thumbImg
 
     $.on thumb, 'click', Gallery.cb.open
