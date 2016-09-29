@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.12.3.4
+// @version      1.13.0.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.3.4',
+  VERSION:   '1.13.0.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -371,6 +371,7 @@ Config = (function() {
       'Previous Index Mode': 'paged',
       'Index Size': 'small',
       'Show Replies': true,
+      'Catalog Hover Expand': true,
       'Pin Watched Threads': false,
       'Anchor Hidden Threads': true,
       'Refreshed Navigation': false
@@ -400,7 +401,7 @@ Config = (function() {
     captchaLanguage: '',
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
-    fileInfo: '%l (%p%s, %r%g)',
+    fileInfo: '%l %d (%p%s, %r%g)',
     favicon: 'ferongr',
     usercss: "/* Board title rice */\ndiv.boardTitle {\n  font-weight: 400 !important;\n}\n:root.yotsuba div.boardTitle {\n  font-family: sans-serif !important;\n  text-shadow: 1px 1px 1px rgba(100,0,0,0.6);\n}\n:root.yotsuba-b div.boardTitle {\n  font-family: sans-serif !important;\n  text-shadow: 1px 1px 1px rgba(105,10,15,0.6);\n}\n:root.photon div.boardTitle {\n  font-family: sans-serif !important;\n  text-shadow: 1px 1px 1px rgba(0,74,153,0.6);\n}\n:root.tomorrow div.boardTitle {\n  font-family: sans-serif !important;\n  text-shadow: 1px 1px 1px rgba(167,170,168,0.6);\n}\n",
     hotkeys: {
@@ -1247,9 +1248,10 @@ body.hasDropDownNav{\n\
   padding: 0px 2px;\n\
 }\n\
 /* 4chan style fixes */\n\
-.opContainer, .op {\n\
-  display: block !important;\n\
-  overflow: visible !important;\n\
+/* overrides 4chan CSS on div.opContainer, div.op */\n\
+.opContainer.opContainer, .op.op {\n\
+  display: block;\n\
+  overflow: visible;\n\
 }\n\
 .reply > .file > .fileText {\n\
   margin: 0 20px;\n\
@@ -1286,6 +1288,15 @@ body > div:last-of-type {\n\
 /* Fix captcha scrolling to top of page. */\n\
 body > div[style*=\" top: -10000px;\"] {\n\
   visibility: hidden !important;\n\
+}\n\
+/* Make long filenames wrap properly: https://github.com/ccd0/4chan-x/issues/1082 */\n\
+.post > .file {\n\
+  /* currently nonstandard but may be added: https://lists.w3.org/Archives/Public/www-style/2016Mar/0352.html, https://bugzilla.mozilla.org/show_bug.cgi?id=1296042 */\n\
+  word-break: break-word;\n\
+}\n\
+:root:not(.ua-webkit):not(.ua-blink) .post > .file {\n\
+  word-wrap: break-word;\n\
+  max-width: calc(100vw - 50px);\n\
 }\n\
 /* Ads */\n\
 :root:not(.ads-loaded) .ad-cnt > * {\n\
@@ -1869,36 +1880,74 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 /* Catalog */\n\
 :root.catalog-mode .board {\n\
   text-align: center;\n\
+  padding: 0 50px;\n\
 }\n\
 .catalog-thread {\n\
-  display: -webkit-inline-flex;\n\
-  display: inline-flex;\n\
-  text-align: left;\n\
-  -webkit-flex-direction: column;\n\
-  flex-direction: column;\n\
-  -webkit-align-items: center;\n\
-  align-items: center;\n\
-  margin: 0 2px 5px;\n\
+  display: inline-block;\n\
+  border: 1px solid transparent;\n\
   word-wrap: break-word;\n\
   vertical-align: top;\n\
   position: relative;\n\
 }\n\
-.catalog-thread > a {\n\
-  flex-shrink: 0;\n\
-  -webkit-flex-shrink: 0;\n\
-  position: relative;\n\
+/* overrides 4chan CSS on div.thread */\n\
+.catalog-thread.catalog-thread {\n\
+  margin: 4px;\n\
 }\n\
-.catalog-small .catalog-thread {\n\
+.catalog-small > .catalog-thread {\n\
   width: 165px;\n\
-  max-height: 320px;\n\
+  height: 320px;\n\
 }\n\
-.catalog-large .catalog-thread {\n\
+.catalog-large > .catalog-thread {\n\
   width: 270px;\n\
-  max-height: 410px;\n\
+  height: 410px;\n\
+}\n\
+.catalog-container {\n\
+  position: absolute;\n\
+  top: -4px;\n\
+  left: 0;\n\
+  right: 0;\n\
+  bottom: 0;\n\
+}\n\
+.catalog-container:not(:hover),\n\
+:root:not(.catalog-hover-expand) .catalog-container {\n\
+  overflow: hidden;\n\
+}\n\
+:root.catalog-hover-expand .catalog-container:hover {\n\
+  z-index: 1;\n\
+}\n\
+.catalog-post {\n\
+  position: absolute;\n\
+  top: 4px;\n\
+  left: 0;\n\
+  right: 0;\n\
+  border: 1px solid transparent;\n\
+  padding-top: 20px;\n\
+}\n\
+/* overrides 4chan CSS on div.post */\n\
+.catalog-post.catalog-post {\n\
+  margin: -21px -1px -1px;\n\
+  overflow: visible;\n\
+}\n\
+.catalog-thread.noFile > * > .catalog-post {\n\
+  margin-top: -7px;\n\
+  padding-top: 6px;\n\
+}\n\
+:root.catalog-hover-expand .catalog-container:hover > .catalog-post {\n\
+  margin-left: -61px;\n\
+  margin-right: -61px;\n\
+}\n\
+:root.catalog-hover-expand .catalog-container:hover > * > :not(.catalog-replies) {\n\
+  padding-left: 2px;\n\
+  padding-right: 2px;\n\
+}\n\
+.catalog-link {\n\
+  display: block;\n\
+  position: relative;\n\
 }\n\
 .catalog-thumb {\n\
   border-radius: 2px;\n\
   box-shadow: 0 0 5px rgba(0, 0, 0, .25);\n\
+  vertical-align: top;\n\
 }\n\
 .catalog-thumb.spoiler-file {\n\
   width: 100px;\n\
@@ -1923,45 +1972,128 @@ div[data-checked=\"false\"] > .suboption-list {\n\
   padding-left: 2px;\n\
 }\n\
 .catalog-stats > .menu-button {\n\
-  text-align: center;\n\
   font-weight: normal;\n\
 }\n\
 .catalog-stats > .menu-button > i::before {\n\
   line-height: 11px;\n\
 }\n\
 .catalog-stats {\n\
-  -webkit-flex-shrink: 0;\n\
-  flex-shrink: 0;\n\
-  cursor: help;\n\
   font-size: 10px;\n\
   font-weight: 700;\n\
-  margin-top: 2px;\n\
+  padding-top: 2px;\n\
 }\n\
-.catalog-thread > .subject {\n\
-  -webkit-flex-shrink: 0;\n\
-  flex-shrink: 0;\n\
-  -webkit-align-self: stretch;\n\
-  align-self: stretch;\n\
-  font-weight: 700;\n\
-  line-height: 1;\n\
-  text-align: center;\n\
+.catalog-stats > [title] {\n\
+  cursor: help;\n\
 }\n\
-.catalog-thread > .comment {\n\
-  -webkit-flex-shrink: 1;\n\
-  flex-shrink: 1;\n\
-  -webkit-align-self: stretch;\n\
-  align-self: stretch;\n\
+.catalog-post > .postMessage {\n\
+  margin: 0;\n\
+  padding-bottom: .3em;\n\
+}\n\
+.catalog-container:not(:hover) > * > .file,\n\
+.catalog-container:not(:hover) > * > .postInfo > :not(.subject),\n\
+.catalog-container:not(:hover) > * > .catalog-replies,\n\
+:root:not(.catalog-hover-expand) .catalog-container > * > .file,\n\
+:root:not(.catalog-hover-expand) .catalog-container > * > .postInfo > :not(.subject),\n\
+:root:not(.catalog-hover-expand) .catalog-container > * > .catalog-replies,\n\
+.catalog-thread > .catalog-container > :not(.catalog-post),\n\
+.catalog-post > .file > :not(.fileText),\n\
+.catalog-post > * > .fileText > :not(:first-child),\n\
+.catalog-post > .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),\n\
+.catalog-post > * > * > .posteruid,\n\
+.post:not(.catalog-post) > .catalog-link,\n\
+.post:not(.catalog-post) > .catalog-stats,\n\
+.post:not(.catalog-post) > .catalog-replies {\n\
+  display: none;\n\
+}\n\
+.catalog-post > .file {\n\
+  position: absolute;\n\
+  left: 0;\n\
+  right: 0;\n\
+  top: 0;\n\
+  min-height: 20px;\n\
+  background-color: inherit;\n\
+}\n\
+.catalog-post > * > .fileText {\n\
+  position: relative;\n\
+  padding: 2px;\n\
+  background-color: inherit;\n\
+}\n\
+.catalog-small .catalog-post > * .fileText {\n\
+  font-size: 10px;\n\
+}\n\
+.catalog-post > * > .fileText:not(:hover) {\n\
+  white-space: nowrap;\n\
   overflow: hidden;\n\
-  text-align: center;\n\
+  text-overflow: ellipsis;\n\
 }\n\
-/* /tg/ dice rolls */\n\
-.board_tg .catalog-thread > .comment > b {\n\
-  font-weight: normal;\n\
+.catalog-post > * > .fileText:hover {\n\
+  z-index: 1;\n\
 }\n\
-.catalog-code {\n\
-  background-color: #FFF;\n\
+/* overrides 4chan CSS on div.post div.postInfo */\n\
+.catalog-post > .postInfo.postInfo {\n\
+  width: auto;\n\
+}\n\
+.catalog-post > * > .subject {\n\
+  display: block;\n\
+}\n\
+.catalog-post > * > .dateTime {\n\
   display: inline-block;\n\
+  font-style: italic;\n\
+}\n\
+.catalog-post > * > .nameBlock,\n\
+.catalog-post > * > .dateTime,\n\
+:root.catalog-hover-expand .catalog-container:hover > * > .postMessage:not(:empty) {\n\
+  padding-top: .3em;\n\
+}\n\
+.catalog-reply {\n\
+  text-align: left;\n\
+  white-space: nowrap;\n\
+  margin: -1px;\n\
+  border: 1px solid transparent;\n\
+  display: -webkit-flex;\n\
+  display: flex;\n\
+  -webkit-flex-direction: row;\n\
+  flex-direction: row;\n\
+  -webkit-align-items: stretch;\n\
+  align-items: stretch;\n\
+}\n\
+.catalog-reply > * {\n\
+  padding: 3px;\n\
+  overflow: hidden;\n\
+  -webkit-flex: none;\n\
+  flex: none;\n\
+}\n\
+.catalog-reply > span {\n\
+  font-style: italic;\n\
+  font-weight: bold;\n\
+}\n\
+.catalog-reply-excerpt {\n\
+  -webkit-flex: 1 1 auto;\n\
+  flex: 1 1 auto;\n\
+}\n\
+.catalog-post .prettyprinted {\n\
   max-width: 100%;\n\
+  box-sizing: border-box;\n\
+}\n\
+.catalog-post .MathJax_Display {\n\
+  text-align: center !important;\n\
+}\n\
+.catalog-post > * > .exif {\n\
+  border-collapse: collapse;\n\
+}\n\
+.catalog-post > * > .exif[style*=\"display: block;\"] {\n\
+  display: inline-block !important;\n\
+}\n\
+.catalog-post > * > .exif,\n\
+.catalog-post > * > .exif > tbody {\n\
+  background-color: inherit;\n\
+}\n\
+.catalog-post > * > .exif,\n\
+.catalog-post > * > .exif td {\n\
+  min-width: 0;\n\
+}\n\
+.catalog-post > * > .exif td {\n\
+  padding-top: 1px;\n\
 }\n\
 :root.hats-enabled .catalog-thread::after {\n\
   content: '';\n\
@@ -1969,13 +2101,13 @@ div[data-checked=\"false\"] > .suboption-list {\n\
   position: absolute;\n\
   background-size: contain;\n\
 }\n\
-:root.hats-enabled .catalog-small .catalog-thread::after {\n\
+:root.hats-enabled .catalog-small > .catalog-thread::after {\n\
   left: -10px;\n\
   top: -65px;\n\
   width: 100px;\n\
   height: 100px;\n\
 }\n\
-:root.hats-enabled .catalog-large .catalog-thread::after {\n\
+:root.hats-enabled .catalog-large > .catalog-thread::after {\n\
   left: -15px;\n\
   top: -105px;\n\
   width: 160px;\n\
@@ -2131,17 +2263,20 @@ span.hide-announcement {\n\
   cursor: pointer;\n\
 }\n\
 /* Quote */\n\
-.catalog-thread > .comment > span.quote, #arc-list span.quote {\n\
+#arc-list span.quote {\n\
   color: #789922;\n\
 }\n\
-:root:not(.catalog-mode) .deadlink {\n\
+:root.resurrect-quotes .deadlink {\n\
   text-decoration: none !important;\n\
+}\n\
+.catalog-post .qmark-ct {\n\
+  display: none;\n\
 }\n\
 .backlink.deadlink:not(.forwardlink),\n\
 .quotelink.deadlink:not(.forwardlink) {\n\
   text-decoration: underline !important;\n\
 }\n\
-.inlined {\n\
+:root:not(.catalog-mode) .inlined {\n\
   opacity: .5;\n\
 }\n\
 #qp input, .forwarded {\n\
@@ -2166,6 +2301,9 @@ span.hide-announcement {\n\
   border: 1px solid;\n\
   display: table;\n\
   margin: 2px 0;\n\
+}\n\
+:root.catalog-mode .inline {\n\
+  display: none;\n\
 }\n\
 .inline .post {\n\
   border: 0 !important;\n\
@@ -2277,11 +2415,17 @@ input[name=\"Default Volume\"] {\n\
 }\n\
 .werkTyme-filename {\n\
   font-weight: bold;\n\
+  font-size: 110%;\n\
 }\n\
-:root.werkTyme .catalog-thread > a {\n\
+:root.werkTyme .catalog-link {\n\
+  box-shadow: 0 0 5px rgba(0, 0, 0, .25);\n\
+  padding: 8px;\n\
   text-align: center;\n\
-  -webkit-align-self: stretch;\n\
-  align-self: stretch;\n\
+}\n\
+:root.werkTyme .catalog-thumb {\n\
+  box-shadow: none;\n\
+  padding: 0;\n\
+  vertical-align: middle;\n\
 }\n\
 .indicator {\n\
   background: rgba(255,0,0,0.8);\n\
@@ -2336,13 +2480,17 @@ input[name=\"Default Volume\"] {\n\
   display: block;\n\
   clear: both;\n\
 }\n\
-.filter-highlight .catalog-thumb,\n\
-.filter-highlight .werkTyme-filename {\n\
+:root:not(.werkTyme) .catalog-thread.filter-highlight .catalog-thumb,\n\
+:root.werkTyme .catalog-thread.filter-highlight:not(:hover),\n\
+:root.werkTyme:not(.catalog-hover-expand) .catalog-thread.filter-highlight,\n\
+:root.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-container:hover > .catalog-post {\n\
   box-shadow: 0 0 3px 3px rgba(255, 0, 0, .5);\n\
 }\n\
-.catalog-thread.watched .catalog-thumb,\n\
-.catalog-thread.watched .werkTyme-filename {\n\
-  border: 2px solid rgba(255, 0, 0, .75);\n\
+:root:not(.werkTyme) .catalog-thread.watched .catalog-thumb,\n\
+:root.werkTyme .catalog-thread.watched:not(:hover),\n\
+:root.werkTyme:not(.catalog-hover-expand) .catalog-thread.watched,\n\
+:root.werkTyme.catalog-hover-expand .catalog-thread.watched > .catalog-container:hover > .catalog-post {\n\
+  outline: 2px solid rgba(255, 0, 0, .75);\n\
 }\n\
 /* Spoiler text */\n\
 :root.reveal-spoilers s,\n\
@@ -2898,7 +3046,7 @@ a:only-of-type > .remove {\n\
   margin: 2px;\n\
   vertical-align: middle;\n\
 }\n\
-.post .menu-button,\n\
+.postInfo > .menu-button,\n\
 #thread-watcher .menu-button {\n\
   width: 18px;\n\
   height: 15px;\n\
@@ -2990,6 +3138,11 @@ a:only-of-type > .remove {\n\
   cursor: text !important;\n\
 }\n\
 /* Embedding */\n\
+.embedder:not(.embedded) > span,\n\
+:root.catalog-mode .embedder > span,\n\
+:root.catalog-mode .board .media-embed {\n\
+  display: none;\n\
+}\n\
 #embedding {\n\
   padding: 1px 4px 1px 4px;\n\
   position: fixed;\n\
@@ -3271,6 +3424,16 @@ a:only-of-type > .remove {\n\
 :root.yotsuba .suboption-list > div:last-of-type {\n\
   background-color: #F0E0D6;\n\
 }\n\
+/* Catalog */\n\
+:root.yotsuba.catalog-hover-expand .catalog-container:hover > .post {\n\
+  background-color: #F0E0D6;\n\
+}\n\
+:root.yotsuba.werkTyme .catalog-thread:not(:hover),\n\
+:root.yotsuba.werkTyme:not(.catalog-hover-expand) .catalog-thread,\n\
+:root.yotsuba.catalog-hover-expand .catalog-container:hover > .post,\n\
+:root.yotsuba.catalog-hover-expand .catalog-container:hover .catalog-reply {\n\
+  border-color: #D9BFB7;\n\
+}\n\
 /* Quote */\n\
 :root.yotsuba .backlink.deadlink {\n\
   color: #00E !important;\n\
@@ -3309,7 +3472,7 @@ a:only-of-type > .remove {\n\
   background: rgba(255, 255, 255, .33);\n\
 }\n\
 /* Thread Watcher */\n\
-:root.yotsuba .replies-quoting-you > a, :root.yotsuba #watcher-link.disabled.replies-quoting-you {\n\
+:root.yotsuba .replies-quoting-you > a, :root.yotsuba #watcher-link.replies-quoting-you {\n\
   color: #F00;\n\
 }\n\
 /* Watcher Favicon */\n\
@@ -3345,6 +3508,16 @@ a:only-of-type > .remove {\n\
 }\n\
 :root.yotsuba-b .suboption-list > div:last-of-type {\n\
   background-color: #D6DAF0;\n\
+}\n\
+/* Catalog */\n\
+:root.yotsuba-b.catalog-hover-expand .catalog-container:hover > .post {\n\
+  background-color: #D6DAF0;\n\
+}\n\
+:root.yotsuba-b.werkTyme .catalog-thread:not(:hover),\n\
+:root.yotsuba-b.werkTyme:not(.catalog-hover-expand) .catalog-thread,\n\
+:root.yotsuba-b.catalog-hover-expand .catalog-container:hover > .post,\n\
+:root.yotsuba-b.catalog-hover-expand .catalog-container:hover .catalog-reply {\n\
+  border-color: #B7C5D9;\n\
 }\n\
 /* Quote */\n\
 :root.yotsuba-b .backlink.deadlink {\n\
@@ -3384,7 +3557,7 @@ a:only-of-type > .remove {\n\
   background: rgba(255, 255, 255, .33);\n\
 }\n\
 /* Thread Watcher */\n\
-:root.yotsuba-b .replies-quoting-you > a, :root.yotsuba-b #watcher-link.disabled.replies-quoting-you {\n\
+:root.yotsuba-b .replies-quoting-you > a, :root.yotsuba-b #watcher-link.replies-quoting-you {\n\
   color: #F00;\n\
 }\n\
 /* Watcher Favicon */\n\
@@ -3420,6 +3593,16 @@ a:only-of-type > .remove {\n\
 }\n\
 :root.futaba .suboption-list > div:last-of-type {\n\
   background-color: #F0E0D6;\n\
+}\n\
+/* Catalog */\n\
+:root.futaba.catalog-hover-expand .catalog-container:hover > .post {\n\
+  background-color: #F0E0D6;\n\
+}\n\
+:root.futaba.werkTyme .catalog-thread:not(:hover),\n\
+:root.futaba.werkTyme:not(.catalog-hover-expand) .catalog-thread,\n\
+:root.futaba.catalog-hover-expand .catalog-container:hover > .post,\n\
+:root.futaba.catalog-hover-expand .catalog-container:hover .catalog-reply {\n\
+  border-color: #D9BFB7;\n\
 }\n\
 /* Quote */\n\
 :root.futaba .backlink.deadlink {\n\
@@ -3459,7 +3642,7 @@ a:only-of-type > .remove {\n\
   background: rgba(255, 255, 255, .33);\n\
 }\n\
 /* Thread Watcher */\n\
-:root.futaba .replies-quoting-you > a, :root.futaba #watcher-link.disabled.replies-quoting-you {\n\
+:root.futaba .replies-quoting-you > a, :root.futaba #watcher-link.replies-quoting-you {\n\
   color: #F00;\n\
 }\n\
 /* Watcher Favicon */\n\
@@ -3495,6 +3678,16 @@ a:only-of-type > .remove {\n\
 }\n\
 :root.burichan .suboption-list > div:last-of-type {\n\
   background-color: #D6DAF0;\n\
+}\n\
+/* Catalog */\n\
+:root.burichan.catalog-hover-expand .catalog-container:hover > .post {\n\
+  background-color: #D6DAF0;\n\
+}\n\
+:root.burichan.werkTyme .catalog-thread:not(:hover),\n\
+:root.burichan.werkTyme:not(.catalog-hover-expand) .catalog-thread,\n\
+:root.burichan.catalog-hover-expand .catalog-container:hover > .post,\n\
+:root.burichan.catalog-hover-expand .catalog-container:hover .catalog-reply {\n\
+  border-color: #B7C5D9;\n\
 }\n\
 /* Quote */\n\
 :root.burichan .backlink.deadlink {\n\
@@ -3534,7 +3727,7 @@ a:only-of-type > .remove {\n\
   background: rgba(255, 255, 255, .33);\n\
 }\n\
 /* Thread Watcher */\n\
-:root.burichan .replies-quoting-you > a, :root.burichan #watcher-link.disabled.replies-quoting-you {\n\
+:root.burichan .replies-quoting-you > a, :root.burichan #watcher-link.replies-quoting-you {\n\
   color: #F00;\n\
 }\n\
 /* Watcher Favicon */\n\
@@ -3571,11 +3764,17 @@ a:only-of-type > .remove {\n\
   background-color: #282A2E;\n\
 }\n\
 /* Catalog */\n\
-:root.tomorrow .catalog-code {\n\
-  background-color: rgba(255, 255, 255, 0.1);\n\
+:root.tomorrow.catalog-hover-expand .catalog-container:hover > .post {\n\
+  background-color: #282A2E;\n\
+}\n\
+:root.tomorrow.werkTyme .catalog-thread:not(:hover),\n\
+:root.tomorrow.werkTyme:not(.catalog-hover-expand) .catalog-thread,\n\
+:root.tomorrow.catalog-hover-expand .catalog-container:hover > .post,\n\
+:root.tomorrow.catalog-hover-expand .catalog-container:hover .catalog-reply {\n\
+  border-color: #111;\n\
 }\n\
 /* Quote */\n\
-:root.tomorrow .catalog-thread > .comment > span.quote, :root.tomorrow #arc-list span.quote {\n\
+:root.tomorrow #arc-list span.quote {\n\
   color: #B5BD68;\n\
 }\n\
 :root.tomorrow .backlink.deadlink {\n\
@@ -3610,13 +3809,17 @@ a:only-of-type > .remove {\n\
 :root.tomorrow .filter-highlight > div.sideArrows {\n\
   color: rgb(155, 185, 210);\n\
 }\n\
-:root.tomorrow .filter-highlight .catalog-thumb,\n\
-:root.tomorrow .filter-highlight .werkTyme-filename {\n\
+:root.tomorrow .catalog-thread.filter-highlight .catalog-thumb,\n\
+:root.tomorrow.werkTyme .catalog-thread.filter-highlight:not(:hover),\n\
+:root.tomorrow.werkTyme:not(.catalog-hover-expand) .catalog-thread.filter-highlight,\n\
+:root.tomorrow.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-container:hover > .catalog-post {\n\
   box-shadow: 0 0 3px 3px rgba(64, 192, 255, .7);\n\
 }\n\
 :root.tomorrow .catalog-thread.watched .catalog-thumb,\n\
-:root.tomorrow .catalog-thread.watched .werkTyme-filename {\n\
-  border: 2px solid rgb(64, 192, 255);\n\
+:root.tomorrow.werkTyme .catalog-thread.watched:not(:hover),\n\
+:root.tomorrow.werkTyme:not(.catalog-hover-expand) .catalog-thread.watched,\n\
+:root.tomorrow.werkTyme.catalog-hover-expand .catalog-thread.watched > .catalog-container:hover > .catalog-post {\n\
+  outline: 2px solid rgb(64, 192, 255);\n\
 }\n\
 /* QR */\n\
 .tomorrow #dump-list::-webkit-scrollbar-thumb {\n\
@@ -3682,7 +3885,7 @@ a:only-of-type > .remove {\n\
   border-color: rgb(197, 200, 198);\n\
 }\n\
 /* Thread Watcher */\n\
-:root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.disabled.replies-quoting-you {\n\
+:root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.replies-quoting-you {\n\
   color: #F00 !important;\n\
 }\n\
 /* Watcher Favicon */\n\
@@ -3720,8 +3923,14 @@ a:only-of-type > .remove {\n\
   background-color: #DDD;\n\
 }\n\
 /* Catalog */\n\
-:root.photon .catalog-code {\n\
-  background-color: rgba(150, 150, 150, 0.2);\n\
+:root.photon.catalog-hover-expand .catalog-container:hover > .post {\n\
+  background-color: #DDD;\n\
+}\n\
+:root.photon.werkTyme .catalog-thread:not(:hover),\n\
+:root.photon.werkTyme:not(.catalog-hover-expand) .catalog-thread,\n\
+:root.photon.catalog-hover-expand .catalog-container:hover > .post,\n\
+:root.photon.catalog-hover-expand .catalog-container:hover .catalog-reply {\n\
+  border-color: #CCC;\n\
 }\n\
 /* Quote */\n\
 :root.photon #arc-list tr:nth-of-type(odd) span.quote {\n\
@@ -3764,7 +3973,7 @@ a:only-of-type > .remove {\n\
   background: rgba(255, 255, 255, .33);\n\
 }\n\
 /* Thread Watcher */\n\
-:root.photon .replies-quoting-you > a, :root.photon #watcher-link.disabled.replies-quoting-you {\n\
+:root.photon .replies-quoting-you > a, :root.photon #watcher-link.replies-quoting-you {\n\
   color: #00F !important;\n\
 }\n\
 /* Watcher Favicon */\n\
@@ -3773,71 +3982,88 @@ a:only-of-type > .remove {\n\
   background-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(51,51,51)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n\
 }\n\
 /* Link Title Favicons */\n\
-.linkify.audio {\n\
+.linkify.audio::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAitJREFUOE9jYCAWKJWwavr0KyXWb/FIbDtUFFyzJx6nVofE2Xo5nXsj0rqPNSR0nVkR2Hjmgmfd+U9Otdf+m5Vf/6+SfeU/R9ChVVgNYDRtlfJuuPA/rPfe/4QpD/6nznj0P27Kw/9unff/69Xf+69c/+C/SO7N/0z+OAxgMmmRCe++/r9i3ev/KWvf/vdY8PK/bt/9/wrNV3/IN5y/IVt1YqNg4pGTTP4HsbuA2bhZ2qvpyn+xjIObxAp3VwqlrgngLFyryVy5nhPmZJHANS2cwYexG8BmVC/pWn3hP4NZlzWuQDJI3dIiFnUUuwEsQAOcq87jNcC7fHeLUtJxHF4AGmBWeAavAWH1+1rUUk7giAWjOknllON4DXAs2NEiG4/DBQxAF/CFHfrPYI4jDFSLuJVjNrUJhB/B7gIGo1pJRt99GAZYJK7wLJ1z7Xzl4vu/7aqv/GRBj0bjqAX2qb0nJ7mXH17C4HcUxQA+hymWtSue/C5a9up/9Ozn/7Vr7v1nRY7GqMb91T3b3v6vWvPmf/S0p/9ZQk+DDLCBRSOz06Jqk+o7/21nvfqvsebDf7kZL/5zBaxphkezd+OFn7HzXvz3Wvjmv9a8N//5Ek//ZTBpVYUrMG2X5wjcdl68+uI/wa5Lr3hSNjczGFeywOVZ/bbcVGp//F9izfv/Ql03f3P4LC/HSEQquYwMFnUCDJ7dzBhyjGZNQpye89M5gpfnMvtNUyE2h4PUAQBovvT7lyNljwAAAABJRU5ErkJggg==') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.clyp {\n\
+.linkify.clyp::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAwUExURTSY22ey5E2l4KbS75rM7Y3F64C/6f///8zl9nS45r/f9PL5/UGe3bPY8Vqr4v///wNjrzUAAAABYktHRA8YugDZAAAAB3RJTUUH4AINEi85AIH95AAAAE9JREFUCNdjYMAGGBWgDGYHCM2a3hkAZmi0dzSBaKaO9o5moCqmLiCjYzNQyw4QowIodQzI6E0AKcpo72gE6+Jyb1kAMehUA9RktgdYbQYAjGIVNGGXBJkAAAAASUVORK5CYII=') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.dailymotion {\n\
+.linkify.dailymotion::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAnUExURQBk3ff6/trp+kKO5wZt3xx54q7P9Ozz/IS17zOG5WKh653E8sbc9/GbbcoAAABZSURBVAjXY2BAASyhDhAGc9oECMOjyAAiESEEYrBYpLWBGcwHxcvBjDDxHelghpF0yDQwY3kVgweEUeEQDWbMEepqAjO8FMsLIeYsU8o+BrbCdWboTAe4AwALXxWGjW41FwAAAABJRU5ErkJggg==') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.gfycat {\n\
+.linkify.gfycat::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAjVBMVEWn3gCo3gSr3w2t4BSu4Bav4Ri35C+45DK45DO55DXA50rA50vB50zC6E/D6FTF6VjG6VvL62vN7G/P7XbQ7XfW74vY8JDa8ZTe8qDe8qLf86Pi9Kzj9K7k9LHp9sDp98Lq98Ps+Mr0++L5/O75/fD6/fH6/fL6/fP7/fT7/fb8/ff8/vj8/vn+/v7///91X4cfAAAAcklEQVR42o3M2xKBUACF4aVQckrIuRJK6H//x2sme4/MuPDfre9i6c/Cc3U5Dj87BuAxsXvGu6JvIIXEHRWwNHCHQNrCzkAFkbSBg4EM8i+Yw7PXBa3zRfuxVyf/Bis7nKwGKAcWxgC8prI5Sc315OlnDfzpDar2S9/oAAAAAElFTkSuQmCC') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.gist {\n\
+.linkify.gist::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABblBMVEXc3NykpKTW1tbb29ugoKCdnZ0AAAACAgIEDRcKCgoMDAwODg4QIzYRDAoTExMUDwwVAg0WICsaEw8aGhoiCBklGxUmERwwKCQ7LSU7Ozs8LSZFLyNINi1JNyxJNy1KSklMOi5VR1FXV1daQTRkZGRseYZwU0F4eHh7dnR8bWV/YE6IdGiKcGCKkJaNgYeNjY2RdGOScWCUcWCZmZmhoaGkpKSoqKirfmaurq6xsbG1tbW6urq+vr7AbmzBb23CwsLGxsbHx8fHyMjJycnJysrMzMzOiYbPi4fQ0NDRoYbT09PU1NTW1tbY2NjZqIzZ2dnb29vd3d3f39/i4uLktZrk5OTl5eXm5ubn5+fo6Ojq6urs7OzttKLu7u7wuqbw8PDx8fHz8/P4+Pj5+fn7uZj8vpz9ya79ybD/tZf/upr/wZ//w6H/xKH/xaL/xrH/yqj/y7T/zqv/z7D/07D/17n/2Lv/2Lz/3L//38n/4Mk3Q/ZuAAAABnRSTlMSFcbGzc5MNKFvAAAA1klEQVQoz2NgYPZHAswMDEwRSclwkBTBxOARn4gE4j0YXBOiJNUDg7y8Ar1UlOITXBkcY73Z2Li42dg42dn4wmIdGeyjQ7nZoEA4PNqewSZKlw0O9KJsGKwjBdl4ZeWkJGQUhNjEIq0ZrMI5+D0ri7Jz8itCRAXCrRgsQ3mUy+xicrPSbfO0REItGSyCVaVL3ONSU9LcCtQUgy0YzIJ85M1LizMzCsv9xF2CzBhMAwN99TV1DI0MtDWcAgNNGUycA5CAswkDi5kDwrMOZiwMjKzGSICVEQDhZj0UQV7PewAAAABJRU5ErkJggg==') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.image {\n\
+.linkify.image::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAs5JREFUOE+lk/tvi1EYx98/xT8gW4REIpGFMEQWl2FiM9ZMZhm2xRAyOsmujFFmdFRHu0tWm87UypxStr69zPauN5e5rHVp3IYhbOvHy+wHEQlxkm+ek+d8nm9OznkeSfrfldmgJC7QyUlTymsJTfuTZ25z4HdWYwyLreYhtpgekGPw0+kKvo1Eo+IXRSIiEhkWZuc9tqnsJD9EqTUopCxjSGTpB0iueczSo1HyW8cpsExQ1DbxI2pt45j9cXpexul4FEd79RnZphAa/SD7WvuFtO6UItbU9LC+YQxNI2w0wwYT5LRAdhOU3oBTIXC9gXP3oUSGgz2vST3gYHejR0jptT1C332f8yrUEYHrz8CgxDnpm6DKCUfc0KnmXa/AEVPPwnDcD0cvetA2uYRk67Ive/lpjO7YBO1PPuF8Df3vwf4cbNE4tqdw7YVq8HYyHx6FvhE1hkMEg8HDUqvFkjT4aIjMqkqyqkswDSrcfBfH+Q561YLAZ/B+BLda6FXlU/cPv0AoEPhuoP1h4Av7Wbh9E/Py15NWWUjeSR3nZDfeN+N0DY9hG/7K1eGP3P0S5/EYRFUF/IOTBrUXHPm9fT6mr1xEwupkZqxbzLyiDJYUZ5NSnkdqdSHpxyrYdFpPgdmAsdfJwPMI/Yr65bf7tZLGGBQ7DNdJWFtIYvoOZmbuZE7OXpIKKli86zAr9p9gTVktWTVnKTI2U95uRWe3U2IJUDbVB5p6hVm5x5m9Vc/cnedZUNzC8lILaQesZBy6hEZ3maKzgvJWFzVWD9XtXvVGQbSWASFtMATVRlJIKbOTWtlJXaeXepuPM1f6MNp9GLt8mLvvYLmp0OhQ2Fwvk6m7xaqDTvY0eYWUVtcnllXfYlGpnfklVuraHHg8HjxuN+6fktUHlWWZPaZeUo/ILK0UKttBcbNbSB9GP0yLxWJJUxoZGUn80zD9C/vXQ/4NHY10h3M1zmQAAAAASUVORK5CYII=') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.installgentoo {\n\
+.linkify.installgentoo::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABcVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB3dIYAAAAAAAAAAAAbGh4BBAcCBgoBBgoCBwsCCQ/QzucCCA7MyuXZ1eUBBQmTh8fo5/i9svIAAADh3vQAAAACCA0CCQ8CCQ4DDBQbGCUDChDr6vgAAAAAAAAREBIDCxK6tdfe2fTv7/cDCxIDDBQEDRUHDhgMJjXk4PZdXWdLUFoUNEYOKDgSMUMRLUBneI4eTGj08/QmW3onW3rTzvfOx/giU3IiVHMkWHdEaYJobHv3+PokWHpua6TNy9xZgZ+1quz8/foQKj0XPFInWn0nW38tZ4o6fqg8gq48grA9hrU/i7pAhrNAiLdBjLtEjr1FksNIjr5Il8pImMtKWnNqhL97odKFqti5q/q5rPq60+nCt/vLw/vPx/jV0vHY0/rc1/rg2/vh3fzn4fzu6/vx8vf19Pv19Pz49/v5+Pv8/Pv8/fr9/vv+/frziVtUAAAAT3RSTlMABQYHCAoNDhARGRobL0ZOV1xdXV5fYGBmZnB0eX2MjZSaoaGio6mqqqustLq7zubo6Ojo6evt7u/x8fLy9/f4+Pj5+vr6+vr6+/39/v7+XKgUSwAAAMhJREFUKM9jYGDg4OZmZgABKINT1dBAhBHIYFMxMBIDisjbhoZbCTExsCu5hoeY8DEwcOkEx8fY6MqpucTGB0izglVEplcU5/gmRYWBVQDNMK+s0hN3SvMyBpsBNJxXw0NfwTEjVQZqHQMHj5RfWW5mliSEC7TPzK6yJD/bXZQRzGdXcisqLy309okA2Q4Eis4peQWmstqBCdGW/CABraC45ERBBs3A6Fh/AbAKTwsHa34QZW8NVsGuLqwswQSjQICTmYMFQaEDAAF8JHLfKGswAAAAAElFTkSuQmCC') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.liveleak {\n\
+.linkify.liveleak::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAlNJREFUGBkFwU2LVmUYAODrPu8Z5x1xSpRBXQyFoLsBE+wfiO5atJOgnf9DUPwFgtGinUgEaQsRhHYuMtpEiEWuG5iNjuOcj+c8z911xXcXL/68c3Dw1fzhg0QgEQAAEYGUKXFie9vxlSs/xk/rdavjGEkmkWSih65z4osv9GfOiK6LzEyZ2uGh4dUrmzs72ddlUUhkoiMr4PT167589Mh6c1N0nSRlqrX67dat+PDyZXRT19m5edPnt28rGFHxMcJ6d9fprS1/37tneP3aemPD1uamUydPOru3p5DdGOH0tWsu3LhhxIQJM2qEpRT/Pn3q/du3AhARSmvGTH0lplKMrVkiYpVpQaJlighzhDkzhmEA0fcWoqAfyaFW4zTlgCABxlrNmY4ylUzLsiREprFWc0T2M+ZSjKWY0AEaltZUjJixZJIpuk5pTWlNP2BYFvOyKJkCAKU1tTXHrZlqVWolUxdhxsfVSj9FmJfFMM9GdICGGa01HyMstYpMIFPJVNDPmYZSTOPoOEKHzNRlKpmWWh1j6TpLa2SKTKVWU6Z+Qolwdm/P9QcPZKa2LH69e9eIMs+WCL/cv2/98CGZPrt61am+V9APq1X89eyZ/968obVYaiXT4dGREgG+vnPHeHgYMsH2+fP+efEihtVKv7SWw/6+9/v7KYLMhIywTJPamvOXLomukyRsrNf+ePzYkpl9dJ3SWgSCSCQCfz5/7pMLF2yfO6eLiAQcHRz4/cmT+HR7O+Ob3d0fNt69+7a2BiICQCJbA0EgE5lpvbXl1OXL3/8Pfax4+6SjSukAAAAASUVORK5CYII=') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.pastebin {\n\
+.linkify.pastebin::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAB1FBMVEUAAAAAAAAAAABWYWwAAABbY3BbYm5dZnFdZXJeZnMEBAQHCAhYYGpdZnFdZnBgaHIlJyomKCooKi09QkdESU5eZGtdYmhdYmleY2lrcXdqb3Rqb3Rqb3SSmJ+SlJeWmJutr7GtrrCWm6ChpKhbW1tmZmZvb290dHR3d3d4eHh5eXl6enp8fHx+gIJ/f3+CgoKDg4OEhISFhYWHh4eKioqKjI2Li4uMjIyOjo6Pj4+QkJCRkZGSkpKUlJSVl5mWlpaYmZqZm52ampqbm5ucnJydnZ2enp6fn5+hoaGioqKkpKSkpaalpaWmp6mmp6qnqauoqKioqquoqq2qqqqrrK2srKysra6srrCsrrGurq6vr6+wsLCxsbGysrKztLa0tLS1t7m2tra3t7e4uLi5ubm6urq7u7u8vLy9vb2+vr7AwMDAwsTBwcHExcfFxcXFxsnGxsbHx8fIyMjJycnMzMzNzc3Ozs7O0NLPz8/Q0NDR0dHR09XT09PV1dXV1dbV1tfV19rW1tbX19fX19jY2tzZ2dnZ2tva2tra3N3a3N7c3Nze3t7f39/f4OHg4ODi4uLl5+jm5ubs7Ozs7e3u7u7v7+/v8PDw8PDx8fHy8vLz8/P29vYSoLMZAAAAJHRSTlMABAUGCwsNHCAiLzMzMzZEYGJwgIuOnJycnqmqq9bc3+/w8fkZ0N/uAAAA/klEQVQoU2NgYGDl5YMDdgYGBmZZ3964CYFtIR3e9Q7K/AwMHI55KfaFmcHWMy3K3MwlGRg4wz0zdYpcorRbNbL0LaWAAp3ts2umV8wo6MupTauQBgqUG03VL7W3sfZSb1erAgm02M+yzYrVCXUy6zapAQlUx/dEdyX3J3ZHVUYVywAF8o2rDNN1Go2jzGLMokAC2QbuSc42mXmaOXop9iAtCXrJ5qXWjT59Abl2ESJAAX/tSIMMiyrrqQ3T6uS5gQK6kSqpqkUermGTexQFmYACflqR+hlWZSamzQpCLEDPsSmVVDT1TJw0JUhOAMRnYOARFRMTE5cQF+ZiBPIAII5B3EVG0b4AAAAASUVORK5CYII=') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.soundcloud {\n\
+.linkify.soundcloud::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABsklEQVQ4y5WTy2pUQRCGv2rbzDjJeAlIBmOyipGIIJqFEBDElwh4yULGeRFXPoEIBl/AvQ/gC2RnxCAoxijiwks852S6+3dxzslcHJCpTXVX11/Xv0097gLPgVNMJxnQNfX4zsqleWbnpoMf/oa9d988MM9MC/rp+E0a+A0dsVobMNMCOO8B6McRoABJI+A6gJmN3D2A8jgEBCEkSEMBrcrsDAzDWWn3AjgKFaDMmgRqniGFgsaDp1jrLOngDf1XT1D+A1dFc4MKAkkiCVKjjVu7g9+4Rzx4i1u6hjXbuMWr0O5QPNvCu7IaCZwEKQukLGDrm5x8uI0tr6MkiGlkiv7yLfzN+6S5i6QsIMABkEfcxhbWWYMkVAOjxvYAjc3HNHrbKI9VBQBFwF25XQKSBjqIf1YBuAurEMrczgDygD6/x2LCpFLXLUyQ+PoldphhBhYfIX09XU1+Flaukz7uYqs3SHs7cG4BmTsmkBUF9mmXEwa28BNLPaQPLepuNcbGSWQquQC2/Kdcox1FUGkcB0ykck1nA2+wTzMs8stGnP4rbWGw74EuS/GFQWfK7/wF6P4F7fzIAYkdmdEAAAAASUVORK5CYII=') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.twitchtv {\n\
+.linkify.twitchtv::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAYUExURf///2RBpWRBpWRBpWRBpWRBpWRBpf///+zQyUYAAAAGdFJOUwFdZX0lTzs4r5oAAAABYktHRAcWYYjrAAAAB3RJTUUH4AINEi42iSXRNAAAAD1JREFUCNdjYEiDAAZGGIMtjQEEUBlMCWoEGci6mGEMsxQgIy0BiB3AjLS0FAYQIw0kwABipoI1AhkBQBIAFCIXxiHgq80AAAAASUVORK5CYII=') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.twitter {\n\
+.linkify.twitter::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAEsUExURf///1Cf21Gg3FGi31Gh3VKj4FGh3lKj4VKk4lKl41Ol5FOn51Sp6VSo6FOn5lCf21Gg3FGh3VGi31Gi31Gh3lGg3FGg3FGg3FGg3FGh3lGg3FGi31Kk4lKj4FGh3lGi31Kk4lGh3lGg3FGh3lOm5FOm5VGi31Kj4VSo6FGi31Gh3VGg3FKj4FOn51Gi31So6FWr7VOl5FGi31On51Sq6lKk4lOo51Sp6VOm5FSq61Ws7VOn51Oo51Sq61Ol5FOm5FSq61Wr7VOo51On51Sr7FWs7VSp6lGg3FGh3VOm5FWr7VSp6lKj4VOm5FSo6FSr7FWs7VWs7VWr7VSq6lOo51Om5FOo51So6FOm5VOl5FSq61Ws7VSr7FSp6lSp6VWs7lWr7VKk4lSq6v///6E3MNsAAABVdFJOUwAAAAAAAAAAAAAAAAAAAB0Ii+3xnBVTJhfsMKb+qTEp9GwBF/7lLAbo0m4pLkUTdvk2Ev3+EZnOBo/3Z8ffCRzH/D0OqPxiLnvx3UI8m9n1++GwXQZNS29BAAAAAWJLR0QAiAUdSAAAAAd0SU1FB+ACDRIwBwy67tEAAADKSURBVBjTY2BAB4xogIGRH8IQEBQSFhEVE2eQkJQC8ZmkQ8PCI2Rk5RjkIxUUlRgZlVWioqNjYlXVGNQ14iI1tbR14qLj4+MTdJkZ9PQNosJCE0OjgPz4KEMWBiPjhPiEmKQokIJ4E1MmBmazhHg4MGdlYmCzsLSC8ROsmRkZmFht4Eps7ViADmOzd4DyHZ2YmYACTOzOLmATXd04mIBOd/eQ9owFCXh5c7KB/MLi4+vnHxAYFBzCwcYEEmBi5uLm4eHl42RmAnsSAMZBLgZiFUQ5AAAAAElFTkSuQmCC') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.video {\n\
+.linkify.video::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QAxgDGAP8nNqN7AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMZBjQQLEEqGwAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAA5SURBVDjLY2AYaMDIwMDwn1JD/lPCZhpwL+B1wf///ykzgBhDiAoDfIYQZQAjIyP5BuDTPJqQqAQAvW0ZAMk8+EEAAAAASUVORK5CYII=') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.vimeo {\n\
+.linkify.vimeo::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAYFBMVEUAAAAIdZUKh6sLlLkLmr4LmsAMp88NrdYVW3MZj7Acstkrt9s1e5E7vN5EfI9JvdtKwuBijp5kpbl30eiDt8aG1uqRr7qTyNehxM+k4PCy3enB3OTg6Ovv9PXw+fz////L9U5WAAAAAXRSTlMAQObYZgAAAIFJREFUeNplz90OwiAMBWAQpAoyxclkP3je/y0H2AQXz0WT8100rRD6kNI9/cRroemQL3hXhoujZYj4OHoAmBvYGcBISwbWBvfXCrytnIDUQMkbsBpagMA7zhtQdyTFQAmIG7IkYniiZuh3XGsPqoOZkMOJOpAcLqUzNFGGu/57fwc1hgtp0mVSyQAAAABJRU5ErkJggg==') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.vine {\n\
+.linkify.vine::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAHCUExURQAAAAC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+jwC+j////54tRLAAAACUdFJOUwAAAEK+9/e+QQIDAwEqzskfUZmUNHz2mrT++V1w+f5tCanNFUDwfEjtjAyyvg027Hki27QMBJzaHE/1+FkNsN0iZvv6bxyAlB589lQeyud0KB8PQO+ZBUrc+eXgcRG/3CoATe316Wxw/P6BAgBt+fp4IAwh0d4zM9q7Fm76qi605EMSrvfX/PRtAivF9IAJNMLxhA2KYlJ9AAAAAWJLR0SVCGB6gwAAAAd0SU1FB+ACDRI2MOJd7FgAAADrSURBVBjTLY9VWwJgGEPfiYWBha2YYHcHditgd3d3odjdivvBfgK727nYsyPiCrw03j6+fv6AaAMCgyAI1lElJBQSFh6hBxDJqOiY2Lh4SEKiIQlITmFqWrqRJkhGJrOA7Bzm5uUXsBBSVMySUpSVs6KyqrqmFmKuY30D0NjU3NLa1t6h9jvZ1Q30WGi19fb1KzAwyKFhYGSUY+MTkwpMTXNmFpibX+Di0rICWFldW9/A5tb2zu7ePtTrg0MeHePklPYzuDRw7uDF5RWvbwC32O0d7x8en55f4DHF6xv5/vHp6f/k6/vH+evuf1LAObptvSvrAAAAAElFTkSuQmCC') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.vocaroo {\n\
+.linkify.vocaroo::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAw9JREFUOE9jYMABuMwYmCyTJKUCGlSnFSy02TTzeOyCiQcDViX26qVz2TAyYtWmEMwuoZ3M7V40LcB79pHkc0svpvzY8jD//87nxf+3Pyn8v/ZO8v+VNyP/2mZJumI1QCWSI8232Hjumitlfw5+qPp/9l8TCt76JP//xkdx/wsXWCzjtWFkwTCkbWFe9plPk/+ga4Txz/xt/D/hkN//gMXif21a+NbyWjIwoRiy6GDT5rP/mlFsPfyp5n/NpOj/22+0gMUXXIz/H7hC/L/bFKFbPDZMrHAD5H35OPt2J9zacDv/f3V7xv9FhwrBGubsT/1//Pjx/1GJ/mD+/nfl/1v3Ovy3KRJNQbHdOlXCvOO03/+pm1P/v3v37n90hhtYw9HPtf8Xb2v937cmHswHeWPRxYj/LvkK3igGKARwicTO07118H3V/5kbi/4vPZMJtK3s/6YH2f+Pfq1B8VbjWrdnMu5s4nAD9CNFhKwz5DTUvLl419zKvAcLtG1P84BRl/b/5M/6/6f/NPzf/qzo84yj0Uus0xUU4Zor54bm9+4OfZG02OCuoAMTb9ZkC9ull1Nvrr2Z+XvRpaRfc65H/68F+jl9svEhzyLFWoccWVc+eyTHq/twydjlKRln7jX9bNMkMJnbhoFRL1xCqmKx6/yi2fYXa/c5/e846PV/5fW0/7OPx/yfcjzop34ulxdGGvDuU8mMXaX507lBuiN6ueadmQeT/p/93vf/1O+G//sP5fw/eL3o/5JLif8zVxs+Tlir9S26UyeFQQvJGBE7FvaFZ9LfN+1y+WjbItSb3GmXvXd15v8zroH/HxgE/D+aGPx/18vi/z07PeZNPRKxe/Kh0Ae8toxscCO4zBkYXArk9C1SxJUYjBkYPPIVtbbuTftz3cz//2O9wP/75iSAXdO72/dt2HL5F6YlfBW4MiJYXMiBiW3t7azHBx+V/t89N+H/8a+1//e9K/9attDp5LQjYX8SuvVL8RoAkmxa65299Erq1FnHo0qrl7t4BddriIs4MrM3rfWcFd+pGwVSAwBZ0bKP8yrZPAAAAABJRU5ErkJggg==') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
-.linkify.youtube {\n\
+.linkify.youtube::before {\n\
+  content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAMCAYAAABr5z2BAAABIklEQVQoz53LvUrDUBjG8bOoOammSf1IoBSvoCB4JeIqOHgBLt6AIMRBBQelWurQ2kERnMRBsBUcIp5FJSBI5oQsJVkkUHh8W0o5nhaFHvjBgef/Mq+Q46RJBMkI/vE+aOus956tnEswIZe1LV0QyJ5sE2GzgZfVMtRNIdiDpccEssdlB1mW4bvTwdvWJtRdErM7U+8S/FJykCRJX5qm+KpVce8UMNLRLbulz4iSjTAMh6Iowsd5BeNadp3nUF0VlxAEwZBotXC0Usa4ll3meZdA1iguwvf9vpvDA2wvmKgYGtSud8suDB4TyGr2PF49D/vra9jRZ1BVdknMzgwuCGSnZEObwu6sBnVTCHZiaC7BhFx2PKdxUidiAH/4lLo9Mv0DELVs9qsOHXwAAAAASUVORK5CYII=') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
@@ -4591,7 +4817,7 @@ $ = (function() {
   $.clear = function(cb) {
     var id;
     $["delete"](Object.keys(Conf));
-    $["delete"](['previousversion', 'AutoWatch', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']);
+    $["delete"](['previousversion', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']);
     $["delete"]((function() {
       var i, len, ref, results;
       ref = ['embedding', 'updater', 'thread-stats', 'thread-watcher', 'qr'];
@@ -4836,17 +5062,19 @@ CatalogThread = (function() {
     };
 
     function CatalogThread(root, thread) {
+      var post;
       this.thread = thread;
       this.ID = this.thread.ID;
       this.board = this.thread.board;
+      post = this.thread.OP.nodes.post;
       this.nodes = {
         root: root,
-        thumb: $('.catalog-thumb', root),
-        icons: $('.catalog-icons', root),
-        postCount: $('.post-count', root),
-        fileCount: $('.file-count', root),
-        pageCount: $('.page-count', root),
-        comment: $('.comment', root)
+        thumb: $('.catalog-thumb', post),
+        icons: $('.catalog-icons', post),
+        postCount: $('.post-count', post),
+        fileCount: $('.file-count', post),
+        pageCount: $('.page-count', post),
+        replies: null
       };
       this.thread.catalogView = this;
     }
@@ -4914,9 +5142,9 @@ DataBoard = (function() {
   DataBoard = (function() {
     DataBoard.keys = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads', 'customTitles'];
 
-    function DataBoard(key, sync, dontClean) {
+    function DataBoard(key1, sync, dontClean) {
       var init;
-      this.key = key;
+      this.key = key1;
       this.onSync = bind(this.onSync, this);
       this.data = Conf[this.key];
       $.sync(this.key, this.onSync);
@@ -4982,10 +5210,14 @@ DataBoard = (function() {
       }
     };
 
-    DataBoard.prototype.set = function(arg, cb) {
+    DataBoard.prototype.set = function(data, cb) {
+      $.forceSync(this.key);
+      return this.setUnsafe(data, cb);
+    };
+
+    DataBoard.prototype.setUnsafe = function(arg, cb) {
       var base, base1, base2, boardID, postID, threadID, val;
       boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, val = arg.val;
-      $.forceSync(this.key);
       if (postID !== void 0) {
         ((base = ((base1 = this.data.boards)[boardID] || (base1[boardID] = {})))[threadID] || (base[threadID] = {}))[postID] = val;
       } else if (threadID !== void 0) {
@@ -4994,6 +5226,30 @@ DataBoard = (function() {
         this.data.boards[boardID] = val;
       }
       return this.save(cb);
+    };
+
+    DataBoard.prototype.extend = function(arg, cb) {
+      var boardID, i, key, len, oldVal, postID, ref, rm, threadID, val;
+      boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, val = arg.val, rm = arg.rm;
+      $.forceSync(this.key);
+      oldVal = this.get({
+        boardID: boardID,
+        threadID: threadID,
+        postID: postID,
+        val: {}
+      });
+      ref = rm || [];
+      for (i = 0, len = ref.length; i < len; i++) {
+        key = ref[i];
+        delete oldVal[key];
+      }
+      $.extend(oldVal, val);
+      return this.setUnsafe({
+        boardID: boardID,
+        threadID: threadID,
+        postID: postID,
+        val: oldVal
+      }, cb);
     };
 
     DataBoard.prototype.get = function(arg) {
@@ -5601,6 +5857,7 @@ Post = (function() {
         nameBlock: $('.nameBlock', info),
         quote: $('.postNum > a:nth-of-type(2)', info),
         reply: $('.replylink', info),
+        fileRoot: $('.file', post),
         comment: $('.postMessage', post),
         links: [],
         quotelinks: [],
@@ -5688,17 +5945,18 @@ Post = (function() {
     };
 
     Post.prototype.parseFile = function() {
-      var fileEl, fileText, info, link, m, ref, ref1, ref2, size, thumb, unit;
-      if (!(fileEl = $('.file', this.nodes.post))) {
+      var fileRoot, fileText, info, link, m, ref, ref1, ref2, size, thumb, unit;
+      fileRoot = this.nodes.fileRoot;
+      if (!fileRoot) {
         return;
       }
-      if (!(link = $('.fileText > a, .fileText-original > a', fileEl))) {
+      if (!(link = $('.fileText > a, .fileText-original > a', fileRoot))) {
         return;
       }
       if (!(info = (ref = link.nextSibling) != null ? ref.textContent.match(/\(([\d.]+ [KMG]?B).*\)/) : void 0)) {
         return;
       }
-      fileText = fileEl.firstElementChild;
+      fileText = fileRoot.firstElementChild;
       this.file = {
         text: fileText,
         link: link,
@@ -5716,15 +5974,21 @@ Post = (function() {
         size *= 1024;
       }
       this.file.sizeInBytes = size;
-      if ((thumb = $('.fileThumb > [data-md5]', fileEl))) {
+      if ((thumb = $('a.fileThumb > [data-md5]', fileRoot))) {
         return $.extend(this.file, {
           thumb: thumb,
+          thumbLink: thumb.parentNode,
           thumbURL: (m = link.href.match(/\d+(?=\.\w+$)/)) ? location.protocol + "//i.4cdn.org/" + this.board + "/" + m[0] + "s.jpg" : void 0,
           MD5: thumb.dataset.md5,
           isSpoiler: $.hasClass(thumb.parentNode, 'imgspoiler')
         });
       }
     };
+
+    Post.deadMark = $.el('span', {
+      textContent: '\u00A0(Dead)',
+      className: 'qmark-dead'
+    });
 
     Post.prototype.kill = function(file) {
       var clone, j, k, len, len1, quotelink, ref, ref1, strong;
@@ -5766,7 +6030,7 @@ Post = (function() {
         if (!(!$.hasClass(quotelink, 'deadlink'))) {
           continue;
         }
-        quotelink.textContent = quotelink.textContent + '\u00A0(Dead)';
+        $.add(quotelink, Post.deadMark.cloneNode(true));
         $.addClass(quotelink, 'deadlink');
       }
     };
@@ -5795,7 +6059,7 @@ Post = (function() {
         if (!($.hasClass(quotelink, 'deadlink'))) {
           continue;
         }
-        quotelink.textContent = quotelink.textContent.replace('\u00A0(Dead)', '');
+        $.rm($('.qmark-dead', quotelink));
         $.rmClass(quotelink, 'deadlink');
       }
     };
@@ -5820,6 +6084,13 @@ Post = (function() {
       }
     };
 
+    Post.prototype.setCatalogOP = function(isCatalogOP) {
+      this.nodes.root.classList.toggle('catalog-container', isCatalogOP);
+      this.nodes.root.classList.toggle('opContainer', !isCatalogOP);
+      this.nodes.post.classList.toggle('catalog-post', isCatalogOP);
+      return this.nodes.post.classList.toggle('op', !isCatalogOP);
+    };
+
     return Post;
 
   })();
@@ -5839,7 +6110,7 @@ Post = (function() {
     _Class.prototype.isClone = true;
 
     function _Class(origin, context, contractThumb) {
-      var base, file, i, inline, inlined, j, k, key, l, len, len1, len2, len3, node, nodes, ref, ref1, ref2, ref3, ref4, ref5, root, val;
+      var base, fileRoot, i, inline, inlined, j, k, key, l, len, len1, len2, len3, node, nodes, ref, ref1, ref2, ref3, ref4, ref5, root, val;
       this.origin = origin;
       this.context = context;
       ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
@@ -5870,6 +6141,12 @@ Post = (function() {
       root.hidden = false;
       $.rmClass(root, 'forwarded');
       $.rmClass(this.nodes.post, 'highlight');
+      if (!this.isReply) {
+        this.setCatalogOP(false);
+        $.rm($('.catalog-link', this.nodes.post));
+        $.rm($('.catalog-stats', this.nodes.post));
+        $.rm($('.catalog-replies', this.nodes.post));
+      }
       this.parseQuotes();
       this.quotes = slice.call(this.origin.quotes);
       if (this.origin.file) {
@@ -5879,11 +6156,12 @@ Post = (function() {
           val = ref4[key];
           this.file[key] = val;
         }
-        file = $('.file', this.nodes.post);
-        this.file.text = file.firstElementChild;
-        this.file.link = $('.fileText > a, .fileText-original', file);
-        this.file.thumb = $('.fileThumb > [data-md5]', file);
-        this.file.fullImage = $('.full-image', file);
+        fileRoot = this.nodes.fileRoot;
+        this.file.text = fileRoot.firstElementChild;
+        this.file.link = $('.fileText > a, .fileText-original', fileRoot);
+        this.file.thumb = $('a.fileThumb > [data-md5]', fileRoot);
+        this.file.thumbLink = this.file.thumb.parentNode;
+        this.file.fullImage = $('.full-image', fileRoot);
         this.file.videoControls = $('.video-controls', this.file.text);
         if (this.file.videoThumb) {
           this.file.thumb.muted = true;
@@ -6167,6 +6445,10 @@ Thread = (function() {
       this.ipCount = void 0;
       this.OP = null;
       this.catalogView = null;
+      this.nodes = {
+        root: null,
+        placeholder: null
+      };
       this.board.threads.push(this.ID, this);
       g.threads.push(this.fullID, this);
     }
@@ -6268,15 +6550,15 @@ Redirect = (function() {
   Redirect = {
     archives: [
       { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ] },
-      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr" ], "files": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr" ] },
+      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr" ], "files": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr" ] },
       { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "fuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ] },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
       { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ] },
       { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ], "files": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ] },
       { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v" ], "files": [] },
       { "uid": 5, "name": "Love is Over", "domain": "archive.loveisover.me", "http": true, "https": false, "software": "foolfuuka", "boards": [ "c", "d", "e", "i", "lgbt", "t", "u" ], "files": [ "c", "d", "e", "i", "lgbt", "t", "u" ] },
-      { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
-      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": false, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "gd", "po", "qst" ] },
+      { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
+      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": false, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "gd", "po", "qst" ], "search": [ "aco", "adv", "an", "asp", "b", "c", "cgl", "ck", "cm", "con", "d", "diy", "e", "f", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "n", "news", "o", "out", "p", "po", "q", "qa", "qst", "r", "s", "soc", "trv", "u", "w", "wg", "wsg", "wsr", "x", "y" ] },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": false, "software": "foolfuuka", "boards": [ "b" ], "files": [ "b" ] },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": false, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ] }
     ],
@@ -7236,6 +7518,7 @@ ThreadHiding = (function() {
         return this.catalogWatch();
       }
       this.catalogSet(g.BOARD);
+      $.on(d, 'IndexRefreshInternal', this.onIndexRefresh);
       return Callbacks.Post.push({
         name: 'Thread Hiding',
         cb: this.node
@@ -7308,15 +7591,14 @@ ThreadHiding = (function() {
       }
       return $.prepend(this.nodes.root, ThreadHiding.makeButton(this.thread, 'hide'));
     },
-    onIndexBuild: function(nodes) {
-      var i, len, root, thread;
-      for (i = 0, len = nodes.length; i < len; i++) {
-        root = nodes[i];
-        thread = Get.threadFromRoot(root);
+    onIndexRefresh: function() {
+      return g.BOARD.threads.forEach(function(thread) {
+        var root;
+        root = thread.nodes.root;
         if (thread.isHidden && thread.stub && !root.contains(thread.stub)) {
-          ThreadHiding.makeStub(thread, root);
+          return ThreadHiding.makeStub(thread, root);
         }
-      }
+      });
     },
     menu: {
       init: function() {
@@ -7482,7 +7764,7 @@ ThreadHiding = (function() {
       if (thread.isHidden) {
         return;
       }
-      threadRoot = thread.OP.nodes.root.parentNode;
+      threadRoot = thread.nodes.root;
       thread.isHidden = true;
       if (Conf['JSON Index']) {
         Index.updateHideLabel();
@@ -7498,7 +7780,7 @@ ThreadHiding = (function() {
         $.rm(thread.stub);
         delete thread.stub;
       }
-      threadRoot = thread.OP.nodes.root.parentNode;
+      threadRoot = thread.nodes.root;
       threadRoot.hidden = thread.isHidden = false;
       if (Conf['JSON Index']) {
         return Index.updateHideLabel();
@@ -7687,6 +7969,15 @@ Build = (function() {
       html = html.replace(/<br\b[^<]*>/gi, '\n').replace(/\n\n<span\b[^<]* class="abbr"[^]*$/i, '').replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '').replace(/<span\b[^<]* class="fortune"[^]*$/i, '').replace(/<[^>]*>/g, '');
       return Build.unescape(html);
     },
+    parseCommentDisplay: function(html) {
+      var html2;
+      if (!(Conf['Remove Spoilers'] || Conf['Reveal Spoilers'])) {
+        while ((html2 = html.replace(/<s>(?:(?!<\/?s>).)*<\/s>/g, '[spoiler]')) !== html) {
+          html = html2;
+        }
+      }
+      return Build.parseComment(html).trim().replace(/\s+$/gm, '');
+    },
     postFromObject: function(data, boardID, suppressThumb) {
       var o;
       o = Build.parseJSON(data, boardID);
@@ -7773,42 +8064,38 @@ Build = (function() {
         href: "/" + boardID + "/thread/" + threadID
       });
     },
-    thread: function(board, data) {
-      var OP, root;
-      Build.spoilerRange[board] = data.custom_spoiler;
-      if (OP = board.posts[data.no]) {
-        if (OP.isFetchedQuote) {
-          OP = null;
-        }
-      }
-      if (OP && (root = OP.nodes.root.parentNode)) {
+    thread: function(thread, data) {
+      var files, posts, ref, root, summary;
+      if ((root = thread.nodes.root)) {
         $.rmAll(root);
+        if (thread.nodes.placeholder) {
+          thread.nodes.placeholder = null;
+          thread.OP.setCatalogOP(false);
+        }
       } else {
-        root = $.el('div', {
+        thread.nodes.root = root = $.el('div', {
           className: 'thread',
           id: "t" + data.no
         });
       }
-      $.add(root, Build.excerptThread(board, data, OP));
-      return root;
-    },
-    excerptThread: function(board, data, OP) {
-      var files, nodes, posts, ref;
-      nodes = [OP ? OP.nodes.root : Build.postFromObject(data, board.ID, true)];
+      if (Build.hat) {
+        $.add(root, Build.hat.cloneNode(false));
+      }
+      $.add(root, thread.OP.nodes.root);
       if (data.omitted_posts || !Conf['Show Replies'] && data.replies) {
         ref = Conf['Show Replies'] ? [
           data.omitted_posts, data.images - data.last_replies.filter(function(data) {
             return !!data.ext;
           }).length
         ] : [data.replies, data.images], posts = ref[0], files = ref[1];
-        nodes.push(Build.summary(board.ID, data.no, posts, files));
+        summary = Build.summary(thread.board.ID, data.no, posts, files);
+        $.add(root, summary);
       }
-      return nodes;
+      return root;
     },
-    catalogThread: function(thread) {
-      var br, cc, comment, data, exif, fileCount, gifIcon, href, i, imgClass, j, k, l, len, len1, len2, len3, pageCount, postCount, pp, quote, ref, ref1, ref2, ref3, ref4, root, spoilerRange, src, staticPath;
+    catalogThread: function(thread, data, pageCount) {
+      var container, fileCount, gifIcon, imgClass, postCount, root, spoilerRange, src, staticPath;
       staticPath = Build.staticPath, gifIcon = Build.gifIcon;
-      data = Index.liveThreadData[Index.liveThreadIDs.indexOf(thread.ID)];
       if (data.spoiler && !Conf['Reveal Spoiler Thumbnails']) {
         src = staticPath + "spoiler";
         if (spoilerRange = Build.spoilerRange[thread.board]) {
@@ -7827,70 +8114,44 @@ Build = (function() {
       }
       postCount = data.replies + 1;
       fileCount = data.images + !!data.ext;
-      pageCount = Math.floor(Index.liveThreadIDs.indexOf(thread.ID) / Index.threadsNumPerPage) + 1;
-      comment = {
-        innerHTML: data.com || ''
-      };
+      container = $.el('div', {
+        innerHTML: "<a class=\"catalog-link\" href=\"/" + E(thread.board) + "/thread/" + E(thread.ID) + "\"><img src=\"" + E(src) + "\"" + ((imgClass) ? " class=\"catalog-thumb " + E(imgClass) + "\"" : " class=\"catalog-thumb\" data-width=\"" + E(data.tn_w) + "\" data-height=\"" + E(data.tn_h) + "\"") + "></a><div class=\"catalog-stats\"><span title=\"Posts / Files / Page\"><span class=\"post-count" + ((data.bumplimit) ? " warning" : "") + "\">" + E(postCount) + "</span> / <span class=\"file-count" + ((data.imagelimit) ? " warning" : "") + "\">" + E(fileCount) + "</span> / <span class=\"page-count\">" + E(pageCount) + "</span></span><span class=\"catalog-icons\">" + ((thread.isSticky) ? "<img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" class=\"stickyIcon\" title=\"Sticky\">" : "") + ((thread.isClosed) ? "<img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" class=\"closedIcon\" title=\"Closed\">" : "") + "</span></div>"
+      });
+      $.before(thread.OP.nodes.info, slice.call(container.childNodes));
       root = $.el('div', {
-        className: 'catalog-thread'
+        className: 'thread catalog-thread',
+        id: "t" + thread
       });
-      $.extend(root, {
-        innerHTML: "<a href=\"/" + E(thread.board) + "/thread/" + E(thread.ID) + "\"><img src=\"" + E(src) + "\"" + ((imgClass) ? " class=\"catalog-thumb " + E(imgClass) + "\"" : " class=\"catalog-thumb\" data-width=\"" + E(data.tn_w) + "\" data-height=\"" + E(data.tn_h) + "\"") + "></a><div class=\"catalog-stats\"><span title=\"Posts / Files / Page\"><span class=\"post-count\">" + E(postCount) + "</span> / <span class=\"file-count\">" + E(fileCount) + "</span> / <span class=\"page-count\">" + E(pageCount) + "</span></span><span class=\"catalog-icons\"></span></div>" + ((thread.OP.info.subject) ? "<div class=\"subject\">" + E(thread.OP.info.subject) + "</div>" : "") + "<div class=\"comment\">" + (comment).innerHTML + "</div>"
-      });
-      root.dataset.fullID = thread.fullID;
       if (thread.OP.highlights) {
         $.addClass.apply($, [root].concat(slice.call(thread.OP.highlights)));
       }
-      ref = $$('.quotelink', root.lastElementChild);
-      for (i = 0, len = ref.length; i < len; i++) {
-        quote = ref[i];
-        href = quote.getAttribute('href');
-        if (href[0] === '#') {
-          quote.href = ("/" + thread.board + "/thread/" + thread.ID) + href;
-        }
-      }
-      ref1 = $$('.abbr, .exif', root.lastElementChild);
-      for (j = 0, len1 = ref1.length; j < len1; j++) {
-        exif = ref1[j];
-        $.rm(exif);
-      }
-      ref2 = $$('.prettyprint', root.lastElementChild);
-      for (k = 0, len2 = ref2.length; k < len2; k++) {
-        pp = ref2[k];
-        cc = $.el('span', {
-          className: 'catalog-code'
-        });
-        $.add(cc, slice.call(pp.childNodes));
-        $.replace(pp, cc);
-      }
-      ref3 = $$('br', root.lastElementChild);
-      for (l = 0, len3 = ref3.length; l < len3; l++) {
-        br = ref3[l];
-        if (((ref4 = br.previousSibling) != null ? ref4.nodeName : void 0) === 'BR') {
-          $.rm(br);
-        }
-      }
-      if (thread.isSticky) {
-        $.add($('.catalog-icons', root), $.el('img', {
-          src: staticPath + "sticky" + gifIcon,
-          className: 'stickyIcon',
-          title: 'Sticky'
-        }));
-      }
-      if (thread.isClosed) {
-        $.add($('.catalog-icons', root), $.el('img', {
-          src: staticPath + "closed" + gifIcon,
-          className: 'closedIcon',
-          title: 'Closed'
-        }));
-      }
-      if (data.bumplimit) {
-        $.addClass($('.post-count', root), 'warning');
-      }
-      if (data.imagelimit) {
-        $.addClass($('.file-count', root), 'warning');
+      if (!thread.OP.file) {
+        $.addClass(root, 'noFile');
       }
       return root;
+    },
+    catalogReply: function(thread, data) {
+      var excerpt, link;
+      excerpt = '';
+      if (data.com) {
+        excerpt = Build.parseCommentDisplay(data.com).replace(/>>\d+/g, '').trim().replace(/\n+/g, ' // ');
+      }
+      if (data.ext) {
+        excerpt || (excerpt = "" + data.filename + data.ext);
+      }
+      if (data.com) {
+        excerpt || (excerpt = Build.unescape(data.com.replace(/<br\b[^<]*>/gi, ' // ')));
+      }
+      excerpt || (excerpt = '\xA0');
+      if (excerpt.length > 73) {
+        excerpt = excerpt.slice(0, 70) + "...";
+      }
+      link = Build.postURL(thread.board.ID, thread.ID, data.no);
+      return $.el('div', {
+        className: 'catalog-reply'
+      }, {
+        innerHTML: "<span><time data-utc=\"" + E(data.time * 1000) + "\" data-abbrev=\"1\">...</time>: </span><a class=\"catalog-reply-excerpt\" href=\"" + E(link) + "\">" + E(excerpt) + "</a><a class=\"catalog-reply-preview\" href=\"" + E(link) + "\">...</a>"
+      });
     }
   };
 
@@ -8664,8 +8925,13 @@ Index = (function() {
     showHiddenThreads: false,
     changed: {},
     init: function() {
-      var anchorEntry, input, j, k, label, len, len1, name, pinEntry, ref, ref1, ref2, ref3, ref4, ref5, ref6, refNavEntry, repliesEntry, select, sortEntry;
-      if (g.BOARD.ID === 'f' || !Conf['JSON Index'] || g.VIEW !== 'index') {
+      var anchorEntry, hoverEntry, input, j, k, label, len, len1, name, pinEntry, ref, ref1, ref2, ref3, ref4, ref5, ref6, refNavEntry, repliesEntry, select, sortEntry;
+      if (!(g.VIEW === 'index' && g.BOARD.ID !== 'f')) {
+        return;
+      }
+      $.one(d, '4chanXInitFinished', this.cb.initFinished);
+      $.on(d, 'PostsInserted', this.cb.postsInserted);
+      if (!Conf['JSON Index']) {
         return;
       }
       Callbacks.CatalogThread.push({
@@ -8682,7 +8948,8 @@ Index = (function() {
       this.processHash();
       $.addClass(doc, 'index-loading', (Conf['Index Mode'].replace(/\ /g, '-')) + "-mode");
       $.on(window, 'popstate', this.cb.popstate);
-      $.on(d, 'scroll', Index.scroll);
+      $.on(d, 'scroll', this.scroll);
+      $.on(d, 'SortIndex', this.cb.resort);
       this.button = $.el('a', {
         className: 'fa fa-refresh',
         title: 'Refresh',
@@ -8696,6 +8963,9 @@ Index = (function() {
       repliesEntry = {
         el: UI.checkbox('Show Replies', 'Show replies')
       };
+      hoverEntry = {
+        el: UI.checkbox('Catalog Hover Expand', 'Catalog hover expand')
+      };
       sortEntry = {
         el: UI.checkbox('Per-Board Sort Type', 'Per-board sort type', typeof Conf['Index Sort'] === 'object')
       };
@@ -8708,11 +8978,12 @@ Index = (function() {
       refNavEntry = {
         el: UI.checkbox('Refreshed Navigation', 'Refreshed navigation')
       };
+      hoverEntry.el.title = 'Expand the comment and show more details when you hover over a thread in the catalog.';
       sortEntry.el.title = 'Set the sorting order of each board independently.';
       pinEntry.el.title = 'Move watched threads to the start of the index.';
       anchorEntry.el.title = 'Move hidden threads to the end of the index.';
       refNavEntry.el.title = 'Refresh index when navigating through pages.';
-      ref4 = [repliesEntry, pinEntry, anchorEntry, refNavEntry];
+      ref4 = [repliesEntry, hoverEntry, pinEntry, anchorEntry, refNavEntry];
       for (j = 0, len = ref4.length; j < len; j++) {
         label = ref4[j];
         input = label.el.firstChild;
@@ -8721,6 +8992,9 @@ Index = (function() {
         switch (name) {
           case 'Show Replies':
             $.on(input, 'change', this.cb.replies);
+            break;
+          case 'Catalog Hover Expand':
+            $.on(input, 'change', this.cb.hover);
             break;
           case 'Pin Watched Threads':
           case 'Anchor Hidden Threads':
@@ -8733,7 +9007,7 @@ Index = (function() {
           textContent: 'Index Navigation'
         }),
         order: 100,
-        subEntries: [repliesEntry, sortEntry, pinEntry, anchorEntry, refNavEntry]
+        subEntries: [repliesEntry, hoverEntry, sortEntry, pinEntry, anchorEntry, refNavEntry]
       });
       this.navLinks = $.el('div', {
         className: 'navLinks json-index'
@@ -8769,6 +9043,7 @@ Index = (function() {
         className: 'board json-index'
       });
       this.cb.size();
+      this.cb.hover();
       this.pagelist = $.el('div', {
         className: 'pagelist json-index'
       });
@@ -8782,28 +9057,30 @@ Index = (function() {
         return d.title = d.title.replace(/\ -\ Page\ \d+/, '');
       });
       $.onExists(doc, '.board > .thread > .postContainer, .board + *', function() {
-        var board, el, l, len2, len3, m, ref7, ref8, threadRoot, topNavPos;
-        Index.hat = $('.board > .thread > img:first-child');
-        if (Index.hat) {
+        var ID, board, el, l, len2, ref7, ref8, threadRoot, topNavPos;
+        Build.hat = $('.board > .thread > img:first-child');
+        if (Build.hat) {
           if (Index.nodes) {
             ref7 = Index.nodes;
-            for (l = 0, len2 = ref7.length; l < len2; l++) {
-              threadRoot = ref7[l];
-              $.prepend(threadRoot, Index.hat.cloneNode(false));
+            for (ID in ref7) {
+              threadRoot = ref7[ID];
+              $.prepend(threadRoot, Build.hat.cloneNode(false));
             }
           }
           $.addClass(doc, 'hats-enabled');
-          $.addStyle(".catalog-thread::after {background-image: url(" + Index.hat.src + ");}");
+          $.addStyle(".catalog-thread::after {background-image: url(" + Build.hat.src + ");}");
         }
         board = $('.board');
         $.replace(board, Index.root);
-        $.event('PostsInserted');
+        if (Index.nodes) {
+          $.event('PostsInserted');
+        }
         try {
           d.implementation.createDocument(null, null, null).appendChild(board);
         } catch (_error) {}
         ref8 = $$('.navLinks');
-        for (m = 0, len3 = ref8.length; m < len3; m++) {
-          el = ref8[m];
+        for (l = 0, len2 = ref8.length; l < len2; l++) {
+          el = ref8[l];
           $.rm(el);
         }
         $.rm($.id('ctrl-top'));
@@ -8820,7 +9097,7 @@ Index = (function() {
       });
     },
     scroll: function() {
-      var nodes, pageNum;
+      var pageNum, threads;
       if (Index.req || !Index.liveThreadData || Conf['Index Mode'] !== 'infinite' || (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight))) {
         return;
       }
@@ -8831,11 +9108,8 @@ Index = (function() {
       if (pageNum > Index.pagesNum) {
         return Index.endNotice();
       }
-      nodes = Index.buildSinglePage(pageNum);
-      if (Conf['Show Replies']) {
-        Index.buildReplies(nodes);
-      }
-      return Index.buildStructure(nodes);
+      threads = Index.threadsOnPage(pageNum);
+      return Index.buildStructure(threads);
     },
     endNotice: (function() {
       var notify, reset;
@@ -8886,20 +9160,17 @@ Index = (function() {
       }
     },
     catalogNode: function() {
-      return $.on(this.nodes.thumb.parentNode, 'click', Index.onClick);
-    },
-    onClick: function(e) {
-      var thread;
-      if (e.button !== 0) {
-        return;
-      }
-      thread = g.threads[this.parentNode.dataset.fullID];
-      if (e.shiftKey) {
-        Index.toggleHide(thread);
-      } else {
-        return;
-      }
-      return e.preventDefault();
+      return $.on(this.nodes.root, 'mousedown click', (function(_this) {
+        return function(e) {
+          if (!(e.button === 0 && e.shiftKey)) {
+            return;
+          }
+          if (e.type === 'click') {
+            Index.toggleHide(_this.thread);
+          }
+          return e.preventDefault();
+        };
+      })(this));
     },
     toggleHide: function(thread) {
       $.rm(thread.catalogView.nodes.root);
@@ -8931,9 +9202,30 @@ Index = (function() {
       return $.event('change', null, Index.selectSort);
     },
     cb: {
+      initFinished: function() {
+        Index.initFinishedFired = true;
+        return $.queueTask(function() {
+          return Index.cb.postsInserted();
+        });
+      },
+      postsInserted: function() {
+        var n;
+        if (!Index.initFinishedFired) {
+          return;
+        }
+        n = 0;
+        g.posts.forEach(function(post) {
+          if (!post.isFetchedQuote && !post.indexRefreshSeen && doc.contains(post.nodes.root)) {
+            post.indexRefreshSeen = true;
+            return n++;
+          }
+        });
+        if (n) {
+          return $.event('IndexRefresh');
+        }
+      },
       toggleHiddenThreads: function() {
         $('#hidden-toggle a', Index.navLinks).textContent = (Index.showHiddenThreads = !Index.showHiddenThreads) ? 'Hide' : 'Show';
-        Index.sort();
         return Index.buildIndex();
       },
       mode: function() {
@@ -8948,9 +9240,12 @@ Index = (function() {
         });
         return Index.pageLoad(false);
       },
-      resort: function() {
-        Index.sort();
-        return Index.buildIndex();
+      resort: function(e) {
+        var ref;
+        Index.changed.order = true;
+        if (!(e != null ? (ref = e.detail) != null ? ref.deferred : void 0 : void 0)) {
+          return Index.pageLoad(false);
+        }
       },
       perBoardSort: function() {
         Conf['Index Sort'] = this.checked ? {} : '';
@@ -8975,6 +9270,12 @@ Index = (function() {
         Index.buildThreads();
         Index.sort();
         return Index.buildIndex();
+      },
+      hover: function() {
+        doc.classList.toggle('catalog-hover-expand', Conf['Catalog Hover Expand']);
+        if (Conf['Show Replies'] && Conf['Catalog Hover Expand']) {
+          return Index.cb.replies();
+        }
       },
       popstate: function(e) {
         var mode, nCommands, page, ref, searched, sort;
@@ -9153,18 +9454,20 @@ Index = (function() {
       return $.set('Index Sort', Conf['Index Sort']);
     },
     pageLoad: function(scroll) {
-      var hash, mode, page, ref, search, sort, threads;
+      var hash, mode, order, page, ref, search, sort, threads;
       if (scroll == null) {
         scroll = true;
       }
       if (!Index.liveThreadData) {
         return;
       }
-      ref = Index.changed, threads = ref.threads, search = ref.search, mode = ref.mode, sort = ref.sort, page = ref.page, hash = ref.hash;
-      if (threads || search || sort) {
+      ref = Index.changed, threads = ref.threads, order = ref.order, search = ref.search, mode = ref.mode, sort = ref.sort, page = ref.page, hash = ref.hash;
+      threads || (threads = search);
+      order || (order = sort);
+      if (threads || order) {
         Index.sort();
       }
-      if (threads || search) {
+      if (threads) {
         Index.buildPagelist();
       }
       if (search) {
@@ -9176,10 +9479,10 @@ Index = (function() {
       if (sort) {
         Index.setupSort();
       }
-      if (threads || search || mode || page || sort) {
+      if (threads || mode || page || order) {
         Index.buildIndex();
       }
-      if (threads || search || mode || page) {
+      if (threads || page) {
         Index.setPage();
       }
       if (scroll && !hash) {
@@ -9207,7 +9510,7 @@ Index = (function() {
     },
     getPagesNum: function() {
       if (Index.search) {
-        return Math.ceil(Index.sortedNodes.length / Index.threadsNumPerPage);
+        return Math.ceil(Index.sortedThreads.length / Index.threadsNumPerPage);
       } else {
         return Index.pagesNum;
       }
@@ -9380,7 +9683,7 @@ Index = (function() {
       return Index.pageLoad();
     },
     parseThreadList: function(pages) {
-      var ref;
+      var data, j, len, ref, ref1;
       Index.pagesNum = pages.length;
       Index.threadsNumPerPage = ((ref = pages[0]) != null ? ref.threads.length : void 0) || 1;
       Index.liveThreadData = pages.reduce((function(arr, next) {
@@ -9389,43 +9692,53 @@ Index = (function() {
       Index.liveThreadIDs = Index.liveThreadData.map(function(data) {
         return data.no;
       });
+      Index.liveThreadDict = {};
+      ref1 = Index.liveThreadData;
+      for (j = 0, len = ref1.length; j < len; j++) {
+        data = ref1[j];
+        Index.liveThreadDict[data.no] = data;
+      }
+      if (Index.liveThreadData[0]) {
+        Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler;
+      }
       g.BOARD.threads.forEach(function(thread) {
-        var ref1;
-        if (ref1 = thread.ID, indexOf.call(Index.liveThreadIDs, ref1) < 0) {
+        var ref2;
+        if (ref2 = thread.ID, indexOf.call(Index.liveThreadIDs, ref2) < 0) {
           return thread.collect();
         }
       });
     },
     buildThreads: function() {
-      var err, errors, i, j, len, posts, ref, thread, threadData, threadRoot, threads;
+      var OP, err, errors, i, j, len, posts, ref, thread, threadData, threads;
       if (!Index.liveThreadData) {
         return;
       }
-      Index.nodes = [];
+      Index.nodes = {};
       threads = [];
       posts = [];
       ref = Index.liveThreadData;
       for (i = j = 0, len = ref.length; j < len; i = ++j) {
         threadData = ref[i];
         try {
-          threadRoot = Build.thread(g.BOARD, threadData);
-          if (Index.hat) {
-            $.prepend(threadRoot, Index.hat.cloneNode(false));
-          }
-          if (thread = g.BOARD.threads[threadData.no]) {
+          if ((thread = g.BOARD.threads[threadData.no])) {
             thread.setCount('post', threadData.replies + 1, threadData.bumplimit);
             thread.setCount('file', threadData.images + !!threadData.ext, threadData.imagelimit);
             thread.setStatus('Sticky', !!threadData.sticky);
             thread.setStatus('Closed', !!threadData.closed);
+            if (thread.catalogView) {
+              $.rm(thread.catalogView.nodes.replies);
+              thread.catalogView.nodes.replies = null;
+            }
           } else {
             thread = new Thread(threadData.no, g.BOARD);
             threads.push(thread);
           }
-          Index.nodes.push(threadRoot);
-          if (!(thread.OP && !thread.OP.isFetchedQuote)) {
-            posts.push(new Post($('.opContainer', threadRoot), thread, g.BOARD));
+          if (!((OP = thread.OP) && !OP.isFetchedQuote)) {
+            OP = new Post(Build.postFromObject(threadData, g.BOARD.ID, true), thread, g.BOARD);
+            posts.push(OP);
           }
           thread.setPage(Math.floor(i / Index.threadsNumPerPage) + 1);
+          Index.nodes[thread.ID] = Build.thread(thread, threadData);
         } catch (_error) {
           err = _error;
           if (!errors) {
@@ -9440,20 +9753,17 @@ Index = (function() {
       if (errors) {
         Main.handleErrors(errors);
       }
-      $.nodes(Index.nodes);
       Main.callbackNodes('Thread', threads);
       Main.callbackNodes('Post', posts);
       Index.updateHideLabel();
-      return $.event('IndexRefresh');
+      return $.event('IndexRefreshInternal');
     },
-    buildReplies: function(threadRoots) {
-      var data, err, errors, i, j, k, lastReplies, len, len1, node, nodes, post, posts, thread, threadRoot;
+    buildReplies: function(threads) {
+      var data, err, errors, j, k, lastReplies, len, len1, node, nodes, post, posts, thread;
       posts = [];
-      for (j = 0, len = threadRoots.length; j < len; j++) {
-        threadRoot = threadRoots[j];
-        thread = Get.threadFromRoot(threadRoot);
-        i = Index.liveThreadIDs.indexOf(thread.ID);
-        if (!(lastReplies = Index.liveThreadData[i].last_replies)) {
+      for (j = 0, len = threads.length; j < len; j++) {
+        thread = threads[j];
+        if (!(lastReplies = Index.liveThreadDict[thread.ID].last_replies)) {
           continue;
         }
         nodes = [];
@@ -9477,38 +9787,33 @@ Index = (function() {
             });
           }
         }
-        $.add(threadRoot, nodes);
+        $.add(Index.nodes[thread.ID], nodes);
       }
       if (errors) {
         Main.handleErrors(errors);
       }
       return Main.callbackNodes('Post', posts);
     },
-    buildCatalogViews: function() {
-      var catalogThreads, j, len, thread, threads;
-      threads = Index.sortedNodes.map(function(threadRoot) {
-        return Get.threadFromRoot(threadRoot);
-      }).filter(function(thread) {
-        return !thread.isHidden !== Index.showHiddenThreads;
-      });
+    buildCatalogViews: function(threads) {
+      var catalogThreads, i, j, len, root, thread;
       catalogThreads = [];
       for (j = 0, len = threads.length; j < len; j++) {
         thread = threads[j];
-        if (!thread.catalogView) {
-          catalogThreads.push(new CatalogThread(Build.catalogThread(thread), thread));
+        if (!(!thread.catalogView)) {
+          continue;
         }
+        i = Index.liveThreadIDs.indexOf(thread.ID);
+        root = Build.catalogThread(thread, Index.liveThreadData[i], Math.floor(i / Index.threadsNumPerPage) + 1);
+        catalogThreads.push(new CatalogThread(root, thread));
       }
-      Main.callbackNodes('CatalogThread', catalogThreads);
-      return threads.map(function(thread) {
-        return thread.catalogView.nodes.root;
-      });
+      return Main.callbackNodes('CatalogThread', catalogThreads);
     },
-    sizeCatalogViews: function(nodes) {
-      var height, j, len, node, ratio, ref, size, thumb, width;
+    sizeCatalogViews: function(threads) {
+      var height, j, len, ratio, ref, size, thread, thumb, width;
       size = Conf['Index Size'] === 'small' ? 150 : 250;
-      for (j = 0, len = nodes.length; j < len; j++) {
-        node = nodes[j];
-        thumb = $('.catalog-thumb', node);
+      for (j = 0, len = threads.length; j < len; j++) {
+        thread = threads[j];
+        thumb = thread.catalogView.nodes.thumb;
         ref = thumb.dataset, width = ref.width, height = ref.height;
         if (!width) {
           continue;
@@ -9518,8 +9823,39 @@ Index = (function() {
         thumb.style.height = height * ratio + 'px';
       }
     },
+    buildCatalogReplies: function(threads) {
+      var data, j, k, l, lastReplies, len, len1, len2, nodes, ref, replies, reply, thread, timeEl;
+      for (j = 0, len = threads.length; j < len; j++) {
+        thread = threads[j];
+        nodes = thread.catalogView.nodes;
+        if (!(lastReplies = Index.liveThreadDict[thread.ID].last_replies)) {
+          continue;
+        }
+        if (nodes.replies) {
+          ref = $$('time', nodes.replies);
+          for (k = 0, len1 = ref.length; k < len1; k++) {
+            timeEl = ref[k];
+            RelativeDates.update(timeEl);
+          }
+          continue;
+        }
+        replies = [];
+        for (l = 0, len2 = lastReplies.length; l < len2; l++) {
+          data = lastReplies[l];
+          reply = Build.catalogReply(thread, data);
+          RelativeDates.update($('time', reply));
+          $.on($('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover);
+          replies.push(reply);
+        }
+        nodes.replies = $.el('div', {
+          className: 'catalog-replies'
+        });
+        $.add(nodes.replies, replies);
+        $.add(thread.OP.nodes.post, nodes.replies);
+      }
+    },
     sort: function() {
-      var j, lastlong, len, liveThreadData, liveThreadIDs, nodes, sortedNodes, sortedThreadIDs, threadID;
+      var lastlong, liveThreadData, liveThreadIDs, sortedThreadIDs, threads;
       liveThreadIDs = Index.liveThreadIDs, liveThreadData = Index.liveThreadData;
       if (!liveThreadData) {
         return;
@@ -9576,14 +9912,11 @@ Index = (function() {
             });
         }
       })();
-      Index.sortedNodes = sortedNodes = [];
-      nodes = Index.nodes;
-      for (j = 0, len = sortedThreadIDs.length; j < len; j++) {
-        threadID = sortedThreadIDs[j];
-        sortedNodes.push(nodes[Index.liveThreadIDs.indexOf(threadID)]);
-      }
-      if (Index.search && (nodes = Index.querySearch(Index.search))) {
-        Index.sortedNodes = nodes;
+      Index.sortedThreads = sortedThreadIDs.map(function(threadID) {
+        return g.BOARD.threads[threadID];
+      });
+      if (Index.search && (threads = Index.querySearch(Index.search))) {
+        Index.sortedThreads = threads;
       }
       Index.sortOnTop(function(thread) {
         return thread.isSticky;
@@ -9598,84 +9931,94 @@ Index = (function() {
       }
     },
     sortOnTop: function(match) {
-      var bottomNodes, j, len, ref, threadRoot, topNodes;
-      topNodes = [];
-      bottomNodes = [];
-      ref = Index.sortedNodes;
+      var bottomThreads, j, len, ref, thread, topThreads;
+      topThreads = [];
+      bottomThreads = [];
+      ref = Index.sortedThreads;
       for (j = 0, len = ref.length; j < len; j++) {
-        threadRoot = ref[j];
-        (match(Get.threadFromRoot(threadRoot)) ? topNodes : bottomNodes).push(threadRoot);
+        thread = ref[j];
+        (match(thread) ? topThreads : bottomThreads).push(thread);
       }
-      return Index.sortedNodes = topNodes.concat(bottomNodes);
+      return Index.sortedThreads = topThreads.concat(bottomThreads);
     },
     buildIndex: function() {
-      var i, nodes, page, post;
+      var threads;
       if (!Index.liveThreadData) {
         return;
       }
       switch (Conf['Index Mode']) {
         case 'all pages':
-          nodes = Index.sortedNodes;
+          threads = Index.sortedThreads;
           break;
         case 'catalog':
-          nodes = Index.buildCatalogViews();
-          Index.sizeCatalogViews(nodes);
+          threads = Index.sortedThreads.filter(function(thread) {
+            return !thread.isHidden !== Index.showHiddenThreads;
+          });
           break;
         default:
-          if (Index.followedThreadID != null) {
-            i = 0;
-            while (Index.followedThreadID !== Get.threadFromRoot(Index.sortedNodes[i]).ID) {
-              i++;
-            }
-            page = Math.floor(i / Index.threadsNumPerPage) + 1;
-            if (page !== Index.currentPage) {
-              Index.currentPage = page;
-              Index.pushState({
-                page: page
-              });
-              Index.setPage();
-            }
-          }
-          nodes = Index.buildSinglePage(Index.currentPage);
+          threads = Index.threadsOnPage(Index.currentPage);
       }
       delete Index.pageNum;
       $.rmAll(Index.root);
       $.rmAll(Header.hover);
       if (Conf['Index Mode'] === 'catalog') {
-        $.add(Index.root, nodes);
-        if (doc.contains(Index.root)) {
-          return $.event('PostsInserted');
-        }
+        return Index.buildCatalog(threads);
       } else {
-        if (Conf['Show Replies']) {
-          Index.buildReplies(nodes);
-        }
-        Index.buildStructure(nodes);
-        if ((Index.followedThreadID != null) && (post = g.posts[g.BOARD + "." + Index.followedThreadID])) {
-          return Header.scrollTo(post.nodes.root);
-        }
+        return Index.buildStructure(threads);
       }
     },
-    buildSinglePage: function(pageNum) {
+    threadsOnPage: function(pageNum) {
       var nodesPerPage, offset;
       nodesPerPage = Index.threadsNumPerPage;
       offset = nodesPerPage * (pageNum - 1);
-      return Index.sortedNodes.slice(offset, offset + nodesPerPage);
+      return Index.sortedThreads.slice(offset, offset + nodesPerPage);
     },
-    buildStructure: function(nodes) {
-      var j, len, node, thumb;
-      for (j = 0, len = nodes.length; j < len; j++) {
-        node = nodes[j];
-        if (thumb = $('img[data-src]', node)) {
+    buildStructure: function(threads) {
+      var file, j, len, nodes, thread, thumb;
+      if (Conf['Show Replies']) {
+        Index.buildReplies(threads);
+      }
+      nodes = [];
+      for (j = 0, len = threads.length; j < len; j++) {
+        thread = threads[j];
+        if (thread.nodes.placeholder) {
+          $.replace(thread.nodes.placeholder, thread.OP.nodes.root);
+          thread.nodes.placeholder = null;
+          thread.OP.setCatalogOP(false);
+        }
+        if ((file = thread.OP.file) && (thumb = thread.OP.file.thumb) && thumb.dataset.src) {
           thumb.src = thumb.dataset.src;
           thumb.removeAttribute('data-src');
         }
-        $.add(Index.root, [node, $.el('hr')]);
+        nodes.push(Index.nodes[thread.ID], $.el('hr'));
       }
+      $.add(Index.root, nodes);
       if (doc.contains(Index.root)) {
-        $.event('PostsInserted');
+        return $.event('PostsInserted');
       }
-      return ThreadHiding.onIndexBuild(nodes);
+    },
+    buildCatalog: function(threads) {
+      var j, len, nodes, thread;
+      Index.buildCatalogViews(threads);
+      Index.sizeCatalogViews(threads);
+      if (Conf['Show Replies'] && Conf['Catalog Hover Expand']) {
+        Index.buildCatalogReplies(threads);
+      }
+      nodes = [];
+      for (j = 0, len = threads.length; j < len; j++) {
+        thread = threads[j];
+        if (!thread.nodes.placeholder) {
+          thread.nodes.placeholder = $.el('div');
+          $.replace(thread.OP.nodes.root, thread.nodes.placeholder);
+          $.add(thread.catalogView.nodes.root, thread.OP.nodes.root);
+          thread.OP.setCatalogOP(true);
+        }
+        nodes.push(thread.catalogView.nodes.root);
+      }
+      $.add(Index.root, nodes);
+      if (doc.contains(Index.root)) {
+        return $.event('PostsInserted');
+      }
     },
     clearSearch: function() {
       Index.searchInput.value = '';
@@ -9707,8 +10050,8 @@ Index = (function() {
       if (!(keywords = query.toLowerCase().match(/\S+/g))) {
         return;
       }
-      return Index.sortedNodes.filter(function(threadRoot) {
-        return Index.searchMatch(Get.threadFromRoot(threadRoot), keywords);
+      return Index.sortedThreads.filter(function(thread) {
+        return Index.searchMatch(thread, keywords);
       });
     },
     searchMatch: function(thread, keywords) {
@@ -11368,7 +11711,7 @@ Gallery = (function() {
         Gallery.nodes.total.textContent = Gallery.images.length;
       }
       if (!Conf['Image Expansion']) {
-        return $.on(this.file.thumb.parentNode, 'click', Gallery.cb.image);
+        return $.on(this.file.thumbLink, 'click', Gallery.cb.image);
       }
     },
     build: function(image) {
@@ -11445,7 +11788,7 @@ Gallery = (function() {
         }
         Gallery.generateThumb(post);
         if (!image && Gallery.fullIDs[post.fullID]) {
-          candidate = post.file.thumb.parentNode;
+          candidate = post.file.thumbLink;
           if (Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0) {
             image = candidate;
           }
@@ -11487,6 +11830,10 @@ Gallery = (function() {
       thumb.dataset.post = post.fullID;
       thumbImg = post.file.thumb.cloneNode(false);
       thumbImg.style.cssText = '';
+      if (thumbImg.dataset.src) {
+        thumbImg.src = thumbImg.dataset.src;
+        thumbImg.removeAttribute('data-src');
+      }
       $.add(thumb, thumbImg);
       $.on(thumb, 'click', Gallery.cb.open);
       Gallery.images.push(thumb);
@@ -12011,7 +12358,7 @@ ImageExpand = (function() {
       if (!(this.file && (this.file.isImage || this.file.isVideo))) {
         return;
       }
-      $.on(this.file.thumb.parentNode, 'click', ImageExpand.cb.toggle);
+      $.on(this.file.thumbLink, 'click', ImageExpand.cb.toggle);
       if (this.isClone) {
         if (this.file.isExpanding) {
           ImageExpand.contract(this);
@@ -12133,8 +12480,8 @@ ImageExpand = (function() {
       $.rmClass(post.nodes.root, 'expanded-image');
       $.rmClass(file.thumb, 'expanding');
       $.rm(file.videoControls);
-      file.thumb.parentNode.href = file.url;
-      file.thumb.parentNode.target = '_blank';
+      file.thumbLink.href = file.url;
+      file.thumbLink.target = '_blank';
       ref = ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying', 'scrollIntoView'];
       for (i = 0, len = ref.length; i < len; i++) {
         x = ref[i];
@@ -12179,9 +12526,9 @@ ImageExpand = (function() {
       });
     },
     expand: function(post, src) {
-      var el, file, isVideo, ref, thumb;
+      var el, file, isVideo, ref, thumb, thumbLink;
       file = post.file;
-      thumb = file.thumb, isVideo = file.isVideo;
+      thumb = file.thumb, thumbLink = file.thumbLink, isVideo = file.isVideo;
       if (post.isHidden || file.isExpanding || file.isExpanded) {
         return;
       }
@@ -12209,8 +12556,8 @@ ImageExpand = (function() {
           file.videoControls = ImageExpand.videoControls.cloneNode(true);
           $.add(file.text, file.videoControls);
         }
-        thumb.parentNode.removeAttribute('href');
-        thumb.parentNode.removeAttribute('target');
+        thumbLink.removeAttribute('href');
+        thumbLink.removeAttribute('target');
         el.loop = true;
         Volume.setup(el);
         ImageExpand.setupVideoCB(post);
@@ -12592,6 +12939,9 @@ ImageLoader = (function() {
       type = (match = url.match(/\.([^.]+)$/)[1].toUpperCase()) === 'JPEG' ? 'JPG' : match;
       replace = Conf["Replace " + type] && !/spoiler/.test(thumb.src || thumb.dataset.src);
       if (!(replace || Conf['prefetch'])) {
+        return;
+      }
+      if ($.hasClass(doc, 'catalog-mode')) {
         return;
       }
       if (![post].concat(slice.call(post.clones)).some(function(clone) {
@@ -13069,7 +13419,7 @@ Volume = (function() {
         return;
       }
       $.on(this.file.thumb, 'wheel', Volume.wheel.bind(Header.hover));
-      return $.on($('a', this.file.text), 'wheel', Volume.wheel.bind(this.file.thumb.parentNode));
+      return $.on($('a', this.file.text), 'wheel', Volume.wheel.bind(this.file.thumbLink));
     },
     catalogNode: function() {
       var file;
@@ -13121,7 +13471,7 @@ Embedding = (function() {
         type = ref[j];
         this.types[type.key] = type;
       }
-      if (Conf['Floating Embeds']) {
+      if (Conf['Embedding']) {
         this.dialog = UI.dialog('embedding', 'top: 50px; right: 0px;', {
           innerHTML: "<div><div class=\"move\"></div><a href=\"javascript:;\" class=\"jump\" title=\"Jump to post\">→</a><a href=\"javascript:;\" class=\"close\" title=\"Close\">×</a></div><div id=\"media-embed\"><div></div></div>"
         });
@@ -13149,7 +13499,7 @@ Embedding = (function() {
       i = 0;
       items = $$('.embedder', post.nodes.comment);
       while (el = items[i++]) {
-        $.on(el, 'click', Embedding.cb.toggle);
+        $.on(el, 'click', Embedding.cb.click);
         if ($.hasClass(el, 'embedded')) {
           Embedding.cb.toggle.call(el);
         }
@@ -13190,7 +13540,7 @@ Embedding = (function() {
       }
     },
     embed: function(data) {
-      var embed, href, key, link, name, options, post, ref, uid, value;
+      var autoEmbed, embed, href, key, link, name, options, post, ref, uid, value;
       key = data.key, uid = data.uid, options = data.options, link = data.link, post = data.post;
       href = link.href;
       if (Embedding.types[key].httpOnly && location.protocol !== 'http:') {
@@ -13199,8 +13549,9 @@ Embedding = (function() {
       $.addClass(link, key.toLowerCase());
       embed = $.el('a', {
         className: 'embedder',
-        href: 'javascript:;',
-        textContent: '(embed)'
+        href: 'javascript:;'
+      }, {
+        innerHTML: "(<span>un</span>embed)"
       });
       ref = {
         key: key,
@@ -13212,14 +13563,16 @@ Embedding = (function() {
         value = ref[name];
         embed.dataset[name] = value;
       }
-      $.on(embed, 'click', Embedding.cb.toggle);
+      $.on(embed, 'click', Embedding.cb.click);
       $.after(link, [$.tn(' '), embed]);
       if (Conf['Auto-embed'] && !Conf['Floating Embeds'] && !post.isFetchedQuote) {
-        return $.asap((function() {
-          return doc.contains(embed);
-        }), function() {
-          return Embedding.cb.toggle.call(embed);
-        });
+        autoEmbed = function() {
+          if (doc.contains(embed) && !$.hasClass(doc, 'catalog-mode')) {
+            $.off(d, 'PostsInserted', autoEmbed);
+            return Embedding.cb.toggle.call(embed);
+          }
+        };
+        return $.on(d, 'PostsInserted', autoEmbed);
       }
     },
     ready: function() {
@@ -13309,32 +13662,33 @@ Embedding = (function() {
       }
     },
     cb: {
-      toggle: function(e) {
+      click: function(e) {
         var div;
-        if (e != null) {
-          e.preventDefault();
-        }
-        if (Conf['Floating Embeds']) {
+        e.preventDefault();
+        if (Conf['Floating Embeds'] || $.hasClass(doc, 'catalog-mode')) {
           if (!(div = Embedding.media.firstChild)) {
             return;
           }
           $.replace(div, Embedding.cb.embed(this));
           Embedding.lastEmbed = Get.postFromNode(this).nodes.root;
-          $.rmClass(Embedding.dialog, 'empty');
-          return;
+          return $.rmClass(Embedding.dialog, 'empty');
+        } else {
+          return Embedding.cb.toggle.call(this);
         }
+      },
+      toggle: function() {
         if ($.hasClass(this, "embedded")) {
           $.rm(this.nextElementSibling);
-          this.textContent = '(embed)';
         } else {
           $.after(this, Embedding.cb.embed(this));
-          this.textContent = '(unembed)';
         }
         return $.toggleClass(this, 'embedded');
       },
       embed: function(a) {
         var container, el, type;
-        container = $.el('div');
+        container = $.el('div', {
+          className: 'media-embed'
+        });
         $.add(container, el = (type = Embedding.types[a.dataset.key]).el(a));
         el.style.cssText = type.style != null ? type.style : 'border: none; width: 640px; height: 360px;';
         return container;
@@ -13777,10 +14131,6 @@ Linkify = (function() {
         name: 'Linkify',
         cb: this.node
       });
-      Callbacks.CatalogThread.push({
-        name: 'Linkify',
-        cb: this.catalogNode
-      });
       return Embedding.init();
     },
     node: function() {
@@ -13802,12 +14152,6 @@ Linkify = (function() {
         link = links[k];
         Embedding.process(link, this);
       }
-    },
-    catalogNode: function() {
-      if (!Linkify.regString.test(this.thread.OP.info.comment)) {
-        return;
-      }
-      return Linkify.process(this.nodes.comment);
     },
     process: function(node) {
       var data, end, endNode, i, index, length, links, part1, part2, ref, ref1, result, saved, snapshot, space, test, word;
@@ -14354,10 +14698,6 @@ AntiAutoplay = (function() {
         name: 'Disable Autoplaying Sounds',
         cb: this.node
       });
-      Callbacks.CatalogThread.push({
-        name: 'Disable Autoplaying Sounds',
-        cb: this.node
-      });
       return $.ready((function(_this) {
         return function() {
           return _this.process(d.body);
@@ -14377,7 +14717,7 @@ AntiAutoplay = (function() {
       return $.addClass(audio, 'controls-added');
     },
     node: function() {
-      return AntiAutoplay.process(this.nodes.root);
+      return AntiAutoplay.process(this.nodes.comment);
     },
     process: function(root) {
       var i, iframe, j, len, len1, object, ref, ref1;
@@ -14593,10 +14933,6 @@ CatalogLinks = (function() {
       }
       if (Conf['JSON Index'] && Conf['Use 4chan X Catalog']) {
         Callbacks.Post.push({
-          name: 'Catalog Link Rewrite',
-          cb: this.node
-        });
-        Callbacks.CatalogThread.push({
           name: 'Catalog Link Rewrite',
           cb: this.node
         });
@@ -14833,11 +15169,11 @@ ExpandThread = (function() {
   ExpandThread = {
     statuses: {},
     init: function() {
-      if (g.VIEW === 'thread' || !Conf['Thread Expansion']) {
+      if (!(g.VIEW === 'index' && Conf['Thread Expansion'])) {
         return;
       }
       if (Conf['JSON Index']) {
-        return $.on(d, 'IndexRefresh', this.onIndexRefresh);
+        return $.on(d, 'IndexRefreshInternal', this.onIndexRefresh);
       } else {
         return Callbacks.Thread.push({
           name: 'Expand Thread',
@@ -14849,7 +15185,7 @@ ExpandThread = (function() {
     },
     setButton: function(thread) {
       var a;
-      if (!(a = $.x('following-sibling::*[contains(@class,"summary")][1]', thread.OP.nodes.root))) {
+      if (!(thread.nodes.root && (a = $('.summary', thread.nodes.root)))) {
         return;
       }
       a.textContent = Build.summaryText.apply(Build, ['+'].concat(slice.call(a.textContent.match(/\d+/g))));
@@ -14870,7 +15206,7 @@ ExpandThread = (function() {
         delete ExpandThread.statuses[threadID];
       }
       if (!refresh) {
-        return $.off(d, 'IndexRefresh', this.onIndexRefresh);
+        return $.off(d, 'IndexRefreshInternal', this.onIndexRefresh);
       }
     },
     onIndexRefresh: function() {
@@ -14888,7 +15224,7 @@ ExpandThread = (function() {
     },
     toggle: function(thread) {
       var a, threadRoot;
-      threadRoot = thread.OP.nodes.root.parentNode;
+      threadRoot = thread.nodes.root;
       if (!(a = $('.summary', threadRoot))) {
         return;
       }
@@ -15226,10 +15562,6 @@ Fourchan = (function() {
           }, false);
         });
         Callbacks.Post.push({
-          name: 'Parse /sci/ math',
-          cb: this.math
-        });
-        Callbacks.CatalogThread.push({
           name: 'Parse /sci/ math',
           cb: this.math
         });
@@ -16002,6 +16334,9 @@ Nav = (function() {
     },
     getThread: function() {
       var i, len, ref, thread, threadRoot;
+      if ($.hasClass(doc, 'catalog-mode')) {
+        return $('.board');
+      }
       ref = $$('.thread');
       for (i = 0, len = ref.length; i < len; i++) {
         threadRoot = ref[i];
@@ -16200,14 +16535,22 @@ RelativeDates = (function() {
       dateEl.title = dateEl.textContent;
       return RelativeDates.update(this);
     },
-    relative: function(diff, now, date) {
+    relative: function(diff, now, date, abbrev) {
       var days, months, number, rounded, unit, years;
       unit = (number = diff / $.DAY) >= 1 ? (years = now.getYear() - date.getYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = months + 12 * years) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
       rounded = Math.round(number);
-      if (rounded !== 1) {
-        unit += 's';
+      if (abbrev) {
+        unit = unit === 'month' ? 'mo' : unit[0];
+      } else {
+        if (rounded !== 1) {
+          unit += 's';
+        }
       }
-      return rounded + " " + unit + " ago";
+      if (abbrev) {
+        return "" + rounded + unit;
+      } else {
+        return rounded + " " + unit + " ago";
+      }
     },
     stale: [],
     flush: function() {
@@ -16233,12 +16576,18 @@ RelativeDates = (function() {
       return post.nodes.date.title = RelativeDates.relative(diff, now, date);
     },
     update: function(data, now) {
-      var date, diff, i, isPost, len, ref, relative, singlePost;
+      var abbrev, date, diff, i, isPost, len, ref, relative, singlePost;
       isPost = data instanceof Post;
-      date = isPost ? data.info.date : new Date(+data.dataset.utc);
+      if (isPost) {
+        date = data.info.date;
+        abbrev = false;
+      } else {
+        date = new Date(+data.dataset.utc);
+        abbrev = !!data.dataset.abbrev;
+      }
       now || (now = new Date());
       diff = now - date;
-      relative = RelativeDates.relative(diff, now, date);
+      relative = RelativeDates.relative(diff, now, date, abbrev);
       if (isPost) {
         ref = [data].concat(data.clones);
         for (i = 0, len = ref.length; i < len; i++) {
@@ -16262,6 +16611,9 @@ RelativeDates = (function() {
       if (data instanceof Post && !g.posts[data.fullID]) {
         return;
       }
+      if (data instanceof Element && !doc.contains(data)) {
+        return;
+      }
       return RelativeDates.stale.push(data);
     }
   };
@@ -16283,10 +16635,6 @@ RemoveSpoilers = (function() {
         return;
       }
       Callbacks.Post.push({
-        name: 'Reveal Spoilers',
-        cb: this.node
-      });
-      Callbacks.CatalogThread.push({
         name: 'Reveal Spoilers',
         cb: this.node
       });
@@ -17008,7 +17356,7 @@ ThreadUpdater = (function() {
     },
     node: function() {
       ThreadUpdater.thread = this;
-      ThreadUpdater.root = this.OP.nodes.root.parentNode;
+      ThreadUpdater.root = this.nodes.root;
       ThreadUpdater.outdateCount = 0;
       ThreadUpdater.postIDs = [];
       ThreadUpdater.fileIDs = [];
@@ -17379,10 +17727,10 @@ ThreadWatcher = (function() {
       $.on(sc, 'click', this.toggleWatcher);
       $.on(this.refreshButton, 'click', this.buttonFetchAll);
       $.on(this.closeButton, 'click', this.toggleWatcher);
-      $.on(d, '4chanXInitFinished', this.ready);
+      $.onExists(doc, 'body', this.addDialog);
       switch (g.VIEW) {
         case 'index':
-          $.on(d, 'IndexRefresh', this.cb.onIndexRefresh);
+          $.on(d, 'IndexRefreshInternal', this.cb.onIndexRefresh);
           break;
         case 'thread':
           $.on(d, 'ThreadUpdate', this.cb.onThreadRefresh);
@@ -17435,65 +17783,70 @@ ThreadWatcher = (function() {
     },
     isWatched: function(thread) {
       var ref;
-      return (ref = ThreadWatcher.db) != null ? ref.get({
+      return !!((ref = ThreadWatcher.db) != null ? ref.get({
         boardID: thread.board.ID,
         threadID: thread.ID
-      }) : void 0;
+      }) : void 0);
+    },
+    setToggler: function(toggler, isWatched) {
+      toggler.classList.toggle('watched', isWatched);
+      return toggler.title = (isWatched ? 'Unwatch' : 'Watch') + " Thread";
     },
     node: function() {
-      var toggler;
+      var boardID, data, threadID, toggler;
       if (this.isReply) {
         return;
       }
       if (this.isClone) {
-        toggler = $('.watch-thread-link', this.nodes.post);
+        toggler = $('.watch-thread-link', this.nodes.info);
       } else {
         toggler = $.el('a', {
           href: 'javascript:;',
           className: 'watch-thread-link'
         });
-        $.before($('input', this.nodes.post), toggler);
+        $.before($('input', this.nodes.info), toggler);
       }
-      return $.on(toggler, 'click', ThreadWatcher.cb.toggle);
+      boardID = this.board.ID;
+      threadID = this.thread.ID;
+      data = ThreadWatcher.db.get({
+        boardID: boardID,
+        threadID: threadID
+      });
+      ThreadWatcher.setToggler(toggler, !!data);
+      $.on(toggler, 'click', ThreadWatcher.cb.toggle);
+      if (data && (data.excerpt == null)) {
+        ThreadWatcher.db.extend({
+          boardID: boardID,
+          threadID: threadID,
+          val: {
+            excerpt: Get.threadExcerpt(this.thread)
+          }
+        });
+        return ThreadWatcher.refresh();
+      }
     },
     catalogNode: function() {
       if (ThreadWatcher.isWatched(this.thread)) {
         $.addClass(this.nodes.root, 'watched');
       }
-      $.on(this.nodes.thumb.parentNode, 'click', (function(_this) {
+      return $.on(this.nodes.root, 'mousedown click', (function(_this) {
         return function(e) {
           if (!(e.button === 0 && e.altKey)) {
             return;
           }
-          ThreadWatcher.toggle(_this.thread);
+          if (e.type === 'click') {
+            ThreadWatcher.toggle(_this.thread);
+          }
           return e.preventDefault();
         };
       })(this));
-      return $.on(this.nodes.thumb.parentNode, 'mousedown', function(e) {
-        if (e.button === 0 && e.altKey) {
-          return e.preventDefault();
-        }
-      });
     },
-    ready: function() {
-      $.off(d, '4chanXInitFinished', ThreadWatcher.ready);
+    addDialog: function() {
       if (!Main.isThisPageLegit()) {
         return;
       }
-      ThreadWatcher.refresh();
-      $.add(d.body, ThreadWatcher.dialog);
-      if (!Conf['Auto Watch']) {
-        return;
-      }
-      return $.get('AutoWatch', 0, function(arg) {
-        var AutoWatch, thread;
-        AutoWatch = arg.AutoWatch;
-        if (!(thread = g.BOARD.threads[AutoWatch])) {
-          return;
-        }
-        ThreadWatcher.add(thread);
-        return $["delete"]('AutoWatch');
-      });
+      ThreadWatcher.build();
+      return $.prepend(d.body, ThreadWatcher.dialog);
     },
     toggleWatcher: function() {
       $.toggleClass(ThreadWatcher.shortcut, 'disabled');
@@ -17517,28 +17870,23 @@ ThreadWatcher = (function() {
         if ($.hasClass(this, 'disabled')) {
           return;
         }
-        ThreadWatcher.db.forceSync();
         ref = ThreadWatcher.getAll();
         for (i = 0, len = ref.length; i < len; i++) {
           ref1 = ref[i], boardID = ref1.boardID, threadID = ref1.threadID, data = ref1.data;
-          if (!data.isDead) {
-            continue;
+          if (data.isDead) {
+            ThreadWatcher.db["delete"]({
+              boardID: boardID,
+              threadID: threadID
+            });
           }
-          delete ThreadWatcher.db.data.boards[boardID][threadID];
-          ThreadWatcher.db.deleteIfEmpty({
-            boardID: boardID
-          });
         }
-        ThreadWatcher.db.save();
         ThreadWatcher.refresh();
         return $.event('CloseMenu');
       },
       toggle: function() {
         var thread;
         thread = Get.postFromNode(this).thread;
-        Index.followedThreadID = thread.ID;
-        ThreadWatcher.toggle(thread);
-        return delete Index.followedThreadID;
+        return ThreadWatcher.toggle(thread);
       },
       rm: function() {
         var boardID, ref, threadID;
@@ -17550,52 +17898,54 @@ ThreadWatcher = (function() {
         ref = e.detail, boardID = ref.boardID, threadID = ref.threadID, postID = ref.postID;
         if (postID === threadID) {
           if (Conf['Auto Watch']) {
-            return $.set('AutoWatch', threadID);
+            return ThreadWatcher.addRaw(boardID, threadID, {});
           }
         } else if (Conf['Auto Watch Reply']) {
           return ThreadWatcher.add(g.threads[boardID + '.' + threadID]);
         }
       },
       onIndexRefresh: function() {
-        var boardID, data, db, ref, threadID;
+        var boardID, data, db, nKilled, ref, threadID;
         db = ThreadWatcher.db;
         boardID = g.BOARD.ID;
-        db.forceSync();
+        nKilled = 0;
         ref = db.data.boards[boardID];
         for (threadID in ref) {
           data = ref[threadID];
-          if (!(data != null ? data.isDead : void 0) && !(threadID in g.BOARD.threads)) {
-            if (Conf['Auto Prune'] || !(data && typeof data === 'object')) {
-              db["delete"]({
-                boardID: boardID,
-                threadID: threadID
-              });
-            } else {
-              if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
-                ThreadWatcher.fetchStatus({
-                  boardID: boardID,
-                  threadID: threadID,
-                  data: data
-                });
+          if (!(!(data != null ? data.isDead : void 0) && !(threadID in g.BOARD.threads))) {
+            continue;
+          }
+          nKilled++;
+          if (Conf['Auto Prune'] || !(data && typeof data === 'object')) {
+            db["delete"]({
+              boardID: boardID,
+              threadID: threadID
+            });
+          } else {
+            db.extend({
+              boardID: boardID,
+              threadID: threadID,
+              val: {
+                isDead: true
               }
-              data.isDead = true;
-              db.set({
+            });
+            if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
+              ThreadWatcher.fetchStatus({
                 boardID: boardID,
                 threadID: threadID,
-                val: data
+                data: data
               });
             }
           }
         }
-        return ThreadWatcher.refresh();
+        if (nKilled) {
+          return ThreadWatcher.refresh();
+        }
       },
       onThreadRefresh: function(e) {
         var thread;
         thread = g.threads[e.detail.threadID];
-        if (!(e.detail[404] && ThreadWatcher.db.get({
-          boardID: thread.board.ID,
-          threadID: thread.ID
-        }))) {
+        if (!(e.detail[404] && ThreadWatcher.isWatched(thread))) {
           return;
         }
         return ThreadWatcher.add(thread);
@@ -17630,8 +17980,8 @@ ThreadWatcher = (function() {
       interval = ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] ? 5 * $.MINUTE : 2 * $.HOUR;
       now = Date.now();
       if (now >= (db.data.lastChecked || 0) + interval) {
-        db.data.lastChecked = now;
         ThreadWatcher.fetchAllStatus();
+        db.data.lastChecked = now;
         db.save();
       }
       return ThreadWatcher.timeout = setTimeout(ThreadWatcher.fetchAuto, interval);
@@ -17737,13 +18087,14 @@ ThreadWatcher = (function() {
           }
         }
         if (isDead !== data.isDead || unread !== data.unread || quotingYou !== data.quotingYou) {
-          data.isDead = isDead;
-          data.unread = unread;
-          data.quotingYou = quotingYou;
-          ThreadWatcher.db.set({
+          ThreadWatcher.db.extend({
             boardID: boardID,
             threadID: threadID,
-            val: data
+            val: {
+              isDead: isDead,
+              unread: unread,
+              quotingYou: quotingYou
+            }
           });
           return ThreadWatcher.refresh();
         }
@@ -17754,13 +18105,13 @@ ThreadWatcher = (function() {
             threadID: threadID
           });
         } else {
-          data.isDead = true;
-          delete data.unread;
-          delete data.quotingYou;
-          ThreadWatcher.db.set({
+          ThreadWatcher.db.extend({
             boardID: boardID,
             threadID: threadID,
-            val: data
+            val: {
+              isDead: true
+            },
+            rm: ['unread', 'quotingYou']
           });
         }
         return ThreadWatcher.refresh();
@@ -17789,15 +18140,17 @@ ThreadWatcher = (function() {
       return all;
     },
     makeLine: function(boardID, threadID, data) {
-      var count, div, fullID, link, title, x;
+      var count, div, excerpt, fullID, link, title, x;
       x = $.el('a', {
         className: 'fa fa-times',
         href: 'javascript:;'
       });
       $.on(x, 'click', ThreadWatcher.cb.rm);
+      excerpt = data.excerpt;
+      excerpt || (excerpt = "/" + boardID + "/ - No." + threadID);
       link = $.el('a', {
         href: "/" + boardID + "/thread/" + threadID,
-        title: data.excerpt,
+        title: excerpt,
         className: 'watcher-link'
       });
       if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] && (data.unread != null)) {
@@ -17808,7 +18161,7 @@ ThreadWatcher = (function() {
         $.add(link, count);
       }
       title = $.el('span', {
-        textContent: data.excerpt,
+        textContent: excerpt,
         className: 'watcher-title'
       });
       $.add(link, title);
@@ -17835,42 +18188,54 @@ ThreadWatcher = (function() {
       $.add(div, [x, $.tn(' '), link]);
       return div;
     },
-    refresh: function() {
-      var boardID, data, i, j, len, len1, list, nodes, ref, ref1, ref2, refresher, threadID;
+    build: function() {
+      var boardID, data, i, j, len, len1, list, nodes, ref, ref1, ref2, refresher, thread, threadID;
       nodes = [];
       ref = ThreadWatcher.getAll();
       for (i = 0, len = ref.length; i < len; i++) {
         ref1 = ref[i], boardID = ref1.boardID, threadID = ref1.threadID, data = ref1.data;
+        if ((data.excerpt == null) && (thread = g.threads[boardID + "." + threadID])) {
+          ThreadWatcher.db.extend({
+            boardID: boardID,
+            threadID: threadID,
+            val: {
+              excerpt: Get.threadExcerpt(thread)
+            }
+          });
+        }
         nodes.push(ThreadWatcher.makeLine(boardID, threadID, data));
       }
       list = ThreadWatcher.list;
       $.rmAll(list);
       $.add(list, nodes);
-      g.threads.forEach(function(thread) {
-        var helper, j, len1, post, ref2, toggler;
-        helper = ThreadWatcher.isWatched(thread) ? ['addClass', 'Unwatch'] : ['rmClass', 'Watch'];
-        if (thread.OP) {
-          ref2 = [thread.OP].concat(slice.call(thread.OP.clones));
-          for (j = 0, len1 = ref2.length; j < len1; j++) {
-            post = ref2[j];
-            toggler = $('.watch-thread-link', post.nodes.post);
-            $[helper[0]](toggler, 'watched');
-            toggler.title = helper[1] + " Thread";
-          }
-        }
-        if (thread.catalogView) {
-          return $[helper[0]](thread.catalogView.nodes.root, 'watched');
-        }
-      });
       ThreadWatcher.refreshIcon();
       ref2 = ThreadWatcher.menu.refreshers;
       for (j = 0, len1 = ref2.length; j < len1; j++) {
         refresher = ref2[j];
         refresher();
       }
-      if (Index.nodes && Conf['Pin Watched Threads']) {
-        Index.sort();
-        return Index.buildIndex();
+    },
+    refresh: function() {
+      ThreadWatcher.build();
+      g.threads.forEach(function(thread) {
+        var i, isWatched, len, post, ref, toggler;
+        isWatched = ThreadWatcher.isWatched(thread);
+        if (thread.OP) {
+          ref = [thread.OP].concat(slice.call(thread.OP.clones));
+          for (i = 0, len = ref.length; i < len; i++) {
+            post = ref[i];
+            toggler = $('.watch-thread-link', post.nodes.info);
+            ThreadWatcher.setToggler(toggler, isWatched);
+          }
+        }
+        if (thread.catalogView) {
+          return thread.catalogView.nodes.root.classList.toggle('watched', isWatched);
+        }
+      });
+      if (Conf['Pin Watched Threads']) {
+        return $.event('SortIndex', {
+          deferred: Conf['Index Mode'] !== 'catalog'
+        });
       }
     },
     refreshIcon: function() {
@@ -17907,18 +18272,16 @@ ThreadWatcher = (function() {
       if (!n) {
         return;
       }
-      ThreadWatcher.db.forceSync();
       if (!(data = ThreadWatcher.db.get({
         boardID: boardID,
         threadID: threadID
       }))) {
         return;
       }
-      $.extend(data, newData);
-      ThreadWatcher.db.set({
+      ThreadWatcher.db.extend({
         boardID: boardID,
         threadID: threadID,
-        val: data
+        val: newData
       });
       if (line = $("#watched-threads > [data-full-i-d='" + boardID + "." + threadID + "']", ThreadWatcher.dialog)) {
         newLine = ThreadWatcher.makeLine(boardID, threadID, data);
@@ -17946,13 +18309,13 @@ ThreadWatcher = (function() {
       if (data.isDead && !((data.unread != null) || (data.quotingYou != null))) {
         return cb();
       }
-      data.isDead = true;
-      delete data.unread;
-      delete data.quotingYou;
-      return ThreadWatcher.db.set({
+      return ThreadWatcher.db.extend({
         boardID: boardID,
         threadID: threadID,
-        val: data
+        val: {
+          isDead: true
+        },
+        rm: ['unread', 'quotingYou']
       }, cb);
     },
     toggle: function(thread) {
@@ -17984,6 +18347,9 @@ ThreadWatcher = (function() {
         data.isDead = true;
       }
       data.excerpt = Get.threadExcerpt(thread);
+      return ThreadWatcher.addRaw(boardID, threadID, data);
+    },
+    addRaw: function(boardID, threadID, data) {
       ThreadWatcher.db.set({
         boardID: boardID,
         threadID: threadID,
@@ -19597,7 +19963,7 @@ QR = (function() {
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
       $.on(d, 'dragstart dragend', QR.drag);
-      $.on(d, 'IndexRefresh', QR.generatePostableThreadsList);
+      $.on(d, 'IndexRefreshInternal', QR.generatePostableThreadsList);
       $.on(d, 'ThreadUpdate', QR.statusCheck);
       if (!Conf['Persistent QR']) {
         return;
@@ -21564,8 +21930,11 @@ QuoteBacklink = (function() {
               '%%': '%'
             }[x];
           };
-        })(this)) + (markYours ? '\u00A0(You)' : '')
+        })(this))
       });
+      if (markYours) {
+        $.add(a, QuoteYou.mark.cloneNode(true));
+      }
       ref1 = this.quotes;
       for (i = 0, len = ref1.length; i < len; i++) {
         quote = ref1[i];
@@ -21632,7 +22001,10 @@ QuoteCT = (function() {
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
-      this.text = '\u00A0(Cross-thread)';
+      this.mark = $.el('span', {
+        textContent: '\u00A0(Cross-thread)',
+        className: 'qmark-ct'
+      });
       return Callbacks.Post.push({
         name: 'Mark Cross-thread Quotes',
         cb: this.node
@@ -21652,10 +22024,10 @@ QuoteCT = (function() {
           continue;
         }
         if (this.isClone) {
-          quotelink.textContent = quotelink.textContent.replace(QuoteCT.text, '');
+          $.rm($('.qmark-ct', quotelink));
         }
         if (boardID === board.ID && threadID !== thread.ID) {
-          $.add(quotelink, $.tn(QuoteCT.text));
+          $.add(quotelink, QuoteCT.mark.cloneNode(true));
         }
       }
     }
@@ -21720,6 +22092,9 @@ QuoteInline = (function() {
       }
       ref = Get.postDataFromLink(this), boardID = ref.boardID, threadID = ref.threadID, postID = ref.postID;
       if (Conf['Inline Cross-thread Quotes Only'] && g.VIEW === 'thread' && ((ref1 = g.posts[boardID + "." + postID]) != null ? ref1.nodes.root.offsetParent : void 0)) {
+        return;
+      }
+      if ($.hasClass(doc, 'catalog-mode')) {
         return;
       }
       e.preventDefault();
@@ -21810,7 +22185,10 @@ QuoteOP = (function() {
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
-      this.text = '\u00A0(OP)';
+      this.mark = $.el('span', {
+        textContent: '\u00A0(OP)',
+        className: 'qmark-op'
+      });
       return Callbacks.Post.push({
         name: 'Mark OP Quotes',
         cb: this.node
@@ -21828,7 +22206,7 @@ QuoteOP = (function() {
       if (this.isClone && (ref = this.thread.fullID, indexOf.call(quotes, ref) >= 0)) {
         i = 0;
         while (quotelink = quotelinks[i++]) {
-          quotelink.textContent = quotelink.textContent.replace(QuoteOP.text, '');
+          $.rm($('.qmark-op', quotelink));
         }
       }
       fullID = this.context.thread.fullID;
@@ -21839,7 +22217,7 @@ QuoteOP = (function() {
       while (quotelink = quotelinks[i++]) {
         ref1 = Get.postDataFromLink(quotelink), boardID = ref1.boardID, postID = ref1.postID;
         if ((boardID + "." + postID) === fullID) {
-          $.add(quotelink, $.tn(QuoteOP.text));
+          $.add(quotelink, QuoteOP.mark.cloneNode(true));
         }
       }
     }
@@ -21877,7 +22255,7 @@ QuotePreview = (function() {
     },
     mouseover: function(e) {
       var boardID, i, len, origin, post, postID, posts, qp, ref, threadID;
-      if ($.hasClass(this, 'inlined') || !d.contains(this)) {
+      if (($.hasClass(this, 'inlined') && !$.hasClass(doc, 'catalog-mode')) || !d.contains(this)) {
         return;
       }
       ref = Get.postDataFromLink(this), boardID = ref.boardID, threadID = ref.threadID, postID = ref.postID;
@@ -22163,7 +22541,7 @@ QuoteThreading =
             return delete post.nodes.threadContainer;
           }
         });
-        $.add(thread.OP.nodes.root.parentNode, nodes);
+        $.add(thread.nodes.root, nodes);
       }
       Unread.position = Unread.order.first;
       Unread.updatePosition();
@@ -22215,7 +22593,10 @@ QuoteYou = (function() {
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
-      this.text = '\u00A0(You)';
+      this.mark = $.el('span', {
+        textContent: '\u00A0(You)',
+        className: 'qmark-you'
+      });
       return Callbacks.Post.push({
         name: 'Mark Quotes of You',
         cb: this.node
@@ -22243,7 +22624,7 @@ QuoteYou = (function() {
           continue;
         }
         if (Conf['Mark Quotes of You']) {
-          $.add(quotelink, $.tn(QuoteYou.text));
+          $.add(quotelink, QuoteYou.mark.cloneNode(true));
         }
         $.addClass(quotelink, 'you');
         $.addClass(this.nodes.root, 'quotesYou');
@@ -22306,6 +22687,7 @@ Quotify = (function() {
       if (((ref = g.VIEW) !== 'index' && ref !== 'thread') || !Conf['Resurrect Quotes']) {
         return;
       }
+      $.addClass(doc, 'resurrect-quotes');
       if (Conf['Comment Expansion']) {
         ExpandComment.callbacks.push(this.node);
       }
@@ -22382,8 +22764,9 @@ Quotify = (function() {
           a = $.el('a', {
             href: Build.postURL(boardID, post.thread.ID, postID),
             className: 'quotelink deadlink',
-            textContent: quote + "\u00A0(Dead)"
+            textContent: quote
           });
+          $.add(a, Post.deadMark.cloneNode(true));
           $.extend(a.dataset, {
             boardID: boardID,
             threadID: post.thread.ID,
@@ -22404,8 +22787,9 @@ Quotify = (function() {
           a = $.el('a', {
             href: redirect || 'javascript:;',
             className: 'deadlink',
-            textContent: quote + "\u00A0(Dead)"
+            textContent: quote
           });
+          $.add(a, Post.deadMark.cloneNode(true));
           if (fetchable) {
             $.addClass(a, 'quotelink');
             $.extend(a.dataset, {
@@ -22419,7 +22803,7 @@ Quotify = (function() {
         this.quotes.push(quoteID);
       }
       if (!a) {
-        deadlink.textContent = quote + "\u00A0(Dead)";
+        $.add(deadlink, Post.deadMark.cloneNode(true));
         return;
       }
       $.replace(deadlink, a);
@@ -22740,7 +23124,7 @@ Main = (function() {
           $.add(d.body, div);
           bgColor = window.getComputedStyle(div).backgroundColor;
           $.rm(div);
-          Main.bgColorStyle.textContent = ".dialog, .suboption-list > div:last-of-type {\n  background-color: " + bgColor + ";\n}";
+          Main.bgColorStyle.textContent = ".dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post {\n  background-color: " + bgColor + ";\n}";
           return $.after($.id('fourchanx-css'), Main.bgColorStyle);
         }
       };
@@ -22795,6 +23179,7 @@ Main = (function() {
         for (j = 0, len = ref.length; j < len; j++) {
           threadRoot = ref[j];
           thread = new Thread(+threadRoot.id.slice(1), g.BOARD);
+          thread.nodes.root = threadRoot;
           threads.push(thread);
           ref1 = $$('.thread > .postContainer', threadRoot);
           for (k = 0, len1 = ref1.length; k < len1; k++) {
