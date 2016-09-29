@@ -263,3 +263,4 @@ class Post
     @nodes.root.classList.toggle 'catalog-container', isCatalogOP
     @nodes.root.classList.toggle 'opContainer', !isCatalogOP
     @nodes.post.classList.toggle 'catalog-post', isCatalogOP
+    @nodes.post.classList.toggle 'op', !isCatalogOP
