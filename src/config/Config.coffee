@@ -733,7 +733,6 @@ Config =
     'Index Size': 'small'
     'Show Replies': true
     'Catalog Hover Expand': true
-    'Catalog Reply Hover': true
     'Pin Watched Threads': false
     'Anchor Hidden Threads': true
     'Refreshed Navigation': false

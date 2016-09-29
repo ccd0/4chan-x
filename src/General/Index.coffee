@@ -44,23 +44,21 @@ Index =
     # Header "Index Navigation" submenu
     repliesEntry = el: UI.checkbox 'Show Replies',          'Show replies'
     hoverEntry   = el: UI.checkbox 'Catalog Hover Expand',  'Catalog hover expand'
-    previewEntry = el: UI.checkbox 'Catalog Reply Hover',   'Catalog reply hover'
     sortEntry    = el: UI.checkbox 'Per-Board Sort Type',   'Per-board sort type', (typeof Conf['Index Sort'] is 'object')
     pinEntry     = el: UI.checkbox 'Pin Watched Threads',   'Pin watched threads'
     anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', 'Anchor hidden threads'
     refNavEntry  = el: UI.checkbox 'Refreshed Navigation',  'Refreshed navigation'
     hoverEntry.el.title   = 'Hovering over catalog threads expands the comment and shows more details.'
-    previewEntry.el.title = 'Show full replies in catalog on mouseover of excerpts.'
     sortEntry.el.title    = 'Set the sorting order of each board independently.'
     pinEntry.el.title     = 'Move watched threads to the start of the index.'
     anchorEntry.el.title  = 'Move hidden threads to the end of the index.'
     refNavEntry.el.title  = 'Refresh index when navigating through pages.'
-    for label in [repliesEntry, hoverEntry, previewEntry, pinEntry, anchorEntry, refNavEntry]
+    for label in [repliesEntry, hoverEntry, pinEntry, anchorEntry, refNavEntry]
       input = label.el.firstChild
       {name} = input
       $.on input, 'change', $.cb.checked
       switch name
-        when 'Show Replies', 'Catalog Reply Hover'
+        when 'Show Replies'
           $.on input, 'change', @cb.replies
         when 'Catalog Hover Expand'
           $.on input, 'change', @cb.hover
@@ -72,7 +70,7 @@ Index =
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 100
-      subEntries: [repliesEntry, hoverEntry, previewEntry, sortEntry, pinEntry, anchorEntry, refNavEntry]
+      subEntries: [repliesEntry, hoverEntry, sortEntry, pinEntry, anchorEntry, refNavEntry]
 
     # Navigation links at top of index
     @navLinks = $.el 'div', className: 'navLinks json-index'
@@ -705,7 +703,7 @@ Index =
         reply = $.el 'div', {className: 'catalog-reply'},
           <%= readHTML('CatalogReply.html') %>
         RelativeDates.update $('time', reply)
-        $.on $('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover if Conf['Catalog Reply Hover']
+        $.on $('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover
         replies.push reply
 
       nodes.replies = $.el 'div', className: 'catalog-replies'
