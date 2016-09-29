@@ -56,12 +56,12 @@ Previously developed by <a href="https://github.com/aeosynth/4chan-x">aeosynth</
 <p><strong>Luakit</strong>: Navigate to the <a href="https://www.4chan-x.net/builds/4chan-X.user.js">script</a>, then type the command <code>:usi</code> to install it.</p>
 </li>
 <li>
-<p><strong>uzbl</strong>: Install the script from <a href="https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh">https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh</a>, enable it in your config file, and then save <a href="https://www.4chan-x.net/builds/4chan-X.user.js">4chan X</a> to <code>$XDG_DATA_HOME/uzbl/userscripts</code> (or <code>$HOME/.local/share/uzbl/userscripts</code>).</p>
-<pre><code>  wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts https://raw.githubusercontent.com/singpolyma/singpolyma/master/uzbl/data/scripts/userscript.sh
-  chmod +x ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts/userscript.sh
-  echo '@on_event LOAD_COMMIT spawn @scripts_dir/userscript.sh document-start' &gt;&gt; ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
-  echo '@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh document-end'   &gt;&gt; ${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config
-  wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts https://www.4chan-x.net/builds/4chan-X.user.js
+<p><strong>uzbl</strong>: Install the script from <a href="https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh">https://github.com/singpolyma/singpolyma/blob/master/uzbl/data/scripts/userscript.sh</a>, enable it in your config file, and then save <a href="https://www.4chan-x.net/builds/4chan-X.user.js">4chan X</a> to <code>$XDG_DATA_HOME/uzbl/userscripts</code> (or <code>$HOME/.local/share/uzbl/userscripts</code>). The commands below assume you have run uzbl at least once to create its config file.</p>
+<pre><code>  wget -P &quot;${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts&quot; https://raw.githubusercontent.com/singpolyma/singpolyma/master/uzbl/data/scripts/userscript.sh
+  chmod +x &quot;${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/scripts/userscript.sh&quot;
+  echo '@on_event LOAD_COMMIT spawn @scripts_dir/userscript.sh document-start' &gt;&gt; &quot;${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config&quot;
+  echo '@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh document-end'   &gt;&gt; &quot;${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config&quot;
+  wget -P &quot;${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts&quot; https://www.4chan-x.net/builds/4chan-X.user.js
 </code></pre>
 </li>
 </ul>
