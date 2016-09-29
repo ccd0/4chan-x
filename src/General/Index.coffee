@@ -272,6 +272,7 @@ Index =
 
     hover: ->
       doc.classList.toggle 'catalog-hover-expand', Conf['Catalog Hover Expand']
+      Index.cb.replies() if Conf['Show Replies'] and Conf['Catalog Hover Expand']
 
     popstate: (e) ->
       if e?.state
@@ -792,7 +793,7 @@ Index =
   buildCatalog: (threads) ->
     Index.buildCatalogViews threads
     Index.sizeCatalogViews threads
-    Index.buildCatalogReplies threads if Conf['Show Replies']
+    Index.buildCatalogReplies threads if Conf['Show Replies'] and Conf['Catalog Hover Expand']
     nodes = []
     for thread in threads
       unless thread.nodes.placeholder
