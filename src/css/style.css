@@ -759,6 +759,7 @@ div[data-checked="false"] > .suboption-list {
 /* overrides 4chan CSS on div.post */
 .catalog-post.catalog-post {
   margin: -21px -1px -1px;
+  overflow: visible;
 }
 .catalog-thread.noFile > * > .catalog-post {
   margin-top: -7px;
