@@ -229,7 +229,7 @@ Main =
         bgColor = window.getComputedStyle(div).backgroundColor
         $.rm div
         Main.bgColorStyle.textContent = """
-          .dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-postContainer:hover > .post {
+          .dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post {
             background-color: #{bgColor};
           }
         """

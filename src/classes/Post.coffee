@@ -260,6 +260,6 @@ class Post
     return
 
   setCatalogOP: (isCatalogOP) ->
-    @nodes.root.classList.toggle 'catalog-postContainer', isCatalogOP
+    @nodes.root.classList.toggle 'catalog-container', isCatalogOP
     @nodes.root.classList.toggle 'opContainer', !isCatalogOP
     @nodes.post.classList.toggle 'catalog-post', isCatalogOP

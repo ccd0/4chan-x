@@ -30,13 +30,13 @@
 }
 
 /* Catalog */
-:root.tomorrow.catalog-hover-expand .catalog-postContainer:hover > .post {
+:root.tomorrow.catalog-hover-expand .catalog-container:hover > .post {
   background-color: #282A2E;
 }
 :root.tomorrow.werkTyme .catalog-thread:not(:hover),
 :root.tomorrow.werkTyme:not(.catalog-hover-expand) .catalog-thread,
-:root.tomorrow.catalog-hover-expand .catalog-postContainer:hover > .post,
-:root.tomorrow.catalog-hover-expand .catalog-postContainer:hover .catalog-reply {
+:root.tomorrow.catalog-hover-expand .catalog-container:hover > .post,
+:root.tomorrow.catalog-hover-expand .catalog-container:hover .catalog-reply {
   border-color: #111;
 }
 
@@ -81,13 +81,13 @@
 :root.tomorrow .catalog-thread.filter-highlight .catalog-thumb,
 :root.tomorrow.werkTyme .catalog-thread.filter-highlight:not(:hover),
 :root.tomorrow.werkTyme:not(.catalog-hover-expand) .catalog-thread.filter-highlight,
-:root.tomorrow.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-postContainer:hover > .catalog-post {
+:root.tomorrow.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-container:hover > .catalog-post {
   box-shadow: 0 0 3px 3px rgba(64, 192, 255, .7);
 }
 :root.tomorrow .catalog-thread.watched .catalog-thumb,
 :root.tomorrow.werkTyme .catalog-thread.watched:not(:hover),
 :root.tomorrow.werkTyme:not(.catalog-hover-expand) .catalog-thread.watched,
-:root.tomorrow.werkTyme.catalog-hover-expand .catalog-thread.watched > .catalog-postContainer:hover > .catalog-post {
+:root.tomorrow.werkTyme.catalog-hover-expand .catalog-thread.watched > .catalog-container:hover > .catalog-post {
   outline: 2px solid rgb(64, 192, 255);
 }
 

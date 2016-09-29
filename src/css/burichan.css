@@ -31,13 +31,13 @@
 }
 
 /* Catalog */
-:root.burichan.catalog-hover-expand .catalog-postContainer:hover > .post {
+:root.burichan.catalog-hover-expand .catalog-container:hover > .post {
   background-color: #D6DAF0;
 }
 :root.burichan.werkTyme .catalog-thread:not(:hover),
 :root.burichan.werkTyme:not(.catalog-hover-expand) .catalog-thread,
-:root.burichan.catalog-hover-expand .catalog-postContainer:hover > .post,
-:root.burichan.catalog-hover-expand .catalog-postContainer:hover .catalog-reply {
+:root.burichan.catalog-hover-expand .catalog-container:hover > .post,
+:root.burichan.catalog-hover-expand .catalog-container:hover .catalog-reply {
   border-color: #B7C5D9;
 }
 

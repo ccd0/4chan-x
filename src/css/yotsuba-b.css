@@ -31,13 +31,13 @@
 }
 
 /* Catalog */
-:root.yotsuba-b.catalog-hover-expand .catalog-postContainer:hover > .post {
+:root.yotsuba-b.catalog-hover-expand .catalog-container:hover > .post {
   background-color: #D6DAF0;
 }
 :root.yotsuba-b.werkTyme .catalog-thread:not(:hover),
 :root.yotsuba-b.werkTyme:not(.catalog-hover-expand) .catalog-thread,
-:root.yotsuba-b.catalog-hover-expand .catalog-postContainer:hover > .post,
-:root.yotsuba-b.catalog-hover-expand .catalog-postContainer:hover .catalog-reply {
+:root.yotsuba-b.catalog-hover-expand .catalog-container:hover > .post,
+:root.yotsuba-b.catalog-hover-expand .catalog-container:hover .catalog-reply {
   border-color: #B7C5D9;
 }
 

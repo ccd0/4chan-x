@@ -732,18 +732,18 @@ div.catalog-thread {
   width: 270px;
   height: 410px;
 }
-.catalog-postContainer {
+.catalog-container {
   position: absolute;
   top: -4px;
   left: 0;
   right: 0;
   bottom: 0;
 }
-.catalog-postContainer:not(:hover),
-:root:not(.catalog-hover-expand) .catalog-postContainer {
+.catalog-container:not(:hover),
+:root:not(.catalog-hover-expand) .catalog-container {
   overflow: hidden;
 }
-:root.catalog-hover-expand .catalog-postContainer:hover {
+:root.catalog-hover-expand .catalog-container:hover {
   z-index: 1;
 }
 .catalog-post {
@@ -761,11 +761,11 @@ div.catalog-post {
   margin-top: -7px;
   padding-top: 6px;
 }
-:root.catalog-hover-expand .catalog-postContainer:hover > .catalog-post {
+:root.catalog-hover-expand .catalog-container:hover > .catalog-post {
   margin-left: -61px;
   margin-right: -61px;
 }
-:root.catalog-hover-expand .catalog-postContainer:hover > * > :not(.catalog-replies) {
+:root.catalog-hover-expand .catalog-container:hover > * > :not(.catalog-replies) {
   padding-left: 2px;
   padding-right: 2px;
 }
@@ -818,13 +818,13 @@ div.catalog-post {
   margin: 0;
   padding-bottom: .3em;
 }
-.catalog-postContainer:not(:hover) > * > .file,
-.catalog-postContainer:not(:hover) > * > .postInfo > :not(.subject),
-.catalog-postContainer:not(:hover) > * > .catalog-replies,
-:root:not(.catalog-hover-expand) .catalog-postContainer > * > .file,
-:root:not(.catalog-hover-expand) .catalog-postContainer > * > .postInfo > :not(.subject),
-:root:not(.catalog-hover-expand) .catalog-postContainer > * > .catalog-replies,
-.catalog-thread > .catalog-postContainer > :not(.catalog-post),
+.catalog-container:not(:hover) > * > .file,
+.catalog-container:not(:hover) > * > .postInfo > :not(.subject),
+.catalog-container:not(:hover) > * > .catalog-replies,
+:root:not(.catalog-hover-expand) .catalog-container > * > .file,
+:root:not(.catalog-hover-expand) .catalog-container > * > .postInfo > :not(.subject),
+:root:not(.catalog-hover-expand) .catalog-container > * > .catalog-replies,
+.catalog-thread > .catalog-container > :not(.catalog-post),
 .catalog-post > .file > :not(.fileText),
 .catalog-post > * > .fileText > :not(:first-child),
 .catalog-post > .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),
@@ -870,7 +870,7 @@ div.catalog-post > div.postInfo {
 }
 .catalog-post > * > .nameBlock,
 .catalog-post > * > .dateTime,
-:root.catalog-hover-expand .catalog-postContainer:hover > * > .postMessage:not(:empty) {
+:root.catalog-hover-expand .catalog-container:hover > * > .postMessage:not(:empty) {
   padding-top: .3em;
 }
 .catalog-reply {
@@ -1322,13 +1322,13 @@ input[name="Default Volume"] {
 .catalog-thread.filter-highlight .catalog-thumb,
 :root.werkTyme .catalog-thread.filter-highlight:not(:hover),
 :root.werkTyme:not(.catalog-hover-expand) .catalog-thread.filter-highlight,
-:root.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-postContainer:hover > .catalog-post {
+:root.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-container:hover > .catalog-post {
   box-shadow: 0 0 3px 3px rgba(255, 0, 0, .5);
 }
 .catalog-thread.watched .catalog-thumb,
 :root.werkTyme .catalog-thread.watched:not(:hover),
 :root.werkTyme:not(.catalog-hover-expand) .catalog-thread.watched,
-:root.werkTyme.catalog-hover-expand .catalog-thread.watched > .catalog-postContainer:hover > .catalog-post {
+:root.werkTyme.catalog-hover-expand .catalog-thread.watched > .catalog-container:hover > .catalog-post {
   outline: 2px solid rgba(255, 0, 0, .75);
 }
 

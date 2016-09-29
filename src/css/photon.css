@@ -31,13 +31,13 @@
 }
 
 /* Catalog */
-:root.photon.catalog-hover-expand .catalog-postContainer:hover > .post {
+:root.photon.catalog-hover-expand .catalog-container:hover > .post {
   background-color: #DDD;
 }
 :root.photon.werkTyme .catalog-thread:not(:hover),
 :root.photon.werkTyme:not(.catalog-hover-expand) .catalog-thread,
-:root.photon.catalog-hover-expand .catalog-postContainer:hover > .post,
-:root.photon.catalog-hover-expand .catalog-postContainer:hover .catalog-reply {
+:root.photon.catalog-hover-expand .catalog-container:hover > .post,
+:root.photon.catalog-hover-expand .catalog-container:hover .catalog-reply {
   border-color: #CCC;
 }
 
