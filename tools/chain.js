@@ -23,6 +23,8 @@ for (var name of process.argv.slice(2)) {
         console.log(`decaffeinate succeeded for ${name}`);
       } catch(err) {
         console.log(`decaffeinate failed for ${name}: ${err.message}`);
+        var line = err.source.slice(0, err.start).match(/.*$/)[0] + err.source.slice(err.start, err.end) + err.source.slice(err.end).match(/^.*/)[0];
+        console.log(line);
         if (definesVar) {
           script = `${script}\nreturn ${parts[3]};\n`;
         }
