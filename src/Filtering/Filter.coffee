@@ -106,34 +106,39 @@ Filter =
         return false
       settings
 
+  test: (post, hideable=true) ->
+    hl  = undefined
+    top = false
+    boardID = if post.board then post.board.ID else post.boardID
+    for key of Filter.filters when ((value = Filter[key] post)?)
+      # Continue if there's nothing to filter (no tripcode for example).
+      for filter in Filter.filters[key] when (result = filter value, boardID, post.isReply)
+        {hide, stub} = result
+        if hide
+          return {hide, stub} if hideable
+        else
+          unless hl and result.class in hl
+            (hl or= []).push result.class
+          top or= result.top
+    {hl, top}
+
   node: ->
     return if @isClone
-    for key of Filter.filters when (value = Filter[key] @)?
-      # Continue if there's nothing to filter (no tripcode for example).
-
-      for filter in Filter.filters[key] when result = filter value, @board.ID, @isReply
-        # Hide
-        if result.hide and not @isFetchedQuote
-          if @isReply
-            PostHiding.hide @, result.stub
-          else if g.VIEW is 'index'
-            ThreadHiding.hide @thread, result.stub
-          else
-            continue
-          return
-
-        # Highlight
-        $.addClass @nodes.root, result.class
-        unless @highlights and result.class in @highlights
-          (@highlights or= []).push result.class
-        if !@isReply and result.top
-          @thread.isOnTop = true
+    {hide, stub, hl, top} = Filter.test @, (!@isFetchedQuote and (@isReply or g.VIEW is 'index'))
+    if hide
+      if @isReply
+        PostHiding.hide @, stub
+      else
+        ThreadHiding.hide @thread, stub
+    else
+      if hl
+        @highlights = hl
+        $.addClass @nodes.root, hl...
+      @thread.isOnTop = top
+    return
 
   isHidden: (post) ->
-    for key of Filter.filters when (value = Filter[key] post)?
-      for filter in Filter.filters[key] when result = filter value, post.boardID, post.isReply
-        return true if result.hide
-    false
+    !!Filter.test(post).hide
 
   postID:     (post) -> "#{post.ID ? post.postID}"
   name:       (post) -> post.info.name
