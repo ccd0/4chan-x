@@ -1220,6 +1220,7 @@ input[name="Default Volume"] {
 }
 .hide-thread-button {
   margin-top: -1px;
+  width: 11px;
 }
 .stub ~ * {
   display: none !important;
@@ -1232,6 +1233,9 @@ input[name="Default Volume"] {
 }
 :root.reply-hide div.sideArrows {
   display: none;
+}
+:root.thread-hide .party-hat {
+  left: 19px;
 }
 
 /* QR */
