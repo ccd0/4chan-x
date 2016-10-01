@@ -159,7 +159,8 @@ Index =
     pageNum = ++Index.pageNum
     return Index.endNotice() if pageNum > Index.pagesNum
 
-    threads = Index.threadsOnPage pageNum
+    threadIDs = Index.threadsOnPage pageNum
+    threads = threadIDs.map (ID) -> g.BOARD.threads[ID]
     Index.buildStructure threads
     
   endNotice: do ->
@@ -438,7 +439,7 @@ Index =
 
   getPagesNum: ->
     if Index.search
-      Math.ceil Index.sortedThreads.length / Index.threadsNumPerPage
+      Math.ceil Index.sortedThreadIDs.length / Index.threadsNumPerPage
     else
       Index.pagesNum
 
@@ -704,7 +705,7 @@ Index =
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
     return unless liveThreadData
-    sortedThreadIDs = switch Index.currentSort
+    Index.sortedThreadIDs = switch Index.currentSort
       when 'lastreply'
         [liveThreadData...].sort((a, b) ->
           a = num[num.length - 1] if (num = a.last_replies)
@@ -723,9 +724,8 @@ Index =
       when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
       when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
       when 'filecount'  then [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
-    Index.sortedThreads = sortedThreadIDs.map (threadID) -> g.BOARD.threads[threadID]
-    if Index.search and (threads = Index.querySearch Index.search)
-      Index.sortedThreads = threads
+    if Index.search and (threadIDs = Index.querySearch Index.search)
+      Index.sortedThreadIDs = threadIDs
     # Sticky threads
     Index.sortOnTop (thread) -> thread.isSticky
     # Highlighted threads
@@ -736,19 +736,20 @@ Index =
   sortOnTop: (match) ->
     topThreads    = []
     bottomThreads = []
-    for thread in Index.sortedThreads
-      (if match thread then topThreads else bottomThreads).push thread
-    Index.sortedThreads = topThreads.concat bottomThreads
+    for ID in Index.sortedThreadIDs
+      (if match g.BOARD.threads[ID] then topThreads else bottomThreads).push ID
+    Index.sortedThreadIDs = topThreads.concat bottomThreads
 
   buildIndex: ->
     return unless Index.liveThreadData
     switch Conf['Index Mode']
       when 'all pages'
-        threads = Index.sortedThreads
+        threadIDs = Index.sortedThreadIDs
       when 'catalog'
-        threads = Index.sortedThreads.filter (thread) -> !thread.isHidden isnt Index.showHiddenThreads
+        threadIDs = Index.sortedThreadIDs.filter (ID) -> !g.BOARD.threads[ID].isHidden isnt Index.showHiddenThreads
       else
-        threads = Index.threadsOnPage Index.currentPage
+        threadIDs = Index.threadsOnPage Index.currentPage
+    threads = threadIDs.map (ID) -> g.BOARD.threads[ID]
     delete Index.pageNum
     $.rmAll Index.root
     $.rmAll Header.hover
@@ -760,7 +761,7 @@ Index =
   threadsOnPage: (pageNum) ->
     nodesPerPage = Index.threadsNumPerPage
     offset = nodesPerPage * (pageNum - 1)
-    Index.sortedThreads[offset ... offset + nodesPerPage]
+    Index.sortedThreadIDs[offset ... offset + nodesPerPage]
 
   buildStructure: (threads) ->
     Index.buildReplies threads if Conf['Show Replies']
@@ -818,8 +819,8 @@ Index =
 
   querySearch: (query) ->
     return if not (keywords = query.toLowerCase().match /\S+/g)
-    Index.sortedThreads.filter (thread) ->
-      Index.searchMatch thread, keywords
+    Index.sortedThreadIDs.filter (ID) ->
+      Index.searchMatch g.BOARD.threads[ID], keywords
 
   searchMatch: (thread, keywords) ->
     {info, file} = thread.OP
