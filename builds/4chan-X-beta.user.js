@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.0.1
+// @version      1.13.0.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.1',
+  VERSION:   '1.13.0.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1901,6 +1901,9 @@ div[data-checked=\"false\"] > .suboption-list {\n\
   width: 270px;\n\
   height: 410px;\n\
 }\n\
+:root.catalog-hover-expand .catalog-thread:hover {\n\
+  z-index: 1;\n\
+}\n\
 .catalog-container {\n\
   position: absolute;\n\
   top: -4px;\n\
@@ -1911,9 +1914,6 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 .catalog-container:not(:hover),\n\
 :root:not(.catalog-hover-expand) .catalog-container {\n\
   overflow: hidden;\n\
-}\n\
-:root.catalog-hover-expand .catalog-container:hover {\n\
-  z-index: 1;\n\
 }\n\
 .catalog-post {\n\
   position: absolute;\n\
@@ -2102,16 +2102,22 @@ div[data-checked=\"false\"] > .suboption-list {\n\
   background-size: contain;\n\
 }\n\
 :root.hats-enabled .catalog-small > .catalog-thread::after {\n\
-  left: -10px;\n\
-  top: -65px;\n\
-  width: 100px;\n\
-  height: 100px;\n\
+  left: -8px;\n\
+  top: -59px;\n\
+  width: 96px;\n\
+  height: 96px;\n\
+}\n\
+:root.hats-enabled:not(.werkTyme) .catalog-small > .catalog-thread:not(.noFile)::after {\n\
+  left: calc(67px - .3px * var(--tn-w));\n\
 }\n\
 :root.hats-enabled .catalog-large > .catalog-thread::after {\n\
   left: -15px;\n\
-  top: -105px;\n\
+  top: -98px;\n\
   width: 160px;\n\
   height: 160px;\n\
+}\n\
+:root.hats-enabled:not(.werkTyme) .catalog-large > .catalog-thread:not(.noFile)::after {\n\
+  left: calc(110px - .5px * var(--tn-w));\n\
 }\n\
 /* Announcement Hiding */\n\
 :root.hide-announcement #globalMessage {\n\
@@ -8101,8 +8107,9 @@ Build = (function() {
       return root;
     },
     catalogThread: function(thread, data, pageCount) {
-      var container, fileCount, gifIcon, imgClass, postCount, root, spoilerRange, src, staticPath;
+      var container, cssText, fileCount, gifIcon, imgClass, postCount, ratio, root, spoilerRange, src, staticPath, tn_h, tn_w;
       staticPath = Build.staticPath, gifIcon = Build.gifIcon;
+      tn_w = data.tn_w, tn_h = data.tn_h;
       if (data.spoiler && !Conf['Reveal Spoiler Thumbnails']) {
         src = staticPath + "spoiler";
         if (spoilerRange = Build.spoilerRange[thread.board]) {
@@ -8110,11 +8117,14 @@ Build = (function() {
         }
         src += '.png';
         imgClass = 'spoiler-file';
+        cssText = "--tn-w: 100; --tn-h: 100;";
       } else if (data.filedeleted) {
         src = staticPath + "filedeleted-res" + gifIcon;
         imgClass = 'deleted-file';
       } else if (thread.OP.file) {
         src = thread.OP.file.thumbURL;
+        ratio = 250 / Math.max(tn_w, tn_h);
+        cssText = "--tn-w: " + (tn_w * ratio) + "; --tn-h: " + (tn_h * ratio) + ";";
       } else {
         src = staticPath + "nofile.png";
         imgClass = 'no-file';
@@ -8135,6 +8145,7 @@ Build = (function() {
       if (!thread.OP.file) {
         $.addClass(root, 'noFile');
       }
+      root.style.cssText = cssText || '';
       return root;
     },
     catalogReply: function(thread, data) {
