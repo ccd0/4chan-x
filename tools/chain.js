@@ -10,6 +10,10 @@ for (var name of process.argv.slice(2)) {
     var script = fs.readFileSync(sourceName, 'utf8');
     script = script.replace(/\r\n/g, '\n');
     script = template(script, {type: parts[2]}, sourceName);
+    if (!script.trim()) {
+      fs.writeFileSync(name, '');
+      continue;
+    }
     if (parts[4] === 'coffee') {
       var definesVar = /^[$A-Z][$\w]*$/.test(parts[3]);
       try {
