@@ -940,11 +940,17 @@ div[data-checked="false"] > .suboption-list {
   width: 96px;
   height: 96px;
 }
+:root.hats-enabled:not(.werkTyme) .catalog-small > .catalog-thread:not(.noFile)::after {
+  left: calc(67px - .3px * var(--tn-w));
+}
 :root.hats-enabled .catalog-large > .catalog-thread::after {
   left: -15px;
   top: -98px;
   width: 160px;
   height: 160px;
+}
+:root.hats-enabled:not(.werkTyme) .catalog-large > .catalog-thread:not(.noFile)::after {
+  left: calc(110px - .5px * var(--tn-w));
 }
 
 /* Announcement Hiding */

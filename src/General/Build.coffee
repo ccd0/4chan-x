@@ -194,6 +194,7 @@ Build =
 
   catalogThread: (thread, data, pageCount) ->
     {staticPath, gifIcon} = Build
+    {tn_w, tn_h} = data
 
     if data.spoiler and !Conf['Reveal Spoiler Thumbnails']
       src = "#{staticPath}spoiler"
@@ -202,11 +203,14 @@ Build =
         src += ("-#{thread.board}") + Math.floor 1 + spoilerRange * Math.random()
       src += '.png'
       imgClass = 'spoiler-file'
+      cssText = "--tn-w: 100; --tn-h: 100;"
     else if data.filedeleted
       src = "#{staticPath}filedeleted-res#{gifIcon}"
       imgClass = 'deleted-file'
     else if thread.OP.file
       src = thread.OP.file.thumbURL
+      ratio = 250 / Math.max(tn_w, tn_h)
+      cssText = "--tn-w: #{tn_w * ratio}; --tn-h: #{tn_h * ratio};"
     else
       src = "#{staticPath}nofile.png"
       imgClass = 'no-file'
@@ -222,6 +226,7 @@ Build =
       id: "t#{thread}"
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
     $.addClass root, 'noFile' unless thread.OP.file
+    root.style.cssText = cssText or ''
 
     root
 
