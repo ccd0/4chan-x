@@ -5,7 +5,7 @@ PSAHiding =
     $.one d, '4chanXInitFinished', @setup
 
   setup: ->
-    unless psa = PSAHiding.psa = $.id 'globalMessage'
+    if not (psa = PSAHiding.psa = $.id 'globalMessage')
       $.rmClass doc, 'hide-announcement'
       return
     if (hr = $.id('globalToggle')?.previousElementSibling) and hr.nodeName is 'HR'

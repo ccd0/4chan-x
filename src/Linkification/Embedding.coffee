@@ -69,7 +69,7 @@ Embedding =
     $.on $('.close', Embedding.dialog), 'click',     Embedding.closeFloat
     $.on $('.move',  Embedding.dialog), 'mousedown', Embedding.dragEmbed
     $.on $('.jump',  Embedding.dialog), 'click', ->
-      Header.scrollTo Embedding.lastEmbed if doc.contains Embedding.lastEmbed
+      (Header.scrollTo Embedding.lastEmbed if doc.contains Embedding.lastEmbed)
     $.add d.body, Embedding.dialog
 
   closeFloat: ->
@@ -91,7 +91,7 @@ Embedding =
 
   title: (data) ->
     {key, uid, options, link, post} = data
-    return unless service = Embedding.types[key].title
+    return if not (service = Embedding.types[key].title)
     $.addClass link, key.toLowerCase()
     if service.batchSize
       (service.queue or= []).push data
@@ -117,7 +117,7 @@ Embedding =
     click: (e) ->
       e.preventDefault()
       if Conf['Floating Embeds'] or $.hasClass(doc, 'catalog-mode')
-        return unless div = Embedding.media.firstChild
+        return if not (div = Embedding.media.firstChild)
         $.replace div, Embedding.cb.embed @
         Embedding.lastEmbed = Get.postFromNode(@).nodes.root
         $.rmClass Embedding.dialog, 'empty'

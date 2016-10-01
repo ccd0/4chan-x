@@ -22,10 +22,11 @@ ThreadHiding =
     @hiddenThreads = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
     Main.ready ->
       # 4chan's catalog sets the style to "display: none;" when hiding or unhiding a thread.
-      new MutationObserver(ThreadHiding.catalogSave).observe $.id('threads'),
+      new MutationObserver(ThreadHiding.catalogSave).observe $.id('threads'), {
         attributes: true
         subtree: true
         attributeFilter: ['style']
+      }
 
   catalogSave: ->
     hiddenThreads2 = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
@@ -78,7 +79,7 @@ ThreadHiding =
             return false
           ThreadHiding.menu.thread = thread
           true
-        subEntries: [el: apply; el: makeStub]
+        subEntries: [{el: apply}, {el: makeStub}]
 
       div = $.el 'a',
         className: 'show-thread-link'

@@ -1,6 +1,6 @@
 Report =
   init: ->
-    return unless (match = location.search.match /\bno=(\d+)/)
+    return if not (match = location.search.match /\bno=(\d+)/)
     Captcha.replace.init()
     @postID = +match[1]
     $.ready @ready
@@ -20,6 +20,6 @@ Report =
       Report.fit 'body'
 
   fit: (selector) ->
-    return unless (el = $ selector, doc) and getComputedStyle(el).visibility isnt 'hidden'
+    return if not ((el = $ selector, doc) and getComputedStyle(el).visibility isnt 'hidden')
     dy = el.getBoundingClientRect().bottom - doc.clientHeight + 8
     window.resizeBy 0, dy if dy > 0

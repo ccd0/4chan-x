@@ -71,7 +71,7 @@ Volume =
 
   wheel: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey
-    return unless el = $ 'video:not([data-md5])', @
+    return if not (el = $ 'video:not([data-md5])', @)
     return if el.muted or not $.hasAudio el
     volume = el.volume + 0.1
     volume *= 1.1 if e.deltaY < 0

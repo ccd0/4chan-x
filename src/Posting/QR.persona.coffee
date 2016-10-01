@@ -13,7 +13,7 @@ QR.persona =
 
   parseItem: (item) ->
     return if item[0] is '#'
-    return unless match = item.match /(name|options|email|subject|password):"(.*)"/i
+    return if not (match = item.match /(name|options|email|subject|password):"(.*)"/i)
     [match, type, val]  = match
 
     # Don't mix up item settings with val.

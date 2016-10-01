@@ -1,7 +1,7 @@
 ExpandThread =
   statuses: {}
   init: ->
-    return unless g.VIEW is 'index' and Conf['Thread Expansion']
+    return if not (g.VIEW is 'index' and Conf['Thread Expansion'])
     if Conf['JSON Index']
       $.on d, 'IndexRefreshInternal', @onIndexRefresh
     else
@@ -10,7 +10,7 @@ ExpandThread =
         cb: -> ExpandThread.setButton @
 
   setButton: (thread) ->
-    return unless thread.nodes.root and (a = $ '.summary', thread.nodes.root)
+    return if not (thread.nodes.root and (a = $ '.summary', thread.nodes.root))
     a.textContent = Build.summaryText '+', a.textContent.match(/\d+/g)...
     a.style.cursor = 'pointer'
     $.on a, 'click', ExpandThread.cbToggle
@@ -35,7 +35,7 @@ ExpandThread =
 
   toggle: (thread) ->
     threadRoot = thread.nodes.root
-    return unless a = $ '.summary', threadRoot
+    return if not (a = $ '.summary', threadRoot)
     if thread.ID of ExpandThread.statuses
       ExpandThread.contract thread, a, threadRoot
     else

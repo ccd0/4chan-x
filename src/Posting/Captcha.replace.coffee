@@ -26,7 +26,7 @@ Captcha.replace =
         $.onExists doc, 'iframe', Captcha.replace.iframe
 
   noscript: ->
-    return unless (original = $ '#g-recaptcha, #captchaContainerAlt') and (noscript = $ 'noscript')
+    return if not ((original = $ '#g-recaptcha, #captchaContainerAlt') and (noscript = $ 'noscript'))
     span = $.el 'span',
       id: 'captcha-forced-noscript'
     $.replace noscript, span

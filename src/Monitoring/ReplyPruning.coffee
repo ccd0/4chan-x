@@ -60,7 +60,7 @@ ReplyPruning =
     @posts.forEach (post) ->
       if post.isReply
         ReplyPruning.total++
-        ReplyPruning.totalFiles++ if post.file
+        (ReplyPruning.totalFiles++ if post.file)
 
     # If we're linked to a post that we would hide, don't hide the posts in the first place.
     # Also don't hide posts if we open the thread by a link to the OP.

@@ -17,7 +17,7 @@ Keybinds =
     Conf[hotkey] = key
 
   keydown: (e) ->
-    return unless key = Keybinds.keyCode e
+    return if not (key = Keybinds.keyCode e)
     {target} = e
     if target.nodeName in ['INPUT', 'TEXTAREA']
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test(key) and not /^Alt\+(\d|Up|Down|Left|Right)$/.test(key)
@@ -260,7 +260,7 @@ Keybinds =
         when 'code'        then !!config.code_tags
         when 'math', 'eqn' then !!config.math_tags
         when 'sjis'        then !!config.sjis_tags
-      new Notice 'warning', "[#{tag}] tags are not supported on /#{g.BOARD}/.", 20 unless supported
+      (new Notice 'warning', "[#{tag}] tags are not supported on /#{g.BOARD}/.", 20 unless supported)
 
     value    = ta.value
     selStart = ta.selectionStart
@@ -272,7 +272,7 @@ Keybinds =
       value[selEnd..]
 
     # Move the caret to the end of the selection.
-    range = "[#{tag}]".length + selEnd
+    range = ("[#{tag}]").length + selEnd
     ta.setSelectionRange range, range
 
     # Fire the 'input' event
@@ -314,7 +314,7 @@ Keybinds =
           'following'
         else
           'preceding'
-        return unless next = $.x "#{axis}-sibling::div[contains(@class,'replyContainer') and not(@hidden) and not(child::div[@class='stub'])][1]/child::div[contains(@class,'reply')]", root
+        return if not (next = $.x "#{axis}-sibling::div[contains(@class,'replyContainer') and not(@hidden) and not(child::div[@class='stub'])][1]/child::div[contains(@class,'reply')]", root)
         Header.scrollToIfNeeded next, delta is +1
         @focus next
         $.rmClass postEl, 'highlight'

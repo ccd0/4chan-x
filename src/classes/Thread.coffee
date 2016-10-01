@@ -26,7 +26,7 @@ class Thread
 
   setPage: (pageNum) ->
     {info, reply} = @OP.nodes
-    unless (icon = $ '.page-num', info)
+    if not (icon = $ '.page-num', info)
       icon = $.el 'span', className: 'page-num'
       $.replace reply.parentNode.previousSibling, [$.tn(' '), icon, $.tn(' ')]
     icon.title       = "This thread is on page #{pageNum} in the original index."

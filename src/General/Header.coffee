@@ -246,7 +246,7 @@ Header =
     a.textContent = if /-title/.test(t) or /-replace/.test(t) and boardID is g.BOARD.ID
       a.title or a.textContent
     else if /-full/.test t
-      "/#{boardID}/" + (if a.title then " - #{a.title}" else '')
+      ("/#{boardID}/") + (if a.title then " - #{a.title}" else '')
     else
       text or boardID
 

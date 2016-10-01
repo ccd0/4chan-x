@@ -16,5 +16,5 @@ IDPostCount =
     {uniqueID} = Get.postFromNode(@).info
     n = 0
     IDPostCount.thread.posts.forEach (post) ->
-      n++ if post.info.uniqueID is uniqueID
+      (n++ if post.info.uniqueID is uniqueID)
     @title = "#{n} post#{if n is 1 then '' else 's'} by this ID"

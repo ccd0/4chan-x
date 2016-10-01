@@ -11,7 +11,7 @@ Filter =
       for line in Conf[key].split '\n'
         continue if line[0] is '#'
 
-        unless regexp = line.match /\/(.+)\/(\w*)/
+        if not (regexp = line.match /\/(.+)\/(\w*)/)
           continue
 
         # Don't mix up filter flags with the regular expression.

@@ -3,7 +3,7 @@ Captcha.v1 =
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return unless @isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt'
+    return if not (@isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt')
 
     imgContainer = $.el 'div',
       className: 'captcha-img'
@@ -40,7 +40,7 @@ Captcha.v1 =
 
   replace: ->
     return if @script
-    unless @script = $ 'script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]', d.head
+    if not (@script = $ 'script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]', d.head)
       @script = $.el 'script',
         src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
       $.add d.head, @script
@@ -66,7 +66,7 @@ Captcha.v1 =
       $.on field, 'keydown', (e) ->
         if e.keyCode is 8 and not field.value
           $.global -> window.Recaptcha.reload()
-      field.focus() if location.hostname is 'sys.4chan.org'
+      (field.focus() if location.hostname is 'sys.4chan.org')
 
     $.global ->
       container = document.getElementById 'captchaContainerAlt'
@@ -113,7 +113,7 @@ Captcha.v1 =
       @nodes.input.focus()
 
   afterSetup: ->
-    return unless challenge = $.id 'recaptcha_challenge_field_holder'
+    return if not (challenge = $.id 'recaptcha_challenge_field_holder')
     return if challenge is QR.captcha.nodes.challenge
 
     setLifetime = (e) -> QR.captcha.lifetime = e.detail
@@ -192,7 +192,7 @@ Captcha.v1 =
       @nodes.img.src = @blank
       return
     return unless @nodes.challenge.firstChild
-    return unless challenge_image = $.id 'recaptcha_challenge_image'
+    return if not (challenge_image = $.id 'recaptcha_challenge_image')
     # -1 minute to give upload some time.
     @timeout  = Date.now() + @lifetime * $.SECOND - $.MINUTE
     challenge = @nodes.challenge.firstChild.value

@@ -14,7 +14,7 @@ class Post
 
     @nodes = @parseNodes root
 
-    unless (@isReply = $.hasClass @nodes.post, 'reply')
+    if not (@isReply = $.hasClass @nodes.post, 'reply')
       @thread.OP = @
       @thread.isArchived = !!$ '.archivedIcon', @nodes.info
       @thread.isSticky   = !!$ '.stickyIcon', @nodes.info
@@ -164,8 +164,8 @@ class Post
   parseFile: ->
     {fileRoot} = @nodes
     return unless fileRoot
-    return unless (link = $ '.fileText > a, .fileText-original > a', fileRoot)
-    return unless (info = link.nextSibling?.textContent.match /\(([\d.]+ [KMG]?B).*\)/)
+    return if not (link = $ '.fileText > a, .fileText-original > a', fileRoot)
+    return if not (info = link.nextSibling?.textContent.match /\(([\d.]+ [KMG]?B).*\)/)
     fileText = fileRoot.firstElementChild
     @file =
       text:       fileText
@@ -206,7 +206,7 @@ class Post
       $.rmClass  @nodes.root, 'deleted-file'
       $.addClass @nodes.root, 'deleted-post'
 
-    unless (strong = $ 'strong.warning', @nodes.info)
+    if not (strong = $ 'strong.warning', @nodes.info)
       strong = $.el 'strong',
         className: 'warning'
       $.after $('input', @nodes.info), strong

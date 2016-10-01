@@ -20,10 +20,11 @@ Index =
       Conf['Index Mode'] = history.state?.mode
     @currentSort = history.state?.sort
     @currentSort or=
-      if typeof Conf['Index Sort'] is 'object'
+      if typeof Conf['Index Sort'] is 'object' then (
         Conf['Index Sort'][g.BOARD.ID] or 'bump'
-      else
+      ) else (
         Conf['Index Sort']
+      )
     @currentPage = @getCurrentPage()
     @processHash()
 
@@ -594,7 +595,7 @@ Index =
     if Index.liveThreadData[0]
       Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler
     g.BOARD.threads.forEach (thread) ->
-      thread.collect() unless thread.ID in Index.liveThreadIDs
+      (thread.collect() unless thread.ID in Index.liveThreadIDs)
     return
 
   buildThreads: ->
@@ -616,7 +617,7 @@ Index =
           thread = new Thread threadData.no, g.BOARD
           threads.push thread
 
-        unless (OP = thread.OP) and not OP.isFetchedQuote
+        if not ((OP = thread.OP) and not OP.isFetchedQuote)
           OP = new Post Build.postFromObject(threadData, g.BOARD.ID, true), thread, g.BOARD
           posts.push OP
         thread.setPage i // Index.threadsNumPerPage + 1
@@ -638,7 +639,7 @@ Index =
   buildReplies: (threads) ->
     posts = []
     for thread in threads
-      continue unless (lastReplies = Index.liveThreadDict[thread.ID].last_replies)
+      continue if not (lastReplies = Index.liveThreadDict[thread.ID].last_replies)
       nodes = []
       for data in lastReplies
         if (post = thread.posts[data.no]) and not post.isFetchedQuote
@@ -681,7 +682,7 @@ Index =
   buildCatalogReplies: (threads) ->
     for thread in threads
       {nodes} = thread.catalogView
-      continue unless (lastReplies = Index.liveThreadDict[thread.ID].last_replies)
+      continue if not (lastReplies = Index.liveThreadDict[thread.ID].last_replies)
 
       if nodes.replies
         # RelativeDates will stop updating elements if they go out of document.
@@ -816,7 +817,7 @@ Index =
     Index.pageLoad false
 
   querySearch: (query) ->
-    return unless keywords = query.toLowerCase().match /\S+/g
+    return if not (keywords = query.toLowerCase().match /\S+/g)
     Index.sortedThreads.filter (thread) ->
       Index.searchMatch thread, keywords
 

@@ -122,9 +122,10 @@ Main =
           else if (match = search.match /\bres=(\d+)/)
             $.ready ->
               if Conf['404 Redirect'] and $.id('errmsg')?.textContent is 'Error: Specified thread does not exist.'
-                Redirect.navigate 'thread',
+                Redirect.navigate 'thread', {
                   boardID: g.BOARD.ID
                   postID:  +match[1]
+                }
         else if pathname[2] is 'post'
           PostSuccessful.init()
         return
@@ -132,9 +133,10 @@ Main =
         return unless pathname[2] and not /s\.jpg$/.test(pathname[2])
         $.asap (-> d.readyState isnt 'loading'), ->
           if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
-            Redirect.navigate 'file',
+            Redirect.navigate 'file', {
               boardID:  g.BOARD.ID
               filename: pathname[pathname.length - 1]
+            }
           else if video = $ 'video'
             if Conf['Volume in New Tab']
               Volume.setup video
@@ -197,7 +199,7 @@ Main =
 
     keyboard = false
     $.on d, 'mousedown', -> keyboard = false
-    $.on d, 'keydown', (e) -> keyboard = true if e.keyCode is 9 # tab
+    $.on d, 'keydown', (e) -> (keyboard = true if e.keyCode is 9) # tab
     window.addEventListener 'focus', (-> doc.classList.toggle 'keyboard-focus', keyboard), true
 
     Main.setClass()
@@ -236,9 +238,10 @@ Main =
         $.after $.id('fourchanx-css'), Main.bgColorStyle
     setStyle()
     return unless mainStyleSheet
-    new MutationObserver(setStyle).observe mainStyleSheet,
+    new MutationObserver(setStyle).observe mainStyleSheet, {
       attributes: true
       attributeFilter: ['href']
+    }
 
   initReady: ->
     # XXX Sometimes threads don't 404 but are left over as stubs containing one garbage reply post.
@@ -322,7 +325,7 @@ Main =
     i   = 0
     cbs = Callbacks[klass]
     fn  = ->
-      return false unless node = nodes[i]
+      return false if not (node = nodes[i])
       cbs.execute node
       ++i % 25
 
@@ -330,7 +333,7 @@ Main =
       while fn()
         continue
       unless nodes[i]
-        cb() if cb
+        (cb() if cb)
         return
       setTimeout softTask, 0 
 
@@ -353,10 +356,11 @@ Main =
     div = $.el 'div',
       <%= html('${errors.length} errors occurred.&{Main.reportLink(errors)} [<a href="javascript:;">show</a>]') %>
     $.on div.lastElementChild, 'click', ->
-      [@textContent, logs.hidden] = if @textContent is 'show'
+      [@textContent, logs.hidden] = if @textContent is 'show' then (
         ['hide', false]
-      else
+      ) else (
         ['show', true]
+      )
 
     logs = $.el 'div',
       hidden: true
@@ -408,7 +412,7 @@ Main =
 
   ready: (cb) ->
     $.ready ->
-      cb() if Main.isThisPageLegit()
+      (cb() if Main.isThisPageLegit())
 
   features: [
     ['Polyfill',                  Polyfill]

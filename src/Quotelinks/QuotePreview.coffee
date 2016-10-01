@@ -43,7 +43,7 @@ QuotePreview =
 
   mouseout: ->
     # Stop if it only contains text.
-    return unless root = @el.firstElementChild
+    return if not (root = @el.firstElementChild)
 
     clone = Get.postFromRoot root
     post  = clone.origin

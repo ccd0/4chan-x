@@ -51,9 +51,10 @@ QR.oekaki =
         window.Tegaki.flatten().toBlob (file) ->
           source = "oekaki-#{Date.now()}"
           FCX.oekakiLatest = source
-          document.dispatchEvent new CustomEvent 'QRSetFile',
+          document.dispatchEvent new CustomEvent 'QRSetFile', {
             bubbles: true
             detail: {file, name: FCX.oekakiName, source}
+          }
       if window.Tegaki
         document.querySelector('#qr .oekaki').hidden = false
 
@@ -101,9 +102,10 @@ QR.oekaki =
       name     = document.getElementById('qr-filename').value.replace(/\.\w+$/, '') + '.png'
       {source} = document.getElementById('file-n-submit').dataset
       error = (content) ->
-        document.dispatchEvent new CustomEvent 'CreateNotification',
+        document.dispatchEvent new CustomEvent 'CreateNotification', {
           bubbles: true
           detail: {type: 'warning', content, lifetime: 20}
+        }
       cb = (e) ->
         document.removeEventListener 'QRFile', cb, false
         return error 'No file to edit.' unless e.detail

@@ -1,6 +1,6 @@
 ImageExpand =
   init: ->
-    return unless @enabled = Conf['Image Expansion'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
+    return if not (@enabled = Conf['Image Expansion'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f')
 
     @EAI = $.el 'a',
       className: 'expand-all-shortcut fa fa-expand'
@@ -273,7 +273,7 @@ ImageExpand =
     ImageCommon.error @, post, 10 * $.SECOND, (URL) ->
       if post.file.isExpanding or post.file.isExpanded
         ImageExpand.contract post
-        ImageExpand.expand post, URL if URL
+        (ImageExpand.expand post, URL if URL)
 
   menu:
     init: ->

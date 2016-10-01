@@ -92,7 +92,7 @@ class Fetcher
 
   archivedPost: ->
     return false unless Conf['Resurrect Quotes']
-    return false unless url = Redirect.to 'post', {@boardID, @postID}
+    return false if not (url = Redirect.to 'post', {@boardID, @postID})
     archive = Redirect.data.post[@boardID]
     if /^https:\/\//.test(url) or location.protocol is 'http:'
       $.cache url, (e) =>

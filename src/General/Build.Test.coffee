@@ -105,7 +105,7 @@ Build.Test =
   testAll: ->
     g.posts.forEach (post) ->
       unless post.isClone or post.isFetchedQuote
-        unless (abbr = $ '.abbr', post.nodes.comment) and /Comment too long\./.test(abbr.textContent)
+        if not ((abbr = $ '.abbr', post.nodes.comment) and /Comment too long\./.test(abbr.textContent))
           Build.Test.testOne post
     return
 

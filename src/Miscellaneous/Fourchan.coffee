@@ -4,8 +4,8 @@ Fourchan =
 
     if g.BOARD.ID is 'g'
       $.on window, 'prettyprint:cb', (e) ->
-        return unless post = g.posts[e.detail.ID]
-        return unless pre  = $$('.prettyprint', post.nodes.comment)[e.detail.i]
+        return if not (post = g.posts[e.detail.ID])
+        return if not (pre  = $$('.prettyprint', post.nodes.comment)[e.detail.i])
         unless $.hasClass pre, 'prettyprinted'
           pre.innerHTML = e.detail.html
           $.addClass pre, 'prettyprinted'

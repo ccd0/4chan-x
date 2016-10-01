@@ -1,6 +1,6 @@
 Favicon =
   init: ->
-    $.asap (-> d.head and Favicon.el = $ 'link[rel="shortcut icon"]', d.head), Favicon.initAsap
+    $.asap (-> d.head and (Favicon.el = $ 'link[rel="shortcut icon"]', d.head)), Favicon.initAsap
   
   initAsap: ->
     Favicon.el.type = 'image/x-icon'

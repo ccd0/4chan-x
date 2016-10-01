@@ -4,7 +4,7 @@ PassLink =
     Main.ready @ready
 
   ready: ->
-    return unless (styleSelector = $.id 'styleSelector')
+    return if not (styleSelector = $.id 'styleSelector')
 
     passLink = $.el 'span',
       className: 'brackets-wrap pass-link-container'

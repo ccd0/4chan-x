@@ -1,6 +1,6 @@
 ThreadWatcher =
   init: ->
-    return unless (@enabled = Conf['Thread Watcher'])
+    return if not (@enabled = Conf['Thread Watcher'])
 
     @shortcut = sc = $.el 'a',
       id:   'watcher-link'
@@ -335,7 +335,7 @@ ThreadWatcher =
         for post in [thread.OP, thread.OP.clones...]
           toggler = $ '.watch-thread-link', post.nodes.info
           ThreadWatcher.setToggler toggler, isWatched
-      thread.catalogView.nodes.root.classList.toggle 'watched', isWatched if thread.catalogView
+      (thread.catalogView.nodes.root.classList.toggle 'watched', isWatched if thread.catalogView)
 
     if Conf['Pin Watched Threads']
       $.event 'SortIndex', {deferred: Conf['Index Mode'] isnt 'catalog'}
@@ -346,7 +346,7 @@ ThreadWatcher =
     return
 
   update: (boardID, threadID, newData) ->
-    return unless data = ThreadWatcher.db?.get {boardID, threadID}
+    return if not (data = ThreadWatcher.db?.get {boardID, threadID})
     if newData.isDead and Conf['Auto Prune']
       ThreadWatcher.db.delete {boardID, threadID}
       ThreadWatcher.refresh()
@@ -354,7 +354,7 @@ ThreadWatcher =
     n = 0
     n++ for key, val of newData when data[key] isnt val
     return unless n
-    return unless (data = ThreadWatcher.db.get {boardID, threadID})
+    return if not (data = ThreadWatcher.db.get {boardID, threadID})
     ThreadWatcher.db.extend {boardID, threadID, val: newData}
     if line = $ "#watched-threads > [data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
       newLine = ThreadWatcher.makeLine boardID, threadID, data
@@ -364,7 +364,7 @@ ThreadWatcher =
       ThreadWatcher.refresh()
 
   set404: (boardID, threadID, cb) ->
-    return cb() unless data = ThreadWatcher.db?.get {boardID, threadID}
+    return cb() if not (data = ThreadWatcher.db?.get {boardID, threadID})
     if Conf['Auto Prune']
       ThreadWatcher.db.delete {boardID, threadID}
       return cb()

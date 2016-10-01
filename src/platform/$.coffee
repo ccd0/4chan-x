@@ -4,10 +4,13 @@
 $ = (selector, root=d.body) ->
   root.querySelector selector
 
-$.DAY = 24 * 
-  $.HOUR = 60 * 
-    $.MINUTE = 60 * 
+$.DAY = 24 * (
+  $.HOUR = 60 * (
+    $.MINUTE = 60 * (
       $.SECOND = 1000
+    )
+  )
+)
 
 $.id = (id) ->
   d.getElementById id
@@ -60,7 +63,7 @@ $.ajax = do ->
       $.extend r, options
       $.extend r.upload, upCallbacks
       # connection error or content blocker
-      $.on r, 'error', -> c.error "4chan X failed to load: #{url}" unless r.status
+      $.on r, 'error', -> (c.error "4chan X failed to load: #{url}" unless r.status)
       r.send form
     catch err
       # XXX Some content blockers in Firefox (e.g. Adblock Plus and NoScript) throw an exception instead of simulating a connection error.
@@ -81,7 +84,7 @@ do ->
       return req
     rm = -> delete reqs[url]
     try
-      return unless req = $.ajax url, options
+      return if not (req = $.ajax url, options)
     catch err
       return
     $.on req, 'load', (e) ->
@@ -456,7 +459,7 @@ do ->
         items.sync[key] = val for key, val of data when not exceedsQuota(key, val)
         setSync()
       else
-        chrome.storage.local.remove (key for key of data when key not of items.local)
+        chrome.storage.local.remove (key for key of data when not (key of items.local))
       cb?()
 
   setSync = $.debounce $.SECOND, ->
@@ -544,7 +547,7 @@ else if GM_deleteValue? or $.hasStorage
 
   do ->
     onChange = ({key, newValue}) ->
-      return unless cb = $.syncing[key]
+      return if not (cb = $.syncing[key])
       if newValue?
         return if newValue is $.oldValue[key]
         $.oldValue[key] = newValue

@@ -19,7 +19,7 @@ Sauce =
       cb:   @node
 
   createSauceLink: (link, post) ->
-    return null unless link = link.trim()
+    return null if not (link = link.trim())
 
     parts = {}
     for part, i in link.split /;(?=(?:text|boards|types|sandbox):?)/
@@ -60,7 +60,7 @@ Sauce =
     nodes = []
     skipped = []
     for link in Sauce.links
-      unless (node = Sauce.createSauceLink link, @)
+      if not (node = Sauce.createSauceLink link, @)
         node = Sauce.link.cloneNode false
         skipped.push [link, node]
       nodes.push $.tn(' '), node
@@ -79,7 +79,7 @@ Sauce =
     URL:   (post) -> post.file.url
     IMG:   (post, ext) -> if ext in ['gif', 'jpg', 'png'] then post.file.url else post.file.thumbURL
     MD5:   (post) -> post.file.MD5
-    sMD5:  (post) -> post.file.MD5?.replace /[+/=]/g, (c) -> {'+': '-', '/': '_', '=': ''}[c]
+    sMD5:  (post) -> post.file.MD5?.replace /[+/=]/g, (c) -> ({'+': '-', '/': '_', '=': ''})[c]
     hMD5:  (post) -> if post.file.MD5 then ("0#{c.charCodeAt(0).toString(16)}"[-2..] for c in atob post.file.MD5).join('')
     board: (post) -> post.board.ID
     name:  (post) -> post.file.name

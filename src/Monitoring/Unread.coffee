@@ -185,7 +185,7 @@ Unread =
     return unless count
     Unread.updatePosition()
     Unread.saveLastReadPost()
-    Unread.update() if e
+    (Unread.update() if e)
 
   updatePosition: ->
     while Unread.position and !Unread.posts.has Unread.position.ID

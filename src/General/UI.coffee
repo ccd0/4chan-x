@@ -5,7 +5,7 @@ dialog = (id, position, properties) ->
   $.extend el, properties
   el.style.cssText = position
   $.get "#{id}.position", position, (item) ->
-    el.style.cssText = item["#{id}.position"]
+    (el.style.cssText = item["#{id}.position"])
 
   move = $ '.move', el
   $.on move, 'touchstart mousedown', dragstart
@@ -153,7 +153,7 @@ class Menu
         if next = @findNextEntry entry, +1
           @focus next
       when 39 # Right
-        if (submenu = $ '.submenu', entry) and next = submenu.firstElementChild
+        if (submenu = $ '.submenu', entry) and (next = submenu.firstElementChild)
           while nextPrev = @findNextEntry next, -1
             next = nextPrev
           @focus next
@@ -178,7 +178,7 @@ class Menu
     $.addClass entry, 'focused'
 
     # Submenu positioning.
-    return unless submenu = $ '.submenu', entry
+    return if not (submenu = $ '.submenu', entry)
     sRect   = submenu.getBoundingClientRect()
     eRect   = entry.getBoundingClientRect()
     cHeight = doc.clientHeight

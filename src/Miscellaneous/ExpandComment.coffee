@@ -24,7 +24,7 @@ ExpandComment =
       $.replace post.nodes.shortComment, post.nodes.longComment
       post.nodes.comment = post.nodes.longComment
       return
-    return unless a = $ '.abbr > a', post.nodes.comment
+    return if not (a = $ '.abbr > a', post.nodes.comment)
     a.textContent = "Post No.#{post} Loading..."
     $.cache "//a.4cdn.org#{a.pathname.split(/\/+/).splice(0,4).join('/')}.json", -> ExpandComment.parse @, a, post
 

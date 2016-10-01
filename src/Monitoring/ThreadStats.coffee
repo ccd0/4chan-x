@@ -42,7 +42,7 @@ ThreadStats =
     @posts.forEach (post) ->
       postCount++
       fileCount++ if post.file
-      ThreadStats.lastPost = post.info.date if ThreadStats.pageCountEl
+      (ThreadStats.lastPost = post.info.date if ThreadStats.pageCountEl)
     ThreadStats.thread = @
     ThreadStats.fetchPage()
     ThreadStats.update postCount, fileCount, @ipCount

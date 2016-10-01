@@ -84,7 +84,7 @@ PostHiding =
         open: (post) ->
           if !post.isReply or post.isClone or !post.isHidden
             return false
-          unless data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+          if not (data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID})
             return false
           PostHiding.menu.post = post
           thisPost.firstChild.checked = post.isHidden
@@ -104,7 +104,7 @@ PostHiding =
         open: (post) ->
           if !post.isReply or post.isClone or !post.isHidden
             return false
-          unless data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+          if not (data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID})
             return false
           PostHiding.menu.post = post
 

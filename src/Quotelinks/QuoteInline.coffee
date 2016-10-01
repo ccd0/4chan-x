@@ -65,14 +65,16 @@ QuoteInline =
     $.addClass qroot, 'hasInline'
     new Fetcher boardID, threadID, postID, inline, quoter
 
-    return unless (post = g.posts["#{boardID}.#{postID}"]) and
+    return if not (
+      (post = g.posts["#{boardID}.#{postID}"]) and
       context.thread is post.thread
+    )
 
     # Hide forward post if it's a backlink of a post in this thread.
     # Will only unhide if there's no inlined backlinks of it anymore.
     if isBacklink and Conf['Forward Hiding']
       $.addClass post.nodes.root, 'forwarded'
-      post.forwarded++ or post.forwarded = 1
+      post.forwarded++ or (post.forwarded = 1)
 
     # Decrease the unread count if this post
     # is in the array of unread posts.
@@ -91,7 +93,7 @@ QuoteInline =
       $.rmClass qroot, 'hasInline'
 
     # Stop if it only contains text.
-    return unless el = root.firstElementChild
+    return if not (el = root.firstElementChild)
 
     # Dereference clone.
     post = g.posts["#{boardID}.#{postID}"]

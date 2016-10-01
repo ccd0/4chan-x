@@ -48,7 +48,7 @@ QuoteThreading =
   setThread: ->
     QuoteThreading.thread = @
     $.asap (-> !Conf['Thread Updater'] or $ '.navLinksBot > .updatelink'), ->
-      $.add navLinksBot, [$.tn(' '), QuoteThreading.threadNewLink] if (navLinksBot = $ '.navLinksBot')
+      ($.add navLinksBot, [$.tn(' '), QuoteThreading.threadNewLink] if (navLinksBot = $ '.navLinksBot'))
 
   node: ->
     return if @isFetchedQuote or @isClone or !@isReply
@@ -77,9 +77,11 @@ QuoteThreading =
     posts
 
   insert: (post) ->
-    return false unless Conf['Thread Quotes'] and
+    return false if not (
+      Conf['Thread Quotes'] and
       (parent = QuoteThreading.parent[post.fullID]) and
       !QuoteThreading.inserted[post.fullID]
+    )
 
     descendants = QuoteThreading.descendants post
     if !Unread.posts.has(parent.ID)

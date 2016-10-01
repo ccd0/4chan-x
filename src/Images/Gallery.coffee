@@ -1,6 +1,6 @@
 Gallery =
   init: ->
-    return unless @enabled = Conf['Gallery'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
+    return if not (@enabled = Conf['Gallery'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f')
 
     @delay = Conf['Slide Delay']
 
@@ -202,7 +202,7 @@ Gallery =
     ImageCommon.error @, g.posts[@dataset.post], null, (url) =>
       return unless url
       Gallery.images[@dataset.id].href = url
-      @src = url if Gallery.nodes.current is @
+      (@src = url if Gallery.nodes.current is @)
 
   cacheError: ->
     delete Gallery.cache
@@ -236,7 +236,7 @@ Gallery =
 
   cb:
     keybinds: (e) ->
-      return unless key = Keybinds.keyCode e
+      return if not (key = Keybinds.keyCode e)
 
       cb = switch key
         when Conf['Close'], Conf['Open Gallery']

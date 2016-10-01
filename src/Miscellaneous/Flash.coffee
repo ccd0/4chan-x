@@ -5,7 +5,7 @@ Flash =
 
   initReady: ->
     if $.hasStorage
-      $.global -> window.SWFEmbed.init() if JSON.parse(localStorage['4chan-settings'] or '{}').disableAll
+      $.global -> (window.SWFEmbed.init() if JSON.parse(localStorage['4chan-settings'] or '{}').disableAll)
     else
       if g.VIEW is 'thread'
         $.global -> window.Main.tid = location.pathname.split(/\/+/)[3]

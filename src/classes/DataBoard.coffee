@@ -98,7 +98,7 @@ class DataBoard
         @ajaxCleanParse boardID, e1.target.response, e2.target.response
 
   ajaxCleanParse: (boardID, response1, response2) ->
-    return unless (board = @data.boards[boardID])
+    return if not (board = @data.boards[boardID])
     threads = {}
     if response1
       for page in response1

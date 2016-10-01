@@ -22,7 +22,7 @@ Quotify =
     return
 
   parseArchivelink: (link) ->
-    return unless (m = link.pathname.match /^\/([^/]+)\/thread\/S?(\d+)\/?$/)
+    return if not (m = link.pathname.match /^\/([^/]+)\/thread\/S?(\d+)\/?$/)
     return if link.hostname is 'boards.4chan.org'
     boardID  = m[1]
     threadID = m[2]
@@ -43,7 +43,7 @@ Quotify =
       return
 
     quote = deadlink.textContent
-    return unless postID = quote.match(/\d+$/)?[0]
+    return if not (postID = quote.match(/\d+$/)?[0])
     if postID[0] is '0'
       # Fix quotelinks that start with a `0`.
       Quotify.fixDeadlink deadlink

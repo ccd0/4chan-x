@@ -183,7 +183,7 @@ Settings =
         if $.hasStorage
           for boardID of hiddenThreads.boards
             localStorage.removeItem "4chan-hide-t-#{boardID}"
-        $.delete ['hiddenThreads', 'hiddenPosts']
+        ($.delete ['hiddenThreads', 'hiddenPosts'])
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
 
   export: ->
@@ -191,7 +191,7 @@ Settings =
     $.get Conf, (Conf) ->
       # Don't export cached JSON data.
       delete Conf['boardConfig']
-      Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf}
+      (Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf})
 
   downloadExport: (data) ->
     a = $.el 'a',
@@ -206,7 +206,7 @@ Settings =
     $('input[type=file]', @parentNode).click()
 
   onImport: ->
-    return unless file = @files[0]
+    return if not (file = @files[0])
     @value = null
     output = $('.imp-exp-result')
     unless confirm 'Your current settings will be entirely overwritten, are you sure?'
@@ -437,7 +437,7 @@ Settings =
         className: 'field'
         spellcheck: false
       $.get name, Conf[name], (item) ->
-        ta.value = item[name]
+        (ta.value = item[name])
       $.on ta, 'change', $.cb.value
       $.add div, ta
       return
@@ -449,7 +449,7 @@ Settings =
     $('.warning', section).hidden = Conf['Sauce']
     ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
-      ta.value = item['sauces']
+      (ta.value = item['sauces'])
     $.on ta, 'change', $.cb.value
 
   advanced: (section) ->
@@ -530,10 +530,11 @@ Settings =
     for {uid, name, boards, files, software} in Conf['archives']
       continue unless software in ['fuuka', 'foolfuuka']
       for boardID in boards
-        o = archBoards[boardID] or=
+        o = archBoards[boardID] or= {
           thread: []
           post:   []
           file:   []
+        }
         archive = [uid ? name, name]
         o.thread.push archive
         o.post.push   archive if software is 'foolfuuka'
@@ -546,10 +547,11 @@ Settings =
         className: "board-#{boardID}"
       row.hidden = boardID isnt g.BOARD.ID
 
-      boardOptions.push $.el 'option',
+      boardOptions.push $.el 'option', {
         textContent: "/#{boardID}/"
         value:       "board-#{boardID}"
         selected:    boardID is g.BOARD.ID
+      }
 
       o = archBoards[boardID]
       $.add row, Settings.addArchiveCell boardID, o, item for item in ['thread', 'post', 'file']
@@ -587,13 +589,14 @@ Settings =
     i = 0
     while i < length
       archive = data[type][i++]
-      options.push $.el 'option',
+      options.push $.el 'option', {
         value: JSON.stringify archive[0]
         textContent: archive[1]
+      }
 
     $.extend td, <%= html('<select></select>') %>
     select = td.firstElementChild
-    unless select.disabled = length is 1
+    if not (select.disabled = length is 1)
       # XXX GM can't into datasets
       select.setAttribute 'data-boardid', boardID
       select.setAttribute 'data-type', type
@@ -616,7 +619,7 @@ Settings =
     @nextElementSibling.textContent = Time.format @value, new Date()
 
   backlink: ->
-    @nextElementSibling.textContent = @value.replace /%(?:id|%)/g, (x) -> {'%id': '123456789', '%%': '%'}[x]
+    @nextElementSibling.textContent = @value.replace /%(?:id|%)/g, (x) -> ({'%id': '123456789', '%%': '%'})[x]
 
   fileInfo: ->
     data =

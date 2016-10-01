@@ -16,7 +16,7 @@ QR.post = class
     $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
     $.on @nodes.spoiler, 'change', (e) =>
       @spoiler = e.target.checked
-      QR.nodes.spoiler.checked = @spoiler if @ is QR.selected
+      (QR.nodes.spoiler.checked = @spoiler if @ is QR.selected)
     for label in $$ 'label', el
       $.on label, 'click', (e) -> e.stopPropagation()
     $.add QR.nodes.dumpList, el
@@ -53,7 +53,7 @@ QR.post = class
       else
         ''
 
-      @load() if QR.selected is @ # load persona
+      (@load() if QR.selected is @) # load persona
     @select() if select
     @unlock()
     # Post count temporarily off by 1 when called from QR.post.rm or QR.close
@@ -104,7 +104,7 @@ QR.post = class
     # Load this post's values.
 
     for name in ['thread', 'name', 'email', 'sub', 'com', 'filename']
-      continue unless node = QR.nodes[name]
+      continue if not (node = QR.nodes[name])
       node.value = @[name] or node.dataset.default or ''
 
     (if @thread isnt 'new' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
@@ -140,7 +140,7 @@ QR.post = class
     # Do this in case people use extensions
     # that do not trigger the `input` event.
     for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler']
-      continue unless node = QR.nodes[name]
+      continue if not (node = QR.nodes[name])
       @save node
     return
 
@@ -171,10 +171,10 @@ QR.post = class
     (@errors or= []).push div
     [rm, rmAll] = $$ 'a', div
     $.on div, 'click', =>
-      @select() if @ in QR.posts
+      (@select() if @ in QR.posts)
     $.on rm, 'click', (e) =>
       e.stopPropagation()
-      @rm() if @ in QR.posts
+      (@rm() if @ in QR.posts)
     $.on rmAll, 'click', QR.post.rmErrored
     QR.error div, true
 

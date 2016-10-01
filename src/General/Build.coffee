@@ -6,7 +6,7 @@ Build =
   unescape: (text) ->
     return text unless text?
     text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt|#44);/g, (c) ->
-      {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','}[c]
+      (({'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','})[c])
 
   shortFilename: (filename) ->
     ext = filename.match(/\.?[^\.]*$/)[0]
@@ -149,7 +149,7 @@ Build =
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
       if (href[0] is '#') and !(Build.sameThread boardID, threadID)
-        quote.href = "/#{boardID}/thread/#{threadID}" + href
+        quote.href = ("/#{boardID}/thread/#{threadID}") + href
       else if (match = href.match /^\/([^\/]+)\/thread\/(\d+)/) and (Build.sameThread match[1], match[2])
         quote.href = href.match(/(#[^#]*)?$/)[0] or '#'
       else if /^\d+(#|$)/.test(href) and not (g.VIEW is 'thread' and g.BOARD.ID is boardID) # used on /f/
@@ -199,7 +199,7 @@ Build =
       src = "#{staticPath}spoiler"
       if spoilerRange = Build.spoilerRange[thread.board]
         # Randomize the spoiler image.
-        src += "-#{thread.board}" + Math.floor 1 + spoilerRange * Math.random()
+        src += ("-#{thread.board}") + Math.floor 1 + spoilerRange * Math.random()
       src += '.png'
       imgClass = 'spoiler-file'
     else if data.filedeleted

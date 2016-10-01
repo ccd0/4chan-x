@@ -8,7 +8,7 @@ QuoteYou =
       $.forceSync 'Remember Your Posts'
       if Conf['Remember Your Posts']
         {boardID, threadID, postID} = e.detail
-        QuoteYou.db.set {boardID, threadID, postID, val: true}
+        (QuoteYou.db.set {boardID, threadID, postID, val: true})
 
     return unless g.VIEW in ['index', 'thread']
 
@@ -49,7 +49,7 @@ QuoteYou =
       $.rmClass highlight, 'highlight' if highlight = $ '.highlight'
 
       unless QuoteYou.lastRead and doc.contains(QuoteYou.lastRead) and $.hasClass(QuoteYou.lastRead, 'quotesYou')
-        unless (post = QuoteYou.lastRead = $ '.quotesYou')
+        if not (post = QuoteYou.lastRead = $ '.quotesYou')
           new Notice 'warning', 'No posts are currently quoting you, loser.', 20
           return
         return if QuoteYou.cb.scroll post

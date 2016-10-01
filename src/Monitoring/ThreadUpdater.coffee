@@ -32,7 +32,7 @@ ThreadUpdater =
       className: 'brackets-wrap updatelink'
     $.extend updateLink, <%= html('<a href="javascript:;">Update</a>') %>
     Main.ready ->
-      $.add navLinksBot, [$.tn(' '), updateLink] if (navLinksBot = $ '.navLinksBot')
+      ($.add navLinksBot, [$.tn(' '), updateLink] if (navLinksBot = $ '.navLinksBot'))
     $.on updateLink.firstElementChild, 'click', @update
 
     subEntries = []
@@ -77,7 +77,7 @@ ThreadUpdater =
     ThreadUpdater.fileIDs = []
     @posts.forEach (post) ->
       ThreadUpdater.postIDs.push post.ID
-      ThreadUpdater.fileIDs.push post.ID if post.file
+      (ThreadUpdater.fileIDs.push post.ID if post.file)
 
     ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
 
@@ -238,7 +238,7 @@ ThreadUpdater =
       whenModified: 'ThreadUpdater'
 
   updateThreadStatus: (type, status) ->
-    return unless hasChanged = ThreadUpdater.thread["is#{type}"] isnt status
+    return if not (hasChanged = ThreadUpdater.thread["is#{type}"] isnt status)
     ThreadUpdater.thread.setStatus type, status
     return if type is 'Closed' and ThreadUpdater.thread.isArchived
     change = if type is 'Sticky'
@@ -346,7 +346,7 @@ ThreadUpdater =
           Header.scrollTo firstPost if firstPost
 
     # Update IP count in original post form.
-    if OP.unique_ips? and ipCountEl = $.id('unique-ips')
+    if OP.unique_ips? and (ipCountEl = $.id('unique-ips'))
       ipCountEl.textContent = OP.unique_ips
       ipCountEl.previousSibling.textContent = ipCountEl.previousSibling.textContent.replace(/\b(?:is|are)\b/, if OP.unique_ips is 1 then 'is' else 'are')
       ipCountEl.nextSibling.textContent = ipCountEl.nextSibling.textContent.replace(/\bposters?\b/, if OP.unique_ips is 1 then 'poster' else 'posters')

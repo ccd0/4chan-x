@@ -27,7 +27,7 @@ ImageCommon =
 
   decodeError: (file, post) ->
     return false unless file.error?.code is MediaError.MEDIA_ERR_DECODE
-    unless message = $ '.warning', post.file.thumb.parentNode
+    if not (message = $ '.warning', post.file.thumb.parentNode)
       message = $.el 'div', className:   'warning'
       $.after post.file.thumb, message
     message.textContent = 'Error: Corrupt or unplayable video'
@@ -35,9 +35,10 @@ ImageCommon =
 
   error: (file, post, delay, cb) ->
     src = post.file.url.split '/'
-    URL = Redirect.to 'file',
+    URL = Redirect.to 'file', {
       boardID:  post.board.ID
       filename: src[src.length - 1]
+    }
     unless Conf['404 Redirect'] and URL and Redirect.securityCheck URL
       URL = null
 
