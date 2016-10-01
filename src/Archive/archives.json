@@ -11,7 +11,7 @@
   "uid": 4,
   "name": "Nyafuu Archive",
   "domain": "archive.nyafuu.org",
-  "http": true,
+  "http": false,
   "https": true,
   "software": "foolfuuka",
   "boards": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr"],
@@ -74,7 +74,7 @@
   "uid": 28,
   "name": "bstats",
   "domain": "archive.b-stats.org",
-  "http": true,
+  "http": false,
   "https": true,
   "software": "foolfuuka",
   "boards": ["f", "cm", "hm", "lgbt", "news", "qst", "trash", "y"],
@@ -87,7 +87,8 @@
   "https": false,
   "software": "foolfuuka",
   "boards": ["3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y"],
-  "files": ["gd", "po", "qst"]
+  "files": ["gd", "po", "qst"],
+  "search": ["aco", "adv", "an", "asp", "b", "c", "cgl", "ck", "cm", "con", "d", "diy", "e", "f", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "n", "news", "o", "out", "p", "po", "q", "qa", "qst", "r", "s", "soc", "trv", "u", "w", "wg", "wsg", "wsr", "x", "y"]
 }, {
   "uid": 30,
   "name": "TheBArchive.com",
