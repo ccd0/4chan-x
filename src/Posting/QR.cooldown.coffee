@@ -20,6 +20,8 @@ QR.cooldown =
     # Read cooldown times
     if m = Get.scriptData().match /\bcooldowns *= *({[^}]+})/
       $.extend QR.cooldown.delays, JSON.parse m[1]
+      QR.cooldown.delays.reply_intra or= QR.cooldown.delays.reply
+      QR.cooldown.delays.image_intra or= QR.cooldown.delays.image
 
     # The longest reply cooldown, for use in pruning old reply data
     QR.cooldown.maxDelay = 0

@@ -21,6 +21,10 @@
 
 ### v1.12.3
 
+**v1.12.3.5** *(2016-10-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.5/builds/4chan-X-noupdate.crx)]
+- Fix cooldowns.
+- Fix party hat alignment when Thread Hiding Buttons are enabled.
+
 **v1.12.3.4** *(2016-09-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.4/builds/4chan-X-noupdate.crx)]
 - Let board banners show. You may need to add the an exception to your ad blocker's cosmetic filters: `boards.4chan.org#@#.middlead` If you do want to hide them, you can add `.middlead {display: none;}` to custom CSS.
 

@@ -5,6 +5,8 @@ ThreadHiding =
     return @catalogWatch() if g.VIEW is 'catalog'
     @catalogSet g.BOARD
     $.on d, 'IndexRefreshInternal', @onIndexRefresh
+    if Conf['Thread Hiding Buttons']
+      $.addClass doc, 'thread-hide'
     Callbacks.Post.push
       name: 'Thread Hiding'
       cb:   @node
