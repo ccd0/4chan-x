@@ -155,7 +155,7 @@ Placeholder.prototype.build = function() {
     case '&': return `\`(${expr}).innerHTML\``; // & : contents of HTML element or template (of form {innerHTML: "safeHTML"})
     case '@': return `\`E.cat(${expr})\``;    // @ : contents of array of HTML elements or templates (see src/General/Globals.coffee for E.cat)
     case '?':
-      return `(if \`(${expr})\` then ${this.args[1] || '""'} else ${this.args[2] || '""'})`; // ? : conditional expression
+      return `(if \`(${expr})\` then (${this.args[1] || '""'}) else (${this.args[2] || '""'}))`; // ? : conditional expression
   }
   throw new Error(`Unrecognized placeholder type (${this.type})`);
 };
