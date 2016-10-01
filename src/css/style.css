@@ -935,14 +935,14 @@ div[data-checked="false"] > .suboption-list {
   background-size: contain;
 }
 :root.hats-enabled .catalog-small > .catalog-thread::after {
-  left: -10px;
-  top: -65px;
-  width: 100px;
-  height: 100px;
+  left: -8px;
+  top: -59px;
+  width: 96px;
+  height: 96px;
 }
 :root.hats-enabled .catalog-large > .catalog-thread::after {
   left: -15px;
-  top: -105px;
+  top: -98px;
   width: 160px;
   height: 160px;
 }
