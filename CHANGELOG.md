@@ -2,6 +2,10 @@
 
 ## v1.13.0
 
+**v1.13.0.1** *(2016-10-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.3.5: Fix cooldowns.
+- Merge v1.12.3.5: Fix party hat alignment when Thread Hiding Buttons are enabled.
+
 **v1.13.0.0** *(2016-09-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.12.3.4.
 - Major rework of the 4chan X catalog:

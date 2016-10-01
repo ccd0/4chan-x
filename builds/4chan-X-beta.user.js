@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.0.0
+// @version      1.13.0.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.0',
+  VERSION:   '1.13.0.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -2521,6 +2521,7 @@ input[name=\"Default Volume\"] {\n\
 }\n\
 .hide-thread-button {\n\
   margin-top: -1px;\n\
+  width: 11px;\n\
 }\n\
 .stub ~ * {\n\
   display: none !important;\n\
@@ -2533,6 +2534,9 @@ input[name=\"Default Volume\"] {\n\
 }\n\
 :root.reply-hide div.sideArrows {\n\
   display: none;\n\
+}\n\
+:root.thread-hide .party-hat {\n\
+  left: 19px;\n\
 }\n\
 /* QR */\n\
 :root.hide-original-post-form #togglePostFormLink,\n\
@@ -7519,6 +7523,9 @@ ThreadHiding = (function() {
       }
       this.catalogSet(g.BOARD);
       $.on(d, 'IndexRefreshInternal', this.onIndexRefresh);
+      if (Conf['Thread Hiding Buttons']) {
+        $.addClass(doc, 'thread-hide');
+      }
       return Callbacks.Post.push({
         name: 'Thread Hiding',
         cb: this.node
@@ -20847,9 +20854,11 @@ QR = (function() {
       return $.sync('cooldowns', this.sync);
     },
     setup: function() {
-      var delay, m, ref, type;
+      var base, base1, delay, m, ref, type;
       if (m = Get.scriptData().match(/\bcooldowns *= *({[^}]+})/)) {
         $.extend(QR.cooldown.delays, JSON.parse(m[1]));
+        (base = QR.cooldown.delays).reply_intra || (base.reply_intra = QR.cooldown.delays.reply);
+        (base1 = QR.cooldown.delays).image_intra || (base1.image_intra = QR.cooldown.delays.image);
       }
       QR.cooldown.maxDelay = 0;
       ref = QR.cooldown.delays;
