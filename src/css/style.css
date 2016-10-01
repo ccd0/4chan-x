@@ -734,6 +734,9 @@ div[data-checked="false"] > .suboption-list {
   width: 270px;
   height: 410px;
 }
+:root.catalog-hover-expand .catalog-thread:hover {
+  z-index: 1;
+}
 .catalog-container {
   position: absolute;
   top: -4px;
@@ -744,9 +747,6 @@ div[data-checked="false"] > .suboption-list {
 .catalog-container:not(:hover),
 :root:not(.catalog-hover-expand) .catalog-container {
   overflow: hidden;
-}
-:root.catalog-hover-expand .catalog-container:hover {
-  z-index: 1;
 }
 .catalog-post {
   position: absolute;
