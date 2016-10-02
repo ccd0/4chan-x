@@ -145,6 +145,7 @@ Filter =
   uniqueID:   (post) -> post.info.uniqueID
   tripcode:   (post) -> post.info.tripcode
   capcode:    (post) -> post.info.capcode
+  pass:       (post) -> post.info.pass
   subject:    (post) -> post.info.subject
   comment:    (post) -> (post.info.comment ?= Build.parseComment post.info.commentHTML.innerHTML)
   flag:       (post) -> post.info.flag
@@ -173,6 +174,7 @@ Filter =
         ['Unique ID',        'uniqueID']
         ['Tripcode',         'tripcode']
         ['Capcode',          'capcode']
+        ['Pass Date',        'pass']
         ['Subject',          'subject']
         ['Comment',          'comment']
         ['Flag',             'flag']

@@ -49,6 +49,7 @@ Build =
       email:    Build.unescape data.email
       name:     Build.unescape(data.name) or ''
       tripcode: data.trip
+      pass:     if data.since4pass? then "#{data.since4pass}" else undefined
       uniqueID: data.id
       flagCode: data.country
       flag:     Build.unescape data.country_name
@@ -101,7 +102,7 @@ Build =
 
   post: (o) ->
     {ID, threadID, boardID, file} = o
-    {subject, email, name, tripcode, capcode, uniqueID, flagCode, flag, dateUTC, dateText, commentHTML} = o.info
+    {subject, email, name, tripcode, capcode, pass, uniqueID, flagCode, flag, dateUTC, dateText, commentHTML} = o.info
     {staticPath, gifIcon} = Build
 
     ### Post Info ###
