@@ -272,9 +272,9 @@ Index =
       Index.sort()
       Index.buildIndex()
 
-    hover: ->
+    hover: (e) ->
       doc.classList.toggle 'catalog-hover-expand', Conf['Catalog Hover Expand']
-      Index.cb.replies() if Conf['Show Replies'] and Conf['Catalog Hover Expand']
+      Index.cb.replies() if e and Conf['Show Replies'] and Conf['Catalog Hover Expand']
 
     popstate: (e) ->
       if e?.state
