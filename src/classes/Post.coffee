@@ -6,9 +6,11 @@ class Post
     @normalizedOriginal = Build.Test.normalize root
     <% } %>
 
-    @ID      = +root.id[2..]
-    @fullID  = "#{@board}.#{@ID}"
-    @context = @
+    @ID       = +root.id[2..]
+    @threadID = @thread.ID
+    @boardID  = @board.ID
+    @fullID   = "#{@board}.#{@ID}"
+    @context  = @
 
     root.dataset.fullID = @fullID
 

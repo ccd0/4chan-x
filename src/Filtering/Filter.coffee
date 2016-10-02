@@ -109,10 +109,9 @@ Filter =
   test: (post, hideable=true) ->
     hl  = undefined
     top = false
-    boardID = if post.board then post.board.ID else post.boardID
     for key of Filter.filters when ((value = Filter[key] post)?)
       # Continue if there's nothing to filter (no tripcode for example).
-      for filter in Filter.filters[key] when (result = filter value, boardID, post.isReply)
+      for filter in Filter.filters[key] when (result = filter value, post.boardID, post.isReply)
         {hide, stub} = result
         if hide
           return {hide, stub} if hideable
