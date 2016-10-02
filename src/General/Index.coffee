@@ -595,7 +595,7 @@ Index =
     for data in Index.liveThreadData
       Index.liveThreadDict[data.no] = data
       Index.parsedThreads[data.no] = obj = Build.parseJSON data, g.BOARD.ID
-      results = Filter.test obj
+      obj.filterResults = results = Filter.test obj
       obj.isOnTop  = results.top
       obj.isHidden = results.hide
     if Index.liveThreadData[0]
@@ -624,7 +624,9 @@ Index =
           threads.push thread
 
         if not ((OP = thread.OP) and not OP.isFetchedQuote)
-          OP = new Post Build.postFromObject(threadData, g.BOARD.ID, true), thread, g.BOARD
+          obj = Index.parsedThreads[threadData.no]
+          OP = new Post Build.post(obj, true), thread, g.BOARD
+          OP.filterResults = obj.filterResults
           posts.push OP
         thread.setPage i // Index.threadsNumPerPage + 1
 

@@ -1,5 +1,6 @@
 Filter =
   filters: {}
+  results: {}
   init: ->
     return unless g.VIEW in ['index', 'thread'] and Conf['Filter']
 
@@ -107,6 +108,7 @@ Filter =
       settings
 
   test: (post, hideable=true) ->
+    return post.filterResults if post.filterResults
     hl  = undefined
     top = false
     for key of Filter.filters when ((value = Filter[key] post)?)
