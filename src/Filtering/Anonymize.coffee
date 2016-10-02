@@ -9,12 +9,15 @@ Anonymize =
 
   node: ->
     return if @info.capcode or @isClone
-    {name, tripcode, email} = @nodes
+    {name, tripcode, pass, email} = @nodes
     if @info.name isnt 'Anonymous'
       name.textContent = 'Anonymous'
     if tripcode
       $.rm tripcode
       delete @nodes.tripcode
+    if pass
+      $.rm pass
+      delete @nodes.pass
     if email
       $.replace email, name
       delete @nodes.email
