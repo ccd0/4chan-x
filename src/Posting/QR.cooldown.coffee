@@ -23,6 +23,11 @@ QR.cooldown =
       QR.cooldown.delays.reply_intra or= QR.cooldown.delays.reply
       QR.cooldown.delays.image_intra or= QR.cooldown.delays.image
 
+    # Pass users have reduced cooldowns.
+    if d.cookie.indexOf('pass_enabled=1') >= 0
+      for key in ['reply', 'image', 'reply_intra', 'image_intra']
+        QR.cooldown.delays[key] = Math.ceil(QR.cooldown.delays[key] / 2)
+
     # The longest reply cooldown, for use in pruning old reply data
     QR.cooldown.maxDelay = 0
     for type, delay of QR.cooldown.delays when type not in ['thread', 'thread_global']
