@@ -11,6 +11,9 @@ Index =
 
     return unless Conf['JSON Index']
 
+    Callbacks.Post.push
+      name: 'Index Page Numbers'
+      cb:   @node
     Callbacks.CatalogThread.push
       name: 'Catalog Features'
       cb:   @catalogNode
@@ -193,6 +196,10 @@ Index =
             Index.toggleHide thread
           $.on @el, 'click', @cb
           true
+
+  node: ->
+    return if @isReply or @isClone or not (Index.threadPosition[@ID]?)
+    @thread.setPage(Index.threadPosition[@ID] // Index.threadsNumPerPage + 1)
 
   catalogNode: ->
     $.on @nodes.root, 'mousedown click', (e) =>
@@ -631,12 +638,12 @@ Index =
 
         if ((OP = thread.OP) and not OP.isFetchedQuote)
           OP.setCatalogOP false
+          thread.setPage(Index.threadPosition[ID] // Index.threadsNumPerPage + 1)
         else
           obj = Index.parsedThreads[ID]
           OP = new Post Build.post(obj), thread, g.BOARD
           OP.filterResults = obj.filterResults
           newPosts.push OP
-        thread.setPage(Index.threadPosition[ID] // Index.threadsNumPerPage + 1)
 
         Build.thread thread, threadData
       catch err
