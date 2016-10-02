@@ -4,8 +4,6 @@ QR.cooldown =
     thread: 0
     reply: 0
     image: 0
-    reply_intra: 0
-    image_intra: 0
     deletion: 60       # cooldown for deleting posts/files
     thread_global: 300 # inter-board thread cooldown
 
@@ -20,12 +18,10 @@ QR.cooldown =
     # Read cooldown times
     if m = Get.scriptData().match /\bcooldowns *= *({[^}]+})/
       $.extend QR.cooldown.delays, JSON.parse m[1]
-      QR.cooldown.delays.reply_intra or= QR.cooldown.delays.reply
-      QR.cooldown.delays.image_intra or= QR.cooldown.delays.image
 
     # Pass users have reduced cooldowns.
     if d.cookie.indexOf('pass_enabled=1') >= 0
-      for key in ['reply', 'image', 'reply_intra', 'image_intra']
+      for key in ['reply', 'image']
         QR.cooldown.delays[key] = Math.ceil(QR.cooldown.delays[key] / 2)
 
     # The longest reply cooldown, for use in pruning old reply data
@@ -155,8 +151,6 @@ QR.cooldown =
           # Inter-board thread cooldowns only apply on boards other than the one they were posted on.
           suffix = if scope is 'global'
             '_global'
-          else if type isnt 'thread' and threadID is cooldown.threadID
-            '_intra'
           else
             ''
           seconds = Math.max seconds, QR.cooldown.delays[type + suffix] - elapsed
