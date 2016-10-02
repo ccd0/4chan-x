@@ -101,6 +101,7 @@ Build.Test =
             c.log "#{post.fullID} correct"
           Build.Test.postsRemaining--
           Build.Test.report() if Build.Test.postsRemaining is 0
+      return
 
   testAll: ->
     g.posts.forEach (post) ->
