@@ -160,8 +160,7 @@ Index =
     return Index.endNotice() if pageNum > Index.pagesNum
 
     threadIDs = Index.threadsOnPage pageNum
-    threads = Index.buildThreads threadIDs
-    Index.buildStructure threads
+    Index.buildStructure threadIDs
     
   endNotice: do ->
     notify = false
@@ -767,21 +766,21 @@ Index =
         threadIDs = Index.sortedThreadIDs.filter (ID) -> !Index.isHidden(ID) isnt Index.showHiddenThreads
       else
         threadIDs = Index.threadsOnPage Index.currentPage
-    threads = Index.buildThreads threadIDs
     delete Index.pageNum
     $.rmAll Index.root
     $.rmAll Header.hover
     if Conf['Index Mode'] is 'catalog'
-      Index.buildCatalog threads
+      Index.buildCatalog threadIDs
     else
-      Index.buildStructure threads
+      Index.buildStructure threadIDs
 
   threadsOnPage: (pageNum) ->
     nodesPerPage = Index.threadsNumPerPage
     offset = nodesPerPage * (pageNum - 1)
     Index.sortedThreadIDs[offset ... offset + nodesPerPage]
 
-  buildStructure: (threads) ->
+  buildStructure: (threadIDs) ->
+    threads = Index.buildThreads threadIDs
     Index.buildReplies threads if Conf['Show Replies']
     nodes = []
     for thread in threads
@@ -794,7 +793,8 @@ Index =
     if doc.contains Index.root
       $.event 'PostsInserted'
 
-  buildCatalog: (threads) ->
+  buildCatalog: (threadIDs) ->
+    threads = Index.buildThreads threadIDs
     Index.buildCatalogViews threads
     Index.sizeCatalogViews threads
     Index.buildCatalogReplies threads if Conf['Show Replies'] and Conf['Catalog Hover Expand']
