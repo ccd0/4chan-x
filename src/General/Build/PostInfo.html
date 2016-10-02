@@ -1,5 +1,5 @@
-<div class="postInfo desktop" id="pi${postID}">
-  <input type="checkbox" name="${postID}" value="delete"> 
+<div class="postInfo desktop" id="pi${ID}">
+  <input type="checkbox" name="${ID}" value="delete"> 
   ?{!o.isReply || boardID === "f" || subject}{<span class="subject">${subject || ""}</span> }
   <span class="nameBlock?{capcode}{ capcode${capcode}}">
     ?{email}{<a href="mailto:${encodeURIComponent(email).replace(/%40/g, "@")}" class="useremail">}
@@ -15,7 +15,7 @@
   <span class="dateTime" data-utc="${dateUTC}">${dateText}</span> 
   <span class="postNum?{!(boardID === "f" && !o.isReply)}{ desktop}">
     <a href="${postLink}" title="Link to this post">No.</a>
-    <a href="${quoteLink}" title="Reply to this post">${postID}</a>
+    <a href="${quoteLink}" title="Reply to this post">${ID}</a>
     ?{o.isSticky}{ <img src="${staticPath}sticky${gifIcon}" alt="Sticky" title="Sticky" class="stickyIcon retina">}
     ?{o.isClosed && !o.isArchived}{ <img src="${staticPath}closed${gifIcon}" alt="Closed" title="Closed" class="closedIcon retina">}
     ?{o.isArchived}{ <img src="${staticPath}archived${gifIcon}" alt="Archived" title="Archived" class="archivedIcon retina">}

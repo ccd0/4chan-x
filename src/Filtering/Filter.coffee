@@ -139,7 +139,7 @@ Filter =
   isHidden: (post) ->
     !!Filter.test(post).hide
 
-  postID:     (post) -> "#{post.ID ? post.postID}"
+  postID:     (post) -> "#{post.ID}"
   name:       (post) -> post.info.name
   uniqueID:   (post) -> post.info.uniqueID
   tripcode:   (post) -> post.info.tripcode

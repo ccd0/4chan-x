@@ -34,7 +34,7 @@ Build =
   parseJSON: (data, boardID) ->
     o =
       # id
-      postID:   data.no
+      ID:       data.no
       threadID: data.resto or data.no
       boardID:  boardID
       isReply:  !!data.resto
@@ -100,7 +100,7 @@ Build =
     Build.post o, suppressThumb
 
   post: (o, suppressThumb) ->
-    {postID, threadID, boardID, file} = o
+    {ID, threadID, boardID, file} = o
     {subject, email, name, tripcode, capcode, uniqueID, flagCode, flag, dateUTC, dateText, commentHTML} = o.info
     {staticPath, gifIcon} = Build
 
@@ -116,11 +116,11 @@ Build =
         capcodePlural = "#{capcodeLong}s"
         capcodeDescription = "a 4chan #{capcodeLong}"
 
-    postLink = Build.postURL boardID, threadID, postID
+    postLink = Build.postURL boardID, threadID, ID
     quoteLink = if Build.sameThread boardID, threadID
-      "javascript:quote('#{+postID}');"
+      "javascript:quote('#{+ID}');"
     else
-      "/#{boardID}/thread/#{threadID}#q#{postID}"
+      "/#{boardID}/thread/#{threadID}#q#{ID}"
 
     postInfo = <%= readHTML('PostInfo.html') %>
 
@@ -142,7 +142,7 @@ Build =
 
     container = $.el 'div',
       className: "postContainer #{postClass}Container"
-      id:        "pc#{postID}"
+      id:        "pc#{ID}"
     $.extend container, wholePost
 
     # Fix quotelinks
