@@ -591,9 +591,11 @@ Index =
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
     Index.liveThreadDict    = {}
+    Index.threadPosition    = {}
     Index.parsedThreads     = {}
-    for data in Index.liveThreadData
+    for data, i in Index.liveThreadData
       Index.liveThreadDict[data.no] = data
+      Index.threadPosition[data.no] = i
       Index.parsedThreads[data.no] = obj = Build.parseJSON data, g.BOARD.ID
       obj.filterResults = results = Filter.test obj
       obj.isOnTop  = results.top
@@ -614,7 +616,7 @@ Index =
     return unless Index.liveThreadData
     threads     = []
     posts       = []
-    for threadData, i in Index.liveThreadData
+    for threadData in Index.liveThreadData
       try
         if (thread = g.BOARD.threads[threadData.no])
           thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
@@ -633,7 +635,7 @@ Index =
           OP = new Post Build.post(obj, true), thread, g.BOARD
           OP.filterResults = obj.filterResults
           posts.push OP
-        thread.setPage i // Index.threadsNumPerPage + 1
+        thread.setPage(Index.threadPosition[threadData.no] // Index.threadsNumPerPage + 1)
 
         Build.thread thread, threadData
       catch err
@@ -675,8 +677,10 @@ Index =
   buildCatalogViews: (threads) ->
     catalogThreads = []
     for thread in threads when !thread.catalogView
-      i = Index.liveThreadIDs.indexOf thread.ID
-      root = Build.catalogThread thread, Index.liveThreadData[i], i // Index.threadsNumPerPage + 1
+      {ID} = thread
+      i = Index.threadPosition[ID]
+      page = Index.threadPosition[ID] // Index.threadsNumPerPage + 1
+      root = Build.catalogThread thread, Index.liveThreadDict[ID], page
       catalogThreads.push new CatalogThread root, thread
     Main.callbackNodes 'CatalogThread', catalogThreads
 
