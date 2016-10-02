@@ -148,7 +148,7 @@ class Fetcher
 
     @threadID = +data.thread_num
     o =
-      postID:   @postID
+      ID:       @postID
       threadID: @threadID
       boardID:  @boardID
       isReply:  @postID isnt @threadID
