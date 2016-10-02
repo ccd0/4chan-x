@@ -129,7 +129,7 @@ Index =
 
       board = $ '.board'
       $.replace board, Index.root
-      if Index.liveThreadData
+      if Index.loaded
         $.event 'PostsInserted'
       # Hacks:
       # - When removing an element from the document during page load,
@@ -681,11 +681,11 @@ Index =
     catalogThreads = []
     for thread in threads when !thread.catalogView
       {ID} = thread
-      i = Index.threadPosition[ID]
       page = Index.threadPosition[ID] // Index.threadsNumPerPage + 1
       root = Build.catalogThread thread, Index.liveThreadDict[ID], page
       catalogThreads.push new CatalogThread root, thread
     Main.callbackNodes 'CatalogThread', catalogThreads
+    return
 
   sizeCatalogViews: (threads) ->
     # XXX When browsers support CSS3 attr(), use it instead.
@@ -775,6 +775,7 @@ Index =
       Index.buildCatalog threadIDs
     else
       Index.buildStructure threadIDs
+    return
 
   threadsOnPage: (pageNum) ->
     nodesPerPage = Index.threadsNumPerPage
@@ -788,10 +789,28 @@ Index =
     for thread in threads
       nodes.push thread.nodes.root, $.el('hr')
     $.add Index.root, nodes
-    if doc.contains Index.root
+    if Index.root.parentNode
       $.event 'PostsInserted'
+    Index.loaded = true
+    return
 
   buildCatalog: (threadIDs) ->
+    i = 0
+    n = threadIDs.length
+    fn = ->
+      j = if i > 0 and Index.root.parentNode then n else i + 25
+      Index.buildCatalogPart threadIDs[i...j]
+      i = j
+      if i < n
+        $.queueTask fn
+      else
+        if Index.root.parentNode
+          $.event 'PostsInserted'
+        Index.loaded = true
+    fn()
+    return
+
+  buildCatalogPart: (threadIDs) ->
     threads = Index.buildThreads threadIDs
     Index.buildCatalogViews threads
     Index.sizeCatalogViews threads
@@ -802,8 +821,7 @@ Index =
       $.add thread.catalogView.nodes.root, thread.OP.nodes.root
       nodes.push thread.catalogView.nodes.root
     $.add Index.root, nodes
-    if doc.contains Index.root
-      $.event 'PostsInserted'
+    return
 
   clearSearch: ->
     Index.searchInput.value = ''
