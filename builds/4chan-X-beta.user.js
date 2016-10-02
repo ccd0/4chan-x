@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.0.2
+// @version      1.13.0.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.2',
+  VERSION:   '1.13.0.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -353,6 +353,7 @@ Config = (function() {
       uniqueID: "# Filter a specific ID:\n#/Txhvk1Tl/",
       tripcode: "# Filter any tripfag\n#/^!/",
       capcode: "# Set a custom class for mods:\n#/Mod$/;highlight:mod;op:yes\n# Set a custom class for admins:\n#/Admin$/;highlight:admin;op:yes",
+      pass: "# Filter anyone using since4pass:\n#/./",
       subject: "# Filter Generals on /v/:\n#/general/i;boards:v;op:only",
       comment: "# Filter Stallman copypasta on /g/:\n#/what you\'re refer+ing to as linux/i;boards:g\n# Filter posts with 20 or more quote links:\n#/(?:>>\\d(?:(?!>>\\d)[^])*){20}/\n# Filter posts like T H I S / H / I / S:\n#/^>?\\s?\\w\\s?(\\w)\\s?(\\w)\\s?(\\w).*$[\\s>]+\\1[\\s>]+\\2[\\s>]+\\3/im",
       flag: '',
@@ -5586,7 +5587,7 @@ Fetcher = (function() {
       };
       this.threadID = +data.thread_num;
       o = {
-        postID: this.postID,
+        ID: this.postID,
         threadID: this.threadID,
         boardID: this.boardID,
         isReply: this.postID !== this.threadID
@@ -5800,10 +5801,12 @@ Post = (function() {
     };
 
     function Post(root, thread, board) {
-      var clone, j, len, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8;
+      var clone, j, len, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
       this.thread = thread;
       this.board = board;
       this.ID = +root.id.slice(2);
+      this.threadID = this.thread.ID;
+      this.boardID = this.board.ID;
       this.fullID = this.board + "." + this.ID;
       this.context = this;
       root.dataset.fullID = this.fullID;
@@ -5824,8 +5827,9 @@ Post = (function() {
         tripcode: (ref2 = this.nodes.tripcode) != null ? ref2.textContent : void 0,
         uniqueID: (ref3 = this.nodes.uniqueID) != null ? ref3.firstElementChild.textContent : void 0,
         capcode: (ref4 = this.nodes.capcode) != null ? ref4.textContent.replace('## ', '') : void 0,
-        flagCode: (ref5 = this.nodes.flag) != null ? (ref6 = ref5.className.match(/flag-(\w+)/)) != null ? ref6[1].toUpperCase() : void 0 : void 0,
-        flag: (ref7 = this.nodes.flag) != null ? ref7.title : void 0,
+        pass: (ref5 = this.nodes.pass) != null ? ref5.title.match(/\d*$/)[0] : void 0,
+        flagCode: (ref6 = this.nodes.flag) != null ? (ref7 = ref6.className.match(/flag-(\w+)/)) != null ? ref7[1].toUpperCase() : void 0 : void 0,
+        flag: (ref8 = this.nodes.flag) != null ? ref8.title : void 0,
         date: this.nodes.date ? new Date(this.nodes.date.dataset.utc * 1000) : void 0
       };
       this.parseComment();
@@ -5837,9 +5841,9 @@ Post = (function() {
       if (g.posts[this.fullID]) {
         this.isRebuilt = true;
         this.clones = g.posts[this.fullID].clones;
-        ref8 = this.clones;
-        for (j = 0, len = ref8.length; j < len; j++) {
-          clone = ref8[j];
+        ref9 = this.clones;
+        for (j = 0, len = ref9.length; j < len; j++) {
+          clone = ref9[j];
           clone.origin = this;
         }
       }
@@ -5862,6 +5866,7 @@ Post = (function() {
         tripcode: $('.postertrip', info),
         uniqueID: $('.posteruid', info),
         capcode: $('.capcode.hand', info),
+        pass: $('.n-pu', info),
         flag: $('.flag, .countryFlag', info),
         date: $('.dateTime', info),
         nameBlock: $('.nameBlock', info),
@@ -6120,7 +6125,7 @@ Post = (function() {
     _Class.prototype.isClone = true;
 
     function _Class(origin, context, contractThumb) {
-      var base, fileRoot, i, inline, inlined, j, k, key, l, len, len1, len2, len3, node, nodes, ref, ref1, ref2, ref3, ref4, ref5, root, val;
+      var base, fileRoot, i, inline, inlined, j, k, key, l, len, len1, len2, len3, node, nodes, ref, ref1, ref2, ref3, ref4, root, val;
       this.origin = origin;
       this.context = context;
       ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
@@ -6175,10 +6180,6 @@ Post = (function() {
         this.file.videoControls = $('.video-controls', this.file.text);
         if (this.file.videoThumb) {
           this.file.thumb.muted = true;
-        }
-        if ((ref5 = this.file.thumb) != null ? ref5.dataset.src : void 0) {
-          this.file.thumb.src = this.file.thumb.dataset.src;
-          this.file.thumb.removeAttribute('data-src');
         }
         if (this.file.thumb && contractThumb) {
           ImageExpand.contract(this);
@@ -6446,7 +6447,6 @@ Thread = (function() {
       this.posts = new SimpleDict();
       this.isDead = false;
       this.isHidden = false;
-      this.isOnTop = false;
       this.isSticky = false;
       this.isClosed = false;
       this.isArchived = false;
@@ -6456,8 +6456,7 @@ Thread = (function() {
       this.OP = null;
       this.catalogView = null;
       this.nodes = {
-        root: null,
-        placeholder: null
+        root: null
       };
       this.board.threads.push(this.ID, this);
       g.threads.push(this.fullID, this);
@@ -6824,17 +6823,21 @@ Anonymize = (function() {
       });
     },
     node: function() {
-      var email, name, ref, tripcode;
+      var email, name, pass, ref, tripcode;
       if (this.info.capcode || this.isClone) {
         return;
       }
-      ref = this.nodes, name = ref.name, tripcode = ref.tripcode, email = ref.email;
+      ref = this.nodes, name = ref.name, tripcode = ref.tripcode, pass = ref.pass, email = ref.email;
       if (this.info.name !== 'Anonymous') {
         name.textContent = 'Anonymous';
       }
       if (tripcode) {
         $.rm(tripcode);
         delete this.nodes.tripcode;
+      }
+      if (pass) {
+        $.rm(pass);
+        delete this.nodes.pass;
       }
       if (email) {
         $.replace(email, name);
@@ -6864,10 +6867,12 @@ Anonymize = (function() {
 
 Filter = (function() {
   var Filter,
-    indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
+    slice = [].slice;
 
   Filter = {
     filters: {},
+    results: {},
     init: function() {
       var boards, err, excludes, filter, hl, i, key, len, line, op, ref, ref1, ref2, ref3, ref4, ref5, ref6, regexp, stub, top;
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Filter'])) {
@@ -6962,60 +6967,70 @@ Filter = (function() {
         return settings;
       };
     },
-    node: function() {
-      var filter, i, key, len, ref, ref1, result, value;
-      if (this.isClone) {
-        return;
+    test: function(post, hideable) {
+      var filter, hide, hl, i, key, len, ref, ref1, result, stub, top, value;
+      if (hideable == null) {
+        hideable = true;
       }
+      if (post.filterResults) {
+        return post.filterResults;
+      }
+      hl = void 0;
+      top = false;
       for (key in Filter.filters) {
-        if ((value = Filter[key](this)) != null) {
+        if (((value = Filter[key](post)) != null)) {
           ref = Filter.filters[key];
           for (i = 0, len = ref.length; i < len; i++) {
             filter = ref[i];
-            if (!(result = filter(value, this.board.ID, this.isReply))) {
+            if (!((result = filter(value, post.boardID, post.isReply)))) {
               continue;
             }
-            if (result.hide && !this.isFetchedQuote) {
-              if (this.isReply) {
-                PostHiding.hide(this, result.stub);
-              } else if (g.VIEW === 'index') {
-                ThreadHiding.hide(this.thread, result.stub);
-              } else {
-                continue;
+            hide = result.hide, stub = result.stub;
+            if (hide) {
+              if (hideable) {
+                return {
+                  hide: hide,
+                  stub: stub
+                };
               }
-              return;
-            }
-            $.addClass(this.nodes.root, result["class"]);
-            if (!(this.highlights && (ref1 = result["class"], indexOf.call(this.highlights, ref1) >= 0))) {
-              (this.highlights || (this.highlights = [])).push(result["class"]);
-            }
-            if (!this.isReply && result.top) {
-              this.thread.isOnTop = true;
+            } else {
+              if (!(hl && (ref1 = result["class"], indexOf.call(hl, ref1) >= 0))) {
+                (hl || (hl = [])).push(result["class"]);
+              }
+              top || (top = result.top);
             }
           }
+        }
+      }
+      return {
+        hl: hl,
+        top: top
+      };
+    },
+    node: function() {
+      var hide, hl, ref, stub, top;
+      if (this.isClone) {
+        return;
+      }
+      ref = Filter.test(this, !this.isFetchedQuote && (this.isReply || g.VIEW === 'index')), hide = ref.hide, stub = ref.stub, hl = ref.hl, top = ref.top;
+      if (hide) {
+        if (this.isReply) {
+          PostHiding.hide(this, stub);
+        } else {
+          ThreadHiding.hide(this.thread, stub);
+        }
+      } else {
+        if (hl) {
+          this.highlights = hl;
+          $.addClass.apply($, [this.nodes.root].concat(slice.call(hl)));
         }
       }
     },
     isHidden: function(post) {
-      var filter, i, key, len, ref, result, value;
-      for (key in Filter.filters) {
-        if ((value = Filter[key](post)) != null) {
-          ref = Filter.filters[key];
-          for (i = 0, len = ref.length; i < len; i++) {
-            filter = ref[i];
-            if (result = filter(value, post.boardID, post.isReply)) {
-              if (result.hide) {
-                return true;
-              }
-            }
-          }
-        }
-      }
-      return false;
+      return !!Filter.test(post).hide;
     },
     postID: function(post) {
-      var ref;
-      return "" + ((ref = post.ID) != null ? ref : post.postID);
+      return "" + post.ID;
     },
     name: function(post) {
       return post.info.name;
@@ -7028,6 +7043,9 @@ Filter = (function() {
     },
     capcode: function(post) {
       return post.info.capcode;
+    },
+    pass: function(post) {
+      return post.info.pass;
     },
     subject: function(post) {
       return post.info.subject;
@@ -7073,7 +7091,7 @@ Filter = (function() {
           },
           subEntries: []
         };
-        ref1 = [['Name', 'name'], ['Unique ID', 'uniqueID'], ['Tripcode', 'tripcode'], ['Capcode', 'capcode'], ['Subject', 'subject'], ['Comment', 'comment'], ['Flag', 'flag'], ['Filename', 'filename'], ['Image dimensions', 'dimensions'], ['Filesize', 'filesize'], ['Image MD5', 'MD5']];
+        ref1 = [['Name', 'name'], ['Unique ID', 'uniqueID'], ['Tripcode', 'tripcode'], ['Capcode', 'capcode'], ['Pass Date', 'pass'], ['Subject', 'subject'], ['Comment', 'comment'], ['Flag', 'flag'], ['Filename', 'filename'], ['Image dimensions', 'dimensions'], ['Filesize', 'filesize'], ['Image MD5', 'MD5']];
         for (i = 0, len = ref1.length; i < len; i++) {
           type = ref1[i];
           entry.subEntries.push(Filter.menu.createSubEntry(type[0], type[1]));
@@ -7588,6 +7606,12 @@ ThreadHiding = (function() {
       }
       return ThreadHiding.hiddenThreads = hiddenThreads2;
     },
+    isHidden: function(boardID, threadID) {
+      return !!(ThreadHiding.db && ThreadHiding.db.get({
+        boardID: boardID,
+        threadID: threadID
+      }));
+    },
     node: function() {
       var data;
       if (this.isReply || this.isClone || this.isFetchedQuote) {
@@ -7928,7 +7952,7 @@ Build = (function() {
     parseJSON: function(data, boardID) {
       var o;
       o = {
-        postID: data.no,
+        ID: data.no,
         threadID: data.resto || data.no,
         boardID: boardID,
         isReply: !!data.resto,
@@ -7942,6 +7966,7 @@ Build = (function() {
         email: Build.unescape(data.email),
         name: Build.unescape(data.name) || '',
         tripcode: data.trip,
+        pass: data.since4pass != null ? "" + data.since4pass : void 0,
         uniqueID: data.id,
         flagCode: data.country,
         flag: Build.unescape(data.country_name),
@@ -7991,15 +8016,15 @@ Build = (function() {
       }
       return Build.parseComment(html).trim().replace(/\s+$/gm, '');
     },
-    postFromObject: function(data, boardID, suppressThumb) {
+    postFromObject: function(data, boardID) {
       var o;
       o = Build.parseJSON(data, boardID);
-      return Build.post(o, suppressThumb);
+      return Build.post(o);
     },
-    post: function(o, suppressThumb) {
-      var boardID, capcode, capcodeDescription, capcodeLC, capcodeLong, capcodePlural, commentHTML, container, dateText, dateUTC, email, file, fileBlock, fileThumb, fileURL, flag, flagCode, gifIcon, href, i, len, match, name, postClass, postID, postInfo, postLink, protocol, quote, quoteLink, ref, ref1, shortFilename, staticPath, subject, threadID, tripcode, uniqueID, wholePost;
-      postID = o.postID, threadID = o.threadID, boardID = o.boardID, file = o.file;
-      ref = o.info, subject = ref.subject, email = ref.email, name = ref.name, tripcode = ref.tripcode, capcode = ref.capcode, uniqueID = ref.uniqueID, flagCode = ref.flagCode, flag = ref.flag, dateUTC = ref.dateUTC, dateText = ref.dateText, commentHTML = ref.commentHTML;
+    post: function(o) {
+      var ID, boardID, capcode, capcodeDescription, capcodeLC, capcodeLong, capcodePlural, commentHTML, container, dateText, dateUTC, email, file, fileBlock, fileThumb, fileURL, flag, flagCode, gifIcon, href, i, len, match, name, pass, postClass, postInfo, postLink, protocol, quote, quoteLink, ref, ref1, shortFilename, staticPath, subject, threadID, tripcode, uniqueID, wholePost;
+      ID = o.ID, threadID = o.threadID, boardID = o.boardID, file = o.file;
+      ref = o.info, subject = ref.subject, email = ref.email, name = ref.name, tripcode = ref.tripcode, capcode = ref.capcode, pass = ref.pass, uniqueID = ref.uniqueID, flagCode = ref.flagCode, flag = ref.flag, dateUTC = ref.dateUTC, dateText = ref.dateText, commentHTML = ref.commentHTML;
       staticPath = Build.staticPath, gifIcon = Build.gifIcon;
 
       /* Post Info */
@@ -8017,10 +8042,10 @@ Build = (function() {
           capcodeDescription = "a 4chan " + capcodeLong;
         }
       }
-      postLink = Build.postURL(boardID, threadID, postID);
-      quoteLink = Build.sameThread(boardID, threadID) ? "javascript:quote('" + (+postID) + "');" : "/" + boardID + "/thread/" + threadID + "#q" + postID;
+      postLink = Build.postURL(boardID, threadID, ID);
+      quoteLink = Build.sameThread(boardID, threadID) ? "javascript:quote('" + (+ID) + "');" : "/" + boardID + "/thread/" + threadID + "#q" + ID;
       postInfo = {
-        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(postID) + "\"><input type=\"checkbox\" name=\"" + E(postID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcode) ? "" : " ") + ((capcode) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(postID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\" class=\"stickyIcon retina\">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\" class=\"closedIcon retina\">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
+        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcode) ? "" : " ") + ((capcode) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\" class=\"stickyIcon retina\">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\" class=\"closedIcon retina\">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
       };
 
       /* File Info */
@@ -8031,17 +8056,17 @@ Build = (function() {
         fileThumb = file.isSpoiler ? Build.spoilerThumb(boardID) : file.thumbURL.replace(protocol, '');
       }
       fileBlock = {
-        innerHTML: ((file) ? "<div class=\"file\" id=\"f" + E(postID) + "\">" + ((boardID === "f") ? "<div class=\"fileInfo\"><span class=\"fileText\" id=\"fT" + E(postID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(fileURL) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E(file.size) + ", " + E(file.dimensions) + ((file.tag) ? ", " + E(file.tag) : "") + ")</span></div>" : "<div class=\"fileText\" id=\"fT" + E(postID) + "\"" + ((file.isSpoiler) ? " title=\"" + E(file.name) + "\"" : "") + ">File: <a" + ((file.name === shortFilename || file.isSpoiler) ? "" : " title=\"" + E(file.name) + "\"") + " href=\"" + E(fileURL) + "\" target=\"_blank\">" + ((file.isSpoiler) ? "Spoiler Image" : E(shortFilename)) + "</a> (" + E(file.size) + ", " + E(file.dimensions || "PDF") + ")</div><a class=\"fileThumb" + ((file.isSpoiler) ? " imgspoiler" : "") + "\" href=\"" + E(fileURL) + "\" target=\"_blank\"><img" + ((suppressThumb) ? " data-src=\"" + E(fileThumb) + "\"" : " src=\"" + E(fileThumb) + "\"") + " alt=\"" + E(file.size) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.isSpoiler ? 100 : file.theight) + "px; width: " + E(file.isSpoiler ? 100 : file.twidth) + "px;\"></a>") + "</div>" : ((o.fileDeleted) ? "<div class=\"file\" id=\"f" + E(postID) + "\"><span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span></div>" : ""))
+        innerHTML: ((file) ? "<div class=\"file\" id=\"f" + E(ID) + "\">" + ((boardID === "f") ? "<div class=\"fileInfo\"><span class=\"fileText\" id=\"fT" + E(ID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(fileURL) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E(file.size) + ", " + E(file.dimensions) + ((file.tag) ? ", " + E(file.tag) : "") + ")</span></div>" : "<div class=\"fileText\" id=\"fT" + E(ID) + "\"" + ((file.isSpoiler) ? " title=\"" + E(file.name) + "\"" : "") + ">File: <a" + ((file.name === shortFilename || file.isSpoiler) ? "" : " title=\"" + E(file.name) + "\"") + " href=\"" + E(fileURL) + "\" target=\"_blank\">" + ((file.isSpoiler) ? "Spoiler Image" : E(shortFilename)) + "</a> (" + E(file.size) + ", " + E(file.dimensions || "PDF") + ")</div><a class=\"fileThumb" + ((file.isSpoiler) ? " imgspoiler" : "") + "\" href=\"" + E(fileURL) + "\" target=\"_blank\"><img src=\"" + E(fileThumb) + "\" alt=\"" + E(file.size) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.isSpoiler ? 100 : file.theight) + "px; width: " + E(file.isSpoiler ? 100 : file.twidth) + "px;\"></a>") + "</div>" : ((o.fileDeleted) ? "<div class=\"file\" id=\"f" + E(ID) + "\"><span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span></div>" : ""))
       };
 
       /* Whole Post */
       postClass = o.isReply ? 'reply' : 'op';
       wholePost = {
-        innerHTML: ((o.isReply) ? "<div class=\"sideArrows\" id=\"sa" + E(postID) + "\">&gt;&gt;</div>" : "") + "<div id=\"p" + E(postID) + "\" class=\"post " + E(postClass) + ((o.capcodeHighlight) ? " highlightPost" : "") + "\">" + ((o.isReply) ? (postInfo).innerHTML + (fileBlock).innerHTML : (fileBlock).innerHTML + (postInfo).innerHTML) + "<blockquote class=\"postMessage\" id=\"m" + E(postID) + "\">" + (commentHTML).innerHTML + "</blockquote></div>"
+        innerHTML: ((o.isReply) ? "<div class=\"sideArrows\" id=\"sa" + E(ID) + "\">&gt;&gt;</div>" : "") + "<div id=\"p" + E(ID) + "\" class=\"post " + E(postClass) + ((o.capcodeHighlight) ? " highlightPost" : "") + "\">" + ((o.isReply) ? (postInfo).innerHTML + (fileBlock).innerHTML : (fileBlock).innerHTML + (postInfo).innerHTML) + "<blockquote class=\"postMessage\" id=\"m" + E(ID) + "\">" + (commentHTML).innerHTML + "</blockquote></div>"
       };
       container = $.el('div', {
         className: "postContainer " + postClass + "Container",
-        id: "pc" + postID
+        id: "pc" + ID
       });
       $.extend(container, wholePost);
       ref1 = $$('.quotelink', container);
@@ -8081,10 +8106,6 @@ Build = (function() {
       var files, posts, ref, root, summary;
       if ((root = thread.nodes.root)) {
         $.rmAll(root);
-        if (thread.nodes.placeholder) {
-          thread.nodes.placeholder = null;
-          thread.OP.setCatalogOP(false);
-        }
       } else {
         thread.nodes.root = root = $.el('div', {
           className: 'thread',
@@ -8943,7 +8964,7 @@ Index = (function() {
     showHiddenThreads: false,
     changed: {},
     init: function() {
-      var anchorEntry, hoverEntry, input, j, k, label, len, len1, name, pinEntry, ref, ref1, ref2, ref3, ref4, ref5, ref6, refNavEntry, repliesEntry, select, sortEntry;
+      var anchorEntry, hoverEntry, input, k, l, label, len, len1, name, pinEntry, ref, ref1, ref2, ref3, ref4, ref5, ref6, refNavEntry, repliesEntry, select, sortEntry;
       if (!(g.VIEW === 'index' && g.BOARD.ID !== 'f')) {
         return;
       }
@@ -8952,6 +8973,10 @@ Index = (function() {
       if (!Conf['JSON Index']) {
         return;
       }
+      Callbacks.Post.push({
+        name: 'Index Page Numbers',
+        cb: this.node
+      });
       Callbacks.CatalogThread.push({
         name: 'Catalog Features',
         cb: this.catalogNode
@@ -9002,8 +9027,8 @@ Index = (function() {
       anchorEntry.el.title = 'Move hidden threads to the end of the index.';
       refNavEntry.el.title = 'Refresh index when navigating through pages.';
       ref4 = [repliesEntry, hoverEntry, pinEntry, anchorEntry, refNavEntry];
-      for (j = 0, len = ref4.length; j < len; j++) {
-        label = ref4[j];
+      for (k = 0, len = ref4.length; k < len; k++) {
+        label = ref4[k];
         input = label.el.firstChild;
         name = input.name;
         $.on(input, 'change', $.cb.checked);
@@ -9052,8 +9077,8 @@ Index = (function() {
       $.on(this.selectSize, 'change', $.cb.value);
       $.on(this.selectSize, 'change', this.cb.size);
       ref6 = [this.selectMode, this.selectSize];
-      for (k = 0, len1 = ref6.length; k < len1; k++) {
-        select = ref6[k];
+      for (l = 0, len1 = ref6.length; l < len1; l++) {
+        select = ref6[l];
         select.value = Conf[select.name];
       }
       this.selectSort.value = Index.currentSort;
@@ -9075,30 +9100,28 @@ Index = (function() {
         return d.title = d.title.replace(/\ -\ Page\ \d+/, '');
       });
       $.onExists(doc, '.board > .thread > .postContainer, .board + *', function() {
-        var ID, board, el, l, len2, ref7, ref8, threadRoot, topNavPos;
+        var board, el, len2, m, ref7, topNavPos;
         Build.hat = $('.board > .thread > img:first-child');
         if (Build.hat) {
-          if (Index.nodes) {
-            ref7 = Index.nodes;
-            for (ID in ref7) {
-              threadRoot = ref7[ID];
-              $.prepend(threadRoot, Build.hat.cloneNode(false));
+          g.BOARD.threads.forEach(function(thread) {
+            if (thread.nodes.root) {
+              return $.prepend(thread.nodes.root, Build.hat.cloneNode(false));
             }
-          }
+          });
           $.addClass(doc, 'hats-enabled');
           $.addStyle(".catalog-thread::after {background-image: url(" + Build.hat.src + ");}");
         }
         board = $('.board');
         $.replace(board, Index.root);
-        if (Index.nodes) {
+        if (Index.loaded) {
           $.event('PostsInserted');
         }
         try {
           d.implementation.createDocument(null, null, null).appendChild(board);
         } catch (_error) {}
-        ref8 = $$('.navLinks');
-        for (l = 0, len2 = ref8.length; l < len2; l++) {
-          el = ref8[l];
+        ref7 = $$('.navLinks');
+        for (m = 0, len2 = ref7.length; m < len2; m++) {
+          el = ref7[m];
           $.rm(el);
         }
         $.rm($.id('ctrl-top'));
@@ -9115,7 +9138,7 @@ Index = (function() {
       });
     },
     scroll: function() {
-      var pageNum, threads;
+      var pageNum, threadIDs;
       if (Index.req || !Index.liveThreadData || Conf['Index Mode'] !== 'infinite' || (window.scrollY <= doc.scrollHeight - (300 + window.innerHeight))) {
         return;
       }
@@ -9126,8 +9149,8 @@ Index = (function() {
       if (pageNum > Index.pagesNum) {
         return Index.endNotice();
       }
-      threads = Index.threadsOnPage(pageNum);
-      return Index.buildStructure(threads);
+      threadIDs = Index.threadsOnPage(pageNum);
+      return Index.buildStructure(threadIDs);
     },
     endNotice: (function() {
       var notify, reset;
@@ -9177,6 +9200,12 @@ Index = (function() {
         });
       }
     },
+    node: function() {
+      if (this.isReply || this.isClone || !(Index.threadPosition[this.ID] != null)) {
+        return;
+      }
+      return this.thread.setPage(Math.floor(Index.threadPosition[this.ID] / Index.threadsNumPerPage) + 1);
+    },
     catalogNode: function() {
       return $.on(this.nodes.root, 'mousedown click', (function(_this) {
         return function(e) {
@@ -9206,11 +9235,11 @@ Index = (function() {
       return ThreadHiding.saveHiddenState(thread);
     },
     cycleSortType: function() {
-      var i, j, len, type, types;
+      var i, k, len, type, types;
       types = slice.call(Index.selectSort.options).filter(function(option) {
         return !option.disabled;
       });
-      for (i = j = 0, len = types.length; j < len; i = ++j) {
+      for (i = k = 0, len = types.length; k < len; i = ++k) {
         type = types[i];
         if (type.selected) {
           break;
@@ -9285,13 +9314,11 @@ Index = (function() {
         }
       },
       replies: function() {
-        Index.buildThreads();
-        Index.sort();
         return Index.buildIndex();
       },
-      hover: function() {
+      hover: function(e) {
         doc.classList.toggle('catalog-hover-expand', Conf['Catalog Hover Expand']);
-        if (Conf['Show Replies'] && Conf['Catalog Hover Expand']) {
+        if (e && Conf['Show Replies'] && Conf['Catalog Hover Expand']) {
           return Index.cb.replies();
         }
       },
@@ -9380,15 +9407,15 @@ Index = (function() {
       }
     },
     processHash: function() {
-      var command, commands, hash, j, leftover, len, mode, ref, sort, state;
+      var command, commands, hash, k, leftover, len, mode, ref, sort, state;
       hash = ((ref = location.href.match(/#.*/)) != null ? ref[0] : void 0) || '';
       state = {
         replace: true
       };
       commands = hash.slice(1).split('/');
       leftover = [];
-      for (j = 0, len = commands.length; j < len; j++) {
-        command = commands[j];
+      for (k = 0, len = commands.length; k < len; k++) {
+        command = commands[k];
         if ((mode = Index.hashCommands.mode[command])) {
           state.mode = mode;
         } else if (command === 'index') {
@@ -9512,10 +9539,10 @@ Index = (function() {
       return Index.changed = {};
     },
     setupMode: function() {
-      var j, len, mode, ref;
+      var k, len, mode, ref;
       ref = ['paged', 'infinite', 'all pages', 'catalog'];
-      for (j = 0, len = ref.length; j < len; j++) {
-        mode = ref[j];
+      for (k = 0, len = ref.length; k < len; k++) {
+        mode = ref[k];
         $[mode === Conf['Index Mode'] ? 'addClass' : 'rmClass'](doc, (mode.replace(/\ /g, '-')) + "-mode");
       }
       Index.selectMode.value = Conf['Index Mode'];
@@ -9528,7 +9555,7 @@ Index = (function() {
     },
     getPagesNum: function() {
       if (Index.search) {
-        return Math.ceil(Index.sortedThreads.length / Index.threadsNumPerPage);
+        return Math.ceil(Index.sortedThreadIDs.length / Index.threadsNumPerPage);
       } else {
         return Index.pagesNum;
       }
@@ -9537,12 +9564,12 @@ Index = (function() {
       return Math.max(1, Index.getPagesNum());
     },
     buildPagelist: function() {
-      var a, i, j, maxPageNum, nodes, pagesRoot, ref;
+      var a, i, k, maxPageNum, nodes, pagesRoot, ref;
       pagesRoot = $('.pages', Index.pagelist);
       maxPageNum = Index.getMaxPageNum();
       if (pagesRoot.childElementCount !== maxPageNum) {
         nodes = [];
-        for (i = j = 1, ref = maxPageNum; j <= ref; i = j += 1) {
+        for (i = k = 1, ref = maxPageNum; k <= ref; i = k += 1) {
           a = $.el('a', {
             textContent: i,
             href: i === 1 ? './' : i
@@ -9579,15 +9606,13 @@ Index = (function() {
       return $.add(strong, a);
     },
     updateHideLabel: function() {
-      var hiddenCount, ref, ref1, thread, threadID;
+      var hiddenCount, k, len, ref, threadID;
       hiddenCount = 0;
-      ref = g.BOARD.threads;
-      for (threadID in ref) {
-        thread = ref[threadID];
-        if (thread.isHidden) {
-          if (ref1 = thread.ID, indexOf.call(Index.liveThreadIDs, ref1) >= 0) {
-            hiddenCount++;
-          }
+      ref = Index.liveThreadIDs;
+      for (k = 0, len = ref.length; k < len; k++) {
+        threadID = ref[k];
+        if (Index.isHidden(threadID)) {
+          hiddenCount++;
         }
       }
       if (!hiddenCount) {
@@ -9696,12 +9721,11 @@ Index = (function() {
         return /^\/\/a\.4cdn\.org\//.test(url);
       });
       Index.parseThreadList(pages);
-      Index.buildThreads();
       Index.changed.threads = true;
       return Index.pageLoad();
     },
     parseThreadList: function(pages) {
-      var data, j, len, ref, ref1;
+      var data, i, k, len, obj, ref, ref1, results;
       Index.pagesNum = pages.length;
       Index.threadsNumPerPage = ((ref = pages[0]) != null ? ref.threads.length : void 0) || 1;
       Index.liveThreadData = pages.reduce((function(arr, next) {
@@ -9711,10 +9735,17 @@ Index = (function() {
         return data.no;
       });
       Index.liveThreadDict = {};
+      Index.threadPosition = {};
+      Index.parsedThreads = {};
       ref1 = Index.liveThreadData;
-      for (j = 0, len = ref1.length; j < len; j++) {
-        data = ref1[j];
+      for (i = k = 0, len = ref1.length; k < len; i = ++k) {
+        data = ref1[i];
         Index.liveThreadDict[data.no] = data;
+        Index.threadPosition[data.no] = i;
+        Index.parsedThreads[data.no] = obj = Build.parseJSON(data, g.BOARD.ID);
+        obj.filterResults = results = Filter.test(obj);
+        obj.isOnTop = results.top;
+        obj.isHidden = results.hide || ThreadHiding.isHidden(obj.boardID, obj.threadID);
       }
       if (Index.liveThreadData[0]) {
         Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler;
@@ -9726,19 +9757,24 @@ Index = (function() {
         }
       });
     },
-    buildThreads: function() {
-      var OP, err, errors, i, j, len, posts, ref, thread, threadData, threads;
-      if (!Index.liveThreadData) {
-        return;
+    isHidden: function(threadID) {
+      var thread;
+      if ((thread = g.BOARD.threads[threadID]) && thread.OP && !thread.OP.isFetchedQuote) {
+        return thread.isHidden;
+      } else {
+        return Index.parsedThreads[threadID].isHidden;
       }
-      Index.nodes = {};
+    },
+    buildThreads: function(threadIDs) {
+      var ID, OP, err, errors, k, len, newPosts, newThreads, obj, thread, threadData, threads;
       threads = [];
-      posts = [];
-      ref = Index.liveThreadData;
-      for (i = j = 0, len = ref.length; j < len; i = ++j) {
-        threadData = ref[i];
+      newThreads = [];
+      newPosts = [];
+      for (k = 0, len = threadIDs.length; k < len; k++) {
+        ID = threadIDs[k];
         try {
-          if ((thread = g.BOARD.threads[threadData.no])) {
+          threadData = Index.liveThreadDict[ID];
+          if ((thread = g.BOARD.threads[ID])) {
             thread.setCount('post', threadData.replies + 1, threadData.bumplimit);
             thread.setCount('file', threadData.images + !!threadData.ext, threadData.imagelimit);
             thread.setStatus('Sticky', !!threadData.sticky);
@@ -9748,15 +9784,20 @@ Index = (function() {
               thread.catalogView.nodes.replies = null;
             }
           } else {
-            thread = new Thread(threadData.no, g.BOARD);
-            threads.push(thread);
+            thread = new Thread(ID, g.BOARD);
+            newThreads.push(thread);
           }
-          if (!((OP = thread.OP) && !OP.isFetchedQuote)) {
-            OP = new Post(Build.postFromObject(threadData, g.BOARD.ID, true), thread, g.BOARD);
-            posts.push(OP);
+          threads.push(thread);
+          if ((OP = thread.OP) && !OP.isFetchedQuote) {
+            OP.setCatalogOP(false);
+            thread.setPage(Math.floor(Index.threadPosition[ID] / Index.threadsNumPerPage) + 1);
+          } else {
+            obj = Index.parsedThreads[ID];
+            OP = new Post(Build.post(obj), thread, g.BOARD);
+            OP.filterResults = obj.filterResults;
+            newPosts.push(OP);
           }
-          thread.setPage(Math.floor(i / Index.threadsNumPerPage) + 1);
-          Index.nodes[thread.ID] = Build.thread(thread, threadData);
+          Build.thread(thread, threadData);
         } catch (_error) {
           err = _error;
           if (!errors) {
@@ -9771,22 +9812,23 @@ Index = (function() {
       if (errors) {
         Main.handleErrors(errors);
       }
-      Main.callbackNodes('Thread', threads);
-      Main.callbackNodes('Post', posts);
+      Main.callbackNodes('Thread', newThreads);
+      Main.callbackNodes('Post', newPosts);
       Index.updateHideLabel();
-      return $.event('IndexRefreshInternal');
+      $.event('IndexRefreshInternal');
+      return threads;
     },
     buildReplies: function(threads) {
-      var data, err, errors, j, k, lastReplies, len, len1, node, nodes, post, posts, thread;
+      var data, err, errors, k, l, lastReplies, len, len1, node, nodes, post, posts, thread;
       posts = [];
-      for (j = 0, len = threads.length; j < len; j++) {
-        thread = threads[j];
+      for (k = 0, len = threads.length; k < len; k++) {
+        thread = threads[k];
         if (!(lastReplies = Index.liveThreadDict[thread.ID].last_replies)) {
           continue;
         }
         nodes = [];
-        for (k = 0, len1 = lastReplies.length; k < len1; k++) {
-          data = lastReplies[k];
+        for (l = 0, len1 = lastReplies.length; l < len1; l++) {
+          data = lastReplies[l];
           if ((post = thread.posts[data.no]) && !post.isFetchedQuote) {
             nodes.push(post.nodes.root);
             continue;
@@ -9805,7 +9847,7 @@ Index = (function() {
             });
           }
         }
-        $.add(Index.nodes[thread.ID], nodes);
+        $.add(thread.nodes.root, nodes);
       }
       if (errors) {
         Main.handleErrors(errors);
@@ -9813,24 +9855,25 @@ Index = (function() {
       return Main.callbackNodes('Post', posts);
     },
     buildCatalogViews: function(threads) {
-      var catalogThreads, i, j, len, root, thread;
+      var ID, catalogThreads, k, len, page, root, thread;
       catalogThreads = [];
-      for (j = 0, len = threads.length; j < len; j++) {
-        thread = threads[j];
+      for (k = 0, len = threads.length; k < len; k++) {
+        thread = threads[k];
         if (!(!thread.catalogView)) {
           continue;
         }
-        i = Index.liveThreadIDs.indexOf(thread.ID);
-        root = Build.catalogThread(thread, Index.liveThreadData[i], Math.floor(i / Index.threadsNumPerPage) + 1);
+        ID = thread.ID;
+        page = Math.floor(Index.threadPosition[ID] / Index.threadsNumPerPage) + 1;
+        root = Build.catalogThread(thread, Index.liveThreadDict[ID], page);
         catalogThreads.push(new CatalogThread(root, thread));
       }
-      return Main.callbackNodes('CatalogThread', catalogThreads);
+      Main.callbackNodes('CatalogThread', catalogThreads);
     },
     sizeCatalogViews: function(threads) {
-      var height, j, len, ratio, ref, size, thread, thumb, width;
+      var height, k, len, ratio, ref, size, thread, thumb, width;
       size = Conf['Index Size'] === 'small' ? 150 : 250;
-      for (j = 0, len = threads.length; j < len; j++) {
-        thread = threads[j];
+      for (k = 0, len = threads.length; k < len; k++) {
+        thread = threads[k];
         thumb = thread.catalogView.nodes.thumb;
         ref = thumb.dataset, width = ref.width, height = ref.height;
         if (!width) {
@@ -9842,24 +9885,24 @@ Index = (function() {
       }
     },
     buildCatalogReplies: function(threads) {
-      var data, j, k, l, lastReplies, len, len1, len2, nodes, ref, replies, reply, thread, timeEl;
-      for (j = 0, len = threads.length; j < len; j++) {
-        thread = threads[j];
+      var data, k, l, lastReplies, len, len1, len2, m, nodes, ref, replies, reply, thread, timeEl;
+      for (k = 0, len = threads.length; k < len; k++) {
+        thread = threads[k];
         nodes = thread.catalogView.nodes;
         if (!(lastReplies = Index.liveThreadDict[thread.ID].last_replies)) {
           continue;
         }
         if (nodes.replies) {
           ref = $$('time', nodes.replies);
-          for (k = 0, len1 = ref.length; k < len1; k++) {
-            timeEl = ref[k];
+          for (l = 0, len1 = ref.length; l < len1; l++) {
+            timeEl = ref[l];
             RelativeDates.update(timeEl);
           }
           continue;
         }
         replies = [];
-        for (l = 0, len2 = lastReplies.length; l < len2; l++) {
-          data = lastReplies[l];
+        for (m = 0, len2 = lastReplies.length; m < len2; m++) {
+          data = lastReplies[m];
           reply = Build.catalogReply(thread, data);
           RelativeDates.update($('time', reply));
           $.on($('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover);
@@ -9873,12 +9916,12 @@ Index = (function() {
       }
     },
     sort: function() {
-      var lastlong, liveThreadData, liveThreadIDs, sortedThreadIDs, threads;
+      var lastlong, liveThreadData, liveThreadIDs, threadIDs;
       liveThreadIDs = Index.liveThreadIDs, liveThreadData = Index.liveThreadData;
       if (!liveThreadData) {
         return;
       }
-      sortedThreadIDs = (function() {
+      Index.sortedThreadIDs = (function() {
         switch (Index.currentSort) {
           case 'lastreply':
             return slice.call(liveThreadData).sort(function(a, b) {
@@ -9895,9 +9938,9 @@ Index = (function() {
             });
           case 'lastlong':
             lastlong = function(thread) {
-              var i, j, r, ref;
+              var i, k, r, ref;
               ref = thread.last_replies || [];
-              for (i = j = ref.length - 1; j >= 0; i = j += -1) {
+              for (i = k = ref.length - 1; k >= 0; i = k += -1) {
                 r = ref[i];
                 if (r.com && Build.parseComment(r.com).replace(/[^a-z]/ig, '').length >= 100) {
                   return r;
@@ -9930,113 +9973,117 @@ Index = (function() {
             });
         }
       })();
-      Index.sortedThreads = sortedThreadIDs.map(function(threadID) {
-        return g.BOARD.threads[threadID];
-      });
-      if (Index.search && (threads = Index.querySearch(Index.search))) {
-        Index.sortedThreads = threads;
+      if (Index.search && (threadIDs = Index.querySearch(Index.search))) {
+        Index.sortedThreadIDs = threadIDs;
       }
-      Index.sortOnTop(function(thread) {
-        return thread.isSticky;
+      Index.sortOnTop(function(obj) {
+        return obj.isSticky;
       });
-      Index.sortOnTop(function(thread) {
-        return thread.isOnTop || Conf['Pin Watched Threads'] && ThreadWatcher.isWatched(thread);
+      Index.sortOnTop(function(obj) {
+        return obj.isOnTop || Conf['Pin Watched Threads'] && ThreadWatcher.isWatchedRaw(obj.boardID, obj.threadID);
       });
       if (Conf['Anchor Hidden Threads']) {
-        return Index.sortOnTop(function(thread) {
-          return !thread.isHidden;
+        return Index.sortOnTop(function(obj) {
+          return !Index.isHidden(obj.threadID);
         });
       }
     },
     sortOnTop: function(match) {
-      var bottomThreads, j, len, ref, thread, topThreads;
+      var ID, bottomThreads, k, len, ref, topThreads;
       topThreads = [];
       bottomThreads = [];
-      ref = Index.sortedThreads;
-      for (j = 0, len = ref.length; j < len; j++) {
-        thread = ref[j];
-        (match(thread) ? topThreads : bottomThreads).push(thread);
+      ref = Index.sortedThreadIDs;
+      for (k = 0, len = ref.length; k < len; k++) {
+        ID = ref[k];
+        (match(Index.parsedThreads[ID]) ? topThreads : bottomThreads).push(ID);
       }
-      return Index.sortedThreads = topThreads.concat(bottomThreads);
+      return Index.sortedThreadIDs = topThreads.concat(bottomThreads);
     },
     buildIndex: function() {
-      var threads;
+      var threadIDs;
       if (!Index.liveThreadData) {
         return;
       }
       switch (Conf['Index Mode']) {
         case 'all pages':
-          threads = Index.sortedThreads;
+          threadIDs = Index.sortedThreadIDs;
           break;
         case 'catalog':
-          threads = Index.sortedThreads.filter(function(thread) {
-            return !thread.isHidden !== Index.showHiddenThreads;
+          threadIDs = Index.sortedThreadIDs.filter(function(ID) {
+            return !Index.isHidden(ID) !== Index.showHiddenThreads;
           });
           break;
         default:
-          threads = Index.threadsOnPage(Index.currentPage);
+          threadIDs = Index.threadsOnPage(Index.currentPage);
       }
       delete Index.pageNum;
       $.rmAll(Index.root);
       $.rmAll(Header.hover);
       if (Conf['Index Mode'] === 'catalog') {
-        return Index.buildCatalog(threads);
+        Index.buildCatalog(threadIDs);
       } else {
-        return Index.buildStructure(threads);
+        Index.buildStructure(threadIDs);
       }
     },
     threadsOnPage: function(pageNum) {
       var nodesPerPage, offset;
       nodesPerPage = Index.threadsNumPerPage;
       offset = nodesPerPage * (pageNum - 1);
-      return Index.sortedThreads.slice(offset, offset + nodesPerPage);
+      return Index.sortedThreadIDs.slice(offset, offset + nodesPerPage);
     },
-    buildStructure: function(threads) {
-      var file, j, len, nodes, thread, thumb;
+    buildStructure: function(threadIDs) {
+      var k, len, nodes, thread, threads;
+      threads = Index.buildThreads(threadIDs);
       if (Conf['Show Replies']) {
         Index.buildReplies(threads);
       }
       nodes = [];
-      for (j = 0, len = threads.length; j < len; j++) {
-        thread = threads[j];
-        if (thread.nodes.placeholder) {
-          $.replace(thread.nodes.placeholder, thread.OP.nodes.root);
-          thread.nodes.placeholder = null;
-          thread.OP.setCatalogOP(false);
-        }
-        if ((file = thread.OP.file) && (thumb = thread.OP.file.thumb) && thumb.dataset.src) {
-          thumb.src = thumb.dataset.src;
-          thumb.removeAttribute('data-src');
-        }
-        nodes.push(Index.nodes[thread.ID], $.el('hr'));
+      for (k = 0, len = threads.length; k < len; k++) {
+        thread = threads[k];
+        nodes.push(thread.nodes.root, $.el('hr'));
       }
       $.add(Index.root, nodes);
-      if (doc.contains(Index.root)) {
-        return $.event('PostsInserted');
+      if (Index.root.parentNode) {
+        $.event('PostsInserted');
       }
+      Index.loaded = true;
     },
-    buildCatalog: function(threads) {
-      var j, len, nodes, thread;
+    buildCatalog: function(threadIDs) {
+      var fn, i, n;
+      i = 0;
+      n = threadIDs.length;
+      fn = function() {
+        var j;
+        j = i > 0 && Index.root.parentNode ? n : i + 30;
+        Index.buildCatalogPart(threadIDs.slice(i, j));
+        i = j;
+        if (i < n) {
+          return $.queueTask(fn);
+        } else {
+          if (Index.root.parentNode) {
+            $.event('PostsInserted');
+          }
+          return Index.loaded = true;
+        }
+      };
+      fn();
+    },
+    buildCatalogPart: function(threadIDs) {
+      var k, len, nodes, thread, threads;
+      threads = Index.buildThreads(threadIDs);
       Index.buildCatalogViews(threads);
       Index.sizeCatalogViews(threads);
       if (Conf['Show Replies'] && Conf['Catalog Hover Expand']) {
         Index.buildCatalogReplies(threads);
       }
       nodes = [];
-      for (j = 0, len = threads.length; j < len; j++) {
-        thread = threads[j];
-        if (!thread.nodes.placeholder) {
-          thread.nodes.placeholder = $.el('div');
-          $.replace(thread.OP.nodes.root, thread.nodes.placeholder);
-          $.add(thread.catalogView.nodes.root, thread.OP.nodes.root);
-          thread.OP.setCatalogOP(true);
-        }
+      for (k = 0, len = threads.length; k < len; k++) {
+        thread = threads[k];
+        thread.OP.setCatalogOP(true);
+        $.add(thread.catalogView.nodes.root, thread.OP.nodes.root);
         nodes.push(thread.catalogView.nodes.root);
       }
       $.add(Index.root, nodes);
-      if (doc.contains(Index.root)) {
-        return $.event('PostsInserted');
-      }
     },
     clearSearch: function() {
       Index.searchInput.value = '';
@@ -10068,17 +10115,17 @@ Index = (function() {
       if (!(keywords = query.toLowerCase().match(/\S+/g))) {
         return;
       }
-      return Index.sortedThreads.filter(function(thread) {
-        return Index.searchMatch(thread, keywords);
+      return Index.sortedThreadIDs.filter(function(ID) {
+        return Index.searchMatch(Index.parsedThreads[ID], keywords);
       });
     },
-    searchMatch: function(thread, keywords) {
-      var file, info, j, k, key, keyword, len, len1, ref, ref1, text;
-      ref = thread.OP, info = ref.info, file = ref.file;
+    searchMatch: function(obj, keywords) {
+      var file, info, k, key, keyword, l, len, len1, ref, text;
+      info = obj.info, file = obj.file;
       text = [];
-      ref1 = ['comment', 'subject', 'name', 'tripcode', 'email'];
-      for (j = 0, len = ref1.length; j < len; j++) {
-        key = ref1[j];
+      ref = ['comment', 'subject', 'name', 'tripcode'];
+      for (k = 0, len = ref.length; k < len; k++) {
+        key = ref[k];
         if (key in info) {
           text.push(info[key]);
         }
@@ -10087,8 +10134,8 @@ Index = (function() {
         text.push(file.name);
       }
       text = text.join(' ').toLowerCase();
-      for (k = 0, len1 = keywords.length; k < len1; k++) {
-        keyword = keywords[k];
+      for (l = 0, len1 = keywords.length; l < len1; l++) {
+        keyword = keywords[l];
         if (-1 === text.indexOf(keyword)) {
           return false;
         }
@@ -10785,7 +10832,7 @@ Settings = (function() {
     filter: function(section) {
       var select;
       $.extend(section, {
-        innerHTML: "<select name=\"filter\"><option value=\"guide\">Guide</option><option value=\"postID\">Post number</option><option value=\"name\">Name</option><option value=\"uniqueID\">Unique ID</option><option value=\"tripcode\">Tripcode</option><option value=\"capcode\">Capcode</option><option value=\"subject\">Subject</option><option value=\"comment\">Comment</option><option value=\"flag\">Flag</option><option value=\"filename\">Filename</option><option value=\"dimensions\">Image dimensions</option><option value=\"filesize\">Filesize</option><option value=\"MD5\">Image MD5</option></select><div></div>"
+        innerHTML: "<select name=\"filter\"><option value=\"guide\">Guide</option><option value=\"postID\">Post number</option><option value=\"name\">Name</option><option value=\"uniqueID\">Unique ID</option><option value=\"tripcode\">Tripcode</option><option value=\"capcode\">Capcode</option><option value=\"pass\">Pass Date</option><option value=\"subject\">Subject</option><option value=\"comment\">Comment</option><option value=\"flag\">Flag</option><option value=\"filename\">Filename</option><option value=\"dimensions\">Image dimensions</option><option value=\"filesize\">Filesize</option><option value=\"MD5\">Image MD5</option></select><div></div>"
       });
       select = $('select', section);
       $.on(select, 'change', Settings.selectFilter);
@@ -11848,10 +11895,6 @@ Gallery = (function() {
       thumb.dataset.post = post.fullID;
       thumbImg = post.file.thumb.cloneNode(false);
       thumbImg.style.cssText = '';
-      if (thumbImg.dataset.src) {
-        thumbImg.src = thumbImg.dataset.src;
-        thumbImg.removeAttribute('data-src');
-      }
       $.add(thumb, thumbImg);
       $.on(thumb, 'click', Gallery.cb.open);
       Gallery.images.push(thumb);
@@ -12991,8 +13034,7 @@ ImageLoader = (function() {
             clone = ref1[j];
             clone.file.thumb.src = url;
           }
-          thumb.src = url;
-          return thumb.removeAttribute('data-src');
+          return thumb.src = url;
         });
       }
       return el.src = url;
@@ -17806,6 +17848,13 @@ ThreadWatcher = (function() {
         threadID: thread.ID
       }) : void 0);
     },
+    isWatchedRaw: function(boardID, threadID) {
+      var ref;
+      return !!((ref = ThreadWatcher.db) != null ? ref.get({
+        boardID: boardID,
+        threadID: threadID
+      }) : void 0);
+    },
     setToggler: function(toggler, isWatched) {
       toggler.classList.toggle('watched', isWatched);
       return toggler.title = (isWatched ? 'Unwatch' : 'Watch') + " Thread";
@@ -20865,16 +20914,23 @@ QR = (function() {
       return $.sync('cooldowns', this.sync);
     },
     setup: function() {
-      var base, base1, delay, m, ref, type;
+      var base, base1, delay, i, key, len, m, ref, ref1, type;
       if (m = Get.scriptData().match(/\bcooldowns *= *({[^}]+})/)) {
         $.extend(QR.cooldown.delays, JSON.parse(m[1]));
         (base = QR.cooldown.delays).reply_intra || (base.reply_intra = QR.cooldown.delays.reply);
         (base1 = QR.cooldown.delays).image_intra || (base1.image_intra = QR.cooldown.delays.image);
       }
+      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
+        ref = ['reply', 'image', 'reply_intra', 'image_intra'];
+        for (i = 0, len = ref.length; i < len; i++) {
+          key = ref[i];
+          QR.cooldown.delays[key] = Math.ceil(QR.cooldown.delays[key] / 2);
+        }
+      }
       QR.cooldown.maxDelay = 0;
-      ref = QR.cooldown.delays;
-      for (type in ref) {
-        delay = ref[type];
+      ref1 = QR.cooldown.delays;
+      for (type in ref1) {
+        delay = ref1[type];
         if (type !== 'thread' && type !== 'thread_global') {
           QR.cooldown.maxDelay = Math.max(QR.cooldown.maxDelay, delay);
         }
