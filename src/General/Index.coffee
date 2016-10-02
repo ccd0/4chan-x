@@ -160,7 +160,7 @@ Index =
     return Index.endNotice() if pageNum > Index.pagesNum
 
     threadIDs = Index.threadsOnPage pageNum
-    threads = threadIDs.map (ID) -> g.BOARD.threads[ID]
+    threads = Index.buildThreads threadIDs
     Index.buildStructure threads
     
   endNotice: do ->
@@ -268,8 +268,6 @@ Index =
       Index.buildIndex() if e
 
     replies: ->
-      Index.buildThreads()
-      Index.sort()
       Index.buildIndex()
 
     hover: (e) ->
@@ -581,7 +579,6 @@ Index =
   parse: (pages) ->
     $.cleanCache (url) -> /^\/\/a\.4cdn\.org\//.test url
     Index.parseThreadList pages
-    Index.buildThreads()
     Index.changed.threads = true
     Index.pageLoad()
 
@@ -612,13 +609,15 @@ Index =
     else
       Index.parsedThreads[threadID].isHidden
 
-  buildThreads: ->
-    return unless Index.liveThreadData
-    threads     = []
-    posts       = []
-    for threadData in Index.liveThreadData
+  buildThreads: (threadIDs) ->
+    threads    = []
+    newThreads = []
+    newPosts   = []
+    for ID in threadIDs
       try
-        if (thread = g.BOARD.threads[threadData.no])
+        threadData = Index.liveThreadDict[ID]
+
+        if (thread = g.BOARD.threads[ID])
           thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
           thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
           thread.setStatus 'Sticky', !!threadData.sticky
@@ -627,15 +626,16 @@ Index =
             $.rm thread.catalogView.nodes.replies
             thread.catalogView.nodes.replies = null
         else
-          thread = new Thread threadData.no, g.BOARD
-          threads.push thread
+          thread = new Thread ID, g.BOARD
+          newThreads.push thread
+        threads.push thread
 
         if not ((OP = thread.OP) and not OP.isFetchedQuote)
-          obj = Index.parsedThreads[threadData.no]
+          obj = Index.parsedThreads[ID]
           OP = new Post Build.post(obj, true), thread, g.BOARD
           OP.filterResults = obj.filterResults
-          posts.push OP
-        thread.setPage(Index.threadPosition[threadData.no] // Index.threadsNumPerPage + 1)
+          newPosts.push OP
+        thread.setPage(Index.threadPosition[ID] // Index.threadsNumPerPage + 1)
 
         Build.thread thread, threadData
       catch err
@@ -646,10 +646,12 @@ Index =
           error: err
     Main.handleErrors errors if errors
 
-    Main.callbackNodes 'Thread', threads
-    Main.callbackNodes 'Post',   posts
+    Main.callbackNodes 'Thread', newThreads
+    Main.callbackNodes 'Post',   newPosts
     Index.updateHideLabel()
     $.event 'IndexRefreshInternal'
+
+    threads
 
   buildReplies: (threads) ->
     posts = []
@@ -765,7 +767,7 @@ Index =
         threadIDs = Index.sortedThreadIDs.filter (ID) -> !Index.isHidden(ID) isnt Index.showHiddenThreads
       else
         threadIDs = Index.threadsOnPage Index.currentPage
-    threads = threadIDs.map (ID) -> g.BOARD.threads[ID]
+    threads = Index.buildThreads threadIDs
     delete Index.pageNum
     $.rmAll Index.root
     $.rmAll Header.hover
