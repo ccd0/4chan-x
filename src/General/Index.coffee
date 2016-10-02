@@ -121,15 +121,15 @@ Index =
     $.onExists doc, '.board > .thread > .postContainer, .board + *', ->
       Build.hat = $ '.board > .thread > img:first-child'
       if Build.hat
-        if Index.nodes
-          for ID, threadRoot of Index.nodes
-            $.prepend threadRoot, Build.hat.cloneNode false
+        g.BOARD.threads.forEach (thread) ->
+          if thread.nodes.root
+            $.prepend thread.nodes.root, Build.hat.cloneNode false
         $.addClass doc, 'hats-enabled'
         $.addStyle ".catalog-thread::after {background-image: url(#{Build.hat.src});}"
 
       board = $ '.board'
       $.replace board, Index.root
-      if Index.nodes
+      if Index.liveThreadData
         $.event 'PostsInserted'
       # Hacks:
       # - When removing an element from the document during page load,
@@ -612,7 +612,6 @@ Index =
 
   buildThreads: ->
     return unless Index.liveThreadData
-    Index.nodes = {}
     threads     = []
     posts       = []
     for threadData, i in Index.liveThreadData
@@ -636,7 +635,7 @@ Index =
           posts.push OP
         thread.setPage i // Index.threadsNumPerPage + 1
 
-        Index.nodes[thread.ID] = Build.thread thread, threadData
+        Build.thread thread, threadData
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
@@ -668,7 +667,7 @@ Index =
           errors.push
             message: "Parsing of Post No.#{data.no} failed. Post will be skipped."
             error: err
-      $.add Index.nodes[thread.ID], nodes
+      $.add thread.nodes.root, nodes
 
     Main.handleErrors errors if errors
     Main.callbackNodes 'Post', posts
@@ -788,7 +787,7 @@ Index =
         thumb.src = thumb.dataset.src
         # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
         thumb.removeAttribute 'data-src'
-      nodes.push Index.nodes[thread.ID], $.el('hr')
+      nodes.push thread.nodes.root, $.el('hr')
     $.add Index.root, nodes
     if doc.contains Index.root
       $.event 'PostsInserted'
