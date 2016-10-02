@@ -805,7 +805,7 @@ Index =
     i = 0
     n = threadIDs.length
     fn = ->
-      j = if i > 0 and Index.root.parentNode then n else i + 25
+      j = if i > 0 and Index.root.parentNode then n else i + 30
       Index.buildCatalogPart threadIDs[i...j]
       i = j
       if i < n
