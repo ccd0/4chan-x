@@ -487,8 +487,8 @@ Index =
 
   updateHideLabel: ->
     hiddenCount = 0
-    for threadID, thread of g.BOARD.threads when thread.isHidden
-      hiddenCount++ if thread.ID in Index.liveThreadIDs
+    for threadID in Index.liveThreadIDs when Index.isHidden(threadID)
+      hiddenCount++
     unless hiddenCount
       Index.hideLabel.hidden = true
       Index.cb.toggleHiddenThreads() if Index.showHiddenThreads
@@ -597,12 +597,18 @@ Index =
       Index.parsedThreads[data.no] = obj = Build.parseJSON data, g.BOARD.ID
       obj.filterResults = results = Filter.test obj
       obj.isOnTop  = results.top
-      obj.isHidden = results.hide
+      obj.isHidden = results.hide or ThreadHiding.isHidden(obj.boardID, obj.threadID)
     if Index.liveThreadData[0]
       Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler
     g.BOARD.threads.forEach (thread) ->
       (thread.collect() unless thread.ID in Index.liveThreadIDs)
     return
+
+  isHidden: (threadID) ->
+    if (thread = g.BOARD.threads[threadID]) and thread.OP and not thread.OP.isFetchedQuote
+      thread.isHidden
+    else
+      Index.parsedThreads[threadID].isHidden
 
   buildThreads: ->
     return unless Index.liveThreadData
@@ -738,7 +744,7 @@ Index =
     # Highlighted threads
     Index.sortOnTop (obj) -> obj.isOnTop or Conf['Pin Watched Threads'] and ThreadWatcher.isWatchedRaw(obj.boardID, obj.threadID)
     # Non-hidden threads
-    Index.sortOnTop((obj) -> !obj.isHidden) if Conf['Anchor Hidden Threads']
+    Index.sortOnTop((obj) -> !Index.isHidden(obj.threadID)) if Conf['Anchor Hidden Threads']
 
   sortOnTop: (match) ->
     topThreads    = []
@@ -753,7 +759,7 @@ Index =
       when 'all pages'
         threadIDs = Index.sortedThreadIDs
       when 'catalog'
-        threadIDs = Index.sortedThreadIDs.filter (ID) -> !Index.parsedThreads[ID].isHidden isnt Index.showHiddenThreads
+        threadIDs = Index.sortedThreadIDs.filter (ID) -> !Index.isHidden(ID) isnt Index.showHiddenThreads
       else
         threadIDs = Index.threadsOnPage Index.currentPage
     threads = threadIDs.map (ID) -> g.BOARD.threads[ID]

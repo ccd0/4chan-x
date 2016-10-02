@@ -43,6 +43,9 @@ ThreadHiding =
         threadID: threadID
     ThreadHiding.hiddenThreads = hiddenThreads2
 
+  isHidden: (boardID, threadID) ->
+    !!(ThreadHiding.db and ThreadHiding.db.get {boardID, threadID})
+
   node: ->
     return if @isReply or @isClone or @isFetchedQuote
 
