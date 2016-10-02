@@ -832,7 +832,7 @@ Index =
   searchMatch: (obj, keywords) ->
     {info, file} = obj
     text = []
-    for key in ['comment', 'subject', 'name', 'tripcode', 'email']
+    for key in ['comment', 'subject', 'name', 'tripcode']
       text.push info[key] if key of info
     text.push file.name if file
     text = text.join(' ').toLowerCase()
