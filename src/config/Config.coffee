@@ -672,6 +672,11 @@ Config =
       #/Admin$/;highlight:admin;op:yes
     """
 
+    pass: """
+      # Filter anyone using since4pass:
+      #/./
+    """
+
     subject: """
       # Filter Generals on /v/:
       #/general/i;boards:v;op:only
