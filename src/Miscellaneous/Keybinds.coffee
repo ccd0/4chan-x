@@ -197,7 +197,7 @@ Keybinds =
         return unless threadRoot and QuoteYou.db
         QuoteYou.cb.seek 'following'
       <% if (readJSON('/.tests_enabled')) { %>
-      when 't'
+      when 'v'
         return unless threadRoot
         Build.Test.testAll()
       <% } %>
