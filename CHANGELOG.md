@@ -2,6 +2,13 @@
 
 ## v1.13.0
 
+**v1.13.0.3** *(2016-10-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.3/builds/4chan-X-noupdate.crx)]
+- Add `Pass Date` to filterable items.
+- Show Pass flair in posts constructed from JSON.
+- Anonymize will now hide Pass flair.
+- Change reply cooldowns to their reduced values for Pass users.
+- Make the JSON index load quicker.
+
 **v1.13.0.2** *(2016-10-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.2/builds/4chan-X-noupdate.crx)]
 - Party hat CSS tweaks.
 
