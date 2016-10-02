@@ -54,11 +54,6 @@ Post.Clone = class extends Post
 
       @file.thumb.muted = true if @file.videoThumb
 
-      if @file.thumb?.dataset.src
-        @file.thumb.src = @file.thumb.dataset.src
-        # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
-        @file.thumb.removeAttribute 'data-src'
-
       # Contract thumbnails in quote preview
       ImageExpand.contract @ if @file.thumb and contractThumb
 

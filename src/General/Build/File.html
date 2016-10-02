@@ -15,8 +15,8 @@
       (${file.size}, ${file.dimensions || "PDF"})
     </div>
     <a class="fileThumb?{file.isSpoiler}{ imgspoiler}{}" href="${fileURL}" target="_blank">
-      <img
-        ?{suppressThumb}{ data-src="${fileThumb}"}{ src="${fileThumb}"} 
+      <img 
+        src="${fileThumb}" 
         alt="${file.size}" 
         data-md5="${file.MD5}" 
         style="height: ${file.isSpoiler ? 100 : file.theight}px; width: ${file.isSpoiler ? 100 : file.twidth}px;"

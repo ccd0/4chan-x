@@ -632,7 +632,7 @@ Index =
 
         if not ((OP = thread.OP) and not OP.isFetchedQuote)
           obj = Index.parsedThreads[ID]
-          OP = new Post Build.post(obj, true), thread, g.BOARD
+          OP = new Post Build.post(obj), thread, g.BOARD
           OP.filterResults = obj.filterResults
           newPosts.push OP
         thread.setPage(Index.threadPosition[ID] // Index.threadsNumPerPage + 1)
@@ -789,10 +789,6 @@ Index =
         $.replace thread.nodes.placeholder, thread.OP.nodes.root
         thread.nodes.placeholder = null
         thread.OP.setCatalogOP false
-      if (file = thread.OP.file) and (thumb = thread.OP.file.thumb) and thumb.dataset.src
-        thumb.src = thumb.dataset.src
-        # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
-        thumb.removeAttribute 'data-src'
       nodes.push thread.nodes.root, $.el('hr')
     $.add Index.root, nodes
     if doc.contains Index.root

@@ -95,11 +95,11 @@ Build =
     # Remove preceding and following new lines, trailing spaces.
     Build.parseComment(html).trim().replace(/\s+$/gm, '')
 
-  postFromObject: (data, boardID, suppressThumb) ->
+  postFromObject: (data, boardID) ->
     o = Build.parseJSON data, boardID
-    Build.post o, suppressThumb
+    Build.post o
 
-  post: (o, suppressThumb) ->
+  post: (o) ->
     {ID, threadID, boardID, file} = o
     {subject, email, name, tripcode, capcode, uniqueID, flagCode, flag, dateUTC, dateText, commentHTML} = o.info
     {staticPath, gifIcon} = Build

@@ -73,8 +73,6 @@ ImageLoader =
       $.on el, 'load', ->
         clone.file.thumb.src = url for clone in post.clones
         thumb.src = url
-        # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
-        thumb.removeAttribute 'data-src'
     el.src = url
 
   toggle: ->
