@@ -591,8 +591,13 @@ Index =
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
     Index.liveThreadDict    = {}
+    Index.parsedThreads     = {}
     for data in Index.liveThreadData
       Index.liveThreadDict[data.no] = data
+      Index.parsedThreads[data.no] = obj = Build.parseJSON data, g.BOARD.ID
+      results = Filter.test obj
+      obj.isOnTop  = results.top
+      obj.isHidden = results.hide
     if Index.liveThreadData[0]
       Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler
     g.BOARD.threads.forEach (thread) ->
@@ -727,17 +732,17 @@ Index =
     if Index.search and (threadIDs = Index.querySearch Index.search)
       Index.sortedThreadIDs = threadIDs
     # Sticky threads
-    Index.sortOnTop (thread) -> thread.isSticky
+    Index.sortOnTop (obj) -> obj.isSticky
     # Highlighted threads
-    Index.sortOnTop (thread) -> thread.isOnTop or Conf['Pin Watched Threads'] and ThreadWatcher.isWatched thread
+    Index.sortOnTop (obj) -> obj.isOnTop or Conf['Pin Watched Threads'] and ThreadWatcher.isWatchedRaw(obj.boardID, obj.threadID)
     # Non-hidden threads
-    Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
+    Index.sortOnTop((obj) -> !obj.isHidden) if Conf['Anchor Hidden Threads']
 
   sortOnTop: (match) ->
     topThreads    = []
     bottomThreads = []
     for ID in Index.sortedThreadIDs
-      (if match g.BOARD.threads[ID] then topThreads else bottomThreads).push ID
+      (if match Index.parsedThreads[ID] then topThreads else bottomThreads).push ID
     Index.sortedThreadIDs = topThreads.concat bottomThreads
 
   buildIndex: ->
@@ -746,7 +751,7 @@ Index =
       when 'all pages'
         threadIDs = Index.sortedThreadIDs
       when 'catalog'
-        threadIDs = Index.sortedThreadIDs.filter (ID) -> !g.BOARD.threads[ID].isHidden isnt Index.showHiddenThreads
+        threadIDs = Index.sortedThreadIDs.filter (ID) -> !Index.parsedThreads[ID].isHidden isnt Index.showHiddenThreads
       else
         threadIDs = Index.threadsOnPage Index.currentPage
     threads = threadIDs.map (ID) -> g.BOARD.threads[ID]
@@ -820,10 +825,10 @@ Index =
   querySearch: (query) ->
     return if not (keywords = query.toLowerCase().match /\S+/g)
     Index.sortedThreadIDs.filter (ID) ->
-      Index.searchMatch g.BOARD.threads[ID], keywords
+      Index.searchMatch Index.parsedThreads[ID], keywords
 
-  searchMatch: (thread, keywords) ->
-    {info, file} = thread.OP
+  searchMatch: (obj, keywords) ->
+    {info, file} = obj
     text = []
     for key in ['comment', 'subject', 'name', 'tripcode', 'email']
       text.push info[key] if key of info

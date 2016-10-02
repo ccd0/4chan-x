@@ -134,7 +134,6 @@ Filter =
       if hl
         @highlights = hl
         $.addClass @nodes.root, hl...
-      @thread.isOnTop = top
     return
 
   isHidden: (post) ->

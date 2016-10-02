@@ -72,6 +72,9 @@ ThreadWatcher =
   isWatched: (thread) ->
     !!ThreadWatcher.db?.get {boardID: thread.board.ID, threadID: thread.ID}
 
+  isWatchedRaw: (boardID, threadID) ->
+    !!ThreadWatcher.db?.get {boardID, threadID}
+
   setToggler: (toggler, isWatched) ->
     toggler.classList.toggle 'watched', isWatched
     toggler.title = "#{if isWatched then 'Unwatch' else 'Watch'} Thread"
