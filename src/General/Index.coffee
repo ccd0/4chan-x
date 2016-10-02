@@ -629,7 +629,9 @@ Index =
           newThreads.push thread
         threads.push thread
 
-        if not ((OP = thread.OP) and not OP.isFetchedQuote)
+        if ((OP = thread.OP) and not OP.isFetchedQuote)
+          OP.setCatalogOP false
+        else
           obj = Index.parsedThreads[ID]
           OP = new Post Build.post(obj), thread, g.BOARD
           OP.filterResults = obj.filterResults
@@ -784,10 +786,6 @@ Index =
     Index.buildReplies threads if Conf['Show Replies']
     nodes = []
     for thread in threads
-      if thread.nodes.placeholder
-        $.replace thread.nodes.placeholder, thread.OP.nodes.root
-        thread.nodes.placeholder = null
-        thread.OP.setCatalogOP false
       nodes.push thread.nodes.root, $.el('hr')
     $.add Index.root, nodes
     if doc.contains Index.root
@@ -800,11 +798,8 @@ Index =
     Index.buildCatalogReplies threads if Conf['Show Replies'] and Conf['Catalog Hover Expand']
     nodes = []
     for thread in threads
-      unless thread.nodes.placeholder
-        thread.nodes.placeholder = $.el 'div'
-        $.replace thread.OP.nodes.root, thread.nodes.placeholder
-        $.add thread.catalogView.nodes.root, thread.OP.nodes.root
-        thread.OP.setCatalogOP true
+      thread.OP.setCatalogOP true
+      $.add thread.catalogView.nodes.root, thread.OP.nodes.root
       nodes.push thread.catalogView.nodes.root
     $.add Index.root, nodes
     if doc.contains Index.root

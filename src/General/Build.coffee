@@ -173,9 +173,6 @@ Build =
   thread: (thread, data) ->
     if (root = thread.nodes.root)
       $.rmAll root
-      if thread.nodes.placeholder
-        thread.nodes.placeholder = null
-        thread.OP.setCatalogOP false
     else
       thread.nodes.root = root = $.el 'div',
         className: 'thread'

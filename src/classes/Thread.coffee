@@ -18,7 +18,6 @@ class Thread
 
     @nodes =
       root: null
-      placeholder: null
 
     @board.threads.push @ID, @
     g.threads.push  @fullID, @
