@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.12.3.5
+// @version      1.12.3.6
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.3.5',
+  VERSION:   '1.12.3.6',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -353,6 +353,7 @@ Config = (function() {
       uniqueID: "# Filter a specific ID:\n#/Txhvk1Tl/",
       tripcode: "# Filter any tripfag\n#/^!/",
       capcode: "# Set a custom class for mods:\n#/Mod$/;highlight:mod;op:yes\n# Set a custom class for admins:\n#/Admin$/;highlight:admin;op:yes",
+      pass: "# Filter anyone using since4pass:\n#/./",
       subject: "# Filter Generals on /v/:\n#/general/i;boards:v;op:only",
       comment: "# Filter Stallman copypasta on /g/:\n#/what you\'re refer+ing to as linux/i;boards:g\n# Filter posts with 20 or more quote links:\n#/(?:>>\\d(?:(?!>>\\d)[^])*){20}/\n# Filter posts like T H I S / H / I / S:\n#/^>?\\s?\\w\\s?(\\w)\\s?(\\w)\\s?(\\w).*$[\\s>]+\\1[\\s>]+\\2[\\s>]+\\3/im",
       flag: '',
@@ -5538,7 +5539,7 @@ Post = (function() {
     };
 
     function Post(root, thread, board) {
-      var clone, j, len, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8;
+      var clone, j, len, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
       this.thread = thread;
       this.board = board;
       this.ID = +root.id.slice(2);
@@ -5562,8 +5563,9 @@ Post = (function() {
         tripcode: (ref2 = this.nodes.tripcode) != null ? ref2.textContent : void 0,
         uniqueID: (ref3 = this.nodes.uniqueID) != null ? ref3.firstElementChild.textContent : void 0,
         capcode: (ref4 = this.nodes.capcode) != null ? ref4.textContent.replace('## ', '') : void 0,
-        flagCode: (ref5 = this.nodes.flag) != null ? (ref6 = ref5.className.match(/flag-(\w+)/)) != null ? ref6[1].toUpperCase() : void 0 : void 0,
-        flag: (ref7 = this.nodes.flag) != null ? ref7.title : void 0,
+        pass: (ref5 = this.nodes.pass) != null ? ref5.title.match(/\d*$/)[0] : void 0,
+        flagCode: (ref6 = this.nodes.flag) != null ? (ref7 = ref6.className.match(/flag-(\w+)/)) != null ? ref7[1].toUpperCase() : void 0 : void 0,
+        flag: (ref8 = this.nodes.flag) != null ? ref8.title : void 0,
         date: this.nodes.date ? new Date(this.nodes.date.dataset.utc * 1000) : void 0
       };
       this.parseComment();
@@ -5575,9 +5577,9 @@ Post = (function() {
       if (g.posts[this.fullID]) {
         this.isRebuilt = true;
         this.clones = g.posts[this.fullID].clones;
-        ref8 = this.clones;
-        for (j = 0, len = ref8.length; j < len; j++) {
-          clone = ref8[j];
+        ref9 = this.clones;
+        for (j = 0, len = ref9.length; j < len; j++) {
+          clone = ref9[j];
           clone.origin = this;
         }
       }
@@ -5600,6 +5602,7 @@ Post = (function() {
         tripcode: $('.postertrip', info),
         uniqueID: $('.posteruid', info),
         capcode: $('.capcode.hand', info),
+        pass: $('.n-pu', info),
         flag: $('.flag, .countryFlag', info),
         date: $('.dateTime', info),
         nameBlock: $('.nameBlock', info),
@@ -6536,17 +6539,21 @@ Anonymize = (function() {
       });
     },
     node: function() {
-      var email, name, ref, tripcode;
+      var email, name, pass, ref, tripcode;
       if (this.info.capcode || this.isClone) {
         return;
       }
-      ref = this.nodes, name = ref.name, tripcode = ref.tripcode, email = ref.email;
+      ref = this.nodes, name = ref.name, tripcode = ref.tripcode, pass = ref.pass, email = ref.email;
       if (this.info.name !== 'Anonymous') {
         name.textContent = 'Anonymous';
       }
       if (tripcode) {
         $.rm(tripcode);
         delete this.nodes.tripcode;
+      }
+      if (pass) {
+        $.rm(pass);
+        delete this.nodes.pass;
       }
       if (email) {
         $.replace(email, name);
@@ -6741,6 +6748,9 @@ Filter = (function() {
     capcode: function(post) {
       return post.info.capcode;
     },
+    pass: function(post) {
+      return post.info.pass;
+    },
     subject: function(post) {
       return post.info.subject;
     },
@@ -6785,7 +6795,7 @@ Filter = (function() {
           },
           subEntries: []
         };
-        ref1 = [['Name', 'name'], ['Unique ID', 'uniqueID'], ['Tripcode', 'tripcode'], ['Capcode', 'capcode'], ['Subject', 'subject'], ['Comment', 'comment'], ['Flag', 'flag'], ['Filename', 'filename'], ['Image dimensions', 'dimensions'], ['Filesize', 'filesize'], ['Image MD5', 'MD5']];
+        ref1 = [['Name', 'name'], ['Unique ID', 'uniqueID'], ['Tripcode', 'tripcode'], ['Capcode', 'capcode'], ['Pass Date', 'pass'], ['Subject', 'subject'], ['Comment', 'comment'], ['Flag', 'flag'], ['Filename', 'filename'], ['Image dimensions', 'dimensions'], ['Filesize', 'filesize'], ['Image MD5', 'MD5']];
         for (i = 0, len = ref1.length; i < len; i++) {
           type = ref1[i];
           entry.subEntries.push(Filter.menu.createSubEntry(type[0], type[1]));
@@ -7654,6 +7664,7 @@ Build = (function() {
         email: Build.unescape(data.email),
         name: Build.unescape(data.name) || '',
         tripcode: data.trip,
+        pass: data.since4pass != null ? "" + data.since4pass : void 0,
         uniqueID: data.id,
         flagCode: data.country,
         flag: Build.unescape(data.country_name),
@@ -7700,9 +7711,9 @@ Build = (function() {
       return Build.post(o, suppressThumb);
     },
     post: function(o, suppressThumb) {
-      var boardID, capcode, capcodeDescription, capcodeLC, capcodeLong, capcodePlural, commentHTML, container, dateText, dateUTC, email, file, fileBlock, fileThumb, fileURL, flag, flagCode, gifIcon, href, i, len, match, name, postClass, postID, postInfo, postLink, protocol, quote, quoteLink, ref, ref1, shortFilename, staticPath, subject, threadID, tripcode, uniqueID, wholePost;
+      var boardID, capcode, capcodeDescription, capcodeLC, capcodeLong, capcodePlural, commentHTML, container, dateText, dateUTC, email, file, fileBlock, fileThumb, fileURL, flag, flagCode, gifIcon, href, i, len, match, name, pass, postClass, postID, postInfo, postLink, protocol, quote, quoteLink, ref, ref1, shortFilename, staticPath, subject, threadID, tripcode, uniqueID, wholePost;
       postID = o.postID, threadID = o.threadID, boardID = o.boardID, file = o.file;
-      ref = o.info, subject = ref.subject, email = ref.email, name = ref.name, tripcode = ref.tripcode, capcode = ref.capcode, uniqueID = ref.uniqueID, flagCode = ref.flagCode, flag = ref.flag, dateUTC = ref.dateUTC, dateText = ref.dateText, commentHTML = ref.commentHTML;
+      ref = o.info, subject = ref.subject, email = ref.email, name = ref.name, tripcode = ref.tripcode, capcode = ref.capcode, pass = ref.pass, uniqueID = ref.uniqueID, flagCode = ref.flagCode, flag = ref.flag, dateUTC = ref.dateUTC, dateText = ref.dateText, commentHTML = ref.commentHTML;
       staticPath = Build.staticPath, gifIcon = Build.gifIcon;
 
       /* Post Info */
@@ -7723,7 +7734,7 @@ Build = (function() {
       postLink = Build.postURL(boardID, threadID, postID);
       quoteLink = Build.sameThread(boardID, threadID) ? "javascript:quote('" + (+postID) + "');" : "/" + boardID + "/thread/" + threadID + "#q" + postID;
       postInfo = {
-        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(postID) + "\"><input type=\"checkbox\" name=\"" + E(postID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcode) ? "" : " ") + ((capcode) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(postID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\" class=\"stickyIcon retina\">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\" class=\"closedIcon retina\">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
+        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(postID) + "\"><input type=\"checkbox\" name=\"" + E(postID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcode) ? "" : " ") + ((capcode) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(postID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\" class=\"stickyIcon retina\">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\" class=\"closedIcon retina\">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
       };
 
       /* File Info */
@@ -10431,7 +10442,7 @@ Settings = (function() {
     filter: function(section) {
       var select;
       $.extend(section, {
-        innerHTML: "<select name=\"filter\"><option value=\"guide\">Guide</option><option value=\"postID\">Post number</option><option value=\"name\">Name</option><option value=\"uniqueID\">Unique ID</option><option value=\"tripcode\">Tripcode</option><option value=\"capcode\">Capcode</option><option value=\"subject\">Subject</option><option value=\"comment\">Comment</option><option value=\"flag\">Flag</option><option value=\"filename\">Filename</option><option value=\"dimensions\">Image dimensions</option><option value=\"filesize\">Filesize</option><option value=\"MD5\">Image MD5</option></select><div></div>"
+        innerHTML: "<select name=\"filter\"><option value=\"guide\">Guide</option><option value=\"postID\">Post number</option><option value=\"name\">Name</option><option value=\"uniqueID\">Unique ID</option><option value=\"tripcode\">Tripcode</option><option value=\"capcode\">Capcode</option><option value=\"pass\">Pass Date</option><option value=\"subject\">Subject</option><option value=\"comment\">Comment</option><option value=\"flag\">Flag</option><option value=\"filename\">Filename</option><option value=\"dimensions\">Image dimensions</option><option value=\"filesize\">Filesize</option><option value=\"MD5\">Image MD5</option></select><div></div>"
       });
       select = $('select', section);
       $.on(select, 'change', Settings.selectFilter);
@@ -20488,16 +20499,23 @@ QR = (function() {
       return $.sync('cooldowns', this.sync);
     },
     setup: function() {
-      var base, base1, delay, m, ref, type;
+      var base, base1, delay, i, key, len, m, ref, ref1, type;
       if (m = Get.scriptData().match(/\bcooldowns *= *({[^}]+})/)) {
         $.extend(QR.cooldown.delays, JSON.parse(m[1]));
         (base = QR.cooldown.delays).reply_intra || (base.reply_intra = QR.cooldown.delays.reply);
         (base1 = QR.cooldown.delays).image_intra || (base1.image_intra = QR.cooldown.delays.image);
       }
+      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
+        ref = ['reply', 'image', 'reply_intra', 'image_intra'];
+        for (i = 0, len = ref.length; i < len; i++) {
+          key = ref[i];
+          QR.cooldown.delays[key] = Math.ceil(QR.cooldown.delays[key] / 2);
+        }
+      }
       QR.cooldown.maxDelay = 0;
-      ref = QR.cooldown.delays;
-      for (type in ref) {
-        delay = ref[type];
+      ref1 = QR.cooldown.delays;
+      for (type in ref1) {
+        delay = ref1[type];
         if (type !== 'thread' && type !== 'thread_global') {
           QR.cooldown.maxDelay = Math.max(QR.cooldown.maxDelay, delay);
         }
