@@ -12,6 +12,7 @@ class Thread
     @postLimit  = false
     @fileLimit  = false
     @ipCount    = undefined
+    @json       = null
 
     @OP = null
     @catalogView = null

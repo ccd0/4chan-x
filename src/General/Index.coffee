@@ -615,7 +615,7 @@ Index =
     else
       Index.parsedThreads[threadID].isHidden
 
-  buildThreads: (threadIDs) ->
+  buildThreads: (threadIDs, isCatalog) ->
     threads    = []
     newThreads = []
     newPosts   = []
@@ -624,20 +624,23 @@ Index =
         threadData = Index.liveThreadDict[ID]
 
         if (thread = g.BOARD.threads[ID])
-          thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
-          thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
-          thread.setStatus 'Sticky', !!threadData.sticky
-          thread.setStatus 'Closed', !!threadData.closed
-          if thread.catalogView
+          isStale = (thread.json isnt threadData) and (JSON.stringify(thread.json) isnt JSON.stringify(threadData))
+          if isStale
+            thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
+            thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
+            thread.setStatus 'Sticky', !!threadData.sticky
+            thread.setStatus 'Closed', !!threadData.closed
+          if thread.catalogView and (isStale or !(isCatalog and Conf['Show Replies'] and Conf['Catalog Hover Expand']))
             $.rm thread.catalogView.nodes.replies
             thread.catalogView.nodes.replies = null
         else
           thread = new Thread ID, g.BOARD
           newThreads.push thread
+        thread.json = threadData
         threads.push thread
 
         if ((OP = thread.OP) and not OP.isFetchedQuote)
-          OP.setCatalogOP false
+          OP.setCatalogOP isCatalog
           thread.setPage(Index.threadPosition[ID] // Index.threadsNumPerPage + 1)
         else
           obj = Index.parsedThreads[ID]
@@ -645,7 +648,7 @@ Index =
           OP.filterResults = obj.filterResults
           newPosts.push OP
 
-        Build.thread thread, threadData
+        Build.thread thread, threadData unless isCatalog
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
@@ -790,7 +793,7 @@ Index =
     Index.sortedThreadIDs[offset ... offset + nodesPerPage]
 
   buildStructure: (threadIDs) ->
-    threads = Index.buildThreads threadIDs
+    threads = Index.buildThreads threadIDs, false
     Index.buildReplies threads if Conf['Show Replies']
     nodes = []
     for thread in threads
@@ -818,7 +821,7 @@ Index =
     return
 
   buildCatalogPart: (threadIDs) ->
-    threads = Index.buildThreads threadIDs
+    threads = Index.buildThreads threadIDs, true
     Index.buildCatalogViews threads
     Index.sizeCatalogViews threads
     Index.buildCatalogReplies threads if Conf['Show Replies'] and Conf['Catalog Hover Expand']
