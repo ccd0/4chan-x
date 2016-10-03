@@ -75,6 +75,12 @@ class Thread
     @isDead = true
 
   collect: ->
-    @posts.forEach (post) -> post.collect()
-    g.threads.rm @fullID
-    @board.threads.rm @
+    n = 0
+    @posts.forEach (post) ->
+      if post.clones.length
+        n++
+      else
+        post.collect()
+    unless n
+      g.threads.rm @fullID
+      @board.threads.rm @
