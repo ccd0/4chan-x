@@ -807,9 +807,11 @@ Index =
   buildCatalog: (threadIDs) ->
     i = 0
     n = threadIDs.length
+    node0 = null
     fn = ->
+      return if node0 and !node0.parentNode # Index.root cleared
       j = if i > 0 and Index.root.parentNode then n else i + 30
-      Index.buildCatalogPart threadIDs[i...j]
+      node0 = Index.buildCatalogPart(threadIDs[i...j])[0]
       i = j
       if i < n
         $.queueTask fn
@@ -831,7 +833,7 @@ Index =
       $.add thread.catalogView.nodes.root, thread.OP.nodes.root
       nodes.push thread.catalogView.nodes.root
     $.add Index.root, nodes
-    return
+    nodes
 
   clearSearch: ->
     Index.searchInput.value = ''
