@@ -725,6 +725,7 @@ Index =
 
     replies = []
     for data in lastReplies
+      continue if Filter.isHidden(Build.parseJSON data, g.BOARD.ID)
       reply = Build.catalogReply thread, data
       RelativeDates.update $('time', reply)
       $.on $('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover
