@@ -1,5 +1,7 @@
 **Note**: Installing the script from one of the links below will disable automatic updates. If you want automatic updates, install the script from the links on the [main page](https://www.4chan-x.net/).
 
+-Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
+
 ## v1.13.0
 
 **v1.13.0.4** *(2016-10-03)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.4/builds/4chan-X-noupdate.crx)]
@@ -97,8 +99,8 @@
 
 **v1.12.1.0** *(2016-07-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.12.0.7.
-- Replace `Toggleable Thread Watcher` setting with `Persistent Thread Watcher` setting (off by default). With `Persistent Thread Watcher` on, the thread watcher is shown by default, but can still be hidden.
-- Add `Toggle thread watcher` keybind (default: "t").
+- (dzamie) Replace `Toggleable Thread Watcher` setting with `Persistent Thread Watcher` setting (off by default). With `Persistent Thread Watcher` on, the thread watcher is shown by default, but can still be hidden.
+- (dzamie) Add `Toggle thread watcher` keybind (default: "t").
 - Make 'all websites' permission optional for Chrome extension.
 
 ## v1.12.0
@@ -151,8 +153,6 @@
   - `.qr-shortcut` is now `#shortcut-qr > a`
 - The captcha complaint links have been removed.
 - The options `Exempt Archives from Encryption` and `Show New Thread Option in Threads` will be enabled by default in new installs.
-
-**Note**: Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (currently ccd0). (This practice was abandoned starting in v1.12.0; in general it's better to check the git logs.)
 
 ### v1.11.35
 
