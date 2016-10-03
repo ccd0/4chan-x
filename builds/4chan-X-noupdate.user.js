@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.0.3
+// @version      1.13.0.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.3',
+  VERSION:   '1.13.0.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -6453,6 +6453,7 @@ Thread = (function() {
       this.postLimit = false;
       this.fileLimit = false;
       this.ipCount = void 0;
+      this.json = null;
       this.OP = null;
       this.catalogView = null;
       this.nodes = {
@@ -6537,11 +6538,19 @@ Thread = (function() {
     };
 
     Thread.prototype.collect = function() {
+      var n;
+      n = 0;
       this.posts.forEach(function(post) {
-        return post.collect();
+        if (post.clones.length) {
+          return n++;
+        } else {
+          return post.collect();
+        }
       });
-      g.threads.rm(this.fullID);
-      return this.board.threads.rm(this);
+      if (!n) {
+        g.threads.rm(this.fullID);
+        return this.board.threads.rm(this);
+      }
     };
 
     return Thread;
@@ -7169,6 +7178,13 @@ PostHiding = (function() {
         name: 'Reply Hiding',
         cb: this.node
       });
+    },
+    isHidden: function(boardID, threadID, postID) {
+      return !!(PostHiding.db && PostHiding.db.get({
+        boardID: boardID,
+        threadID: threadID,
+        postID: postID
+      }));
     },
     node: function() {
       var data, sideArrows;
@@ -9370,6 +9386,13 @@ Index = (function() {
           page: 1
         });
         return Index.update();
+      },
+      catalogReplies: function() {
+        $.off(this, 'mouseover', Index.cb.catalogReplies);
+        if (!(Conf['Show Replies'] && Conf['Catalog Hover Expand'] && this.parentNode)) {
+          return;
+        }
+        return Index.buildCatalogReplies(Get.threadFromRoot(this));
       }
     },
     scrollToIndex: function() {
@@ -9765,8 +9788,8 @@ Index = (function() {
         return Index.parsedThreads[threadID].isHidden;
       }
     },
-    buildThreads: function(threadIDs) {
-      var ID, OP, err, errors, k, len, newPosts, newThreads, obj, thread, threadData, threads;
+    buildThreads: function(threadIDs, isCatalog) {
+      var ID, OP, err, errors, isStale, k, len, newPosts, newThreads, obj, thread, threadData, threads;
       threads = [];
       newThreads = [];
       newPosts = [];
@@ -9775,11 +9798,14 @@ Index = (function() {
         try {
           threadData = Index.liveThreadDict[ID];
           if ((thread = g.BOARD.threads[ID])) {
-            thread.setCount('post', threadData.replies + 1, threadData.bumplimit);
-            thread.setCount('file', threadData.images + !!threadData.ext, threadData.imagelimit);
-            thread.setStatus('Sticky', !!threadData.sticky);
-            thread.setStatus('Closed', !!threadData.closed);
-            if (thread.catalogView) {
+            isStale = (thread.json !== threadData) && (JSON.stringify(thread.json) !== JSON.stringify(threadData));
+            if (isStale) {
+              thread.setCount('post', threadData.replies + 1, threadData.bumplimit);
+              thread.setCount('file', threadData.images + !!threadData.ext, threadData.imagelimit);
+              thread.setStatus('Sticky', !!threadData.sticky);
+              thread.setStatus('Closed', !!threadData.closed);
+            }
+            if (thread.catalogView && (isStale || !(isCatalog && Conf['Show Replies'] && Conf['Catalog Hover Expand']))) {
               $.rm(thread.catalogView.nodes.replies);
               thread.catalogView.nodes.replies = null;
             }
@@ -9787,9 +9813,10 @@ Index = (function() {
             thread = new Thread(ID, g.BOARD);
             newThreads.push(thread);
           }
+          thread.json = threadData;
           threads.push(thread);
           if ((OP = thread.OP) && !OP.isFetchedQuote) {
-            OP.setCatalogOP(false);
+            OP.setCatalogOP(isCatalog);
             thread.setPage(Math.floor(Index.threadPosition[ID] / Index.threadsNumPerPage) + 1);
           } else {
             obj = Index.parsedThreads[ID];
@@ -9797,7 +9824,9 @@ Index = (function() {
             OP.filterResults = obj.filterResults;
             newPosts.push(OP);
           }
-          Build.thread(thread, threadData);
+          if (!isCatalog) {
+            Build.thread(thread, threadData);
+          }
         } catch (_error) {
           err = _error;
           if (!errors) {
@@ -9884,36 +9913,39 @@ Index = (function() {
         thumb.style.height = height * ratio + 'px';
       }
     },
-    buildCatalogReplies: function(threads) {
-      var data, k, l, lastReplies, len, len1, len2, m, nodes, ref, replies, reply, thread, timeEl;
-      for (k = 0, len = threads.length; k < len; k++) {
-        thread = threads[k];
-        nodes = thread.catalogView.nodes;
-        if (!(lastReplies = Index.liveThreadDict[thread.ID].last_replies)) {
-          continue;
-        }
-        if (nodes.replies) {
-          ref = $$('time', nodes.replies);
-          for (l = 0, len1 = ref.length; l < len1; l++) {
-            timeEl = ref[l];
-            RelativeDates.update(timeEl);
-          }
-          continue;
-        }
-        replies = [];
-        for (m = 0, len2 = lastReplies.length; m < len2; m++) {
-          data = lastReplies[m];
-          reply = Build.catalogReply(thread, data);
-          RelativeDates.update($('time', reply));
-          $.on($('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover);
-          replies.push(reply);
-        }
-        nodes.replies = $.el('div', {
-          className: 'catalog-replies'
-        });
-        $.add(nodes.replies, replies);
-        $.add(thread.OP.nodes.post, nodes.replies);
+    buildCatalogReplies: function(thread) {
+      var data, k, l, lastReplies, len, len1, nodes, ref, replies, reply, timeEl;
+      nodes = thread.catalogView.nodes;
+      if (!(lastReplies = Index.liveThreadDict[thread.ID].last_replies)) {
+        return;
       }
+      if (nodes.replies) {
+        ref = $$('time', nodes.replies);
+        for (k = 0, len = ref.length; k < len; k++) {
+          timeEl = ref[k];
+          RelativeDates.update(timeEl);
+        }
+        return;
+      }
+      replies = [];
+      for (l = 0, len1 = lastReplies.length; l < len1; l++) {
+        data = lastReplies[l];
+        if (PostHiding.isHidden(g.BOARD.ID, thread.ID, data.no)) {
+          continue;
+        }
+        if (Filter.isHidden(Build.parseJSON(data, g.BOARD.ID))) {
+          continue;
+        }
+        reply = Build.catalogReply(thread, data);
+        RelativeDates.update($('time', reply));
+        $.on($('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover);
+        replies.push(reply);
+      }
+      nodes.replies = $.el('div', {
+        className: 'catalog-replies'
+      });
+      $.add(nodes.replies, replies);
+      $.add(thread.OP.nodes.post, nodes.replies);
     },
     sort: function() {
       var lastlong, liveThreadData, liveThreadIDs, threadIDs;
@@ -10033,7 +10065,7 @@ Index = (function() {
     },
     buildStructure: function(threadIDs) {
       var k, len, nodes, thread, threads;
-      threads = Index.buildThreads(threadIDs);
+      threads = Index.buildThreads(threadIDs, false);
       if (Conf['Show Replies']) {
         Index.buildReplies(threads);
       }
@@ -10049,13 +10081,17 @@ Index = (function() {
       Index.loaded = true;
     },
     buildCatalog: function(threadIDs) {
-      var fn, i, n;
+      var fn, i, n, node0;
       i = 0;
       n = threadIDs.length;
+      node0 = null;
       fn = function() {
         var j;
+        if (node0 && !node0.parentNode) {
+          return;
+        }
         j = i > 0 && Index.root.parentNode ? n : i + 30;
-        Index.buildCatalogPart(threadIDs.slice(i, j));
+        node0 = Index.buildCatalogPart(threadIDs.slice(i, j))[0];
         i = j;
         if (i < n) {
           return $.queueTask(fn);
@@ -10070,20 +10106,21 @@ Index = (function() {
     },
     buildCatalogPart: function(threadIDs) {
       var k, len, nodes, thread, threads;
-      threads = Index.buildThreads(threadIDs);
+      threads = Index.buildThreads(threadIDs, true);
       Index.buildCatalogViews(threads);
       Index.sizeCatalogViews(threads);
-      if (Conf['Show Replies'] && Conf['Catalog Hover Expand']) {
-        Index.buildCatalogReplies(threads);
-      }
       nodes = [];
       for (k = 0, len = threads.length; k < len; k++) {
         thread = threads[k];
         thread.OP.setCatalogOP(true);
         $.add(thread.catalogView.nodes.root, thread.OP.nodes.root);
         nodes.push(thread.catalogView.nodes.root);
+        if (Conf['Show Replies'] && Conf['Catalog Hover Expand']) {
+          $.on(thread.catalogView.nodes.root, 'mouseover', Index.cb.catalogReplies);
+        }
       }
       $.add(Index.root, nodes);
+      return nodes;
     },
     clearSearch: function() {
       Index.searchInput.value = '';
@@ -20901,8 +20938,6 @@ QR = (function() {
       thread: 0,
       reply: 0,
       image: 0,
-      reply_intra: 0,
-      image_intra: 0,
       deletion: 60,
       thread_global: 300
     },
@@ -20914,14 +20949,12 @@ QR = (function() {
       return $.sync('cooldowns', this.sync);
     },
     setup: function() {
-      var base, base1, delay, i, key, len, m, ref, ref1, type;
+      var delay, i, key, len, m, ref, ref1, type;
       if (m = Get.scriptData().match(/\bcooldowns *= *({[^}]+})/)) {
         $.extend(QR.cooldown.delays, JSON.parse(m[1]));
-        (base = QR.cooldown.delays).reply_intra || (base.reply_intra = QR.cooldown.delays.reply);
-        (base1 = QR.cooldown.delays).image_intra || (base1.image_intra = QR.cooldown.delays.image);
       }
       if (d.cookie.indexOf('pass_enabled=1') >= 0) {
-        ref = ['reply', 'image', 'reply_intra', 'image_intra'];
+        ref = ['reply', 'image'];
         for (i = 0, len = ref.length; i < len; i++) {
           key = ref[i];
           QR.cooldown.delays[key] = Math.ceil(QR.cooldown.delays[key] / 2);
@@ -21092,7 +21125,7 @@ QR = (function() {
               continue;
             }
             if ((type === 'thread') === (cooldown.threadID === cooldown.postID) && cooldown.boardID !== g.BOARD.ID) {
-              suffix = scope === 'global' ? '_global' : type !== 'thread' && threadID === cooldown.threadID ? '_intra' : '';
+              suffix = scope === 'global' ? '_global' : '';
               seconds = Math.max(seconds, QR.cooldown.delays[type + suffix] - elapsed);
             }
             if (QR.cooldown.customCooldown) {

@@ -2,6 +2,10 @@
 
 ## v1.13.0
 
+**v1.13.0.4** *(2016-10-03)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.4/builds/4chan-X-noupdate.crx)]
+- Performance work and bug fixes related to recent catalog changes.
+- Don't show excerpts of hidden or filtered replies in the catalog.
+
 **v1.13.0.3** *(2016-10-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.3/builds/4chan-X-noupdate.crx)]
 - Add `Pass Date` to filterable items.
 - Show Pass flair in posts constructed from JSON.
