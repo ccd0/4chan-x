@@ -10,6 +10,9 @@ PostHiding =
       name: 'Reply Hiding'
       cb:   @node
 
+  isHidden: (boardID, threadID, postID) ->
+    !!(PostHiding.db and PostHiding.db.get {boardID, threadID, postID})
+
   node: ->
     return if !@isReply or @isClone or @isFetchedQuote
 
