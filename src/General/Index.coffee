@@ -312,6 +312,11 @@ Index =
       Index.pushState {page: 1}
       Index.update()
 
+    catalogReplies: ->
+      $.off @, 'mouseover', Index.cb.catalogReplies
+      return unless Conf['Show Replies'] and Conf['Catalog Hover Expand'] and @parentNode
+      Index.buildCatalogReplies Get.threadFromRoot @
+
   scrollToIndex: ->
     # Scroll to navlinks, or top of board if navlinks are hidden.
     Header.scrollToIfNeeded (if Index.navLinks.getBoundingClientRect().height then Index.navLinks else Index.root)
@@ -709,26 +714,25 @@ Index =
       thumb.style.height = height * ratio + 'px'
     return
 
-  buildCatalogReplies: (threads) ->
-    for thread in threads
-      {nodes} = thread.catalogView
-      continue if not (lastReplies = Index.liveThreadDict[thread.ID].last_replies)
+  buildCatalogReplies: (thread) ->
+    {nodes} = thread.catalogView
+    return if not (lastReplies = Index.liveThreadDict[thread.ID].last_replies)
 
-      if nodes.replies
-        # RelativeDates will stop updating elements if they go out of document.
-        RelativeDates.update timeEl for timeEl in $$ 'time', nodes.replies
-        continue
+    if nodes.replies
+      # RelativeDates will stop updating elements if they go out of document.
+      RelativeDates.update timeEl for timeEl in $$ 'time', nodes.replies
+      return
 
-      replies = []
-      for data in lastReplies
-        reply = Build.catalogReply thread, data
-        RelativeDates.update $('time', reply)
-        $.on $('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover
-        replies.push reply
+    replies = []
+    for data in lastReplies
+      reply = Build.catalogReply thread, data
+      RelativeDates.update $('time', reply)
+      $.on $('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover
+      replies.push reply
 
-      nodes.replies = $.el 'div', className: 'catalog-replies'
-      $.add nodes.replies, replies
-      $.add thread.OP.nodes.post, nodes.replies
+    nodes.replies = $.el 'div', className: 'catalog-replies'
+    $.add nodes.replies, replies
+    $.add thread.OP.nodes.post, nodes.replies
     return
 
   sort: ->
@@ -826,12 +830,13 @@ Index =
     threads = Index.buildThreads threadIDs, true
     Index.buildCatalogViews threads
     Index.sizeCatalogViews threads
-    Index.buildCatalogReplies threads if Conf['Show Replies'] and Conf['Catalog Hover Expand']
     nodes = []
     for thread in threads
       thread.OP.setCatalogOP true
       $.add thread.catalogView.nodes.root, thread.OP.nodes.root
       nodes.push thread.catalogView.nodes.root
+      if Conf['Show Replies'] and Conf['Catalog Hover Expand']
+        $.on thread.catalogView.nodes.root, 'mouseover', Index.cb.catalogReplies
     $.add Index.root, nodes
     nodes
 
