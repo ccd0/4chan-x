@@ -135,19 +135,16 @@ Settings =
 
     items  = {}
     inputs = {}
-    for key, obj of Config.main
-      fs = $.el 'fieldset',
-        <%= html('<legend>${key}</legend>') %>
-      containers = [fs]
-      for key, arr of obj
+    addCheckboxes = (root, obj) ->
+      containers = [root]
+      for key, arr of obj when arr instanceof Array
         description = arr[1]
         div = $.el 'div',
           <%= html('<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>') %>
-        div.hidden = true if $.engine isnt 'gecko' and key is 'Remember QR Size' # XXX not supported
+        div.dataset.name = key
         input = $ 'input', div
-        $.on input, 'change', ->
-          @parentNode.parentNode.dataset.checked = @checked
-          $.cb.checked.call @
+        $.on input, 'change', $.cb.checked
+        $.on input, 'change', -> @parentNode.parentNode.dataset.checked = @checked
         items[key]  = Conf[key]
         inputs[key] = input
         level = arr[2] or 0
@@ -158,7 +155,15 @@ Settings =
         else if containers.length > level+1
           containers.splice level+1, containers.length - (level+1)
         $.add containers[level], div
+
+    for key, obj of Config.main
+      fs = $.el 'fieldset',
+        <%= html('<legend>${key}</legend>') %>
+      addCheckboxes fs, obj
       $.add section, fs
+    addCheckboxes $('div[data-name="JSON Index"] > .suboption-list', section), Config.Index
+    if $.engine isnt 'gecko'
+      $('div[data-name="Remember QR Size"]', section).hidden = true # XXX not supported
 
     $.get items, (items) ->
       for key, val of items

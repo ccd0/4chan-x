@@ -736,11 +736,11 @@ Config =
     'Index Mode': 'paged'
     'Previous Index Mode': 'paged'
     'Index Size': 'small'
-    'Show Replies': true
-    'Catalog Hover Expand': true
-    'Pin Watched Threads': false
-    'Anchor Hidden Threads': true
-    'Refreshed Navigation': false
+    'Show Replies':          [true,  'Show replies in the index, and also in the catalog if "Catalog hover expand" is checked.']
+    'Catalog Hover Expand':  [true,  'Expand the comment and show more details when you hover over a thread in the catalog.']
+    'Pin Watched Threads':   [false, 'Move watched threads to the start of the index.']
+    'Anchor Hidden Threads': [true,  'Move hidden threads to the end of the index.']
+    'Refreshed Navigation':  [false, 'Refresh index when navigating through pages.']
 
   Header:
     'Fixed Header':               true

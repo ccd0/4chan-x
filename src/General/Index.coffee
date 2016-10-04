@@ -46,35 +46,37 @@ Index =
     Header.addShortcut 'index-refresh', @button, 590
 
     # Header "Index Navigation" submenu
-    repliesEntry = el: UI.checkbox 'Show Replies',          'Show replies'
-    hoverEntry   = el: UI.checkbox 'Catalog Hover Expand',  'Catalog hover expand'
-    sortEntry    = el: UI.checkbox 'Per-Board Sort Type',   'Per-board sort type', (typeof Conf['Index Sort'] is 'object')
-    pinEntry     = el: UI.checkbox 'Pin Watched Threads',   'Pin watched threads'
-    anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', 'Anchor hidden threads'
-    refNavEntry  = el: UI.checkbox 'Refreshed Navigation',  'Refreshed navigation'
-    hoverEntry.el.title   = 'Expand the comment and show more details when you hover over a thread in the catalog.'
-    sortEntry.el.title    = 'Set the sorting order of each board independently.'
-    pinEntry.el.title     = 'Move watched threads to the start of the index.'
-    anchorEntry.el.title  = 'Move hidden threads to the end of the index.'
-    refNavEntry.el.title  = 'Refresh index when navigating through pages.'
-    for label in [repliesEntry, hoverEntry, pinEntry, anchorEntry, refNavEntry]
-      input = label.el.firstChild
-      {name} = input
+    entries = []
+    inputs = {}
+    for name, arr of Config.Index when arr instanceof Array
+      label = UI.checkbox name, "#{name[0]}#{name[1..].toLowerCase()}"
+      label.title = arr[1]
+      entries.push {el: label}
+      input = label.firstChild
       $.on input, 'change', $.cb.checked
-      switch name
-        when 'Show Replies'
-          $.on input, 'change', @cb.replies
-        when 'Catalog Hover Expand'
-          $.on input, 'change', @cb.hover
-        when 'Pin Watched Threads', 'Anchor Hidden Threads'
-          $.on input, 'change', @cb.resort
-    $.on sortEntry.el.firstChild, 'change', @cb.perBoardSort
+      inputs[name] = input
+    $.on inputs['Show Replies'], 'change', @cb.replies
+    $.on inputs['Catalog Hover Expand'], 'change', @cb.hover
+    $.on inputs['Pin Watched Threads'], 'change', @cb.resort
+    $.on inputs['Anchor Hidden Threads'], 'change', @cb.resort
+
+    watchSettings = (e) ->
+      if (input = inputs[e.target.name])
+        input.checked = e.target.checked
+        $.event 'change', null, input
+    $.on d, 'OpenSettings', ->
+      $.on $.id('fourchanx-settings'), 'change', watchSettings
+
+    sortEntry = UI.checkbox 'Per-Board Sort Type', 'Per-board sort type', (typeof Conf['Index Sort'] is 'object')
+    sortEntry.title = 'Set the sorting order of each board independently.'
+    $.on sortEntry.firstChild, 'change', @cb.perBoardSort
+    entries.splice 2, 0, {el: sortEntry}
 
     Header.menu.addEntry
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 100
-      subEntries: [repliesEntry, hoverEntry, sortEntry, pinEntry, anchorEntry, refNavEntry]
+      subEntries: entries
 
     # Navigation links at top of index
     @navLinks = $.el 'div', className: 'navLinks json-index'
