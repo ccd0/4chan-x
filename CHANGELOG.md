@@ -4,6 +4,11 @@
 
 ## v1.13.0
 
+**v1.13.0.5** *(2016-10-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.5/builds/4chan-X-noupdate.crx)]
+- (dzamie) `sfw` and `nsfw` can be used in the `boards` options of filters.
+- Mirror most of `Index Navigation` menu settings in main settings panel.
+- Fix a hidden threads related bug from v1.13.0.4.
+
 **v1.13.0.4** *(2016-10-03)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.4/builds/4chan-X-noupdate.crx)]
 - Performance work and bug fixes related to recent catalog changes.
 - Don't show excerpts of hidden or filtered replies in the catalog.
