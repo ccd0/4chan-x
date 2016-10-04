@@ -34,10 +34,9 @@ ExpandThread =
     ExpandThread.toggle Get.threadFromNode @
 
   toggle: (thread) ->
-    threadRoot = thread.nodes.root
-    return if not (a = $ '.summary', threadRoot)
+    return if not (thread.nodes.root and (a = $ '.summary', thread.nodes.root))
     if thread.ID of ExpandThread.statuses
-      ExpandThread.contract thread, a, threadRoot
+      ExpandThread.contract thread, a, thread.nodes.root
     else
       ExpandThread.expand thread, a
 
