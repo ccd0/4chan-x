@@ -35,3 +35,6 @@ BoardConfig =
       cb()
     else
       @cbs.push cb
+
+  sfwBoards: (sfw) ->
+    board for board, data of (@boards or Conf['boardConfig'].boards) when !!data.ws_board is sfw

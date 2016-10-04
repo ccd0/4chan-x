@@ -7,9 +7,9 @@ Filter =
     unless Conf['Filtered Backlinks']
       $.addClass doc, 'hide-backlinks'
 
-    nsfwBoards = 'aco,b,d,e,f,gif,h,hc,hm,hr,i,ic,pol,r,r9k,s,s4s,soc,t,trash,u,wg,y'
-    sfwBoards = '3,a,adv,an,asp,biz,c,cgl,ck,cm,co,diy,fa,fit,g,gd,his,int,jp,k,lgbt,lit,m,mlp,mu,n,news,o,out,p,po,qa,qst,sci,sp,tg,toy,trv,tv,v,vg,vp,vr,w,wsg,wsr,x'
-    
+    nsfwBoards = BoardConfig.sfwBoards(false).join(',')
+    sfwBoards  = BoardConfig.sfwBoards(true).join(',')
+
     for key of Config.filter
       @filters[key] = []
       for line in Conf[key].split '\n'
