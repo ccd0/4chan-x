@@ -495,78 +495,74 @@ do ->
 if GM_deleteValue?
   $.getValue   = GM_getValue
   $.listValues = -> GM_listValues() # error when called if missing
-else if $.hasStorage
-  $.getValue = (key) -> localStorage[key]
-  $.listValues = ->
-    key for key of localStorage when key[...g.NAMESPACE.length] is g.NAMESPACE
 else
-  $.getValue   = ->
-  $.listValues = -> []
+  $.localStorage = if $.hasStorage then localStorage else {}
+  $.getValue = (key) -> $.localStorage[key]
+  $.listValues = ->
+    key for key of $.localStorage when key[...g.NAMESPACE.length] is g.NAMESPACE
 
 if GM_addValueChangeListener?
   $.setValue    = GM_setValue
   $.deleteValue = GM_deleteValue
 else if GM_deleteValue?
-  $.oldValue = {}
   $.setValue = (key, val) ->
     GM_setValue key, val
     if key of $.syncing
-      $.oldValue[key]   = val
       localStorage[key] = val if $.hasStorage # for `storage` events
+      $.queueTask $.onChange, {key, newValue: val}
+    return
   $.deleteValue = (key) ->
     GM_deleteValue key
     if key of $.syncing
-      delete $.oldValue[key]
-      localStorage.removeItem key if $.hasStorage # for `storage` events
+      delete localStorage[key] if $.hasStorage # for `storage` events
+      $.queueTask $.onChange, {key}
+    return
   $.cantSync = true if !$.hasStorage
-else if $.hasStorage
-  $.oldValue = {}
-  $.setValue = (key, val) ->
-    $.oldValue[key]   = val if key of $.syncing
-    localStorage[key] = val
-  $.deleteValue = (key) ->
-    delete $.oldValue[key] if key of $.syncing
-    localStorage.removeItem key
 else
-  $.setValue = ->
-  $.deleteValue = ->
-  $.cantSync = $.cantSet = true
+  $.setValue = (key, val) ->
+    $.localStorage[key] = val
+    $.queueTask $.onChange, {key, newValue: val} if key of $.syncing
+    return
+  $.deleteValue = (key) ->
+    delete $.localStorage[key]
+    $.queueTask $.onChange, {key} if key of $.syncing
+    return
+  $.cantSync = $.cantSet = true if !$.hasStorage
 
 if GM_addValueChangeListener?
   $.sync = (key, cb) ->
-    $.syncing[key] = GM_addValueChangeListener g.NAMESPACE + key, (key2, oldValue, newValue, remote) ->
-      if remote
-        newValue = JSON.parse newValue unless newValue is undefined
-        cb newValue, key
+    $.syncing[key] = GM_addValueChangeListener g.NAMESPACE + key, (key2, oldValue, newValue) ->
+      newValue = JSON.parse newValue unless newValue is undefined
+      cb newValue, key
+      return
+    return
   $.forceSync = ->
-else if GM_deleteValue? or $.hasStorage
+else
+  $.oldValue = {}
   $.sync = (key, cb) ->
     key = g.NAMESPACE + key
     $.syncing[key] = cb
     $.oldValue[key] = $.getValue key
-
-  do ->
-    onChange = ({key, newValue}) ->
-      return if not (cb = $.syncing[key])
-      if newValue?
-        return if newValue is $.oldValue[key]
-        $.oldValue[key] = newValue
-        cb JSON.parse(newValue), key[g.NAMESPACE.length..]
-      else
-        return unless $.oldValue[key]?
-        delete $.oldValue[key]
-        cb undefined, key[g.NAMESPACE.length..]
-    $.on window, 'storage', onChange
-
-    $.forceSync = (key) ->
-      # Storage events don't work across origins
-      # e.g. http://boards.4chan.org and https://boards.4chan.org
-      # so force a check for changes to avoid lost data.
-      key = g.NAMESPACE + key
-      onChange {key, newValue: $.getValue key}
-else
-  $.sync = ->
-  $.forceSync = ->
+    return
+  $.onChange = ({key, newValue}) ->
+    return if not (cb = $.syncing[key])
+    if newValue? # undefined or null; `storage` events use null
+      return if newValue is $.oldValue[key]
+      $.oldValue[key] = newValue
+      cb JSON.parse(newValue), key[g.NAMESPACE.length..]
+    else
+      return unless $.oldValue[key]?
+      delete $.oldValue[key]
+      cb undefined, key[g.NAMESPACE.length..]
+    return
+  $.forceSync = (key) ->
+    # Storage events don't work across origins
+    # e.g. http://boards.4chan.org and https://boards.4chan.org
+    # so force a check for changes to avoid lost data.
+    key = g.NAMESPACE + key
+    $.onChange {key, newValue: $.getValue key}
+    return
+  $.on window, 'storage', $.onChange
 
 $.delete = (keys) ->
   unless keys instanceof Array
