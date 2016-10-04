@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.0.4
+// @version      1.13.0.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.4',
+  VERSION:   '1.13.0.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -371,11 +371,11 @@ Config = (function() {
       'Index Mode': 'paged',
       'Previous Index Mode': 'paged',
       'Index Size': 'small',
-      'Show Replies': true,
-      'Catalog Hover Expand': true,
-      'Pin Watched Threads': false,
-      'Anchor Hidden Threads': true,
-      'Refreshed Navigation': false
+      'Show Replies': [true, 'Show replies in the index, and also in the catalog if "Catalog hover expand" is checked.'],
+      'Catalog Hover Expand': [true, 'Expand the comment and show more details when you hover over a thread in the catalog.'],
+      'Pin Watched Threads': [false, 'Move watched threads to the start of the index.'],
+      'Anchor Hidden Threads': [true, 'Move hidden threads to the end of the index.'],
+      'Refreshed Navigation': [false, 'Refresh index when navigating through pages.']
     },
     Header: {
       'Fixed Header': true,
@@ -6883,13 +6883,15 @@ Filter = (function() {
     filters: {},
     results: {},
     init: function() {
-      var boards, err, excludes, filter, hl, i, key, len, line, op, ref, ref1, ref2, ref3, ref4, ref5, ref6, regexp, stub, top;
+      var boards, err, excludes, filter, hl, i, key, len, line, nsfwBoards, op, ref, ref1, ref2, ref3, ref4, ref5, ref6, regexp, sfwBoards, stub, top;
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Filter'])) {
         return;
       }
       if (!Conf['Filtered Backlinks']) {
         $.addClass(doc, 'hide-backlinks');
       }
+      nsfwBoards = BoardConfig.sfwBoards(false).join(',');
+      sfwBoards = BoardConfig.sfwBoards(true).join(',');
       for (key in Config.filter) {
         this.filters[key] = [];
         ref1 = Conf[key].split('\n');
@@ -6903,8 +6905,10 @@ Filter = (function() {
           }
           filter = line.replace(regexp[0], '');
           boards = ((ref2 = filter.match(/boards:([^;]+)/)) != null ? ref2[1].toLowerCase() : void 0) || 'global';
+          boards = boards.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards);
           boards = boards === 'global' ? null : boards.split(',');
-          excludes = boards === null ? ((ref3 = filter.match(/exclude:([^;]+)/)) != null ? ref3[1].toLowerCase().split(',') : void 0) || null : null;
+          excludes = ((ref3 = filter.match(/exclude:([^;]+)/)) != null ? ref3[1].toLowerCase() : void 0) || null;
+          excludes = excludes === null ? null : excludes.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards).split(',');
           if (key === 'uniqueID' || key === 'MD5') {
             regexp = regexp[1];
           } else {
@@ -7908,6 +7912,18 @@ BoardConfig = (function() {
       } else {
         return this.cbs.push(cb);
       }
+    },
+    sfwBoards: function(sfw) {
+      var board, data, ref, results;
+      ref = this.boards || Conf['boardConfig'].boards;
+      results = [];
+      for (board in ref) {
+        data = ref[board];
+        if (!!data.ws_board === sfw) {
+          results.push(board);
+        }
+      }
+      return results;
     }
   };
 
@@ -8980,7 +8996,7 @@ Index = (function() {
     showHiddenThreads: false,
     changed: {},
     init: function() {
-      var anchorEntry, hoverEntry, input, k, l, label, len, len1, name, pinEntry, ref, ref1, ref2, ref3, ref4, ref5, ref6, refNavEntry, repliesEntry, select, sortEntry;
+      var arr, entries, input, inputs, k, label, len, name, ref, ref1, ref2, ref3, ref4, ref5, ref6, select, sortEntry, watchSettings;
       if (!(g.VIEW === 'index' && g.BOARD.ID !== 'f')) {
         return;
       }
@@ -9019,54 +9035,48 @@ Index = (function() {
         return Index.update();
       });
       Header.addShortcut('index-refresh', this.button, 590);
-      repliesEntry = {
-        el: UI.checkbox('Show Replies', 'Show replies')
-      };
-      hoverEntry = {
-        el: UI.checkbox('Catalog Hover Expand', 'Catalog hover expand')
-      };
-      sortEntry = {
-        el: UI.checkbox('Per-Board Sort Type', 'Per-board sort type', typeof Conf['Index Sort'] === 'object')
-      };
-      pinEntry = {
-        el: UI.checkbox('Pin Watched Threads', 'Pin watched threads')
-      };
-      anchorEntry = {
-        el: UI.checkbox('Anchor Hidden Threads', 'Anchor hidden threads')
-      };
-      refNavEntry = {
-        el: UI.checkbox('Refreshed Navigation', 'Refreshed navigation')
-      };
-      hoverEntry.el.title = 'Expand the comment and show more details when you hover over a thread in the catalog.';
-      sortEntry.el.title = 'Set the sorting order of each board independently.';
-      pinEntry.el.title = 'Move watched threads to the start of the index.';
-      anchorEntry.el.title = 'Move hidden threads to the end of the index.';
-      refNavEntry.el.title = 'Refresh index when navigating through pages.';
-      ref4 = [repliesEntry, hoverEntry, pinEntry, anchorEntry, refNavEntry];
-      for (k = 0, len = ref4.length; k < len; k++) {
-        label = ref4[k];
-        input = label.el.firstChild;
-        name = input.name;
-        $.on(input, 'change', $.cb.checked);
-        switch (name) {
-          case 'Show Replies':
-            $.on(input, 'change', this.cb.replies);
-            break;
-          case 'Catalog Hover Expand':
-            $.on(input, 'change', this.cb.hover);
-            break;
-          case 'Pin Watched Threads':
-          case 'Anchor Hidden Threads':
-            $.on(input, 'change', this.cb.resort);
+      entries = [];
+      inputs = {};
+      ref4 = Config.Index;
+      for (name in ref4) {
+        arr = ref4[name];
+        if (!(arr instanceof Array)) {
+          continue;
         }
+        label = UI.checkbox(name, "" + name[0] + (name.slice(1).toLowerCase()));
+        label.title = arr[1];
+        entries.push({
+          el: label
+        });
+        input = label.firstChild;
+        $.on(input, 'change', $.cb.checked);
+        inputs[name] = input;
       }
-      $.on(sortEntry.el.firstChild, 'change', this.cb.perBoardSort);
+      $.on(inputs['Show Replies'], 'change', this.cb.replies);
+      $.on(inputs['Catalog Hover Expand'], 'change', this.cb.hover);
+      $.on(inputs['Pin Watched Threads'], 'change', this.cb.resort);
+      $.on(inputs['Anchor Hidden Threads'], 'change', this.cb.resort);
+      watchSettings = function(e) {
+        if ((input = inputs[e.target.name])) {
+          input.checked = e.target.checked;
+          return $.event('change', null, input);
+        }
+      };
+      $.on(d, 'OpenSettings', function() {
+        return $.on($.id('fourchanx-settings'), 'change', watchSettings);
+      });
+      sortEntry = UI.checkbox('Per-Board Sort Type', 'Per-board sort type', typeof Conf['Index Sort'] === 'object');
+      sortEntry.title = 'Set the sorting order of each board independently.';
+      $.on(sortEntry.firstChild, 'change', this.cb.perBoardSort);
+      entries.splice(2, 0, {
+        el: sortEntry
+      });
       Header.menu.addEntry({
         el: $.el('span', {
           textContent: 'Index Navigation'
         }),
         order: 100,
-        subEntries: [repliesEntry, hoverEntry, sortEntry, pinEntry, anchorEntry, refNavEntry]
+        subEntries: entries
       });
       this.navLinks = $.el('div', {
         className: 'navLinks json-index'
@@ -9093,8 +9103,8 @@ Index = (function() {
       $.on(this.selectSize, 'change', $.cb.value);
       $.on(this.selectSize, 'change', this.cb.size);
       ref6 = [this.selectMode, this.selectSize];
-      for (l = 0, len1 = ref6.length; l < len1; l++) {
-        select = ref6[l];
+      for (k = 0, len = ref6.length; k < len; k++) {
+        select = ref6[k];
         select.value = Conf[select.name];
       }
       this.selectSort.value = Index.currentSort;
@@ -9116,7 +9126,7 @@ Index = (function() {
         return d.title = d.title.replace(/\ -\ Page\ \d+/, '');
       });
       $.onExists(doc, '.board > .thread > .postContainer, .board + *', function() {
-        var board, el, len2, m, ref7, topNavPos;
+        var board, el, l, len1, ref7, topNavPos;
         Build.hat = $('.board > .thread > img:first-child');
         if (Build.hat) {
           g.BOARD.threads.forEach(function(thread) {
@@ -9136,8 +9146,8 @@ Index = (function() {
           d.implementation.createDocument(null, null, null).appendChild(board);
         } catch (_error) {}
         ref7 = $$('.navLinks');
-        for (m = 0, len2 = ref7.length; m < len2; m++) {
-          el = ref7[m];
+        for (l = 0, len1 = ref7.length; l < len1; l++) {
+          el = ref7[l];
           $.rm(el);
         }
         $.rm($.id('ctrl-top'));
@@ -9824,7 +9834,7 @@ Index = (function() {
             OP.filterResults = obj.filterResults;
             newPosts.push(OP);
           }
-          if (!isCatalog) {
+          if (!(isCatalog && thread.nodes.root)) {
             Build.thread(thread, threadData);
           }
         } catch (_error) {
@@ -10384,7 +10394,7 @@ Settings = (function() {
       }
     },
     main: function(section) {
-      var addWarning, arr, button, container, containers, description, div, fs, input, inputs, items, key, level, obj, ref, ref1, warning, warnings;
+      var addCheckboxes, addWarning, button, div, fs, inputs, items, key, obj, ref, ref1, warning, warnings;
       warnings = $.el('fieldset', {
         hidden: true
       }, {
@@ -10402,26 +10412,24 @@ Settings = (function() {
       $.add(section, warnings);
       items = {};
       inputs = {};
-      ref1 = Config.main;
-      for (key in ref1) {
-        obj = ref1[key];
-        fs = $.el('fieldset', {
-          innerHTML: "<legend>" + E(key) + "</legend>"
-        });
-        containers = [fs];
+      addCheckboxes = function(root, obj) {
+        var arr, container, containers, description, div, input, level, results;
+        containers = [root];
+        results = [];
         for (key in obj) {
           arr = obj[key];
+          if (!(arr instanceof Array)) {
+            continue;
+          }
           description = arr[1];
           div = $.el('div', {
             innerHTML: "<label><input type=\"checkbox\" name=\"" + E(key) + "\">" + E(key) + "</label><span class=\"description\">: " + E(description) + "</span>"
           });
-          if ($.engine !== 'gecko' && key === 'Remember QR Size') {
-            div.hidden = true;
-          }
+          div.dataset.name = key;
           input = $('input', div);
+          $.on(input, 'change', $.cb.checked);
           $.on(input, 'change', function() {
-            this.parentNode.parentNode.dataset.checked = this.checked;
-            return $.cb.checked.call(this);
+            return this.parentNode.parentNode.dataset.checked = this.checked;
           });
           items[key] = Conf[key];
           inputs[key] = input;
@@ -10435,9 +10443,22 @@ Settings = (function() {
           } else if (containers.length > level + 1) {
             containers.splice(level + 1, containers.length - (level + 1));
           }
-          $.add(containers[level], div);
+          results.push($.add(containers[level], div));
         }
+        return results;
+      };
+      ref1 = Config.main;
+      for (key in ref1) {
+        obj = ref1[key];
+        fs = $.el('fieldset', {
+          innerHTML: "<legend>" + E(key) + "</legend>"
+        });
+        addCheckboxes(fs, obj);
         $.add(section, fs);
+      }
+      addCheckboxes($('div[data-name="JSON Index"] > .suboption-list', section), Config.Index);
+      if ($.engine !== 'gecko') {
+        $('div[data-name="Remember QR Size"]', section).hidden = true;
       }
       $.get(items, function(items) {
         var val;
@@ -10893,7 +10914,7 @@ Settings = (function() {
         return;
       }
       $.extend(div, {
-        innerHTML: "<div class=\"warning\"><code>Filter</code> is disabled.</div><p>Use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\" target=\"_blank\">regular expressions</a>, one per line.<br>Lines starting with a <code>#</code> will be ignored.<br>For example, <code>/weeaboo/i</code> will filter posts containing the string \`<code>weeaboo</code>\`, case-insensitive.<br>MD5 filtering uses exact string matching, not regular expressions.</p><ul>You can use these settings with each regular expression, separate them with semicolons:<li>Per boards, separate them with commas. It is global if not specified.<br>For example: <code>boards:a,jp;</code>.</li><li>In case of a global rule, select boards to be excluded from the filter.<br>For example: <code>exclude:vg,v;</code>.</li><li>Filter OPs only along with their threads (\`only\`), replies only (\`no\`), or both (\`yes\`, this is default).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li><li>Overrule the \`Show Stubs\` setting if specified: create a stub (\`yes\`) or not (\`no\`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code>.</li><li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li><li>Highlighted OPs will have their threads put on top of the board index by default.<br>For example: <code>top:yes;</code> or <code>top:no;</code>.</li></ul><p>Note: If you&#039;re using the native catalog rather than 4chan X&#039;s catalog, 4chan X&#039;s filters do not apply there.<br>The native catalog has its own separate filter list.</p>"
+        innerHTML: "<div class=\"warning\"><code>Filter</code> is disabled.</div><p>Use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\" target=\"_blank\">regular expressions</a>, one per line.<br>Lines starting with a <code>#</code> will be ignored.<br>For example, <code>/weeaboo/i</code> will filter posts containing the string \`<code>weeaboo</code>\`, case-insensitive.<br>MD5 filtering uses exact string matching, not regular expressions.</p><ul>You can use these settings with each regular expression, separate them with semicolons:<li>Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>For example: <code>boards:a,jp;</code>.<br></li><li>In case of a global rule or one that uses <code>sfw</code>/<code>nsfw</code>, select boards to be excluded from the filter.<br>For example: <code>exclude:vg,v;</code>.</li><li>Filter OPs only along with their threads (\`only\`), replies only (\`no\`), or both (\`yes\`, this is default).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li><li>Overrule the \`Show Stubs\` setting if specified: create a stub (\`yes\`) or not (\`no\`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code>.</li><li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li><li>Highlighted OPs will have their threads put on top of the board index by default.<br>For example: <code>top:yes;</code> or <code>top:no;</code>.</li></ul><p>Note: If you&#039;re using the native catalog rather than 4chan X&#039;s catalog, 4chan X&#039;s filters do not apply there.<br>The native catalog has its own separate filter list.</p>"
       });
       return $('.warning', div).hidden = Conf['Filter'];
     },
@@ -15320,13 +15341,12 @@ ExpandThread = (function() {
       return ExpandThread.toggle(Get.threadFromNode(this));
     },
     toggle: function(thread) {
-      var a, threadRoot;
-      threadRoot = thread.nodes.root;
-      if (!(a = $('.summary', threadRoot))) {
+      var a;
+      if (!(thread.nodes.root && (a = $('.summary', thread.nodes.root)))) {
         return;
       }
       if (thread.ID in ExpandThread.statuses) {
-        return ExpandThread.contract(thread, a, threadRoot);
+        return ExpandThread.contract(thread, a, thread.nodes.root);
       } else {
         return ExpandThread.expand(thread, a);
       }
