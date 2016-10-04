@@ -655,7 +655,7 @@ Index =
           OP.filterResults = obj.filterResults
           newPosts.push OP
 
-        Build.thread thread, threadData unless isCatalog
+        Build.thread thread, threadData unless isCatalog and thread.nodes.root
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
