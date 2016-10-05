@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.0.5
+// @version      1.13.0.6
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.5',
+  VERSION:   '1.13.0.6',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -6576,7 +6576,7 @@ Redirect = (function() {
       { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v" ], "files": [] },
       { "uid": 5, "name": "Love is Over", "domain": "archive.loveisover.me", "http": true, "https": false, "software": "foolfuuka", "boards": [ "c", "d", "e", "i", "lgbt", "t", "u" ], "files": [ "c", "d", "e", "i", "lgbt", "t", "u" ] },
       { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
-      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": false, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "gd", "po", "qst" ], "search": [ "aco", "adv", "an", "asp", "b", "c", "cgl", "ck", "cm", "con", "d", "diy", "e", "f", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "n", "news", "o", "out", "p", "po", "q", "qa", "qst", "r", "s", "soc", "trv", "u", "w", "wg", "wsg", "wsr", "x", "y" ] },
+      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": false, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "gd", "po", "qst", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "c", "cgl", "ck", "cm", "con", "d", "diy", "e", "f", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "n", "news", "o", "out", "p", "po", "q", "qa", "qst", "r", "s", "soc", "trv", "u", "vip", "w", "wg", "wsg", "wsr", "x", "y" ] },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": false, "software": "foolfuuka", "boards": [ "b" ], "files": [ "b" ] },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": false, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ] }
     ],
@@ -9758,7 +9758,7 @@ Index = (function() {
       return Index.pageLoad();
     },
     parseThreadList: function(pages) {
-      var data, i, k, len, obj, ref, ref1, results;
+      var ID, data, i, k, len, obj, ref, ref1, results;
       Index.pagesNum = pages.length;
       Index.threadsNumPerPage = ((ref = pages[0]) != null ? ref.threads.length : void 0) || 1;
       Index.liveThreadData = pages.reduce((function(arr, next) {
@@ -9788,6 +9788,18 @@ Index = (function() {
         if (ref2 = thread.ID, indexOf.call(Index.liveThreadIDs, ref2) < 0) {
           return thread.collect();
         }
+      });
+      $.event('IndexUpdate', {
+        threads: (function() {
+          var l, len1, ref2, results1;
+          ref2 = Index.liveThreadIDs;
+          results1 = [];
+          for (l = 0, len1 = ref2.length; l < len1; l++) {
+            ID = ref2[l];
+            results1.push(g.BOARD + "." + ID);
+          }
+          return results1;
+        })()
       });
     },
     isHidden: function(threadID) {
@@ -17815,6 +17827,7 @@ ThreadUpdater = (function() {
 
 ThreadWatcher = (function() {
   var ThreadWatcher,
+    indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     slice = [].slice;
 
   ThreadWatcher = {
@@ -17847,7 +17860,7 @@ ThreadWatcher = (function() {
       $.onExists(doc, 'body', this.addDialog);
       switch (g.VIEW) {
         case 'index':
-          $.on(d, 'IndexRefreshInternal', this.cb.onIndexRefresh);
+          $.on(d, 'IndexUpdate', this.cb.onIndexUpdate);
           break;
         case 'thread':
           $.on(d, 'ThreadUpdate', this.cb.onThreadRefresh);
@@ -18028,15 +18041,15 @@ ThreadWatcher = (function() {
           return ThreadWatcher.add(g.threads[boardID + '.' + threadID]);
         }
       },
-      onIndexRefresh: function() {
-        var boardID, data, db, nKilled, ref, threadID;
+      onIndexUpdate: function(e) {
+        var boardID, data, db, nKilled, ref, ref1, threadID;
         db = ThreadWatcher.db;
         boardID = g.BOARD.ID;
         nKilled = 0;
         ref = db.data.boards[boardID];
         for (threadID in ref) {
           data = ref[threadID];
-          if (!(!(data != null ? data.isDead : void 0) && !(threadID in g.BOARD.threads))) {
+          if (!(!(data != null ? data.isDead : void 0) && (ref1 = boardID + "." + threadID, indexOf.call(e.detail.threads, ref1) < 0))) {
             continue;
           }
           nKilled++;
