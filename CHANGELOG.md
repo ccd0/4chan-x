@@ -4,6 +4,9 @@
 
 ## v1.13.0
 
+**v1.13.0.6** *(2016-10-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.6/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.3 causing threads to be incorrectly pruned / marked dead in Thread Watcher.
+
 **v1.13.0.5** *(2016-10-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.5/builds/4chan-X-noupdate.crx)]
 - (dzamie) `sfw` and `nsfw` can be used in the `boards` options of filters.
 - Mirror most of `Index Navigation` menu settings in main settings panel.
