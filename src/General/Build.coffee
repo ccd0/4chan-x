@@ -233,7 +233,7 @@ Build =
     if data.com
       excerpt = Build.parseCommentDisplay(data.com).replace(/>>\d+/g, '').trim().replace(/\n+/g, ' // ')
     if data.ext
-      excerpt or= "#{data.filename}#{data.ext}"
+      excerpt or= "#{Build.unescape data.filename}#{data.ext}"
     if data.com
       excerpt or= Build.unescape data.com.replace(/<br\b[^<]*>/gi, ' // ')
     excerpt or= '\xA0'
