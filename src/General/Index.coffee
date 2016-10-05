@@ -614,6 +614,8 @@ Index =
       Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler
     g.BOARD.threads.forEach (thread) ->
       (thread.collect() unless thread.ID in Index.liveThreadIDs)
+    $.event 'IndexUpdate',
+      threads: ("#{g.BOARD}.#{ID}" for ID in Index.liveThreadIDs)
     return
 
   isHidden: (threadID) ->

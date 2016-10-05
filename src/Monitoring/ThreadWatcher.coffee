@@ -28,7 +28,7 @@ ThreadWatcher =
 
     switch g.VIEW
       when 'index'
-        $.on d, 'IndexRefreshInternal', @cb.onIndexRefresh
+        $.on d, 'IndexUpdate', @cb.onIndexUpdate
       when 'thread'
         $.on d, 'ThreadUpdate', @cb.onThreadRefresh
 
@@ -139,11 +139,11 @@ ThreadWatcher =
           ThreadWatcher.addRaw boardID, threadID, {}
       else if Conf['Auto Watch Reply']
         ThreadWatcher.add g.threads[boardID + '.' + threadID]
-    onIndexRefresh: ->
+    onIndexUpdate: (e) ->
       {db}    = ThreadWatcher
       boardID = g.BOARD.ID
       nKilled = 0
-      for threadID, data of db.data.boards[boardID] when not data?.isDead and threadID not of g.BOARD.threads
+      for threadID, data of db.data.boards[boardID] when not data?.isDead and "#{boardID}.#{threadID}" not in e.detail.threads
         nKilled++
         if Conf['Auto Prune'] or not (data and typeof data is 'object') # corrupt data
           db.delete {boardID, threadID}
