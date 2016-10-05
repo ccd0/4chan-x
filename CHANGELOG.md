@@ -4,6 +4,9 @@
 
 ## v1.13.0
 
+**v1.13.0.7** *(2016-10-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.7/builds/4chan-X-noupdate.crx)]
+- Fix filenames not being properly unescaped in catalog replies.
+
 **v1.13.0.6** *(2016-10-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.6/builds/4chan-X-noupdate.crx)]
 - Fix bug from v1.13.0.3 causing threads to be incorrectly pruned / marked dead in Thread Watcher.
 
