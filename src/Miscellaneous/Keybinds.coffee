@@ -83,6 +83,9 @@ Keybinds =
       when Conf['Post from URL']
         return unless QR.postingIsEnabled
         QR.handleUrl ''
+      when Conf['Add new post']
+        return unless QR.postingIsEnabled
+        QR.addPost()
       when Conf['Submit QR']
         return unless QR.nodes and !QR.nodes.el.hidden
         QR.submit() if !QR.status()

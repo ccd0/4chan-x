@@ -197,6 +197,14 @@ QR =
   texPreviewHide: ->
     $.rmClass QR.nodes.el, 'tex-preview'
 
+  addPost: ->
+    wasOpen = (QR.nodes and !QR.nodes.el.hidden)
+    QR.open()
+    if wasOpen
+      $.addClass QR.nodes.el, 'dump'
+      new QR.post true
+    QR.nodes.com.focus()
+
   setCustomCooldown: (enabled) ->
     Conf['customCooldownEnabled'] = enabled
     QR.cooldown.customCooldown = enabled

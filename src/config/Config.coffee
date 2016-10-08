@@ -867,6 +867,10 @@ Config =
       'Alt+l'
       'Post from URL.'
     ]
+    'Add new post': [
+      'Alt+n'
+      'Add new post to the QR dump list.'
+    ]
     'Submit QR': [
       'Ctrl+Enter'
       'Submit post.'
