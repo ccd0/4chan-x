@@ -41,34 +41,38 @@ CatalogLinks =
         a.href = "//boards.4chan.org/#{m[1]}/#{m[2] or '#catalog'}"
     return
 
-  # Set links on load or custom board list change.
-  # Called by Header when both board lists (header and footer) are ready.
-  initBoardList: ->
-    return unless CatalogLinks.el
-    CatalogLinks.set Conf['Header catalog links']
-
   toggle: ->
     $.event 'CloseMenu'
     $.set 'Header catalog links', @checked
     CatalogLinks.set @checked
 
   set: (useCatalog) ->
-    for a in $$('a:not([data-only])', Header.boardList).concat $$('a', Header.bottomBoardList)
-      continue if a.hostname not in ['boards.4chan.org', 'catalog.neet.tv'] or
-      !(board = a.pathname.split('/')[1]) or
-      board in ['f', 'status', '4chan'] or
-      a.pathname.split('/')[2] is 'archive' or
-      $.hasClass a, 'external'
+    Conf['Header catalog links'] = useCatalog
+    CatalogLinks.setLinks Header.boardList
+    CatalogLinks.setLinks Header.bottomBoardList
+    CatalogLinks.el.title = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
+    $('input', CatalogLinks.el).checked = useCatalog
+
+  # Also called by Header when board lists are loaded / generated.
+  setLinks: (list) ->
+    return unless CatalogLinks.el and list
+
+    for a in $$('a:not([data-only])', list)
+      continue if (
+        a.hostname not in ['boards.4chan.org', 'catalog.neet.tv'] or
+        !(board = a.pathname.split('/')[1]) or
+        board in ['f', 'status', '4chan'] or
+        a.pathname.split('/')[2] is 'archive' or
+        $.hasClass a, 'external'
+      )
 
       # Href is easier than pathname because then we don't have
       # conditions where External Catalog has been disabled between switches.
-      a.href = if useCatalog then CatalogLinks.catalog(board) else "/#{board}/"
+      a.href = if Conf['Header catalog links'] then CatalogLinks.catalog(board) else "/#{board}/"
 
       if a.dataset.indexOptions and a.hostname is 'boards.4chan.org' and a.pathname.split('/')[2] is ''
         a.href += (if a.hash then '/' else '#') + a.dataset.indexOptions
-
-    CatalogLinks.el.title = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
-    $('input', CatalogLinks.el).checked = useCatalog
+    return
 
   catalog: (board=g.BOARD.ID) ->
     if Conf['External Catalog'] and board in ['a', 'c', 'g', 'biz', 'k', 'm', 'o', 'p', 'v', 'vg', 'vr', 'w', 'wg', 'cm', '3', 'adv', 'an', 'asp', 'cgl', 'ck', 'co', 'diy', 'fa', 'fit', 'gd', 'int', 'jp', 'lit', 'mlp', 'mu', 'n', 'out', 'po', 'sci', 'sp', 'tg', 'toy', 'trv', 'tv', 'vp', 'wsg', 'x', 'f', 'pol', 's4s', 'lgbt']
