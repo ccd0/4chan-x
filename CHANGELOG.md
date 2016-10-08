@@ -4,6 +4,11 @@
 
 ## v1.13.0
 
+**v1.13.0.8** *(2016-10-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.8/builds/4chan-X-noupdate.crx)]
+- (AchtBit) Add keybind for toggling custom cooldown (default: `Alt+Comma`).
+- Add keybind to post file from URL (default: `Alt+l`).
+- Add keybind for adding new post to QR dump list (default: `Alt+n`).
+
 **v1.13.0.7** *(2016-10-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.7/builds/4chan-X-noupdate.crx)]
 - Fix filenames not being properly unescaped in catalog replies.
 
