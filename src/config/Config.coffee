@@ -997,7 +997,7 @@ Config =
       'Scroll to the next post that quotes you.'
     ]
     'Toggle Cooldown': [
-      'Shift+p'
+      'Alt+Comma'
       'Toggle custom cooldown timer.'
     ]
 
