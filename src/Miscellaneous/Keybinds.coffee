@@ -80,6 +80,9 @@ Keybinds =
       when Conf['Toggle Cooldown']
         return unless QR.nodes and !QR.nodes.el.hidden and $.hasClass(QR.nodes.fileSubmit, 'custom-cooldown')
         QR.toggleCustomCooldown()
+      when Conf['Post from URL']
+        return unless QR.postingIsEnabled
+        QR.handleUrl ''
       when Conf['Submit QR']
         return unless QR.nodes and !QR.nodes.el.hidden
         QR.submit() if !QR.status()

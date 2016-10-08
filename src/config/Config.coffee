@@ -863,6 +863,10 @@ Config =
       'Alt+Comma'
       'Toggle custom cooldown timer.'
     ]
+    'Post from URL': [
+      'Alt+l'
+      'Post from URL.'
+    ]
     'Submit QR': [
       'Ctrl+Enter'
       'Submit post.'

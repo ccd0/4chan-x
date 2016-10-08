@@ -389,6 +389,7 @@ QR =
     return
 
   handleUrl: (urlDefault) ->
+    QR.open()
     url = prompt 'Enter a URL:', urlDefault
     return if url is null
     QR.nodes.fileButton.focus()
