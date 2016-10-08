@@ -859,6 +859,10 @@ Config =
       'Alt+s'
       'Toggle sage in options field.'
     ]
+    'Toggle Cooldown': [
+      'Alt+Comma'
+      'Toggle custom cooldown timer.'
+    ]
     'Submit QR': [
       'Ctrl+Enter'
       'Submit post.'
@@ -995,10 +999,6 @@ Config =
     'Next Post Quoting You': [
       'Alt+Down'
       'Scroll to the next post that quotes you.'
-    ]
-    'Toggle Cooldown': [
-      'Alt+Comma'
-      'Toggle custom cooldown timer.'
     ]
 
   updater:

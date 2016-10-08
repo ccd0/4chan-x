@@ -77,6 +77,9 @@ Keybinds =
       when Conf['Toggle sage']
         return unless QR.nodes and !QR.nodes.el.hidden
         Keybinds.sage()
+      when Conf['Toggle Cooldown']
+        return unless QR.nodes and !QR.nodes.el.hidden and $.hasClass(QR.nodes.fileSubmit, 'custom-cooldown')
+        QR.toggleCustomCooldown()
       when Conf['Submit QR']
         return unless QR.nodes and !QR.nodes.el.hidden
         QR.submit() if !QR.status()
@@ -196,10 +199,6 @@ Keybinds =
       when Conf['Next Post Quoting You']
         return unless threadRoot and QuoteYou.db
         QuoteYou.cb.seek 'following'
-      when Conf['Toggle Cooldown']
-        return unless Conf['customCooldown']
-        return unless QR.nodes
-        QR.toggleCustomCooldown()
       <% if (readJSON('/.tests_enabled')) { %>
       when 'v'
         return unless threadRoot
