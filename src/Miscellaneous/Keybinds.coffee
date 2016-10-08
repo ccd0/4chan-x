@@ -196,6 +196,10 @@ Keybinds =
       when Conf['Next Post Quoting You']
         return unless threadRoot and QuoteYou.db
         QuoteYou.cb.seek 'following'
+      when Conf['Toggle Cooldown']
+        return unless Conf['customCooldown']
+        return unless QR.nodes
+        QR.toggleCustomCooldown()
       <% if (readJSON('/.tests_enabled')) { %>
       when 'v'
         return unless threadRoot

@@ -996,6 +996,10 @@ Config =
       'Alt+Down'
       'Scroll to the next post that quotes you.'
     ]
+    'Toggle Cooldown': [
+      'Shift+p'
+      'Toggle custom cooldown timer.'
+    ]
 
   updater:
     checkbox:

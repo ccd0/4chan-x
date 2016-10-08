@@ -203,7 +203,7 @@ QR =
     QR.nodes.customCooldown.classList.toggle 'disabled', !enabled
 
   toggleCustomCooldown: ->
-    enabled = $.hasClass @, 'disabled'
+    enabled = 'disabled' in QR.nodes.customCooldown.classList
     QR.setCustomCooldown enabled
     $.set 'customCooldownEnabled', enabled
 
