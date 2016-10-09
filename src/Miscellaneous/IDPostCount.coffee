@@ -10,7 +10,7 @@ IDPostCount =
 
   node: ->
     if @nodes.uniqueID and @thread is IDPostCount.thread
-      $.on $('span.hand', @nodes.uniqueID), 'mouseover', IDPostCount.count
+      $.on @nodes.uniqueID, 'mouseover', IDPostCount.count
 
   count: ->
     {uniqueID} = Get.postFromNode(@).info

@@ -27,7 +27,7 @@ class Post
       subject:   @nodes.subject?.textContent or undefined
       name:      @nodes.name?.textContent
       tripcode:  @nodes.tripcode?.textContent
-      uniqueID:  @nodes.uniqueID?.firstElementChild.textContent
+      uniqueID:  @nodes.uniqueID?.textContent
       capcode:   @nodes.capcode?.textContent.replace '## ', ''
       pass:      @nodes.pass?.title.match(/\d*$/)[0]
       flagCode:  @nodes.flag?.className.match(/flag-(\w+)/)?[1].toUpperCase()
@@ -65,25 +65,26 @@ class Post
     post = $ '.post',     root
     info = $ '.postInfo', post
     nodes =
-      root:       root
-      post:       post
-      info:       info
-      subject:    $ '.subject',            info
-      name:       $ '.name',               info
-      email:      $ '.useremail',          info
-      tripcode:   $ '.postertrip',         info
-      uniqueID:   $ '.posteruid',          info
-      capcode:    $ '.capcode.hand',       info
-      pass:       $ '.n-pu',               info
-      flag:       $ '.flag, .countryFlag', info
-      date:       $ '.dateTime',           info
-      nameBlock:  $ '.nameBlock',          info
-      quote:      $ '.postNum > a:nth-of-type(2)', info
-      reply:      $ '.replylink',          info
-      fileRoot:   $ '.file',        post
-      comment:    $ '.postMessage', post
-      links:      []
-      quotelinks: []
+      root:         root
+      post:         post
+      info:         info
+      subject:      $ '.subject',            info
+      name:         $ '.name',               info
+      email:        $ '.useremail',          info
+      tripcode:     $ '.postertrip',         info
+      uniqueIDRoot: $ '.posteruid',          info
+      uniqueID:     $ '.posteruid > .hand',  info
+      capcode:      $ '.capcode.hand',       info
+      pass:         $ '.n-pu',               info
+      flag:         $ '.flag, .countryFlag', info
+      date:         $ '.dateTime',           info
+      nameBlock:    $ '.nameBlock',          info
+      quote:        $ '.postNum > a:nth-of-type(2)', info
+      reply:        $ '.replylink',          info
+      fileRoot:     $ '.file',        post
+      comment:      $ '.postMessage', post
+      links:        []
+      quotelinks:   []
       archivelinks: []
 
     # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
