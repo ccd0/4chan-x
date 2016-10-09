@@ -4,6 +4,9 @@
 
 ## v1.13.0
 
+**v1.13.0.9** *(2016-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.9/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.0 that broke Quote Inlining / Previewing of OPs on /f/.
+
 **v1.13.0.8** *(2016-10-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.8/builds/4chan-X-noupdate.crx)]
 - (AchtBit) Add keybind for toggling custom cooldown (default: `Alt+Comma`).
 - Add keybind to post file from URL (default: `Alt+l`).

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.0.8
+// @version      1.13.0.9
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.8',
+  VERSION:   '1.13.0.9',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -6128,7 +6128,7 @@ Post = (function() {
     _Class.prototype.isClone = true;
 
     function _Class(origin, context, contractThumb) {
-      var base, fileRoot, i, inline, inlined, j, k, key, l, len, len1, len2, len3, node, nodes, ref, ref1, ref2, ref3, ref4, root, val;
+      var base, fileRoot, i, inline, inlined, j, k, key, l, len, len1, len2, len3, node, nodes, ref, ref1, ref2, ref3, ref4, ref5, root, val;
       this.origin = origin;
       this.context = context;
       ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
@@ -6178,7 +6178,7 @@ Post = (function() {
         this.file.text = fileRoot.firstElementChild;
         this.file.link = $('.fileText > a, .fileText-original', fileRoot);
         this.file.thumb = $('a.fileThumb > [data-md5]', fileRoot);
-        this.file.thumbLink = this.file.thumb.parentNode;
+        this.file.thumbLink = (ref5 = this.file.thumb) != null ? ref5.parentNode : void 0;
         this.file.fullImage = $('.full-image', fileRoot);
         this.file.videoControls = $('.video-controls', this.file.text);
         if (this.file.videoThumb) {
