@@ -83,7 +83,6 @@ class Post
       reply:        $ '.replylink',          info
       fileRoot:     $ '.file',        post
       comment:      $ '.postMessage', post
-      links:        []
       quotelinks:   []
       archivelinks: []
 
