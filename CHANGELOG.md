@@ -60,6 +60,10 @@
 
 ### v1.12.3
 
+**v1.12.3.7** *(2016-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.7/builds/4chan-X-noupdate.crx)]
+- Workaround for problem on 4chan's end with images not loading.
+- The error messages displayed when the Chrome extension updates but the tab has not been reloaded have been replaced with a single warning message asking you to reload the tab.
+
 **v1.12.3.6** *(2016-10-03)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.6/builds/4chan-X-noupdate.crx)]
 - Add `Pass Date` to filterable items.
 - Show Pass flair in posts constructed from JSON.
