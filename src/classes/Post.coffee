@@ -24,7 +24,6 @@ class Post
       @thread.kill() if @thread.isArchived
 
     @info =
-      nameBlock: if Conf['Anonymize'] then 'Anonymous' else @nodes.nameBlock.textContent.trim()
       subject:   @nodes.subject?.textContent or undefined
       name:      @nodes.name?.textContent
       tripcode:  @nodes.tripcode?.textContent
@@ -34,6 +33,13 @@ class Post
       flagCode:  @nodes.flag?.className.match(/flag-(\w+)/)?[1].toUpperCase()
       flag:      @nodes.flag?.title
       date:      if @nodes.date then new Date(@nodes.date.dataset.utc * 1000)
+
+    if Conf['Anonymize']
+      @info.nameBlock = 'Anonymous'
+    else
+      @info.nameBlock = "#{@info.name or ''} #{@info.tripcode or ''}".trim()
+    @info.nameBlock += " ## #{@info.capcode}"     if @info.capcode
+    @info.nameBlock += " (ID: #{@info.uniqueID})" if @info.uniqueID
 
     @parseComment()
     @parseQuotes()
