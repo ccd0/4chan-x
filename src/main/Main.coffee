@@ -100,6 +100,9 @@ Main =
         new Notice 'info', el, 15
 
   initFeatures: ->
+    Site.init()
+    return unless Site.software
+
     {hostname, search} = location
     pathname = location.pathname.split /\/+/
     g.BOARD = new Board pathname[1] unless hostname is 'www.4chan.org'

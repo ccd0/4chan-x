@@ -1049,3 +1049,7 @@ Config =
   'Max Replies': 1000
 
   'Autohiding Scrollbar': false
+
+  siteSoftware: """
+    4chan.org yotsuba
+  """
