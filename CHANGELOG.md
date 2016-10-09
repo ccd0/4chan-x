@@ -4,6 +4,9 @@
 
 ## v1.13.0
 
+**v1.13.0.10** *(2016-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.10/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.3.7: Workaround for problem on 4chan's end with images not loading.
+
 **v1.13.0.9** *(2016-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.9/builds/4chan-X-noupdate.crx)]
 - Fix bug from v1.13.0.0 that broke Quote Inlining / Previewing of OPs on /f/.
 

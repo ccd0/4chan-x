@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.0.9
+// @version      1.13.0.10
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -136,7 +136,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.9',
+  VERSION:   '1.13.0.10',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5975,6 +5975,9 @@ Post = (function() {
         return;
       }
       fileText = fileRoot.firstElementChild;
+      if (link.hostname === 'is.4chan.org') {
+        link.hostname = 'i.4cdn.org';
+      }
       this.file = {
         text: fileText,
         link: link,
@@ -5993,6 +5996,9 @@ Post = (function() {
       }
       this.file.sizeInBytes = size;
       if ((thumb = $('a.fileThumb > [data-md5]', fileRoot))) {
+        if (thumb.parentNode.hostname === 'is.4chan.org') {
+          thumb.parentNode.hostname = 'i.4cdn.org';
+        }
         return $.extend(this.file, {
           thumb: thumb,
           thumbLink: thumb.parentNode,
