@@ -167,6 +167,8 @@ class Post
     return unless link   = $ '.fileText > a, .fileText-original > a', fileEl
     return unless info   = link.nextSibling?.textContent.match /\(([\d.]+ [KMG]?B).*\)/
     fileText = fileEl.firstElementChild
+    # XXX full images on https://is.4chan.org don't load
+    link.hostname = 'i.4cdn.org' if link.hostname is 'is.4chan.org'
     @file =
       text:       fileText
       link:       link
@@ -182,6 +184,8 @@ class Post
     size *= 1024 while unit-- > 0
     @file.sizeInBytes = size
     if (thumb = $ '.fileThumb > [data-md5]', fileEl)
+      # XXX full images on https://is.4chan.org don't load
+      thumb.parentNode.hostname = 'i.4cdn.org' if thumb.parentNode.hostname is 'is.4chan.org'
       $.extend @file,
         thumb:     thumb
         thumbURL:  if m = link.href.match(/\d+(?=\.\w+$)/) then "#{location.protocol}//i.4cdn.org/#{@board}/#{m[0]}s.jpg"
