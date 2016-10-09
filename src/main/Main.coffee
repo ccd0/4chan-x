@@ -406,11 +406,12 @@ Main =
     <%= html('<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>') %>
 
   isThisPageLegit: ->
-    # 404 error page or similar.
+    # not 404 error page or similar.
     unless 'thisPageIsLegit' of Main
-      Main.thisPageIsLegit = location.hostname is 'boards.4chan.org' and
-        !$('link[href*="favicon-status.ico"]', d.head) and
-        d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out']
+      Main.thisPageIsLegit = if Site.isThisPageLegit
+        Site.isThisPageLegit()
+      else
+        !/^[45]\d\d\b/.test(document.title)
     Main.thisPageIsLegit
 
   ready: (cb) ->
