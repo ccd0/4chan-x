@@ -9,8 +9,8 @@ IDHighlight =
   uniqueID: null
 
   node: ->
-    $.on @nodes.uniqueID, 'click', IDHighlight.click @ if @nodes.uniqueID
-    $.on @nodes.capcode,  'click', IDHighlight.click @ if @nodes.capcode
+    $.on @nodes.uniqueIDRoot, 'click', IDHighlight.click @ if @nodes.uniqueIDRoot
+    $.on @nodes.capcode,      'click', IDHighlight.click @ if @nodes.capcode
     IDHighlight.set @ unless @isClone
 
   set: (post) ->

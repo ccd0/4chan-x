@@ -48,7 +48,7 @@ Post.Clone = class extends Post
       @file.text  = fileRoot.firstElementChild
       @file.link  = $ '.fileText > a, .fileText-original', fileRoot
       @file.thumb = $ 'a.fileThumb > [data-md5]', fileRoot
-      @file.thumbLink = @file.thumb.parentNode
+      @file.thumbLink = @file.thumb?.parentNode
       @file.fullImage = $ '.full-image', fileRoot
       @file.videoControls = $ '.video-controls', @file.text
 

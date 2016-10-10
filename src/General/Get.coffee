@@ -3,9 +3,9 @@ Get =
     {OP} = thread
     excerpt = ("/#{thread.board}/ - ") + (
       OP.info.subject?.trim() or
-      OP.info.commentDisplay.replace(/\n+/g, ' // ') or
+      OP.commentDisplay().replace(/\n+/g, ' // ') or
       OP.file?.name or
-      OP.info.nameBlock)
+      "No.#{OP}")
     return "#{excerpt[...70]}..." if excerpt.length > 73
     excerpt
   threadFromRoot: (root) ->

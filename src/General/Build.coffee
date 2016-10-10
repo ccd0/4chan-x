@@ -83,8 +83,6 @@ Build =
     html = html
       .replace(/<br\b[^<]*>/gi, '\n')
       .replace(/\n\n<span\b[^<]* class="abbr"[^]*$/i, '') # EXIF data (/p/)
-      .replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '')       # Rolls (/tg/)
-      .replace(/<span\b[^<]* class="fortune"[^]*$/i, '')  # Fortunes (/s4s/)
       .replace(/<[^>]*>/g, '')
     Build.unescape html
 
@@ -93,6 +91,9 @@ Build =
     unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
       while (html2 = html.replace /<s>(?:(?!<\/?s>).)*<\/s>/g, '[spoiler]') isnt html
         html = html2
+    html = html
+      .replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '')      # Rolls (/tg/, /qst/)
+      .replace(/<span\b[^<]* class="fortune"[^]*$/i, '') # Fortunes (/s4s/)
     # Remove preceding and following new lines, trailing spaces.
     Build.parseComment(html).trim().replace(/\s+$/gm, '')
 

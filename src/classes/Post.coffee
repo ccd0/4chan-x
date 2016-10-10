@@ -24,16 +24,22 @@ class Post
       @thread.kill() if @thread.isArchived
 
     @info =
-      nameBlock: if Conf['Anonymize'] then 'Anonymous' else @nodes.nameBlock.textContent.trim()
       subject:   @nodes.subject?.textContent or undefined
       name:      @nodes.name?.textContent
       tripcode:  @nodes.tripcode?.textContent
-      uniqueID:  @nodes.uniqueID?.firstElementChild.textContent
+      uniqueID:  @nodes.uniqueID?.textContent
       capcode:   @nodes.capcode?.textContent.replace '## ', ''
       pass:      @nodes.pass?.title.match(/\d*$/)[0]
       flagCode:  @nodes.flag?.className.match(/flag-(\w+)/)?[1].toUpperCase()
       flag:      @nodes.flag?.title
       date:      if @nodes.date then new Date(@nodes.date.dataset.utc * 1000)
+
+    if Conf['Anonymize']
+      @info.nameBlock = 'Anonymous'
+    else
+      @info.nameBlock = "#{@info.name or ''} #{@info.tripcode or ''}".trim()
+    @info.nameBlock += " ## #{@info.capcode}"     if @info.capcode
+    @info.nameBlock += " (ID: #{@info.uniqueID})" if @info.uniqueID
 
     @parseComment()
     @parseQuotes()
@@ -59,25 +65,25 @@ class Post
     post = $ '.post',     root
     info = $ '.postInfo', post
     nodes =
-      root:       root
-      post:       post
-      info:       info
-      subject:    $ '.subject',            info
-      name:       $ '.name',               info
-      email:      $ '.useremail',          info
-      tripcode:   $ '.postertrip',         info
-      uniqueID:   $ '.posteruid',          info
-      capcode:    $ '.capcode.hand',       info
-      pass:       $ '.n-pu',               info
-      flag:       $ '.flag, .countryFlag', info
-      date:       $ '.dateTime',           info
-      nameBlock:  $ '.nameBlock',          info
-      quote:      $ '.postNum > a:nth-of-type(2)', info
-      reply:      $ '.replylink',          info
-      fileRoot:   $ '.file',        post
-      comment:    $ '.postMessage', post
-      links:      []
-      quotelinks: []
+      root:         root
+      post:         post
+      info:         info
+      subject:      $ '.subject',            info
+      name:         $ '.name',               info
+      email:        $ '.useremail',          info
+      tripcode:     $ '.postertrip',         info
+      uniqueIDRoot: $ '.posteruid',          info
+      uniqueID:     $ '.posteruid > .hand',  info
+      capcode:      $ '.capcode.hand',       info
+      pass:         $ '.n-pu',               info
+      flag:         $ '.flag, .countryFlag', info
+      date:         $ '.dateTime',           info
+      nameBlock:    $ '.nameBlock',          info
+      quote:        $ '.postNum > a:nth-of-type(2)', info
+      reply:        $ '.replylink',          info
+      fileRoot:     $ '.file',        post
+      comment:      $ '.postMessage', post
+      quotelinks:   []
       archivelinks: []
 
     # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
@@ -101,29 +107,22 @@ class Post
     # Remove:
     #   'Comment too long'...
     #   EXIF data. (/p/)
-    #   Rolls. (/tg/)
-    #   Fortunes. (/s4s/)
-    bq = @nodes.comment.cloneNode true
-    for node in $$ '.abbr + br, .exif, b, .fortune', bq
-      $.rm node
-    if abbr = $ '.abbr', bq
-      $.rm abbr
+    @nodes.commentClean = bq = @nodes.comment.cloneNode true
+    @cleanComment bq
     @info.comment = @nodesToText bq
-    if abbr
-      @info.comment = @info.comment.replace /\n\n$/, ''
 
-    # Hide spoilers.
-    # Remove:
+  commentDisplay: ->
+    # Get the comment's text for display purposes (e.g. notifications, excerpts).
+    # In addition to what's done in generating `@info.comment`, remove:
+    #   Spoilers. (filter to '[spoiler]')
+    #   Rolls. (/tg/, /qst/)
+    #   Fortunes. (/s4s/)
     #   Preceding and following new lines.
     #   Trailing spaces.
-    commentDisplay = @info.comment
-    unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
-      spoilers = $$ 's', bq
-      if spoilers.length
-        for node in spoilers
-          $.replace node, $.tn '[spoiler]'
-        commentDisplay = @nodesToText bq
-    @info.commentDisplay = commentDisplay.trim().replace /\s+$/gm, ''
+    bq = @nodes.commentClean.cloneNode true
+    @cleanSpoilers bq unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
+    @cleanCommentDisplay bq
+    @nodesToText(bq).trim().replace(/\s+$/gm, '')
 
   nodesToText: (bq) ->
     text = ""
@@ -132,6 +131,24 @@ class Post
     while node = nodes.snapshotItem i++
       text += node.data or '\n'
     text
+
+  cleanComment: (bq) ->
+    if (abbr = $ '.abbr', bq) # 'Comment too long' or 'EXIF data available'
+      for node in $$ '.abbr + br, .exif', bq
+        $.rm node
+      for i in [0...2]
+        $.rm br if (br = abbr.previousSibling) and br.nodeName is 'BR'
+      $.rm abbr
+
+  cleanSpoilers: (bq) ->
+    spoilers = $$ 's', bq
+    for node in spoilers
+      $.replace node, $.tn '[spoiler]'
+    return
+
+  cleanCommentDisplay: (bq) ->
+    $.rm b if (b = $ 'b', bq) and /^Rolled /.test(b.textContent)
+    $.rm $('.fortune', bq)
 
   parseQuotes: ->
     @quotes = []
