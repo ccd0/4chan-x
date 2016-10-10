@@ -132,7 +132,7 @@ Unread =
   openNotification: (post) ->
     return unless Header.areNotificationsEnabled
     notif = new Notification "#{post.info.nameBlock} replied to you",
-      body: post.info.commentDisplay
+      body: post.commentDisplay()
       icon: Favicon.logo
     notif.onclick = ->
       Header.scrollToIfNeeded post.nodes.root, true

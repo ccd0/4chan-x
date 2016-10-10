@@ -107,29 +107,22 @@ class Post
     # Remove:
     #   'Comment too long'...
     #   EXIF data. (/p/)
-    #   Rolls. (/tg/)
-    #   Fortunes. (/s4s/)
-    bq = @nodes.comment.cloneNode true
-    for node in $$ '.abbr + br, .exif, b, .fortune', bq
-      $.rm node
-    if abbr = $ '.abbr', bq
-      $.rm abbr
+    @nodes.commentClean = bq = @nodes.comment.cloneNode true
+    @cleanComment bq
     @info.comment = @nodesToText bq
-    if abbr
-      @info.comment = @info.comment.replace /\n\n$/, ''
 
-    # Hide spoilers.
-    # Remove:
+  commentDisplay: ->
+    # Get the comment's text for display purposes (e.g. notifications, excerpts).
+    # In addition to what's done in generating `@info.comment`, remove:
+    #   Spoilers. (filter to '[spoiler]')
+    #   Rolls. (/tg/, /qst/)
+    #   Fortunes. (/s4s/)
     #   Preceding and following new lines.
     #   Trailing spaces.
-    commentDisplay = @info.comment
-    unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
-      spoilers = $$ 's', bq
-      if spoilers.length
-        for node in spoilers
-          $.replace node, $.tn '[spoiler]'
-        commentDisplay = @nodesToText bq
-    @info.commentDisplay = commentDisplay.trim().replace /\s+$/gm, ''
+    bq = @nodes.commentClean.cloneNode true
+    @cleanSpoilers bq unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
+    @cleanCommentDisplay bq
+    @nodesToText(bq).trim().replace(/\s+$/gm, '')
 
   nodesToText: (bq) ->
     text = ""
@@ -138,6 +131,24 @@ class Post
     while node = nodes.snapshotItem i++
       text += node.data or '\n'
     text
+
+  cleanComment: (bq) ->
+    if (abbr = $ '.abbr', bq) # 'Comment too long' or 'EXIF data available'
+      for node in $$ '.abbr + br, .exif', bq
+        $.rm node
+      for i in [0...2]
+        $.rm br if (br = abbr.previousSibling) and br.nodeName is 'BR'
+      $.rm abbr
+
+  cleanSpoilers: (bq) ->
+    spoilers = $$ 's', bq
+    for node in spoilers
+      $.replace node, $.tn '[spoiler]'
+    return
+
+  cleanCommentDisplay: (bq) ->
+    $.rm b if (b = $ 'b', bq) and /^Rolled /.test(b.textContent)
+    $.rm $('.fortune', bq)
 
   parseQuotes: ->
     @quotes = []
