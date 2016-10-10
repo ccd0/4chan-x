@@ -5,6 +5,7 @@ SW.yotsuba =
     board:         '.board'
     thread:        '.thread'
     postContainer: '.postContainer'
+    sideArrows:    '.sideArrows'
     post:          '.post'
     infoRoot:      '.postInfo'
     info:
