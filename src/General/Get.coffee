@@ -63,8 +63,3 @@ Get =
     quotelinks.filter (quotelink) ->
       {boardID, postID} = Get.postDataFromLink quotelink
       boardID is post.board.ID and postID is post.ID
-
-  scriptData: ->
-    for script in $$ 'script:not([src])', d.head
-      return script.textContent if /\bcooldowns *=/.test script.textContent
-    ''

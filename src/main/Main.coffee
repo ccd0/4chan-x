@@ -274,15 +274,18 @@ Main =
       $.event '4chanXInitFinished'
 
   initThread: ->
-    if (board = $ '.board')
+    s = Site.selectors
+    if (board = $ s.board)
       threads = []
       posts   = []
 
-      for threadRoot in $$ '.board > .thread', board
-        thread = new Thread +threadRoot.id[1..], g.BOARD
+      for threadRoot in $$(s.thread, board)
+        thread = new Thread +threadRoot.id.match(/\d*$/)[0], g.BOARD
         thread.nodes.root = threadRoot
         threads.push thread
-        for postRoot in $$('.thread > .postContainer', threadRoot) when $('.postMessage', postRoot)
+        postRoots = $$ s.postContainer, threadRoot
+        postRoots.unshift threadRoot if Site.isOPContainerThread
+        for postRoot in postRoots when $(s.comment, postRoot)
           try
             posts.push new Post postRoot, thread, g.BOARD
           catch err
@@ -295,17 +298,7 @@ Main =
       Main.handleErrors errors if errors
 
       if g.VIEW is 'thread'
-        scriptData = Get.scriptData()
-        threads[0].postLimit = /\bbumplimit *= *1\b/.test scriptData
-        threads[0].fileLimit = /\bimagelimit *= *1\b/.test scriptData
-        threads[0].ipCount   = if m = scriptData.match /\bunique_ips *= *(\d+)\b/ then +m[1]
-
-      if g.BOARD.ID is 'f' and g.VIEW is 'thread'
-        $.ajax "//a.4cdn.org/f/thread/#{g.THREADID}.json",
-          timeout: $.MINUTE
-          onloadend: ->
-            if @response and posts[0].file
-              posts[0].file.text.dataset.md5 = posts[0].file.MD5 = @response.posts[0].md5
+        Site.parseThreadMetadata?(threads[0])
 
       Main.callbackNodes 'Thread', threads
       Main.callbackNodesDB 'Post', posts, ->

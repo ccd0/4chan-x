@@ -6,7 +6,7 @@ class Post
     @normalizedOriginal = Build.Test.normalize root
     <% } %>
 
-    @ID       = +root.id[2..]
+    @ID       = +root.id.match(/\d*$/)[0]
     @threadID = @thread.ID
     @boardID  = @board.ID
     @fullID   = "#{@board}.#{@ID}"
@@ -16,12 +16,13 @@ class Post
 
     @nodes = @parseNodes root
 
-    if not (@isReply = $.hasClass @nodes.post, 'reply')
+    if not (@isReply = @ID isnt @threadID)
       @thread.OP = @
-      @thread.isArchived = !!$ '.archivedIcon', @nodes.info
-      @thread.isSticky   = !!$ '.stickyIcon', @nodes.info
-      @thread.isClosed   = @thread.isArchived or !!$ '.closedIcon', @nodes.info
-      @thread.kill() if @thread.isArchived
+      for key in ['isSticky', 'isClosed', 'isArchived']
+        @thread[key] = if (selector = Site.selectors.icons[key]) then !!$(selector, @nodes.info) else false
+      if @thread.isArchived
+        @thread.isClosed = true
+        @thread.kill()
 
     @info =
       subject:   @nodes.subject?.textContent or undefined
@@ -32,7 +33,7 @@ class Post
       pass:      @nodes.pass?.title.match(/\d*$/)[0]
       flagCode:  @nodes.flag?.className.match(/flag-(\w+)/)?[1].toUpperCase()
       flag:      @nodes.flag?.title
-      date:      if @nodes.date then new Date(@nodes.date.dataset.utc * 1000)
+      date:      if @nodes.date then new Date(@nodes.date.getAttribute('datetime') or (@nodes.date.dataset.utc * 1000))
 
     if Conf['Anonymize']
       @info.nameBlock = 'Anonymous'
@@ -62,29 +63,20 @@ class Post
     g.posts.push   @fullID, @
 
   parseNodes: (root) ->
-    post = $ '.post',     root
-    info = $ '.postInfo', post
+    s = Site.selectors
+    post = $(s.post, root) or root
+    info = $ s.infoRoot, post
     nodes =
-      root:         root
-      post:         post
-      info:         info
-      subject:      $ '.subject',            info
-      name:         $ '.name',               info
-      email:        $ '.useremail',          info
-      tripcode:     $ '.postertrip',         info
-      uniqueIDRoot: $ '.posteruid',          info
-      uniqueID:     $ '.posteruid > .hand',  info
-      capcode:      $ '.capcode.hand',       info
-      pass:         $ '.n-pu',               info
-      flag:         $ '.flag, .countryFlag', info
-      date:         $ '.dateTime',           info
-      nameBlock:    $ '.nameBlock',          info
-      quote:        $ '.postNum > a:nth-of-type(2)', info
-      reply:        $ '.replylink',          info
-      fileRoot:     $ '.file',        post
-      comment:      $ '.postMessage', post
-      quotelinks:   []
+      root:       root
+      post:       post
+      info:       info
+      comment:    $ s.comment, post
+      quotelinks: []
       archivelinks: []
+    for key, selector of s.info
+      nodes[key] = $ selector, info
+    Site.parseNodes?(@, nodes)
+    nodes.uniqueIDRoot or= nodes.uniqueID
 
     # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
     # https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/7560353/
@@ -108,7 +100,7 @@ class Post
     #   'Comment too long'...
     #   EXIF data. (/p/)
     @nodes.commentClean = bq = @nodes.comment.cloneNode true
-    @cleanComment bq
+    Site.cleanComment?(bq)
     @info.comment = @nodesToText bq
 
   commentDisplay: ->
@@ -121,7 +113,7 @@ class Post
     #   Trailing spaces.
     bq = @nodes.commentClean.cloneNode true
     @cleanSpoilers bq unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
-    @cleanCommentDisplay bq
+    Site.cleanCommentDisplay?(bq)
     @nodesToText(bq).trim().replace(/\s+$/gm, '')
 
   nodesToText: (bq) ->
@@ -132,29 +124,15 @@ class Post
       text += node.data or '\n'
     text
 
-  cleanComment: (bq) ->
-    if (abbr = $ '.abbr', bq) # 'Comment too long' or 'EXIF data available'
-      for node in $$ '.abbr + br, .exif', bq
-        $.rm node
-      for i in [0...2]
-        $.rm br if (br = abbr.previousSibling) and br.nodeName is 'BR'
-      $.rm abbr
-
   cleanSpoilers: (bq) ->
-    spoilers = $$ 's', bq
+    spoilers = $$ Site.selectors.spoiler, bq
     for node in spoilers
       $.replace node, $.tn '[spoiler]'
     return
 
-  cleanCommentDisplay: (bq) ->
-    $.rm b if (b = $ 'b', bq) and /^Rolled /.test(b.textContent)
-    $.rm $('.fortune', bq)
-
   parseQuotes: ->
     @quotes = []
-    # XXX https://github.com/4chan/4chan-JS/issues/77
-    # 4chan currently creates quote links inside [code] tags; ignore them
-    for quotelink in $$ ':not(pre) > .quotelink', @nodes.comment
+    for quotelink in $$ Site.selectors.quotelink, @nodes.comment
       @parseQuote quotelink
     return
 
@@ -165,13 +143,7 @@ class Post
     #  - catalog links. (>>>/b/catalog or >>>/b/search)
     #  - rules links. (>>>/a/rules)
     #  - text-board quotelinks. (>>>/img/1234)
-    match = quotelink.href.match ///
-      ^https?://boards\.4chan\.org/+
-      ([^/]+) # boardID
-      /+(?:res|thread)/+\d+(?:[/?][^#]*)?#p
-      (\d+)   # postID
-      $
-    ///
+    match = quotelink.href.match Site.regexp.quotelink
     return unless match or (@isClone and quotelink.dataset.postID) # normal or resurrected quote
 
     @nodes.quotelinks.push quotelink
@@ -183,32 +155,24 @@ class Post
     @quotes.push fullID unless fullID in @quotes
 
   parseFile: ->
-    {fileRoot} = @nodes
-    return unless fileRoot
-    return if not (link = $ '.fileText > a, .fileText-original > a', fileRoot)
-    return if not (info = link.nextSibling?.textContent.match /\(([\d.]+ [KMG]?B).*\)/)
-    fileText = fileRoot.firstElementChild
-    @file =
-      text:       fileText
-      link:       link
-      url:        link.href
-      name:       fileText.title or link.title or link.textContent
-      size:       info[1]
-      isImage:    /(jpg|png|gif)$/i.test link.href
-      isVideo:    /webm$/i.test link.href
-      dimensions: info[0].match(/\d+x\d+/)?[0]
-      tag:        info[0].match(/,[^,]*, ([a-z]+)\)/i)?[1]
-    size  = +@file.size.match(/[\d.]+/)[0]
-    unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
+    file = {}
+    for key, selector of Site.selectors.file
+      file[key] = $ selector, @nodes.root
+    file.thumbLink = file.thumb?.parentNode
+
+    return if not (file.text and file.link)
+    return if not Site.parseFile @, file
+
+    $.extend file,
+      url:     file.link.href
+      isImage: /(jpg|png|gif)$/i.test file.link.href
+      isVideo: /(webm|mp4)$/i.test file.link.href
+    size  = +file.size.match(/[\d.]+/)[0]
+    unit  = ['B', 'KB', 'MB', 'GB'].indexOf file.size.match(/\w+$/)[0]
     size *= 1024 while unit-- > 0
-    @file.sizeInBytes = size
-    if (thumb = $ 'a.fileThumb > [data-md5]', fileRoot)
-      $.extend @file,
-        thumb:     thumb
-        thumbLink: thumb.parentNode
-        thumbURL:  if m = link.href.match(/\d+(?=\.\w+$)/) then "#{location.protocol}//i.4cdn.org/#{@board}/#{m[0]}s.jpg"
-        MD5:       thumb.dataset.md5
-        isSpoiler: $.hasClass thumb.parentNode, 'imgspoiler'
+    file.sizeInBytes = size
+
+    @file = file
 
   @deadMark =
     # \u00A0 is nbsp

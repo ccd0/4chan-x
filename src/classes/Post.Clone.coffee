@@ -11,10 +11,10 @@ Post.Clone = class extends Post
       @cloneWithoutVideo nodes.root
     else
       nodes.root.cloneNode true
-    Post.Clone.prefix or= 0
+    Post.Clone.suffix or= 0
     for node in [root, $$('[id]', root)...]
-      node.id = Post.Clone.prefix + node.id
-    Post.Clone.prefix++
+      node.id += "_#{Post.Clone.suffix}"
+    Post.Clone.suffix++
 
     @nodes = @parseNodes root
 
@@ -44,12 +44,10 @@ Post.Clone = class extends Post
       @file = {}
       for key, val of @origin.file
         @file[key] = val
-      {fileRoot} = @nodes
-      @file.text  = fileRoot.firstElementChild
-      @file.link  = $ '.fileText > a, .fileText-original', fileRoot
-      @file.thumb = $ 'a.fileThumb > [data-md5]', fileRoot
+      for key, selector of Site.selectors.file
+        @file[key] = $ selector, @nodes.root
       @file.thumbLink = @file.thumb?.parentNode
-      @file.fullImage = $ '.full-image', fileRoot
+      @file.fullImage = $ '.full-image', @file.thumbLink if @file.thumbLink
       @file.videoControls = $ '.video-controls', @file.text
 
       @file.thumb.muted = true if @file.videoThumb
