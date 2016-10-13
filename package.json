@@ -31,7 +31,11 @@
     ],
     "exclude_matches": [
       "*://www.4chan.org/pass",
-      "*://www.4chan.org/pass?*"
+      "*://www.4chan.org/pass?*",
+      "*://www.4chan.org/advertise",
+      "*://www.4chan.org/advertise?*",
+      "*://www.4chan.org/donate",
+      "*://www.4chan.org/donate?*"
     ],
     "grants": [
       "GM_getValue",
