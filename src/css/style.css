@@ -717,6 +717,8 @@ div[data-checked="false"] > .suboption-list {
 }
 .catalog-thread {
   display: inline-block;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   border: 1px solid transparent;
   word-wrap: break-word;
   vertical-align: top;
@@ -727,12 +729,12 @@ div[data-checked="false"] > .suboption-list {
   margin: 4px;
 }
 .catalog-small > .catalog-thread {
-  width: 165px;
-  height: 320px;
+  width: 167px;
+  height: 322px;
 }
 .catalog-large > .catalog-thread {
-  width: 270px;
-  height: 410px;
+  width: 272px;
+  height: 412px;
 }
 :root.catalog-hover-expand .catalog-thread:hover {
   z-index: 1;
@@ -881,8 +883,7 @@ div[data-checked="false"] > .suboption-list {
 .catalog-reply {
   text-align: left;
   white-space: nowrap;
-  margin: -1px;
-  border: 1px solid transparent;
+  border-top: 1px solid transparent;
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: row;
@@ -1337,10 +1338,10 @@ input[name="Default Volume"] {
   box-shadow: 0 0 3px 3px rgba(255, 0, 0, .5);
 }
 :root:not(.werkTyme) .catalog-thread.watched .catalog-thumb,
-:root.werkTyme .catalog-thread.watched:not(:hover),
-:root.werkTyme:not(.catalog-hover-expand) .catalog-thread.watched,
+:root:root.werkTyme .catalog-thread.watched:not(:hover),
+:root:root.werkTyme:not(.catalog-hover-expand) .catalog-thread.watched,
 :root.werkTyme.catalog-hover-expand .catalog-thread.watched > .catalog-container:hover > .catalog-post {
-  outline: 2px solid rgba(255, 0, 0, .75);
+  border: 2px solid rgba(255, 0, 0, .75);
 }
 
 /* Spoiler text */
