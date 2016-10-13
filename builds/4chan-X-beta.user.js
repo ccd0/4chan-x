@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.12.3.7
+// @version      1.12.3.8
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -22,6 +22,14 @@
 // @exclude      https://www.4chan.org/pass
 // @exclude      http://www.4chan.org/pass?*
 // @exclude      https://www.4chan.org/pass?*
+// @exclude      http://www.4chan.org/advertise
+// @exclude      https://www.4chan.org/advertise
+// @exclude      http://www.4chan.org/advertise?*
+// @exclude      https://www.4chan.org/advertise?*
+// @exclude      http://www.4chan.org/donate
+// @exclude      https://www.4chan.org/donate
+// @exclude      http://www.4chan.org/donate?*
+// @exclude      https://www.4chan.org/donate?*
 // @connect      i.4cdn.org
 // @connect      *
 // @grant        GM_getValue
@@ -136,7 +144,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.3.7',
+  VERSION:   '1.12.3.8',
   NAMESPACE: '4chan X.',
   boards:    {}
 };

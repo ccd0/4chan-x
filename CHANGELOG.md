@@ -2,6 +2,9 @@
 
 ### v1.12.3
 
+**v1.12.3.8** *(2016-10-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.8/builds/4chan-X-noupdate.crx)]
+- Don't run 4chan X on the donation or advertisement purchase pages (it already didn't run on the pass purchase page).
+
 **v1.12.3.7** *(2016-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.7/builds/4chan-X-noupdate.crx)]
 - Workaround for problem on 4chan's end with images not loading.
 - The error messages displayed when the Chrome extension updates but the tab has not been reloaded have been replaced with a single warning message asking you to reload the tab.
