@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.0.11
+// @version      1.13.0.12
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -144,7 +144,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.11',
+  VERSION:   '1.13.0.12',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1896,6 +1896,8 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 }\n\
 .catalog-thread {\n\
   display: inline-block;\n\
+  -moz-box-sizing: border-box;\n\
+  box-sizing: border-box;\n\
   border: 1px solid transparent;\n\
   word-wrap: break-word;\n\
   vertical-align: top;\n\
@@ -1906,12 +1908,12 @@ div[data-checked=\"false\"] > .suboption-list {\n\
   margin: 4px;\n\
 }\n\
 .catalog-small > .catalog-thread {\n\
-  width: 165px;\n\
-  height: 320px;\n\
+  width: 167px;\n\
+  height: 322px;\n\
 }\n\
 .catalog-large > .catalog-thread {\n\
-  width: 270px;\n\
-  height: 410px;\n\
+  width: 272px;\n\
+  height: 412px;\n\
 }\n\
 :root.catalog-hover-expand .catalog-thread:hover {\n\
   z-index: 1;\n\
@@ -2004,9 +2006,11 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 .catalog-container:not(:hover) > * > .file,\n\
 .catalog-container:not(:hover) > * > .postInfo > :not(.subject),\n\
 .catalog-container:not(:hover) > * > .catalog-replies,\n\
+.catalog-container:not(:hover) .extra-linebreak,\n\
 :root:not(.catalog-hover-expand) .catalog-container > * > .file,\n\
 :root:not(.catalog-hover-expand) .catalog-container > * > .postInfo > :not(.subject),\n\
 :root:not(.catalog-hover-expand) .catalog-container > * > .catalog-replies,\n\
+:root:not(.catalog-hover-expand) .catalog-container .extra-linebreak,\n\
 .catalog-thread > .catalog-container > :not(.catalog-post),\n\
 .catalog-post > .file > :not(.fileText),\n\
 .catalog-post > * > .fileText > :not(:first-child),\n\
@@ -2057,11 +2061,15 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 :root.catalog-hover-expand .catalog-container:hover > * > .postMessage:not(:empty) {\n\
   padding-top: .3em;\n\
 }\n\
+.catalog-post .extra-linebreak {\n\
+  content: ''; /* makes this work in Blink/WebKit */\n\
+  display: block;\n\
+  margin-top: .3em;\n\
+}\n\
 .catalog-reply {\n\
   text-align: left;\n\
   white-space: nowrap;\n\
-  margin: -1px;\n\
-  border: 1px solid transparent;\n\
+  border-top: 1px solid transparent;\n\
   display: -webkit-flex;\n\
   display: flex;\n\
   -webkit-flex-direction: row;\n\
@@ -2505,10 +2513,10 @@ input[name=\"Default Volume\"] {\n\
   box-shadow: 0 0 3px 3px rgba(255, 0, 0, .5);\n\
 }\n\
 :root:not(.werkTyme) .catalog-thread.watched .catalog-thumb,\n\
-:root.werkTyme .catalog-thread.watched:not(:hover),\n\
-:root.werkTyme:not(.catalog-hover-expand) .catalog-thread.watched,\n\
+:root:root.werkTyme .catalog-thread.watched:not(:hover),\n\
+:root:root.werkTyme:not(.catalog-hover-expand) .catalog-thread.watched,\n\
 :root.werkTyme.catalog-hover-expand .catalog-thread.watched > .catalog-container:hover > .catalog-post {\n\
-  outline: 2px solid rgba(255, 0, 0, .75);\n\
+  border: 2px solid rgba(255, 0, 0, .75);\n\
 }\n\
 /* Spoiler text */\n\
 :root.reveal-spoilers s,\n\
@@ -3841,7 +3849,7 @@ a:only-of-type > .remove {\n\
 :root.tomorrow.werkTyme .catalog-thread.watched:not(:hover),\n\
 :root.tomorrow.werkTyme:not(.catalog-hover-expand) .catalog-thread.watched,\n\
 :root.tomorrow.werkTyme.catalog-hover-expand .catalog-thread.watched > .catalog-container:hover > .catalog-post {\n\
-  outline: 2px solid rgb(64, 192, 255);\n\
+  border: 2px solid rgb(64, 192, 255);\n\
 }\n\
 /* QR */\n\
 .tomorrow #dump-list::-webkit-scrollbar-thumb {\n\
@@ -8177,7 +8185,7 @@ Build = (function() {
       return root;
     },
     catalogThread: function(thread, data, pageCount) {
-      var container, cssText, fileCount, gifIcon, imgClass, postCount, ratio, root, spoilerRange, src, staticPath, tn_h, tn_w;
+      var br, container, cssText, fileCount, gifIcon, i, imgClass, len, postCount, ratio, ref, root, spoilerRange, src, staticPath, tn_h, tn_w;
       staticPath = Build.staticPath, gifIcon = Build.gifIcon;
       tn_w = data.tn_w, tn_h = data.tn_h;
       if (data.spoiler && !Conf['Reveal Spoiler Thumbnails']) {
@@ -8205,6 +8213,13 @@ Build = (function() {
         innerHTML: "<a class=\"catalog-link\" href=\"/" + E(thread.board) + "/thread/" + E(thread.ID) + "\"><img src=\"" + E(src) + "\"" + ((imgClass) ? " class=\"catalog-thumb " + E(imgClass) + "\"" : " class=\"catalog-thumb\" data-width=\"" + E(data.tn_w) + "\" data-height=\"" + E(data.tn_h) + "\"") + "></a><div class=\"catalog-stats\"><span title=\"Posts / Files / Page\"><span class=\"post-count" + ((data.bumplimit) ? " warning" : "") + "\">" + E(postCount) + "</span> / <span class=\"file-count" + ((data.imagelimit) ? " warning" : "") + "\">" + E(fileCount) + "</span> / <span class=\"page-count\">" + E(pageCount) + "</span></span><span class=\"catalog-icons\">" + ((thread.isSticky) ? "<img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" class=\"stickyIcon\" title=\"Sticky\">" : "") + ((thread.isClosed) ? "<img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" class=\"closedIcon\" title=\"Closed\">" : "") + "</span></div>"
       });
       $.before(thread.OP.nodes.info, slice.call(container.childNodes));
+      ref = $$('br', thread.OP.nodes.comment);
+      for (i = 0, len = ref.length; i < len; i++) {
+        br = ref[i];
+        if (br.previousSibling && br.previousSibling.nodeName === 'BR') {
+          $.addClass(br, 'extra-linebreak');
+        }
+      }
       root = $.el('div', {
         className: 'thread catalog-thread',
         id: "t" + thread
