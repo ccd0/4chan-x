@@ -827,9 +827,11 @@ div[data-checked="false"] > .suboption-list {
 .catalog-container:not(:hover) > * > .file,
 .catalog-container:not(:hover) > * > .postInfo > :not(.subject),
 .catalog-container:not(:hover) > * > .catalog-replies,
+.catalog-container:not(:hover) .extra-linebreak,
 :root:not(.catalog-hover-expand) .catalog-container > * > .file,
 :root:not(.catalog-hover-expand) .catalog-container > * > .postInfo > :not(.subject),
 :root:not(.catalog-hover-expand) .catalog-container > * > .catalog-replies,
+:root:not(.catalog-hover-expand) .catalog-container .extra-linebreak,
 .catalog-thread > .catalog-container > :not(.catalog-post),
 .catalog-post > .file > :not(.fileText),
 .catalog-post > * > .fileText > :not(:first-child),
@@ -879,6 +881,11 @@ div[data-checked="false"] > .suboption-list {
 .catalog-post > * > .dateTime,
 :root.catalog-hover-expand .catalog-container:hover > * > .postMessage:not(:empty) {
   padding-top: .3em;
+}
+.catalog-post .extra-linebreak {
+  content: ''; /* makes this work in Blink/WebKit */
+  display: block;
+  margin-top: .3em;
 }
 .catalog-reply {
   text-align: left;
