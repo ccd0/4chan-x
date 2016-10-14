@@ -4,6 +4,10 @@
 
 ## v1.13.0
 
+**v1.13.0.12** *(2016-10-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.12/builds/4chan-X-noupdate.crx)]
+- Switch back to using `border` rather than `outline` for highlighting watched threads in catalog.
+- Restore hiding of extra linebreaks in catalog. Show them at reduced height on hover.
+
 **v1.13.0.11** *(2016-10-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.11/builds/4chan-X-noupdate.crx)]
 - Merge v1.12.3.8: Don't run 4chan X on the donation or advertisement purchase pages (it already didn't run on the pass purchase page).
 
