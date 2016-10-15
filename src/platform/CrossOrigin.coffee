@@ -14,7 +14,7 @@ CrossOrigin =
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
-    if url.split('/')[...3].join('/') is "#{location.protocol}//i.4cdn.org"
+    if url.split('/')[...3].join('/') in ["#{location.protocol}//i.4cdn.org", "#{location.protocol}//is.4chan.org"]
       xhr = new XMLHttpRequest()
       xhr.open 'GET', url, true
       xhr.setRequestHeader key, value for key, value of headers
