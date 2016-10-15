@@ -4,6 +4,10 @@
 
 ## v1.13.0
 
+**v1.13.0.13** *(2016-10-15)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.13/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.13/builds/4chan-X-noupdate.crx)]
+- Add styling guide link to custom CSS section.
+- Add basic support for is.4chan.org domain.
+
 **v1.13.0.12** *(2016-10-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.12/builds/4chan-X-noupdate.crx)]
 - Switch back to using `border` rather than `outline` for highlighting watched threads in catalog.
 - Restore hiding of extra linebreaks in catalog. Show them at reduced height on hover.
