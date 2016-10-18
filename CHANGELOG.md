@@ -2,6 +2,9 @@
 
 ### v1.12.3
 
+**v1.12.3.9** *(2016-10-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.9/builds/4chan-X-noupdate.crx)]
+- Add basic support for is.4chan.org domain.
+
 **v1.12.3.8** *(2016-10-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.8/builds/4chan-X-noupdate.crx)]
 - Don't run 4chan X on the donation or advertisement purchase pages (it already didn't run on the pass purchase page).
 

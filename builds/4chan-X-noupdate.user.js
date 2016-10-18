@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.12.3.8
+// @version      1.12.3.9
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -14,6 +14,8 @@
 // @include      https://www.4chan.org/*
 // @include      http://i.4cdn.org/*
 // @include      https://i.4cdn.org/*
+// @include      http://is.4chan.org/*
+// @include      https://is.4chan.org/*
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      http://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
@@ -31,6 +33,7 @@
 // @exclude      http://www.4chan.org/donate?*
 // @exclude      https://www.4chan.org/donate?*
 // @connect      i.4cdn.org
+// @connect      is.4chan.org
 // @connect      *
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -144,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.3.8',
+  VERSION:   '1.12.3.9',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -13823,7 +13826,7 @@ Linkify = (function() {
       if (!Linkify.regString.test(this.info.comment)) {
         return;
       }
-      ref = $$('a[href^="http://i.4cdn.org/"], a[href^="https://i.4cdn.org/"]', this.nodes.comment);
+      ref = $$('a[href^="http://i.4cdn.org/"], a[href^="https://i.4cdn.org/"], a[href^="http://is.4chan.org/"], a[href^="https://is.4chan.org/"]', this.nodes.comment);
       for (j = 0, len = ref.length; j < len; j++) {
         link = ref[j];
         $.addClass(link, 'linkify');
@@ -22650,6 +22653,7 @@ Main = (function() {
           }
           return;
         case 'i.4cdn.org':
+        case 'is.4chan.org':
           if (!(pathname[2] && !/s\.jpg$/.test(pathname[2]))) {
             return;
           }
