@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.0.13
+// @version      1.13.0.14
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.13',
+  VERSION:   '1.13.0.14',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -10216,6 +10216,9 @@ Index = (function() {
     searchMatch: function(obj, keywords) {
       var file, info, k, key, keyword, l, len, len1, ref, text;
       info = obj.info, file = obj.file;
+      if (info.comment == null) {
+        info.comment = Build.parseComment(info.commentHTML.innerHTML);
+      }
       text = [];
       ref = ['comment', 'subject', 'name', 'tripcode'];
       for (k = 0, len = ref.length; k < len; k++) {

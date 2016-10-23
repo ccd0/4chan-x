@@ -4,6 +4,9 @@
 
 ## v1.13.0
 
+**v1.13.0.14** *(2016-10-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.14/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.14/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.3 causing index/catalog search to not search comment.
+
 **v1.13.0.13** *(2016-10-15)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.13/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.13/builds/4chan-X-noupdate.crx)]
 - Add styling guide link to custom CSS section.
 - Add basic support for is.4chan.org domain.
