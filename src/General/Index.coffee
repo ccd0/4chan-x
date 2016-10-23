@@ -874,6 +874,7 @@ Index =
 
   searchMatch: (obj, keywords) ->
     {info, file} = obj
+    info.comment ?= Build.parseComment info.commentHTML.innerHTML
     text = []
     for key in ['comment', 'subject', 'name', 'tripcode']
       text.push info[key] if key of info
