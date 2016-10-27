@@ -126,14 +126,16 @@ body > div[style*=" top: -10000px;"] {
 }
 
 /* Ads */
-:root:not(.ads-loaded) .ad-cnt > * {
-  height: auto;
+.ad-cnt > *, .adg-rects > * {
+  height: auto !important;
 }
-:root:not(.ads-loaded) .adg-rects,
 :root:not(.ads-loaded) .ad-plea,
 :root:not(.ads-loaded) hr.abovePostForm,
 :root:not(.ads-loaded) .ad-plea-bottom + hr {
   display: none;
+}
+:root:not(.ads-loaded) .adg-rects {
+  margin: 0;
 }
 div.center[style] {
   display: none !important;
