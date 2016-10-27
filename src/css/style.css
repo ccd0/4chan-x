@@ -129,12 +129,13 @@ body > div[style*=" top: -10000px;"] {
 :root:not(.ads-loaded) .ad-cnt > * {
   height: auto;
 }
+:root:not(.ads-loaded) .adg-rects,
 :root:not(.ads-loaded) .ad-plea,
 :root:not(.ads-loaded) hr.abovePostForm,
 :root:not(.ads-loaded) .ad-plea-bottom + hr {
   display: none;
 }
-hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
+div.center[style] {
   display: none !important;
 }
 

@@ -77,6 +77,9 @@
 
 ### v1.12.3
 
+**v1.12.3.10** *(2016-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.10/builds/4chan-X-noupdate.crx)]
+- Update due to 4chan's ad changes.
+
 **v1.12.3.9** *(2016-10-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.9/builds/4chan-X-noupdate.crx)]
 - Add basic support for is.4chan.org domain.
 
