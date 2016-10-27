@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.12.3.10
+// @version      1.12.3.11
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.3.10',
+  VERSION:   '1.12.3.11',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1300,14 +1300,16 @@ body > div[style*=\" top: -10000px;\"] {\n\
   visibility: hidden !important;\n\
 }\n\
 /* Ads */\n\
-:root:not(.ads-loaded) .ad-cnt > * {\n\
-  height: auto;\n\
+.ad-cnt > *, .adg-rects > * {\n\
+  height: auto !important;\n\
 }\n\
-:root:not(.ads-loaded) .adg-rects,\n\
 :root:not(.ads-loaded) .ad-plea,\n\
 :root:not(.ads-loaded) hr.abovePostForm,\n\
 :root:not(.ads-loaded) .ad-plea-bottom + hr {\n\
   display: none;\n\
+}\n\
+:root:not(.ads-loaded) .adg-rects {\n\
+  margin: 0;\n\
 }\n\
 div.center[style] {\n\
   display: none !important;\n\
@@ -3884,6 +3886,11 @@ www:
 }\n\
 :root:not(.js-enabled) #form {\n\
   display: block;\n\
+}\n\
+#bd > div[style], #bd > div[style] > * {\n\
+  height: auto !important;\n\
+  margin: 0 !important;\n\
+  font-size: 0;\n\
 }\n"
 
 };
