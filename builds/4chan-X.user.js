@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.12.3.9
+// @version      1.12.3.10
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.12.3.9',
+  VERSION:   '1.12.3.10',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1303,12 +1303,13 @@ body > div[style*=\" top: -10000px;\"] {\n\
 :root:not(.ads-loaded) .ad-cnt > * {\n\
   height: auto;\n\
 }\n\
+:root:not(.ads-loaded) .adg-rects,\n\
 :root:not(.ads-loaded) .ad-plea,\n\
 :root:not(.ads-loaded) hr.abovePostForm,\n\
 :root:not(.ads-loaded) .ad-plea-bottom + hr {\n\
   display: none;\n\
 }\n\
-hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {\n\
+div.center[style] {\n\
   display: none !important;\n\
 }\n\
 /* Anti-autoplay */\n\
@@ -9959,8 +9960,8 @@ Settings = (function() {
         }
       },
       ads: function(cb) {
-        return $.onExists(doc, '.ad-cnt', function(ad) {
-          return $.onExists(ad, 'img', function() {
+        return $.onExists(doc, '.ad-cnt, .adg-rects', function(ad) {
+          return $.onExists(ad, 'img, iframe', function() {
             var url;
             url = Redirect.to('thread', {
               boardID: 'qa',
@@ -22721,8 +22722,8 @@ Main = (function() {
       if ($.engine) {
         $.addClass(doc, "ua-" + $.engine);
       }
-      $.onExists(doc, '.ad-cnt', function(ad) {
-        return $.onExists(ad, 'img', function() {
+      $.onExists(doc, '.ad-cnt, .adg-rects', function(ad) {
+        return $.onExists(ad, 'img, iframe', function() {
           return $.addClass(doc, 'ads-loaded');
         });
       });
