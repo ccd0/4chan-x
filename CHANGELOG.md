@@ -5,9 +5,7 @@
 ## v1.13.0
 
 **v1.13.0.15** *(2016-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.15/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.15/builds/4chan-X-noupdate.crx)]
-- Merge branch 'bstable'
-- Release 4chan X v1.12.3.10.
-- Update due to 4chan's ad changes.
+- Merge v1.12.3.10: Update due to 4chan's ad changes.
 
 **v1.13.0.14** *(2016-10-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.14/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.14/builds/4chan-X-noupdate.crx)]
 - Fix bug from v1.13.0.3 causing index/catalog search to not search comment.
