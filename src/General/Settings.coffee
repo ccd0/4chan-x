@@ -113,7 +113,7 @@ Settings =
             Enable it on boards.4chan.org in your browser's privacy settings (may be listed as part of "local data" or "cookies").
           """
     ads: (cb) ->
-      $.onExists doc, '.ad-cnt', (ad) -> $.onExists ad, 'img', ->
+      $.onExists doc, '.ad-cnt, .adg-rects', (ad) -> $.onExists ad, 'img, iframe', ->
         url = Redirect.to 'thread', {boardID: 'qa', threadID: 362590}
         cb $.el 'li',
           <%= html(
