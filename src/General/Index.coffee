@@ -342,12 +342,18 @@ Index =
       'all-pages':     'all pages'
       'catalog':       'catalog'
     sort:
-      'bump-order':    'bump'
-      'last-reply':    'lastreply'
-      'last-long-reply': 'lastlong'
-      'creation-date': 'birth'
-      'reply-count':   'replycount'
-      'file-count':    'filecount'
+      'bump-order':        'bump'
+      'bump-order-rev':    'bump-rev'
+      'last-reply':        'lastreply'
+      'last-reply-rev':    'lastreply-rev'
+      'last-long-reply':   'lastlong'
+      'last-long-reply-rev': 'lastlong-rev'
+      'creation-date':     'birth'
+      'creation-date-rev': 'birth-rev'
+      'reply-count':       'replycount'
+      'reply-count-rev':   'replycount-rev'
+      'file-count':        'filecount'
+      'file-count-rev':    'filecount-rev'
 
   processHash: ->
     # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
