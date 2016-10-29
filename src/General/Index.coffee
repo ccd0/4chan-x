@@ -351,17 +351,11 @@ Index =
       'catalog':       'catalog'
     sort:
       'bump-order':        'bump'
-      'bump-order-rev':    'bump-rev'
       'last-reply':        'lastreply'
-      'last-reply-rev':    'lastreply-rev'
       'last-long-reply':   'lastlong'
-      'last-long-reply-rev': 'lastlong-rev'
       'creation-date':     'birth'
-      'creation-date-rev': 'birth-rev'
       'reply-count':       'replycount'
-      'reply-count-rev':   'replycount-rev'
       'file-count':        'filecount'
-      'file-count-rev':    'filecount-rev'
 
   processHash: ->
     # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
@@ -378,6 +372,8 @@ Index =
         state.page = 1
       else if (sort = Index.hashCommands.sort[command])
         state.sort = sort
+      else if (sort = Index.hashCommands.sort[command.slice(0,-4)])
+        state.sort = sort + '-rev'
       else if /^s=/.test command
         state.search = decodeURIComponent(command[2..]).replace(/\+/g, ' ').trim()
       else
@@ -460,7 +456,7 @@ Index =
     $('#hidden-toggle a', Index.navLinks).textContent = 'Show'
 
   setupSort: ->
-    Index.selectRev.checked = false
+    Index.selectRev.checked = Index.currentSort.slice(-4) is '-rev'
     Index.selectSort.value  = do ->
       if Index.currentSort.slice(-4) is '-rev'
         Index.selectRev.checked = true
@@ -764,32 +760,31 @@ Index =
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
     return unless liveThreadData
-    Index.sortedThreadIDs = do ->
-      if Index.currentSort.slice(-4) == "-rev"
-        currentSort = Index.currentSort.slice(0,-4)
-        reverse = true
-      else
-        currentSort = Index.currentSort
-      sorted = switch currentSort
-        when 'lastreply'
-          [liveThreadData...].sort((a, b) ->
-            a = num[num.length - 1] if (num = a.last_replies)
-            b = num[num.length - 1] if (num = b.last_replies)
-            b.no - a.no
-          ).map (post) -> post.no
-        when 'lastlong'
-          lastlong = (thread) ->
-            for r, i in (thread.last_replies or []) by -1
-              return r if r.com and Build.parseComment(r.com).replace(/[^a-z]/ig, '').length >= 100
-            thread
-          [liveThreadData...].sort((a, b) ->
-            lastlong(b).no - lastlong(a).no
-          ).map (post) -> post.no
-        when 'bump'       then liveThreadIDs
-        when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
-        when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
-        when 'filecount'  then [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
-      return if reverse then [sorted...].reverse() else sorted
+    if Index.currentSort.slice(-4) is '-rev'
+      currentSort = Index.currentSort.slice(0,-4)
+      reverse = true
+    else
+      currentSort = Index.currentSort
+    sorted = switch currentSort
+      when 'lastreply'
+        [liveThreadData...].sort((a, b) ->
+          a = num[num.length - 1] if (num = a.last_replies)
+          b = num[num.length - 1] if (num = b.last_replies)
+          b.no - a.no
+        ).map (post) -> post.no
+      when 'lastlong'
+        lastlong = (thread) ->
+          for r, i in (thread.last_replies or []) by -1
+            return r if r.com and Build.parseComment(r.com).replace(/[^a-z]/ig, '').length >= 100
+          thread
+        [liveThreadData...].sort((a, b) ->
+          lastlong(b).no - lastlong(a).no
+        ).map (post) -> post.no
+      when 'bump'       then liveThreadIDs
+      when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
+      when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
+      when 'filecount'  then [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
+    Index.sortedThreadIDs = if reverse then [sorted...].reverse() else sorted
     if Index.search and (threadIDs = Index.querySearch Index.search)
       Index.sortedThreadIDs = threadIDs
     # Sticky threads
