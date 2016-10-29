@@ -95,17 +95,24 @@ Index =
     @hideLabel = $ '#hidden-label', @navLinks
     $.on $('#hidden-toggle a', @navLinks), 'click', @cb.toggleHiddenThreads
 
-    # Drop-down menus
+    # Drop-down menus and reverse sort toggle
+    @selectRev   = $ '#index-rev',  @navLinks
     @selectMode  = $ '#index-mode', @navLinks
     @selectSort  = $ '#index-sort', @navLinks
     @selectSize  = $ '#index-size', @navLinks
+    $.on @selectRev,  'change', @cb.sort
     $.on @selectMode, 'change', @cb.mode
     $.on @selectSort, 'change', @cb.sort
     $.on @selectSize, 'change', $.cb.value
     $.on @selectSize, 'change', @cb.size
     for select in [@selectMode, @selectSize]
       select.value = Conf[select.name]
-    @selectSort.value = Index.currentSort
+    @selectSort.value = do ->
+      if Index.currentSort.slice(-4) is '-rev'
+        Index.selectRev.checked = true
+        return Index.currentSort.slice(0,-4)
+      else
+        return Index.currentSort
 
     # Thread container
     @root = $.el 'div', className: 'board json-index'
@@ -252,7 +259,8 @@ Index =
       Index.pageLoad false
 
     sort: ->
-      Index.pushState {sort: @value}
+      value = if Index.selectRev.checked then Index.selectSort.value + "-rev" else Index.selectSort.value
+      Index.pushState {sort: value}
       Index.pageLoad false
 
     resort: (e) ->
@@ -452,7 +460,13 @@ Index =
     $('#hidden-toggle a', Index.navLinks).textContent = 'Show'
 
   setupSort: ->
-    Index.selectSort.value = Index.currentSort
+    Index.selectRev.checked = false
+    Index.selectSort.value  = do ->
+      if Index.currentSort.slice(-4) is '-rev'
+        Index.selectRev.checked = true
+        return Index.currentSort.slice(0,-4)
+      else
+        return Index.currentSort
 
   getPagesNum: ->
     if Index.search
@@ -750,25 +764,32 @@ Index =
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
     return unless liveThreadData
-    Index.sortedThreadIDs = switch Index.currentSort
-      when 'lastreply'
-        [liveThreadData...].sort((a, b) ->
-          a = num[num.length - 1] if (num = a.last_replies)
-          b = num[num.length - 1] if (num = b.last_replies)
-          b.no - a.no
-        ).map (post) -> post.no
-      when 'lastlong'
-        lastlong = (thread) ->
-          for r, i in (thread.last_replies or []) by -1
-            return r if r.com and Build.parseComment(r.com).replace(/[^a-z]/ig, '').length >= 100
-          thread
-        [liveThreadData...].sort((a, b) ->
-          lastlong(b).no - lastlong(a).no
-        ).map (post) -> post.no
-      when 'bump'       then liveThreadIDs
-      when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
-      when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
-      when 'filecount'  then [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
+    Index.sortedThreadIDs = do ->
+      if Index.currentSort.slice(-4) == "-rev"
+        currentSort = Index.currentSort.slice(0,-4)
+        reverse = true
+      else
+        currentSort = Index.currentSort
+      sorted = switch currentSort
+        when 'lastreply'
+          [liveThreadData...].sort((a, b) ->
+            a = num[num.length - 1] if (num = a.last_replies)
+            b = num[num.length - 1] if (num = b.last_replies)
+            b.no - a.no
+          ).map (post) -> post.no
+        when 'lastlong'
+          lastlong = (thread) ->
+            for r, i in (thread.last_replies or []) by -1
+              return r if r.com and Build.parseComment(r.com).replace(/[^a-z]/ig, '').length >= 100
+            thread
+          [liveThreadData...].sort((a, b) ->
+            lastlong(b).no - lastlong(a).no
+          ).map (post) -> post.no
+        when 'bump'       then liveThreadIDs
+        when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
+        when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
+        when 'filecount'  then [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
+      return if reverse then [sorted...].reverse() else sorted
     if Index.search and (threadIDs = Index.querySearch Index.search)
       Index.sortedThreadIDs = threadIDs
     # Sticky threads
