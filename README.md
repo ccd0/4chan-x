@@ -1,7 +1,8 @@
 ![screenshot](https://ccd0.github.io/4chan-x/img/screenshot.png)
 # 4chan X
-Adds various features to 4chan.
-Previously developed by [aeosynth](https://github.com/aeosynth/4chan-x), [Mayhem](https://github.com/MayhemYDG/4chan-x), [ihavenoface](https://github.com/ihavenoface/4chan-x), [Zixaphir](https://github.com/zixaphir/appchan-x), [Seaweed](https://github.com/seaweedchan/4chan-x), and [Spittie](https://github.com/Spittie/4chan-x), with contributions from many others.
+4chan X is an unofficial script written by users of 4chan to add various features to the site.
+
+It was previously developed by [aeosynth](https://github.com/aeosynth/4chan-x), [Mayhem](https://github.com/MayhemYDG/4chan-x), [ihavenoface](https://github.com/ihavenoface/4chan-x), [Zixaphir](https://github.com/zixaphir/appchan-x), [Seaweed](https://github.com/seaweedchan/4chan-x), and [Spittie](https://github.com/Spittie/4chan-x), with contributions from many others.
 
 If you're looking for a maintained fork of OneeChan (a style script used in addition to 4chan X), try
 https://github.com/Nebukazar/OneeChan.
