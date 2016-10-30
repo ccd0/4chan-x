@@ -9,6 +9,7 @@
     "downloads": "https://www.4chan-x.net/builds/",
     "oldVersions": "https://raw.githubusercontent.com/ccd0/4chan-x/",
     "faq": "https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions",
+    "cssGuide": "https://github.com/ccd0/4chan-x/wiki/Styling-Guide",
     "license": "https://github.com/ccd0/4chan-x/blob/master/LICENSE",
     "changelog": "https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md",
     "issues": "https://gitreports.com/issue/ccd0/4chan-x",
@@ -25,13 +26,18 @@
       "*://sys.4chan.org/*",
       "*://www.4chan.org/*",
       "*://i.4cdn.org/*",
+      "*://is.4chan.org/*",
       "https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
       "https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
       "*://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*"
     ],
     "exclude_matches": [
       "*://www.4chan.org/pass",
-      "*://www.4chan.org/pass?*"
+      "*://www.4chan.org/pass?*",
+      "*://www.4chan.org/advertise",
+      "*://www.4chan.org/advertise?*",
+      "*://www.4chan.org/donate",
+      "*://www.4chan.org/donate?*"
     ],
     "grants": [
       "GM_getValue",

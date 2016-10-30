@@ -763,6 +763,7 @@ Index =
       when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
       when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
       when 'filecount'  then [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
+      else liveThreadIDs
     if Index.search and (threadIDs = Index.querySearch Index.search)
       Index.sortedThreadIDs = threadIDs
     # Sticky threads
@@ -874,6 +875,7 @@ Index =
 
   searchMatch: (obj, keywords) ->
     {info, file} = obj
+    info.comment ?= Build.parseComment info.commentHTML.innerHTML
     text = []
     for key in ['comment', 'subject', 'name', 'tripcode']
       text.push info[key] if key of info

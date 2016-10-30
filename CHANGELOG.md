@@ -4,6 +4,32 @@
 
 ## v1.13.0
 
+**v1.13.0.17** *(2016-10-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.17/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.17/builds/4chan-X-noupdate.crx)]
+- Various regression and bug fixes.
+
+**v1.13.0.16** *(2016-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.16/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.16/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.3.11: Update due to 4chan's ad changes, part two.
+
+**v1.13.0.15** *(2016-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.15/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.15/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.3.10: Update due to 4chan's ad changes.
+
+**v1.13.0.14** *(2016-10-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.14/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.14/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.3 causing index/catalog search to not search comment.
+
+**v1.13.0.13** *(2016-10-15)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.13/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.13/builds/4chan-X-noupdate.crx)]
+- Add styling guide link to custom CSS section.
+- Add basic support for is.4chan.org domain.
+
+**v1.13.0.12** *(2016-10-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.12/builds/4chan-X-noupdate.crx)]
+- Switch back to using `border` rather than `outline` for highlighting watched threads in catalog.
+- Restore hiding of extra linebreaks in catalog. Show them at reduced height on hover.
+
+**v1.13.0.11** *(2016-10-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.11/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.3.8: Don't run 4chan X on the donation or advertisement purchase pages (it already didn't run on the pass purchase page).
+
+**v1.13.0.10** *(2016-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.10/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.3.7: Workaround for problem on 4chan's end with images not loading.
+
 **v1.13.0.9** *(2016-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.9/builds/4chan-X-noupdate.crx)]
 - Fix bug from v1.13.0.0 that broke Quote Inlining / Previewing of OPs on /f/.
 
@@ -59,6 +85,22 @@
 - API change: The conditions under which the `IndexRefresh` event is fired have changed to better serve the needs of clients (particularly Name Sync, which is the only extension I know of using this). It now fires whenever new posts are added to the index (including the initial ones, and including posts in the non-JSON index), and always fires after `4chanXInitFinished`.
 
 ### v1.12.3
+
+**v1.12.3.11** *(2016-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.11/builds/4chan-X-noupdate.crx)]
+- Update due to 4chan's ad changes, part two.
+
+**v1.12.3.10** *(2016-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.10/builds/4chan-X-noupdate.crx)]
+- Update due to 4chan's ad changes.
+
+**v1.12.3.9** *(2016-10-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.9/builds/4chan-X-noupdate.crx)]
+- Add basic support for is.4chan.org domain.
+
+**v1.12.3.8** *(2016-10-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.8/builds/4chan-X-noupdate.crx)]
+- Don't run 4chan X on the donation or advertisement purchase pages (it already didn't run on the pass purchase page).
+
+**v1.12.3.7** *(2016-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.7/builds/4chan-X-noupdate.crx)]
+- Workaround for problem on 4chan's end with images not loading.
+- The error messages displayed when the Chrome extension updates but the tab has not been reloaded have been replaced with a single warning message asking you to reload the tab.
 
 **v1.12.3.6** *(2016-10-03)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.6/builds/4chan-X-noupdate.crx)]
 - Add `Pass Date` to filterable items.
