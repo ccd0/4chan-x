@@ -72,12 +72,16 @@ SW.yotsuba =
   parseFile: (post, file) ->
     {text, link, thumb} = file
     return false if not (info = link.nextSibling?.textContent.match /\(([\d.]+ [KMG]?B).*\)/)
+    # XXX full images on https://is.4chan.org don't load
+    link.hostname = 'i.4cdn.org' if link.hostname is 'is.4chan.org'
     $.extend file,
       name:       text.title or link.title or link.textContent
       size:       info[1]
       dimensions: info[0].match(/\d+x\d+/)?[0]
       tag:        info[0].match(/,[^,]*, ([a-z]+)\)/i)?[1]
     if thumb
+      # XXX full images on https://is.4chan.org don't load
+      thumb.parentNode.hostname = 'i.4cdn.org' if thumb.parentNode.hostname is 'is.4chan.org'
       $.extend file,
         thumbURL:  if (m = link.href.match /\d+(?=\.\w+$)/) then "#{location.protocol}//i.4cdn.org/#{post.board}/#{m[0]}s.jpg"
         MD5:       thumb.dataset.md5

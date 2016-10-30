@@ -132,7 +132,7 @@ Main =
         else if pathname[2] is 'post'
           PostSuccessful.init()
         return
-      when 'i.4cdn.org'
+      when 'i.4cdn.org', 'is.4chan.org'
         return unless pathname[2] and not /s\.jpg$/.test(pathname[2])
         $.asap (-> d.readyState isnt 'loading'), ->
           if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
@@ -190,7 +190,7 @@ Main =
     $.addClass doc, 'fourchan-x', 'seaweedchan'
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
     $.addClass doc, "ua-#{$.engine}" if $.engine
-    $.onExists doc, '.ad-cnt', (ad) -> $.onExists ad, 'img', -> $.addClass doc, 'ads-loaded'
+    $.onExists doc, '.ad-cnt, .adg-rects', (ad) -> $.onExists ad, 'img, iframe', -> $.addClass doc, 'ads-loaded'
     $.addClass doc, 'autohiding-scrollbar' if Conf['Autohiding Scrollbar']
     $.ready ->
       if d.body.clientHeight > doc.clientHeight and (window.innerWidth is doc.clientWidth) isnt Conf['Autohiding Scrollbar']

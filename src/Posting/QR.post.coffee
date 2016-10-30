@@ -117,6 +117,7 @@ QR.post = class
       @spoiler = input.checked
       return
     {name}  = input.dataset
+    prev    = @[name]
     @[name] = input.value or input.dataset.default or null
     switch name
       when 'thread'
@@ -133,7 +134,8 @@ QR.post = class
         @saveFilename()
         @updateFilename()
       when 'name'
-        QR.persona.set @
+        if @name isnt prev # only save manual changes, not values filled in by persona settings
+          QR.persona.set @
 
   forceSave: ->
     return unless @ is QR.selected

@@ -220,6 +220,9 @@ Build =
     container = $.el 'div', <%= readHTML('CatalogThread.html') %>
     $.before thread.OP.nodes.info, [container.childNodes...]
 
+    for br in $$('br', thread.OP.nodes.comment) when br.previousSibling and br.previousSibling.nodeName is 'BR'
+      $.addClass br, 'extra-linebreak'
+
     root = $.el 'div',
       className: 'thread catalog-thread'
       id: "t#{thread}"

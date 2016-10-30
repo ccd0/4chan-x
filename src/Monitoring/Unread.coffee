@@ -231,12 +231,7 @@ Unread =
         Unread.title
       d.title = "#{titleQuotingYou}#{titleCount}#{titleDead}"
 
-    $.forceSync 'Remember Last Read Post'
-    if Conf['Remember Last Read Post'] and (!Unread.thread.isDead or Unread.thread.isArchived)
-      ThreadWatcher.update Unread.thread.board.ID, Unread.thread.ID,
-        isDead: Unread.thread.isDead
-        unread: count
-        quotingYou: countQuotingYou
+    Unread.saveThreadWatcherCount()
 
     if Conf['Unread Favicon']
       {isDead} = Unread.thread
@@ -249,3 +244,11 @@ Unread =
           Favicon[if isDead then 'dead' else 'default']
       # `favicon.href = href` doesn't work on Firefox.
       $.add d.head, Favicon.el
+
+  saveThreadWatcherCount: $.debounce 2 * $.SECOND, ->
+    $.forceSync 'Remember Last Read Post'
+    if Conf['Remember Last Read Post'] and (!Unread.thread.isDead or Unread.thread.isArchived)
+      ThreadWatcher.update Unread.thread.board.ID, Unread.thread.ID,
+        isDead: Unread.thread.isDead
+        unread: Unread.posts.size
+        quotingYou: Unread.postsQuotingYou.size

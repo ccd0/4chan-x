@@ -16,13 +16,13 @@ Post.Clone = class extends Post
       node.id += "_#{Post.Clone.suffix}"
     Post.Clone.suffix++
 
-    @nodes = @parseNodes root
-
     # Remove inlined posts inside of this post.
-    for inline  in $$ '.inline',  @nodes.post
+    for inline  in $$ '.inline', root
       $.rm inline
-    for inlined in $$ '.inlined', @nodes.post
+    for inlined in $$ '.inlined', root
       $.rmClass inlined, 'inlined'
+
+    @nodes = @parseNodes root
 
     root.hidden = false # post hiding
     $.rmClass root,        'forwarded' # quote inlining
