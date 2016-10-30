@@ -4,6 +4,9 @@
 
 ## v1.13.0
 
+**v1.13.0.17** *(2016-10-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.17/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.17/builds/4chan-X-noupdate.crx)]
+- Various regression and bug fixes.
+
 **v1.13.0.16** *(2016-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.16/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.16/builds/4chan-X-noupdate.crx)]
 - Merge v1.12.3.11: Update due to 4chan's ad changes, part two.
 

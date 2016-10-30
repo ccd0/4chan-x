@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.0.16
+// @version      1.13.0.17
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.16',
+  VERSION:   '1.13.0.17',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -6178,17 +6178,17 @@ Post = (function() {
         node.id = Post.Clone.prefix + node.id;
       }
       Post.Clone.prefix++;
-      this.nodes = this.parseNodes(root);
-      ref2 = $$('.inline', this.nodes.post);
+      ref2 = $$('.inline', root);
       for (k = 0, len2 = ref2.length; k < len2; k++) {
         inline = ref2[k];
         $.rm(inline);
       }
-      ref3 = $$('.inlined', this.nodes.post);
+      ref3 = $$('.inlined', root);
       for (l = 0, len3 = ref3.length; l < len3; l++) {
         inlined = ref3[l];
         $.rmClass(inlined, 'inlined');
       }
+      this.nodes = this.parseNodes(root);
       root.hidden = false;
       $.rmClass(root, 'forwarded');
       $.rmClass(this.nodes.post, 'highlight');
@@ -18965,20 +18965,23 @@ Unread = (function() {
         titleDead = Unread.thread.isDead ? Unread.title.replace('-', (Unread.thread.isArchived ? '- Archived -' : '- 404 -')) : Unread.title;
         d.title = "" + titleQuotingYou + titleCount + titleDead;
       }
-      $.forceSync('Remember Last Read Post');
-      if (Conf['Remember Last Read Post'] && (!Unread.thread.isDead || Unread.thread.isArchived)) {
-        ThreadWatcher.update(Unread.thread.board.ID, Unread.thread.ID, {
-          isDead: Unread.thread.isDead,
-          unread: count,
-          quotingYou: countQuotingYou
-        });
-      }
+      Unread.saveThreadWatcherCount();
       if (Conf['Unread Favicon']) {
         isDead = Unread.thread.isDead;
         Favicon.el.href = countQuotingYou ? Favicon[isDead ? 'unreadDeadY' : 'unreadY'] : count ? Favicon[isDead ? 'unreadDead' : 'unread'] : Favicon[isDead ? 'dead' : 'default'];
         return $.add(d.head, Favicon.el);
       }
-    }
+    },
+    saveThreadWatcherCount: $.debounce(2 * $.SECOND, function() {
+      $.forceSync('Remember Last Read Post');
+      if (Conf['Remember Last Read Post'] && (!Unread.thread.isDead || Unread.thread.isArchived)) {
+        return ThreadWatcher.update(Unread.thread.board.ID, Unread.thread.ID, {
+          isDead: Unread.thread.isDead,
+          unread: Unread.posts.size,
+          quotingYou: Unread.postsQuotingYou.size
+        });
+      }
+    })
   };
 
   return Unread;
@@ -21719,12 +21722,13 @@ QR = (function() {
     };
 
     _Class.prototype.save = function(input) {
-      var name, ref;
+      var name, prev, ref;
       if (input.type === 'checkbox') {
         this.spoiler = input.checked;
         return;
       }
       name = input.dataset.name;
+      prev = this[name];
       this[name] = input.value || input.dataset["default"] || null;
       switch (name) {
         case 'thread':
@@ -21743,7 +21747,9 @@ QR = (function() {
           this.saveFilename();
           return this.updateFilename();
         case 'name':
-          return QR.persona.set(this);
+          if (this.name !== prev) {
+            return QR.persona.set(this);
+          }
       }
     };
 
