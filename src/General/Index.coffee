@@ -107,12 +107,8 @@ Index =
     $.on @selectSize, 'change', @cb.size
     for select in [@selectMode, @selectSize]
       select.value = Conf[select.name]
-    @selectSort.value = do ->
-      if Index.currentSort.slice(-4) is '-rev'
-        Index.selectRev.checked = true
-        return Index.currentSort.slice(0,-4)
-      else
-        return Index.currentSort
+    @selectRev.checked = /-rev$/.test Index.currentSort
+    @selectSort.value  = Index.currentSort.replace /-rev$/, ''
 
     # Thread container
     @root = $.el 'div', className: 'board json-index'
@@ -370,10 +366,9 @@ Index =
       else if command is 'index'
         state.mode = Conf['Previous Index Mode']
         state.page = 1
-      else if (sort = Index.hashCommands.sort[command])
+      else if (sort = Index.hashCommands.sort[command.replace(/-rev$/, '')])
         state.sort = sort
-      else if command.slice(-4) is '-rev' and (sort = Index.hashCommands.sort[command.slice(0,-4)])
-        state.sort = sort + '-rev'
+        state.sort += '-rev' if /-rev$/.test(command)
       else if /^s=/.test command
         state.search = decodeURIComponent(command[2..]).replace(/\+/g, ' ').trim()
       else
@@ -456,13 +451,8 @@ Index =
     $('#hidden-toggle a', Index.navLinks).textContent = 'Show'
 
   setupSort: ->
-    Index.selectRev.checked = Index.currentSort.slice(-4) is '-rev'
-    Index.selectSort.value  = do ->
-      if Index.currentSort.slice(-4) is '-rev'
-        Index.selectRev.checked = true
-        return Index.currentSort.slice(0,-4)
-      else
-        return Index.currentSort
+    Index.selectRev.checked = /-rev$/.test Index.currentSort
+    Index.selectSort.value  = Index.currentSort.replace /-rev$/, ''
 
   getPagesNum: ->
     if Index.search
@@ -760,12 +750,7 @@ Index =
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
     return unless liveThreadData
-    if Index.currentSort.slice(-4) is '-rev'
-      currentSort = Index.currentSort.slice(0,-4)
-      reverse = true
-    else
-      currentSort = Index.currentSort
-    sorted = switch currentSort
+    Index.sortedThreadIDs = switch Index.currentSort.replace(/-rev$/, '')
       when 'lastreply'
         [liveThreadData...].sort((a, b) ->
           a = num[num.length - 1] if (num = a.last_replies)
@@ -784,7 +769,8 @@ Index =
       when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
       when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
       when 'filecount'  then [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
-    Index.sortedThreadIDs = if reverse then [sorted...].reverse() else sorted
+    if /-rev$/.test(Index.currentSort)
+      Index.sortedThreadIDs = [Index.sortedThreadIDs...].reverse()
     if Index.search and (threadIDs = Index.querySearch Index.search)
       Index.sortedThreadIDs = threadIDs
     # Sticky threads
