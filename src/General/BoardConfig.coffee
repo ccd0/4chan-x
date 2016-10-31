@@ -2,7 +2,8 @@ BoardConfig =
   cbs: []
 
   init: ->
-    if (Conf['boardConfig'].lastChecked or 0) < Date.now() - 2 * $.HOUR
+    now = Date.now()
+    unless now - 2 * $.HOUR < (Conf['boardConfig'].lastChecked or 0) <= now
       $.ajax '//a.4cdn.org/boards.json',
         onloadend: @load
     else
