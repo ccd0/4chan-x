@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.0.18
+// @version      1.13.0.19
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.18',
+  VERSION:   '1.13.0.19',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -4016,6 +4016,156 @@ a:only-of-type > .remove {\n\
 :root.photon .watch-thread-link\n\
 {\n\
   background-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(51,51,51)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n\
+}\n\
+/* General */\n\
+:root.spooky .dialog {\n\
+  background-color: #171526;\n\
+  border-color: #707070;\n\
+}\n\
+:root.spooky .field:focus,\n\
+:root.spooky .field.focus {\n\
+  border-color: #98E;\n\
+}\n\
+/* Header */\n\
+:root.spooky #header-bar.dialog {\n\
+  background-color: rgba(23,21,38,0.98);\n\
+}\n\
+:root.spooky:not(.fixed) #header-bar, :root.spooky #notifications {\n\
+  font-size: 9pt;\n\
+}\n\
+:root.spooky #header-bar, :root.spooky #notifications {\n\
+  color: #C49756;\n\
+}\n\
+:root.spooky #board-list a, :root.spooky #shortcuts a {\n\
+  color: #FE9600;\n\
+}\n\
+:root.spooky.shortcut-icons .native-settings {\n\
+  background-image: url('//s.4cdn.org/image/favicon-ws.ico');\n\
+}\n\
+/* Settings */\n\
+:root.spooky #fourchanx-settings fieldset, :root.spooky .section-main div::before {\n\
+  border-color: #707070;\n\
+}\n\
+:root.spooky .suboption-list > div:last-of-type {\n\
+  background-color: #171526;\n\
+}\n\
+/* Catalog */\n\
+:root.spooky.catalog-hover-expand .catalog-container:hover > .post {\n\
+  background-color: #171526;\n\
+}\n\
+:root.spooky.werkTyme .catalog-thread:not(:hover),\n\
+:root.spooky.werkTyme:not(.catalog-hover-expand) .catalog-thread,\n\
+:root.spooky.catalog-hover-expand .catalog-container:hover > .post,\n\
+:root.spooky.catalog-hover-expand .catalog-container:hover .catalog-reply {\n\
+  border-color: #707070;\n\
+}\n\
+/* Quote */\n\
+:root.spooky #arc-list span.quote {\n\
+  color: #634C2C;\n\
+}\n\
+:root.spooky .backlink.deadlink {\n\
+  color: #FE9600 !important;\n\
+}\n\
+:root.spooky .inline {\n\
+  border-color: #707070;\n\
+  background-color: rgba(255, 255, 255, .14);\n\
+}\n\
+/* Fappe and Werk Tyme */\n\
+:root.spooky .indicator {\n\
+  color: #171526;\n\
+}\n\
+/* Highlighting */\n\
+:root.spooky .qphl {\n\
+  outline: 2px solid rgba(145, 182, 214, .8);\n\
+}\n\
+:root.spooky.highlight-you .quotesYou.opContainer,\n\
+:root.spooky.highlight-you .quotesYou > .reply {\n\
+  border-left: 3px solid rgba(145, 182, 214, .8);\n\
+}\n\
+:root.spooky.highlight-own .yourPost.opContainer,\n\
+:root.spooky.highlight-own .yourPost > .reply {\n\
+  border-left: 3px dashed rgba(145, 182, 214, .8);\n\
+}\n\
+:root.spooky .opContainer.filter-highlight,\n\
+:root.spooky .filter-highlight > .reply {\n\
+  box-shadow: inset 5px 0 rgba(145, 182, 214, .5);\n\
+}\n\
+:root.spooky.highlight-own .yourPost > div.sideArrows,\n\
+:root.spooky.highlight-you .quotesYou > div.sideArrows,\n\
+:root.spooky .filter-highlight > div.sideArrows {\n\
+  color: rgb(155, 185, 210);\n\
+}\n\
+/* QR */\n\
+.spooky #dump-list::-webkit-scrollbar-thumb {\n\
+  background-color: #171526;\n\
+  border-color: #707070;\n\
+}\n\
+:root.spooky .qr-preview {\n\
+  background-color: rgba(0, 0, 0, .15);\n\
+}\n\
+:root.spooky #qr .field {\n\
+  background-color: rgb(26, 27, 29);\n\
+  color: rgb(197,200,198);\n\
+  border-color: rgb(40, 41, 42);\n\
+}\n\
+:root.spooky #qr .field:focus,\n\
+:root.spooky #qr .field.focus {\n\
+  border-color: rgb(254, 150, 0) !important;\n\
+  background-color: rgb(30,32,36);\n\
+}\n\
+:root.spooky .persona button {\n\
+  background: linear-gradient(to bottom, #2E3035, #222427) no-repeat;\n\
+  color: rgb(197,200,198);\n\
+  border-color: rgb(40, 41, 42);\n\
+  outline: none;\n\
+}\n\
+:root.spooky .persona button::-moz-focus-inner {\n\
+  border: none;\n\
+}\n\
+:root.spooky .persona button:focus {\n\
+  border-color: rgb(254, 150, 0);\n\
+}\n\
+:root.spooky #qr.sjis-preview #sjis-toggle,\n\
+:root.spooky #qr.tex-preview #tex-preview-button {\n\
+  background: rgb(26, 27, 29);\n\
+}\n\
+:root.spooky #qr select,\n\
+:root.spooky #file-n-submit > input,\n\
+:root.spooky #qr-draw-button {\n\
+  border-color: rgb(40, 41, 42);\n\
+}\n\
+:root.spooky #qr-filename {\n\
+  color: rgb(197,200,198);\n\
+}\n\
+:root.spooky .qr-link {\n\
+  border-color: rgb(8, 6, 23) rgb(8, 6, 23) rgb(0, 0, 8);\n\
+  background: linear-gradient(#262435, #171526) repeat scroll 0% 0% transparent;\n\
+}\n\
+:root.spooky .qr-link:hover {\n\
+  background: #1A1829;\n\
+}\n\
+/* Menu */\n\
+:root.spooky #menu {\n\
+  color: #FE9600;\n\
+}\n\
+:root.spooky .entry {\n\
+  font-size: 10pt;\n\
+}\n\
+:root.spooky .focused.entry {\n\
+  background: rgba(255, 255, 255, .33);\n\
+}\n\
+/* Unread */\n\
+:root.spooky #unread-line {\n\
+  border-color: rgb(197, 200, 198);\n\
+}\n\
+/* Thread Watcher */\n\
+:root.spooky .replies-quoting-you > a, :root.spooky #watcher-link.replies-quoting-you {\n\
+  color: #F00 !important;\n\
+}\n\
+/* Watcher Favicon */\n\
+:root.spooky .watch-thread-link\n\
+{\n\
+  background-image: url(\"data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(254,150,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>\");\n\
 }\n\
 /* Link Title Favicons */\n\
 .linkify.audio::before {\n\
@@ -19799,7 +19949,7 @@ Captcha = {};
           container = document.querySelector('#qr .captcha-container');
           return container.dataset.widgetID = window.grecaptcha.render(container, {
             sitekey: '6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc',
-            theme: classList.contains('tomorrow') || classList.contains('dark-captcha') ? 'dark' : 'light',
+            theme: classList.contains('tomorrow') || classList.contains('spooky') || classList.contains('dark-captcha') ? 'dark' : 'light',
             callback: function(response) {
               return window.dispatchEvent(new CustomEvent('captcha:success', {
                 detail: response
@@ -23326,7 +23476,14 @@ Main = (function() {
       return Main.setClass();
     },
     setClass: function() {
-      var mainStyleSheet, setStyle, style, styleSheets;
+      var mainStyleSheet, setStyle, spooky, style, styleSheets;
+      if ((spooky = $('link[rel="stylesheet"][href^="//s.4cdn.org/css/spooky."]', d.head))) {
+        spooky.removeAttribute('media');
+        if (getComputedStyle(d.body).color === 'rgb(196, 151, 86)') {
+          $.addClass(doc, 'spooky');
+          return;
+        }
+      }
       if (g.VIEW === 'catalog') {
         $.addClass(doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace(/_+/g, '-'));
         return;
