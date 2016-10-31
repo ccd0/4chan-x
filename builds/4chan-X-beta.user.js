@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.0.17
+// @version      1.13.0.18
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.17',
+  VERSION:   '1.13.0.18',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5321,7 +5321,7 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype.clean = function() {
-      var boardID, now, ref, val;
+      var boardID, now, ref, ref1, val;
       $.forceSync(this.key);
       ref = this.data.boards;
       for (boardID in ref) {
@@ -5331,7 +5331,7 @@ DataBoard = (function() {
         });
       }
       now = Date.now();
-      if ((this.data.lastChecked || 0) < now - 2 * $.HOUR) {
+      if (!((now - 2 * $.HOUR < (ref1 = this.data.lastChecked || 0) && ref1 <= now))) {
         this.data.lastChecked = now;
         for (boardID in this.data.boards) {
           this.ajaxClean(boardID);
@@ -6617,9 +6617,13 @@ Redirect = (function() {
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": false, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ] }
     ],
     init: function() {
+      var now, ref;
       this.selectArchives();
-      if (Conf['archiveAutoUpdate'] && Conf['lastarchivecheck'] < Date.now() - 2 * $.DAY) {
-        return this.update();
+      if (Conf['archiveAutoUpdate']) {
+        now = Date.now();
+        if (!((now - 2 * $.DAY < (ref = Conf['lastarchivecheck']) && ref <= now))) {
+          return this.update();
+        }
       }
     },
     selectArchives: function() {
@@ -7891,7 +7895,9 @@ BoardConfig = (function() {
   BoardConfig = {
     cbs: [],
     init: function() {
-      if ((Conf['boardConfig'].lastChecked || 0) < Date.now() - 2 * $.HOUR) {
+      var now, ref;
+      now = Date.now();
+      if (!((now - 2 * $.HOUR < (ref = Conf['boardConfig'].lastChecked || 0) && ref <= now))) {
         return $.ajax('//a.4cdn.org/boards.json', {
           onloadend: this.load
         });
@@ -10068,6 +10074,8 @@ Index = (function() {
             }).map(function(post) {
               return post.no;
             });
+          default:
+            return liveThreadIDs;
         }
       })();
       if (Index.search && (threadIDs = Index.querySearch(Index.search))) {
@@ -18172,7 +18180,7 @@ ThreadWatcher = (function() {
       return ThreadWatcher.clearRequests();
     },
     fetchAuto: function() {
-      var db, interval, now;
+      var db, interval, now, ref;
       clearTimeout(ThreadWatcher.timeout);
       if (!Conf['Auto Update Thread Watcher']) {
         return;
@@ -18180,7 +18188,7 @@ ThreadWatcher = (function() {
       db = ThreadWatcher.db;
       interval = ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] ? 5 * $.MINUTE : 2 * $.HOUR;
       now = Date.now();
-      if (now >= (db.data.lastChecked || 0) + interval) {
+      if (!((now - interval < (ref = db.data.lastChecked || 0) && ref <= now))) {
         ThreadWatcher.fetchAllStatus();
         db.data.lastChecked = now;
         db.save();
