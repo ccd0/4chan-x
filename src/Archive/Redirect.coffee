@@ -9,7 +9,9 @@ Redirect =
 
   init: ->
     @selectArchives()
-    @update() if Conf['archiveAutoUpdate'] and Conf['lastarchivecheck'] < Date.now() - 2 * $.DAY
+    if Conf['archiveAutoUpdate']
+      now = Date.now()
+      @update() unless now - 2 * $.DAY < Conf['lastarchivecheck'] <= now
 
   selectArchives: ->
     o =

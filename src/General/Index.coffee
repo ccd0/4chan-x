@@ -95,17 +95,20 @@ Index =
     @hideLabel = $ '#hidden-label', @navLinks
     $.on $('#hidden-toggle a', @navLinks), 'click', @cb.toggleHiddenThreads
 
-    # Drop-down menus
+    # Drop-down menus and reverse sort toggle
+    @selectRev   = $ '#index-rev',  @navLinks
     @selectMode  = $ '#index-mode', @navLinks
     @selectSort  = $ '#index-sort', @navLinks
     @selectSize  = $ '#index-size', @navLinks
+    $.on @selectRev,  'change', @cb.sort
     $.on @selectMode, 'change', @cb.mode
     $.on @selectSort, 'change', @cb.sort
     $.on @selectSize, 'change', $.cb.value
     $.on @selectSize, 'change', @cb.size
     for select in [@selectMode, @selectSize]
       select.value = Conf[select.name]
-    @selectSort.value = Index.currentSort
+    @selectRev.checked = /-rev$/.test Index.currentSort
+    @selectSort.value  = Index.currentSort.replace /-rev$/, ''
 
     # Thread container
     @root = $.el 'div', className: 'board json-index'
@@ -252,7 +255,8 @@ Index =
       Index.pageLoad false
 
     sort: ->
-      Index.pushState {sort: @value}
+      value = if Index.selectRev.checked then Index.selectSort.value + "-rev" else Index.selectSort.value
+      Index.pushState {sort: value}
       Index.pageLoad false
 
     resort: (e) ->
@@ -342,12 +346,12 @@ Index =
       'all-pages':     'all pages'
       'catalog':       'catalog'
     sort:
-      'bump-order':    'bump'
-      'last-reply':    'lastreply'
-      'last-long-reply': 'lastlong'
-      'creation-date': 'birth'
-      'reply-count':   'replycount'
-      'file-count':    'filecount'
+      'bump-order':        'bump'
+      'last-reply':        'lastreply'
+      'last-long-reply':   'lastlong'
+      'creation-date':     'birth'
+      'reply-count':       'replycount'
+      'file-count':        'filecount'
 
   processHash: ->
     # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
@@ -362,8 +366,9 @@ Index =
       else if command is 'index'
         state.mode = Conf['Previous Index Mode']
         state.page = 1
-      else if (sort = Index.hashCommands.sort[command])
+      else if (sort = Index.hashCommands.sort[command.replace(/-rev$/, '')])
         state.sort = sort
+        state.sort += '-rev' if /-rev$/.test(command)
       else if /^s=/.test command
         state.search = decodeURIComponent(command[2..]).replace(/\+/g, ' ').trim()
       else
@@ -446,7 +451,8 @@ Index =
     $('#hidden-toggle a', Index.navLinks).textContent = 'Show'
 
   setupSort: ->
-    Index.selectSort.value = Index.currentSort
+    Index.selectRev.checked = /-rev$/.test Index.currentSort
+    Index.selectSort.value  = Index.currentSort.replace /-rev$/, ''
 
   getPagesNum: ->
     if Index.search
@@ -744,7 +750,7 @@ Index =
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
     return unless liveThreadData
-    Index.sortedThreadIDs = switch Index.currentSort
+    Index.sortedThreadIDs = switch Index.currentSort.replace(/-rev$/, '')
       when 'lastreply'
         [liveThreadData...].sort((a, b) ->
           a = num[num.length - 1] if (num = a.last_replies)
@@ -764,6 +770,8 @@ Index =
       when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
       when 'filecount'  then [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
       else liveThreadIDs
+    if /-rev$/.test(Index.currentSort)
+      Index.sortedThreadIDs = [Index.sortedThreadIDs...].reverse()
     if Index.search and (threadIDs = Index.querySearch Index.search)
       Index.sortedThreadIDs = threadIDs
     # Sticky threads

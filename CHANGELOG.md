@@ -4,6 +4,9 @@
 
 ## v1.13.0
 
+**v1.13.0.18** *(2016-10-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.18/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.18/builds/4chan-X-noupdate.crx)]
+- Improve robustness against invalid settings data, including thread watcher timestamps from future.
+
 **v1.13.0.17** *(2016-10-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.17/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.17/builds/4chan-X-noupdate.crx)]
 - Various regression and bug fixes.
 
