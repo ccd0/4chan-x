@@ -151,7 +151,7 @@ class Post
     return if @isClone
 
     # ES6 Set when?
-    fullID = "#{match[1]}.#{match[2]}"
+    fullID = "#{match[1]}.#{match[3]}"
     @quotes.push fullID unless fullID in @quotes
 
   parseFile: ->

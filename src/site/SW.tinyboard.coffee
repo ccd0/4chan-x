@@ -29,12 +29,18 @@ SW.tinyboard =
     spoiler:   '.spoiler'
     quotelink: 'a[onclick^="highlightReply("]'
 
+  xpath:
+    thread:        'div[starts-with(@id,"thread_")]'
+    postContainer: 'div[starts-with(@id,"reply_") or starts-with(@id,"thread_")]'
+
   regexp:
     quotelink:
       ///
         /
         ([^/]+) # boardID
-        /res/\d+\.html#
+        /res/
+        (\d+)   # threadID
+        \.html#
         (\d+)   # postID
         $
       ///

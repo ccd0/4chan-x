@@ -9,25 +9,23 @@ Get =
     return "#{excerpt[...70]}..." if excerpt.length > 73
     excerpt
   threadFromRoot: (root) ->
-    g.threads["#{g.BOARD}.#{root.id[1..]}"]
+    g.threads["#{g.BOARD}.#{root.id.match(/\d*$/)[0]}"]
   threadFromNode: (node) ->
-    Get.threadFromRoot $.x 'ancestor::div[@class="thread"]', node
+    Get.threadFromRoot $.x "ancestor::#{Site.xpath.thread}", node
   postFromRoot: (root) ->
     return null unless root?
     post  = g.posts[root.dataset.fullID]
     index = root.dataset.clone
     if index then post.clones[index] else post
   postFromNode: (root) ->
-    Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', root
+    Get.postFromRoot $.x "ancestor::#{Site.xpath.postContainer}[1]", root
   postDataFromLink: (link) ->
-    if link.hostname is 'boards.4chan.org'
-      path     = link.pathname.split /\/+/
-      boardID  = path[1]
-      threadID = path[3]
-      postID   = link.hash[2..]
-    else # resurrected quote
+    if link.dataset.postID # resurrected quote
       {boardID, threadID, postID} = link.dataset
       threadID or= 0
+    else
+      match = link.href.match Site.regexp.quotelink
+      [boardID, threadID, postID] = match[1..]
     return {
       boardID:  boardID
       threadID: +threadID

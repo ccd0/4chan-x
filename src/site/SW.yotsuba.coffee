@@ -34,12 +34,18 @@ SW.yotsuba =
     spoiler:   's'
     quotelink: ':not(pre) > .quotelink' # XXX https://github.com/4chan/4chan-JS/issues/77: 4chan currently creates quote links inside [code] tags; ignore them
 
+  xpath:
+    thread:        'div[@class="thread"]'
+    postContainer: 'div[contains(@class,"postContainer")]'
+
   regexp:
     quotelink:
       ///
         ^https?://boards\.4chan\.org/+
         ([^/]+) # boardID
-        /+thread/+\d+(?:[/?][^#]*)?#p
+        /+thread/+
+        (\d+)   # threadID
+        (?:[/?][^#]*)?#p
         (\d+)   # postID
         $
       ///
