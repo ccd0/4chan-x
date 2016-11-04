@@ -831,10 +831,12 @@ div[data-checked="false"] > .suboption-list {
 .catalog-container:not(:hover) > * > .postInfo > :not(.subject),
 .catalog-container:not(:hover) > * > .catalog-replies,
 .catalog-container:not(:hover) .extra-linebreak,
+.catalog-container:not(:hover) .abbr,
 :root:not(.catalog-hover-expand) .catalog-container > * > .file,
 :root:not(.catalog-hover-expand) .catalog-container > * > .postInfo > :not(.subject),
 :root:not(.catalog-hover-expand) .catalog-container > * > .catalog-replies,
 :root:not(.catalog-hover-expand) .catalog-container .extra-linebreak,
+:root:not(.catalog-hover-expand) .catalog-container .abbr,
 .catalog-thread > .catalog-container > :not(.catalog-post),
 .catalog-post > .file > :not(.fileText),
 .catalog-post > * > .fileText > :not(:first-child),
@@ -922,10 +924,14 @@ div[data-checked="false"] > .suboption-list {
 .catalog-post .MathJax_Display {
   text-align: center !important;
 }
+.catalog-container:not(:hover) .exif,
+:root:not(.catalog-hover-expand) .catalog-container .exif {
+  display: none !important;
+}
 .catalog-post > * > .exif {
   border-collapse: collapse;
 }
-.catalog-post > * > .exif[style*="display: block;"] {
+:root.catalog-hover-expand .catalog-container:hover .exif[style*="display: block;"] {
   display: inline-block !important;
 }
 .catalog-post > * > .exif,
