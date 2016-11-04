@@ -65,6 +65,7 @@ Embedding =
       $.on d, 'PostsInserted', autoEmbed
 
   ready: ->
+    return if !Main.isThisPageLegit()
     $.addClass Embedding.dialog, 'empty'
     $.on $('.close', Embedding.dialog), 'click',     Embedding.closeFloat
     $.on $('.move',  Embedding.dialog), 'mousedown', Embedding.dragEmbed
