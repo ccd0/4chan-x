@@ -425,6 +425,7 @@ Main =
     ['Board Configuration',       BoardConfig]
     ['Normalize URL',             NormalizeURL]
     ['Captcha Configuration',     Captcha.replace]
+    ['Image Host Rewriting',      ImageHost]
     ['Redirect',                  Redirect]
     ['Header',                    Header]
     ['Catalog Links',             CatalogLinks]

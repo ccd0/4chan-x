@@ -184,6 +184,10 @@ Config =
       ]
 
     'Images and Videos':
+      'Use Faster Image Host': [
+        true
+        'Change is.4chan.org links to point to the faster i.4cdn.org host.'
+      ]
       'Image Expansion': [
         true
         'Expand images / videos.'
