@@ -66,7 +66,7 @@ Build =
         url: if boardID is 'f'
           "#{location.protocol}//i.4cdn.org/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
         else
-          "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
+          "#{location.protocol}//#{if data.no % 3 then 'i.4cdn.org' else 'is.4chan.org'}/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h
         width:     data.w
         MD5:       data.md5
@@ -76,6 +76,7 @@ Build =
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
         tag:       data.tag
+        hasDownscale: !!data.m_img
       o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
     o
 

@@ -133,7 +133,7 @@ Main =
           PostSuccessful.init()
         return
       when 'i.4cdn.org', 'is.4chan.org'
-        return unless pathname[2] and not /s\.jpg$/.test(pathname[2])
+        return unless pathname[2] and not /[sm]\.jpg$/.test(pathname[2])
         $.asap (-> d.readyState isnt 'loading'), ->
           if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
             Redirect.navigate 'file', {
@@ -208,6 +208,12 @@ Main =
     Main.setClass()
 
   setClass: ->
+    if (spooky = $ 'link[rel="stylesheet"][href^="//s.4cdn.org/css/spooky."]', d.head)
+      spooky.removeAttribute 'media'
+      if getComputedStyle(d.body).color is 'rgb(196, 151, 86)' # not blocked
+        $.addClass doc, 'spooky'
+        return
+
     if g.VIEW is 'catalog'
       $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
       return
@@ -416,6 +422,7 @@ Main =
     ['Board Configuration',       BoardConfig]
     ['Normalize URL',             NormalizeURL]
     ['Captcha Configuration',     Captcha.replace]
+    ['Image Host Rewriting',      ImageHost]
     ['Redirect',                  Redirect]
     ['Header',                    Header]
     ['Catalog Links',             CatalogLinks]

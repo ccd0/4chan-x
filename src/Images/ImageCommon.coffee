@@ -33,6 +33,9 @@ ImageCommon =
     message.textContent = 'Error: Corrupt or unplayable video'
     return true
 
+  isFromArchive: (file) ->
+    file.src.split('/')[2] not in ['i.4cdn.org', 'is.4chan.org']
+
   error: (file, post, delay, cb) ->
     src = post.file.url.split '/'
     URL = Redirect.to 'file', {
@@ -42,12 +45,12 @@ ImageCommon =
     unless Conf['404 Redirect'] and URL and Redirect.securityCheck URL
       URL = null
 
-    return cb URL if (post.isDead or post.file.isDead) and file.src.split('/')[2] is 'i.4cdn.org'
+    return cb URL if (post.isDead or post.file.isDead) and not ImageCommon.isFromArchive file
 
     timeoutID = setTimeout (-> cb URL), delay if delay?
     return if post.isDead or post.file.isDead
     redirect = ->
-      if file.src.split('/')[2] is 'i.4cdn.org'
+      unless ImageCommon.isFromArchive file
         clearTimeout timeoutID if delay?
         cb URL
 

@@ -4,6 +4,13 @@
 
 ## v1.13.0
 
+**v1.13.0.20** *(2016-11-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.20/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.20/builds/4chan-X-noupdate.crx)]
+- Bugfix: Don't add embedding window to error pages.
+- Hide EXIF data in /p/ catalog except on hover.
+
+**v1.13.0.19** *(2016-10-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.19/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.19/builds/4chan-X-noupdate.crx)]
+- Bring back CSS tweaks for Halloween theme.
+
 **v1.13.0.18** *(2016-10-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.18/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.18/builds/4chan-X-noupdate.crx)]
 - Improve robustness against invalid settings data, including thread watcher timestamps from future.
 
