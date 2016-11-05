@@ -76,6 +76,7 @@ Build =
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
         tag:       data.tag
+        hasDownscale: !!data.m_img
       o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
     o
 
