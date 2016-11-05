@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.0.19
+// @version      1.13.0.20
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.19',
+  VERSION:   '1.13.0.20',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -2013,10 +2013,12 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 .catalog-container:not(:hover) > * > .postInfo > :not(.subject),\n\
 .catalog-container:not(:hover) > * > .catalog-replies,\n\
 .catalog-container:not(:hover) .extra-linebreak,\n\
+.catalog-container:not(:hover) .abbr,\n\
 :root:not(.catalog-hover-expand) .catalog-container > * > .file,\n\
 :root:not(.catalog-hover-expand) .catalog-container > * > .postInfo > :not(.subject),\n\
 :root:not(.catalog-hover-expand) .catalog-container > * > .catalog-replies,\n\
 :root:not(.catalog-hover-expand) .catalog-container .extra-linebreak,\n\
+:root:not(.catalog-hover-expand) .catalog-container .abbr,\n\
 .catalog-thread > .catalog-container > :not(.catalog-post),\n\
 .catalog-post > .file > :not(.fileText),\n\
 .catalog-post > * > .fileText > :not(:first-child),\n\
@@ -2104,10 +2106,14 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 .catalog-post .MathJax_Display {\n\
   text-align: center !important;\n\
 }\n\
+.catalog-container:not(:hover) .exif,\n\
+:root:not(.catalog-hover-expand) .catalog-container .exif {\n\
+  display: none !important;\n\
+}\n\
 .catalog-post > * > .exif {\n\
   border-collapse: collapse;\n\
 }\n\
-.catalog-post > * > .exif[style*=\"display: block;\"] {\n\
+:root.catalog-hover-expand .catalog-container:hover .exif[style*=\"display: block;\"] {\n\
   display: inline-block !important;\n\
 }\n\
 .catalog-post > * > .exif,\n\
@@ -13910,6 +13916,9 @@ Embedding = (function() {
       }
     },
     ready: function() {
+      if (!Main.isThisPageLegit()) {
+        return;
+      }
       $.addClass(Embedding.dialog, 'empty');
       $.on($('.close', Embedding.dialog), 'click', Embedding.closeFloat);
       $.on($('.move', Embedding.dialog), 'mousedown', Embedding.dragEmbed);
