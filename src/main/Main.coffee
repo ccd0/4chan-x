@@ -205,6 +205,12 @@ Main =
     Main.setClass()
 
   setClass: ->
+    if (spooky = $ 'link[rel="stylesheet"][href^="//s.4cdn.org/css/spooky."]', d.head)
+      spooky.removeAttribute 'media'
+      if getComputedStyle(d.body).color is 'rgb(196, 151, 86)' # not blocked
+        $.addClass doc, 'spooky'
+        return
+
     if g.VIEW is 'catalog'
       $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
       return

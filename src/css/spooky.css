@@ -1,0 +1,163 @@
+/* General */
+:root.spooky .dialog {
+  background-color: #171526;
+  border-color: #707070;
+}
+:root.spooky .field:focus,
+:root.spooky .field.focus {
+  border-color: #98E;
+}
+
+/* Header */
+:root.spooky #header-bar.dialog {
+  background-color: rgba(23,21,38,0.98);
+}
+:root.spooky:not(.fixed) #header-bar, :root.spooky #notifications {
+  font-size: 9pt;
+}
+:root.spooky #header-bar, :root.spooky #notifications {
+  color: #C49756;
+}
+:root.spooky #board-list a, :root.spooky #shortcuts a {
+  color: #FE9600;
+}
+:root.spooky.shortcut-icons .native-settings {
+  background-image: url('//s.4cdn.org/image/favicon-ws.ico');
+}
+
+/* Settings */
+:root.spooky #fourchanx-settings fieldset, :root.spooky .section-main div::before {
+  border-color: #707070;
+}
+:root.spooky .suboption-list > div:last-of-type {
+  background-color: #171526;
+}
+
+/* Catalog */
+:root.spooky.catalog-hover-expand .catalog-container:hover > .post {
+  background-color: #171526;
+}
+:root.spooky.werkTyme .catalog-thread:not(:hover),
+:root.spooky.werkTyme:not(.catalog-hover-expand) .catalog-thread,
+:root.spooky.catalog-hover-expand .catalog-container:hover > .post,
+:root.spooky.catalog-hover-expand .catalog-container:hover .catalog-reply {
+  border-color: #707070;
+}
+
+/* Quote */
+:root.spooky #arc-list span.quote {
+  color: #634C2C;
+}
+:root.spooky .backlink.deadlink {
+  color: #FE9600 !important;
+}
+:root.spooky .inline {
+  border-color: #707070;
+  background-color: rgba(255, 255, 255, .14);
+}
+
+/* Fappe and Werk Tyme */
+:root.spooky .indicator {
+  color: #171526;
+}
+
+/* Highlighting */
+:root.spooky .qphl {
+  outline: 2px solid rgba(145, 182, 214, .8);
+}
+:root.spooky.highlight-you .quotesYou.opContainer,
+:root.spooky.highlight-you .quotesYou > .reply {
+  border-left: 3px solid rgba(145, 182, 214, .8);
+}
+:root.spooky.highlight-own .yourPost.opContainer,
+:root.spooky.highlight-own .yourPost > .reply {
+  border-left: 3px dashed rgba(145, 182, 214, .8);
+}
+:root.spooky .opContainer.filter-highlight,
+:root.spooky .filter-highlight > .reply {
+  box-shadow: inset 5px 0 rgba(145, 182, 214, .5);
+}
+:root.spooky.highlight-own .yourPost > div.sideArrows,
+:root.spooky.highlight-you .quotesYou > div.sideArrows,
+:root.spooky .filter-highlight > div.sideArrows {
+  color: rgb(155, 185, 210);
+}
+
+/* QR */
+.spooky #dump-list::-webkit-scrollbar-thumb {
+  background-color: #171526;
+  border-color: #707070;
+}
+:root.spooky .qr-preview {
+  background-color: rgba(0, 0, 0, .15);
+}
+:root.spooky #qr .field {
+  background-color: rgb(26, 27, 29);
+  color: rgb(197,200,198);
+  border-color: rgb(40, 41, 42);
+}
+:root.spooky #qr .field:focus,
+:root.spooky #qr .field.focus {
+  border-color: rgb(254, 150, 0) !important;
+  background-color: rgb(30,32,36);
+}
+:root.spooky .persona button {
+  background: linear-gradient(to bottom, #2E3035, #222427) no-repeat;
+  color: rgb(197,200,198);
+  border-color: rgb(40, 41, 42);
+  outline: none;
+}
+:root.spooky .persona button::-moz-focus-inner {
+  border: none;
+}
+:root.spooky .persona button:focus {
+  border-color: rgb(254, 150, 0);
+}
+:root.spooky #qr.sjis-preview #sjis-toggle,
+:root.spooky #qr.tex-preview #tex-preview-button {
+  background: rgb(26, 27, 29);
+}
+:root.spooky #qr select,
+:root.spooky #file-n-submit > input,
+:root.spooky #qr-draw-button {
+  border-color: rgb(40, 41, 42);
+}
+:root.spooky #qr-filename {
+  color: rgb(197,200,198);
+}
+
+:root.spooky .qr-link {
+  border-color: rgb(8, 6, 23) rgb(8, 6, 23) rgb(0, 0, 8);
+  background: linear-gradient(#262435, #171526) repeat scroll 0% 0% transparent;
+}
+:root.spooky .qr-link:hover {
+  background: #1A1829;
+}
+
+
+/* Menu */
+:root.spooky #menu {
+  color: #FE9600;
+}
+:root.spooky .entry {
+  font-size: 10pt;
+}
+:root.spooky .focused.entry {
+  background: rgba(255, 255, 255, .33);
+}
+
+/* Unread */
+:root.spooky #unread-line {
+  border-color: rgb(197, 200, 198);
+}
+
+/* Thread Watcher */
+:root.spooky .replies-quoting-you > a, :root.spooky #watcher-link.replies-quoting-you {
+  color: #F00 !important;
+}
+
+/* Watcher Favicon */
+:root.spooky .watch-thread-link
+{
+  background-image: url("data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(254,150,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>");
+}
