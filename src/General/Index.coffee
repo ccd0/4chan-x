@@ -319,6 +319,16 @@ Index =
       return unless Conf['Show Replies'] and Conf['Catalog Hover Expand'] and @parentNode
       Index.buildCatalogReplies Get.threadFromRoot @
 
+    hoverAdjust: ->
+      # Prevent hovered catalog threads from going offscreen.
+      return unless Conf['Catalog Hover Expand']
+      rect = @post.getBoundingClientRect()
+      if (x = $.minmax 0, -rect.left, doc.clientWidth - rect.right)
+        {style} = @post
+        style.left = "#{x}px"
+        style.right = "#{-x}px"
+        $.one @root, 'mouseleave', -> style.left = style.right = null
+
   scrollToIndex: ->
     # Scroll to navlinks, or top of board if navlinks are hidden.
     Header.scrollToIfNeeded (if Index.navLinks.getBoundingClientRect().height then Index.navLinks else Index.root)
@@ -844,6 +854,7 @@ Index =
       nodes.push thread.catalogView.nodes.root
       if Conf['Show Replies'] and Conf['Catalog Hover Expand']
         $.on thread.catalogView.nodes.root, 'mouseover', Index.cb.catalogReplies
+      $.on thread.OP.nodes.root, 'mouseenter', Index.cb.hoverAdjust.bind(thread.OP.nodes)
     $.add Index.root, nodes
     nodes
 
