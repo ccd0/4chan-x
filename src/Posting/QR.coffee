@@ -398,6 +398,7 @@ QR =
 
   handleUrl: (urlDefault) ->
     QR.open()
+    QR.selected.preventAutoPost()
     url = prompt 'Enter a URL:', urlDefault
     return if url is null
     QR.nodes.fileButton.focus()

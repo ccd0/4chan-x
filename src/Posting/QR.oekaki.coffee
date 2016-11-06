@@ -97,6 +97,7 @@ QR.oekaki =
       QR.oekaki.toggle()
 
   edit: ->
+    QR.cooldown.auto = false
     QR.oekaki.load -> $.global ->
       {Tegaki, FCX} = window
       name     = document.getElementById('qr-filename').value.replace(/\.\w+$/, '') + '.png'

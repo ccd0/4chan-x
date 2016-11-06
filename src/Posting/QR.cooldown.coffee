@@ -92,7 +92,9 @@ QR.cooldown =
       delete data[scope]
     $.set 'cooldowns', data
 
-  count: ->
+  update: ->
+    return unless QR.cooldown.isCounting
+
     $.forceSync 'cooldowns'
     save = []
     nCooldowns = 0
@@ -163,4 +165,7 @@ QR.cooldown =
     update = seconds isnt QR.cooldown.seconds
     QR.cooldown.seconds = seconds
     QR.status() if update
-    QR.submit() if seconds is 0 and QR.cooldown.auto and !QR.req
+
+  count: ->
+    QR.cooldown.update()
+    QR.submit() if QR.cooldown.seconds is 0 and QR.cooldown.auto and !QR.req

@@ -16,7 +16,8 @@ QR.post = class
     $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
     $.on @nodes.spoiler, 'change', (e) =>
       @spoiler = e.target.checked
-      (QR.nodes.spoiler.checked = @spoiler if @ is QR.selected)
+      QR.nodes.spoiler.checked = @spoiler if @ is QR.selected
+      @preventAutoPost()
     for label in $$ 'label', el
       $.on label, 'click', (e) -> e.stopPropagation()
     $.add QR.nodes.dumpList, el
@@ -112,7 +113,7 @@ QR.post = class
     @showFileData()
     QR.characterCount()
 
-  save: (input) ->
+  save: (input, forced) ->
     if input.type is 'checkbox'
       @spoiler = input.checked
       return
@@ -125,10 +126,6 @@ QR.post = class
         QR.status()
       when 'com'
         @updateComment()
-        # Disable auto-posting if you're typing in the first post
-        # during the last 5 seconds of the cooldown.
-        if QR.cooldown.auto and @ is QR.posts[0] and 0 < QR.cooldown.seconds <= 5
-          QR.cooldown.auto = false
       when 'filename'
         return unless @file
         @saveFilename()
@@ -136,6 +133,7 @@ QR.post = class
       when 'name'
         if @name isnt prev # only save manual changes, not values filled in by persona settings
           QR.persona.set @
+    @preventAutoPost() unless forced
 
   forceSave: ->
     return unless @ is QR.selected
@@ -143,8 +141,15 @@ QR.post = class
     # that do not trigger the `input` event.
     for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler']
       continue if not (node = QR.nodes[name])
-      @save node
+      @save node, true
     return
+
+  preventAutoPost: ->
+    # Disable auto-posting if you're editing the first post
+    # during the last 5 seconds of the cooldown.
+    if QR.cooldown.auto and @ is QR.posts[0]
+      QR.cooldown.update() # adding/removing file can change cooldown
+      QR.cooldown.auto = false if QR.cooldown.seconds <= 5
 
   setComment: (com) ->
     @com = com or null
@@ -210,6 +215,7 @@ QR.post = class
       @fileError 'Unsupported file type.'
     else if /^(image|video)\//.test @file.type
       @readFile()
+    @preventAutoPost()
 
   checkSize: ->
     max = QR.max_size
@@ -306,6 +312,7 @@ QR.post = class
     @showFileData()
     URL.revokeObjectURL @URL
     @dismissErrors (error) -> $.hasClass error, 'file-error'
+    @preventAutoPost()
 
   saveFilename: ->
     @file.newName = (@filename or '').replace /[/\\]/g, '-'
@@ -336,6 +343,7 @@ QR.post = class
 
   pasteText: (file) ->
     @pasting = true
+    @preventAutoPost()
     reader = new FileReader()
     reader.onload = (e) =>
       {result} = e.target
