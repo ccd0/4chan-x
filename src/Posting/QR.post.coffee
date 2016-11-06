@@ -370,6 +370,7 @@ QR.post = class
     index    = (el) -> [el.parentNode.children...].indexOf el
     oldIndex = index el
     newIndex = index @
+    return if QR.posts[oldIndex].isLocked or QR.posts[newIndex].isLocked
     (if oldIndex < newIndex then $.after else $.before) @, el
     post = QR.posts.splice(oldIndex, 1)[0]
     QR.posts.splice newIndex, 0, post
