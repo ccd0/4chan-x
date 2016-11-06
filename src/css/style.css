@@ -716,7 +716,7 @@ div[data-checked="false"] > .suboption-list {
 /* Catalog */
 :root.catalog-mode .board {
   text-align: center;
-  padding: 0 50px;
+  padding: 0 51px;
 }
 .catalog-thread {
   display: inline-block;
