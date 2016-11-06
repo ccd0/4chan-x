@@ -579,6 +579,7 @@ QR =
       QR.abort()
       return
 
+    $.forceSync 'cooldowns'
     if QR.cooldown.seconds
       QR.cooldown.auto = !QR.cooldown.auto
       QR.status()
