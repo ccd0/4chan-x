@@ -1053,3 +1053,10 @@ Config =
   'Max Replies': 1000
 
   'Autohiding Scrollbar': false
+
+  position:
+    'embedding.position':      'top: 50px; right: 0px;'
+    'thread-stats.position':   'bottom: 0px; right: 0px;'
+    'updater.position':        'bottom: 0px; left: 0px;'
+    'thread-watcher.position': 'top: 50px; left: 0px;'
+    'qr.position':             'top: 50px; right: 0px;'

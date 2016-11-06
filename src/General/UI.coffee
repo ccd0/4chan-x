@@ -1,11 +1,9 @@
-dialog = (id, position, properties) ->
+dialog = (id, properties) ->
   el = $.el 'div',
     className: 'dialog'
     id: id
   $.extend el, properties
-  el.style.cssText = position
-  $.get "#{id}.position", position, (item) ->
-    (el.style.cssText = item["#{id}.position"])
+  el.style.cssText = Conf["#{id}.position"]
 
   move = $ '.move', el
   $.on move, 'touchstart mousedown', dragstart

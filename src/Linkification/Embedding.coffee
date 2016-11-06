@@ -5,7 +5,7 @@ Embedding =
     @types[type.key] = type for type in @ordered_types
 
     if Conf['Embedding']
-      @dialog = UI.dialog 'embedding', 'top: 50px; right: 0px;',
+      @dialog = UI.dialog 'embedding',
         <%= readHTML('Embed.html') %>
       @media = $ '#media-embed', @dialog
       $.one d, '4chanXInitFinished', @ready
