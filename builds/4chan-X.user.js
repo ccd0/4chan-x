@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.0.20
+// @version      1.13.0.21
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.20',
+  VERSION:   '1.13.0.21',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1898,7 +1898,7 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 /* Catalog */\n\
 :root.catalog-mode .board {\n\
   text-align: center;\n\
-  padding: 0 50px;\n\
+  padding: 0 51px;\n\
 }\n\
 .catalog-thread {\n\
   display: inline-block;\n\
@@ -9608,6 +9608,21 @@ Index = (function() {
           return;
         }
         return Index.buildCatalogReplies(Get.threadFromRoot(this));
+      },
+      hoverAdjust: function() {
+        var rect, style, x;
+        if (!Conf['Catalog Hover Expand']) {
+          return;
+        }
+        rect = this.post.getBoundingClientRect();
+        if ((x = $.minmax(0, -rect.left, doc.clientWidth - rect.right))) {
+          style = this.post.style;
+          style.left = x + "px";
+          style.right = (-x) + "px";
+          return $.one(this.root, 'mouseleave', function() {
+            return style.left = style.right = null;
+          });
+        }
       }
     },
     scrollToIndex: function() {
@@ -10347,6 +10362,7 @@ Index = (function() {
         if (Conf['Show Replies'] && Conf['Catalog Hover Expand']) {
           $.on(thread.catalogView.nodes.root, 'mouseover', Index.cb.catalogReplies);
         }
+        $.on(thread.OP.nodes.root, 'mouseenter', Index.cb.hoverAdjust.bind(thread.OP.nodes));
       }
       $.add(Index.root, nodes);
       return nodes;
