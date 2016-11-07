@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.1.0
+// @version      1.13.1.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.1.0',
+  VERSION:   '1.13.1.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -8509,10 +8509,13 @@ Get = (function() {
       return excerpt;
     },
     threadFromRoot: function(root) {
+      if (root == null) {
+        return null;
+      }
       return g.threads[g.BOARD + "." + root.id.slice(1)];
     },
     threadFromNode: function(node) {
-      return Get.threadFromRoot($.x('ancestor::div[@class="thread"]', node));
+      return Get.threadFromRoot($.x('ancestor-or-self::div[contains(concat(" ",@class," ")," thread ")]', node));
     },
     postFromRoot: function(root) {
       var index, post;
@@ -9603,11 +9606,12 @@ Index = (function() {
         }
       },
       hoverToggle: function(e) {
-        var post;
+        var thread;
         if (Conf['Catalog Hover Expand'] && !$.modifiedClick(e) && !$.x('ancestor-or-self::a', e.target)) {
           $.toggleClass(doc, 'catalog-hover-expand');
-          if ((post = Get.postFromNode(e.target))) {
-            return Index.cb.hoverAdjust.call(post.nodes);
+          if ((thread = Get.threadFromNode(e.target))) {
+            Index.cb.catalogReplies.call(thread);
+            return Index.cb.hoverAdjust.call(thread.OP.nodes);
           }
         }
       },
@@ -9661,11 +9665,9 @@ Index = (function() {
         return Index.update();
       },
       catalogReplies: function() {
-        if (!(Conf['Show Replies'] && $.hasClass(doc, 'catalog-hover-expand'))) {
-          return;
+        if (Conf['Show Replies'] && $.hasClass(doc, 'catalog-hover-expand') && !this.catalogView.nodes.replies) {
+          return Index.buildCatalogReplies(this);
         }
-        $.off(this, 'mouseenter', Index.cb.catalogReplies);
-        return Index.buildCatalogReplies(Get.threadFromRoot(this));
       },
       hoverAdjust: function() {
         var rect, style, x;
@@ -10109,7 +10111,7 @@ Index = (function() {
               thread.setStatus('Sticky', !!threadData.sticky);
               thread.setStatus('Closed', !!threadData.closed);
             }
-            if (thread.catalogView && (isStale || !(isCatalog && Conf['Show Replies'] && Conf['Catalog Hover Expand']))) {
+            if (thread.catalogView) {
               $.rm(thread.catalogView.nodes.replies);
               thread.catalogView.nodes.replies = null;
             }
@@ -10218,22 +10220,14 @@ Index = (function() {
       }
     },
     buildCatalogReplies: function(thread) {
-      var data, k, l, lastReplies, len, len1, nodes, ref, replies, reply, timeEl;
+      var data, k, lastReplies, len, nodes, replies, reply;
       nodes = thread.catalogView.nodes;
       if (!(lastReplies = Index.liveThreadDict[thread.ID].last_replies)) {
         return;
       }
-      if (nodes.replies) {
-        ref = $$('time', nodes.replies);
-        for (k = 0, len = ref.length; k < len; k++) {
-          timeEl = ref[k];
-          RelativeDates.update(timeEl);
-        }
-        return;
-      }
       replies = [];
-      for (l = 0, len1 = lastReplies.length; l < len1; l++) {
-        data = lastReplies[l];
+      for (k = 0, len = lastReplies.length; k < len; k++) {
+        data = lastReplies[k];
         if (PostHiding.isHidden(g.BOARD.ID, thread.ID, data.no)) {
           continue;
         }
@@ -10424,7 +10418,7 @@ Index = (function() {
         thread.OP.setCatalogOP(true);
         $.add(thread.catalogView.nodes.root, thread.OP.nodes.root);
         nodes.push(thread.catalogView.nodes.root);
-        $.on(thread.catalogView.nodes.root, 'mouseenter', Index.cb.catalogReplies);
+        $.on(thread.catalogView.nodes.root, 'mouseenter', Index.cb.catalogReplies.bind(thread));
         $.on(thread.OP.nodes.root, 'mouseenter', Index.cb.hoverAdjust.bind(thread.OP.nodes));
       }
       $.add(Index.root, nodes);
