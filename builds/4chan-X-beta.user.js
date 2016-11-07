@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.0.21
+// @version      1.13.0.22
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.21',
+  VERSION:   '1.13.0.22',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -383,7 +383,7 @@ Config = (function() {
       'Previous Index Mode': 'paged',
       'Index Size': 'small',
       'Show Replies': [true, 'Show replies in the index, and also in the catalog if "Catalog hover expand" is checked.'],
-      'Catalog Hover Expand': [true, 'Expand the comment and show more details when you hover over a thread in the catalog.'],
+      'Catalog Hover Expand': [false, 'Expand the comment and show more details when you hover over a thread in the catalog.'],
       'Pin Watched Threads': [false, 'Move watched threads to the start of the index.'],
       'Anchor Hidden Threads': [true, 'Move hidden threads to the end of the index.'],
       'Refreshed Navigation': [false, 'Refresh index when navigating through pages.']
@@ -1898,7 +1898,6 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 /* Catalog */\n\
 :root.catalog-mode .board {\n\
   text-align: center;\n\
-  padding: 0 51px;\n\
 }\n\
 .catalog-thread {\n\
   display: inline-block;\n\
@@ -1911,15 +1910,15 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 }\n\
 /* overrides 4chan CSS on div.thread */\n\
 .catalog-thread.catalog-thread {\n\
-  margin: 4px;\n\
+  margin: 2px;\n\
 }\n\
 .catalog-small > .catalog-thread {\n\
-  width: 167px;\n\
-  height: 322px;\n\
+  width: 165px;\n\
+  height: 320px;\n\
 }\n\
 .catalog-large > .catalog-thread {\n\
-  width: 272px;\n\
-  height: 412px;\n\
+  width: 270px;\n\
+  height: 410px;\n\
 }\n\
 :root.catalog-hover-expand .catalog-thread:hover {\n\
   z-index: 1;\n\

@@ -4,6 +4,10 @@
 
 ## v1.13.0
 
+**v1.13.0.22** *(2016-11-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.22/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.22/builds/4chan-X-noupdate.crx)]
+- Turn `Catalog Hover Expand` off by default for now.
+- Adjust catalog CSS; opt for more entries displayed as it was previously.
+
 **v1.13.0.21** *(2016-11-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.21/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.21/builds/4chan-X-noupdate.crx)]
 - Prevent hovered catalog threads from going offscreen if the extra padding on `.board` is removed.
 
