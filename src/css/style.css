@@ -760,6 +760,11 @@ div[data-checked="false"] > .suboption-list {
   border: 1px solid transparent;
   padding-top: 20px;
 }
+/* overrides inline CSS from Index.cb.hoverAdjust */
+:root:not(.catalog-hover-expand) .catalog-post {
+  left: 0 !important;
+  right: 0 !important;
+}
 /* overrides 4chan CSS on div.post */
 .catalog-post.catalog-post {
   margin: -21px -1px -1px;

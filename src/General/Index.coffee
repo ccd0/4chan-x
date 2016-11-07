@@ -109,8 +109,8 @@ Index =
 
     # Thread container
     @root = $.el 'div', className: 'board json-index'
+    $.on @root, 'click', @cb.hoverToggle
     @cb.size()
-    @cb.hover()
 
     # Page list
     @pagelist = $.el 'div', className: 'pagelist json-index'
@@ -278,9 +278,14 @@ Index =
     replies: ->
       Index.buildIndex()
 
-    hover: (e) ->
-      doc.classList.toggle 'catalog-hover-expand', Conf['Catalog Hover Expand']
-      Index.cb.replies() if e and Conf['Show Replies'] and Conf['Catalog Hover Expand']
+    hover: ->
+      $.rmClass doc, 'catalog-hover-expand' unless Conf['Catalog Hover Expand']
+
+    hoverToggle: (e) ->
+      if Conf['Catalog Hover Expand'] and !$.modifiedClick(e) and !$.x('ancestor-or-self::a', e.target)
+        $.toggleClass doc, 'catalog-hover-expand'
+        if (post = Get.postFromNode e.target)
+          Index.cb.hoverAdjust.call post.nodes
 
     popstate: (e) ->
       if e?.state
@@ -315,13 +320,13 @@ Index =
       Index.update()
 
     catalogReplies: ->
-      $.off @, 'mouseover', Index.cb.catalogReplies
-      return unless Conf['Show Replies'] and Conf['Catalog Hover Expand'] and @parentNode
+      return unless Conf['Show Replies'] and $.hasClass(doc, 'catalog-hover-expand')
+      $.off @, 'mouseenter', Index.cb.catalogReplies
       Index.buildCatalogReplies Get.threadFromRoot @
 
     hoverAdjust: ->
       # Prevent hovered catalog threads from going offscreen.
-      return unless Conf['Catalog Hover Expand']
+      return unless $.hasClass(doc, 'catalog-hover-expand')
       rect = @post.getBoundingClientRect()
       if (x = $.minmax 0, -rect.left, doc.clientWidth - rect.right)
         {style} = @post
@@ -852,8 +857,7 @@ Index =
       thread.OP.setCatalogOP true
       $.add thread.catalogView.nodes.root, thread.OP.nodes.root
       nodes.push thread.catalogView.nodes.root
-      if Conf['Show Replies'] and Conf['Catalog Hover Expand']
-        $.on thread.catalogView.nodes.root, 'mouseover', Index.cb.catalogReplies
+      $.on thread.catalogView.nodes.root, 'mouseenter', Index.cb.catalogReplies
       $.on thread.OP.nodes.root, 'mouseenter', Index.cb.hoverAdjust.bind(thread.OP.nodes)
     $.add Index.root, nodes
     nodes

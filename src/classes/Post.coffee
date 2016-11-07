@@ -272,3 +272,4 @@ class Post
     @nodes.root.classList.toggle 'opContainer', !isCatalogOP
     @nodes.post.classList.toggle 'catalog-post', isCatalogOP
     @nodes.post.classList.toggle 'op', !isCatalogOP
+    @nodes.post.style.left = @nodes.post.style.right = null
