@@ -2,6 +2,19 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.13.1
+
+**v1.13.1.0** *(2016-11-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.0.22.
+- Only activate `Catalog Hover Expand` when catalog is clicked. Deactivate on second click. Turn `Catalog Hover Expand` back on by default.
+- (Koushien) Add checkbox after Index dropdowns to reverse the sort order of the index. Also:
+  - Let custom board navigation accept "rev" option as part of the sort option, e.g. `g-sort:"creation date rev"`.
+  - Support hash commands of the form `#bump-order-rev` to open the index with reverse sorting on.
+- Prevent auto-posting when editing any part of the first post in the last 5 seconds of the cooldown, not just when editing the comment.
+- Make rewriting of is.4chan.org links to i.4cdn.org optional (`Use Faster Image Host`, default: true).
+- Include rolls and fortunes in filterable text but continue removing them from notifications and thread excerpts.
+- Various minor bugfixes.
+
 ## v1.13.0
 
 **v1.13.0.22** *(2016-11-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.22/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.22/builds/4chan-X-noupdate.crx)]

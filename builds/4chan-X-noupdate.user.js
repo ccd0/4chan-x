@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.0.22
+// @version      1.13.1.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -132,7 +132,7 @@
 
 'use strict';
 
-var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, Sauce, Settings, ShimSet, SimpleDict, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, Volume;
+var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, Sauce, Settings, ShimSet, SimpleDict, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, Volume;
 
 var Conf, E, c, d, doc, docSet, g;
 
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.22',
+  VERSION:   '1.13.1.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -238,6 +238,7 @@ Config = (function() {
         'Stubs': [true, 'Show stubs of hidden threads / replies.']
       },
       'Images and Videos': {
+        'Use Faster Image Host': [true, 'Change is.4chan.org links to point to the faster i.4cdn.org host.'],
         'Image Expansion': [true, 'Expand images / videos.'],
         'Image Hover': [true, 'Show full image / video on mouseover.'],
         'Image Hover in Catalog': [true, 'Show full image / video on mouseover in 4chan X catalog.'],
@@ -383,7 +384,7 @@ Config = (function() {
       'Previous Index Mode': 'paged',
       'Index Size': 'small',
       'Show Replies': [true, 'Show replies in the index, and also in the catalog if "Catalog hover expand" is checked.'],
-      'Catalog Hover Expand': [false, 'Expand the comment and show more details when you hover over a thread in the catalog.'],
+      'Catalog Hover Expand': [true, 'Clicking in the catalog shows more details in the thread you are hovering over.'],
       'Pin Watched Threads': [false, 'Move watched threads to the start of the index.'],
       'Anchor Hidden Threads': [true, 'Move hidden threads to the end of the index.'],
       'Refreshed Navigation': [false, 'Refresh index when navigating through pages.']
@@ -482,7 +483,14 @@ Config = (function() {
     customCooldownEnabled: true,
     'Thread Quotes': false,
     'Max Replies': 1000,
-    'Autohiding Scrollbar': false
+    'Autohiding Scrollbar': false,
+    position: {
+      'embedding.position': 'top: 50px; right: 0px;',
+      'thread-stats.position': 'bottom: 0px; right: 0px;',
+      'updater.position': 'bottom: 0px; left: 0px;',
+      'thread-watcher.position': 'top: 50px; left: 0px;',
+      'qr.position': 'top: 50px; right: 0px;'
+    }
   };
 
   return Config;
@@ -1889,7 +1897,7 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 #index-search:not([data-searching]) + #index-search-clear {\n\
   display: none;\n\
 }\n\
-#index-mode, #index-sort, #index-size {\n\
+#index-rev, #index-mode, #index-sort, #index-size {\n\
   float: right;\n\
 }\n\
 .summary {\n\
@@ -1941,6 +1949,11 @@ div[data-checked=\"false\"] > .suboption-list {\n\
   right: 0;\n\
   border: 1px solid transparent;\n\
   padding-top: 20px;\n\
+}\n\
+/* overrides inline CSS from Index.cb.hoverAdjust */\n\
+:root:not(.catalog-hover-expand) .catalog-post {\n\
+  left: 0 !important;\n\
+  right: 0 !important;\n\
 }\n\
 /* overrides 4chan CSS on div.post */\n\
 .catalog-post.catalog-post {\n\
@@ -4711,6 +4724,10 @@ $ = (function() {
     }
   })();
 
+  $.modifiedClick = function(e) {
+    return e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0;
+  };
+
   $.open = typeof GM_openInTab !== "undefined" && GM_openInTab !== null ? GM_openInTab : function(url) {
     return window.open(url, '_blank');
   };
@@ -5011,19 +5028,8 @@ $ = (function() {
   };
 
   $.clear = function(cb) {
-    var id;
     $["delete"](Object.keys(Conf));
     $["delete"](['previousversion', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']);
-    $["delete"]((function() {
-      var i, len, ref, results;
-      ref = ['embedding', 'updater', 'thread-stats', 'thread-watcher', 'qr'];
-      results = [];
-      for (i = 0, len = ref.length; i < len; i++) {
-        id = ref[i];
-        results.push(id + ".position");
-      }
-      return results;
-    })());
     try {
       $["delete"]($.listValues().map(function(key) {
         return key.replace(g.NAMESPACE, '');
@@ -5180,6 +5186,26 @@ Board = (function() {
       this.config = ((ref = BoardConfig.boards) != null ? ref[this.ID] : void 0) || {};
       g.boards[this] = this;
     }
+
+    Board.prototype.cooldowns = function() {
+      var c, c2, i, key, len, ref;
+      c2 = (this.config || {}).cooldowns || {};
+      c = {
+        thread: c2.threads || 0,
+        reply: c2.replies || 0,
+        image: c2.images || 0,
+        deletion: 60,
+        thread_global: 300
+      };
+      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
+        ref = ['reply', 'image'];
+        for (i = 0, len = ref.length; i < len; i++) {
+          key = ref[i];
+          c[key] = Math.ceil(c[key] / 2);
+        }
+      }
+      return c;
+    };
 
     return Board;
 
@@ -5812,7 +5838,7 @@ Fetcher = (function() {
         }
         o.file = {
           name: data.media.media_filename,
-          url: data.media.media_link || data.media.remote_media_link || (location.protocol + "//i.4cdn.org/" + this.boardID + "/" + (encodeURIComponent(data.media[this.boardID === 'f' ? 'media_filename' : 'media_orig']))),
+          url: data.media.media_link || data.media.remote_media_link || (this.boardID === 'f' ? location.protocol + "//i.4cdn.org/" + this.boardID + "/" + (encodeURIComponent(data.media.media_filename)) : location.protocol + "//" + (data.no % 3 ? 'i.4cdn.org' : 'is.4chan.org') + "/" + this.boardID + "/" + (encodeURIComponent(data.media.media_orig))),
           height: data.media.media_h,
           width: data.media.media_w,
           MD5: data.media.media_hash,
@@ -6006,17 +6032,27 @@ Post = (function() {
         }
       }
       this.info = {
-        nameBlock: Conf['Anonymize'] ? 'Anonymous' : this.nodes.nameBlock.textContent.trim(),
         subject: ((ref = this.nodes.subject) != null ? ref.textContent : void 0) || void 0,
         name: (ref1 = this.nodes.name) != null ? ref1.textContent : void 0,
         tripcode: (ref2 = this.nodes.tripcode) != null ? ref2.textContent : void 0,
-        uniqueID: (ref3 = this.nodes.uniqueID) != null ? ref3.firstElementChild.textContent : void 0,
+        uniqueID: (ref3 = this.nodes.uniqueID) != null ? ref3.textContent : void 0,
         capcode: (ref4 = this.nodes.capcode) != null ? ref4.textContent.replace('## ', '') : void 0,
         pass: (ref5 = this.nodes.pass) != null ? ref5.title.match(/\d*$/)[0] : void 0,
         flagCode: (ref6 = this.nodes.flag) != null ? (ref7 = ref6.className.match(/flag-(\w+)/)) != null ? ref7[1].toUpperCase() : void 0 : void 0,
         flag: (ref8 = this.nodes.flag) != null ? ref8.title : void 0,
         date: this.nodes.date ? new Date(this.nodes.date.dataset.utc * 1000) : void 0
       };
+      if (Conf['Anonymize']) {
+        this.info.nameBlock = 'Anonymous';
+      } else {
+        this.info.nameBlock = ((this.info.name || '') + " " + (this.info.tripcode || '')).trim();
+      }
+      if (this.info.capcode) {
+        this.info.nameBlock += " ## " + this.info.capcode;
+      }
+      if (this.info.uniqueID) {
+        this.info.nameBlock += " (ID: " + this.info.uniqueID + ")";
+      }
       this.parseComment();
       this.parseQuotes();
       this.parseFile();
@@ -6049,7 +6085,8 @@ Post = (function() {
         name: $('.name', info),
         email: $('.useremail', info),
         tripcode: $('.postertrip', info),
-        uniqueID: $('.posteruid', info),
+        uniqueIDRoot: $('.posteruid', info),
+        uniqueID: $('.posteruid > .hand', info),
         capcode: $('.capcode.hand', info),
         pass: $('.n-pu', info),
         flag: $('.flag, .countryFlag', info),
@@ -6059,7 +6096,6 @@ Post = (function() {
         reply: $('.replylink', info),
         fileRoot: $('.file', post),
         comment: $('.postMessage', post),
-        links: [],
         quotelinks: [],
         archivelinks: []
       };
@@ -6078,33 +6114,21 @@ Post = (function() {
     };
 
     Post.prototype.parseComment = function() {
-      var abbr, bq, commentDisplay, j, k, len, len1, node, ref, spoilers;
+      var bq;
       this.nodes.comment.normalize();
-      bq = this.nodes.comment.cloneNode(true);
-      ref = $$('.abbr + br, .exif, b, .fortune', bq);
-      for (j = 0, len = ref.length; j < len; j++) {
-        node = ref[j];
-        $.rm(node);
-      }
-      if (abbr = $('.abbr', bq)) {
-        $.rm(abbr);
-      }
-      this.info.comment = this.nodesToText(bq);
-      if (abbr) {
-        this.info.comment = this.info.comment.replace(/\n\n$/, '');
-      }
-      commentDisplay = this.info.comment;
+      this.nodes.commentClean = bq = this.nodes.comment.cloneNode(true);
+      this.cleanComment(bq);
+      return this.info.comment = this.nodesToText(bq);
+    };
+
+    Post.prototype.commentDisplay = function() {
+      var bq;
+      bq = this.nodes.commentClean.cloneNode(true);
       if (!(Conf['Remove Spoilers'] || Conf['Reveal Spoilers'])) {
-        spoilers = $$('s', bq);
-        if (spoilers.length) {
-          for (k = 0, len1 = spoilers.length; k < len1; k++) {
-            node = spoilers[k];
-            $.replace(node, $.tn('[spoiler]'));
-          }
-          commentDisplay = this.nodesToText(bq);
-        }
+        this.cleanSpoilers(bq);
       }
-      return this.info.commentDisplay = commentDisplay.trim().replace(/\s+$/gm, '');
+      this.cleanCommentDisplay(bq);
+      return this.nodesToText(bq).trim().replace(/\s+$/gm, '');
     };
 
     Post.prototype.nodesToText = function(bq) {
@@ -6116,6 +6140,40 @@ Post = (function() {
         text += node.data || '\n';
       }
       return text;
+    };
+
+    Post.prototype.cleanComment = function(bq) {
+      var abbr, br, i, j, k, len, node, ref;
+      if ((abbr = $('.abbr', bq))) {
+        ref = $$('.abbr + br, .exif', bq);
+        for (j = 0, len = ref.length; j < len; j++) {
+          node = ref[j];
+          $.rm(node);
+        }
+        for (i = k = 0; k < 2; i = ++k) {
+          if ((br = abbr.previousSibling) && br.nodeName === 'BR') {
+            $.rm(br);
+          }
+        }
+        return $.rm(abbr);
+      }
+    };
+
+    Post.prototype.cleanSpoilers = function(bq) {
+      var j, len, node, spoilers;
+      spoilers = $$('s', bq);
+      for (j = 0, len = spoilers.length; j < len; j++) {
+        node = spoilers[j];
+        $.replace(node, $.tn('[spoiler]'));
+      }
+    };
+
+    Post.prototype.cleanCommentDisplay = function(bq) {
+      var b;
+      if ((b = $('b', bq)) && /^Rolled /.test(b.textContent)) {
+        $.rm(b);
+      }
+      return $.rm($('.fortune', bq));
     };
 
     Post.prototype.parseQuotes = function() {
@@ -6157,9 +6215,6 @@ Post = (function() {
         return;
       }
       fileText = fileRoot.firstElementChild;
-      if (link.hostname === 'is.4chan.org') {
-        link.hostname = 'i.4cdn.org';
-      }
       this.file = {
         text: fileText,
         link: link,
@@ -6178,9 +6233,6 @@ Post = (function() {
       }
       this.file.sizeInBytes = size;
       if ((thumb = $('a.fileThumb > [data-md5]', fileRoot))) {
-        if (thumb.parentNode.hostname === 'is.4chan.org') {
-          thumb.parentNode.hostname = 'i.4cdn.org';
-        }
         return $.extend(this.file, {
           thumb: thumb,
           thumbLink: thumb.parentNode,
@@ -6294,7 +6346,8 @@ Post = (function() {
       this.nodes.root.classList.toggle('catalog-container', isCatalogOP);
       this.nodes.root.classList.toggle('opContainer', !isCatalogOP);
       this.nodes.post.classList.toggle('catalog-post', isCatalogOP);
-      return this.nodes.post.classList.toggle('op', !isCatalogOP);
+      this.nodes.post.classList.toggle('op', !isCatalogOP);
+      return this.nodes.post.style.left = this.nodes.post.style.right = null;
     };
 
     return Post;
@@ -8215,7 +8268,7 @@ Build = (function() {
       if (data.ext) {
         o.file = {
           name: (Build.unescape(data.filename)) + data.ext,
-          url: boardID === 'f' ? location.protocol + "//i.4cdn.org/" + boardID + "/" + (encodeURIComponent(data.filename)) + data.ext : location.protocol + "//i.4cdn.org/" + boardID + "/" + data.tim + data.ext,
+          url: boardID === 'f' ? location.protocol + "//i.4cdn.org/" + boardID + "/" + (encodeURIComponent(data.filename)) + data.ext : location.protocol + "//" + (data.no % 3 ? 'i.4cdn.org' : 'is.4chan.org') + "/" + boardID + "/" + data.tim + data.ext,
           height: data.h,
           width: data.w,
           MD5: data.md5,
@@ -8224,7 +8277,8 @@ Build = (function() {
           theight: data.tn_h,
           twidth: data.tn_w,
           isSpoiler: !!data.spoiler,
-          tag: data.tag
+          tag: data.tag,
+          hasDownscale: !!data.m_img
         };
         if (!/\.pdf$/.test(o.file.url)) {
           o.file.dimensions = o.file.width + "x" + o.file.height;
@@ -8233,7 +8287,7 @@ Build = (function() {
       return o;
     },
     parseComment: function(html) {
-      html = html.replace(/<br\b[^<]*>/gi, '\n').replace(/\n\n<span\b[^<]* class="abbr"[^]*$/i, '').replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '').replace(/<span\b[^<]* class="fortune"[^]*$/i, '').replace(/<[^>]*>/g, '');
+      html = html.replace(/<br\b[^<]*>/gi, '\n').replace(/\n\n<span\b[^<]* class="abbr"[^]*$/i, '').replace(/<[^>]*>/g, '');
       return Build.unescape(html);
     },
     parseCommentDisplay: function(html) {
@@ -8243,6 +8297,7 @@ Build = (function() {
           html = html2;
         }
       }
+      html = html.replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '').replace(/<span\b[^<]* class="fortune"[^]*$/i, '');
       return Build.parseComment(html).trim().replace(/\s+$/gm, '');
     },
     postFromObject: function(data, boardID) {
@@ -8285,7 +8340,7 @@ Build = (function() {
         fileThumb = file.isSpoiler ? Build.spoilerThumb(boardID) : file.thumbURL.replace(protocol, '');
       }
       fileBlock = {
-        innerHTML: ((file) ? "<div class=\"file\" id=\"f" + E(ID) + "\">" + ((boardID === "f") ? "<div class=\"fileInfo\"><span class=\"fileText\" id=\"fT" + E(ID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(fileURL) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E(file.size) + ", " + E(file.dimensions) + ((file.tag) ? ", " + E(file.tag) : "") + ")</span></div>" : "<div class=\"fileText\" id=\"fT" + E(ID) + "\"" + ((file.isSpoiler) ? " title=\"" + E(file.name) + "\"" : "") + ">File: <a" + ((file.name === shortFilename || file.isSpoiler) ? "" : " title=\"" + E(file.name) + "\"") + " href=\"" + E(fileURL) + "\" target=\"_blank\">" + ((file.isSpoiler) ? "Spoiler Image" : E(shortFilename)) + "</a> (" + E(file.size) + ", " + E(file.dimensions || "PDF") + ")</div><a class=\"fileThumb" + ((file.isSpoiler) ? " imgspoiler" : "") + "\" href=\"" + E(fileURL) + "\" target=\"_blank\"><img src=\"" + E(fileThumb) + "\" alt=\"" + E(file.size) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.isSpoiler ? 100 : file.theight) + "px; width: " + E(file.isSpoiler ? 100 : file.twidth) + "px;\"></a>") + "</div>" : ((o.fileDeleted) ? "<div class=\"file\" id=\"f" + E(ID) + "\"><span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span></div>" : ""))
+        innerHTML: ((file) ? "<div class=\"file\" id=\"f" + E(ID) + "\">" + ((boardID === "f") ? "<div class=\"fileInfo\"><span class=\"fileText\" id=\"fT" + E(ID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(fileURL) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E(file.size) + ", " + E(file.dimensions) + ((file.tag) ? ", " + E(file.tag) : "") + ")</span></div>" : "<div class=\"fileText\" id=\"fT" + E(ID) + "\"" + ((file.isSpoiler) ? " title=\"" + E(file.name) + "\"" : "") + ">File: <a" + ((file.name === shortFilename || file.isSpoiler) ? "" : " title=\"" + E(file.name) + "\"") + " href=\"" + E(fileURL) + "\" target=\"_blank\">" + ((file.isSpoiler) ? "Spoiler Image" : E(shortFilename)) + "</a> (" + E(file.size) + ", " + E(file.dimensions || "PDF") + ")</div><a class=\"fileThumb" + ((file.isSpoiler) ? " imgspoiler" : "") + "\" href=\"" + E(fileURL) + "\" target=\"_blank\"" + ((file.hasDownscale) ? " data-m" : "") + "><img src=\"" + E(fileThumb) + "\" alt=\"" + E(file.size) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.isSpoiler ? 100 : file.theight) + "px; width: " + E(file.isSpoiler ? 100 : file.twidth) + "px;\"></a>") + "</div>" : ((o.fileDeleted) ? "<div class=\"file\" id=\"f" + E(ID) + "\"><span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span></div>" : ""))
       };
 
       /* Whole Post */
@@ -8447,7 +8502,7 @@ Get = (function() {
     threadExcerpt: function(thread) {
       var OP, excerpt, ref, ref1;
       OP = thread.OP;
-      excerpt = ("/" + thread.board + "/ - ") + (((ref = OP.info.subject) != null ? ref.trim() : void 0) || OP.info.commentDisplay.replace(/\n+/g, ' // ') || ((ref1 = OP.file) != null ? ref1.name : void 0) || OP.info.nameBlock);
+      excerpt = ("/" + thread.board + "/ - ") + (((ref = OP.info.subject) != null ? ref.trim() : void 0) || OP.commentDisplay().replace(/\n+/g, ' // ') || ((ref1 = OP.file) != null ? ref1.name : void 0) || ("No." + OP));
       if (excerpt.length > 73) {
         return excerpt.slice(0, 70) + "...";
       }
@@ -8473,7 +8528,7 @@ Get = (function() {
       }
     },
     postFromNode: function(root) {
-      return Get.postFromRoot($.x('(ancestor::div[contains(@class,"postContainer")][1]|following::div[contains(@class,"postContainer")][1])', root));
+      return Get.postFromRoot($.x('ancestor-or-self::div[contains(@class,"postContainer")][1]', root));
     },
     postDataFromLink: function(link) {
       var boardID, path, postID, ref, threadID;
@@ -8548,7 +8603,7 @@ Header = (function() {
 
   Header = {
     init: function() {
-      var barFixedToggler, barPositionToggler, box, customNavToggler, editCustomNav, footerToggler, headerToggler, linkJustifyToggler, menuButton, scrollHeaderToggler, shortcutToggler;
+      var barFixedToggler, barPositionToggler, box, cs, customNavToggler, editCustomNav, footerToggler, headerToggler, linkJustifyToggler, menuButton, scrollHeaderToggler, shortcutToggler;
       this.menu = new UI.Menu('header');
       menuButton = $.el('span', {
         className: 'menu-button'
@@ -8630,63 +8685,52 @@ Header = (function() {
       });
       $.on(window, 'load popstate', Header.hashScroll);
       $.on(d, 'CreateNotification', this.createNotification);
-      $.asap((function() {
-        return d.body;
-      }), (function(_this) {
+      $.onExists(doc, 'body', (function(_this) {
         return function() {
           if (!Main.isThisPageLegit()) {
             return;
           }
-          $.asap((function() {
-            return $.id('boardNavMobile') || d.readyState !== 'loading';
-          }), function() {
-            var a, footer;
-            footer = $.id('boardNavDesktop').cloneNode(true);
-            footer.id = 'boardNavDesktopFoot';
-            $('#navtopright', footer).id = 'navbotright';
-            $('#settingsWindowLink', footer).id = 'settingsWindowLinkBot';
-            Header.bottomBoardList = $('.boardList', footer);
-            if (a = $("a[href*='/" + g.BOARD + "/']", footer)) {
-              a.className = 'current';
-            }
-            Main.ready(function() {
-              var absbot, oldFooter;
-              if ((oldFooter = $.id('boardNavDesktopFoot'))) {
-                return $.replace($('.boardList', oldFooter), Header.bottomBoardList);
-              } else if ((absbot = $.id('absbot'))) {
-                $.before(absbot, footer);
-                return $.globalEval('window.cloneTopNav = function() {};');
-              }
-            });
-            return Header.setBoardList();
-          });
           $.prepend(d.body, _this.bar);
           $.add(d.body, Header.hover);
-          _this.setBarPosition(Conf['Bottom Header']);
-          return _this;
+          return _this.setBarPosition(Conf['Bottom Header']);
         };
       })(this));
-      Main.ready((function(_this) {
-        return function() {
-          var cs;
-          if (g.VIEW === 'catalog' || !Conf['Disable Native Extension']) {
-            cs = $.el('a', {
-              href: 'javascript:;'
-            });
-            if (g.VIEW === 'catalog') {
-              cs.title = cs.textContent = 'Catalog Settings';
-              cs.className = 'fa fa-book';
-            } else {
-              cs.title = cs.textContent = '4chan Settings';
-              cs.className = 'native-settings';
-            }
-            $.on(cs, 'click', function() {
-              return $.id('settingsWindowLink').click();
-            });
-            return _this.addShortcut('native', cs, 810);
+      $.onExists(doc, '#boardNavMobile', Header.setBoardList);
+      Main.ready(function() {
+        var a, absbot, footer;
+        if (!(footer = $.id('boardNavDesktopFoot'))) {
+          if (!(absbot = $.id('absbot'))) {
+            return;
           }
-        };
-      })(this));
+          footer = $.id('boardNavDesktop').cloneNode(true);
+          footer.id = 'boardNavDesktopFoot';
+          $('#navtopright', footer).id = 'navbotright';
+          $('#settingsWindowLink', footer).id = 'settingsWindowLinkBot';
+          $.before(absbot, footer);
+          $.globalEval('window.cloneTopNav = function() {};');
+        }
+        if ((a = $("a[href*='/" + g.BOARD + "/']", footer))) {
+          a.className = 'current';
+        }
+        Header.bottomBoardList = $('.boardList', footer);
+        return CatalogLinks.setLinks(Header.bottomBoardList);
+      });
+      if (g.VIEW === 'catalog' || !Conf['Disable Native Extension']) {
+        cs = $.el('a', {
+          href: 'javascript:;'
+        });
+        if (g.VIEW === 'catalog') {
+          cs.title = cs.textContent = 'Catalog Settings';
+          cs.className = 'fa fa-book';
+        } else {
+          cs.title = cs.textContent = '4chan Settings';
+          cs.className = 'native-settings';
+        }
+        $.on(cs, 'click', function() {
+          return $.id('settingsWindowLink').click();
+        });
+        this.addShortcut('native', cs, 810);
+      }
       return this.enableDesktopNotifications();
     },
     bar: $.el('div', {
@@ -8705,7 +8749,7 @@ Header = (function() {
       id: 'scroll-marker'
     }),
     setBoardList: function() {
-      var a, boardList, btn, chr, i, j, len, len1, node, nodes, ref, ref1, spacer, span;
+      var a, boardList, btn, chr, fullBoardList, i, j, len, len1, node, nodes, ref, ref1, spacer, span;
       Header.boardList = boardList = $.el('span', {
         id: 'board-list'
       });
@@ -8751,7 +8795,9 @@ Header = (function() {
             nodes.push(a);
         }
       }
-      $.add($('.boardList', boardList), nodes);
+      fullBoardList = $('.boardList', boardList);
+      $.add(fullBoardList, nodes);
+      CatalogLinks.setLinks(fullBoardList);
       $.add(Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]);
       Header.setCustomNav(Conf['Custom Board Navigation']);
       Header.generateBoardList(Conf['boardnav']);
@@ -8779,7 +8825,7 @@ Header = (function() {
         return results;
       })();
       $.add(list, nodes);
-      return $.ready(CatalogLinks.initBoardList);
+      return CatalogLinks.setLinks(list);
     },
     mapCustomNavigation: function(t, as) {
       var a, boardID, href, indexOptions, m, text, url;
@@ -9286,7 +9332,7 @@ Index = (function() {
         className: 'navLinks json-index'
       });
       $.extend(this.navLinks, {
-        innerHTML: "<span class=\"brackets-wrap indexlink\"><a href=\"#index\">Index</a></span> <span class=\"brackets-wrap cataloglink\"><a href=\"#catalog\">Catalog</a></span> <span class=\"brackets-wrap archlistlink\"><a href=\"./archive\">Archive</a></span> <span class=\"brackets-wrap bottomlink\"><a href=\"#bottom\">Bottom</a></span> <span class=\"brackets-wrap\" id=\"index-last-refresh\"><a href=\"javascript:;\"><time title=\"Last index refresh\">...</time></a></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a><span id=\"hidden-label\" hidden> &mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"lastlong\">Last long reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select>"
+        innerHTML: "<span class=\"brackets-wrap indexlink\"><a href=\"#index\">Index</a></span> <span class=\"brackets-wrap cataloglink\"><a href=\"#catalog\">Catalog</a></span> <span class=\"brackets-wrap archlistlink\"><a href=\"./archive\">Archive</a></span> <span class=\"brackets-wrap bottomlink\"><a href=\"#bottom\">Bottom</a></span> <span class=\"brackets-wrap\" id=\"index-last-refresh\"><a href=\"javascript:;\"><time title=\"Last index refresh\">...</time></a></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a><span id=\"hidden-label\" hidden> &mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><input type=\"checkbox\" id=\"index-rev\" name=\"Reverse Sort\" title=\"Reverse sort order\"><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"lastlong\">Last long reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select>"
       });
       $('.cataloglink a', this.navLinks).href = CatalogLinks.catalog();
       if ((ref5 = g.BOARD.ID) === 'b' || ref5 === 'trash') {
@@ -9299,9 +9345,11 @@ Index = (function() {
       $.on($('#index-search-clear', this.navLinks), 'click', this.clearSearch);
       this.hideLabel = $('#hidden-label', this.navLinks);
       $.on($('#hidden-toggle a', this.navLinks), 'click', this.cb.toggleHiddenThreads);
+      this.selectRev = $('#index-rev', this.navLinks);
       this.selectMode = $('#index-mode', this.navLinks);
       this.selectSort = $('#index-sort', this.navLinks);
       this.selectSize = $('#index-size', this.navLinks);
+      $.on(this.selectRev, 'change', this.cb.sort);
       $.on(this.selectMode, 'change', this.cb.mode);
       $.on(this.selectSort, 'change', this.cb.sort);
       $.on(this.selectSize, 'change', $.cb.value);
@@ -9311,12 +9359,13 @@ Index = (function() {
         select = ref6[k];
         select.value = Conf[select.name];
       }
-      this.selectSort.value = Index.currentSort;
+      this.selectRev.checked = /-rev$/.test(Index.currentSort);
+      this.selectSort.value = Index.currentSort.replace(/-rev$/, '');
       this.root = $.el('div', {
         className: 'board json-index'
       });
+      $.on(this.root, 'click', this.cb.hoverToggle);
       this.cb.size();
-      this.cb.hover();
       this.pagelist = $.el('div', {
         className: 'pagelist json-index'
       });
@@ -9512,8 +9561,10 @@ Index = (function() {
         return Index.pageLoad(false);
       },
       sort: function() {
+        var value;
+        value = Index.selectRev.checked ? Index.selectSort.value + "-rev" : Index.selectSort.value;
         Index.pushState({
-          sort: this.value
+          sort: value
         });
         return Index.pageLoad(false);
       },
@@ -9546,10 +9597,18 @@ Index = (function() {
       replies: function() {
         return Index.buildIndex();
       },
-      hover: function(e) {
-        doc.classList.toggle('catalog-hover-expand', Conf['Catalog Hover Expand']);
-        if (e && Conf['Show Replies'] && Conf['Catalog Hover Expand']) {
-          return Index.cb.replies();
+      hover: function() {
+        if (!Conf['Catalog Hover Expand']) {
+          return $.rmClass(doc, 'catalog-hover-expand');
+        }
+      },
+      hoverToggle: function(e) {
+        var post;
+        if (Conf['Catalog Hover Expand'] && !$.modifiedClick(e) && !$.x('ancestor-or-self::a', e.target)) {
+          $.toggleClass(doc, 'catalog-hover-expand');
+          if ((post = Get.postFromNode(e.target))) {
+            return Index.cb.hoverAdjust.call(post.nodes);
+          }
         }
       },
       popstate: function(e) {
@@ -9575,7 +9634,7 @@ Index = (function() {
       },
       pageNav: function(e) {
         var a;
-        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+        if ($.modifiedClick(e)) {
           return;
         }
         switch (e.target.nodeName) {
@@ -9602,15 +9661,15 @@ Index = (function() {
         return Index.update();
       },
       catalogReplies: function() {
-        $.off(this, 'mouseover', Index.cb.catalogReplies);
-        if (!(Conf['Show Replies'] && Conf['Catalog Hover Expand'] && this.parentNode)) {
+        if (!(Conf['Show Replies'] && $.hasClass(doc, 'catalog-hover-expand'))) {
           return;
         }
+        $.off(this, 'mouseenter', Index.cb.catalogReplies);
         return Index.buildCatalogReplies(Get.threadFromRoot(this));
       },
       hoverAdjust: function() {
         var rect, style, x;
-        if (!Conf['Catalog Hover Expand']) {
+        if (!$.hasClass(doc, 'catalog-hover-expand')) {
           return;
         }
         rect = this.post.getBoundingClientRect();
@@ -9673,8 +9732,11 @@ Index = (function() {
         } else if (command === 'index') {
           state.mode = Conf['Previous Index Mode'];
           state.page = 1;
-        } else if ((sort = Index.hashCommands.sort[command])) {
+        } else if ((sort = Index.hashCommands.sort[command.replace(/-rev$/, '')])) {
           state.sort = sort;
+          if (/-rev$/.test(command)) {
+            state.sort += '-rev';
+          }
         } else if (/^s=/.test(command)) {
           state.search = decodeURIComponent(command.slice(2)).replace(/\+/g, ' ').trim();
         } else {
@@ -9803,7 +9865,8 @@ Index = (function() {
       return $('#hidden-toggle a', Index.navLinks).textContent = 'Show';
     },
     setupSort: function() {
-      return Index.selectSort.value = Index.currentSort;
+      Index.selectRev.checked = /-rev$/.test(Index.currentSort);
+      return Index.selectSort.value = Index.currentSort.replace(/-rev$/, '');
     },
     getPagesNum: function() {
       if (Index.search) {
@@ -10195,7 +10258,7 @@ Index = (function() {
         return;
       }
       Index.sortedThreadIDs = (function() {
-        switch (Index.currentSort) {
+        switch (Index.currentSort.replace(/-rev$/, '')) {
           case 'lastreply':
             return slice.call(liveThreadData).sort(function(a, b) {
               var num;
@@ -10248,6 +10311,9 @@ Index = (function() {
             return liveThreadIDs;
         }
       })();
+      if (/-rev$/.test(Index.currentSort)) {
+        Index.sortedThreadIDs = slice.call(Index.sortedThreadIDs).reverse();
+      }
       if (Index.search && (threadIDs = Index.querySearch(Index.search))) {
         Index.sortedThreadIDs = threadIDs;
       }
@@ -10358,9 +10424,7 @@ Index = (function() {
         thread.OP.setCatalogOP(true);
         $.add(thread.catalogView.nodes.root, thread.OP.nodes.root);
         nodes.push(thread.catalogView.nodes.root);
-        if (Conf['Show Replies'] && Conf['Catalog Hover Expand']) {
-          $.on(thread.catalogView.nodes.root, 'mouseover', Index.cb.catalogReplies);
-        }
+        $.on(thread.catalogView.nodes.root, 'mouseenter', Index.cb.catalogReplies);
         $.on(thread.OP.nodes.root, 'mouseenter', Index.cb.hoverAdjust.bind(thread.OP.nodes));
       }
       $.add(Index.root, nodes);
@@ -11170,7 +11234,7 @@ Settings = (function() {
     advanced: function(section) {
       var applyCSS, boardSelect, customCSS, event, input, inputs, interval, items, itemsArchive, j, k, l, len, len1, len2, len3, m, name, ref, ref1, ref2, ref3, table, updateArchives, warning;
       $.extend(section, {
-        innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"
+        innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"
       });
       ref = $$('.warning', section);
       for (j = 0, len = ref.length; j < len; j++) {
@@ -11475,17 +11539,14 @@ UI = (function() {
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     slice = [].slice;
 
-  dialog = function(id, position, properties) {
+  dialog = function(id, properties) {
     var child, el, i, len, move, ref;
     el = $.el('div', {
       className: 'dialog',
       id: id
     });
     $.extend(el, properties);
-    el.style.cssText = position;
-    $.get(id + ".position", position, function(item) {
-      return el.style.cssText = item[id + ".position"];
-    });
+    el.style.cssText = Conf[id + ".position"];
     move = $('.move', el);
     $.on(move, 'touchstart mousedown', dragstart);
     ref = move.children;
@@ -12263,7 +12324,7 @@ Gallery = (function() {
       if (((ref = this.error) != null ? ref.code : void 0) === MediaError.MEDIA_ERR_DECODE) {
         return new Notice('error', 'Corrupt or unplayable video', 30);
       }
-      if (this.src.split('/')[2] !== 'i.4cdn.org') {
+      if (ImageCommon.isFromArchive(this)) {
         return;
       }
       return ImageCommon.error(this, g.posts[this.dataset.post], null, (function(_this) {
@@ -12576,6 +12637,10 @@ ImageCommon = (function() {
       message.textContent = 'Error: Corrupt or unplayable video';
       return true;
     },
+    isFromArchive: function(file) {
+      var ref;
+      return (ref = file.src.split('/')[2]) !== 'i.4cdn.org' && ref !== 'is.4chan.org';
+    },
     error: function(file, post, delay, cb) {
       var URL, redirect, src, timeoutID;
       src = post.file.url.split('/');
@@ -12586,7 +12651,7 @@ ImageCommon = (function() {
       if (!(Conf['404 Redirect'] && URL && Redirect.securityCheck(URL))) {
         URL = null;
       }
-      if ((post.isDead || post.file.isDead) && file.src.split('/')[2] === 'i.4cdn.org') {
+      if ((post.isDead || post.file.isDead) && !ImageCommon.isFromArchive(file)) {
         return cb(URL);
       }
       if (delay != null) {
@@ -12598,7 +12663,7 @@ ImageCommon = (function() {
         return;
       }
       redirect = function() {
-        if (file.src.split('/')[2] === 'i.4cdn.org') {
+        if (!ImageCommon.isFromArchive(file)) {
           if (delay != null) {
             clearTimeout(timeoutID);
           }
@@ -12731,7 +12796,7 @@ ImageExpand = (function() {
     cb: {
       toggle: function(e) {
         var file, post, ref;
-        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+        if ($.modifiedClick(e)) {
           return;
         }
         post = Get.postFromNode(this);
@@ -13028,7 +13093,7 @@ ImageExpand = (function() {
       if (ImageCommon.decodeError(this, post)) {
         return ImageExpand.contract(post);
       }
-      if (this.src.split('/')[2] !== 'i.4cdn.org') {
+      if (ImageCommon.isFromArchive(this)) {
         return ImageExpand.contract(post);
       }
       return ImageCommon.error(this, post, 10 * $.SECOND, function(URL) {
@@ -13081,6 +13146,37 @@ ImageExpand = (function() {
   };
 
   return ImageExpand;
+
+}).call(this);
+
+ImageHost = (function() {
+  var ImageHost;
+
+  ImageHost = {
+    init: function() {
+      var ref;
+      if (!(Conf['Use Faster Image Host'] && ((ref = g.VIEW) === 'index' || ref === 'thread'))) {
+        return;
+      }
+      return Callbacks.Post.push({
+        name: 'Image Host Rewriting',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var m;
+      if (!(this.file && !this.isClone && (m = this.file.url.match(/^https?:\/\/is\.4chan\.org\/(.*)$/)))) {
+        return;
+      }
+      this.file.link.hostname = 'i.4cdn.org';
+      if (this.file.thumbLink) {
+        this.file.thumbLink.hostname = 'i.4cdn.org';
+      }
+      return this.file.url = this.file.link.href;
+    }
+  };
+
+  return ImageHost;
 
 }).call(this);
 
@@ -13827,7 +13923,7 @@ Embedding = (function() {
         this.types[type.key] = type;
       }
       if (Conf['Embedding']) {
-        this.dialog = UI.dialog('embedding', 'top: 50px; right: 0px;', {
+        this.dialog = UI.dialog('embedding', {
           innerHTML: "<div><div class=\"move\"></div><a href=\"javascript:;\" class=\"jump\" title=\"Jump to post\">→</a><a href=\"javascript:;\" class=\"close\" title=\"Close\">×</a></div><div id=\"media-embed\"><div></div></div>"
         });
         this.media = $('#media-embed', this.dialog);
@@ -15295,7 +15391,7 @@ CatalogLinks = (function() {
           cb: this.node
         });
       }
-      if (Conf['Catalog Links']) {
+      if ((this.enabled = Conf['Catalog Links'])) {
         CatalogLinks.el = el = UI.checkbox('Header catalog links', 'Catalog Links');
         el.id = 'toggleCatalog';
         input = $('input', el);
@@ -15317,32 +15413,34 @@ CatalogLinks = (function() {
         }
       }
     },
-    initBoardList: function() {
-      if (!CatalogLinks.el) {
-        return;
-      }
-      return CatalogLinks.set(Conf['Header catalog links']);
-    },
     toggle: function() {
       $.event('CloseMenu');
       $.set('Header catalog links', this.checked);
       return CatalogLinks.set(this.checked);
     },
     set: function(useCatalog) {
-      var a, board, i, len, ref, ref1;
-      ref = $$('a:not([data-only])', Header.boardList).concat($$('a', Header.bottomBoardList));
-      for (i = 0, len = ref.length; i < len; i++) {
-        a = ref[i];
-        if (((ref1 = a.hostname) !== 'boards.4chan.org' && ref1 !== 'catalog.neet.tv') || !(board = a.pathname.split('/')[1]) || (board === 'f' || board === 'status' || board === '4chan') || a.pathname.split('/')[2] === 'archive' || $.hasClass(a, 'external')) {
+      Conf['Header catalog links'] = useCatalog;
+      CatalogLinks.setLinks(Header.boardList);
+      CatalogLinks.setLinks(Header.bottomBoardList);
+      CatalogLinks.el.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
+      return $('input', CatalogLinks.el).checked = useCatalog;
+    },
+    setLinks: function(list) {
+      var a, board, i, len, ref, ref1, ref2;
+      if (!(((ref = CatalogLinks.enabled) != null ? ref : Conf['Catalog Links']) && list)) {
+        return;
+      }
+      ref1 = $$('a:not([data-only])', list);
+      for (i = 0, len = ref1.length; i < len; i++) {
+        a = ref1[i];
+        if (((ref2 = a.hostname) !== 'boards.4chan.org' && ref2 !== 'catalog.neet.tv') || !(board = a.pathname.split('/')[1]) || (board === 'f' || board === 'status' || board === '4chan') || a.pathname.split('/')[2] === 'archive' || $.hasClass(a, 'external')) {
           continue;
         }
-        a.href = useCatalog ? CatalogLinks.catalog(board) : "/" + board + "/";
+        a.href = Conf['Header catalog links'] ? CatalogLinks.catalog(board) : "/" + board + "/";
         if (a.dataset.indexOptions && a.hostname === 'boards.4chan.org' && a.pathname.split('/')[2] === '') {
           a.href += (a.hash ? '/' : '#') + a.dataset.indexOptions;
         }
       }
-      CatalogLinks.el.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
-      return $('input', CatalogLinks.el).checked = useCatalog;
     },
     catalog: function(board) {
       if (board == null) {
@@ -15574,7 +15672,7 @@ ExpandThread = (function() {
       });
     },
     cbToggle: function(e) {
-      if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+      if ($.modifiedClick(e)) {
         return;
       }
       e.preventDefault();
@@ -16005,7 +16103,7 @@ IDColor = (function() {
     },
     node: function() {
       var rgb, span, style, uid;
-      if (this.isClone || !((uid = this.info.uniqueID) && (span = $('span.hand', this.nodes.uniqueID)))) {
+      if (this.isClone || !((uid = this.info.uniqueID) && (span = this.nodes.uniqueID))) {
         return;
       }
       rgb = IDColor.ids[uid] || IDColor.compute(uid);
@@ -16052,8 +16150,8 @@ IDHighlight = (function() {
     },
     uniqueID: null,
     node: function() {
-      if (this.nodes.uniqueID) {
-        $.on(this.nodes.uniqueID, 'click', IDHighlight.click(this));
+      if (this.nodes.uniqueIDRoot) {
+        $.on(this.nodes.uniqueIDRoot, 'click', IDHighlight.click(this));
       }
       if (this.nodes.capcode) {
         $.on(this.nodes.capcode, 'click', IDHighlight.click(this));
@@ -16102,7 +16200,7 @@ IDPostCount = (function() {
     },
     node: function() {
       if (this.nodes.uniqueID && this.thread === IDPostCount.thread) {
-        return $.on($('span.hand', this.nodes.uniqueID), 'mouseover', IDPostCount.count);
+        return $.on(this.nodes.uniqueID, 'mouseover', IDPostCount.count);
       }
     },
     count: function() {
@@ -17512,7 +17610,7 @@ ThreadStats = (function() {
         $.extend(sc, statsHTML);
         Header.addShortcut('stats', sc, 200);
       } else {
-        this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', {
+        this.dialog = sc = UI.dialog('thread-stats', {
           innerHTML: "<div class=\"move\" title=\"" + E(statsTitle) + "\">" + (statsHTML).innerHTML + "</div>"
         });
         $.addClass(doc, 'float');
@@ -17666,7 +17764,7 @@ ThreadUpdater = (function() {
         });
         Header.addShortcut('updater', sc, 100);
       } else {
-        this.dialog = sc = UI.dialog('updater', 'bottom: 0px; left: 0px;', {
+        this.dialog = sc = UI.dialog('updater', {
           innerHTML: "<div class=\"move\"></div><span id=\"update-status\"></span><span id=\"update-timer\" title=\"Update now\"></span>"
         });
         $.addClass(doc, 'float');
@@ -18090,7 +18188,7 @@ ThreadWatcher = (function() {
         className: 'fa fa-eye'
       });
       this.db = new DataBoard('watchedThreads', this.refresh, true);
-      this.dialog = UI.dialog('thread-watcher', 'top: 50px; left: 0px;', {
+      this.dialog = UI.dialog('thread-watcher', {
         innerHTML: "<div class=\"move\">Thread Watcher <a class=\"refresh fa fa-refresh\" title=\"Check threads\" href=\"javascript:;\"></a><span id=\"watcher-status\"></span><a class=\"menu-button\" href=\"javascript:;\"><i class=\"fa fa-angle-down\"></i></a><a class=\"close\" href=\"javascript:;\">×</a></div><div id=\"watched-threads\"></div>"
       });
       this.status = $('#watcher-status', this.dialog);
@@ -19024,7 +19122,7 @@ Unread = (function() {
         return;
       }
       notif = new Notification(post.info.nameBlock + " replied to you", {
-        body: post.info.commentDisplay,
+        body: post.commentDisplay(),
         icon: Favicon.logo
       });
       notif.onclick = function() {
@@ -20737,6 +20835,7 @@ QR = (function() {
     handleUrl: function(urlDefault) {
       var url;
       QR.open();
+      QR.selected.preventAutoPost();
       url = prompt('Enter a URL:', urlDefault);
       if (url === null) {
         return;
@@ -20819,7 +20918,7 @@ QR = (function() {
     dialog: function() {
       var classList, config, dialog, event, i, items, name, node, nodes, save, setNode;
       QR.nodes = nodes = {
-        el: dialog = UI.dialog('qr', 'top: 50px; right: 0px;', {
+        el: dialog = UI.dialog('qr', {
           innerHTML: "<div class=\"move\"><label><input type=\"checkbox\" id=\"autohide\" title=\"Auto-hide\">Quick Reply</label><a href=\"javascript:;\" class=\"close\" title=\"Close\">×</a><select data-name=\"thread\" title=\"Create a new thread / Reply\"><option value=\"new\">New thread</option></select></div><form><div class=\"persona\"><button type=\"button\" id=\"sjis-toggle\" title=\"Toggle Mona font\">∀</button><button type=\"button\" id=\"tex-preview-button\" title=\"Preview TeX\">T<sub>E</sub>X</button><input name=\"name\" data-name=\"name\" list=\"list-name\" placeholder=\"Name\" class=\"field\" size=\"1\"><input name=\"email\" data-name=\"email\" list=\"list-email\" placeholder=\"Options\" class=\"field\" size=\"1\"><input name=\"sub\" data-name=\"sub\" list=\"list-sub\" placeholder=\"Subject\" class=\"field\" size=\"1\"></div><div class=\"textarea\"><textarea data-name=\"com\" placeholder=\"Comment\" class=\"field\"></textarea><span id=\"char-count\"></span><div id=\"tex-preview\"></div></div><div id=\"dump-list-container\"><div id=\"dump-list\"></div><a id=\"add-post\" href=\"javascript:;\" title=\"Add a post\">+</a></div><div class=\"oekaki\" hidden><input type=\"button\" id=\"qr-draw-button\" value=\"Draw\"><label><span>Width:</span><input name=\"oekaki-width\" value=\"400\" type=\"number\" class=\"field\" size=\"1\"></label><label><span>Height:</span><input name=\"oekaki-height\" value=\"400\" type=\"number\" class=\"field\" size=\"1\"></label><span class=\"oekaki-bg\" title=\"Background Color\"><input name=\"oekaki-bg\" type=\"checkbox\" checked><input name=\"oekaki-bgcolor\" type=\"color\" value=\"#ffffff\"></span></div><div id=\"file-n-submit\"><input type=\"button\" id=\"qr-file-button\" value=\"Files\"><span id=\"qr-filename-container\" class=\"field\"><span id=\"qr-no-file\">No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><label id=\"qr-spoiler-label\"><input type=\"checkbox\" id=\"qr-file-spoiler\" title=\"Spoiler image\"><a class=\"checkbox-letter\">S</a></label><a id=\"qr-oekaki-button\" title=\"Edit in Tegaki\"><i class=\"fa fa-edit\"></i></a><a href=\"javascript:;\" id=\"qr-filerm\" title=\"Remove file\"><i class=\"fa fa-times-circle\"></i></a><a id=\"url-button\" title=\"Post from URL\"><i class=\"fa fa-link\"></i></a><a hidden id=\"paste-area\" title=\"Select to paste images\" class=\"fa fa-clipboard\" tabindex=\"-1\" contentEditable=\"true\"></a><a id=\"custom-cooldown-button\" title=\"Toggle custom cooldown\" class=\"disabled\"><i class=\"fa fa-clock-o\"></i></a><a id=\"dump-button\" title=\"Dump list\"><i class=\"fa fa-plus-square\"></i></a></span><input type=\"submit\"></div><select data-default=\"4\" name=\"filetag\"><option value=\"0\">Hentai</option><option value=\"6\">Porn</option><option value=\"1\">Japanese</option><option value=\"2\">Anime</option><option value=\"3\">Game</option><option value=\"5\">Loop</option><option value=\"4\" selected>Other</option></select><input type=\"file\" multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist> "
         })
       };
@@ -20959,6 +21058,7 @@ QR = (function() {
         QR.abort();
         return;
       }
+      $.forceSync('cooldowns');
       if (QR.cooldown.seconds) {
         QR.cooldown.auto = !QR.cooldown.auto;
         QR.status();
@@ -21227,13 +21327,6 @@ QR = (function() {
 (function() {
   QR.cooldown = {
     seconds: 0,
-    delays: {
-      thread: 0,
-      reply: 0,
-      image: 0,
-      deletion: 60,
-      thread_global: 300
-    },
     init: function() {
       if (!Conf['Quick Reply']) {
         return;
@@ -21242,21 +21335,12 @@ QR = (function() {
       return $.sync('cooldowns', this.sync);
     },
     setup: function() {
-      var delay, i, key, len, m, ref, ref1, type;
-      if (m = Get.scriptData().match(/\bcooldowns *= *({[^}]+})/)) {
-        $.extend(QR.cooldown.delays, JSON.parse(m[1]));
-      }
-      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
-        ref = ['reply', 'image'];
-        for (i = 0, len = ref.length; i < len; i++) {
-          key = ref[i];
-          QR.cooldown.delays[key] = Math.ceil(QR.cooldown.delays[key] / 2);
-        }
-      }
+      var delay, ref, type;
+      QR.cooldown.delays = g.BOARD.cooldowns();
       QR.cooldown.maxDelay = 0;
-      ref1 = QR.cooldown.delays;
-      for (type in ref1) {
-        delay = ref1[type];
+      ref = QR.cooldown.delays;
+      for (type in ref) {
+        delay = ref[type];
         if (type !== 'thread' && type !== 'thread_global') {
           QR.cooldown.maxDelay = Math.max(QR.cooldown.maxDelay, delay);
         }
@@ -21377,8 +21461,11 @@ QR = (function() {
       }
       return $.set('cooldowns', data);
     },
-    count: function() {
+    update: function() {
       var base, cooldown, cooldowns, elapsed, i, len, maxDelay, nCooldowns, now, ref, ref1, save, scope, seconds, start, suffix, threadID, type, update;
+      if (!QR.cooldown.isCounting) {
+        return;
+      }
       $.forceSync('cooldowns');
       save = [];
       nCooldowns = 0;
@@ -21440,9 +21527,12 @@ QR = (function() {
       update = seconds !== QR.cooldown.seconds;
       QR.cooldown.seconds = seconds;
       if (update) {
-        QR.status();
+        return QR.status();
       }
-      if (seconds === 0 && QR.cooldown.auto && !QR.req) {
+    },
+    count: function() {
+      QR.cooldown.update();
+      if (QR.cooldown.seconds === 0 && QR.cooldown.auto && !QR.req) {
         return QR.submit();
       }
     }
@@ -21788,8 +21878,9 @@ QR = (function() {
         return function(e) {
           _this.spoiler = e.target.checked;
           if (_this === QR.selected) {
-            return QR.nodes.spoiler.checked = _this.spoiler;
+            QR.nodes.spoiler.checked = _this.spoiler;
           }
+          return _this.preventAutoPost();
         };
       })(this));
       ref = $$('label', el);
@@ -21903,8 +21994,8 @@ QR = (function() {
       return QR.characterCount();
     };
 
-    _Class.prototype.save = function(input) {
-      var name, prev, ref;
+    _Class.prototype.save = function(input, forced) {
+      var name, prev;
       if (input.type === 'checkbox') {
         this.spoiler = input.checked;
         return;
@@ -21915,23 +22006,25 @@ QR = (function() {
       switch (name) {
         case 'thread':
           (this.thread !== 'new' ? $.addClass : $.rmClass)(QR.nodes.el, 'reply-to-thread');
-          return QR.status();
+          QR.status();
+          break;
         case 'com':
           this.updateComment();
-          if (QR.cooldown.auto && this === QR.posts[0] && (0 < (ref = QR.cooldown.seconds) && ref <= 5)) {
-            return QR.cooldown.auto = false;
-          }
           break;
         case 'filename':
           if (!this.file) {
             return;
           }
           this.saveFilename();
-          return this.updateFilename();
+          this.updateFilename();
+          break;
         case 'name':
           if (this.name !== prev) {
-            return QR.persona.set(this);
+            QR.persona.set(this);
           }
+      }
+      if (!forced) {
+        return this.preventAutoPost();
       }
     };
 
@@ -21946,7 +22039,16 @@ QR = (function() {
         if (!(node = QR.nodes[name])) {
           continue;
         }
-        this.save(node);
+        this.save(node, true);
+      }
+    };
+
+    _Class.prototype.preventAutoPost = function() {
+      if (QR.cooldown.auto && this === QR.posts[0]) {
+        QR.cooldown.update();
+        if (QR.cooldown.seconds <= 5) {
+          return QR.cooldown.auto = false;
+        }
       }
     };
 
@@ -22064,10 +22166,11 @@ QR = (function() {
       }
       this.nodes.el.style.backgroundImage = '';
       if (ref = this.file.type, indexOf.call(QR.mimeTypes, ref) < 0) {
-        return this.fileError('Unsupported file type.');
+        this.fileError('Unsupported file type.');
       } else if (/^(image|video)\//.test(this.file.type)) {
-        return this.readFile();
+        this.readFile();
       }
+      return this.preventAutoPost();
     };
 
     _Class.prototype.checkSize = function() {
@@ -22192,9 +22295,10 @@ QR = (function() {
       $.rmClass(this.nodes.el, 'has-file');
       this.showFileData();
       URL.revokeObjectURL(this.URL);
-      return this.dismissErrors(function(error) {
+      this.dismissErrors(function(error) {
         return $.hasClass(error, 'file-error');
       });
+      return this.preventAutoPost();
     };
 
     _Class.prototype.saveFilename = function() {
@@ -22236,6 +22340,7 @@ QR = (function() {
     _Class.prototype.pasteText = function(file) {
       var reader;
       this.pasting = true;
+      this.preventAutoPost();
       reader = new FileReader();
       reader.onload = (function(_this) {
         return function(e) {
@@ -22284,6 +22389,9 @@ QR = (function() {
       };
       oldIndex = index(el);
       newIndex = index(this);
+      if (QR.posts[oldIndex].isLocked || QR.posts[newIndex].isLocked) {
+        return;
+      }
       (oldIndex < newIndex ? $.after : $.before)(this, el);
       post = QR.posts.splice(oldIndex, 1)[0];
       QR.posts.splice(newIndex, 0, post);
@@ -22492,7 +22600,7 @@ QuoteInline = (function() {
     },
     toggle: function(e) {
       var boardID, context, postID, quoter, ref, ref1, threadID;
-      if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+      if ($.modifiedClick(e)) {
         return;
       }
       ref = Get.postDataFromLink(this), boardID = ref.boardID, threadID = ref.threadID, postID = ref.postID;
@@ -23399,7 +23507,7 @@ Main = (function() {
           return;
         case 'i.4cdn.org':
         case 'is.4chan.org':
-          if (!(pathname[2] && !/s\.jpg$/.test(pathname[2]))) {
+          if (!(pathname[2] && !/[sm]\.jpg$/.test(pathname[2]))) {
             return;
           }
           $.asap((function() {
@@ -23768,7 +23876,7 @@ Main = (function() {
         }
       });
     },
-    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning]]
+    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning]]
   };
 
   return Main;
