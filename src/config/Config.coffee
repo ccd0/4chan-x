@@ -409,6 +409,11 @@ Config =
         true
         'Hide old replies in long threads. Number of replies shown can be set from header menu.'
       ]
+      'Prune by Default': [
+        false
+        'Turn Reply Pruning on by default in all threads, except when navigating to a post that would be hidden.'
+        1
+      ]
 
     'Posting and Captchas':
       'Quick Reply': [
