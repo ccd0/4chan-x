@@ -90,7 +90,9 @@ Header =
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
 
-    $.onExists doc, '#boardNavDesktop > *', Header.setBoardList
+    # Wait for #boardNavMobile instead of #boardNavDesktop,
+    # it might be incomplete otherwise.
+    $.onExists doc, '#boardNavMobile', Header.setBoardList
 
     Main.ready ->
       if not (footer = $.id 'boardNavDesktopFoot')
