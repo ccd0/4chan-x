@@ -66,7 +66,7 @@ Build =
         url: if boardID is 'f'
           "#{location.protocol}//i.4cdn.org/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
         else
-          "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
+          "#{location.protocol}//#{if data.no % 3 then 'i.4cdn.org' else 'is.4chan.org'}/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h
         width:     data.w
         MD5:       data.md5
@@ -76,6 +76,7 @@ Build =
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
         tag:       data.tag
+        hasDownscale: !!data.m_img
       o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
     o
 
@@ -83,8 +84,6 @@ Build =
     html = html
       .replace(/<br\b[^<]*>/gi, '\n')
       .replace(/\n\n<span\b[^<]* class="abbr"[^]*$/i, '') # EXIF data (/p/)
-      .replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '')       # Rolls (/tg/)
-      .replace(/<span\b[^<]* class="fortune"[^]*$/i, '')  # Fortunes (/s4s/)
       .replace(/<[^>]*>/g, '')
     Build.unescape html
 
@@ -93,6 +92,9 @@ Build =
     unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
       while (html2 = html.replace /<s>(?:(?!<\/?s>).)*<\/s>/g, '[spoiler]') isnt html
         html = html2
+    html = html
+      .replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '')      # Rolls (/tg/, /qst/)
+      .replace(/<span\b[^<]* class="fortune"[^]*$/i, '') # Fortunes (/s4s/)
     # Remove preceding and following new lines, trailing spaces.
     Build.parseComment(html).trim().replace(/\s+$/gm, '')
 

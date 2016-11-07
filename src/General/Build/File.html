@@ -14,7 +14,7 @@
       </a> 
       (${file.size}, ${file.dimensions || "PDF"})
     </div>
-    <a class="fileThumb?{file.isSpoiler}{ imgspoiler}{}" href="${fileURL}" target="_blank">
+    <a class="fileThumb?{file.isSpoiler}{ imgspoiler}{}" href="${fileURL}" target="_blank"?{file.hasDownscale}{ data-m}>
       <img 
         src="${fileThumb}" 
         alt="${file.size}" 

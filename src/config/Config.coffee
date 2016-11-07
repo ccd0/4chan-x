@@ -184,6 +184,10 @@ Config =
       ]
 
     'Images and Videos':
+      'Use Faster Image Host': [
+        true
+        'Change is.4chan.org links to point to the faster i.4cdn.org host.'
+      ]
       'Image Expansion': [
         true
         'Expand images / videos.'
@@ -1049,3 +1053,10 @@ Config =
   'Max Replies': 1000
 
   'Autohiding Scrollbar': false
+
+  position:
+    'embedding.position':      'top: 50px; right: 0px;'
+    'thread-stats.position':   'bottom: 0px; right: 0px;'
+    'updater.position':        'bottom: 0px; left: 0px;'
+    'thread-watcher.position': 'top: 50px; left: 0px;'
+    'qr.position':             'top: 50px; right: 0px;'

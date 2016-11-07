@@ -19,7 +19,7 @@ ThreadStats =
       Header.addShortcut 'stats', sc, 200
 
     else
-      @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',
+      @dialog = sc = UI.dialog 'thread-stats',
         <%= html('<div class="move" title="${statsTitle}">&{statsHTML}</div>') %>
       $.addClass doc, 'float'
       $.ready ->

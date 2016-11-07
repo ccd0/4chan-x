@@ -130,7 +130,7 @@ Main =
           PostSuccessful.init()
         return
       when 'i.4cdn.org', 'is.4chan.org'
-        return unless pathname[2] and not /s\.jpg$/.test(pathname[2])
+        return unless pathname[2] and not /[sm]\.jpg$/.test(pathname[2])
         $.asap (-> d.readyState isnt 'loading'), ->
           if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
             Redirect.navigate 'file', {
@@ -425,6 +425,7 @@ Main =
     ['Board Configuration',       BoardConfig]
     ['Normalize URL',             NormalizeURL]
     ['Captcha Configuration',     Captcha.replace]
+    ['Image Host Rewriting',      ImageHost]
     ['Redirect',                  Redirect]
     ['Header',                    Header]
     ['Catalog Links',             CatalogLinks]

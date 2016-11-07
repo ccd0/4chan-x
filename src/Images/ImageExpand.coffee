@@ -268,7 +268,7 @@ ImageExpand =
     if ImageCommon.decodeError @, post
       return ImageExpand.contract post
     # Don't autoretry images from the archive.
-    unless @src.split('/')[2] is 'i.4cdn.org'
+    if ImageCommon.isFromArchive @
       return ImageExpand.contract post
     ImageCommon.error @, post, 10 * $.SECOND, (URL) ->
       if post.file.isExpanding or post.file.isExpanded

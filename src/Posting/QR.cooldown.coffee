@@ -1,11 +1,5 @@
 QR.cooldown =
   seconds: 0
-  delays:
-    thread: 0
-    reply: 0
-    image: 0
-    deletion: 60       # cooldown for deleting posts/files
-    thread_global: 300 # inter-board thread cooldown
 
   # Called from Main
   init: ->
@@ -16,13 +10,7 @@ QR.cooldown =
   # Called from QR
   setup: ->
     # Read cooldown times
-    if m = Get.scriptData().match /\bcooldowns *= *({[^}]+})/
-      $.extend QR.cooldown.delays, JSON.parse m[1]
-
-    # Pass users have reduced cooldowns.
-    if d.cookie.indexOf('pass_enabled=1') >= 0
-      for key in ['reply', 'image']
-        QR.cooldown.delays[key] = Math.ceil(QR.cooldown.delays[key] / 2)
+    QR.cooldown.delays = g.BOARD.cooldowns()
 
     # The longest reply cooldown, for use in pruning old reply data
     QR.cooldown.maxDelay = 0
@@ -104,7 +92,9 @@ QR.cooldown =
       delete data[scope]
     $.set 'cooldowns', data
 
-  count: ->
+  update: ->
+    return unless QR.cooldown.isCounting
+
     $.forceSync 'cooldowns'
     save = []
     nCooldowns = 0
@@ -175,4 +165,7 @@ QR.cooldown =
     update = seconds isnt QR.cooldown.seconds
     QR.cooldown.seconds = seconds
     QR.status() if update
-    QR.submit() if seconds is 0 and QR.cooldown.auto and !QR.req
+
+  count: ->
+    QR.cooldown.update()
+    QR.submit() if QR.cooldown.seconds is 0 and QR.cooldown.auto and !QR.req

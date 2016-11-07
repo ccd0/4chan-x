@@ -10,7 +10,7 @@ IDColor =
       cb:   @node
 
   node: ->
-    return if @isClone or !((uid = @info.uniqueID) and (span = $ 'span.hand', @nodes.uniqueID))
+    return if @isClone or !((uid = @info.uniqueID) and (span = @nodes.uniqueID))
 
     rgb = IDColor.ids[uid] or IDColor.compute uid
 

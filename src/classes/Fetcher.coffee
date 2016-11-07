@@ -175,7 +175,10 @@ class Fetcher
       o.file =
         name:      data.media.media_filename
         url:       data.media.media_link or data.media.remote_media_link or
-                     "#{location.protocol}//i.4cdn.org/#{@boardID}/#{encodeURIComponent data.media[if @boardID is 'f' then 'media_filename' else 'media_orig']}"
+                     if @boardID is 'f'
+                       "#{location.protocol}//i.4cdn.org/#{@boardID}/#{encodeURIComponent data.media.media_filename}"
+                     else
+                       "#{location.protocol}//#{if data.no % 3 then 'i.4cdn.org' else 'is.4chan.org'}/#{@boardID}/#{encodeURIComponent data.media.media_orig}"
         height:    data.media.media_h
         width:     data.media.media_w
         MD5:       data.media.media_hash

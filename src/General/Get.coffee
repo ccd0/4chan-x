@@ -3,9 +3,9 @@ Get =
     {OP} = thread
     excerpt = ("/#{thread.board}/ - ") + (
       OP.info.subject?.trim() or
-      OP.info.commentDisplay.replace(/\n+/g, ' // ') or
+      OP.commentDisplay().replace(/\n+/g, ' // ') or
       OP.file?.name or
-      OP.info.nameBlock)
+      "No.#{OP}")
     return "#{excerpt[...70]}..." if excerpt.length > 73
     excerpt
   threadFromRoot: (root) ->
@@ -18,7 +18,7 @@ Get =
     index = root.dataset.clone
     if index then post.clones[index] else post
   postFromNode: (root) ->
-    Get.postFromRoot $.x '(ancestor-or-self::div[contains(@class,"postContainer")][1]|following::div[contains(@class,"postContainer")][1])', root
+    Get.postFromRoot $.x 'ancestor-or-self::div[contains(@class,"postContainer")][1]', root
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
       path     = link.pathname.split /\/+/

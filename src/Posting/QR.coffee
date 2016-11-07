@@ -398,6 +398,7 @@ QR =
 
   handleUrl: (urlDefault) ->
     QR.open()
+    QR.selected.preventAutoPost()
     url = prompt 'Enter a URL:', urlDefault
     return if url is null
     QR.nodes.fileButton.focus()
@@ -456,7 +457,7 @@ QR =
 
   dialog: ->
     QR.nodes = nodes =
-      el: dialog = UI.dialog 'qr', 'top: 50px; right: 0px;',
+      el: dialog = UI.dialog 'qr',
         <%= readHTML('QuickReply.html') %>
 
     setNode = (name, query) ->
@@ -579,6 +580,7 @@ QR =
       QR.abort()
       return
 
+    $.forceSync 'cooldowns'
     if QR.cooldown.seconds
       QR.cooldown.auto = !QR.cooldown.auto
       QR.status()

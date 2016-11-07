@@ -84,42 +84,39 @@ Header =
     $.on window, 'load popstate', Header.hashScroll
     $.on d, 'CreateNotification', @createNotification
 
-    $.asap (-> d.body), =>
+    $.onExists doc, 'body', =>
       return unless Main.isThisPageLegit()
-      # Wait for #boardNavMobile instead of #boardNavDesktop,
-      # it might be incomplete otherwise.
-      $.asap (-> $.id('boardNavMobile') or d.readyState isnt 'loading'), ->
+      $.prepend d.body, @bar
+      $.add d.body, Header.hover
+      @setBarPosition Conf['Bottom Header']
+
+    $.onExists doc, '#boardNavDesktop > *', Header.setBoardList
+
+    Main.ready ->
+      if not (footer = $.id 'boardNavDesktopFoot')
+        return unless (absbot = $.id 'absbot')
         footer = $.id('boardNavDesktop').cloneNode true
         footer.id = 'boardNavDesktopFoot'
         $('#navtopright',        footer).id = 'navbotright'
         $('#settingsWindowLink', footer).id = 'settingsWindowLinkBot'
-        Header.bottomBoardList = $ '.boardList', footer
-        if a = $ "a[href*='/#{g.BOARD}/']", footer
-          a.className = 'current'
-        Main.ready ->
-          if (oldFooter = $.id 'boardNavDesktopFoot')
-            $.replace $('.boardList', oldFooter), Header.bottomBoardList
-          else if (absbot = $.id 'absbot')
-            $.before absbot, footer
-            $.globalEval 'window.cloneTopNav = function() {};'
-        Header.setBoardList()
-      $.prepend d.body, @bar
-      $.add d.body, Header.hover
-      @setBarPosition Conf['Bottom Header']
-      @
+        $.before absbot, footer
+        $.globalEval 'window.cloneTopNav = function() {};'
+      if (a = $ "a[href*='/#{g.BOARD}/']", footer)
+        a.className = 'current'
+      Header.bottomBoardList = $ '.boardList', footer
+      CatalogLinks.setLinks Header.bottomBoardList
 
-    Main.ready =>
-      if g.VIEW is 'catalog' or !Conf['Disable Native Extension']
-        cs = $.el 'a', href: 'javascript:;'
-        if g.VIEW is 'catalog'
-          cs.title = cs.textContent = 'Catalog Settings'
-          cs.className = 'fa fa-book'
-        else
-          cs.title = cs.textContent = '4chan Settings'
-          cs.className = 'native-settings'
-        $.on cs, 'click', () ->
-          $.id('settingsWindowLink').click()
-        @addShortcut 'native', cs, 810
+    if g.VIEW is 'catalog' or !Conf['Disable Native Extension']
+      cs = $.el 'a', href: 'javascript:;'
+      if g.VIEW is 'catalog'
+        cs.title = cs.textContent = 'Catalog Settings'
+        cs.className = 'fa fa-book'
+      else
+        cs.title = cs.textContent = '4chan Settings'
+        cs.className = 'native-settings'
+      $.on cs, 'click', () ->
+        $.id('settingsWindowLink').click()
+      @addShortcut 'native', cs, 810
 
     @enableDesktopNotifications()
 
@@ -170,7 +167,9 @@ Header =
           a = node.cloneNode true
           a.className = 'current' if a.pathname.split('/')[1] is g.BOARD.ID
           nodes.push a
-    $.add $('.boardList', boardList), nodes
+    fullBoardList = $ '.boardList', boardList
+    $.add fullBoardList, nodes
+    CatalogLinks.setLinks fullBoardList
 
     $.add Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
 
@@ -188,9 +187,8 @@ Header =
     as = $$ '#full-board-list a[title]', Header.boardList
     re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g
     nodes = (Header.mapCustomNavigation t, as for t in boardnav.match re)
-
     $.add list, nodes
-    $.ready CatalogLinks.initBoardList
+    CatalogLinks.setLinks list
 
   mapCustomNavigation: (t, as) ->
     if /^[^\w@]/.test t
