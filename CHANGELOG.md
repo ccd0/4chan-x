@@ -4,6 +4,9 @@
 
 ### v1.13.1
 
+**v1.13.1.1** *(2016-11-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.1/builds/4chan-X-noupdate.crx)]
+- Fix bug causing replies to not immediately show when catalog thread is clicked.
+
 **v1.13.1.0** *(2016-11-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.13.0.22.
 - Only activate `Catalog Hover Expand` when catalog is clicked. Deactivate on second click. Turn `Catalog Hover Expand` back on by default.
