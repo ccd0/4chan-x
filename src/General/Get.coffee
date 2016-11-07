@@ -9,9 +9,10 @@ Get =
     return "#{excerpt[...70]}..." if excerpt.length > 73
     excerpt
   threadFromRoot: (root) ->
+    return null unless root?
     g.threads["#{g.BOARD}.#{root.id[1..]}"]
   threadFromNode: (node) ->
-    Get.threadFromRoot $.x 'ancestor::div[@class="thread"]', node
+    Get.threadFromRoot $.x 'ancestor-or-self::div[contains(concat(" ",@class," ")," thread ")]', node
   postFromRoot: (root) ->
     return null unless root?
     post  = g.posts[root.dataset.fullID]

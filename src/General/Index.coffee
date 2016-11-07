@@ -288,8 +288,9 @@ Index =
     hoverToggle: (e) ->
       if Conf['Catalog Hover Expand'] and !$.modifiedClick(e) and !$.x('ancestor-or-self::a', e.target)
         $.toggleClass doc, 'catalog-hover-expand'
-        if (post = Get.postFromNode e.target)
-          Index.cb.hoverAdjust.call post.nodes
+        if (thread = Get.threadFromNode e.target)
+          Index.cb.catalogReplies.call thread
+          Index.cb.hoverAdjust.call thread.OP.nodes
 
     popstate: (e) ->
       if e?.state
@@ -324,9 +325,8 @@ Index =
       Index.update()
 
     catalogReplies: ->
-      return unless Conf['Show Replies'] and $.hasClass(doc, 'catalog-hover-expand')
-      $.off @, 'mouseenter', Index.cb.catalogReplies
-      Index.buildCatalogReplies Get.threadFromRoot @
+      if Conf['Show Replies'] and $.hasClass(doc, 'catalog-hover-expand') and !@catalogView.nodes.replies
+        Index.buildCatalogReplies @
 
     hoverAdjust: ->
       # Prevent hovered catalog threads from going offscreen.
@@ -660,7 +660,7 @@ Index =
             thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
             thread.setStatus 'Sticky', !!threadData.sticky
             thread.setStatus 'Closed', !!threadData.closed
-          if thread.catalogView and (isStale or !(isCatalog and Conf['Show Replies'] and Conf['Catalog Hover Expand']))
+          if thread.catalogView
             $.rm thread.catalogView.nodes.replies
             thread.catalogView.nodes.replies = null
         else
@@ -742,11 +742,6 @@ Index =
   buildCatalogReplies: (thread) ->
     {nodes} = thread.catalogView
     return if not (lastReplies = Index.liveThreadDict[thread.ID].last_replies)
-
-    if nodes.replies
-      # RelativeDates will stop updating elements if they go out of document.
-      RelativeDates.update timeEl for timeEl in $$ 'time', nodes.replies
-      return
 
     replies = []
     for data in lastReplies
@@ -865,7 +860,7 @@ Index =
       thread.OP.setCatalogOP true
       $.add thread.catalogView.nodes.root, thread.OP.nodes.root
       nodes.push thread.catalogView.nodes.root
-      $.on thread.catalogView.nodes.root, 'mouseenter', Index.cb.catalogReplies
+      $.on thread.catalogView.nodes.root, 'mouseenter', Index.cb.catalogReplies.bind(thread)
       $.on thread.OP.nodes.root, 'mouseenter', Index.cb.hoverAdjust.bind(thread.OP.nodes)
     $.add Index.root, nodes
     nodes
