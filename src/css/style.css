@@ -716,7 +716,6 @@ div[data-checked="false"] > .suboption-list {
 /* Catalog */
 :root.catalog-mode .board {
   text-align: center;
-  padding: 0 51px;
 }
 .catalog-thread {
   display: inline-block;
@@ -729,15 +728,15 @@ div[data-checked="false"] > .suboption-list {
 }
 /* overrides 4chan CSS on div.thread */
 .catalog-thread.catalog-thread {
-  margin: 4px;
+  margin: 2px;
 }
 .catalog-small > .catalog-thread {
-  width: 167px;
-  height: 322px;
+  width: 165px;
+  height: 320px;
 }
 .catalog-large > .catalog-thread {
-  width: 272px;
-  height: 412px;
+  width: 270px;
+  height: 410px;
 }
 :root.catalog-hover-expand .catalog-thread:hover {
   z-index: 1;
