@@ -254,6 +254,9 @@ do ->
       root.dispatchEvent new CustomEvent event, {bubbles: true, detail: clone detail}
 <% } %>
 
+$.modifiedClick = (e) ->
+  e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+
 $.open = 
 <% if (type === 'userscript') { %>
   if GM_openInTab?

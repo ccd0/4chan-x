@@ -29,7 +29,7 @@ ExpandThread =
       ExpandThread.setButton thread
 
   cbToggle: (e) ->
-    return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+    return if $.modifiedClick e
     e.preventDefault()
     ExpandThread.toggle Get.threadFromNode @
 

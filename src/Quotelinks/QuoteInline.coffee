@@ -30,7 +30,7 @@ QuoteInline =
       href: link.href
 
   toggle: (e) ->
-    return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+    return if $.modifiedClick e
 
     {boardID, threadID, postID} = Get.postDataFromLink @
     return if Conf['Inline Cross-thread Quotes Only'] and g.VIEW is 'thread' and g.posts["#{boardID}.#{postID}"]?.nodes.root.offsetParent # exists and not hidden
