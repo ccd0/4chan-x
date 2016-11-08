@@ -286,7 +286,7 @@ Index =
       $.rmClass doc, 'catalog-hover-expand' unless Conf['Catalog Hover Expand']
 
     hoverToggle: (e) ->
-      if Conf['Catalog Hover Expand'] and !$.modifiedClick(e) and !$.x('ancestor-or-self::a', e.target)
+      if Conf['Catalog Hover Expand'] and $.hasClass(doc, 'catalog-mode') and !$.modifiedClick(e) and !$.x('ancestor-or-self::a', e.target)
         $.toggleClass doc, 'catalog-hover-expand'
         if (thread = Get.threadFromNode e.target)
           Index.cb.catalogReplies.call thread
