@@ -1009,6 +1009,10 @@ Config =
       'x'
       'Hide thread.'
     ]
+    'Quick Filter MD5': [
+      '5'
+      'Add the MD5 of the selected image to the filter list.'
+    ]
     'Previous Post Quoting You': [
       'Alt+Up'
       'Scroll to the previous post that quotes you.'

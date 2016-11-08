@@ -171,6 +171,7 @@ Filter =
 
   quickFilterMD5: ->
     post = Get.postFromNode @
+    return unless post.file
     Filter.addFilter 'MD5', "/#{post.file.MD5}/"
     origin = post.origin or post
     if origin.isReply

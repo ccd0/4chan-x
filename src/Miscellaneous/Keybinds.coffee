@@ -199,6 +199,11 @@ Keybinds =
         return unless thread and ThreadHiding.db
         Header.scrollTo threadRoot
         ThreadHiding.toggle thread
+      when Conf['Quick Filter MD5']
+        return unless threadRoot
+        post = Keybinds.post threadRoot
+        Keybinds.hl +1, threadRoot
+        Filter.quickFilterMD5.call post
       when Conf['Previous Post Quoting You']
         return unless threadRoot and QuoteYou.db
         QuoteYou.cb.seek 'preceding'
@@ -255,10 +260,13 @@ Keybinds =
       if e.shiftKey then key = 'Shift+' + key
     key
 
+  post: (thread) ->
+    $('.post.highlight', thread) or $('.op', thread)
+
   qr: (thread) ->
     QR.open()
     if thread?
-      QR.quote.call $ 'input', $('.post.highlight', thread) or thread
+      QR.quote.call Keybinds.post thread
     QR.nodes.com.focus()
 
   tags: (tag, ta) ->
@@ -297,8 +305,8 @@ Keybinds =
     if all
       ImageExpand.cb.toggleAll()
     else
-      post = Get.postFromNode $('.post.highlight', thread) or $ '.op', thread
-      ImageExpand.toggle post
+      post = Get.postFromNode Keybinds.post thread
+      ImageExpand.toggle post if post.file
 
   open: (thread, tab) ->
     return if g.VIEW isnt 'index'
