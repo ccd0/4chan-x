@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.0.22
+// @version      1.13.0.23
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.22',
+  VERSION:   '1.13.0.23',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1319,11 +1319,13 @@ body > div[style*=\" top: -10000px;\"] {\n\
 }\n\
 :root:not(.ads-loaded) .ad-plea,\n\
 :root:not(.ads-loaded) hr.abovePostForm,\n\
-:root:not(.ads-loaded) .ad-plea-bottom + hr {\n\
+:root:not(.ads-loaded) .ad-plea-bottom + hr,\n\
+:root:not(.ads-loaded) #adg-ol + hr {\n\
   display: none;\n\
 }\n\
 :root:not(.ads-loaded) .adg-rects {\n\
   margin: 0;\n\
+  font-size: 0;\n\
 }\n\
 div.center[style] {\n\
   display: none !important;\n\
@@ -9503,6 +9505,7 @@ Index = (function() {
       },
       toggleHiddenThreads: function() {
         $('#hidden-toggle a', Index.navLinks).textContent = (Index.showHiddenThreads = !Index.showHiddenThreads) ? 'Hide' : 'Show';
+        Index.sort();
         return Index.buildIndex();
       },
       mode: function() {
