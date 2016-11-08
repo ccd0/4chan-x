@@ -158,6 +158,29 @@ Filter =
   filesize:   (post) -> post.file?.size
   MD5:        (post) -> post.file?.MD5
 
+  addFilter: (type, re, cb) ->
+    $.get type, Conf[type], (item) ->
+      save = item[type]
+      # Add a new line before the regexp unless the text is empty.
+      save =
+        if save
+          "#{save}\n#{re}"
+        else
+          re
+      $.set type, save, cb
+
+  quickFilterMD5: ->
+    post = Get.postFromNode @
+    Filter.addFilter 'MD5', "/#{post.file.MD5}/"
+    origin = post.origin or post
+    if origin.isReply
+      PostHiding.hide origin
+    else if g.VIEW is 'index'
+      ThreadHiding.hide origin.thread
+    # If post is still visible, give an indication that the MD5 was filtered.
+    if post.nodes.post.getBoundingClientRect().height
+      new Notice 'info', 'MD5 filtered.', 2
+
   menu:
     init: ->
       return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Filter']
@@ -240,16 +263,7 @@ Filter =
       else
         "/^#{re}$/"
 
-      # Add a new line before the regexp unless the text is empty.
-      $.get type, Conf[type], (item) ->
-        save = item[type]
-        save =
-          if save
-            "#{save}\n#{re}"
-          else
-            re
-        $.set type, save
-
+      Filter.addFilter type, re, ->
         # Open the settings and display & focus the relevant filter textarea.
         Settings.open 'Filter'
         section = $ '.section-container'
