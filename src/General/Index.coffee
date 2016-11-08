@@ -518,6 +518,7 @@ Index =
     $.add strong, a
 
   updateHideLabel: ->
+    return unless Index.hideLabel
     hiddenCount = 0
     for threadID in Index.liveThreadIDs when Index.isHidden(threadID)
       hiddenCount++
