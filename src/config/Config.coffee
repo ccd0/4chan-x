@@ -716,6 +716,7 @@ Config =
     https://www.google.com/searchbyimage?image_url=%IMG&safe=off
     #https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG
     #//tineye.com/search?url=%IMG
+    #http://www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi
 
     # Specialized reverse image search:
     //iqdb.org/?url=%IMG
