@@ -12,7 +12,7 @@ ReplyPruning =
       @inputs.enabled.checked = !@inputs.enabled.checked
       $.event 'change', null, @inputs.enabled
 
-    label = UI.checkbox 'Prune Replies', 'Show Last', Conf['Prune by Default']
+    label = UI.checkbox 'Prune Replies', 'Show Last', Conf['Prune All Threads']
     el = $.el 'span',
       title: 'Maximum number of replies to show.'
     ,

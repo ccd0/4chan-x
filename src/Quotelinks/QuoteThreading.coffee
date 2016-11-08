@@ -40,7 +40,7 @@ QuoteThreading =
 
   setEnabled: ->
     if @checked
-      $.set 'Prune by Default', false
+      $.set 'Prune All Threads', false
       other = ReplyPruning.inputs?.enabled
       if other?.checked
         other.checked = false

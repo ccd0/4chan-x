@@ -409,7 +409,7 @@ Config =
         true
         'Add option in header menu to hide old replies in long threads. Activated by default in stickies.'
       ]
-      'Prune by Default': [
+      'Prune All Threads': [
         false
         'Activate Reply Pruning by default in all threads.'
         1
