@@ -76,8 +76,6 @@ Unread =
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
 
-    ReplyPruning.showIfHidden Unread.position?.data.nodes.root.id
-
     position = Unread.positionPrev()
     while position
       {root} = position.data.nodes
