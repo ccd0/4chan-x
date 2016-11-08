@@ -15,7 +15,7 @@
     <b>Archive Lists</b>: Each line below should be an archive list in <a href="https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md" target="_blank">this format</a> or a URL to load an archive list from.<br>
     Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).
   </div>
-  <textarea name="archiveLists" class="field" spellcheck="false"></textarea>
+  <textarea hidden name="archiveLists" class="field" spellcheck="false"></textarea>
   <button id="update-archives">Update now</button> Last updated: <time id="lastarchivecheck"></time> <label><input type="checkbox" name="archiveAutoUpdate"> Auto-update</label>
 </fieldset>
 
@@ -27,7 +27,7 @@
 
 <fieldset>
   <legend>Custom Board Navigation</legend>
-  <div><textarea name="boardnav" class="field" spellcheck="false"></textarea></div>
+  <div><textarea hidden name="boardnav" class="field" spellcheck="false"></textarea></div>
   <span class="note">New lines will be converted into spaces.</span><br><br>
   <div class="note">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div>
   <div>Board link: <code>g</code></div>
@@ -87,7 +87,7 @@
 
 <fieldset>
   <legend>Quick Reply Personas</legend>
-  <textarea class="personafield field" name="QR.personas" spellcheck="false"></textarea>
+  <textarea hidden class="personafield field" name="QR.personas" spellcheck="false"></textarea>
   <p>
     One item per line.<br>
     Items will be added in the relevant input&#039;s auto-completion list.<br>
@@ -140,7 +140,7 @@
   </legend>
   <div>For more information about customizing 4chan X&#039;s CSS, see the <a href="<%= meta.cssGuide %>" target="_blank">styling guide</a>.</div>
   <button id="apply-css">Apply CSS</button>
-  <textarea name="usercss" class="field" spellcheck="false"></textarea>
+  <textarea hidden name="usercss" class="field" spellcheck="false"></textarea>
 </fieldset>
 
 <fieldset>
@@ -149,5 +149,5 @@
     Sources from which Javascript is allowed to be loaded by <a href="http://content-security-policy.com/#source_list" target="_blank">Content Security Policy</a>.<br>
     Lines starting with a <code>#</code> will be ignored.
   </div>
-  <textarea name="jsWhitelist" class="field" spellcheck="false"></textarea>
+  <textarea hidden name="jsWhitelist" class="field" spellcheck="false"></textarea>
 </fieldset>

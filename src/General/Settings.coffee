@@ -454,7 +454,8 @@ Settings =
     $('.warning', section).hidden = Conf['Sauce']
     ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
-      (ta.value = item['sauces'])
+      ta.value = item['sauces']
+      (ta.hidden = false) # XXX prevent Firefox from adding initialization to undo queue
     $.on ta, 'change', $.cb.value
 
   advanced: (section) ->
@@ -482,6 +483,7 @@ Settings =
       for key, val of items
         input = inputs[key]
         input[if input.type is 'checkbox' then 'checked' else 'value'] = val
+        input.hidden = false # XXX prevent Firefox from adding initialization to undo queue
         if key of Settings
           Settings[key].call input
       return
