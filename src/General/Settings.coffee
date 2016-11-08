@@ -441,10 +441,10 @@ Settings =
         name: name
         className: 'field'
         spellcheck: false
-      $.get name, Conf[name], (item) ->
-        (ta.value = item[name])
       $.on ta, 'change', $.cb.value
-      $.add div, ta
+      $.get name, Conf[name], (item) ->
+        ta.value = item[name]
+        $.add div, ta
       return
     $.extend div, <%= readHTML('Filter-guide.html') %>
     $('.warning', div).hidden = Conf['Filter']
