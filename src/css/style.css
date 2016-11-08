@@ -137,6 +137,7 @@ body > div[style*=" top: -10000px;"] {
 }
 :root:not(.ads-loaded) .adg-rects {
   margin: 0;
+  font-size: 0;
 }
 div.center[style] {
   display: none !important;

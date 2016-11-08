@@ -20,6 +20,10 @@
 
 ## v1.13.0
 
+**v1.13.0.23** *(2016-11-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.23/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.23/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.0 affecting the catalog sorting order of recently hidden/shown threads.
+- Cosmetic fixes for bottom ad changes.
+
 **v1.13.0.22** *(2016-11-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.22/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.22/builds/4chan-X-noupdate.crx)]
 - Turn `Catalog Hover Expand` off by default for now.
 - Adjust catalog CSS; opt for more entries displayed as it was previously.
