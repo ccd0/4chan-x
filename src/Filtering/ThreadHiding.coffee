@@ -183,6 +183,7 @@ ThreadHiding =
     threadRoot = thread.nodes.root
     thread.isHidden = true
     Index.updateHideLabel()
+    $.rm thread.catalogView.nodes.root if thread.catalogView and !Index.showHiddenThreads
 
     return threadRoot.hidden = true unless makeStub
 
@@ -195,3 +196,4 @@ ThreadHiding =
     threadRoot = thread.nodes.root
     threadRoot.hidden = thread.isHidden = false
     Index.updateHideLabel()
+    $.rm thread.catalogView.nodes.root if thread.catalogView and Index.showHiddenThreads

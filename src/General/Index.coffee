@@ -213,7 +213,6 @@ Index =
       e.preventDefault() # Also on mousedown to prevent highlighting text.
 
   toggleHide: (thread) ->
-    $.rm thread.catalogView.nodes.root
     if Index.showHiddenThreads
       ThreadHiding.show thread
       return unless ThreadHiding.db.get {boardID: thread.board.ID, threadID: thread.ID}
