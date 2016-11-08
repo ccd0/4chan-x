@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.1.1
+// @version      1.13.1.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.1.1',
+  VERSION:   '1.13.1.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -292,7 +292,8 @@ Config = (function() {
         'Fixed Thread Watcher': [true, 'Makes the thread watcher scroll with the page.', 1],
         'Persistent Thread Watcher': [false, 'The thread watcher will be visible when the page is loaded.', 1],
         'Mark New IPs': [false, 'Label each post from a new IP with the thread\'s current IP count.'],
-        'Reply Pruning': [true, 'Hide old replies in long threads. Number of replies shown can be set from header menu.']
+        'Reply Pruning': [true, 'Add option in header menu to hide old replies in long threads. Activated by default in stickies.'],
+        'Prune All Threads': [false, 'Activate Reply Pruning by default in all threads.', 1]
       },
       'Posting and Captchas': {
         'Quick Reply': [true, 'All-in-one form to reply, create threads, automate dumping and more.'],
@@ -374,7 +375,7 @@ Config = (function() {
       filesize: '',
       MD5: ''
     },
-    sauces: "# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\n#https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//tineye.com/search?url=%IMG\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://whatanime.ga/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desuarchive.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
+    sauces: "# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\n#https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//tineye.com/search?url=%IMG\n#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://whatanime.ga/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desuarchive.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
     FappeT: {
       werk: false
     },
@@ -464,6 +465,7 @@ Config = (function() {
       'Previous reply': ['k', 'Select previous reply.'],
       'Deselect reply': ['Shift+d', 'Deselect reply.'],
       'Hide': ['x', 'Hide thread.'],
+      'Quick Filter MD5': ['5', 'Add the MD5 of the selected image to the filter list.'],
       'Previous Post Quoting You': ['Alt+Up', 'Scroll to the previous post that quotes you.'],
       'Next Post Quoting You': ['Alt+Down', 'Scroll to the next post that quotes you.']
     },
@@ -1327,11 +1329,13 @@ body > div[style*=\" top: -10000px;\"] {\n\
 }\n\
 :root:not(.ads-loaded) .ad-plea,\n\
 :root:not(.ads-loaded) hr.abovePostForm,\n\
-:root:not(.ads-loaded) .ad-plea-bottom + hr {\n\
+:root:not(.ads-loaded) .ad-plea-bottom + hr,\n\
+:root:not(.ads-loaded) #adg-ol + hr {\n\
   display: none;\n\
 }\n\
 :root:not(.ads-loaded) .adg-rects {\n\
   margin: 0;\n\
+  font-size: 0;\n\
 }\n\
 div.center[style] {\n\
   display: none !important;\n\
@@ -7334,6 +7338,31 @@ Filter = (function() {
       var ref;
       return (ref = post.file) != null ? ref.MD5 : void 0;
     },
+    addFilter: function(type, re, cb) {
+      return $.get(type, Conf[type], function(item) {
+        var save;
+        save = item[type];
+        save = save ? save + "\n" + re : re;
+        return $.set(type, save, cb);
+      });
+    },
+    quickFilterMD5: function() {
+      var origin, post;
+      post = Get.postFromNode(this);
+      if (!post.file) {
+        return;
+      }
+      Filter.addFilter('MD5', "/" + post.file.MD5 + "/");
+      origin = post.origin || post;
+      if (origin.isReply) {
+        PostHiding.hide(origin);
+      } else if (g.VIEW === 'index') {
+        ThreadHiding.hide(origin.thread);
+      }
+      if (post.nodes.post.getBoundingClientRect().height) {
+        return new Notice('info', 'MD5 filtered.', 2);
+      }
+    },
     menu: {
       init: function() {
         var div, entry, i, len, ref, ref1, type;
@@ -7390,20 +7419,19 @@ Filter = (function() {
           }
         });
         re = type === 'uniqueID' || type === 'MD5' ? "/" + re + "/" : "/^" + re + "$/";
-        return $.get(type, Conf[type], function(item) {
-          var save, section, select, ta, tl;
-          save = item[type];
-          save = save ? save + "\n" + re : re;
-          $.set(type, save);
+        return Filter.addFilter(type, re, function() {
+          var section, select;
           Settings.open('Filter');
           section = $('.section-container');
           select = $('select[name=filter]', section);
           select.value = type;
           Settings.selectFilter.call(select);
-          ta = $('textarea', section);
-          tl = ta.textLength;
-          ta.setSelectionRange(tl, tl);
-          return ta.focus();
+          return $.onExists(section, 'textarea', function(ta) {
+            var tl;
+            tl = ta.textLength;
+            ta.setSelectionRange(tl, tl);
+            return ta.focus();
+          });
         });
       }
     }
@@ -8071,8 +8099,9 @@ ThreadHiding = (function() {
       }
       threadRoot = thread.nodes.root;
       thread.isHidden = true;
-      if (Conf['JSON Index']) {
-        Index.updateHideLabel();
+      Index.updateHideLabel();
+      if (thread.catalogView && !Index.showHiddenThreads) {
+        $.rm(thread.catalogView.nodes.root);
       }
       if (!makeStub) {
         return threadRoot.hidden = true;
@@ -8087,8 +8116,9 @@ ThreadHiding = (function() {
       }
       threadRoot = thread.nodes.root;
       threadRoot.hidden = thread.isHidden = false;
-      if (Conf['JSON Index']) {
-        return Index.updateHideLabel();
+      Index.updateHideLabel();
+      if (thread.catalogView && Index.showHiddenThreads) {
+        return $.rm(thread.catalogView.nodes.root);
       }
     }
   };
@@ -9502,7 +9532,6 @@ Index = (function() {
       })(this));
     },
     toggleHide: function(thread) {
-      $.rm(thread.catalogView.nodes.root);
       if (Index.showHiddenThreads) {
         ThreadHiding.show(thread);
         if (!ThreadHiding.db.get({
@@ -9555,6 +9584,7 @@ Index = (function() {
       },
       toggleHiddenThreads: function() {
         $('#hidden-toggle a', Index.navLinks).textContent = (Index.showHiddenThreads = !Index.showHiddenThreads) ? 'Hide' : 'Show';
+        Index.sort();
         return Index.buildIndex();
       },
       mode: function() {
@@ -9607,7 +9637,7 @@ Index = (function() {
       },
       hoverToggle: function(e) {
         var thread;
-        if (Conf['Catalog Hover Expand'] && !$.modifiedClick(e) && !$.x('ancestor-or-self::a', e.target)) {
+        if (Conf['Catalog Hover Expand'] && $.hasClass(doc, 'catalog-mode') && !$.modifiedClick(e) && !$.x('ancestor-or-self::a', e.target)) {
           $.toggleClass(doc, 'catalog-hover-expand');
           if ((thread = Get.threadFromNode(e.target))) {
             Index.cb.catalogReplies.call(thread);
@@ -9924,6 +9954,9 @@ Index = (function() {
     },
     updateHideLabel: function() {
       var hiddenCount, k, len, ref, threadID;
+      if (!Index.hideLabel) {
+        return;
+      }
       hiddenCount = 0;
       ref = Index.liveThreadIDs;
       for (k = 0, len = ref.length; k < len; k++) {
@@ -11156,6 +11189,9 @@ Settings = (function() {
           setD(key, false);
         }
       }
+      if (compareString < '00001.00013.00001.00002') {
+        addSauces(['#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights']);
+      }
       return changes;
     },
     loadSettings: function(data, cb) {
@@ -11201,11 +11237,11 @@ Settings = (function() {
           className: 'field',
           spellcheck: false
         });
-        $.get(name, Conf[name], function(item) {
-          return ta.value = item[name];
-        });
         $.on(ta, 'change', $.cb.value);
-        $.add(div, ta);
+        $.get(name, Conf[name], function(item) {
+          ta.value = item[name];
+          return $.add(div, ta);
+        });
         return;
       }
       $.extend(div, {
@@ -11216,19 +11252,20 @@ Settings = (function() {
     sauce: function(section) {
       var ta;
       $.extend(section, {
-        innerHTML: "<div class=\"warning\"><code>Sauce</code> is disabled.</div><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><div>You can specify the applicable boards by appending <code>;boards:[board1],[board2]</code>.</div><div>You can specify the applicable file types by appending <code>;types:[extension1],[extension2]</code>.</div><ul>These parameters will be replaced by their corresponding values:<li><code>%TURL</code>: Thumbnail URL.</li><li><code>%URL</code>: Full image URL.</li><li><code>%IMG</code>: Full image URL for GIF, JPG, and PNG; thumbnail URL for other types.</li><li><code>%MD5</code>: MD5 hash in base64.</li><li><code>%sMD5</code>: MD5 hash in base64 using <code>-</code> and <code>_</code>.</li><li><code>%hMD5</code>: MD5 hash in hexadecimal.</li><li><code>%name</code>: Original file name.</li><li><code>%board</code>: Current board.</li><li><code>%%</code>, <code>%semi</code>: Literal <code>%</code> and <code>;</code>.</li></ul><textarea name=\"sauces\" class=\"field\" spellcheck=\"false\"></textarea>"
+        innerHTML: "<div class=\"warning\"><code>Sauce</code> is disabled.</div><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><div>You can specify the applicable boards by appending <code>;boards:[board1],[board2]</code>.</div><div>You can specify the applicable file types by appending <code>;types:[extension1],[extension2]</code>.</div><ul>These parameters will be replaced by their corresponding values:<li><code>%TURL</code>: Thumbnail URL.</li><li><code>%URL</code>: Full image URL.</li><li><code>%IMG</code>: Full image URL for GIF, JPG, and PNG; thumbnail URL for other types.</li><li><code>%MD5</code>: MD5 hash in base64.</li><li><code>%sMD5</code>: MD5 hash in base64 using <code>-</code> and <code>_</code>.</li><li><code>%hMD5</code>: MD5 hash in hexadecimal.</li><li><code>%name</code>: Original file name.</li><li><code>%board</code>: Current board.</li><li><code>%%</code>, <code>%semi</code>: Literal <code>%</code> and <code>;</code>.</li></ul><textarea hidden name=\"sauces\" class=\"field\" spellcheck=\"false\"></textarea>"
       });
       $('.warning', section).hidden = Conf['Sauce'];
       ta = $('textarea', section);
       $.get('sauces', Conf['sauces'], function(item) {
-        return ta.value = item['sauces'];
+        ta.value = item['sauces'];
+        return ta.hidden = false;
       });
       return $.on(ta, 'change', $.cb.value);
     },
     advanced: function(section) {
       var applyCSS, boardSelect, customCSS, event, input, inputs, interval, items, itemsArchive, j, k, l, len, len1, len2, len3, m, name, ref, ref1, ref2, ref3, table, updateArchives, warning;
       $.extend(section, {
-        innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"
+        innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"
       });
       ref = $$('.warning', section);
       for (j = 0, len = ref.length; j < len; j++) {
@@ -11264,6 +11301,7 @@ Settings = (function() {
           val = items[key];
           input = inputs[key];
           input[input.type === 'checkbox' ? 'checked' : 'value'] = val;
+          input.hidden = false;
           if (key in Settings) {
             Settings[key].call(input);
           }
@@ -15797,7 +15835,7 @@ FileInfo = (function() {
       });
     },
     node: function() {
-      var a, i, info, len, oldInfo, ref;
+      var a, i, info, j, len, len1, oldInfo, ref, ref1;
       if (!this.file) {
         return;
       }
@@ -15806,6 +15844,11 @@ FileInfo = (function() {
         for (i = 0, len = ref.length; i < len; i++) {
           a = ref[i];
           $.on(a, 'click', ImageCommon.download);
+        }
+        ref1 = $$('.file-info .quick-filter-md5', this.file.text);
+        for (j = 0, len1 = ref1.length; j < len1; j++) {
+          a = ref1[j];
+          $.on(a, 'click', Filter.quickFilterMD5);
         }
         return;
       }
@@ -15821,7 +15864,7 @@ FileInfo = (function() {
       return $.prepend(this.file.text, info);
     },
     format: function(formatString, post, outputNode) {
-      var a, i, len, output, ref;
+      var a, i, j, len, len1, output, ref, ref1;
       output = [];
       formatString.replace(/%(.)|[^%]+/g, function(s, c) {
         output.push(c in FileInfo.formatters ? FileInfo.formatters[c].call(post) : {
@@ -15836,6 +15879,11 @@ FileInfo = (function() {
       for (i = 0, len = ref.length; i < len; i++) {
         a = ref[i];
         $.on(a, 'click', ImageCommon.download);
+      }
+      ref1 = $$('.quick-filter-md5', outputNode);
+      for (j = 0, len1 = ref1.length; j < len1; j++) {
+        a = ref1[j];
+        $.on(a, 'click', Filter.quickFilterMD5);
       }
     },
     formatters: {
@@ -15881,6 +15929,11 @@ FileInfo = (function() {
       d: function() {
         return {
           innerHTML: "<a href=\"" + E(this.file.url) + "\" download=\"" + E(this.file.name) + "\" class=\"fa fa-download download-button\"></a>"
+        };
+      },
+      f: function() {
+        return {
+          innerHTML: "<a href=\"javascript:;\" class=\"fa fa-trash-o quick-filter-md5\"></a>"
         };
       },
       p: function() {
@@ -16242,7 +16295,7 @@ Keybinds = (function() {
       return Conf[hotkey] = key;
     },
     keydown: function(e) {
-      var form, i, key, len, notification, notifications, op, ref, ref1, ref2, ref3, ref4, ref5, searchInput, target, thread, threadRoot;
+      var form, i, key, len, notification, notifications, op, post, ref, ref1, ref2, ref3, ref4, ref5, searchInput, target, thread, threadRoot;
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -16564,6 +16617,14 @@ Keybinds = (function() {
           Header.scrollTo(threadRoot);
           ThreadHiding.toggle(thread);
           break;
+        case Conf['Quick Filter MD5']:
+          if (!threadRoot) {
+            return;
+          }
+          post = Keybinds.post(threadRoot);
+          Keybinds.hl(+1, threadRoot);
+          Filter.quickFilterMD5.call(post);
+          break;
         case Conf['Previous Post Quoting You']:
           if (!(threadRoot && QuoteYou.db)) {
             return;
@@ -16637,10 +16698,13 @@ Keybinds = (function() {
       }
       return key;
     },
+    post: function(thread) {
+      return $('.post.highlight', thread) || $('.op', thread);
+    },
     qr: function(thread) {
       QR.open();
       if (thread != null) {
-        QR.quote.call($('input', $('.post.highlight', thread) || thread));
+        QR.quote.call(Keybinds.post(thread));
       }
       return QR.nodes.com.focus();
     },
@@ -16684,8 +16748,10 @@ Keybinds = (function() {
       if (all) {
         return ImageExpand.cb.toggleAll();
       } else {
-        post = Get.postFromNode($('.post.highlight', thread) || $('.op', thread));
-        return ImageExpand.toggle(post);
+        post = Get.postFromNode(Keybinds.post(thread));
+        if (post.file) {
+          return ImageExpand.toggle(post);
+        }
       }
     },
     open: function(thread, tab) {
@@ -17443,7 +17509,6 @@ ReplyPruning = (function() {
       if (!(g.VIEW === 'thread' && Conf['Reply Pruning'])) {
         return;
       }
-      this.active = !(Conf['Quote Threading'] && Conf['Thread Quotes']);
       this.container = $.frag();
       this.summary = $.el('span', {
         hidden: true,
@@ -17456,7 +17521,7 @@ ReplyPruning = (function() {
           return $.event('change', null, _this.inputs.enabled);
         };
       })(this));
-      label = UI.checkbox('Prune Replies', 'Show Last', this.active);
+      label = UI.checkbox('Prune Replies', 'Show Last', Conf['Prune All Threads']);
       el = $.el('span', {
         title: 'Maximum number of replies to show.'
       }, {
@@ -17467,6 +17532,7 @@ ReplyPruning = (function() {
         enabled: label.firstElementChild,
         replies: el.lastElementChild
       };
+      this.setEnabled.call(this.inputs.enabled);
       $.on(this.inputs.enabled, 'change', this.setEnabled);
       $.on(this.inputs.replies, 'change', $.cb.value);
       Header.menu.addEntry({
@@ -17501,6 +17567,12 @@ ReplyPruning = (function() {
     node: function() {
       var ref;
       ReplyPruning.thread = this;
+      if (this.isSticky) {
+        ReplyPruning.active = ReplyPruning.inputs.enabled.checked = true;
+        if (QuoteThreading.input) {
+          Conf['Thread Quotes'] = QuoteThreading.input.checked = false;
+        }
+      }
       this.posts.forEach(function(post) {
         if (post.isReply) {
           ReplyPruning.total++;
@@ -17509,7 +17581,7 @@ ReplyPruning = (function() {
           }
         }
       });
-      if (ReplyPruning.active && /^#p\d+$/.test(location.hash) && (0 <= (ref = this.posts.keys.indexOf(location.hash.slice(2))) && ref < 1 + Math.max(ReplyPruning.total - +Conf["Max Replies"], 0))) {
+      if (ReplyPruning.active && /^#p\d+$/.test(location.hash) && (1 <= (ref = this.posts.keys.indexOf(location.hash.slice(2))) && ref < 1 + Math.max(ReplyPruning.total - +Conf["Max Replies"], 0))) {
         ReplyPruning.active = ReplyPruning.inputs.enabled.checked = false;
       }
       $.after(this.OP.nodes.root, ReplyPruning.summary);
@@ -17534,7 +17606,7 @@ ReplyPruning = (function() {
       }
     },
     update: function() {
-      var boardTop, frag, hidden1, hidden2, oldPos, post, posts;
+      var boardTop, frag, hidden1, hidden2, node, oldPos, post, posts;
       hidden1 = ReplyPruning.hidden;
       hidden2 = ReplyPruning.active ? Math.max(ReplyPruning.total - +Conf["Max Replies"], 0) : 0;
       oldPos = d.body.clientHeight - window.scrollY;
@@ -17543,6 +17615,9 @@ ReplyPruning = (function() {
         while (ReplyPruning.hidden < hidden2 && ReplyPruning.position < posts.keys.length) {
           post = posts[posts.keys[ReplyPruning.position++]];
           if (post.isReply && !post.isFetchedQuote) {
+            while ((node = ReplyPruning.summary.nextSibling) && node !== post.nodes.root) {
+              $.add(ReplyPruning.container, node);
+            }
             $.add(ReplyPruning.container, post.nodes.root);
             ReplyPruning.hidden++;
             if (post.file) {
@@ -17555,6 +17630,9 @@ ReplyPruning = (function() {
         while (ReplyPruning.hidden > hidden2 && ReplyPruning.position > 0) {
           post = posts[posts.keys[--ReplyPruning.position]];
           if (post.isReply && !post.isFetchedQuote) {
+            while ((node = ReplyPruning.container.lastChild) && node !== post.nodes.root) {
+              $.prepend(frag, node);
+            }
             $.prepend(frag, post.nodes.root);
             ReplyPruning.hidden--;
             if (post.file) {
@@ -19034,11 +19112,10 @@ Unread = (function() {
       }
     },
     scroll: function() {
-      var hash, position, ref, root;
+      var hash, position, root;
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
-      ReplyPruning.showIfHidden((ref = Unread.position) != null ? ref.data.nodes.root.id : void 0);
       position = Unread.positionPrev();
       while (position) {
         root = position.data.nodes.root;
@@ -22896,10 +22973,13 @@ QuoteThreading =
     inserted: {},
     setEnabled: function() {
       var other, ref;
-      other = (ref = ReplyPruning.inputs) != null ? ref.enabled : void 0;
-      if (this.checked && (other != null ? other.checked : void 0)) {
-        other.checked = false;
-        $.event('change', null, other);
+      if (this.checked) {
+        $.set('Prune All Threads', false);
+        other = (ref = ReplyPruning.inputs) != null ? ref.enabled : void 0;
+        if (other != null ? other.checked : void 0) {
+          other.checked = false;
+          $.event('change', null, other);
+        }
       }
       return $.cb.checked.call(this);
     },

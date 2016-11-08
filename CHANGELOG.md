@@ -4,6 +4,16 @@
 
 ### v1.13.1
 
+**v1.13.1.2** *(2016-11-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.2/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.0.23: Fix bug from v1.13.0.0 affecting the catalog sorting order of recently hidden/shown threads.
+- Merge v1.13.0.23: Cosmetic fixes for bottom ad changes.
+- Reply Pruning is no longer activated by default except in stickies. Added `Prune All Threads` option (default: false) to activate Reply Pruning by default in all threads.
+- Reply Pruning will no longer be deactivated by `Scroll to Last Read Post` in order to unhide the last read post, or by following links to the OP.
+- Add option for quick MD5-filtering button (`%f`) to File Info Formatting (Advanced settings tab).
+- Add keybind for filtering image MD5s (default: `5`).
+- (ihavenoface) Add Bing reverse image search to Sauce examples.
+- Various minor bugfixes.
+
 **v1.13.1.1** *(2016-11-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.1/builds/4chan-X-noupdate.crx)]
 - Fix bug causing replies to not immediately show when catalog thread is clicked.
 
