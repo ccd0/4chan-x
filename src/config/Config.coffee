@@ -407,11 +407,11 @@ Config =
       ]
       'Reply Pruning': [
         true
-        'Hide old replies in long threads. Number of replies shown can be set from header menu.'
+        'Add option in header menu to hide old replies in long threads. Activated by default in stickies.'
       ]
       'Prune by Default': [
         false
-        'Turn Reply Pruning on by default in all threads, except when navigating to a post that would be hidden.'
+        'Activate Reply Pruning by default in all threads.'
         1
       ]
 

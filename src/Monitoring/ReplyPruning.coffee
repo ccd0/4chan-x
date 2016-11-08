@@ -56,6 +56,12 @@ ReplyPruning =
   node: ->
     ReplyPruning.thread = @
 
+    if @isSticky
+      ReplyPruning.active = ReplyPruning.inputs.enabled.checked = true
+      if QuoteThreading.input
+        # Disable Quote Threading for this thread but don't save the setting.
+        Conf['Thread Quotes'] = QuoteThreading.input.checked = false
+
     @posts.forEach (post) ->
       if post.isReply
         ReplyPruning.total++
