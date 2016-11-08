@@ -245,6 +245,7 @@ Index =
         'Hide'
       else
         'Show'
+      Index.sort()
       Index.buildIndex()
 
     mode: ->
