@@ -120,9 +120,9 @@ body > div[style*=" top: -10000px;"] {
   /* currently nonstandard but may be added: https://lists.w3.org/Archives/Public/www-style/2016Mar/0352.html, https://bugzilla.mozilla.org/show_bug.cgi?id=1296042 */
   word-break: break-word;
 }
-:root:not(.ua-webkit):not(.ua-blink) .post > .file {
+:root:not(.ua-webkit):not(.ua-blink) .fileText {
   word-wrap: break-word;
-  max-width: calc(100vw - 50px);
+  max-width: calc(100vw - 90px);
 }
 
 /* Ads */
