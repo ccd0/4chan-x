@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.1.3
+// @version      1.13.1.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.1.3',
+  VERSION:   '1.13.1.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5198,7 +5198,6 @@ Board = (function() {
         thread: c2.threads || 0,
         reply: c2.replies || 0,
         image: c2.images || 0,
-        deletion: 60,
         thread_global: 300
       };
       if (d.cookie.indexOf('pass_enabled=1') >= 0) {
@@ -21398,6 +21397,9 @@ QR = (function() {
 (function() {
   QR.cooldown = {
     seconds: 0,
+    delays: {
+      deletion: 60
+    },
     init: function() {
       if (!Conf['Quick Reply']) {
         return;
@@ -21407,7 +21409,7 @@ QR = (function() {
     },
     setup: function() {
       var delay, ref, type;
-      QR.cooldown.delays = g.BOARD.cooldowns();
+      $.extend(QR.cooldown.delays, g.BOARD.cooldowns());
       QR.cooldown.maxDelay = 0;
       ref = QR.cooldown.delays;
       for (type in ref) {
