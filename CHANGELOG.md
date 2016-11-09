@@ -4,6 +4,9 @@
 
 ## v1.13.0
 
+**v1.13.0.24** *(2016-11-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.24/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.24/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.0 causing lack of scroll bar when `Fit width` is disabled and images overflow screen.
+
 **v1.13.0.23** *(2016-11-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.23/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.23/builds/4chan-X-noupdate.crx)]
 - Fix bug from v1.13.0.0 affecting the catalog sorting order of recently hidden/shown threads.
 - Cosmetic fixes for bottom ad changes.

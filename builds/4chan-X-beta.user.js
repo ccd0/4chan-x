@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.0.23
+// @version      1.13.0.24
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.23',
+  VERSION:   '1.13.0.24',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1309,9 +1309,9 @@ body > div[style*=\" top: -10000px;\"] {\n\
   /* currently nonstandard but may be added: https://lists.w3.org/Archives/Public/www-style/2016Mar/0352.html, https://bugzilla.mozilla.org/show_bug.cgi?id=1296042 */\n\
   word-break: break-word;\n\
 }\n\
-:root:not(.ua-webkit):not(.ua-blink) .post > .file {\n\
+:root:not(.ua-webkit):not(.ua-blink) .fileText {\n\
   word-wrap: break-word;\n\
-  max-width: calc(100vw - 50px);\n\
+  max-width: calc(100vw - 90px);\n\
 }\n\
 /* Ads */\n\
 .ad-cnt > *, .adg-rects > * {\n\
