@@ -1,5 +1,7 @@
 QR.cooldown =
   seconds: 0
+  delays:
+    deletion: 60 # cooldown for deleting posts/files
 
   # Called from Main
   init: ->
@@ -10,7 +12,7 @@ QR.cooldown =
   # Called from QR
   setup: ->
     # Read cooldown times
-    QR.cooldown.delays = g.BOARD.cooldowns()
+    $.extend QR.cooldown.delays, g.BOARD.cooldowns()
 
     # The longest reply cooldown, for use in pruning old reply data
     QR.cooldown.maxDelay = 0
