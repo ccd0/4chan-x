@@ -174,7 +174,7 @@ QR.post = class
 
   error: (className, message) ->
     div = $.el 'div', {className}
-    $.extend div, <%= html('${message}<br>[<a href="javascript:;">delete</a>] [<a href="javascript:;">delete all</a>]') %>
+    $.extend div, <%= html('${message}<br>[<a href="javascript:;">delete post</a>] [<a href="javascript:;">delete all</a>]') %>
     (@errors or= []).push div
     [rm, rmAll] = $$ 'a', div
     $.on div, 'click', =>
