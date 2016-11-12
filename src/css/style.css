@@ -135,7 +135,7 @@ body > div[style*=" top: -10000px;"] {
 :root:not(.ads-loaded) #adg-ol + hr {
   display: none;
 }
-:root:not(.ads-loaded) .adg-rects {
+.adg-rects {
   margin: 0;
   font-size: 0;
 }
