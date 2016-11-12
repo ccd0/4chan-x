@@ -132,7 +132,7 @@ body > div[style*=" top: -10000px;"] {
 :root:not(.ads-loaded) .ad-plea,
 :root:not(.ads-loaded) hr.abovePostForm,
 :root:not(.ads-loaded) .ad-plea-bottom + hr,
-:root:not(.ads-loaded) #adg-ol + hr {
+#adg-ol + hr {
   display: none;
 }
 .adg-rects {
