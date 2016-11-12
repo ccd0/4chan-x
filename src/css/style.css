@@ -888,8 +888,8 @@ div[data-checked="false"] > .suboption-list {
   display: inline-block;
   font-style: italic;
 }
-.catalog-post > * > .nameBlock,
-.catalog-post > * > .dateTime,
+:root.catalog-hover-expand .catalog-container:hover > * > * > .nameBlock,
+:root.catalog-hover-expand .catalog-container:hover > * > * > .dateTime,
 :root.catalog-hover-expand .catalog-container:hover > * > .postMessage:not(:empty) {
   padding-top: .3em;
 }
