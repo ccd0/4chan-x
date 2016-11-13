@@ -145,6 +145,8 @@ ThreadWatcher =
       boardID = g.BOARD.ID
       nKilled = 0
       for threadID, data of db.data.boards[boardID] when not data?.isDead and "#{boardID}.#{threadID}" not in e.detail.threads
+        # Don't prune threads that have yet to appear in index.
+        continue unless e.detail.threads.some (fullID) -> +fullID.split('.')[1] > threadID
         nKilled++
         if Conf['Auto Prune'] or not (data and typeof data is 'object') # corrupt data
           db.delete {boardID, threadID}
