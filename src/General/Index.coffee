@@ -47,7 +47,7 @@ Index =
 
     # Header "Index Navigation" submenu
     entries = []
-    inputs = {}
+    @inputs = inputs = {}
     for name, arr of Config.Index when arr instanceof Array
       label = UI.checkbox name, "#{name[0]}#{name[1..].toLowerCase()}"
       label.title = arr[1]
@@ -70,7 +70,7 @@ Index =
     sortEntry = UI.checkbox 'Per-Board Sort Type', 'Per-board sort type', (typeof Conf['Index Sort'] is 'object')
     sortEntry.title = 'Set the sorting order of each board independently.'
     $.on sortEntry.firstChild, 'change', @cb.perBoardSort
-    entries.splice 2, 0, {el: sortEntry}
+    entries.splice 3, 0, {el: sortEntry}
 
     Header.menu.addEntry
       el: $.el 'span',
@@ -114,6 +114,7 @@ Index =
     @root = $.el 'div', className: 'board json-index'
     $.on @root, 'click', @cb.hoverToggle
     @cb.size()
+    @cb.hover()
 
     # Page list
     @pagelist = $.el 'div', className: 'pagelist json-index'
@@ -283,11 +284,13 @@ Index =
       Index.buildIndex()
 
     hover: ->
-      $.rmClass doc, 'catalog-hover-expand' unless Conf['Catalog Hover Expand']
+      doc.classList.toggle 'catalog-hover-expand', Conf['Catalog Hover Expand']
 
     hoverToggle: (e) ->
-      if Conf['Catalog Hover Expand'] and $.hasClass(doc, 'catalog-mode') and !$.modifiedClick(e) and !$.x('ancestor-or-self::a', e.target)
-        $.toggleClass doc, 'catalog-hover-expand'
+      if Conf['Catalog Hover Toggle'] and $.hasClass(doc, 'catalog-mode') and !$.modifiedClick(e) and !$.x('ancestor-or-self::a', e.target)
+        input = Index.inputs['Catalog Hover Expand']
+        input.checked = !input.checked
+        $.event 'change', null, input
         if (thread = Get.threadFromNode e.target)
           Index.cb.catalogReplies.call thread
           Index.cb.hoverAdjust.call thread.OP.nodes
