@@ -36,6 +36,11 @@
 
 ## v1.13.0
 
+**v1.13.0.25** *(2016-11-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.25/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.25/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.0 causing errors on index refresh in certain cases when creating threads with cookies disabled. #1184
+- Better link text in file error message: 'delete' -> 'delete post'. #1186
+- Fix bug causing auto-pruning if you refreshed the index too soon after creating a thread.
+
 **v1.13.0.24** *(2016-11-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.24/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.24/builds/4chan-X-noupdate.crx)]
 - Fix bug from v1.13.0.0 causing lack of scroll bar when `Fit width` is disabled and images overflow screen.
 
