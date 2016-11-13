@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.1.4
+// @version      1.13.1.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.1.4',
+  VERSION:   '1.13.1.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -385,7 +385,8 @@ Config = (function() {
       'Previous Index Mode': 'paged',
       'Index Size': 'small',
       'Show Replies': [true, 'Show replies in the index, and also in the catalog if "Catalog hover expand" is checked.'],
-      'Catalog Hover Expand': [true, 'Clicking in the catalog shows more details in the thread you are hovering over.'],
+      'Catalog Hover Expand': [false, 'Expand the comment and show more details when you hover over a thread in the catalog.'],
+      'Catalog Hover Toggle': [true, 'Turn "Catalog hover expand" on and off by clicking in the catalog.'],
       'Pin Watched Threads': [false, 'Move watched threads to the start of the index.'],
       'Anchor Hidden Threads': [true, 'Move hidden threads to the end of the index.'],
       'Refreshed Navigation': [false, 'Refresh index when navigating through pages.']
@@ -411,7 +412,7 @@ Config = (function() {
       'QR.personas': "#options:\"sage\";boards:jp;always",
       sjisPreview: false
     },
-    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'',
+    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'\n\n# Banner ads\n#http://s.zkcdn.net/ados.js\n#https://s.zkcdn.net/ados.js\n#http://engine.4chan-ads.org\n#https://engine.4chan-ads.org',
     captchaLanguage: '',
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
@@ -1330,10 +1331,10 @@ body > div[style*=\" top: -10000px;\"] {\n\
 :root:not(.ads-loaded) .ad-plea,\n\
 :root:not(.ads-loaded) hr.abovePostForm,\n\
 :root:not(.ads-loaded) .ad-plea-bottom + hr,\n\
-:root:not(.ads-loaded) #adg-ol + hr {\n\
+#adg-ol + hr {\n\
   display: none;\n\
 }\n\
-:root:not(.ads-loaded) .adg-rects {\n\
+.adg-rects {\n\
   margin: 0;\n\
   font-size: 0;\n\
 }\n\
@@ -2080,8 +2081,8 @@ div[data-checked=\"false\"] > .suboption-list {\n\
   display: inline-block;\n\
   font-style: italic;\n\
 }\n\
-.catalog-post > * > .nameBlock,\n\
-.catalog-post > * > .dateTime,\n\
+:root.catalog-hover-expand .catalog-container:hover > * > * > .nameBlock,\n\
+:root.catalog-hover-expand .catalog-container:hover > * > * > .dateTime,\n\
 :root.catalog-hover-expand .catalog-container:hover > * > .postMessage:not(:empty) {\n\
   padding-top: .3em;\n\
 }\n\
@@ -9318,7 +9319,7 @@ Index = (function() {
       });
       Header.addShortcut('index-refresh', this.button, 590);
       entries = [];
-      inputs = {};
+      this.inputs = inputs = {};
       ref4 = Config.Index;
       for (name in ref4) {
         arr = ref4[name];
@@ -9350,7 +9351,7 @@ Index = (function() {
       sortEntry = UI.checkbox('Per-Board Sort Type', 'Per-board sort type', typeof Conf['Index Sort'] === 'object');
       sortEntry.title = 'Set the sorting order of each board independently.';
       $.on(sortEntry.firstChild, 'change', this.cb.perBoardSort);
-      entries.splice(2, 0, {
+      entries.splice(3, 0, {
         el: sortEntry
       });
       Header.menu.addEntry({
@@ -9398,6 +9399,7 @@ Index = (function() {
       });
       $.on(this.root, 'click', this.cb.hoverToggle);
       this.cb.size();
+      this.cb.hover();
       this.pagelist = $.el('div', {
         className: 'pagelist json-index'
       });
@@ -9630,14 +9632,14 @@ Index = (function() {
         return Index.buildIndex();
       },
       hover: function() {
-        if (!Conf['Catalog Hover Expand']) {
-          return $.rmClass(doc, 'catalog-hover-expand');
-        }
+        return doc.classList.toggle('catalog-hover-expand', Conf['Catalog Hover Expand']);
       },
       hoverToggle: function(e) {
-        var thread;
-        if (Conf['Catalog Hover Expand'] && $.hasClass(doc, 'catalog-mode') && !$.modifiedClick(e) && !$.x('ancestor-or-self::a', e.target)) {
-          $.toggleClass(doc, 'catalog-hover-expand');
+        var input, thread;
+        if (Conf['Catalog Hover Toggle'] && $.hasClass(doc, 'catalog-mode') && !$.modifiedClick(e) && !$.x('ancestor-or-self::a', e.target)) {
+          input = Index.inputs['Catalog Hover Expand'];
+          input.checked = !input.checked;
+          $.event('change', null, input);
           if ((thread = Get.threadFromNode(e.target))) {
             Index.cb.catalogReplies.call(thread);
             return Index.cb.hoverAdjust.call(thread.OP.nodes);
@@ -10706,8 +10708,8 @@ Settings = (function() {
         }
       },
       ads: function(cb) {
-        return $.onExists(doc, '.ad-cnt, .adg-rects', function(ad) {
-          return $.onExists(ad, 'img, iframe', function() {
+        return $.onExists(doc, '.adg-rects > .desktop', function(ad) {
+          return $.onExists(ad, 'iframe', function() {
             var url;
             url = Redirect.to('thread', {
               boardID: 'qa',
@@ -18367,14 +18369,18 @@ ThreadWatcher = (function() {
       ThreadWatcher.setToggler(toggler, !!data);
       $.on(toggler, 'click', ThreadWatcher.cb.toggle);
       if (data && (data.excerpt == null)) {
-        ThreadWatcher.db.extend({
-          boardID: boardID,
-          threadID: threadID,
-          val: {
-            excerpt: Get.threadExcerpt(this.thread)
-          }
-        });
-        return ThreadWatcher.refresh();
+        return $.queueTask((function(_this) {
+          return function() {
+            ThreadWatcher.db.extend({
+              boardID: boardID,
+              threadID: threadID,
+              val: {
+                excerpt: Get.threadExcerpt(_this.thread)
+              }
+            });
+            return ThreadWatcher.refresh();
+          };
+        })(this));
       }
     },
     catalogNode: function() {
@@ -18465,6 +18471,11 @@ ThreadWatcher = (function() {
         for (threadID in ref) {
           data = ref[threadID];
           if (!(!(data != null ? data.isDead : void 0) && (ref1 = boardID + "." + threadID, indexOf.call(e.detail.threads, ref1) < 0))) {
+            continue;
+          }
+          if (!e.detail.threads.some(function(fullID) {
+            return +fullID.split('.')[1] > threadID;
+          })) {
             continue;
           }
           nKilled++;
@@ -22168,7 +22179,7 @@ QR = (function() {
         className: className
       });
       $.extend(div, {
-        innerHTML: E(message) + "<br>[<a href=\"javascript:;\">delete</a>] [<a href=\"javascript:;\">delete all</a>]"
+        innerHTML: E(message) + "<br>[<a href=\"javascript:;\">delete post</a>] [<a href=\"javascript:;\">delete all</a>]"
       });
       (this.errors || (this.errors = [])).push(div);
       ref = $$('a', div), rm = ref[0], rmAll = ref[1];

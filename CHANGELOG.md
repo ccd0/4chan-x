@@ -4,6 +4,13 @@
 
 ### v1.13.1
 
+**v1.13.1.5** *(2016-11-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.5/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.0.25: Fix bug from v1.13.0.0 causing errors on index refresh in certain cases when creating threads with cookies disabled. #1184
+- Merge v1.13.0.25: Better link text in file error message: 'delete' -> 'delete post'. #1186
+- Merge v1.13.0.25: Fix bug causing auto-pruning if you refreshed the index too soon after creating a thread.
+- Add `Catalog Hover Toggle` setting, which sets whether clicking in the catalog toggles `Catalog Hover Expand`.
+- Improved support for those who want to unblock the top banner ads. See the [FAQ](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#ads) for how to do so.
+
 **v1.13.1.4** *(2016-11-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.4/builds/4chan-X-noupdate.crx)]
 - Fix deletion cooldown bug from v1.13.1.0.
 
