@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.0.24
+// @version      1.13.0.25
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.24',
+  VERSION:   '1.13.0.25',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -18201,14 +18201,18 @@ ThreadWatcher = (function() {
       ThreadWatcher.setToggler(toggler, !!data);
       $.on(toggler, 'click', ThreadWatcher.cb.toggle);
       if (data && (data.excerpt == null)) {
-        ThreadWatcher.db.extend({
-          boardID: boardID,
-          threadID: threadID,
-          val: {
-            excerpt: Get.threadExcerpt(this.thread)
-          }
-        });
-        return ThreadWatcher.refresh();
+        return $.queueTask((function(_this) {
+          return function() {
+            ThreadWatcher.db.extend({
+              boardID: boardID,
+              threadID: threadID,
+              val: {
+                excerpt: Get.threadExcerpt(_this.thread)
+              }
+            });
+            return ThreadWatcher.refresh();
+          };
+        })(this));
       }
     },
     catalogNode: function() {
@@ -18299,6 +18303,11 @@ ThreadWatcher = (function() {
         for (threadID in ref) {
           data = ref[threadID];
           if (!(!(data != null ? data.isDead : void 0) && (ref1 = boardID + "." + threadID, indexOf.call(e.detail.threads, ref1) < 0))) {
+            continue;
+          }
+          if (!e.detail.threads.some(function(fullID) {
+            return +fullID.split('.')[1] > threadID;
+          })) {
             continue;
           }
           nKilled++;
@@ -21996,7 +22005,7 @@ QR = (function() {
         className: className
       });
       $.extend(div, {
-        innerHTML: E(message) + "<br>[<a href=\"javascript:;\">delete</a>] [<a href=\"javascript:;\">delete all</a>]"
+        innerHTML: E(message) + "<br>[<a href=\"javascript:;\">delete post</a>] [<a href=\"javascript:;\">delete all</a>]"
       });
       (this.errors || (this.errors = [])).push(div);
       ref = $$('a', div), rm = ref[0], rmAll = ref[1];
