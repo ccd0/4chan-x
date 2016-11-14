@@ -638,6 +638,12 @@ div[data-checked="false"] > .suboption-list {
   font-style: normal;
   font-size: 11px;
 }
+.favicon-preview > img {
+    vertical-align: middle;
+}
+.favicon-preview > img:nth-of-type(3n+1) {
+    margin-left: 4px;
+}
 .section-keybinds .field {
   font-family: monospace;
 }

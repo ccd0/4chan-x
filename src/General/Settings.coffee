@@ -649,10 +649,11 @@ Settings =
     Favicon.switch()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
     img = @nextElementSibling.children
-    img[0].src = Favicon.default
-    img[1].src = Favicon.unreadSFW
-    img[2].src = Favicon.unreadNSFW
-    img[3].src = Favicon.unreadDead
+    f = Favicon
+    for icon, i in [f.SFW, f.unreadSFW, f.unreadSFWY, f.NSFW, f.unreadNSFW, f.unreadNSFWY, f.dead, f.unreadDead, f.unreadDeadY]
+      $.add @nextElementSibling, $.el('img') unless img[i]
+      img[i].src = icon
+    return
 
   togglecss: ->
     if $('textarea[name=usercss]', $.x 'ancestor::fieldset[1]', @).disabled = $.id('apply-css').disabled = !@checked
