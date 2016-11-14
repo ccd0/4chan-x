@@ -4,6 +4,11 @@
 
 ### v1.13.1
 
+**v1.13.1.6** *(2016-11-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.6/builds/4chan-X-noupdate.crx)]
+- (desaku) Update 4chanJS favicons to reflect the native extension. #1038
+- Fix reply-to-you favicons in `xat-` set looking blurry.
+- Show all icons in Favicon settings. #1191
+
 **v1.13.1.5** *(2016-11-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.5/builds/4chan-X-noupdate.crx)]
 - Merge v1.13.0.25: Fix bug from v1.13.0.0 causing errors on index refresh in certain cases when creating threads with cookies disabled. #1184
 - Merge v1.13.0.25: Better link text in file error message: 'delete' -> 'delete post'. #1186
