@@ -194,7 +194,7 @@ Embedding =
           controls: true
           preload:  'auto'
           src:      a.dataset.href
-          loop:     /^https?:\/\/i\.4cdn\.org\//.test a.dataset.href
+          loop:     /^https?:\/\/(i\.4cdn|is\.4chan)\.org\//.test a.dataset.href
         $.on el, 'loadedmetadata', ->
           if el.videoHeight is 0 and el.parentNode
             $.replace el, Embedding.types.audio.el(a)
