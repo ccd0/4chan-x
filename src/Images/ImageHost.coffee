@@ -6,7 +6,11 @@ ImageHost =
       cb:   @node
 
   node: ->
-    return unless @file and not @isClone and (m = @file.url.match /^https?:\/\/is\.4chan\.org\/(.*)$/)
-    @file.link.hostname = 'i.4cdn.org'
-    @file.thumbLink.hostname = 'i.4cdn.org' if @file.thumbLink
-    @file.url = @file.link.href
+    return if @isClone
+    if @file and (m = @file.url.match /^https?:\/\/is\.4chan\.org\/(.*)$/)
+      @file.link.hostname = 'i.4cdn.org'
+      @file.thumbLink.hostname = 'i.4cdn.org' if @file.thumbLink
+      @file.url = @file.link.href
+    for link in $$ 'a[href^="http://is.4chan.org/"], a[href^="https://is.4chan.org/"]', @nodes.comment
+      link.hostname = 'i.4cdn.org'
+    return
