@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.1.6
+// @version      1.13.1.7
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.1.6',
+  VERSION:   '1.13.1.7',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -13208,15 +13208,22 @@ ImageHost = (function() {
       });
     },
     node: function() {
-      var m;
-      if (!(this.file && !this.isClone && (m = this.file.url.match(/^https?:\/\/is\.4chan\.org\/(.*)$/)))) {
+      var i, len, link, m, ref;
+      if (this.isClone) {
         return;
       }
-      this.file.link.hostname = 'i.4cdn.org';
-      if (this.file.thumbLink) {
-        this.file.thumbLink.hostname = 'i.4cdn.org';
+      if (this.file && (m = this.file.url.match(/^https?:\/\/is\.4chan\.org\/(.*)$/))) {
+        this.file.link.hostname = 'i.4cdn.org';
+        if (this.file.thumbLink) {
+          this.file.thumbLink.hostname = 'i.4cdn.org';
+        }
+        this.file.url = this.file.link.href;
       }
-      return this.file.url = this.file.link.href;
+      ref = $$('a[href^="http://is.4chan.org/"], a[href^="https://is.4chan.org/"]', this.nodes.comment);
+      for (i = 0, len = ref.length; i < len; i++) {
+        link = ref[i];
+        link.hostname = 'i.4cdn.org';
+      }
     }
   };
 
@@ -14260,7 +14267,7 @@ Embedding = (function() {
             controls: true,
             preload: 'auto',
             src: a.dataset.href,
-            loop: /^https?:\/\/i\.4cdn\.org\//.test(a.dataset.href)
+            loop: /^https?:\/\/(i\.4cdn|is\.4chan)\.org\//.test(a.dataset.href)
           });
           $.on(el, 'loadedmetadata', function() {
             if (el.videoHeight === 0 && el.parentNode) {

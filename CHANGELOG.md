@@ -4,6 +4,9 @@
 
 ### v1.13.1
 
+**v1.13.1.7** *(2016-11-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.7/builds/4chan-X-noupdate.crx)]
+- Fix in-comment links to is.4chan.org.
+
 **v1.13.1.6** *(2016-11-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.6/builds/4chan-X-noupdate.crx)]
 - (desaku) Update 4chanJS favicons to reflect the native extension. #1038
 - Fix reply-to-you favicons in `xat-` set looking blurry.
