@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.1.7
+// @version      1.13.1.8
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.1.7',
+  VERSION:   '1.13.1.8',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -238,7 +238,6 @@ Config = (function() {
         'Stubs': [true, 'Show stubs of hidden threads / replies.']
       },
       'Images and Videos': {
-        'Use Faster Image Host': [true, 'Change is.4chan.org links to point to the faster i.4cdn.org host.'],
         'Image Expansion': [true, 'Expand images / videos.'],
         'Image Hover': [true, 'Show full image / video on mouseover.'],
         'Image Hover in Catalog': [true, 'Show full image / video on mouseover in 4chan X catalog.'],
@@ -262,7 +261,8 @@ Config = (function() {
         'Allow Sound': [true, 'Open videos with the sound unmuted.'],
         'Mouse Wheel Volume': [true, 'Adjust volume of videos with the mouse wheel over the thumbnail/filename/gallery.'],
         'Loop in New Tab': [true, 'Loop videos opened in their own tabs.'],
-        'Volume in New Tab': [true, 'Apply 4chan X mute and volume settings to videos opened in their own tabs.']
+        'Volume in New Tab': [true, 'Apply 4chan X mute and volume settings to videos opened in their own tabs.'],
+        'Use Faster Image Host': [true, 'Change is.4chan.org links to point to the faster i.4cdn.org host.']
       },
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
@@ -1908,7 +1908,7 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 #index-search:not([data-searching]) + #index-search-clear {\n\
   display: none;\n\
 }\n\
-#index-rev, #index-mode, #index-sort, #index-size {\n\
+#index-options {\n\
   float: right;\n\
 }\n\
 .summary {\n\
@@ -9371,7 +9371,7 @@ Index = (function() {
         className: 'navLinks json-index'
       });
       $.extend(this.navLinks, {
-        innerHTML: "<span class=\"brackets-wrap indexlink\"><a href=\"#index\">Index</a></span> <span class=\"brackets-wrap cataloglink\"><a href=\"#catalog\">Catalog</a></span> <span class=\"brackets-wrap archlistlink\"><a href=\"./archive\">Archive</a></span> <span class=\"brackets-wrap bottomlink\"><a href=\"#bottom\">Bottom</a></span> <span class=\"brackets-wrap\" id=\"index-last-refresh\"><a href=\"javascript:;\"><time title=\"Last index refresh\">...</time></a></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a><span id=\"hidden-label\" hidden> &mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><input type=\"checkbox\" id=\"index-rev\" name=\"Reverse Sort\" title=\"Reverse sort order\"><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"lastlong\">Last long reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select>"
+        innerHTML: "<span class=\"brackets-wrap indexlink\"><a href=\"#index\">Index</a></span> <span class=\"brackets-wrap cataloglink\"><a href=\"#catalog\">Catalog</a></span> <span class=\"brackets-wrap archlistlink\"><a href=\"./archive\">Archive</a></span> <span class=\"brackets-wrap bottomlink\"><a href=\"#bottom\">Bottom</a></span> <span class=\"brackets-wrap\" id=\"index-last-refresh\"><a href=\"javascript:;\"><time title=\"Last index refresh\">...</time></a></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a><span id=\"hidden-label\" hidden> &mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><span id=\"index-options\"><input type=\"checkbox\" id=\"index-rev\" name=\"Reverse Sort\" title=\"Reverse sort order\"><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"lastlong\">Last long reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select></span>"
       });
       $('.cataloglink a', this.navLinks).href = CatalogLinks.catalog();
       if ((ref5 = g.BOARD.ID) === 'b' || ref5 === 'trash') {

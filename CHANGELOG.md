@@ -4,6 +4,9 @@
 
 ### v1.13.1
 
+**v1.13.1.8** *(2016-11-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.8/builds/4chan-X-noupdate.crx)]
+- Rearrange some options.
+
 **v1.13.1.7** *(2016-11-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.7/builds/4chan-X-noupdate.crx)]
 - Fix in-comment links to is.4chan.org.
 
