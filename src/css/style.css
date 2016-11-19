@@ -714,7 +714,7 @@ div[data-checked="false"] > .suboption-list {
 #index-search:not([data-searching]) + #index-search-clear {
   display: none;
 }
-#index-rev, #index-mode, #index-sort, #index-size {
+#index-options {
   float: right;
 }
 .summary {
