@@ -7,11 +7,7 @@
 <a id="index-search-clear" href="javascript:;" title="Clear search">×</a>
 <span id="hidden-label" hidden> &mdash; <span id="hidden-count"></span> <span id="hidden-toggle">[<a href="javascript:;">Show</a>]</span></span>
 <span id="index-options">
-  <select id="index-size" name="Index Size">
-    <option disabled>Image Size</option>
-    <option value="small">Small</option>
-    <option value="large">Large</option>
-  </select>
+  <input type="checkbox" id="index-rev" name="Reverse Sort" title="Reverse sort order">
   <select id="index-sort" name="Index Sort">
     <option disabled>Index Sort</option>
     <option value="bump">Bump order</option>
@@ -21,6 +17,11 @@
     <option value="replycount">Reply count</option>
     <option value="filecount">File count</option>
   </select>
+  <select id="index-size" name="Index Size">
+    <option disabled>Image Size</option>
+    <option value="small">Small</option>
+    <option value="large">Large</option>
+  </select>
   <select id="index-mode" name="Index Mode">
     <option disabled>Index Mode</option>
     <option value="paged">Paged</option>
@@ -28,5 +29,4 @@
     <option value="all pages">All threads</option>
     <option value="catalog">Catalog</option>
   </select>
-  <input type="checkbox" id="index-rev" name="Reverse Sort" title="Reverse sort order">
 </span>
