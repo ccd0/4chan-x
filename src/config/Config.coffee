@@ -184,10 +184,6 @@ Config =
       ]
 
     'Images and Videos':
-      'Use Faster Image Host': [
-        true
-        'Change is.4chan.org links to point to the faster i.4cdn.org host.'
-      ]
       'Image Expansion': [
         true
         'Expand images / videos.'
@@ -286,6 +282,10 @@ Config =
       'Volume in New Tab': [
         true
         'Apply <%= meta.name %> mute and volume settings to videos opened in their own tabs.'
+      ]
+      'Use Faster Image Host': [
+        true
+        'Change is.4chan.org links to point to the faster i.4cdn.org host.'
       ]
 
     'Menu':
