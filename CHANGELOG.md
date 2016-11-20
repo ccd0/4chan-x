@@ -4,6 +4,9 @@
 
 ### v1.13.1
 
+**v1.13.1.9** *(2016-11-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.9/builds/4chan-X-noupdate.crx)]
+- Change replies-quoting-you exclamation mark from red to green on dead-thread icon in 4chanJS set.
+
 **v1.13.1.8** *(2016-11-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.8/builds/4chan-X-noupdate.crx)]
 - Rearrange some options.
 
