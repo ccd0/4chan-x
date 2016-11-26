@@ -645,7 +645,7 @@ Config =
       'Automatically watch threads you reply to.'
     ]
     'Auto Prune': [
-      true
+      false
       'Automatically remove dead threads.'
     ]
     'Show Unread Count': [
