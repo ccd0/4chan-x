@@ -406,7 +406,7 @@ Settings =
       if not data['Persistent Thread Watcher']? and data['Toggleable Thread Watcher']?
         set 'Persistent Thread Watcher', not data['Toggleable Thread Watcher']
     if compareString < '00001.00012.00003.00000'
-      for key in ['Image Hover in Catalog', 'Auto Watch', 'Auto Watch Reply', 'Auto Prune']
+      for key in ['Image Hover in Catalog', 'Auto Watch', 'Auto Watch Reply']
         setD key, false
     if compareString < '00001.00013.00001.00002'
       addSauces ['#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights']
