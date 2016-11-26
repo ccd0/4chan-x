@@ -9,7 +9,12 @@ Embedding =
         <%= readHTML('Embed.html') %>
       @media = $ '#media-embed', @dialog
       $.one d, '4chanXInitFinished', @ready
-
+      $.on  d, 'IndexRefreshInternal', ->
+        g.posts.forEach (post) ->
+          for post in [post, post.clones...]
+            for embed in post.nodes.embedlinks
+              Embedding.cb.catalogRemove.call embed
+          return
     if Conf['Link Title']
       $.on d, '4chanXInitFinished PostsInserted', ->
         for key, service of Embedding.types when service.title?.batchSize
@@ -55,8 +60,8 @@ Embedding =
     embed.dataset[name] = value for name, value of {key, uid, options, href}
 
     $.on embed, 'click', Embedding.cb.click
-    $.on d, 'IndexRefreshInternal', Embedding.cb.catalogRemove.bind(embed) if Index.enabled
     $.after link, [$.tn(' '), embed]
+    post.nodes.embedlinks.push embed
 
     if Conf['Auto-embed'] and !Conf['Floating Embeds'] and !post.isFetchedQuote
       if $.hasClass(doc, 'catalog-mode')

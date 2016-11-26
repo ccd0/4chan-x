@@ -85,6 +85,7 @@ class Post
       comment:      $ '.postMessage', post
       quotelinks:   []
       archivelinks: []
+      embedlinks:   []
 
     # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
     # https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/7560353/
