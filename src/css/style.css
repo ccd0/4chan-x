@@ -1011,10 +1011,11 @@ span.hide-announcement {
 }
 #updater > .move {
   position: absolute;
-  left: 0;
   top: -5px;
-  width: 100%;
-  height: 5px;
+  bottom: -5px;
+  left: -5px;
+  right: -5px;
+  z-index: -1;
 }
 #updater > div:last-child {
   text-align: center;
