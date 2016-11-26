@@ -2033,9 +2033,7 @@ a:only-of-type > .remove {
 }
 
 /* Embedding */
-.embedder:not(.embedded) > span,
-:root.catalog-mode .embedder > span,
-:root.catalog-mode .board .media-embed {
+.embedder:not(.embedded) > span {
   display: none;
 }
 #embedding {

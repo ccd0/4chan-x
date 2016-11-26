@@ -59,12 +59,10 @@ Embedding =
     $.after link, [$.tn(' '), embed]
 
     if Conf['Auto-embed'] and !Conf['Floating Embeds'] and !post.isFetchedQuote
-      autoEmbed = ->
-        if doc.contains(embed) and not $.hasClass(doc, 'catalog-mode')
-          $.off d, 'PostsInserted', autoEmbed
-          Embedding.cb.toggle.call embed
-      $.on d, 'PostsInserted', autoEmbed
-      autoEmbed()
+      if $.hasClass(doc, 'catalog-mode')
+        $.addClass embed, 'embed-removed'
+      else
+        Embedding.cb.toggle.call embed
 
   ready: ->
     return if !Main.isThisPageLegit()
