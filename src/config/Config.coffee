@@ -714,7 +714,7 @@ Config =
   sauces: """
     # Reverse image search:
     https://www.google.com/searchbyimage?image_url=%IMG&safe=off
-    #https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG
+    https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG
     #//tineye.com/search?url=%IMG
     #//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights
 
