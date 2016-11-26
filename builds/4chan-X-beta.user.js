@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.1.10
+// @version      1.13.1.11
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.1.10',
+  VERSION:   '1.13.1.11',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -9294,7 +9294,6 @@ Index = (function() {
       if (!Conf['JSON Index']) {
         return;
       }
-      this.enabled = true;
       Callbacks.Post.push({
         name: 'Index Page Numbers',
         cb: this.node
@@ -14067,9 +14066,6 @@ Embedding = (function() {
         embed.dataset[name] = value;
       }
       $.on(embed, 'click', Embedding.cb.click);
-      if (Index.enabled) {
-        $.on(d, 'IndexRefreshInternal', Embedding.cb.catalogRemove.bind(embed));
-      }
       $.after(link, [$.tn(' '), embed]);
       if (Conf['Auto-embed'] && !Conf['Floating Embeds'] && !post.isFetchedQuote) {
         autoEmbed = function() {
@@ -14202,14 +14198,6 @@ Embedding = (function() {
         $.add(container, el = (type = Embedding.types[a.dataset.key]).el(a));
         el.style.cssText = type.style != null ? type.style : 'border: none; width: 640px; height: 360px;';
         return container;
-      },
-      catalogRemove: function() {
-        var isCatalog;
-        isCatalog = $.hasClass(doc, 'catalog-mode');
-        if ((isCatalog && $.hasClass(this, 'embedded')) || (!isCatalog && $.hasClass(this, 'embed-removed'))) {
-          Embedding.cb.toggle.call(this);
-          return $.toggleClass(this, 'embed-removed');
-        }
       },
       title: function(req, data) {
         var base1, j, k, key, len, len1, link, link2, options, post, post2, ref, ref1, service, status, text, uid;

@@ -4,6 +4,9 @@
 
 ### v1.13.1
 
+**v1.13.1.11** *(2016-11-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.11/builds/4chan-X-noupdate.crx)]
+- Revert performance issue fix from v1.13.1.10 as it may cause more issues than it solves.
+
 **v1.13.1.10** *(2016-11-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.10/builds/4chan-X-noupdate.crx)]
 - Fix bug from v1.13.0.0 causing `Auto-embed` to sometimes not work.
 - Fix performance issue from v1.13.0.0 due to all link embeds in OPs being reloaded upon switching to catalog mode.
