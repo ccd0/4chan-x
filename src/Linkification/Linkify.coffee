@@ -51,6 +51,9 @@ Linkify =
               else
                 break
 
+            if saved.parentElement.nodeName is "A" and not Linkify.regString.test(word)
+              break
+
             endNode  = saved
             {data}   = saved
 
