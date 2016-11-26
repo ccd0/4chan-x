@@ -63,6 +63,7 @@ Embedding =
           $.off d, 'PostsInserted', autoEmbed
           Embedding.cb.toggle.call embed
       $.on d, 'PostsInserted', autoEmbed
+      autoEmbed()
 
   ready: ->
     return if !Main.isThisPageLegit()
