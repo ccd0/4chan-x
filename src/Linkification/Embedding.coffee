@@ -89,11 +89,11 @@ Embedding =
     if Embedding.dragEmbed.mouseup
       $.off d, 'mouseup', Embedding.dragEmbed
       Embedding.dragEmbed.mouseup = false
-      style.visibility = ''
+      style.pointerEvents = ''
       return
     $.on d, 'mouseup', Embedding.dragEmbed
     Embedding.dragEmbed.mouseup = true
-    style.visibility = 'hidden'
+    style.pointerEvents = 'none'
 
   title: (data) ->
     {key, uid, options, link, post} = data
