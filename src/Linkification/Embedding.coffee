@@ -124,7 +124,7 @@ Embedding =
     {key, uid, link} = data
     service = Embedding.types[key].preview
     $.on link, 'mouseover', (e) ->
-      src = service.call uid
+      src = service uid
       el = $.el 'img',
         src: src
         id: 'ihover'
@@ -435,6 +435,6 @@ Embedding =
           for item in data.items when item.id is uid
             return item.snippet.title
           'Not Found'
-      preview: ->
-        "https://img.youtube.com/vi/#{@}/0.jpg"
+      preview: (uid) ->
+        "https://img.youtube.com/vi/#{uid}/0.jpg"
   ]
