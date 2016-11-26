@@ -11,6 +11,8 @@ Index =
 
     return unless Conf['JSON Index']
 
+    @enabled = true
+
     Callbacks.Post.push
       name: 'Index Page Numbers'
       cb:   @node

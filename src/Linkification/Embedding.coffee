@@ -55,6 +55,7 @@ Embedding =
     embed.dataset[name] = value for name, value of {key, uid, options, href}
 
     $.on embed, 'click', Embedding.cb.click
+    $.on d, 'IndexRefreshInternal', Embedding.cb.catalogRemove.bind(embed) if Index.enabled
     $.after link, [$.tn(' '), embed]
 
     if Conf['Auto-embed'] and !Conf['Floating Embeds'] and !post.isFetchedQuote
@@ -145,6 +146,12 @@ Embedding =
         'border: none; width: 640px; height: 360px;'
 
       return container
+
+    catalogRemove: ->
+      isCatalog = $.hasClass(doc, 'catalog-mode')
+      if (isCatalog and $.hasClass(@, 'embedded')) or (!isCatalog and $.hasClass(@, 'embed-removed'))
+        Embedding.cb.toggle.call @
+        $.toggleClass @, 'embed-removed'
 
     title: (req, data) ->
       {key, uid, options, link, post} = data
