@@ -134,7 +134,6 @@ Embedding =
         el: el
         latestEvent: e
         endEvents: 'mouseout click'
-        asapTest: -> el.height
 
   cb:
     click: (e) ->
@@ -435,6 +434,5 @@ Embedding =
           for item in data.items when item.id is uid
             return item.snippet.title
           'Not Found'
-      preview: (uid) ->
-        "https://img.youtube.com/vi/#{uid}/0.jpg"
+      preview: (uid) -> "https://img.youtube.com/vi/#{uid}/0.jpg"
   ]
