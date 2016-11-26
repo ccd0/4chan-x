@@ -122,7 +122,7 @@ Embedding =
   cb:
     click: (e) ->
       e.preventDefault()
-      if Conf['Floating Embeds'] or $.hasClass(doc, 'catalog-mode')
+      if not $.hasClass(@, 'embedded') and (Conf['Floating Embeds'] or $.hasClass(doc, 'catalog-mode'))
         return if not (div = Embedding.media.firstChild)
         $.replace div, Embedding.cb.embed @
         Embedding.lastEmbed = Get.postFromNode(@).nodes.root
