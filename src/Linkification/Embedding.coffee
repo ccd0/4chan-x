@@ -1,6 +1,6 @@
 Embedding =
   init: ->
-    return unless Conf['Embedding'] or Conf['Link Title']
+    return unless Conf['Embedding'] or Conf['Link Title'] or Conf['Cover Preview']
     @types = {}
     @types[type.key] = type for type in @ordered_types
 
@@ -31,12 +31,13 @@ Embedding =
     return
 
   process: (link, post) ->
-    return unless Conf['Embedding'] or Conf['Link Title']
+    return unless Conf['Embedding'] or Conf['Link Title'] or Conf['Cover Preview']
     return if $.x 'ancestor::pre', link
     if data = Embedding.services link
       data.post = post
       Embedding.embed data if Conf['Embedding']
       Embedding.title data if Conf['Link Title']
+      Embedding.preview data if Conf['Cover Preview']
 
   services: (link) ->
     {href} = link
@@ -118,6 +119,22 @@ Embedding =
       for data in queue
         $.extend data.link, <%= html('[${data.key}] <span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>') %>
     return
+
+  preview: (data) ->
+    {key, uid, link} = data
+    service = Embedding.types[key].preview
+    $.on link, 'mouseover', (e) ->
+      src = service.call uid
+      el = $.el 'img',
+        src: src
+        id: 'ihover'
+      $.add d.body, el
+      UI.hover
+        root: link
+        el: el
+        latestEvent: e
+        endEvents: 'mouseout click'
+        asapTest: -> el.height
 
   cb:
     click: (e) ->
@@ -418,4 +435,6 @@ Embedding =
           for item in data.items when item.id is uid
             return item.snippet.title
           'Not Found'
+      preview: ->
+        "https://img.youtube.com/vi/#{@}/0.jpg"
   ]

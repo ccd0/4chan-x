@@ -136,6 +136,11 @@ Config =
         'Replace the link of a supported site with its actual title.'
         1
       ]
+      'Cover Preview': [
+        true
+        'Show preview of links on hover.'
+        1
+      ]
       'Embedding': [
         true
         'Embed supported services. Note: Some services don\'t work on HTTPS.'
