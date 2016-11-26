@@ -363,9 +363,18 @@ Embedding =
     ,
       key: 'Twitter'
       regExp: /^\w+:\/\/(?:www\.)?twitter\.com\/(\w+\/status\/\d+)/
+      style: 'border: none; width: 550px; height: 250px;'
       el: (a) ->
-        $.el 'iframe',
-          src: "https://twitframe.com/show?url=https://twitter.com/#{a.dataset.uid}"
+        el = $.el 'iframe'
+        $.on el, 'load', ->
+          @contentWindow.postMessage {element: 't', query: 'height'}, 'https://twitframe.com'
+        onMessage = (e) ->
+          if e.source is el.contentWindow and e.origin is 'https://twitframe.com'
+            $.off window, 'message', onMessage
+            el.style.height = "#{+e.data.height}px"
+        $.on window, 'message', onMessage
+        el.src = "https://twitframe.com/show?url=https://twitter.com/#{a.dataset.uid}"
+        el
     ,
       key: 'Vimeo'
       regExp:  /^\w+:\/\/(?:www\.)?vimeo\.com\/(\d+)/
