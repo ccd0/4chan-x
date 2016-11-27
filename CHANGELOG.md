@@ -4,6 +4,9 @@
 
 ### v1.13.2
 
+**v1.13.2.1** *(2016-11-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.1/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.2.0 causing errors when non-embeddable link is in inlined/previewed quote.
+
 **v1.13.2.0** *(2016-11-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.13.1.12.
 - (ihavenoface) Add `Cover Preview` function: Show preview of supported links on hover.
