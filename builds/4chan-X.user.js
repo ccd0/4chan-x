@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.1.11
+// @version      1.13.1.12
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.1.11',
+  VERSION:   '1.13.1.12',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -357,7 +357,7 @@ Config = (function() {
       'Auto Update Thread Watcher': [true, 'Periodically check status of watched threads.'],
       'Auto Watch': [true, 'Automatically watch threads you start.'],
       'Auto Watch Reply': [true, 'Automatically watch threads you reply to.'],
-      'Auto Prune': [true, 'Automatically remove dead threads.'],
+      'Auto Prune': [false, 'Automatically remove dead threads.'],
       'Show Unread Count': [true, 'Show number of unread posts in watched threads.']
     },
     filter: {
@@ -11190,7 +11190,7 @@ Settings = (function() {
         }
       }
       if (compareString < '00001.00012.00003.00000') {
-        ref6 = ['Image Hover in Catalog', 'Auto Watch', 'Auto Watch Reply', 'Auto Prune'];
+        ref6 = ['Image Hover in Catalog', 'Auto Watch', 'Auto Watch Reply'];
         for (k = 0, len1 = ref6.length; k < len1; k++) {
           key = ref6[k];
           setD(key, false);
@@ -18295,6 +18295,7 @@ ThreadWatcher = (function() {
       $.on(sc, 'click', this.toggleWatcher);
       $.on(this.refreshButton, 'click', this.buttonFetchAll);
       $.on(this.closeButton, 'click', this.toggleWatcher);
+      this.menu.addHeaderMenuEntry();
       $.onExists(doc, 'body', this.addDialog);
       switch (g.VIEW) {
         case 'index':
@@ -18966,7 +18967,6 @@ ThreadWatcher = (function() {
         $.on($('.menu-button', ThreadWatcher.dialog), 'click', function(e) {
           return menu.toggle(e, this, ThreadWatcher);
         });
-        this.addHeaderMenuEntry();
         return this.addMenuEntries();
       },
       addHeaderMenuEntry: function() {
