@@ -1,6 +1,6 @@
 Embedding =
   init: ->
-    return unless Conf['Embedding'] or Conf['Link Title'] or Conf['Cover Preview']
+    return unless g.VIEW in ['index', 'thread'] and Conf['Linkify'] and (Conf['Embedding'] or Conf['Link Title'] or Conf['Cover Preview'])
     @types = {}
     @types[type.key] = type for type in @ordered_types
 
