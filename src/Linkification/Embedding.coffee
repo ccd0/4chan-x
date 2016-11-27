@@ -259,6 +259,9 @@ Embedding =
       title:
         api: (uid) -> "https://api.dailymotion.com/video/#{uid}"
         text: (_) -> _.title
+      preview:
+        url: (uid) -> "https://www.dailymotion.com/thumbnail/video/#{uid}"
+        height: 240
     ,
       key: 'Gfycat'
       regExp: /^\w+:\/\/(?:www\.)?gfycat\.com\/(?:iframe\/)?(\w+)/
