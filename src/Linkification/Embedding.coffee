@@ -124,7 +124,8 @@ Embedding =
     {key, uid, link} = data
     return if not (service = Embedding.types[key].preview)
     $.on link, 'mouseover', (e) ->
-      src = service uid
+      src = service.url uid
+      {height} = service
       el = $.el 'img',
         src: src
         id: 'ihover'
@@ -134,6 +135,7 @@ Embedding =
         el: el
         latestEvent: e
         endEvents: 'mouseout click'
+        height: height
 
   cb:
     click: (e) ->
@@ -434,5 +436,7 @@ Embedding =
           for item in data.items when item.id is uid
             return item.snippet.title
           'Not Found'
-      preview: (uid) -> "https://img.youtube.com/vi/#{uid}/0.jpg"
+      preview:
+        url: (uid) -> "https://img.youtube.com/vi/#{uid}/0.jpg"
+        height: 480
   ]
