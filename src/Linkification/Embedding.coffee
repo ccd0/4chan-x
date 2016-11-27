@@ -1,6 +1,6 @@
 Embedding =
   init: ->
-    return unless Conf['Embedding'] or Conf['Link Title']
+    return unless Conf['Embedding'] or Conf['Link Title'] or Conf['Cover Preview']
     @types = {}
     @types[type.key] = type for type in @ordered_types
 
@@ -22,21 +22,28 @@ Embedding =
         return
 
   events: (post) ->
-    return unless Conf['Embedding']
-    i = 0
-    items = $$ '.embedder', post.nodes.comment
-    while el = items[i++]
-      $.on el, 'click', Embedding.cb.click
-      Embedding.cb.toggle.call el if $.hasClass el, 'embedded'
-    return
+    if Conf['Embedding']
+      i = 0
+      items = $$ '.embedder', post.nodes.comment
+      while el = items[i++]
+        $.on el, 'click', Embedding.cb.click
+        Embedding.cb.toggle.call el if $.hasClass el, 'embedded'
+    if Conf['Cover Preview']
+      i = 0
+      items = $$ '.linkify', post.nodes.comment
+      while el = items[i++]
+        data = Embedding.services el
+        Embedding.preview data
+      return
 
   process: (link, post) ->
-    return unless Conf['Embedding'] or Conf['Link Title']
+    return unless Conf['Embedding'] or Conf['Link Title'] or Conf['Cover Preview']
     return if $.x 'ancestor::pre', link
     if data = Embedding.services link
       data.post = post
       Embedding.embed data if Conf['Embedding']
       Embedding.title data if Conf['Link Title']
+      Embedding.preview data if Conf['Cover Preview']
 
   services: (link) ->
     {href} = link
@@ -118,6 +125,23 @@ Embedding =
       for data in queue
         $.extend data.link, <%= html('[${data.key}] <span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>') %>
     return
+
+  preview: (data) ->
+    {key, uid, link} = data
+    return if not (service = Embedding.types[key].preview)
+    $.on link, 'mouseover', (e) ->
+      src = service.url uid
+      {height} = service
+      el = $.el 'img',
+        src: src
+        id: 'ihover'
+      $.add d.body, el
+      UI.hover
+        root: link
+        el: el
+        latestEvent: e
+        endEvents: 'mouseout click'
+        height: height
 
   cb:
     click: (e) ->
@@ -427,4 +451,7 @@ Embedding =
           for item in data.items when item.id is uid
             return item.snippet.title
           'Not Found'
+      preview:
+        url: (uid) -> "https://img.youtube.com/vi/#{uid}/0.jpg"
+        height: 360
   ]
