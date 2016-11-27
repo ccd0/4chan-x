@@ -444,5 +444,5 @@ Embedding =
           'Not Found'
       preview:
         url: (uid) -> "https://img.youtube.com/vi/#{uid}/0.jpg"
-        height: 480
+        height: 360
   ]
