@@ -24,7 +24,7 @@ Embedding =
   events: (post) ->
     if Conf['Embedding']
       i = 0
-      items = $$ '.embedder', post.nodes.comment
+      items = post.nodes.embedlinks = $$ '.embedder', post.nodes.comment
       while el = items[i++]
         $.on el, 'click', Embedding.cb.click
         Embedding.cb.toggle.call el if $.hasClass el, 'embedded'
