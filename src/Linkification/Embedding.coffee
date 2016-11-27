@@ -32,8 +32,8 @@ Embedding =
       i = 0
       items = $$ '.linkify', post.nodes.comment
       while el = items[i++]
-        data = Embedding.services el
-        Embedding.preview data
+        if (data = Embedding.services el)
+          Embedding.preview data
       return
 
   process: (link, post) ->
