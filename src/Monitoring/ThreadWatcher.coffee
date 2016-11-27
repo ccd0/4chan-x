@@ -24,6 +24,7 @@ ThreadWatcher =
     $.on @refreshButton, 'click', @buttonFetchAll
     $.on @closeButton, 'click', @toggleWatcher
 
+    @menu.addHeaderMenuEntry()
     $.onExists doc, 'body', @addDialog
 
     switch g.VIEW
@@ -414,7 +415,6 @@ ThreadWatcher =
       menu = @menu = new UI.Menu 'thread watcher'
       $.on $('.menu-button', ThreadWatcher.dialog), 'click', (e) ->
         menu.toggle e, @, ThreadWatcher
-      @addHeaderMenuEntry()
       @addMenuEntries()
 
     addHeaderMenuEntry: ->
