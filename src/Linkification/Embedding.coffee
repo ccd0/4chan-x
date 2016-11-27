@@ -22,13 +22,19 @@ Embedding =
         return
 
   events: (post) ->
-    return unless Conf['Embedding']
-    i = 0
-    items = $$ '.embedder', post.nodes.comment
-    while el = items[i++]
-      $.on el, 'click', Embedding.cb.click
-      Embedding.cb.toggle.call el if $.hasClass el, 'embedded'
-    return
+    if Conf['Embedding']
+      i = 0
+      items = $$ '.embedder', post.nodes.comment
+      while el = items[i++]
+        $.on el, 'click', Embedding.cb.click
+        Embedding.cb.toggle.call el if $.hasClass el, 'embedded'
+    if Conf['Cover Preview']
+      i = 0
+      items = $$ '.linkify', post.nodes.comment
+      while el = items[i++]
+        data = Embedding.services el
+        Embedding.preview data
+      return
 
   process: (link, post) ->
     return unless Conf['Embedding'] or Conf['Link Title'] or Conf['Cover Preview']
