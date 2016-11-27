@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.1.12
+// @version      1.13.2.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.1.12',
+  VERSION:   '1.13.2.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -224,6 +224,7 @@ Config = (function() {
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
         'Link Title': [true, 'Replace the link of a supported site with its actual title.', 1],
+        'Cover Preview': [true, 'Show preview of supported links on hover.', 1],
         'Embedding': [true, 'Embed supported services. Note: Some services don\'t work on HTTPS.', 1],
         'Auto-embed': [false, 'Auto-embed Linkify Embeds.', 2],
         'Floating Embeds': [false, 'Embed content in a frame that remains in place when the page is scrolled.', 2]
@@ -2201,10 +2202,11 @@ span.hide-announcement {\n\
 }\n\
 #updater > .move {\n\
   position: absolute;\n\
-  left: 0;\n\
   top: -5px;\n\
-  width: 100%;\n\
-  height: 5px;\n\
+  bottom: -5px;\n\
+  left: -5px;\n\
+  right: -5px;\n\
+  z-index: -1;\n\
 }\n\
 #updater > div:last-child {\n\
   text-align: center;\n\
@@ -3203,9 +3205,7 @@ a:only-of-type > .remove {\n\
   cursor: text !important;\n\
 }\n\
 /* Embedding */\n\
-.embedder:not(.embedded) > span,\n\
-:root.catalog-mode .embedder > span,\n\
-:root.catalog-mode .board .media-embed {\n\
+.embedder:not(.embedded) > span {\n\
   display: none;\n\
 }\n\
 #embedding {\n\
@@ -6107,7 +6107,8 @@ Post = (function() {
         fileRoot: $('.file', post),
         comment: $('.postMessage', post),
         quotelinks: [],
-        archivelinks: []
+        archivelinks: [],
+        embedlinks: []
       };
       if ($.engine === 'edge') {
         Object.defineProperty(nodes, 'backlinks', {
@@ -9294,6 +9295,7 @@ Index = (function() {
       if (!Conf['JSON Index']) {
         return;
       }
+      this.enabled = true;
       Callbacks.Post.push({
         name: 'Index Page Numbers',
         cb: this.node
@@ -13959,18 +13961,19 @@ Volume = (function() {
 }).call(this);
 
 Embedding = (function() {
-  var Embedding;
+  var Embedding,
+    slice = [].slice;
 
   Embedding = {
     init: function() {
-      var j, len, ref, type;
-      if (!(Conf['Embedding'] || Conf['Link Title'])) {
+      var j, len, ref, ref1, type;
+      if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Linkify'] && (Conf['Embedding'] || Conf['Link Title'] || Conf['Cover Preview']))) {
         return;
       }
       this.types = {};
-      ref = this.ordered_types;
-      for (j = 0, len = ref.length; j < len; j++) {
-        type = ref[j];
+      ref1 = this.ordered_types;
+      for (j = 0, len = ref1.length; j < len; j++) {
+        type = ref1[j];
         this.types[type.key] = type;
       }
       if (Conf['Embedding']) {
@@ -13979,14 +13982,28 @@ Embedding = (function() {
         });
         this.media = $('#media-embed', this.dialog);
         $.one(d, '4chanXInitFinished', this.ready);
+        $.on(d, 'IndexRefreshInternal', function() {
+          return g.posts.forEach(function(post) {
+            var embed, k, l, len1, len2, ref2, ref3;
+            ref2 = [post].concat(slice.call(post.clones));
+            for (k = 0, len1 = ref2.length; k < len1; k++) {
+              post = ref2[k];
+              ref3 = post.nodes.embedlinks;
+              for (l = 0, len2 = ref3.length; l < len2; l++) {
+                embed = ref3[l];
+                Embedding.cb.catalogRemove.call(embed);
+              }
+            }
+          });
+        });
       }
       if (Conf['Link Title']) {
         return $.on(d, '4chanXInitFinished PostsInserted', function() {
-          var key, ref1, ref2, service;
-          ref1 = Embedding.types;
-          for (key in ref1) {
-            service = ref1[key];
-            if ((ref2 = service.title) != null ? ref2.batchSize : void 0) {
+          var key, ref2, ref3, service;
+          ref2 = Embedding.types;
+          for (key in ref2) {
+            service = ref2[key];
+            if ((ref3 = service.title) != null ? ref3.batchSize : void 0) {
               Embedding.flushTitles(service.title);
             }
           }
@@ -13994,22 +14011,29 @@ Embedding = (function() {
       }
     },
     events: function(post) {
-      var el, i, items;
-      if (!Conf['Embedding']) {
-        return;
+      var data, el, i, items;
+      if (Conf['Embedding']) {
+        i = 0;
+        items = post.nodes.embedlinks = $$('.embedder', post.nodes.comment);
+        while (el = items[i++]) {
+          $.on(el, 'click', Embedding.cb.click);
+          if ($.hasClass(el, 'embedded')) {
+            Embedding.cb.toggle.call(el);
+          }
+        }
       }
-      i = 0;
-      items = $$('.embedder', post.nodes.comment);
-      while (el = items[i++]) {
-        $.on(el, 'click', Embedding.cb.click);
-        if ($.hasClass(el, 'embedded')) {
-          Embedding.cb.toggle.call(el);
+      if (Conf['Cover Preview']) {
+        i = 0;
+        items = $$('.linkify', post.nodes.comment);
+        while (el = items[i++]) {
+          data = Embedding.services(el);
+          Embedding.preview(data);
         }
       }
     },
     process: function(link, post) {
       var data;
-      if (!(Conf['Embedding'] || Conf['Link Title'])) {
+      if (!(Conf['Embedding'] || Conf['Link Title'] || Conf['Cover Preview'])) {
         return;
       }
       if ($.x('ancestor::pre', link)) {
@@ -14021,7 +14045,10 @@ Embedding = (function() {
           Embedding.embed(data);
         }
         if (Conf['Link Title']) {
-          return Embedding.title(data);
+          Embedding.title(data);
+        }
+        if (Conf['Cover Preview']) {
+          return Embedding.preview(data);
         }
       }
     },
@@ -14042,7 +14069,7 @@ Embedding = (function() {
       }
     },
     embed: function(data) {
-      var autoEmbed, embed, href, key, link, name, options, post, ref, uid, value;
+      var embed, href, key, link, name, options, post, ref, uid, value;
       key = data.key, uid = data.uid, options = data.options, link = data.link, post = data.post;
       href = link.href;
       if (Embedding.types[key].httpOnly && location.protocol !== 'http:') {
@@ -14067,15 +14094,13 @@ Embedding = (function() {
       }
       $.on(embed, 'click', Embedding.cb.click);
       $.after(link, [$.tn(' '), embed]);
+      post.nodes.embedlinks.push(embed);
       if (Conf['Auto-embed'] && !Conf['Floating Embeds'] && !post.isFetchedQuote) {
-        autoEmbed = function() {
-          if (doc.contains(embed) && !$.hasClass(doc, 'catalog-mode')) {
-            $.off(d, 'PostsInserted', autoEmbed);
-            return Embedding.cb.toggle.call(embed);
-          }
-        };
-        $.on(d, 'PostsInserted', autoEmbed);
-        return autoEmbed();
+        if ($.hasClass(doc, 'catalog-mode')) {
+          return $.addClass(embed, 'embed-removed');
+        } else {
+          return Embedding.cb.toggle.call(embed);
+        }
       }
     },
     ready: function() {
@@ -14103,12 +14128,12 @@ Embedding = (function() {
       if (Embedding.dragEmbed.mouseup) {
         $.off(d, 'mouseup', Embedding.dragEmbed);
         Embedding.dragEmbed.mouseup = false;
-        style.visibility = '';
+        style.pointerEvents = '';
         return;
       }
       $.on(d, 'mouseup', Embedding.dragEmbed);
       Embedding.dragEmbed.mouseup = true;
-      return style.visibility = 'hidden';
+      return style.pointerEvents = 'none';
     },
     title: function(data) {
       var key, link, options, post, service, uid;
@@ -14167,11 +14192,35 @@ Embedding = (function() {
         }
       }
     },
+    preview: function(data) {
+      var key, link, service, uid;
+      key = data.key, uid = data.uid, link = data.link;
+      if (!(service = Embedding.types[key].preview)) {
+        return;
+      }
+      return $.on(link, 'mouseover', function(e) {
+        var el, height, src;
+        src = service.url(uid);
+        height = service.height;
+        el = $.el('img', {
+          src: src,
+          id: 'ihover'
+        });
+        $.add(d.body, el);
+        return UI.hover({
+          root: link,
+          el: el,
+          latestEvent: e,
+          endEvents: 'mouseout click',
+          height: height
+        });
+      });
+    },
     cb: {
       click: function(e) {
         var div;
         e.preventDefault();
-        if (Conf['Floating Embeds'] || $.hasClass(doc, 'catalog-mode')) {
+        if (!$.hasClass(this, 'embedded') && (Conf['Floating Embeds'] || $.hasClass(doc, 'catalog-mode'))) {
           if (!(div = Embedding.media.firstChild)) {
             return;
           }
@@ -14198,6 +14247,14 @@ Embedding = (function() {
         $.add(container, el = (type = Embedding.types[a.dataset.key]).el(a));
         el.style.cssText = type.style != null ? type.style : 'border: none; width: 640px; height: 360px;';
         return container;
+      },
+      catalogRemove: function() {
+        var isCatalog;
+        isCatalog = $.hasClass(doc, 'catalog-mode');
+        if ((isCatalog && $.hasClass(this, 'embedded')) || (!isCatalog && $.hasClass(this, 'embed-removed'))) {
+          Embedding.cb.toggle.call(this);
+          return $.toggleClass(this, 'embed-removed');
+        }
       },
       title: function(req, data) {
         var base1, j, k, key, len, len1, link, link2, options, post, post2, ref, ref1, service, status, text, uid;
@@ -14312,6 +14369,12 @@ Embedding = (function() {
           text: function(_) {
             return _.title;
           }
+        },
+        preview: {
+          url: function(uid) {
+            return "https://www.dailymotion.com/thumbnail/video/" + uid;
+          },
+          height: 240
         }
       }, {
         key: 'Gfycat',
@@ -14527,10 +14590,25 @@ Embedding = (function() {
       }, {
         key: 'Twitter',
         regExp: /^\w+:\/\/(?:www\.)?twitter\.com\/(\w+\/status\/\d+)/,
+        style: 'border: none; width: 550px; height: 250px; max-height: 80vh;',
         el: function(a) {
-          return $.el('iframe', {
-            src: "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid
+          var el, onMessage;
+          el = $.el('iframe');
+          $.on(el, 'load', function() {
+            return this.contentWindow.postMessage({
+              element: 't',
+              query: 'height'
+            }, 'https://twitframe.com');
           });
+          onMessage = function(e) {
+            if (e.source === el.contentWindow && e.origin === 'https://twitframe.com') {
+              $.off(window, 'message', onMessage);
+              return el.style.height = (+e.data.height) + "px";
+            }
+          };
+          $.on(window, 'message', onMessage);
+          el.src = "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid;
+          return el;
         }
       }, {
         key: 'Vimeo',
@@ -14612,6 +14690,12 @@ Embedding = (function() {
             }
             return 'Not Found';
           }
+        },
+        preview: {
+          url: function(uid) {
+            return "https://img.youtube.com/vi/" + uid + "/0.jpg";
+          },
+          height: 360
         }
       }
     ]
@@ -14684,6 +14768,9 @@ Linkify = (function() {
                 } else {
                   break;
                 }
+              }
+              if (saved.parentElement.nodeName === "A" && !Linkify.regString.test(word)) {
+                break;
               }
               endNode = saved;
               data = saved.data;
@@ -17859,7 +17946,7 @@ ThreadUpdater = (function() {
         Header.addShortcut('updater', sc, 100);
       } else {
         this.dialog = sc = UI.dialog('updater', {
-          innerHTML: "<div class=\"move\"></div><span id=\"update-status\"></span><span id=\"update-timer\" title=\"Update now\"></span>"
+          innerHTML: "<div class=\"move\"></div><span id=\"update-status\" class=\"empty\"></span><span id=\"update-timer\" class=\"empty\" title=\"Update now\"></span>"
         });
         $.addClass(doc, 'float');
         $.ready(function() {

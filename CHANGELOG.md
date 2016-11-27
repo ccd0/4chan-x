@@ -2,6 +2,16 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.13.2
+
+**v1.13.2.0** *(2016-11-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.1.12.
+- (ihavenoface) Add `Cover Preview` function: Show preview of supported links on hover.
+  - Currently supported: Youtube and Dailymotion.
+- (ihavenoface) Keep floating embeds visible while moving the window.
+- Various embedding-related bugfixes, including performance issue from v1.13.0.0 when switching to catalog.
+- Make floating updater draggable by any edge so it doesn't get stuck at the top. #1031
+
 ### v1.13.1
 
 **v1.13.1.12** *(2016-11-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.12/builds/4chan-X-noupdate.crx)]
