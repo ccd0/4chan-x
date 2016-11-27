@@ -122,7 +122,7 @@ Embedding =
 
   preview: (data) ->
     {key, uid, link} = data
-    service = Embedding.types[key].preview
+    return if not (service = Embedding.types[key].preview)
     $.on link, 'mouseover', (e) ->
       src = service uid
       el = $.el 'img',
