@@ -138,7 +138,7 @@ Config =
       ]
       'Cover Preview': [
         true
-        'Show preview of links on hover.'
+        'Show preview of supported links on hover.'
         1
       ]
       'Embedding': [
