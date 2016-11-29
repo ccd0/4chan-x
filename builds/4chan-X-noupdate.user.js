@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.2.1
+// @version      1.13.2.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -147,7 +147,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.2.1',
+  VERSION:   '1.13.2.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5848,7 +5848,7 @@ Fetcher = (function() {
         }
         o.file = {
           name: data.media.media_filename,
-          url: data.media.media_link || data.media.remote_media_link || (this.boardID === 'f' ? location.protocol + "//i.4cdn.org/" + this.boardID + "/" + (encodeURIComponent(data.media.media_filename)) : location.protocol + "//" + (data.no % 3 ? 'i.4cdn.org' : 'is.4chan.org') + "/" + this.boardID + "/" + (encodeURIComponent(data.media.media_orig))),
+          url: data.media.media_link || data.media.remote_media_link || (this.boardID === 'f' ? location.protocol + "//i.4cdn.org/" + this.boardID + "/" + (encodeURIComponent(data.media.media_filename)) : location.protocol + "//i.4cdn.org/" + this.boardID + "/" + (encodeURIComponent(data.media.media_orig))),
           height: data.media.media_h,
           width: data.media.media_w,
           MD5: data.media.media_hash,
@@ -8305,7 +8305,7 @@ Build = (function() {
       if (data.ext) {
         o.file = {
           name: (Build.unescape(data.filename)) + data.ext,
-          url: boardID === 'f' ? location.protocol + "//i.4cdn.org/" + boardID + "/" + (encodeURIComponent(data.filename)) + data.ext : location.protocol + "//" + (data.no % 3 ? 'i.4cdn.org' : 'is.4chan.org') + "/" + boardID + "/" + data.tim + data.ext,
+          url: boardID === 'f' ? location.protocol + "//i.4cdn.org/" + boardID + "/" + (encodeURIComponent(data.filename)) + data.ext : location.protocol + "//i.4cdn.org/" + boardID + "/" + data.tim + data.ext,
           height: data.h,
           width: data.w,
           MD5: data.md5,
