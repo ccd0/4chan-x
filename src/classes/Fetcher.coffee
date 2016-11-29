@@ -178,7 +178,7 @@ class Fetcher
                      if @boardID is 'f'
                        "#{location.protocol}//i.4cdn.org/#{@boardID}/#{encodeURIComponent data.media.media_filename}"
                      else
-                       "#{location.protocol}//#{if data.no % 3 then 'i.4cdn.org' else 'is.4chan.org'}/#{@boardID}/#{encodeURIComponent data.media.media_orig}"
+                       "#{location.protocol}//i.4cdn.org/#{@boardID}/#{encodeURIComponent data.media.media_orig}"
         height:    data.media.media_h
         width:     data.media.media_w
         MD5:       data.media.media_hash
