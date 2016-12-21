@@ -4,6 +4,9 @@
 
 ### v1.13.2
 
+**v1.13.2.3** *(2016-12-21)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.3/builds/4chan-X-noupdate.crx)]
+- Update for new Recaptcha URL. Restores image selection by keyboard. #1234
+
 **v1.13.2.2** *(2016-11-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.2/builds/4chan-X-noupdate.crx)]
 - Drop support for is.4chan.org in posts generated from JSON for now. (This only affects users with `Use Faster Image Host` off.)
 
