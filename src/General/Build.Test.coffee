@@ -26,7 +26,7 @@ Build.Test =
       href = el.href
       href = href.replace /(^\w+:\/\/boards.4chan.org\/[^\/]+\/thread\/\d+)\/.*/, '$1'
       el.setAttribute 'href', href
-    for el in $$ '.fileText > a, a.fileThumb', root2 when el.hostname is 'is.4chan.org'
+    for el in $$ '.fileText > a, a.fileThumb', root2 when ImageHost.regex.test(el.hostname)
       el.hostname = 'i.4cdn.org'
     for el in $$ 'img[src]', root2
       el.src = el.src.replace /(spoiler-\w+)\d(\.png)$/, '$11$2'

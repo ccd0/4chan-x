@@ -14,10 +14,11 @@ Linkify =
   node: ->
     return Embedding.events @ if @isClone
     return unless Linkify.regString.test @info.comment
-    for link in $$ 'a[href^="http://i.4cdn.org/"], a[href^="https://i.4cdn.org/"], a[href^="http://is.4chan.org/"], a[href^="https://is.4chan.org/"]', @nodes.comment
+    for link in $$ 'a', @nodes.comment when Main.isImageHost link.hostname
       $.addClass link, 'linkify'
       Embedding.process link, @
     links = Linkify.process @nodes.comment
+    ImageHost.fixLinks links if ImageHost.enabled
     Embedding.process link, @ for link in links
     return
 

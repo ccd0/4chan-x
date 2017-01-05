@@ -290,7 +290,7 @@ Config =
       ]
       'Use Faster Image Host': [
         true
-        'Change is.4chan.org links to point to the faster i.4cdn.org host.'
+        'Change is*.4chan.org links to point to the faster i.4cdn.org host.'
       ]
 
     'Menu':

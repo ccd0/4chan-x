@@ -26,7 +26,8 @@
       "*://sys.4chan.org/*",
       "*://www.4chan.org/*",
       "*://i.4cdn.org/*",
-      "*://is.4chan.org/*"
+      "*://is.4chan.org/*",
+      "*://is2.4chan.org/*"
     ],
     "matches_only": [
       "*://*.4chan.org/*",

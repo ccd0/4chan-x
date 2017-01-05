@@ -34,8 +34,8 @@
     ).join('\n');
   })()
 %>
-// @connect      i.4cdn.org
-// @connect      is.4chan.org
+// @connect      4chan.org
+// @connect      4cdn.org
 // @connect      *
 <%=
   meta.grants.map(function(grant) {

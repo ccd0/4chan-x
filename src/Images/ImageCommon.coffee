@@ -34,7 +34,7 @@ ImageCommon =
     return true
 
   isFromArchive: (file) ->
-    file.src.split('/')[2] not in ['i.4cdn.org', 'is.4chan.org']
+    !Main.isImageHost(file.src.split('/')[2])
 
   error: (file, post, delay, cb) ->
     src = post.file.url.split '/'

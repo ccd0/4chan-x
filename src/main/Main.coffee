@@ -129,23 +129,24 @@ Main =
         else if pathname[2] is 'post'
           PostSuccessful.init()
         return
-      when 'i.4cdn.org', 'is.4chan.org'
-        return unless pathname[2] and not /[sm]\.jpg$/.test(pathname[2])
-        $.asap (-> d.readyState isnt 'loading'), ->
-          if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
-            Redirect.navigate 'file', {
-              boardID:  g.BOARD.ID
-              filename: pathname[pathname.length - 1]
-            }
-          else if video = $ 'video'
-            if Conf['Volume in New Tab']
-              Volume.setup video
-            if Conf['Loop in New Tab']
-              video.loop = true
-              video.controls = false
-              video.play()
-              ImageCommon.addControls video
-        return
+
+    if Main.isImageHost hostname
+      return unless pathname[2] and not /[sm]\.jpg$/.test(pathname[2])
+      $.asap (-> d.readyState isnt 'loading'), ->
+        if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
+          Redirect.navigate 'file', {
+            boardID:  g.BOARD.ID
+            filename: pathname[pathname.length - 1]
+          }
+        else if video = $ 'video'
+          if Conf['Volume in New Tab']
+            Volume.setup video
+          if Conf['Loop in New Tab']
+            video.loop = true
+            video.controls = false
+            video.play()
+            ImageCommon.addControls video
+      return
 
     return unless hostname is 'boards.4chan.org'
 
@@ -409,6 +410,9 @@ Main =
     details = details.replace /file:\/{3}.+\//g, '' # Remove local file paths
     url = "<%= meta.newIssue.replace('%title', '#{encodeURIComponent title}').replace('%details', '#{encodeURIComponent details}') %>"
     <%= html('<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>') %>
+
+  isImageHost: (hostname) ->
+    hostname is 'i.4cdn.org' or /^is\d*\.4chan\.org$/.test(hostname)
 
   isThisPageLegit: ->
     # 404 error page or similar.
