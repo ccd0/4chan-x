@@ -21,12 +21,18 @@
     "youtubeAPIKey": "AIzaSyB5_zaen_-46Uhz1xGR-lz1YoUMHqCD6CE",
     "distBranch": "gh-pages",
     "uploadPath": "www.4chan-x.net:/var/www/html/",
-    "matches": [
+    "includes_only": [
       "*://boards.4chan.org/*",
       "*://sys.4chan.org/*",
       "*://www.4chan.org/*",
       "*://i.4cdn.org/*",
-      "*://is.4chan.org/*",
+      "*://is.4chan.org/*"
+    ],
+    "matches_only": [
+      "*://*.4chan.org/*",
+      "*://*.4cdn.org/*"
+    ],
+    "matches": [
       "https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
       "https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
       "https://www.google.com/recaptcha/api2/frame?*&k=887877714&*",

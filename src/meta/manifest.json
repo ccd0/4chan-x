@@ -10,7 +10,7 @@
   },
   "content_scripts": [{
     "js": ["script.js"],
-    "matches": <%= JSON.stringify(meta.matches) %>,
+    "matches": <%= JSON.stringify(meta.matches_only.concat(meta.matches)) %>,
     "exclude_matches": <%= JSON.stringify(meta.exclude_matches) %>,
     "all_frames": true,
     "run_at": "document_start"
@@ -24,8 +24,7 @@
   "key": "<%= meta.appid %>",
 <% } %>  "minimum_chrome_version": "<%= meta.min.chrome %>",
   "permissions": [
-    "storage",
-    "*://a.4cdn.org/"
+    "storage"
   ],
   "optional_permissions": [
     "*://*/"

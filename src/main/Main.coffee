@@ -147,6 +147,8 @@ Main =
               ImageCommon.addControls video
         return
 
+    return unless hostname is 'boards.4chan.org'
+
     if pathname[2] in ['thread', 'res']
       g.VIEW     = 'thread'
       g.THREADID = +pathname[3]
