@@ -4,6 +4,9 @@
 
 ### v1.13.2
 
+**v1.13.2.4** *(2017-01-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.4/builds/4chan-X-noupdate.crx)]
+- Change is2.4chan.org image links to i.4cdn.org also.
+
 **v1.13.2.3** *(2016-12-21)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.3/builds/4chan-X-noupdate.crx)]
 - Update for new Recaptcha URL. Restores image selection by keyboard. #1234
 
