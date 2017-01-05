@@ -7,7 +7,7 @@ ImageHost =
 
   node: ->
     return if @isClone
-    if @file and (m = @file.url.match /^https?:\/\/is\.4chan\.org\/(.*)$/)
+    if @file and (m = @file.url.match /^https?:\/\/is\d*\.4chan\.org\/(.*)$/)
       @file.link.hostname = 'i.4cdn.org'
       @file.thumbLink.hostname = 'i.4cdn.org' if @file.thumbLink
       @file.url = @file.link.href
