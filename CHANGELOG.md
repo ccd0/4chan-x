@@ -2,6 +2,13 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.13.3
+
+**v1.13.3.0** *(2017-01-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.3.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.3.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.2.4.
+- Full support for new is2.4chan.org host.
+- Use is.4chan.org for building posts if `Use Faster Image Host` is off.
+
 ### v1.13.2
 
 **v1.13.2.4** *(2017-01-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.4/builds/4chan-X-noupdate.crx)]
