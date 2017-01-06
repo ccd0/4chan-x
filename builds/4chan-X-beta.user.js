@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.2.4
+// @version      1.13.3.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -16,6 +16,8 @@
 // @include      https://i.4cdn.org/*
 // @include      http://is.4chan.org/*
 // @include      https://is.4chan.org/*
+// @include      http://is2.4chan.org/*
+// @include      https://is2.4chan.org/*
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=887877714&*
@@ -33,8 +35,8 @@
 // @exclude      https://www.4chan.org/donate
 // @exclude      http://www.4chan.org/donate?*
 // @exclude      https://www.4chan.org/donate?*
-// @connect      i.4cdn.org
-// @connect      is.4chan.org
+// @connect      4chan.org
+// @connect      4cdn.org
 // @connect      *
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -148,7 +150,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.2.4',
+  VERSION:   '1.13.3.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -264,7 +266,7 @@ Config = (function() {
         'Mouse Wheel Volume': [true, 'Adjust volume of videos with the mouse wheel over the thumbnail/filename/gallery.'],
         'Loop in New Tab': [true, 'Loop videos opened in their own tabs.'],
         'Volume in New Tab': [true, 'Apply 4chan X mute and volume settings to videos opened in their own tabs.'],
-        'Use Faster Image Host': [true, 'Change is.4chan.org links to point to the faster i.4cdn.org host.']
+        'Use Faster Image Host': [true, 'Change is*.4chan.org links to point to the faster i.4cdn.org host.']
       },
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
@@ -5849,12 +5851,12 @@ Fetcher = (function() {
         }
         o.file = {
           name: data.media.media_filename,
-          url: data.media.media_link || data.media.remote_media_link || (this.boardID === 'f' ? location.protocol + "//i.4cdn.org/" + this.boardID + "/" + (encodeURIComponent(data.media.media_filename)) : location.protocol + "//i.4cdn.org/" + this.boardID + "/" + (encodeURIComponent(data.media.media_orig))),
+          url: data.media.media_link || data.media.remote_media_link || (this.boardID === 'f' ? location.protocol + "//" + (ImageHost.flashHost()) + "/" + this.boardID + "/" + (encodeURIComponent(data.media.media_filename)) : location.protocol + "//" + (ImageHost.host()) + "/" + this.boardID + "/" + (encodeURIComponent(data.media.media_orig))),
           height: data.media.media_h,
           width: data.media.media_w,
           MD5: data.media.media_hash,
           size: $.bytesToString(data.media.media_size),
-          thumbURL: data.media.thumb_link || (location.protocol + "//i.4cdn.org/" + this.boardID + "/" + data.media.preview_orig),
+          thumbURL: data.media.thumb_link || (location.protocol + "//" + (ImageHost.thumbHost()) + "/" + this.boardID + "/" + data.media.preview_orig),
           theight: data.media.preview_h,
           twidth: data.media.preview_w,
           isSpoiler: data.media.spoiler === '1'
@@ -6245,13 +6247,16 @@ Post = (function() {
       }
       this.file.sizeInBytes = size;
       if ((thumb = $('a.fileThumb > [data-md5]', fileRoot))) {
-        return $.extend(this.file, {
+        $.extend(this.file, {
           thumb: thumb,
           thumbLink: thumb.parentNode,
-          thumbURL: (m = link.href.match(/\d+(?=\.\w+$)/)) ? location.protocol + "//i.4cdn.org/" + this.board + "/" + m[0] + "s.jpg" : void 0,
+          thumbURL: thumb.src,
           MD5: thumb.dataset.md5,
           isSpoiler: $.hasClass(thumb.parentNode, 'imgspoiler')
         });
+        if (this.file.isSpoiler) {
+          return this.file.thumbURL = (m = link.href.match(/\d+(?=\.\w+$)/)) ? location.protocol + "//" + (ImageHost.thumbHost()) + "/" + this.board + "/" + m[0] + "s.jpg" : void 0;
+        }
       }
     };
 
@@ -8306,12 +8311,12 @@ Build = (function() {
       if (data.ext) {
         o.file = {
           name: (Build.unescape(data.filename)) + data.ext,
-          url: boardID === 'f' ? location.protocol + "//i.4cdn.org/" + boardID + "/" + (encodeURIComponent(data.filename)) + data.ext : location.protocol + "//i.4cdn.org/" + boardID + "/" + data.tim + data.ext,
+          url: boardID === 'f' ? location.protocol + "//" + (ImageHost.flashHost()) + "/" + boardID + "/" + (encodeURIComponent(data.filename)) + data.ext : location.protocol + "//" + (ImageHost.host()) + "/" + boardID + "/" + data.tim + data.ext,
           height: data.h,
           width: data.w,
           MD5: data.md5,
           size: $.bytesToString(data.fsize),
-          thumbURL: location.protocol + "//i.4cdn.org/" + boardID + "/" + data.tim + "s.jpg",
+          thumbURL: location.protocol + "//" + (ImageHost.thumbHost()) + "/" + boardID + "/" + data.tim + "s.jpg",
           theight: data.tn_h,
           twidth: data.tn_w,
           isSpoiler: !!data.spoiler,
@@ -11493,7 +11498,7 @@ Settings = (function() {
       data = {
         isReply: true,
         file: {
-          url: '//i.4cdn.org/g/1334437723720.jpg',
+          url: "//" + (ImageHost.host()) + "/g/1334437723720.jpg",
           name: 'd9bb2efc98dd0df141a94399ff5880b7.jpg',
           size: '276 KB',
           sizeInBytes: 276 * 1024,
@@ -12685,8 +12690,7 @@ ImageCommon = (function() {
       return true;
     },
     isFromArchive: function(file) {
-      var ref;
-      return (ref = file.src.split('/')[2]) !== 'i.4cdn.org' && ref !== 'is.4chan.org';
+      return !ImageHost.test(file.src.split('/')[2]);
     },
     error: function(file, post, delay, cb) {
       var URL, redirect, src, timeoutID;
@@ -13202,7 +13206,7 @@ ImageHost = (function() {
   ImageHost = {
     init: function() {
       var ref;
-      if (!(Conf['Use Faster Image Host'] && ((ref = g.VIEW) === 'index' || ref === 'thread'))) {
+      if (!((this.useFaster = Conf['Use Faster Image Host']) && ((ref = g.VIEW) === 'index' || ref === 'thread'))) {
         return;
       }
       return Callbacks.Post.push({
@@ -13210,22 +13214,45 @@ ImageHost = (function() {
         cb: this.node
       });
     },
+    host: function() {
+      if (this.useFaster) {
+        return 'i.4cdn.org';
+      } else {
+        return 'is.4chan.org';
+      }
+    },
+    flashHost: function() {
+      return 'i.4cdn.org';
+    },
+    thumbHost: function() {
+      return 'i.4cdn.org';
+    },
+    test: function(hostname) {
+      return hostname === 'i.4cdn.org' || ImageHost.regex.test(hostname);
+    },
+    regex: /^is\d*\.4chan\.org$/,
     node: function() {
-      var i, len, link, m, ref;
+      var host;
       if (this.isClone) {
         return;
       }
-      if (this.file && (m = this.file.url.match(/^https?:\/\/is\d*\.4chan\.org\/(.*)$/))) {
-        this.file.link.hostname = 'i.4cdn.org';
+      host = ImageHost.host();
+      if (this.file && ImageHost.regex.test(this.file.url.split('/')[2])) {
+        this.file.link.hostname = host;
         if (this.file.thumbLink) {
-          this.file.thumbLink.hostname = 'i.4cdn.org';
+          this.file.thumbLink.hostname = host;
         }
         this.file.url = this.file.link.href;
       }
-      ref = $$('a[href^="http://is.4chan.org/"], a[href^="https://is.4chan.org/"]', this.nodes.comment);
-      for (i = 0, len = ref.length; i < len; i++) {
-        link = ref[i];
-        link.hostname = 'i.4cdn.org';
+      return ImageHost.fixLinks($$('a', this.nodes.comment));
+    },
+    fixLinks: function(links) {
+      var i, len, link;
+      for (i = 0, len = links.length; i < len; i++) {
+        link = links[i];
+        if (ImageHost.regex.test(link.hostname)) {
+          link.hostname = ImageHost.host();
+        }
       }
     }
   };
@@ -14327,7 +14354,7 @@ Embedding = (function() {
             controls: true,
             preload: 'auto',
             src: a.dataset.href,
-            loop: /^https?:\/\/(i\.4cdn|is\.4chan)\.org\//.test(a.dataset.href)
+            loop: ImageHost.test(a.dataset.href.split('/')[2])
           });
           $.on(el, 'loadedmetadata', function() {
             if (el.videoHeight === 0 && el.parentNode) {
@@ -14511,7 +14538,7 @@ Embedding = (function() {
                   case 'ko':
                     return ["https://kordy.kastden.org/loopvid/" + base];
                   case 'fc':
-                    return ["//i.4cdn.org/" + base + ".webm"];
+                    return ["//" + (ImageHost.host()) + "/" + base + ".webm"];
                   case 'gc':
                     return ["https://" + type + ".gfycat.com/" + name + ".webm"];
                 }
@@ -14733,13 +14760,19 @@ Linkify = (function() {
       if (!Linkify.regString.test(this.info.comment)) {
         return;
       }
-      ref = $$('a[href^="http://i.4cdn.org/"], a[href^="https://i.4cdn.org/"], a[href^="http://is.4chan.org/"], a[href^="https://is.4chan.org/"]', this.nodes.comment);
+      ref = $$('a', this.nodes.comment);
       for (j = 0, len = ref.length; j < len; j++) {
         link = ref[j];
+        if (!(ImageHost.test(link.hostname))) {
+          continue;
+        }
         $.addClass(link, 'linkify');
         Embedding.process(link, this);
       }
       links = Linkify.process(this.nodes.comment);
+      if (ImageHost.useFaster) {
+        ImageHost.fixLinks(links);
+      }
       for (k = 0, len1 = links.length; k < len1; k++) {
         link = links[k];
         Embedding.process(link, this);
@@ -23702,33 +23735,36 @@ Main = (function() {
             PostSuccessful.init();
           }
           return;
-        case 'i.4cdn.org':
-        case 'is.4chan.org':
-          if (!(pathname[2] && !/[sm]\.jpg$/.test(pathname[2]))) {
-            return;
-          }
-          $.asap((function() {
-            return d.readyState !== 'loading';
-          }), function() {
-            var ref, video;
-            if (Conf['404 Redirect'] && ((ref = d.title) === '4chan - Temporarily Offline' || ref === '4chan - 404 Not Found')) {
-              return Redirect.navigate('file', {
-                boardID: g.BOARD.ID,
-                filename: pathname[pathname.length - 1]
-              });
-            } else if (video = $('video')) {
-              if (Conf['Volume in New Tab']) {
-                Volume.setup(video);
-              }
-              if (Conf['Loop in New Tab']) {
-                video.loop = true;
-                video.controls = false;
-                video.play();
-                return ImageCommon.addControls(video);
-              }
-            }
-          });
+      }
+      if (ImageHost.test(hostname)) {
+        if (!(pathname[2] && !/[sm]\.jpg$/.test(pathname[2]))) {
           return;
+        }
+        $.asap((function() {
+          return d.readyState !== 'loading';
+        }), function() {
+          var ref, video;
+          if (Conf['404 Redirect'] && ((ref = d.title) === '4chan - Temporarily Offline' || ref === '4chan - 404 Not Found')) {
+            return Redirect.navigate('file', {
+              boardID: g.BOARD.ID,
+              filename: pathname[pathname.length - 1]
+            });
+          } else if (video = $('video')) {
+            if (Conf['Volume in New Tab']) {
+              Volume.setup(video);
+            }
+            if (Conf['Loop in New Tab']) {
+              video.loop = true;
+              video.controls = false;
+              video.play();
+              return ImageCommon.addControls(video);
+            }
+          }
+        });
+        return;
+      }
+      if (hostname !== 'boards.4chan.org') {
+        return;
       }
       if ((ref = pathname[2]) === 'thread' || ref === 'res') {
         g.VIEW = 'thread';
