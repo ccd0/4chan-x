@@ -176,14 +176,14 @@ class Fetcher
         name:      data.media.media_filename
         url:       data.media.media_link or data.media.remote_media_link or
                      if @boardID is 'f'
-                       "#{location.protocol}//i.4cdn.org/#{@boardID}/#{encodeURIComponent data.media.media_filename}"
+                       "#{location.protocol}//#{ImageHost.host()}/#{@boardID}/#{encodeURIComponent data.media.media_filename}"
                      else
-                       "#{location.protocol}//i.4cdn.org/#{@boardID}/#{encodeURIComponent data.media.media_orig}"
+                       "#{location.protocol}//#{ImageHost.host()}/#{@boardID}/#{encodeURIComponent data.media.media_orig}"
         height:    data.media.media_h
         width:     data.media.media_w
         MD5:       data.media.media_hash
         size:      $.bytesToString data.media.media_size
-        thumbURL:  data.media.thumb_link or "#{location.protocol}//i.4cdn.org/#{@boardID}/#{data.media.preview_orig}"
+        thumbURL:  data.media.thumb_link or "#{location.protocol}//#{ImageHost.thumbHost()}/#{@boardID}/#{data.media.preview_orig}"
         theight:   data.media.preview_h
         twidth:    data.media.preview_w
         isSpoiler: data.media.spoiler is '1'

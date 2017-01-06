@@ -130,7 +130,7 @@ Main =
           PostSuccessful.init()
         return
 
-    if Main.isImageHost hostname
+    if ImageHost.test hostname
       return unless pathname[2] and not /[sm]\.jpg$/.test(pathname[2])
       $.asap (-> d.readyState isnt 'loading'), ->
         if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
@@ -410,9 +410,6 @@ Main =
     details = details.replace /file:\/{3}.+\//g, '' # Remove local file paths
     url = "<%= meta.newIssue.replace('%title', '#{encodeURIComponent title}').replace('%details', '#{encodeURIComponent details}') %>"
     <%= html('<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>') %>
-
-  isImageHost: (hostname) ->
-    hostname is 'i.4cdn.org' or /^is\d*\.4chan\.org$/.test(hostname)
 
   isThisPageLegit: ->
     # 404 error page or similar.

@@ -634,7 +634,7 @@ Settings =
     data =
       isReply: true
       file:
-        url: '//i.4cdn.org/g/1334437723720.jpg'
+        url: "//#{ImageHost.host()}/g/1334437723720.jpg"
         name: 'd9bb2efc98dd0df141a94399ff5880b7.jpg'
         size: '276 KB'
         sizeInBytes: 276 * 1024

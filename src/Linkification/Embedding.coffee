@@ -229,7 +229,7 @@ Embedding =
           controls: true
           preload:  'auto'
           src:      a.dataset.href
-          loop:     Main.isImageHost a.dataset.href.split('/')[2]
+          loop:     ImageHost.test a.dataset.href.split('/')[2]
         $.on el, 'loadedmetadata', ->
           if el.videoHeight is 0 and el.parentNode
             $.replace el, Embedding.types.audio.el(a)
@@ -337,7 +337,7 @@ Embedding =
               when 'pi' then ["https://u.pomf.is/#{base}"]
               when 'wl' then ["http://webm.land/media/#{base}"]
               when 'ko' then ["https://kordy.kastden.org/loopvid/#{base}"]
-              when 'fc' then ["//i.4cdn.org/#{base}.webm"]
+              when 'fc' then ["//#{ImageHost.host()}/#{base}.webm"]
               when 'gc' then ["https://#{type}.gfycat.com/#{name}.webm"]
             for url in urls
               $.add el, $.el 'source', src: url

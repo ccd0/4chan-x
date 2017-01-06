@@ -64,14 +64,14 @@ Build =
       o.file =
         name:      (Build.unescape data.filename) + data.ext
         url: if boardID is 'f'
-          "#{location.protocol}//i.4cdn.org/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
+          "#{location.protocol}//#{ImageHost.host()}/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
         else
-          "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
+          "#{location.protocol}//#{ImageHost.host()}/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h
         width:     data.w
         MD5:       data.md5
         size:      $.bytesToString data.fsize
-        thumbURL:  "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}s.jpg"
+        thumbURL:  "#{location.protocol}//#{ImageHost.thumbHost()}/#{boardID}/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler

@@ -207,9 +207,11 @@ class Post
       $.extend @file,
         thumb:     thumb
         thumbLink: thumb.parentNode
-        thumbURL:  if m = link.href.match(/\d+(?=\.\w+$)/) then "#{location.protocol}//i.4cdn.org/#{@board}/#{m[0]}s.jpg"
+        thumbURL:  thumb.src
         MD5:       thumb.dataset.md5
         isSpoiler: $.hasClass thumb.parentNode, 'imgspoiler'
+      if @file.isSpoiler
+        @file.thumbURL = if (m = link.href.match /\d+(?=\.\w+$)/) then "#{location.protocol}//#{ImageHost.thumbHost()}/#{@board}/#{m[0]}s.jpg"
 
   @deadMark =
     # \u00A0 is nbsp

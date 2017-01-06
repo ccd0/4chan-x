@@ -34,7 +34,7 @@ ImageCommon =
     return true
 
   isFromArchive: (file) ->
-    !Main.isImageHost(file.src.split('/')[2])
+    !ImageHost.test(file.src.split('/')[2])
 
   error: (file, post, delay, cb) ->
     src = post.file.url.split '/'

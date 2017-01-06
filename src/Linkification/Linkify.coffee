@@ -14,11 +14,11 @@ Linkify =
   node: ->
     return Embedding.events @ if @isClone
     return unless Linkify.regString.test @info.comment
-    for link in $$ 'a', @nodes.comment when Main.isImageHost link.hostname
+    for link in $$ 'a', @nodes.comment when ImageHost.test link.hostname
       $.addClass link, 'linkify'
       Embedding.process link, @
     links = Linkify.process @nodes.comment
-    ImageHost.fixLinks links if ImageHost.enabled
+    ImageHost.fixLinks links if ImageHost.useFaster
     Embedding.process link, @ for link in links
     return
 

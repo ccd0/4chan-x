@@ -15,7 +15,7 @@ CrossOrigin =
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
     parts = url.split '/'
-    if parts[0] is location.protocol and parts[1] is '' and Main.isImageHost(parts[2])
+    if parts[0] is location.protocol and parts[1] is '' and ImageHost.test(parts[2])
       xhr = new XMLHttpRequest()
       xhr.open 'GET', url, true
       xhr.setRequestHeader key, value for key, value of headers
