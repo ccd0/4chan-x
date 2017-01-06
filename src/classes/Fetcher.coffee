@@ -176,7 +176,7 @@ class Fetcher
         name:      data.media.media_filename
         url:       data.media.media_link or data.media.remote_media_link or
                      if @boardID is 'f'
-                       "#{location.protocol}//#{ImageHost.host()}/#{@boardID}/#{encodeURIComponent data.media.media_filename}"
+                       "#{location.protocol}//#{ImageHost.flashHost()}/#{@boardID}/#{encodeURIComponent data.media.media_filename}"
                      else
                        "#{location.protocol}//#{ImageHost.host()}/#{@boardID}/#{encodeURIComponent data.media.media_orig}"
         height:    data.media.media_h

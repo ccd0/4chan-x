@@ -7,6 +7,8 @@ ImageHost =
 
   host: ->
     if @useFaster then 'i.4cdn.org' else 'is.4chan.org'
+  flashHost: ->
+    'i.4cdn.org'
   thumbHost: ->
     'i.4cdn.org'
   test: (hostname) ->

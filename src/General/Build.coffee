@@ -64,7 +64,7 @@ Build =
       o.file =
         name:      (Build.unescape data.filename) + data.ext
         url: if boardID is 'f'
-          "#{location.protocol}//#{ImageHost.host()}/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
+          "#{location.protocol}//#{ImageHost.flashHost()}/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
         else
           "#{location.protocol}//#{ImageHost.host()}/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h
