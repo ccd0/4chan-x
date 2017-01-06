@@ -4,8 +4,8 @@ eventPageRequest = do ->
   chrome.runtime.onMessage.addListener (data) ->
     callbacks[data.id] data
     delete callbacks[data.id]
-  (url, responseType, cb) ->
-    chrome.runtime.sendMessage {url, responseType}, (id) ->
+  (url, headers, responseType, cb) ->
+    chrome.runtime.sendMessage {url, headers, responseType}, (id) ->
       callbacks[id] = cb
 
 <% } %>
@@ -29,7 +29,7 @@ CrossOrigin =
         cb null
       xhr.send()
     else
-      eventPageRequest url, 'arraybuffer', ({response, contentType, contentDisposition, error}) ->
+      eventPageRequest url, headers, 'arraybuffer', ({response, contentType, contentDisposition, error}) ->
         return cb null if error
         cb new Uint8Array(response), contentType, contentDisposition
     <% } %>
@@ -66,7 +66,7 @@ CrossOrigin =
     GM_xmlhttpRequest options
     <% } %>
 
-  file: (url, cb) ->
+  file: (url, cb, headers={}) ->
     CrossOrigin.binary url, (data, contentType, contentDisposition) ->
       return cb null unless data?
       name = url.match(/([^\/]+)\/*$/)?[1]
@@ -82,6 +82,7 @@ CrossOrigin =
       blob = new Blob([data], {type: mime})
       blob.name = name
       cb blob
+    , headers
 
   json: do ->
     callbacks = {}

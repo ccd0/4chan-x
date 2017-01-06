@@ -407,6 +407,7 @@ QR =
         QR.handleFiles [blob]
       else
         QR.error "Can't load file."
+    , Accept: Object.keys(QR.extensionFromType).join(',')
 
   handleFiles: (files) ->
     if @ isnt QR # file input

@@ -25,6 +25,7 @@ ajax = (request, sender, sendResponse) ->
 
   xhr = new XMLHttpRequest()
   xhr.open 'GET', request.url, true
+  xhr.setRequestHeader key, value for key, value of request.headers
   xhr.responseType = request.responseType
   xhr.addEventListener 'load', ->
     if @readyState is @DONE && xhr.status is 200
