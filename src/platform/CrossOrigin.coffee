@@ -114,7 +114,7 @@ CrossOrigin =
           delete callbacks[url]
       <% } %>
       <% if (type === 'crx') { %>
-      eventPageRequest url, 'json', ({response, error}) ->
+      eventPageRequest url, {}, 'json', ({response, error}) ->
         if error
           delete callbacks[url]
         else
