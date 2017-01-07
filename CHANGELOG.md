@@ -4,9 +4,12 @@
 
 ### v1.13.4
 
+**v1.13.4.1** *(2017-01-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.4.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.4.1/builds/4chan-X-noupdate.crx)]
+- Revert Data Saver workarounds. They didn't work. This release is the same as v1.13.3.0 except for the version number. #1241
+
 **v1.13.4.0** *(2017-01-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.4.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.4.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.13.3.0.
-- Tell Chrome Data Compression Proxy not to convert images to WebP when posting images from URLs. #1241
+- Tell Chrome Data Saver not to convert images to WebP when posting images from URLs. #1241
 
 ### v1.13.3
 
