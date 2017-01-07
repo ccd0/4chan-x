@@ -43,7 +43,6 @@ QR.oekaki =
           blob.name = post.file.name
           QR.handleFiles [blob]
           QR.oekaki.edit()
-      , Accept: Object.keys(QR.extensionFromType).join(',')
 
   setup: ->
     $.global ->
