@@ -2,6 +2,12 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.13.4
+
+**v1.13.4.0** *(2017-01-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.4.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.4.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.3.0.
+- Tell Chrome Data Compression Proxy not to convert images to WebP when posting images from URLs. #1241
+
 ### v1.13.3
 
 **v1.13.3.0** *(2017-01-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.3.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.3.0/builds/4chan-X-noupdate.crx)]

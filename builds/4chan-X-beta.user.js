@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.3.0
+// @version      1.13.4.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -150,7 +150,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.3.0',
+  VERSION:   '1.13.4.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5119,7 +5119,10 @@ CrossOrigin = (function() {
       }
       return GM_xmlhttpRequest(options);
     },
-    file: function(url, cb) {
+    file: function(url, cb, headers) {
+      if (headers == null) {
+        headers = {};
+      }
       return CrossOrigin.binary(url, function(data, contentType, contentDisposition) {
         var blob, match, mime, name, ref, ref1, ref2, ref3;
         if (data == null) {
@@ -5139,7 +5142,7 @@ CrossOrigin = (function() {
         });
         blob.name = name;
         return cb(blob);
-      });
+      }, headers);
     },
     json: (function() {
       var callbacks, responses;
@@ -21071,6 +21074,8 @@ QR = (function() {
         } else {
           return QR.error("Can't load file.");
         }
+      }, {
+        Accept: Object.keys(QR.extensionFromType).join(',')
       });
     },
     handleFiles: function(files) {
@@ -21826,6 +21831,8 @@ QR = (function() {
             QR.handleFiles([blob]);
             return QR.oekaki.edit();
           }
+        }, {
+          Accept: Object.keys(QR.extensionFromType).join(',')
         });
       }
     },
