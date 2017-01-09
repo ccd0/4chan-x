@@ -13,3 +13,4 @@ node_modules/
 /.events2
 /dist/
 /builds/*.gz
+/test/
