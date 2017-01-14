@@ -275,6 +275,8 @@ class Post
     @board.posts.rm @
 
   addClone: (context, contractThumb) ->
+    # Callbacks may not have been run yet due to anti-browser-lock delay in Main.callbackNodesDB.
+    Callbacks.Post.execute @
     new Post.Clone @, context, contractThumb
 
   rmClone: (index) ->
