@@ -176,7 +176,7 @@ class Fetcher
         name:      data.media.media_filename
         url:       Redirect.to('file', {boardID: @boardID, filename: data.media.media_orig}) or
                      if @boardID is 'f'
-                       "#{location.protocol}//#{ImageHost.flashHost()}/#{@boardID}/#{encodeURIComponent data.media.media_filename}"
+                       "#{location.protocol}//#{ImageHost.flashHost()}/#{@boardID}/#{encodeURIComponent E data.media.media_filename}"
                      else
                        "#{location.protocol}//#{ImageHost.host()}/#{@boardID}/#{data.media.media_orig}"
         height:    data.media.media_h
