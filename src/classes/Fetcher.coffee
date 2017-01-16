@@ -174,7 +174,7 @@ class Fetcher
         data.media[key] = url.split('/', 3).join('/') + val
       o.file =
         name:      data.media.media_filename
-        url:       data.media.media_link or data.media.remote_media_link or
+        url:       Redirect.to('file', {boardID: @boardID, filename: data.media.media_orig}) or
                      if @boardID is 'f'
                        "#{location.protocol}//#{ImageHost.flashHost()}/#{@boardID}/#{encodeURIComponent data.media.media_filename}"
                      else
