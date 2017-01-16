@@ -178,7 +178,7 @@ class Fetcher
                      if @boardID is 'f'
                        "#{location.protocol}//#{ImageHost.flashHost()}/#{@boardID}/#{encodeURIComponent data.media.media_filename}"
                      else
-                       "#{location.protocol}//#{ImageHost.host()}/#{@boardID}/#{encodeURIComponent data.media.media_orig}"
+                       "#{location.protocol}//#{ImageHost.host()}/#{@boardID}/#{data.media.media_orig}"
         height:    data.media.media_h
         width:     data.media.media_w
         MD5:       data.media.media_hash
