@@ -340,8 +340,8 @@ ThreadWatcher =
       isWatched = ThreadWatcher.isWatched thread
       if thread.OP
         for post in [thread.OP, thread.OP.clones...]
-          toggler = $ '.watch-thread-link', post.nodes.info
-          ThreadWatcher.setToggler toggler, isWatched
+          if (toggler = $ '.watch-thread-link', post.nodes.info)
+            ThreadWatcher.setToggler toggler, isWatched
       (thread.catalogView.nodes.root.classList.toggle 'watched', isWatched if thread.catalogView)
 
     if Conf['Pin Watched Threads']
