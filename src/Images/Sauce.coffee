@@ -31,6 +31,9 @@ Sauce =
     parts['text'] or= parts['url'].match(/(\w+)\.\w+\//)?[1] or '?'
     ext = post.file.url.match(/[^.]*$/)[0]
 
+    return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
+    return null unless !parts['types']  or ext           in parts['types'].split  ','
+
     skip = false
     for key in ['url', 'text']
       parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi)/g, (_, parameter) ->
@@ -45,8 +48,6 @@ Sauce =
         type
 
     return null if skip
-    return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
-    return null unless !parts['types']  or ext           in parts['types'].split  ','
 
     a = Sauce.link.cloneNode false
     a.href = parts['url']
