@@ -410,6 +410,9 @@ Settings =
         setD key, false
     if compareString < '00001.00013.00001.00002'
       addSauces ['#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights']
+    if compareString < '00001.00013.00005.00000'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(/^(#?\s*)http:\/\/regex\.info\/exif\.cgi/mg, '$1http://exif.regex.info/exif.cgi')
     changes
 
   loadSettings: (data, cb) ->

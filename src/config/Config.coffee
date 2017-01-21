@@ -737,7 +737,7 @@ Config =
     #https://foolz.fireden.net/_/search/image/%sMD5/
 
     # Other tools:
-    #http://regex.info/exif.cgi?imgurl=%URL
+    #http://exif.regex.info/exif.cgi?imgurl=%URL
     #//imgops.com/%URL;types:gif,jpg,png
     #//www.gif-explode.com/%URL;types:gif
   """
