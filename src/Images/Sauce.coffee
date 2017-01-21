@@ -32,7 +32,7 @@ Sauce =
     ext = post.file.url.match(/[^.]*$/)[0]
 
     skip = false
-    for key of parts
+    for key in ['url', 'text']
       parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi)/g, (_, parameter) ->
         type = Sauce.formatters[parameter] post, ext
         if not type?
