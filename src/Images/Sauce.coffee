@@ -19,13 +19,28 @@ Sauce =
   parseLink: (link) ->
     return null if not (link = link.trim())
     parts = {}
-    for part, i in link.split /;(?=(?:text|boards|types|sandbox):?)/
+    for part, i in link.split /;(?=(?:text|boards|types|regexp|sandbox):?)/
       if i is 0
         parts['url'] = part
       else
         m = part.match /^(\w*):?(.*)$/
         parts[m[1]] = m[2]
     parts['text'] or= parts['url'].match(/(\w+)\.\w+\//)?[1] or '?'
+    if 'regexp' of parts
+      try
+        if (regexp = parts['regexp'].match /^\/(.*)\/(\w*)$/)
+          parts['regexp'] = RegExp regexp[1], regexp[2]
+        else
+          parts['regexp'] = RegExp parts['regexp']
+      catch err
+        new Notice 'warning', [
+          $.tn "Invalid regexp for Sauce link:"
+          $.el 'br'
+          $.tn link
+          $.el 'br'
+          $.tn err.message
+        ], 60
+        return null
     parts
 
   createSauceLink: (link, post) ->
@@ -35,14 +50,19 @@ Sauce =
 
     return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
     return null unless !parts['types']  or ext           in parts['types'].split  ','
+    return null unless !parts['regexp'] or (matches = post.file.name.match parts['regexp'])
 
     skip = false
     for key in ['url', 'text']
-      parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi)/g, (_, parameter) ->
-        type = Sauce.formatters[parameter] post, ext
-        if not type?
-          skip = true
-          return ''
+      parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi|\$\d+)/g, (_, parameter) ->
+        if parameter[0] is '$'
+          return parameter unless matches
+          type = matches[parameter[1..]]
+        else
+          type = Sauce.formatters[parameter] post, ext
+          if not type?
+            skip = true
+            return ''
 
         if key is 'url' and parameter not in ['%', 'semi']
           type = JSON.stringify type if /^javascript:/i.test parts['url']

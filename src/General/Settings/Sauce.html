@@ -3,6 +3,7 @@
 <div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div>
 <div>You can specify the applicable boards by appending <code>;boards:[board1],[board2]</code>.</div>
 <div>You can specify the applicable file types by appending <code>;types:[extension1],[extension2]</code>.</div>
+<div>You can specify a regular expression the filename must match by appending <code>;regexp:[regular expression]</code>.</div>
 <ul>These parameters will be replaced by their corresponding values in the URL and displayed text:
   <li><code>%TURL</code>: Thumbnail URL.</li>
   <li><code>%URL</code>: Full image URL.</li>
@@ -12,6 +13,8 @@
   <li><code>%hMD5</code>: MD5 hash in hexadecimal.</li>
   <li><code>%name</code>: Original file name.</li>
   <li><code>%board</code>: Current board.</li>
+  <li><code>%$0</code>: The matched regular expression.</li>
+  <li><code>%$1</code>, <code>%$2</code>, and so on: Subexpressions within the matched regular expression.</li>
   <li><code>%%</code>, <code>%semi</code>: Literal <code>%</code> and <code>;</code>.</li>
 </ul>
 <textarea hidden name="sauces" class="field" spellcheck="false"></textarea>
