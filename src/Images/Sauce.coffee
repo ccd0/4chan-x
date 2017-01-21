@@ -4,10 +4,8 @@ Sauce =
 
     links = []
     for link in Conf['sauces'].split '\n'
-      try
-        links.push link.trim() if link[0] isnt '#'
-      catch err
-        # Don't add random text plz.
+      if link[0] isnt '#' and (linkData = @parseLink link)
+        links.push linkData
     return unless links.length
 
     @links = links
@@ -18,9 +16,8 @@ Sauce =
       name: 'Sauce'
       cb:   @node
 
-  createSauceLink: (link, post) ->
+  parseLink: (link) ->
     return null if not (link = link.trim())
-
     parts = {}
     for part, i in link.split /;(?=(?:text|boards|types|sandbox):?)/
       if i is 0
@@ -29,7 +26,12 @@ Sauce =
         m = part.match /^(\w*):?(.*)$/
         parts[m[1]] = m[2]
     parts['text'] or= parts['url'].match(/(\w+)\.\w+\//)?[1] or '?'
+    parts
+
+  createSauceLink: (link, post) ->
     ext = post.file.url.match(/[^.]*$/)[0]
+    parts = {}
+    $.extend parts, link
 
     return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
     return null unless !parts['types']  or ext           in parts['types'].split  ','
