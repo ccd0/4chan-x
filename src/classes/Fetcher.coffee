@@ -175,7 +175,6 @@ class Fetcher
       thumb_link = '' unless Redirect.securityCheck thumb_link
       media_link = Redirect.to('file', {boardID: @boardID, filename: data.media.media_orig})
       media_link = '' unless Redirect.securityCheck media_link
-      url = '' unless Redirect.securityCheck url
       o.file =
         name:      data.media.media_filename
         url:       media_link or
