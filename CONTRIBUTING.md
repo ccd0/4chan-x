@@ -10,7 +10,8 @@ Generic archive information:
   "software": "foolfuuka",
   "boards": ["a"],
   "files": ["a"],
-  "search": ["a"]
+  "search": ["a"],
+  "report": "https://example.com/report/?board=%board&no=%post"
 }
 ```
 
@@ -25,5 +26,7 @@ make sure it does not overlap with an archive that previously died for example.
 `files` is the list of boards whose files (images, videos, pdfs) are also archived, even temporarily, and not just thumbnails.
 
 `search` is the list of boards where search is enabled. If this field is missing then it implies that search is enabled on all boards.
+
+`report` is the URL of a form for reporting posts. The board name and post number will be substituted for `%board` and `%post`, respectively. If missing, it means your site has no such form.
 
 Also, be sure to add your board to [archives.md](https://github.com/MayhemYDG/archives.json/blob/gh-pages/archives.md) at some point.

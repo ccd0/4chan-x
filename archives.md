@@ -32,3 +32,4 @@ uid | name | domain | software
 `29`|`Archived.Moe`|[archived.moe](http://archived.moe)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `30`|`TheBArchive.com`|[thebarchive.com](http://thebarchive.com)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `31`|`Archive Of Sins`|[archiveofsins.com](http://archiveofsins.com)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
+`32`|`4tan`|[boards.4tan.org](https://boards.4tan.org)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)

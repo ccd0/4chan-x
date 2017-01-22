@@ -107,4 +107,15 @@
   "software": "foolfuuka",
   "boards": ["h", "hc", "hm", "r", "s", "soc"],
   "files": ["h", "hc", "hm", "r", "s", "soc"]
+}, {
+  "uid": 32,
+  "name": "4tan",
+  "domain": "boards.4tan.org",
+  "http": false,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y"],
+  "files": [],
+  "search": [],
+  "report": "https://sys.4tan.org/report/?board=%board&no=%post"
 }]
