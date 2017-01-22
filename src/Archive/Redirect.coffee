@@ -24,14 +24,14 @@ Redirect =
     for data in Conf['archives']
       for key in ['boards', 'files']
         data[key] = [] unless data[key] instanceof Array
-      {uid, name, boards, files, software} = data
+      {uid, name, boards, files, software, report} = data
       continue unless software in ['fuuka', 'foolfuuka']
       archives[JSON.stringify(uid ? name)] = data
       for boardID in boards
         o.thread[boardID] = data unless boardID of o.thread
         o.post[boardID]   = data unless boardID of o.post   or software isnt 'foolfuuka'
         o.file[boardID]   = data unless boardID of o.file   or boardID  not in files
-        o.report[boardID] = data if name is 'fgts'
+        o.report[boardID] = data unless boardID of o.report or not report
 
     for boardID, record of Conf['selectedArchives']
       for type, id of record when (archive = archives[JSON.stringify id])
@@ -155,7 +155,9 @@ Redirect =
     "#{Redirect.protocol archive}#{archive.domain}/#{path}"
 
   report: (archive, {boardID, postID}) ->
-    "https://so.fgts.jp/report/?board=#{boardID}&no=#{postID}"
+    {report} = archive
+    return '' unless /^https?:\/\//.test(report)
+    "#{report}?board=#{boardID}&no=#{postID}"
 
   securityCheck: (url) ->
     /^https:\/\//.test(url) or

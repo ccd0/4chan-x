@@ -34,7 +34,7 @@ Report =
       if location.hash is '#redirect'
         $.globalEval 'self.close = function(){};'
         window.resizeTo 700, 475
-        location.replace url
+        Redirect.navigate 'report', {boardID: g.BOARD.ID, postID: Report.postID}
       return
 
     link = $.el 'a',
