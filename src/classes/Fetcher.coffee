@@ -169,12 +169,16 @@ class Fetcher
       commentHTML: comment
     delete o.info.uniqueID if o.info.capcode
     if data.media?.media_filename
+      {thumb_link} = data.media
       # Fix URLs missing origin
-      for key, val of data.media when /_link$/.test(key) and val?[0] is '/'
-        data.media[key] = url.split('/', 3).join('/') + val
+      thumb_link = url.split('/', 3).join('/') + thumb_link if thumb_link?[0] is '/'
+      thumb_link = '' unless Redirect.securityCheck thumb_link
+      media_link = Redirect.to('file', {boardID: @boardID, filename: data.media.media_orig})
+      media_link = '' unless Redirect.securityCheck media_link
+      url = '' unless Redirect.securityCheck url
       o.file =
         name:      data.media.media_filename
-        url:       Redirect.to('file', {boardID: @boardID, filename: data.media.media_orig}) or
+        url:       media_link or
                      if @boardID is 'f'
                        "#{location.protocol}//#{ImageHost.flashHost()}/#{@boardID}/#{encodeURIComponent E data.media.media_filename}"
                      else
@@ -183,7 +187,7 @@ class Fetcher
         width:     data.media.media_w
         MD5:       data.media.media_hash
         size:      $.bytesToString data.media.media_size
-        thumbURL:  data.media.thumb_link or "#{location.protocol}//#{ImageHost.thumbHost()}/#{@boardID}/#{data.media.preview_orig}"
+        thumbURL:  thumb_link or "#{location.protocol}//#{ImageHost.thumbHost()}/#{@boardID}/#{data.media.preview_orig}"
         theight:   data.media.preview_h
         twidth:    data.media.preview_w
         isSpoiler: data.media.spoiler is '1'
