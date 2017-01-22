@@ -157,7 +157,7 @@ Redirect =
   report: (archive, {boardID, postID}) ->
     {report} = archive
     return '' unless /^https?:\/\//.test(report)
-    "#{report}?board=#{boardID}&no=#{postID}"
+    report.replace(/%board/g, boardID).replace(/%post/g, postID)
 
   securityCheck: (url) ->
     /^https:\/\//.test(url) or
