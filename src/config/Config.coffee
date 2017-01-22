@@ -717,6 +717,13 @@ Config =
     MD5: ''
 
   sauces: """
+    # Known filename formats:
+    http://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/
+    //%$1.deviantart.com/gallery/#/d%$2;regexp:/^\\w+_by_(\\w+)-d([\\da-z]+)/
+    //imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/
+    http://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/
+    https://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/
+
     # Reverse image search:
     https://www.google.com/searchbyimage?image_url=%IMG&safe=off
     https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG

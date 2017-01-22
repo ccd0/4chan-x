@@ -413,6 +413,8 @@ Settings =
     if compareString < '00001.00013.00005.00000'
       if data['sauces']?
         set 'sauces', data['sauces'].replace(/^(#?\s*)http:\/\/regex\.info\/exif\.cgi/mg, '$1http://exif.regex.info/exif.cgi')
+        if (known = Config['sauces'].match /# Known filename formats:(?:\n.+)*/)
+          set 'sauces', data['sauces'] + '\n\n' + known[0]
     changes
 
   loadSettings: (data, cb) ->
