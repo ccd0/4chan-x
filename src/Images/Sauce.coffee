@@ -33,8 +33,12 @@ Sauce =
 
     skip = false
     for key of parts
-      parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi)/g, (_, parameter) ->
-        type = Sauce.formatters[parameter] post, ext
+      parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi|sname\[-?\d*(\,-?\d*)?\])/g, (_, parameter) ->
+        if (parameter.substr(0,5)) is 'sname'
+            n1 = parseInt(parameter.match(/-?\d{1,}(?=\,)/g))
+            n2 = Math.abs(parseInt(parameter.match(/-?\d{1,}(?=\])/g)))
+            parameter = parameter.substr(0,5)
+        type = Sauce.formatters[parameter] post, ext, n1, n2
         if not type?
           skip = true
           return ''
@@ -85,3 +89,4 @@ Sauce =
     name:  (post) -> post.file.name
     '%':   -> '%'
     semi:  -> ';'
+    sname: (post, ext, a, b) -> post.file.name.match(/.+(?=\.\w)/g).toString().substr((0 or a),b)+'.'+ext;
