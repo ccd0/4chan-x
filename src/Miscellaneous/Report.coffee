@@ -10,16 +10,14 @@ Report =
 
     Report.archive() if Conf['Archive Report']
 
-    if not Conf['Use Recaptcha v1 in Reports'] and not Conf['Force Noscript Captcha'] and Main.jsEnabled
-      new MutationObserver(->
-        Report.fit 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
-        Report.fit 'body'
-      ).observe d.body,
-        childList:  true
-        attributes: true
-        subtree:    true
-    else
+    new MutationObserver(->
+      Report.fit 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
       Report.fit 'body'
+    ).observe d.body,
+      childList:  true
+      attributes: true
+      subtree:    true
+    Report.fit 'body'
 
   fit: (selector) ->
     return if not ((el = $ selector, doc) and getComputedStyle(el).visibility isnt 'hidden')
@@ -27,24 +25,78 @@ Report =
     window.resizeBy 0, dy if dy > 0
 
   archive: ->
-    Redirect.init()
-    return unless (url = Redirect.to 'report', {boardID: g.BOARD.ID, postID: Report.postID})
+    return unless (urls = Redirect.report g.BOARD.ID).length
 
-    if (message = $ 'h3') and /Report submitted!/.test(message.textContent)
-      if location.hash is '#redirect'
-        $.globalEval 'self.close = function(){};'
-        window.resizeTo 700, 475
-        Redirect.navigate 'report', {boardID: g.BOARD.ID, postID: Report.postID}
-      return
+    form    = $ 'form'
+    types   = $.id 'reportTypes'
+    message = $ 'h3'
 
-    link = $.el 'a',
-      href: url
-      textContent: 'Report to archive'
-    $.on link, 'click', (e) ->
-      unless e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
-        window.resizeTo 700, 475
-    $.add d.body, [$.tn(' ['), link, $.tn(']')]
+    fieldset = $.el 'fieldset',
+      id: 'archive-report'
+      hidden: true
+    ,
+      <%= readHTML('ArchiveReport.html') %>
+    enabled = $ '#archive-report-enabled', fieldset
+    reason  = $ '#archive-report-reason',  fieldset
+    submit  = $ '#archive-report-submit',  fieldset
 
-    if types = $.id('reportTypes')
+    if form and types
+      fieldset.hidden = !$('[value=illegal]', types).checked
       $.on types, 'change', (e) ->
-        $('form').action = if e.target.value is 'illegal' then '#redirect' else ''
+        fieldset.hidden = (e.target.value isnt 'illegal')
+        Report.fit 'body'
+      $.after types, fieldset
+      Report.fit 'body'
+      $.one form, 'submit', (e) ->
+        if !fieldset.hidden and enabled.checked
+          e.preventDefault()
+          Report.archiveSubmit urls, reason.value, (results) =>
+            @action = '#archiveresults=' + encodeURIComponent JSON.stringify results
+            @submit()
+    else if message
+      enabled.checked = false
+      fieldset.hidden = false
+      $.on enabled, 'change', ->
+        submit.hidden = !@checked
+      $.after message, fieldset
+      $.on submit, 'click', ->
+        Report.archiveSubmit urls, reason.value, Report.archiveResults
+
+    if (match = location.hash.match /^#archiveresults=(.*)$/)
+      try
+        Report.archiveResults JSON.parse decodeURIComponent match[1]
+
+  archiveSubmit: (urls, reason, cb) ->
+    form = $.formData
+      board:  g.BOARD.ID
+      num:    Report.postID
+      reason: reason
+    results = []
+    for [name, url] in urls
+      do (name, url) ->
+        $.ajax url,
+          responseType: 'json'
+          onloadend: ->
+            results.push [name, @response or {error: ''}]
+            if results.length is urls.length
+              cb results
+        ,
+          {form}
+    return
+
+  archiveResults: (results) ->
+    fieldset = $.id 'archive-report'
+    for [name, response] in results
+      line = $.el 'h3',
+        className: 'archive-report-response'
+      if 'success' of response
+        $.addClass line, 'archive-report-success'
+        line.textContent = "#{name}: #{response.success}"
+      else
+        $.addClass line, 'archive-report-error'
+        line.textContent = "#{name}: #{response.error or 'Error reporting post.'}"
+      if fieldset
+        $.before fieldset, line
+      else
+        $.add d.body, line
+    return

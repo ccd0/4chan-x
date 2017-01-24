@@ -5,3 +5,24 @@
 #captchaContainerAlt td:nth-child(2) {
   display: table-cell !important;
 }
+
+/* Archive reports */
+#archive-report {
+  padding: 3px;
+}
+#archive-report-enabled {
+  vertical-align: middle;
+}
+#archive-report > label {
+  display: block;
+}
+#archive-report-reason {
+  display: block;
+  width: 98%;
+}
+.archive-report-success {
+  color: green;
+}
+.archive-report-error {
+  color: red;
+}

@@ -18,20 +18,18 @@ Redirect =
       thread: {}
       post:   {}
       file:   {}
-      report: {}
 
     archives = {}
     for data in Conf['archives']
       for key in ['boards', 'files']
         data[key] = [] unless data[key] instanceof Array
-      {uid, name, boards, files, software, report} = data
+      {uid, name, boards, files, software} = data
       continue unless software in ['fuuka', 'foolfuuka']
       archives[JSON.stringify(uid ? name)] = data
       for boardID in boards
         o.thread[boardID] = data unless boardID of o.thread
         o.post[boardID]   = data unless boardID of o.post   or software isnt 'foolfuuka'
         o.file[boardID]   = data unless boardID of o.file   or boardID  not in files
-        o.report[boardID] = data unless boardID of o.report or not report
 
     for boardID, record of Conf['selectedArchives']
       for type, id of record when (archive = archives[JSON.stringify id])
@@ -154,10 +152,13 @@ Redirect =
       "#{boardID}/?task=search2&search_#{type}=#{value}"
     "#{Redirect.protocol archive}#{archive.domain}/#{path}"
 
-  report: (archive, {boardID, postID}) ->
-    {report} = archive
-    return '' unless /^https?:\/\//.test(report)
-    report.replace(/%board/g, boardID).replace(/%post/g, postID)
+  report: (boardID) ->
+    urls = []
+    for archive in Conf['archives']
+      {software, https, reports, boards, name, domain} = archive
+      if software is 'foolfuuka' and https and reports and boards instanceof Array and boardID in boards
+        urls.push [name, "https://#{domain}/_/api/chan/offsite_report/"]
+    urls
 
   securityCheck: (url) ->
     /^https:\/\//.test(url) or
