@@ -2,6 +2,17 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.13.5
+
+**v1.13.5.0** *(2017-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.4.1.
+- Bring back `Archive Report` feature, now with reporting to multiple archives through the offsite reports API of https://github.com/pleebe/foolfuuka-plugin-popup-report. #1260
+- Add filename regular expression matching to Sauce. Sauce will now recognize Pixiv, DeviantArt, Imgur, Flickr, and Facebook filenames and link to the page the image came from. #1183
+- Update regex.info -> exif.regex.info in Sauce links.
+- Parameters in Sauce links will only be expanded in the URL and displayed text.
+- Posts fetched from an archive now have their file links point to the archive chosen by the user for file redirection, rather than the URL given by the archive. #1255
+- Minor bugfixes.
+
 ### v1.13.4
 
 **v1.13.4.1** *(2017-01-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.4.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.4.1/builds/4chan-X-noupdate.crx)]
