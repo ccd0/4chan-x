@@ -114,6 +114,9 @@ Build =
       if capcode is 'Founder'
         capcodePlural      = 'the Founder'
         capcodeDescription = "4chan's Founder"
+      else if capcode is 'Verified'
+        capcodePlural      = 'Verified Users'
+        capcodeDescription = ''
       else
         capcodeLong   = {'Admin': 'Administrator', 'Mod': 'Moderator'}[capcode] or capcode
         capcodePlural = "#{capcodeLong}s"
