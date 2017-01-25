@@ -15,8 +15,9 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr"],
-  "files": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr"]
+  "boards": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
+  "files": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
+  "reports": true
 }, {
   "uid": 8,
   "name": "Rebecca Black Tech",
@@ -43,7 +44,8 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg"],
-  "files": ["a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg"]
+  "files": ["a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg"],
+  "reports": true
 }, {
   "uid": 24,
   "name": "fireden.net",
