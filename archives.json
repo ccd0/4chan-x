@@ -15,8 +15,9 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr"],
-  "files": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr"]
+  "boards": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
+  "files": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
+  "reports": true
 }, {
   "uid": 8,
   "name": "Rebecca Black Tech",
