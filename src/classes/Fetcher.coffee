@@ -161,6 +161,7 @@ class Fetcher
         when 'M' then 'Mod'
         when 'A' then 'Admin'
         when 'D' then 'Developer'
+        when 'F' then 'Founder'
         when 'V' then 'Verified'
       uniqueID: data.poster_hash
       flagCode: data.poster_country
