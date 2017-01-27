@@ -610,8 +610,20 @@ div[data-checked="false"] > .suboption-list {
 .section-main a, .section-filter a, .section-advanced a {
   text-decoration: underline;
 }
+#sauce-doc-expand:not(:checked) ~ #sauce-doc {
+  max-height: 130px;
+  overflow: auto;
+}
+#sauce-doc > label {
+  float: right;
+  margin: 0 5px;
+}
+/* XXX for OneeChan */
+#sauce-doc-expand + .riceCheck {
+  display: none;
+}
 .section-sauce textarea {
-  height: 350px;
+  height: 430px;
 }
 .section-advanced .field[name="boardnav"] {
   width: 100%;
