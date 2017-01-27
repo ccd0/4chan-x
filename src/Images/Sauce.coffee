@@ -54,9 +54,9 @@ Sauce =
 
     skip = false
     for key in ['url', 'text']
-      parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi|\$\d+)/g, (_, parameter) ->
+      parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi|\$\d+)/g, (orig, parameter) ->
         if parameter[0] is '$'
-          return parameter unless matches
+          return orig unless matches
           type = matches[parameter[1..]]
         else
           type = Sauce.formatters[parameter] post, ext
