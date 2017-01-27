@@ -4,6 +4,10 @@
 
 ### v1.13.5
 
+**v1.13.5.2** *(2017-01-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.2/builds/4chan-X-noupdate.crx)]
+- Improvements to Sauce settings panel.
+- Minor bugfixes.
+
 **v1.13.5.1** *(2017-01-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.1/builds/4chan-X-noupdate.crx)]
 - Fix appearance of the new ##Verified capcode in posts added by updater and cross-thread quote previews.
 

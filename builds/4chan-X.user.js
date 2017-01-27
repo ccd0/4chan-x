@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.5.1
+// @version      1.13.5.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -150,7 +150,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.5.1',
+  VERSION:   '1.13.5.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1810,8 +1810,20 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 .section-main a, .section-filter a, .section-advanced a {\n\
   text-decoration: underline;\n\
 }\n\
+#sauce-doc-expand:not(:checked) ~ #sauce-doc {\n\
+  max-height: 130px;\n\
+  overflow: auto;\n\
+}\n\
+#sauce-doc > label {\n\
+  float: right;\n\
+  margin: 0 5px;\n\
+}\n\
+/* XXX for OneeChan */\n\
+#sauce-doc-expand + .riceCheck {\n\
+  display: none;\n\
+}\n\
 .section-sauce textarea {\n\
-  height: 350px;\n\
+  height: 430px;\n\
 }\n\
 .section-advanced .field[name=\"boardnav\"] {\n\
   width: 100%;\n\
@@ -6873,7 +6885,7 @@ Redirect = (function() {
       { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": false, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "gd", "po", "qst", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "c", "cgl", "ck", "cm", "con", "d", "diy", "e", "f", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "n", "news", "o", "out", "p", "po", "q", "qa", "qst", "r", "s", "soc", "trv", "u", "vip", "w", "wg", "wsg", "wsr", "x", "y" ] },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": false, "software": "foolfuuka", "boards": [ "b" ], "files": [ "b" ] },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": false, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ] },
-      { "uid": 32, "name": "4tan", "domain": "boards.4tan.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [], "search": [], "reports": true }
+      { "uid": 32, "name": "4tan", "domain": "boards.4tan.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [], "search": [], "reports": true }
     ],
     init: function() {
       var now, ref;
@@ -11073,7 +11085,7 @@ Settings = (function() {
       }
     },
     upgrade: function(data, version) {
-      var addCSS, addSauces, boardID, changes, compareString, j, k, key, known, len, len1, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, value;
+      var addCSS, addSauces, boardID, changes, compareString, j, k, key, len, len1, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, value;
       changes = {};
       set = function(key, value) {
         return data[key] = changes[key] = value;
@@ -11263,10 +11275,8 @@ Settings = (function() {
       if (compareString < '00001.00013.00005.00000') {
         if (data['sauces'] != null) {
           set('sauces', data['sauces'].replace(/^(#?\s*)http:\/\/regex\.info\/exif\.cgi/mg, '$1http://exif.regex.info/exif.cgi'));
-          if ((known = Config['sauces'].match(/# Known filename formats:(?:\n.+)*/))) {
-            set('sauces', data['sauces'] + '\n\n' + known[0]);
-          }
         }
+        addSauces(Config['sauces'].match(/# Known filename formats:(?:\n.+)*|$/)[0].split('\n'));
       }
       return changes;
     },
@@ -11328,7 +11338,7 @@ Settings = (function() {
     sauce: function(section) {
       var ta;
       $.extend(section, {
-        innerHTML: "<div class=\"warning\"><code>Sauce</code> is disabled.</div><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><div>You can specify the applicable boards by appending <code>;boards:[board1],[board2]</code>.</div><div>You can specify the applicable file types by appending <code>;types:[extension1],[extension2]</code>.</div><div>You can specify a regular expression the filename must match by appending <code>;regexp:[regular expression]</code>.</div><ul>These parameters will be replaced by their corresponding values in the URL and displayed text:<li><code>%TURL</code>: Thumbnail URL.</li><li><code>%URL</code>: Full image URL.</li><li><code>%IMG</code>: Full image URL for GIF, JPG, and PNG; thumbnail URL for other types.</li><li><code>%MD5</code>: MD5 hash in base64.</li><li><code>%sMD5</code>: MD5 hash in base64 using <code>-</code> and <code>_</code>.</li><li><code>%hMD5</code>: MD5 hash in hexadecimal.</li><li><code>%name</code>: Original file name.</li><li><code>%board</code>: Current board.</li><li><code>%$0</code>: The matched regular expression.</li><li><code>%$1</code>, <code>%$2</code>, and so on: Subexpressions within the matched regular expression.</li><li><code>%%</code>, <code>%semi</code>: Literal <code>%</code> and <code>;</code>.</li></ul><textarea hidden name=\"sauces\" class=\"field\" spellcheck=\"false\"></textarea>"
+        innerHTML: "<div class=\"warning\"><code>Sauce</code> is disabled.</div><input id=\"sauce-doc-expand\" type=\"checkbox\" hidden><div id=\"sauce-doc\"><label for=\"sauce-doc-expand\">[expand]</label><div>These parameters will be replaced by their corresponding values in the URL and displayed text:</div><ul><li><code>%IMG</code>: Full image URL for GIF, JPG, and PNG; thumbnail URL for other types.</li><li><code>%URL</code>: Full image URL.</li><li><code>%TURL</code>: Thumbnail URL.</li><li><code>%name</code>: Original file name.</li><li><code>%board</code>: Current board.</li><li><code>%MD5</code>: MD5 hash in base64.</li><li><code>%sMD5</code>: MD5 hash in base64 using <code>-</code> and <code>_</code>.</li><li><code>%hMD5</code>: MD5 hash in hexadecimal.</li><li><code>%$0</code>: Matched regular expression within the filename.</li><li><code>%$1</code>, <code>%$2</code>, <code>%$3</code>, ... : Subexpressions within the matched regular expression.</li><li><code>%%</code>, <code>%semi</code>: Literal <code>%</code> and <code>;</code>.</li></ul><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><div>You can specify the applicable boards by appending <code>;boards:[board1],[board2]</code>.</div><div>You can specify the applicable file types by appending <code>;types:[extension1],[extension2]</code>.</div><div>You can specify a regular expression the filename must match by appending <code>;regexp:[regular expression]</code>.</div></div><textarea hidden name=\"sauces\" class=\"field\" spellcheck=\"false\"></textarea>"
       });
       $('.warning', section).hidden = Conf['Sauce'];
       ta = $('textarea', section);
@@ -13819,11 +13829,11 @@ Sauce = (function() {
       ref1 = ['url', 'text'];
       for (j = 0, len = ref1.length; j < len; j++) {
         key = ref1[j];
-        parts[key] = parts[key].replace(/%(T?URL|IMG|[sh]?MD5|board|name|%|semi|\$\d+)/g, function(_, parameter) {
+        parts[key] = parts[key].replace(/%(T?URL|IMG|[sh]?MD5|board|name|%|semi|\$\d+)/g, function(orig, parameter) {
           var type;
           if (parameter[0] === '$') {
             if (!matches) {
-              return parameter;
+              return orig;
             }
             type = matches[parameter.slice(1)];
           } else {
