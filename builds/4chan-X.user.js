@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.3.0
+// @version      1.13.5.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -150,7 +150,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.3.0',
+  VERSION:   '1.13.5.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -202,6 +202,7 @@ Config = (function() {
         'Announcement Hiding': [true, 'Add button to hide 4chan announcements.'],
         'Desktop Notifications': [true, 'Enables desktop notifications across various 4chan X features.'],
         '404 Redirect': [true, 'Redirect dead threads and images to the archives.'],
+        'Archive Report': [true, 'Enable reporting posts to supported archives.'],
         'Exempt Archives from Encryption': [true, 'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps.'],
@@ -379,7 +380,7 @@ Config = (function() {
       filesize: '',
       MD5: ''
     },
-    sauces: "# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\nhttps://www.yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//tineye.com/search?url=%IMG\n#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://whatanime.ga/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desuarchive.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
+    sauces: "# Known filename formats:\nhttp://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/\n//%$1.deviantart.com/gallery/#/d%$2;regexp:/^\\w+_by_(\\w+)-d([\\da-z]+)/\n//imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/\nhttp://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/\nhttps://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/\n\n# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\nhttps://www.yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//tineye.com/search?url=%IMG\n#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://whatanime.ga/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desuarchive.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://exif.regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
     FappeT: {
       werk: false
     },
@@ -1809,8 +1810,20 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 .section-main a, .section-filter a, .section-advanced a {\n\
   text-decoration: underline;\n\
 }\n\
+#sauce-doc-expand:not(:checked) ~ #sauce-doc {\n\
+  max-height: 130px;\n\
+  overflow: auto;\n\
+}\n\
+#sauce-doc > label {\n\
+  float: right;\n\
+  margin: 0 5px;\n\
+}\n\
+/* XXX for OneeChan */\n\
+#sauce-doc-expand + .riceCheck {\n\
+  display: none;\n\
+}\n\
 .section-sauce textarea {\n\
-  height: 350px;\n\
+  height: 430px;\n\
 }\n\
 .section-advanced .field[name=\"boardnav\"] {\n\
   width: 100%;\n\
@@ -4303,7 +4316,27 @@ report:
 }\n\
 #captchaContainerAlt td:nth-child(2) {\n\
   display: table-cell !important;\n\
-}\n",
+}\n\
+/* Archive reports */\n\
+#archive-report {\n\
+  padding: 3px;\n\
+}\n\
+#archive-report-enabled {\n\
+  vertical-align: middle;\n\
+}\n\
+#archive-report > label {\n\
+  display: block;\n\
+}\n\
+#archive-report-reason {\n\
+  display: block;\n\
+  width: 98%;\n\
+}\n\
+.archive-report-success {\n\
+  color: green;\n\
+}\n\
+.archive-report-error {\n\
+  color: red;\n\
+}",
 
 www:
 "#captcha-cnt {\n\
@@ -5257,6 +5290,10 @@ Callbacks = (function() {
       if (keys == null) {
         keys = this.keys;
       }
+      if (node.callbacksExecuted) {
+        return;
+      }
+      node.callbacksExecuted = true;
       for (i = 0, len = keys.length; i < len; i++) {
         name = keys[i];
         try {
@@ -5755,7 +5792,7 @@ Fetcher = (function() {
     };
 
     Fetcher.prototype.parseArchivedPost = function(data, url, archive) {
-      var board, comment, greentext, i, j, key, o, post, ref, ref1, tag, text, text2, thread, val;
+      var board, comment, greentext, i, j, media_link, o, post, ref, tag, text, text2, thread, thumb_link;
       if (post = g.posts[this.boardID + "." + this.postID]) {
         this.insert(post);
         return;
@@ -5842,21 +5879,28 @@ Fetcher = (function() {
         delete o.info.uniqueID;
       }
       if ((ref = data.media) != null ? ref.media_filename : void 0) {
-        ref1 = data.media;
-        for (key in ref1) {
-          val = ref1[key];
-          if (/_link$/.test(key) && (val != null ? val[0] : void 0) === '/') {
-            data.media[key] = url.split('/', 3).join('/') + val;
-          }
+        thumb_link = data.media.thumb_link;
+        if ((thumb_link != null ? thumb_link[0] : void 0) === '/') {
+          thumb_link = url.split('/', 3).join('/') + thumb_link;
+        }
+        if (!Redirect.securityCheck(thumb_link)) {
+          thumb_link = '';
+        }
+        media_link = Redirect.to('file', {
+          boardID: this.boardID,
+          filename: data.media.media_orig
+        });
+        if (!Redirect.securityCheck(media_link)) {
+          media_link = '';
         }
         o.file = {
           name: data.media.media_filename,
-          url: data.media.media_link || data.media.remote_media_link || (this.boardID === 'f' ? location.protocol + "//" + (ImageHost.flashHost()) + "/" + this.boardID + "/" + (encodeURIComponent(data.media.media_filename)) : location.protocol + "//" + (ImageHost.host()) + "/" + this.boardID + "/" + (encodeURIComponent(data.media.media_orig))),
+          url: media_link || (this.boardID === 'f' ? location.protocol + "//" + (ImageHost.flashHost()) + "/" + this.boardID + "/" + (encodeURIComponent(E(data.media.media_filename))) : location.protocol + "//" + (ImageHost.host()) + "/" + this.boardID + "/" + data.media.media_orig),
           height: data.media.media_h,
           width: data.media.media_w,
           MD5: data.media.media_hash,
           size: $.bytesToString(data.media.media_size),
-          thumbURL: data.media.thumb_link || (location.protocol + "//" + (ImageHost.thumbHost()) + "/" + this.boardID + "/" + data.media.preview_orig),
+          thumbURL: thumb_link || (location.protocol + "//" + (ImageHost.thumbHost()) + "/" + this.boardID + "/" + data.media.preview_orig),
           theight: data.media.preview_h,
           twidth: data.media.preview_w,
           isSpoiler: data.media.spoiler === '1'
@@ -6346,6 +6390,7 @@ Post = (function() {
     };
 
     Post.prototype.addClone = function(context, contractThumb) {
+      Callbacks.Post.execute(this);
       return new Post.Clone(this, context, contractThumb);
     };
 
@@ -6828,18 +6873,19 @@ Redirect = (function() {
 
   Redirect = {
     archives: [
-      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ] },
-      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr" ], "files": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr" ] },
+      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "reports": true },
+      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "files": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "reports": true },
       { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "fuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ] },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
-      { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ] },
+      { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
       { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ], "files": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ] },
       { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v" ], "files": [] },
       { "uid": 5, "name": "Love is Over", "domain": "archive.loveisover.me", "http": true, "https": false, "software": "foolfuuka", "boards": [ "c", "d", "e", "i", "lgbt", "t", "u" ], "files": [ "c", "d", "e", "i", "lgbt", "t", "u" ] },
       { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
       { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": false, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "gd", "po", "qst", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "c", "cgl", "ck", "cm", "con", "d", "diy", "e", "f", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "n", "news", "o", "out", "p", "po", "q", "qa", "qst", "r", "s", "soc", "trv", "u", "vip", "w", "wg", "wsg", "wsr", "x", "y" ] },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": false, "software": "foolfuuka", "boards": [ "b" ], "files": [ "b" ] },
-      { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": false, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ] }
+      { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": false, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ] },
+      { "uid": 32, "name": "4tan", "domain": "boards.4tan.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [], "search": [], "reports": true }
     ],
     init: function() {
       var now, ref;
@@ -7030,6 +7076,9 @@ Redirect = (function() {
     file: function(archive, arg) {
       var boardID, filename;
       boardID = arg.boardID, filename = arg.filename;
+      if (boardID === 'f') {
+        filename = encodeURIComponent(Build.unescape(decodeURIComponent(filename)));
+      }
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + boardID + "/full_image/" + filename;
     },
     board: function(archive, arg) {
@@ -7057,6 +7106,19 @@ Redirect = (function() {
       value = encodeURIComponent(value);
       path = archive.software === 'foolfuuka' ? boardID + "/search/" + type + "/" + value + "/" : type === 'image' ? boardID + "/image/" + value : boardID + "/?task=search2&search_" + type + "=" + value;
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + path;
+    },
+    report: function(boardID) {
+      var archive, boards, domain, https, j, len, name, ref, reports, software, urls;
+      urls = [];
+      ref = Conf['archives'];
+      for (j = 0, len = ref.length; j < len; j++) {
+        archive = ref[j];
+        software = archive.software, https = archive.https, reports = archive.reports, boards = archive.boards, name = archive.name, domain = archive.domain;
+        if (software === 'foolfuuka' && https && reports && boards instanceof Array && indexOf.call(boards, boardID) >= 0) {
+          urls.push([name, "https://" + domain + "/_/api/chan/offsite_report/"]);
+        }
+      }
+      return urls;
     },
     securityCheck: function(url) {
       return /^https:\/\//.test(url) || location.protocol === 'http:' || Conf['Exempt Archives from Encryption'];
@@ -8360,6 +8422,9 @@ Build = (function() {
         if (capcode === 'Founder') {
           capcodePlural = 'the Founder';
           capcodeDescription = "4chan's Founder";
+        } else if (capcode === 'Verified') {
+          capcodePlural = 'Verified Users';
+          capcodeDescription = '';
         } else {
           capcodeLong = {
             'Admin': 'Administrator',
@@ -8372,7 +8437,7 @@ Build = (function() {
       postLink = Build.postURL(boardID, threadID, ID);
       quoteLink = Build.sameThread(boardID, threadID) ? "javascript:quote('" + (+ID) + "');" : "/" + boardID + "/thread/" + threadID + "#q" + ID;
       postInfo = {
-        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcode) ? "" : " ") + ((capcode) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\" class=\"stickyIcon retina\">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\" class=\"closedIcon retina\">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
+        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcodeDescription) ? "" : " ") + ((capcodeDescription) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\" class=\"stickyIcon retina\">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\" class=\"closedIcon retina\">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
       };
 
       /* File Info */
@@ -11207,6 +11272,12 @@ Settings = (function() {
       if (compareString < '00001.00013.00001.00002') {
         addSauces(['#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights']);
       }
+      if (compareString < '00001.00013.00005.00000') {
+        if (data['sauces'] != null) {
+          set('sauces', data['sauces'].replace(/^(#?\s*)http:\/\/regex\.info\/exif\.cgi/mg, '$1http://exif.regex.info/exif.cgi'));
+        }
+        addSauces(Config['sauces'].match(/# Known filename formats:(?:\n.+)*|$/)[0].split('\n'));
+      }
       return changes;
     },
     loadSettings: function(data, cb) {
@@ -11267,7 +11338,7 @@ Settings = (function() {
     sauce: function(section) {
       var ta;
       $.extend(section, {
-        innerHTML: "<div class=\"warning\"><code>Sauce</code> is disabled.</div><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><div>You can specify the applicable boards by appending <code>;boards:[board1],[board2]</code>.</div><div>You can specify the applicable file types by appending <code>;types:[extension1],[extension2]</code>.</div><ul>These parameters will be replaced by their corresponding values:<li><code>%TURL</code>: Thumbnail URL.</li><li><code>%URL</code>: Full image URL.</li><li><code>%IMG</code>: Full image URL for GIF, JPG, and PNG; thumbnail URL for other types.</li><li><code>%MD5</code>: MD5 hash in base64.</li><li><code>%sMD5</code>: MD5 hash in base64 using <code>-</code> and <code>_</code>.</li><li><code>%hMD5</code>: MD5 hash in hexadecimal.</li><li><code>%name</code>: Original file name.</li><li><code>%board</code>: Current board.</li><li><code>%%</code>, <code>%semi</code>: Literal <code>%</code> and <code>;</code>.</li></ul><textarea hidden name=\"sauces\" class=\"field\" spellcheck=\"false\"></textarea>"
+        innerHTML: "<div class=\"warning\"><code>Sauce</code> is disabled.</div><input id=\"sauce-doc-expand\" type=\"checkbox\" hidden><div id=\"sauce-doc\"><label for=\"sauce-doc-expand\">[expand]</label><div>These parameters will be replaced by their corresponding values in the URL and displayed text:</div><ul><li><code>%IMG</code>: Full image URL for GIF, JPG, and PNG; thumbnail URL for other types.</li><li><code>%URL</code>: Full image URL.</li><li><code>%TURL</code>: Thumbnail URL.</li><li><code>%name</code>: Original file name.</li><li><code>%board</code>: Current board.</li><li><code>%MD5</code>: MD5 hash in base64.</li><li><code>%sMD5</code>: MD5 hash in base64 using <code>-</code> and <code>_</code>.</li><li><code>%hMD5</code>: MD5 hash in hexadecimal.</li><li><code>%$0</code>: Matched regular expression within the filename.</li><li><code>%$1</code>, <code>%$2</code>, <code>%$3</code>, ... : Subexpressions within the matched regular expression.</li><li><code>%%</code>, <code>%semi</code>: Literal <code>%</code> and <code>;</code>.</li></ul><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><div>You can specify the applicable boards by appending <code>;boards:[board1],[board2]</code>.</div><div>You can specify the applicable file types by appending <code>;types:[extension1],[extension2]</code>.</div><div>You can specify a regular expression the filename must match by appending <code>;regexp:[regular expression]</code>.</div></div><textarea hidden name=\"sauces\" class=\"field\" spellcheck=\"false\"></textarea>"
       });
       $('.warning', section).hidden = Conf['Sauce'];
       ta = $('textarea', section);
@@ -13683,7 +13754,7 @@ Sauce = (function() {
 
   Sauce = {
     init: function() {
-      var err, j, len, link, links, ref, ref1;
+      var j, len, link, linkData, links, ref, ref1;
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Sauce'])) {
         return;
       }
@@ -13691,12 +13762,8 @@ Sauce = (function() {
       ref1 = Conf['sauces'].split('\n');
       for (j = 0, len = ref1.length; j < len; j++) {
         link = ref1[j];
-        try {
-          if (link[0] !== '#') {
-            links.push(link.trim());
-          }
-        } catch (_error) {
-          err = _error;
+        if (link[0] !== '#' && (linkData = this.parseLink(link))) {
+          links.push(linkData);
         }
       }
       if (!links.length) {
@@ -13712,13 +13779,13 @@ Sauce = (function() {
         cb: this.node
       });
     },
-    createSauceLink: function(link, post) {
-      var a, ext, i, j, key, len, m, part, parts, ref, ref1, ref2, skip;
+    parseLink: function(link) {
+      var err, i, j, len, m, part, parts, ref, ref1, regexp;
       if (!(link = link.trim())) {
         return null;
       }
       parts = {};
-      ref = link.split(/;(?=(?:text|boards|types|sandbox):?)/);
+      ref = link.split(/;(?=(?:text|boards|types|regexp|sandbox):?)/);
       for (i = j = 0, len = ref.length; j < len; i = ++j) {
         part = ref[i];
         if (i === 0) {
@@ -13729,15 +13796,52 @@ Sauce = (function() {
         }
       }
       parts['text'] || (parts['text'] = ((ref1 = parts['url'].match(/(\w+)\.\w+\//)) != null ? ref1[1] : void 0) || '?');
+      if ('regexp' in parts) {
+        try {
+          if ((regexp = parts['regexp'].match(/^\/(.*)\/(\w*)$/))) {
+            parts['regexp'] = RegExp(regexp[1], regexp[2]);
+          } else {
+            parts['regexp'] = RegExp(parts['regexp']);
+          }
+        } catch (_error) {
+          err = _error;
+          new Notice('warning', [$.tn("Invalid regexp for Sauce link:"), $.el('br'), $.tn(link), $.el('br'), $.tn(err.message)], 60);
+          return null;
+        }
+      }
+      return parts;
+    },
+    createSauceLink: function(link, post) {
+      var a, ext, j, key, len, matches, parts, ref, ref1, skip;
       ext = post.file.url.match(/[^.]*$/)[0];
+      parts = {};
+      $.extend(parts, link);
+      if (!(!parts['boards'] || (ref = post.board.ID, indexOf.call(parts['boards'].split(','), ref) >= 0))) {
+        return null;
+      }
+      if (!(!parts['types'] || indexOf.call(parts['types'].split(','), ext) >= 0)) {
+        return null;
+      }
+      if (!(!parts['regexp'] || (matches = post.file.name.match(parts['regexp'])))) {
+        return null;
+      }
       skip = false;
-      for (key in parts) {
-        parts[key] = parts[key].replace(/%(T?URL|IMG|[sh]?MD5|board|name|%|semi)/g, function(_, parameter) {
+      ref1 = ['url', 'text'];
+      for (j = 0, len = ref1.length; j < len; j++) {
+        key = ref1[j];
+        parts[key] = parts[key].replace(/%(T?URL|IMG|[sh]?MD5|board|name|%|semi|\$\d+)/g, function(orig, parameter) {
           var type;
-          type = Sauce.formatters[parameter](post, ext);
-          if (type == null) {
-            skip = true;
-            return '';
+          if (parameter[0] === '$') {
+            if (!matches) {
+              return orig;
+            }
+            type = matches[parameter.slice(1)];
+          } else {
+            type = Sauce.formatters[parameter](post, ext);
+            if (type == null) {
+              skip = true;
+              return '';
+            }
           }
           if (key === 'url' && (parameter !== '%' && parameter !== 'semi')) {
             if (/^javascript:/i.test(parts['url'])) {
@@ -13749,12 +13853,6 @@ Sauce = (function() {
         });
       }
       if (skip) {
-        return null;
-      }
-      if (!(!parts['boards'] || (ref2 = post.board.ID, indexOf.call(parts['boards'].split(','), ref2) >= 0))) {
-        return null;
-      }
-      if (!(!parts['types'] || indexOf.call(parts['types'].split(','), ext) >= 0)) {
         return null;
       }
       a = Sauce.link.cloneNode(false);
@@ -15266,26 +15364,22 @@ ReportLink = (function() {
       }
       a = $.el('a', {
         className: 'report-link',
-        href: 'javascript:;'
+        href: 'javascript:;',
+        textContent: 'Report'
       });
       $.on(a, 'click', ReportLink.report);
       return Menu.menu.addEntry({
         el: a,
         order: 10,
         open: function(post) {
-          if (!(post.isDead || (post.thread.isDead && !post.thread.isArchived))) {
-            a.textContent = 'Report';
-            ReportLink.url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
-            if ((Conf['Use Recaptcha v1 in Reports'] && Main.jsEnabled) || d.cookie.indexOf('pass_enabled=1') >= 0) {
-              ReportLink.url += '&altc=1';
-              ReportLink.dims = 'width=350,height=275';
-            } else {
-              ReportLink.dims = 'width=400,height=550';
-            }
+          ReportLink.url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
+          if ((Conf['Use Recaptcha v1 in Reports'] && Main.jsEnabled) || d.cookie.indexOf('pass_enabled=1') >= 0) {
+            ReportLink.url += '&altc=1';
+            ReportLink.dims = 'width=350,height=275';
           } else {
-            ReportLink.url = '';
+            ReportLink.dims = 'width=400,height=550';
           }
-          return !!ReportLink.url;
+          return true;
         }
       });
     },
@@ -17355,18 +17449,18 @@ Report = (function() {
     },
     ready: function() {
       $.addStyle(CSS.report);
-      if (!Conf['Use Recaptcha v1 in Reports'] && !Conf['Force Noscript Captcha'] && Main.jsEnabled) {
-        return new MutationObserver(function() {
-          Report.fit('iframe[src^="https://www.google.com/recaptcha/api2/frame"]');
-          return Report.fit('body');
-        }).observe(d.body, {
-          childList: true,
-          attributes: true,
-          subtree: true
-        });
-      } else {
-        return Report.fit('body');
+      if (Conf['Archive Report']) {
+        Report.archive();
       }
+      new MutationObserver(function() {
+        Report.fit('iframe[src^="https://www.google.com/recaptcha/api2/frame"]');
+        return Report.fit('body');
+      }).observe(d.body, {
+        childList: true,
+        attributes: true,
+        subtree: true
+      });
+      return Report.fit('body');
     },
     fit: function(selector) {
       var dy, el;
@@ -17376,6 +17470,111 @@ Report = (function() {
       dy = el.getBoundingClientRect().bottom - doc.clientHeight + 8;
       if (dy > 0) {
         return window.resizeBy(0, dy);
+      }
+    },
+    archive: function() {
+      var enabled, fieldset, form, match, message, reason, submit, types, urls;
+      if (!(urls = Redirect.report(g.BOARD.ID)).length) {
+        return;
+      }
+      form = $('form');
+      types = $.id('reportTypes');
+      message = $('h3');
+      fieldset = $.el('fieldset', {
+        id: 'archive-report',
+        hidden: true
+      }, {
+        innerHTML: "<legend><label><input id=\"archive-report-enabled\" type=\"checkbox\" checked>Report illegal content to archives</label></legend><label for=\"archive-report-reason\">Details</label><textarea id=\"archive-report-reason\">Illegal content</textarea><button id=\"archive-report-submit\" hidden>Submit</button>"
+      });
+      enabled = $('#archive-report-enabled', fieldset);
+      reason = $('#archive-report-reason', fieldset);
+      submit = $('#archive-report-submit', fieldset);
+      if (form && types) {
+        fieldset.hidden = !$('[value=illegal]', types).checked;
+        $.on(types, 'change', function(e) {
+          fieldset.hidden = e.target.value !== 'illegal';
+          return Report.fit('body');
+        });
+        $.after(types, fieldset);
+        Report.fit('body');
+        $.one(form, 'submit', function(e) {
+          if (!fieldset.hidden && enabled.checked) {
+            e.preventDefault();
+            return Report.archiveSubmit(urls, reason.value, (function(_this) {
+              return function(results) {
+                _this.action = '#archiveresults=' + encodeURIComponent(JSON.stringify(results));
+                return _this.submit();
+              };
+            })(this));
+          }
+        });
+      } else if (message) {
+        enabled.checked = false;
+        fieldset.hidden = false;
+        $.on(enabled, 'change', function() {
+          return submit.hidden = !this.checked;
+        });
+        $.after(message, fieldset);
+        $.on(submit, 'click', function() {
+          return Report.archiveSubmit(urls, reason.value, Report.archiveResults);
+        });
+      }
+      if ((match = location.hash.match(/^#archiveresults=(.*)$/))) {
+        try {
+          return Report.archiveResults(JSON.parse(decodeURIComponent(match[1])));
+        } catch (_error) {}
+      }
+    },
+    archiveSubmit: function(urls, reason, cb) {
+      var fn, form, i, len, name, ref, results, url;
+      form = $.formData({
+        board: g.BOARD.ID,
+        num: Report.postID,
+        reason: reason
+      });
+      results = [];
+      fn = function(name, url) {
+        return $.ajax(url, {
+          responseType: 'json',
+          onloadend: function() {
+            results.push([
+              name, this.response || {
+                error: ''
+              }
+            ]);
+            if (results.length === urls.length) {
+              return cb(results);
+            }
+          }
+        }, {
+          form: form
+        });
+      };
+      for (i = 0, len = urls.length; i < len; i++) {
+        ref = urls[i], name = ref[0], url = ref[1];
+        fn(name, url);
+      }
+    },
+    archiveResults: function(results) {
+      var fieldset, i, len, line, name, ref, response;
+      fieldset = $.id('archive-report');
+      for (i = 0, len = results.length; i < len; i++) {
+        ref = results[i], name = ref[0], response = ref[1];
+        line = $.el('h3', {
+          className: 'archive-report-response'
+        });
+        if ('success' in response) {
+          $.addClass(line, 'archive-report-success');
+          line.textContent = name + ": " + response.success;
+        } else {
+          $.addClass(line, 'archive-report-error');
+          line.textContent = name + ": " + (response.error || 'Error reporting post.');
+        }
+        if (fieldset) {
+          $.before(fieldset, line);
+        } else {
+          $.add(d.body, line);
+        }
       }
     }
   };
@@ -18931,8 +19130,9 @@ ThreadWatcher = (function() {
           ref = [thread.OP].concat(slice.call(thread.OP.clones));
           for (i = 0, len = ref.length; i < len; i++) {
             post = ref[i];
-            toggler = $('.watch-thread-link', post.nodes.info);
-            ThreadWatcher.setToggler(toggler, isWatched);
+            if ((toggler = $('.watch-thread-link', post.nodes.info))) {
+              ThreadWatcher.setToggler(toggler, isWatched);
+            }
           }
         }
         if (thread.catalogView) {
