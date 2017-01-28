@@ -55,7 +55,7 @@ Report =
             @submit()
     else if message
       enabled.checked = false
-      fieldset.hidden = false
+      fieldset.hidden = /Report submitted!/.test(message.textContent)
       $.on enabled, 'change', ->
         submit.hidden = !@checked
       $.after message, fieldset
