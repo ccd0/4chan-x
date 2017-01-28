@@ -10,7 +10,7 @@ QuoteYou =
         {boardID, threadID, postID} = e.detail
         (QuoteYou.db.set {boardID, threadID, postID, val: true})
 
-    return unless g.VIEW in ['index', 'thread']
+    return unless g.VIEW in ['index', 'thread', 'archive']
 
     if Conf['Highlight Own Posts']
       $.addClass doc, 'highlight-own'

@@ -1,6 +1,6 @@
 FileInfo =
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or !Conf['File Info Formatting']
+    return if g.VIEW not in ['index', 'thread', 'archive'] or !Conf['File Info Formatting']
 
     Callbacks.Post.push
       name: 'File Info Formatting'

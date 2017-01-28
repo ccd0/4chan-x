@@ -1,10 +1,10 @@
 Embedding =
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Linkify'] and (Conf['Embedding'] or Conf['Link Title'] or Conf['Cover Preview'])
+    return unless g.VIEW in ['index', 'thread', 'archive'] and Conf['Linkify'] and (Conf['Embedding'] or Conf['Link Title'] or Conf['Cover Preview'])
     @types = {}
     @types[type.key] = type for type in @ordered_types
 
-    if Conf['Embedding']
+    if Conf['Embedding'] and g.VIEW isnt 'archive'
       @dialog = UI.dialog 'embedding',
         <%= readHTML('Embed.html') %>
       @media = $ '#media-embed', @dialog
@@ -22,6 +22,7 @@ Embedding =
         return
 
   events: (post) ->
+    return if g.VIEW is 'archive'
     if Conf['Embedding']
       i = 0
       items = post.nodes.embedlinks = $$ '.embedder', post.nodes.comment
@@ -41,9 +42,9 @@ Embedding =
     return if $.x 'ancestor::pre', link
     if data = Embedding.services link
       data.post = post
-      Embedding.embed data if Conf['Embedding']
+      Embedding.embed data if Conf['Embedding'] and g.VIEW isnt 'archive'
       Embedding.title data if Conf['Link Title']
-      Embedding.preview data if Conf['Cover Preview']
+      Embedding.preview data if Conf['Cover Preview'] and g.VIEW isnt 'archive'
 
   services: (link) ->
     {href} = link

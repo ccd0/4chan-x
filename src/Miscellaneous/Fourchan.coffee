@@ -1,6 +1,6 @@
 Fourchan =
   init: ->
-    return unless g.VIEW in ['index', 'thread']
+    return unless g.VIEW in ['index', 'thread', 'archive']
 
     if g.BOARD.ID is 'g'
       $.on window, 'prettyprint:cb', (e) ->

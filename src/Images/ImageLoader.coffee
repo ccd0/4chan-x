@@ -1,6 +1,6 @@
 ImageLoader =
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
+    return unless g.VIEW in ['index', 'thread', 'archive'] and g.BOARD.ID isnt 'f'
     return unless Conf['Image Prefetching'] or
       Conf['Replace JPG'] or Conf['Replace PNG'] or Conf['Replace GIF'] or Conf['Replace WEBM']
 

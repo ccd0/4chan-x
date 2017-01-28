@@ -1,6 +1,6 @@
 Linkify =
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or not Conf['Linkify']
+    return if g.VIEW not in ['index', 'thread', 'archive'] or not Conf['Linkify']
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node

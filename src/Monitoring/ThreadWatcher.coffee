@@ -63,6 +63,8 @@ ThreadWatcher =
           $.on @el, 'click', @cb
           true
 
+    return unless g.VIEW in ['index', 'thread']
+
     Callbacks.Post.push
       name: 'Thread Watcher'
       cb:   @node
