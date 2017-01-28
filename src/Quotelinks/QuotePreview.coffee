@@ -1,6 +1,13 @@
 QuotePreview =
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Quote Previewing']
+    return unless Conf['Quote Previewing']
+
+    if g.VIEW is 'archive'
+      $.on d, 'mouseover', (e) ->
+        if e.target.nodeName is 'A' and $.hasClass(e.target, 'quotelink')
+          QuotePreview.mouseover.call e.target, e
+
+    return unless g.VIEW in ['index', 'thread']
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node

@@ -14,6 +14,7 @@ class Fetcher
   insert: (post) ->
     # Stop here if the container has been removed while loading.
     return unless @root.parentNode
+    @quoter or= post
     clone = post.addClone @quoter.context, ($.hasClass @root, 'dialog')
     Main.callbackNodes 'Post', [clone]
 
