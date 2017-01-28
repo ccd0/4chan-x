@@ -55,6 +55,11 @@
   color: #D6DAF0;
 }
 
+/* Anonymize */
+:root.burichan.anonymize .name::before {
+  font-size: 12pt;
+}
+
 /* QR */
 .burichan #dump-list::-webkit-scrollbar-thumb {
   background-color: #D6DAF0;

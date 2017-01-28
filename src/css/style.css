@@ -1433,6 +1433,25 @@ input[name="Default Volume"] {
   left: 19px;
 }
 
+/* Anonymize */
+:root.anonymize .name,
+:root.anonymize .post-author:not([class*=capcode]) {
+  font-size: 0;
+}
+:root.anonymize .postertrip,
+:root.anonymize .n-pu {
+  display: none;
+}
+:root.anonymize .name::before,
+:root.anonymize .post-author:not([class*=capcode])::before {
+  content: "Anonymous";
+  font-size: 10pt;
+}
+:root.anonymize .flashListing .name::before,
+:root.anonymize .post-last > .post-author:not([class*=capcode])::before {
+  font-size: 9pt;
+}
+
 /* QR */
 :root.hide-original-post-form #togglePostFormLink,
 #qr.autohide:not(.focus):not(:hover):not(:active) > form,
