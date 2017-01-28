@@ -239,6 +239,7 @@ ThreadWatcher =
         defaultValue: 0
 
       unread = quotingYou = 0
+      youOP = !!QuoteYou.db?.get {boardID, threadID, postID: threadID}
 
       for postObj in @response.posts
         continue unless postObj.no > lastReadPost
@@ -246,7 +247,11 @@ ThreadWatcher =
 
         unread++
 
-        continue unless QuoteYou.db and postObj.com
+        if !quotingYou and youOP and not Filter.isHidden(Build.parseJSON postObj, boardID)
+          quotingYou = 1
+          continue
+
+        continue unless !quotingYou and QuoteYou.db and postObj.com
 
         quotesYou = false
         regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
