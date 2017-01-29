@@ -120,10 +120,10 @@ Keybinds =
         return unless Gallery.enabled
         Gallery.cb.toggle()
       when Conf['fappeTyme']
-        return unless Conf['Fappe Tyme'] and g.VIEW in ['index', 'thread']
+        return unless FappeTyme.nodes?.fappe
         FappeTyme.toggle 'fappe'
       when Conf['werkTyme']
-        return unless Conf['Werk Tyme'] and g.VIEW in ['index', 'thread']
+        return unless FappeTyme.nodes?.werk
         FappeTyme.toggle 'werk'
       # Board Navigation
       when Conf['Front page']
