@@ -140,7 +140,11 @@ Redirect =
     else
       type
     if type is 'capcode'
-      value = {'Developer': 'dev'}[value] or value.toLowerCase()
+      # https://github.com/pleebe/FoolFuuka/blob/bf4224eed04637a4d0bd4411c2bf5f9945dfec0b/src/Model/Search.php#L363
+      value = {
+        'Developer': 'dev'
+        'Verified':  'ver'
+      }[value] or value.toLowerCase()
     else if type is 'image'
       value = value.replace /[+/=]/g, (c) -> ({'+': '-', '/': '_', '=': ''})[c]
     value = encodeURIComponent value
