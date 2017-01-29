@@ -159,11 +159,13 @@ class Fetcher
       name:     data.name or ''
       tripcode: data.trip
       capcode:  switch data.capcode
+        # https://github.com/pleebe/FoolFuuka/blob/bf4224eed04637a4d0bd4411c2bf5f9945dfec0b/assets/themes/foolz/foolfuuka-theme-fuuka/src/Partial/Board.php#L77
         when 'M' then 'Mod'
         when 'A' then 'Admin'
         when 'D' then 'Developer'
-        when 'F' then 'Founder'
         when 'V' then 'Verified'
+        when 'F' then 'Founder'
+        when 'G' then 'Manager'
       uniqueID: data.poster_hash
       flagCode: data.poster_country
       flag:     data.poster_country_name
