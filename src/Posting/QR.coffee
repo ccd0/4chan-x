@@ -539,7 +539,7 @@ QR =
     # https://bugzilla.mozilla.org/show_bug.cgi?id=906420
     if $.engine is 'gecko' and not window.DataTransferItemList
       nodes.pasteArea.hidden = false
-      new MutationObserver(QR.pasteFF).observe nodes.pasteArea, {childList: true}
+    new MutationObserver(QR.pasteFF).observe nodes.pasteArea, {childList: true}
 
     # save selected post's data
     items = ['thread', 'name', 'email', 'sub', 'com', 'filename']
