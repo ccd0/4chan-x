@@ -2,6 +2,18 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.13.6
+
+**v1.13.6.0** *(2017-01-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.5.2.
+- Add item in the post menu to mark/unmark posts as yours. #195
+- When you are the OP of a thread, any unread reply to the thread will now light up the `Thread Watcher` icon, not just replies directly to you. #913
+- Show `##Manager`, `##Founder`, and `##Verified` capcodes in posts loaded from the archives. Also support searching for them from the post menu.
+- Make `Anonymize` more efficient, and extend it to the /f/ index and native catalog. #1111
+- If `Quote Preview` is enabled, links to threads in the internal archive will show previews of the OP on hover, as in the native extension. #1256
+- If we detect the QR paste icon isn't needed, hide it instead of disabling it so it can be brought back with CSS if necessary.
+- Don't show archive report form on the "Report submitted!" page.
+
 ### v1.13.5
 
 **v1.13.5.2** *(2017-01-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.2/builds/4chan-X-noupdate.crx)]
