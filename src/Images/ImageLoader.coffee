@@ -14,7 +14,7 @@ ImageLoader =
     if Conf['Replace WEBM']
       $.on d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', @playVideos
 
-    return unless Conf['Image Prefetching']
+    return unless Conf['Image Prefetching'] and g.VIEW in ['index', 'thread']
 
     prefetch = $.el 'label',
       <%= html('<input type="checkbox" name="prefetch"> Prefetch Images') %>
