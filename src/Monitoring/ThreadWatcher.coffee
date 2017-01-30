@@ -238,7 +238,8 @@ ThreadWatcher =
         threadID: threadID
         defaultValue: 0
 
-      unread = quotingYou = 0
+      unread = 0
+      quotingYou = false
       youOP = !!QuoteYou.db?.get {boardID, threadID, postID: threadID}
 
       for postObj in @response.posts
@@ -248,7 +249,7 @@ ThreadWatcher =
         unread++
 
         if !quotingYou and youOP and not Filter.isHidden(Build.parseJSON postObj, boardID)
-          quotingYou = 1
+          quotingYou = true
           continue
 
         continue unless !quotingYou and QuoteYou.db and postObj.com
@@ -264,7 +265,7 @@ ThreadWatcher =
             quotesYou = true
             break
         if quotesYou and not Filter.isHidden(Build.parseJSON postObj, boardID)
-          quotingYou++
+          quotingYou = true
 
       if isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou
         ThreadWatcher.db.extend {boardID, threadID, val: {isDead, unread, quotingYou}}

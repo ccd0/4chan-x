@@ -238,4 +238,4 @@ Unread =
       ThreadWatcher.update Unread.thread.board.ID, Unread.thread.ID,
         isDead: Unread.thread.isDead
         unread: Unread.posts.size
-        quotingYou: Unread.postsQuotingYou.size
+        quotingYou: !!(if QuoteYou.isYou(Unread.thread.OP) then Unread.posts.size else Unread.postsQuotingYou.size)
