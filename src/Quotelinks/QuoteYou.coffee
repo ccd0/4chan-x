@@ -31,10 +31,17 @@ QuoteYou =
 
     QuoteYou.menu.init()
 
+  isYou: (post) ->
+    !!QuoteYou.db?.get {
+      boardID:  post.board.ID
+      threadID: post.thread.ID
+      postID:   post.ID
+    }
+
   node: ->
     return if @isClone
 
-    if QuoteYou.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
+    if QuoteYou.isYou @
       $.addClass @nodes.root, 'yourPost'
 
     # Stop there if there's no quotes in that post.
@@ -57,7 +64,7 @@ QuoteYou =
         order: 12
         open: (post) ->
           QuoteYou.menu.post = (post.origin or post)
-          input.checked = QuoteYou.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+          input.checked = QuoteYou.isYou post
           true
 
     toggle: ->

@@ -22,7 +22,7 @@ QuoteBacklink =
       cb:   @secondNode
   firstNode: ->
     return if @isClone or !@quotes.length or @isRebuilt
-    markYours = Conf['Mark Quotes of You'] and QuoteYou.db?.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
+    markYours = Conf['Mark Quotes of You'] and QuoteYou.isYou(@)
     a = $.el 'a',
       href: Build.postURL @board.ID, @thread.ID, @ID
       className: if @isHidden then 'filtered backlink' else 'backlink'

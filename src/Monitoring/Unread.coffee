@@ -112,11 +112,7 @@ Unread =
   addPost: ->
     return if @isFetchedQuote or @isClone
     Unread.order.push @
-    return if @ID <= Unread.lastReadPost or @isHidden or QuoteYou.db?.get {
-      boardID:  @board.ID
-      threadID: @thread.ID
-      postID:   @ID
-    }
+    return if @ID <= Unread.lastReadPost or @isHidden or QuoteYou.isYou(@)
     Unread.posts.add @ID
     Unread.addPostQuotingYou @
     Unread.position ?= Unread.order[@ID]
@@ -172,11 +168,7 @@ Unread =
       Unread.posts.delete ID
       Unread.postsQuotingYou.delete ID
 
-      if QuoteYou.db?.get {
-        boardID:  data.board.ID
-        threadID: data.thread.ID
-        postID:   ID
-      }
+      if QuoteYou.isYou data
         QuoteYou.lastRead = root
       Unread.position = Unread.position.next
 
