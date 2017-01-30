@@ -167,9 +167,6 @@ Unread =
       count++
       Unread.posts.delete ID
       Unread.postsQuotingYou.delete ID
-
-      if QuoteYou.isYou data
-        QuoteYou.lastRead = root
       Unread.position = Unread.position.next
 
     return unless count
