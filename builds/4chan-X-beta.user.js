@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.6.0
+// @version      1.13.6.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -150,7 +150,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.6.0',
+  VERSION:   '1.13.6.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -23582,6 +23582,8 @@ QuoteYou = (function() {
       init: function() {
         var input, label, ref;
         label = $.el('label', {
+          className: 'toggle-you'
+        }, {
           innerHTML: "<input type=\"checkbox\"> You"
         });
         input = $('input', label);
