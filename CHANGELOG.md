@@ -4,6 +4,9 @@
 
 ### v1.13.6
 
+**v1.13.6.1** *(2017-01-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.1/builds/4chan-X-noupdate.crx)]
+- Add CSS class `toggle-you` to menu entry for marking posts as yours.
+
 **v1.13.6.0** *(2017-01-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.13.5.2.
 - Add item in the post menu to mark/unmark posts as yours. #195
