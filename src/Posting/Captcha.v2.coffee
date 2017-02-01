@@ -96,6 +96,7 @@ Captcha.v2 =
   setupNoscript: ->
     iframe = $.el 'iframe',
       id: 'qr-captcha-iframe'
+      scrolling: 'no'
       src: @noscriptURL()
     div = $.el 'div'
     textarea = $.el 'textarea'
