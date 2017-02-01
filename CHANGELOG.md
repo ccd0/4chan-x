@@ -2,6 +2,12 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.13.7
+
+**v1.13.7.0** *(2017-02-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.6.1.
+- Fix scroll bars sometimes appearing on noscript captcha in QR.
+
 ### v1.13.6
 
 **v1.13.6.1** *(2017-01-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.1/builds/4chan-X-noupdate.crx)]
