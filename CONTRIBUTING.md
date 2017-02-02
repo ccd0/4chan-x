@@ -29,4 +29,6 @@ make sure it does not overlap with an archive that previously died for example.
 
 `reports` indicates that you have enabled the offsite reporting API from https://github.com/pleebe/foolfuuka-plugin-popup-report. It is assumed false if missing.
 
+Archives with HTTPS support are listed before archives without HTTPS support.
+
 Also, be sure to add your board to [archives.md](https://github.com/MayhemYDG/archives.json/blob/gh-pages/archives.md) at some point.
