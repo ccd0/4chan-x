@@ -121,4 +121,13 @@
   "files": [],
   "search": [],
   "reports": true
+}, {
+  "uid": 33,
+  "name": "yeet.net",
+  "domain": "yeet.net",
+  "http": true,
+  "https": false,
+  "software": "foolfuuka",
+  "boards": ["g", "k", "qa"],
+  "files": ["g", "k", "qa"]
 }]
