@@ -4,6 +4,9 @@
 
 ### v1.13.5
 
+**v1.13.5.3** *(2017-02-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.3/builds/4chan-X-noupdate.crx)]
+- Update for Recaptcha changes.
+
 **v1.13.5.2** *(2017-01-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.2/builds/4chan-X-noupdate.crx)]
 - Improvements to Sauce settings panel.
 - Minor bugfixes.
