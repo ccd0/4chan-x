@@ -45,7 +45,7 @@ Captcha.fixes =
   init: ->
     switch location.pathname.split('/')[3]
       when 'anchor'   then @initMain()
-      when 'frame'    then @initPopup()
+      when 'frame', 'bframe' then @initPopup()
       when 'fallback' then @initNoscript()
 
   initMain: ->
