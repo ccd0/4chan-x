@@ -696,7 +696,7 @@ QR =
         else
           delete QR.req
           post.unlock()
-          QR.cooldown.auto = !!QR.captcha.captchas.length
+          QR.cooldown.auto = !!Captcha.cache.getCount()
           QR.status()
     else
       cb captcha
@@ -749,7 +749,7 @@ QR =
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.captcha.setup(QR.cooldown.auto and d.activeElement in [QR.nodes.status, d.body])
-      QR.cooldown.auto = false if QR.captcha.isEnabled and !QR.captcha.captchas.length
+      QR.cooldown.auto = false if QR.captcha.isEnabled and !Captcha.cache.getCount()
       QR.status()
       QR.error err
       return

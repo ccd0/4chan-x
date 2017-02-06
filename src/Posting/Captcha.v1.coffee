@@ -26,11 +26,8 @@ Captcha.v1 =
     $.addClass QR.nodes.el, 'has-captcha', 'captcha-v1'
     $.after QR.nodes.com.parentNode, [imgContainer, input]
 
-    @captchas = []
-    $.get 'captchas', [], ({captchas}) ->
-      QR.captcha.sync captchas
-      QR.captcha.clear()
-    $.sync 'captchas', @sync
+    Captcha.cache.init()
+    $.on d, 'CaptchaCount', @count.bind(@)
 
     @replace()
     @beforeSetup()
@@ -94,17 +91,10 @@ Captcha.v1 =
     @count()
     $.on input, 'focus click', @cb.focus
 
-  needed: ->
-    captchaCount = @captchas.length
-    captchaCount++ if QR.req
-    postsCount = QR.posts.length
-    postsCount = 0 if postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
-    captchaCount < postsCount
-
   moreNeeded: ->
 
   setup: (focus, force) ->
-    return unless @isEnabled and (force or @needed())
+    return unless @isEnabled and (force or Captcha.cache.needed())
     @create()
     if focus
       $.addClass QR.nodes.el, 'focus'
@@ -142,15 +132,8 @@ Captcha.v1 =
     delete @occupied
     @beforeSetup() if @nodes
 
-  sync: (captchas=[]) ->
-    QR.captcha.captchas = captchas
-    QR.captcha.count()
-
   getOne: ->
-    @clear()
-    if captcha = @captchas.shift()
-      @count()
-      $.set 'captchas', @captchas
+    if (captcha = Captcha.cache.getOne())
       captcha
     else
       challenge = @nodes.img.alt
@@ -164,27 +147,12 @@ Captcha.v1 =
   save: ->
     return unless /\S/.test(response = @nodes.input.value)
     @nodes.input.value = ''
-    $.forceSync 'captchas'
-    @captchas.push
+    Captcha.cache.save
       challenge: @nodes.img.alt
       response:  response
       timeout:   @timeout
-    @captchas.sort (a, b) -> a.timeout - b.timeout
-    @count()
     @destroy()
     @setup false, true
-    $.set 'captchas', @captchas
-
-  clear: ->
-    $.forceSync 'captchas'
-    return unless @captchas.length
-    now = Date.now()
-    for captcha, i in @captchas
-      break if captcha.timeout > now
-    return unless i
-    @captchas = @captchas[i..]
-    @count()
-    $.set 'captchas', @captchas
 
   load: ->
     if $('#captchaContainerAlt[class~="recaptcha_is_showing_audio"]')
@@ -198,10 +166,10 @@ Captcha.v1 =
     @nodes.img.alt = challenge
     @nodes.img.src = challenge_image.src
     @nodes.input.value = ''
-    @clear()
+    Captcha.cache.clear()
 
   count: ->
-    count = if @captchas then @captchas.length else 0
+    count = Captcha.cache.getCount()
     placeholder = @nodes.input.placeholder.replace /\ \(.*\)$/, ''
     placeholder += switch count
       when 0
@@ -212,9 +180,6 @@ Captcha.v1 =
         " (#{count} cached captchas)"
     @nodes.input.placeholder = placeholder
     @nodes.input.alt = count # For XTRM RICE.
-    clearTimeout @timer
-    if count
-      @timer = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
 
   reload: (focus) ->
     # Recaptcha.should_focus = false: Hack to prevent the input from being focused

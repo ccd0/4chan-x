@@ -8,11 +8,8 @@ Captcha.v2 =
     if (@noscript = Conf['Force Noscript Captcha'] or not Main.jsEnabled)
       $.addClass QR.nodes.el, 'noscript-captcha'
 
-    @captchas = []
-    $.get 'captchas', [], ({captchas}) ->
-      QR.captcha.sync captchas
-      QR.captcha.clear()
-    $.sync 'captchas', @sync.bind @
+    Captcha.cache.init()
+    $.on d, 'CaptchaCount', @count.bind(@)
 
     root = $.el 'div', className: 'captcha-root'
     $.extend root, <%= html(
@@ -43,17 +40,10 @@ Captcha.v2 =
       url += "&hl=#{encodeURIComponent lang}"
     url
 
-  needed: ->
-    captchaCount = @captchas.length
-    captchaCount++ if QR.req
-    postsCount = QR.posts.length
-    postsCount = 0 if postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
-    captchaCount < postsCount
-
   moreNeeded: ->
     # Post count temporarily off by 1 when called from QR.post.rm, QR.close, or QR.submit
     $.queueTask =>
-      needed = @needed()
+      needed = Captcha.cache.needed()
       if needed and not @prevNeeded
         @setup(QR.cooldown.auto and d.activeElement is QR.nodes.status)
       @prevNeeded = needed
@@ -65,7 +55,7 @@ Captcha.v2 =
       @setup true, true
 
   setup: (focus, force) ->
-    return unless @isEnabled and (@needed() or force)
+    return unless @isEnabled and (Captcha.cache.needed() or force)
 
     if focus
       $.addClass QR.nodes.el, 'focus'
@@ -167,30 +157,16 @@ Captcha.v2 =
       $.rm node
     return
 
-  sync: (captchas=[]) ->
-    @captchas = captchas
-    @count()
-
   getOne: ->
-    @clear()
-    if (captcha = @captchas.shift())
-      $.set 'captchas', @captchas
-      @count()
-      captcha
-    else
-      null
+    Captcha.cache.getOne()
 
   save: (pasted, token) ->
-    $.forceSync 'captchas'
-    @captchas.push
+    Captcha.cache.save
       response: token or $('textarea', @nodes.container).value
       timeout:  Date.now() + @lifetime
-    @captchas.sort (a, b) -> a.timeout - b.timeout
-    $.set 'captchas', @captchas
-    @count()
 
     focus = d.activeElement?.nodeName is 'IFRAME' and /https?:\/\/www\.google\.com\/recaptcha\//.test(d.activeElement.src)
-    if @needed()
+    if Captcha.cache.needed()
       if focus
         if QR.cooldown.auto or Conf['Post on Captcha Completion']
           @nodes.counter.focus()
@@ -206,23 +182,10 @@ Captcha.v2 =
 
     QR.submit() if Conf['Post on Captcha Completion'] and !QR.cooldown.auto
 
-  clear: ->
-    $.forceSync 'captchas'
-    return unless @captchas.length
-    now = Date.now()
-    for captcha, i in @captchas
-      break if captcha.timeout > now
-    return unless i
-    @captchas = @captchas[i..]
-    @count()
-    $.set 'captchas', @captchas
-
   count: ->
-    @nodes.counter.textContent = "Captchas: #{@captchas.length}"
+    count = Captcha.cache.getCount()
+    @nodes.counter.textContent = "Captchas: #{count}"
     @moreNeeded()
-    clearTimeout @timeouts.clear
-    if @captchas.length
-      @timeouts.clear = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
 
   reload: ->
     if $ 'iframe[src^="https://www.google.com/recaptcha/api/fallback?"]', @nodes.container
