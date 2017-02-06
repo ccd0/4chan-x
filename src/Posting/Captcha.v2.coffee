@@ -34,7 +34,7 @@ Captcha.v2 =
       $.queueTask => @save false
 
   timeouts: {}
-  postsCount: 0
+  prevNeeded: 0
 
   noscriptURL: ->
     url = 'https://www.google.com/recaptcha/api/fallback?k=<%= meta.recaptchaKey %>'
@@ -45,16 +45,17 @@ Captcha.v2 =
   needed: ->
     captchaCount = @captchas.length
     captchaCount++ if QR.req
-    @postsCount = QR.posts.length
-    @postsCount = 0 if @postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
-    captchaCount < @postsCount
+    postsCount = QR.posts.length
+    postsCount = 0 if postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
+    captchaCount < postsCount
 
-  onNewPost: ->
-    @setup()
-
-  onPostChange: ->
-    @setup() if @postsCount is 0
-    @postsCount = 0 if QR.posts.length is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
+  moreNeeded: ->
+    # Post count temporarily off by 1 when called from QR.post.rm, QR.close, or QR.submit
+    $.queueTask =>
+      needed = @needed()
+      if needed and not @prevNeeded
+        @setup(QR.cooldown.auto and d.activeElement is QR.nodes.status)
+      @prevNeeded = needed
 
   toggle: ->
     if @nodes.container and !@timeouts.destroy
@@ -215,10 +216,10 @@ Captcha.v2 =
     @captchas = @captchas[i..]
     @count()
     $.set 'captchas', @captchas
-    @setup(d.activeElement is QR.nodes.status)
 
   count: ->
     @nodes.counter.textContent = "Captchas: #{@captchas.length}"
+    @moreNeeded()
     clearTimeout @timeouts.clear
     if @captchas.length
       @timeouts.clear = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()

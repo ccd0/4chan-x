@@ -101,9 +101,7 @@ Captcha.v1 =
     postsCount = 0 if postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
     captchaCount < postsCount
 
-  onNewPost: ->
-
-  onPostChange: ->
+  moreNeeded: ->
 
   setup: (focus, force) ->
     return unless @isEnabled and (force or @needed())
