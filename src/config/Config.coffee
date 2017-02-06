@@ -661,6 +661,10 @@ Config =
       true
       'Show number of unread posts in watched threads.'
     ]
+    'Require OP Quote Link': [
+      false
+      'For purposes of thread watcher highlighting, only consider posts with a quote link to the OP as replies to the OP.'
+    ]
 
   filter:
     postID: """

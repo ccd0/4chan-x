@@ -248,7 +248,7 @@ ThreadWatcher =
 
         unread++
 
-        if !quotingYou and youOP and not Filter.isHidden(Build.parseJSON postObj, boardID)
+        if !quotingYou and !Conf['Require OP Quote Link'] and youOP and not Filter.isHidden(Build.parseJSON postObj, boardID)
           quotingYou = true
           continue
 
