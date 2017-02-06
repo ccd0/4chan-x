@@ -11,6 +11,7 @@ Captcha.v2 =
     @captchas = []
     $.get 'captchas', [], ({captchas}) ->
       QR.captcha.sync captchas
+      QR.captcha.clear()
     $.sync 'captchas', @sync.bind @
 
     root = $.el 'div', className: 'captcha-root'
@@ -168,7 +169,6 @@ Captcha.v2 =
 
   sync: (captchas=[]) ->
     @captchas = captchas
-    @clear()
     @count()
 
   getOne: ->
