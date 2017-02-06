@@ -4,6 +4,10 @@
 
 ### v1.13.7
 
+**v1.13.7.2** *(2017-02-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.2/builds/4chan-X-noupdate.crx)]
+- Add `Require OP Quote Link` option (off by default in new installs) to Thread Watcher menu: For purposes of thread watcher highlighting, only consider posts with a quote link to the OP as replies to the OP.
+- Turn on `Require OP Quote Link` for upgrading users as it is the old behavior.
+
 **v1.13.7.1** *(2017-02-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.1/builds/4chan-X-noupdate.crx)]
 - Merge v1.13.5.3: Update for Recaptcha changes.
 
