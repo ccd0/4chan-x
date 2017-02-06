@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.7.1
+// @version      1.13.7.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -151,7 +151,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.7.1',
+  VERSION:   '1.13.7.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -247,7 +247,7 @@ Config = (function() {
         'Image Expansion': [true, 'Expand images / videos.'],
         'Image Hover': [true, 'Show full image / video on mouseover.'],
         'Image Hover in Catalog': [true, 'Show full image / video on mouseover in 4chan X catalog.'],
-        'Gallery': [true, 'Adds a simple and cute image gallery.'],
+        'Gallery': [true, 'Adds a simple and cute image gallery. Has more options in the gallery menu.'],
         'Fullscreen Gallery': [false, 'Open gallery in fullscreen mode.', 1],
         'PDF in Gallery': [false, 'Show PDF files in gallery.', 1],
         'Sauce': [true, 'Add sauce links to images.'],
@@ -294,7 +294,7 @@ Config = (function() {
         'IP Count in Stats': [true, 'Display the unique IP count in the thread stats.', 1],
         'Page Count in Stats': [true, 'Display the page count in the thread stats.', 1],
         'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
-        'Thread Watcher': [true, 'Bookmark threads.'],
+        'Thread Watcher': [true, 'Bookmark threads. Has more options in the thread watcher menu.'],
         'Fixed Thread Watcher': [true, 'Makes the thread watcher scroll with the page.', 1],
         'Persistent Thread Watcher': [false, 'The thread watcher will be visible when the page is loaded.', 1],
         'Mark New IPs': [false, 'Label each post from a new IP with the thread\'s current IP count.'],
@@ -364,7 +364,8 @@ Config = (function() {
       'Auto Watch': [true, 'Automatically watch threads you start.'],
       'Auto Watch Reply': [true, 'Automatically watch threads you reply to.'],
       'Auto Prune': [false, 'Automatically remove dead threads.'],
-      'Show Unread Count': [true, 'Show number of unread posts in watched threads.']
+      'Show Unread Count': [true, 'Show number of unread posts in watched threads.'],
+      'Require OP Quote Link': [false, 'For purposes of thread watcher highlighting, only consider posts with a quote link to the OP as replies to the OP.']
     },
     filter: {
       postID: "# Highlight dubs on [s4s]:\n#/(\\d)\\1$/;highlight;top:no;boards:s4s",
@@ -11270,6 +11271,9 @@ Settings = (function() {
         }
         addSauces(Config['sauces'].match(/# Known filename formats:(?:\n.+)*|$/)[0].split('\n'));
       }
+      if (compareString < '00001.00013.00007.00002') {
+        setD('Require OP Quote Link', true);
+      }
       return changes;
     },
     loadSettings: function(data, cb) {
@@ -18977,7 +18981,7 @@ ThreadWatcher = (function() {
             continue;
           }
           unread++;
-          if (!quotingYou && youOP && !Filter.isHidden(Build.parseJSON(postObj, boardID))) {
+          if (!quotingYou && !Conf['Require OP Quote Link'] && youOP && !Filter.isHidden(Build.parseJSON(postObj, boardID))) {
             quotingYou = true;
             continue;
           }
@@ -19678,7 +19682,7 @@ Unread = (function() {
         return ThreadWatcher.update(Unread.thread.board.ID, Unread.thread.ID, {
           isDead: Unread.thread.isDead,
           unread: Unread.posts.size,
-          quotingYou: !!(QuoteYou.isYou(Unread.thread.OP) ? Unread.posts.size : Unread.postsQuotingYou.size)
+          quotingYou: !!(!Conf['Require OP Quote Link'] && QuoteYou.isYou(Unread.thread.OP) ? Unread.posts.size : Unread.postsQuotingYou.size)
         });
       }
     })

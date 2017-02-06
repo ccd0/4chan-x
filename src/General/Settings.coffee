@@ -414,6 +414,8 @@ Settings =
       if data['sauces']?
         set 'sauces', data['sauces'].replace(/^(#?\s*)http:\/\/regex\.info\/exif\.cgi/mg, '$1http://exif.regex.info/exif.cgi')
       addSauces Config['sauces'].match(/# Known filename formats:(?:\n.+)*|$/)[0].split('\n')
+    if compareString < '00001.00013.00007.00002'
+      setD 'Require OP Quote Link', true
     changes
 
   loadSettings: (data, cb) ->

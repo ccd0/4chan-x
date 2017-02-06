@@ -4,6 +4,10 @@
 
 ### v1.13.7
 
+**v1.13.7.2** *(2017-02-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.2/builds/4chan-X-noupdate.crx)]
+- Add `Require OP Quote Link` option (off by default in new installs) to Thread Watcher menu: For purposes of thread watcher highlighting, only consider posts with a quote link to the OP as replies to the OP.
+- Turn on `Require OP Quote Link` for upgrading users as it is the old behavior.
+
 **v1.13.7.1** *(2017-02-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.1/builds/4chan-X-noupdate.crx)]
 - Merge v1.13.5.3: Update for Recaptcha changes.
 
@@ -19,7 +23,7 @@
 **v1.13.6.0** *(2017-01-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.13.5.2.
 - Add item in the post menu to mark/unmark posts as yours. #195
-- When you are the OP of a thread, any unread reply to the thread will now light up the `Thread Watcher` icon, not just replies directly to you. #913
+- When you are the OP of a thread, any unread reply to the thread will now light up the `Thread Watcher` icon, not just replies with quote links to you. #913
 - Show `##Manager`, `##Founder`, and `##Verified` capcodes in posts loaded from the archives. Also support searching for them from the post menu.
 - Make `Anonymize` more efficient, and extend it to the /f/ index and native catalog. #1111
 - If `Quote Preview` is enabled, links to threads in the internal archive will show previews of the OP on hover, as in the native extension. #1256
