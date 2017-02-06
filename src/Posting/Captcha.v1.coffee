@@ -166,6 +166,7 @@ Captcha.v1 =
   save: ->
     return unless /\S/.test(response = @nodes.input.value)
     @nodes.input.value = ''
+    $.forceSync 'captchas'
     @captchas.push
       challenge: @nodes.img.alt
       response:  response
