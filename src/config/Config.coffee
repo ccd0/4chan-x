@@ -207,7 +207,7 @@ Config =
       ]
       'Gallery': [
         true
-        'Adds a simple and cute image gallery.'
+        'Adds a simple and cute image gallery. Has more options in the gallery menu.'
       ]
       'Fullscreen Gallery': [
         false
@@ -398,7 +398,7 @@ Config =
       ]
       'Thread Watcher': [
         true
-        'Bookmark threads.'
+        'Bookmark threads. Has more options in the thread watcher menu.'
       ]
       'Fixed Thread Watcher': [
         true
