@@ -206,8 +206,8 @@ Captcha.v2 =
     QR.submit() if Conf['Post on Captcha Completion'] and !QR.cooldown.auto
 
   clear: ->
-    return unless @captchas.length
     $.forceSync 'captchas'
+    return unless @captchas.length
     now = Date.now()
     for captcha, i in @captchas
       break if captcha.timeout > now

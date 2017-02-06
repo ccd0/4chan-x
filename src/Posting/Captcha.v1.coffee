@@ -177,8 +177,8 @@ Captcha.v1 =
     $.set 'captchas', @captchas
 
   clear: ->
-    return unless @captchas.length
     $.forceSync 'captchas'
+    return unless @captchas.length
     now = Date.now()
     for captcha, i in @captchas
       break if captcha.timeout > now
