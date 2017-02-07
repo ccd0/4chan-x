@@ -593,6 +593,7 @@ QR =
     $.forceSync 'cooldowns'
     if QR.cooldown.seconds
       QR.cooldown.auto = !QR.cooldown.auto
+      QR.captcha.setup true if QR.cooldown.auto
       QR.status()
       return
 
@@ -635,6 +636,7 @@ QR =
       return
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
+    wasAuto = QR.cooldown.auto
     QR.cooldown.auto = QR.posts.length > 1
 
     post.lock()
@@ -693,6 +695,9 @@ QR =
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
     QR.status()
+
+    # Focus on captcha if more captchas are needed.
+    QR.captcha.setup true unless wasAuto
 
   response: ->
     {req} = QR
@@ -764,7 +769,6 @@ QR =
 
     if postsCount
       post.rm()
-      QR.captcha.setup(d.activeElement is QR.nodes.status)
     else if Conf['Persistent QR']
       post.rm()
       if Conf['Auto Hide QR']
