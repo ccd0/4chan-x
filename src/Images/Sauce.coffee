@@ -93,7 +93,7 @@ Sauce =
         skipped.push [link, node] if node.dataset.skip
     $.add @file.text, nodes
 
-    if @board.ID is 'f'
+    if skipped.length
       observer = new MutationObserver =>
         if @file.text.dataset.md5
           for [link, node] in skipped when (node2 = Sauce.createSauceLink link, @)
