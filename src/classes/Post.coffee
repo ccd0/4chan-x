@@ -199,6 +199,7 @@ class Post
       isVideo:    /webm$/i.test link.href
       dimensions: info[0].match(/\d+x\d+/)?[0]
       tag:        info[0].match(/,[^,]*, ([a-z]+)\)/i)?[1]
+      MD5:        fileText.dataset.md5
     size  = +@file.size.match(/[\d.]+/)[0]
     unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
     size *= 1024 while unit-- > 0

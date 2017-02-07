@@ -39,6 +39,8 @@ Build.Test =
       $.rmClass el, 'prettyprinted'
     for el in $$ 'pre[style=""]', root2
       el.removeAttribute 'style'
+    # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
+    $('.fileInfo[data-md5]', root2)?.removeAttribute 'data-md5'
     textNodes = $.X './/text()', root2
     i = 0
     while (node = textNodes.snapshotItem i++)
