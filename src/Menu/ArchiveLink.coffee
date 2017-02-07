@@ -7,7 +7,7 @@ ArchiveLink =
 
     entry =
       el: div
-      order: 90
+      order: 60
       open: ({ID, thread, board}) ->
         !!Redirect.to 'thread', {postID: ID, threadID: thread.ID, boardID: board.ID}
       subEntries: []

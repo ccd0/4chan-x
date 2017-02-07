@@ -11,7 +11,7 @@ QR.oekaki =
 
       Menu.menu.addEntry
         el: a
-        order: 95
+        order: 90
         open: (post) ->
           QR.oekaki.menu.post = post
           {file} = post

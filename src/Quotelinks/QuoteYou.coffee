@@ -63,7 +63,7 @@ QuoteYou =
       $.on input, 'change', QuoteYou.menu.toggle
       Menu.menu?.addEntry
         el: label
-        order: 12
+        order: 80
         open: (post) ->
           QuoteYou.menu.post = (post.origin or post)
           input.checked = QuoteYou.isYou post
