@@ -168,7 +168,6 @@ Captcha.v1 =
     @nodes.img.alt = challenge
     @nodes.img.src = challenge_image.src
     @nodes.input.value = ''
-    Captcha.cache.clear()
 
   count: ->
     count = Captcha.cache.getCount()
