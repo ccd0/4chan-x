@@ -651,7 +651,7 @@ QR =
       withCredentials: true
       onload: QR.response
       onerror: ->
-        # Connection error, or www.4chan.org/banned
+        # Connection error
         delete QR.req
         post.unlock()
         QR.cooldown.auto = false
