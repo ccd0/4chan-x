@@ -52,7 +52,7 @@ Sauce =
     return null unless !parts['types']  or ext           in parts['types'].split  ','
     return null unless !parts['regexp'] or (matches = post.file.name.match parts['regexp'])
 
-    skip = false
+    missing = []
     for key in ['url', 'text']
       parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi|\$\d+)/g, (orig, parameter) ->
         if parameter[0] is '$'
@@ -61,7 +61,7 @@ Sauce =
         else
           type = Sauce.formatters[parameter] post, ext
           if not type?
-            skip = true
+            missing.push parameter
             return ''
 
         if key is 'url' and parameter not in ['%', 'semi']
@@ -69,7 +69,12 @@ Sauce =
           type = encodeURIComponent type
         type
 
-    return null if skip
+    if post.board.ID is 'f' and missing.length and !missing.filter((x) -> !/^.?MD5$/.test(x)).length
+      a = Sauce.link.cloneNode false
+      a.dataset.skip = '1'
+      return a
+
+    return null if missing.length
 
     a = Sauce.link.cloneNode false
     a.href = parts['url']
@@ -83,10 +88,9 @@ Sauce =
     nodes = []
     skipped = []
     for link in Sauce.links
-      if not (node = Sauce.createSauceLink link, @)
-        node = Sauce.link.cloneNode false
-        skipped.push [link, node]
-      nodes.push $.tn(' '), node
+      if (node = Sauce.createSauceLink link, @)
+        nodes.push $.tn(' '), node
+        skipped.push [link, node] if node.dataset.skip
     $.add @file.text, nodes
 
     if @board.ID is 'f'
