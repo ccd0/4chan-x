@@ -696,13 +696,7 @@ QR =
     post.unlock()
 
     resDoc  = req.response
-    if ban  = $ '.banType', resDoc # banned/warning
-      err   = $.el 'span',
-        if ban.textContent.toLowerCase() is 'banned'
-          <%= html('You are banned on &{$(".board", resDoc)}! ;_;<br>Click <a href="//www.4chan.org/banned" target="_blank">here</a> to see the reason.') %>
-        else
-          <%= html('You were issued a warning on &{$(".board", resDoc)} as &{$(".nameBlock", resDoc)}.<br>Reason: &{$(".reason", resDoc)}') %>
-    else if err = resDoc.getElementById 'errmsg' # error!
+    if (err = resDoc.getElementById 'errmsg') # error!
       $('a', err)?.target = '_blank' # duplicate image link
     else if resDoc.title isnt 'Post successful!'
       err = 'Connection error with sys.4chan.org.'
