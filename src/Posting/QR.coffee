@@ -661,6 +661,8 @@ QR =
         # On connection error, the post most likely didn't go through.
         # If the post did go through, it should be stopped by the duplicate reply cooldown.
         delete QR.req
+        Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
+        delete QR.currentCaptcha
         post.unlock()
         QR.cooldown.auto = true
         QR.cooldown.addDelay post, 2
@@ -681,6 +683,7 @@ QR =
           QR.status()
 
     if captcha?
+      QR.currentCaptcha = captcha
       if captcha.challenge?
         extra.form.append 'recaptcha_challenge_field', captcha.challenge
         extra.form.append 'recaptcha_response_field', captcha.response
@@ -705,8 +708,11 @@ QR =
       $('a', err)?.target = '_blank' # duplicate image link
     else if (connErr = resDoc.title isnt 'Post successful!')
       err = QR.connectionError()
+      Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
     else if req.status isnt 200
       err = "Error #{req.statusText} (#{req.status})"
+
+    delete QR.currentCaptcha
 
     if err
       if /captcha|verification/i.test(err.textContent) or connErr
@@ -809,6 +815,8 @@ QR =
     if QR.req and !QR.req.isUploadFinished
       QR.req.abort()
       delete QR.req
+      Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
+      delete QR.currentCaptcha
       QR.posts[0].unlock()
       QR.cooldown.auto = false
       QR.notifications.push new Notice 'info', 'QR upload aborted.', 5
