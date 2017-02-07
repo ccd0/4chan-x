@@ -146,7 +146,7 @@ QR =
       return
     QR.nodes.el.hidden = true
     QR.cleanNotifications()
-    d.activeElement.blur()
+    QR.blur()
     $.rmClass QR.nodes.el, 'dump'
     $.addClass QR.shortcut, 'disabled'
     new QR.post true
@@ -168,7 +168,7 @@ QR =
       getComputedStyle(el).visibility isnt 'hidden' and el.getBoundingClientRect().bottom > 0
 
   hide: ->
-    d.activeElement.blur()
+    QR.blur()
     $.addClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = true
 
@@ -181,6 +181,9 @@ QR =
       QR.hide()
     else
       QR.unhide()
+
+  blur: ->
+    d.activeElement.blur() if QR.nodes.el.contains(d.activeElement)
 
   toggleSJIS: (e) ->
     e.preventDefault()
