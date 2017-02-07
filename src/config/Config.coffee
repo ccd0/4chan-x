@@ -437,7 +437,7 @@ Config =
       'Auto Hide QR': [
         true
         'Automatically hide the quick reply when posting.'
-        1
+        2
       ]
       'Open Post in New Tab': [
         true
