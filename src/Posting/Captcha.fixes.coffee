@@ -18,6 +18,9 @@ Captcha.fixes =
   cssNoscript: '''
     .fbc-payload-imageselect {
       position: relative;
+      /* XXX Fixes for Google's broken CSS */
+      display: inline-block;
+      margin-left: 0;
     }
     .fbc-payload-imageselect > label {
       position: absolute;
