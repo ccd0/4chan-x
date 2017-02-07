@@ -738,7 +738,6 @@ QR =
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.captcha.setup(QR.cooldown.auto and d.activeElement in [QR.nodes.status, d.body])
-      QR.cooldown.auto = false if QR.captcha.isEnabled and !Captcha.cache.getCount()
       QR.status()
       QR.error err
       return
