@@ -636,11 +636,6 @@ QR =
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.posts.length > 1
-    if Conf['Auto Hide QR'] and !QR.cooldown.auto
-      QR.hide()
-    if !QR.cooldown.auto and $.x 'ancestor::div[@id="qr"]', d.activeElement
-      # Unfocus the focused element if it is one within the QR and we're not auto-posting.
-      d.activeElement.blur()
 
     post.lock()
 
@@ -767,11 +762,17 @@ QR =
 
     lastPostToThread = not (do -> return true for p in QR.posts[1..] when p.thread is post.thread)
 
-    unless Conf['Persistent QR'] or postsCount
-      QR.close()
-    else
+    if postsCount
       post.rm()
       QR.captcha.setup(d.activeElement is QR.nodes.status)
+    else if Conf['Persistent QR']
+      post.rm()
+      if Conf['Auto Hide QR']
+        QR.hide()
+      else
+        QR.blur()
+    else
+      QR.close()
 
     QR.cleanNotifications()
     if Conf['Posting Success Notifications']
