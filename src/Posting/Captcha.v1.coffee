@@ -21,6 +21,8 @@ Captcha.v1 =
     $.on input, 'blur',  QR.focusout
     $.on input, 'focus', QR.focusin
     $.on input, 'keydown', QR.captcha.keydown.bind QR.captcha
+    # Disable auto-posting if you're typing the captcha during the last 5 seconds of the cooldown.
+    $.on input, 'input', -> QR.posts[0].preventAutoPost() unless Captcha.cache.getCount()
     $.on @nodes.img.parentNode, 'click', QR.captcha.reload.bind QR.captcha
 
     $.addClass QR.nodes.el, 'has-captcha', 'captcha-v1'
