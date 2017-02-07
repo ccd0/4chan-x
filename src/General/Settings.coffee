@@ -416,6 +416,8 @@ Settings =
       addSauces Config['sauces'].match(/# Known filename formats:(?:\n.+)*|$/)[0].split('\n')
     if compareString < '00001.00013.00007.00002'
       setD 'Require OP Quote Link', true
+    if compareString < '00001.00013.00008.00000'
+      setD 'Download Link', true
     changes
 
   loadSettings: (data, cb) ->

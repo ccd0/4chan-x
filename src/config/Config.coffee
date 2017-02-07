@@ -333,7 +333,7 @@ Config =
         1
       ]
       'Download Link': [
-        true
+        false
         'Add a download with original filename link to the menu.'
         1
       ]
