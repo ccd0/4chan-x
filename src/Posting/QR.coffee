@@ -675,31 +675,14 @@ QR =
           QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
           QR.status()
 
-    cb = (response) ->
-      if response?
-        if response.challenge?
-          extra.form.append 'recaptcha_challenge_field', response.challenge
-          extra.form.append 'recaptcha_response_field', response.response
-        else
-          extra.form.append 'g-recaptcha-response', response.response
-      QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
-      QR.req.progress = '...'
-
-    if typeof captcha is 'function'
-      # Wait for captcha to be verified before submitting post.
-      QR.req =
-        progress: '...'
-        abort: -> cb = null
-      captcha (response) ->
-        if response
-          cb? response
-        else
-          delete QR.req
-          post.unlock()
-          QR.cooldown.auto = !!Captcha.cache.getCount()
-          QR.status()
-    else
-      cb captcha
+    if captcha?
+      if captcha.challenge?
+        extra.form.append 'recaptcha_challenge_field', captcha.challenge
+        extra.form.append 'recaptcha_response_field', captcha.response
+      else
+        extra.form.append 'g-recaptcha-response', captcha.response
+    QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
+    QR.req.progress = '...'
 
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
