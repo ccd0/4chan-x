@@ -2,6 +2,17 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.13.8
+
+**v1.13.8.0** *(2017-02-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.7.2.
+- Retry posting on connection errors using the same captcha.
+- Don't autohide QR while uploading is in progress. (#222) Also, `Auto Hide QR` is now a suboption of `Persistent QR`.
+- Various minor captcha-related bugfixes and improvements.
+- Sauce link optimizations and bugfixes.
+- Move You checkbox down in menu (beneath Archive). #1277
+- Turn `Download Link` off by default in new installs. #1222
+
 ### v1.13.7
 
 **v1.13.7.2** *(2017-02-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.2/builds/4chan-X-noupdate.crx)]
