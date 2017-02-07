@@ -127,10 +127,6 @@ Captcha.v2 =
     @fixQRPosition()
     $.on iframe, 'load', @fixQRPosition
     iframe.focus() if d.activeElement is @nodes.counter
-    # XXX Stop Recaptcha from changing focus from iframe -> body -> iframe on submit.
-    $.global ->
-      f = document.querySelector('#qr iframe')
-      f.focus = f.blur = ->
     # XXX Make sure scroll on space prevention (see src/css/style.css) doesn't cause scrolling of div
     if $.engine in ['blink', 'edge'] and iframe.parentNode in $$('#qr .captcha-container > div > div:first-of-type')
       $.on iframe.parentNode, 'scroll', -> @scrollTop = 0
