@@ -241,6 +241,13 @@ QR =
             notif.close()
           , 7 * $.SECOND
 
+  connectionError: ->
+    $.el 'span',
+      <%= html(
+        'Connection error while posting. ' +
+        '[<a href="' + meta.faq + '#connection-errors" target="_blank">More info</a>]'
+      ) %>
+
   notifications: []
 
   cleanNotifications: ->
@@ -651,16 +658,14 @@ QR =
       withCredentials: true
       onload: QR.response
       onerror: ->
-        # Connection error
+        # On connection error, the post most likely didn't go through.
+        # If the post did go through, it should be stopped by the duplicate reply cooldown.
         delete QR.req
         post.unlock()
-        QR.cooldown.auto = false
+        QR.cooldown.auto = true
+        QR.cooldown.addDelay post, 2
         QR.status()
-        QR.error $.el 'span',
-          <%= html(
-            'Connection error while posting. ' +
-            '[<a href="' + meta.faq + '#connection-errors" target="_blank">More info</a>]'
-          ) %>
+        QR.error QR.connectionError()
     extra =
       form: $.formData formData
     if Conf['Show Upload Progress']
@@ -698,13 +703,13 @@ QR =
     resDoc  = req.response
     if (err = resDoc.getElementById 'errmsg') # error!
       $('a', err)?.target = '_blank' # duplicate image link
-    else if resDoc.title isnt 'Post successful!'
-      err = 'Connection error with sys.4chan.org.'
+    else if (connErr = resDoc.title isnt 'Post successful!')
+      err = QR.connectionError()
     else if req.status isnt 200
       err = "Error #{req.statusText} (#{req.status})"
 
     if err
-      if /captcha|verification/i.test(err.textContent) or err is 'Connection error with sys.4chan.org.'
+      if /captcha|verification/i.test(err.textContent) or connErr
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent
           err = 'You mistyped the CAPTCHA, or the CAPTCHA malfunctioned.'
@@ -712,9 +717,10 @@ QR =
           err = 'This CAPTCHA is no longer valid because it has expired.'
         # Something must've gone terribly wrong if you get captcha errors without captchas.
         # Don't auto-post indefinitely in that case.
-        QR.cooldown.auto = QR.captcha.isEnabled or err is 'Connection error with sys.4chan.org.'
+        QR.cooldown.auto = QR.captcha.isEnabled or connErr
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
+        # If the post did go through, it should be stopped by the duplicate reply cooldown.
         QR.cooldown.addDelay post, 2
       else if err.textContent and (m = err.textContent.match /(?:(\d+)\s+minutes?\s+)?(\d+)\s+second/i) and !/duplicate|hour/i.test(err.textContent)
         QR.cooldown.auto = !/have\s+been\s+muted/i.test(err.textContent)
