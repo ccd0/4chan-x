@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.8.0
+// @version      1.13.8.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -151,7 +151,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.8.0',
+  VERSION:   '1.13.8.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -21463,7 +21463,7 @@ QR = (function() {
       return $.event('QRDialogCreation', null, dialog);
     },
     submit: function(e) {
-      var captcha, err, extra, filetag, formData, options, post, ref, thread, threadID, wasAuto;
+      var captcha, err, extra, filetag, formData, options, post, ref, thread, threadID;
       if (e != null) {
         e.preventDefault();
       }
@@ -21474,9 +21474,6 @@ QR = (function() {
       $.forceSync('cooldowns');
       if (QR.cooldown.seconds) {
         QR.cooldown.auto = !QR.cooldown.auto;
-        if (QR.cooldown.auto) {
-          QR.captcha.setup(true);
-        }
         QR.status();
         return;
       }
@@ -21518,7 +21515,6 @@ QR = (function() {
         QR.error(err);
         return;
       }
-      wasAuto = QR.cooldown.auto;
       QR.cooldown.auto = QR.posts.length > 1;
       post.lock();
       formData = {
@@ -21577,10 +21573,7 @@ QR = (function() {
       }
       QR.req = $.ajax("https://sys.4chan.org/" + g.BOARD + "/post", options, extra);
       QR.req.progress = '...';
-      QR.status();
-      if (!wasAuto) {
-        return QR.captcha.setup(true);
-      }
+      return QR.status();
     },
     response: function() {
       var URL, _, connErr, err, h1, isReply, lastPostToThread, m, open, post, postID, postsCount, ref, ref1, ref2, req, resDoc, seconds, threadID;
@@ -21656,6 +21649,7 @@ QR = (function() {
       })());
       if (postsCount) {
         post.rm();
+        QR.captcha.setup(d.activeElement === QR.nodes.status);
       } else if (Conf['Persistent QR']) {
         post.rm();
         if (Conf['Auto Hide QR']) {
