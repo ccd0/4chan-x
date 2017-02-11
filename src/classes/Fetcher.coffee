@@ -173,7 +173,9 @@ class Fetcher
       dateText: data.fourchan_date
       commentHTML: comment
     delete o.info.uniqueID if o.info.capcode
-    if data.media?.media_filename
+    if data.media and !!+data.media.banned
+      o.fileDeleted = true
+    else if data.media?.media_filename
       {thumb_link} = data.media
       # Fix URLs missing origin
       thumb_link = url.split('/', 3).join('/') + thumb_link if thumb_link?[0] is '/'
