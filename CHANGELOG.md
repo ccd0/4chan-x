@@ -4,6 +4,9 @@
 
 ### v1.13.8
 
+**v1.13.8.3** *(2017-02-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.3/builds/4chan-X-noupdate.crx)]
+- Make posts from archives with files deleted (by archive) show as "File Deleted". #1287
+
 **v1.13.8.2** *(2017-02-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.2/builds/4chan-X-noupdate.crx)]
 - Update for recent site changes. Fixes quote preview on archive page.
 
