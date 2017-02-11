@@ -6,7 +6,7 @@ ImageHost =
       cb:   @node
 
   host: ->
-    if @useFaster then 'i.4cdn.org' else 'is.4chan.org'
+    'i.4cdn.org'
   flashHost: ->
     'i.4cdn.org'
   thumbHost: ->
