@@ -4,6 +4,9 @@
 
 ### v1.13.8
 
+**v1.13.8.2** *(2017-02-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.2/builds/4chan-X-noupdate.crx)]
+- Update for recent site changes. Fixes quote preview on archive page.
+
 **v1.13.8.1** *(2017-02-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.1/builds/4chan-X-noupdate.crx)]
 - Fix bug from v1.13.8.0 causing v1 captcha sometimes not to reload when needed.
 

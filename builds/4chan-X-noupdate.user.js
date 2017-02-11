@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.8.1
+// @version      1.13.8.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -151,7 +151,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.8.1',
+  VERSION:   '1.13.8.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -8641,7 +8641,7 @@ Get = (function() {
         path = link.pathname.split(/\/+/);
         boardID = path[1];
         threadID = path[3];
-        postID = link.hash.slice(2);
+        postID = link.hash ? link.hash.slice(2) : path[3];
       } else {
         ref = link.dataset, boardID = ref.boardID, threadID = ref.threadID, postID = ref.postID;
         threadID || (threadID = 0);
@@ -13286,11 +13286,7 @@ ImageHost = (function() {
       });
     },
     host: function() {
-      if (this.useFaster) {
-        return 'i.4cdn.org';
-      } else {
-        return 'is.4chan.org';
-      }
+      return 'i.4cdn.org';
     },
     flashHost: function() {
       return 'i.4cdn.org';
