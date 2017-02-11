@@ -25,7 +25,7 @@ Get =
       path     = link.pathname.split /\/+/
       boardID  = path[1]
       threadID = path[3]
-      postID   = link.hash[2..]
+      postID   = if link.hash then link.hash[2..] else path[3]
     else # resurrected quote
       {boardID, threadID, postID} = link.dataset
       threadID or= 0
