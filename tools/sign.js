@@ -9,6 +9,7 @@ var archive = fs.readFileSync(`testbuilds/${pkg.name}${channel}.crx.zip`);
 var extension = new crx({privateKey, loaded: true});
 extension.pack(archive).then((data) =>
   fs.writeFileSync(`testbuilds/${pkg.name}${channel}.crx`, data)
-).catch(function() {
+).catch(function(err) {
+  console.error(err);
   process.exit(1);
 });
