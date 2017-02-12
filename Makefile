@@ -189,7 +189,7 @@ testbuilds/$(name)$1.crx.zip : \
  package.json version.json tools/zip-crx.js node_modules/jszip/package.json
 	node tools/zip-crx.js $1
 
-testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.js node_modules/crx/package.json
+testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.js node_modules/node-rsa/package.json
 	node tools/sign.js $1
 
 testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.json $(template_deps) | testbuilds
