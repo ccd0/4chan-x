@@ -115,8 +115,8 @@ node_modules/%/package.json : .events/npm
 
 else
 
-node_modules/%/package.json :
-	npm install $*
+node_modules/%/package.json : package.json
+	npm install $(call QUOTE,$*@$(version_$*))
 
 endif
 
