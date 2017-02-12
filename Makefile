@@ -260,7 +260,7 @@ distready : dist $(wildcard dist/* dist/*/*)
 	git push web $(meta_distBranch)
 	echo -> $@
 
-.events2/push-store : .git/refs/tags/stable | .events2 distready node_modules/webstore-upload/package.json
+.events2/push-store : .git/refs/tags/stable | .events2 distready node_modules/webstore-upload/package.json node_modules/request/package.json
 	node tools/webstore.js
 	echo -> $@
 
