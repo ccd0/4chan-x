@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "coffee-script": "=1.9.3",
-    "crx": "^3.0.3",
+    "crx": "=3.0.3",
     "esprima": "^3.0.0",
     "font-awesome": "=4.6.3",
     "jshint": "^2.9.3",
