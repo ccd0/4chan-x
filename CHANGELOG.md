@@ -4,6 +4,9 @@
 
 ### v1.13.8
 
+**v1.13.8.4** *(2017-02-21)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.4/builds/4chan-X-noupdate.crx)]
+- As a workaround for 4chan's recent removal of the ability to start new threads using the v1 (text) Recaptcha, the `Use Recaptcha v1` option now only applies within threads. You can enable the new option `Use Recaptcha v1 on Index` to get Recaptcha v1 in the index and catalog, but unless 4chan's change is reverted, this will interfere with starting threads.
+
 **v1.13.8.3** *(2017-02-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.3/builds/4chan-X-noupdate.crx)]
 - Make posts from archives with files deleted (by archive) show as "File Deleted". #1287
 

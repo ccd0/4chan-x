@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.8.3
+// @version      1.13.8.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -151,7 +151,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.8.3',
+  VERSION:   '1.13.8.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -316,7 +316,8 @@ Config = (function() {
         'Auto-load captcha': [false, 'Automatically load the captcha in the QR even if your post is empty.', 1],
         'Post on Captcha Completion': [false, 'Submit the post immediately when the captcha is completed.', 1],
         'Captcha Fixes': [true, 'Make captcha easier to use, especially with the keyboard.'],
-        'Use Recaptcha v1': [false, 'Use the old text version of Recaptcha in the post form.'],
+        'Use Recaptcha v1': [false, 'Use the old text version of Recaptcha in the post form in threads.'],
+        'Use Recaptcha v1 on Index': [false, 'Use the old text version of Recaptcha on the index and catalog. Warning: May interfere with starting threads.'],
         'Use Recaptcha v1 in Reports': [false, 'Use the text captcha in the report window.'],
         'Force Noscript Captcha': [false, 'Use the non-Javascript fallback captcha even if Javascript is enabled (Recaptcha v2 only).'],
         'Pass Link': [false, 'Add a 4chan Pass login link to the bottom of the page.']
@@ -19994,7 +19995,7 @@ Captcha = {};
         });
         return;
       }
-      if (((Conf['Use Recaptcha v1'] && location.hostname === 'boards.4chan.org') || (Conf['Use Recaptcha v1 in Reports'] && location.hostname === 'sys.4chan.org')) && Main.jsEnabled) {
+      if (((Conf[g.VIEW === 'thread' ? 'Use Recaptcha v1' : 'Use Recaptcha v1 on Index'] && location.hostname === 'boards.4chan.org') || (Conf['Use Recaptcha v1 in Reports'] && location.hostname === 'sys.4chan.org')) && Main.jsEnabled) {
         $.ready(Captcha.replace.v1);
         return;
       }
@@ -20764,7 +20765,7 @@ QR = (function() {
       if (g.VIEW === 'archive') {
         return;
       }
-      version = Conf['Use Recaptcha v1'] && Main.jsEnabled ? 'v1' : 'v2';
+      version = Conf[g.VIEW === 'thread' ? 'Use Recaptcha v1' : 'Use Recaptcha v1 on Index'] && Main.jsEnabled ? 'v1' : 'v2';
       this.captcha = Captcha[version];
       $.on(d, '4chanXInitFinished', function() {
         return BoardConfig.ready(QR.initReady);
