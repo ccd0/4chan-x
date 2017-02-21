@@ -21,9 +21,11 @@ Captcha.cache =
     @captchas = captchas
     @count()
 
-  getOne: ->
+  getOne: (isReply) ->
     @clear()
-    if (captcha = @captchas.shift())
+    i = @captchas.findIndex((x) -> isReply or !x.challenge?)
+    if i >= 0
+      captcha = @captchas.splice(i, 1)[0]
       $.set 'captchas', @captchas
       @count()
       captcha

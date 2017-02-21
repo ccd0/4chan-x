@@ -621,7 +621,7 @@ QR =
       err or= 'Original comment required.'
 
     if QR.captcha.isEnabled and !err
-      captcha = QR.captcha.getOne()
+      captcha = QR.captcha.getOne(!!threadID)
       unless captcha
         err = 'No valid captcha.'
         QR.captcha.setup(!QR.cooldown.auto or d.activeElement is QR.nodes.status)

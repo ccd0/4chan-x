@@ -134,8 +134,8 @@ Captcha.v1 =
     delete @occupied
     @beforeSetup() if @nodes
 
-  getOne: ->
-    if (captcha = Captcha.cache.getOne())
+  getOne: (isReply) ->
+    if (captcha = Captcha.cache.getOne isReply)
       captcha
     else
       challenge = @nodes.img.alt

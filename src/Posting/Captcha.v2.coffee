@@ -153,8 +153,8 @@ Captcha.v2 =
       $.rm node
     return
 
-  getOne: ->
-    Captcha.cache.getOne()
+  getOne: (isReply) ->
+    Captcha.cache.getOne isReply
 
   save: (pasted, token) ->
     Captcha.cache.save
