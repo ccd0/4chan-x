@@ -9,7 +9,7 @@ Captcha.replace =
       return
 
     if (
-      (Conf['Use Recaptcha v1'] and location.hostname is 'boards.4chan.org') or
+      (Conf[if g.VIEW is 'thread' then 'Use Recaptcha v1' else 'Use Recaptcha v1 on Index'] and location.hostname is 'boards.4chan.org') or
       (Conf['Use Recaptcha v1 in Reports'] and location.hostname is 'sys.4chan.org')
     ) and Main.jsEnabled
       $.ready Captcha.replace.v1

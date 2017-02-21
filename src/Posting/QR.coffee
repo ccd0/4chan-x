@@ -28,7 +28,7 @@ QR =
 
     return if g.VIEW is 'archive'
 
-    version = if Conf['Use Recaptcha v1'] and Main.jsEnabled then 'v1' else 'v2'
+    version = if Conf[if g.VIEW is 'thread' then 'Use Recaptcha v1' else 'Use Recaptcha v1 on Index'] and Main.jsEnabled then 'v1' else 'v2'
     @captcha = Captcha[version]
 
     $.on d, '4chanXInitFinished', -> BoardConfig.ready QR.initReady

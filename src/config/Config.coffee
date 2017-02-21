@@ -495,7 +495,11 @@ Config =
       ]
       'Use Recaptcha v1': [
         false
-        'Use the old text version of Recaptcha in the post form.'
+        'Use the old text version of Recaptcha in the post form in threads.'
+      ]
+      'Use Recaptcha v1 on Index': [
+        false
+        'Use the old text version of Recaptcha on the index and catalog. Warning: May interfere with starting threads.'
       ]
       'Use Recaptcha v1 in Reports': [
         false
