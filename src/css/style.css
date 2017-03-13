@@ -124,6 +124,9 @@ body > div[style*=" top: -10000px;"] {
   word-wrap: break-word;
   max-width: calc(100vw - 90px);
 }
+body.is_catalog .thread > a > img {
+  display: inline-block;
+}
 
 /* Ads */
 .ad-cnt > *, .adg-rects > * {
