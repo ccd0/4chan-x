@@ -16,7 +16,7 @@ Volume =
         name: 'Mouse Wheel Volume'
         cb:   @node
 
-    return unless g.BOARD.ID in ['gif', 'wsg']
+    return unless g.BOARD.ID in ['gif', 'wsg', 'r', 'wsr']
 
     if Conf['Mouse Wheel Volume']
       Callbacks.CatalogThread.push
