@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.8.4
+// @version      1.13.8.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -151,7 +151,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.8.4',
+  VERSION:   '1.13.8.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1331,6 +1331,9 @@ body > div[style*=\" top: -10000px;\"] {\n\
 :root:not(.ua-webkit):not(.ua-blink) .fileText {\n\
   word-wrap: break-word;\n\
   max-width: calc(100vw - 90px);\n\
+}\n\
+body.is_catalog .thread > a > img {\n\
+  display: inline-block;\n\
 }\n\
 /* Ads */\n\
 .ad-cnt > *, .adg-rects > * {\n\
@@ -13993,7 +13996,7 @@ Volume = (function() {
           cb: this.node
         });
       }
-      if ((ref1 = g.BOARD.ID) !== 'gif' && ref1 !== 'wsg') {
+      if ((ref1 = g.BOARD.ID) !== 'gif' && ref1 !== 'wsg' && ref1 !== 'r' && ref1 !== 'wsr') {
         return;
       }
       if (Conf['Mouse Wheel Volume']) {
@@ -19741,10 +19744,14 @@ Captcha = {};
       this.captchas = captchas;
       return this.count();
     },
-    getOne: function() {
-      var captcha;
+    getOne: function(isReply) {
+      var captcha, i;
       this.clear();
-      if ((captcha = this.captchas.shift())) {
+      i = this.captchas.findIndex(function(x) {
+        return isReply || (x.challenge == null);
+      });
+      if (i >= 0) {
+        captcha = this.captchas.splice(i, 1)[0];
         $.set('captchas', this.captchas);
         this.count();
         return captcha;
@@ -20283,9 +20290,9 @@ Captcha = {};
         return this.beforeSetup();
       }
     },
-    getOne: function() {
+    getOne: function(isReply) {
       var captcha, challenge, response, timeout;
-      if ((captcha = Captcha.cache.getOne())) {
+      if ((captcha = Captcha.cache.getOne(isReply))) {
         return captcha;
       } else {
         challenge = this.nodes.img.alt;
@@ -20609,8 +20616,8 @@ Captcha = {};
         $.rm(node);
       }
     },
-    getOne: function() {
-      return Captcha.cache.getOne();
+    getOne: function(isReply) {
+      return Captcha.cache.getOne(isReply);
     },
     save: function(pasted, token) {
       var base, focus, ref;
@@ -21501,7 +21508,7 @@ QR = (function() {
         err || (err = 'Original comment required.');
       }
       if (QR.captcha.isEnabled && !err) {
-        captcha = QR.captcha.getOne();
+        captcha = QR.captcha.getOne(!!threadID);
         if (!captcha) {
           err = 'No valid captcha.';
           QR.captcha.setup(!QR.cooldown.auto || d.activeElement === QR.nodes.status);
@@ -22629,7 +22636,7 @@ QR = (function() {
         } else if (duration > QR.max_duration_video) {
           this.fileError("Video too long (video: " + duration + "s, max: " + QR.max_duration_video + "s)");
         }
-        if (((ref = g.BOARD.ID) !== 'gif' && ref !== 'wsg') && $.hasAudio(el)) {
+        if (((ref = g.BOARD.ID) !== 'gif' && ref !== 'wsg' && ref !== 'r' && ref !== 'wsr') && $.hasAudio(el)) {
           return this.fileError('Audio not allowed');
         }
       }
