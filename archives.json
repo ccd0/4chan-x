@@ -15,8 +15,8 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
-  "files": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
+  "boards": ["c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
+  "files": ["c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
   "reports": true
 }, {
   "uid": 8,
