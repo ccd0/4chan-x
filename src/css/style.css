@@ -21,13 +21,11 @@
   font: 13px sans-serif;
   outline: none;
   transition: color .25s, border-color .25s;
-  transition: color .25s, border-color .25s;
 }
-.field::-moz-placeholder,
-.field:hover::-moz-placeholder {
-  color: #AAA !important;
-  font-size: 13px !important;
-  opacity: 1.0 !important;
+.field::-moz-placeholder {
+  color: #AAA;
+  font-size: 13px;
+  opacity: 1;
 }
 .captch-img:hover,
 .field:hover {
@@ -2315,9 +2313,9 @@ a:only-of-type > .remove {
 :root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-count {
   right: 178px !important;
 }
-:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-buttons,
-:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-name,
-:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-count {
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-buttons,
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-name,
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-count {
   right: 28px !important;
 }
 :root.gallery-open.fixed #header-bar:not(.autohide),
