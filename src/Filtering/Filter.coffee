@@ -150,7 +150,7 @@ Filter =
   tripcode:   (post) -> post.info.tripcode
   capcode:    (post) -> post.info.capcode
   pass:       (post) -> post.info.pass
-  subject:    (post) -> post.info.subject
+  subject:    (post) -> post.info.subject or (if post.isReply then undefined else '')
   comment:    (post) -> (post.info.comment ?= Build.parseComment post.info.commentHTML.innerHTML)
   flag:       (post) -> post.info.flag
   filename:   (post) -> post.file?.name
