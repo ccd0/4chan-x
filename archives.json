@@ -5,8 +5,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
-  "files": ["adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
+  "boards": ["adv", "f", "hr", "mlpol", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
+  "files": ["adv", "f", "hr", "mlpol", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
   "reports": true
 }, {
   "uid": 4,
