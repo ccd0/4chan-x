@@ -24,7 +24,7 @@
   "domain": "archive.rebeccablacktech.com",
   "http": false,
   "https": true,
-  "software": "fuuka",
+  "software": "foolfuuka",
   "boards": ["cgl", "g", "mu"],
   "files": ["cgl", "g", "mu"]
 }, {
