@@ -3,7 +3,7 @@ Captcha.v2 =
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return if not (@isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt, #captcha-forced-noscript')
+    return if not (@isEnabled = !!$ '#g-recaptcha, #captcha-forced-noscript')
 
     if (@noscript = Conf['Force Noscript Captcha'] or not Main.jsEnabled)
       $.addClass QR.nodes.el, 'noscript-captcha'

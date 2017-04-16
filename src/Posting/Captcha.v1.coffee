@@ -3,7 +3,7 @@ Captcha.v1 =
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return if not (@isEnabled = !!$ '#g-recaptcha, #captchaContainerAlt')
+    return if not (@isEnabled = !!$ '#g-recaptcha, #captcha-forced-noscript')
 
     imgContainer = $.el 'div',
       className: 'captcha-img'
@@ -31,22 +31,19 @@ Captcha.v1 =
     Captcha.cache.init()
     $.on d, 'CaptchaCount', @count.bind(@)
 
-    @replace()
+    @script = $.el 'script',
+      src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
+    $.add d.head, @script
+
+    container = $.el 'div',
+      id: 'captchaContainerAlt'
+      hidden: true
+    $.add d.body, container
+
     @beforeSetup()
     @setup() if Conf['Auto-load captcha']
-    new MutationObserver(@afterSetup).observe $.id('captchaContainerAlt'), childList: true
+    new MutationObserver(@afterSetup).observe container, childList: true
     @afterSetup() # reCAPTCHA might have loaded before the QR.
-
-  replace: ->
-    return if @script
-    if not (@script = $ 'script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]', d.head)
-      @script = $.el 'script',
-        src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
-      $.add d.head, @script
-    if old = $.id 'g-recaptcha'
-      container = $.el 'div',
-        id: 'captchaContainerAlt'
-      $.replace old, container
 
   create: ->
     cont = $.id 'captchaContainerAlt'
@@ -71,7 +68,6 @@ Captcha.v1 =
       container = document.getElementById 'captchaContainerAlt'
       options =
         theme:    'clean'
-        tabindex: {"boards.4chan.org": 5}[location.hostname]
         lang:     container.dataset.lang
       if window.Recaptcha
         window.Recaptcha.create '<%= meta.recaptchaKey %>', container, options
