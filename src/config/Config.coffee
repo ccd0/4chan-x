@@ -509,6 +509,10 @@ Config =
         false
         'Use the non-Javascript fallback captcha even if Javascript is enabled (Recaptcha v2 only).'
       ]
+      'Force Noscript Captcha for v1': [
+        false
+        'Force the non-Javascript fallback captcha for Recaptcha v1. Currently only works on HTTPS.'
+      ]
       'Pass Link': [
         false
         'Add a 4chan Pass login link to the bottom of the page.'

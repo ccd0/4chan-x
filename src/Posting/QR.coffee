@@ -28,7 +28,11 @@ QR =
 
     return if g.VIEW is 'archive'
 
-    version = if Conf[if g.VIEW is 'thread' then 'Use Recaptcha v1' else 'Use Recaptcha v1 on Index'] and Main.jsEnabled then 'v1' else 'v2'
+    version = if Conf[if g.VIEW is 'thread' then 'Use Recaptcha v1' else 'Use Recaptcha v1 on Index'] and (Main.jsEnabled or location.protocol is 'https:')
+      noscript = location.protocol is 'https:' and (Conf['Force Noscript Captcha for v1'] or not Main.jsEnabled)
+      if noscript then 'noscript' else 'v1'
+    else
+      'v2'
     @captcha = Captcha[version]
 
     $.on d, '4chanXInitFinished', -> BoardConfig.ready QR.initReady
@@ -680,15 +684,32 @@ QR =
           QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
           QR.status()
 
-    if captcha?
-      QR.currentCaptcha = captcha
-      if captcha.challenge?
-        extra.form.append 'recaptcha_challenge_field', captcha.challenge
-        extra.form.append 'recaptcha_response_field', captcha.response
-      else
-        extra.form.append 'g-recaptcha-response', captcha.response
-    QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
-    QR.req.progress = '...'
+    cb = (response) ->
+      if response?
+        QR.currentCaptcha = response
+        if response.challenge?
+          extra.form.append 'recaptcha_challenge_field', response.challenge
+          extra.form.append 'recaptcha_response_field', response.response
+        else
+          extra.form.append 'g-recaptcha-response', response.response
+      QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
+      QR.req.progress = '...'
+
+    if typeof captcha is 'function'
+      # Wait for captcha to be verified before submitting post.
+      QR.req =
+        progress: '...'
+        abort: -> cb = null
+      captcha (response) ->
+        if response
+          cb? response
+        else
+          delete QR.req
+          post.unlock()
+          QR.cooldown.auto = !!Captcha.cache.getCount()
+          QR.status()
+    else
+      cb captcha
 
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
