@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.8.5
+// @version      1.13.9.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -24,6 +24,8 @@
 // @include      https://www.google.com/recaptcha/api2/bframe?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      http://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      https://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @exclude      http://www.4chan.org/pass
 // @exclude      https://www.4chan.org/pass
 // @exclude      http://www.4chan.org/pass?*
