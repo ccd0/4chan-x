@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.8.5
+// @version      1.13.9.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -24,6 +24,8 @@
 // @include      https://www.google.com/recaptcha/api2/bframe?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      http://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      https://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @exclude      http://www.4chan.org/pass
 // @exclude      https://www.4chan.org/pass
 // @exclude      http://www.4chan.org/pass?*
@@ -151,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.8.5',
+  VERSION:   '1.13.9.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -320,6 +322,7 @@ Config = (function() {
         'Use Recaptcha v1 on Index': [false, 'Use the old text version of Recaptcha on the index and catalog. Warning: May interfere with starting threads.'],
         'Use Recaptcha v1 in Reports': [false, 'Use the text captcha in the report window.'],
         'Force Noscript Captcha': [false, 'Use the non-Javascript fallback captcha even if Javascript is enabled (Recaptcha v2 only).'],
+        'Force Noscript Captcha for v1': [false, 'Force the non-Javascript fallback captcha for Recaptcha v1. Currently only works on HTTPS.'],
         'Pass Link': [false, 'Add a 4chan Pass login link to the bottom of the page.']
       },
       'Quote Links': {
@@ -1230,13 +1233,11 @@ boards:
   font: 13px sans-serif;\n\
   outline: none;\n\
   transition: color .25s, border-color .25s;\n\
-  transition: color .25s, border-color .25s;\n\
 }\n\
-.field::-moz-placeholder,\n\
-.field:hover::-moz-placeholder {\n\
-  color: #AAA !important;\n\
-  font-size: 13px !important;\n\
-  opacity: 1.0 !important;\n\
+.field::-moz-placeholder {\n\
+  color: #AAA;\n\
+  font-size: 13px;\n\
+  opacity: 1;\n\
 }\n\
 .captch-img:hover,\n\
 .field:hover {\n\
@@ -3491,9 +3492,9 @@ a:only-of-type > .remove {\n\
 :root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-count {\n\
   right: 178px !important;\n\
 }\n\
-:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-buttons,\n\
-:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-name,\n\
-:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-count {\n\
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-buttons,\n\
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-name,\n\
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-count {\n\
   right: 28px !important;\n\
 }\n\
 :root.gallery-open.fixed #header-bar:not(.autohide),\n\
@@ -6915,18 +6916,18 @@ Redirect = (function() {
 
   Redirect = {
     archives: [
-      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "reports": true },
-      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "files": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "reports": true },
-      { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "fuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ] },
+      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "reports": true },
+      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "files": [ "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "reports": true },
+      { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ] },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
       { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
       { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ], "files": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ] },
       { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v" ], "files": [] },
       { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
-      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "gd", "po", "qst", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "c", "cgl", "ck", "cm", "con", "d", "diy", "e", "f", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "n", "news", "o", "out", "p", "po", "q", "qa", "qst", "r", "s", "soc", "trv", "u", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
+      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b" ], "files": [ "b" ], "reports": true },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ], "reports": true },
-      { "uid": 32, "name": "4tan", "domain": "boards.4tan.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [], "reports": true },
+      { "uid": 32, "name": "4tan", "domain": "boards.4tan.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [], "reports": true },
       { "uid": 5, "name": "Love is Over", "domain": "archive.loveisover.me", "http": true, "https": false, "software": "foolfuuka", "boards": [ "c", "d", "e", "i", "lgbt", "t", "u" ], "files": [ "c", "d", "e", "i", "lgbt", "t", "u" ] },
       { "uid": 33, "name": "yeet.net", "domain": "yeet.net", "http": true, "https": false, "software": "foolfuuka", "boards": [ "g", "k", "qa" ], "files": [ "g", "k", "qa" ] }
     ],
@@ -7388,7 +7389,7 @@ Filter = (function() {
       return post.info.pass;
     },
     subject: function(post) {
-      return post.info.subject;
+      return post.info.subject || (post.isReply ? void 0 : '');
     },
     comment: function(post) {
       var base;
@@ -19988,6 +19989,286 @@ Captcha = {};
 }).call(this);
 
 (function() {
+  Captcha.noscript = {
+    lifetime: 30 * $.MINUTE,
+    init: function() {
+      var container, input;
+      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
+        return;
+      }
+      if (!(this.isEnabled = !!$('#g-recaptcha, #captcha-forced-noscript'))) {
+        return;
+      }
+      container = $.el('div', {
+        className: 'captcha-img',
+        title: 'Reload reCAPTCHA'
+      });
+      input = $.el('input', {
+        className: 'captcha-input field',
+        title: 'Verification',
+        autocomplete: 'off',
+        spellcheck: false
+      });
+      this.nodes = {
+        container: container,
+        input: input
+      };
+      $.on(input, 'blur', QR.focusout);
+      $.on(input, 'focus', QR.focusin);
+      $.on(input, 'keydown', this.keydown.bind(this));
+      $.on(input, 'input', function() {
+        if (!Captcha.cache.getCount()) {
+          return QR.posts[0].preventAutoPost();
+        }
+      });
+      $.on(this.nodes.container, 'click', (function(_this) {
+        return function() {
+          _this.reload();
+          return _this.nodes.input.focus();
+        };
+      })(this));
+      this.conn = new Connection(null, 'https://www.google.com', {
+        challenge: this.load.bind(this),
+        token: this.save.bind(this),
+        error: this.error.bind(this)
+      });
+      $.addClass(QR.nodes.el, 'has-captcha', 'captcha-v1', 'noscript-captcha');
+      $.after(QR.nodes.com.parentNode, [container, input]);
+      Captcha.cache.init();
+      $.on(d, 'CaptchaCount', this.count.bind(this));
+      this.beforeSetup();
+      return this.setup();
+    },
+    initFrame: function() {
+      var cb, conn, img, ref, ref1;
+      conn = new Connection(window.parent, 'https://boards.4chan.org', {
+        response: function(response) {
+          $.id('recaptcha_response_field').value = response;
+          return HTMLFormElement.prototype.submit.call($('form'));
+        }
+      });
+      if (location.hash === '#response') {
+        conn.send({
+          token: (ref = $('textarea')) != null ? ref.value : void 0,
+          error: (ref1 = $('.recaptcha_input_area')) != null ? ref1.textContent.replace(/:$/, '') : void 0
+        });
+      }
+      if (!(img = $('img'))) {
+        return;
+      }
+      $('form').action = '#response';
+      cb = function() {
+        var canvas;
+        canvas = $.el('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        return conn.send({
+          challenge: canvas.toDataURL()
+        });
+      };
+      if (img.complete) {
+        return cb();
+      } else {
+        return $.on(img, 'load', cb);
+      }
+    },
+    timers: {},
+    iframeURL: function() {
+      var lang, url;
+      url = 'https://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc';
+      if (lang = Conf['captchaLanguage'].trim()) {
+        url += "&hl=" + (encodeURIComponent(lang));
+      }
+      return url;
+    },
+    cb: {
+      focus: function() {
+        return QR.captcha.setup(false, true);
+      }
+    },
+    beforeSetup: function() {
+      var container, input, ref;
+      ref = this.nodes, container = ref.container, input = ref.input;
+      container.hidden = true;
+      input.value = '';
+      input.placeholder = 'Focus to load reCAPTCHA';
+      this.count();
+      return $.on(input, 'focus click', this.cb.focus);
+    },
+    moreNeeded: function() {},
+    setup: function(focus, force) {
+      if (!(this.isEnabled && (force || Captcha.cache.needed()))) {
+        return;
+      }
+      if (!this.nodes.iframe) {
+        this.nodes.iframe = $.el('iframe', {
+          id: 'qr-captcha-iframe',
+          src: this.iframeURL()
+        });
+        $.add(QR.nodes.el, this.nodes.iframe);
+        this.conn.target = this.nodes.iframe;
+      } else if (!this.occupied || force) {
+        this.nodes.iframe.src = this.iframeURL();
+      }
+      this.occupied = true;
+      if (focus) {
+        return this.nodes.input.focus();
+      }
+    },
+    afterSetup: function() {
+      var container, input, ref;
+      ref = this.nodes, container = ref.container, input = ref.input;
+      container.hidden = false;
+      input.placeholder = 'Verification';
+      this.count();
+      $.off(input, 'focus click', this.cb.focus);
+      if (QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight) {
+        QR.nodes.el.style.top = '';
+        return QR.nodes.el.style.bottom = '0px';
+      }
+    },
+    destroy: function() {
+      if (!this.isEnabled) {
+        return;
+      }
+      $.rm(this.nodes.img);
+      delete this.nodes.img;
+      $.rm(this.nodes.iframe);
+      delete this.nodes.iframe;
+      delete this.occupied;
+      return this.beforeSetup();
+    },
+    getOne: function(isReply) {
+      var captcha;
+      if ((captcha = Captcha.cache.getOne(isReply))) {
+        return captcha;
+      } else if (/\S/.test(this.nodes.input.value)) {
+        return (function(_this) {
+          return function(cb) {
+            _this.submitCB = cb;
+            return _this.sendResponse();
+          };
+        })(this);
+      } else {
+        return null;
+      }
+    },
+    sendResponse: function() {
+      var response;
+      response = this.nodes.input.value;
+      if (/\S/.test(response)) {
+        return this.conn.send({
+          response: response
+        });
+      }
+    },
+    save: function(token) {
+      var captcha;
+      delete this.occupied;
+      this.nodes.input.value = '';
+      captcha = {
+        challenge: token,
+        response: 'manual_challenge',
+        timeout: this.timeout
+      };
+      if (this.submitCB) {
+        this.submitCB(captcha);
+        delete this.submitCB;
+        if (Captcha.cache.needed()) {
+          return this.reload();
+        } else {
+          return this.destroy();
+        }
+      } else {
+        Captcha.cache.save(captcha);
+        return this.reload();
+      }
+    },
+    error: function(message) {
+      this.occupied = true;
+      this.nodes.input.value = '';
+      if (this.submitCB) {
+        this.submitCB();
+        delete this.submitCB;
+      }
+      return QR.error("Captcha Error: " + message);
+    },
+    load: function(src) {
+      var container, img, input, ref;
+      ref = this.nodes, container = ref.container, input = ref.input, img = ref.img;
+      this.occupied = true;
+      this.timeout = Date.now() + this.lifetime;
+      if (!img) {
+        img = this.nodes.img = new Image();
+        $.one(img, 'load', this.afterSetup.bind(this));
+        $.on(img, 'load', function() {
+          return this.hidden = false;
+        });
+        $.add(container, img);
+      }
+      img.src = src;
+      input.value = '';
+      clearTimeout(this.timers.expire);
+      return this.timers.expire = setTimeout(this.expire.bind(this), this.lifetime);
+    },
+    count: function() {
+      var count, placeholder;
+      count = Captcha.cache.getCount();
+      placeholder = this.nodes.input.placeholder.replace(/\ \(.*\)$/, '');
+      placeholder += (function() {
+        switch (count) {
+          case 0:
+            if (placeholder === 'Verification') {
+              return ' (Shift + Enter to cache)';
+            } else {
+              return '';
+            }
+            break;
+          case 1:
+            return ' (1 cached captcha)';
+          default:
+            return " (" + count + " cached captchas)";
+        }
+      })();
+      this.nodes.input.placeholder = placeholder;
+      return this.nodes.input.alt = count;
+    },
+    expire: function() {
+      if (!this.nodes.iframe) {
+        return;
+      }
+      if (!d.hidden && (Captcha.cache.needed() || d.activeElement === this.nodes.input)) {
+        return this.reload();
+      } else {
+        return this.destroy();
+      }
+    },
+    reload: function() {
+      var ref;
+      this.nodes.iframe.src = this.iframeURL();
+      this.occupied = true;
+      return (ref = this.nodes.img) != null ? ref.hidden = true : void 0;
+    },
+    keydown: function(e) {
+      if (e.keyCode === 8 && !this.nodes.input.value) {
+        if (this.nodes.iframe) {
+          this.reload();
+        } else {
+          this.setup();
+        }
+      } else if (e.keyCode === 13 && e.shiftKey) {
+        this.sendResponse();
+      } else {
+        return;
+      }
+      return e.preventDefault();
+    }
+  };
+
+}).call(this);
+
+(function() {
   Captcha.replace = {
     init: function() {
       if (!(d.cookie.indexOf('pass_enabled=1') < 0)) {
@@ -20000,10 +20281,6 @@ Captcha = {};
           });
           return Captcha.v1.create();
         });
-        return;
-      }
-      if (((Conf[g.VIEW === 'thread' ? 'Use Recaptcha v1' : 'Use Recaptcha v1 on Index'] && location.hostname === 'boards.4chan.org') || (Conf['Use Recaptcha v1 in Reports'] && location.hostname === 'sys.4chan.org')) && Main.jsEnabled) {
-        $.ready(Captcha.replace.v1);
         return;
       }
       if (Conf['Force Noscript Captcha'] && Main.jsEnabled) {
@@ -20022,7 +20299,7 @@ Captcha = {};
     },
     noscript: function() {
       var insert, noscript, original, span, toggle;
-      if (!((original = $('#g-recaptcha, #captchaContainerAlt')) && (noscript = $('noscript')))) {
+      if (!((original = $('#g-recaptcha')) && (noscript = $('noscript')))) {
         return;
       }
       span = $.el('span', {
@@ -20038,25 +20315,6 @@ Captcha = {};
         return $.on(toggle, 'click', insert);
       } else {
         return insert();
-      }
-    },
-    v1: function() {
-      var form, link;
-      if (!$.id('g-recaptcha')) {
-        return;
-      }
-      Captcha.v1.replace();
-      if ((link = $.id('form-link'))) {
-        return $.on(link, 'click', function() {
-          return Captcha.v1.create();
-        });
-      } else if (location.hostname === 'boards.4chan.org') {
-        form = $.id('postForm');
-        return form.addEventListener('focus', (function() {
-          return Captcha.v1.create();
-        }), true);
-      } else {
-        return Captcha.v1.create();
       }
     },
     iframe: function(iframe) {
@@ -20101,11 +20359,11 @@ Captcha = {};
   Captcha.v1 = {
     blank: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='57'/>",
     init: function() {
-      var imgContainer, input;
+      var container, imgContainer, input;
       if (d.cookie.indexOf('pass_enabled=1') >= 0) {
         return;
       }
-      if (!(this.isEnabled = !!$('#g-recaptcha, #captchaContainerAlt'))) {
+      if (!(this.isEnabled = !!$('#g-recaptcha, #captcha-forced-noscript'))) {
         return;
       }
       imgContainer = $.el('div', {
@@ -20138,33 +20396,23 @@ Captcha = {};
       $.after(QR.nodes.com.parentNode, [imgContainer, input]);
       Captcha.cache.init();
       $.on(d, 'CaptchaCount', this.count.bind(this));
-      this.replace();
+      this.script = $.el('script', {
+        src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
+      });
+      $.add(d.head, this.script);
+      container = $.el('div', {
+        id: 'captchaContainerAlt',
+        hidden: true
+      });
+      $.add(d.body, container);
       this.beforeSetup();
       if (Conf['Auto-load captcha']) {
         this.setup();
       }
-      new MutationObserver(this.afterSetup).observe($.id('captchaContainerAlt'), {
+      new MutationObserver(this.afterSetup).observe(container, {
         childList: true
       });
       return this.afterSetup();
-    },
-    replace: function() {
-      var container, old;
-      if (this.script) {
-        return;
-      }
-      if (!(this.script = $('script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]', d.head))) {
-        this.script = $.el('script', {
-          src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
-        });
-        $.add(d.head, this.script);
-      }
-      if (old = $.id('g-recaptcha')) {
-        container = $.el('div', {
-          id: 'captchaContainerAlt'
-        });
-        return $.replace(old, container);
-      }
     },
     create: function() {
       var cont, lang;
@@ -20202,9 +20450,6 @@ Captcha = {};
         container = document.getElementById('captchaContainerAlt');
         options = {
           theme: 'clean',
-          tabindex: {
-            "boards.4chan.org": 5
-          }[location.hostname],
           lang: container.dataset.lang
         };
         if (window.Recaptcha) {
@@ -20400,7 +20645,7 @@ Captcha = {};
       if (d.cookie.indexOf('pass_enabled=1') >= 0) {
         return;
       }
-      if (!(this.isEnabled = !!$('#g-recaptcha, #captchaContainerAlt, #captcha-forced-noscript'))) {
+      if (!(this.isEnabled = !!$('#g-recaptcha, #captcha-forced-noscript'))) {
         return;
       }
       if ((this.noscript = Conf['Force Noscript Captcha'] || !Main.jsEnabled)) {
@@ -20764,7 +21009,7 @@ QR = (function() {
       'video/webm': 'webm'
     },
     init: function() {
-      var sc, version;
+      var noscript, sc, version;
       if (!Conf['Quick Reply']) {
         return;
       }
@@ -20772,7 +21017,7 @@ QR = (function() {
       if (g.VIEW === 'archive') {
         return;
       }
-      version = Conf[g.VIEW === 'thread' ? 'Use Recaptcha v1' : 'Use Recaptcha v1 on Index'] && Main.jsEnabled ? 'v1' : 'v2';
+      version = Conf[g.VIEW === 'thread' ? 'Use Recaptcha v1' : 'Use Recaptcha v1 on Index'] && (Main.jsEnabled || location.protocol === 'https:') ? (noscript = location.protocol === 'https:' && (Conf['Force Noscript Captcha for v1'] || !Main.jsEnabled), noscript ? 'noscript' : 'v1') : 'v2';
       this.captcha = Captcha[version];
       $.on(d, '4chanXInitFinished', function() {
         return BoardConfig.ready(QR.initReady);
@@ -21469,7 +21714,7 @@ QR = (function() {
       return $.event('QRDialogCreation', null, dialog);
     },
     submit: function(e) {
-      var captcha, err, extra, filetag, formData, options, post, ref, thread, threadID;
+      var captcha, cb, err, extra, filetag, formData, options, post, ref, thread, threadID;
       if (e != null) {
         e.preventDefault();
       }
@@ -21568,17 +21813,39 @@ QR = (function() {
           }
         };
       }
-      if (captcha != null) {
-        QR.currentCaptcha = captcha;
-        if (captcha.challenge != null) {
-          extra.form.append('recaptcha_challenge_field', captcha.challenge);
-          extra.form.append('recaptcha_response_field', captcha.response);
-        } else {
-          extra.form.append('g-recaptcha-response', captcha.response);
+      cb = function(response) {
+        if (response != null) {
+          QR.currentCaptcha = response;
+          if (response.challenge != null) {
+            extra.form.append('recaptcha_challenge_field', response.challenge);
+            extra.form.append('recaptcha_response_field', response.response);
+          } else {
+            extra.form.append('g-recaptcha-response', response.response);
+          }
         }
+        QR.req = $.ajax("https://sys.4chan.org/" + g.BOARD + "/post", options, extra);
+        return QR.req.progress = '...';
+      };
+      if (typeof captcha === 'function') {
+        QR.req = {
+          progress: '...',
+          abort: function() {
+            return cb = null;
+          }
+        };
+        captcha(function(response) {
+          if (response) {
+            return typeof cb === "function" ? cb(response) : void 0;
+          } else {
+            delete QR.req;
+            post.unlock();
+            QR.cooldown.auto = !!Captcha.cache.getCount();
+            return QR.status();
+          }
+        });
+      } else {
+        cb(captcha);
       }
-      QR.req = $.ajax("https://sys.4chan.org/" + g.BOARD + "/post", options, extra);
-      QR.req.progress = '...';
       return QR.status();
     },
     response: function() {
@@ -23824,6 +24091,12 @@ Main = (function() {
       }
       window['4chan X antidup'] = true;
       if (location.hostname === 'www.google.com') {
+        if (location.pathname === '/recaptcha/api/noscript') {
+          $.ready(function() {
+            return Captcha.noscript.initFrame();
+          });
+          return;
+        }
         $.get('Captcha Fixes', true, function(arg) {
           var enabled;
           enabled = arg['Captcha Fixes'];
