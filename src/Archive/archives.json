@@ -5,8 +5,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
-  "files": ["adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
+  "boards": ["adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
+  "files": ["adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
   "reports": true
 }, {
   "uid": 4,
@@ -15,8 +15,8 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
-  "files": ["asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
+  "boards": ["c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
+  "files": ["c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
   "reports": true
 }, {
   "uid": 8,
@@ -24,7 +24,7 @@
   "domain": "archive.rebeccablacktech.com",
   "http": false,
   "https": true,
-  "software": "fuuka",
+  "software": "foolfuuka",
   "boards": ["cgl", "g", "mu"],
   "files": ["cgl", "g", "mu"]
 }, {
@@ -80,9 +80,9 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y"],
-  "files": ["gd", "po", "qst", "vip"],
-  "search": ["aco", "adv", "an", "asp", "b", "c", "cgl", "ck", "cm", "con", "d", "diy", "e", "f", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "n", "news", "o", "out", "p", "po", "q", "qa", "qst", "r", "s", "soc", "trv", "u", "vip", "w", "wg", "wsg", "wsr", "x", "y"],
+  "boards": ["3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y"],
+  "files": ["can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip"],
+  "search": ["aco", "adv", "an", "asp", "b", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y"],
   "reports": true
 }, {
   "uid": 30,
@@ -111,7 +111,7 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y"],
+  "boards": ["3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y"],
   "files": [],
   "reports": true
 }, {
