@@ -143,15 +143,12 @@ Captcha.v2 =
     return unless @isEnabled
     delete @timeouts.destroy
     $.rmClass QR.nodes.el, 'captcha-open'
-    $.rm @nodes.container if @nodes.container
-    delete @nodes.container
-    # Clean up abandoned iframes.
-    garbage = $.X '//iframe[starts-with(@src, "https://www.google.com/recaptcha/api2/frame")]/ancestor-or-self::*[parent::body]'
-    i = 0
-    while node = garbage.snapshotItem i++
-      $.rm ins if (ins = node.nextSibling)?.nodeName is 'INS'
-      $.rm node
-    return
+    if @nodes.container
+      $.global ->
+        container = document.querySelector '#qr .captcha-container'
+        window.grecaptcha.reset container.dataset.widgetID
+      $.rm @nodes.container
+      delete @nodes.container
 
   getOne: (isReply) ->
     Captcha.cache.getOne isReply
