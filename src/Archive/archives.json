@@ -26,7 +26,8 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["cgl", "g", "mu"],
-  "files": ["cgl", "g", "mu"]
+  "files": ["cgl", "g", "mu"],
+  "reports": true
 }, {
   "uid": 10,
   "name": "warosu",
