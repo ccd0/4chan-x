@@ -4,6 +4,9 @@
 
 ### v1.13.9
 
+**v1.13.9.1** *(2017-04-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.1/builds/4chan-X-noupdate.crx)]
+- Fix captcha cleanup. #1341
+
 **v1.13.9.0** *(2017-04-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.13.8.5.
 - Restore support for noscript fallback version of Recaptcha v1. Can be activated through new `Force Noscript Captcha for v1` option. Only working on HTTPS currently. If used, this will validate captchas before posting.

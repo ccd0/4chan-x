@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.9.0
+// @version      1.13.9.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.9.0',
+  VERSION:   '1.13.9.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -6918,7 +6918,7 @@ Redirect = (function() {
     archives: [
       { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "reports": true },
       { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "files": [ "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "reports": true },
-      { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ] },
+      { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ], "reports": true },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
       { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
       { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ], "files": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ] },
@@ -20795,12 +20795,12 @@ Captcha = {};
       });
     },
     afterSetup: function(mutations) {
-      var iframe, j, k, len, len1, mutation, node, ref, textarea;
-      for (j = 0, len = mutations.length; j < len; j++) {
-        mutation = mutations[j];
+      var i, iframe, j, len, len1, mutation, node, ref, textarea;
+      for (i = 0, len = mutations.length; i < len; i++) {
+        mutation = mutations[i];
         ref = mutation.addedNodes;
-        for (k = 0, len1 = ref.length; k < len1; k++) {
-          node = ref[k];
+        for (j = 0, len1 = ref.length; j < len1; j++) {
+          node = ref[j];
           if ((iframe = $.x('./descendant-or-self::iframe', node))) {
             this.setupIFrame(iframe);
           }
@@ -20842,23 +20842,19 @@ Captcha = {};
       })(this));
     },
     destroy: function() {
-      var garbage, i, ins, node, ref;
       if (!this.isEnabled) {
         return;
       }
       delete this.timeouts.destroy;
       $.rmClass(QR.nodes.el, 'captcha-open');
       if (this.nodes.container) {
+        $.global(function() {
+          var container;
+          container = document.querySelector('#qr .captcha-container');
+          return window.grecaptcha.reset(container.dataset.widgetID);
+        });
         $.rm(this.nodes.container);
-      }
-      delete this.nodes.container;
-      garbage = $.X('//iframe[starts-with(@src, "https://www.google.com/recaptcha/api2/frame")]/ancestor-or-self::*[parent::body]');
-      i = 0;
-      while (node = garbage.snapshotItem(i++)) {
-        if (((ref = (ins = node.nextSibling)) != null ? ref.nodeName : void 0) === 'INS') {
-          $.rm(ins);
-        }
-        $.rm(node);
+        return delete this.nodes.container;
       }
     },
     getOne: function(isReply) {
