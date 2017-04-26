@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.9.1
+// @version      1.13.9.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.9.1',
+  VERSION:   '1.13.9.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -4935,8 +4935,30 @@ $ = (function() {
 
   $.syncing = {};
 
+  $.currentValue = {};
+
+  $.GM_getValue = function(key) {
+    var err;
+    try {
+      return $.currentValue[key] = GM_getValue(key);
+    } catch (_error) {
+      err = _error;
+      return $.currentValue[key];
+    }
+  };
+
+  $.GM_setValue = function(key, val) {
+    $.currentValue[key] = val;
+    return GM_setValue(key, val);
+  };
+
+  $.GM_deleteValue = function(key) {
+    delete $.currentValue[key];
+    return GM_deleteValue(key);
+  };
+
   if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
-    $.getValue = GM_getValue;
+    $.getValue = $.GM_getValue;
     $.listValues = function() {
       return GM_listValues();
     };
@@ -4962,12 +4984,12 @@ $ = (function() {
   }
 
   if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
-    $.setValue = GM_setValue;
-    $.deleteValue = GM_deleteValue;
+    $.setValue = $.GM_setValue;
+    $.deleteValue = $.GM_deleteValue;
   } else if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
     $.oldValue = {};
     $.setValue = function(key, val) {
-      GM_setValue(key, val);
+      $.GM_setValue(key, val);
       if (key in $.syncing) {
         $.oldValue[key] = val;
         if ($.hasStorage) {
@@ -4976,7 +4998,7 @@ $ = (function() {
       }
     };
     $.deleteValue = function(key) {
-      GM_deleteValue(key);
+      $.GM_deleteValue(key);
       if (key in $.syncing) {
         delete $.oldValue[key];
         if ($.hasStorage) {

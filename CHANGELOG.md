@@ -4,6 +4,14 @@
 
 ### v1.13.9
 
+**v1.13.9.2** *(2017-04-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.2/builds/4chan-X-noupdate.crx)]
+- Merge branch 'bstable'
+- Release 4chan X v1.13.8.6.
+- Update archive list.
+- Workaround for issue starting in Firefox 53.
+- Fix captcha cleanup. #1341
+- Workaround for issue starting in Firefox 53.
+
 **v1.13.9.1** *(2017-04-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.1/builds/4chan-X-noupdate.crx)]
 - Fix captcha cleanup. #1341
 
