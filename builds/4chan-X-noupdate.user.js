@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.8.5
+// @version      1.13.8.6
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -151,7 +151,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.8.5',
+  VERSION:   '1.13.8.6',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -4934,8 +4934,30 @@ $ = (function() {
 
   $.syncing = {};
 
+  $.currentValue = {};
+
+  $.GM_getValue = function(key) {
+    var err;
+    try {
+      return $.currentValue[key] = GM_getValue(key);
+    } catch (_error) {
+      err = _error;
+      return $.currentValue[key];
+    }
+  };
+
+  $.GM_setValue = function(key, val) {
+    $.currentValue[key] = val;
+    return GM_setValue(key, val);
+  };
+
+  $.GM_deleteValue = function(key) {
+    delete $.currentValue[key];
+    return GM_deleteValue(key);
+  };
+
   if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
-    $.getValue = GM_getValue;
+    $.getValue = $.GM_getValue;
     $.listValues = function() {
       return GM_listValues();
     };
@@ -4961,12 +4983,12 @@ $ = (function() {
   }
 
   if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
-    $.setValue = GM_setValue;
-    $.deleteValue = GM_deleteValue;
+    $.setValue = $.GM_setValue;
+    $.deleteValue = $.GM_deleteValue;
   } else if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
     $.oldValue = {};
     $.setValue = function(key, val) {
-      GM_setValue(key, val);
+      $.GM_setValue(key, val);
       if (key in $.syncing) {
         $.oldValue[key] = val;
         if ($.hasStorage) {
@@ -4975,7 +4997,7 @@ $ = (function() {
       }
     };
     $.deleteValue = function(key) {
-      GM_deleteValue(key);
+      $.GM_deleteValue(key);
       if (key in $.syncing) {
         delete $.oldValue[key];
         if ($.hasStorage) {
@@ -6915,18 +6937,18 @@ Redirect = (function() {
 
   Redirect = {
     archives: [
-      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "reports": true },
-      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "files": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "reports": true },
-      { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "fuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ] },
+      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "reports": true },
+      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "files": [ "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "reports": true },
+      { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ], "reports": true },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
       { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
       { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ], "files": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ] },
       { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v" ], "files": [] },
       { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
-      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "gd", "po", "qst", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "c", "cgl", "ck", "cm", "con", "d", "diy", "e", "f", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "n", "news", "o", "out", "p", "po", "q", "qa", "qst", "r", "s", "soc", "trv", "u", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
+      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b" ], "files": [ "b" ], "reports": true },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ], "reports": true },
-      { "uid": 32, "name": "4tan", "domain": "boards.4tan.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [], "reports": true },
+      { "uid": 32, "name": "4tan", "domain": "boards.4tan.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [], "reports": true },
       { "uid": 5, "name": "Love is Over", "domain": "archive.loveisover.me", "http": true, "https": false, "software": "foolfuuka", "boards": [ "c", "d", "e", "i", "lgbt", "t", "u" ], "files": [ "c", "d", "e", "i", "lgbt", "t", "u" ] },
       { "uid": 33, "name": "yeet.net", "domain": "yeet.net", "http": true, "https": false, "software": "foolfuuka", "boards": [ "g", "k", "qa" ], "files": [ "g", "k", "qa" ] }
     ],
@@ -20550,12 +20572,12 @@ Captcha = {};
       });
     },
     afterSetup: function(mutations) {
-      var iframe, j, k, len, len1, mutation, node, ref, textarea;
-      for (j = 0, len = mutations.length; j < len; j++) {
-        mutation = mutations[j];
+      var i, iframe, j, len, len1, mutation, node, ref, textarea;
+      for (i = 0, len = mutations.length; i < len; i++) {
+        mutation = mutations[i];
         ref = mutation.addedNodes;
-        for (k = 0, len1 = ref.length; k < len1; k++) {
-          node = ref[k];
+        for (j = 0, len1 = ref.length; j < len1; j++) {
+          node = ref[j];
           if ((iframe = $.x('./descendant-or-self::iframe', node))) {
             this.setupIFrame(iframe);
           }
@@ -20597,23 +20619,19 @@ Captcha = {};
       })(this));
     },
     destroy: function() {
-      var garbage, i, ins, node, ref;
       if (!this.isEnabled) {
         return;
       }
       delete this.timeouts.destroy;
       $.rmClass(QR.nodes.el, 'captcha-open');
       if (this.nodes.container) {
+        $.global(function() {
+          var container;
+          container = document.querySelector('#qr .captcha-container');
+          return window.grecaptcha.reset(container.dataset.widgetID);
+        });
         $.rm(this.nodes.container);
-      }
-      delete this.nodes.container;
-      garbage = $.X('//iframe[starts-with(@src, "https://www.google.com/recaptcha/api2/frame")]/ancestor-or-self::*[parent::body]');
-      i = 0;
-      while (node = garbage.snapshotItem(i++)) {
-        if (((ref = (ins = node.nextSibling)) != null ? ref.nodeName : void 0) === 'INS') {
-          $.rm(ins);
-        }
-        $.rm(node);
+        return delete this.nodes.container;
       }
     },
     getOne: function(isReply) {
