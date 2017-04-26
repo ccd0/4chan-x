@@ -495,8 +495,23 @@ do ->
 
 # http://wiki.greasespot.net/Main_Page
 # https://tampermonkey.net/documentation.php
+
+# workaround for Firefox 53 issue
+$.currentValue = {}
+$.GM_getValue = (key) ->
+  try
+    $.currentValue[key] = GM_getValue key
+  catch err
+    $.currentValue[key]
+$.GM_setValue = (key, val) ->
+  $.currentValue[key] = val
+  GM_setValue key, val
+$.GM_deleteValue = (key) ->
+  delete $.currentValue[key]
+  GM_deleteValue key
+
 if GM_deleteValue?
-  $.getValue   = GM_getValue
+  $.getValue   = $.GM_getValue
   $.listValues = -> GM_listValues() # error when called if missing
 else if $.hasStorage
   $.getValue = (key) -> localStorage[key]
@@ -507,17 +522,17 @@ else
   $.listValues = -> []
 
 if GM_addValueChangeListener?
-  $.setValue    = GM_setValue
-  $.deleteValue = GM_deleteValue
+  $.setValue    = $.GM_setValue
+  $.deleteValue = $.GM_deleteValue
 else if GM_deleteValue?
   $.oldValue = {}
   $.setValue = (key, val) ->
-    GM_setValue key, val
+    $.GM_setValue key, val
     if key of $.syncing
       $.oldValue[key]   = val
       localStorage[key] = val if $.hasStorage # for `storage` events
   $.deleteValue = (key) ->
-    GM_deleteValue key
+    $.GM_deleteValue key
     if key of $.syncing
       delete $.oldValue[key]
       localStorage.removeItem key if $.hasStorage # for `storage` events
