@@ -16,6 +16,10 @@
 
 ### v1.13.8
 
+**v1.13.8.6** *(2017-04-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.6/builds/4chan-X-noupdate.crx)]
+- Workaround for issues with cooldown timer and other things starting in Firefox 53. #1323
+- Fix captcha cleanup. #1341
+
 **v1.13.8.5** *(2017-03-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.5/builds/4chan-X-noupdate.crx)]
 - WebM with audio is now allowed on /wsr/ and /r/. #1319
 - Minor bugfixes.
