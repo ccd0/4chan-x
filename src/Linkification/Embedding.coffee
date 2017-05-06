@@ -442,7 +442,7 @@ Embedding =
           start += ' 0h0m0s'
           start = 3600 * start.match(/(\d+)h/)[1] + 60 * start.match(/(\d+)m/)[1] + 1 * start.match(/(\d+)s/)[1]
         el = $.el 'iframe',
-          src: "//www.youtube.com/embed/#{a.dataset.uid}?wmode=opaque#{if start then '&start=' + start else ''}"
+          src: "//www.youtube.com/embed/#{a.dataset.uid}?rel=0&wmode=opaque#{if start then '&start=' + start else ''}"
         el.setAttribute "allowfullscreen", "true"
         el
       title:
