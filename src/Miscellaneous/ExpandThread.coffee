@@ -61,7 +61,7 @@ ExpandThread =
         1
       else switch g.BOARD.ID
         # XXX boards config
-        when 'b', 'vg' then 3
+        when 'b', 'vg', 'bant' then 3
         when 't' then 1
         else 5
       replies = replies[...-num]

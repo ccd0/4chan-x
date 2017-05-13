@@ -831,6 +831,7 @@ Config =
     https://www.gstatic.com
     http://cdn.mathjax.org
     https://cdn.mathjax.org
+    https://cdnjs.cloudflare.com
     'self'
     'unsafe-inline'
     'unsafe-eval'
