@@ -4,6 +4,10 @@
 
 ### v1.13.8
 
+**v1.13.8.7** *(2017-05-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.7/builds/4chan-X-noupdate.crx)]
+- Fix MathJax on /sci/. #1356
+- Minor fixes for new board /bant/.
+
 **v1.13.8.6** *(2017-04-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.6/builds/4chan-X-noupdate.crx)]
 - Workaround for issues with cooldown timer and other things starting in Firefox 53. #1323
 - Fix captcha cleanup. #1341
