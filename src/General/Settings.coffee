@@ -418,7 +418,7 @@ Settings =
       setD 'Require OP Quote Link', true
     if compareString < '00001.00013.00008.00000'
       setD 'Download Link', true
-    if compareString < '00001.00013.00008.00007'
+    if compareString < '00001.00013.00009.00003'
       if data['jsWhitelist']?
         list = data['jsWhitelist'].split('\n')
         if 'https://cdnjs.cloudflare.com' not in list and 'https://cdn.mathjax.org' in list
