@@ -4,6 +4,13 @@
 
 ### v1.13.9
 
+**v1.13.9.3** *(2017-05-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.3/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.8.7: Fix MathJax on /sci/. #1356
+- Merge v1.13.8.7: Minor fixes for new board /bant/.
+- Restore 'Use Recaptcha v1 in Reports' functionality when reporting from native catalog. #1346
+- Fix noscript captcha in original post form on /f/.
+- (mahkoh) Hide related videos when a youtube video is paused.
+
 **v1.13.9.2** *(2017-04-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.2/builds/4chan-X-noupdate.crx)]
 - Workaround for issues with cooldown timer and other things starting in Firefox 53. #1323
 

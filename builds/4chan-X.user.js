@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.9.2
+// @version      1.13.9.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.9.2',
+  VERSION:   '1.13.9.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -423,7 +423,7 @@ Config = (function() {
       'QR.personas': "#options:\"sage\";boards:jp;always",
       sjisPreview: false
     },
-    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'\n\n# Banner ads\n#http://s.zkcdn.net/ados.js\n#https://s.zkcdn.net/ados.js\n#http://engine.4chan-ads.org\n#https://engine.4chan-ads.org',
+    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\nhttps://cdnjs.cloudflare.com\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'\n\n# Banner ads\n#http://s.zkcdn.net/ados.js\n#https://s.zkcdn.net/ados.js\n#http://engine.4chan-ads.org\n#https://engine.4chan-ads.org',
     captchaLanguage: '',
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
@@ -6939,15 +6939,15 @@ Redirect = (function() {
   Redirect = {
     archives: [
       { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "reports": true },
-      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "files": [ "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "reports": true },
+      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "bant", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "files": [ "bant", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "reports": true },
       { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ], "reports": true },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
       { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
       { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ], "files": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ] },
       { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v" ], "files": [] },
       { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
-      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
-      { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b" ], "files": [ "b" ], "reports": true },
+      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
+      { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ], "reports": true },
       { "uid": 32, "name": "4tan", "domain": "boards.4tan.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [], "reports": true },
       { "uid": 5, "name": "Love is Over", "domain": "archive.loveisover.me", "http": true, "https": false, "software": "foolfuuka", "boards": [ "c", "d", "e", "i", "lgbt", "t", "u" ], "files": [ "c", "d", "e", "i", "lgbt", "t", "u" ] },
@@ -9054,7 +9054,7 @@ Header = (function() {
         }
       }
       if (/-expired/.test(t)) {
-        if (boardID !== 'b' && boardID !== 'f' && boardID !== 'trash') {
+        if (boardID !== 'b' && boardID !== 'f' && boardID !== 'trash' && boardID !== 'bant') {
           a.href = "/" + boardID + "/archive";
         } else {
           return a.firstChild;
@@ -9470,7 +9470,7 @@ Index = (function() {
         innerHTML: "<span class=\"brackets-wrap indexlink\"><a href=\"#index\">Index</a></span> <span class=\"brackets-wrap cataloglink\"><a href=\"#catalog\">Catalog</a></span> <span class=\"brackets-wrap archlistlink\"><a href=\"./archive\">Archive</a></span> <span class=\"brackets-wrap bottomlink\"><a href=\"#bottom\">Bottom</a></span> <span class=\"brackets-wrap\" id=\"index-last-refresh\"><a href=\"javascript:;\"><time title=\"Last index refresh\">...</time></a></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a><span id=\"hidden-label\" hidden> &mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><span id=\"index-options\"><input type=\"checkbox\" id=\"index-rev\" name=\"Reverse Sort\" title=\"Reverse sort order\"><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"lastlong\">Last long reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select></span>"
       });
       $('.cataloglink a', this.navLinks).href = CatalogLinks.catalog();
-      if ((ref5 = g.BOARD.ID) === 'b' || ref5 === 'trash') {
+      if ((ref5 = g.BOARD.ID) === 'b' || ref5 === 'trash' || ref5 === 'bant') {
         $('.archlistlink', this.navLinks).hidden = true;
       }
       $.on($('#index-last-refresh a', this.navLinks), 'click', this.cb.refreshFront);
@@ -11108,7 +11108,7 @@ Settings = (function() {
       }
     },
     upgrade: function(data, version) {
-      var addCSS, addSauces, boardID, changes, compareString, j, k, key, len, len1, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, value;
+      var addCSS, addSauces, boardID, changes, compareString, j, k, key, len, len1, list, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, value;
       changes = {};
       set = function(key, value) {
         return data[key] = changes[key] = value;
@@ -11306,6 +11306,14 @@ Settings = (function() {
       }
       if (compareString < '00001.00013.00008.00000') {
         setD('Download Link', true);
+      }
+      if (compareString < '00001.00013.00009.00003') {
+        if (data['jsWhitelist'] != null) {
+          list = data['jsWhitelist'].split('\n');
+          if (indexOf.call(list, 'https://cdnjs.cloudflare.com') < 0 && indexOf.call(list, 'https://cdn.mathjax.org') >= 0) {
+            set('jsWhitelist', data['jsWhitelist'] + '\n\nhttps://cdnjs.cloudflare.com');
+          }
+        }
       }
       return changes;
     },
@@ -14829,7 +14837,7 @@ Embedding = (function() {
             start = 3600 * start.match(/(\d+)h/)[1] + 60 * start.match(/(\d+)m/)[1] + 1 * start.match(/(\d+)s/)[1];
           }
           el = $.el('iframe', {
-            src: "//www.youtube.com/embed/" + a.dataset.uid + "?wmode=opaque" + (start ? '&start=' + start : '')
+            src: "//www.youtube.com/embed/" + a.dataset.uid + "?rel=0&wmode=opaque" + (start ? '&start=' + start : '')
           });
           el.setAttribute("allowfullscreen", "true");
           return el;
@@ -16022,6 +16030,7 @@ ExpandThread = (function() {
             switch (g.BOARD.ID) {
               case 'b':
               case 'vg':
+              case 'bant':
                 return 3;
               case 't':
                 return 1;
@@ -20305,6 +20314,10 @@ Captcha = {};
         });
         return;
       }
+      if (location.hostname === 'sys.4chan.org' && Conf['Use Recaptcha v1 in Reports'] && Main.jsEnabled) {
+        $.ready(Captcha.replace.v1);
+        return;
+      }
       if (Conf['Force Noscript Captcha'] && Main.jsEnabled) {
         $.ready(Captcha.replace.noscript);
         return;
@@ -20321,7 +20334,7 @@ Captcha = {};
     },
     noscript: function() {
       var insert, noscript, original, span, toggle;
-      if (!((original = $('#g-recaptcha')) && (noscript = $('noscript')))) {
+      if (!((original = $('#g-recaptcha')) && (noscript = $('noscript', original.parentNode)))) {
         return;
       }
       span = $.el('span', {
@@ -20338,6 +20351,21 @@ Captcha = {};
       } else {
         return insert();
       }
+    },
+    v1: function() {
+      var container, old, script;
+      if (!(old = $.id('g-recaptcha'))) {
+        return;
+      }
+      script = $.el('script', {
+        src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
+      });
+      $.add(d.head, script);
+      container = $.el('div', {
+        id: 'captchaContainerAlt'
+      });
+      $.replace(old, container);
+      return Captcha.v1.create();
     },
     iframe: function(iframe) {
       var lang, src;
