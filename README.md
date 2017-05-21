@@ -8,7 +8,7 @@ If you're looking for a maintained fork of OneeChan (a style script used in addi
 https://github.com/Nebukazar/OneeChan.
 
 ## Please note
-**Uninstalling**: 4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the `[Settings]` link in the top right corner, uncheck "`Disable the native extension`" in the panel that appears, and click the "`Save Settings`" button.
+**Uninstalling**: 4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the `[Settings]` link in the top right corner, uncheck "`Disable the native extension`" in the panel that appears, and click the "`Save Settings`" button. If you don't see a "`Save Settings`" button, it may be being hidden by your ad blocker.
 
 **Private browsing**: 4chan X does not yet support private browsing / incognito mode. Although it may work in this mode, browsing data recorded by 4chan X, such as your last read post in a thread and which posts are yours, will still need to be cleared manually by resetting your settings. To control what browsing data 4chan X records, use the `Remember Last Read Post` and `Remember Your Posts` options in the settings panel.
 
