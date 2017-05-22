@@ -126,11 +126,10 @@
   "files": ["c", "d", "e", "i", "lgbt", "t", "u"]
 }, {
   "uid": 33,
-  "name": "yeet.net",
+  "name": "Bui's /b/ Archive (Mirror)",
   "domain": "yeet.net",
   "http": true,
   "https": false,
   "software": "foolfuuka",
-  "boards": ["g", "k", "qa"],
-  "files": ["g", "k", "qa"]
+  "boards": ["b"]
 }]
