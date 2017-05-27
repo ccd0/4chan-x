@@ -751,6 +751,7 @@ Config =
     https://whatanime.ga/?auto&url=%IMG;text:wait
     #//3d.iqdb.org/?url=%IMG
     #//saucenao.com/search.php?url=%IMG
+    #//whatanime.ga/?auto&url=%IMG
 
     # "View Same" in archives:
     http://eye.swfchan.com/search/?q=%name;types:swf
