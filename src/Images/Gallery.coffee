@@ -237,11 +237,11 @@ Gallery =
       cb = switch key
         when Conf['Close'], Conf['Open Gallery']
           Gallery.cb.close
-        when 'Right'
+        when Conf['Next Gallery Image']
           Gallery.cb.next
-        when 'Enter'
+        when Conf['Advance Gallery']
           Gallery.cb.advance
-        when 'Left', ''
+        when Conf['Previous Gallery Image']
           Gallery.cb.prev
         when Conf['Pause']
           Gallery.cb.pause

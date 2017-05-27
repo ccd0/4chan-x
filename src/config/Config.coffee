@@ -950,7 +950,19 @@ Config =
     'Open Gallery': [
       'g'
       'Opens the gallery.'
-    ]
+    ],
+    'Next Gallery Image': [
+      'Right',
+      'Go to the next image in gallery mode'
+    ],
+    'Previous Gallery Image': [
+      'Left',
+      'Go to the previous image in gallery mode'
+    ],
+    'Advance Gallery': [
+      'Enter',
+      'Advance the gallery'
+    ],
     'Pause': [
       'p'
       'Pause/play videos in the gallery.'
