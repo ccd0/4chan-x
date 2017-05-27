@@ -185,6 +185,8 @@ ThreadHiding =
     Index.updateHideLabel()
     $.rm thread.catalogView.nodes.root if thread.catalogView and !Index.showHiddenThreads
 
+    Header.scrollTo threadRoot
+
     return threadRoot.hidden = true unless makeStub
 
     ThreadHiding.makeStub thread, threadRoot
