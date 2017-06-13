@@ -4,6 +4,16 @@
 
 ### v1.13.9
 
+**v1.13.9.4** *(2017-06-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.4/builds/4chan-X-noupdate.crx)]
+- Update archive list.
+- Update for changes in /pol/ flags since last time. #1403
+- Revert "Remove /pol/ flags properly." #1403
+- forgot to remove joke boards
+- Update 4tan. (#54)
+- Updating yeet.net (#53)
+- Build web page.
+- README.md: Mention ad blocker hiding of save button.
+
 **v1.13.9.3** *(2017-05-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.3/builds/4chan-X-noupdate.crx)]
 - Merge v1.13.8.7: Fix MathJax on /sci/. #1356
 - Merge v1.13.8.7: Minor fixes for new board /bant/.
