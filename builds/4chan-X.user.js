@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.8.7
+// @version      1.13.8.8
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -151,7 +151,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.8.7',
+  VERSION:   '1.13.8.8',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -6132,7 +6132,7 @@ Post = (function() {
     };
 
     function Post(root, thread, board) {
-      var clone, j, len, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
+      var clone, j, len, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
       this.thread = thread;
       this.board = board;
       this.ID = +root.id.slice(2);
@@ -6159,7 +6159,8 @@ Post = (function() {
         capcode: (ref4 = this.nodes.capcode) != null ? ref4.textContent.replace('## ', '') : void 0,
         pass: (ref5 = this.nodes.pass) != null ? ref5.title.match(/\d*$/)[0] : void 0,
         flagCode: (ref6 = this.nodes.flag) != null ? (ref7 = ref6.className.match(/flag-(\w+)/)) != null ? ref7[1].toUpperCase() : void 0 : void 0,
-        flag: (ref8 = this.nodes.flag) != null ? ref8.title : void 0,
+        flagCodeTroll: (ref8 = this.nodes.flag) != null ? (ref9 = ref8.src) != null ? (ref10 = ref9.match(/(\w+)\.gif$/)) != null ? ref10[1].toUpperCase() : void 0 : void 0 : void 0,
+        flag: (ref11 = this.nodes.flag) != null ? ref11.title : void 0,
         date: this.nodes.date ? new Date(this.nodes.date.dataset.utc * 1000) : void 0
       };
       if (Conf['Anonymize']) {
@@ -6182,9 +6183,9 @@ Post = (function() {
       if (g.posts[this.fullID]) {
         this.isRebuilt = true;
         this.clones = g.posts[this.fullID].clones;
-        ref9 = this.clones;
-        for (j = 0, len = ref9.length; j < len; j++) {
-          clone = ref9[j];
+        ref12 = this.clones;
+        for (j = 0, len = ref12.length; j < len; j++) {
+          clone = ref12[j];
           clone.origin = this;
         }
       }
@@ -6937,7 +6938,7 @@ Redirect = (function() {
 
   Redirect = {
     archives: [
-      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "reports": true },
+      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "reports": true },
       { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "bant", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "files": [ "bant", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "reports": true },
       { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ], "reports": true },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
@@ -6948,9 +6949,9 @@ Redirect = (function() {
       { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ], "reports": true },
-      { "uid": 32, "name": "4tan", "domain": "boards.4tan.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [], "reports": true },
+      { "uid": 32, "name": "4tan", "domain": "boards.4tan.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "bant", "can", "cock", "fap", "fitlit", "mlpol", "mo", "mtv", "outsoc", "spa", "vint" ], "reports": true },
       { "uid": 5, "name": "Love is Over", "domain": "archive.loveisover.me", "http": true, "https": false, "software": "foolfuuka", "boards": [ "c", "d", "e", "i", "lgbt", "t", "u" ], "files": [ "c", "d", "e", "i", "lgbt", "t", "u" ] },
-      { "uid": 33, "name": "yeet.net", "domain": "yeet.net", "http": true, "https": false, "software": "foolfuuka", "boards": [ "g", "k", "qa" ], "files": [ "g", "k", "qa" ] }
+      { "uid": 33, "name": "Bui's /b/ Archive (Mirror)", "domain": "yeet.net", "http": true, "https": false, "software": "foolfuuka", "boards": [ "b" ] }
     ],
     init: function() {
       var now, ref;
@@ -8378,6 +8379,7 @@ Build = (function() {
         pass: data.since4pass != null ? "" + data.since4pass : void 0,
         uniqueID: data.id,
         flagCode: data.country,
+        flagCodeTroll: data.troll_country,
         flag: Build.unescape(data.country_name),
         dateUTC: data.time,
         dateText: data.now,
@@ -8433,9 +8435,9 @@ Build = (function() {
       return Build.post(o);
     },
     post: function(o) {
-      var ID, boardID, capcode, capcodeDescription, capcodeLC, capcodeLong, capcodePlural, commentHTML, container, dateText, dateUTC, email, file, fileBlock, fileThumb, fileURL, flag, flagCode, gifIcon, href, i, len, match, name, pass, postClass, postInfo, postLink, protocol, quote, quoteLink, ref, ref1, shortFilename, staticPath, subject, threadID, tripcode, uniqueID, wholePost;
+      var ID, boardID, capcode, capcodeDescription, capcodeLC, capcodeLong, capcodePlural, commentHTML, container, dateText, dateUTC, email, file, fileBlock, fileThumb, fileURL, flag, flagCode, flagCodeTroll, gifIcon, href, i, len, match, name, pass, postClass, postInfo, postLink, protocol, quote, quoteLink, ref, ref1, shortFilename, staticPath, subject, threadID, tripcode, uniqueID, wholePost;
       ID = o.ID, threadID = o.threadID, boardID = o.boardID, file = o.file;
-      ref = o.info, subject = ref.subject, email = ref.email, name = ref.name, tripcode = ref.tripcode, capcode = ref.capcode, pass = ref.pass, uniqueID = ref.uniqueID, flagCode = ref.flagCode, flag = ref.flag, dateUTC = ref.dateUTC, dateText = ref.dateText, commentHTML = ref.commentHTML;
+      ref = o.info, subject = ref.subject, email = ref.email, name = ref.name, tripcode = ref.tripcode, capcode = ref.capcode, pass = ref.pass, uniqueID = ref.uniqueID, flagCode = ref.flagCode, flagCodeTroll = ref.flagCodeTroll, flag = ref.flag, dateUTC = ref.dateUTC, dateText = ref.dateText, commentHTML = ref.commentHTML;
       staticPath = Build.staticPath, gifIcon = Build.gifIcon;
 
       /* Post Info */
@@ -8459,7 +8461,7 @@ Build = (function() {
       postLink = Build.postURL(boardID, threadID, ID);
       quoteLink = Build.sameThread(boardID, threadID) ? "javascript:quote('" + (+ID) + "');" : "/" + boardID + "/thread/" + threadID + "#q" + ID;
       postInfo = {
-        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcodeDescription) ? "" : " ") + ((capcodeDescription) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\" class=\"stickyIcon retina\">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\" class=\"closedIcon retina\">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
+        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcodeDescription) ? "" : " ") + ((capcodeDescription) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + ((flagCodeTroll) ? " <img src=\"" + E(staticPath) + "country/troll/" + E(flagCodeTroll.toLowerCase()) + ".gif\" alt=\"" + E(flagCodeTroll) + "\" title=\"" + E(flag) + "\" class=\"countryFlag\">" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\" class=\"stickyIcon retina\">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\" class=\"closedIcon retina\">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
       };
 
       /* File Info */
@@ -21419,6 +21421,7 @@ QR = (function() {
           return $.sync('customCooldownEnabled', QR.setCustomCooldown);
         });
       }
+      QR.flagsInput();
       $.on(nodes.autohide, 'change', QR.toggleHide);
       $.on(nodes.close, 'click', QR.close);
       $.on(nodes.form, 'submit', QR.submit);
@@ -21461,7 +21464,7 @@ QR = (function() {
       new MutationObserver(QR.pasteFF).observe(nodes.pasteArea, {
         childList: true
       });
-      items = ['thread', 'name', 'email', 'sub', 'com', 'filename'];
+      items = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag'];
       i = 0;
       save = function() {
         return QR.selected.save(this);
@@ -21494,6 +21497,43 @@ QR = (function() {
       QR.captcha.setup();
       QR.oekaki.setup();
       return $.event('QRDialogCreation', null, dialog);
+    },
+    flags: function() {
+      var flag, fn, j, len, ref, select;
+      select = $.el('select', {
+        name: 'flag',
+        className: 'flagSelector'
+      });
+      fn = function(val) {
+        return $.add(select, $.el('option', {
+          value: val[0],
+          textContent: val[1]
+        }));
+      };
+      ref = [['0', 'Geographic Location'], ['AC', 'Anarcho-Capitalist'], ['AN', 'Anarchist'], ['BL', 'Black Nationalist'], ['CF', 'Confederate'], ['CM', 'Communist'], ['DM', 'Democrat'], ['EU', 'European'], ['FC', 'Fascist'], ['GN', 'Gadsden'], ['GY', 'Gay'], ['JH', 'Jihadi'], ['KN', 'Kekistani'], ['MF', 'Muslim'], ['NB', 'National Bolshevik'], ['NZ', 'Nazi'], ['PC', 'Hippie'], ['PR', 'Pirate'], ['RE', 'Republican'], ['TM', 'Templar'], ['TR', 'Tree Hugger'], ['UN', 'United Nations'], ['WP', 'White Supremacist']];
+      for (j = 0, len = ref.length; j < len; j++) {
+        flag = ref[j];
+        fn(flag);
+      }
+      return select;
+    },
+    flagsInput: function() {
+      var flag, nodes;
+      nodes = QR.nodes;
+      if (!nodes) {
+        return;
+      }
+      if (nodes.flag) {
+        $.rm(nodes.flag);
+        delete nodes.flag;
+      }
+      if (g.BOARD.ID === 'pol') {
+        flag = QR.flags();
+        flag.dataset.name = 'flag';
+        flag.dataset["default"] = '0';
+        nodes.flag = flag;
+        return $.add(nodes.form, flag);
+      }
     },
     submit: function(e) {
       var captcha, err, extra, filetag, formData, options, post, ref, thread, threadID;
@@ -21559,6 +21599,7 @@ QR = (function() {
         upfile: post.file,
         filetag: filetag,
         spoiler: post.spoiler,
+        flag: post.flag,
         mode: 'regist',
         pwd: QR.persona.getPassword()
       };
@@ -22266,7 +22307,8 @@ QR = (function() {
         var persona;
         persona = arg['QR.persona'];
         persona = {
-          name: post.name
+          name: post.name,
+          flag: post.flag
         };
         return $.set('QR.persona', persona);
       });
@@ -22336,6 +22378,9 @@ QR = (function() {
           _this.name = 'name' in QR.persona.always ? QR.persona.always.name : prev ? prev.name : persona.name;
           _this.email = 'email' in QR.persona.always ? QR.persona.always.email : '';
           _this.sub = 'sub' in QR.persona.always ? QR.persona.always.sub : '';
+          if (QR.nodes.flag) {
+            _this.flag = prev ? prev.flag : persona.flag;
+          }
           if (QR.selected === _this) {
             return _this.load();
           }
@@ -22377,7 +22422,7 @@ QR = (function() {
       if (this !== QR.selected) {
         return;
       }
-      ref = ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler'];
+      ref = ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler', 'flag'];
       for (i = 0, len = ref.length; i < len; i++) {
         name = ref[i];
         if (node = QR.nodes[name]) {
@@ -22410,7 +22455,7 @@ QR = (function() {
 
     _Class.prototype.load = function() {
       var i, len, name, node, ref;
-      ref = ['thread', 'name', 'email', 'sub', 'com', 'filename'];
+      ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag'];
       for (i = 0, len = ref.length; i < len; i++) {
         name = ref[i];
         if (!(node = QR.nodes[name])) {
@@ -22448,7 +22493,8 @@ QR = (function() {
           this.updateFilename();
           break;
         case 'name':
-          if (this.name !== prev) {
+        case 'flag':
+          if (this[name] !== prev) {
             QR.persona.set(this);
           }
       }
@@ -22462,7 +22508,7 @@ QR = (function() {
       if (this !== QR.selected) {
         return;
       }
-      ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler'];
+      ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler', 'flag'];
       for (i = 0, len = ref.length; i < len; i++) {
         name = ref[i];
         if (!(node = QR.nodes[name])) {
