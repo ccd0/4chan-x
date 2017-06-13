@@ -520,6 +520,8 @@ QR =
         QR.setCustomCooldown customCooldownEnabled
         $.sync 'customCooldownEnabled', QR.setCustomCooldown
 
+    QR.flagsInput()
+
     $.on nodes.autohide,       'change',    QR.toggleHide
     $.on nodes.close,          'click',     QR.close
     $.on nodes.form,           'submit',    QR.submit
@@ -552,7 +554,7 @@ QR =
     new MutationObserver(QR.pasteFF).observe nodes.pasteArea, {childList: true}
 
     # save selected post's data
-    items = ['thread', 'name', 'email', 'sub', 'com', 'filename']
+    items = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag']
     i = 0
     save = -> QR.selected.save @
     while name = items[i++]
@@ -582,6 +584,57 @@ QR =
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
     $.event 'QRDialogCreation', null, dialog
+
+  flags: ->
+    select = $.el 'select',
+      name:      'flag'
+      className: 'flagSelector'
+
+    fn = (val) ->
+      $.add select, $.el 'option',
+        value: val[0]
+        textContent: val[1]
+
+    fn flag for flag in [
+      ['0',  'None']
+      ['US', 'American']
+      ['KP', 'Best Korean']
+      ['BL', 'Black Nationalist']
+      ['CM', 'Communist']
+      ['CF', 'Confederate']
+      ['RE', 'Conservative']
+      ['EU', 'European']
+      ['GY', 'Gay']
+      ['PC', 'Hippie']
+      ['IL', 'Israeli']
+      ['DM', 'Liberal']
+      ['RP', 'Libertarian']
+      ['MF', 'Muslim']
+      ['NZ', 'Nazi']
+      ['OB', 'Obama']
+      ['PR', 'Pirate']
+      ['RB', 'Rebel']
+      ['TP', 'Tea Partier']
+      ['TX', 'Texan']
+      ['TR', 'Tree Hugger']
+      ['WP', 'White Supremacist']
+    ]
+
+    select
+
+  flagsInput: ->
+    {nodes} = QR
+    return if not nodes
+    if nodes.flag
+      $.rm nodes.flag
+      delete nodes.flag
+
+    if g.BOARD.ID is 'pol'
+      flag = QR.flags()
+      flag.dataset.name    = 'flag'
+      flag.dataset.default = '0'
+      nodes.flag = flag
+      $.add nodes.form, flag
 
   submit: (e) ->
     e?.preventDefault()
@@ -648,6 +701,7 @@ QR =
       upfile:   post.file
       filetag:  filetag
       spoiler:  post.spoiler
+      flag:     post.flag
       mode:     'regist'
       pwd:      QR.persona.getPassword()
 

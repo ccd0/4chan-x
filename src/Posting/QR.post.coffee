@@ -54,6 +54,11 @@ QR.post = class
       else
         ''
 
+      if QR.nodes.flag
+        @flag = if prev
+          prev.flag
+        else
+          persona.flag
       (@load() if QR.selected is @) # load persona
     @select() if select
     @unlock()
@@ -78,7 +83,7 @@ QR.post = class
   lock: (lock=true) ->
     @isLocked = lock
     return unless @ is QR.selected
-    for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler'] when node = QR.nodes[name]
+    for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler', 'flag'] when node = QR.nodes[name]
       node.disabled = lock
     @nodes.rm.style.visibility = if lock then 'hidden' else ''
     @nodes.spoiler.disabled = lock
@@ -103,7 +108,7 @@ QR.post = class
   load: ->
     # Load this post's values.
 
-    for name in ['thread', 'name', 'email', 'sub', 'com', 'filename']
+    for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag']
       continue if not (node = QR.nodes[name])
       node.value = @[name] or node.dataset.default or ''
 
@@ -129,8 +134,8 @@ QR.post = class
         return unless @file
         @saveFilename()
         @updateFilename()
-      when 'name'
-        if @name isnt prev # only save manual changes, not values filled in by persona settings
+      when 'name', 'flag'
+        if @[name] isnt prev # only save manual changes, not values filled in by persona settings
           QR.persona.set @
     @preventAutoPost() unless forced
 
@@ -138,7 +143,7 @@ QR.post = class
     return unless @ is QR.selected
     # Do this in case people use extensions
     # that do not trigger the `input` event.
-    for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler']
+    for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler', 'flag']
       continue if not (node = QR.nodes[name])
       @save node, true
     return
