@@ -60,4 +60,5 @@ QR.persona =
     $.get 'QR.persona', {}, ({'QR.persona': persona}) ->
       persona =
         name:  post.name
+        flag:  post.flag
       $.set 'QR.persona', persona
