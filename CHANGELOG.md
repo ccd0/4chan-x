@@ -29,6 +29,9 @@
 
 ### v1.13.8
 
+**v1.13.8.8** *(2017-06-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.8/builds/4chan-X-noupdate.crx)]
+- Update for restoration of custom flags on /pol/. #1403
+
 **v1.13.8.7** *(2017-05-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.7/builds/4chan-X-noupdate.crx)]
 - Fix MathJax on /sci/. #1356
 - Minor fixes for new board /bant/.
