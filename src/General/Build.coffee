@@ -52,6 +52,7 @@ Build =
       pass:     if data.since4pass? then "#{data.since4pass}" else undefined
       uniqueID: data.id
       flagCode: data.country
+      flagCodeTroll: data.troll_country
       flag:     Build.unescape data.country_name
       dateUTC:  data.time
       dateText: data.now
@@ -104,7 +105,7 @@ Build =
 
   post: (o) ->
     {ID, threadID, boardID, file} = o
-    {subject, email, name, tripcode, capcode, pass, uniqueID, flagCode, flag, dateUTC, dateText, commentHTML} = o.info
+    {subject, email, name, tripcode, capcode, pass, uniqueID, flagCode, flagCodeTroll, flag, dateUTC, dateText, commentHTML} = o.info
     {staticPath, gifIcon} = Build
 
     ### Post Info ###
