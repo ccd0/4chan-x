@@ -4,6 +4,9 @@
 
 ### v1.13.9
 
+**v1.13.9.5** *(2017-06-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.5/builds/4chan-X-noupdate.crx)]
+- Support /pol/ custom flags in archive-related features. #1403
+
 **v1.13.9.4** *(2017-06-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.4/builds/4chan-X-noupdate.crx)]
 - Update for restoration of custom flags on /pol/. #1403
 

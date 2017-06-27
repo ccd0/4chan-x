@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.9.4
+// @version      1.13.9.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.9.4',
+  VERSION:   '1.13.9.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5932,7 +5932,8 @@ Fetcher = (function() {
         })(),
         uniqueID: data.poster_hash,
         flagCode: data.poster_country,
-        flag: data.poster_country_name,
+        flagCodeTroll: data.troll_country_code,
+        flag: data.poster_country_name || data.troll_country_name,
         dateUTC: data.timestamp,
         dateText: data.fourchan_date,
         commentHTML: comment
@@ -15092,14 +15093,15 @@ ArchiveLink = (function() {
         });
         return true;
       } : function(post) {
-        var value;
-        value = type === 'country' ? post.info.flagCode : Filter[type](post);
+        var typeParam, value;
+        typeParam = type === 'country' && post.info.flagCodeTroll ? 'tag' : type;
+        value = type === 'country' ? post.info.flagCode || post.info.flagCodeTroll : Filter[type](post);
         if (!value) {
           return false;
         }
         el.href = Redirect.to('search', {
           boardID: post.board.ID,
-          type: type,
+          type: typeParam,
           value: value,
           isSearch: true
         });
