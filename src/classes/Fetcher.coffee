@@ -168,7 +168,8 @@ class Fetcher
         when 'G' then 'Manager'
       uniqueID: data.poster_hash
       flagCode: data.poster_country
-      flag:     data.poster_country_name
+      flagCodeTroll: data.troll_country_code
+      flag:     data.poster_country_name or data.troll_country_name
       dateUTC:  data.timestamp
       dateText: data.fourchan_date
       commentHTML: comment
