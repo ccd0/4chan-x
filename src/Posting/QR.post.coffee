@@ -175,9 +175,9 @@ QR.post = class
         break
     return
 
-  error: (className, message) ->
+  error: (className, message, link) ->
     div = $.el 'div', {className}
-    $.extend div, <%= html('${message}<br>[<a href="javascript:;">delete post</a>] [<a href="javascript:;">delete all</a>]') %>
+    $.extend div, <%= html('${message}?{link}{ [<a href="${link}" target="_blank">More info</a>]}<br>[<a href="javascript:;">delete post</a>] [<a href="javascript:;">delete all</a>]') %>
     (@errors or= []).push div
     [rm, rmAll] = $$ 'a', div
     $.on div, 'click', =>
@@ -188,8 +188,8 @@ QR.post = class
     $.on rmAll, 'click', QR.post.rmErrored
     QR.error div, true
 
-  fileError: (message) ->
-    @error 'file-error', "#{@filename}: #{message}"
+  fileError: (message, link) ->
+    @error 'file-error', "#{@filename}: #{message}", link
 
   dismissErrors: (test = -> true) ->
     if @errors
@@ -240,7 +240,7 @@ QR.post = class
     onerror = =>
       $.off el, event, onload
       $.off el, 'error', onerror
-      @fileError "#{if isVideo then 'Video' else 'Image'} appears corrupt"
+      @fileError "Corrupt #{if isVideo then 'video' else 'image'} or error reading metadata.", '<%= meta.faq %>#error-reading-metadata'
       URL.revokeObjectURL el.src
     $.on el, event, onload
     $.on el, 'error', onerror
