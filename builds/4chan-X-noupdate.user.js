@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.9.5
+// @version      1.13.9.6
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.9.5',
+  VERSION:   '1.13.9.6',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -22850,13 +22850,13 @@ QR = (function() {
       }
     };
 
-    _Class.prototype.error = function(className, message) {
+    _Class.prototype.error = function(className, message, link) {
       var div, ref, rm, rmAll;
       div = $.el('div', {
         className: className
       });
       $.extend(div, {
-        innerHTML: E(message) + "<br>[<a href=\"javascript:;\">delete post</a>] [<a href=\"javascript:;\">delete all</a>]"
+        innerHTML: E(message) + ((link) ? " [<a href=\"" + E(link) + "\" target=\"_blank\">More info</a>]" : "") + "<br>[<a href=\"javascript:;\">delete post</a>] [<a href=\"javascript:;\">delete all</a>]"
       });
       (this.errors || (this.errors = [])).push(div);
       ref = $$('a', div), rm = ref[0], rmAll = ref[1];
@@ -22879,8 +22879,8 @@ QR = (function() {
       return QR.error(div, true);
     };
 
-    _Class.prototype.fileError = function(message) {
-      return this.error('file-error', this.filename + ": " + message);
+    _Class.prototype.fileError = function(message, link) {
+      return this.error('file-error', this.filename + ": " + message, link);
     };
 
     _Class.prototype.dismissErrors = function(test) {
@@ -22963,7 +22963,7 @@ QR = (function() {
         return function() {
           $.off(el, event, onload);
           $.off(el, 'error', onerror);
-          _this.fileError((isVideo ? 'Video' : 'Image') + " appears corrupt");
+          _this.fileError("Corrupt " + (isVideo ? 'video' : 'image') + " or error reading metadata.", 'https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#error-reading-metadata');
           return URL.revokeObjectURL(el.src);
         };
       })(this);

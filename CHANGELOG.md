@@ -4,6 +4,9 @@
 
 ### v1.13.9
 
+**v1.13.9.6** *(2017-06-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.6/builds/4chan-X-noupdate.crx)]
+- Include link to FAQ entry about [blob: blocking issue](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#error-reading-metadata) in warning message when can't read file metadata. #1417
+
 **v1.13.9.5** *(2017-06-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.5/builds/4chan-X-noupdate.crx)]
 - Support /pol/ custom flags in archive-related features. #1403
 
