@@ -113,19 +113,25 @@ Filter =
 
   test: (post, hideable=true) ->
     return post.filterResults if post.filterResults
-    hl  = undefined
-    top = false
+    hide = false
+    stub = true
+    hl   = undefined
+    top  = false
     for key of Filter.filters when ((value = Filter[key] post)?)
       # Continue if there's nothing to filter (no tripcode for example).
       for filter in Filter.filters[key] when (result = filter value, post.boardID, post.isReply)
-        {hide, stub} = result
-        if hide
-          return {hide, stub} if hideable
+        if result.hide
+          if hideable
+            hide = true
+            stub and= result.stub
         else
           unless hl and result.class in hl
             (hl or= []).push result.class
           top or= result.top
-    {hl, top}
+    if hide
+      {hide, stub}
+    else
+      {hl, top}
 
   node: ->
     return if @isClone
