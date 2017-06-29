@@ -51,6 +51,7 @@ Main =
     Conf['selectedArchives'] = {}
     Conf['cooldowns'] = {}
     Conf['Index Sort'] = {}
+    Conf["Last Long Reply Thresholds #{i}"] = {} for i in [0...2]
 
     # XXX old key names
     Conf['Except Archives from Encryption'] = false

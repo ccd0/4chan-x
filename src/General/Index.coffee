@@ -112,6 +112,17 @@ Index =
     @selectRev.checked = /-rev$/.test Index.currentSort
     @selectSort.value  = Index.currentSort.replace /-rev$/, ''
 
+    # Last Long Reply options
+    @lastLongOptions = $ '#lastlong-options', @navLinks
+    @lastLongInputs = $$ 'input', @lastLongOptions
+    @lastLongThresholds = [0, 0]
+    @lastLongOptions.hidden = (@selectSort.value isnt 'lastlong')
+    for input, i in @lastLongInputs
+      $.on input, 'change', @cb.lastLongThresholds
+      tRaw = Conf["Last Long Reply Thresholds #{i}"]
+      input.value = @lastLongThresholds[i] =
+        if typeof tRaw is 'object' then (tRaw[g.BOARD.ID] ? 100) else tRaw
+
     # Thread container
     @root = $.el 'div', className: 'board json-index'
     $.on @root, 'click', @cb.hoverToggle
@@ -269,6 +280,21 @@ Index =
     perBoardSort: ->
       Conf['Index Sort'] = if @checked then {} else ''
       Index.saveSort()
+      for i in [0...2]
+        Conf["Last Long Reply Thresholds #{i}"] = if @checked then {} else ''
+        Index.saveLastLongThresholds i
+      return
+
+    lastLongThresholds: ->
+      i = [@parentNode.children...].indexOf @
+      value = +@value
+      unless Number.isFinite(value)
+        @value = Index.lastLongThresholds[i]
+        return
+      Index.lastLongThresholds[i] = value
+      Index.saveLastLongThresholds i
+      Index.changed.order = true
+      Index.pageLoad false
 
     size: (e) ->
       if Conf['Index Mode'] isnt 'catalog'
@@ -439,12 +465,18 @@ Index =
     if hash?
       Index.changed.hash = true
 
-  saveSort: ->
-    if typeof Conf['Index Sort'] is 'object'
-      Conf['Index Sort'][g.BOARD.ID] = Index.currentSort
+  savePerBoard: (key, value) ->
+    if typeof Conf[key] is 'object'
+      Conf[key][g.BOARD.ID] = value
     else
-      Conf['Index Sort'] = Index.currentSort
-    $.set 'Index Sort', Conf['Index Sort']
+      Conf[key] = value
+    $.set key, Conf[key]
+
+  saveSort: ->
+    Index.savePerBoard 'Index Sort', Index.currentSort
+
+  saveLastLongThresholds: (i) ->
+    Index.savePerBoard "Last Long Reply Thresholds #{i}", Index.lastLongThresholds[i]
 
   pageLoad: (scroll=true) ->
     return unless Index.liveThreadData
@@ -473,6 +505,7 @@ Index =
   setupSort: ->
     Index.selectRev.checked = /-rev$/.test Index.currentSort
     Index.selectSort.value  = Index.currentSort.replace /-rev$/, ''
+    Index.lastLongOptions.hidden = (Index.selectSort.value isnt 'lastlong')
 
   getPagesNum: ->
     if Index.search
@@ -776,7 +809,9 @@ Index =
       when 'lastlong'
         lastlong = (thread) ->
           for r, i in (thread.last_replies or []) by -1
-            return r if r.com and Build.parseComment(r.com).replace(/[^a-z]/ig, '').length >= 100
+            len = if r.com then Build.parseComment(r.com).replace(/[^a-z]/ig, '').length else 0
+            if len >= Index.lastLongThresholds[+!!r.ext]
+              return r
           thread
         [liveThreadData...].sort((a, b) ->
           lastlong(b).no - lastlong(a).no

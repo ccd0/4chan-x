@@ -730,6 +730,23 @@ div[data-checked="false"] > .suboption-list {
 #index-options {
   float: right;
 }
+#lastlong-options {
+  display: inline-block;
+  vertical-align: middle;
+  height: 28px;
+  margin: -14px 0;
+}
+#lastlong-options > input {
+  padding: 0;
+  border: 0 !important;
+  text-align: center;
+  background: transparent;
+  display: block;
+  font-size: 12px;
+  height: 12px;
+  width: 30px;
+  margin: 1px 0;
+}
 .summary {
   text-decoration: none;
 }
