@@ -812,7 +812,7 @@ Index =
             len = if r.com then Build.parseComment(r.com).replace(/[^a-z]/ig, '').length else 0
             if len >= Index.lastLongThresholds[+!!r.ext]
               return r
-          thread
+          if thread.omitted_posts then thread.last_replies[0] else thread
         [liveThreadData...].sort((a, b) ->
           lastlong(b).no - lastlong(a).no
         ).map (post) -> post.no
