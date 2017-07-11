@@ -2,6 +2,15 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.13.10
+
+**v1.13.10.0** *(2017-07-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.9.6.
+- Support adjusting the length thresholds for 'Last Long Reply' order. Thresholds can be set separately for replies with and without images.
+- In Last Long Reply order, if no visible reply meets threshold and there are omitted replies, sort by first visible reply.
+- When multiple filters hide a post, non-stub filters should override with-stub filters. #1414
+- (rivertam) Add more customizable keybindings for gallery image navigation.
+
 ### v1.13.9
 
 **v1.13.9.6** *(2017-06-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.6/builds/4chan-X-noupdate.crx)]

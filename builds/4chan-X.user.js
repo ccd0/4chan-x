@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.9.6
+// @version      1.13.10.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.9.6',
+  VERSION:   '1.13.10.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -454,6 +454,9 @@ Config = (function() {
       'Expand image': ['Shift+e', 'Expand selected image.'],
       'Expand images': ['e', 'Expand all images.'],
       'Open Gallery': ['g', 'Opens the gallery.'],
+      'Next Gallery Image': ['Right', 'Go to the next image in gallery mode.'],
+      'Previous Gallery Image': ['Left', 'Go to the previous image in gallery mode.'],
+      'Advance Gallery': ['Enter', 'Go to next image or, if Autoplay is off, play video.'],
       'Pause': ['p', 'Pause/play videos in the gallery.'],
       'Slideshow': ['Ctrl+Right', 'Toggle the gallery slideshow mode.'],
       'fappeTyme': ['f', 'Toggle Fappe Tyme.'],
@@ -1934,6 +1937,23 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 }\n\
 #index-options {\n\
   float: right;\n\
+}\n\
+#lastlong-options {\n\
+  display: inline-block;\n\
+  vertical-align: middle;\n\
+  height: 28px;\n\
+  margin: -14px 0;\n\
+}\n\
+#lastlong-options > input {\n\
+  padding: 0;\n\
+  border: 0 !important;\n\
+  text-align: center;\n\
+  background: transparent;\n\
+  display: block;\n\
+  font-size: 12px;\n\
+  height: 12px;\n\
+  width: 30px;\n\
+  margin: 1px 0;\n\
 }\n\
 .summary {\n\
   text-decoration: none;\n\
@@ -7340,6 +7360,8 @@ Filter = (function() {
       if (post.filterResults) {
         return post.filterResults;
       }
+      hide = false;
+      stub = true;
       hl = void 0;
       top = false;
       for (key in Filter.filters) {
@@ -7347,30 +7369,33 @@ Filter = (function() {
           ref = Filter.filters[key];
           for (i = 0, len = ref.length; i < len; i++) {
             filter = ref[i];
-            if (!((result = filter(value, post.boardID, post.isReply)))) {
-              continue;
-            }
-            hide = result.hide, stub = result.stub;
-            if (hide) {
-              if (hideable) {
-                return {
-                  hide: hide,
-                  stub: stub
-                };
+            if ((result = filter(value, post.boardID, post.isReply))) {
+              if (result.hide) {
+                if (hideable) {
+                  hide = true;
+                  stub && (stub = result.stub);
+                }
+              } else {
+                if (!(hl && (ref1 = result["class"], indexOf.call(hl, ref1) >= 0))) {
+                  (hl || (hl = [])).push(result["class"]);
+                }
+                top || (top = result.top);
               }
-            } else {
-              if (!(hl && (ref1 = result["class"], indexOf.call(hl, ref1) >= 0))) {
-                (hl || (hl = [])).push(result["class"]);
-              }
-              top || (top = result.top);
             }
           }
         }
       }
-      return {
-        hl: hl,
-        top: top
-      };
+      if (hide) {
+        return {
+          hide: hide,
+          stub: stub
+        };
+      } else {
+        return {
+          hl: hl,
+          top: top
+        };
+      }
     },
     node: function() {
       var hide, hl, ref, stub, top;
@@ -9383,7 +9408,7 @@ Index = (function() {
     showHiddenThreads: false,
     changed: {},
     init: function() {
-      var arr, entries, input, inputs, k, label, len, name, ref, ref1, ref2, ref3, ref4, ref5, ref6, select, sortEntry, watchSettings;
+      var arr, entries, i, input, inputs, k, l, label, len1, len2, name, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, select, sortEntry, tRaw, watchSettings;
       if (!(g.VIEW === 'index' && g.BOARD.ID !== 'f')) {
         return;
       }
@@ -9470,7 +9495,7 @@ Index = (function() {
         className: 'navLinks json-index'
       });
       $.extend(this.navLinks, {
-        innerHTML: "<span class=\"brackets-wrap indexlink\"><a href=\"#index\">Index</a></span> <span class=\"brackets-wrap cataloglink\"><a href=\"#catalog\">Catalog</a></span> <span class=\"brackets-wrap archlistlink\"><a href=\"./archive\">Archive</a></span> <span class=\"brackets-wrap bottomlink\"><a href=\"#bottom\">Bottom</a></span> <span class=\"brackets-wrap\" id=\"index-last-refresh\"><a href=\"javascript:;\"><time title=\"Last index refresh\">...</time></a></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a><span id=\"hidden-label\" hidden> &mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><span id=\"index-options\"><input type=\"checkbox\" id=\"index-rev\" name=\"Reverse Sort\" title=\"Reverse sort order\"><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"lastlong\">Last long reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select></span>"
+        innerHTML: "<span class=\"brackets-wrap indexlink\"><a href=\"#index\">Index</a></span> <span class=\"brackets-wrap cataloglink\"><a href=\"#catalog\">Catalog</a></span> <span class=\"brackets-wrap archlistlink\"><a href=\"./archive\">Archive</a></span> <span class=\"brackets-wrap bottomlink\"><a href=\"#bottom\">Bottom</a></span> <span class=\"brackets-wrap\" id=\"index-last-refresh\"><a href=\"javascript:;\"><time title=\"Last index refresh\">...</time></a></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a><span id=\"hidden-label\" hidden> &mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><span id=\"index-options\"><input type=\"checkbox\" id=\"index-rev\" name=\"Reverse Sort\" title=\"Reverse sort order\"><span id=\"lastlong-options\" hidden><input type=\"text\" title=\"Minimum letter count (without image)\"><input type=\"text\" title=\"Minimum letter count (with image)\"></span><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"lastlong\">Last long reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select></span>"
       });
       $('.cataloglink a', this.navLinks).href = CatalogLinks.catalog();
       if ((ref5 = g.BOARD.ID) === 'b' || ref5 === 'trash' || ref5 === 'bant') {
@@ -9493,12 +9518,23 @@ Index = (function() {
       $.on(this.selectSize, 'change', $.cb.value);
       $.on(this.selectSize, 'change', this.cb.size);
       ref6 = [this.selectMode, this.selectSize];
-      for (k = 0, len = ref6.length; k < len; k++) {
+      for (k = 0, len1 = ref6.length; k < len1; k++) {
         select = ref6[k];
         select.value = Conf[select.name];
       }
       this.selectRev.checked = /-rev$/.test(Index.currentSort);
       this.selectSort.value = Index.currentSort.replace(/-rev$/, '');
+      this.lastLongOptions = $('#lastlong-options', this.navLinks);
+      this.lastLongInputs = $$('input', this.lastLongOptions);
+      this.lastLongThresholds = [0, 0];
+      this.lastLongOptions.hidden = this.selectSort.value !== 'lastlong';
+      ref7 = this.lastLongInputs;
+      for (i = l = 0, len2 = ref7.length; l < len2; i = ++l) {
+        input = ref7[i];
+        $.on(input, 'change', this.cb.lastLongThresholds);
+        tRaw = Conf["Last Long Reply Thresholds " + i];
+        input.value = this.lastLongThresholds[i] = typeof tRaw === 'object' ? (ref8 = tRaw[g.BOARD.ID]) != null ? ref8 : 100 : tRaw;
+      }
       this.root = $.el('div', {
         className: 'board json-index'
       });
@@ -9518,7 +9554,7 @@ Index = (function() {
         return d.title = d.title.replace(/\ -\ Page\ \d+/, '');
       });
       $.onExists(doc, '.board > .thread > .postContainer, .board + *', function() {
-        var board, el, l, len1, ref7, topNavPos;
+        var board, el, len3, m, ref9, topNavPos;
         Build.hat = $('.board > .thread > img:first-child');
         if (Build.hat) {
           g.BOARD.threads.forEach(function(thread) {
@@ -9537,9 +9573,9 @@ Index = (function() {
         try {
           d.implementation.createDocument(null, null, null).appendChild(board);
         } catch (_error) {}
-        ref7 = $$('.navLinks');
-        for (l = 0, len1 = ref7.length; l < len1; l++) {
-          el = ref7[l];
+        ref9 = $$('.navLinks');
+        for (m = 0, len3 = ref9.length; m < len3; m++) {
+          el = ref9[m];
           $.rm(el);
         }
         $.rm($.id('ctrl-top'));
@@ -9652,11 +9688,11 @@ Index = (function() {
       return ThreadHiding.saveHiddenState(thread);
     },
     cycleSortType: function() {
-      var i, k, len, type, types;
+      var i, k, len1, type, types;
       types = slice.call(Index.selectSort.options).filter(function(option) {
         return !option.disabled;
       });
-      for (i = k = 0, len = types.length; k < len; i = ++k) {
+      for (i = k = 0, len1 = types.length; k < len1; i = ++k) {
         type = types[i];
         if (type.selected) {
           break;
@@ -9715,8 +9751,26 @@ Index = (function() {
         }
       },
       perBoardSort: function() {
+        var i, k;
         Conf['Index Sort'] = this.checked ? {} : '';
-        return Index.saveSort();
+        Index.saveSort();
+        for (i = k = 0; k < 2; i = ++k) {
+          Conf["Last Long Reply Thresholds " + i] = this.checked ? {} : '';
+          Index.saveLastLongThresholds(i);
+        }
+      },
+      lastLongThresholds: function() {
+        var i, value;
+        i = slice.call(this.parentNode.children).indexOf(this);
+        value = +this.value;
+        if (!Number.isFinite(value)) {
+          this.value = Index.lastLongThresholds[i];
+          return;
+        }
+        Index.lastLongThresholds[i] = value;
+        Index.saveLastLongThresholds(i);
+        Index.changed.order = true;
+        return Index.pageLoad(false);
       },
       size: function(e) {
         if (Conf['Index Mode'] !== 'catalog') {
@@ -9856,14 +9910,14 @@ Index = (function() {
       }
     },
     processHash: function() {
-      var command, commands, hash, k, leftover, len, mode, ref, sort, state;
+      var command, commands, hash, k, leftover, len1, mode, ref, sort, state;
       hash = ((ref = location.href.match(/#.*/)) != null ? ref[0] : void 0) || '';
       state = {
         replace: true
       };
       commands = hash.slice(1).split('/');
       leftover = [];
-      for (k = 0, len = commands.length; k < len; k++) {
+      for (k = 0, len1 = commands.length; k < len1; k++) {
         command = commands[k];
         if ((mode = Index.hashCommands.mode[command])) {
           state.mode = mode;
@@ -9942,13 +9996,19 @@ Index = (function() {
         return Index.changed.hash = true;
       }
     },
-    saveSort: function() {
-      if (typeof Conf['Index Sort'] === 'object') {
-        Conf['Index Sort'][g.BOARD.ID] = Index.currentSort;
+    savePerBoard: function(key, value) {
+      if (typeof Conf[key] === 'object') {
+        Conf[key][g.BOARD.ID] = value;
       } else {
-        Conf['Index Sort'] = Index.currentSort;
+        Conf[key] = value;
       }
-      return $.set('Index Sort', Conf['Index Sort']);
+      return $.set(key, Conf[key]);
+    },
+    saveSort: function() {
+      return Index.savePerBoard('Index Sort', Index.currentSort);
+    },
+    saveLastLongThresholds: function(i) {
+      return Index.savePerBoard("Last Long Reply Thresholds " + i, Index.lastLongThresholds[i]);
     },
     pageLoad: function(scroll) {
       var hash, mode, order, page, ref, search, sort, threads;
@@ -9991,9 +10051,9 @@ Index = (function() {
       return Index.changed = {};
     },
     setupMode: function() {
-      var k, len, mode, ref;
+      var k, len1, mode, ref;
       ref = ['paged', 'infinite', 'all pages', 'catalog'];
-      for (k = 0, len = ref.length; k < len; k++) {
+      for (k = 0, len1 = ref.length; k < len1; k++) {
         mode = ref[k];
         $[mode === Conf['Index Mode'] ? 'addClass' : 'rmClass'](doc, (mode.replace(/\ /g, '-')) + "-mode");
       }
@@ -10004,7 +10064,8 @@ Index = (function() {
     },
     setupSort: function() {
       Index.selectRev.checked = /-rev$/.test(Index.currentSort);
-      return Index.selectSort.value = Index.currentSort.replace(/-rev$/, '');
+      Index.selectSort.value = Index.currentSort.replace(/-rev$/, '');
+      return Index.lastLongOptions.hidden = Index.selectSort.value !== 'lastlong';
     },
     getPagesNum: function() {
       if (Index.search) {
@@ -10059,13 +10120,13 @@ Index = (function() {
       return $.add(strong, a);
     },
     updateHideLabel: function() {
-      var hiddenCount, k, len, ref, threadID;
+      var hiddenCount, k, len1, ref, threadID;
       if (!Index.hideLabel) {
         return;
       }
       hiddenCount = 0;
       ref = Index.liveThreadIDs;
-      for (k = 0, len = ref.length; k < len; k++) {
+      for (k = 0, len1 = ref.length; k < len1; k++) {
         threadID = ref[k];
         if (Index.isHidden(threadID)) {
           hiddenCount++;
@@ -10181,7 +10242,7 @@ Index = (function() {
       return Index.pageLoad();
     },
     parseThreadList: function(pages) {
-      var ID, data, i, k, len, obj, ref, ref1, results;
+      var ID, data, i, k, len1, obj, ref, ref1, results;
       Index.pagesNum = pages.length;
       Index.threadsNumPerPage = ((ref = pages[0]) != null ? ref.threads.length : void 0) || 1;
       Index.liveThreadData = pages.reduce((function(arr, next) {
@@ -10194,7 +10255,7 @@ Index = (function() {
       Index.threadPosition = {};
       Index.parsedThreads = {};
       ref1 = Index.liveThreadData;
-      for (i = k = 0, len = ref1.length; k < len; i = ++k) {
+      for (i = k = 0, len1 = ref1.length; k < len1; i = ++k) {
         data = ref1[i];
         Index.liveThreadDict[data.no] = data;
         Index.threadPosition[data.no] = i;
@@ -10214,10 +10275,10 @@ Index = (function() {
       });
       $.event('IndexUpdate', {
         threads: (function() {
-          var l, len1, ref2, results1;
+          var l, len2, ref2, results1;
           ref2 = Index.liveThreadIDs;
           results1 = [];
-          for (l = 0, len1 = ref2.length; l < len1; l++) {
+          for (l = 0, len2 = ref2.length; l < len2; l++) {
             ID = ref2[l];
             results1.push(g.BOARD + "." + ID);
           }
@@ -10234,11 +10295,11 @@ Index = (function() {
       }
     },
     buildThreads: function(threadIDs, isCatalog) {
-      var ID, OP, err, errors, isStale, k, len, newPosts, newThreads, obj, thread, threadData, threads;
+      var ID, OP, err, errors, isStale, k, len1, newPosts, newThreads, obj, thread, threadData, threads;
       threads = [];
       newThreads = [];
       newPosts = [];
-      for (k = 0, len = threadIDs.length; k < len; k++) {
+      for (k = 0, len1 = threadIDs.length; k < len1; k++) {
         ID = threadIDs[k];
         try {
           threadData = Index.liveThreadDict[ID];
@@ -10293,15 +10354,15 @@ Index = (function() {
       return threads;
     },
     buildReplies: function(threads) {
-      var data, err, errors, k, l, lastReplies, len, len1, node, nodes, post, posts, thread;
+      var data, err, errors, k, l, lastReplies, len1, len2, node, nodes, post, posts, thread;
       posts = [];
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         if (!(lastReplies = Index.liveThreadDict[thread.ID].last_replies)) {
           continue;
         }
         nodes = [];
-        for (l = 0, len1 = lastReplies.length; l < len1; l++) {
+        for (l = 0, len2 = lastReplies.length; l < len2; l++) {
           data = lastReplies[l];
           if ((post = thread.posts[data.no]) && !post.isFetchedQuote) {
             nodes.push(post.nodes.root);
@@ -10329,9 +10390,9 @@ Index = (function() {
       return Main.callbackNodes('Post', posts);
     },
     buildCatalogViews: function(threads) {
-      var ID, catalogThreads, k, len, page, root, thread;
+      var ID, catalogThreads, k, len1, page, root, thread;
       catalogThreads = [];
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         if (!(!thread.catalogView)) {
           continue;
@@ -10344,9 +10405,9 @@ Index = (function() {
       Main.callbackNodes('CatalogThread', catalogThreads);
     },
     sizeCatalogViews: function(threads) {
-      var height, k, len, ratio, ref, size, thread, thumb, width;
+      var height, k, len1, ratio, ref, size, thread, thumb, width;
       size = Conf['Index Size'] === 'small' ? 150 : 250;
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         thumb = thread.catalogView.nodes.thumb;
         ref = thumb.dataset, width = ref.width, height = ref.height;
@@ -10359,13 +10420,13 @@ Index = (function() {
       }
     },
     buildCatalogReplies: function(thread) {
-      var data, k, lastReplies, len, nodes, replies, reply;
+      var data, k, lastReplies, len1, nodes, replies, reply;
       nodes = thread.catalogView.nodes;
       if (!(lastReplies = Index.liveThreadDict[thread.ID].last_replies)) {
         return;
       }
       replies = [];
-      for (k = 0, len = lastReplies.length; k < len; k++) {
+      for (k = 0, len1 = lastReplies.length; k < len1; k++) {
         data = lastReplies[k];
         if (PostHiding.isHidden(g.BOARD.ID, thread.ID, data.no)) {
           continue;
@@ -10407,15 +10468,20 @@ Index = (function() {
             });
           case 'lastlong':
             lastlong = function(thread) {
-              var i, k, r, ref;
+              var i, k, len, r, ref;
               ref = thread.last_replies || [];
               for (i = k = ref.length - 1; k >= 0; i = k += -1) {
                 r = ref[i];
-                if (r.com && Build.parseComment(r.com).replace(/[^a-z]/ig, '').length >= 100) {
+                len = r.com ? Build.parseComment(r.com).replace(/[^a-z]/ig, '').length : 0;
+                if (len >= Index.lastLongThresholds[+(!!r.ext)]) {
                   return r;
                 }
               }
-              return thread;
+              if (thread.omitted_posts) {
+                return thread.last_replies[0];
+              } else {
+                return thread;
+              }
             };
             return slice.call(liveThreadData).sort(function(a, b) {
               return lastlong(b).no - lastlong(a).no;
@@ -10463,11 +10529,11 @@ Index = (function() {
       }
     },
     sortOnTop: function(match) {
-      var ID, bottomThreads, k, len, ref, topThreads;
+      var ID, bottomThreads, k, len1, ref, topThreads;
       topThreads = [];
       bottomThreads = [];
       ref = Index.sortedThreadIDs;
-      for (k = 0, len = ref.length; k < len; k++) {
+      for (k = 0, len1 = ref.length; k < len1; k++) {
         ID = ref[k];
         (match(Index.parsedThreads[ID]) ? topThreads : bottomThreads).push(ID);
       }
@@ -10506,13 +10572,13 @@ Index = (function() {
       return Index.sortedThreadIDs.slice(offset, offset + nodesPerPage);
     },
     buildStructure: function(threadIDs) {
-      var k, len, nodes, thread, threads;
+      var k, len1, nodes, thread, threads;
       threads = Index.buildThreads(threadIDs, false);
       if (Conf['Show Replies']) {
         Index.buildReplies(threads);
       }
       nodes = [];
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         nodes.push(thread.nodes.root, $.el('hr'));
       }
@@ -10547,12 +10613,12 @@ Index = (function() {
       fn();
     },
     buildCatalogPart: function(threadIDs) {
-      var k, len, nodes, thread, threads;
+      var k, len1, nodes, thread, threads;
       threads = Index.buildThreads(threadIDs, true);
       Index.buildCatalogViews(threads);
       Index.sizeCatalogViews(threads);
       nodes = [];
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         thread.OP.setCatalogOP(true);
         $.add(thread.catalogView.nodes.root, thread.OP.nodes.root);
@@ -10598,14 +10664,14 @@ Index = (function() {
       });
     },
     searchMatch: function(obj, keywords) {
-      var file, info, k, key, keyword, l, len, len1, ref, text;
+      var file, info, k, key, keyword, l, len1, len2, ref, text;
       info = obj.info, file = obj.file;
       if (info.comment == null) {
         info.comment = Build.parseComment(info.commentHTML.innerHTML);
       }
       text = [];
       ref = ['comment', 'subject', 'name', 'tripcode'];
-      for (k = 0, len = ref.length; k < len; k++) {
+      for (k = 0, len1 = ref.length; k < len1; k++) {
         key = ref[k];
         if (key in info) {
           text.push(info[key]);
@@ -10615,7 +10681,7 @@ Index = (function() {
         text.push(file.name);
       }
       text = text.join(' ').toLowerCase();
-      for (l = 0, len1 = keywords.length; l < len1; l++) {
+      for (l = 0, len2 = keywords.length; l < len2; l++) {
         keyword = keywords[l];
         if (-1 === text.indexOf(keyword)) {
           return false;
@@ -12550,12 +12616,11 @@ Gallery = (function() {
             case Conf['Close']:
             case Conf['Open Gallery']:
               return Gallery.cb.close;
-            case 'Right':
+            case Conf['Next Gallery Image']:
               return Gallery.cb.next;
-            case 'Enter':
+            case Conf['Advance Gallery']:
               return Gallery.cb.advance;
-            case 'Left':
-            case '':
+            case Conf['Previous Gallery Image']:
               return Gallery.cb.prev;
             case Conf['Pause']:
               return Gallery.cb.pause;
@@ -24176,7 +24241,7 @@ Main = (function() {
 
   Main = {
     init: function() {
-      var db, flatten, items, j, key, len, ref;
+      var db, flatten, i, items, j, k, key, len, ref;
       if (d.body && !$('title', d.head)) {
         return;
       }
@@ -24246,6 +24311,9 @@ Main = (function() {
       Conf['selectedArchives'] = {};
       Conf['cooldowns'] = {};
       Conf['Index Sort'] = {};
+      for (i = k = 0; k < 2; i = ++k) {
+        Conf["Last Long Reply Thresholds " + i] = {};
+      }
       Conf['Except Archives from Encryption'] = false;
       Conf['JSON Navigation'] = true;
       Conf['Oekaki Links'] = true;
