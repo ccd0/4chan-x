@@ -43,7 +43,3 @@ E.cat = function(templates) {
   }
   return html;
 };
-
-E.url = function(content) {
-  return "data:text/html;charset=utf-8,<!doctype html>" + encodeURIComponent(content.innerHTML);
-};
