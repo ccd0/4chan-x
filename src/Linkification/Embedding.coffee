@@ -240,14 +240,10 @@ Embedding =
     ,
       key: 'Clyp'
       regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w+)/
-      style: ''
+      style: 'border: 0; width: 640px; height: 160px;'
       el: (a) ->
-        el = $.el 'audio',
-          controls: true
-          preload: 'auto'
-        type = if el.canPlayType 'audio/ogg' then 'ogg' else 'mp3'
-        el.src = "https://clyp.it/#{a.dataset.uid}.#{type}"
-        el
+        $.el 'iframe',
+          src: "https://clyp.it/#{a.dataset.uid}/widget"
     ,
       key: 'Dailymotion'
       regExp:  /^\w+:\/\/(?:(?:www\.)?dailymotion\.com\/(?:embed\/)?video|dai\.ly)\/([A-Za-z0-9]+)[^?]*(.*)/
