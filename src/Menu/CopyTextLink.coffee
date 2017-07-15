@@ -10,8 +10,9 @@ CopyTextLink =
 
     Menu.menu.addEntry
       el: a
+      order: 12
       open: (post) ->
-        CopyTextLink.text = post.nodes.commentClean.innerText
+        CopyTextLink.text = post.info.comment
         true
 
   copy: ->
