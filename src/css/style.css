@@ -1012,6 +1012,14 @@ div[data-checked="false"] > .suboption-list {
   left: calc(110px - .5px * var(--tn-w));
 }
 
+/* Copy Text Link's textarea element */
+textarea.copy-text-element {
+  height: 0;
+  width: 0;
+  position: absolute;
+  top: -10000px;
+}
+
 /* Announcement Hiding */
 :root.hide-announcement #globalMessage {
   display: none;

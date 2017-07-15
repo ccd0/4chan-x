@@ -307,6 +307,11 @@ Config =
         'Add a report link to the menu.'
         1
       ]
+      'Copy Text Link': [
+        true
+        'Add a link to copy the post\'s text.'
+        1
+      ]
       'Thread Hiding Link': [
         true
         'Add a link to hide entire threads.'

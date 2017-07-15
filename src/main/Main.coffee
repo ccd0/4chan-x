@@ -461,6 +461,7 @@ Main =
     ['Menu',                      Menu]
     ['Index Generator (Menu)',    Index.menu]
     ['Report Link',               ReportLink]
+    ['Copy Text Link',            CopyTextLink]
     ['Thread Hiding (Menu)',      ThreadHiding.menu]
     ['Reply Hiding (Menu)',       PostHiding.menu]
     ['Delete Link',               DeleteLink]
