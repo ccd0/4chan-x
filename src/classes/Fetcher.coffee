@@ -4,6 +4,16 @@ class Fetcher
       @insert post
       return
 
+    # 4chan X catalog data
+    if (post = Index.replyData?["#{@boardID}.#{@postID}"])
+      board  = g.boards[@boardID]
+      thread = g.threads["#{@boardID}.#{@threadID}"]
+      post = new Post Build.postFromObject(post, @boardID), thread, board
+      post.isFetchedQuote = true
+      Main.callbackNodes 'Post', [post]
+      @insert post
+      return
+
     @root.textContent = "Loading post No.#{@postID}..."
     if @threadID
       $.cache "//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json", (e, isCached) =>

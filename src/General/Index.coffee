@@ -663,6 +663,7 @@ Index =
     Index.liveThreadDict    = {}
     Index.threadPosition    = {}
     Index.parsedThreads     = {}
+    Index.replyData         = {}
     for data, i in Index.liveThreadData
       Index.liveThreadDict[data.no] = data
       Index.threadPosition[data.no] = i
@@ -670,6 +671,9 @@ Index =
       obj.filterResults = results = Filter.test obj
       obj.isOnTop  = results.top
       obj.isHidden = results.hide or ThreadHiding.isHidden(obj.boardID, obj.threadID)
+      if data.last_replies
+        for reply in data.last_replies
+          Index.replyData["#{g.BOARD}.#{reply.no}"] = reply
     if Index.liveThreadData[0]
       Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler
     g.BOARD.threads.forEach (thread) ->
