@@ -354,13 +354,13 @@ Embedding =
         el
     ,
       key: 'Openings.moe'
-      regExp: /^\w+:\/\/openings.moe\/\?video=([^&=]+\.webm)/
+      regExp: /^\w+:\/\/openings.moe\/\?video=([^.&=]+)/
       style: 'max-width: 80vw; max-height: 80vh;'
       el: (a) ->
         $.el 'video',
           controls: true
           preload:  'auto'
-          src:      "//openings.moe/video/#{a.dataset.uid}"
+          src:      "//openings.moe/video/#{a.dataset.uid}.webm"
           loop:     true
     ,
       key: 'Pastebin'
