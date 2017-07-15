@@ -19,6 +19,15 @@
   "files": ["bant", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
   "reports": true
 }, {
+  "uid": 5,
+  "name": "Love is Over",
+  "domain": "archive.loveisover.me",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["c", "d", "e", "i", "lgbt", "t", "u"],
+  "files": ["c", "d", "e", "i", "lgbt", "t", "u"]
+}, {
   "uid": 8,
   "name": "Rebecca Black Tech",
   "domain": "archive.rebeccablacktech.com",
@@ -115,15 +124,6 @@
   "boards": ["3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y"],
   "files": ["bant", "can", "cock", "fap", "fitlit", "mlpol", "mo", "mtv", "outsoc", "spa", "vint"],
   "reports": true
-}, {
-  "uid": 5,
-  "name": "Love is Over",
-  "domain": "archive.loveisover.me",
-  "http": true,
-  "https": false,
-  "software": "foolfuuka",
-  "boards": ["c", "d", "e", "i", "lgbt", "t", "u"],
-  "files": ["c", "d", "e", "i", "lgbt", "t", "u"]
 }, {
   "uid": 33,
   "name": "Bui's /b/ Archive (Mirror)",
