@@ -71,6 +71,9 @@ Main =
     items[key] = undefined for key of Conf
     items['previousversion'] = undefined
     ($.getSync or $.get) items, (items) ->
+      if (items['Redirect to HTTPS'] ? Conf['Redirect to HTTPS']) and location.protocol isnt 'https:'
+        location.protocol = 'https:'
+        return
       $.asap docSet, ->
 
         # Don't hide the local storage warning behind a settings panel.

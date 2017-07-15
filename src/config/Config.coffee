@@ -1,6 +1,10 @@
 Config =
   main:
     'Miscellaneous':
+      'Redirect to HTTPS': [
+        true
+        'Redirect to the HTTPS version of 4chan.'
+      ]
       'JSON Index': [
         true
         'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'
