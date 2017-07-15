@@ -399,7 +399,7 @@ Embedding =
         el
     ,
       key: 'Twitter'
-      regExp: /^\w+:\/\/(?:www\.)?twitter\.com\/(\w+\/status\/\d+)/
+      regExp: /^\w+:\/\/(?:www\.|mobile\.)?twitter\.com\/(\w+\/status\/\d+)/
       style: 'border: none; width: 550px; height: 250px; max-height: 80vh;'
       el: (a) ->
         el = $.el 'iframe'
