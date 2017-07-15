@@ -461,6 +461,8 @@ Settings =
         ta.value = item[name]
         $.add div, ta
       return
+    filterTypes = Object.keys(Config.filter).filter((x) -> x isnt 'general').map (x, i) ->
+      <%= html('?{i}{,}<wbr>${x}') %>
     $.extend div, <%= readHTML('Filter-guide.html') %>
     $('.warning', div).hidden = Conf['Filter']
 

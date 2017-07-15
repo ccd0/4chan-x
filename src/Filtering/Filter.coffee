@@ -11,7 +11,6 @@ Filter =
     sfwBoards  = BoardConfig.sfwBoards(true).join(',')
 
     for key of Config.filter
-      @filters[key] = []
       for line in Conf[key].split '\n'
         continue if line[0] is '#'
 
@@ -75,11 +74,20 @@ Filter =
           top = filter.match(/top:(yes|no)/)?[1] or 'yes'
           top = top is 'yes' # Turn it into a boolean
 
-        @filters[key].push @createFilter regexp, boards, excludes, op, stub, hl, top
+        # Fields that this filter applies to (for 'general' filters)
+        if key is 'general'
+          if (types = filter.match /(?:^|;)\s*type:([^;]*)/)
+            types = types[1].split(',').filter (x) ->
+              x of Config.filter and x isnt 'general'
+          else
+            types = ['subject', 'name', 'filename', 'comment']
 
-      # Only execute filter types that contain valid filters.
-      unless @filters[key].length
-        delete @filters[key]
+        filter = @createFilter regexp, boards, excludes, op, stub, hl, top
+        if key is 'general'
+          for type in types
+            (@filters[type] or= []).push filter
+        else
+          (@filters[key] or= []).push filter
 
     return unless Object.keys(@filters).length
     Callbacks.Post.push
