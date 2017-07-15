@@ -55,7 +55,6 @@ Embedding =
   embed: (data) ->
     {key, uid, options, link, post} = data
     {href} = link
-    return if Embedding.types[key].httpOnly and location.protocol isnt 'http:'
 
     $.addClass link, key.toLowerCase()
 
