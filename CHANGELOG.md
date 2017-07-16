@@ -4,6 +4,13 @@
 
 ### v1.13.10
 
+**v1.13.10.1** *(2017-07-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.1/builds/4chan-X-noupdate.crx)]
+- Add `Redirect to HTTPS` setting and turn it on by default. #885
+- Turn `Force Noscript Captcha for v1` on by default.
+- Add "General" filter category for filters that apply to multiple fields given by `type` option. #1124
+- Various embedding updates and bugfixes, including Link Title support for Clyp.
+- (friendlyanon) Add menu item to copy a post's clean text.
+
 **v1.13.10.0** *(2017-07-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.13.9.6.
 - Support adjusting the length thresholds for 'Last Long Reply' order. Thresholds can be set separately for replies with and without images.
