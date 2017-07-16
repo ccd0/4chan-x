@@ -238,7 +238,7 @@ Embedding =
         el
     ,
       key: 'Clyp'
-      regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w+)/
+      regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w{8})/
       style: 'border: 0; width: 640px; height: 160px;'
       el: (a) ->
         $.el 'iframe',
