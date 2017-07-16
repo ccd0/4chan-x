@@ -19,6 +19,15 @@
   "files": ["bant", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
   "reports": true
 }, {
+  "uid": 5,
+  "name": "Love is Over",
+  "domain": "archive.loveisover.me",
+  "http": true,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["c", "d", "e", "i", "lgbt", "t", "u"],
+  "files": ["c", "d", "e", "i", "lgbt", "t", "u"]
+}, {
   "uid": 8,
   "name": "Rebecca Black Tech",
   "domain": "archive.rebeccablacktech.com",
@@ -116,20 +125,11 @@
   "files": ["bant", "can", "cock", "fap", "fitlit", "mlpol", "mo", "mtv", "outsoc", "spa", "vint"],
   "reports": true
 }, {
-  "uid": 5,
-  "name": "Love is Over",
-  "domain": "archive.loveisover.me",
-  "http": true,
-  "https": false,
-  "software": "foolfuuka",
-  "boards": ["c", "d", "e", "i", "lgbt", "t", "u"],
-  "files": ["c", "d", "e", "i", "lgbt", "t", "u"]
-}, {
   "uid": 33,
-  "name": "Bui's /b/ Archive (Mirror)",
-  "domain": "yeet.net",
+  "name": "YEET Archive",
+  "domain": "archive.yeet.net",
   "http": true,
-  "https": false,
+  "https": true,
   "software": "foolfuuka",
-  "boards": ["b"]
+  "boards": ["g", "k", "qa", "s4s"]
 }]
