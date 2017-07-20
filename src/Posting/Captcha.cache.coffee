@@ -4,6 +4,8 @@ Captcha.cache =
       @sync captchas
       @clear()
     $.sync 'captchas', @sync.bind(@)
+    $.on d, 'SaveCaptcha', (e) =>
+      @save e.detail
 
   captchas: []
 
