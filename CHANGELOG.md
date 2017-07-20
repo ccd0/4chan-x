@@ -4,6 +4,9 @@
 
 ### v1.13.10
 
+**v1.13.10.2** *(2017-07-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.2/builds/4chan-X-noupdate.crx)]
+- Add an API for adding captchas to 4chan X's cache (`SaveCaptcha` event).
+
 **v1.13.10.1** *(2017-07-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.1/builds/4chan-X-noupdate.crx)]
 - Add `Redirect to HTTPS` setting and turn it on by default. #885
 - Turn `Force Noscript Captcha for v1` on by default.
