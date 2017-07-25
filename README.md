@@ -17,7 +17,13 @@ https://github.com/Nebukazar/OneeChan.
 ## Install
 
 ### Firefox
-Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
+You will first need to install a userscript manager such as [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/). Unfortunately, Firefox's transition to WebExtensions has forced a complete rewrite of Greasemonkey, leaving the current version of Greasemonkey unmaintained and unreliable. Until the WebExtensions version of Greasemonkey is complete, your options are:
+
+- Use [Firefox ESR](https://www.mozilla.org/en-US/firefox/organizations/), which should continue to work with the current version of [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) until a new one is ready.
+- Install [Violentmonkey](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/) or [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/). These are already WebExtensions, but due to the current limitations of WebExtensions, they offer less functionality than Greasemonkey.
+- Use [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) with the current version of Firefox, but don't be surprised when things break.
+
+After Greasemonkey or an alternative userscript manager is installed, **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
 
 Ports of Greasemonkey are available for [SeaMonkey](https://sourceforge.net/projects/gmport/) and [Pale Moon](https://github.com/janekptacijarabaci/greasemonkey/releases/latest).
 
