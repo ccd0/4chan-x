@@ -4,6 +4,9 @@
 
 ### v1.13.10
 
+**v1.13.10.3** *(2017-07-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.3/builds/4chan-X-noupdate.crx)]
+- Fix double sticky icon bug on /f/.
+
 **v1.13.10.2** *(2017-07-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.2/builds/4chan-X-noupdate.crx)]
 - Add an API for adding captchas to 4chan X's cache (`SaveCaptcha` event).
 
