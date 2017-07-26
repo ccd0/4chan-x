@@ -89,7 +89,7 @@ Build.Test =
             c.log x.outerHTML
             c.log y.outerHTML
 
-          for key of Config.filter when not (key is 'MD5' and post.board.ID is 'f')
+          for key of Config.filter when not key is 'General' and not (key is 'MD5' and post.board.ID is 'f')
             val1 = Filter[key] obj
             val2 = Filter[key] post2
             if val1 isnt val2
