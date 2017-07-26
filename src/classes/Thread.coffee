@@ -62,6 +62,8 @@ class Thread
       alt:   type
       title: type
       className: "#{typeLC}Icon retina"
+    if g.BOARD.ID is 'f'
+      icon.style.cssText = 'height: 18px; width: 18px;'
 
     root = if type isnt 'Sticky' and @isSticky
       $ '.stickyIcon', @OP.nodes.info

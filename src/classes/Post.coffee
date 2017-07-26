@@ -18,6 +18,9 @@ class Post
 
     if not (@isReply = $.hasClass @nodes.post, 'reply')
       @thread.OP = @
+      if @boardID is 'f'
+        for type in ['Sticky', 'Closed'] when (icon = $ "img[alt=#{type}]", @nodes.info)
+          $.addClass icon, "#{type.toLowerCase()}Icon", 'retina'
       @thread.isArchived = !!$ '.archivedIcon', @nodes.info
       @thread.isSticky   = !!$ '.stickyIcon', @nodes.info
       @thread.isClosed   = @thread.isArchived or !!$ '.closedIcon', @nodes.info

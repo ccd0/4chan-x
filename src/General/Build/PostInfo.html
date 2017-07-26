@@ -18,8 +18,8 @@
   <span class="postNum?{!(boardID === "f" && !o.isReply)}{ desktop}">
     <a href="${postLink}" title="Link to this post">No.</a>
     <a href="${quoteLink}" title="Reply to this post">${ID}</a>
-    ?{o.isSticky}{ <img src="${staticPath}sticky${gifIcon}" alt="Sticky" title="Sticky" class="stickyIcon retina">}
-    ?{o.isClosed && !o.isArchived}{ <img src="${staticPath}closed${gifIcon}" alt="Closed" title="Closed" class="closedIcon retina">}
+    ?{o.isSticky}{ <img src="${staticPath}sticky${gifIcon}" alt="Sticky" title="Sticky"?{boardID === "f"}{ style="height: 18px; width: 18px;"}{ class="stickyIcon retina"}>}
+    ?{o.isClosed && !o.isArchived}{ <img src="${staticPath}closed${gifIcon}" alt="Closed" title="Closed"?{boardID === "f"}{ style="height: 18px; width: 18px;"}{ class="closedIcon retina"}>}
     ?{o.isArchived}{ <img src="${staticPath}archived${gifIcon}" alt="Archived" title="Archived" class="archivedIcon retina">}
     ?{!o.isReply && g.VIEW === "index"}{ &nbsp; <span>[<a href="/${boardID}/thread/${threadID}" class="replylink">Reply</a>]</span>}
   </span>
