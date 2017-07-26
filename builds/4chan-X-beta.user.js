@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.10.2
+// @version      1.13.10.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.10.2',
+  VERSION:   '1.13.10.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -6169,7 +6169,7 @@ Post = (function() {
     };
 
     function Post(root, thread, board) {
-      var clone, j, len, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
+      var clone, icon, j, k, len, len1, ref, ref1, ref10, ref11, ref12, ref13, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, type;
       this.thread = thread;
       this.board = board;
       this.ID = +root.id.slice(2);
@@ -6181,6 +6181,15 @@ Post = (function() {
       this.nodes = this.parseNodes(root);
       if (!(this.isReply = $.hasClass(this.nodes.post, 'reply'))) {
         this.thread.OP = this;
+        if (this.boardID === 'f') {
+          ref = ['Sticky', 'Closed'];
+          for (j = 0, len = ref.length; j < len; j++) {
+            type = ref[j];
+            if ((icon = $("img[alt=" + type + "]", this.nodes.info))) {
+              $.addClass(icon, (type.toLowerCase()) + "Icon", 'retina');
+            }
+          }
+        }
         this.thread.isArchived = !!$('.archivedIcon', this.nodes.info);
         this.thread.isSticky = !!$('.stickyIcon', this.nodes.info);
         this.thread.isClosed = this.thread.isArchived || !!$('.closedIcon', this.nodes.info);
@@ -6189,15 +6198,15 @@ Post = (function() {
         }
       }
       this.info = {
-        subject: ((ref = this.nodes.subject) != null ? ref.textContent : void 0) || void 0,
-        name: (ref1 = this.nodes.name) != null ? ref1.textContent : void 0,
-        tripcode: (ref2 = this.nodes.tripcode) != null ? ref2.textContent : void 0,
-        uniqueID: (ref3 = this.nodes.uniqueID) != null ? ref3.textContent : void 0,
-        capcode: (ref4 = this.nodes.capcode) != null ? ref4.textContent.replace('## ', '') : void 0,
-        pass: (ref5 = this.nodes.pass) != null ? ref5.title.match(/\d*$/)[0] : void 0,
-        flagCode: (ref6 = this.nodes.flag) != null ? (ref7 = ref6.className.match(/flag-(\w+)/)) != null ? ref7[1].toUpperCase() : void 0 : void 0,
-        flagCodeTroll: (ref8 = this.nodes.flag) != null ? (ref9 = ref8.src) != null ? (ref10 = ref9.match(/(\w+)\.gif$/)) != null ? ref10[1].toUpperCase() : void 0 : void 0 : void 0,
-        flag: (ref11 = this.nodes.flag) != null ? ref11.title : void 0,
+        subject: ((ref1 = this.nodes.subject) != null ? ref1.textContent : void 0) || void 0,
+        name: (ref2 = this.nodes.name) != null ? ref2.textContent : void 0,
+        tripcode: (ref3 = this.nodes.tripcode) != null ? ref3.textContent : void 0,
+        uniqueID: (ref4 = this.nodes.uniqueID) != null ? ref4.textContent : void 0,
+        capcode: (ref5 = this.nodes.capcode) != null ? ref5.textContent.replace('## ', '') : void 0,
+        pass: (ref6 = this.nodes.pass) != null ? ref6.title.match(/\d*$/)[0] : void 0,
+        flagCode: (ref7 = this.nodes.flag) != null ? (ref8 = ref7.className.match(/flag-(\w+)/)) != null ? ref8[1].toUpperCase() : void 0 : void 0,
+        flagCodeTroll: (ref9 = this.nodes.flag) != null ? (ref10 = ref9.src) != null ? (ref11 = ref10.match(/(\w+)\.gif$/)) != null ? ref11[1].toUpperCase() : void 0 : void 0 : void 0,
+        flag: (ref12 = this.nodes.flag) != null ? ref12.title : void 0,
         date: this.nodes.date ? new Date(this.nodes.date.dataset.utc * 1000) : void 0
       };
       if (Conf['Anonymize']) {
@@ -6220,9 +6229,9 @@ Post = (function() {
       if (g.posts[this.fullID]) {
         this.isRebuilt = true;
         this.clones = g.posts[this.fullID].clones;
-        ref12 = this.clones;
-        for (j = 0, len = ref12.length; j < len; j++) {
-          clone = ref12[j];
+        ref13 = this.clones;
+        for (k = 0, len1 = ref13.length; k < len1; k++) {
+          clone = ref13[k];
           clone.origin = this;
         }
       }
@@ -6933,6 +6942,9 @@ Thread = (function() {
         title: type,
         className: typeLC + "Icon retina"
       });
+      if (g.BOARD.ID === 'f') {
+        icon.style.cssText = 'height: 18px; width: 18px;';
+      }
       root = type !== 'Sticky' && this.isSticky ? $('.stickyIcon', this.OP.nodes.info) : $('.page-num', this.OP.nodes.info) || this.OP.nodes.quote;
       $.after(root, [$.tn(' '), icon]);
       if (!this.catalogView) {
@@ -8516,7 +8528,7 @@ Build = (function() {
       postLink = Build.postURL(boardID, threadID, ID);
       quoteLink = Build.sameThread(boardID, threadID) ? "javascript:quote('" + (+ID) + "');" : "/" + boardID + "/thread/" + threadID + "#q" + ID;
       postInfo = {
-        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcodeDescription) ? "" : " ") + ((capcodeDescription) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + ((flagCodeTroll) ? " <img src=\"" + E(staticPath) + "country/troll/" + E(flagCodeTroll.toLowerCase()) + ".gif\" alt=\"" + E(flagCodeTroll) + "\" title=\"" + E(flag) + "\" class=\"countryFlag\">" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\" class=\"stickyIcon retina\">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\" class=\"closedIcon retina\">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
+        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcodeDescription) ? "" : " ") + ((capcodeDescription) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + ((flagCodeTroll) ? " <img src=\"" + E(staticPath) + "country/troll/" + E(flagCodeTroll.toLowerCase()) + ".gif\" alt=\"" + E(flagCodeTroll) + "\" title=\"" + E(flag) + "\" class=\"countryFlag\">" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"stickyIcon retina\"") + ">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"closedIcon retina\"") + ">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
       };
 
       /* File Info */
