@@ -20,6 +20,7 @@ https://github.com/Nebukazar/OneeChan.
 You will first need to install a userscript manager such as [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/). Unfortunately, Firefox's transition to WebExtensions has forced a complete rewrite of Greasemonkey, leaving the current version of Greasemonkey unmaintained and unreliable. Until the WebExtensions version of Greasemonkey is complete, your options are:
 
 - Use [Firefox ESR](https://www.mozilla.org/en-US/firefox/organizations/), which should continue to work with the current version of [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) until a new one is ready.
+- If you're using a freedom-respecting build/fork of Firefox, you can try [this build of Greasemonkey](https://www.4chan-x.net/greasemonkey-2017.07.27.beta.xpi) based on [this pull request](https://github.com/greasemonkey/greasemonkey/pull/2507) which may fix the issues some people are having.
 - Install [Violentmonkey](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/) or [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/). These are already WebExtensions, but due to the current limitations of WebExtensions, they offer less functionality than Greasemonkey.
 - Use [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) with the current version of Firefox, but don't be surprised when things break.
 
