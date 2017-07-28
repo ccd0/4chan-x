@@ -125,8 +125,12 @@ var engine = (function() {
   if (/Gecko\/|Goanna/.test(navigator.userAgent)) return 'gecko';
   if (/Presto\//.test(navigator.userAgent)) return 'presto';
 })();
-if (engine) {
-  var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk': 'webkit', 'ms-edge': 'edge', 'other-browsers': ''};
+var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk': 'webkit', 'ms-edge': 'edge', 'other-browsers': ''};
+if (location.hash.slice(1) in engines) {
+  for (browser in engines) {
+    document.getElementById(browser + '-hide').checked = (browser !== location.hash.slice(1));
+  }
+} else if (engine) {
   for (browser in engines) {
     document.getElementById(browser + '-hide').checked = (engines[browser].indexOf(engine) < 0);
   }
