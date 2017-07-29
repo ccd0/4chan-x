@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.10.3
+// @version      1.13.10.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.10.3',
+  VERSION:   '1.13.10.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -16398,7 +16398,7 @@ FileInfo = (function() {
       },
       f: function() {
         return {
-          innerHTML: "<a href=\"javascript:;\" class=\"fa fa-trash-o quick-filter-md5\"></a>"
+          innerHTML: "<a href=\"javascript:;\" class=\"fa fa-times quick-filter-md5\"></a>"
         };
       },
       p: function() {
@@ -22277,6 +22277,7 @@ QR = (function() {
         return;
       }
       this.data = Conf['cooldowns'];
+      this.changes = {};
       return $.sync('cooldowns', this.sync);
     },
     setup: function() {
@@ -22324,6 +22325,7 @@ QR = (function() {
           postID: postID
         });
       }
+      QR.cooldown.save();
       return QR.cooldown.start();
     },
     addDelay: function(post, delay) {
@@ -22334,6 +22336,7 @@ QR = (function() {
       cooldown = QR.cooldown.categorize(post);
       cooldown.delay = delay;
       QR.cooldown.set(g.BOARD.ID, Date.now(), cooldown);
+      QR.cooldown.save();
       return QR.cooldown.start();
     },
     addMute: function(delay) {
@@ -22344,6 +22347,7 @@ QR = (function() {
         type: 'mute',
         delay: delay
       });
+      QR.cooldown.save();
       return QR.cooldown.start();
     },
     "delete": function(post) {
@@ -22351,15 +22355,14 @@ QR = (function() {
       if (!QR.cooldown.data) {
         return;
       }
-      $.forceSync('cooldowns');
       cooldowns = ((base = QR.cooldown.data)[name = post.board.ID] || (base[name] = {}));
       for (id in cooldowns) {
         cooldown = cooldowns[id];
         if ((cooldown.delay == null) && cooldown.threadID === post.thread.ID && cooldown.postID === post.ID) {
-          delete cooldowns[id];
+          QR.cooldown.set(post.board.ID, id, null);
         }
       }
-      return QR.cooldown.save([post.board.ID]);
+      return QR.cooldown.save();
     },
     secondsDeletion: function(post) {
       var cooldown, cooldowns, seconds, start;
@@ -22388,31 +22391,49 @@ QR = (function() {
         };
       }
     },
-    set: function(scope, id, value) {
-      var base, cooldowns;
-      $.forceSync('cooldowns');
-      cooldowns = ((base = QR.cooldown.data)[scope] || (base[scope] = {}));
-      cooldowns[id] = value;
-      return $.set('cooldowns', QR.cooldown.data);
-    },
-    save: function(scopes) {
-      var data, i, len, scope;
-      data = QR.cooldown.data;
-      for (i = 0, len = scopes.length; i < len; i++) {
-        scope = scopes[i];
-        if (scope in data && !Object.keys(data[scope]).length) {
-          delete data[scope];
+    mergeChange: function(data, scope, id, value) {
+      if (value) {
+        return (data[scope] || (data[scope] = {}))[id] = value;
+      } else if (scope in data) {
+        delete data[scope][id];
+        if (Object.keys(data[scope]).length === 0) {
+          return delete data[scope];
         }
       }
-      return $.set('cooldowns', data);
+    },
+    set: function(scope, id, value) {
+      var base;
+      QR.cooldown.mergeChange(QR.cooldown.data, scope, id, value);
+      return ((base = QR.cooldown.changes)[scope] || (base[scope] = {}))[id] = value;
+    },
+    save: function() {
+      var changes;
+      changes = QR.cooldown.changes;
+      if (!Object.keys(changes).length) {
+        return;
+      }
+      return $.get('cooldowns', {}, function(arg) {
+        var cooldowns, id, ref, scope, value;
+        cooldowns = arg.cooldowns;
+        for (scope in QR.cooldown.changes) {
+          ref = QR.cooldown.changes[scope];
+          for (id in ref) {
+            value = ref[id];
+            QR.cooldown.mergeChange(cooldowns, scope, id, value);
+          }
+          QR.cooldown.data = cooldowns;
+        }
+        return $.set('cooldowns', cooldowns, function() {
+          return QR.cooldown.changes = {};
+        });
+      });
     },
     update: function() {
       var base, cooldown, cooldowns, elapsed, i, len, maxDelay, nCooldowns, now, ref, ref1, save, scope, seconds, start, suffix, threadID, type, update;
       if (!QR.cooldown.isCounting) {
         return;
       }
-      $.forceSync('cooldowns');
-      save = [];
+      save = false;
       nCooldowns = 0;
       now = Date.now();
       ref = QR.cooldown.categorize(QR.posts[0]), type = ref.type, threadID = ref.threadID;
@@ -22427,14 +22448,14 @@ QR = (function() {
             start = +start;
             elapsed = Math.floor((now - start) / $.SECOND);
             if (elapsed < 0) {
-              delete cooldowns[start];
-              save.push(scope);
+              QR.cooldown.set(scope, start, null);
+              save = true;
               continue;
             }
             if (cooldown.delay != null) {
               if (cooldown.delay <= elapsed) {
-                delete cooldowns[start];
-                save.push(scope);
+                QR.cooldown.set(scope, start, null);
+                save = true;
               } else if ((cooldown.type === type && cooldown.threadID === threadID) || cooldown.type === 'mute') {
                 seconds = Math.max(seconds, cooldown.delay - elapsed);
               }
@@ -22445,8 +22466,8 @@ QR = (function() {
               maxDelay = Math.max(maxDelay, parseInt(Conf['customCooldown'], 10));
             }
             if (maxDelay <= elapsed) {
-              delete cooldowns[start];
-              save.push(scope);
+              QR.cooldown.set(scope, start, null);
+              save = true;
               continue;
             }
             if ((type === 'thread') === (cooldown.threadID === cooldown.postID) && cooldown.boardID !== g.BOARD.ID) {
@@ -22460,8 +22481,8 @@ QR = (function() {
           nCooldowns += Object.keys(cooldowns).length;
         }
       }
-      if (save.length) {
-        QR.cooldown.save(save);
+      if (save) {
+        QR.cooldown.save;
       }
       if (nCooldowns) {
         clearTimeout(QR.cooldown.timeout);
