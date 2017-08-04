@@ -15,7 +15,7 @@ class Fetcher
 
     @root.textContent = "Loading post No.#{@postID}..."
     if @threadID
-      $.cache "//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json", (e, isCached) =>
+      $.cache "#{location.protocol}//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json", (e, isCached) =>
         @fetchedPost e.target, isCached
     else
       @archivedPost()
@@ -78,7 +78,7 @@ class Fetcher
     if post.no isnt @postID
       # Cached requests can be stale and must be rechecked.
       if isCached
-        api = "//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json"
+        api = "#{location.protocol}//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json"
         $.cleanCache (url) -> url is api
         $.cache api, (e) =>
           @fetchedPost e.target, false

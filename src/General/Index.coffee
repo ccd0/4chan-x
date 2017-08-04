@@ -591,7 +591,7 @@ Index =
       location.reload()
       return
 
-    Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
+    Index.req = $.ajax "#{location.protocol}//a.4cdn.org/#{g.BOARD}/catalog.json",
       onabort:   Index.load
       onloadend: Index.load
     ,

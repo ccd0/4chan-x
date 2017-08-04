@@ -315,7 +315,7 @@ Main =
         threads[0].ipCount   = if m = scriptData.match /\bunique_ips *= *(\d+)\b/ then +m[1]
 
       if g.BOARD.ID is 'f' and g.VIEW is 'thread'
-        $.ajax "//a.4cdn.org/f/thread/#{g.THREADID}.json",
+        $.ajax "#{location.protocol}//a.4cdn.org/f/thread/#{g.THREADID}.json",
           timeout: $.MINUTE
           onloadend: ->
             if @response and posts[0].file
