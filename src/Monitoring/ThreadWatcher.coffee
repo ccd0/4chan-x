@@ -211,7 +211,7 @@ ThreadWatcher =
     if ThreadWatcher.requests.length is 0
       ThreadWatcher.status.textContent = '...'
       $.addClass ThreadWatcher.refreshButton, 'fa-spin'
-    req = $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
+    req = $.ajax "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
       onloadend: ->
         ThreadWatcher.parseStatus.call @, thread
       timeout: $.MINUTE

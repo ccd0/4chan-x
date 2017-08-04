@@ -65,7 +65,7 @@ Build.Test =
 
   testOne: (post) ->
     Build.Test.postsRemaining++
-    $.cache "//a.4cdn.org/#{post.board.ID}/thread/#{post.thread.ID}.json", ->
+    $.cache "#{location.protocol}//a.4cdn.org/#{post.board.ID}/thread/#{post.thread.ID}.json", ->
       {posts} = @response
       Build.spoilerRange[post.board.ID] = posts[0].custom_spoiler
       for postData in posts
