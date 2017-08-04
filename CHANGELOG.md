@@ -4,6 +4,10 @@
 
 ### v1.13.10
 
+**v1.13.10.5** *(2017-08-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.5/builds/4chan-X-noupdate.crx)]
+- Better parsing of archive links for Quote Inlining / Hover.
+- Add Board Tips.
+
 **v1.13.10.4** *(2017-07-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.4/builds/4chan-X-noupdate.crx)]
 - Reduce disk reads preformed by QR Cooldown.
 - Change the MD5 Quick Filter button from a trash can to an X.
