@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.9.6
+// @version      1.13.10.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -138,7 +138,7 @@
 
 'use strict';
 
-var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, Sauce, Settings, ShimSet, SimpleDict, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, Volume;
+var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, BoardTips, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, Sauce, Settings, ShimSet, SimpleDict, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, Volume;
 
 var Conf, E, c, d, doc, docSet, g;
 
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.9.6',
+  VERSION:   '1.13.10.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -186,16 +186,13 @@ E.cat = function(templates) {
   return html;
 };
 
-E.url = function(content) {
-  return "data:text/html;charset=utf-8,<!doctype html>" + encodeURIComponent(content.innerHTML);
-};
-
 Config = (function() {
   var Config;
 
   Config = {
     main: {
       'Miscellaneous': {
+        'Redirect to HTTPS': [true, 'Redirect to the HTTPS version of 4chan.'],
         'JSON Index': [true, 'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'],
         'Use 4chan X Catalog': [true, 'Link to 4chan X\'s catalog instead of the native 4chan one.', 1],
         'Index Refresh Notifications': [false, 'Show a notice at the top of the page when the index is refreshed.', 1],
@@ -275,6 +272,7 @@ Config = (function() {
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
         'Report Link': [true, 'Add a report link to the menu.', 1],
+        'Copy Text Link': [true, 'Add a link to copy the post\'s text.', 1],
         'Thread Hiding Link': [true, 'Add a link to hide entire threads.', 1],
         'Reply Hiding Link': [true, 'Add a link to hide single replies.', 1],
         'Delete Link': [true, 'Add post and image deletion links to the menu.', 1],
@@ -322,7 +320,7 @@ Config = (function() {
         'Use Recaptcha v1 on Index': [false, 'Use the old text version of Recaptcha on the index and catalog. Warning: May interfere with starting threads.'],
         'Use Recaptcha v1 in Reports': [false, 'Use the text captcha in the report window.'],
         'Force Noscript Captcha': [false, 'Use the non-Javascript fallback captcha even if Javascript is enabled (Recaptcha v2 only).'],
-        'Force Noscript Captcha for v1': [false, 'Force the non-Javascript fallback captcha for Recaptcha v1. Currently only works on HTTPS.'],
+        'Force Noscript Captcha for v1': [true, 'Force the non-Javascript fallback captcha for Recaptcha v1. Currently only works on HTTPS.'],
         'Pass Link': [false, 'Add a 4chan Pass login link to the bottom of the page.']
       },
       'Quote Links': {
@@ -372,6 +370,7 @@ Config = (function() {
       'Require OP Quote Link': [false, 'For purposes of thread watcher highlighting, only consider posts with a quote link to the OP as replies to the OP.']
     },
     filter: {
+      general: '',
       postID: "# Highlight dubs on [s4s]:\n#/(\\d)\\1$/;highlight;top:no;boards:s4s",
       name: "# Filter any namefags:\n#/^(?!Anonymous$)/",
       uniqueID: "# Filter a specific ID:\n#/Txhvk1Tl/",
@@ -454,6 +453,9 @@ Config = (function() {
       'Expand image': ['Shift+e', 'Expand selected image.'],
       'Expand images': ['e', 'Expand all images.'],
       'Open Gallery': ['g', 'Opens the gallery.'],
+      'Next Gallery Image': ['Right', 'Go to the next image in gallery mode.'],
+      'Previous Gallery Image': ['Left', 'Go to the previous image in gallery mode.'],
+      'Advance Gallery': ['Enter', 'Go to next image or, if Autoplay is off, play video.'],
       'Pause': ['p', 'Pause/play videos in the gallery.'],
       'Slideshow': ['Ctrl+Right', 'Toggle the gallery slideshow mode.'],
       'fappeTyme': ['f', 'Toggle Fappe Tyme.'],
@@ -1935,6 +1937,23 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 #index-options {\n\
   float: right;\n\
 }\n\
+#lastlong-options {\n\
+  display: inline-block;\n\
+  vertical-align: middle;\n\
+  height: 28px;\n\
+  margin: -14px 0;\n\
+}\n\
+#lastlong-options > input {\n\
+  padding: 0;\n\
+  border: 0 !important;\n\
+  text-align: center;\n\
+  background: transparent;\n\
+  display: block;\n\
+  font-size: 12px;\n\
+  height: 12px;\n\
+  width: 30px;\n\
+  margin: 1px 0;\n\
+}\n\
 .summary {\n\
   text-decoration: none;\n\
 }\n\
@@ -2197,6 +2216,13 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 }\n\
 :root.hats-enabled:not(.werkTyme) .catalog-large > .catalog-thread:not(.noFile)::after {\n\
   left: calc(110px - .5px * var(--tn-w));\n\
+}\n\
+/* Copy Text Link's textarea element */\n\
+textarea.copy-text-element {\n\
+  height: 0;\n\
+  width: 0;\n\
+  position: absolute;\n\
+  top: -10000px;\n\
 }\n\
 /* Announcement Hiding */\n\
 :root.hide-announcement #globalMessage {\n\
@@ -5698,13 +5724,22 @@ Fetcher = (function() {
 
   Fetcher = (function() {
     function Fetcher(boardID1, threadID, postID1, root, quoter) {
-      var post;
+      var board, post, ref, thread;
       this.boardID = boardID1;
       this.threadID = threadID;
       this.postID = postID1;
       this.root = root;
       this.quoter = quoter;
       if (post = g.posts[this.boardID + "." + this.postID]) {
+        this.insert(post);
+        return;
+      }
+      if ((post = (ref = Index.replyData) != null ? ref[this.boardID + "." + this.postID] : void 0)) {
+        board = g.boards[this.boardID];
+        thread = g.threads[this.boardID + "." + this.threadID];
+        post = new Post(Build.postFromObject(post, this.boardID), thread, board);
+        post.isFetchedQuote = true;
+        Main.callbackNodes('Post', [post]);
         this.insert(post);
         return;
       }
@@ -6134,7 +6169,7 @@ Post = (function() {
     };
 
     function Post(root, thread, board) {
-      var clone, j, len, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
+      var clone, icon, j, k, len, len1, ref, ref1, ref10, ref11, ref12, ref13, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, type;
       this.thread = thread;
       this.board = board;
       this.ID = +root.id.slice(2);
@@ -6146,6 +6181,15 @@ Post = (function() {
       this.nodes = this.parseNodes(root);
       if (!(this.isReply = $.hasClass(this.nodes.post, 'reply'))) {
         this.thread.OP = this;
+        if (this.boardID === 'f') {
+          ref = ['Sticky', 'Closed'];
+          for (j = 0, len = ref.length; j < len; j++) {
+            type = ref[j];
+            if ((icon = $("img[alt=" + type + "]", this.nodes.info))) {
+              $.addClass(icon, (type.toLowerCase()) + "Icon", 'retina');
+            }
+          }
+        }
         this.thread.isArchived = !!$('.archivedIcon', this.nodes.info);
         this.thread.isSticky = !!$('.stickyIcon', this.nodes.info);
         this.thread.isClosed = this.thread.isArchived || !!$('.closedIcon', this.nodes.info);
@@ -6154,15 +6198,15 @@ Post = (function() {
         }
       }
       this.info = {
-        subject: ((ref = this.nodes.subject) != null ? ref.textContent : void 0) || void 0,
-        name: (ref1 = this.nodes.name) != null ? ref1.textContent : void 0,
-        tripcode: (ref2 = this.nodes.tripcode) != null ? ref2.textContent : void 0,
-        uniqueID: (ref3 = this.nodes.uniqueID) != null ? ref3.textContent : void 0,
-        capcode: (ref4 = this.nodes.capcode) != null ? ref4.textContent.replace('## ', '') : void 0,
-        pass: (ref5 = this.nodes.pass) != null ? ref5.title.match(/\d*$/)[0] : void 0,
-        flagCode: (ref6 = this.nodes.flag) != null ? (ref7 = ref6.className.match(/flag-(\w+)/)) != null ? ref7[1].toUpperCase() : void 0 : void 0,
-        flagCodeTroll: (ref8 = this.nodes.flag) != null ? (ref9 = ref8.src) != null ? (ref10 = ref9.match(/(\w+)\.gif$/)) != null ? ref10[1].toUpperCase() : void 0 : void 0 : void 0,
-        flag: (ref11 = this.nodes.flag) != null ? ref11.title : void 0,
+        subject: ((ref1 = this.nodes.subject) != null ? ref1.textContent : void 0) || void 0,
+        name: (ref2 = this.nodes.name) != null ? ref2.textContent : void 0,
+        tripcode: (ref3 = this.nodes.tripcode) != null ? ref3.textContent : void 0,
+        uniqueID: (ref4 = this.nodes.uniqueID) != null ? ref4.textContent : void 0,
+        capcode: (ref5 = this.nodes.capcode) != null ? ref5.textContent.replace('## ', '') : void 0,
+        pass: (ref6 = this.nodes.pass) != null ? ref6.title.match(/\d*$/)[0] : void 0,
+        flagCode: (ref7 = this.nodes.flag) != null ? (ref8 = ref7.className.match(/flag-(\w+)/)) != null ? ref8[1].toUpperCase() : void 0 : void 0,
+        flagCodeTroll: (ref9 = this.nodes.flag) != null ? (ref10 = ref9.src) != null ? (ref11 = ref10.match(/(\w+)\.gif$/)) != null ? ref11[1].toUpperCase() : void 0 : void 0 : void 0,
+        flag: (ref12 = this.nodes.flag) != null ? ref12.title : void 0,
         date: this.nodes.date ? new Date(this.nodes.date.dataset.utc * 1000) : void 0
       };
       if (Conf['Anonymize']) {
@@ -6185,9 +6229,9 @@ Post = (function() {
       if (g.posts[this.fullID]) {
         this.isRebuilt = true;
         this.clones = g.posts[this.fullID].clones;
-        ref12 = this.clones;
-        for (j = 0, len = ref12.length; j < len; j++) {
-          clone = ref12[j];
+        ref13 = this.clones;
+        for (k = 0, len1 = ref13.length; k < len1; k++) {
+          clone = ref13[k];
           clone.origin = this;
         }
       }
@@ -6898,6 +6942,9 @@ Thread = (function() {
         title: type,
         className: typeLC + "Icon retina"
       });
+      if (g.BOARD.ID === 'f') {
+        icon.style.cssText = 'height: 18px; width: 18px;';
+      }
       root = type !== 'Sticky' && this.isSticky ? $('.stickyIcon', this.OP.nodes.info) : $('.page-num', this.OP.nodes.info) || this.OP.nodes.quote;
       $.after(root, [$.tn(' '), icon]);
       if (!this.catalogView) {
@@ -6942,6 +6989,7 @@ Redirect = (function() {
     archives: [
       { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "reports": true },
       { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "bant", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "files": [ "bant", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "reports": true },
+      { "uid": 5, "name": "Love is Over", "domain": "archive.loveisover.me", "http": true, "https": true, "software": "foolfuuka", "boards": [ "c", "d", "e", "i", "lgbt", "t", "u" ], "files": [ "c", "d", "e", "i", "lgbt", "t", "u" ] },
       { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ], "reports": true },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
       { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
@@ -6952,8 +7000,7 @@ Redirect = (function() {
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ], "reports": true },
       { "uid": 32, "name": "4tan", "domain": "boards.4tan.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "bant", "can", "cock", "fap", "fitlit", "mlpol", "mo", "mtv", "outsoc", "spa", "vint" ], "reports": true },
-      { "uid": 5, "name": "Love is Over", "domain": "archive.loveisover.me", "http": true, "https": false, "software": "foolfuuka", "boards": [ "c", "d", "e", "i", "lgbt", "t", "u" ], "files": [ "c", "d", "e", "i", "lgbt", "t", "u" ] },
-      { "uid": 33, "name": "Bui's /b/ Archive (Mirror)", "domain": "yeet.net", "http": true, "https": false, "software": "foolfuuka", "boards": [ "b" ] }
+      { "uid": 33, "name": "YEET Archive", "domain": "archive.yeet.net", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "k", "qa", "s4s" ] }
     ],
     init: function() {
       var now, ref;
@@ -7235,7 +7282,7 @@ Filter = (function() {
     filters: {},
     results: {},
     init: function() {
-      var boards, err, excludes, filter, hl, i, key, len, line, nsfwBoards, op, ref, ref1, ref2, ref3, ref4, ref5, ref6, regexp, sfwBoards, stub, top;
+      var base, base1, boards, err, excludes, filter, hl, i, j, key, len, len1, line, nsfwBoards, op, ref, ref1, ref2, ref3, ref4, ref5, ref6, regexp, sfwBoards, stub, top, type, types;
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Filter'])) {
         return;
       }
@@ -7245,7 +7292,6 @@ Filter = (function() {
       nsfwBoards = BoardConfig.sfwBoards(false).join(',');
       sfwBoards = BoardConfig.sfwBoards(true).join(',');
       for (key in Config.filter) {
-        this.filters[key] = [];
         ref1 = Conf[key].split('\n');
         for (i = 0, len = ref1.length; i < len; i++) {
           line = ref1[i];
@@ -7289,10 +7335,24 @@ Filter = (function() {
             top = ((ref6 = filter.match(/top:(yes|no)/)) != null ? ref6[1] : void 0) || 'yes';
             top = top === 'yes';
           }
-          this.filters[key].push(this.createFilter(regexp, boards, excludes, op, stub, hl, top));
-        }
-        if (!this.filters[key].length) {
-          delete this.filters[key];
+          if (key === 'general') {
+            if ((types = filter.match(/(?:^|;)\s*type:([^;]*)/))) {
+              types = types[1].split(',').filter(function(x) {
+                return x in Config.filter && x !== 'general';
+              });
+            } else {
+              types = ['subject', 'name', 'filename', 'comment'];
+            }
+          }
+          filter = this.createFilter(regexp, boards, excludes, op, stub, hl, top);
+          if (key === 'general') {
+            for (j = 0, len1 = types.length; j < len1; j++) {
+              type = types[j];
+              ((base = this.filters)[type] || (base[type] = [])).push(filter);
+            }
+          } else {
+            ((base1 = this.filters)[key] || (base1[key] = [])).push(filter);
+          }
         }
       }
       if (!Object.keys(this.filters).length) {
@@ -7340,6 +7400,8 @@ Filter = (function() {
       if (post.filterResults) {
         return post.filterResults;
       }
+      hide = false;
+      stub = true;
       hl = void 0;
       top = false;
       for (key in Filter.filters) {
@@ -7347,30 +7409,33 @@ Filter = (function() {
           ref = Filter.filters[key];
           for (i = 0, len = ref.length; i < len; i++) {
             filter = ref[i];
-            if (!((result = filter(value, post.boardID, post.isReply)))) {
-              continue;
-            }
-            hide = result.hide, stub = result.stub;
-            if (hide) {
-              if (hideable) {
-                return {
-                  hide: hide,
-                  stub: stub
-                };
+            if ((result = filter(value, post.boardID, post.isReply))) {
+              if (result.hide) {
+                if (hideable) {
+                  hide = true;
+                  stub && (stub = result.stub);
+                }
+              } else {
+                if (!(hl && (ref1 = result["class"], indexOf.call(hl, ref1) >= 0))) {
+                  (hl || (hl = [])).push(result["class"]);
+                }
+                top || (top = result.top);
               }
-            } else {
-              if (!(hl && (ref1 = result["class"], indexOf.call(hl, ref1) >= 0))) {
-                (hl || (hl = [])).push(result["class"]);
-              }
-              top || (top = result.top);
             }
           }
         }
       }
-      return {
-        hl: hl,
-        top: top
-      };
+      if (hide) {
+        return {
+          hide: hide,
+          stub: stub
+        };
+      } else {
+        return {
+          hl: hl,
+          top: top
+        };
+      }
     },
     node: function() {
       var hide, hl, ref, stub, top;
@@ -8463,7 +8528,7 @@ Build = (function() {
       postLink = Build.postURL(boardID, threadID, ID);
       quoteLink = Build.sameThread(boardID, threadID) ? "javascript:quote('" + (+ID) + "');" : "/" + boardID + "/thread/" + threadID + "#q" + ID;
       postInfo = {
-        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcodeDescription) ? "" : " ") + ((capcodeDescription) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + ((flagCodeTroll) ? " <img src=\"" + E(staticPath) + "country/troll/" + E(flagCodeTroll.toLowerCase()) + ".gif\" alt=\"" + E(flagCodeTroll) + "\" title=\"" + E(flag) + "\" class=\"countryFlag\">" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\" class=\"stickyIcon retina\">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\" class=\"closedIcon retina\">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
+        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcodeDescription) ? "" : " ") + ((capcodeDescription) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + ((flagCodeTroll) ? " <img src=\"" + E(staticPath) + "country/troll/" + E(flagCodeTroll.toLowerCase()) + ".gif\" alt=\"" + E(flagCodeTroll) + "\" title=\"" + E(flag) + "\" class=\"countryFlag\">" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"stickyIcon retina\"") + ">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"closedIcon retina\"") + ">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
       };
 
       /* File Info */
@@ -9383,7 +9448,7 @@ Index = (function() {
     showHiddenThreads: false,
     changed: {},
     init: function() {
-      var arr, entries, input, inputs, k, label, len, name, ref, ref1, ref2, ref3, ref4, ref5, ref6, select, sortEntry, watchSettings;
+      var arr, entries, i, input, inputs, k, l, label, len1, len2, name, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, select, sortEntry, tRaw, watchSettings;
       if (!(g.VIEW === 'index' && g.BOARD.ID !== 'f')) {
         return;
       }
@@ -9470,7 +9535,7 @@ Index = (function() {
         className: 'navLinks json-index'
       });
       $.extend(this.navLinks, {
-        innerHTML: "<span class=\"brackets-wrap indexlink\"><a href=\"#index\">Index</a></span> <span class=\"brackets-wrap cataloglink\"><a href=\"#catalog\">Catalog</a></span> <span class=\"brackets-wrap archlistlink\"><a href=\"./archive\">Archive</a></span> <span class=\"brackets-wrap bottomlink\"><a href=\"#bottom\">Bottom</a></span> <span class=\"brackets-wrap\" id=\"index-last-refresh\"><a href=\"javascript:;\"><time title=\"Last index refresh\">...</time></a></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a><span id=\"hidden-label\" hidden> &mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><span id=\"index-options\"><input type=\"checkbox\" id=\"index-rev\" name=\"Reverse Sort\" title=\"Reverse sort order\"><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"lastlong\">Last long reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select></span>"
+        innerHTML: "<span class=\"brackets-wrap indexlink\"><a href=\"#index\">Index</a></span> <span class=\"brackets-wrap cataloglink\"><a href=\"#catalog\">Catalog</a></span> <span class=\"brackets-wrap archlistlink\"><a href=\"./archive\">Archive</a></span> <span class=\"brackets-wrap bottomlink\"><a href=\"#bottom\">Bottom</a></span> <span class=\"brackets-wrap\" id=\"index-last-refresh\"><a href=\"javascript:;\"><time title=\"Last index refresh\">...</time></a></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a><span id=\"hidden-label\" hidden> &mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><span id=\"index-options\"><input type=\"checkbox\" id=\"index-rev\" name=\"Reverse Sort\" title=\"Reverse sort order\"><span id=\"lastlong-options\" hidden><input type=\"text\" title=\"Minimum letter count (without image)\"><input type=\"text\" title=\"Minimum letter count (with image)\"></span><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"lastlong\">Last long reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select></span>"
       });
       $('.cataloglink a', this.navLinks).href = CatalogLinks.catalog();
       if ((ref5 = g.BOARD.ID) === 'b' || ref5 === 'trash' || ref5 === 'bant') {
@@ -9493,12 +9558,23 @@ Index = (function() {
       $.on(this.selectSize, 'change', $.cb.value);
       $.on(this.selectSize, 'change', this.cb.size);
       ref6 = [this.selectMode, this.selectSize];
-      for (k = 0, len = ref6.length; k < len; k++) {
+      for (k = 0, len1 = ref6.length; k < len1; k++) {
         select = ref6[k];
         select.value = Conf[select.name];
       }
       this.selectRev.checked = /-rev$/.test(Index.currentSort);
       this.selectSort.value = Index.currentSort.replace(/-rev$/, '');
+      this.lastLongOptions = $('#lastlong-options', this.navLinks);
+      this.lastLongInputs = $$('input', this.lastLongOptions);
+      this.lastLongThresholds = [0, 0];
+      this.lastLongOptions.hidden = this.selectSort.value !== 'lastlong';
+      ref7 = this.lastLongInputs;
+      for (i = l = 0, len2 = ref7.length; l < len2; i = ++l) {
+        input = ref7[i];
+        $.on(input, 'change', this.cb.lastLongThresholds);
+        tRaw = Conf["Last Long Reply Thresholds " + i];
+        input.value = this.lastLongThresholds[i] = typeof tRaw === 'object' ? (ref8 = tRaw[g.BOARD.ID]) != null ? ref8 : 100 : tRaw;
+      }
       this.root = $.el('div', {
         className: 'board json-index'
       });
@@ -9518,7 +9594,7 @@ Index = (function() {
         return d.title = d.title.replace(/\ -\ Page\ \d+/, '');
       });
       $.onExists(doc, '.board > .thread > .postContainer, .board + *', function() {
-        var board, el, l, len1, ref7, topNavPos;
+        var board, el, len3, m, ref9, topNavPos;
         Build.hat = $('.board > .thread > img:first-child');
         if (Build.hat) {
           g.BOARD.threads.forEach(function(thread) {
@@ -9537,9 +9613,9 @@ Index = (function() {
         try {
           d.implementation.createDocument(null, null, null).appendChild(board);
         } catch (_error) {}
-        ref7 = $$('.navLinks');
-        for (l = 0, len1 = ref7.length; l < len1; l++) {
-          el = ref7[l];
+        ref9 = $$('.navLinks');
+        for (m = 0, len3 = ref9.length; m < len3; m++) {
+          el = ref9[m];
           $.rm(el);
         }
         $.rm($.id('ctrl-top'));
@@ -9652,11 +9728,11 @@ Index = (function() {
       return ThreadHiding.saveHiddenState(thread);
     },
     cycleSortType: function() {
-      var i, k, len, type, types;
+      var i, k, len1, type, types;
       types = slice.call(Index.selectSort.options).filter(function(option) {
         return !option.disabled;
       });
-      for (i = k = 0, len = types.length; k < len; i = ++k) {
+      for (i = k = 0, len1 = types.length; k < len1; i = ++k) {
         type = types[i];
         if (type.selected) {
           break;
@@ -9715,8 +9791,26 @@ Index = (function() {
         }
       },
       perBoardSort: function() {
+        var i, k;
         Conf['Index Sort'] = this.checked ? {} : '';
-        return Index.saveSort();
+        Index.saveSort();
+        for (i = k = 0; k < 2; i = ++k) {
+          Conf["Last Long Reply Thresholds " + i] = this.checked ? {} : '';
+          Index.saveLastLongThresholds(i);
+        }
+      },
+      lastLongThresholds: function() {
+        var i, value;
+        i = slice.call(this.parentNode.children).indexOf(this);
+        value = +this.value;
+        if (!Number.isFinite(value)) {
+          this.value = Index.lastLongThresholds[i];
+          return;
+        }
+        Index.lastLongThresholds[i] = value;
+        Index.saveLastLongThresholds(i);
+        Index.changed.order = true;
+        return Index.pageLoad(false);
       },
       size: function(e) {
         if (Conf['Index Mode'] !== 'catalog') {
@@ -9856,14 +9950,14 @@ Index = (function() {
       }
     },
     processHash: function() {
-      var command, commands, hash, k, leftover, len, mode, ref, sort, state;
+      var command, commands, hash, k, leftover, len1, mode, ref, sort, state;
       hash = ((ref = location.href.match(/#.*/)) != null ? ref[0] : void 0) || '';
       state = {
         replace: true
       };
       commands = hash.slice(1).split('/');
       leftover = [];
-      for (k = 0, len = commands.length; k < len; k++) {
+      for (k = 0, len1 = commands.length; k < len1; k++) {
         command = commands[k];
         if ((mode = Index.hashCommands.mode[command])) {
           state.mode = mode;
@@ -9942,13 +10036,19 @@ Index = (function() {
         return Index.changed.hash = true;
       }
     },
-    saveSort: function() {
-      if (typeof Conf['Index Sort'] === 'object') {
-        Conf['Index Sort'][g.BOARD.ID] = Index.currentSort;
+    savePerBoard: function(key, value) {
+      if (typeof Conf[key] === 'object') {
+        Conf[key][g.BOARD.ID] = value;
       } else {
-        Conf['Index Sort'] = Index.currentSort;
+        Conf[key] = value;
       }
-      return $.set('Index Sort', Conf['Index Sort']);
+      return $.set(key, Conf[key]);
+    },
+    saveSort: function() {
+      return Index.savePerBoard('Index Sort', Index.currentSort);
+    },
+    saveLastLongThresholds: function(i) {
+      return Index.savePerBoard("Last Long Reply Thresholds " + i, Index.lastLongThresholds[i]);
     },
     pageLoad: function(scroll) {
       var hash, mode, order, page, ref, search, sort, threads;
@@ -9991,9 +10091,9 @@ Index = (function() {
       return Index.changed = {};
     },
     setupMode: function() {
-      var k, len, mode, ref;
+      var k, len1, mode, ref;
       ref = ['paged', 'infinite', 'all pages', 'catalog'];
-      for (k = 0, len = ref.length; k < len; k++) {
+      for (k = 0, len1 = ref.length; k < len1; k++) {
         mode = ref[k];
         $[mode === Conf['Index Mode'] ? 'addClass' : 'rmClass'](doc, (mode.replace(/\ /g, '-')) + "-mode");
       }
@@ -10004,7 +10104,8 @@ Index = (function() {
     },
     setupSort: function() {
       Index.selectRev.checked = /-rev$/.test(Index.currentSort);
-      return Index.selectSort.value = Index.currentSort.replace(/-rev$/, '');
+      Index.selectSort.value = Index.currentSort.replace(/-rev$/, '');
+      return Index.lastLongOptions.hidden = Index.selectSort.value !== 'lastlong';
     },
     getPagesNum: function() {
       if (Index.search) {
@@ -10059,13 +10160,13 @@ Index = (function() {
       return $.add(strong, a);
     },
     updateHideLabel: function() {
-      var hiddenCount, k, len, ref, threadID;
+      var hiddenCount, k, len1, ref, threadID;
       if (!Index.hideLabel) {
         return;
       }
       hiddenCount = 0;
       ref = Index.liveThreadIDs;
-      for (k = 0, len = ref.length; k < len; k++) {
+      for (k = 0, len1 = ref.length; k < len1; k++) {
         threadID = ref[k];
         if (Index.isHidden(threadID)) {
           hiddenCount++;
@@ -10181,7 +10282,7 @@ Index = (function() {
       return Index.pageLoad();
     },
     parseThreadList: function(pages) {
-      var ID, data, i, k, len, obj, ref, ref1, results;
+      var ID, data, i, k, l, len1, len2, obj, ref, ref1, ref2, reply, results;
       Index.pagesNum = pages.length;
       Index.threadsNumPerPage = ((ref = pages[0]) != null ? ref.threads.length : void 0) || 1;
       Index.liveThreadData = pages.reduce((function(arr, next) {
@@ -10193,8 +10294,9 @@ Index = (function() {
       Index.liveThreadDict = {};
       Index.threadPosition = {};
       Index.parsedThreads = {};
+      Index.replyData = {};
       ref1 = Index.liveThreadData;
-      for (i = k = 0, len = ref1.length; k < len; i = ++k) {
+      for (i = k = 0, len1 = ref1.length; k < len1; i = ++k) {
         data = ref1[i];
         Index.liveThreadDict[data.no] = data;
         Index.threadPosition[data.no] = i;
@@ -10202,23 +10304,30 @@ Index = (function() {
         obj.filterResults = results = Filter.test(obj);
         obj.isOnTop = results.top;
         obj.isHidden = results.hide || ThreadHiding.isHidden(obj.boardID, obj.threadID);
+        if (data.last_replies) {
+          ref2 = data.last_replies;
+          for (l = 0, len2 = ref2.length; l < len2; l++) {
+            reply = ref2[l];
+            Index.replyData[g.BOARD + "." + reply.no] = reply;
+          }
+        }
       }
       if (Index.liveThreadData[0]) {
         Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler;
       }
       g.BOARD.threads.forEach(function(thread) {
-        var ref2;
-        if (ref2 = thread.ID, indexOf.call(Index.liveThreadIDs, ref2) < 0) {
+        var ref3;
+        if (ref3 = thread.ID, indexOf.call(Index.liveThreadIDs, ref3) < 0) {
           return thread.collect();
         }
       });
       $.event('IndexUpdate', {
         threads: (function() {
-          var l, len1, ref2, results1;
-          ref2 = Index.liveThreadIDs;
+          var len3, m, ref3, results1;
+          ref3 = Index.liveThreadIDs;
           results1 = [];
-          for (l = 0, len1 = ref2.length; l < len1; l++) {
-            ID = ref2[l];
+          for (m = 0, len3 = ref3.length; m < len3; m++) {
+            ID = ref3[m];
             results1.push(g.BOARD + "." + ID);
           }
           return results1;
@@ -10234,11 +10343,11 @@ Index = (function() {
       }
     },
     buildThreads: function(threadIDs, isCatalog) {
-      var ID, OP, err, errors, isStale, k, len, newPosts, newThreads, obj, thread, threadData, threads;
+      var ID, OP, err, errors, isStale, k, len1, newPosts, newThreads, obj, thread, threadData, threads;
       threads = [];
       newThreads = [];
       newPosts = [];
-      for (k = 0, len = threadIDs.length; k < len; k++) {
+      for (k = 0, len1 = threadIDs.length; k < len1; k++) {
         ID = threadIDs[k];
         try {
           threadData = Index.liveThreadDict[ID];
@@ -10293,15 +10402,15 @@ Index = (function() {
       return threads;
     },
     buildReplies: function(threads) {
-      var data, err, errors, k, l, lastReplies, len, len1, node, nodes, post, posts, thread;
+      var data, err, errors, k, l, lastReplies, len1, len2, node, nodes, post, posts, thread;
       posts = [];
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         if (!(lastReplies = Index.liveThreadDict[thread.ID].last_replies)) {
           continue;
         }
         nodes = [];
-        for (l = 0, len1 = lastReplies.length; l < len1; l++) {
+        for (l = 0, len2 = lastReplies.length; l < len2; l++) {
           data = lastReplies[l];
           if ((post = thread.posts[data.no]) && !post.isFetchedQuote) {
             nodes.push(post.nodes.root);
@@ -10329,9 +10438,9 @@ Index = (function() {
       return Main.callbackNodes('Post', posts);
     },
     buildCatalogViews: function(threads) {
-      var ID, catalogThreads, k, len, page, root, thread;
+      var ID, catalogThreads, k, len1, page, root, thread;
       catalogThreads = [];
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         if (!(!thread.catalogView)) {
           continue;
@@ -10344,9 +10453,9 @@ Index = (function() {
       Main.callbackNodes('CatalogThread', catalogThreads);
     },
     sizeCatalogViews: function(threads) {
-      var height, k, len, ratio, ref, size, thread, thumb, width;
+      var height, k, len1, ratio, ref, size, thread, thumb, width;
       size = Conf['Index Size'] === 'small' ? 150 : 250;
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         thumb = thread.catalogView.nodes.thumb;
         ref = thumb.dataset, width = ref.width, height = ref.height;
@@ -10359,13 +10468,13 @@ Index = (function() {
       }
     },
     buildCatalogReplies: function(thread) {
-      var data, k, lastReplies, len, nodes, replies, reply;
+      var data, k, lastReplies, len1, nodes, replies, reply;
       nodes = thread.catalogView.nodes;
       if (!(lastReplies = Index.liveThreadDict[thread.ID].last_replies)) {
         return;
       }
       replies = [];
-      for (k = 0, len = lastReplies.length; k < len; k++) {
+      for (k = 0, len1 = lastReplies.length; k < len1; k++) {
         data = lastReplies[k];
         if (PostHiding.isHidden(g.BOARD.ID, thread.ID, data.no)) {
           continue;
@@ -10407,15 +10516,20 @@ Index = (function() {
             });
           case 'lastlong':
             lastlong = function(thread) {
-              var i, k, r, ref;
+              var i, k, len, r, ref;
               ref = thread.last_replies || [];
               for (i = k = ref.length - 1; k >= 0; i = k += -1) {
                 r = ref[i];
-                if (r.com && Build.parseComment(r.com).replace(/[^a-z]/ig, '').length >= 100) {
+                len = r.com ? Build.parseComment(r.com).replace(/[^a-z]/ig, '').length : 0;
+                if (len >= Index.lastLongThresholds[+(!!r.ext)]) {
                   return r;
                 }
               }
-              return thread;
+              if (thread.omitted_posts) {
+                return thread.last_replies[0];
+              } else {
+                return thread;
+              }
             };
             return slice.call(liveThreadData).sort(function(a, b) {
               return lastlong(b).no - lastlong(a).no;
@@ -10463,11 +10577,11 @@ Index = (function() {
       }
     },
     sortOnTop: function(match) {
-      var ID, bottomThreads, k, len, ref, topThreads;
+      var ID, bottomThreads, k, len1, ref, topThreads;
       topThreads = [];
       bottomThreads = [];
       ref = Index.sortedThreadIDs;
-      for (k = 0, len = ref.length; k < len; k++) {
+      for (k = 0, len1 = ref.length; k < len1; k++) {
         ID = ref[k];
         (match(Index.parsedThreads[ID]) ? topThreads : bottomThreads).push(ID);
       }
@@ -10506,13 +10620,13 @@ Index = (function() {
       return Index.sortedThreadIDs.slice(offset, offset + nodesPerPage);
     },
     buildStructure: function(threadIDs) {
-      var k, len, nodes, thread, threads;
+      var k, len1, nodes, thread, threads;
       threads = Index.buildThreads(threadIDs, false);
       if (Conf['Show Replies']) {
         Index.buildReplies(threads);
       }
       nodes = [];
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         nodes.push(thread.nodes.root, $.el('hr'));
       }
@@ -10547,12 +10661,12 @@ Index = (function() {
       fn();
     },
     buildCatalogPart: function(threadIDs) {
-      var k, len, nodes, thread, threads;
+      var k, len1, nodes, thread, threads;
       threads = Index.buildThreads(threadIDs, true);
       Index.buildCatalogViews(threads);
       Index.sizeCatalogViews(threads);
       nodes = [];
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         thread.OP.setCatalogOP(true);
         $.add(thread.catalogView.nodes.root, thread.OP.nodes.root);
@@ -10598,14 +10712,14 @@ Index = (function() {
       });
     },
     searchMatch: function(obj, keywords) {
-      var file, info, k, key, keyword, l, len, len1, ref, text;
+      var file, info, k, key, keyword, l, len1, len2, ref, text;
       info = obj.info, file = obj.file;
       if (info.comment == null) {
         info.comment = Build.parseComment(info.commentHTML.innerHTML);
       }
       text = [];
       ref = ['comment', 'subject', 'name', 'tripcode'];
-      for (k = 0, len = ref.length; k < len; k++) {
+      for (k = 0, len1 = ref.length; k < len1; k++) {
         key = ref[k];
         if (key in info) {
           text.push(info[key]);
@@ -10615,7 +10729,7 @@ Index = (function() {
         text.push(file.name);
       }
       text = text.join(' ').toLowerCase();
-      for (l = 0, len1 = keywords.length; l < len1; l++) {
+      for (l = 0, len2 = keywords.length; l < len2; l++) {
         keyword = keywords[l];
         if (-1 === text.indexOf(keyword)) {
           return false;
@@ -11347,14 +11461,14 @@ Settings = (function() {
     filter: function(section) {
       var select;
       $.extend(section, {
-        innerHTML: "<select name=\"filter\"><option value=\"guide\">Guide</option><option value=\"postID\">Post number</option><option value=\"name\">Name</option><option value=\"uniqueID\">Unique ID</option><option value=\"tripcode\">Tripcode</option><option value=\"capcode\">Capcode</option><option value=\"pass\">Pass Date</option><option value=\"subject\">Subject</option><option value=\"comment\">Comment</option><option value=\"flag\">Flag</option><option value=\"filename\">Filename</option><option value=\"dimensions\">Image dimensions</option><option value=\"filesize\">Filesize</option><option value=\"MD5\">Image MD5</option></select><div></div>"
+        innerHTML: "<select name=\"filter\"><option value=\"guide\">Guide</option><option value=\"general\">General</option><option value=\"postID\">Post number</option><option value=\"name\">Name</option><option value=\"uniqueID\">Unique ID</option><option value=\"tripcode\">Tripcode</option><option value=\"capcode\">Capcode</option><option value=\"pass\">Pass Date</option><option value=\"subject\">Subject</option><option value=\"comment\">Comment</option><option value=\"flag\">Flag</option><option value=\"filename\">Filename</option><option value=\"dimensions\">Image dimensions</option><option value=\"filesize\">Filesize</option><option value=\"MD5\">Image MD5</option></select><div></div>"
       });
       select = $('select', section);
       $.on(select, 'change', Settings.selectFilter);
       return Settings.selectFilter.call(select);
     },
     selectFilter: function() {
-      var div, name, ta;
+      var div, filterTypes, name, ta;
       div = this.nextElementSibling;
       if ((name = this.value) !== 'guide') {
         $.rmAll(div);
@@ -11370,8 +11484,15 @@ Settings = (function() {
         });
         return;
       }
+      filterTypes = Object.keys(Config.filter).filter(function(x) {
+        return x !== 'general';
+      }).map(function(x, i) {
+        return {
+          innerHTML: ((i) ? "," : "") + "<wbr>" + E(x)
+        };
+      });
       $.extend(div, {
-        innerHTML: "<div class=\"warning\"><code>Filter</code> is disabled.</div><p>Use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\" target=\"_blank\">regular expressions</a>, one per line.<br>Lines starting with a <code>#</code> will be ignored.<br>For example, <code>/weeaboo/i</code> will filter posts containing the string \`<code>weeaboo</code>\`, case-insensitive.<br>MD5 filtering uses exact string matching, not regular expressions.</p><ul>You can use these settings with each regular expression, separate them with semicolons:<li>Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>For example: <code>boards:a,jp;</code>.<br></li><li>In case of a global rule or one that uses <code>sfw</code>/<code>nsfw</code>, select boards to be excluded from the filter.<br>For example: <code>exclude:vg,v;</code>.</li><li>Filter OPs only along with their threads (\`only\`), replies only (\`no\`), or both (\`yes\`, this is default).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li><li>Overrule the \`Show Stubs\` setting if specified: create a stub (\`yes\`) or not (\`no\`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code>.</li><li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li><li>Highlighted OPs will have their threads put on top of the board index by default.<br>For example: <code>top:yes;</code> or <code>top:no;</code>.</li></ul><p>Note: If you&#039;re using the native catalog rather than 4chan X&#039;s catalog, 4chan X&#039;s filters do not apply there.<br>The native catalog has its own separate filter list.</p>"
+        innerHTML: "<div class=\"warning\"><code>Filter</code> is disabled.</div><p>Use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\" target=\"_blank\">regular expressions</a>, one per line.<br>Lines starting with a <code>#</code> will be ignored.<br>For example, <code>/weeaboo/i</code> will filter posts containing the string \`<code>weeaboo</code>\`, case-insensitive.<br>MD5 filtering uses exact string matching, not regular expressions.</p><ul>You can use these settings with each regular expression, separate them with semicolons:<li>Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>For example: <code>boards:a,jp;</code>.<br></li><li>In case of a global rule or one that uses <code>sfw</code>/<code>nsfw</code>, select boards to be excluded from the filter.<br>For example: <code>exclude:vg,v;</code>.</li><li>Filter OPs only along with their threads (\`only\`), replies only (\`no\`), or both (\`yes\`, this is default).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li><li>Overrule the \`Show Stubs\` setting if specified: create a stub (\`yes\`) or not (\`no\`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code>.</li><li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li><li>Highlighted OPs will have their threads put on top of the board index by default.<br>For example: <code>top:yes;</code> or <code>top:no;</code>.</li><li>Filters in the \"General\" section apply to multiple fields, by default <code>subject,name,filename,comment</code>.<br>The fields can be specified with the <code>type</code> option, separated by commas.<br>For example: <code>type:" + E.cat(filterTypes) + ";</code>.</li></ul><p>Note: If you&#039;re using the native catalog rather than 4chan X&#039;s catalog, 4chan X&#039;s filters do not apply there.<br>The native catalog has its own separate filter list.</p>"
       });
       return $('.warning', div).hidden = Conf['Filter'];
     },
@@ -12550,12 +12671,11 @@ Gallery = (function() {
             case Conf['Close']:
             case Conf['Open Gallery']:
               return Gallery.cb.close;
-            case 'Right':
+            case Conf['Next Gallery Image']:
               return Gallery.cb.next;
-            case 'Enter':
+            case Conf['Advance Gallery']:
               return Gallery.cb.advance;
-            case 'Left':
-            case '':
+            case Conf['Previous Gallery Image']:
               return Gallery.cb.prev;
             case Conf['Pause']:
               return Gallery.cb.pause;
@@ -14246,9 +14366,6 @@ Embedding = (function() {
       var embed, href, key, link, name, options, post, ref, uid, value;
       key = data.key, uid = data.uid, options = data.options, link = data.link, post = data.post;
       href = link.href;
-      if (Embedding.types[key].httpOnly && location.protocol !== 'http:') {
-        return;
-      }
       $.addClass(link, key.toLowerCase());
       embed = $.el('a', {
         className: 'embedder',
@@ -14512,17 +14629,20 @@ Embedding = (function() {
         }
       }, {
         key: 'Clyp',
-        regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w+)/,
-        style: '',
+        regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w{8})/,
+        style: 'border: 0; width: 640px; height: 160px;',
         el: function(a) {
-          var el, type;
-          el = $.el('audio', {
-            controls: true,
-            preload: 'auto'
+          return $.el('iframe', {
+            src: "https://clyp.it/" + a.dataset.uid + "/widget"
           });
-          type = el.canPlayType('audio/ogg') ? 'ogg' : 'mp3';
-          el.src = "https://clyp.it/" + a.dataset.uid + "." + type;
-          return el;
+        },
+        title: {
+          api: function(uid) {
+            return "https://api.clyp.it/" + uid;
+          },
+          text: function(_) {
+            return _.Title;
+          }
         }
       }, {
         key: 'Dailymotion',
@@ -14562,16 +14682,32 @@ Embedding = (function() {
       }, {
         key: 'Gist',
         regExp: /^\w+:\/\/gist\.github\.com\/[\w\-]+\/(\w+)/,
-        el: function(a) {
-          var content, el;
-          el = $.el('iframe');
-          el.setAttribute('sandbox', 'allow-scripts');
-          content = {
-            innerHTML: "<html><head><title>" + E(a.dataset.uid) + "</title></head><body><script src=\"https://gist.github.com/" + E(a.dataset.uid) + ".js\"></script></body></html>"
+        style: '',
+        el: (function() {
+          var counter;
+          counter = 0;
+          return function(a) {
+            var el;
+            el = $.el('pre', {
+              hidden: true,
+              id: "gist-embed-" + (counter++)
+            });
+            $.ajax("https://api.github.com/gists/" + a.dataset.uid, {
+              responseType: 'json',
+              onload: function() {
+                el.textContent = Object.values(this.response.files)[0].content;
+                el.className = 'prettyprint';
+                $.global(function() {
+                  return typeof window.prettyPrint === "function" ? window.prettyPrint((function() {}), document.getElementById(document.currentScript.dataset.id).parentNode) : void 0;
+                }, {
+                  id: el.id
+                });
+                return el.hidden = false;
+              }
+            });
+            return el;
           };
-          el.src = E.url(content);
-          return el;
-        },
+        })(),
         title: {
           api: function(uid) {
             return "https://api.github.com/gists/" + uid;
@@ -14597,18 +14733,17 @@ Embedding = (function() {
       }, {
         key: 'LiveLeak',
         regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*i=(\w+)/,
-        httpOnly: true,
         el: function(a) {
           var el;
           el = $.el('iframe', {
-            src: "http://www.liveleak.com/ll_embed?i=" + a.dataset.uid
+            src: "https://www.liveleak.com/ll_embed?i=" + a.dataset.uid
           });
           el.setAttribute("allowfullscreen", "true");
           return el;
         }
       }, {
         key: 'Loopvid',
-        regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|m2|pc|1c|pi|wl|ko|gc)\/[\w\-\/]+(?:,[\w\-\/]+)*|fc\/\w+\/\d+|https?:\/\/.+)/,
+        regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|m2|pc|1c|pi|ni|wl|ko|gc)\/[\w\-\/]+(?:,[\w\-\/]+)*|fc\/\w+\/\d+|https?:\/\/.+)/,
         style: 'max-width: 80vw; max-height: 80vh;',
         el: function(a) {
           var _, base, el, host, j, k, l, len, len1, len2, name, names, ref, ref1, type, types, url, urls;
@@ -14647,9 +14782,9 @@ Embedding = (function() {
                   case 'pf':
                     return ["https://kastden.org/_loopvid_media/pf/" + base, "https://web.archive.org/web/2/http://a.pomf.se/" + base];
                   case 'kd':
-                    return ["http://kastden.org/loopvid/" + base];
+                    return ["https://kastden.org/loopvid/" + base];
                   case 'lv':
-                    return ["http://lv.kastden.org/" + base];
+                    return ["https://lv.kastden.org/" + base];
                   case 'gd':
                     return ["https://docs.google.com/uc?export=download&id=" + base];
                   case 'gh':
@@ -14659,7 +14794,7 @@ Embedding = (function() {
                   case 'dx':
                     return ["https://dl.dropboxusercontent.com/" + base];
                   case 'nn':
-                    return ["http://naenara.eu/loopvids/" + base];
+                    return ["https://kastden.org/_loopvid_media/nn/" + base];
                   case 'cp':
                     return ["https://copy.com/" + base];
                   case 'wu':
@@ -14667,7 +14802,7 @@ Embedding = (function() {
                   case 'ig':
                     return ["https://i.imgur.com/" + base];
                   case 'ky':
-                    return ["https://kiyo.me/" + base];
+                    return ["https://kastden.org/_loopvid_media/ky/" + base];
                   case 'mf':
                     return ["https://kastden.org/_loopvid_media/mf/" + base, "https://web.archive.org/web/2/https://d.maxfile.ro/" + base];
                   case 'm2':
@@ -14678,6 +14813,8 @@ Embedding = (function() {
                     return ["http://b.1339.cf/" + base];
                   case 'pi':
                     return ["https://u.pomf.is/" + base];
+                  case 'ni':
+                    return ["https://u.nya.is/" + base];
                   case 'wl':
                     return ["http://webm.land/media/" + base];
                   case 'ko':
@@ -14700,13 +14837,13 @@ Embedding = (function() {
         }
       }, {
         key: 'Openings.moe',
-        regExp: /^\w+:\/\/openings.moe\/\?video=([^&=]+\.webm)/,
+        regExp: /^\w+:\/\/openings.moe\/\?video=([^.&=]+)/,
         style: 'max-width: 80vw; max-height: 80vh;',
         el: function(a) {
           return $.el('video', {
             controls: true,
             preload: 'auto',
-            src: "//openings.moe/video/" + a.dataset.uid,
+            src: "//openings.moe/video/" + a.dataset.uid + ".webm",
             loop: true
           });
         }
@@ -14763,7 +14900,7 @@ Embedding = (function() {
         }
       }, {
         key: 'Twitter',
-        regExp: /^\w+:\/\/(?:www\.)?twitter\.com\/(\w+\/status\/\d+)/,
+        regExp: /^\w+:\/\/(?:www\.|mobile\.)?twitter\.com\/(\w+\/status\/\d+)/,
         style: 'border: none; width: 550px; height: 250px; max-height: 80vh;',
         el: function(a) {
           var el, onMessage;
@@ -15115,6 +15252,49 @@ ArchiveLink = (function() {
   };
 
   return ArchiveLink;
+
+}).call(this);
+
+CopyTextLink = (function() {
+  var CopyTextLink;
+
+  CopyTextLink = {
+    init: function() {
+      var a, ref;
+      if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Menu'] && Conf['Copy Text Link'])) {
+        return;
+      }
+      a = $.el('a', {
+        className: 'copy-text-link',
+        href: 'javascript:;',
+        textContent: 'Copy Text'
+      });
+      $.on(a, 'click', CopyTextLink.copy);
+      return Menu.menu.addEntry({
+        el: a,
+        order: 12,
+        open: function(post) {
+          CopyTextLink.text = post.info.comment;
+          return true;
+        }
+      });
+    },
+    copy: function() {
+      var el;
+      el = $.el('textarea', {
+        className: 'copy-text-element',
+        value: CopyTextLink.text
+      });
+      $.add(d.body, el);
+      el.select();
+      try {
+        d.execCommand('copy');
+      } catch (_error) {}
+      return $.rm(el);
+    }
+  };
+
+  return CopyTextLink;
 
 }).call(this);
 
@@ -15656,6 +15836,35 @@ Banner = (function() {
   };
 
   return Banner;
+
+}).call(this);
+
+BoardTips = (function() {
+  var BoardTips;
+
+  BoardTips = {
+    tips: {
+      qa: [
+        1, {
+          innerHTML: "New to /qa/?<br>/qa/ is NOT an effective way to contact the mods.<br>Use <a href=\"https://www.rizon.net/chat\" target=\"_blank\">IRC</a> or <a href=\"https://www.4chan.org/feedback\" target=\"_blank\">feedback</a> instead. More details <a href=\"https://www.4chan-x.net/qa_instructions.png\" target=\"_blank\">here</a>."
+        }
+      ]
+    },
+    init: function() {
+      var el, seen, tip;
+      tip = BoardTips.tips[g.BOARD.ID];
+      seen = Conf['BoardTips.seen'];
+      if (!tip || (seen[g.BOARD.ID] && seen[g.BOARD.ID] >= tip[0])) {
+        return;
+      }
+      seen[g.BOARD.ID] = tip[0];
+      $.set('BoardTips.seen', seen);
+      el = $.el('span', tip[1]);
+      return new Notice('info', el);
+    }
+  };
+
+  return BoardTips;
 
 }).call(this);
 
@@ -16218,7 +16427,7 @@ FileInfo = (function() {
       },
       f: function() {
         return {
-          innerHTML: "<a href=\"javascript:;\" class=\"fa fa-trash-o quick-filter-md5\"></a>"
+          innerHTML: "<a href=\"javascript:;\" class=\"fa fa-times quick-filter-md5\"></a>"
         };
       },
       p: function() {
@@ -19755,7 +19964,12 @@ Captcha = {};
           return _this.clear();
         };
       })(this));
-      return $.sync('captchas', this.sync.bind(this));
+      $.sync('captchas', this.sync.bind(this));
+      return $.on(d, 'SaveCaptcha', (function(_this) {
+        return function(e) {
+          return _this.save(e.detail);
+        };
+      })(this));
     },
     captchas: [],
     getCount: function() {
@@ -22092,6 +22306,7 @@ QR = (function() {
         return;
       }
       this.data = Conf['cooldowns'];
+      this.changes = {};
       return $.sync('cooldowns', this.sync);
     },
     setup: function() {
@@ -22139,6 +22354,7 @@ QR = (function() {
           postID: postID
         });
       }
+      QR.cooldown.save();
       return QR.cooldown.start();
     },
     addDelay: function(post, delay) {
@@ -22149,6 +22365,7 @@ QR = (function() {
       cooldown = QR.cooldown.categorize(post);
       cooldown.delay = delay;
       QR.cooldown.set(g.BOARD.ID, Date.now(), cooldown);
+      QR.cooldown.save();
       return QR.cooldown.start();
     },
     addMute: function(delay) {
@@ -22159,6 +22376,7 @@ QR = (function() {
         type: 'mute',
         delay: delay
       });
+      QR.cooldown.save();
       return QR.cooldown.start();
     },
     "delete": function(post) {
@@ -22166,15 +22384,14 @@ QR = (function() {
       if (!QR.cooldown.data) {
         return;
       }
-      $.forceSync('cooldowns');
       cooldowns = ((base = QR.cooldown.data)[name = post.board.ID] || (base[name] = {}));
       for (id in cooldowns) {
         cooldown = cooldowns[id];
         if ((cooldown.delay == null) && cooldown.threadID === post.thread.ID && cooldown.postID === post.ID) {
-          delete cooldowns[id];
+          QR.cooldown.set(post.board.ID, id, null);
         }
       }
-      return QR.cooldown.save([post.board.ID]);
+      return QR.cooldown.save();
     },
     secondsDeletion: function(post) {
       var cooldown, cooldowns, seconds, start;
@@ -22203,31 +22420,49 @@ QR = (function() {
         };
       }
     },
-    set: function(scope, id, value) {
-      var base, cooldowns;
-      $.forceSync('cooldowns');
-      cooldowns = ((base = QR.cooldown.data)[scope] || (base[scope] = {}));
-      cooldowns[id] = value;
-      return $.set('cooldowns', QR.cooldown.data);
-    },
-    save: function(scopes) {
-      var data, i, len, scope;
-      data = QR.cooldown.data;
-      for (i = 0, len = scopes.length; i < len; i++) {
-        scope = scopes[i];
-        if (scope in data && !Object.keys(data[scope]).length) {
-          delete data[scope];
+    mergeChange: function(data, scope, id, value) {
+      if (value) {
+        return (data[scope] || (data[scope] = {}))[id] = value;
+      } else if (scope in data) {
+        delete data[scope][id];
+        if (Object.keys(data[scope]).length === 0) {
+          return delete data[scope];
         }
       }
-      return $.set('cooldowns', data);
+    },
+    set: function(scope, id, value) {
+      var base;
+      QR.cooldown.mergeChange(QR.cooldown.data, scope, id, value);
+      return ((base = QR.cooldown.changes)[scope] || (base[scope] = {}))[id] = value;
+    },
+    save: function() {
+      var changes;
+      changes = QR.cooldown.changes;
+      if (!Object.keys(changes).length) {
+        return;
+      }
+      return $.get('cooldowns', {}, function(arg) {
+        var cooldowns, id, ref, scope, value;
+        cooldowns = arg.cooldowns;
+        for (scope in QR.cooldown.changes) {
+          ref = QR.cooldown.changes[scope];
+          for (id in ref) {
+            value = ref[id];
+            QR.cooldown.mergeChange(cooldowns, scope, id, value);
+          }
+          QR.cooldown.data = cooldowns;
+        }
+        return $.set('cooldowns', cooldowns, function() {
+          return QR.cooldown.changes = {};
+        });
+      });
     },
     update: function() {
       var base, cooldown, cooldowns, elapsed, i, len, maxDelay, nCooldowns, now, ref, ref1, save, scope, seconds, start, suffix, threadID, type, update;
       if (!QR.cooldown.isCounting) {
         return;
       }
-      $.forceSync('cooldowns');
-      save = [];
+      save = false;
       nCooldowns = 0;
       now = Date.now();
       ref = QR.cooldown.categorize(QR.posts[0]), type = ref.type, threadID = ref.threadID;
@@ -22242,14 +22477,14 @@ QR = (function() {
             start = +start;
             elapsed = Math.floor((now - start) / $.SECOND);
             if (elapsed < 0) {
-              delete cooldowns[start];
-              save.push(scope);
+              QR.cooldown.set(scope, start, null);
+              save = true;
               continue;
             }
             if (cooldown.delay != null) {
               if (cooldown.delay <= elapsed) {
-                delete cooldowns[start];
-                save.push(scope);
+                QR.cooldown.set(scope, start, null);
+                save = true;
               } else if ((cooldown.type === type && cooldown.threadID === threadID) || cooldown.type === 'mute') {
                 seconds = Math.max(seconds, cooldown.delay - elapsed);
               }
@@ -22260,8 +22495,8 @@ QR = (function() {
               maxDelay = Math.max(maxDelay, parseInt(Conf['customCooldown'], 10));
             }
             if (maxDelay <= elapsed) {
-              delete cooldowns[start];
-              save.push(scope);
+              QR.cooldown.set(scope, start, null);
+              save = true;
               continue;
             }
             if ((type === 'thread') === (cooldown.threadID === cooldown.postID) && cooldown.boardID !== g.BOARD.ID) {
@@ -22275,8 +22510,8 @@ QR = (function() {
           nCooldowns += Object.keys(cooldowns).length;
         }
       }
-      if (save.length) {
-        QR.cooldown.save(save);
+      if (save) {
+        QR.cooldown.save;
       }
       if (nCooldowns) {
         clearTimeout(QR.cooldown.timeout);
@@ -24066,7 +24301,7 @@ Quotify = (function() {
       }
       boardID = m[1];
       threadID = m[2];
-      postID = link.hash.match(/^#p?(\d+)$|$/)[1] || threadID;
+      postID = link.hash.match(/^#[pq]?(\d+)$|$/)[1] || threadID;
       if (Redirect.to('post', {
         boardID: boardID,
         postID: postID
@@ -24176,7 +24411,7 @@ Main = (function() {
 
   Main = {
     init: function() {
-      var db, flatten, items, j, key, len, ref;
+      var db, flatten, i, items, j, k, key, len, ref;
       if (d.body && !$('title', d.head)) {
         return;
       }
@@ -24246,6 +24481,10 @@ Main = (function() {
       Conf['selectedArchives'] = {};
       Conf['cooldowns'] = {};
       Conf['Index Sort'] = {};
+      Conf['BoardTips.seen'] = {};
+      for (i = k = 0; k < 2; i = ++k) {
+        Conf["Last Long Reply Thresholds " + i] = {};
+      }
       Conf['Except Archives from Encryption'] = false;
       Conf['JSON Navigation'] = true;
       Conf['Oekaki Links'] = true;
@@ -24266,8 +24505,13 @@ Main = (function() {
       }
       items['previousversion'] = void 0;
       return ($.getSync || $.get)(items, function(items) {
+        var ref1;
+        if (((ref1 = items['Redirect to HTTPS']) != null ? ref1 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
+          location.replace('https:' + location.host + location.pathname + location.search + location.hash);
+          return;
+        }
         return $.asap(docSet, function() {
-          var ref1, val;
+          var ref2, val;
           if ($.cantSet) {
 
           } else if (items.previousversion == null) {
@@ -24280,7 +24524,7 @@ Main = (function() {
           }
           for (key in Conf) {
             val = Conf[key];
-            Conf[key] = (ref1 = items[key]) != null ? ref1 : val;
+            Conf[key] = (ref2 = items[key]) != null ? ref2 : val;
           }
           return Main.initFeatures();
         });
@@ -24715,7 +24959,7 @@ Main = (function() {
         }
       });
     },
-    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning]]
+    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Copy Text Link', CopyTextLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning], ['Board Tips', BoardTips]]
   };
 
   return Main;
