@@ -297,9 +297,20 @@ QR =
     return unless QR.postingIsEnabled
     sel  = d.getSelection()
     post = Get.postFromNode @
+    {root} = post.nodes
+    postRange = new Range()
+    postRange.selectNode root
     text = if post.board.ID is g.BOARD.ID then ">>#{post}\n" else ">>>/#{post.board}/#{post}\n"
-    if sel.toString().trim() and post is Get.postFromNode sel.anchorNode
-      range = sel.getRangeAt 0
+    for i in [0...sel.rangeCount]
+      range = sel.getRangeAt i
+      # Trim range to be fully inside post
+      if range.compareBoundaryPoints(Range.START_TO_START, postRange) < 0
+        range.setStartBefore root
+      if range.compareBoundaryPoints(Range.END_TO_END, postRange) > 0
+        range.setEndAfter root
+
+      continue unless range.toString().trim()
+
       frag  = range.cloneContents()
       ancestor = range.commonAncestorContainer
       # Quoting the insides of a spoiler/code tag.
