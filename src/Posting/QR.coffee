@@ -313,10 +313,7 @@ QR =
         $.replace node, $.tn '\n'
       for node in $$ 'br', frag
         $.replace node, $.tn '\n>' unless node is frag.lastChild
-      for node in $$ 's, .removed-spoiler', frag
-        $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
-      for node in $$ '.prettyprint', frag
-        $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
+      Post::insertTags frag
       for node in $$ '.linkify[data-original]', frag
         $.replace node, $.tn node.dataset.original
       for node in $$ '.embedder', frag

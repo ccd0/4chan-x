@@ -12,7 +12,7 @@ CopyTextLink =
       el: a
       order: 12
       open: (post) ->
-        CopyTextLink.text = post.info.comment
+        CopyTextLink.text = post.commentOrig()
         true
 
   copy: ->
