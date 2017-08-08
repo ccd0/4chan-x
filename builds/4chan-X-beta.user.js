@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.10.5
+// @version      1.13.11.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.10.5',
+  VERSION:   '1.13.11.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -6161,6 +6161,7 @@ Notice = (function() {
 
 Post = (function() {
   var Post,
+    slice = [].slice,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Post = (function() {
@@ -6299,6 +6300,13 @@ Post = (function() {
       return this.nodesToText(bq).trim().replace(/\s+$/gm, '');
     };
 
+    Post.prototype.commentOrig = function() {
+      var bq;
+      bq = this.nodes.commentClean.cloneNode(true);
+      this.insertTags(bq);
+      return this.nodesToText(bq);
+    };
+
     Post.prototype.nodesToText = function(bq) {
       var i, node, nodes, text;
       text = "";
@@ -6342,6 +6350,20 @@ Post = (function() {
         $.rm(b);
       }
       return $.rm($('.fortune', bq));
+    };
+
+    Post.prototype.insertTags = function(bq) {
+      var j, k, len, len1, node, ref, ref1;
+      ref = $$('s, .removed-spoiler', bq);
+      for (j = 0, len = ref.length; j < len; j++) {
+        node = ref[j];
+        $.replace(node, [$.tn('[spoiler]')].concat(slice.call(node.childNodes), [$.tn('[/spoiler]')]));
+      }
+      ref1 = $$('.prettyprint', bq);
+      for (k = 0, len1 = ref1.length; k < len1; k++) {
+        node = ref1[k];
+        $.replace(node, [$.tn('[code]')].concat(slice.call(node.childNodes), [$.tn('[/code]')]));
+      }
     };
 
     Post.prototype.parseQuotes = function() {
@@ -15274,7 +15296,7 @@ CopyTextLink = (function() {
         el: a,
         order: 12,
         open: function(post) {
-          CopyTextLink.text = post.info.comment;
+          CopyTextLink.text = (post.origin || post).commentOrig();
           return true;
         }
       });
@@ -21589,7 +21611,7 @@ QR = (function() {
       }
     },
     quote: function(e) {
-      var ancestor, caretPos, com, frag, insideCode, j, k, l, len, len1, len2, len3, len4, len5, n, node, o, post, q, range, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, sel, text, thread;
+      var ancestor, caretPos, com, frag, i, insideCode, j, k, l, len, len1, len2, len3, n, node, o, post, postRange, range, ref, ref1, ref2, ref3, ref4, ref5, ref6, root, sel, text, thread;
       if (e != null) {
         e.preventDefault();
       }
@@ -21598,9 +21620,21 @@ QR = (function() {
       }
       sel = d.getSelection();
       post = Get.postFromNode(this);
+      root = post.nodes.root;
+      postRange = new Range();
+      postRange.selectNode(root);
       text = post.board.ID === g.BOARD.ID ? ">>" + post + "\n" : ">>>/" + post.board + "/" + post + "\n";
-      if (sel.toString().trim() && post === Get.postFromNode(sel.anchorNode)) {
-        range = sel.getRangeAt(0);
+      for (i = j = 0, ref = sel.rangeCount; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+        range = sel.getRangeAt(i);
+        if (range.compareBoundaryPoints(Range.START_TO_START, postRange) < 0) {
+          range.setStartBefore(root);
+        }
+        if (range.compareBoundaryPoints(Range.END_TO_END, postRange) > 0) {
+          range.setEndAfter(root);
+        }
+        if (!range.toString().trim()) {
+          continue;
+        }
         frag = range.cloneContents();
         ancestor = range.commonAncestorContainer;
         if ($.x('ancestor-or-self::*[self::s or contains(@class,"removed-spoiler")]', ancestor)) {
@@ -21611,37 +21645,28 @@ QR = (function() {
           $.prepend(frag, $.tn('[code]'));
           $.add(frag, $.tn('[/code]'));
         }
-        ref = $$((insideCode ? 'br' : '.prettyprint br'), frag);
-        for (j = 0, len = ref.length; j < len; j++) {
-          node = ref[j];
+        ref1 = $$((insideCode ? 'br' : '.prettyprint br'), frag);
+        for (k = 0, len = ref1.length; k < len; k++) {
+          node = ref1[k];
           $.replace(node, $.tn('\n'));
         }
-        ref1 = $$('br', frag);
-        for (k = 0, len1 = ref1.length; k < len1; k++) {
-          node = ref1[k];
+        ref2 = $$('br', frag);
+        for (l = 0, len1 = ref2.length; l < len1; l++) {
+          node = ref2[l];
           if (node !== frag.lastChild) {
             $.replace(node, $.tn('\n>'));
           }
         }
-        ref2 = $$('s, .removed-spoiler', frag);
-        for (l = 0, len2 = ref2.length; l < len2; l++) {
-          node = ref2[l];
-          $.replace(node, [$.tn('[spoiler]')].concat(slice.call(node.childNodes), [$.tn('[/spoiler]')]));
-        }
-        ref3 = $$('.prettyprint', frag);
-        for (n = 0, len3 = ref3.length; n < len3; n++) {
+        Post.prototype.insertTags(frag);
+        ref3 = $$('.linkify[data-original]', frag);
+        for (n = 0, len2 = ref3.length; n < len2; n++) {
           node = ref3[n];
-          $.replace(node, [$.tn('[code]')].concat(slice.call(node.childNodes), [$.tn('[/code]')]));
-        }
-        ref4 = $$('.linkify[data-original]', frag);
-        for (o = 0, len4 = ref4.length; o < len4; o++) {
-          node = ref4[o];
           $.replace(node, $.tn(node.dataset.original));
         }
-        ref5 = $$('.embedder', frag);
-        for (q = 0, len5 = ref5.length; q < len5; q++) {
-          node = ref5[q];
-          if (((ref6 = node.previousSibling) != null ? ref6.nodeValue : void 0) === ' ') {
+        ref4 = $$('.embedder', frag);
+        for (o = 0, len3 = ref4.length; o < len3; o++) {
+          node = ref4[o];
+          if (((ref5 = node.previousSibling) != null ? ref5.nodeValue : void 0) === ' ') {
             $.rm(node.previousSibling);
           }
           $.rm(node);
@@ -21649,7 +21674,7 @@ QR = (function() {
         text += ">" + (frag.textContent.trim()) + "\n";
       }
       QR.openPost();
-      ref7 = QR.nodes, com = ref7.com, thread = ref7.thread;
+      ref6 = QR.nodes, com = ref6.com, thread = ref6.thread;
       if (!com.value) {
         thread.value = Get.threadFromNode(this);
       }
