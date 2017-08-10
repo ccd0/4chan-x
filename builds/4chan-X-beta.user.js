@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.11.0
+// @version      1.13.11.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.11.0',
+  VERSION:   '1.13.11.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -4982,6 +4982,10 @@ $ = (function() {
     delete $.currentValue[key];
     return GM_deleteValue(key);
   };
+
+  if (typeof GM_deleteValue === "undefined" || GM_deleteValue === null) {
+    $.perProtocolSettings = true;
+  }
 
   if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
     $.getValue = $.GM_getValue;
@@ -11029,6 +11033,9 @@ Settings = (function() {
       addCheckboxes($('div[data-name="JSON Index"] > .suboption-list', section), Config.Index);
       if ($.engine !== 'gecko') {
         $('div[data-name="Remember QR Size"]', section).hidden = true;
+      }
+      if ($.perProtocolSettings) {
+        $('div[data-name="Redirect to HTTPS"]', section).hidden = true;
       }
       $.get(items, function(items) {
         var val;
@@ -24531,7 +24538,7 @@ Main = (function() {
       items['previousversion'] = void 0;
       return ($.getSync || $.get)(items, function(items) {
         var ref1;
-        if (((ref1 = items['Redirect to HTTPS']) != null ? ref1 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
+        if (!$.perProtocolSettings && ((ref1 = items['Redirect to HTTPS']) != null ? ref1 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
           location.replace('https:' + location.host + location.pathname + location.search + location.hash);
           return;
         }
