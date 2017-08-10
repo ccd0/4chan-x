@@ -162,8 +162,12 @@ Settings =
       addCheckboxes fs, obj
       $.add section, fs
     addCheckboxes $('div[data-name="JSON Index"] > .suboption-list', section), Config.Index
+
+    # Unsupported options
     if $.engine isnt 'gecko'
-      $('div[data-name="Remember QR Size"]', section).hidden = true # XXX not supported
+      $('div[data-name="Remember QR Size"]', section).hidden = true
+    if $.perProtocolSettings
+      $('div[data-name="Redirect to HTTPS"]', section).hidden = true
 
     $.get items, (items) ->
       for key, val of items
