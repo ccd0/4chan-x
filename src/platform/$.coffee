@@ -510,6 +510,9 @@ $.GM_deleteValue = (key) ->
   delete $.currentValue[key]
   GM_deleteValue key
 
+unless GM_deleteValue?
+  $.perProtocolSettings = true
+
 if GM_deleteValue?
   $.getValue   = $.GM_getValue
   $.listValues = -> GM_listValues() # error when called if missing
