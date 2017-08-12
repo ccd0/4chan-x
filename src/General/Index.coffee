@@ -688,6 +688,9 @@ Index =
     else
       Index.parsedThreads[threadID].isHidden
 
+  isHiddenReply: (threadID, replyData) ->
+    PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) or Filter.isHidden(Build.parseJSON replyData, g.BOARD.ID)
+
   buildThreads: (threadIDs, isCatalog) ->
     threads    = []
     newThreads = []
@@ -788,8 +791,7 @@ Index =
 
     replies = []
     for data in lastReplies
-      continue if PostHiding.isHidden(g.BOARD.ID, thread.ID, data.no)
-      continue if Filter.isHidden(Build.parseJSON data, g.BOARD.ID)
+      continue if Index.isHiddenReply thread.ID, data
       reply = Build.catalogReply thread, data
       RelativeDates.update $('time', reply)
       $.on $('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover
