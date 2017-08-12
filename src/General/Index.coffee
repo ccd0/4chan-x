@@ -817,8 +817,11 @@ Index =
             if len >= Index.lastLongThresholds[+!!r.ext]
               return r
           if thread.omitted_posts then thread.last_replies[0] else thread
+        lastlongD = {}
+        for thread in liveThreadData
+          lastlongD[thread.no] = lastlong(thread).no
         [liveThreadData...].sort((a, b) ->
-          lastlong(b).no - lastlong(a).no
+          lastlongD[b.no] - lastlongD[a.no]
         ).map (post) -> post.no
       when 'bump'       then liveThreadIDs
       when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
