@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.11.1
+// @version      1.13.11.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.11.1',
+  VERSION:   '1.13.11.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -10368,6 +10368,9 @@ Index = (function() {
         return Index.parsedThreads[threadID].isHidden;
       }
     },
+    isHiddenReply: function(threadID, replyData) {
+      return PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) || Filter.isHidden(Build.parseJSON(replyData, g.BOARD.ID));
+    },
     buildThreads: function(threadIDs, isCatalog) {
       var ID, OP, err, errors, isStale, k, len1, newPosts, newThreads, obj, thread, threadData, threads;
       threads = [];
@@ -10502,10 +10505,7 @@ Index = (function() {
       replies = [];
       for (k = 0, len1 = lastReplies.length; k < len1; k++) {
         data = lastReplies[k];
-        if (PostHiding.isHidden(g.BOARD.ID, thread.ID, data.no)) {
-          continue;
-        }
-        if (Filter.isHidden(Build.parseJSON(data, g.BOARD.ID))) {
+        if (Index.isHiddenReply(thread.ID, data)) {
           continue;
         }
         reply = Build.catalogReply(thread, data);
@@ -10520,12 +10520,13 @@ Index = (function() {
       $.add(thread.OP.nodes.post, nodes.replies);
     },
     sort: function() {
-      var lastlong, liveThreadData, liveThreadIDs, threadIDs;
+      var lastlong, lastlongD, liveThreadData, liveThreadIDs, thread, threadIDs;
       liveThreadIDs = Index.liveThreadIDs, liveThreadData = Index.liveThreadData;
       if (!liveThreadData) {
         return;
       }
       Index.sortedThreadIDs = (function() {
+        var k, len1;
         switch (Index.currentSort.replace(/-rev$/, '')) {
           case 'lastreply':
             return slice.call(liveThreadData).sort(function(a, b) {
@@ -10546,6 +10547,9 @@ Index = (function() {
               ref = thread.last_replies || [];
               for (i = k = ref.length - 1; k >= 0; i = k += -1) {
                 r = ref[i];
+                if (Index.isHiddenReply(thread.no, r)) {
+                  continue;
+                }
                 len = r.com ? Build.parseComment(r.com).replace(/[^a-z]/ig, '').length : 0;
                 if (len >= Index.lastLongThresholds[+(!!r.ext)]) {
                   return r;
@@ -10557,8 +10561,13 @@ Index = (function() {
                 return thread;
               }
             };
+            lastlongD = {};
+            for (k = 0, len1 = liveThreadData.length; k < len1; k++) {
+              thread = liveThreadData[k];
+              lastlongD[thread.no] = lastlong(thread).no;
+            }
             return slice.call(liveThreadData).sort(function(a, b) {
-              return lastlong(b).no - lastlong(a).no;
+              return lastlongD[b.no] - lastlongD[a.no];
             }).map(function(post) {
               return post.no;
             });
