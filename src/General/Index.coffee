@@ -815,6 +815,7 @@ Index =
       when 'lastlong'
         lastlong = (thread) ->
           for r, i in (thread.last_replies or []) by -1
+            continue if Index.isHiddenReply thread.no, r
             len = if r.com then Build.parseComment(r.com).replace(/[^a-z]/ig, '').length else 0
             if len >= Index.lastLongThresholds[+!!r.ext]
               return r
