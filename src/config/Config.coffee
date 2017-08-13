@@ -857,6 +857,7 @@ Config =
   captchaLanguage: ''
 
   time: '%m/%d/%y(%a)%H:%M:%S'
+  timeLocale: ''
 
   backlink: '>>%id'
 
