@@ -5,7 +5,7 @@ BoardTips =
       <%= html(
         'New to /qa/?<br>' +
         '/qa/ is NOT an effective way to contact the mods.<br>' +
-        'Use <a href="https://www.rizon.net/chat" target="_blank">IRC</a> or <a href="https://www.4chan.org/feedback" target="_blank">feedback</a> instead. ' +
+        'Message a mod on <a href="https://www.rizon.net/chat" target="_blank">IRC</a> or use <a href="https://www.4chan.org/feedback" target="_blank">feedback</a> instead. ' +
         'More details <a href="https://www.4chan-x.net/qa_instructions.png" target="_blank">here</a>.'
       ) %>
     ]
