@@ -5,9 +5,8 @@ class Fetcher
       return
 
     # 4chan X catalog data
-    if (post = Index.replyData?["#{@boardID}.#{@postID}"])
+    if (post = Index.replyData?["#{@boardID}.#{@postID}"]) and (thread = g.threads["#{@boardID}.#{@threadID}"])
       board  = g.boards[@boardID]
-      thread = g.threads["#{@boardID}.#{@threadID}"]
       post = new Post Build.postFromObject(post, @boardID), thread, board
       post.isFetchedQuote = true
       Main.callbackNodes 'Post', [post]
