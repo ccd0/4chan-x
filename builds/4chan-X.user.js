@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.10.6
+// @version      1.13.10.7
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.10.6',
+  VERSION:   '1.13.10.7',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5738,9 +5738,8 @@ Fetcher = (function() {
         this.insert(post);
         return;
       }
-      if ((post = (ref = Index.replyData) != null ? ref[this.boardID + "." + this.postID] : void 0)) {
+      if ((post = (ref = Index.replyData) != null ? ref[this.boardID + "." + this.postID] : void 0) && (thread = g.threads[this.boardID + "." + this.threadID])) {
         board = g.boards[this.boardID];
-        thread = g.threads[this.boardID + "." + this.threadID];
         post = new Post(Build.postFromObject(post, this.boardID), thread, board);
         post.isFetchedQuote = true;
         Main.callbackNodes('Post', [post]);
