@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.11.3
+// @version      1.13.11.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.11.3',
+  VERSION:   '1.13.11.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5739,9 +5739,8 @@ Fetcher = (function() {
         this.insert(post);
         return;
       }
-      if ((post = (ref = Index.replyData) != null ? ref[this.boardID + "." + this.postID] : void 0)) {
+      if ((post = (ref = Index.replyData) != null ? ref[this.boardID + "." + this.postID] : void 0) && (thread = g.threads[this.boardID + "." + this.threadID])) {
         board = g.boards[this.boardID];
-        thread = g.threads[this.boardID + "." + this.threadID];
         post = new Post(Build.postFromObject(post, this.boardID), thread, board);
         post.isFetchedQuote = true;
         Main.callbackNodes('Post', [post]);
@@ -15888,7 +15887,7 @@ BoardTips = (function() {
     tips: {
       qa: [
         1, {
-          innerHTML: "New to /qa/?<br>/qa/ is NOT an effective way to contact the mods.<br>Use <a href=\"https://www.rizon.net/chat\" target=\"_blank\">IRC</a> or <a href=\"https://www.4chan.org/feedback\" target=\"_blank\">feedback</a> instead. More details <a href=\"https://www.4chan-x.net/qa_instructions.png\" target=\"_blank\">here</a>."
+          innerHTML: "New to /qa/?<br>/qa/ is NOT an effective way to contact the mods.<br>Message a mod on <a href=\"https://www.rizon.net/chat\" target=\"_blank\">IRC</a> or use <a href=\"https://www.4chan.org/feedback\" target=\"_blank\">feedback</a> instead. More details <a href=\"https://www.4chan-x.net/qa_instructions.png\" target=\"_blank\">here</a>."
         }
       ]
     },
