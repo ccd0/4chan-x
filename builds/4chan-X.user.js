@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.10.7
+// @version      1.13.11.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.10.7',
+  VERSION:   '1.13.11.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -425,6 +425,7 @@ Config = (function() {
     jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\nhttps://cdnjs.cloudflare.com\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'\n\n# Banner ads\n#http://s.zkcdn.net/ados.js\n#https://s.zkcdn.net/ados.js\n#http://engine.4chan-ads.org\n#https://engine.4chan-ads.org',
     captchaLanguage: '',
     time: '%m/%d/%y(%a)%H:%M:%S',
+    timeLocale: '',
     backlink: '>>%id',
     fileInfo: '%l %d (%p%s, %r%g)',
     favicon: 'ferongr',
@@ -6164,6 +6165,7 @@ Notice = (function() {
 
 Post = (function() {
   var Post,
+    slice = [].slice,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Post = (function() {
@@ -6302,6 +6304,13 @@ Post = (function() {
       return this.nodesToText(bq).trim().replace(/\s+$/gm, '');
     };
 
+    Post.prototype.commentOrig = function() {
+      var bq;
+      bq = this.nodes.commentClean.cloneNode(true);
+      this.insertTags(bq);
+      return this.nodesToText(bq);
+    };
+
     Post.prototype.nodesToText = function(bq) {
       var i, node, nodes, text;
       text = "";
@@ -6345,6 +6354,20 @@ Post = (function() {
         $.rm(b);
       }
       return $.rm($('.fortune', bq));
+    };
+
+    Post.prototype.insertTags = function(bq) {
+      var j, k, len, len1, node, ref, ref1;
+      ref = $$('s, .removed-spoiler', bq);
+      for (j = 0, len = ref.length; j < len; j++) {
+        node = ref[j];
+        $.replace(node, [$.tn('[spoiler]')].concat(slice.call(node.childNodes), [$.tn('[/spoiler]')]));
+      }
+      ref1 = $$('.prettyprint', bq);
+      for (k = 0, len1 = ref1.length; k < len1; k++) {
+        node = ref1[k];
+        $.replace(node, [$.tn('[code]')].concat(slice.call(node.childNodes), [$.tn('[/code]')]));
+      }
     };
 
     Post.prototype.parseQuotes = function() {
@@ -10345,6 +10368,9 @@ Index = (function() {
         return Index.parsedThreads[threadID].isHidden;
       }
     },
+    isHiddenReply: function(threadID, replyData) {
+      return PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) || Filter.isHidden(Build.parseJSON(replyData, g.BOARD.ID));
+    },
     buildThreads: function(threadIDs, isCatalog) {
       var ID, OP, err, errors, isStale, k, len1, newPosts, newThreads, obj, thread, threadData, threads;
       threads = [];
@@ -10479,10 +10505,7 @@ Index = (function() {
       replies = [];
       for (k = 0, len1 = lastReplies.length; k < len1; k++) {
         data = lastReplies[k];
-        if (PostHiding.isHidden(g.BOARD.ID, thread.ID, data.no)) {
-          continue;
-        }
-        if (Filter.isHidden(Build.parseJSON(data, g.BOARD.ID))) {
+        if (Index.isHiddenReply(thread.ID, data)) {
           continue;
         }
         reply = Build.catalogReply(thread, data);
@@ -10497,12 +10520,13 @@ Index = (function() {
       $.add(thread.OP.nodes.post, nodes.replies);
     },
     sort: function() {
-      var lastlong, liveThreadData, liveThreadIDs, threadIDs;
+      var lastlong, lastlongD, liveThreadData, liveThreadIDs, thread, threadIDs;
       liveThreadIDs = Index.liveThreadIDs, liveThreadData = Index.liveThreadData;
       if (!liveThreadData) {
         return;
       }
       Index.sortedThreadIDs = (function() {
+        var k, len1;
         switch (Index.currentSort.replace(/-rev$/, '')) {
           case 'lastreply':
             return slice.call(liveThreadData).sort(function(a, b) {
@@ -10523,6 +10547,9 @@ Index = (function() {
               ref = thread.last_replies || [];
               for (i = k = ref.length - 1; k >= 0; i = k += -1) {
                 r = ref[i];
+                if (Index.isHiddenReply(thread.no, r)) {
+                  continue;
+                }
                 len = r.com ? Build.parseComment(r.com).replace(/[^a-z]/ig, '').length : 0;
                 if (len >= Index.lastLongThresholds[+(!!r.ext)]) {
                   return r;
@@ -10534,8 +10561,13 @@ Index = (function() {
                 return thread;
               }
             };
+            lastlongD = {};
+            for (k = 0, len1 = liveThreadData.length; k < len1; k++) {
+              thread = liveThreadData[k];
+              lastlongD[thread.no] = lastlong(thread).no;
+            }
             return slice.call(liveThreadData).sort(function(a, b) {
-              return lastlong(b).no - lastlong(a).no;
+              return lastlongD[b.no] - lastlongD[a.no];
             }).map(function(post) {
               return post.no;
             });
@@ -11518,7 +11550,7 @@ Settings = (function() {
     advanced: function(section) {
       var applyCSS, boardSelect, customCSS, event, input, inputs, interval, items, itemsArchive, j, k, l, len, len1, len2, len3, m, name, ref, ref1, ref2, ref3, table, updateArchives, warning;
       $.extend(section, {
-        innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"
+        innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div><div><a href=\"https://www.w3.org/International/articles/language-tags/\" target=\"_blank\">Language tag</a>: <input name=\"timeLocale\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"
       });
       ref = $$('.warning', section);
       for (j = 0, len = ref.length; j < len; j++) {
@@ -11537,7 +11569,7 @@ Settings = (function() {
         return $.id('lastarchivecheck').textContent = 'never';
       });
       items = {};
-      ref2 = ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist'];
+      ref2 = ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'timeLocale', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist'];
       for (l = 0, len2 = ref2.length; l < len2; l++) {
         name = ref2[l];
         items[name] = Conf[name];
@@ -11722,6 +11754,9 @@ Settings = (function() {
     },
     time: function() {
       return this.nextElementSibling.textContent = Time.format(this.value, new Date());
+    },
+    timeLocale: function() {
+      return Settings.time.call($('[name=time]', Settings.dialog));
     },
     backlink: function() {
       return this.nextElementSibling.textContent = this.value.replace(/%(?:id|%)/g, function(x) {
@@ -15280,7 +15315,7 @@ CopyTextLink = (function() {
         el: a,
         order: 12,
         open: function(post) {
-          CopyTextLink.text = post.info.comment;
+          CopyTextLink.text = (post.origin || post).commentOrig();
           return true;
         }
       });
@@ -15852,7 +15887,7 @@ BoardTips = (function() {
     tips: {
       qa: [
         1, {
-          innerHTML: "New to /qa/?<br>/qa/ is NOT an effective way to contact the mods.<br>Use <a href=\"https://www.rizon.net/chat\" target=\"_blank\">IRC</a> or <a href=\"https://www.4chan.org/feedback\" target=\"_blank\">feedback</a> instead. More details <a href=\"https://www.4chan-x.net/qa_instructions.png\" target=\"_blank\">here</a>."
+          innerHTML: "New to /qa/?<br>/qa/ is NOT an effective way to contact the mods.<br>Message a mod on <a href=\"https://www.rizon.net/chat\" target=\"_blank\">IRC</a> or use <a href=\"https://www.4chan.org/feedback\" target=\"_blank\">feedback</a> instead. More details <a href=\"https://www.4chan-x.net/qa_instructions.png\" target=\"_blank\">here</a>."
         }
       ]
     },
@@ -17913,6 +17948,30 @@ Time = (function() {
     },
     day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    localeFormat: function(date, options, defaultValue) {
+      if (Conf['timeLocale']) {
+        try {
+          return Intl.DateTimeFormat(Conf['timeLocale'], options).format(date);
+        } catch (_error) {}
+      }
+      return defaultValue;
+    },
+    localeFormatPart: function(date, options, part, defaultValue) {
+      var parts;
+      if (Conf['timeLocale']) {
+        try {
+          parts = Intl.DateTimeFormat(Conf['timeLocale'], options).formatToParts(date);
+          return parts.map(function(x) {
+            if (x.type === part) {
+              return x.value;
+            } else {
+              return '';
+            }
+          }).join('');
+        } catch (_error) {}
+      }
+      return defaultValue;
+    },
     zeroPad: function(n) {
       if (n < 10) {
         return "0" + n;
@@ -17922,16 +17981,24 @@ Time = (function() {
     },
     formatters: {
       a: function() {
-        return Time.day[this.getDay()].slice(0, 3);
+        return Time.localeFormat(this, {
+          weekday: 'short'
+        }, Time.day[this.getDay()].slice(0, 3));
       },
       A: function() {
-        return Time.day[this.getDay()];
+        return Time.localeFormat(this, {
+          weekday: 'long'
+        }, Time.day[this.getDay()]);
       },
       b: function() {
-        return Time.month[this.getMonth()].slice(0, 3);
+        return Time.localeFormat(this, {
+          month: 'short'
+        }, Time.month[this.getMonth()].slice(0, 3));
       },
       B: function() {
-        return Time.month[this.getMonth()];
+        return Time.localeFormat(this, {
+          month: 'long'
+        }, Time.month[this.getMonth()]);
       },
       d: function() {
         return Time.zeroPad(this.getDate());
@@ -17958,18 +18025,13 @@ Time = (function() {
         return Time.zeroPad(this.getMinutes());
       },
       p: function() {
-        if (this.getHours() < 12) {
-          return 'AM';
-        } else {
-          return 'PM';
-        }
+        return Time.localeFormatPart(this, {
+          hour: 'numeric',
+          hour12: true
+        }, 'dayperiod', (this.getHours() < 12 ? 'AM' : 'PM'));
       },
       P: function() {
-        if (this.getHours() < 12) {
-          return 'am';
-        } else {
-          return 'pm';
-        }
+        return Time.formatters.p.call(this).toLowerCase();
       },
       S: function() {
         return Time.zeroPad(this.getSeconds());
@@ -21595,7 +21657,7 @@ QR = (function() {
       }
     },
     quote: function(e) {
-      var ancestor, caretPos, com, frag, insideCode, j, k, l, len, len1, len2, len3, len4, len5, n, node, o, post, q, range, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, sel, text, thread;
+      var ancestor, caretPos, com, frag, i, insideCode, j, k, l, len, len1, len2, len3, n, node, o, post, postRange, range, ref, ref1, ref2, ref3, ref4, ref5, ref6, root, sel, text, thread;
       if (e != null) {
         e.preventDefault();
       }
@@ -21604,9 +21666,21 @@ QR = (function() {
       }
       sel = d.getSelection();
       post = Get.postFromNode(this);
+      root = post.nodes.root;
+      postRange = new Range();
+      postRange.selectNode(root);
       text = post.board.ID === g.BOARD.ID ? ">>" + post + "\n" : ">>>/" + post.board + "/" + post + "\n";
-      if (sel.toString().trim() && post === Get.postFromNode(sel.anchorNode)) {
-        range = sel.getRangeAt(0);
+      for (i = j = 0, ref = sel.rangeCount; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+        range = sel.getRangeAt(i);
+        if (range.compareBoundaryPoints(Range.START_TO_START, postRange) < 0) {
+          range.setStartBefore(root);
+        }
+        if (range.compareBoundaryPoints(Range.END_TO_END, postRange) > 0) {
+          range.setEndAfter(root);
+        }
+        if (!range.toString().trim()) {
+          continue;
+        }
         frag = range.cloneContents();
         ancestor = range.commonAncestorContainer;
         if ($.x('ancestor-or-self::*[self::s or contains(@class,"removed-spoiler")]', ancestor)) {
@@ -21617,37 +21691,28 @@ QR = (function() {
           $.prepend(frag, $.tn('[code]'));
           $.add(frag, $.tn('[/code]'));
         }
-        ref = $$((insideCode ? 'br' : '.prettyprint br'), frag);
-        for (j = 0, len = ref.length; j < len; j++) {
-          node = ref[j];
+        ref1 = $$((insideCode ? 'br' : '.prettyprint br'), frag);
+        for (k = 0, len = ref1.length; k < len; k++) {
+          node = ref1[k];
           $.replace(node, $.tn('\n'));
         }
-        ref1 = $$('br', frag);
-        for (k = 0, len1 = ref1.length; k < len1; k++) {
-          node = ref1[k];
+        ref2 = $$('br', frag);
+        for (l = 0, len1 = ref2.length; l < len1; l++) {
+          node = ref2[l];
           if (node !== frag.lastChild) {
             $.replace(node, $.tn('\n>'));
           }
         }
-        ref2 = $$('s, .removed-spoiler', frag);
-        for (l = 0, len2 = ref2.length; l < len2; l++) {
-          node = ref2[l];
-          $.replace(node, [$.tn('[spoiler]')].concat(slice.call(node.childNodes), [$.tn('[/spoiler]')]));
-        }
-        ref3 = $$('.prettyprint', frag);
-        for (n = 0, len3 = ref3.length; n < len3; n++) {
+        Post.prototype.insertTags(frag);
+        ref3 = $$('.linkify[data-original]', frag);
+        for (n = 0, len2 = ref3.length; n < len2; n++) {
           node = ref3[n];
-          $.replace(node, [$.tn('[code]')].concat(slice.call(node.childNodes), [$.tn('[/code]')]));
-        }
-        ref4 = $$('.linkify[data-original]', frag);
-        for (o = 0, len4 = ref4.length; o < len4; o++) {
-          node = ref4[o];
           $.replace(node, $.tn(node.dataset.original));
         }
-        ref5 = $$('.embedder', frag);
-        for (q = 0, len5 = ref5.length; q < len5; q++) {
-          node = ref5[q];
-          if (((ref6 = node.previousSibling) != null ? ref6.nodeValue : void 0) === ' ') {
+        ref4 = $$('.embedder', frag);
+        for (o = 0, len3 = ref4.length; o < len3; o++) {
+          node = ref4[o];
+          if (((ref5 = node.previousSibling) != null ? ref5.nodeValue : void 0) === ' ') {
             $.rm(node.previousSibling);
           }
           $.rm(node);
@@ -21655,7 +21720,7 @@ QR = (function() {
         text += ">" + (frag.textContent.trim()) + "\n";
       }
       QR.openPost();
-      ref7 = QR.nodes, com = ref7.com, thread = ref7.thread;
+      ref6 = QR.nodes, com = ref6.com, thread = ref6.thread;
       if (!com.value) {
         thread.value = Get.threadFromNode(this);
       }
