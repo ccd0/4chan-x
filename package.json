@@ -56,7 +56,12 @@
       "GM_listValues",
       "GM_addValueChangeListener",
       "GM_openInTab",
-      "GM_xmlhttpRequest"
+      "GM_xmlhttpRequest",
+      "GM.getValue",
+      "GM.setValue",
+      "GM.deleteValue",
+      "GM.listValues",
+      "GM.xmlHttpRequest"
     ],
     "min": {
       "chrome": "33",

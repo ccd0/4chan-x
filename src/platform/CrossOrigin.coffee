@@ -63,7 +63,7 @@ CrossOrigin =
       options.overrideMimeType = 'text/plain; charset=x-user-defined'
     else
       options.responseType = 'arraybuffer'
-    GM_xmlhttpRequest options
+    (GM?.xmlHttpRequest or GM_xmlhttpRequest) options
     <% } %>
 
   file: (url, cb) ->
@@ -99,7 +99,7 @@ CrossOrigin =
         return
       callbacks[url] = [cb]
       <% if (type === 'userscript') { %>
-      GM_xmlhttpRequest
+      (GM?.xmlHttpRequest or GM_xmlhttpRequest)
         method: "GET"
         url: url+''
         onload: (xhr) ->
