@@ -641,9 +641,10 @@ else
     cb items
 
   $.set = $.oneItemSugar (items, cb) ->
-    for key, value of items
-      $.setValue(g.NAMESPACE + key, JSON.stringify value)
-    cb?()
+    $.queueTask ->
+      for key, value of items
+        $.setValue(g.NAMESPACE + key, JSON.stringify value)
+      cb?()
 
   $.clear = (cb) ->
     # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
