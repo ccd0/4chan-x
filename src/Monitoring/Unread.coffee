@@ -190,7 +190,6 @@ Unread =
         Unread.lastReadPost = ID
       Unread.readCount++
     return if Unread.thread.isDead and !Unread.thread.isArchived
-    Unread.db.forceSync()
     Unread.db.set
       boardID:  Unread.thread.board.ID
       threadID: Unread.thread.ID
