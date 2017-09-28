@@ -369,6 +369,13 @@ $.item = (key, val) ->
   item[key] = val
   item
 
+$.oneItemSugar = (fn) ->
+  (key, val, cb) ->
+    if typeof key is 'string'
+      fn $.item(key, val), cb
+    else
+      fn key, val
+
 $.syncing = {}
 
 <% if (type === 'crx') { %>
@@ -402,14 +409,8 @@ $.crxWorking = ->
       $.crxWarningShown = true
     false
 
-$.get = (key, val, cb) ->
+$.get = $.oneItemSugar (data, cb) ->
   return unless $.crxWorking()
-  if typeof cb is 'function'
-    data = $.item key, val
-  else
-    data = key
-    cb = val
-
   results = {}
   get = (area) ->
     chrome.storage[area].get Object.keys(data), (result) ->
@@ -468,13 +469,8 @@ do ->
   setSync = $.debounce $.SECOND, ->
     setArea 'sync'
 
-  $.set = (key, val, cb) ->
+  $.set = $.oneItemSugar (data, cb) ->
     return unless $.crxWorking()
-    if typeof key is 'string'
-      data = $.item key, val
-    else
-      data = key
-      cb = val
     $.extend items.local, data
     setArea 'local', cb
 
@@ -596,12 +592,7 @@ $.delete = (keys) ->
     $.deleteValue g.NAMESPACE + key
   return
 
-$.get = (key, val, cb) ->
-  if typeof cb is 'function'
-    items = $.item key, val
-  else
-    items = key
-    cb = val
+$.get = $.oneItemSugar (items, cb) ->
   $.queueTask $.getSync, items, cb
 
 $.getSync = (items, cb) ->
@@ -609,13 +600,9 @@ $.getSync = (items, cb) ->
     items[key] = JSON.parse val2
   cb items
 
-$.set = (keys, val, cb) ->
-  if typeof keys is 'string'
-    $.setValue(g.NAMESPACE + keys, JSON.stringify val)
-  else
-    for key, value of keys
-      $.setValue(g.NAMESPACE + key, JSON.stringify value)
-    cb = val
+$.set = $.oneItemSugar (items, cb) ->
+  for key, value of items
+    $.setValue(g.NAMESPACE + key, JSON.stringify value)
   cb?()
 
 $.clear = (cb) ->
