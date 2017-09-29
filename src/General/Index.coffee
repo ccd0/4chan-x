@@ -688,6 +688,9 @@ Index =
     else
       Index.parsedThreads[threadID].isHidden
 
+  isHiddenReply: (threadID, replyData) ->
+    PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) or Filter.isHidden(Build.parseJSON replyData, g.BOARD.ID)
+
   buildThreads: (threadIDs, isCatalog) ->
     threads    = []
     newThreads = []
@@ -788,8 +791,7 @@ Index =
 
     replies = []
     for data in lastReplies
-      continue if PostHiding.isHidden(g.BOARD.ID, thread.ID, data.no)
-      continue if Filter.isHidden(Build.parseJSON data, g.BOARD.ID)
+      continue if Index.isHiddenReply thread.ID, data
       reply = Build.catalogReply thread, data
       RelativeDates.update $('time', reply)
       $.on $('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover
@@ -813,12 +815,16 @@ Index =
       when 'lastlong'
         lastlong = (thread) ->
           for r, i in (thread.last_replies or []) by -1
+            continue if Index.isHiddenReply thread.no, r
             len = if r.com then Build.parseComment(r.com).replace(/[^a-z]/ig, '').length else 0
             if len >= Index.lastLongThresholds[+!!r.ext]
               return r
           if thread.omitted_posts then thread.last_replies[0] else thread
+        lastlongD = {}
+        for thread in liveThreadData
+          lastlongD[thread.no] = lastlong(thread).no
         [liveThreadData...].sort((a, b) ->
-          lastlong(b).no - lastlong(a).no
+          lastlongD[b.no] - lastlongD[a.no]
         ).map (post) -> post.no
       when 'bump'       then liveThreadIDs
       when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a

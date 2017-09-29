@@ -2,7 +2,46 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.13.12
+
+**v1.13.12.1** *(2017-09-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.11.5: Fix lag after settings changes.
+
+**v1.13.12.0** *(2017-09-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.11.4.
+- Preliminary support for Greasemonkey 4.
+- Minor custom cooldown bugfix.
+- (BeltranBot) Fix 'open thread in new tab' keybind for VM/TM
+
+### v1.13.11
+
+**v1.13.11.5** *(2017-09-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.5/builds/4chan-X-noupdate.crx)]
+- Fix lag after settings changes.
+
+**v1.13.11.4** *(2017-08-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.4/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.10.7: Fix quote preview bug when reply is in index data but no thread object exists. #1478
+
+**v1.13.11.3** *(2017-08-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.3/builds/4chan-X-noupdate.crx)]
+- Add language setting for time formatting.
+
+**v1.13.11.2** *(2017-08-12)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.2/builds/4chan-X-noupdate.crx)]
+- Last Long Reply order will now ignore hidden and filtered replies.
+
+**v1.13.11.1** *(2017-08-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.10.6: Disable 'Redirect to HTTPS' on platforms where we use localStorage for saving settings.
+
+**v1.13.11.0** *(2017-08-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.10.5.
+- Support [spoiler] and [code] tags in 'Copy Text' menu item.
+- Trim quoted text to text fully inside post. #1108
+
 ### v1.13.10
+
+**v1.13.10.7** *(2017-08-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.7/builds/4chan-X-noupdate.crx)]
+- Fix quote preview bug when reply is in index data but no thread object exists. #1478
+
+**v1.13.10.6** *(2017-08-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.6/builds/4chan-X-noupdate.crx)]
+- Disable 'Redirect to HTTPS' on platforms where we use localStorage for saving settings.
 
 **v1.13.10.5** *(2017-08-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.5/builds/4chan-X-noupdate.crx)]
 - Better parsing of archive links for Quote Inlining / Hover.

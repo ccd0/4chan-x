@@ -159,9 +159,9 @@ QR.cooldown =
             ''
           seconds = Math.max seconds, QR.cooldown.delays[type + suffix] - elapsed
 
-        # If additional cooldown is enabled, add the configured seconds to the count.
-        if QR.cooldown.customCooldown
-          seconds = Math.max seconds, parseInt(Conf['customCooldown'], 10) - elapsed
+          # If additional cooldown is enabled, add the configured seconds to the count.
+          if QR.cooldown.customCooldown
+            seconds = Math.max seconds, parseInt(Conf['customCooldown'], 10) - elapsed
 
       nCooldowns += Object.keys(cooldowns).length
 

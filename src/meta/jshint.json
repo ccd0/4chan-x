@@ -16,11 +16,14 @@
   "globals": {
     "MediaError":   false,
     "Set":          false,
+    "Promise":      false,
+    "BroadcastChannel": false,
     "GM_info":      false,
     "cloneInto":    false,
     "unsafeWindow": false,
-    "chrome":       false<%=
-  meta.grants.map(x => `,\n    "${x}": false`).join('')
+    "chrome":       false,
+    "GM":           false<%=
+  meta.grants.filter(x => !/\./.test(x)).map(x => `,\n    "${x}": false`).join('')
 %><%=
   read('/tmp/declaration.js').match(/^var (.*);/)[1].split(', ').map(x => `,\n    "${x}": true`).join('')
 %><%=

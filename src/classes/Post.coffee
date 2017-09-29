@@ -129,6 +129,12 @@ class Post
     @cleanCommentDisplay bq
     @nodesToText(bq).trim().replace(/\s+$/gm, '')
 
+  commentOrig: ->
+    # Get the comment's text for reposting purposes.
+    bq = @nodes.commentClean.cloneNode true
+    @insertTags bq
+    @nodesToText bq
+
   nodesToText: (bq) ->
     text = ""
     nodes = $.X './/br|.//text()', bq
@@ -154,6 +160,13 @@ class Post
   cleanCommentDisplay: (bq) ->
     $.rm b if (b = $ 'b', bq) and /^Rolled /.test(b.textContent)
     $.rm $('.fortune', bq)
+
+  insertTags: (bq) ->
+    for node in $$ 's, .removed-spoiler', bq
+      $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
+    for node in $$ '.prettyprint', bq
+      $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
+    return
 
   parseQuotes: ->
     @quotes = []

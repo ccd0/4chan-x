@@ -162,8 +162,12 @@ Settings =
       addCheckboxes fs, obj
       $.add section, fs
     addCheckboxes $('div[data-name="JSON Index"] > .suboption-list', section), Config.Index
+
+    # Unsupported options
     if $.engine isnt 'gecko'
-      $('div[data-name="Remember QR Size"]', section).hidden = true # XXX not supported
+      $('div[data-name="Remember QR Size"]', section).hidden = true
+    if $.perProtocolSettings
+      $('div[data-name="Redirect to HTTPS"]', section).hidden = true
 
     $.get items, (items) ->
       for key, val of items
@@ -489,7 +493,7 @@ Settings =
       $.id('lastarchivecheck').textContent = 'never'
 
     items = {}
-    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
+    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'timeLocale', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
       items[name] = Conf[name]
       input = inputs[name]
       event = if name in ['archiveLists', 'archiveAutoUpdate', 'QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
@@ -641,6 +645,9 @@ Settings =
 
   time: ->
     @nextElementSibling.textContent = Time.format @value, new Date()
+
+  timeLocale: ->
+    Settings.time.call $('[name=time]', Settings.dialog)
 
   backlink: ->
     @nextElementSibling.textContent = @value.replace /%(?:id|%)/g, (x) -> ({'%id': '123456789', '%%': '%'})[x]

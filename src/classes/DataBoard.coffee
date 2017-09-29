@@ -30,7 +30,6 @@ class DataBoard
     @save()
 
   deleteIfEmpty: ({boardID, threadID}) ->
-    $.forceSync @key
     if threadID
       unless Object.keys(@data.boards[boardID][threadID]).length
         delete @data.boards[boardID][threadID]

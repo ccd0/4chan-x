@@ -369,6 +369,13 @@ $.item = (key, val) ->
   item[key] = val
   item
 
+$.oneItemSugar = (fn) ->
+  (key, val, cb) ->
+    if typeof key is 'string'
+      fn $.item(key, val), cb
+    else
+      fn key, val
+
 $.syncing = {}
 
 <% if (type === 'crx') { %>
@@ -402,14 +409,8 @@ $.crxWorking = ->
       $.crxWarningShown = true
     false
 
-$.get = (key, val, cb) ->
+$.get = $.oneItemSugar (data, cb) ->
   return unless $.crxWorking()
-  if typeof cb is 'function'
-    data = $.item key, val
-  else
-    data = key
-    cb = val
-
   results = {}
   get = (area) ->
     chrome.storage[area].get Object.keys(data), (result) ->
@@ -468,13 +469,8 @@ do ->
   setSync = $.debounce $.SECOND, ->
     setArea 'sync'
 
-  $.set = (key, val, cb) ->
+  $.set = $.oneItemSugar (data, cb) ->
     return unless $.crxWorking()
-    if typeof key is 'string'
-      data = $.item key, val
-    else
-      data = key
-      cb = val
     $.extend items.local, data
     setArea 'local', cb
 
@@ -496,131 +492,167 @@ do ->
 # http://wiki.greasespot.net/Main_Page
 # https://tampermonkey.net/documentation.php
 
-# workaround for Firefox 53 issue
-$.currentValue = {}
-$.GM_getValue = (key) ->
-  try
-    $.currentValue[key] = GM_getValue key
-  catch err
-    $.currentValue[key]
-$.GM_setValue = (key, val) ->
-  $.currentValue[key] = val
-  GM_setValue key, val
-$.GM_deleteValue = (key) ->
-  delete $.currentValue[key]
-  GM_deleteValue key
+if GM?.deleteValue?
 
-if GM_deleteValue?
-  $.getValue   = $.GM_getValue
-  $.listValues = -> GM_listValues() # error when called if missing
-else if $.hasStorage
-  $.getValue = (key) -> localStorage[key]
-  $.listValues = ->
-    key for key of localStorage when key[...g.NAMESPACE.length] is g.NAMESPACE
-else
-  $.getValue   = ->
-  $.listValues = -> []
+  $.syncChannel = new BroadcastChannel(g.NAMESPACE + 'sync')
 
-if GM_addValueChangeListener?
-  $.setValue    = $.GM_setValue
-  $.deleteValue = $.GM_deleteValue
-else if GM_deleteValue?
-  $.oldValue = {}
-  $.setValue = (key, val) ->
-    $.GM_setValue key, val
-    if key of $.syncing
-      $.oldValue[key]   = val
-      localStorage[key] = val if $.hasStorage # for `storage` events
-  $.deleteValue = (key) ->
-    $.GM_deleteValue key
-    if key of $.syncing
-      delete $.oldValue[key]
-      localStorage.removeItem key if $.hasStorage # for `storage` events
-  $.cantSync = true if !$.hasStorage
-else if $.hasStorage
-  $.oldValue = {}
-  $.setValue = (key, val) ->
-    $.oldValue[key]   = val if key of $.syncing
-    localStorage[key] = val
-  $.deleteValue = (key) ->
-    delete $.oldValue[key] if key of $.syncing
-    localStorage.removeItem key
-else
-  $.setValue = ->
-  $.deleteValue = ->
-  $.cantSync = $.cantSet = true
+  $.on $.syncChannel, 'message', (e) ->
+    for key, val of e.data when (cb = $.syncing[key])
+      cb val, key
 
-if GM_addValueChangeListener?
   $.sync = (key, cb) ->
-    $.syncing[key] = GM_addValueChangeListener g.NAMESPACE + key, (key2, oldValue, newValue, remote) ->
-      if remote
-        newValue = JSON.parse newValue unless newValue is undefined
-        cb newValue, key
-  $.forceSync = ->
-else if GM_deleteValue? or $.hasStorage
-  $.sync = (key, cb) ->
-    key = g.NAMESPACE + key
     $.syncing[key] = cb
-    $.oldValue[key] = $.getValue key
 
-  do ->
-    onChange = ({key, newValue}) ->
-      return if not (cb = $.syncing[key])
-      if newValue?
-        return if newValue is $.oldValue[key]
-        $.oldValue[key] = newValue
-        cb JSON.parse(newValue), key[g.NAMESPACE.length..]
-      else
-        return unless $.oldValue[key]?
-        delete $.oldValue[key]
-        cb undefined, key[g.NAMESPACE.length..]
-    $.on window, 'storage', onChange
-
-    $.forceSync = (key) ->
-      # Storage events don't work across origins
-      # e.g. http://boards.4chan.org and https://boards.4chan.org
-      # so force a check for changes to avoid lost data.
-      key = g.NAMESPACE + key
-      onChange {key, newValue: $.getValue key}
-else
-  $.sync = ->
   $.forceSync = ->
 
-$.delete = (keys) ->
-  unless keys instanceof Array
-    keys = [keys]
-  for key in keys
-    $.deleteValue g.NAMESPACE + key
-  return
+  $.delete = (keys, cb) ->
+    unless keys instanceof Array
+      keys = [keys]
+    Promise.all(GM.deleteValue(g.NAMESPACE + key) for key in keys).then ->
+      items = {}
+      items[key] = undefined for key in keys
+      $.syncChannel.postMessage items
+      cb?()
 
-$.get = (key, val, cb) ->
-  if typeof cb is 'function'
-    items = $.item key, val
+  $.get = $.oneItemSugar (items, cb) ->
+    keys = Object.keys items
+    Promise.all(GM.getValue(g.NAMESPACE + key) for key in keys).then (values) ->
+      for val, i in values when val
+        items[keys[i]] = JSON.parse val
+      cb items
+
+  $.set = $.oneItemSugar (items, cb) ->
+    Promise.all(GM.setValue(g.NAMESPACE + key, JSON.stringify(val)) for key, val of items).then ->
+      $.syncChannel.postMessage items
+      cb?()
+
+  $.clear = (cb) ->
+    GM.listValues.then (keys) ->
+      $.delete keys.map((key) -> key.replace g.NAMESPACE, ''), cb
+
+else
+
+  # workaround for Firefox 53 issue
+  $.currentValue = {}
+  $.GM_getValue = (key) ->
+    try
+      $.currentValue[key] = GM_getValue key
+    catch err
+      $.currentValue[key]
+  $.GM_setValue = (key, val) ->
+    $.currentValue[key] = val
+    GM_setValue key, val
+  $.GM_deleteValue = (key) ->
+    delete $.currentValue[key]
+    GM_deleteValue key
+
+  unless GM_deleteValue?
+    $.perProtocolSettings = true
+
+  if GM_deleteValue?
+    $.getValue   = $.GM_getValue
+    $.listValues = -> GM_listValues() # error when called if missing
+  else if $.hasStorage
+    $.getValue = (key) -> localStorage[key]
+    $.listValues = ->
+      key for key of localStorage when key[...g.NAMESPACE.length] is g.NAMESPACE
   else
-    items = key
-    cb = val
-  $.queueTask $.getSync, items, cb
+    $.getValue   = ->
+    $.listValues = -> []
 
-$.getSync = (items, cb) ->
-  for key of items when (val2 = $.getValue g.NAMESPACE + key)
-    items[key] = JSON.parse val2
-  cb items
-
-$.set = (keys, val, cb) ->
-  if typeof keys is 'string'
-    $.setValue(g.NAMESPACE + keys, JSON.stringify val)
+  if GM_addValueChangeListener?
+    $.setValue    = $.GM_setValue
+    $.deleteValue = $.GM_deleteValue
+  else if GM_deleteValue?
+    $.oldValue = {}
+    $.setValue = (key, val) ->
+      $.GM_setValue key, val
+      if key of $.syncing
+        $.oldValue[key]   = val
+        localStorage[key] = val if $.hasStorage # for `storage` events
+    $.deleteValue = (key) ->
+      $.GM_deleteValue key
+      if key of $.syncing
+        delete $.oldValue[key]
+        localStorage.removeItem key if $.hasStorage # for `storage` events
+    $.cantSync = true if !$.hasStorage
+  else if $.hasStorage
+    $.oldValue = {}
+    $.setValue = (key, val) ->
+      $.oldValue[key]   = val if key of $.syncing
+      localStorage[key] = val
+    $.deleteValue = (key) ->
+      delete $.oldValue[key] if key of $.syncing
+      localStorage.removeItem key
   else
-    for key, value of keys
-      $.setValue(g.NAMESPACE + key, JSON.stringify value)
-    cb = val
-  cb?()
+    $.setValue = ->
+    $.deleteValue = ->
+    $.cantSync = $.cantSet = true
 
-$.clear = (cb) ->
-  # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
-  # Also support case where GM_listValues is not defined.
-  $.delete Object.keys(Conf)
-  $.delete ['previousversion', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']
-  try
-    $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''
-  cb?()
+  if GM_addValueChangeListener?
+    $.sync = (key, cb) ->
+      $.syncing[key] = GM_addValueChangeListener g.NAMESPACE + key, (key2, oldValue, newValue, remote) ->
+        if remote
+          newValue = JSON.parse newValue unless newValue is undefined
+          cb newValue, key
+    $.forceSync = ->
+  else if GM_deleteValue? or $.hasStorage
+    $.sync = (key, cb) ->
+      key = g.NAMESPACE + key
+      $.syncing[key] = cb
+      $.oldValue[key] = $.getValue key
+
+    do ->
+      onChange = ({key, newValue}) ->
+        return if not (cb = $.syncing[key])
+        if newValue?
+          return if newValue is $.oldValue[key]
+          $.oldValue[key] = newValue
+          cb JSON.parse(newValue), key[g.NAMESPACE.length..]
+        else
+          return unless $.oldValue[key]?
+          delete $.oldValue[key]
+          cb undefined, key[g.NAMESPACE.length..]
+      $.on window, 'storage', onChange
+
+      $.forceSync = (key) ->
+        # Storage events don't work across origins
+        # e.g. http://boards.4chan.org and https://boards.4chan.org
+        # so force a check for changes to avoid lost data.
+        key = g.NAMESPACE + key
+        onChange {key, newValue: $.getValue key}
+  else
+    $.sync = ->
+    $.forceSync = ->
+
+  $.delete = (keys) ->
+    unless keys instanceof Array
+      keys = [keys]
+    for key in keys
+      $.deleteValue g.NAMESPACE + key
+    return
+
+  $.get = $.oneItemSugar (items, cb) ->
+    $.queueTask $.getSync, items, cb
+
+  $.getSync = (items, cb) ->
+    for key of items when (val2 = $.getValue g.NAMESPACE + key)
+      items[key] = JSON.parse val2
+    cb items
+
+  $.set = $.oneItemSugar (items, cb) ->
+    $.queueTask ->
+      for key, value of items
+        $.setValue(g.NAMESPACE + key, JSON.stringify value)
+      cb?()
+
+  $.clear = (cb) ->
+    # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
+    # Also support case where GM_listValues is not defined.
+    $.delete Object.keys(Conf)
+    $.delete ['previousversion', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']
+    try
+      $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''
+    cb?()
+
 <% } %>

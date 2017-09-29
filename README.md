@@ -10,21 +10,12 @@ https://github.com/Nebukazar/OneeChan.
 ## Please note
 **Uninstalling**: 4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the `[Settings]` link in the top right corner, uncheck "`Disable the native extension`" in the panel that appears, and click the "`Save Settings`" button. If you don't see a "`Save Settings`" button, it may be being hidden by your ad blocker.
 
-**Private browsing**: 4chan X does not yet support private browsing / incognito mode. Although it may work in this mode, browsing data recorded by 4chan X, such as your last read post in a thread and which posts are yours, will still need to be cleared manually by resetting your settings. To control what browsing data 4chan X records, use the `Remember Last Read Post` and `Remember Your Posts` options in the settings panel.
-
-**HTTPS**: 4chan X currently shares your settings and post history between the HTTP and HTTPS versions of 4chan. If you are concerned about protecting your privacy against a man-in-the-middle attack, you should disable 4chan X on the HTTP version of 4chan and/or install [HTTPS Everywhere](https://www.eff.org/https-everywhere).
+**Private browsing**: By default, 4chan X remembers your last read post in a thread and which posts were made by you, even if you are in private browsing / incognito mode. If you want to turn this off, uncheck the `Remember Last Read Post` and `Remember Your Posts` options in the settings panel. You can clear all 4chan browsing history saved by 4chan X by resetting your settings.
 
 ## Install
 
 ### Firefox
-You will first need to install a userscript manager such as [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/). Unfortunately, Firefox's transition to WebExtensions has forced a complete rewrite of Greasemonkey, leaving the current version of Greasemonkey unmaintained and unreliable. Until the WebExtensions version of Greasemonkey is complete, your options are:
-
-- Use [Firefox ESR](https://www.mozilla.org/en-US/firefox/organizations/), which should continue to work with the current version of [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) until a new one is ready.
-- If you're using a freedom-respecting build/fork of Firefox, you can try [this build of Greasemonkey](https://www.4chan-x.net/greasemonkey-2017.07.27.beta.xpi) based on [this pull request](https://github.com/greasemonkey/greasemonkey/pull/2507) which may fix the issues some people are having.
-- Install [Violentmonkey](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/) or [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/). These are already WebExtensions, but due to the current limitations of WebExtensions, they offer less functionality than Greasemonkey.
-- Use [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) with the current version of Firefox, but don't be surprised when things break.
-
-After Greasemonkey or an alternative userscript manager is installed, **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
+Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
 
 Ports of Greasemonkey are available for [SeaMonkey](https://sourceforge.net/projects/gmport/) and [Pale Moon](https://github.com/janekptacijarabaci/greasemonkey/releases/latest).
 

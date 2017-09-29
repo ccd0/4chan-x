@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.10.5
+// @version      1.13.12.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -48,6 +48,11 @@
 // @grant        GM_addValueChangeListener
 // @grant        GM_openInTab
 // @grant        GM_xmlhttpRequest
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.listValues
+// @grant        GM.xmlHttpRequest
 // @run-at       document-start
 // @updateURL    https://www.4chan-x.net/builds/4chan-X.meta.js
 // @downloadURL  https://www.4chan-x.net/builds/4chan-X.user.js
@@ -153,7 +158,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.10.5',
+  VERSION:   '1.13.12.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -425,6 +430,7 @@ Config = (function() {
     jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\nhttps://cdnjs.cloudflare.com\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'\n\n# Banner ads\n#http://s.zkcdn.net/ados.js\n#https://s.zkcdn.net/ados.js\n#http://engine.4chan-ads.org\n#https://engine.4chan-ads.org',
     captchaLanguage: '',
     time: '%m/%d/%y(%a)%H:%M:%S',
+    timeLocale: '',
     backlink: '>>%id',
     fileInfo: '%l %d (%p%s, %r%g)',
     favicon: 'ferongr',
@@ -4474,7 +4480,7 @@ $ = (function() {
     var lastModified;
     lastModified = {};
     return function(url, options, extra) {
-      var err, event, form, i, len, r, ref, ref1, type, upCallbacks, whenModified;
+      var err, event, form, j, len, r, ref, ref1, type, upCallbacks, whenModified;
       if (options == null) {
         options = {};
       }
@@ -4517,8 +4523,8 @@ $ = (function() {
           throw err;
         }
         ref1 = ['error', 'loadend'];
-        for (i = 0, len = ref1.length; i < len; i++) {
-          event = ref1[i];
+        for (j = 0, len = ref1.length; j < len; j++) {
+          event = ref1[j];
           r["on" + event] = options["on" + event];
           $.queueTask($.event, event, null, r);
         }
@@ -4554,7 +4560,7 @@ $ = (function() {
         return;
       }
       $.on(req, 'load', function(e) {
-        var fn1, i, len, ref;
+        var fn1, j, len, ref;
         this.evt = e;
         ref = this.callbacks;
         fn1 = (function(_this) {
@@ -4564,8 +4570,8 @@ $ = (function() {
             });
           };
         })(this);
-        for (i = 0, len = ref.length; i < len; i++) {
-          cb = ref[i];
+        for (j = 0, len = ref.length; j < len; j++) {
+          cb = ref[j];
           fn1(cb);
         }
         return delete this.callbacks;
@@ -4664,19 +4670,19 @@ $ = (function() {
   };
 
   $.addClass = function() {
-    var className, classNames, el, i, len;
+    var className, classNames, el, j, len;
     el = arguments[0], classNames = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-    for (i = 0, len = classNames.length; i < len; i++) {
-      className = classNames[i];
+    for (j = 0, len = classNames.length; j < len; j++) {
+      className = classNames[j];
       el.classList.add(className);
     }
   };
 
   $.rmClass = function() {
-    var className, classNames, el, i, len;
+    var className, classNames, el, j, len;
     el = arguments[0], classNames = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-    for (i = 0, len = classNames.length; i < len; i++) {
-      className = classNames[i];
+    for (j = 0, len = classNames.length; j < len; j++) {
+      className = classNames[j];
       el.classList.remove(className);
     }
   };
@@ -4706,13 +4712,13 @@ $ = (function() {
   };
 
   $.nodes = function(nodes) {
-    var frag, i, len, node;
+    var frag, j, len, node;
     if (!(nodes instanceof Array)) {
       return nodes;
     }
     frag = $.frag();
-    for (i = 0, len = nodes.length; i < len; i++) {
-      node = nodes[i];
+    for (j = 0, len = nodes.length; j < len; j++) {
+      node = nodes[j];
       frag.appendChild(node);
     }
     return frag;
@@ -4751,19 +4757,19 @@ $ = (function() {
   };
 
   $.on = function(el, events, handler) {
-    var event, i, len, ref;
+    var event, j, len, ref;
     ref = events.split(' ');
-    for (i = 0, len = ref.length; i < len; i++) {
-      event = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      event = ref[j];
       el.addEventListener(event, handler, false);
     }
   };
 
   $.off = function(el, events, handler) {
-    var event, i, len, ref;
+    var event, j, len, ref;
     ref = events.split(' ');
-    for (i = 0, len = ref.length; i < len; i++) {
-      event = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      event = ref[j];
       el.removeEventListener(event, handler, false);
     }
   };
@@ -4959,212 +4965,292 @@ $ = (function() {
     return item;
   };
 
+  $.oneItemSugar = function(fn) {
+    return function(key, val, cb) {
+      if (typeof key === 'string') {
+        return fn($.item(key, val), cb);
+      } else {
+        return fn(key, val);
+      }
+    };
+  };
+
   $.syncing = {};
 
-  $.currentValue = {};
-
-  $.GM_getValue = function(key) {
-    var err;
-    try {
-      return $.currentValue[key] = GM_getValue(key);
-    } catch (_error) {
-      err = _error;
-      return $.currentValue[key];
-    }
-  };
-
-  $.GM_setValue = function(key, val) {
-    $.currentValue[key] = val;
-    return GM_setValue(key, val);
-  };
-
-  $.GM_deleteValue = function(key) {
-    delete $.currentValue[key];
-    return GM_deleteValue(key);
-  };
-
-  if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
-    $.getValue = $.GM_getValue;
-    $.listValues = function() {
-      return GM_listValues();
-    };
-  } else if ($.hasStorage) {
-    $.getValue = function(key) {
-      return localStorage[key];
-    };
-    $.listValues = function() {
-      var key, results;
+  if ((typeof GM !== "undefined" && GM !== null ? GM.deleteValue : void 0) != null) {
+    $.syncChannel = new BroadcastChannel(g.NAMESPACE + 'sync');
+    $.on($.syncChannel, 'message', function(e) {
+      var cb, key, ref, results, val;
+      ref = e.data;
       results = [];
-      for (key in localStorage) {
-        if (key.slice(0, g.NAMESPACE.length) === g.NAMESPACE) {
-          results.push(key);
+      for (key in ref) {
+        val = ref[key];
+        if ((cb = $.syncing[key])) {
+          results.push(cb(val, key));
         }
       }
       return results;
-    };
-  } else {
-    $.getValue = function() {};
-    $.listValues = function() {
-      return [];
-    };
-  }
-
-  if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
-    $.setValue = $.GM_setValue;
-    $.deleteValue = $.GM_deleteValue;
-  } else if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
-    $.oldValue = {};
-    $.setValue = function(key, val) {
-      $.GM_setValue(key, val);
-      if (key in $.syncing) {
-        $.oldValue[key] = val;
-        if ($.hasStorage) {
-          return localStorage[key] = val;
-        }
-      }
-    };
-    $.deleteValue = function(key) {
-      $.GM_deleteValue(key);
-      if (key in $.syncing) {
-        delete $.oldValue[key];
-        if ($.hasStorage) {
-          return localStorage.removeItem(key);
-        }
-      }
-    };
-    if (!$.hasStorage) {
-      $.cantSync = true;
-    }
-  } else if ($.hasStorage) {
-    $.oldValue = {};
-    $.setValue = function(key, val) {
-      if (key in $.syncing) {
-        $.oldValue[key] = val;
-      }
-      return localStorage[key] = val;
-    };
-    $.deleteValue = function(key) {
-      if (key in $.syncing) {
-        delete $.oldValue[key];
-      }
-      return localStorage.removeItem(key);
-    };
-  } else {
-    $.setValue = function() {};
-    $.deleteValue = function() {};
-    $.cantSync = $.cantSet = true;
-  }
-
-  if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
+    });
     $.sync = function(key, cb) {
-      return $.syncing[key] = GM_addValueChangeListener(g.NAMESPACE + key, function(key2, oldValue, newValue, remote) {
-        if (remote) {
-          if (newValue !== void 0) {
-            newValue = JSON.parse(newValue);
-          }
-          return cb(newValue, key);
+      return $.syncing[key] = cb;
+    };
+    $.forceSync = function() {};
+    $["delete"] = function(keys, cb) {
+      var key;
+      if (!(keys instanceof Array)) {
+        keys = [keys];
+      }
+      return Promise.all((function() {
+        var j, len, results;
+        results = [];
+        for (j = 0, len = keys.length; j < len; j++) {
+          key = keys[j];
+          results.push(GM.deleteValue(g.NAMESPACE + key));
         }
+        return results;
+      })()).then(function() {
+        var items, j, key, len;
+        items = {};
+        for (j = 0, len = keys.length; j < len; j++) {
+          key = keys[j];
+          items[key] = void 0;
+        }
+        $.syncChannel.postMessage(items);
+        return typeof cb === "function" ? cb() : void 0;
       });
     };
-    $.forceSync = function() {};
-  } else if ((typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) || $.hasStorage) {
-    $.sync = function(key, cb) {
-      key = g.NAMESPACE + key;
-      $.syncing[key] = cb;
-      return $.oldValue[key] = $.getValue(key);
-    };
-    (function() {
-      var onChange;
-      onChange = function(arg) {
-        var cb, key, newValue;
-        key = arg.key, newValue = arg.newValue;
-        if (!(cb = $.syncing[key])) {
-          return;
+    $.get = $.oneItemSugar(function(items, cb) {
+      var key, keys;
+      keys = Object.keys(items);
+      return Promise.all((function() {
+        var j, len, results;
+        results = [];
+        for (j = 0, len = keys.length; j < len; j++) {
+          key = keys[j];
+          results.push(GM.getValue(g.NAMESPACE + key));
         }
-        if (newValue != null) {
-          if (newValue === $.oldValue[key]) {
-            return;
+        return results;
+      })()).then(function(values) {
+        var i, j, len, val;
+        for (i = j = 0, len = values.length; j < len; i = ++j) {
+          val = values[i];
+          if (val) {
+            items[keys[i]] = JSON.parse(val);
           }
-          $.oldValue[key] = newValue;
-          return cb(JSON.parse(newValue), key.slice(g.NAMESPACE.length));
-        } else {
-          if ($.oldValue[key] == null) {
-            return;
+        }
+        return cb(items);
+      });
+    });
+    $.set = $.oneItemSugar(function(items, cb) {
+      var key, val;
+      return Promise.all((function() {
+        var results;
+        results = [];
+        for (key in items) {
+          val = items[key];
+          results.push(GM.setValue(g.NAMESPACE + key, JSON.stringify(val)));
+        }
+        return results;
+      })()).then(function() {
+        $.syncChannel.postMessage(items);
+        return typeof cb === "function" ? cb() : void 0;
+      });
+    });
+    $.clear = function(cb) {
+      return GM.listValues.then(function(keys) {
+        return $["delete"](keys.map(function(key) {
+          return key.replace(g.NAMESPACE, '');
+        }), cb);
+      });
+    };
+  } else {
+    $.currentValue = {};
+    $.GM_getValue = function(key) {
+      var err;
+      try {
+        return $.currentValue[key] = GM_getValue(key);
+      } catch (_error) {
+        err = _error;
+        return $.currentValue[key];
+      }
+    };
+    $.GM_setValue = function(key, val) {
+      $.currentValue[key] = val;
+      return GM_setValue(key, val);
+    };
+    $.GM_deleteValue = function(key) {
+      delete $.currentValue[key];
+      return GM_deleteValue(key);
+    };
+    if (typeof GM_deleteValue === "undefined" || GM_deleteValue === null) {
+      $.perProtocolSettings = true;
+    }
+    if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
+      $.getValue = $.GM_getValue;
+      $.listValues = function() {
+        return GM_listValues();
+      };
+    } else if ($.hasStorage) {
+      $.getValue = function(key) {
+        return localStorage[key];
+      };
+      $.listValues = function() {
+        var key, results;
+        results = [];
+        for (key in localStorage) {
+          if (key.slice(0, g.NAMESPACE.length) === g.NAMESPACE) {
+            results.push(key);
           }
-          delete $.oldValue[key];
-          return cb(void 0, key.slice(g.NAMESPACE.length));
+        }
+        return results;
+      };
+    } else {
+      $.getValue = function() {};
+      $.listValues = function() {
+        return [];
+      };
+    }
+    if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
+      $.setValue = $.GM_setValue;
+      $.deleteValue = $.GM_deleteValue;
+    } else if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
+      $.oldValue = {};
+      $.setValue = function(key, val) {
+        $.GM_setValue(key, val);
+        if (key in $.syncing) {
+          $.oldValue[key] = val;
+          if ($.hasStorage) {
+            return localStorage[key] = val;
+          }
         }
       };
-      $.on(window, 'storage', onChange);
-      return $.forceSync = function(key) {
-        key = g.NAMESPACE + key;
-        return onChange({
-          key: key,
-          newValue: $.getValue(key)
+      $.deleteValue = function(key) {
+        $.GM_deleteValue(key);
+        if (key in $.syncing) {
+          delete $.oldValue[key];
+          if ($.hasStorage) {
+            return localStorage.removeItem(key);
+          }
+        }
+      };
+      if (!$.hasStorage) {
+        $.cantSync = true;
+      }
+    } else if ($.hasStorage) {
+      $.oldValue = {};
+      $.setValue = function(key, val) {
+        if (key in $.syncing) {
+          $.oldValue[key] = val;
+        }
+        return localStorage[key] = val;
+      };
+      $.deleteValue = function(key) {
+        if (key in $.syncing) {
+          delete $.oldValue[key];
+        }
+        return localStorage.removeItem(key);
+      };
+    } else {
+      $.setValue = function() {};
+      $.deleteValue = function() {};
+      $.cantSync = $.cantSet = true;
+    }
+    if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
+      $.sync = function(key, cb) {
+        return $.syncing[key] = GM_addValueChangeListener(g.NAMESPACE + key, function(key2, oldValue, newValue, remote) {
+          if (remote) {
+            if (newValue !== void 0) {
+              newValue = JSON.parse(newValue);
+            }
+            return cb(newValue, key);
+          }
         });
       };
-    })();
-  } else {
-    $.sync = function() {};
-    $.forceSync = function() {};
+      $.forceSync = function() {};
+    } else if ((typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) || $.hasStorage) {
+      $.sync = function(key, cb) {
+        key = g.NAMESPACE + key;
+        $.syncing[key] = cb;
+        return $.oldValue[key] = $.getValue(key);
+      };
+      (function() {
+        var onChange;
+        onChange = function(arg) {
+          var cb, key, newValue;
+          key = arg.key, newValue = arg.newValue;
+          if (!(cb = $.syncing[key])) {
+            return;
+          }
+          if (newValue != null) {
+            if (newValue === $.oldValue[key]) {
+              return;
+            }
+            $.oldValue[key] = newValue;
+            return cb(JSON.parse(newValue), key.slice(g.NAMESPACE.length));
+          } else {
+            if ($.oldValue[key] == null) {
+              return;
+            }
+            delete $.oldValue[key];
+            return cb(void 0, key.slice(g.NAMESPACE.length));
+          }
+        };
+        $.on(window, 'storage', onChange);
+        return $.forceSync = function(key) {
+          key = g.NAMESPACE + key;
+          return onChange({
+            key: key,
+            newValue: $.getValue(key)
+          });
+        };
+      })();
+    } else {
+      $.sync = function() {};
+      $.forceSync = function() {};
+    }
+    $["delete"] = function(keys) {
+      var j, key, len;
+      if (!(keys instanceof Array)) {
+        keys = [keys];
+      }
+      for (j = 0, len = keys.length; j < len; j++) {
+        key = keys[j];
+        $.deleteValue(g.NAMESPACE + key);
+      }
+    };
+    $.get = $.oneItemSugar(function(items, cb) {
+      return $.queueTask($.getSync, items, cb);
+    });
+    $.getSync = function(items, cb) {
+      var key, val2;
+      for (key in items) {
+        if ((val2 = $.getValue(g.NAMESPACE + key))) {
+          items[key] = JSON.parse(val2);
+        }
+      }
+      return cb(items);
+    };
+    $.set = $.oneItemSugar(function(items, cb) {
+      return $.queueTask(function() {
+        var key, value;
+        for (key in items) {
+          value = items[key];
+          $.setValue(g.NAMESPACE + key, JSON.stringify(value));
+        }
+        return typeof cb === "function" ? cb() : void 0;
+      });
+    });
+    $.clear = function(cb) {
+      $["delete"](Object.keys(Conf));
+      $["delete"](['previousversion', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']);
+      try {
+        $["delete"]($.listValues().map(function(key) {
+          return key.replace(g.NAMESPACE, '');
+        }));
+      } catch (_error) {}
+      return typeof cb === "function" ? cb() : void 0;
+    };
   }
-
-  $["delete"] = function(keys) {
-    var i, key, len;
-    if (!(keys instanceof Array)) {
-      keys = [keys];
-    }
-    for (i = 0, len = keys.length; i < len; i++) {
-      key = keys[i];
-      $.deleteValue(g.NAMESPACE + key);
-    }
-  };
-
-  $.get = function(key, val, cb) {
-    var items;
-    if (typeof cb === 'function') {
-      items = $.item(key, val);
-    } else {
-      items = key;
-      cb = val;
-    }
-    return $.queueTask($.getSync, items, cb);
-  };
-
-  $.getSync = function(items, cb) {
-    var key, val2;
-    for (key in items) {
-      if ((val2 = $.getValue(g.NAMESPACE + key))) {
-        items[key] = JSON.parse(val2);
-      }
-    }
-    return cb(items);
-  };
-
-  $.set = function(keys, val, cb) {
-    var key, value;
-    if (typeof keys === 'string') {
-      $.setValue(g.NAMESPACE + keys, JSON.stringify(val));
-    } else {
-      for (key in keys) {
-        value = keys[key];
-        $.setValue(g.NAMESPACE + key, JSON.stringify(value));
-      }
-      cb = val;
-    }
-    return typeof cb === "function" ? cb() : void 0;
-  };
-
-  $.clear = function(cb) {
-    $["delete"](Object.keys(Conf));
-    $["delete"](['previousversion', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']);
-    try {
-      $["delete"]($.listValues().map(function(key) {
-        return key.replace(g.NAMESPACE, '');
-      }));
-    } catch (_error) {}
-    return typeof cb === "function" ? cb() : void 0;
-  };
 
   return $;
 
@@ -5231,7 +5317,7 @@ CrossOrigin = (function() {
       } else {
         options.responseType = 'arraybuffer';
       }
-      return GM_xmlhttpRequest(options);
+      return ((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) || GM_xmlhttpRequest)(options);
     },
     file: function(url, cb) {
       return CrossOrigin.binary(url, function(data, contentType, contentDisposition) {
@@ -5269,7 +5355,7 @@ CrossOrigin = (function() {
           return;
         }
         callbacks[url] = [cb];
-        return GM_xmlhttpRequest({
+        return ((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) || GM_xmlhttpRequest)({
           method: "GET",
           url: url + '',
           onload: function(xhr) {
@@ -5550,7 +5636,6 @@ DataBoard = (function() {
     DataBoard.prototype.deleteIfEmpty = function(arg) {
       var boardID, threadID;
       boardID = arg.boardID, threadID = arg.threadID;
-      $.forceSync(this.key);
       if (threadID) {
         if (!Object.keys(this.data.boards[boardID][threadID]).length) {
           delete this.data.boards[boardID][threadID];
@@ -5652,13 +5737,13 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype.ajaxClean = function(boardID) {
-      return $.cache("//a.4cdn.org/" + boardID + "/threads.json", (function(_this) {
+      return $.cache(location.protocol + "//a.4cdn.org/" + boardID + "/threads.json", (function(_this) {
         return function(e1) {
           var ref;
           if ((ref = e1.target.status) !== 200 && ref !== 404) {
             return;
           }
-          return $.cache("//a.4cdn.org/" + boardID + "/archive.json", function(e2) {
+          return $.cache(location.protocol + "//a.4cdn.org/" + boardID + "/archive.json", function(e2) {
             var ref1;
             if ((ref1 = e2.target.status) !== 200 && ref1 !== 404) {
               return;
@@ -5734,9 +5819,8 @@ Fetcher = (function() {
         this.insert(post);
         return;
       }
-      if ((post = (ref = Index.replyData) != null ? ref[this.boardID + "." + this.postID] : void 0)) {
+      if ((post = (ref = Index.replyData) != null ? ref[this.boardID + "." + this.postID] : void 0) && (thread = g.threads[this.boardID + "." + this.threadID])) {
         board = g.boards[this.boardID];
-        thread = g.threads[this.boardID + "." + this.threadID];
         post = new Post(Build.postFromObject(post, this.boardID), thread, board);
         post.isFetchedQuote = true;
         Main.callbackNodes('Post', [post]);
@@ -5745,7 +5829,7 @@ Fetcher = (function() {
       }
       this.root.textContent = "Loading post No." + this.postID + "...";
       if (this.threadID) {
-        $.cache("//a.4cdn.org/" + this.boardID + "/thread/" + this.threadID + ".json", (function(_this) {
+        $.cache(location.protocol + "//a.4cdn.org/" + this.boardID + "/thread/" + this.threadID + ".json", (function(_this) {
           return function(e, isCached) {
             return _this.fetchedPost(e.target, isCached);
           };
@@ -5812,7 +5896,7 @@ Fetcher = (function() {
       }
       if (post.no !== this.postID) {
         if (isCached) {
-          api = "//a.4cdn.org/" + this.boardID + "/thread/" + this.threadID + ".json";
+          api = location.protocol + "//a.4cdn.org/" + this.boardID + "/thread/" + this.threadID + ".json";
           $.cleanCache(function(url) {
             return url === api;
           });
@@ -6161,6 +6245,7 @@ Notice = (function() {
 
 Post = (function() {
   var Post,
+    slice = [].slice,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Post = (function() {
@@ -6299,6 +6384,13 @@ Post = (function() {
       return this.nodesToText(bq).trim().replace(/\s+$/gm, '');
     };
 
+    Post.prototype.commentOrig = function() {
+      var bq;
+      bq = this.nodes.commentClean.cloneNode(true);
+      this.insertTags(bq);
+      return this.nodesToText(bq);
+    };
+
     Post.prototype.nodesToText = function(bq) {
       var i, node, nodes, text;
       text = "";
@@ -6342,6 +6434,20 @@ Post = (function() {
         $.rm(b);
       }
       return $.rm($('.fortune', bq));
+    };
+
+    Post.prototype.insertTags = function(bq) {
+      var j, k, len, len1, node, ref, ref1;
+      ref = $$('s, .removed-spoiler', bq);
+      for (j = 0, len = ref.length; j < len; j++) {
+        node = ref[j];
+        $.replace(node, [$.tn('[spoiler]')].concat(slice.call(node.childNodes), [$.tn('[/spoiler]')]));
+      }
+      ref1 = $$('.prettyprint', bq);
+      for (k = 0, len1 = ref1.length; k < len1; k++) {
+        node = ref1[k];
+        $.replace(node, [$.tn('[code]')].concat(slice.call(node.childNodes), [$.tn('[/code]')]));
+      }
     };
 
     Post.prototype.parseQuotes = function() {
@@ -6999,7 +7105,6 @@ Redirect = (function() {
       { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ], "reports": true },
-      { "uid": 32, "name": "4tan", "domain": "boards.4tan.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "bant", "can", "cock", "fap", "fitlit", "mlpol", "mo", "mtv", "outsoc", "spa", "vint" ], "reports": true },
       { "uid": 33, "name": "YEET Archive", "domain": "archive.yeet.net", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "k", "qa", "s4s" ] }
     ],
     init: function() {
@@ -8301,7 +8406,7 @@ BoardConfig = (function() {
       var now, ref;
       now = Date.now();
       if (!((now - 2 * $.HOUR < (ref = Conf['boardConfig'].lastChecked || 0) && ref <= now))) {
-        return $.ajax('//a.4cdn.org/boards.json', {
+        return $.ajax(location.protocol + "//a.4cdn.org/boards.json", {
           onloadend: this.load
         });
       } else {
@@ -10206,7 +10311,7 @@ Index = (function() {
         location.reload();
         return;
       }
-      Index.req = $.ajax("//a.4cdn.org/" + g.BOARD + "/catalog.json", {
+      Index.req = $.ajax(location.protocol + "//a.4cdn.org/" + g.BOARD + "/catalog.json", {
         onabort: Index.load,
         onloadend: Index.load
       }, {
@@ -10342,6 +10447,9 @@ Index = (function() {
         return Index.parsedThreads[threadID].isHidden;
       }
     },
+    isHiddenReply: function(threadID, replyData) {
+      return PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) || Filter.isHidden(Build.parseJSON(replyData, g.BOARD.ID));
+    },
     buildThreads: function(threadIDs, isCatalog) {
       var ID, OP, err, errors, isStale, k, len1, newPosts, newThreads, obj, thread, threadData, threads;
       threads = [];
@@ -10476,10 +10584,7 @@ Index = (function() {
       replies = [];
       for (k = 0, len1 = lastReplies.length; k < len1; k++) {
         data = lastReplies[k];
-        if (PostHiding.isHidden(g.BOARD.ID, thread.ID, data.no)) {
-          continue;
-        }
-        if (Filter.isHidden(Build.parseJSON(data, g.BOARD.ID))) {
+        if (Index.isHiddenReply(thread.ID, data)) {
           continue;
         }
         reply = Build.catalogReply(thread, data);
@@ -10494,12 +10599,13 @@ Index = (function() {
       $.add(thread.OP.nodes.post, nodes.replies);
     },
     sort: function() {
-      var lastlong, liveThreadData, liveThreadIDs, threadIDs;
+      var lastlong, lastlongD, liveThreadData, liveThreadIDs, thread, threadIDs;
       liveThreadIDs = Index.liveThreadIDs, liveThreadData = Index.liveThreadData;
       if (!liveThreadData) {
         return;
       }
       Index.sortedThreadIDs = (function() {
+        var k, len1;
         switch (Index.currentSort.replace(/-rev$/, '')) {
           case 'lastreply':
             return slice.call(liveThreadData).sort(function(a, b) {
@@ -10520,6 +10626,9 @@ Index = (function() {
               ref = thread.last_replies || [];
               for (i = k = ref.length - 1; k >= 0; i = k += -1) {
                 r = ref[i];
+                if (Index.isHiddenReply(thread.no, r)) {
+                  continue;
+                }
                 len = r.com ? Build.parseComment(r.com).replace(/[^a-z]/ig, '').length : 0;
                 if (len >= Index.lastLongThresholds[+(!!r.ext)]) {
                   return r;
@@ -10531,8 +10640,13 @@ Index = (function() {
                 return thread;
               }
             };
+            lastlongD = {};
+            for (k = 0, len1 = liveThreadData.length; k < len1; k++) {
+              thread = liveThreadData[k];
+              lastlongD[thread.no] = lastlong(thread).no;
+            }
             return slice.call(liveThreadData).sort(function(a, b) {
-              return lastlong(b).no - lastlong(a).no;
+              return lastlongD[b.no] - lastlongD[a.no];
             }).map(function(post) {
               return post.no;
             });
@@ -11007,6 +11121,9 @@ Settings = (function() {
       addCheckboxes($('div[data-name="JSON Index"] > .suboption-list', section), Config.Index);
       if ($.engine !== 'gecko') {
         $('div[data-name="Remember QR Size"]', section).hidden = true;
+      }
+      if ($.perProtocolSettings) {
+        $('div[data-name="Redirect to HTTPS"]', section).hidden = true;
       }
       $.get(items, function(items) {
         var val;
@@ -11512,7 +11629,7 @@ Settings = (function() {
     advanced: function(section) {
       var applyCSS, boardSelect, customCSS, event, input, inputs, interval, items, itemsArchive, j, k, l, len, len1, len2, len3, m, name, ref, ref1, ref2, ref3, table, updateArchives, warning;
       $.extend(section, {
-        innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"
+        innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div><div><a href=\"https://www.w3.org/International/articles/language-tags/\" target=\"_blank\">Language tag</a>: <input name=\"timeLocale\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"
       });
       ref = $$('.warning', section);
       for (j = 0, len = ref.length; j < len; j++) {
@@ -11531,7 +11648,7 @@ Settings = (function() {
         return $.id('lastarchivecheck').textContent = 'never';
       });
       items = {};
-      ref2 = ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist'];
+      ref2 = ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'timeLocale', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist'];
       for (l = 0, len2 = ref2.length; l < len2; l++) {
         name = ref2[l];
         items[name] = Conf[name];
@@ -11716,6 +11833,9 @@ Settings = (function() {
     },
     time: function() {
       return this.nextElementSibling.textContent = Time.format(this.value, new Date());
+    },
+    timeLocale: function() {
+      return Settings.time.call($('[name=time]', Settings.dialog));
     },
     backlink: function() {
       return this.nextElementSibling.textContent = this.value.replace(/%(?:id|%)/g, function(x) {
@@ -12952,7 +13072,7 @@ ImageCommon = (function() {
           return cb(URL);
         }
       };
-      return $.ajax("//a.4cdn.org/" + post.board + "/thread/" + post.thread + ".json", {
+      return $.ajax(location.protocol + "//a.4cdn.org/" + post.board + "/thread/" + post.thread + ".json", {
         onload: function() {
           var i, len, postObj, ref;
           if (this.status === 404) {
@@ -14867,7 +14987,7 @@ Embedding = (function() {
         },
         title: {
           api: function(uid) {
-            return "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F" + (encodeURIComponent(uid));
+            return location.protocol + "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F" + (encodeURIComponent(uid));
           },
           text: function(_) {
             return _.title;
@@ -15274,7 +15394,7 @@ CopyTextLink = (function() {
         el: a,
         order: 12,
         open: function(post) {
-          CopyTextLink.text = post.info.comment;
+          CopyTextLink.text = (post.origin || post).commentOrig();
           return true;
         }
       });
@@ -15846,7 +15966,7 @@ BoardTips = (function() {
     tips: {
       qa: [
         1, {
-          innerHTML: "New to /qa/?<br>/qa/ is NOT an effective way to contact the mods.<br>Use <a href=\"https://www.rizon.net/chat\" target=\"_blank\">IRC</a> or <a href=\"https://www.4chan.org/feedback\" target=\"_blank\">feedback</a> instead. More details <a href=\"https://www.4chan-x.net/qa_instructions.png\" target=\"_blank\">here</a>."
+          innerHTML: "New to /qa/?<br>/qa/ is NOT an effective way to contact the mods.<br>Message a mod on <a href=\"https://www.rizon.net/chat\" target=\"_blank\">IRC</a> or use <a href=\"https://www.4chan.org/feedback\" target=\"_blank\">feedback</a> instead. More details <a href=\"https://www.4chan-x.net/qa_instructions.png\" target=\"_blank\">here</a>."
         }
       ]
     },
@@ -16075,7 +16195,7 @@ ExpandComment = (function() {
         return;
       }
       a.textContent = "Post No." + post + " Loading...";
-      return $.cache("//a.4cdn.org" + (a.pathname.split(/\/+/).splice(0, 4).join('/')) + ".json", function() {
+      return $.cache(location.protocol + "//a.4cdn.org" + (a.pathname.split(/\/+/).splice(0, 4).join('/')) + ".json", function() {
         return ExpandComment.parse(this, a, post);
       });
     },
@@ -16218,7 +16338,7 @@ ExpandThread = (function() {
       var status;
       ExpandThread.statuses[thread] = status = {};
       a.textContent = Build.summaryText.apply(Build, ['...'].concat(slice.call(a.textContent.match(/\d+/g))));
-      return status.req = $.cache("//a.4cdn.org/" + thread.board + "/thread/" + thread + ".json", function() {
+      return status.req = $.cache(location.protocol + "//a.4cdn.org/" + thread.board + "/thread/" + thread + ".json", function() {
         delete status.req;
         return ExpandThread.parse(this, thread, a);
       });
@@ -17255,7 +17375,7 @@ Keybinds = (function() {
       }
       url = "/" + thread.board + "/thread/" + thread;
       if (tab) {
-        return $.open(url);
+        return $.open(location.origin + url);
       } else {
         return location.href = url;
       }
@@ -17907,6 +18027,30 @@ Time = (function() {
     },
     day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    localeFormat: function(date, options, defaultValue) {
+      if (Conf['timeLocale']) {
+        try {
+          return Intl.DateTimeFormat(Conf['timeLocale'], options).format(date);
+        } catch (_error) {}
+      }
+      return defaultValue;
+    },
+    localeFormatPart: function(date, options, part, defaultValue) {
+      var parts;
+      if (Conf['timeLocale']) {
+        try {
+          parts = Intl.DateTimeFormat(Conf['timeLocale'], options).formatToParts(date);
+          return parts.map(function(x) {
+            if (x.type === part) {
+              return x.value;
+            } else {
+              return '';
+            }
+          }).join('');
+        } catch (_error) {}
+      }
+      return defaultValue;
+    },
     zeroPad: function(n) {
       if (n < 10) {
         return "0" + n;
@@ -17916,16 +18060,24 @@ Time = (function() {
     },
     formatters: {
       a: function() {
-        return Time.day[this.getDay()].slice(0, 3);
+        return Time.localeFormat(this, {
+          weekday: 'short'
+        }, Time.day[this.getDay()].slice(0, 3));
       },
       A: function() {
-        return Time.day[this.getDay()];
+        return Time.localeFormat(this, {
+          weekday: 'long'
+        }, Time.day[this.getDay()]);
       },
       b: function() {
-        return Time.month[this.getMonth()].slice(0, 3);
+        return Time.localeFormat(this, {
+          month: 'short'
+        }, Time.month[this.getMonth()].slice(0, 3));
       },
       B: function() {
-        return Time.month[this.getMonth()];
+        return Time.localeFormat(this, {
+          month: 'long'
+        }, Time.month[this.getMonth()]);
       },
       d: function() {
         return Time.zeroPad(this.getDate());
@@ -17952,18 +18104,13 @@ Time = (function() {
         return Time.zeroPad(this.getMinutes());
       },
       p: function() {
-        if (this.getHours() < 12) {
-          return 'AM';
-        } else {
-          return 'PM';
-        }
+        return Time.localeFormatPart(this, {
+          hour: 'numeric',
+          hour12: true
+        }, 'dayperiod', (this.getHours() < 12 ? 'AM' : 'PM'));
       },
       P: function() {
-        if (this.getHours() < 12) {
-          return 'am';
-        } else {
-          return 'pm';
-        }
+        return Time.formatters.p.call(this).toLowerCase();
       },
       S: function() {
         return Time.zeroPad(this.getSeconds());
@@ -18360,7 +18507,7 @@ ThreadStats = (function() {
         return;
       }
       ThreadStats.timeout = setTimeout(ThreadStats.fetchPage, 2 * $.MINUTE);
-      return $.ajax("//a.4cdn.org/" + ThreadStats.thread.board + "/threads.json", {
+      return $.ajax(location.protocol + "//a.4cdn.org/" + ThreadStats.thread.board + "/threads.json", {
         onload: ThreadStats.onThreadsLoad
       }, {
         whenModified: 'ThreadStats'
@@ -18585,7 +18732,7 @@ ThreadUpdater = (function() {
             }
             break;
           case 404:
-            return $.ajax("//a.4cdn.org/" + ThreadUpdater.thread.board + "/catalog.json", {
+            return $.ajax(location.protocol + "//a.4cdn.org/" + ThreadUpdater.thread.board + "/catalog.json", {
               onloadend: function() {
                 var confirmed, i, k, len, len1, page, ref, ref1, thread;
                 if (this.status === 200) {
@@ -18697,7 +18844,7 @@ ThreadUpdater = (function() {
       if ((ref = ThreadUpdater.req) != null) {
         ref.abort();
       }
-      return ThreadUpdater.req = $.ajax("//a.4cdn.org/" + ThreadUpdater.thread.board + "/thread/" + ThreadUpdater.thread + ".json", {
+      return ThreadUpdater.req = $.ajax(location.protocol + "//a.4cdn.org/" + ThreadUpdater.thread.board + "/thread/" + ThreadUpdater.thread + ".json", {
         onloadend: ThreadUpdater.cb.load,
         timeout: $.MINUTE
       }, {
@@ -19185,7 +19332,7 @@ ThreadWatcher = (function() {
         ThreadWatcher.status.textContent = '...';
         $.addClass(ThreadWatcher.refreshButton, 'fa-spin');
       }
-      req = $.ajax("//a.4cdn.org/" + boardID + "/thread/" + threadID + ".json", {
+      req = $.ajax(location.protocol + "//a.4cdn.org/" + boardID + "/thread/" + threadID + ".json", {
         onloadend: function() {
           return ThreadWatcher.parseStatus.call(this, thread);
         },
@@ -19898,7 +20045,6 @@ Unread = (function() {
       if (Unread.thread.isDead && !Unread.thread.isArchived) {
         return;
       }
-      Unread.db.forceSync();
       return Unread.db.set({
         boardID: Unread.thread.board.ID,
         threadID: Unread.thread.ID,
@@ -21589,7 +21735,7 @@ QR = (function() {
       }
     },
     quote: function(e) {
-      var ancestor, caretPos, com, frag, insideCode, j, k, l, len, len1, len2, len3, len4, len5, n, node, o, post, q, range, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, sel, text, thread;
+      var ancestor, caretPos, com, frag, i, insideCode, j, k, l, len, len1, len2, len3, n, node, o, post, postRange, range, ref, ref1, ref2, ref3, ref4, ref5, ref6, root, sel, text, thread;
       if (e != null) {
         e.preventDefault();
       }
@@ -21598,9 +21744,21 @@ QR = (function() {
       }
       sel = d.getSelection();
       post = Get.postFromNode(this);
+      root = post.nodes.root;
+      postRange = new Range();
+      postRange.selectNode(root);
       text = post.board.ID === g.BOARD.ID ? ">>" + post + "\n" : ">>>/" + post.board + "/" + post + "\n";
-      if (sel.toString().trim() && post === Get.postFromNode(sel.anchorNode)) {
-        range = sel.getRangeAt(0);
+      for (i = j = 0, ref = sel.rangeCount; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+        range = sel.getRangeAt(i);
+        if (range.compareBoundaryPoints(Range.START_TO_START, postRange) < 0) {
+          range.setStartBefore(root);
+        }
+        if (range.compareBoundaryPoints(Range.END_TO_END, postRange) > 0) {
+          range.setEndAfter(root);
+        }
+        if (!range.toString().trim()) {
+          continue;
+        }
         frag = range.cloneContents();
         ancestor = range.commonAncestorContainer;
         if ($.x('ancestor-or-self::*[self::s or contains(@class,"removed-spoiler")]', ancestor)) {
@@ -21611,37 +21769,28 @@ QR = (function() {
           $.prepend(frag, $.tn('[code]'));
           $.add(frag, $.tn('[/code]'));
         }
-        ref = $$((insideCode ? 'br' : '.prettyprint br'), frag);
-        for (j = 0, len = ref.length; j < len; j++) {
-          node = ref[j];
+        ref1 = $$((insideCode ? 'br' : '.prettyprint br'), frag);
+        for (k = 0, len = ref1.length; k < len; k++) {
+          node = ref1[k];
           $.replace(node, $.tn('\n'));
         }
-        ref1 = $$('br', frag);
-        for (k = 0, len1 = ref1.length; k < len1; k++) {
-          node = ref1[k];
+        ref2 = $$('br', frag);
+        for (l = 0, len1 = ref2.length; l < len1; l++) {
+          node = ref2[l];
           if (node !== frag.lastChild) {
             $.replace(node, $.tn('\n>'));
           }
         }
-        ref2 = $$('s, .removed-spoiler', frag);
-        for (l = 0, len2 = ref2.length; l < len2; l++) {
-          node = ref2[l];
-          $.replace(node, [$.tn('[spoiler]')].concat(slice.call(node.childNodes), [$.tn('[/spoiler]')]));
-        }
-        ref3 = $$('.prettyprint', frag);
-        for (n = 0, len3 = ref3.length; n < len3; n++) {
+        Post.prototype.insertTags(frag);
+        ref3 = $$('.linkify[data-original]', frag);
+        for (n = 0, len2 = ref3.length; n < len2; n++) {
           node = ref3[n];
-          $.replace(node, [$.tn('[code]')].concat(slice.call(node.childNodes), [$.tn('[/code]')]));
-        }
-        ref4 = $$('.linkify[data-original]', frag);
-        for (o = 0, len4 = ref4.length; o < len4; o++) {
-          node = ref4[o];
           $.replace(node, $.tn(node.dataset.original));
         }
-        ref5 = $$('.embedder', frag);
-        for (q = 0, len5 = ref5.length; q < len5; q++) {
-          node = ref5[q];
-          if (((ref6 = node.previousSibling) != null ? ref6.nodeValue : void 0) === ' ') {
+        ref4 = $$('.embedder', frag);
+        for (o = 0, len3 = ref4.length; o < len3; o++) {
+          node = ref4[o];
+          if (((ref5 = node.previousSibling) != null ? ref5.nodeValue : void 0) === ' ') {
             $.rm(node.previousSibling);
           }
           $.rm(node);
@@ -21649,7 +21798,7 @@ QR = (function() {
         text += ">" + (frag.textContent.trim()) + "\n";
       }
       QR.openPost();
-      ref7 = QR.nodes, com = ref7.com, thread = ref7.thread;
+      ref6 = QR.nodes, com = ref6.com, thread = ref6.thread;
       if (!com.value) {
         thread.value = Get.threadFromNode(this);
       }
@@ -22502,9 +22651,9 @@ QR = (function() {
             if ((type === 'thread') === (cooldown.threadID === cooldown.postID) && cooldown.boardID !== g.BOARD.ID) {
               suffix = scope === 'global' ? '_global' : '';
               seconds = Math.max(seconds, QR.cooldown.delays[type + suffix] - elapsed);
-            }
-            if (QR.cooldown.customCooldown) {
-              seconds = Math.max(seconds, parseInt(Conf['customCooldown'], 10) - elapsed);
+              if (QR.cooldown.customCooldown) {
+                seconds = Math.max(seconds, parseInt(Conf['customCooldown'], 10) - elapsed);
+              }
             }
           }
           nCooldowns += Object.keys(cooldowns).length;
@@ -24506,7 +24655,7 @@ Main = (function() {
       items['previousversion'] = void 0;
       return ($.getSync || $.get)(items, function(items) {
         var ref1;
-        if (((ref1 = items['Redirect to HTTPS']) != null ? ref1 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
+        if (!$.perProtocolSettings && ((ref1 = items['Redirect to HTTPS']) != null ? ref1 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
           location.replace('https:' + location.host + location.pathname + location.search + location.hash);
           return;
         }
@@ -24814,7 +24963,7 @@ Main = (function() {
           threads[0].ipCount = (m = scriptData.match(/\bunique_ips *= *(\d+)\b/)) ? +m[1] : void 0;
         }
         if (g.BOARD.ID === 'f' && g.VIEW === 'thread') {
-          $.ajax("//a.4cdn.org/f/thread/" + g.THREADID + ".json", {
+          $.ajax(location.protocol + "//a.4cdn.org/f/thread/" + g.THREADID + ".json", {
             timeout: $.MINUTE,
             onloadend: function() {
               if (this.response && posts[0].file) {

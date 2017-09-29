@@ -72,7 +72,7 @@ Main =
     items[key] = undefined for key of Conf
     items['previousversion'] = undefined
     ($.getSync or $.get) items, (items) ->
-      if (items['Redirect to HTTPS'] ? Conf['Redirect to HTTPS']) and location.protocol isnt 'https:'
+      if !$.perProtocolSettings and (items['Redirect to HTTPS'] ? Conf['Redirect to HTTPS']) and location.protocol isnt 'https:'
         location.replace('https:' + location.host + location.pathname + location.search + location.hash)
         return
       $.asap docSet, ->

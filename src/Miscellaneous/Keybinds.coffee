@@ -312,7 +312,7 @@ Keybinds =
     return if g.VIEW isnt 'index'
     url = "/#{thread.board}/thread/#{thread}"
     if tab
-      $.open url
+      $.open location.origin + url
     else
       location.href = url
 
