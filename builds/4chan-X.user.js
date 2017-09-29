@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.11.4
+// @version      1.13.11.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -153,7 +153,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.11.4',
+  VERSION:   '1.13.11.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5147,17 +5147,19 @@ $ = (function() {
   };
 
   $.set = function(keys, val, cb) {
-    var key, value;
-    if (typeof keys === 'string') {
-      $.setValue(g.NAMESPACE + keys, JSON.stringify(val));
-    } else {
-      for (key in keys) {
-        value = keys[key];
-        $.setValue(g.NAMESPACE + key, JSON.stringify(value));
+    return $.queueTask(function() {
+      var key, value;
+      if (typeof keys === 'string') {
+        $.setValue(g.NAMESPACE + keys, JSON.stringify(val));
+      } else {
+        for (key in keys) {
+          value = keys[key];
+          $.setValue(g.NAMESPACE + key, JSON.stringify(value));
+        }
+        cb = val;
       }
-      cb = val;
-    }
-    return typeof cb === "function" ? cb() : void 0;
+      return typeof cb === "function" ? cb() : void 0;
+    });
   };
 
   $.clear = function(cb) {
@@ -7025,7 +7027,6 @@ Redirect = (function() {
       { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ], "reports": true },
-      { "uid": 32, "name": "4tan", "domain": "boards.4tan.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "bant", "can", "cock", "fap", "fitlit", "mlpol", "mo", "mtv", "outsoc", "spa", "vint" ], "reports": true },
       { "uid": 33, "name": "YEET Archive", "domain": "archive.yeet.net", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "k", "qa", "s4s" ] }
     ],
     init: function() {
