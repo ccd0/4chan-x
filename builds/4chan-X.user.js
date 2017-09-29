@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.12.0
+// @version      1.13.12.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -158,7 +158,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.12.0',
+  VERSION:   '1.13.12.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5231,12 +5231,14 @@ $ = (function() {
       return cb(items);
     };
     $.set = $.oneItemSugar(function(items, cb) {
-      var key, value;
-      for (key in items) {
-        value = items[key];
-        $.setValue(g.NAMESPACE + key, JSON.stringify(value));
-      }
-      return typeof cb === "function" ? cb() : void 0;
+      return $.queueTask(function() {
+        var key, value;
+        for (key in items) {
+          value = items[key];
+          $.setValue(g.NAMESPACE + key, JSON.stringify(value));
+        }
+        return typeof cb === "function" ? cb() : void 0;
+      });
     });
     $.clear = function(cb) {
       $["delete"](Object.keys(Conf));

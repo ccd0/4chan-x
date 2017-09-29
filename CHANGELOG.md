@@ -4,6 +4,9 @@
 
 ### v1.13.12
 
+**v1.13.12.1** *(2017-09-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.11.5: Fix lag after settings changes.
+
 **v1.13.12.0** *(2017-09-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.13.11.4.
 - Preliminary support for Greasemonkey 4.
