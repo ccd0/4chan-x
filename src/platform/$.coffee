@@ -610,13 +610,14 @@ $.getSync = (items, cb) ->
   cb items
 
 $.set = (keys, val, cb) ->
-  if typeof keys is 'string'
-    $.setValue(g.NAMESPACE + keys, JSON.stringify val)
-  else
-    for key, value of keys
-      $.setValue(g.NAMESPACE + key, JSON.stringify value)
-    cb = val
-  cb?()
+  $.queueTask ->
+    if typeof keys is 'string'
+      $.setValue(g.NAMESPACE + keys, JSON.stringify val)
+    else
+      for key, value of keys
+        $.setValue(g.NAMESPACE + key, JSON.stringify value)
+      cb = val
+    cb?()
 
 $.clear = (cb) ->
   # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
