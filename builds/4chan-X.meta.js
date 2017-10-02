@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.11.5
+// @version      1.13.12.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -48,6 +48,11 @@
 // @grant        GM_addValueChangeListener
 // @grant        GM_openInTab
 // @grant        GM_xmlhttpRequest
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.listValues
+// @grant        GM.xmlHttpRequest
 // @run-at       document-start
 // @updateURL    https://www.4chan-x.net/builds/4chan-X.meta.js
 // @downloadURL  https://www.4chan-x.net/builds/4chan-X.user.js

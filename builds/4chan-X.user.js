@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.11.5
+// @version      1.13.12.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -48,6 +48,11 @@
 // @grant        GM_addValueChangeListener
 // @grant        GM_openInTab
 // @grant        GM_xmlhttpRequest
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.listValues
+// @grant        GM.xmlHttpRequest
 // @run-at       document-start
 // @updateURL    https://www.4chan-x.net/builds/4chan-X.meta.js
 // @downloadURL  https://www.4chan-x.net/builds/4chan-X.user.js
@@ -153,7 +158,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.11.5',
+  VERSION:   '1.13.12.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -2793,7 +2798,7 @@ input.field.tripped:not(:hover):not(:focus) {\n\
   text-shadow: none !important;\n\
 }\n\
 #qr textarea {\n\
-  min-width: 100%;\n\
+  min-width: 300px;\n\
   resize: both;\n\
 }\n\
 .field {\n\
@@ -4475,7 +4480,7 @@ $ = (function() {
     var lastModified;
     lastModified = {};
     return function(url, options, extra) {
-      var err, event, form, i, len, r, ref, ref1, type, upCallbacks, whenModified;
+      var err, event, form, j, len, r, ref, ref1, type, upCallbacks, whenModified;
       if (options == null) {
         options = {};
       }
@@ -4518,8 +4523,8 @@ $ = (function() {
           throw err;
         }
         ref1 = ['error', 'loadend'];
-        for (i = 0, len = ref1.length; i < len; i++) {
-          event = ref1[i];
+        for (j = 0, len = ref1.length; j < len; j++) {
+          event = ref1[j];
           r["on" + event] = options["on" + event];
           $.queueTask($.event, event, null, r);
         }
@@ -4555,7 +4560,7 @@ $ = (function() {
         return;
       }
       $.on(req, 'load', function(e) {
-        var fn1, i, len, ref;
+        var fn1, j, len, ref;
         this.evt = e;
         ref = this.callbacks;
         fn1 = (function(_this) {
@@ -4565,8 +4570,8 @@ $ = (function() {
             });
           };
         })(this);
-        for (i = 0, len = ref.length; i < len; i++) {
-          cb = ref[i];
+        for (j = 0, len = ref.length; j < len; j++) {
+          cb = ref[j];
           fn1(cb);
         }
         return delete this.callbacks;
@@ -4665,19 +4670,19 @@ $ = (function() {
   };
 
   $.addClass = function() {
-    var className, classNames, el, i, len;
+    var className, classNames, el, j, len;
     el = arguments[0], classNames = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-    for (i = 0, len = classNames.length; i < len; i++) {
-      className = classNames[i];
+    for (j = 0, len = classNames.length; j < len; j++) {
+      className = classNames[j];
       el.classList.add(className);
     }
   };
 
   $.rmClass = function() {
-    var className, classNames, el, i, len;
+    var className, classNames, el, j, len;
     el = arguments[0], classNames = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-    for (i = 0, len = classNames.length; i < len; i++) {
-      className = classNames[i];
+    for (j = 0, len = classNames.length; j < len; j++) {
+      className = classNames[j];
       el.classList.remove(className);
     }
   };
@@ -4707,13 +4712,13 @@ $ = (function() {
   };
 
   $.nodes = function(nodes) {
-    var frag, i, len, node;
+    var frag, j, len, node;
     if (!(nodes instanceof Array)) {
       return nodes;
     }
     frag = $.frag();
-    for (i = 0, len = nodes.length; i < len; i++) {
-      node = nodes[i];
+    for (j = 0, len = nodes.length; j < len; j++) {
+      node = nodes[j];
       frag.appendChild(node);
     }
     return frag;
@@ -4752,19 +4757,19 @@ $ = (function() {
   };
 
   $.on = function(el, events, handler) {
-    var event, i, len, ref;
+    var event, j, len, ref;
     ref = events.split(' ');
-    for (i = 0, len = ref.length; i < len; i++) {
-      event = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      event = ref[j];
       el.addEventListener(event, handler, false);
     }
   };
 
   $.off = function(el, events, handler) {
-    var event, i, len, ref;
+    var event, j, len, ref;
     ref = events.split(' ');
-    for (i = 0, len = ref.length; i < len; i++) {
-      event = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      event = ref[j];
       el.removeEventListener(event, handler, false);
     }
   };
@@ -4960,218 +4965,292 @@ $ = (function() {
     return item;
   };
 
+  $.oneItemSugar = function(fn) {
+    return function(key, val, cb) {
+      if (typeof key === 'string') {
+        return fn($.item(key, val), cb);
+      } else {
+        return fn(key, val);
+      }
+    };
+  };
+
   $.syncing = {};
 
-  $.currentValue = {};
-
-  $.GM_getValue = function(key) {
-    var err;
-    try {
-      return $.currentValue[key] = GM_getValue(key);
-    } catch (_error) {
-      err = _error;
-      return $.currentValue[key];
-    }
-  };
-
-  $.GM_setValue = function(key, val) {
-    $.currentValue[key] = val;
-    return GM_setValue(key, val);
-  };
-
-  $.GM_deleteValue = function(key) {
-    delete $.currentValue[key];
-    return GM_deleteValue(key);
-  };
-
-  if (typeof GM_deleteValue === "undefined" || GM_deleteValue === null) {
-    $.perProtocolSettings = true;
-  }
-
-  if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
-    $.getValue = $.GM_getValue;
-    $.listValues = function() {
-      return GM_listValues();
-    };
-  } else if ($.hasStorage) {
-    $.getValue = function(key) {
-      return localStorage[key];
-    };
-    $.listValues = function() {
-      var key, results;
+  if ((typeof GM !== "undefined" && GM !== null ? GM.deleteValue : void 0) != null) {
+    $.syncChannel = new BroadcastChannel(g.NAMESPACE + 'sync');
+    $.on($.syncChannel, 'message', function(e) {
+      var cb, key, ref, results, val;
+      ref = e.data;
       results = [];
-      for (key in localStorage) {
-        if (key.slice(0, g.NAMESPACE.length) === g.NAMESPACE) {
-          results.push(key);
+      for (key in ref) {
+        val = ref[key];
+        if ((cb = $.syncing[key])) {
+          results.push(cb(val, key));
         }
       }
       return results;
-    };
-  } else {
-    $.getValue = function() {};
-    $.listValues = function() {
-      return [];
-    };
-  }
-
-  if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
-    $.setValue = $.GM_setValue;
-    $.deleteValue = $.GM_deleteValue;
-  } else if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
-    $.oldValue = {};
-    $.setValue = function(key, val) {
-      $.GM_setValue(key, val);
-      if (key in $.syncing) {
-        $.oldValue[key] = val;
-        if ($.hasStorage) {
-          return localStorage[key] = val;
-        }
-      }
-    };
-    $.deleteValue = function(key) {
-      $.GM_deleteValue(key);
-      if (key in $.syncing) {
-        delete $.oldValue[key];
-        if ($.hasStorage) {
-          return localStorage.removeItem(key);
-        }
-      }
-    };
-    if (!$.hasStorage) {
-      $.cantSync = true;
-    }
-  } else if ($.hasStorage) {
-    $.oldValue = {};
-    $.setValue = function(key, val) {
-      if (key in $.syncing) {
-        $.oldValue[key] = val;
-      }
-      return localStorage[key] = val;
-    };
-    $.deleteValue = function(key) {
-      if (key in $.syncing) {
-        delete $.oldValue[key];
-      }
-      return localStorage.removeItem(key);
-    };
-  } else {
-    $.setValue = function() {};
-    $.deleteValue = function() {};
-    $.cantSync = $.cantSet = true;
-  }
-
-  if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
+    });
     $.sync = function(key, cb) {
-      return $.syncing[key] = GM_addValueChangeListener(g.NAMESPACE + key, function(key2, oldValue, newValue, remote) {
-        if (remote) {
-          if (newValue !== void 0) {
-            newValue = JSON.parse(newValue);
-          }
-          return cb(newValue, key);
+      return $.syncing[key] = cb;
+    };
+    $.forceSync = function() {};
+    $["delete"] = function(keys, cb) {
+      var key;
+      if (!(keys instanceof Array)) {
+        keys = [keys];
+      }
+      return Promise.all((function() {
+        var j, len, results;
+        results = [];
+        for (j = 0, len = keys.length; j < len; j++) {
+          key = keys[j];
+          results.push(GM.deleteValue(g.NAMESPACE + key));
         }
+        return results;
+      })()).then(function() {
+        var items, j, key, len;
+        items = {};
+        for (j = 0, len = keys.length; j < len; j++) {
+          key = keys[j];
+          items[key] = void 0;
+        }
+        $.syncChannel.postMessage(items);
+        return typeof cb === "function" ? cb() : void 0;
       });
     };
-    $.forceSync = function() {};
-  } else if ((typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) || $.hasStorage) {
-    $.sync = function(key, cb) {
-      key = g.NAMESPACE + key;
-      $.syncing[key] = cb;
-      return $.oldValue[key] = $.getValue(key);
-    };
-    (function() {
-      var onChange;
-      onChange = function(arg) {
-        var cb, key, newValue;
-        key = arg.key, newValue = arg.newValue;
-        if (!(cb = $.syncing[key])) {
-          return;
+    $.get = $.oneItemSugar(function(items, cb) {
+      var key, keys;
+      keys = Object.keys(items);
+      return Promise.all((function() {
+        var j, len, results;
+        results = [];
+        for (j = 0, len = keys.length; j < len; j++) {
+          key = keys[j];
+          results.push(GM.getValue(g.NAMESPACE + key));
         }
-        if (newValue != null) {
-          if (newValue === $.oldValue[key]) {
-            return;
+        return results;
+      })()).then(function(values) {
+        var i, j, len, val;
+        for (i = j = 0, len = values.length; j < len; i = ++j) {
+          val = values[i];
+          if (val) {
+            items[keys[i]] = JSON.parse(val);
           }
-          $.oldValue[key] = newValue;
-          return cb(JSON.parse(newValue), key.slice(g.NAMESPACE.length));
-        } else {
-          if ($.oldValue[key] == null) {
-            return;
+        }
+        return cb(items);
+      });
+    });
+    $.set = $.oneItemSugar(function(items, cb) {
+      var key, val;
+      return Promise.all((function() {
+        var results;
+        results = [];
+        for (key in items) {
+          val = items[key];
+          results.push(GM.setValue(g.NAMESPACE + key, JSON.stringify(val)));
+        }
+        return results;
+      })()).then(function() {
+        $.syncChannel.postMessage(items);
+        return typeof cb === "function" ? cb() : void 0;
+      });
+    });
+    $.clear = function(cb) {
+      return GM.listValues.then(function(keys) {
+        return $["delete"](keys.map(function(key) {
+          return key.replace(g.NAMESPACE, '');
+        }), cb);
+      });
+    };
+  } else {
+    $.currentValue = {};
+    $.GM_getValue = function(key) {
+      var err;
+      try {
+        return $.currentValue[key] = GM_getValue(key);
+      } catch (_error) {
+        err = _error;
+        return $.currentValue[key];
+      }
+    };
+    $.GM_setValue = function(key, val) {
+      $.currentValue[key] = val;
+      return GM_setValue(key, val);
+    };
+    $.GM_deleteValue = function(key) {
+      delete $.currentValue[key];
+      return GM_deleteValue(key);
+    };
+    if (typeof GM_deleteValue === "undefined" || GM_deleteValue === null) {
+      $.perProtocolSettings = true;
+    }
+    if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
+      $.getValue = $.GM_getValue;
+      $.listValues = function() {
+        return GM_listValues();
+      };
+    } else if ($.hasStorage) {
+      $.getValue = function(key) {
+        return localStorage[key];
+      };
+      $.listValues = function() {
+        var key, results;
+        results = [];
+        for (key in localStorage) {
+          if (key.slice(0, g.NAMESPACE.length) === g.NAMESPACE) {
+            results.push(key);
           }
-          delete $.oldValue[key];
-          return cb(void 0, key.slice(g.NAMESPACE.length));
+        }
+        return results;
+      };
+    } else {
+      $.getValue = function() {};
+      $.listValues = function() {
+        return [];
+      };
+    }
+    if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
+      $.setValue = $.GM_setValue;
+      $.deleteValue = $.GM_deleteValue;
+    } else if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
+      $.oldValue = {};
+      $.setValue = function(key, val) {
+        $.GM_setValue(key, val);
+        if (key in $.syncing) {
+          $.oldValue[key] = val;
+          if ($.hasStorage) {
+            return localStorage[key] = val;
+          }
         }
       };
-      $.on(window, 'storage', onChange);
-      return $.forceSync = function(key) {
-        key = g.NAMESPACE + key;
-        return onChange({
-          key: key,
-          newValue: $.getValue(key)
+      $.deleteValue = function(key) {
+        $.GM_deleteValue(key);
+        if (key in $.syncing) {
+          delete $.oldValue[key];
+          if ($.hasStorage) {
+            return localStorage.removeItem(key);
+          }
+        }
+      };
+      if (!$.hasStorage) {
+        $.cantSync = true;
+      }
+    } else if ($.hasStorage) {
+      $.oldValue = {};
+      $.setValue = function(key, val) {
+        if (key in $.syncing) {
+          $.oldValue[key] = val;
+        }
+        return localStorage[key] = val;
+      };
+      $.deleteValue = function(key) {
+        if (key in $.syncing) {
+          delete $.oldValue[key];
+        }
+        return localStorage.removeItem(key);
+      };
+    } else {
+      $.setValue = function() {};
+      $.deleteValue = function() {};
+      $.cantSync = $.cantSet = true;
+    }
+    if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
+      $.sync = function(key, cb) {
+        return $.syncing[key] = GM_addValueChangeListener(g.NAMESPACE + key, function(key2, oldValue, newValue, remote) {
+          if (remote) {
+            if (newValue !== void 0) {
+              newValue = JSON.parse(newValue);
+            }
+            return cb(newValue, key);
+          }
         });
       };
-    })();
-  } else {
-    $.sync = function() {};
-    $.forceSync = function() {};
-  }
-
-  $["delete"] = function(keys) {
-    var i, key, len;
-    if (!(keys instanceof Array)) {
-      keys = [keys];
-    }
-    for (i = 0, len = keys.length; i < len; i++) {
-      key = keys[i];
-      $.deleteValue(g.NAMESPACE + key);
-    }
-  };
-
-  $.get = function(key, val, cb) {
-    var items;
-    if (typeof cb === 'function') {
-      items = $.item(key, val);
+      $.forceSync = function() {};
+    } else if ((typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) || $.hasStorage) {
+      $.sync = function(key, cb) {
+        key = g.NAMESPACE + key;
+        $.syncing[key] = cb;
+        return $.oldValue[key] = $.getValue(key);
+      };
+      (function() {
+        var onChange;
+        onChange = function(arg) {
+          var cb, key, newValue;
+          key = arg.key, newValue = arg.newValue;
+          if (!(cb = $.syncing[key])) {
+            return;
+          }
+          if (newValue != null) {
+            if (newValue === $.oldValue[key]) {
+              return;
+            }
+            $.oldValue[key] = newValue;
+            return cb(JSON.parse(newValue), key.slice(g.NAMESPACE.length));
+          } else {
+            if ($.oldValue[key] == null) {
+              return;
+            }
+            delete $.oldValue[key];
+            return cb(void 0, key.slice(g.NAMESPACE.length));
+          }
+        };
+        $.on(window, 'storage', onChange);
+        return $.forceSync = function(key) {
+          key = g.NAMESPACE + key;
+          return onChange({
+            key: key,
+            newValue: $.getValue(key)
+          });
+        };
+      })();
     } else {
-      items = key;
-      cb = val;
+      $.sync = function() {};
+      $.forceSync = function() {};
     }
-    return $.queueTask($.getSync, items, cb);
-  };
-
-  $.getSync = function(items, cb) {
-    var key, val2;
-    for (key in items) {
-      if ((val2 = $.getValue(g.NAMESPACE + key))) {
-        items[key] = JSON.parse(val2);
+    $["delete"] = function(keys) {
+      var j, key, len;
+      if (!(keys instanceof Array)) {
+        keys = [keys];
       }
-    }
-    return cb(items);
-  };
-
-  $.set = function(keys, val, cb) {
-    return $.queueTask(function() {
-      var key, value;
-      if (typeof keys === 'string') {
-        $.setValue(g.NAMESPACE + keys, JSON.stringify(val));
-      } else {
-        for (key in keys) {
-          value = keys[key];
+      for (j = 0, len = keys.length; j < len; j++) {
+        key = keys[j];
+        $.deleteValue(g.NAMESPACE + key);
+      }
+    };
+    $.get = $.oneItemSugar(function(items, cb) {
+      return $.queueTask($.getSync, items, cb);
+    });
+    $.getSync = function(items, cb) {
+      var key, val2;
+      for (key in items) {
+        if ((val2 = $.getValue(g.NAMESPACE + key))) {
+          items[key] = JSON.parse(val2);
+        }
+      }
+      return cb(items);
+    };
+    $.set = $.oneItemSugar(function(items, cb) {
+      return $.queueTask(function() {
+        var key, value;
+        for (key in items) {
+          value = items[key];
           $.setValue(g.NAMESPACE + key, JSON.stringify(value));
         }
-        cb = val;
-      }
-      return typeof cb === "function" ? cb() : void 0;
+        return typeof cb === "function" ? cb() : void 0;
+      });
     });
-  };
-
-  $.clear = function(cb) {
-    $["delete"](Object.keys(Conf));
-    $["delete"](['previousversion', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']);
-    try {
-      $["delete"]($.listValues().map(function(key) {
-        return key.replace(g.NAMESPACE, '');
-      }));
-    } catch (_error) {}
-    return typeof cb === "function" ? cb() : void 0;
-  };
+    $.clear = function(cb) {
+      $["delete"](Object.keys(Conf));
+      $["delete"](['previousversion', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']);
+      try {
+        $["delete"]($.listValues().map(function(key) {
+          return key.replace(g.NAMESPACE, '');
+        }));
+      } catch (_error) {}
+      return typeof cb === "function" ? cb() : void 0;
+    };
+  }
 
   return $;
 
@@ -5238,7 +5317,7 @@ CrossOrigin = (function() {
       } else {
         options.responseType = 'arraybuffer';
       }
-      return GM_xmlhttpRequest(options);
+      return ((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) || GM_xmlhttpRequest)(options);
     },
     file: function(url, cb) {
       return CrossOrigin.binary(url, function(data, contentType, contentDisposition) {
@@ -5276,7 +5355,7 @@ CrossOrigin = (function() {
           return;
         }
         callbacks[url] = [cb];
-        return GM_xmlhttpRequest({
+        return ((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) || GM_xmlhttpRequest)({
           method: "GET",
           url: url + '',
           onload: function(xhr) {
@@ -5557,7 +5636,6 @@ DataBoard = (function() {
     DataBoard.prototype.deleteIfEmpty = function(arg) {
       var boardID, threadID;
       boardID = arg.boardID, threadID = arg.threadID;
-      $.forceSync(this.key);
       if (threadID) {
         if (!Object.keys(this.data.boards[boardID][threadID]).length) {
           delete this.data.boards[boardID][threadID];
@@ -5659,13 +5737,13 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype.ajaxClean = function(boardID) {
-      return $.cache("//a.4cdn.org/" + boardID + "/threads.json", (function(_this) {
+      return $.cache(location.protocol + "//a.4cdn.org/" + boardID + "/threads.json", (function(_this) {
         return function(e1) {
           var ref;
           if ((ref = e1.target.status) !== 200 && ref !== 404) {
             return;
           }
-          return $.cache("//a.4cdn.org/" + boardID + "/archive.json", function(e2) {
+          return $.cache(location.protocol + "//a.4cdn.org/" + boardID + "/archive.json", function(e2) {
             var ref1;
             if ((ref1 = e2.target.status) !== 200 && ref1 !== 404) {
               return;
@@ -5751,7 +5829,7 @@ Fetcher = (function() {
       }
       this.root.textContent = "Loading post No." + this.postID + "...";
       if (this.threadID) {
-        $.cache("//a.4cdn.org/" + this.boardID + "/thread/" + this.threadID + ".json", (function(_this) {
+        $.cache(location.protocol + "//a.4cdn.org/" + this.boardID + "/thread/" + this.threadID + ".json", (function(_this) {
           return function(e, isCached) {
             return _this.fetchedPost(e.target, isCached);
           };
@@ -5818,7 +5896,7 @@ Fetcher = (function() {
       }
       if (post.no !== this.postID) {
         if (isCached) {
-          api = "//a.4cdn.org/" + this.boardID + "/thread/" + this.threadID + ".json";
+          api = location.protocol + "//a.4cdn.org/" + this.boardID + "/thread/" + this.threadID + ".json";
           $.cleanCache(function(url) {
             return url === api;
           });
@@ -8328,7 +8406,7 @@ BoardConfig = (function() {
       var now, ref;
       now = Date.now();
       if (!((now - 2 * $.HOUR < (ref = Conf['boardConfig'].lastChecked || 0) && ref <= now))) {
-        return $.ajax('//a.4cdn.org/boards.json', {
+        return $.ajax(location.protocol + "//a.4cdn.org/boards.json", {
           onloadend: this.load
         });
       } else {
@@ -10233,7 +10311,7 @@ Index = (function() {
         location.reload();
         return;
       }
-      Index.req = $.ajax("//a.4cdn.org/" + g.BOARD + "/catalog.json", {
+      Index.req = $.ajax(location.protocol + "//a.4cdn.org/" + g.BOARD + "/catalog.json", {
         onabort: Index.load,
         onloadend: Index.load
       }, {
@@ -12994,7 +13072,7 @@ ImageCommon = (function() {
           return cb(URL);
         }
       };
-      return $.ajax("//a.4cdn.org/" + post.board + "/thread/" + post.thread + ".json", {
+      return $.ajax(location.protocol + "//a.4cdn.org/" + post.board + "/thread/" + post.thread + ".json", {
         onload: function() {
           var i, len, postObj, ref;
           if (this.status === 404) {
@@ -14909,7 +14987,7 @@ Embedding = (function() {
         },
         title: {
           api: function(uid) {
-            return "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F" + (encodeURIComponent(uid));
+            return location.protocol + "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F" + (encodeURIComponent(uid));
           },
           text: function(_) {
             return _.title;
@@ -14943,9 +15021,9 @@ Embedding = (function() {
       }, {
         key: 'Twitter',
         regExp: /^\w+:\/\/(?:www\.|mobile\.)?twitter\.com\/(\w+\/status\/\d+)/,
-        style: 'border: none; width: 550px; height: 250px; max-height: 80vh;',
+        style: 'border: none; width: 550px; height: 250px; overflow: hidden; resize: both;',
         el: function(a) {
-          var el, onMessage;
+          var cont, el, onMessage;
           el = $.el('iframe');
           $.on(el, 'load', function() {
             return this.contentWindow.postMessage({
@@ -14956,12 +15034,19 @@ Embedding = (function() {
           onMessage = function(e) {
             if (e.source === el.contentWindow && e.origin === 'https://twitframe.com') {
               $.off(window, 'message', onMessage);
-              return el.style.height = (+e.data.height) + "px";
+              return (cont || el).style.height = (+$.minmax(e.data.height, 250, 0.8 * doc.clientHeight)) + "px";
             }
           };
           $.on(window, 'message', onMessage);
           el.src = "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid;
-          return el;
+          if ($.engine === 'gecko') {
+            el.style.cssText = 'border: none; width: 100%; height: 100%;';
+            cont = $.el('div');
+            $.add(cont, el);
+            return cont;
+          } else {
+            return el;
+          }
         }
       }, {
         key: 'Vimeo',
@@ -16117,7 +16202,7 @@ ExpandComment = (function() {
         return;
       }
       a.textContent = "Post No." + post + " Loading...";
-      return $.cache("//a.4cdn.org" + (a.pathname.split(/\/+/).splice(0, 4).join('/')) + ".json", function() {
+      return $.cache(location.protocol + "//a.4cdn.org" + (a.pathname.split(/\/+/).splice(0, 4).join('/')) + ".json", function() {
         return ExpandComment.parse(this, a, post);
       });
     },
@@ -16260,7 +16345,7 @@ ExpandThread = (function() {
       var status;
       ExpandThread.statuses[thread] = status = {};
       a.textContent = Build.summaryText.apply(Build, ['...'].concat(slice.call(a.textContent.match(/\d+/g))));
-      return status.req = $.cache("//a.4cdn.org/" + thread.board + "/thread/" + thread + ".json", function() {
+      return status.req = $.cache(location.protocol + "//a.4cdn.org/" + thread.board + "/thread/" + thread + ".json", function() {
         delete status.req;
         return ExpandThread.parse(this, thread, a);
       });
@@ -17297,7 +17382,7 @@ Keybinds = (function() {
       }
       url = "/" + thread.board + "/thread/" + thread;
       if (tab) {
-        return $.open(url);
+        return $.open(location.origin + url);
       } else {
         return location.href = url;
       }
@@ -18429,7 +18514,7 @@ ThreadStats = (function() {
         return;
       }
       ThreadStats.timeout = setTimeout(ThreadStats.fetchPage, 2 * $.MINUTE);
-      return $.ajax("//a.4cdn.org/" + ThreadStats.thread.board + "/threads.json", {
+      return $.ajax(location.protocol + "//a.4cdn.org/" + ThreadStats.thread.board + "/threads.json", {
         onload: ThreadStats.onThreadsLoad
       }, {
         whenModified: 'ThreadStats'
@@ -18654,7 +18739,7 @@ ThreadUpdater = (function() {
             }
             break;
           case 404:
-            return $.ajax("//a.4cdn.org/" + ThreadUpdater.thread.board + "/catalog.json", {
+            return $.ajax(location.protocol + "//a.4cdn.org/" + ThreadUpdater.thread.board + "/catalog.json", {
               onloadend: function() {
                 var confirmed, i, k, len, len1, page, ref, ref1, thread;
                 if (this.status === 200) {
@@ -18766,7 +18851,7 @@ ThreadUpdater = (function() {
       if ((ref = ThreadUpdater.req) != null) {
         ref.abort();
       }
-      return ThreadUpdater.req = $.ajax("//a.4cdn.org/" + ThreadUpdater.thread.board + "/thread/" + ThreadUpdater.thread + ".json", {
+      return ThreadUpdater.req = $.ajax(location.protocol + "//a.4cdn.org/" + ThreadUpdater.thread.board + "/thread/" + ThreadUpdater.thread + ".json", {
         onloadend: ThreadUpdater.cb.load,
         timeout: $.MINUTE
       }, {
@@ -19254,7 +19339,7 @@ ThreadWatcher = (function() {
         ThreadWatcher.status.textContent = '...';
         $.addClass(ThreadWatcher.refreshButton, 'fa-spin');
       }
-      req = $.ajax("//a.4cdn.org/" + boardID + "/thread/" + threadID + ".json", {
+      req = $.ajax(location.protocol + "//a.4cdn.org/" + boardID + "/thread/" + threadID + ".json", {
         onloadend: function() {
           return ThreadWatcher.parseStatus.call(this, thread);
         },
@@ -19967,7 +20052,6 @@ Unread = (function() {
       if (Unread.thread.isDead && !Unread.thread.isArchived) {
         return;
       }
-      Unread.db.forceSync();
       return Unread.db.set({
         boardID: Unread.thread.board.ID,
         threadID: Unread.thread.ID,
@@ -22574,9 +22658,9 @@ QR = (function() {
             if ((type === 'thread') === (cooldown.threadID === cooldown.postID) && cooldown.boardID !== g.BOARD.ID) {
               suffix = scope === 'global' ? '_global' : '';
               seconds = Math.max(seconds, QR.cooldown.delays[type + suffix] - elapsed);
-            }
-            if (QR.cooldown.customCooldown) {
-              seconds = Math.max(seconds, parseInt(Conf['customCooldown'], 10) - elapsed);
+              if (QR.cooldown.customCooldown) {
+                seconds = Math.max(seconds, parseInt(Conf['customCooldown'], 10) - elapsed);
+              }
             }
           }
           nCooldowns += Object.keys(cooldowns).length;
@@ -24886,7 +24970,7 @@ Main = (function() {
           threads[0].ipCount = (m = scriptData.match(/\bunique_ips *= *(\d+)\b/)) ? +m[1] : void 0;
         }
         if (g.BOARD.ID === 'f' && g.VIEW === 'thread') {
-          $.ajax("//a.4cdn.org/f/thread/" + g.THREADID + ".json", {
+          $.ajax(location.protocol + "//a.4cdn.org/f/thread/" + g.THREADID + ".json", {
             timeout: $.MINUTE,
             onloadend: function() {
               if (this.response && posts[0].file) {
