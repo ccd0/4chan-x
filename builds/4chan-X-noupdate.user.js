@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.12.2
+// @version      1.13.12.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -158,7 +158,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.12.2',
+  VERSION:   '1.13.12.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -2798,7 +2798,7 @@ input.field.tripped:not(:hover):not(:focus) {\n\
   text-shadow: none !important;\n\
 }\n\
 #qr textarea {\n\
-  min-width: 100%;\n\
+  min-width: 300px;\n\
   resize: both;\n\
 }\n\
 .field {\n\
