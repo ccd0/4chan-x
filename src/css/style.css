@@ -1602,7 +1602,7 @@ input.field.tripped:not(:hover):not(:focus) {
   text-shadow: none !important;
 }
 #qr textarea {
-  min-width: 100%;
+  min-width: 300px;
   resize: both;
 }
 .field {
