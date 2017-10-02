@@ -400,7 +400,7 @@ Embedding =
     ,
       key: 'Twitter'
       regExp: /^\w+:\/\/(?:www\.|mobile\.)?twitter\.com\/(\w+\/status\/\d+)/
-      style: 'border: none; width: 550px; height: 250px; max-height: 80vh;'
+      style: 'border: none; width: 550px; height: 250px; overflow: hidden; resize: both;'
       el: (a) ->
         el = $.el 'iframe'
         $.on el, 'load', ->
@@ -408,10 +408,17 @@ Embedding =
         onMessage = (e) ->
           if e.source is el.contentWindow and e.origin is 'https://twitframe.com'
             $.off window, 'message', onMessage
-            el.style.height = "#{+e.data.height}px"
+            (cont or el).style.height = "#{+$.minmax(e.data.height, 250, 0.8 * doc.clientHeight)}px"
         $.on window, 'message', onMessage
         el.src = "https://twitframe.com/show?url=https://twitter.com/#{a.dataset.uid}"
-        el
+        if $.engine is 'gecko'
+          # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=680823
+          el.style.cssText = 'border: none; width: 100%; height: 100%;'
+          cont = $.el 'div'
+          $.add cont, el
+          cont
+        else
+          el
     ,
       key: 'Vimeo'
       regExp:  /^\w+:\/\/(?:www\.)?vimeo\.com\/(\d+)/
