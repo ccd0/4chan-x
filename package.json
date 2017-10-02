@@ -61,6 +61,7 @@
       "GM.setValue",
       "GM.deleteValue",
       "GM.listValues",
+      "GM.openInTab",
       "GM.xmlHttpRequest"
     ],
     "min": {

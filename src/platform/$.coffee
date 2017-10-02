@@ -259,7 +259,9 @@ $.modifiedClick = (e) ->
 
 $.open = 
 <% if (type === 'userscript') { %>
-  if GM_openInTab?
+  if GM?.openInTab?
+    GM.openInTab
+  else if GM_openInTab?
     GM_openInTab
   else
     (url) -> window.open url, '_blank'
