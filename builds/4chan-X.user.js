@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.12.1
+// @version      1.13.12.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -158,7 +158,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.12.1',
+  VERSION:   '1.13.12.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -15021,9 +15021,9 @@ Embedding = (function() {
       }, {
         key: 'Twitter',
         regExp: /^\w+:\/\/(?:www\.|mobile\.)?twitter\.com\/(\w+\/status\/\d+)/,
-        style: 'border: none; width: 550px; height: 250px; max-height: 80vh;',
+        style: 'border: none; width: 550px; height: 250px; overflow: hidden; resize: both;',
         el: function(a) {
-          var el, onMessage;
+          var cont, el, onMessage;
           el = $.el('iframe');
           $.on(el, 'load', function() {
             return this.contentWindow.postMessage({
@@ -15034,12 +15034,19 @@ Embedding = (function() {
           onMessage = function(e) {
             if (e.source === el.contentWindow && e.origin === 'https://twitframe.com') {
               $.off(window, 'message', onMessage);
-              return el.style.height = (+e.data.height) + "px";
+              return (cont || el).style.height = (+$.minmax(e.data.height, 250, 0.8 * doc.clientHeight)) + "px";
             }
           };
           $.on(window, 'message', onMessage);
           el.src = "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid;
-          return el;
+          if ($.engine === 'gecko') {
+            el.style.cssText = 'border: none; width: 100%; height: 100%;';
+            cont = $.el('div');
+            $.add(cont, el);
+            return cont;
+          } else {
+            return el;
+          }
         }
       }, {
         key: 'Vimeo',
