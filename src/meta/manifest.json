@@ -29,7 +29,8 @@
   ],
   "applications": {
     "gecko": {
-      "id": "<%= meta.appidGecko %>"
-    }
+      "id": "<%= meta.appidGecko %>"<% if (channel !== '-noupdate') { %>,
+      "update_url": "<%= meta.downloads %>updates<%= channel %>.json"
+<% } %>    }
   }
 }
