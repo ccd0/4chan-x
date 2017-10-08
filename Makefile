@@ -87,7 +87,7 @@ crx_contents := script.js eventPage.js icon16.png icon48.png icon128.png manifes
 
 release := \
  $(foreach f, \
-  $(foreach c,. -beta.,$(name)$(c)crx updates$(c)xml $(name)$(c)user.js $(name)$(c)meta.js) \
+  $(foreach c,. -beta.,$(name)$(c)crx updates$(c)xml updates$(c)json $(name)$(c)user.js $(name)$(c)meta.js) \
   $(name)-noupdate.crx \
   $(name)-noupdate.user.js \
   $(name).zip \
@@ -182,6 +182,9 @@ testbuilds/crx$1/manifest.json : src/meta/manifest.json version.json $(template_
 	$(template) $$< $$@ type=crx channel=$1
 
 testbuilds/updates$1.xml : src/meta/updates.xml version.json $(template_deps) | testbuilds/crx$1
+	$(template) $$< $$@ type=crx channel=$1
+
+testbuilds/updates$1.json : src/meta/updates.json version.json $(template_deps) | testbuilds/crx$1
 	$(template) $$< $$@ type=crx channel=$1
 
 testbuilds/$(name)$1.crx.zip : \
@@ -342,7 +345,7 @@ stable : distready
 	git push . HEAD:bstable
 	git tag -af stable -m "$(meta_name) v$(version)."
 	cd dist && git merge --no-commit -s ours stable
-	cd dist && git checkout stable "builds/$(name).*" builds/updates.xml
+	cd dist && git checkout stable "builds/$(name).*" builds/updates.xml builds/updates.json
 	cd dist && git commit -am "Move $(meta_name) v$(version) to stable channel."
 
 web : index.html distready

@@ -1,0 +1,12 @@
+{
+  "addons": {
+    "<%= meta.appidGecko %>": {
+      "updates": [
+        {
+          "version": "<%= readJSON('/version.json').version %>",
+          "update_link": "<%= meta.downloads %><%= name %><%= channel %>.crx"
+        }
+      ]
+    }
+  }
+}

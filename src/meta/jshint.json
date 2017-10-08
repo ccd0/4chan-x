@@ -20,6 +20,7 @@
     "BroadcastChannel": false,
     "GM_info":      false,
     "cloneInto":    false,
+    "XPCNativeWrapper": false,
     "unsafeWindow": false,
     "chrome":       false,
     "GM":           false<%=

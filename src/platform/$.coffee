@@ -45,6 +45,10 @@ $.ajax = do ->
   # With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
   # This saves a lot of bandwidth and CPU time for both the users and the servers.
   lastModified = {}
+  <% if (type === 'crx') { %>
+  if XPCNativeWrapper?
+    pageXHR = XPCNativeWrapper window.wrappedJSObject.XMLHttpRequest
+  <% } %>
 
   (url, options={}, extra={}) ->
     {type, whenModified, upCallbacks, form} = extra
@@ -53,7 +57,11 @@ $.ajax = do ->
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
     url += "?s=#{whenModified}" if $.engine is 'blink' and whenModified
-    r = new XMLHttpRequest()
+    xhr = XMLHttpRequest
+    <% if (type === 'crx') { %>
+    xhr = pageXHR or xhr
+    <% } %>
+    r = new xhr()
     type or= form and 'post' or 'get'
     try
       r.open type, url, true
@@ -415,9 +423,17 @@ $.get = $.oneItemSugar (data, cb) ->
   return unless $.crxWorking()
   results = {}
   get = (area) ->
-    chrome.storage[area].get Object.keys(data), (result) ->
+    keys = Object.keys data
+    # XXX slow performance in Firefox
+    if $.engine is 'gecko' and area is 'sync' and keys.length > 3
+      keys = null
+    chrome.storage[area].get keys, (result) ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
+      if keys is null
+        result2 = {}
+        result2[key] = val for key, val of result when key of data
+        result = result2
       for key of data
         $.oldValue[area][key] = result[key]
       results[area] = result

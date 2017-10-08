@@ -23,10 +23,14 @@
 <% if (channel !== '-noupdate') { %>  "update_url": "<%= meta.downloads %>updates<%= channel %>.xml",
   "key": "<%= meta.appid %>",
 <% } %>  "minimum_chrome_version": "<%= meta.min.chrome %>",
-  "permissions": [
-    "storage"
-  ],
+  "permissions": <%= JSON.stringify(meta.matches_only.concat(["storage"])) %>,
   "optional_permissions": [
     "*://*/"
-  ]
+  ],
+  "applications": {
+    "gecko": {
+      "id": "<%= meta.appidGecko %>"<% if (channel !== '-noupdate') { %>,
+      "update_url": "<%= meta.downloads %>updates<%= channel %>.json"
+<% } %>    }
+  }
 }

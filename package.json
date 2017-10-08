@@ -16,6 +16,7 @@
     "newIssue": "https://gitreports.com/issue/ccd0/4chan-x?issue_title=%title&details=%details",
     "newIssueMaxLength": 8181,
     "appid": "lacclbnghgdicfifcamcmcnilckjamag",
+    "appidGecko": "4chan-x@4chan-x.net",
     "chromeStoreID": "ohnjgmpcibpbafdlkimncjhflgedgpam",
     "recaptchaKey": "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc",
     "youtubeAPIKey": "AIzaSyB5_zaen_-46Uhz1xGR-lz1YoUMHqCD6CE",
