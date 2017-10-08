@@ -421,9 +421,17 @@ $.get = $.oneItemSugar (data, cb) ->
   return unless $.crxWorking()
   results = {}
   get = (area) ->
-    chrome.storage[area].get Object.keys(data), (result) ->
+    keys = Object.keys data
+    # XXX slow performance in Firefox
+    if $.engine is 'gecko' and area is 'sync' and keys.length > 3
+      keys = null
+    chrome.storage[area].get keys, (result) ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
+      if keys is null
+        result2 = {}
+        result2[key] = val for key, val of result when key of data
+        result = result2
       for key of data
         $.oldValue[area][key] = result[key]
       results[area] = result
