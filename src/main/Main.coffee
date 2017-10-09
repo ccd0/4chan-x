@@ -4,8 +4,12 @@ Main =
     return if d.body and not $ 'title', d.head
 
     # XXX dwb userscripts extension reloads scripts run at document-start when replaceState/pushState is called.
-    return if window['<%= meta.name %> antidup']
-    window['<%= meta.name %> antidup'] = true
+    # XXX Firefox reinjects WebExtension content scripts when extension is updated / reloaded.
+    try
+      w = window
+      w = (w.wrappedJSObject or w) if $.platform is 'crx'
+      return if '<%= meta.name %> antidup' of w
+      w['<%= meta.name %> antidup'] = true
 
     if location.hostname is 'www.google.com'
       if location.pathname is '/recaptcha/api/noscript'
