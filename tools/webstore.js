@@ -9,7 +9,7 @@ var secrets = JSON.parse(fs.readFileSync(`../${pkg.meta.path}.keys/chrome-store.
 
 request(`https://chrome.google.com/webstore/detail/${pkg.meta.chromeStoreID}`, function (error, response, body) {
 
-  if (body && body.indexOf(`<meta itemprop="version" content="${v.version}" />`) > 0 && process.argv[2] !== 'force') {
+  if (body && body.indexOf(`<meta itemprop="version" content="${v.version}"/>`) > 0 && process.argv[2] !== 'force') {
     console.log(`Version ${v.version} already uploaded.`);
     return;
   }
