@@ -2,6 +2,13 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.13.13
+
+**v1.13.13.0** *(2017-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.12.3.
+- Experimental support for installing the Chrome extension version in Firefox.
+- Minor bugfixes.
+
 ### v1.13.12
 
 **v1.13.12.3** *(2017-10-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.3/builds/4chan-X-noupdate.crx)]

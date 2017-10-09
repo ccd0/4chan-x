@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.12.3
+// @version      1.13.13.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -52,6 +52,7 @@
 // @grant        GM.setValue
 // @grant        GM.deleteValue
 // @grant        GM.listValues
+// @grant        GM.openInTab
 // @grant        GM.xmlHttpRequest
 // @run-at       document-start
 // @updateURL    https://www.4chan-x.net/builds/4chan-X.meta.js
@@ -158,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.12.3',
+  VERSION:   '1.13.13.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -4480,7 +4481,7 @@ $ = (function() {
     var lastModified;
     lastModified = {};
     return function(url, options, extra) {
-      var err, event, form, j, len, r, ref, ref1, type, upCallbacks, whenModified;
+      var err, event, form, j, len, r, ref, ref1, type, upCallbacks, whenModified, xhr;
       if (options == null) {
         options = {};
       }
@@ -4497,7 +4498,8 @@ $ = (function() {
       if ($.engine === 'blink' && whenModified) {
         url += "?s=" + whenModified;
       }
-      r = new XMLHttpRequest();
+      xhr = XMLHttpRequest;
+      r = new xhr();
       type || (type = form && 'post' || 'get');
       try {
         r.open(type, url, true);
@@ -4840,7 +4842,7 @@ $ = (function() {
     return e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0;
   };
 
-  $.open = typeof GM_openInTab !== "undefined" && GM_openInTab !== null ? GM_openInTab : function(url) {
+  $.open = (typeof GM !== "undefined" && GM !== null ? GM.openInTab : void 0) != null ? GM.openInTab : typeof GM_openInTab !== "undefined" && GM_openInTab !== null ? GM_openInTab : function(url) {
     return window.open(url, '_blank');
   };
 
@@ -14333,7 +14335,7 @@ Volume = (function() {
         return;
       }
       $.on(this.file.thumb, 'wheel', Volume.wheel.bind(Header.hover));
-      return $.on($('a', this.file.text), 'wheel', Volume.wheel.bind(this.file.thumbLink));
+      return $.on($('.file-info', this.file.text) || this.file.link, 'wheel', Volume.wheel.bind(this.file.thumbLink));
     },
     catalogNode: function() {
       var file;
