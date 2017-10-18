@@ -510,7 +510,7 @@ do ->
 # http://wiki.greasespot.net/Main_Page
 # https://tampermonkey.net/documentation.php
 
-if GM?.deleteValue?
+if GM?.deleteValue? and window.BroadcastChannel and not GM_addValueChangeListener?
 
   $.syncChannel = new BroadcastChannel(g.NAMESPACE + 'sync')
 
