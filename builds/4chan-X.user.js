@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.13.0
+// @version      1.13.13.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.13.0',
+  VERSION:   '1.13.13.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -4979,7 +4979,7 @@ $ = (function() {
 
   $.syncing = {};
 
-  if ((typeof GM !== "undefined" && GM !== null ? GM.deleteValue : void 0) != null) {
+  if (((typeof GM !== "undefined" && GM !== null ? GM.deleteValue : void 0) != null) && window.BroadcastChannel && (typeof GM_addValueChangeListener === "undefined" || GM_addValueChangeListener === null)) {
     $.syncChannel = new BroadcastChannel(g.NAMESPACE + 'sync');
     $.on($.syncChannel, 'message', function(e) {
       var cb, key, ref, results, val;
@@ -5059,7 +5059,7 @@ $ = (function() {
       });
     });
     $.clear = function(cb) {
-      return GM.listValues.then(function(keys) {
+      return GM.listValues().then(function(keys) {
         return $["delete"](keys.map(function(key) {
           return key.replace(g.NAMESPACE, '');
         }), cb);
@@ -24569,14 +24569,20 @@ Main = (function() {
 
   Main = {
     init: function() {
-      var db, flatten, i, items, j, k, key, len, ref;
+      var db, flatten, i, items, j, k, key, len, ref, w;
       if (d.body && !$('title', d.head)) {
         return;
       }
-      if (window['4chan X antidup']) {
-        return;
-      }
-      window['4chan X antidup'] = true;
+      try {
+        w = window;
+        if ($.platform === 'crx') {
+          w = w.wrappedJSObject || w;
+        }
+        if ('4chan X antidup' in w) {
+          return;
+        }
+        w['4chan X antidup'] = true;
+      } catch (_error) {}
       if (location.hostname === 'www.google.com') {
         if (location.pathname === '/recaptcha/api/noscript') {
           $.ready(function() {

@@ -4,6 +4,10 @@
 
 ### v1.13.13
 
+**v1.13.13.1** *(2017-10-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.1/builds/4chan-X-noupdate.crx)]
+- Fix setting clearing/importing in GM4. #1531
+- Fix issue with new Tampermonkey version on Edge. #1534
+
 **v1.13.13.0** *(2017-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.13.12.3.
 - Experimental support for installing the Chrome extension version in Firefox.
