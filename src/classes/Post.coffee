@@ -97,9 +97,9 @@ class Post
       Object.defineProperty nodes, 'backlinks',
         configurable: true
         enumerable:   true
-        get: -> info.getElementsByClassName 'backlink'
+        get: -> post.getElementsByClassName 'backlink'
     else
-      nodes.backlinks = info.getElementsByClassName 'backlink'
+      nodes.backlinks = post.getElementsByClassName 'backlink'
 
     nodes
 
