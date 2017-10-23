@@ -1215,6 +1215,7 @@ span.hide-announcement {
 :root.bottom-backlinks .container {
   display: block;
   clear: both;
+  margin: 0 4px;
 }
 :root.bottom-backlinks .backlink {
   font-size: 90%;
