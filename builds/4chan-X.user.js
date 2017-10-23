@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.14.1
+// @version      1.13.14.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.1',
+  VERSION:   '1.13.14.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -23640,7 +23640,7 @@ QuoteBacklink = (function() {
     secondNode: function() {
       var container;
       if (this.isClone && (this.origin.isReply || Conf['OP Backlinks'])) {
-        this.nodes.backlinkContainer = $('.container', this.nodes.info);
+        this.nodes.backlinkContainer = $('.container', this.nodes.post);
         return;
       }
       if (!(this.isReply || Conf['OP Backlinks'])) {
