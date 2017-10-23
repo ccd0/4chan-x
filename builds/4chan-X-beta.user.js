@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.13.1
+// @version      1.13.14.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.13.1',
+  VERSION:   '1.13.14.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -332,6 +332,7 @@ Config = (function() {
       'Quote Links': {
         'Quote Backlinks': [true, 'Add quote backlinks.'],
         'OP Backlinks': [true, 'Add backlinks to the OP.', 1],
+        'Bottom Backlinks': [false, 'Place backlinks at the bottom of posts.', 1],
         'Quote Inlining': [true, 'Inline quoted post on click.'],
         'Inline Cross-thread Quotes Only': [false, 'Don\'t inline quote links when the posts are visible in the thread.', 1],
         'Quote Hash Navigation': [false, 'Include an extra link after quotes for autoscrolling to quoted posts.', 1],
@@ -2415,6 +2416,13 @@ span.hide-announcement {\n\
 }\n\
 .postNum + .container::before {\n\
   content: \" \";\n\
+}\n\
+:root.bottom-backlinks .container {\n\
+  display: block;\n\
+  clear: both;\n\
+}\n\
+:root.bottom-backlinks .backlink {\n\
+  font-size: 90%;\n\
 }\n\
 .inline {\n\
   border: 1px solid;\n\
@@ -6359,11 +6367,11 @@ Post = (function() {
           configurable: true,
           enumerable: true,
           get: function() {
-            return info.getElementsByClassName('backlink');
+            return post.getElementsByClassName('backlink');
           }
         });
       } else {
-        nodes.backlinks = info.getElementsByClassName('backlink');
+        nodes.backlinks = post.getElementsByClassName('backlink');
       }
       return nodes;
     };
@@ -23566,6 +23574,9 @@ QuoteBacklink = (function() {
       if (((ref = g.VIEW) !== 'index' && ref !== 'thread') || !Conf['Quote Backlinks']) {
         return;
       }
+      if ((this.bottomBacklinks = Conf['Bottom Backlinks'])) {
+        $.addClass(doc, 'bottom-backlinks');
+      }
       Callbacks.Post.push({
         name: 'Quote Backlinking Part 1',
         cb: this.firstNode
@@ -23636,7 +23647,11 @@ QuoteBacklink = (function() {
       }
       container = QuoteBacklink.getContainer(this.fullID);
       this.nodes.backlinkContainer = container;
-      return $.add(this.nodes.info, container);
+      if (QuoteBacklink.bottomBacklinks) {
+        return $.add(this.nodes.post, container);
+      } else {
+        return $.add(this.nodes.info, container);
+      }
     },
     getContainer: function(id) {
       var base;
@@ -23773,7 +23788,7 @@ QuoteInline = (function() {
     },
     findRoot: function(quotelink, isBacklink) {
       if (isBacklink) {
-        return quotelink.parentNode.parentNode;
+        return $.x('ancestor::*[parent::*[contains(@class,"post")]][1]', quotelink);
       } else {
         return $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
       }
