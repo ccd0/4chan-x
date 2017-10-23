@@ -537,6 +537,11 @@ Config =
         'Add backlinks to the OP.'
         1
       ]
+      'Bottom Backlinks': [
+        false
+        'Place backlinks at the bottom of posts.'
+        1
+      ]
       'Quote Inlining': [
         true
         'Inline quoted post on click.'
