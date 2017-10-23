@@ -48,7 +48,7 @@ QuoteInline =
 
   findRoot: (quotelink, isBacklink) ->
     if isBacklink
-      quotelink.parentNode.parentNode
+      $.x 'ancestor::*[parent::*[contains(@class,"post")]][1]', quotelink
     else
       $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
 
