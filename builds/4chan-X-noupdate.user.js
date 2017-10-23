@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.14.0
+// @version      1.13.14.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.0',
+  VERSION:   '1.13.14.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -2098,6 +2098,7 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 .catalog-post > * > .fileText > :not(:first-child),\n\
 .catalog-post > .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),\n\
 .catalog-post > * > * > .posteruid,\n\
+:root.bottom-backlinks .catalog-post > .container,\n\
 .post:not(.catalog-post) > .catalog-link,\n\
 .post:not(.catalog-post) > .catalog-stats,\n\
 .post:not(.catalog-post) > .catalog-replies {\n\
