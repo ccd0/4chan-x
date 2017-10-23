@@ -1211,6 +1211,13 @@ span.hide-announcement {
 .postNum + .container::before {
   content: " ";
 }
+:root.bottom-backlinks .container {
+  display: block;
+  clear: both;
+}
+:root.bottom-backlinks .backlink {
+  font-size: 90%;
+}
 .inline {
   border: 1px solid;
   display: table;
