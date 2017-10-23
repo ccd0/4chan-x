@@ -48,6 +48,10 @@ QuoteBacklink =
         $.add container, nodes
     return
   secondNode: ->
+    # Add a class to differentiate when backlinks are at
+    # the top (default) or bottom of a post
+    if Conf['Bottom Backlinks']
+      $.addClass doc, 'bottom-backlinks'
     if @isClone and (@origin.isReply or Conf['OP Backlinks'])
       @nodes.backlinkContainer = $ '.container', @nodes.info
       return
@@ -55,7 +59,10 @@ QuoteBacklink =
     return unless @isReply or Conf['OP Backlinks']
     container = QuoteBacklink.getContainer @fullID
     @nodes.backlinkContainer = container
-    $.add @nodes.info, container
+    if Conf['Bottom Backlinks']
+      $.add @nodes.post, container
+    else
+      $.add @nodes.info, container
   getContainer: (id) ->
     @containers[id] or=
       $.el 'span', className: 'container'
