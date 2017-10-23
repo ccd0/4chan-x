@@ -54,7 +54,7 @@ QuoteBacklink =
     return
   secondNode: ->
     if @isClone and (@origin.isReply or Conf['OP Backlinks'])
-      @nodes.backlinkContainer = $ '.container', @nodes.info
+      @nodes.backlinkContainer = $ '.container', @nodes.post
       return
     # Don't backlink the OP.
     return unless @isReply or Conf['OP Backlinks']
