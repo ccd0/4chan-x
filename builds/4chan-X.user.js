@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.14.2
+// @version      1.13.14.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.2',
+  VERSION:   '1.13.14.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -2421,6 +2421,7 @@ span.hide-announcement {\n\
 :root.bottom-backlinks .container {\n\
   display: block;\n\
   clear: both;\n\
+  margin: 0 4px;\n\
 }\n\
 :root.bottom-backlinks .backlink {\n\
   font-size: 90%;\n\
@@ -2429,6 +2430,9 @@ span.hide-announcement {\n\
   border: 1px solid;\n\
   display: table;\n\
   margin: 2px 0;\n\
+}\n\
+.container ~ .inline {\n\
+  margin-left: 20px;\n\
 }\n\
 :root.catalog-mode .inline {\n\
   display: none;\n\

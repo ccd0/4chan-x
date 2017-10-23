@@ -4,6 +4,9 @@
 
 ### v1.13.14
 
+**v1.13.14.3** *(2017-10-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.3/builds/4chan-X-noupdate.crx)]
+- CSS tweaks to bottom backlinks.
+
 **v1.13.14.2** *(2017-10-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.2/builds/4chan-X-noupdate.crx)]
 - Fix bottom backlinks related error.
 
