@@ -1225,6 +1225,9 @@ span.hide-announcement {
   display: table;
   margin: 2px 0;
 }
+.container ~ .inline {
+  margin-left: 20px;
+}
 :root.catalog-mode .inline {
   display: none;
 }
