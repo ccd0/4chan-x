@@ -196,6 +196,32 @@ Filter =
     if post.nodes.post.getBoundingClientRect().height
       new Notice 'info', 'MD5 filtered.', 2
 
+  escape: (value) ->
+    value.replace ///
+      /
+      | \\
+      | \^
+      | \$
+      | \n
+      | \.
+      | \(
+      | \)
+      | \{
+      | \}
+      | \[
+      | \]
+      | \?
+      | \*
+      | \+
+      | \|
+      ///g, (c) ->
+        if c is '\n'
+          '\\n'
+        else if c is '\\'
+          '\\\\'
+        else
+          "\\#{c}"
+
   menu:
     init: ->
       return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Filter']
@@ -248,31 +274,7 @@ Filter =
       {type} = @dataset
       # Convert value -> regexp, unless type is MD5
       value = Filter[type] Filter.menu.post
-      re = if type in ['uniqueID', 'MD5'] then value else value.replace ///
-        /
-        | \\
-        | \^
-        | \$
-        | \n
-        | \.
-        | \(
-        | \)
-        | \{
-        | \}
-        | \[
-        | \]
-        | \?
-        | \*
-        | \+
-        | \|
-        ///g, (c) ->
-          if c is '\n'
-            '\\n'
-          else if c is '\\'
-            '\\\\'
-          else
-            "\\#{c}"
-
+      re = if type in ['uniqueID', 'MD5'] then value else Filter.escape(value)
       re = if type in ['uniqueID', 'MD5']
         "/#{re}/"
       else
