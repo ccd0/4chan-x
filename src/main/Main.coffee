@@ -55,7 +55,6 @@ Main =
     Conf['selectedArchives'] = {}
     Conf['cooldowns'] = {}
     Conf['Index Sort'] = {}
-    Conf['BoardTips.seen'] = {}
     Conf["Last Long Reply Thresholds #{i}"] = {} for i in [0...2]
 
     # XXX old key names
@@ -513,7 +512,6 @@ Main =
     ['Banner',                    Banner]
     ['Flash Features',            Flash]
     ['Reply Pruning',             ReplyPruning]
-    ['Board Tips',                BoardTips]
     <% if (readJSON('/.tests_enabled')) { %>
     ['Build Test',                Build.Test]
     <% } %>
