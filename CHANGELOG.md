@@ -4,6 +4,10 @@
 
 ### v1.13.13
 
+**v1.13.13.2** *(2017-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.2/builds/4chan-X-noupdate.crx)]
+- Drop now redundant /qa/ message.
+- Add Catalonia to /pol/ flags.
+
 **v1.13.13.1** *(2017-10-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.1/builds/4chan-X-noupdate.crx)]
 - Fix setting clearing/importing in GM4. #1531
 - Fix issue with new Tampermonkey version on Edge. #1534
