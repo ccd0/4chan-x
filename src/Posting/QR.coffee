@@ -614,6 +614,7 @@ QR =
       ['BL', 'Black Nationalist']
       ['CF', 'Confederate']
       ['CM', 'Communist']
+      ['CT', 'Catalonia']
       ['DM', 'Democrat']
       ['EU', 'European']
       ['FC', 'Fascist']
