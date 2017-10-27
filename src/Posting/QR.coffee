@@ -602,37 +602,12 @@ QR =
       name:      'flag'
       className: 'flagSelector'
 
-    fn = (val) ->
-      $.add select, $.el 'option',
-        value: val[0]
-        textContent: val[1]
+    addFlag = (value, textContent) ->
+      $.add select, $.el 'option', {value, textContent}
 
-    fn flag for flag in [
-      ['0',  'Geographic Location']
-      ['AC', 'Anarcho-Capitalist']
-      ['AN', 'Anarchist']
-      ['BL', 'Black Nationalist']
-      ['CF', 'Confederate']
-      ['CM', 'Communist']
-      ['CT', 'Catalonia']
-      ['DM', 'Democrat']
-      ['EU', 'European']
-      ['FC', 'Fascist']
-      ['GN', 'Gadsden']
-      ['GY', 'Gay']
-      ['JH', 'Jihadi']
-      ['KN', 'Kekistani']
-      ['MF', 'Muslim']
-      ['NB', 'National Bolshevik']
-      ['NZ', 'Nazi']
-      ['PC', 'Hippie']
-      ['PR', 'Pirate']
-      ['RE', 'Republican']
-      ['TM', 'Templar']
-      ['TR', 'Tree Hugger']
-      ['UN', 'United Nations']
-      ['WP', 'White Supremacist']
-    ]
+    addFlag '0', 'Geographic Location'
+    for value, textContent of BoardConfig.troll_flags
+      addFlag value, textContent
 
     select
 
