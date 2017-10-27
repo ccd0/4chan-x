@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.14.3
+// @version      1.13.14.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -144,7 +144,7 @@
 
 'use strict';
 
-var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, BoardTips, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, Sauce, Settings, ShimSet, SimpleDict, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, Volume;
+var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, Sauce, Settings, ShimSet, SimpleDict, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, Volume;
 
 var Conf, E, c, d, doc, docSet, g;
 
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.3',
+  VERSION:   '1.13.14.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -7648,6 +7648,17 @@ Filter = (function() {
         return new Notice('info', 'MD5 filtered.', 2);
       }
     },
+    escape: function(value) {
+      return value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
+        if (c === '\n') {
+          return '\\n';
+        } else if (c === '\\') {
+          return '\\\\';
+        } else {
+          return "\\" + c;
+        }
+      });
+    },
     menu: {
       init: function() {
         var div, entry, i, len, ref, ref1, type;
@@ -7694,15 +7705,7 @@ Filter = (function() {
         var re, type, value;
         type = this.dataset.type;
         value = Filter[type](Filter.menu.post);
-        re = type === 'uniqueID' || type === 'MD5' ? value : value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
-          if (c === '\n') {
-            return '\\n';
-          } else if (c === '\\') {
-            return '\\\\';
-          } else {
-            return "\\" + c;
-          }
-        });
+        re = type === 'uniqueID' || type === 'MD5' ? value : Filter.escape(value);
         re = type === 'uniqueID' || type === 'MD5' ? "/" + re + "/" : "/^" + re + "$/";
         return Filter.addFilter(type, re, function() {
           var section, select;
@@ -8418,18 +8421,19 @@ BoardConfig = (function() {
   BoardConfig = {
     cbs: [],
     init: function() {
-      var now, ref;
+      var boards, now, ref, ref1, troll_flags;
       now = Date.now();
-      if (!((now - 2 * $.HOUR < (ref = Conf['boardConfig'].lastChecked || 0) && ref <= now))) {
+      if (!((now - 2 * $.HOUR < (ref = Conf['boardConfig'].lastChecked || 0) && ref <= now) && Conf['boardConfig'].troll_flags)) {
         return $.ajax(location.protocol + "//a.4cdn.org/boards.json", {
           onloadend: this.load
         });
       } else {
-        return this.set(Conf['boardConfig'].boards);
+        ref1 = Conf['boardConfig'], boards = ref1.boards, troll_flags = ref1.troll_flags;
+        return this.set(boards, troll_flags);
       }
     },
     load: function() {
-      var board, boards, err, i, len, ref;
+      var board, boards, err, i, len, ref, ref1, troll_flags;
       if (this.status === 200 && this.response && this.response.boards) {
         boards = {};
         ref = this.response.boards;
@@ -8437,12 +8441,14 @@ BoardConfig = (function() {
           board = ref[i];
           boards[board.board] = board;
         }
+        troll_flags = this.response.troll_flags;
         $.set('boardConfig', {
           boards: boards,
+          troll_flags: troll_flags,
           lastChecked: Date.now()
         });
       } else {
-        boards = Conf['boardConfig'].boards;
+        ref1 = Conf['boardConfig'], boards = ref1.boards, troll_flags = ref1.troll_flags;
         err = (function() {
           switch (this.status) {
             case 0:
@@ -8455,11 +8461,12 @@ BoardConfig = (function() {
         }).call(this);
         new Notice('warning', "Failed to load board configuration. " + err, 20);
       }
-      return BoardConfig.set(boards);
+      return BoardConfig.set(boards, troll_flags);
     },
-    set: function(boards1) {
+    set: function(boards1, troll_flags1) {
       var ID, board, cb, i, len, ref, ref1;
       this.boards = boards1;
+      this.troll_flags = troll_flags1;
       ref = g.boards;
       for (ID in ref) {
         board = ref[ID];
@@ -15981,35 +15988,6 @@ Banner = (function() {
 
 }).call(this);
 
-BoardTips = (function() {
-  var BoardTips;
-
-  BoardTips = {
-    tips: {
-      qa: [
-        1, {
-          innerHTML: "New to /qa/?<br>/qa/ is NOT an effective way to contact the mods.<br>Message a mod on <a href=\"https://www.rizon.net/chat\" target=\"_blank\">IRC</a> or use <a href=\"https://www.4chan.org/feedback\" target=\"_blank\">feedback</a> instead. More details <a href=\"https://www.4chan-x.net/qa_instructions.png\" target=\"_blank\">here</a>."
-        }
-      ]
-    },
-    init: function() {
-      var el, seen, tip;
-      tip = BoardTips.tips[g.BOARD.ID];
-      seen = Conf['BoardTips.seen'];
-      if (!tip || (seen[g.BOARD.ID] && seen[g.BOARD.ID] >= tip[0])) {
-        return;
-      }
-      seen[g.BOARD.ID] = tip[0];
-      $.set('BoardTips.seen', seen);
-      el = $.el('span', tip[1]);
-      return new Notice('info', el);
-    }
-  };
-
-  return BoardTips;
-
-}).call(this);
-
 CatalogLinks = (function() {
   var CatalogLinks;
 
@@ -22150,21 +22128,22 @@ QR = (function() {
       return $.event('QRDialogCreation', null, dialog);
     },
     flags: function() {
-      var flag, fn, j, len, ref, select;
+      var addFlag, ref, select, textContent, value;
       select = $.el('select', {
         name: 'flag',
         className: 'flagSelector'
       });
-      fn = function(val) {
+      addFlag = function(value, textContent) {
         return $.add(select, $.el('option', {
-          value: val[0],
-          textContent: val[1]
+          value: value,
+          textContent: textContent
         }));
       };
-      ref = [['0', 'Geographic Location'], ['AC', 'Anarcho-Capitalist'], ['AN', 'Anarchist'], ['BL', 'Black Nationalist'], ['CF', 'Confederate'], ['CM', 'Communist'], ['DM', 'Democrat'], ['EU', 'European'], ['FC', 'Fascist'], ['GN', 'Gadsden'], ['GY', 'Gay'], ['JH', 'Jihadi'], ['KN', 'Kekistani'], ['MF', 'Muslim'], ['NB', 'National Bolshevik'], ['NZ', 'Nazi'], ['PC', 'Hippie'], ['PR', 'Pirate'], ['RE', 'Republican'], ['TM', 'Templar'], ['TR', 'Tree Hugger'], ['UN', 'United Nations'], ['WP', 'White Supremacist']];
-      for (j = 0, len = ref.length; j < len; j++) {
-        flag = ref[j];
-        fn(flag);
+      addFlag('0', 'Geographic Location');
+      ref = BoardConfig.troll_flags;
+      for (value in ref) {
+        textContent = ref[value];
+        addFlag(value, textContent);
       }
       return select;
     },
@@ -24665,7 +24644,6 @@ Main = (function() {
       Conf['selectedArchives'] = {};
       Conf['cooldowns'] = {};
       Conf['Index Sort'] = {};
-      Conf['BoardTips.seen'] = {};
       for (i = k = 0; k < 2; i = ++k) {
         Conf["Last Long Reply Thresholds " + i] = {};
       }
@@ -25143,7 +25121,7 @@ Main = (function() {
         }
       });
     },
-    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Copy Text Link', CopyTextLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning], ['Board Tips', BoardTips]]
+    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Copy Text Link', CopyTextLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning]]
   };
 
   return Main;
