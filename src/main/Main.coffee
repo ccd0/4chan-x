@@ -238,6 +238,7 @@ Main =
       for styleSheet in styleSheets
         if styleSheet.href is mainStyleSheet?.href
           style = styleSheet.title.toLowerCase().replace('new', '').trim().replace /\s+/g, '-'
+          style = 'spooky' if style.href.match(/[a-z]*(?=[^/]*$)/)[0] is 'spooky'
           break
       if style
         $.addClass doc, style
