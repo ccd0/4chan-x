@@ -239,6 +239,7 @@ Main =
         if styleSheet.href is mainStyleSheet?.href
           style = styleSheet.title.toLowerCase().replace('new', '').trim().replace /\s+/g, '-'
           style = styleSheet.href.match(/[a-z]*(?=[^/]*$)/)[0] if style is '_special'
+          style = null unless style in ['yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'photon', 'tomorrow', 'spooky']
           break
       if style
         $.addClass doc, style
