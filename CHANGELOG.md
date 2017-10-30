@@ -23,6 +23,9 @@
 
 ### v1.13.13
 
+**v1.13.13.3** *(2017-10-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.3/builds/4chan-X-noupdate.crx)]
+- Update for Halloween theme compatibility.
+
 **v1.13.13.2** *(2017-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.2/builds/4chan-X-noupdate.crx)]
 - Drop now redundant /qa/ message.
 - Add Catalonia to /pol/ flags.
