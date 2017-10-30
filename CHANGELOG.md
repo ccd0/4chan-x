@@ -4,6 +4,9 @@
 
 ### v1.13.14
 
+**v1.13.14.5** *(2017-10-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.5/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.13.3: Update for Halloween theme compatibility.
+
 **v1.13.14.4** *(2017-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.4/builds/4chan-X-noupdate.crx)]
 - Merge v1.13.13.2: Drop now redundant /qa/ message.
 - Read /pol/ flags from 4chan API instead of hardcoding them.

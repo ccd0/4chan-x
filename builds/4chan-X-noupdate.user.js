@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.14.4
+// @version      1.13.14.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.4',
+  VERSION:   '1.13.14.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -24853,14 +24853,7 @@ Main = (function() {
       return Main.setClass();
     },
     setClass: function() {
-      var mainStyleSheet, setStyle, spooky, style, styleSheets;
-      if ((spooky = $('link[rel="stylesheet"][href^="//s.4cdn.org/css/spooky."]', d.head))) {
-        spooky.removeAttribute('media');
-        if (getComputedStyle(d.body).color === 'rgb(196, 151, 86)') {
-          $.addClass(doc, 'spooky');
-          return;
-        }
-      }
+      var mainStyleSheet, setStyle, style, styleSheets;
       if (g.VIEW === 'catalog') {
         $.addClass(doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace(/_+/g, '-'));
         return;
@@ -24876,6 +24869,12 @@ Main = (function() {
           styleSheet = styleSheets[j];
           if (styleSheet.href === (mainStyleSheet != null ? mainStyleSheet.href : void 0)) {
             style = styleSheet.title.toLowerCase().replace('new', '').trim().replace(/\s+/g, '-');
+            if (style === '_special') {
+              style = styleSheet.href.match(/[a-z]*(?=[^\/]*$)/)[0];
+            }
+            if (style !== 'yotsuba' && style !== 'yotsuba-b' && style !== 'futaba' && style !== 'burichan' && style !== 'photon' && style !== 'tomorrow' && style !== 'spooky') {
+              style = null;
+            }
             break;
           }
         }
