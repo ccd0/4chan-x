@@ -201,7 +201,7 @@ Main =
     $.addClass doc, 'fourchan-x', 'seaweedchan'
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
     $.addClass doc, "ua-#{$.engine}" if $.engine
-    $.onExists doc, '.ad-cnt, .adg-rects', (ad) -> $.onExists ad, 'img, iframe', -> $.addClass doc, 'ads-loaded'
+    $.onExists doc, '.ad-cnt, .adg-rects > .desktop', (ad) -> $.onExists ad, 'img, iframe', -> $.addClass doc, 'ads-loaded'
     $.addClass doc, 'autohiding-scrollbar' if Conf['Autohiding Scrollbar']
     $.ready ->
       if d.body.clientHeight > doc.clientHeight and (window.innerWidth is doc.clientWidth) isnt Conf['Autohiding Scrollbar']
