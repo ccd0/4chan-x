@@ -22,7 +22,7 @@ Main =
 
     # Don't run inside ad iframes.
     try
-      return if window.frameElement and window.frameElement.src is ''
+      return if window.frameElement and window.frameElement.src in ['', 'about:blank']
 
     # Don't run inside MathJax popups.
     return if location.hostname is 'boards.4chan.org' and d.documentElement and not d.doctype
