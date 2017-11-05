@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.13.3
+// @version      1.13.14.6
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.13.3',
+  VERSION:   '1.13.14.6',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -332,6 +332,7 @@ Config = (function() {
       'Quote Links': {
         'Quote Backlinks': [true, 'Add quote backlinks.'],
         'OP Backlinks': [true, 'Add backlinks to the OP.', 1],
+        'Bottom Backlinks': [false, 'Place backlinks at the bottom of posts.', 1],
         'Quote Inlining': [true, 'Inline quoted post on click.'],
         'Inline Cross-thread Quotes Only': [false, 'Don\'t inline quote links when the posts are visible in the thread.', 1],
         'Quote Hash Navigation': [false, 'Include an extra link after quotes for autoscrolling to quoted posts.', 1],
@@ -2097,6 +2098,7 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 .catalog-post > * > .fileText > :not(:first-child),\n\
 .catalog-post > .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),\n\
 .catalog-post > * > * > .posteruid,\n\
+:root.bottom-backlinks .catalog-post > .container,\n\
 .post:not(.catalog-post) > .catalog-link,\n\
 .post:not(.catalog-post) > .catalog-stats,\n\
 .post:not(.catalog-post) > .catalog-replies {\n\
@@ -2416,10 +2418,21 @@ span.hide-announcement {\n\
 .postNum + .container::before {\n\
   content: \" \";\n\
 }\n\
+:root.bottom-backlinks .container {\n\
+  display: block;\n\
+  clear: both;\n\
+  margin: 0 4px;\n\
+}\n\
+:root.bottom-backlinks .backlink {\n\
+  font-size: 90%;\n\
+}\n\
 .inline {\n\
   border: 1px solid;\n\
   display: table;\n\
   margin: 2px 0;\n\
+}\n\
+.container ~ .inline {\n\
+  margin-left: 20px;\n\
 }\n\
 :root.catalog-mode .inline {\n\
   display: none;\n\
@@ -6359,11 +6372,11 @@ Post = (function() {
           configurable: true,
           enumerable: true,
           get: function() {
-            return info.getElementsByClassName('backlink');
+            return post.getElementsByClassName('backlink');
           }
         });
       } else {
-        nodes.backlinks = info.getElementsByClassName('backlink');
+        nodes.backlinks = post.getElementsByClassName('backlink');
       }
       return nodes;
     };
@@ -7635,6 +7648,17 @@ Filter = (function() {
         return new Notice('info', 'MD5 filtered.', 2);
       }
     },
+    escape: function(value) {
+      return value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
+        if (c === '\n') {
+          return '\\n';
+        } else if (c === '\\') {
+          return '\\\\';
+        } else {
+          return "\\" + c;
+        }
+      });
+    },
     menu: {
       init: function() {
         var div, entry, i, len, ref, ref1, type;
@@ -7681,15 +7705,7 @@ Filter = (function() {
         var re, type, value;
         type = this.dataset.type;
         value = Filter[type](Filter.menu.post);
-        re = type === 'uniqueID' || type === 'MD5' ? value : value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
-          if (c === '\n') {
-            return '\\n';
-          } else if (c === '\\') {
-            return '\\\\';
-          } else {
-            return "\\" + c;
-          }
-        });
+        re = type === 'uniqueID' || type === 'MD5' ? value : Filter.escape(value);
         re = type === 'uniqueID' || type === 'MD5' ? "/" + re + "/" : "/^" + re + "$/";
         return Filter.addFilter(type, re, function() {
           var section, select;
@@ -8405,18 +8421,19 @@ BoardConfig = (function() {
   BoardConfig = {
     cbs: [],
     init: function() {
-      var now, ref;
+      var boards, now, ref, ref1, troll_flags;
       now = Date.now();
-      if (!((now - 2 * $.HOUR < (ref = Conf['boardConfig'].lastChecked || 0) && ref <= now))) {
+      if (!((now - 2 * $.HOUR < (ref = Conf['boardConfig'].lastChecked || 0) && ref <= now) && Conf['boardConfig'].troll_flags)) {
         return $.ajax(location.protocol + "//a.4cdn.org/boards.json", {
           onloadend: this.load
         });
       } else {
-        return this.set(Conf['boardConfig'].boards);
+        ref1 = Conf['boardConfig'], boards = ref1.boards, troll_flags = ref1.troll_flags;
+        return this.set(boards, troll_flags);
       }
     },
     load: function() {
-      var board, boards, err, i, len, ref;
+      var board, boards, err, i, len, ref, ref1, troll_flags;
       if (this.status === 200 && this.response && this.response.boards) {
         boards = {};
         ref = this.response.boards;
@@ -8424,12 +8441,14 @@ BoardConfig = (function() {
           board = ref[i];
           boards[board.board] = board;
         }
+        troll_flags = this.response.troll_flags;
         $.set('boardConfig', {
           boards: boards,
+          troll_flags: troll_flags,
           lastChecked: Date.now()
         });
       } else {
-        boards = Conf['boardConfig'].boards;
+        ref1 = Conf['boardConfig'], boards = ref1.boards, troll_flags = ref1.troll_flags;
         err = (function() {
           switch (this.status) {
             case 0:
@@ -8442,11 +8461,12 @@ BoardConfig = (function() {
         }).call(this);
         new Notice('warning', "Failed to load board configuration. " + err, 20);
       }
-      return BoardConfig.set(boards);
+      return BoardConfig.set(boards, troll_flags);
     },
-    set: function(boards1) {
+    set: function(boards1, troll_flags1) {
       var ID, board, cb, i, len, ref, ref1;
       this.boards = boards1;
+      this.troll_flags = troll_flags1;
       ref = g.boards;
       for (ID in ref) {
         board = ref[ID];
@@ -22108,21 +22128,22 @@ QR = (function() {
       return $.event('QRDialogCreation', null, dialog);
     },
     flags: function() {
-      var flag, fn, j, len, ref, select;
+      var addFlag, ref, select, textContent, value;
       select = $.el('select', {
         name: 'flag',
         className: 'flagSelector'
       });
-      fn = function(val) {
+      addFlag = function(value, textContent) {
         return $.add(select, $.el('option', {
-          value: val[0],
-          textContent: val[1]
+          value: value,
+          textContent: textContent
         }));
       };
-      ref = [['0', 'Geographic Location'], ['AC', 'Anarcho-Capitalist'], ['AN', 'Anarchist'], ['BL', 'Black Nationalist'], ['CF', 'Confederate'], ['CM', 'Communist'], ['CT', 'Catalonia'], ['DM', 'Democrat'], ['EU', 'European'], ['FC', 'Fascist'], ['GN', 'Gadsden'], ['GY', 'Gay'], ['JH', 'Jihadi'], ['KN', 'Kekistani'], ['MF', 'Muslim'], ['NB', 'National Bolshevik'], ['NZ', 'Nazi'], ['PC', 'Hippie'], ['PR', 'Pirate'], ['RE', 'Republican'], ['TM', 'Templar'], ['TR', 'Tree Hugger'], ['UN', 'United Nations'], ['WP', 'White Supremacist']];
-      for (j = 0, len = ref.length; j < len; j++) {
-        flag = ref[j];
-        fn(flag);
+      addFlag('0', 'Geographic Location');
+      ref = BoardConfig.troll_flags;
+      for (value in ref) {
+        textContent = ref[value];
+        addFlag(value, textContent);
       }
       return select;
     },
@@ -23537,6 +23558,9 @@ QuoteBacklink = (function() {
       if (((ref = g.VIEW) !== 'index' && ref !== 'thread') || !Conf['Quote Backlinks']) {
         return;
       }
+      if ((this.bottomBacklinks = Conf['Bottom Backlinks'])) {
+        $.addClass(doc, 'bottom-backlinks');
+      }
       Callbacks.Post.push({
         name: 'Quote Backlinking Part 1',
         cb: this.firstNode
@@ -23599,7 +23623,7 @@ QuoteBacklink = (function() {
     secondNode: function() {
       var container;
       if (this.isClone && (this.origin.isReply || Conf['OP Backlinks'])) {
-        this.nodes.backlinkContainer = $('.container', this.nodes.info);
+        this.nodes.backlinkContainer = $('.container', this.nodes.post);
         return;
       }
       if (!(this.isReply || Conf['OP Backlinks'])) {
@@ -23607,7 +23631,11 @@ QuoteBacklink = (function() {
       }
       container = QuoteBacklink.getContainer(this.fullID);
       this.nodes.backlinkContainer = container;
-      return $.add(this.nodes.info, container);
+      if (QuoteBacklink.bottomBacklinks) {
+        return $.add(this.nodes.post, container);
+      } else {
+        return $.add(this.nodes.info, container);
+      }
     },
     getContainer: function(id) {
       var base;
@@ -23744,7 +23772,7 @@ QuoteInline = (function() {
     },
     findRoot: function(quotelink, isBacklink) {
       if (isBacklink) {
-        return quotelink.parentNode.parentNode;
+        return $.x('ancestor::*[parent::*[contains(@class,"post")]][1]', quotelink);
       } else {
         return $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
       }
@@ -24540,7 +24568,7 @@ Main = (function() {
 
   Main = {
     init: function() {
-      var db, flatten, i, items, j, k, key, len, ref, w;
+      var db, flatten, i, items, j, k, key, len, ref, ref1, w;
       if (d.body && !$('title', d.head)) {
         return;
       }
@@ -24573,7 +24601,7 @@ Main = (function() {
         return;
       }
       try {
-        if (window.frameElement && window.frameElement.src === '') {
+        if (window.frameElement && ((ref = window.frameElement.src) === '' || ref === 'about:blank')) {
           return;
         }
       } catch (_error) {}
@@ -24602,9 +24630,9 @@ Main = (function() {
         }
       };
       flatten(null, Config);
-      ref = DataBoard.keys;
-      for (j = 0, len = ref.length; j < len; j++) {
-        db = ref[j];
+      ref1 = DataBoard.keys;
+      for (j = 0, len = ref1.length; j < len; j++) {
+        db = ref1[j];
         Conf[db] = {
           boards: {}
         };
@@ -24626,6 +24654,9 @@ Main = (function() {
       Conf['QR Shortcut'] = true;
       Conf['Bottom QR Link'] = true;
       Conf['Toggleable Thread Watcher'] = true;
+      if ($.engine === 'gecko' && (typeof GM !== "undefined" && GM !== null)) {
+        Conf['Force Noscript Captcha for v1'] = false;
+      }
       ($.getSync || $.get)({
         'jsWhitelist': Conf['jsWhitelist']
       }, function(arg) {
@@ -24639,13 +24670,13 @@ Main = (function() {
       }
       items['previousversion'] = void 0;
       return ($.getSync || $.get)(items, function(items) {
-        var ref1;
-        if (!$.perProtocolSettings && ((ref1 = items['Redirect to HTTPS']) != null ? ref1 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
+        var ref2;
+        if (!$.perProtocolSettings && ((ref2 = items['Redirect to HTTPS']) != null ? ref2 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
           location.replace('https:' + location.host + location.pathname + location.search + location.hash);
           return;
         }
         return $.asap(docSet, function() {
-          var ref2, val;
+          var ref3, val;
           if ($.cantSet) {
 
           } else if (items.previousversion == null) {
@@ -24658,7 +24689,7 @@ Main = (function() {
           }
           for (key in Conf) {
             val = Conf[key];
-            Conf[key] = (ref2 = items[key]) != null ? ref2 : val;
+            Conf[key] = (ref3 = items[key]) != null ? ref3 : val;
           }
           return Main.initFeatures();
         });
@@ -24791,7 +24822,7 @@ Main = (function() {
       if ($.engine) {
         $.addClass(doc, "ua-" + $.engine);
       }
-      $.onExists(doc, '.ad-cnt, .adg-rects', function(ad) {
+      $.onExists(doc, '.ad-cnt, .adg-rects > .desktop', function(ad) {
         return $.onExists(ad, 'img, iframe', function() {
           return $.addClass(doc, 'ads-loaded');
         });
@@ -24825,14 +24856,7 @@ Main = (function() {
       return Main.setClass();
     },
     setClass: function() {
-      var mainStyleSheet, setStyle, spooky, style, styleSheets;
-      if ((spooky = $('link[rel="stylesheet"][href^="//s.4cdn.org/css/spooky."]', d.head))) {
-        spooky.removeAttribute('media');
-        if (getComputedStyle(d.body).color === 'rgb(196, 151, 86)') {
-          $.addClass(doc, 'spooky');
-          return;
-        }
-      }
+      var mainStyleSheet, setStyle, style, styleSheets;
       if (g.VIEW === 'catalog') {
         $.addClass(doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace(/_+/g, '-'));
         return;
@@ -24850,6 +24874,9 @@ Main = (function() {
             style = styleSheet.title.toLowerCase().replace('new', '').trim().replace(/\s+/g, '-');
             if (style === '_special') {
               style = styleSheet.href.match(/[a-z]*(?=[^\/]*$)/)[0];
+            }
+            if (style !== 'yotsuba' && style !== 'yotsuba-b' && style !== 'futaba' && style !== 'burichan' && style !== 'photon' && style !== 'tomorrow' && style !== 'spooky') {
+              style = null;
             }
             break;
           }
