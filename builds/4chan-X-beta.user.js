@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.14.5
+// @version      1.13.14.6
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.5',
+  VERSION:   '1.13.14.6',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -24568,7 +24568,7 @@ Main = (function() {
 
   Main = {
     init: function() {
-      var db, flatten, i, items, j, k, key, len, ref, w;
+      var db, flatten, i, items, j, k, key, len, ref, ref1, w;
       if (d.body && !$('title', d.head)) {
         return;
       }
@@ -24601,7 +24601,7 @@ Main = (function() {
         return;
       }
       try {
-        if (window.frameElement && window.frameElement.src === '') {
+        if (window.frameElement && ((ref = window.frameElement.src) === '' || ref === 'about:blank')) {
           return;
         }
       } catch (_error) {}
@@ -24630,9 +24630,9 @@ Main = (function() {
         }
       };
       flatten(null, Config);
-      ref = DataBoard.keys;
-      for (j = 0, len = ref.length; j < len; j++) {
-        db = ref[j];
+      ref1 = DataBoard.keys;
+      for (j = 0, len = ref1.length; j < len; j++) {
+        db = ref1[j];
         Conf[db] = {
           boards: {}
         };
@@ -24654,6 +24654,9 @@ Main = (function() {
       Conf['QR Shortcut'] = true;
       Conf['Bottom QR Link'] = true;
       Conf['Toggleable Thread Watcher'] = true;
+      if ($.engine === 'gecko' && (typeof GM !== "undefined" && GM !== null)) {
+        Conf['Force Noscript Captcha for v1'] = false;
+      }
       ($.getSync || $.get)({
         'jsWhitelist': Conf['jsWhitelist']
       }, function(arg) {
@@ -24667,13 +24670,13 @@ Main = (function() {
       }
       items['previousversion'] = void 0;
       return ($.getSync || $.get)(items, function(items) {
-        var ref1;
-        if (!$.perProtocolSettings && ((ref1 = items['Redirect to HTTPS']) != null ? ref1 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
+        var ref2;
+        if (!$.perProtocolSettings && ((ref2 = items['Redirect to HTTPS']) != null ? ref2 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
           location.replace('https:' + location.host + location.pathname + location.search + location.hash);
           return;
         }
         return $.asap(docSet, function() {
-          var ref2, val;
+          var ref3, val;
           if ($.cantSet) {
 
           } else if (items.previousversion == null) {
@@ -24686,7 +24689,7 @@ Main = (function() {
           }
           for (key in Conf) {
             val = Conf[key];
-            Conf[key] = (ref2 = items[key]) != null ? ref2 : val;
+            Conf[key] = (ref3 = items[key]) != null ? ref3 : val;
           }
           return Main.initFeatures();
         });
@@ -24819,7 +24822,7 @@ Main = (function() {
       if ($.engine) {
         $.addClass(doc, "ua-" + $.engine);
       }
-      $.onExists(doc, '.ad-cnt, .adg-rects', function(ad) {
+      $.onExists(doc, '.ad-cnt, .adg-rects > .desktop', function(ad) {
         return $.onExists(ad, 'img, iframe', function() {
           return $.addClass(doc, 'ads-loaded');
         });
