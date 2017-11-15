@@ -45,10 +45,10 @@ $.ajax = do ->
   # With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
   # This saves a lot of bandwidth and CPU time for both the users and the servers.
   lastModified = {}
-  <% if (type === 'crx') { %>
-  if XPCNativeWrapper?
+  if window.wrappedJSObject and not XMLHttpRequest.wrappedJSObject
     pageXHR = XPCNativeWrapper window.wrappedJSObject.XMLHttpRequest
-  <% } %>
+  else
+    pageXHR = XMLHttpRequest
 
   (url, options={}, extra={}) ->
     {type, whenModified, upCallbacks, form} = extra
@@ -57,11 +57,7 @@ $.ajax = do ->
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
     url += "?s=#{whenModified}" if $.engine is 'blink' and whenModified
-    xhr = XMLHttpRequest
-    <% if (type === 'crx') { %>
-    xhr = pageXHR or xhr
-    <% } %>
-    r = new xhr()
+    r = new pageXHR()
     type or= form and 'post' or 'get'
     try
       r.open type, url, true
