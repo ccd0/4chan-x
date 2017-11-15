@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.14.6
+// @version      1.13.14.7
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.6',
+  VERSION:   '1.13.14.7',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -4491,10 +4491,15 @@ $ = (function() {
   };
 
   $.ajax = (function() {
-    var lastModified;
+    var lastModified, pageXHR;
     lastModified = {};
+    if (window.wrappedJSObject && !XMLHttpRequest.wrappedJSObject) {
+      pageXHR = XPCNativeWrapper(window.wrappedJSObject.XMLHttpRequest);
+    } else {
+      pageXHR = XMLHttpRequest;
+    }
     return function(url, options, extra) {
-      var err, event, form, j, len, r, ref, ref1, type, upCallbacks, whenModified, xhr;
+      var err, event, form, j, len, r, ref, ref1, type, upCallbacks, whenModified;
       if (options == null) {
         options = {};
       }
@@ -4511,8 +4516,7 @@ $ = (function() {
       if ($.engine === 'blink' && whenModified) {
         url += "?s=" + whenModified;
       }
-      xhr = XMLHttpRequest;
-      r = new xhr();
+      r = new pageXHR();
       type || (type = form && 'post' || 'get');
       try {
         r.open(type, url, true);
@@ -24676,7 +24680,21 @@ Main = (function() {
           return;
         }
         return $.asap(docSet, function() {
-          var ref3, val;
+          var changes, ref3, val, val2;
+          if (typeof items.watchedThreads === 'string') {
+            changes = {};
+            for (key in items) {
+              val = items[key];
+              if (typeof val === 'string') {
+                try {
+                  val2 = JSON.parse(val);
+                  changes[key] = val2;
+                } catch (_error) {}
+              }
+            }
+            $.extend(items, changes);
+            $.set(changes);
+          }
           if ($.cantSet) {
 
           } else if (items.previousversion == null) {

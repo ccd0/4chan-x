@@ -4,6 +4,9 @@
 
 ### v1.13.14
 
+**v1.13.14.7** *(2017-11-15)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.7/builds/4chan-X-noupdate.crx)]
+- More Greasemonkey 4 related fixes.
+
 **v1.13.14.6** *(2017-11-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.6/builds/4chan-X-noupdate.crx)]
 - Turn 'Force Noscript Captcha for v1' off by default in GM4 due to missing frame support.
 - Fix bugs related to 4chan's ads.
