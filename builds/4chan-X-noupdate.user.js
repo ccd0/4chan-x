@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.14.7
+// @version      1.13.14.8
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.7',
+  VERSION:   '1.13.14.8',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -11368,7 +11368,7 @@ Settings = (function() {
       }
     },
     upgrade: function(data, version) {
-      var addCSS, addSauces, boardID, changes, compareString, j, k, key, len, len1, list, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, value;
+      var addCSS, addSauces, boardID, changes, compareString, corrupted, j, k, key, len, len1, list, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, val, val2, value;
       changes = {};
       set = function(key, value) {
         return data[key] = changes[key] = value;
@@ -11396,9 +11396,35 @@ Settings = (function() {
           return set('usercss', css + '\n\n' + data['usercss']);
         }
       };
+      if ((corrupted = version[0] === '"')) {
+        try {
+          version = JSON.parse(version);
+        } catch (_error) {}
+      }
       compareString = version.replace(/\d+/g, function(x) {
         return ('0000' + x).slice(-5);
       });
+      if (compareString < '00001.00013.00014.00008') {
+        for (key in data) {
+          val = data[key];
+          if (!(typeof val === 'string' && typeof Conf[key] !== 'string' && (key !== 'Index Sort' && key !== 'Last Long Reply Thresholds 0' && key !== 'Last Long Reply Thresholds 1'))) {
+            continue;
+          }
+          corrupted = true;
+          break;
+        }
+      }
+      if (corrupted) {
+        for (key in data) {
+          val = data[key];
+          if (typeof val === 'string') {
+            try {
+              val2 = JSON.parse(val);
+              set(key, val2);
+            } catch (_error) {}
+          }
+        }
+      }
       if (compareString < '00001.00011.00008.00000') {
         if (data['Fixed Thread Watcher'] == null) {
           set('Fixed Thread Watcher', (ref = data['Toggleable Thread Watcher']) != null ? ref : true);
@@ -20141,6 +20167,9 @@ Captcha = {};
       if (captchas == null) {
         captchas = [];
       }
+      if (!(captchas instanceof Array)) {
+        captchas = [];
+      }
       this.captchas = captchas;
       return this.count();
     },
@@ -24680,21 +24709,7 @@ Main = (function() {
           return;
         }
         return $.asap(docSet, function() {
-          var changes, ref3, val, val2;
-          if (typeof items.watchedThreads === 'string') {
-            changes = {};
-            for (key in items) {
-              val = items[key];
-              if (typeof val === 'string') {
-                try {
-                  val2 = JSON.parse(val);
-                  changes[key] = val2;
-                } catch (_error) {}
-              }
-            }
-            $.extend(items, changes);
-            $.set(changes);
-          }
+          var ref3, val;
           if ($.cantSet) {
 
           } else if (items.previousversion == null) {
