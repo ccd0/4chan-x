@@ -338,7 +338,20 @@ Settings =
       set 'usercss', Config['usercss'] unless data['usercss']?
       if data['usercss'].indexOf(css) < 0
         set 'usercss', css + '\n\n' + data['usercss']
+    # XXX https://github.com/greasemonkey/greasemonkey/issues/2600
+    if (corrupted = (version[0] is '"'))
+      try
+        version = JSON.parse version
     compareString = version.replace(/\d+/g, (x) -> ('0000'+x)[-5..])
+    if compareString < '00001.00013.00014.00008'
+      for key, val of data when typeof val is 'string' and typeof Conf[key] isnt 'string' and key not in ['Index Sort', 'Last Long Reply Thresholds 0', 'Last Long Reply Thresholds 1']
+        corrupted = true
+        break
+    if corrupted
+      for key, val of data when typeof val is 'string'
+        try
+          val2 = JSON.parse val
+          set key, val2
     if compareString < '00001.00011.00008.00000'
       unless data['Fixed Thread Watcher']?
         set 'Fixed Thread Watcher', data['Toggleable Thread Watcher'] ? true

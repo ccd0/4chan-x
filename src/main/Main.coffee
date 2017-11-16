@@ -84,16 +84,6 @@ Main =
         return
       $.asap docSet, ->
 
-        # XXX https://github.com/greasemonkey/greasemonkey/issues/2600
-        if typeof items.watchedThreads is 'string'
-          changes = {}
-          for key, val of items when typeof val is 'string'
-            try
-              val2 = JSON.parse val
-              changes[key] = val2
-          $.extend items, changes
-          $.set changes
-
         # Don't hide the local storage warning behind a settings panel.
         if $.cantSet
           # pass
