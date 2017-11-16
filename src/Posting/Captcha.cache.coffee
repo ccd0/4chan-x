@@ -20,6 +20,7 @@ Captcha.cache =
     captchaCount < postsCount
 
   sync: (captchas=[]) ->
+    captchas = [] unless captchas instanceof Array
     @captchas = captchas
     @count()
 
