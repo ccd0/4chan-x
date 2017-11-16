@@ -132,7 +132,7 @@ Keybinds =
         else
           window.location = "/#{g.BOARD}/"
       when Conf['Open front page']
-        $.open "/#{g.BOARD}/"
+        $.open "#{location.origin}/#{g.BOARD}/"
       when Conf['Next page']
         return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         if Conf['JSON Index']
