@@ -70,10 +70,6 @@ Main =
     Conf['Bottom QR Link'] = true
     Conf['Toggleable Thread Watcher'] = true
 
-    # XXX Frames not yet supported in GM4.
-    if $.engine is 'gecko' and GM?
-      Conf['Force Noscript Captcha for v1'] = false
-
     # Enforce JS whitelist
     ($.getSync or $.get) {'jsWhitelist': Conf['jsWhitelist']}, ({jsWhitelist}) ->
       $.addCSP "script-src #{jsWhitelist.replace(/^#.*$/mg, '').replace(/[\s;]+/g, ' ').trim()}"
