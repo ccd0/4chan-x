@@ -28,6 +28,10 @@ Main =
     return if location.hostname is 'boards.4chan.org' and d.documentElement and not d.doctype
 
     # Detect multiple copies of 4chan X
+    return if doc and $.hasClass(doc, 'fourchan-x')
+    $.asap docSet, ->
+      $.addClass doc, 'fourchan-x', 'seaweedchan'
+      $.addClass doc, "ua-#{$.engine}" if $.engine
     $.on d, '4chanXInitFinished', ->
       if Main.expectInitFinished
         delete Main.expectInitFinished
@@ -202,9 +206,7 @@ Main =
 
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
-    $.addClass doc, 'fourchan-x', 'seaweedchan'
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
-    $.addClass doc, "ua-#{$.engine}" if $.engine
     $.onExists doc, '.ad-cnt, .adg-rects > .desktop', (ad) -> $.onExists ad, 'img, iframe', -> $.addClass doc, 'ads-loaded'
     $.addClass doc, 'autohiding-scrollbar' if Conf['Autohiding Scrollbar']
     $.ready ->
