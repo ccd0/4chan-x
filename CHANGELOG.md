@@ -4,6 +4,11 @@
 
 ### v1.13.14
 
+**v1.13.14.9** *(2017-11-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.9/builds/4chan-X-noupdate.crx)]
+- Hard disable 'Force Noscript Captcha for v1' in GM4 for now.
+- Work around double loading issue in Greasemonkey 4. #1629
+- Fix 'Open front page' keybind in Tampermonkey.
+
 **v1.13.14.8** *(2017-11-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.8/builds/4chan-X-noupdate.crx)]
 - Yet more Greasemonkey 4 related fixes.
 

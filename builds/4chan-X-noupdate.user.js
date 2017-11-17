@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.14.8
+// @version      1.13.14.9
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.8',
+  VERSION:   '1.13.14.9',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -17136,7 +17136,7 @@ Keybinds = (function() {
           }
           break;
         case Conf['Open front page']:
-          $.open("/" + g.BOARD + "/");
+          $.open(location.origin + "/" + g.BOARD + "/");
           break;
         case Conf['Next page']:
           if (!(g.VIEW === 'index' && g.BOARD.ID !== 'f')) {
@@ -21452,7 +21452,7 @@ QR = (function() {
       'video/webm': 'webm'
     },
     init: function() {
-      var noscript, sc, version;
+      var info, noscript, sc, version;
       if (!Conf['Quick Reply']) {
         return;
       }
@@ -21460,7 +21460,7 @@ QR = (function() {
       if (g.VIEW === 'archive') {
         return;
       }
-      version = Conf[g.VIEW === 'thread' ? 'Use Recaptcha v1' : 'Use Recaptcha v1 on Index'] && (Main.jsEnabled || location.protocol === 'https:') ? (noscript = location.protocol === 'https:' && (Conf['Force Noscript Captcha for v1'] || !Main.jsEnabled), noscript ? 'noscript' : 'v1') : 'v2';
+      version = Conf[g.VIEW === 'thread' ? 'Use Recaptcha v1' : 'Use Recaptcha v1 on Index'] && (Main.jsEnabled || location.protocol === 'https:') ? (noscript = location.protocol === 'https:' && (Conf['Force Noscript Captcha for v1'] || !Main.jsEnabled), (info = typeof GM !== "undefined" && GM !== null ? GM.info : void 0) && info.scriptHandler === 'Greasemonkey' && /^4\./.test(info.version) ? noscript = false : void 0, noscript ? 'noscript' : 'v1') : 'v2';
       this.captcha = Captcha[version];
       $.on(d, '4chanXInitFinished', function() {
         return BoardConfig.ready(QR.initReady);
@@ -24641,6 +24641,15 @@ Main = (function() {
       if (location.hostname === 'boards.4chan.org' && d.documentElement && !d.doctype) {
         return;
       }
+      if (doc && $.hasClass(doc, 'fourchan-x')) {
+        return;
+      }
+      $.asap(docSet, function() {
+        $.addClass(doc, 'fourchan-x', 'seaweedchan');
+        if ($.engine) {
+          return $.addClass(doc, "ua-" + $.engine);
+        }
+      });
       $.on(d, '4chanXInitFinished', function() {
         if (Main.expectInitFinished) {
           return delete Main.expectInitFinished;
@@ -24687,9 +24696,6 @@ Main = (function() {
       Conf['QR Shortcut'] = true;
       Conf['Bottom QR Link'] = true;
       Conf['Toggleable Thread Watcher'] = true;
-      if ($.engine === 'gecko' && (typeof GM !== "undefined" && GM !== null)) {
-        Conf['Force Noscript Captcha for v1'] = false;
-      }
       ($.getSync || $.get)({
         'jsWhitelist': Conf['jsWhitelist']
       }, function(arg) {
@@ -24850,11 +24856,7 @@ Main = (function() {
       if ((ref = $('link[href*=mobile]', d.head)) != null) {
         ref.disabled = true;
       }
-      $.addClass(doc, 'fourchan-x', 'seaweedchan');
       $.addClass(doc, g.VIEW === 'thread' ? 'thread-view' : g.VIEW);
-      if ($.engine) {
-        $.addClass(doc, "ua-" + $.engine);
-      }
       $.onExists(doc, '.ad-cnt, .adg-rects > .desktop', function(ad) {
         return $.onExists(ad, 'img, iframe', function() {
           return $.addClass(doc, 'ads-loaded');
