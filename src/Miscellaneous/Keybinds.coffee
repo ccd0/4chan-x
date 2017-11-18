@@ -169,54 +169,52 @@ Keybinds =
       when Conf['Cycle sort type']
         return unless Conf['JSON Index'] and g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         Index.cycleSortType()
-      # Thread Navigation
-      when Conf['Next thread']
-        return unless g.VIEW is 'index' and threadRoot
-        Nav.scroll +1
-      when Conf['Previous thread']
-        return unless g.VIEW is 'index' and threadRoot
-        Nav.scroll -1
-      when Conf['Expand thread']
-        return unless g.VIEW is 'index' and threadRoot
-        ExpandThread.toggle thread
-      when Conf['Open thread']
-        return unless g.VIEW is 'index' and threadRoot
-        Keybinds.open thread
-      when Conf['Open thread tab']
-        return unless g.VIEW is 'index' and threadRoot
-        Keybinds.open thread, true
-      # Reply Navigation
-      when Conf['Next reply']
-        return unless threadRoot
-        Keybinds.hl +1, threadRoot
-      when Conf['Previous reply']
-        return unless threadRoot
-        Keybinds.hl -1, threadRoot
-      when Conf['Deselect reply']
-        return unless threadRoot
-        Keybinds.hl  0, threadRoot
-      when Conf['Hide']
-        return unless thread and ThreadHiding.db
-        Header.scrollTo threadRoot
-        ThreadHiding.toggle thread
-      when Conf['Quick Filter MD5']
-        return unless threadRoot
-        post = Keybinds.post threadRoot
-        Keybinds.hl +1, threadRoot
-        Filter.quickFilterMD5.call post
-      when Conf['Previous Post Quoting You']
-        return unless threadRoot and QuoteYou.db
-        QuoteYou.cb.seek 'preceding'
-      when Conf['Next Post Quoting You']
-        return unless threadRoot and QuoteYou.db
-        QuoteYou.cb.seek 'following'
       <% if (readJSON('/.tests_enabled')) { %>
       when 'v'
         return unless threadRoot
         Build.Test.testAll()
       <% } %>
       else
-        return
+        if g.VIEW is 'index' and threadRoot
+          switch key
+            # Thread Navigation
+            when Conf['Next thread']
+              Nav.scroll +1
+            when Conf['Previous thread']
+              Nav.scroll -1
+            when Conf['Expand thread']
+              ExpandThread.toggle thread
+            when Conf['Open thread']
+              Keybinds.open thread
+            when Conf['Open thread tab']
+              Keybinds.open thread, true
+            else
+              return
+        if threadRoot
+          switch key
+            # Reply Navigation
+            when Conf['Next reply']
+              Keybinds.hl +1, threadRoot
+            when Conf['Previous reply']
+              Keybinds.hl -1, threadRoot
+            when Conf['Deselect reply']
+              Keybinds.hl  0, threadRoot
+            when Conf['Hide']
+              return unless ThreadHiding.db
+              Header.scrollTo threadRoot
+              ThreadHiding.toggle thread
+            when Conf['Quick Filter MD5']
+              post = Keybinds.post threadRoot
+              Keybinds.hl +1, threadRoot
+              Filter.quickFilterMD5.call post
+            when Conf['Previous Post Quoting You']
+              return unless QuoteYou.db
+              QuoteYou.cb.seek 'preceding'
+            when Conf['Next Post Quoting You']
+              return unless QuoteYou.db
+              QuoteYou.cb.seek 'following'
+            else
+              return
     e.preventDefault()
     e.stopPropagation()
 
