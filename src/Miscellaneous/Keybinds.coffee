@@ -190,7 +190,7 @@ Keybinds =
               Keybinds.open thread, true
             else
               return
-        if threadRoot
+        else if threadRoot
           switch key
             # Reply Navigation
             when Conf['Next reply']
