@@ -666,7 +666,7 @@ Settings =
     @nextElementSibling.textContent = @value.replace /%(?:id|%)/g, (x) -> ({'%id': '123456789', '%%': '%'})[x]
 
   pastedname: -> 
-    @nextElementSibling.textContent = "#{@value}.png"
+    @nextElementSibling.textContent = @value.replace /%(?:ext|%)/g, (x) -> ({'%ext': 'png', '%%': '%'})[x]
 
   fileInfo: ->
     data =

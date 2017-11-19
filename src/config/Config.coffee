@@ -866,7 +866,7 @@ Config =
 
   backlink: '>>%id'
 
-  pastedname: 'file'
+  pastedname: 'file.%ext'
 
   fileInfo: '%l %d (%p%s, %r%g)'
 
