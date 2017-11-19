@@ -33,8 +33,8 @@ QuoteYou =
 
   isYou: (post) ->
     !!QuoteYou.db?.get {
-      boardID:  post.board.ID
-      threadID: post.thread.ID
+      boardID:  post.boardID
+      threadID: post.threadID
       postID:   post.ID
     }
 
