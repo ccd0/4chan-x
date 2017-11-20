@@ -179,11 +179,6 @@ Config =
         'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'
         1
       ]
-      'Filter Self': [
-        true
-        'Also apply filters to posts known to be yours. (Remember Your Posts must be enabled)'
-        1
-      ]
       'Recursive Hiding': [
         true
         'Hide replies of hidden posts, recursively.'

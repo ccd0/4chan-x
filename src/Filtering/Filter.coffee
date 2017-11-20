@@ -125,7 +125,7 @@ Filter =
     stub = true
     hl   = undefined
     top  = false
-    if !Conf['Filter Self'] and QuoteYou.isYou(post)
+    if QuoteYou.isYou(post)
       hideable = false
     for key of Filter.filters when ((value = Filter[key] post)?)
       # Continue if there's nothing to filter (no tripcode for example).
