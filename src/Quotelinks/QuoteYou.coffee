@@ -115,7 +115,7 @@ QuoteYou =
         return false
       else
         QuoteYou.lastRead = root
-        window.location = "##{post.id}"
+        location.href = "##{post.id}"
         Header.scrollTo post
         $.addClass post, 'highlight'
         return true

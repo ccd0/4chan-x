@@ -852,7 +852,7 @@ QR =
       open = if Conf['Open Post in New Tab'] or postsCount
         -> $.open URL
       else
-        -> window.location = URL
+        -> location.href = URL
 
       if threadID is postID
         # XXX 4chan sometimes responds before the thread exists.

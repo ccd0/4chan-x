@@ -130,7 +130,7 @@ Keybinds =
         if Conf['JSON Index'] and g.VIEW is 'index' and g.BOARD.ID isnt 'f'
           Index.userPageNav 1
         else
-          window.location = "/#{g.BOARD}/"
+          location.href = "/#{g.BOARD}/"
       when Conf['Open front page']
         $.open "#{location.origin}/#{g.BOARD}/"
       when Conf['Next page']
@@ -140,7 +140,7 @@ Keybinds =
           $('.next button', Index.pagelist).click()
         else
           if form = $ '.next form'
-            window.location = form.action
+            location.href = form.action
       when Conf['Previous page']
         return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         if Conf['JSON Index']
@@ -148,7 +148,7 @@ Keybinds =
           $('.prev button', Index.pagelist).click()
         else
           if form = $ '.prev form'
-            window.location = form.action
+            location.href = form.action
       when Conf['Search form']
         return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         searchInput = if Conf['JSON Index'] then Index.searchInput else $.id('search-box')
@@ -156,16 +156,16 @@ Keybinds =
         searchInput.focus()
       when Conf['Paged mode']
         return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
-        window.location = if g.VIEW is 'index' then '#paged' else "/#{g.BOARD}/#paged"
+        location.href = if g.VIEW is 'index' then '#paged' else "/#{g.BOARD}/#paged"
       when Conf['Infinite scrolling mode']
         return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
-        window.location = if g.VIEW is 'index' then '#infinite' else "/#{g.BOARD}/#infinite"
+        location.href = if g.VIEW is 'index' then '#infinite' else "/#{g.BOARD}/#infinite"
       when Conf['All pages mode']
         return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
-        window.location = if g.VIEW is 'index' then '#all-pages' else "/#{g.BOARD}/#all-pages"
+        location.href = if g.VIEW is 'index' then '#all-pages' else "/#{g.BOARD}/#all-pages"
       when Conf['Open catalog']
         return if g.BOARD.ID is 'f'
-        window.location = CatalogLinks.catalog()
+        location.href = CatalogLinks.catalog()
       when Conf['Cycle sort type']
         return unless Conf['JSON Index'] and g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         Index.cycleSortType()
