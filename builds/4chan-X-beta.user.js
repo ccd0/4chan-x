@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.14.9
+// @version      1.13.14.10
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.9',
+  VERSION:   '1.13.14.10',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -17132,7 +17132,7 @@ Keybinds = (function() {
           if (Conf['JSON Index'] && g.VIEW === 'index' && g.BOARD.ID !== 'f') {
             Index.userPageNav(1);
           } else {
-            window.location = "/" + g.BOARD + "/";
+            location.href = "/" + g.BOARD + "/";
           }
           break;
         case Conf['Open front page']:
@@ -17149,7 +17149,7 @@ Keybinds = (function() {
             $('.next button', Index.pagelist).click();
           } else {
             if (form = $('.next form')) {
-              window.location = form.action;
+              location.href = form.action;
             }
           }
           break;
@@ -17164,7 +17164,7 @@ Keybinds = (function() {
             $('.prev button', Index.pagelist).click();
           } else {
             if (form = $('.prev form')) {
-              window.location = form.action;
+              location.href = form.action;
             }
           }
           break;
@@ -17180,25 +17180,25 @@ Keybinds = (function() {
           if (!(Conf['JSON Index'] && g.BOARD.ID !== 'f')) {
             return;
           }
-          window.location = g.VIEW === 'index' ? '#paged' : "/" + g.BOARD + "/#paged";
+          location.href = g.VIEW === 'index' ? '#paged' : "/" + g.BOARD + "/#paged";
           break;
         case Conf['Infinite scrolling mode']:
           if (!(Conf['JSON Index'] && g.BOARD.ID !== 'f')) {
             return;
           }
-          window.location = g.VIEW === 'index' ? '#infinite' : "/" + g.BOARD + "/#infinite";
+          location.href = g.VIEW === 'index' ? '#infinite' : "/" + g.BOARD + "/#infinite";
           break;
         case Conf['All pages mode']:
           if (!(Conf['JSON Index'] && g.BOARD.ID !== 'f')) {
             return;
           }
-          window.location = g.VIEW === 'index' ? '#all-pages' : "/" + g.BOARD + "/#all-pages";
+          location.href = g.VIEW === 'index' ? '#all-pages' : "/" + g.BOARD + "/#all-pages";
           break;
         case Conf['Open catalog']:
           if (g.BOARD.ID === 'f') {
             return;
           }
-          window.location = CatalogLinks.catalog();
+          location.href = CatalogLinks.catalog();
           break;
         case Conf['Cycle sort type']:
           if (!(Conf['JSON Index'] && g.VIEW === 'index' && g.BOARD.ID !== 'f')) {
@@ -22429,7 +22429,7 @@ QR = (function() {
         open = Conf['Open Post in New Tab'] || postsCount ? function() {
           return $.open(URL);
         } : function() {
-          return window.location = URL;
+          return location.href = URL;
         };
         if (threadID === postID) {
           QR.waitForThread(URL, open);
@@ -24431,7 +24431,7 @@ QuoteYou = (function() {
           return false;
         } else {
           QuoteYou.lastRead = root;
-          window.location = "#" + post.id;
+          location.href = "#" + post.id;
           Header.scrollTo(post);
           $.addClass(post, 'highlight');
           return true;
