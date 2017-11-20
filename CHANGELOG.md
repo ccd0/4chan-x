@@ -4,6 +4,9 @@
 
 ### v1.13.14
 
+**v1.13.14.10** *(2017-11-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.10/builds/4chan-X-noupdate.crx)]
+- Attempt to fix navigation keybind issue in Violentmonkey. #1656
+
 **v1.13.14.9** *(2017-11-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.9/builds/4chan-X-noupdate.crx)]
 - Hard disable 'Force Noscript Captcha for v1' in GM4 for now.
 - Work around double loading issue in Greasemonkey 4. #1629
