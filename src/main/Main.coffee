@@ -122,11 +122,10 @@ Main =
     pathname = location.pathname.split /\/+/
     g.BOARD = new Board pathname[1] unless hostname is 'www.4chan.org'
 
-    if hostname in ['boards.4chan.org', 'sys.4chan.org', 'www.4chan.org']
-      $.global ->
-        document.documentElement.classList.add 'js-enabled'
-        window.FCX = {}
-      Main.jsEnabled = $.hasClass doc, 'js-enabled'
+    $.global ->
+      document.documentElement.classList.add 'js-enabled'
+      window.FCX = {}
+    Main.jsEnabled = $.hasClass doc, 'js-enabled'
 
     switch hostname
       when 'www.4chan.org'
@@ -151,7 +150,7 @@ Main =
     if ImageHost.test hostname
       return unless pathname[2] and not /[sm]\.jpg$/.test(pathname[2])
       $.asap (-> d.readyState isnt 'loading'), ->
-        if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
+        if Conf['404 Redirect'] and Site.is404?()
           Redirect.navigate 'file', {
             boardID:  g.BOARD.ID
             filename: pathname[pathname.length - 1]
@@ -166,7 +165,7 @@ Main =
             ImageCommon.addControls video
       return
 
-    return unless hostname is 'boards.4chan.org'
+    return if Site.isAuxiliaryPage?()
 
     if pathname[2] in ['thread', 'res']
       g.VIEW     = 'thread'
@@ -265,20 +264,19 @@ Main =
     }
 
   initReady: ->
-    # XXX Sometimes threads don't 404 but are left over as stubs containing one garbage reply post.
-    if g.VIEW is 'thread' and (d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found'] or ($('.board') and not $('.opContainer')))
-      ThreadWatcher.set404 g.BOARD.ID, g.THREADID, ->
-        if Conf['404 Redirect']
-          Redirect.navigate 'thread',
-            boardID:  g.BOARD.ID
-            threadID: g.THREADID
-            postID:   +location.hash.match /\d+/ # post number or 0
-          , "/#{g.BOARD}/"
+    if Site.is404?()
+      if g.VIEW is 'thread'
+        ThreadWatcher.set404 g.BOARD.ID, g.THREADID, ->
+          if Conf['404 Redirect']
+            Redirect.navigate 'thread',
+              boardID:  g.BOARD.ID
+              threadID: g.THREADID
+              postID:   +location.hash.match /\d+/ # post number or 0
+            , "/#{g.BOARD}/"
+
       return
 
-    return if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
-
-    if g.VIEW in ['index', 'thread'] and not $('.board + *')
+    if Site.isIncomplete?()
       msg = $.el 'div',
         <%= html('The page didn&#039;t load completely.<br>Some features may not work unless you <a href="javascript:;">reload</a>.') %>
       $.on $('a', msg), 'click', -> location.reload()

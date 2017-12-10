@@ -58,6 +58,16 @@ SW.yotsuba =
     !$('link[href*="favicon-status.ico"]', d.head) and
     d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out']
 
+  is404: ->
+    # XXX Sometimes threads don't 404 but are left over as stubs containing one garbage reply post.
+    d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found'] or (g.VIEW is 'thread' and $('.board') and not $('.opContainer'))
+
+  isIncomplete: ->
+    return g.VIEW in ['index', 'thread'] and not $('.board + *')
+
+  isAuxiliaryPage: ->
+    location.hostname isnt 'boards.4chan.org'
+
   scriptData: ->
     for script in $$ 'script:not([src])', d.head
       return script.textContent if /\bcooldowns *=/.test script.textContent
