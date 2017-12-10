@@ -4,6 +4,9 @@
 
 ### v1.13.14
 
+**v1.13.14.12** *(2017-12-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.12/builds/4chan-X-noupdate.crx)]
+- Feedback request.
+
 **v1.13.14.11** *(2017-12-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.11/builds/4chan-X-noupdate.crx)]
 - Fix bug causing Quick Reply errors. #1652
 
