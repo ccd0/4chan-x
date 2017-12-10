@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.14.10
+// @version      1.13.14.11
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.10',
+  VERSION:   '1.13.14.11',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5005,7 +5005,7 @@ $ = (function() {
       for (key in ref) {
         val = ref[key];
         if ((cb = $.syncing[key])) {
-          results.push(cb(val, key));
+          results.push(cb(JSON.parse(JSON.stringify(val)), key));
         }
       }
       return results;
