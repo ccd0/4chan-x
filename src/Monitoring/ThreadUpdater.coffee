@@ -14,8 +14,8 @@ ThreadUpdater =
       $.extend sc, <%= html('<span id="update-status" class="empty"></span><span id="update-timer" class="empty" title="Update now"></span>') %>
       Header.addShortcut 'updater', sc, 100
     else
-      @dialog = sc = UI.dialog 'updater', 'bottom: 0px; left: 0px;',
-        <%= html('<div class="move"></div><span id="update-status"></span><span id="update-timer" title="Update now"></span>') %>
+      @dialog = sc = UI.dialog 'updater',
+        <%= html('<div class="move"></div><span id="update-status" class="empty"></span><span id="update-timer" class="empty" title="Update now"></span>') %>
       $.addClass doc, 'float'
       $.ready ->
         $.add d.body, sc
@@ -138,7 +138,7 @@ ThreadUpdater =
             ThreadUpdater.setInterval()
         when 404
           # XXX workaround for 4chan sending false 404s
-          $.ajax "//a.4cdn.org/#{ThreadUpdater.thread.board}/catalog.json", onloadend: ->
+          $.ajax "#{location.protocol}//a.4cdn.org/#{ThreadUpdater.thread.board}/catalog.json", onloadend: ->
             if @status is 200
               confirmed = true
               for page in @response
@@ -231,7 +231,7 @@ ThreadUpdater =
     clearTimeout ThreadUpdater.timeoutID
     ThreadUpdater.set 'timer', '...', 'loading'
     ThreadUpdater.req?.abort()
-    ThreadUpdater.req = $.ajax "//a.4cdn.org/#{ThreadUpdater.thread.board}/thread/#{ThreadUpdater.thread}.json",
+    ThreadUpdater.req = $.ajax "#{location.protocol}//a.4cdn.org/#{ThreadUpdater.thread.board}/thread/#{ThreadUpdater.thread}.json",
       onloadend: ThreadUpdater.cb.load
       timeout:   $.MINUTE
     ,

@@ -32,6 +32,7 @@ class Post
       capcode:   @nodes.capcode?.textContent.replace '## ', ''
       pass:      @nodes.pass?.title.match(/\d*$/)[0]
       flagCode:  @nodes.flag?.className.match(/flag-(\w+)/)?[1].toUpperCase()
+      flagCodeTroll: @nodes.flag?.src?.match(/(\w+)\.gif$/)?[1].toUpperCase()
       flag:      @nodes.flag?.title
       date:      if @nodes.date then new Date(@nodes.date.getAttribute('datetime') or (@nodes.date.dataset.utc * 1000))
 
@@ -73,6 +74,7 @@ class Post
       comment:    $ s.comment, post
       quotelinks: []
       archivelinks: []
+      embedlinks:   []
     for key, selector of s.info
       nodes[key] = $ selector, info
     Site.parseNodes?(@, nodes)
@@ -84,9 +86,9 @@ class Post
       Object.defineProperty nodes, 'backlinks',
         configurable: true
         enumerable:   true
-        get: -> info.getElementsByClassName 'backlink'
+        get: -> post.getElementsByClassName 'backlink'
     else
-      nodes.backlinks = info.getElementsByClassName 'backlink'
+      nodes.backlinks = post.getElementsByClassName 'backlink'
 
     nodes
 
@@ -115,6 +117,12 @@ class Post
     @cleanSpoilers bq unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
     Site.cleanCommentDisplay?(bq)
     @nodesToText(bq).trim().replace(/\s+$/gm, '')
+
+  commentOrig: ->
+    # Get the comment's text for reposting purposes.
+    bq = @nodes.commentClean.cloneNode true
+    Site.insertTags?(bq)
+    @nodesToText bq
 
   nodesToText: (bq) ->
     text = ""
@@ -236,6 +244,8 @@ class Post
     @board.posts.rm @
 
   addClone: (context, contractThumb) ->
+    # Callbacks may not have been run yet due to anti-browser-lock delay in Main.callbackNodesDB.
+    Callbacks.Post.execute @
     new Post.Clone @, context, contractThumb
 
   rmClone: (index) ->
@@ -249,3 +259,4 @@ class Post
     @nodes.root.classList.toggle 'opContainer', !isCatalogOP
     @nodes.post.classList.toggle 'catalog-post', isCatalogOP
     @nodes.post.classList.toggle 'op', !isCatalogOP
+    @nodes.post.style.left = @nodes.post.style.right = null

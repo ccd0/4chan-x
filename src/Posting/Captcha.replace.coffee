@@ -8,10 +8,7 @@ Captcha.replace =
         Captcha.v1.create()
       return
 
-    if (
-      (Conf['Use Recaptcha v1'] and location.hostname is 'boards.4chan.org') or
-      (Conf['Use Recaptcha v1 in Reports'] and location.hostname is 'sys.4chan.org')
-    ) and Main.jsEnabled
+    if location.hostname is 'sys.4chan.org' and Conf['Use Recaptcha v1 in Reports'] and Main.jsEnabled
       $.ready Captcha.replace.v1
       return
 
@@ -26,7 +23,7 @@ Captcha.replace =
         $.onExists doc, 'iframe', Captcha.replace.iframe
 
   noscript: ->
-    return if not ((original = $ '#g-recaptcha, #captchaContainerAlt') and (noscript = $ 'noscript'))
+    return if not ((original = $ '#g-recaptcha') and (noscript = $ 'noscript', original.parentNode))
     span = $.el 'span',
       id: 'captcha-forced-noscript'
     $.replace noscript, span
@@ -40,15 +37,14 @@ Captcha.replace =
       insert()
 
   v1: ->
-    return unless $.id 'g-recaptcha'
-    Captcha.v1.replace()
-    if (link = $.id 'form-link')
-      $.on link, 'click', -> Captcha.v1.create()
-    else if location.hostname is 'boards.4chan.org'
-      form = $.id 'postForm'
-      form.addEventListener 'focus', (-> Captcha.v1.create()), true
-    else
-      Captcha.v1.create()
+    return if not (old = $.id 'g-recaptcha')
+    script = $.el 'script',
+      src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
+    $.add d.head, script
+    container = $.el 'div',
+      id: 'captchaContainerAlt'
+    $.replace old, container
+    Captcha.v1.create()
 
   iframe: (iframe) ->
     if (lang = Conf['captchaLanguage'].trim())

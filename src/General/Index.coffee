@@ -11,6 +11,8 @@ Index =
 
     return unless Conf['JSON Index']
 
+    @enabled = true
+
     Callbacks.Post.push
       name: 'Index Page Numbers'
       cb:   @node
@@ -47,7 +49,7 @@ Index =
 
     # Header "Index Navigation" submenu
     entries = []
-    inputs = {}
+    @inputs = inputs = {}
     for name, arr of Config.Index when arr instanceof Array
       label = UI.checkbox name, "#{name[0]}#{name[1..].toLowerCase()}"
       label.title = arr[1]
@@ -70,7 +72,7 @@ Index =
     sortEntry = UI.checkbox 'Per-Board Sort Type', 'Per-board sort type', (typeof Conf['Index Sort'] is 'object')
     sortEntry.title = 'Set the sorting order of each board independently.'
     $.on sortEntry.firstChild, 'change', @cb.perBoardSort
-    entries.splice 2, 0, {el: sortEntry}
+    entries.splice 3, 0, {el: sortEntry}
 
     Header.menu.addEntry
       el: $.el 'span',
@@ -82,7 +84,7 @@ Index =
     @navLinks = $.el 'div', className: 'navLinks json-index'
     $.extend @navLinks, <%= readHTML('NavLinks.html') %>
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
-    $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID in ['b', 'trash']
+    $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID in ['b', 'trash', 'bant']
     $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
 
     # Search field
@@ -110,8 +112,20 @@ Index =
     @selectRev.checked = /-rev$/.test Index.currentSort
     @selectSort.value  = Index.currentSort.replace /-rev$/, ''
 
+    # Last Long Reply options
+    @lastLongOptions = $ '#lastlong-options', @navLinks
+    @lastLongInputs = $$ 'input', @lastLongOptions
+    @lastLongThresholds = [0, 0]
+    @lastLongOptions.hidden = (@selectSort.value isnt 'lastlong')
+    for input, i in @lastLongInputs
+      $.on input, 'change', @cb.lastLongThresholds
+      tRaw = Conf["Last Long Reply Thresholds #{i}"]
+      input.value = @lastLongThresholds[i] =
+        if typeof tRaw is 'object' then (tRaw[g.BOARD.ID] ? 100) else tRaw
+
     # Thread container
     @root = $.el 'div', className: 'board json-index'
+    $.on @root, 'click', @cb.hoverToggle
     @cb.size()
     @cb.hover()
 
@@ -213,7 +227,6 @@ Index =
       e.preventDefault() # Also on mousedown to prevent highlighting text.
 
   toggleHide: (thread) ->
-    $.rm thread.catalogView.nodes.root
     if Index.showHiddenThreads
       ThreadHiding.show thread
       return unless ThreadHiding.db.get {boardID: thread.board.ID, threadID: thread.ID}
@@ -248,6 +261,7 @@ Index =
         'Hide'
       else
         'Show'
+      Index.sort()
       Index.buildIndex()
 
     mode: ->
@@ -266,6 +280,21 @@ Index =
     perBoardSort: ->
       Conf['Index Sort'] = if @checked then {} else ''
       Index.saveSort()
+      for i in [0...2]
+        Conf["Last Long Reply Thresholds #{i}"] = if @checked then {} else ''
+        Index.saveLastLongThresholds i
+      return
+
+    lastLongThresholds: ->
+      i = [@parentNode.children...].indexOf @
+      value = +@value
+      unless Number.isFinite(value)
+        @value = Index.lastLongThresholds[i]
+        return
+      Index.lastLongThresholds[i] = value
+      Index.saveLastLongThresholds i
+      Index.changed.order = true
+      Index.pageLoad false
 
     size: (e) ->
       if Conf['Index Mode'] isnt 'catalog'
@@ -282,9 +311,17 @@ Index =
     replies: ->
       Index.buildIndex()
 
-    hover: (e) ->
+    hover: ->
       doc.classList.toggle 'catalog-hover-expand', Conf['Catalog Hover Expand']
-      Index.cb.replies() if e and Conf['Show Replies'] and Conf['Catalog Hover Expand']
+
+    hoverToggle: (e) ->
+      if Conf['Catalog Hover Toggle'] and $.hasClass(doc, 'catalog-mode') and !$.modifiedClick(e) and !$.x('ancestor-or-self::a', e.target)
+        input = Index.inputs['Catalog Hover Expand']
+        input.checked = !input.checked
+        $.event 'change', null, input
+        if (thread = Get.threadFromNode e.target)
+          Index.cb.catalogReplies.call thread
+          Index.cb.hoverAdjust.call thread.OP.nodes
 
     popstate: (e) ->
       if e?.state
@@ -301,7 +338,7 @@ Index =
           Index.pageLoad()
 
     pageNav: (e) ->
-      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+      return if $.modifiedClick e
       switch e.target.nodeName
         when 'BUTTON'
           e.target.blur()
@@ -319,9 +356,18 @@ Index =
       Index.update()
 
     catalogReplies: ->
-      $.off @, 'mouseover', Index.cb.catalogReplies
-      return unless Conf['Show Replies'] and Conf['Catalog Hover Expand'] and @parentNode
-      Index.buildCatalogReplies Get.threadFromRoot @
+      if Conf['Show Replies'] and $.hasClass(doc, 'catalog-hover-expand') and !@catalogView.nodes.replies
+        Index.buildCatalogReplies @
+
+    hoverAdjust: ->
+      # Prevent hovered catalog threads from going offscreen.
+      return unless $.hasClass(doc, 'catalog-hover-expand')
+      rect = @post.getBoundingClientRect()
+      if (x = $.minmax 0, -rect.left, doc.clientWidth - rect.right)
+        {style} = @post
+        style.left = "#{x}px"
+        style.right = "#{-x}px"
+        $.one @root, 'mouseleave', -> style.left = style.right = null
 
   scrollToIndex: ->
     # Scroll to navlinks, or top of board if navlinks are hidden.
@@ -419,12 +465,18 @@ Index =
     if hash?
       Index.changed.hash = true
 
-  saveSort: ->
-    if typeof Conf['Index Sort'] is 'object'
-      Conf['Index Sort'][g.BOARD.ID] = Index.currentSort
+  savePerBoard: (key, value) ->
+    if typeof Conf[key] is 'object'
+      Conf[key][g.BOARD.ID] = value
     else
-      Conf['Index Sort'] = Index.currentSort
-    $.set 'Index Sort', Conf['Index Sort']
+      Conf[key] = value
+    $.set key, Conf[key]
+
+  saveSort: ->
+    Index.savePerBoard 'Index Sort', Index.currentSort
+
+  saveLastLongThresholds: (i) ->
+    Index.savePerBoard "Last Long Reply Thresholds #{i}", Index.lastLongThresholds[i]
 
   pageLoad: (scroll=true) ->
     return unless Index.liveThreadData
@@ -453,6 +505,7 @@ Index =
   setupSort: ->
     Index.selectRev.checked = /-rev$/.test Index.currentSort
     Index.selectSort.value  = Index.currentSort.replace /-rev$/, ''
+    Index.lastLongOptions.hidden = (Index.selectSort.value isnt 'lastlong')
 
   getPagesNum: ->
     if Index.search
@@ -503,6 +556,7 @@ Index =
     $.add strong, a
 
   updateHideLabel: ->
+    return unless Index.hideLabel
     hiddenCount = 0
     for threadID in Index.liveThreadIDs when Index.isHidden(threadID)
       hiddenCount++
@@ -537,7 +591,7 @@ Index =
       location.reload()
       return
 
-    Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
+    Index.req = $.ajax "#{location.protocol}//a.4cdn.org/#{g.BOARD}/catalog.json",
       onabort:   Index.load
       onloadend: Index.load
     ,
@@ -609,6 +663,7 @@ Index =
     Index.liveThreadDict    = {}
     Index.threadPosition    = {}
     Index.parsedThreads     = {}
+    Index.replyData         = {}
     for data, i in Index.liveThreadData
       Index.liveThreadDict[data.no] = data
       Index.threadPosition[data.no] = i
@@ -616,6 +671,9 @@ Index =
       obj.filterResults = results = Filter.test obj
       obj.isOnTop  = results.top
       obj.isHidden = results.hide or ThreadHiding.isHidden(obj.boardID, obj.threadID)
+      if data.last_replies
+        for reply in data.last_replies
+          Index.replyData["#{g.BOARD}.#{reply.no}"] = reply
     if Index.liveThreadData[0]
       Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler
     g.BOARD.threads.forEach (thread) ->
@@ -629,6 +687,9 @@ Index =
       thread.isHidden
     else
       Index.parsedThreads[threadID].isHidden
+
+  isHiddenReply: (threadID, replyData) ->
+    PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) or Filter.isHidden(Build.parseJSON replyData, g.BOARD.ID)
 
   buildThreads: (threadIDs, isCatalog) ->
     threads    = []
@@ -645,7 +706,7 @@ Index =
             thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
             thread.setStatus 'Sticky', !!threadData.sticky
             thread.setStatus 'Closed', !!threadData.closed
-          if thread.catalogView and (isStale or !(isCatalog and Conf['Show Replies'] and Conf['Catalog Hover Expand']))
+          if thread.catalogView
             $.rm thread.catalogView.nodes.replies
             thread.catalogView.nodes.replies = null
         else
@@ -728,15 +789,9 @@ Index =
     {nodes} = thread.catalogView
     return if not (lastReplies = Index.liveThreadDict[thread.ID].last_replies)
 
-    if nodes.replies
-      # RelativeDates will stop updating elements if they go out of document.
-      RelativeDates.update timeEl for timeEl in $$ 'time', nodes.replies
-      return
-
     replies = []
     for data in lastReplies
-      continue if PostHiding.isHidden(g.BOARD.ID, thread.ID, data.no)
-      continue if Filter.isHidden(Build.parseJSON data, g.BOARD.ID)
+      continue if Index.isHiddenReply thread.ID, data
       reply = Build.catalogReply thread, data
       RelativeDates.update $('time', reply)
       $.on $('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover
@@ -760,10 +815,16 @@ Index =
       when 'lastlong'
         lastlong = (thread) ->
           for r, i in (thread.last_replies or []) by -1
-            return r if r.com and Build.parseComment(r.com).replace(/[^a-z]/ig, '').length >= 100
-          thread
+            continue if Index.isHiddenReply thread.no, r
+            len = if r.com then Build.parseComment(r.com).replace(/[^a-z]/ig, '').length else 0
+            if len >= Index.lastLongThresholds[+!!r.ext]
+              return r
+          if thread.omitted_posts then thread.last_replies[0] else thread
+        lastlongD = {}
+        for thread in liveThreadData
+          lastlongD[thread.no] = lastlong(thread).no
         [liveThreadData...].sort((a, b) ->
-          lastlong(b).no - lastlong(a).no
+          lastlongD[b.no] - lastlongD[a.no]
         ).map (post) -> post.no
       when 'bump'       then liveThreadIDs
       when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
@@ -850,8 +911,8 @@ Index =
       thread.OP.setCatalogOP true
       $.add thread.catalogView.nodes.root, thread.OP.nodes.root
       nodes.push thread.catalogView.nodes.root
-      if Conf['Show Replies'] and Conf['Catalog Hover Expand']
-        $.on thread.catalogView.nodes.root, 'mouseover', Index.cb.catalogReplies
+      $.on thread.catalogView.nodes.root, 'mouseenter', Index.cb.catalogReplies.bind(thread)
+      $.on thread.OP.nodes.root, 'mouseenter', Index.cb.hoverAdjust.bind(thread.OP.nodes)
     $.add Index.root, nodes
     nodes
 

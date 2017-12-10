@@ -26,7 +26,7 @@ Quotify =
     return if link.hostname is 'boards.4chan.org'
     boardID  = m[1]
     threadID = m[2]
-    postID   = link.hash.match(/^#p?(\d+)$|$/)[1] or threadID
+    postID   = link.hash.match(/^#[pq]?(\d+)$|$/)[1] or threadID
     if Redirect.to 'post', {boardID, postID}
       $.addClass link, 'quotelink'
       $.extend link.dataset, {boardID, threadID, postID}

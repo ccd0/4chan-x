@@ -30,7 +30,6 @@ class DataBoard
     @save()
 
   deleteIfEmpty: ({boardID, threadID}) ->
-    $.forceSync @key
     if threadID
       unless Object.keys(@data.boards[boardID][threadID]).length
         delete @data.boards[boardID][threadID]
@@ -91,9 +90,9 @@ class DataBoard
     return
 
   ajaxClean: (boardID) ->
-    $.cache "//a.4cdn.org/#{boardID}/threads.json", (e1) =>
+    $.cache "#{location.protocol}//a.4cdn.org/#{boardID}/threads.json", (e1) =>
       return unless e1.target.status in [200, 404]
-      $.cache "//a.4cdn.org/#{boardID}/archive.json", (e2) =>
+      $.cache "#{location.protocol}//a.4cdn.org/#{boardID}/archive.json", (e2) =>
         return unless e2.target.status in [200, 404]
         @ajaxCleanParse boardID, e1.target.response, e2.target.response
 

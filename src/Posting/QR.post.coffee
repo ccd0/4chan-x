@@ -16,7 +16,8 @@ QR.post = class
     $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
     $.on @nodes.spoiler, 'change', (e) =>
       @spoiler = e.target.checked
-      (QR.nodes.spoiler.checked = @spoiler if @ is QR.selected)
+      QR.nodes.spoiler.checked = @spoiler if @ is QR.selected
+      @preventAutoPost()
     for label in $$ 'label', el
       $.on label, 'click', (e) -> e.stopPropagation()
     $.add QR.nodes.dumpList, el
@@ -53,11 +54,15 @@ QR.post = class
       else
         ''
 
+      if QR.nodes.flag
+        @flag = if prev
+          prev.flag
+        else
+          persona.flag
       (@load() if QR.selected is @) # load persona
     @select() if select
     @unlock()
-    # Post count temporarily off by 1 when called from QR.post.rm or QR.close
-    $.queueTask -> QR.captcha.onNewPost()
+    QR.captcha.moreNeeded()
 
   rm: ->
     @delete()
@@ -78,7 +83,7 @@ QR.post = class
   lock: (lock=true) ->
     @isLocked = lock
     return unless @ is QR.selected
-    for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler'] when node = QR.nodes[name]
+    for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler', 'flag'] when node = QR.nodes[name]
       node.disabled = lock
     @nodes.rm.style.visibility = if lock then 'hidden' else ''
     @nodes.spoiler.disabled = lock
@@ -103,7 +108,7 @@ QR.post = class
   load: ->
     # Load this post's values.
 
-    for name in ['thread', 'name', 'email', 'sub', 'com', 'filename']
+    for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag']
       continue if not (node = QR.nodes[name])
       node.value = @[name] or node.dataset.default or ''
 
@@ -112,7 +117,7 @@ QR.post = class
     @showFileData()
     QR.characterCount()
 
-  save: (input) ->
+  save: (input, forced) ->
     if input.type is 'checkbox'
       @spoiler = input.checked
       return
@@ -125,26 +130,30 @@ QR.post = class
         QR.status()
       when 'com'
         @updateComment()
-        # Disable auto-posting if you're typing in the first post
-        # during the last 5 seconds of the cooldown.
-        if QR.cooldown.auto and @ is QR.posts[0] and 0 < QR.cooldown.seconds <= 5
-          QR.cooldown.auto = false
       when 'filename'
         return unless @file
         @saveFilename()
         @updateFilename()
-      when 'name'
-        if @name isnt prev # only save manual changes, not values filled in by persona settings
+      when 'name', 'flag'
+        if @[name] isnt prev # only save manual changes, not values filled in by persona settings
           QR.persona.set @
+    @preventAutoPost() unless forced
 
   forceSave: ->
     return unless @ is QR.selected
     # Do this in case people use extensions
     # that do not trigger the `input` event.
-    for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler']
+    for name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler', 'flag']
       continue if not (node = QR.nodes[name])
-      @save node
+      @save node, true
     return
+
+  preventAutoPost: ->
+    # Disable auto-posting if you're editing the first post
+    # during the last 5 seconds of the cooldown.
+    if QR.cooldown.auto and @ is QR.posts[0]
+      QR.cooldown.update() # adding/removing file can change cooldown
+      QR.cooldown.auto = false if QR.cooldown.seconds <= 5
 
   setComment: (com) ->
     @com = com or null
@@ -156,8 +165,7 @@ QR.post = class
     if @ is QR.selected
       QR.characterCount()
     @nodes.span.textContent = @com
-    # Post count temporarily off by 1 when called from QR.post.rm or QR.close
-    $.queueTask -> QR.captcha.onPostChange()
+    QR.captcha.moreNeeded()
 
   @rmErrored: (e) ->
     e.stopPropagation()
@@ -167,9 +175,9 @@ QR.post = class
         break
     return
 
-  error: (className, message) ->
+  error: (className, message, link) ->
     div = $.el 'div', {className}
-    $.extend div, <%= html('${message}<br>[<a href="javascript:;">delete</a>] [<a href="javascript:;">delete all</a>]') %>
+    $.extend div, <%= html('${message}?{link}{ [<a href="${link}" target="_blank">More info</a>]}<br>[<a href="javascript:;">delete post</a>] [<a href="javascript:;">delete all</a>]') %>
     (@errors or= []).push div
     [rm, rmAll] = $$ 'a', div
     $.on div, 'click', =>
@@ -180,8 +188,8 @@ QR.post = class
     $.on rmAll, 'click', QR.post.rmErrored
     QR.error div, true
 
-  fileError: (message) ->
-    @error 'file-error', "#{@filename}: #{message}"
+  fileError: (message, link) ->
+    @error 'file-error', "#{@filename}: #{message}", link
 
   dismissErrors: (test = -> true) ->
     if @errors
@@ -198,7 +206,7 @@ QR.post = class
     @filesize = $.bytesToString @file.size
     @checkSize()
     $.addClass @nodes.el, 'has-file'
-    $.queueTask -> QR.captcha.onPostChange()
+    QR.captcha.moreNeeded()
     URL.revokeObjectURL @URL
     @saveFilename()
     if @ is QR.selected
@@ -210,6 +218,7 @@ QR.post = class
       @fileError 'Unsupported file type.'
     else if /^(image|video)\//.test @file.type
       @readFile()
+    @preventAutoPost()
 
   checkSize: ->
     max = QR.max_size
@@ -231,7 +240,7 @@ QR.post = class
     onerror = =>
       $.off el, event, onload
       $.off el, 'error', onerror
-      @fileError "#{if isVideo then 'Video' else 'Image'} appears corrupt"
+      @fileError "Corrupt #{if isVideo then 'video' else 'image'} or error reading metadata.", '<%= meta.faq %>#error-reading-metadata'
       URL.revokeObjectURL el.src
     $.on el, event, onload
     $.on el, 'error', onerror
@@ -256,7 +265,7 @@ QR.post = class
         @fileError 'Video lacks duration metadata (try remuxing)'
       else if duration > QR.max_duration_video
         @fileError "Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
-      if g.BOARD.ID not in ['gif', 'wsg'] and $.hasAudio el
+      if g.BOARD.ID not in ['gif', 'wsg', 'r', 'wsr'] and $.hasAudio el
         @fileError 'Audio not allowed'
 
   setThumbnail: (el) ->
@@ -306,6 +315,7 @@ QR.post = class
     @showFileData()
     URL.revokeObjectURL @URL
     @dismissErrors (error) -> $.hasClass error, 'file-error'
+    @preventAutoPost()
 
   saveFilename: ->
     @file.newName = (@filename or '').replace /[/\\]/g, '-'
@@ -336,6 +346,7 @@ QR.post = class
 
   pasteText: (file) ->
     @pasting = true
+    @preventAutoPost()
     reader = new FileReader()
     reader.onload = (e) =>
       {result} = e.target
@@ -362,6 +373,7 @@ QR.post = class
     index    = (el) -> [el.parentNode.children...].indexOf el
     oldIndex = index el
     newIndex = index @
+    return if QR.posts[oldIndex].isLocked or QR.posts[newIndex].isLocked
     (if oldIndex < newIndex then $.after else $.before) @, el
     post = QR.posts.splice(oldIndex, 1)[0]
     QR.posts.splice newIndex, 0, post

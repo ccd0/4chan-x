@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.0.20
+// @version      1.13.14.11
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -16,10 +16,16 @@
 // @include      https://i.4cdn.org/*
 // @include      http://is.4chan.org/*
 // @include      https://is.4chan.org/*
+// @include      http://is2.4chan.org/*
+// @include      https://is2.4chan.org/*
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      https://www.google.com/recaptcha/api2/frame?*&k=887877714&*
+// @include      https://www.google.com/recaptcha/api2/bframe?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      http://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      https://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @exclude      http://www.4chan.org/pass
 // @exclude      https://www.4chan.org/pass
 // @exclude      http://www.4chan.org/pass?*
@@ -32,8 +38,8 @@
 // @exclude      https://www.4chan.org/donate
 // @exclude      http://www.4chan.org/donate?*
 // @exclude      https://www.4chan.org/donate?*
-// @connect      i.4cdn.org
-// @connect      is.4chan.org
+// @connect      4chan.org
+// @connect      4cdn.org
 // @connect      *
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -42,6 +48,12 @@
 // @grant        GM_addValueChangeListener
 // @grant        GM_openInTab
 // @grant        GM_xmlhttpRequest
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.listValues
+// @grant        GM.openInTab
+// @grant        GM.xmlHttpRequest
 // @run-at       document-start
 // @updateURL    https://noupdate.invalid/
 // @downloadURL  https://noupdate.invalid/
@@ -132,7 +144,7 @@
 
 'use strict';
 
-var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, Sauce, Settings, ShimSet, SimpleDict, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, Volume;
+var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, Sauce, Settings, ShimSet, SimpleDict, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, Volume;
 
 var Conf, E, c, d, doc, docSet, g;
 
@@ -147,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.0.20',
+  VERSION:   '1.13.14.11',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -180,16 +192,13 @@ E.cat = function(templates) {
   return html;
 };
 
-E.url = function(content) {
-  return "data:text/html;charset=utf-8,<!doctype html>" + encodeURIComponent(content.innerHTML);
-};
-
 Config = (function() {
   var Config;
 
   Config = {
     main: {
       'Miscellaneous': {
+        'Redirect to HTTPS': [true, 'Redirect to the HTTPS version of 4chan.'],
         'JSON Index': [true, 'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'],
         'Use 4chan X Catalog': [true, 'Link to 4chan X\'s catalog instead of the native 4chan one.', 1],
         'Index Refresh Notifications': [false, 'Show a notice at the top of the page when the index is refreshed.', 1],
@@ -199,6 +208,7 @@ Config = (function() {
         'Announcement Hiding': [true, 'Add button to hide 4chan announcements.'],
         'Desktop Notifications': [true, 'Enables desktop notifications across various 4chan X features.'],
         '404 Redirect': [true, 'Redirect dead threads and images to the archives.'],
+        'Archive Report': [true, 'Enable reporting posts to supported archives.'],
         'Exempt Archives from Encryption': [true, 'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps.'],
@@ -224,6 +234,7 @@ Config = (function() {
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
         'Link Title': [true, 'Replace the link of a supported site with its actual title.', 1],
+        'Cover Preview': [true, 'Show preview of supported links on hover.', 1],
         'Embedding': [true, 'Embed supported services. Note: Some services don\'t work on HTTPS.', 1],
         'Auto-embed': [false, 'Auto-embed Linkify Embeds.', 2],
         'Floating Embeds': [false, 'Embed content in a frame that remains in place when the page is scrolled.', 2]
@@ -241,7 +252,7 @@ Config = (function() {
         'Image Expansion': [true, 'Expand images / videos.'],
         'Image Hover': [true, 'Show full image / video on mouseover.'],
         'Image Hover in Catalog': [true, 'Show full image / video on mouseover in 4chan X catalog.'],
-        'Gallery': [true, 'Adds a simple and cute image gallery.'],
+        'Gallery': [true, 'Adds a simple and cute image gallery. Has more options in the gallery menu.'],
         'Fullscreen Gallery': [false, 'Open gallery in fullscreen mode.', 1],
         'PDF in Gallery': [false, 'Show PDF files in gallery.', 1],
         'Sauce': [true, 'Add sauce links to images.'],
@@ -261,17 +272,19 @@ Config = (function() {
         'Allow Sound': [true, 'Open videos with the sound unmuted.'],
         'Mouse Wheel Volume': [true, 'Adjust volume of videos with the mouse wheel over the thumbnail/filename/gallery.'],
         'Loop in New Tab': [true, 'Loop videos opened in their own tabs.'],
-        'Volume in New Tab': [true, 'Apply 4chan X mute and volume settings to videos opened in their own tabs.']
+        'Volume in New Tab': [true, 'Apply 4chan X mute and volume settings to videos opened in their own tabs.'],
+        'Use Faster Image Host': [true, 'Change is*.4chan.org links to point to the faster i.4cdn.org host.']
       },
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
         'Report Link': [true, 'Add a report link to the menu.', 1],
+        'Copy Text Link': [true, 'Add a link to copy the post\'s text.', 1],
         'Thread Hiding Link': [true, 'Add a link to hide entire threads.', 1],
         'Reply Hiding Link': [true, 'Add a link to hide single replies.', 1],
         'Delete Link': [true, 'Add post and image deletion links to the menu.', 1],
         'Archive Link': [true, 'Add an archive link to the menu.', 1],
         'Edit Link': [true, 'Add a link to edit the image in Tegaki, /i/\'s painting program. Requires Quick Reply.', 1],
-        'Download Link': [true, 'Add a download with original filename link to the menu.', 1]
+        'Download Link': [false, 'Add a download with original filename link to the menu.', 1]
       },
       'Monitoring': {
         'Thread Updater': [true, 'Fetch and insert new replies. Has more options in the header menu and the "Advanced" tab.'],
@@ -287,16 +300,17 @@ Config = (function() {
         'IP Count in Stats': [true, 'Display the unique IP count in the thread stats.', 1],
         'Page Count in Stats': [true, 'Display the page count in the thread stats.', 1],
         'Updater and Stats in Header': [true, 'Places the thread updater and thread stats in the header instead of floating them.'],
-        'Thread Watcher': [true, 'Bookmark threads.'],
+        'Thread Watcher': [true, 'Bookmark threads. Has more options in the thread watcher menu.'],
         'Fixed Thread Watcher': [true, 'Makes the thread watcher scroll with the page.', 1],
         'Persistent Thread Watcher': [false, 'The thread watcher will be visible when the page is loaded.', 1],
         'Mark New IPs': [false, 'Label each post from a new IP with the thread\'s current IP count.'],
-        'Reply Pruning': [true, 'Hide old replies in long threads. Number of replies shown can be set from header menu.']
+        'Reply Pruning': [true, 'Add option in header menu to hide old replies in long threads. Activated by default in stickies.'],
+        'Prune All Threads': [false, 'Activate Reply Pruning by default in all threads.', 1]
       },
       'Posting and Captchas': {
         'Quick Reply': [true, 'All-in-one form to reply, create threads, automate dumping and more.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.', 1],
-        'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.', 1],
+        'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.', 2],
         'Open Post in New Tab': [true, 'Open new threads in a new tab, and open replies in a new tab if you\'re not already in the thread.', 1],
         'Remember QR Size': [false, 'Remember the size of the Quick reply.', 1],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.', 1],
@@ -308,14 +322,17 @@ Config = (function() {
         'Auto-load captcha': [false, 'Automatically load the captcha in the QR even if your post is empty.', 1],
         'Post on Captcha Completion': [false, 'Submit the post immediately when the captcha is completed.', 1],
         'Captcha Fixes': [true, 'Make captcha easier to use, especially with the keyboard.'],
-        'Use Recaptcha v1': [false, 'Use the old text version of Recaptcha in the post form.'],
+        'Use Recaptcha v1': [false, 'Use the old text version of Recaptcha in the post form in threads.'],
+        'Use Recaptcha v1 on Index': [false, 'Use the old text version of Recaptcha on the index and catalog. Warning: May interfere with starting threads.'],
         'Use Recaptcha v1 in Reports': [false, 'Use the text captcha in the report window.'],
         'Force Noscript Captcha': [false, 'Use the non-Javascript fallback captcha even if Javascript is enabled (Recaptcha v2 only).'],
+        'Force Noscript Captcha for v1': [true, 'Force the non-Javascript fallback captcha for Recaptcha v1. Currently only works on HTTPS.'],
         'Pass Link': [false, 'Add a 4chan Pass login link to the bottom of the page.']
       },
       'Quote Links': {
         'Quote Backlinks': [true, 'Add quote backlinks.'],
         'OP Backlinks': [true, 'Add backlinks to the OP.', 1],
+        'Bottom Backlinks': [false, 'Place backlinks at the bottom of posts.', 1],
         'Quote Inlining': [true, 'Inline quoted post on click.'],
         'Inline Cross-thread Quotes Only': [false, 'Don\'t inline quote links when the posts are visible in the thread.', 1],
         'Quote Hash Navigation': [false, 'Include an extra link after quotes for autoscrolling to quoted posts.', 1],
@@ -355,10 +372,12 @@ Config = (function() {
       'Auto Update Thread Watcher': [true, 'Periodically check status of watched threads.'],
       'Auto Watch': [true, 'Automatically watch threads you start.'],
       'Auto Watch Reply': [true, 'Automatically watch threads you reply to.'],
-      'Auto Prune': [true, 'Automatically remove dead threads.'],
-      'Show Unread Count': [true, 'Show number of unread posts in watched threads.']
+      'Auto Prune': [false, 'Automatically remove dead threads.'],
+      'Show Unread Count': [true, 'Show number of unread posts in watched threads.'],
+      'Require OP Quote Link': [false, 'For purposes of thread watcher highlighting, only consider posts with a quote link to the OP as replies to the OP.']
     },
     filter: {
+      general: '',
       postID: "# Highlight dubs on [s4s]:\n#/(\\d)\\1$/;highlight;top:no;boards:s4s",
       name: "# Filter any namefags:\n#/^(?!Anonymous$)/",
       uniqueID: "# Filter a specific ID:\n#/Txhvk1Tl/",
@@ -373,7 +392,7 @@ Config = (function() {
       filesize: '',
       MD5: ''
     },
-    sauces: "# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\n#https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//tineye.com/search?url=%IMG\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://whatanime.ga/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desuarchive.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
+    sauces: "# Known filename formats:\nhttp://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/\n//%$1.deviantart.com/gallery/#/d%$2;regexp:/^\\w+_by_(\\w+)-d([\\da-z]+)/\n//imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/\nhttp://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/\nhttps://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/\n\n# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\nhttps://www.yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//tineye.com/search?url=%IMG\n#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://whatanime.ga/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desuarchive.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://exif.regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
     FappeT: {
       werk: false
     },
@@ -383,7 +402,8 @@ Config = (function() {
       'Previous Index Mode': 'paged',
       'Index Size': 'small',
       'Show Replies': [true, 'Show replies in the index, and also in the catalog if "Catalog hover expand" is checked.'],
-      'Catalog Hover Expand': [true, 'Expand the comment and show more details when you hover over a thread in the catalog.'],
+      'Catalog Hover Expand': [false, 'Expand the comment and show more details when you hover over a thread in the catalog.'],
+      'Catalog Hover Toggle': [true, 'Turn "Catalog hover expand" on and off by clicking in the catalog.'],
       'Pin Watched Threads': [false, 'Move watched threads to the start of the index.'],
       'Anchor Hidden Threads': [true, 'Move hidden threads to the end of the index.'],
       'Refreshed Navigation': [false, 'Refresh index when navigating through pages.']
@@ -409,9 +429,10 @@ Config = (function() {
       'QR.personas': "#options:\"sage\";boards:jp;always",
       sjisPreview: false
     },
-    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'',
+    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\nhttps://cdnjs.cloudflare.com\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'\n\n# Banner ads\n#http://s.zkcdn.net/ados.js\n#https://s.zkcdn.net/ados.js\n#http://engine.4chan-ads.org\n#https://engine.4chan-ads.org',
     captchaLanguage: '',
     time: '%m/%d/%y(%a)%H:%M:%S',
+    timeLocale: '',
     backlink: '>>%id',
     fileInfo: '%l %d (%p%s, %r%g)',
     favicon: 'ferongr',
@@ -440,6 +461,9 @@ Config = (function() {
       'Expand image': ['Shift+e', 'Expand selected image.'],
       'Expand images': ['e', 'Expand all images.'],
       'Open Gallery': ['g', 'Opens the gallery.'],
+      'Next Gallery Image': ['Right', 'Go to the next image in gallery mode.'],
+      'Previous Gallery Image': ['Left', 'Go to the previous image in gallery mode.'],
+      'Advance Gallery': ['Enter', 'Go to next image or, if Autoplay is off, play video.'],
       'Pause': ['p', 'Pause/play videos in the gallery.'],
       'Slideshow': ['Ctrl+Right', 'Toggle the gallery slideshow mode.'],
       'fappeTyme': ['f', 'Toggle Fappe Tyme.'],
@@ -463,6 +487,7 @@ Config = (function() {
       'Previous reply': ['k', 'Select previous reply.'],
       'Deselect reply': ['Shift+d', 'Deselect reply.'],
       'Hide': ['x', 'Hide thread.'],
+      'Quick Filter MD5': ['5', 'Add the MD5 of the selected image to the filter list.'],
       'Previous Post Quoting You': ['Alt+Up', 'Scroll to the previous post that quotes you.'],
       'Next Post Quoting You': ['Alt+Down', 'Scroll to the next post that quotes you.']
     },
@@ -482,7 +507,14 @@ Config = (function() {
     customCooldownEnabled: true,
     'Thread Quotes': false,
     'Max Replies': 1000,
-    'Autohiding Scrollbar': false
+    'Autohiding Scrollbar': false,
+    position: {
+      'embedding.position': 'top: 50px; right: 0px;',
+      'thread-stats.position': 'bottom: 0px; right: 0px;',
+      'updater.position': 'bottom: 0px; left: 0px;',
+      'thread-watcher.position': 'top: 50px; left: 0px;',
+      'qr.position': 'top: 50px; right: 0px;'
+    }
   };
 
   return Config;
@@ -1211,13 +1243,11 @@ boards:
   font: 13px sans-serif;\n\
   outline: none;\n\
   transition: color .25s, border-color .25s;\n\
-  transition: color .25s, border-color .25s;\n\
 }\n\
-.field::-moz-placeholder,\n\
-.field:hover::-moz-placeholder {\n\
-  color: #AAA !important;\n\
-  font-size: 13px !important;\n\
-  opacity: 1.0 !important;\n\
+.field::-moz-placeholder {\n\
+  color: #AAA;\n\
+  font-size: 13px;\n\
+  opacity: 1;\n\
 }\n\
 .captch-img:hover,\n\
 .field:hover {\n\
@@ -1309,9 +1339,12 @@ body > div[style*=\" top: -10000px;\"] {\n\
   /* currently nonstandard but may be added: https://lists.w3.org/Archives/Public/www-style/2016Mar/0352.html, https://bugzilla.mozilla.org/show_bug.cgi?id=1296042 */\n\
   word-break: break-word;\n\
 }\n\
-:root:not(.ua-webkit):not(.ua-blink) .post > .file {\n\
+:root:not(.ua-webkit):not(.ua-blink) .fileText {\n\
   word-wrap: break-word;\n\
-  max-width: calc(100vw - 50px);\n\
+  max-width: calc(100vw - 90px);\n\
+}\n\
+body.is_catalog .thread > a > img {\n\
+  display: inline-block;\n\
 }\n\
 /* Ads */\n\
 .ad-cnt > *, .adg-rects > * {\n\
@@ -1319,11 +1352,13 @@ body > div[style*=\" top: -10000px;\"] {\n\
 }\n\
 :root:not(.ads-loaded) .ad-plea,\n\
 :root:not(.ads-loaded) hr.abovePostForm,\n\
-:root:not(.ads-loaded) .ad-plea-bottom + hr {\n\
+:root:not(.ads-loaded) .ad-plea-bottom + hr,\n\
+#adg-ol + hr {\n\
   display: none;\n\
 }\n\
-:root:not(.ads-loaded) .adg-rects {\n\
+.adg-rects {\n\
   margin: 0;\n\
+  font-size: 0;\n\
 }\n\
 div.center[style] {\n\
   display: none !important;\n\
@@ -1792,8 +1827,20 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 .section-main a, .section-filter a, .section-advanced a {\n\
   text-decoration: underline;\n\
 }\n\
+#sauce-doc-expand:not(:checked) ~ #sauce-doc {\n\
+  max-height: 130px;\n\
+  overflow: auto;\n\
+}\n\
+#sauce-doc > label {\n\
+  float: right;\n\
+  margin: 0 5px;\n\
+}\n\
+/* XXX for OneeChan */\n\
+#sauce-doc-expand + .riceCheck {\n\
+  display: none;\n\
+}\n\
 .section-sauce textarea {\n\
-  height: 350px;\n\
+  height: 430px;\n\
 }\n\
 .section-advanced .field[name=\"boardnav\"] {\n\
   width: 100%;\n\
@@ -1819,6 +1866,12 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 .section-advanced .note code {\n\
   font-style: normal;\n\
   font-size: 11px;\n\
+}\n\
+.favicon-preview > img {\n\
+    vertical-align: middle;\n\
+}\n\
+.favicon-preview > img:nth-of-type(3n+1) {\n\
+    margin-left: 4px;\n\
 }\n\
 .section-keybinds .field {\n\
   font-family: monospace;\n\
@@ -1889,8 +1942,25 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 #index-search:not([data-searching]) + #index-search-clear {\n\
   display: none;\n\
 }\n\
-#index-mode, #index-sort, #index-size {\n\
+#index-options {\n\
   float: right;\n\
+}\n\
+#lastlong-options {\n\
+  display: inline-block;\n\
+  vertical-align: middle;\n\
+  height: 28px;\n\
+  margin: -14px 0;\n\
+}\n\
+#lastlong-options > input {\n\
+  padding: 0;\n\
+  border: 0 !important;\n\
+  text-align: center;\n\
+  background: transparent;\n\
+  display: block;\n\
+  font-size: 12px;\n\
+  height: 12px;\n\
+  width: 30px;\n\
+  margin: 1px 0;\n\
 }\n\
 .summary {\n\
   text-decoration: none;\n\
@@ -1898,7 +1968,6 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 /* Catalog */\n\
 :root.catalog-mode .board {\n\
   text-align: center;\n\
-  padding: 0 50px;\n\
 }\n\
 .catalog-thread {\n\
   display: inline-block;\n\
@@ -1911,15 +1980,15 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 }\n\
 /* overrides 4chan CSS on div.thread */\n\
 .catalog-thread.catalog-thread {\n\
-  margin: 4px;\n\
+  margin: 2px;\n\
 }\n\
 .catalog-small > .catalog-thread {\n\
-  width: 167px;\n\
-  height: 322px;\n\
+  width: 165px;\n\
+  height: 320px;\n\
 }\n\
 .catalog-large > .catalog-thread {\n\
-  width: 272px;\n\
-  height: 412px;\n\
+  width: 270px;\n\
+  height: 410px;\n\
 }\n\
 :root.catalog-hover-expand .catalog-thread:hover {\n\
   z-index: 1;\n\
@@ -1942,6 +2011,11 @@ div[data-checked=\"false\"] > .suboption-list {\n\
   right: 0;\n\
   border: 1px solid transparent;\n\
   padding-top: 20px;\n\
+}\n\
+/* overrides inline CSS from Index.cb.hoverAdjust */\n\
+:root:not(.catalog-hover-expand) .catalog-post {\n\
+  left: 0 !important;\n\
+  right: 0 !important;\n\
 }\n\
 /* overrides 4chan CSS on div.post */\n\
 .catalog-post.catalog-post {\n\
@@ -2024,6 +2098,7 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 .catalog-post > * > .fileText > :not(:first-child),\n\
 .catalog-post > .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),\n\
 .catalog-post > * > * > .posteruid,\n\
+:root.bottom-backlinks .catalog-post > .container,\n\
 .post:not(.catalog-post) > .catalog-link,\n\
 .post:not(.catalog-post) > .catalog-stats,\n\
 .post:not(.catalog-post) > .catalog-replies {\n\
@@ -2064,8 +2139,8 @@ div[data-checked=\"false\"] > .suboption-list {\n\
   display: inline-block;\n\
   font-style: italic;\n\
 }\n\
-.catalog-post > * > .nameBlock,\n\
-.catalog-post > * > .dateTime,\n\
+:root.catalog-hover-expand .catalog-container:hover > * > * > .nameBlock,\n\
+:root.catalog-hover-expand .catalog-container:hover > * > * > .dateTime,\n\
 :root.catalog-hover-expand .catalog-container:hover > * > .postMessage:not(:empty) {\n\
   padding-top: .3em;\n\
 }\n\
@@ -2151,6 +2226,13 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 :root.hats-enabled:not(.werkTyme) .catalog-large > .catalog-thread:not(.noFile)::after {\n\
   left: calc(110px - .5px * var(--tn-w));\n\
 }\n\
+/* Copy Text Link's textarea element */\n\
+textarea.copy-text-element {\n\
+  height: 0;\n\
+  width: 0;\n\
+  position: absolute;\n\
+  top: -10000px;\n\
+}\n\
 /* Announcement Hiding */\n\
 :root.hide-announcement #globalMessage {\n\
   display: none;\n\
@@ -2178,10 +2260,11 @@ span.hide-announcement {\n\
 }\n\
 #updater > .move {\n\
   position: absolute;\n\
-  left: 0;\n\
   top: -5px;\n\
-  width: 100%;\n\
-  height: 5px;\n\
+  bottom: -5px;\n\
+  left: -5px;\n\
+  right: -5px;\n\
+  z-index: -1;\n\
 }\n\
 #updater > div:last-child {\n\
   text-align: center;\n\
@@ -2335,10 +2418,21 @@ span.hide-announcement {\n\
 .postNum + .container::before {\n\
   content: \" \";\n\
 }\n\
+:root.bottom-backlinks .container {\n\
+  display: block;\n\
+  clear: both;\n\
+  margin: 0 4px;\n\
+}\n\
+:root.bottom-backlinks .backlink {\n\
+  font-size: 90%;\n\
+}\n\
 .inline {\n\
   border: 1px solid;\n\
   display: table;\n\
   margin: 2px 0;\n\
+}\n\
+.container ~ .inline {\n\
+  margin-left: 20px;\n\
 }\n\
 :root.catalog-mode .inline {\n\
   display: none;\n\
@@ -2576,6 +2670,24 @@ input[name=\"Default Volume\"] {\n\
 :root.thread-hide .party-hat {\n\
   left: 19px;\n\
 }\n\
+/* Anonymize */\n\
+:root.anonymize .name,\n\
+:root.anonymize .post-author:not([class*=capcode]) {\n\
+  font-size: 0;\n\
+}\n\
+:root.anonymize .postertrip,\n\
+:root.anonymize .n-pu {\n\
+  display: none;\n\
+}\n\
+:root.anonymize .name::before,\n\
+:root.anonymize .post-author:not([class*=capcode])::before {\n\
+  content: \"Anonymous\";\n\
+  font-size: 10pt;\n\
+}\n\
+:root.anonymize .flashListing .name::before,\n\
+:root.anonymize .post-last > .post-author:not([class*=capcode])::before {\n\
+  font-size: 9pt;\n\
+}\n\
 /* QR */\n\
 :root.hide-original-post-form #togglePostFormLink,\n\
 #qr.autohide:not(.focus):not(:hover):not(:active) > form,\n\
@@ -2700,7 +2812,7 @@ input.field.tripped:not(:hover):not(:focus) {\n\
   text-shadow: none !important;\n\
 }\n\
 #qr textarea {\n\
-  min-width: 100%;\n\
+  min-width: 300px;\n\
   resize: both;\n\
 }\n\
 .field {\n\
@@ -3180,9 +3292,7 @@ a:only-of-type > .remove {\n\
   cursor: text !important;\n\
 }\n\
 /* Embedding */\n\
-.embedder:not(.embedded) > span,\n\
-:root.catalog-mode .embedder > span,\n\
-:root.catalog-mode .board .media-embed {\n\
+.embedder:not(.embedded) > span {\n\
   display: none;\n\
 }\n\
 #embedding {\n\
@@ -3428,9 +3538,9 @@ a:only-of-type > .remove {\n\
 :root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-count {\n\
   right: 178px !important;\n\
 }\n\
-:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-buttons,\n\
-:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-name,\n\
-:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-count {\n\
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-buttons,\n\
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-name,\n\
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-count {\n\
   right: 28px !important;\n\
 }\n\
 :root.gallery-open.fixed #header-bar:not(.autohide),\n\
@@ -3658,6 +3768,10 @@ a:only-of-type > .remove {\n\
 :root.futaba .indicator {\n\
   color: #F0E0D6;\n\
 }\n\
+/* Anonymize */\n\
+:root.futaba.anonymize .name::before {\n\
+  font-size: 12pt;\n\
+}\n\
 /* QR */\n\
 .futaba #dump-list::-webkit-scrollbar-thumb {\n\
   background-color: #F0E0D6;\n\
@@ -3742,6 +3856,10 @@ a:only-of-type > .remove {\n\
 /* Fappe and Werk Tyme */\n\
 :root.burichan .indicator {\n\
   color: #D6DAF0;\n\
+}\n\
+/* Anonymize */\n\
+:root.burichan.anonymize .name::before {\n\
+  font-size: 12pt;\n\
 }\n\
 /* QR */\n\
 .burichan #dump-list::-webkit-scrollbar-thumb {\n\
@@ -4277,7 +4395,27 @@ report:
 }\n\
 #captchaContainerAlt td:nth-child(2) {\n\
   display: table-cell !important;\n\
-}\n",
+}\n\
+/* Archive reports */\n\
+#archive-report {\n\
+  padding: 3px;\n\
+}\n\
+#archive-report-enabled {\n\
+  vertical-align: middle;\n\
+}\n\
+#archive-report > label {\n\
+  display: block;\n\
+}\n\
+#archive-report-reason {\n\
+  display: block;\n\
+  width: 98%;\n\
+}\n\
+.archive-report-success {\n\
+  color: green;\n\
+}\n\
+.archive-report-error {\n\
+  color: red;\n\
+}",
 
 www:
 "#captcha-cnt {\n\
@@ -4353,10 +4491,15 @@ $ = (function() {
   };
 
   $.ajax = (function() {
-    var lastModified;
+    var lastModified, pageXHR;
     lastModified = {};
+    if (window.wrappedJSObject && !XMLHttpRequest.wrappedJSObject) {
+      pageXHR = XPCNativeWrapper(window.wrappedJSObject.XMLHttpRequest);
+    } else {
+      pageXHR = XMLHttpRequest;
+    }
     return function(url, options, extra) {
-      var err, event, form, i, len, r, ref, ref1, type, upCallbacks, whenModified;
+      var err, event, form, j, len, r, ref, ref1, type, upCallbacks, whenModified;
       if (options == null) {
         options = {};
       }
@@ -4373,7 +4516,7 @@ $ = (function() {
       if ($.engine === 'blink' && whenModified) {
         url += "?s=" + whenModified;
       }
-      r = new XMLHttpRequest();
+      r = new pageXHR();
       type || (type = form && 'post' || 'get');
       try {
         r.open(type, url, true);
@@ -4399,8 +4542,8 @@ $ = (function() {
           throw err;
         }
         ref1 = ['error', 'loadend'];
-        for (i = 0, len = ref1.length; i < len; i++) {
-          event = ref1[i];
+        for (j = 0, len = ref1.length; j < len; j++) {
+          event = ref1[j];
           r["on" + event] = options["on" + event];
           $.queueTask($.event, event, null, r);
         }
@@ -4436,7 +4579,7 @@ $ = (function() {
         return;
       }
       $.on(req, 'load', function(e) {
-        var fn1, i, len, ref;
+        var fn1, j, len, ref;
         this.evt = e;
         ref = this.callbacks;
         fn1 = (function(_this) {
@@ -4446,8 +4589,8 @@ $ = (function() {
             });
           };
         })(this);
-        for (i = 0, len = ref.length; i < len; i++) {
-          cb = ref[i];
+        for (j = 0, len = ref.length; j < len; j++) {
+          cb = ref[j];
           fn1(cb);
         }
         return delete this.callbacks;
@@ -4546,19 +4689,19 @@ $ = (function() {
   };
 
   $.addClass = function() {
-    var className, classNames, el, i, len;
+    var className, classNames, el, j, len;
     el = arguments[0], classNames = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-    for (i = 0, len = classNames.length; i < len; i++) {
-      className = classNames[i];
+    for (j = 0, len = classNames.length; j < len; j++) {
+      className = classNames[j];
       el.classList.add(className);
     }
   };
 
   $.rmClass = function() {
-    var className, classNames, el, i, len;
+    var className, classNames, el, j, len;
     el = arguments[0], classNames = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-    for (i = 0, len = classNames.length; i < len; i++) {
-      className = classNames[i];
+    for (j = 0, len = classNames.length; j < len; j++) {
+      className = classNames[j];
       el.classList.remove(className);
     }
   };
@@ -4588,13 +4731,13 @@ $ = (function() {
   };
 
   $.nodes = function(nodes) {
-    var frag, i, len, node;
+    var frag, j, len, node;
     if (!(nodes instanceof Array)) {
       return nodes;
     }
     frag = $.frag();
-    for (i = 0, len = nodes.length; i < len; i++) {
-      node = nodes[i];
+    for (j = 0, len = nodes.length; j < len; j++) {
+      node = nodes[j];
       frag.appendChild(node);
     }
     return frag;
@@ -4633,19 +4776,19 @@ $ = (function() {
   };
 
   $.on = function(el, events, handler) {
-    var event, i, len, ref;
+    var event, j, len, ref;
     ref = events.split(' ');
-    for (i = 0, len = ref.length; i < len; i++) {
-      event = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      event = ref[j];
       el.addEventListener(event, handler, false);
     }
   };
 
   $.off = function(el, events, handler) {
-    var event, i, len, ref;
+    var event, j, len, ref;
     ref = events.split(' ');
-    for (i = 0, len = ref.length; i < len; i++) {
-      event = ref[i];
+    for (j = 0, len = ref.length; j < len; j++) {
+      event = ref[j];
       el.removeEventListener(event, handler, false);
     }
   };
@@ -4712,7 +4855,11 @@ $ = (function() {
     }
   })();
 
-  $.open = typeof GM_openInTab !== "undefined" && GM_openInTab !== null ? GM_openInTab : function(url) {
+  $.modifiedClick = function(e) {
+    return e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0;
+  };
+
+  $.open = (typeof GM !== "undefined" && GM !== null ? GM.openInTab : void 0) != null ? GM.openInTab : typeof GM_openInTab !== "undefined" && GM_openInTab !== null ? GM_openInTab : function(url) {
     return window.open(url, '_blank');
   };
 
@@ -4837,201 +4984,292 @@ $ = (function() {
     return item;
   };
 
+  $.oneItemSugar = function(fn) {
+    return function(key, val, cb) {
+      if (typeof key === 'string') {
+        return fn($.item(key, val), cb);
+      } else {
+        return fn(key, val);
+      }
+    };
+  };
+
   $.syncing = {};
 
-  if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
-    $.getValue = GM_getValue;
-    $.listValues = function() {
-      return GM_listValues();
-    };
-  } else if ($.hasStorage) {
-    $.getValue = function(key) {
-      return localStorage[key];
-    };
-    $.listValues = function() {
-      var key, results;
+  if (((typeof GM !== "undefined" && GM !== null ? GM.deleteValue : void 0) != null) && window.BroadcastChannel && (typeof GM_addValueChangeListener === "undefined" || GM_addValueChangeListener === null)) {
+    $.syncChannel = new BroadcastChannel(g.NAMESPACE + 'sync');
+    $.on($.syncChannel, 'message', function(e) {
+      var cb, key, ref, results, val;
+      ref = e.data;
       results = [];
-      for (key in localStorage) {
-        if (key.slice(0, g.NAMESPACE.length) === g.NAMESPACE) {
-          results.push(key);
+      for (key in ref) {
+        val = ref[key];
+        if ((cb = $.syncing[key])) {
+          results.push(cb(JSON.parse(JSON.stringify(val)), key));
         }
       }
       return results;
-    };
-  } else {
-    $.getValue = function() {};
-    $.listValues = function() {
-      return [];
-    };
-  }
-
-  if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
-    $.setValue = GM_setValue;
-    $.deleteValue = GM_deleteValue;
-  } else if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
-    $.oldValue = {};
-    $.setValue = function(key, val) {
-      GM_setValue(key, val);
-      if (key in $.syncing) {
-        $.oldValue[key] = val;
-        if ($.hasStorage) {
-          return localStorage[key] = val;
-        }
-      }
-    };
-    $.deleteValue = function(key) {
-      GM_deleteValue(key);
-      if (key in $.syncing) {
-        delete $.oldValue[key];
-        if ($.hasStorage) {
-          return localStorage.removeItem(key);
-        }
-      }
-    };
-    if (!$.hasStorage) {
-      $.cantSync = true;
-    }
-  } else if ($.hasStorage) {
-    $.oldValue = {};
-    $.setValue = function(key, val) {
-      if (key in $.syncing) {
-        $.oldValue[key] = val;
-      }
-      return localStorage[key] = val;
-    };
-    $.deleteValue = function(key) {
-      if (key in $.syncing) {
-        delete $.oldValue[key];
-      }
-      return localStorage.removeItem(key);
-    };
-  } else {
-    $.setValue = function() {};
-    $.deleteValue = function() {};
-    $.cantSync = $.cantSet = true;
-  }
-
-  if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
+    });
     $.sync = function(key, cb) {
-      return $.syncing[key] = GM_addValueChangeListener(g.NAMESPACE + key, function(key2, oldValue, newValue, remote) {
-        if (remote) {
-          if (newValue !== void 0) {
-            newValue = JSON.parse(newValue);
-          }
-          return cb(newValue, key);
+      return $.syncing[key] = cb;
+    };
+    $.forceSync = function() {};
+    $["delete"] = function(keys, cb) {
+      var key;
+      if (!(keys instanceof Array)) {
+        keys = [keys];
+      }
+      return Promise.all((function() {
+        var j, len, results;
+        results = [];
+        for (j = 0, len = keys.length; j < len; j++) {
+          key = keys[j];
+          results.push(GM.deleteValue(g.NAMESPACE + key));
         }
+        return results;
+      })()).then(function() {
+        var items, j, key, len;
+        items = {};
+        for (j = 0, len = keys.length; j < len; j++) {
+          key = keys[j];
+          items[key] = void 0;
+        }
+        $.syncChannel.postMessage(items);
+        return typeof cb === "function" ? cb() : void 0;
       });
     };
-    $.forceSync = function() {};
-  } else if ((typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) || $.hasStorage) {
-    $.sync = function(key, cb) {
-      key = g.NAMESPACE + key;
-      $.syncing[key] = cb;
-      return $.oldValue[key] = $.getValue(key);
-    };
-    (function() {
-      var onChange;
-      onChange = function(arg) {
-        var cb, key, newValue;
-        key = arg.key, newValue = arg.newValue;
-        if (!(cb = $.syncing[key])) {
-          return;
+    $.get = $.oneItemSugar(function(items, cb) {
+      var key, keys;
+      keys = Object.keys(items);
+      return Promise.all((function() {
+        var j, len, results;
+        results = [];
+        for (j = 0, len = keys.length; j < len; j++) {
+          key = keys[j];
+          results.push(GM.getValue(g.NAMESPACE + key));
         }
-        if (newValue != null) {
-          if (newValue === $.oldValue[key]) {
-            return;
+        return results;
+      })()).then(function(values) {
+        var i, j, len, val;
+        for (i = j = 0, len = values.length; j < len; i = ++j) {
+          val = values[i];
+          if (val) {
+            items[keys[i]] = JSON.parse(val);
           }
-          $.oldValue[key] = newValue;
-          return cb(JSON.parse(newValue), key.slice(g.NAMESPACE.length));
-        } else {
-          if ($.oldValue[key] == null) {
-            return;
+        }
+        return cb(items);
+      });
+    });
+    $.set = $.oneItemSugar(function(items, cb) {
+      var key, val;
+      return Promise.all((function() {
+        var results;
+        results = [];
+        for (key in items) {
+          val = items[key];
+          results.push(GM.setValue(g.NAMESPACE + key, JSON.stringify(val)));
+        }
+        return results;
+      })()).then(function() {
+        $.syncChannel.postMessage(items);
+        return typeof cb === "function" ? cb() : void 0;
+      });
+    });
+    $.clear = function(cb) {
+      return GM.listValues().then(function(keys) {
+        return $["delete"](keys.map(function(key) {
+          return key.replace(g.NAMESPACE, '');
+        }), cb);
+      });
+    };
+  } else {
+    $.currentValue = {};
+    $.GM_getValue = function(key) {
+      var err;
+      try {
+        return $.currentValue[key] = GM_getValue(key);
+      } catch (_error) {
+        err = _error;
+        return $.currentValue[key];
+      }
+    };
+    $.GM_setValue = function(key, val) {
+      $.currentValue[key] = val;
+      return GM_setValue(key, val);
+    };
+    $.GM_deleteValue = function(key) {
+      delete $.currentValue[key];
+      return GM_deleteValue(key);
+    };
+    if (typeof GM_deleteValue === "undefined" || GM_deleteValue === null) {
+      $.perProtocolSettings = true;
+    }
+    if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
+      $.getValue = $.GM_getValue;
+      $.listValues = function() {
+        return GM_listValues();
+      };
+    } else if ($.hasStorage) {
+      $.getValue = function(key) {
+        return localStorage[key];
+      };
+      $.listValues = function() {
+        var key, results;
+        results = [];
+        for (key in localStorage) {
+          if (key.slice(0, g.NAMESPACE.length) === g.NAMESPACE) {
+            results.push(key);
           }
-          delete $.oldValue[key];
-          return cb(void 0, key.slice(g.NAMESPACE.length));
+        }
+        return results;
+      };
+    } else {
+      $.getValue = function() {};
+      $.listValues = function() {
+        return [];
+      };
+    }
+    if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
+      $.setValue = $.GM_setValue;
+      $.deleteValue = $.GM_deleteValue;
+    } else if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
+      $.oldValue = {};
+      $.setValue = function(key, val) {
+        $.GM_setValue(key, val);
+        if (key in $.syncing) {
+          $.oldValue[key] = val;
+          if ($.hasStorage) {
+            return localStorage[key] = val;
+          }
         }
       };
-      $.on(window, 'storage', onChange);
-      return $.forceSync = function(key) {
-        key = g.NAMESPACE + key;
-        return onChange({
-          key: key,
-          newValue: $.getValue(key)
+      $.deleteValue = function(key) {
+        $.GM_deleteValue(key);
+        if (key in $.syncing) {
+          delete $.oldValue[key];
+          if ($.hasStorage) {
+            return localStorage.removeItem(key);
+          }
+        }
+      };
+      if (!$.hasStorage) {
+        $.cantSync = true;
+      }
+    } else if ($.hasStorage) {
+      $.oldValue = {};
+      $.setValue = function(key, val) {
+        if (key in $.syncing) {
+          $.oldValue[key] = val;
+        }
+        return localStorage[key] = val;
+      };
+      $.deleteValue = function(key) {
+        if (key in $.syncing) {
+          delete $.oldValue[key];
+        }
+        return localStorage.removeItem(key);
+      };
+    } else {
+      $.setValue = function() {};
+      $.deleteValue = function() {};
+      $.cantSync = $.cantSet = true;
+    }
+    if (typeof GM_addValueChangeListener !== "undefined" && GM_addValueChangeListener !== null) {
+      $.sync = function(key, cb) {
+        return $.syncing[key] = GM_addValueChangeListener(g.NAMESPACE + key, function(key2, oldValue, newValue, remote) {
+          if (remote) {
+            if (newValue !== void 0) {
+              newValue = JSON.parse(newValue);
+            }
+            return cb(newValue, key);
+          }
         });
       };
-    })();
-  } else {
-    $.sync = function() {};
-    $.forceSync = function() {};
+      $.forceSync = function() {};
+    } else if ((typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) || $.hasStorage) {
+      $.sync = function(key, cb) {
+        key = g.NAMESPACE + key;
+        $.syncing[key] = cb;
+        return $.oldValue[key] = $.getValue(key);
+      };
+      (function() {
+        var onChange;
+        onChange = function(arg) {
+          var cb, key, newValue;
+          key = arg.key, newValue = arg.newValue;
+          if (!(cb = $.syncing[key])) {
+            return;
+          }
+          if (newValue != null) {
+            if (newValue === $.oldValue[key]) {
+              return;
+            }
+            $.oldValue[key] = newValue;
+            return cb(JSON.parse(newValue), key.slice(g.NAMESPACE.length));
+          } else {
+            if ($.oldValue[key] == null) {
+              return;
+            }
+            delete $.oldValue[key];
+            return cb(void 0, key.slice(g.NAMESPACE.length));
+          }
+        };
+        $.on(window, 'storage', onChange);
+        return $.forceSync = function(key) {
+          key = g.NAMESPACE + key;
+          return onChange({
+            key: key,
+            newValue: $.getValue(key)
+          });
+        };
+      })();
+    } else {
+      $.sync = function() {};
+      $.forceSync = function() {};
+    }
+    $["delete"] = function(keys) {
+      var j, key, len;
+      if (!(keys instanceof Array)) {
+        keys = [keys];
+      }
+      for (j = 0, len = keys.length; j < len; j++) {
+        key = keys[j];
+        $.deleteValue(g.NAMESPACE + key);
+      }
+    };
+    $.get = $.oneItemSugar(function(items, cb) {
+      return $.queueTask($.getSync, items, cb);
+    });
+    $.getSync = function(items, cb) {
+      var key, val2;
+      for (key in items) {
+        if ((val2 = $.getValue(g.NAMESPACE + key))) {
+          items[key] = JSON.parse(val2);
+        }
+      }
+      return cb(items);
+    };
+    $.set = $.oneItemSugar(function(items, cb) {
+      return $.queueTask(function() {
+        var key, value;
+        for (key in items) {
+          value = items[key];
+          $.setValue(g.NAMESPACE + key, JSON.stringify(value));
+        }
+        return typeof cb === "function" ? cb() : void 0;
+      });
+    });
+    $.clear = function(cb) {
+      $["delete"](Object.keys(Conf));
+      $["delete"](['previousversion', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']);
+      try {
+        $["delete"]($.listValues().map(function(key) {
+          return key.replace(g.NAMESPACE, '');
+        }));
+      } catch (_error) {}
+      return typeof cb === "function" ? cb() : void 0;
+    };
   }
-
-  $["delete"] = function(keys) {
-    var i, key, len;
-    if (!(keys instanceof Array)) {
-      keys = [keys];
-    }
-    for (i = 0, len = keys.length; i < len; i++) {
-      key = keys[i];
-      $.deleteValue(g.NAMESPACE + key);
-    }
-  };
-
-  $.get = function(key, val, cb) {
-    var items;
-    if (typeof cb === 'function') {
-      items = $.item(key, val);
-    } else {
-      items = key;
-      cb = val;
-    }
-    return $.queueTask($.getSync, items, cb);
-  };
-
-  $.getSync = function(items, cb) {
-    var key, val2;
-    for (key in items) {
-      if ((val2 = $.getValue(g.NAMESPACE + key))) {
-        items[key] = JSON.parse(val2);
-      }
-    }
-    return cb(items);
-  };
-
-  $.set = function(keys, val, cb) {
-    var key, value;
-    if (typeof keys === 'string') {
-      $.setValue(g.NAMESPACE + keys, JSON.stringify(val));
-    } else {
-      for (key in keys) {
-        value = keys[key];
-        $.setValue(g.NAMESPACE + key, JSON.stringify(value));
-      }
-      cb = val;
-    }
-    return typeof cb === "function" ? cb() : void 0;
-  };
-
-  $.clear = function(cb) {
-    var id;
-    $["delete"](Object.keys(Conf));
-    $["delete"](['previousversion', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']);
-    $["delete"]((function() {
-      var i, len, ref, results;
-      ref = ['embedding', 'updater', 'thread-stats', 'thread-watcher', 'qr'];
-      results = [];
-      for (i = 0, len = ref.length; i < len; i++) {
-        id = ref[i];
-        results.push(id + ".position");
-      }
-      return results;
-    })());
-    try {
-      $["delete"]($.listValues().map(function(key) {
-        return key.replace(g.NAMESPACE, '');
-      }));
-    } catch (_error) {}
-    return typeof cb === "function" ? cb() : void 0;
-  };
 
   return $;
 
@@ -5098,7 +5336,7 @@ CrossOrigin = (function() {
       } else {
         options.responseType = 'arraybuffer';
       }
-      return GM_xmlhttpRequest(options);
+      return ((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) || GM_xmlhttpRequest)(options);
     },
     file: function(url, cb) {
       return CrossOrigin.binary(url, function(data, contentType, contentDisposition) {
@@ -5136,7 +5374,7 @@ CrossOrigin = (function() {
           return;
         }
         callbacks[url] = [cb];
-        return GM_xmlhttpRequest({
+        return ((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) || GM_xmlhttpRequest)({
           method: "GET",
           url: url + '',
           onload: function(xhr) {
@@ -5182,6 +5420,25 @@ Board = (function() {
       g.boards[this] = this;
     }
 
+    Board.prototype.cooldowns = function() {
+      var c, c2, i, key, len, ref;
+      c2 = (this.config || {}).cooldowns || {};
+      c = {
+        thread: c2.threads || 0,
+        reply: c2.replies || 0,
+        image: c2.images || 0,
+        thread_global: 300
+      };
+      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
+        ref = ['reply', 'image'];
+        for (i = 0, len = ref.length; i < len; i++) {
+          key = ref[i];
+          c[key] = Math.ceil(c[key] / 2);
+        }
+      }
+      return c;
+    };
+
     return Board;
 
   })();
@@ -5219,6 +5476,10 @@ Callbacks = (function() {
       if (keys == null) {
         keys = this.keys;
       }
+      if (node.callbacksExecuted) {
+        return;
+      }
+      node.callbacksExecuted = true;
       for (i = 0, len = keys.length; i < len; i++) {
         name = keys[i];
         try {
@@ -5394,7 +5655,6 @@ DataBoard = (function() {
     DataBoard.prototype.deleteIfEmpty = function(arg) {
       var boardID, threadID;
       boardID = arg.boardID, threadID = arg.threadID;
-      $.forceSync(this.key);
       if (threadID) {
         if (!Object.keys(this.data.boards[boardID][threadID]).length) {
           delete this.data.boards[boardID][threadID];
@@ -5496,13 +5756,13 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype.ajaxClean = function(boardID) {
-      return $.cache("//a.4cdn.org/" + boardID + "/threads.json", (function(_this) {
+      return $.cache(location.protocol + "//a.4cdn.org/" + boardID + "/threads.json", (function(_this) {
         return function(e1) {
           var ref;
           if ((ref = e1.target.status) !== 200 && ref !== 404) {
             return;
           }
-          return $.cache("//a.4cdn.org/" + boardID + "/archive.json", function(e2) {
+          return $.cache(location.protocol + "//a.4cdn.org/" + boardID + "/archive.json", function(e2) {
             var ref1;
             if ((ref1 = e2.target.status) !== 200 && ref1 !== 404) {
               return;
@@ -5568,7 +5828,7 @@ Fetcher = (function() {
 
   Fetcher = (function() {
     function Fetcher(boardID1, threadID, postID1, root, quoter) {
-      var post;
+      var board, post, ref, thread;
       this.boardID = boardID1;
       this.threadID = threadID;
       this.postID = postID1;
@@ -5578,9 +5838,17 @@ Fetcher = (function() {
         this.insert(post);
         return;
       }
+      if ((post = (ref = Index.replyData) != null ? ref[this.boardID + "." + this.postID] : void 0) && (thread = g.threads[this.boardID + "." + this.threadID])) {
+        board = g.boards[this.boardID];
+        post = new Post(Build.postFromObject(post, this.boardID), thread, board);
+        post.isFetchedQuote = true;
+        Main.callbackNodes('Post', [post]);
+        this.insert(post);
+        return;
+      }
       this.root.textContent = "Loading post No." + this.postID + "...";
       if (this.threadID) {
-        $.cache("//a.4cdn.org/" + this.boardID + "/thread/" + this.threadID + ".json", (function(_this) {
+        $.cache(location.protocol + "//a.4cdn.org/" + this.boardID + "/thread/" + this.threadID + ".json", (function(_this) {
           return function(e, isCached) {
             return _this.fetchedPost(e.target, isCached);
           };
@@ -5595,6 +5863,7 @@ Fetcher = (function() {
       if (!this.root.parentNode) {
         return;
       }
+      this.quoter || (this.quoter = post);
       clone = post.addClone(this.quoter.context, $.hasClass(this.root, 'dialog'));
       Main.callbackNodes('Post', [clone]);
       nodes = clone.nodes;
@@ -5646,7 +5915,7 @@ Fetcher = (function() {
       }
       if (post.no !== this.postID) {
         if (isCached) {
-          api = "//a.4cdn.org/" + this.boardID + "/thread/" + this.threadID + ".json";
+          api = location.protocol + "//a.4cdn.org/" + this.boardID + "/thread/" + this.threadID + ".json";
           $.cleanCache(function(url) {
             return url === api;
           });
@@ -5717,7 +5986,7 @@ Fetcher = (function() {
     };
 
     Fetcher.prototype.parseArchivedPost = function(data, url, archive) {
-      var board, comment, greentext, i, j, key, o, post, ref, ref1, tag, text, text2, thread, val;
+      var board, comment, greentext, i, j, media_link, o, post, ref, tag, text, text2, thread, thumb_link;
       if (post = g.posts[this.boardID + "." + this.postID]) {
         this.insert(post);
         return;
@@ -5791,11 +6060,18 @@ Fetcher = (function() {
               return 'Admin';
             case 'D':
               return 'Developer';
+            case 'V':
+              return 'Verified';
+            case 'F':
+              return 'Founder';
+            case 'G':
+              return 'Manager';
           }
         })(),
         uniqueID: data.poster_hash,
         flagCode: data.poster_country,
-        flag: data.poster_country_name,
+        flagCodeTroll: data.troll_country_code,
+        flag: data.poster_country_name || data.troll_country_name,
         dateUTC: data.timestamp,
         dateText: data.fourchan_date,
         commentHTML: comment
@@ -5803,22 +6079,31 @@ Fetcher = (function() {
       if (o.info.capcode) {
         delete o.info.uniqueID;
       }
-      if ((ref = data.media) != null ? ref.media_filename : void 0) {
-        ref1 = data.media;
-        for (key in ref1) {
-          val = ref1[key];
-          if (/_link$/.test(key) && (val != null ? val[0] : void 0) === '/') {
-            data.media[key] = url.split('/', 3).join('/') + val;
-          }
+      if (data.media && !!+data.media.banned) {
+        o.fileDeleted = true;
+      } else if ((ref = data.media) != null ? ref.media_filename : void 0) {
+        thumb_link = data.media.thumb_link;
+        if ((thumb_link != null ? thumb_link[0] : void 0) === '/') {
+          thumb_link = url.split('/', 3).join('/') + thumb_link;
+        }
+        if (!Redirect.securityCheck(thumb_link)) {
+          thumb_link = '';
+        }
+        media_link = Redirect.to('file', {
+          boardID: this.boardID,
+          filename: data.media.media_orig
+        });
+        if (!Redirect.securityCheck(media_link)) {
+          media_link = '';
         }
         o.file = {
           name: data.media.media_filename,
-          url: data.media.media_link || data.media.remote_media_link || (location.protocol + "//i.4cdn.org/" + this.boardID + "/" + (encodeURIComponent(data.media[this.boardID === 'f' ? 'media_filename' : 'media_orig']))),
+          url: media_link || (this.boardID === 'f' ? location.protocol + "//" + (ImageHost.flashHost()) + "/" + this.boardID + "/" + (encodeURIComponent(E(data.media.media_filename))) : location.protocol + "//" + (ImageHost.host()) + "/" + this.boardID + "/" + data.media.media_orig),
           height: data.media.media_h,
           width: data.media.media_w,
           MD5: data.media.media_hash,
           size: $.bytesToString(data.media.media_size),
-          thumbURL: data.media.thumb_link || (location.protocol + "//i.4cdn.org/" + this.boardID + "/" + data.media.preview_orig),
+          thumbURL: thumb_link || (location.protocol + "//" + (ImageHost.thumbHost()) + "/" + this.boardID + "/" + data.media.preview_orig),
           theight: data.media.preview_h,
           twidth: data.media.preview_w,
           isSpoiler: data.media.spoiler === '1'
@@ -5979,6 +6264,7 @@ Notice = (function() {
 
 Post = (function() {
   var Post,
+    slice = [].slice,
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Post = (function() {
@@ -5987,7 +6273,7 @@ Post = (function() {
     };
 
     function Post(root, thread, board) {
-      var clone, j, len, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9;
+      var clone, icon, j, k, len, len1, ref, ref1, ref10, ref11, ref12, ref13, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, type;
       this.thread = thread;
       this.board = board;
       this.ID = +root.id.slice(2);
@@ -5999,6 +6285,15 @@ Post = (function() {
       this.nodes = this.parseNodes(root);
       if (!(this.isReply = $.hasClass(this.nodes.post, 'reply'))) {
         this.thread.OP = this;
+        if (this.boardID === 'f') {
+          ref = ['Sticky', 'Closed'];
+          for (j = 0, len = ref.length; j < len; j++) {
+            type = ref[j];
+            if ((icon = $("img[alt=" + type + "]", this.nodes.info))) {
+              $.addClass(icon, (type.toLowerCase()) + "Icon", 'retina');
+            }
+          }
+        }
         this.thread.isArchived = !!$('.archivedIcon', this.nodes.info);
         this.thread.isSticky = !!$('.stickyIcon', this.nodes.info);
         this.thread.isClosed = this.thread.isArchived || !!$('.closedIcon', this.nodes.info);
@@ -6007,17 +6302,28 @@ Post = (function() {
         }
       }
       this.info = {
-        nameBlock: Conf['Anonymize'] ? 'Anonymous' : this.nodes.nameBlock.textContent.trim(),
-        subject: ((ref = this.nodes.subject) != null ? ref.textContent : void 0) || void 0,
-        name: (ref1 = this.nodes.name) != null ? ref1.textContent : void 0,
-        tripcode: (ref2 = this.nodes.tripcode) != null ? ref2.textContent : void 0,
-        uniqueID: (ref3 = this.nodes.uniqueID) != null ? ref3.firstElementChild.textContent : void 0,
-        capcode: (ref4 = this.nodes.capcode) != null ? ref4.textContent.replace('## ', '') : void 0,
-        pass: (ref5 = this.nodes.pass) != null ? ref5.title.match(/\d*$/)[0] : void 0,
-        flagCode: (ref6 = this.nodes.flag) != null ? (ref7 = ref6.className.match(/flag-(\w+)/)) != null ? ref7[1].toUpperCase() : void 0 : void 0,
-        flag: (ref8 = this.nodes.flag) != null ? ref8.title : void 0,
+        subject: ((ref1 = this.nodes.subject) != null ? ref1.textContent : void 0) || void 0,
+        name: (ref2 = this.nodes.name) != null ? ref2.textContent : void 0,
+        tripcode: (ref3 = this.nodes.tripcode) != null ? ref3.textContent : void 0,
+        uniqueID: (ref4 = this.nodes.uniqueID) != null ? ref4.textContent : void 0,
+        capcode: (ref5 = this.nodes.capcode) != null ? ref5.textContent.replace('## ', '') : void 0,
+        pass: (ref6 = this.nodes.pass) != null ? ref6.title.match(/\d*$/)[0] : void 0,
+        flagCode: (ref7 = this.nodes.flag) != null ? (ref8 = ref7.className.match(/flag-(\w+)/)) != null ? ref8[1].toUpperCase() : void 0 : void 0,
+        flagCodeTroll: (ref9 = this.nodes.flag) != null ? (ref10 = ref9.src) != null ? (ref11 = ref10.match(/(\w+)\.gif$/)) != null ? ref11[1].toUpperCase() : void 0 : void 0 : void 0,
+        flag: (ref12 = this.nodes.flag) != null ? ref12.title : void 0,
         date: this.nodes.date ? new Date(this.nodes.date.dataset.utc * 1000) : void 0
       };
+      if (Conf['Anonymize']) {
+        this.info.nameBlock = 'Anonymous';
+      } else {
+        this.info.nameBlock = ((this.info.name || '') + " " + (this.info.tripcode || '')).trim();
+      }
+      if (this.info.capcode) {
+        this.info.nameBlock += " ## " + this.info.capcode;
+      }
+      if (this.info.uniqueID) {
+        this.info.nameBlock += " (ID: " + this.info.uniqueID + ")";
+      }
       this.parseComment();
       this.parseQuotes();
       this.parseFile();
@@ -6027,9 +6333,9 @@ Post = (function() {
       if (g.posts[this.fullID]) {
         this.isRebuilt = true;
         this.clones = g.posts[this.fullID].clones;
-        ref9 = this.clones;
-        for (j = 0, len = ref9.length; j < len; j++) {
-          clone = ref9[j];
+        ref13 = this.clones;
+        for (k = 0, len1 = ref13.length; k < len1; k++) {
+          clone = ref13[k];
           clone.origin = this;
         }
       }
@@ -6050,7 +6356,8 @@ Post = (function() {
         name: $('.name', info),
         email: $('.useremail', info),
         tripcode: $('.postertrip', info),
-        uniqueID: $('.posteruid', info),
+        uniqueIDRoot: $('.posteruid', info),
+        uniqueID: $('.posteruid > .hand', info),
         capcode: $('.capcode.hand', info),
         pass: $('.n-pu', info),
         flag: $('.flag, .countryFlag', info),
@@ -6060,52 +6367,47 @@ Post = (function() {
         reply: $('.replylink', info),
         fileRoot: $('.file', post),
         comment: $('.postMessage', post),
-        links: [],
         quotelinks: [],
-        archivelinks: []
+        archivelinks: [],
+        embedlinks: []
       };
       if ($.engine === 'edge') {
         Object.defineProperty(nodes, 'backlinks', {
           configurable: true,
           enumerable: true,
           get: function() {
-            return info.getElementsByClassName('backlink');
+            return post.getElementsByClassName('backlink');
           }
         });
       } else {
-        nodes.backlinks = info.getElementsByClassName('backlink');
+        nodes.backlinks = post.getElementsByClassName('backlink');
       }
       return nodes;
     };
 
     Post.prototype.parseComment = function() {
-      var abbr, bq, commentDisplay, j, k, len, len1, node, ref, spoilers;
+      var bq;
       this.nodes.comment.normalize();
-      bq = this.nodes.comment.cloneNode(true);
-      ref = $$('.abbr + br, .exif, b, .fortune', bq);
-      for (j = 0, len = ref.length; j < len; j++) {
-        node = ref[j];
-        $.rm(node);
-      }
-      if (abbr = $('.abbr', bq)) {
-        $.rm(abbr);
-      }
-      this.info.comment = this.nodesToText(bq);
-      if (abbr) {
-        this.info.comment = this.info.comment.replace(/\n\n$/, '');
-      }
-      commentDisplay = this.info.comment;
+      this.nodes.commentClean = bq = this.nodes.comment.cloneNode(true);
+      this.cleanComment(bq);
+      return this.info.comment = this.nodesToText(bq);
+    };
+
+    Post.prototype.commentDisplay = function() {
+      var bq;
+      bq = this.nodes.commentClean.cloneNode(true);
       if (!(Conf['Remove Spoilers'] || Conf['Reveal Spoilers'])) {
-        spoilers = $$('s', bq);
-        if (spoilers.length) {
-          for (k = 0, len1 = spoilers.length; k < len1; k++) {
-            node = spoilers[k];
-            $.replace(node, $.tn('[spoiler]'));
-          }
-          commentDisplay = this.nodesToText(bq);
-        }
+        this.cleanSpoilers(bq);
       }
-      return this.info.commentDisplay = commentDisplay.trim().replace(/\s+$/gm, '');
+      this.cleanCommentDisplay(bq);
+      return this.nodesToText(bq).trim().replace(/\s+$/gm, '');
+    };
+
+    Post.prototype.commentOrig = function() {
+      var bq;
+      bq = this.nodes.commentClean.cloneNode(true);
+      this.insertTags(bq);
+      return this.nodesToText(bq);
     };
 
     Post.prototype.nodesToText = function(bq) {
@@ -6117,6 +6419,54 @@ Post = (function() {
         text += node.data || '\n';
       }
       return text;
+    };
+
+    Post.prototype.cleanComment = function(bq) {
+      var abbr, br, i, j, k, len, node, ref;
+      if ((abbr = $('.abbr', bq))) {
+        ref = $$('.abbr + br, .exif', bq);
+        for (j = 0, len = ref.length; j < len; j++) {
+          node = ref[j];
+          $.rm(node);
+        }
+        for (i = k = 0; k < 2; i = ++k) {
+          if ((br = abbr.previousSibling) && br.nodeName === 'BR') {
+            $.rm(br);
+          }
+        }
+        return $.rm(abbr);
+      }
+    };
+
+    Post.prototype.cleanSpoilers = function(bq) {
+      var j, len, node, spoilers;
+      spoilers = $$('s', bq);
+      for (j = 0, len = spoilers.length; j < len; j++) {
+        node = spoilers[j];
+        $.replace(node, $.tn('[spoiler]'));
+      }
+    };
+
+    Post.prototype.cleanCommentDisplay = function(bq) {
+      var b;
+      if ((b = $('b', bq)) && /^Rolled /.test(b.textContent)) {
+        $.rm(b);
+      }
+      return $.rm($('.fortune', bq));
+    };
+
+    Post.prototype.insertTags = function(bq) {
+      var j, k, len, len1, node, ref, ref1;
+      ref = $$('s, .removed-spoiler', bq);
+      for (j = 0, len = ref.length; j < len; j++) {
+        node = ref[j];
+        $.replace(node, [$.tn('[spoiler]')].concat(slice.call(node.childNodes), [$.tn('[/spoiler]')]));
+      }
+      ref1 = $$('.prettyprint', bq);
+      for (k = 0, len1 = ref1.length; k < len1; k++) {
+        node = ref1[k];
+        $.replace(node, [$.tn('[code]')].concat(slice.call(node.childNodes), [$.tn('[/code]')]));
+      }
     };
 
     Post.prototype.parseQuotes = function() {
@@ -6158,9 +6508,6 @@ Post = (function() {
         return;
       }
       fileText = fileRoot.firstElementChild;
-      if (link.hostname === 'is.4chan.org') {
-        link.hostname = 'i.4cdn.org';
-      }
       this.file = {
         text: fileText,
         link: link,
@@ -6170,7 +6517,8 @@ Post = (function() {
         isImage: /(jpg|png|gif)$/i.test(link.href),
         isVideo: /webm$/i.test(link.href),
         dimensions: (ref1 = info[0].match(/\d+x\d+/)) != null ? ref1[0] : void 0,
-        tag: (ref2 = info[0].match(/,[^,]*, ([a-z]+)\)/i)) != null ? ref2[1] : void 0
+        tag: (ref2 = info[0].match(/,[^,]*, ([a-z]+)\)/i)) != null ? ref2[1] : void 0,
+        MD5: fileText.dataset.md5
       };
       size = +this.file.size.match(/[\d.]+/)[0];
       unit = ['B', 'KB', 'MB', 'GB'].indexOf(this.file.size.match(/\w+$/)[0]);
@@ -6179,16 +6527,16 @@ Post = (function() {
       }
       this.file.sizeInBytes = size;
       if ((thumb = $('a.fileThumb > [data-md5]', fileRoot))) {
-        if (thumb.parentNode.hostname === 'is.4chan.org') {
-          thumb.parentNode.hostname = 'i.4cdn.org';
-        }
-        return $.extend(this.file, {
+        $.extend(this.file, {
           thumb: thumb,
           thumbLink: thumb.parentNode,
-          thumbURL: (m = link.href.match(/\d+(?=\.\w+$)/)) ? location.protocol + "//i.4cdn.org/" + this.board + "/" + m[0] + "s.jpg" : void 0,
+          thumbURL: thumb.src,
           MD5: thumb.dataset.md5,
           isSpoiler: $.hasClass(thumb.parentNode, 'imgspoiler')
         });
+        if (this.file.isSpoiler) {
+          return this.file.thumbURL = (m = link.href.match(/\d+(?=\.\w+$)/)) ? location.protocol + "//" + (ImageHost.thumbHost()) + "/" + this.board + "/" + m[0] + "s.jpg" : void 0;
+        }
       }
     };
 
@@ -6278,6 +6626,7 @@ Post = (function() {
     };
 
     Post.prototype.addClone = function(context, contractThumb) {
+      Callbacks.Post.execute(this);
       return new Post.Clone(this, context, contractThumb);
     };
 
@@ -6295,7 +6644,8 @@ Post = (function() {
       this.nodes.root.classList.toggle('catalog-container', isCatalogOP);
       this.nodes.root.classList.toggle('opContainer', !isCatalogOP);
       this.nodes.post.classList.toggle('catalog-post', isCatalogOP);
-      return this.nodes.post.classList.toggle('op', !isCatalogOP);
+      this.nodes.post.classList.toggle('op', !isCatalogOP);
+      return this.nodes.post.style.left = this.nodes.post.style.right = null;
     };
 
     return Post;
@@ -6717,6 +7067,9 @@ Thread = (function() {
         title: type,
         className: typeLC + "Icon retina"
       });
+      if (g.BOARD.ID === 'f') {
+        icon.style.cssText = 'height: 18px; width: 18px;';
+      }
       root = type !== 'Sticky' && this.isSticky ? $('.stickyIcon', this.OP.nodes.info) : $('.page-num', this.OP.nodes.info) || this.OP.nodes.quote;
       $.after(root, [$.tn(' '), icon]);
       if (!this.catalogView) {
@@ -6759,18 +7112,19 @@ Redirect = (function() {
 
   Redirect = {
     archives: [
-      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ] },
-      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr" ], "files": [ "asp", "c", "e", "n", "news", "out", "p", "toy", "vp", "w", "wg", "wsr" ] },
-      { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "fuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ] },
+      { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "reports": true },
+      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "bant", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "files": [ "bant", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr" ], "reports": true },
+      { "uid": 5, "name": "Love is Over", "domain": "archive.loveisover.me", "http": true, "https": true, "software": "foolfuuka", "boards": [ "c", "d", "e", "i", "lgbt", "t", "u" ], "files": [ "c", "d", "e", "i", "lgbt", "t", "u" ] },
+      { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ], "reports": true },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
-      { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ] },
+      { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
       { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ], "files": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ] },
       { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v" ], "files": [] },
-      { "uid": 5, "name": "Love is Over", "domain": "archive.loveisover.me", "http": true, "https": false, "software": "foolfuuka", "boards": [ "c", "d", "e", "i", "lgbt", "t", "u" ], "files": [ "c", "d", "e", "i", "lgbt", "t", "u" ] },
       { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
-      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": false, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "gd", "po", "qst", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "c", "cgl", "ck", "cm", "con", "d", "diy", "e", "f", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "n", "news", "o", "out", "p", "po", "q", "qa", "qst", "r", "s", "soc", "trv", "u", "vip", "w", "wg", "wsg", "wsr", "x", "y" ] },
-      { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": false, "software": "foolfuuka", "boards": [ "b" ], "files": [ "b" ] },
-      { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": false, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ] }
+      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
+      { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
+      { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ], "reports": true },
+      { "uid": 33, "name": "YEET Archive", "domain": "archive.yeet.net", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "k", "qa", "s4s" ] }
     ],
     init: function() {
       var now, ref;
@@ -6961,6 +7315,9 @@ Redirect = (function() {
     file: function(archive, arg) {
       var boardID, filename;
       boardID = arg.boardID, filename = arg.filename;
+      if (boardID === 'f') {
+        filename = encodeURIComponent(Build.unescape(decodeURIComponent(filename)));
+      }
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + boardID + "/full_image/" + filename;
     },
     board: function(archive, arg) {
@@ -6974,7 +7331,8 @@ Redirect = (function() {
       type = type === 'name' ? 'username' : type === 'MD5' ? 'image' : type;
       if (type === 'capcode') {
         value = {
-          'Developer': 'dev'
+          'Developer': 'dev',
+          'Verified': 'ver'
         }[value] || value.toLowerCase();
       } else if (type === 'image') {
         value = value.replace(/[+\/=]/g, function(c) {
@@ -6988,6 +7346,19 @@ Redirect = (function() {
       value = encodeURIComponent(value);
       path = archive.software === 'foolfuuka' ? boardID + "/search/" + type + "/" + value + "/" : type === 'image' ? boardID + "/image/" + value : boardID + "/?task=search2&search_" + type + "=" + value;
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + path;
+    },
+    report: function(boardID) {
+      var archive, boards, domain, https, j, len, name, ref, reports, software, urls;
+      urls = [];
+      ref = Conf['archives'];
+      for (j = 0, len = ref.length; j < len; j++) {
+        archive = ref[j];
+        software = archive.software, https = archive.https, reports = archive.reports, boards = archive.boards, name = archive.name, domain = archive.domain;
+        if (software === 'foolfuuka' && https && reports && boards instanceof Array && indexOf.call(boards, boardID) >= 0) {
+          urls.push([name, "https://" + domain + "/_/api/chan/offsite_report/"]);
+        }
+      }
+      return urls;
     },
     securityCheck: function(url) {
       return /^https:\/\//.test(url) || location.protocol === 'http:' || Conf['Exempt Archives from Encryption'];
@@ -7015,54 +7386,10 @@ Anonymize = (function() {
 
   Anonymize = {
     init: function() {
-      var ref;
-      if (!(((ref = g.VIEW) === 'index' || ref === 'thread' || ref === 'archive') && Conf['Anonymize'])) {
+      if (!Conf['Anonymize']) {
         return;
       }
-      if (g.VIEW === 'archive') {
-        return this.archive();
-      }
-      return Callbacks.Post.push({
-        name: 'Anonymize',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var email, name, pass, ref, tripcode;
-      if (this.info.capcode || this.isClone) {
-        return;
-      }
-      ref = this.nodes, name = ref.name, tripcode = ref.tripcode, pass = ref.pass, email = ref.email;
-      if (this.info.name !== 'Anonymous') {
-        name.textContent = 'Anonymous';
-      }
-      if (tripcode) {
-        $.rm(tripcode);
-        delete this.nodes.tripcode;
-      }
-      if (pass) {
-        $.rm(pass);
-        delete this.nodes.pass;
-      }
-      if (email) {
-        $.replace(email, name);
-        return delete this.nodes.email;
-      }
-    },
-    archive: function() {
-      return $.ready(function() {
-        var i, j, len, len1, name, ref, ref1, trip;
-        ref = $$('.name');
-        for (i = 0, len = ref.length; i < len; i++) {
-          name = ref[i];
-          name.textContent = 'Anonymous';
-        }
-        ref1 = $$('.postertrip');
-        for (j = 0, len1 = ref1.length; j < len1; j++) {
-          trip = ref1[j];
-          $.rm(trip);
-        }
-      });
+      return $.addClass(doc, 'anonymize');
     }
   };
 
@@ -7079,7 +7406,7 @@ Filter = (function() {
     filters: {},
     results: {},
     init: function() {
-      var boards, err, excludes, filter, hl, i, key, len, line, nsfwBoards, op, ref, ref1, ref2, ref3, ref4, ref5, ref6, regexp, sfwBoards, stub, top;
+      var base, base1, boards, err, excludes, filter, hl, i, j, key, len, len1, line, nsfwBoards, op, ref, ref1, ref2, ref3, ref4, ref5, ref6, regexp, sfwBoards, stub, top, type, types;
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Filter'])) {
         return;
       }
@@ -7089,7 +7416,6 @@ Filter = (function() {
       nsfwBoards = BoardConfig.sfwBoards(false).join(',');
       sfwBoards = BoardConfig.sfwBoards(true).join(',');
       for (key in Config.filter) {
-        this.filters[key] = [];
         ref1 = Conf[key].split('\n');
         for (i = 0, len = ref1.length; i < len; i++) {
           line = ref1[i];
@@ -7133,10 +7459,24 @@ Filter = (function() {
             top = ((ref6 = filter.match(/top:(yes|no)/)) != null ? ref6[1] : void 0) || 'yes';
             top = top === 'yes';
           }
-          this.filters[key].push(this.createFilter(regexp, boards, excludes, op, stub, hl, top));
-        }
-        if (!this.filters[key].length) {
-          delete this.filters[key];
+          if (key === 'general') {
+            if ((types = filter.match(/(?:^|;)\s*type:([^;]*)/))) {
+              types = types[1].split(',').filter(function(x) {
+                return x in Config.filter && x !== 'general';
+              });
+            } else {
+              types = ['subject', 'name', 'filename', 'comment'];
+            }
+          }
+          filter = this.createFilter(regexp, boards, excludes, op, stub, hl, top);
+          if (key === 'general') {
+            for (j = 0, len1 = types.length; j < len1; j++) {
+              type = types[j];
+              ((base = this.filters)[type] || (base[type] = [])).push(filter);
+            }
+          } else {
+            ((base1 = this.filters)[key] || (base1[key] = [])).push(filter);
+          }
         }
       }
       if (!Object.keys(this.filters).length) {
@@ -7184,6 +7524,8 @@ Filter = (function() {
       if (post.filterResults) {
         return post.filterResults;
       }
+      hide = false;
+      stub = true;
       hl = void 0;
       top = false;
       for (key in Filter.filters) {
@@ -7191,30 +7533,33 @@ Filter = (function() {
           ref = Filter.filters[key];
           for (i = 0, len = ref.length; i < len; i++) {
             filter = ref[i];
-            if (!((result = filter(value, post.boardID, post.isReply)))) {
-              continue;
-            }
-            hide = result.hide, stub = result.stub;
-            if (hide) {
-              if (hideable) {
-                return {
-                  hide: hide,
-                  stub: stub
-                };
+            if ((result = filter(value, post.boardID, post.isReply))) {
+              if (result.hide) {
+                if (hideable) {
+                  hide = true;
+                  stub && (stub = result.stub);
+                }
+              } else {
+                if (!(hl && (ref1 = result["class"], indexOf.call(hl, ref1) >= 0))) {
+                  (hl || (hl = [])).push(result["class"]);
+                }
+                top || (top = result.top);
               }
-            } else {
-              if (!(hl && (ref1 = result["class"], indexOf.call(hl, ref1) >= 0))) {
-                (hl || (hl = [])).push(result["class"]);
-              }
-              top || (top = result.top);
             }
           }
         }
       }
-      return {
-        hl: hl,
-        top: top
-      };
+      if (hide) {
+        return {
+          hide: hide,
+          stub: stub
+        };
+      } else {
+        return {
+          hl: hl,
+          top: top
+        };
+      }
     },
     node: function() {
       var hide, hl, ref, stub, top;
@@ -7257,7 +7602,7 @@ Filter = (function() {
       return post.info.pass;
     },
     subject: function(post) {
-      return post.info.subject;
+      return post.info.subject || (post.isReply ? void 0 : '');
     },
     comment: function(post) {
       var base;
@@ -7281,6 +7626,42 @@ Filter = (function() {
     MD5: function(post) {
       var ref;
       return (ref = post.file) != null ? ref.MD5 : void 0;
+    },
+    addFilter: function(type, re, cb) {
+      return $.get(type, Conf[type], function(item) {
+        var save;
+        save = item[type];
+        save = save ? save + "\n" + re : re;
+        return $.set(type, save, cb);
+      });
+    },
+    quickFilterMD5: function() {
+      var origin, post;
+      post = Get.postFromNode(this);
+      if (!post.file) {
+        return;
+      }
+      Filter.addFilter('MD5', "/" + post.file.MD5 + "/");
+      origin = post.origin || post;
+      if (origin.isReply) {
+        PostHiding.hide(origin);
+      } else if (g.VIEW === 'index') {
+        ThreadHiding.hide(origin.thread);
+      }
+      if (post.nodes.post.getBoundingClientRect().height) {
+        return new Notice('info', 'MD5 filtered.', 2);
+      }
+    },
+    escape: function(value) {
+      return value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
+        if (c === '\n') {
+          return '\\n';
+        } else if (c === '\\') {
+          return '\\\\';
+        } else {
+          return "\\" + c;
+        }
+      });
     },
     menu: {
       init: function() {
@@ -7328,30 +7709,21 @@ Filter = (function() {
         var re, type, value;
         type = this.dataset.type;
         value = Filter[type](Filter.menu.post);
-        re = type === 'uniqueID' || type === 'MD5' ? value : value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
-          if (c === '\n') {
-            return '\\n';
-          } else if (c === '\\') {
-            return '\\\\';
-          } else {
-            return "\\" + c;
-          }
-        });
+        re = type === 'uniqueID' || type === 'MD5' ? value : Filter.escape(value);
         re = type === 'uniqueID' || type === 'MD5' ? "/" + re + "/" : "/^" + re + "$/";
-        return $.get(type, Conf[type], function(item) {
-          var save, section, select, ta, tl;
-          save = item[type];
-          save = save ? save + "\n" + re : re;
-          $.set(type, save);
+        return Filter.addFilter(type, re, function() {
+          var section, select;
           Settings.open('Filter');
           section = $('.section-container');
           select = $('select[name=filter]', section);
           select.value = type;
           Settings.selectFilter.call(select);
-          ta = $('textarea', section);
-          tl = ta.textLength;
-          ta.setSelectionRange(tl, tl);
-          return ta.focus();
+          return $.onExists(section, 'textarea', function(ta) {
+            var tl;
+            tl = ta.textLength;
+            ta.setSelectionRange(tl, tl);
+            return ta.focus();
+          });
         });
       }
     }
@@ -8019,8 +8391,9 @@ ThreadHiding = (function() {
       }
       threadRoot = thread.nodes.root;
       thread.isHidden = true;
-      if (Conf['JSON Index']) {
-        Index.updateHideLabel();
+      Index.updateHideLabel();
+      if (thread.catalogView && !Index.showHiddenThreads) {
+        $.rm(thread.catalogView.nodes.root);
       }
       if (!makeStub) {
         return threadRoot.hidden = true;
@@ -8035,8 +8408,9 @@ ThreadHiding = (function() {
       }
       threadRoot = thread.nodes.root;
       threadRoot.hidden = thread.isHidden = false;
-      if (Conf['JSON Index']) {
-        return Index.updateHideLabel();
+      Index.updateHideLabel();
+      if (thread.catalogView && Index.showHiddenThreads) {
+        return $.rm(thread.catalogView.nodes.root);
       }
     }
   };
@@ -8051,18 +8425,19 @@ BoardConfig = (function() {
   BoardConfig = {
     cbs: [],
     init: function() {
-      var now, ref;
+      var boards, now, ref, ref1, troll_flags;
       now = Date.now();
-      if (!((now - 2 * $.HOUR < (ref = Conf['boardConfig'].lastChecked || 0) && ref <= now))) {
-        return $.ajax('//a.4cdn.org/boards.json', {
+      if (!((now - 2 * $.HOUR < (ref = Conf['boardConfig'].lastChecked || 0) && ref <= now) && Conf['boardConfig'].troll_flags)) {
+        return $.ajax(location.protocol + "//a.4cdn.org/boards.json", {
           onloadend: this.load
         });
       } else {
-        return this.set(Conf['boardConfig'].boards);
+        ref1 = Conf['boardConfig'], boards = ref1.boards, troll_flags = ref1.troll_flags;
+        return this.set(boards, troll_flags);
       }
     },
     load: function() {
-      var board, boards, err, i, len, ref;
+      var board, boards, err, i, len, ref, ref1, troll_flags;
       if (this.status === 200 && this.response && this.response.boards) {
         boards = {};
         ref = this.response.boards;
@@ -8070,12 +8445,14 @@ BoardConfig = (function() {
           board = ref[i];
           boards[board.board] = board;
         }
+        troll_flags = this.response.troll_flags;
         $.set('boardConfig', {
           boards: boards,
+          troll_flags: troll_flags,
           lastChecked: Date.now()
         });
       } else {
-        boards = Conf['boardConfig'].boards;
+        ref1 = Conf['boardConfig'], boards = ref1.boards, troll_flags = ref1.troll_flags;
         err = (function() {
           switch (this.status) {
             case 0:
@@ -8088,11 +8465,12 @@ BoardConfig = (function() {
         }).call(this);
         new Notice('warning', "Failed to load board configuration. " + err, 20);
       }
-      return BoardConfig.set(boards);
+      return BoardConfig.set(boards, troll_flags);
     },
-    set: function(boards1) {
+    set: function(boards1, troll_flags1) {
       var ID, board, cb, i, len, ref, ref1;
       this.boards = boards1;
+      this.troll_flags = troll_flags1;
       ref = g.boards;
       for (ID in ref) {
         board = ref[ID];
@@ -8199,6 +8577,7 @@ Build = (function() {
         pass: data.since4pass != null ? "" + data.since4pass : void 0,
         uniqueID: data.id,
         flagCode: data.country,
+        flagCodeTroll: data.troll_country,
         flag: Build.unescape(data.country_name),
         dateUTC: data.time,
         dateText: data.now,
@@ -8216,16 +8595,17 @@ Build = (function() {
       if (data.ext) {
         o.file = {
           name: (Build.unescape(data.filename)) + data.ext,
-          url: boardID === 'f' ? location.protocol + "//i.4cdn.org/" + boardID + "/" + (encodeURIComponent(data.filename)) + data.ext : location.protocol + "//i.4cdn.org/" + boardID + "/" + data.tim + data.ext,
+          url: boardID === 'f' ? location.protocol + "//" + (ImageHost.flashHost()) + "/" + boardID + "/" + (encodeURIComponent(data.filename)) + data.ext : location.protocol + "//" + (ImageHost.host()) + "/" + boardID + "/" + data.tim + data.ext,
           height: data.h,
           width: data.w,
           MD5: data.md5,
           size: $.bytesToString(data.fsize),
-          thumbURL: location.protocol + "//i.4cdn.org/" + boardID + "/" + data.tim + "s.jpg",
+          thumbURL: location.protocol + "//" + (ImageHost.thumbHost()) + "/" + boardID + "/" + data.tim + "s.jpg",
           theight: data.tn_h,
           twidth: data.tn_w,
           isSpoiler: !!data.spoiler,
-          tag: data.tag
+          tag: data.tag,
+          hasDownscale: !!data.m_img
         };
         if (!/\.pdf$/.test(o.file.url)) {
           o.file.dimensions = o.file.width + "x" + o.file.height;
@@ -8234,7 +8614,7 @@ Build = (function() {
       return o;
     },
     parseComment: function(html) {
-      html = html.replace(/<br\b[^<]*>/gi, '\n').replace(/\n\n<span\b[^<]* class="abbr"[^]*$/i, '').replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '').replace(/<span\b[^<]* class="fortune"[^]*$/i, '').replace(/<[^>]*>/g, '');
+      html = html.replace(/<br\b[^<]*>/gi, '\n').replace(/\n\n<span\b[^<]* class="abbr"[^]*$/i, '').replace(/<[^>]*>/g, '');
       return Build.unescape(html);
     },
     parseCommentDisplay: function(html) {
@@ -8244,6 +8624,7 @@ Build = (function() {
           html = html2;
         }
       }
+      html = html.replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '').replace(/<span\b[^<]* class="fortune"[^]*$/i, '');
       return Build.parseComment(html).trim().replace(/\s+$/gm, '');
     },
     postFromObject: function(data, boardID) {
@@ -8252,9 +8633,9 @@ Build = (function() {
       return Build.post(o);
     },
     post: function(o) {
-      var ID, boardID, capcode, capcodeDescription, capcodeLC, capcodeLong, capcodePlural, commentHTML, container, dateText, dateUTC, email, file, fileBlock, fileThumb, fileURL, flag, flagCode, gifIcon, href, i, len, match, name, pass, postClass, postInfo, postLink, protocol, quote, quoteLink, ref, ref1, shortFilename, staticPath, subject, threadID, tripcode, uniqueID, wholePost;
+      var ID, boardID, capcode, capcodeDescription, capcodeLC, capcodeLong, capcodePlural, commentHTML, container, dateText, dateUTC, email, file, fileBlock, fileThumb, fileURL, flag, flagCode, flagCodeTroll, gifIcon, href, i, len, match, name, pass, postClass, postInfo, postLink, protocol, quote, quoteLink, ref, ref1, shortFilename, staticPath, subject, threadID, tripcode, uniqueID, wholePost;
       ID = o.ID, threadID = o.threadID, boardID = o.boardID, file = o.file;
-      ref = o.info, subject = ref.subject, email = ref.email, name = ref.name, tripcode = ref.tripcode, capcode = ref.capcode, pass = ref.pass, uniqueID = ref.uniqueID, flagCode = ref.flagCode, flag = ref.flag, dateUTC = ref.dateUTC, dateText = ref.dateText, commentHTML = ref.commentHTML;
+      ref = o.info, subject = ref.subject, email = ref.email, name = ref.name, tripcode = ref.tripcode, capcode = ref.capcode, pass = ref.pass, uniqueID = ref.uniqueID, flagCode = ref.flagCode, flagCodeTroll = ref.flagCodeTroll, flag = ref.flag, dateUTC = ref.dateUTC, dateText = ref.dateText, commentHTML = ref.commentHTML;
       staticPath = Build.staticPath, gifIcon = Build.gifIcon;
 
       /* Post Info */
@@ -8263,6 +8644,9 @@ Build = (function() {
         if (capcode === 'Founder') {
           capcodePlural = 'the Founder';
           capcodeDescription = "4chan's Founder";
+        } else if (capcode === 'Verified') {
+          capcodePlural = 'Verified Users';
+          capcodeDescription = '';
         } else {
           capcodeLong = {
             'Admin': 'Administrator',
@@ -8275,7 +8659,7 @@ Build = (function() {
       postLink = Build.postURL(boardID, threadID, ID);
       quoteLink = Build.sameThread(boardID, threadID) ? "javascript:quote('" + (+ID) + "');" : "/" + boardID + "/thread/" + threadID + "#q" + ID;
       postInfo = {
-        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcode) ? "" : " ") + ((capcode) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\" class=\"stickyIcon retina\">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\" class=\"closedIcon retina\">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
+        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcodeDescription) ? "" : " ") + ((capcodeDescription) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + ((flagCodeTroll) ? " <img src=\"" + E(staticPath) + "country/troll/" + E(flagCodeTroll.toLowerCase()) + ".gif\" alt=\"" + E(flagCodeTroll) + "\" title=\"" + E(flag) + "\" class=\"countryFlag\">" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"stickyIcon retina\"") + ">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"closedIcon retina\"") + ">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
       };
 
       /* File Info */
@@ -8286,7 +8670,7 @@ Build = (function() {
         fileThumb = file.isSpoiler ? Build.spoilerThumb(boardID) : file.thumbURL.replace(protocol, '');
       }
       fileBlock = {
-        innerHTML: ((file) ? "<div class=\"file\" id=\"f" + E(ID) + "\">" + ((boardID === "f") ? "<div class=\"fileInfo\"><span class=\"fileText\" id=\"fT" + E(ID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(fileURL) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E(file.size) + ", " + E(file.dimensions) + ((file.tag) ? ", " + E(file.tag) : "") + ")</span></div>" : "<div class=\"fileText\" id=\"fT" + E(ID) + "\"" + ((file.isSpoiler) ? " title=\"" + E(file.name) + "\"" : "") + ">File: <a" + ((file.name === shortFilename || file.isSpoiler) ? "" : " title=\"" + E(file.name) + "\"") + " href=\"" + E(fileURL) + "\" target=\"_blank\">" + ((file.isSpoiler) ? "Spoiler Image" : E(shortFilename)) + "</a> (" + E(file.size) + ", " + E(file.dimensions || "PDF") + ")</div><a class=\"fileThumb" + ((file.isSpoiler) ? " imgspoiler" : "") + "\" href=\"" + E(fileURL) + "\" target=\"_blank\"><img src=\"" + E(fileThumb) + "\" alt=\"" + E(file.size) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.isSpoiler ? 100 : file.theight) + "px; width: " + E(file.isSpoiler ? 100 : file.twidth) + "px;\"></a>") + "</div>" : ((o.fileDeleted) ? "<div class=\"file\" id=\"f" + E(ID) + "\"><span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span></div>" : ""))
+        innerHTML: ((file) ? "<div class=\"file\" id=\"f" + E(ID) + "\">" + ((boardID === "f") ? "<div class=\"fileInfo\" data-md5=\"" + E(file.MD5) + "\"><span class=\"fileText\" id=\"fT" + E(ID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(fileURL) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E(file.size) + ", " + E(file.dimensions) + ((file.tag) ? ", " + E(file.tag) : "") + ")</span></div>" : "<div class=\"fileText\" id=\"fT" + E(ID) + "\"" + ((file.isSpoiler) ? " title=\"" + E(file.name) + "\"" : "") + ">File: <a" + ((file.name === shortFilename || file.isSpoiler) ? "" : " title=\"" + E(file.name) + "\"") + " href=\"" + E(fileURL) + "\" target=\"_blank\">" + ((file.isSpoiler) ? "Spoiler Image" : E(shortFilename)) + "</a> (" + E(file.size) + ", " + E(file.dimensions || "PDF") + ")</div><a class=\"fileThumb" + ((file.isSpoiler) ? " imgspoiler" : "") + "\" href=\"" + E(fileURL) + "\" target=\"_blank\"" + ((file.hasDownscale) ? " data-m" : "") + "><img src=\"" + E(fileThumb) + "\" alt=\"" + E(file.size) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.isSpoiler ? 100 : file.theight) + "px; width: " + E(file.isSpoiler ? 100 : file.twidth) + "px;\"></a>") + "</div>" : ((o.fileDeleted) ? "<div class=\"file\" id=\"f" + E(ID) + "\"><span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span></div>" : ""))
       };
 
       /* Whole Post */
@@ -8448,17 +8832,20 @@ Get = (function() {
     threadExcerpt: function(thread) {
       var OP, excerpt, ref, ref1;
       OP = thread.OP;
-      excerpt = ("/" + thread.board + "/ - ") + (((ref = OP.info.subject) != null ? ref.trim() : void 0) || OP.info.commentDisplay.replace(/\n+/g, ' // ') || ((ref1 = OP.file) != null ? ref1.name : void 0) || OP.info.nameBlock);
+      excerpt = ("/" + thread.board + "/ - ") + (((ref = OP.info.subject) != null ? ref.trim() : void 0) || OP.commentDisplay().replace(/\n+/g, ' // ') || ((ref1 = OP.file) != null ? ref1.name : void 0) || ("No." + OP));
       if (excerpt.length > 73) {
         return excerpt.slice(0, 70) + "...";
       }
       return excerpt;
     },
     threadFromRoot: function(root) {
+      if (root == null) {
+        return null;
+      }
       return g.threads[g.BOARD + "." + root.id.slice(1)];
     },
     threadFromNode: function(node) {
-      return Get.threadFromRoot($.x('ancestor::div[@class="thread"]', node));
+      return Get.threadFromRoot($.x('ancestor-or-self::div[contains(concat(" ",@class," ")," thread ")]', node));
     },
     postFromRoot: function(root) {
       var index, post;
@@ -8474,7 +8861,7 @@ Get = (function() {
       }
     },
     postFromNode: function(root) {
-      return Get.postFromRoot($.x('(ancestor::div[contains(@class,"postContainer")][1]|following::div[contains(@class,"postContainer")][1])', root));
+      return Get.postFromRoot($.x('ancestor-or-self::div[contains(@class,"postContainer")][1]', root));
     },
     postDataFromLink: function(link) {
       var boardID, path, postID, ref, threadID;
@@ -8482,7 +8869,7 @@ Get = (function() {
         path = link.pathname.split(/\/+/);
         boardID = path[1];
         threadID = path[3];
-        postID = link.hash.slice(2);
+        postID = link.hash ? link.hash.slice(2) : path[3];
       } else {
         ref = link.dataset, boardID = ref.boardID, threadID = ref.threadID, postID = ref.postID;
         threadID || (threadID = 0);
@@ -8549,7 +8936,7 @@ Header = (function() {
 
   Header = {
     init: function() {
-      var barFixedToggler, barPositionToggler, box, customNavToggler, editCustomNav, footerToggler, headerToggler, linkJustifyToggler, menuButton, scrollHeaderToggler, shortcutToggler;
+      var barFixedToggler, barPositionToggler, box, cs, customNavToggler, editCustomNav, footerToggler, headerToggler, linkJustifyToggler, menuButton, scrollHeaderToggler, shortcutToggler;
       this.menu = new UI.Menu('header');
       menuButton = $.el('span', {
         className: 'menu-button'
@@ -8631,63 +9018,52 @@ Header = (function() {
       });
       $.on(window, 'load popstate', Header.hashScroll);
       $.on(d, 'CreateNotification', this.createNotification);
-      $.asap((function() {
-        return d.body;
-      }), (function(_this) {
+      $.onExists(doc, 'body', (function(_this) {
         return function() {
           if (!Main.isThisPageLegit()) {
             return;
           }
-          $.asap((function() {
-            return $.id('boardNavMobile') || d.readyState !== 'loading';
-          }), function() {
-            var a, footer;
-            footer = $.id('boardNavDesktop').cloneNode(true);
-            footer.id = 'boardNavDesktopFoot';
-            $('#navtopright', footer).id = 'navbotright';
-            $('#settingsWindowLink', footer).id = 'settingsWindowLinkBot';
-            Header.bottomBoardList = $('.boardList', footer);
-            if (a = $("a[href*='/" + g.BOARD + "/']", footer)) {
-              a.className = 'current';
-            }
-            Main.ready(function() {
-              var absbot, oldFooter;
-              if ((oldFooter = $.id('boardNavDesktopFoot'))) {
-                return $.replace($('.boardList', oldFooter), Header.bottomBoardList);
-              } else if ((absbot = $.id('absbot'))) {
-                $.before(absbot, footer);
-                return $.globalEval('window.cloneTopNav = function() {};');
-              }
-            });
-            return Header.setBoardList();
-          });
           $.prepend(d.body, _this.bar);
           $.add(d.body, Header.hover);
-          _this.setBarPosition(Conf['Bottom Header']);
-          return _this;
+          return _this.setBarPosition(Conf['Bottom Header']);
         };
       })(this));
-      Main.ready((function(_this) {
-        return function() {
-          var cs;
-          if (g.VIEW === 'catalog' || !Conf['Disable Native Extension']) {
-            cs = $.el('a', {
-              href: 'javascript:;'
-            });
-            if (g.VIEW === 'catalog') {
-              cs.title = cs.textContent = 'Catalog Settings';
-              cs.className = 'fa fa-book';
-            } else {
-              cs.title = cs.textContent = '4chan Settings';
-              cs.className = 'native-settings';
-            }
-            $.on(cs, 'click', function() {
-              return $.id('settingsWindowLink').click();
-            });
-            return _this.addShortcut('native', cs, 810);
+      $.onExists(doc, '#boardNavMobile', Header.setBoardList);
+      Main.ready(function() {
+        var a, absbot, footer;
+        if (!(footer = $.id('boardNavDesktopFoot'))) {
+          if (!(absbot = $.id('absbot'))) {
+            return;
           }
-        };
-      })(this));
+          footer = $.id('boardNavDesktop').cloneNode(true);
+          footer.id = 'boardNavDesktopFoot';
+          $('#navtopright', footer).id = 'navbotright';
+          $('#settingsWindowLink', footer).id = 'settingsWindowLinkBot';
+          $.before(absbot, footer);
+          $.globalEval('window.cloneTopNav = function() {};');
+        }
+        if ((a = $("a[href*='/" + g.BOARD + "/']", footer))) {
+          a.className = 'current';
+        }
+        Header.bottomBoardList = $('.boardList', footer);
+        return CatalogLinks.setLinks(Header.bottomBoardList);
+      });
+      if (g.VIEW === 'catalog' || !Conf['Disable Native Extension']) {
+        cs = $.el('a', {
+          href: 'javascript:;'
+        });
+        if (g.VIEW === 'catalog') {
+          cs.title = cs.textContent = 'Catalog Settings';
+          cs.className = 'fa fa-book';
+        } else {
+          cs.title = cs.textContent = '4chan Settings';
+          cs.className = 'native-settings';
+        }
+        $.on(cs, 'click', function() {
+          return $.id('settingsWindowLink').click();
+        });
+        this.addShortcut('native', cs, 810);
+      }
       return this.enableDesktopNotifications();
     },
     bar: $.el('div', {
@@ -8706,7 +9082,7 @@ Header = (function() {
       id: 'scroll-marker'
     }),
     setBoardList: function() {
-      var a, boardList, btn, chr, i, j, len, len1, node, nodes, ref, ref1, spacer, span;
+      var a, boardList, btn, chr, fullBoardList, i, j, len, len1, node, nodes, ref, ref1, spacer, span;
       Header.boardList = boardList = $.el('span', {
         id: 'board-list'
       });
@@ -8752,7 +9128,9 @@ Header = (function() {
             nodes.push(a);
         }
       }
-      $.add($('.boardList', boardList), nodes);
+      fullBoardList = $('.boardList', boardList);
+      $.add(fullBoardList, nodes);
+      CatalogLinks.setLinks(fullBoardList);
       $.add(Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]);
       Header.setCustomNav(Conf['Custom Board Navigation']);
       Header.generateBoardList(Conf['boardnav']);
@@ -8780,7 +9158,7 @@ Header = (function() {
         return results;
       })();
       $.add(list, nodes);
-      return $.ready(CatalogLinks.initBoardList);
+      return CatalogLinks.setLinks(list);
     },
     mapCustomNavigation: function(t, as) {
       var a, boardID, href, indexOptions, m, text, url;
@@ -8875,7 +9253,7 @@ Header = (function() {
         }
       }
       if (/-expired/.test(t)) {
-        if (boardID !== 'b' && boardID !== 'f' && boardID !== 'trash') {
+        if (boardID !== 'b' && boardID !== 'f' && boardID !== 'trash' && boardID !== 'bant') {
           a.href = "/" + boardID + "/archive";
         } else {
           return a.firstChild;
@@ -9201,7 +9579,7 @@ Index = (function() {
     showHiddenThreads: false,
     changed: {},
     init: function() {
-      var arr, entries, input, inputs, k, label, len, name, ref, ref1, ref2, ref3, ref4, ref5, ref6, select, sortEntry, watchSettings;
+      var arr, entries, i, input, inputs, k, l, label, len1, len2, name, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, select, sortEntry, tRaw, watchSettings;
       if (!(g.VIEW === 'index' && g.BOARD.ID !== 'f')) {
         return;
       }
@@ -9210,6 +9588,7 @@ Index = (function() {
       if (!Conf['JSON Index']) {
         return;
       }
+      this.enabled = true;
       Callbacks.Post.push({
         name: 'Index Page Numbers',
         cb: this.node
@@ -9241,7 +9620,7 @@ Index = (function() {
       });
       Header.addShortcut('index-refresh', this.button, 590);
       entries = [];
-      inputs = {};
+      this.inputs = inputs = {};
       ref4 = Config.Index;
       for (name in ref4) {
         arr = ref4[name];
@@ -9273,7 +9652,7 @@ Index = (function() {
       sortEntry = UI.checkbox('Per-Board Sort Type', 'Per-board sort type', typeof Conf['Index Sort'] === 'object');
       sortEntry.title = 'Set the sorting order of each board independently.';
       $.on(sortEntry.firstChild, 'change', this.cb.perBoardSort);
-      entries.splice(2, 0, {
+      entries.splice(3, 0, {
         el: sortEntry
       });
       Header.menu.addEntry({
@@ -9287,10 +9666,10 @@ Index = (function() {
         className: 'navLinks json-index'
       });
       $.extend(this.navLinks, {
-        innerHTML: "<span class=\"brackets-wrap indexlink\"><a href=\"#index\">Index</a></span> <span class=\"brackets-wrap cataloglink\"><a href=\"#catalog\">Catalog</a></span> <span class=\"brackets-wrap archlistlink\"><a href=\"./archive\">Archive</a></span> <span class=\"brackets-wrap bottomlink\"><a href=\"#bottom\">Bottom</a></span> <span class=\"brackets-wrap\" id=\"index-last-refresh\"><a href=\"javascript:;\"><time title=\"Last index refresh\">...</time></a></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a><span id=\"hidden-label\" hidden> &mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"lastlong\">Last long reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select>"
+        innerHTML: "<span class=\"brackets-wrap indexlink\"><a href=\"#index\">Index</a></span> <span class=\"brackets-wrap cataloglink\"><a href=\"#catalog\">Catalog</a></span> <span class=\"brackets-wrap archlistlink\"><a href=\"./archive\">Archive</a></span> <span class=\"brackets-wrap bottomlink\"><a href=\"#bottom\">Bottom</a></span> <span class=\"brackets-wrap\" id=\"index-last-refresh\"><a href=\"javascript:;\"><time title=\"Last index refresh\">...</time></a></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a><span id=\"hidden-label\" hidden> &mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><span id=\"index-options\"><input type=\"checkbox\" id=\"index-rev\" name=\"Reverse Sort\" title=\"Reverse sort order\"><span id=\"lastlong-options\" hidden><input type=\"text\" title=\"Minimum letter count (without image)\"><input type=\"text\" title=\"Minimum letter count (with image)\"></span><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"lastlong\">Last long reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select></span>"
       });
       $('.cataloglink a', this.navLinks).href = CatalogLinks.catalog();
-      if ((ref5 = g.BOARD.ID) === 'b' || ref5 === 'trash') {
+      if ((ref5 = g.BOARD.ID) === 'b' || ref5 === 'trash' || ref5 === 'bant') {
         $('.archlistlink', this.navLinks).hidden = true;
       }
       $.on($('#index-last-refresh a', this.navLinks), 'click', this.cb.refreshFront);
@@ -9300,22 +9679,37 @@ Index = (function() {
       $.on($('#index-search-clear', this.navLinks), 'click', this.clearSearch);
       this.hideLabel = $('#hidden-label', this.navLinks);
       $.on($('#hidden-toggle a', this.navLinks), 'click', this.cb.toggleHiddenThreads);
+      this.selectRev = $('#index-rev', this.navLinks);
       this.selectMode = $('#index-mode', this.navLinks);
       this.selectSort = $('#index-sort', this.navLinks);
       this.selectSize = $('#index-size', this.navLinks);
+      $.on(this.selectRev, 'change', this.cb.sort);
       $.on(this.selectMode, 'change', this.cb.mode);
       $.on(this.selectSort, 'change', this.cb.sort);
       $.on(this.selectSize, 'change', $.cb.value);
       $.on(this.selectSize, 'change', this.cb.size);
       ref6 = [this.selectMode, this.selectSize];
-      for (k = 0, len = ref6.length; k < len; k++) {
+      for (k = 0, len1 = ref6.length; k < len1; k++) {
         select = ref6[k];
         select.value = Conf[select.name];
       }
-      this.selectSort.value = Index.currentSort;
+      this.selectRev.checked = /-rev$/.test(Index.currentSort);
+      this.selectSort.value = Index.currentSort.replace(/-rev$/, '');
+      this.lastLongOptions = $('#lastlong-options', this.navLinks);
+      this.lastLongInputs = $$('input', this.lastLongOptions);
+      this.lastLongThresholds = [0, 0];
+      this.lastLongOptions.hidden = this.selectSort.value !== 'lastlong';
+      ref7 = this.lastLongInputs;
+      for (i = l = 0, len2 = ref7.length; l < len2; i = ++l) {
+        input = ref7[i];
+        $.on(input, 'change', this.cb.lastLongThresholds);
+        tRaw = Conf["Last Long Reply Thresholds " + i];
+        input.value = this.lastLongThresholds[i] = typeof tRaw === 'object' ? (ref8 = tRaw[g.BOARD.ID]) != null ? ref8 : 100 : tRaw;
+      }
       this.root = $.el('div', {
         className: 'board json-index'
       });
+      $.on(this.root, 'click', this.cb.hoverToggle);
       this.cb.size();
       this.cb.hover();
       this.pagelist = $.el('div', {
@@ -9331,7 +9725,7 @@ Index = (function() {
         return d.title = d.title.replace(/\ -\ Page\ \d+/, '');
       });
       $.onExists(doc, '.board > .thread > .postContainer, .board + *', function() {
-        var board, el, l, len1, ref7, topNavPos;
+        var board, el, len3, m, ref9, topNavPos;
         Build.hat = $('.board > .thread > img:first-child');
         if (Build.hat) {
           g.BOARD.threads.forEach(function(thread) {
@@ -9350,9 +9744,9 @@ Index = (function() {
         try {
           d.implementation.createDocument(null, null, null).appendChild(board);
         } catch (_error) {}
-        ref7 = $$('.navLinks');
-        for (l = 0, len1 = ref7.length; l < len1; l++) {
-          el = ref7[l];
+        ref9 = $$('.navLinks');
+        for (m = 0, len3 = ref9.length; m < len3; m++) {
+          el = ref9[m];
           $.rm(el);
         }
         $.rm($.id('ctrl-top'));
@@ -9451,7 +9845,6 @@ Index = (function() {
       })(this));
     },
     toggleHide: function(thread) {
-      $.rm(thread.catalogView.nodes.root);
       if (Index.showHiddenThreads) {
         ThreadHiding.show(thread);
         if (!ThreadHiding.db.get({
@@ -9466,11 +9859,11 @@ Index = (function() {
       return ThreadHiding.saveHiddenState(thread);
     },
     cycleSortType: function() {
-      var i, k, len, type, types;
+      var i, k, len1, type, types;
       types = slice.call(Index.selectSort.options).filter(function(option) {
         return !option.disabled;
       });
-      for (i = k = 0, len = types.length; k < len; i = ++k) {
+      for (i = k = 0, len1 = types.length; k < len1; i = ++k) {
         type = types[i];
         if (type.selected) {
           break;
@@ -9504,6 +9897,7 @@ Index = (function() {
       },
       toggleHiddenThreads: function() {
         $('#hidden-toggle a', Index.navLinks).textContent = (Index.showHiddenThreads = !Index.showHiddenThreads) ? 'Hide' : 'Show';
+        Index.sort();
         return Index.buildIndex();
       },
       mode: function() {
@@ -9513,8 +9907,10 @@ Index = (function() {
         return Index.pageLoad(false);
       },
       sort: function() {
+        var value;
+        value = Index.selectRev.checked ? Index.selectSort.value + "-rev" : Index.selectSort.value;
         Index.pushState({
-          sort: this.value
+          sort: value
         });
         return Index.pageLoad(false);
       },
@@ -9526,8 +9922,26 @@ Index = (function() {
         }
       },
       perBoardSort: function() {
+        var i, k;
         Conf['Index Sort'] = this.checked ? {} : '';
-        return Index.saveSort();
+        Index.saveSort();
+        for (i = k = 0; k < 2; i = ++k) {
+          Conf["Last Long Reply Thresholds " + i] = this.checked ? {} : '';
+          Index.saveLastLongThresholds(i);
+        }
+      },
+      lastLongThresholds: function() {
+        var i, value;
+        i = slice.call(this.parentNode.children).indexOf(this);
+        value = +this.value;
+        if (!Number.isFinite(value)) {
+          this.value = Index.lastLongThresholds[i];
+          return;
+        }
+        Index.lastLongThresholds[i] = value;
+        Index.saveLastLongThresholds(i);
+        Index.changed.order = true;
+        return Index.pageLoad(false);
       },
       size: function(e) {
         if (Conf['Index Mode'] !== 'catalog') {
@@ -9547,10 +9961,19 @@ Index = (function() {
       replies: function() {
         return Index.buildIndex();
       },
-      hover: function(e) {
-        doc.classList.toggle('catalog-hover-expand', Conf['Catalog Hover Expand']);
-        if (e && Conf['Show Replies'] && Conf['Catalog Hover Expand']) {
-          return Index.cb.replies();
+      hover: function() {
+        return doc.classList.toggle('catalog-hover-expand', Conf['Catalog Hover Expand']);
+      },
+      hoverToggle: function(e) {
+        var input, thread;
+        if (Conf['Catalog Hover Toggle'] && $.hasClass(doc, 'catalog-mode') && !$.modifiedClick(e) && !$.x('ancestor-or-self::a', e.target)) {
+          input = Index.inputs['Catalog Hover Expand'];
+          input.checked = !input.checked;
+          $.event('change', null, input);
+          if ((thread = Get.threadFromNode(e.target))) {
+            Index.cb.catalogReplies.call(thread);
+            return Index.cb.hoverAdjust.call(thread.OP.nodes);
+          }
         }
       },
       popstate: function(e) {
@@ -9576,7 +9999,7 @@ Index = (function() {
       },
       pageNav: function(e) {
         var a;
-        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+        if ($.modifiedClick(e)) {
           return;
         }
         switch (e.target.nodeName) {
@@ -9603,11 +10026,24 @@ Index = (function() {
         return Index.update();
       },
       catalogReplies: function() {
-        $.off(this, 'mouseover', Index.cb.catalogReplies);
-        if (!(Conf['Show Replies'] && Conf['Catalog Hover Expand'] && this.parentNode)) {
+        if (Conf['Show Replies'] && $.hasClass(doc, 'catalog-hover-expand') && !this.catalogView.nodes.replies) {
+          return Index.buildCatalogReplies(this);
+        }
+      },
+      hoverAdjust: function() {
+        var rect, style, x;
+        if (!$.hasClass(doc, 'catalog-hover-expand')) {
           return;
         }
-        return Index.buildCatalogReplies(Get.threadFromRoot(this));
+        rect = this.post.getBoundingClientRect();
+        if ((x = $.minmax(0, -rect.left, doc.clientWidth - rect.right))) {
+          style = this.post.style;
+          style.left = x + "px";
+          style.right = (-x) + "px";
+          return $.one(this.root, 'mouseleave', function() {
+            return style.left = style.right = null;
+          });
+        }
       }
     },
     scrollToIndex: function() {
@@ -9645,22 +10081,25 @@ Index = (function() {
       }
     },
     processHash: function() {
-      var command, commands, hash, k, leftover, len, mode, ref, sort, state;
+      var command, commands, hash, k, leftover, len1, mode, ref, sort, state;
       hash = ((ref = location.href.match(/#.*/)) != null ? ref[0] : void 0) || '';
       state = {
         replace: true
       };
       commands = hash.slice(1).split('/');
       leftover = [];
-      for (k = 0, len = commands.length; k < len; k++) {
+      for (k = 0, len1 = commands.length; k < len1; k++) {
         command = commands[k];
         if ((mode = Index.hashCommands.mode[command])) {
           state.mode = mode;
         } else if (command === 'index') {
           state.mode = Conf['Previous Index Mode'];
           state.page = 1;
-        } else if ((sort = Index.hashCommands.sort[command])) {
+        } else if ((sort = Index.hashCommands.sort[command.replace(/-rev$/, '')])) {
           state.sort = sort;
+          if (/-rev$/.test(command)) {
+            state.sort += '-rev';
+          }
         } else if (/^s=/.test(command)) {
           state.search = decodeURIComponent(command.slice(2)).replace(/\+/g, ' ').trim();
         } else {
@@ -9728,13 +10167,19 @@ Index = (function() {
         return Index.changed.hash = true;
       }
     },
-    saveSort: function() {
-      if (typeof Conf['Index Sort'] === 'object') {
-        Conf['Index Sort'][g.BOARD.ID] = Index.currentSort;
+    savePerBoard: function(key, value) {
+      if (typeof Conf[key] === 'object') {
+        Conf[key][g.BOARD.ID] = value;
       } else {
-        Conf['Index Sort'] = Index.currentSort;
+        Conf[key] = value;
       }
-      return $.set('Index Sort', Conf['Index Sort']);
+      return $.set(key, Conf[key]);
+    },
+    saveSort: function() {
+      return Index.savePerBoard('Index Sort', Index.currentSort);
+    },
+    saveLastLongThresholds: function(i) {
+      return Index.savePerBoard("Last Long Reply Thresholds " + i, Index.lastLongThresholds[i]);
     },
     pageLoad: function(scroll) {
       var hash, mode, order, page, ref, search, sort, threads;
@@ -9777,9 +10222,9 @@ Index = (function() {
       return Index.changed = {};
     },
     setupMode: function() {
-      var k, len, mode, ref;
+      var k, len1, mode, ref;
       ref = ['paged', 'infinite', 'all pages', 'catalog'];
-      for (k = 0, len = ref.length; k < len; k++) {
+      for (k = 0, len1 = ref.length; k < len1; k++) {
         mode = ref[k];
         $[mode === Conf['Index Mode'] ? 'addClass' : 'rmClass'](doc, (mode.replace(/\ /g, '-')) + "-mode");
       }
@@ -9789,7 +10234,9 @@ Index = (function() {
       return $('#hidden-toggle a', Index.navLinks).textContent = 'Show';
     },
     setupSort: function() {
-      return Index.selectSort.value = Index.currentSort;
+      Index.selectRev.checked = /-rev$/.test(Index.currentSort);
+      Index.selectSort.value = Index.currentSort.replace(/-rev$/, '');
+      return Index.lastLongOptions.hidden = Index.selectSort.value !== 'lastlong';
     },
     getPagesNum: function() {
       if (Index.search) {
@@ -9844,10 +10291,13 @@ Index = (function() {
       return $.add(strong, a);
     },
     updateHideLabel: function() {
-      var hiddenCount, k, len, ref, threadID;
+      var hiddenCount, k, len1, ref, threadID;
+      if (!Index.hideLabel) {
+        return;
+      }
       hiddenCount = 0;
       ref = Index.liveThreadIDs;
-      for (k = 0, len = ref.length; k < len; k++) {
+      for (k = 0, len1 = ref.length; k < len1; k++) {
         threadID = ref[k];
         if (Index.isHidden(threadID)) {
           hiddenCount++;
@@ -9887,7 +10337,7 @@ Index = (function() {
         location.reload();
         return;
       }
-      Index.req = $.ajax("//a.4cdn.org/" + g.BOARD + "/catalog.json", {
+      Index.req = $.ajax(location.protocol + "//a.4cdn.org/" + g.BOARD + "/catalog.json", {
         onabort: Index.load,
         onloadend: Index.load
       }, {
@@ -9963,7 +10413,7 @@ Index = (function() {
       return Index.pageLoad();
     },
     parseThreadList: function(pages) {
-      var ID, data, i, k, len, obj, ref, ref1, results;
+      var ID, data, i, k, l, len1, len2, obj, ref, ref1, ref2, reply, results;
       Index.pagesNum = pages.length;
       Index.threadsNumPerPage = ((ref = pages[0]) != null ? ref.threads.length : void 0) || 1;
       Index.liveThreadData = pages.reduce((function(arr, next) {
@@ -9975,8 +10425,9 @@ Index = (function() {
       Index.liveThreadDict = {};
       Index.threadPosition = {};
       Index.parsedThreads = {};
+      Index.replyData = {};
       ref1 = Index.liveThreadData;
-      for (i = k = 0, len = ref1.length; k < len; i = ++k) {
+      for (i = k = 0, len1 = ref1.length; k < len1; i = ++k) {
         data = ref1[i];
         Index.liveThreadDict[data.no] = data;
         Index.threadPosition[data.no] = i;
@@ -9984,23 +10435,30 @@ Index = (function() {
         obj.filterResults = results = Filter.test(obj);
         obj.isOnTop = results.top;
         obj.isHidden = results.hide || ThreadHiding.isHidden(obj.boardID, obj.threadID);
+        if (data.last_replies) {
+          ref2 = data.last_replies;
+          for (l = 0, len2 = ref2.length; l < len2; l++) {
+            reply = ref2[l];
+            Index.replyData[g.BOARD + "." + reply.no] = reply;
+          }
+        }
       }
       if (Index.liveThreadData[0]) {
         Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler;
       }
       g.BOARD.threads.forEach(function(thread) {
-        var ref2;
-        if (ref2 = thread.ID, indexOf.call(Index.liveThreadIDs, ref2) < 0) {
+        var ref3;
+        if (ref3 = thread.ID, indexOf.call(Index.liveThreadIDs, ref3) < 0) {
           return thread.collect();
         }
       });
       $.event('IndexUpdate', {
         threads: (function() {
-          var l, len1, ref2, results1;
-          ref2 = Index.liveThreadIDs;
+          var len3, m, ref3, results1;
+          ref3 = Index.liveThreadIDs;
           results1 = [];
-          for (l = 0, len1 = ref2.length; l < len1; l++) {
-            ID = ref2[l];
+          for (m = 0, len3 = ref3.length; m < len3; m++) {
+            ID = ref3[m];
             results1.push(g.BOARD + "." + ID);
           }
           return results1;
@@ -10015,12 +10473,15 @@ Index = (function() {
         return Index.parsedThreads[threadID].isHidden;
       }
     },
+    isHiddenReply: function(threadID, replyData) {
+      return PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) || Filter.isHidden(Build.parseJSON(replyData, g.BOARD.ID));
+    },
     buildThreads: function(threadIDs, isCatalog) {
-      var ID, OP, err, errors, isStale, k, len, newPosts, newThreads, obj, thread, threadData, threads;
+      var ID, OP, err, errors, isStale, k, len1, newPosts, newThreads, obj, thread, threadData, threads;
       threads = [];
       newThreads = [];
       newPosts = [];
-      for (k = 0, len = threadIDs.length; k < len; k++) {
+      for (k = 0, len1 = threadIDs.length; k < len1; k++) {
         ID = threadIDs[k];
         try {
           threadData = Index.liveThreadDict[ID];
@@ -10032,7 +10493,7 @@ Index = (function() {
               thread.setStatus('Sticky', !!threadData.sticky);
               thread.setStatus('Closed', !!threadData.closed);
             }
-            if (thread.catalogView && (isStale || !(isCatalog && Conf['Show Replies'] && Conf['Catalog Hover Expand']))) {
+            if (thread.catalogView) {
               $.rm(thread.catalogView.nodes.replies);
               thread.catalogView.nodes.replies = null;
             }
@@ -10075,15 +10536,15 @@ Index = (function() {
       return threads;
     },
     buildReplies: function(threads) {
-      var data, err, errors, k, l, lastReplies, len, len1, node, nodes, post, posts, thread;
+      var data, err, errors, k, l, lastReplies, len1, len2, node, nodes, post, posts, thread;
       posts = [];
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         if (!(lastReplies = Index.liveThreadDict[thread.ID].last_replies)) {
           continue;
         }
         nodes = [];
-        for (l = 0, len1 = lastReplies.length; l < len1; l++) {
+        for (l = 0, len2 = lastReplies.length; l < len2; l++) {
           data = lastReplies[l];
           if ((post = thread.posts[data.no]) && !post.isFetchedQuote) {
             nodes.push(post.nodes.root);
@@ -10111,9 +10572,9 @@ Index = (function() {
       return Main.callbackNodes('Post', posts);
     },
     buildCatalogViews: function(threads) {
-      var ID, catalogThreads, k, len, page, root, thread;
+      var ID, catalogThreads, k, len1, page, root, thread;
       catalogThreads = [];
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         if (!(!thread.catalogView)) {
           continue;
@@ -10126,9 +10587,9 @@ Index = (function() {
       Main.callbackNodes('CatalogThread', catalogThreads);
     },
     sizeCatalogViews: function(threads) {
-      var height, k, len, ratio, ref, size, thread, thumb, width;
+      var height, k, len1, ratio, ref, size, thread, thumb, width;
       size = Conf['Index Size'] === 'small' ? 150 : 250;
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         thumb = thread.catalogView.nodes.thumb;
         ref = thumb.dataset, width = ref.width, height = ref.height;
@@ -10141,26 +10602,15 @@ Index = (function() {
       }
     },
     buildCatalogReplies: function(thread) {
-      var data, k, l, lastReplies, len, len1, nodes, ref, replies, reply, timeEl;
+      var data, k, lastReplies, len1, nodes, replies, reply;
       nodes = thread.catalogView.nodes;
       if (!(lastReplies = Index.liveThreadDict[thread.ID].last_replies)) {
         return;
       }
-      if (nodes.replies) {
-        ref = $$('time', nodes.replies);
-        for (k = 0, len = ref.length; k < len; k++) {
-          timeEl = ref[k];
-          RelativeDates.update(timeEl);
-        }
-        return;
-      }
       replies = [];
-      for (l = 0, len1 = lastReplies.length; l < len1; l++) {
-        data = lastReplies[l];
-        if (PostHiding.isHidden(g.BOARD.ID, thread.ID, data.no)) {
-          continue;
-        }
-        if (Filter.isHidden(Build.parseJSON(data, g.BOARD.ID))) {
+      for (k = 0, len1 = lastReplies.length; k < len1; k++) {
+        data = lastReplies[k];
+        if (Index.isHiddenReply(thread.ID, data)) {
           continue;
         }
         reply = Build.catalogReply(thread, data);
@@ -10175,13 +10625,14 @@ Index = (function() {
       $.add(thread.OP.nodes.post, nodes.replies);
     },
     sort: function() {
-      var lastlong, liveThreadData, liveThreadIDs, threadIDs;
+      var lastlong, lastlongD, liveThreadData, liveThreadIDs, thread, threadIDs;
       liveThreadIDs = Index.liveThreadIDs, liveThreadData = Index.liveThreadData;
       if (!liveThreadData) {
         return;
       }
       Index.sortedThreadIDs = (function() {
-        switch (Index.currentSort) {
+        var k, len1;
+        switch (Index.currentSort.replace(/-rev$/, '')) {
           case 'lastreply':
             return slice.call(liveThreadData).sort(function(a, b) {
               var num;
@@ -10197,18 +10648,31 @@ Index = (function() {
             });
           case 'lastlong':
             lastlong = function(thread) {
-              var i, k, r, ref;
+              var i, k, len, r, ref;
               ref = thread.last_replies || [];
               for (i = k = ref.length - 1; k >= 0; i = k += -1) {
                 r = ref[i];
-                if (r.com && Build.parseComment(r.com).replace(/[^a-z]/ig, '').length >= 100) {
+                if (Index.isHiddenReply(thread.no, r)) {
+                  continue;
+                }
+                len = r.com ? Build.parseComment(r.com).replace(/[^a-z]/ig, '').length : 0;
+                if (len >= Index.lastLongThresholds[+(!!r.ext)]) {
                   return r;
                 }
               }
-              return thread;
+              if (thread.omitted_posts) {
+                return thread.last_replies[0];
+              } else {
+                return thread;
+              }
             };
+            lastlongD = {};
+            for (k = 0, len1 = liveThreadData.length; k < len1; k++) {
+              thread = liveThreadData[k];
+              lastlongD[thread.no] = lastlong(thread).no;
+            }
             return slice.call(liveThreadData).sort(function(a, b) {
-              return lastlong(b).no - lastlong(a).no;
+              return lastlongD[b.no] - lastlongD[a.no];
             }).map(function(post) {
               return post.no;
             });
@@ -10234,6 +10698,9 @@ Index = (function() {
             return liveThreadIDs;
         }
       })();
+      if (/-rev$/.test(Index.currentSort)) {
+        Index.sortedThreadIDs = slice.call(Index.sortedThreadIDs).reverse();
+      }
       if (Index.search && (threadIDs = Index.querySearch(Index.search))) {
         Index.sortedThreadIDs = threadIDs;
       }
@@ -10250,11 +10717,11 @@ Index = (function() {
       }
     },
     sortOnTop: function(match) {
-      var ID, bottomThreads, k, len, ref, topThreads;
+      var ID, bottomThreads, k, len1, ref, topThreads;
       topThreads = [];
       bottomThreads = [];
       ref = Index.sortedThreadIDs;
-      for (k = 0, len = ref.length; k < len; k++) {
+      for (k = 0, len1 = ref.length; k < len1; k++) {
         ID = ref[k];
         (match(Index.parsedThreads[ID]) ? topThreads : bottomThreads).push(ID);
       }
@@ -10293,13 +10760,13 @@ Index = (function() {
       return Index.sortedThreadIDs.slice(offset, offset + nodesPerPage);
     },
     buildStructure: function(threadIDs) {
-      var k, len, nodes, thread, threads;
+      var k, len1, nodes, thread, threads;
       threads = Index.buildThreads(threadIDs, false);
       if (Conf['Show Replies']) {
         Index.buildReplies(threads);
       }
       nodes = [];
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         nodes.push(thread.nodes.root, $.el('hr'));
       }
@@ -10334,19 +10801,18 @@ Index = (function() {
       fn();
     },
     buildCatalogPart: function(threadIDs) {
-      var k, len, nodes, thread, threads;
+      var k, len1, nodes, thread, threads;
       threads = Index.buildThreads(threadIDs, true);
       Index.buildCatalogViews(threads);
       Index.sizeCatalogViews(threads);
       nodes = [];
-      for (k = 0, len = threads.length; k < len; k++) {
+      for (k = 0, len1 = threads.length; k < len1; k++) {
         thread = threads[k];
         thread.OP.setCatalogOP(true);
         $.add(thread.catalogView.nodes.root, thread.OP.nodes.root);
         nodes.push(thread.catalogView.nodes.root);
-        if (Conf['Show Replies'] && Conf['Catalog Hover Expand']) {
-          $.on(thread.catalogView.nodes.root, 'mouseover', Index.cb.catalogReplies);
-        }
+        $.on(thread.catalogView.nodes.root, 'mouseenter', Index.cb.catalogReplies.bind(thread));
+        $.on(thread.OP.nodes.root, 'mouseenter', Index.cb.hoverAdjust.bind(thread.OP.nodes));
       }
       $.add(Index.root, nodes);
       return nodes;
@@ -10386,14 +10852,14 @@ Index = (function() {
       });
     },
     searchMatch: function(obj, keywords) {
-      var file, info, k, key, keyword, l, len, len1, ref, text;
+      var file, info, k, key, keyword, l, len1, len2, ref, text;
       info = obj.info, file = obj.file;
       if (info.comment == null) {
         info.comment = Build.parseComment(info.commentHTML.innerHTML);
       }
       text = [];
       ref = ['comment', 'subject', 'name', 'tripcode'];
-      for (k = 0, len = ref.length; k < len; k++) {
+      for (k = 0, len1 = ref.length; k < len1; k++) {
         key = ref[k];
         if (key in info) {
           text.push(info[key]);
@@ -10403,7 +10869,7 @@ Index = (function() {
         text.push(file.name);
       }
       text = text.join(' ').toLowerCase();
-      for (l = 0, len1 = keywords.length; l < len1; l++) {
+      for (l = 0, len2 = keywords.length; l < len2; l++) {
         keyword = keywords[l];
         if (-1 === text.indexOf(keyword)) {
           return false;
@@ -10601,8 +11067,8 @@ Settings = (function() {
         }
       },
       ads: function(cb) {
-        return $.onExists(doc, '.ad-cnt, .adg-rects', function(ad) {
-          return $.onExists(ad, 'img, iframe', function() {
+        return $.onExists(doc, '.adg-rects > .desktop', function(ad) {
+          return $.onExists(ad, 'iframe', function() {
             var url;
             url = Redirect.to('thread', {
               boardID: 'qa',
@@ -10681,6 +11147,9 @@ Settings = (function() {
       addCheckboxes($('div[data-name="JSON Index"] > .suboption-list', section), Config.Index);
       if ($.engine !== 'gecko') {
         $('div[data-name="Remember QR Size"]', section).hidden = true;
+      }
+      if ($.perProtocolSettings) {
+        $('div[data-name="Redirect to HTTPS"]', section).hidden = true;
       }
       $.get(items, function(items) {
         var val;
@@ -10899,7 +11368,7 @@ Settings = (function() {
       }
     },
     upgrade: function(data, version) {
-      var addCSS, addSauces, boardID, changes, compareString, j, k, key, len, len1, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, value;
+      var addCSS, addSauces, boardID, changes, compareString, corrupted, j, k, key, len, len1, list, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, val, val2, value;
       changes = {};
       set = function(key, value) {
         return data[key] = changes[key] = value;
@@ -10927,9 +11396,35 @@ Settings = (function() {
           return set('usercss', css + '\n\n' + data['usercss']);
         }
       };
+      if ((corrupted = version[0] === '"')) {
+        try {
+          version = JSON.parse(version);
+        } catch (_error) {}
+      }
       compareString = version.replace(/\d+/g, function(x) {
         return ('0000' + x).slice(-5);
       });
+      if (compareString < '00001.00013.00014.00008') {
+        for (key in data) {
+          val = data[key];
+          if (!(typeof val === 'string' && typeof Conf[key] !== 'string' && (key !== 'Index Sort' && key !== 'Last Long Reply Thresholds 0' && key !== 'Last Long Reply Thresholds 1'))) {
+            continue;
+          }
+          corrupted = true;
+          break;
+        }
+      }
+      if (corrupted) {
+        for (key in data) {
+          val = data[key];
+          if (typeof val === 'string') {
+            try {
+              val2 = JSON.parse(val);
+              set(key, val2);
+            } catch (_error) {}
+          }
+        }
+      }
       if (compareString < '00001.00011.00008.00000') {
         if (data['Fixed Thread Watcher'] == null) {
           set('Fixed Thread Watcher', (ref = data['Toggleable Thread Watcher']) != null ? ref : true);
@@ -11077,10 +11572,33 @@ Settings = (function() {
         }
       }
       if (compareString < '00001.00012.00003.00000') {
-        ref6 = ['Image Hover in Catalog', 'Auto Watch', 'Auto Watch Reply', 'Auto Prune'];
+        ref6 = ['Image Hover in Catalog', 'Auto Watch', 'Auto Watch Reply'];
         for (k = 0, len1 = ref6.length; k < len1; k++) {
           key = ref6[k];
           setD(key, false);
+        }
+      }
+      if (compareString < '00001.00013.00001.00002') {
+        addSauces(['#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights']);
+      }
+      if (compareString < '00001.00013.00005.00000') {
+        if (data['sauces'] != null) {
+          set('sauces', data['sauces'].replace(/^(#?\s*)http:\/\/regex\.info\/exif\.cgi/mg, '$1http://exif.regex.info/exif.cgi'));
+        }
+        addSauces(Config['sauces'].match(/# Known filename formats:(?:\n.+)*|$/)[0].split('\n'));
+      }
+      if (compareString < '00001.00013.00007.00002') {
+        setD('Require OP Quote Link', true);
+      }
+      if (compareString < '00001.00013.00008.00000') {
+        setD('Download Link', true);
+      }
+      if (compareString < '00001.00013.00009.00003') {
+        if (data['jsWhitelist'] != null) {
+          list = data['jsWhitelist'].split('\n');
+          if (indexOf.call(list, 'https://cdnjs.cloudflare.com') < 0 && indexOf.call(list, 'https://cdn.mathjax.org') >= 0) {
+            set('jsWhitelist', data['jsWhitelist'] + '\n\nhttps://cdnjs.cloudflare.com');
+          }
         }
       }
       return changes;
@@ -11112,14 +11630,14 @@ Settings = (function() {
     filter: function(section) {
       var select;
       $.extend(section, {
-        innerHTML: "<select name=\"filter\"><option value=\"guide\">Guide</option><option value=\"postID\">Post number</option><option value=\"name\">Name</option><option value=\"uniqueID\">Unique ID</option><option value=\"tripcode\">Tripcode</option><option value=\"capcode\">Capcode</option><option value=\"pass\">Pass Date</option><option value=\"subject\">Subject</option><option value=\"comment\">Comment</option><option value=\"flag\">Flag</option><option value=\"filename\">Filename</option><option value=\"dimensions\">Image dimensions</option><option value=\"filesize\">Filesize</option><option value=\"MD5\">Image MD5</option></select><div></div>"
+        innerHTML: "<select name=\"filter\"><option value=\"guide\">Guide</option><option value=\"general\">General</option><option value=\"postID\">Post number</option><option value=\"name\">Name</option><option value=\"uniqueID\">Unique ID</option><option value=\"tripcode\">Tripcode</option><option value=\"capcode\">Capcode</option><option value=\"pass\">Pass Date</option><option value=\"subject\">Subject</option><option value=\"comment\">Comment</option><option value=\"flag\">Flag</option><option value=\"filename\">Filename</option><option value=\"dimensions\">Image dimensions</option><option value=\"filesize\">Filesize</option><option value=\"MD5\">Image MD5</option></select><div></div>"
       });
       select = $('select', section);
       $.on(select, 'change', Settings.selectFilter);
       return Settings.selectFilter.call(select);
     },
     selectFilter: function() {
-      var div, name, ta;
+      var div, filterTypes, name, ta;
       div = this.nextElementSibling;
       if ((name = this.value) !== 'guide') {
         $.rmAll(div);
@@ -11128,34 +11646,42 @@ Settings = (function() {
           className: 'field',
           spellcheck: false
         });
-        $.get(name, Conf[name], function(item) {
-          return ta.value = item[name];
-        });
         $.on(ta, 'change', $.cb.value);
-        $.add(div, ta);
+        $.get(name, Conf[name], function(item) {
+          ta.value = item[name];
+          return $.add(div, ta);
+        });
         return;
       }
+      filterTypes = Object.keys(Config.filter).filter(function(x) {
+        return x !== 'general';
+      }).map(function(x, i) {
+        return {
+          innerHTML: ((i) ? "," : "") + "<wbr>" + E(x)
+        };
+      });
       $.extend(div, {
-        innerHTML: "<div class=\"warning\"><code>Filter</code> is disabled.</div><p>Use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\" target=\"_blank\">regular expressions</a>, one per line.<br>Lines starting with a <code>#</code> will be ignored.<br>For example, <code>/weeaboo/i</code> will filter posts containing the string \`<code>weeaboo</code>\`, case-insensitive.<br>MD5 filtering uses exact string matching, not regular expressions.</p><ul>You can use these settings with each regular expression, separate them with semicolons:<li>Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>For example: <code>boards:a,jp;</code>.<br></li><li>In case of a global rule or one that uses <code>sfw</code>/<code>nsfw</code>, select boards to be excluded from the filter.<br>For example: <code>exclude:vg,v;</code>.</li><li>Filter OPs only along with their threads (\`only\`), replies only (\`no\`), or both (\`yes\`, this is default).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li><li>Overrule the \`Show Stubs\` setting if specified: create a stub (\`yes\`) or not (\`no\`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code>.</li><li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li><li>Highlighted OPs will have their threads put on top of the board index by default.<br>For example: <code>top:yes;</code> or <code>top:no;</code>.</li></ul><p>Note: If you&#039;re using the native catalog rather than 4chan X&#039;s catalog, 4chan X&#039;s filters do not apply there.<br>The native catalog has its own separate filter list.</p>"
+        innerHTML: "<div class=\"warning\"><code>Filter</code> is disabled.</div><p>Use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\" target=\"_blank\">regular expressions</a>, one per line.<br>Lines starting with a <code>#</code> will be ignored.<br>For example, <code>/weeaboo/i</code> will filter posts containing the string \`<code>weeaboo</code>\`, case-insensitive.<br>MD5 filtering uses exact string matching, not regular expressions.</p><ul>You can use these settings with each regular expression, separate them with semicolons:<li>Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>For example: <code>boards:a,jp;</code>.<br></li><li>In case of a global rule or one that uses <code>sfw</code>/<code>nsfw</code>, select boards to be excluded from the filter.<br>For example: <code>exclude:vg,v;</code>.</li><li>Filter OPs only along with their threads (\`only\`), replies only (\`no\`), or both (\`yes\`, this is default).<br>For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.</li><li>Overrule the \`Show Stubs\` setting if specified: create a stub (\`yes\`) or not (\`no\`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code>.</li><li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li><li>Highlighted OPs will have their threads put on top of the board index by default.<br>For example: <code>top:yes;</code> or <code>top:no;</code>.</li><li>Filters in the \"General\" section apply to multiple fields, by default <code>subject,name,filename,comment</code>.<br>The fields can be specified with the <code>type</code> option, separated by commas.<br>For example: <code>type:" + E.cat(filterTypes) + ";</code>.</li></ul><p>Note: If you&#039;re using the native catalog rather than 4chan X&#039;s catalog, 4chan X&#039;s filters do not apply there.<br>The native catalog has its own separate filter list.</p>"
       });
       return $('.warning', div).hidden = Conf['Filter'];
     },
     sauce: function(section) {
       var ta;
       $.extend(section, {
-        innerHTML: "<div class=\"warning\"><code>Sauce</code> is disabled.</div><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><div>You can specify the applicable boards by appending <code>;boards:[board1],[board2]</code>.</div><div>You can specify the applicable file types by appending <code>;types:[extension1],[extension2]</code>.</div><ul>These parameters will be replaced by their corresponding values:<li><code>%TURL</code>: Thumbnail URL.</li><li><code>%URL</code>: Full image URL.</li><li><code>%IMG</code>: Full image URL for GIF, JPG, and PNG; thumbnail URL for other types.</li><li><code>%MD5</code>: MD5 hash in base64.</li><li><code>%sMD5</code>: MD5 hash in base64 using <code>-</code> and <code>_</code>.</li><li><code>%hMD5</code>: MD5 hash in hexadecimal.</li><li><code>%name</code>: Original file name.</li><li><code>%board</code>: Current board.</li><li><code>%%</code>, <code>%semi</code>: Literal <code>%</code> and <code>;</code>.</li></ul><textarea name=\"sauces\" class=\"field\" spellcheck=\"false\"></textarea>"
+        innerHTML: "<div class=\"warning\"><code>Sauce</code> is disabled.</div><input id=\"sauce-doc-expand\" type=\"checkbox\" hidden><div id=\"sauce-doc\"><label for=\"sauce-doc-expand\">[expand]</label><div>These parameters will be replaced by their corresponding values in the URL and displayed text:</div><ul><li><code>%IMG</code>: Full image URL for GIF, JPG, and PNG; thumbnail URL for other types.</li><li><code>%URL</code>: Full image URL.</li><li><code>%TURL</code>: Thumbnail URL.</li><li><code>%name</code>: Original file name.</li><li><code>%board</code>: Current board.</li><li><code>%MD5</code>: MD5 hash in base64.</li><li><code>%sMD5</code>: MD5 hash in base64 using <code>-</code> and <code>_</code>.</li><li><code>%hMD5</code>: MD5 hash in hexadecimal.</li><li><code>%$0</code>: Matched regular expression within the filename.</li><li><code>%$1</code>, <code>%$2</code>, <code>%$3</code>, ... : Subexpressions within the matched regular expression.</li><li><code>%%</code>, <code>%semi</code>: Literal <code>%</code> and <code>;</code>.</li></ul><div>Lines starting with a <code>#</code> will be ignored.</div><div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div><div>You can specify the applicable boards by appending <code>;boards:[board1],[board2]</code>.</div><div>You can specify the applicable file types by appending <code>;types:[extension1],[extension2]</code>.</div><div>You can specify a regular expression the filename must match by appending <code>;regexp:[regular expression]</code>.</div></div><textarea hidden name=\"sauces\" class=\"field\" spellcheck=\"false\"></textarea>"
       });
       $('.warning', section).hidden = Conf['Sauce'];
       ta = $('textarea', section);
       $.get('sauces', Conf['sauces'], function(item) {
-        return ta.value = item['sauces'];
+        ta.value = item['sauces'];
+        return ta.hidden = false;
       });
       return $.on(ta, 'change', $.cb.value);
     },
     advanced: function(section) {
       var applyCSS, boardSelect, customCSS, event, input, inputs, interval, items, itemsArchive, j, k, l, len, len1, len2, len3, m, name, ref, ref1, ref2, ref3, table, updateArchives, warning;
       $.extend(section, {
-        innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"><img src=\"data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"
+        innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div><div><a href=\"https://www.w3.org/International/articles/language-tags/\" target=\"_blank\">Language tag</a>: <input name=\"timeLocale\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"
       });
       ref = $$('.warning', section);
       for (j = 0, len = ref.length; j < len; j++) {
@@ -11174,7 +11700,7 @@ Settings = (function() {
         return $.id('lastarchivecheck').textContent = 'never';
       });
       items = {};
-      ref2 = ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist'];
+      ref2 = ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'timeLocale', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist'];
       for (l = 0, len2 = ref2.length; l < len2; l++) {
         name = ref2[l];
         items[name] = Conf[name];
@@ -11191,6 +11717,7 @@ Settings = (function() {
           val = items[key];
           input = inputs[key];
           input[input.type === 'checkbox' ? 'checked' : 'value'] = val;
+          input.hidden = false;
           if (key in Settings) {
             Settings[key].call(input);
           }
@@ -11359,6 +11886,9 @@ Settings = (function() {
     time: function() {
       return this.nextElementSibling.textContent = Time.format(this.value, new Date());
     },
+    timeLocale: function() {
+      return Settings.time.call($('[name=time]', Settings.dialog));
+    },
     backlink: function() {
       return this.nextElementSibling.textContent = this.value.replace(/%(?:id|%)/g, function(x) {
         return {
@@ -11372,7 +11902,7 @@ Settings = (function() {
       data = {
         isReply: true,
         file: {
-          url: '//i.4cdn.org/g/1334437723720.jpg',
+          url: "//" + (ImageHost.host()) + "/g/1334437723720.jpg",
           name: 'd9bb2efc98dd0df141a94399ff5880b7.jpg',
           size: '276 KB',
           sizeInBytes: 276 * 1024,
@@ -11386,16 +11916,21 @@ Settings = (function() {
       return FileInfo.format(this.value, data, this.nextElementSibling);
     },
     favicon: function() {
-      var img;
+      var f, i, icon, img, j, len, ref;
       Favicon["switch"]();
       if (g.VIEW === 'thread' && Conf['Unread Favicon']) {
         Unread.update();
       }
       img = this.nextElementSibling.children;
-      img[0].src = Favicon["default"];
-      img[1].src = Favicon.unreadSFW;
-      img[2].src = Favicon.unreadNSFW;
-      return img[3].src = Favicon.unreadDead;
+      f = Favicon;
+      ref = [f.SFW, f.unreadSFW, f.unreadSFWY, f.NSFW, f.unreadNSFW, f.unreadNSFWY, f.dead, f.unreadDead, f.unreadDeadY];
+      for (i = j = 0, len = ref.length; j < len; i = ++j) {
+        icon = ref[i];
+        if (!img[i]) {
+          $.add(this.nextElementSibling, $.el('img'));
+        }
+        img[i].src = icon;
+      }
     },
     togglecss: function() {
       if ($('textarea[name=usercss]', $.x('ancestor::fieldset[1]', this)).disabled = $.id('apply-css').disabled = !this.checked) {
@@ -11460,17 +11995,14 @@ UI = (function() {
     bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     slice = [].slice;
 
-  dialog = function(id, position, properties) {
+  dialog = function(id, properties) {
     var child, el, i, len, move, ref;
     el = $.el('div', {
       className: 'dialog',
       id: id
     });
     $.extend(el, properties);
-    el.style.cssText = position;
-    $.get(id + ".position", position, function(item) {
-      return el.style.cssText = item[id + ".position"];
-    });
+    el.style.cssText = Conf[id + ".position"];
     move = $('.move', el);
     $.on(move, 'touchstart mousedown', dragstart);
     ref = move.children;
@@ -11941,7 +12473,7 @@ FappeTyme = (function() {
   FappeTyme = {
     init: function() {
       var el, i, indicator, lc, len, ref, ref1, type;
-      if (!((Conf['Fappe Tyme'] || Conf['Werk Tyme']) && ((ref = g.VIEW) === 'index' || ref === 'thread'))) {
+      if (!((Conf['Fappe Tyme'] || Conf['Werk Tyme']) && ((ref = g.VIEW) === 'index' || ref === 'thread' || ref === 'archive'))) {
         return;
       }
       this.nodes = {};
@@ -12248,7 +12780,7 @@ Gallery = (function() {
       if (((ref = this.error) != null ? ref.code : void 0) === MediaError.MEDIA_ERR_DECODE) {
         return new Notice('error', 'Corrupt or unplayable video', 30);
       }
-      if (this.src.split('/')[2] !== 'i.4cdn.org') {
+      if (ImageCommon.isFromArchive(this)) {
         return;
       }
       return ImageCommon.error(this, g.posts[this.dataset.post], null, (function(_this) {
@@ -12311,12 +12843,11 @@ Gallery = (function() {
             case Conf['Close']:
             case Conf['Open Gallery']:
               return Gallery.cb.close;
-            case 'Right':
+            case Conf['Next Gallery Image']:
               return Gallery.cb.next;
-            case 'Enter':
+            case Conf['Advance Gallery']:
               return Gallery.cb.advance;
-            case 'Left':
-            case '':
+            case Conf['Previous Gallery Image']:
               return Gallery.cb.prev;
             case Conf['Pause']:
               return Gallery.cb.pause;
@@ -12561,6 +13092,9 @@ ImageCommon = (function() {
       message.textContent = 'Error: Corrupt or unplayable video';
       return true;
     },
+    isFromArchive: function(file) {
+      return !ImageHost.test(file.src.split('/')[2]);
+    },
     error: function(file, post, delay, cb) {
       var URL, redirect, src, timeoutID;
       src = post.file.url.split('/');
@@ -12571,7 +13105,7 @@ ImageCommon = (function() {
       if (!(Conf['404 Redirect'] && URL && Redirect.securityCheck(URL))) {
         URL = null;
       }
-      if ((post.isDead || post.file.isDead) && file.src.split('/')[2] === 'i.4cdn.org') {
+      if ((post.isDead || post.file.isDead) && !ImageCommon.isFromArchive(file)) {
         return cb(URL);
       }
       if (delay != null) {
@@ -12583,14 +13117,14 @@ ImageCommon = (function() {
         return;
       }
       redirect = function() {
-        if (file.src.split('/')[2] === 'i.4cdn.org') {
+        if (!ImageCommon.isFromArchive(file)) {
           if (delay != null) {
             clearTimeout(timeoutID);
           }
           return cb(URL);
         }
       };
-      return $.ajax("//a.4cdn.org/" + post.board + "/thread/" + post.thread + ".json", {
+      return $.ajax(location.protocol + "//a.4cdn.org/" + post.board + "/thread/" + post.thread + ".json", {
         onload: function() {
           var i, len, postObj, ref;
           if (this.status === 404) {
@@ -12716,7 +13250,7 @@ ImageExpand = (function() {
     cb: {
       toggle: function(e) {
         var file, post, ref;
-        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+        if ($.modifiedClick(e)) {
           return;
         }
         post = Get.postFromNode(this);
@@ -13013,7 +13547,7 @@ ImageExpand = (function() {
       if (ImageCommon.decodeError(this, post)) {
         return ImageExpand.contract(post);
       }
-      if (this.src.split('/')[2] !== 'i.4cdn.org') {
+      if (ImageCommon.isFromArchive(this)) {
         return ImageExpand.contract(post);
       }
       return ImageCommon.error(this, post, 10 * $.SECOND, function(URL) {
@@ -13066,6 +13600,63 @@ ImageExpand = (function() {
   };
 
   return ImageExpand;
+
+}).call(this);
+
+ImageHost = (function() {
+  var ImageHost;
+
+  ImageHost = {
+    init: function() {
+      var ref;
+      if (!((this.useFaster = Conf['Use Faster Image Host']) && ((ref = g.VIEW) === 'index' || ref === 'thread'))) {
+        return;
+      }
+      return Callbacks.Post.push({
+        name: 'Image Host Rewriting',
+        cb: this.node
+      });
+    },
+    host: function() {
+      return 'i.4cdn.org';
+    },
+    flashHost: function() {
+      return 'i.4cdn.org';
+    },
+    thumbHost: function() {
+      return 'i.4cdn.org';
+    },
+    test: function(hostname) {
+      return hostname === 'i.4cdn.org' || ImageHost.regex.test(hostname);
+    },
+    regex: /^is\d*\.4chan\.org$/,
+    node: function() {
+      var host;
+      if (this.isClone) {
+        return;
+      }
+      host = ImageHost.host();
+      if (this.file && ImageHost.regex.test(this.file.url.split('/')[2])) {
+        this.file.link.hostname = host;
+        if (this.file.thumbLink) {
+          this.file.thumbLink.hostname = host;
+        }
+        this.file.url = this.file.link.href;
+      }
+      return ImageHost.fixLinks($$('a', this.nodes.comment));
+    },
+    fixLinks: function(links) {
+      var i, len, link;
+      for (i = 0, len = links.length; i < len; i++) {
+        link = links[i];
+        if (ImageHost.regex.test(link.hostname)) {
+          link.hostname = ImageHost.host();
+        }
+      }
+    }
+  };
+
+  return ImageHost;
 
 }).call(this);
 
@@ -13204,8 +13795,8 @@ ImageLoader = (function() {
 
   ImageLoader = {
     init: function() {
-      var prefetch, ref;
-      if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && g.BOARD.ID !== 'f')) {
+      var prefetch, ref, ref1;
+      if (!(((ref = g.VIEW) === 'index' || ref === 'thread' || ref === 'archive') && g.BOARD.ID !== 'f')) {
         return;
       }
       if (!(Conf['Image Prefetching'] || Conf['Replace JPG'] || Conf['Replace PNG'] || Conf['Replace GIF'] || Conf['Replace WEBM'])) {
@@ -13221,7 +13812,7 @@ ImageLoader = (function() {
       if (Conf['Replace WEBM']) {
         $.on(d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', this.playVideos);
       }
-      if (!Conf['Image Prefetching']) {
+      if (!(Conf['Image Prefetching'] && ((ref1 = g.VIEW) === 'index' || ref1 === 'thread'))) {
         return;
       }
       prefetch = $.el('label', {
@@ -13457,7 +14048,7 @@ RevealSpoilers = (function() {
   RevealSpoilers = {
     init: function() {
       var ref;
-      if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Reveal Spoiler Thumbnails'])) {
+      if (!(((ref = g.VIEW) === 'index' || ref === 'thread' || ref === 'archive') && Conf['Reveal Spoiler Thumbnails'])) {
         return;
       }
       return Callbacks.Post.push({
@@ -13491,7 +14082,7 @@ Sauce = (function() {
 
   Sauce = {
     init: function() {
-      var err, j, len, link, links, ref, ref1;
+      var j, len, link, linkData, links, ref, ref1;
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Sauce'])) {
         return;
       }
@@ -13499,12 +14090,8 @@ Sauce = (function() {
       ref1 = Conf['sauces'].split('\n');
       for (j = 0, len = ref1.length; j < len; j++) {
         link = ref1[j];
-        try {
-          if (link[0] !== '#') {
-            links.push(link.trim());
-          }
-        } catch (_error) {
-          err = _error;
+        if (link[0] !== '#' && (linkData = this.parseLink(link))) {
+          links.push(linkData);
         }
       }
       if (!links.length) {
@@ -13520,13 +14107,13 @@ Sauce = (function() {
         cb: this.node
       });
     },
-    createSauceLink: function(link, post) {
-      var a, ext, i, j, key, len, m, part, parts, ref, ref1, ref2, skip;
+    parseLink: function(link) {
+      var err, i, j, len, m, part, parts, ref, ref1, regexp;
       if (!(link = link.trim())) {
         return null;
       }
       parts = {};
-      ref = link.split(/;(?=(?:text|boards|types|sandbox):?)/);
+      ref = link.split(/;(?=(?:text|boards|types|regexp|sandbox):?)/);
       for (i = j = 0, len = ref.length; j < len; i = ++j) {
         part = ref[i];
         if (i === 0) {
@@ -13537,15 +14124,52 @@ Sauce = (function() {
         }
       }
       parts['text'] || (parts['text'] = ((ref1 = parts['url'].match(/(\w+)\.\w+\//)) != null ? ref1[1] : void 0) || '?');
+      if ('regexp' in parts) {
+        try {
+          if ((regexp = parts['regexp'].match(/^\/(.*)\/(\w*)$/))) {
+            parts['regexp'] = RegExp(regexp[1], regexp[2]);
+          } else {
+            parts['regexp'] = RegExp(parts['regexp']);
+          }
+        } catch (_error) {
+          err = _error;
+          new Notice('warning', [$.tn("Invalid regexp for Sauce link:"), $.el('br'), $.tn(link), $.el('br'), $.tn(err.message)], 60);
+          return null;
+        }
+      }
+      return parts;
+    },
+    createSauceLink: function(link, post) {
+      var a, ext, j, key, len, matches, missing, parts, ref, ref1;
       ext = post.file.url.match(/[^.]*$/)[0];
-      skip = false;
-      for (key in parts) {
-        parts[key] = parts[key].replace(/%(T?URL|IMG|[sh]?MD5|board|name|%|semi)/g, function(_, parameter) {
+      parts = {};
+      $.extend(parts, link);
+      if (!(!parts['boards'] || (ref = post.board.ID, indexOf.call(parts['boards'].split(','), ref) >= 0))) {
+        return null;
+      }
+      if (!(!parts['types'] || indexOf.call(parts['types'].split(','), ext) >= 0)) {
+        return null;
+      }
+      if (!(!parts['regexp'] || (matches = post.file.name.match(parts['regexp'])))) {
+        return null;
+      }
+      missing = [];
+      ref1 = ['url', 'text'];
+      for (j = 0, len = ref1.length; j < len; j++) {
+        key = ref1[j];
+        parts[key] = parts[key].replace(/%(T?URL|IMG|[sh]?MD5|board|name|%|semi|\$\d+)/g, function(orig, parameter) {
           var type;
-          type = Sauce.formatters[parameter](post, ext);
-          if (type == null) {
-            skip = true;
-            return '';
+          if (parameter[0] === '$') {
+            if (!matches) {
+              return orig;
+            }
+            type = matches[parameter.slice(1)];
+          } else {
+            type = Sauce.formatters[parameter](post, ext);
+            if (type == null) {
+              missing.push(parameter);
+              return '';
+            }
           }
           if (key === 'url' && (parameter !== '%' && parameter !== 'semi')) {
             if (/^javascript:/i.test(parts['url'])) {
@@ -13556,13 +14180,14 @@ Sauce = (function() {
           return type;
         });
       }
-      if (skip) {
-        return null;
+      if (post.board.ID === 'f' && missing.length && !missing.filter(function(x) {
+        return !/^.?MD5$/.test(x);
+      }).length) {
+        a = Sauce.link.cloneNode(false);
+        a.dataset.skip = '1';
+        return a;
       }
-      if (!(!parts['boards'] || (ref2 = post.board.ID, indexOf.call(parts['boards'].split(','), ref2) >= 0))) {
-        return null;
-      }
-      if (!(!parts['types'] || indexOf.call(parts['types'].split(','), ext) >= 0)) {
+      if (missing.length) {
         return null;
       }
       a = Sauce.link.cloneNode(false);
@@ -13583,14 +14208,15 @@ Sauce = (function() {
       ref = Sauce.links;
       for (j = 0, len = ref.length; j < len; j++) {
         link = ref[j];
-        if (!(node = Sauce.createSauceLink(link, this))) {
-          node = Sauce.link.cloneNode(false);
-          skipped.push([link, node]);
+        if ((node = Sauce.createSauceLink(link, this))) {
+          nodes.push($.tn(' '), node);
+          if (node.dataset.skip) {
+            skipped.push([link, node]);
+          }
         }
-        nodes.push($.tn(' '), node);
       }
       $.add(this.file.text, nodes);
-      if (this.board.ID === 'f') {
+      if (skipped.length) {
         observer = new MutationObserver((function(_this) {
           return function() {
             var k, len1, node2, ref1;
@@ -13696,7 +14322,7 @@ Volume = (function() {
           cb: this.node
         });
       }
-      if ((ref1 = g.BOARD.ID) !== 'gif' && ref1 !== 'wsg') {
+      if ((ref1 = g.BOARD.ID) !== 'gif' && ref1 !== 'wsg' && ref1 !== 'r' && ref1 !== 'wsr') {
         return;
       }
       if (Conf['Mouse Wheel Volume']) {
@@ -13759,7 +14385,7 @@ Volume = (function() {
         return;
       }
       $.on(this.file.thumb, 'wheel', Volume.wheel.bind(Header.hover));
-      return $.on($('a', this.file.text), 'wheel', Volume.wheel.bind(this.file.thumbLink));
+      return $.on($('.file-info', this.file.text) || this.file.link, 'wheel', Volume.wheel.bind(this.file.thumbLink));
     },
     catalogNode: function() {
       var file;
@@ -13797,34 +14423,49 @@ Volume = (function() {
 }).call(this);
 
 Embedding = (function() {
-  var Embedding;
+  var Embedding,
+    slice = [].slice;
 
   Embedding = {
     init: function() {
-      var j, len, ref, type;
-      if (!(Conf['Embedding'] || Conf['Link Title'])) {
+      var j, len, ref, ref1, type;
+      if (!(((ref = g.VIEW) === 'index' || ref === 'thread' || ref === 'archive') && Conf['Linkify'] && (Conf['Embedding'] || Conf['Link Title'] || Conf['Cover Preview']))) {
         return;
       }
       this.types = {};
-      ref = this.ordered_types;
-      for (j = 0, len = ref.length; j < len; j++) {
-        type = ref[j];
+      ref1 = this.ordered_types;
+      for (j = 0, len = ref1.length; j < len; j++) {
+        type = ref1[j];
         this.types[type.key] = type;
       }
-      if (Conf['Embedding']) {
-        this.dialog = UI.dialog('embedding', 'top: 50px; right: 0px;', {
+      if (Conf['Embedding'] && g.VIEW !== 'archive') {
+        this.dialog = UI.dialog('embedding', {
           innerHTML: "<div><div class=\"move\"></div><a href=\"javascript:;\" class=\"jump\" title=\"Jump to post\">→</a><a href=\"javascript:;\" class=\"close\" title=\"Close\">×</a></div><div id=\"media-embed\"><div></div></div>"
         });
         this.media = $('#media-embed', this.dialog);
         $.one(d, '4chanXInitFinished', this.ready);
+        $.on(d, 'IndexRefreshInternal', function() {
+          return g.posts.forEach(function(post) {
+            var embed, k, l, len1, len2, ref2, ref3;
+            ref2 = [post].concat(slice.call(post.clones));
+            for (k = 0, len1 = ref2.length; k < len1; k++) {
+              post = ref2[k];
+              ref3 = post.nodes.embedlinks;
+              for (l = 0, len2 = ref3.length; l < len2; l++) {
+                embed = ref3[l];
+                Embedding.cb.catalogRemove.call(embed);
+              }
+            }
+          });
+        });
       }
       if (Conf['Link Title']) {
         return $.on(d, '4chanXInitFinished PostsInserted', function() {
-          var key, ref1, ref2, service;
-          ref1 = Embedding.types;
-          for (key in ref1) {
-            service = ref1[key];
-            if ((ref2 = service.title) != null ? ref2.batchSize : void 0) {
+          var key, ref2, ref3, service;
+          ref2 = Embedding.types;
+          for (key in ref2) {
+            service = ref2[key];
+            if ((ref3 = service.title) != null ? ref3.batchSize : void 0) {
               Embedding.flushTitles(service.title);
             }
           }
@@ -13832,22 +14473,33 @@ Embedding = (function() {
       }
     },
     events: function(post) {
-      var el, i, items;
-      if (!Conf['Embedding']) {
+      var data, el, i, items;
+      if (g.VIEW === 'archive') {
         return;
       }
-      i = 0;
-      items = $$('.embedder', post.nodes.comment);
-      while (el = items[i++]) {
-        $.on(el, 'click', Embedding.cb.click);
-        if ($.hasClass(el, 'embedded')) {
-          Embedding.cb.toggle.call(el);
+      if (Conf['Embedding']) {
+        i = 0;
+        items = post.nodes.embedlinks = $$('.embedder', post.nodes.comment);
+        while (el = items[i++]) {
+          $.on(el, 'click', Embedding.cb.click);
+          if ($.hasClass(el, 'embedded')) {
+            Embedding.cb.toggle.call(el);
+          }
+        }
+      }
+      if (Conf['Cover Preview']) {
+        i = 0;
+        items = $$('.linkify', post.nodes.comment);
+        while (el = items[i++]) {
+          if ((data = Embedding.services(el))) {
+            Embedding.preview(data);
+          }
         }
       }
     },
     process: function(link, post) {
       var data;
-      if (!(Conf['Embedding'] || Conf['Link Title'])) {
+      if (!(Conf['Embedding'] || Conf['Link Title'] || Conf['Cover Preview'])) {
         return;
       }
       if ($.x('ancestor::pre', link)) {
@@ -13855,11 +14507,14 @@ Embedding = (function() {
       }
       if (data = Embedding.services(link)) {
         data.post = post;
-        if (Conf['Embedding']) {
+        if (Conf['Embedding'] && g.VIEW !== 'archive') {
           Embedding.embed(data);
         }
         if (Conf['Link Title']) {
-          return Embedding.title(data);
+          Embedding.title(data);
+        }
+        if (Conf['Cover Preview'] && g.VIEW !== 'archive') {
+          return Embedding.preview(data);
         }
       }
     },
@@ -13880,12 +14535,9 @@ Embedding = (function() {
       }
     },
     embed: function(data) {
-      var autoEmbed, embed, href, key, link, name, options, post, ref, uid, value;
+      var embed, href, key, link, name, options, post, ref, uid, value;
       key = data.key, uid = data.uid, options = data.options, link = data.link, post = data.post;
       href = link.href;
-      if (Embedding.types[key].httpOnly && location.protocol !== 'http:') {
-        return;
-      }
       $.addClass(link, key.toLowerCase());
       embed = $.el('a', {
         className: 'embedder',
@@ -13905,14 +14557,13 @@ Embedding = (function() {
       }
       $.on(embed, 'click', Embedding.cb.click);
       $.after(link, [$.tn(' '), embed]);
+      post.nodes.embedlinks.push(embed);
       if (Conf['Auto-embed'] && !Conf['Floating Embeds'] && !post.isFetchedQuote) {
-        autoEmbed = function() {
-          if (doc.contains(embed) && !$.hasClass(doc, 'catalog-mode')) {
-            $.off(d, 'PostsInserted', autoEmbed);
-            return Embedding.cb.toggle.call(embed);
-          }
-        };
-        return $.on(d, 'PostsInserted', autoEmbed);
+        if ($.hasClass(doc, 'catalog-mode')) {
+          return $.addClass(embed, 'embed-removed');
+        } else {
+          return Embedding.cb.toggle.call(embed);
+        }
       }
     },
     ready: function() {
@@ -13940,12 +14591,12 @@ Embedding = (function() {
       if (Embedding.dragEmbed.mouseup) {
         $.off(d, 'mouseup', Embedding.dragEmbed);
         Embedding.dragEmbed.mouseup = false;
-        style.visibility = '';
+        style.pointerEvents = '';
         return;
       }
       $.on(d, 'mouseup', Embedding.dragEmbed);
       Embedding.dragEmbed.mouseup = true;
-      return style.visibility = 'hidden';
+      return style.pointerEvents = 'none';
     },
     title: function(data) {
       var key, link, options, post, service, uid;
@@ -14004,11 +14655,35 @@ Embedding = (function() {
         }
       }
     },
+    preview: function(data) {
+      var key, link, service, uid;
+      key = data.key, uid = data.uid, link = data.link;
+      if (!(service = Embedding.types[key].preview)) {
+        return;
+      }
+      return $.on(link, 'mouseover', function(e) {
+        var el, height, src;
+        src = service.url(uid);
+        height = service.height;
+        el = $.el('img', {
+          src: src,
+          id: 'ihover'
+        });
+        $.add(d.body, el);
+        return UI.hover({
+          root: link,
+          el: el,
+          latestEvent: e,
+          endEvents: 'mouseout click',
+          height: height
+        });
+      });
+    },
     cb: {
       click: function(e) {
         var div;
         e.preventDefault();
-        if (Conf['Floating Embeds'] || $.hasClass(doc, 'catalog-mode')) {
+        if (!$.hasClass(this, 'embedded') && (Conf['Floating Embeds'] || $.hasClass(doc, 'catalog-mode'))) {
           if (!(div = Embedding.media.firstChild)) {
             return;
           }
@@ -14035,6 +14710,14 @@ Embedding = (function() {
         $.add(container, el = (type = Embedding.types[a.dataset.key]).el(a));
         el.style.cssText = type.style != null ? type.style : 'border: none; width: 640px; height: 360px;';
         return container;
+      },
+      catalogRemove: function() {
+        var isCatalog;
+        isCatalog = $.hasClass(doc, 'catalog-mode');
+        if ((isCatalog && $.hasClass(this, 'embedded')) || (!isCatalog && $.hasClass(this, 'embed-removed'))) {
+          Embedding.cb.toggle.call(this);
+          return $.toggleClass(this, 'embed-removed');
+        }
       },
       title: function(req, data) {
         var base1, j, k, key, len, len1, link, link2, options, post, post2, ref, ref1, service, status, text, uid;
@@ -14105,7 +14788,7 @@ Embedding = (function() {
             controls: true,
             preload: 'auto',
             src: a.dataset.href,
-            loop: /^https?:\/\/i\.4cdn\.org\//.test(a.dataset.href)
+            loop: ImageHost.test(a.dataset.href.split('/')[2])
           });
           $.on(el, 'loadedmetadata', function() {
             if (el.videoHeight === 0 && el.parentNode) {
@@ -14118,17 +14801,20 @@ Embedding = (function() {
         }
       }, {
         key: 'Clyp',
-        regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w+)/,
-        style: '',
+        regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w{8})/,
+        style: 'border: 0; width: 640px; height: 160px;',
         el: function(a) {
-          var el, type;
-          el = $.el('audio', {
-            controls: true,
-            preload: 'auto'
+          return $.el('iframe', {
+            src: "https://clyp.it/" + a.dataset.uid + "/widget"
           });
-          type = el.canPlayType('audio/ogg') ? 'ogg' : 'mp3';
-          el.src = "https://clyp.it/" + a.dataset.uid + "." + type;
-          return el;
+        },
+        title: {
+          api: function(uid) {
+            return "https://api.clyp.it/" + uid;
+          },
+          text: function(_) {
+            return _.Title;
+          }
         }
       }, {
         key: 'Dailymotion',
@@ -14149,6 +14835,12 @@ Embedding = (function() {
           text: function(_) {
             return _.title;
           }
+        },
+        preview: {
+          url: function(uid) {
+            return "https://www.dailymotion.com/thumbnail/video/" + uid;
+          },
+          height: 240
         }
       }, {
         key: 'Gfycat',
@@ -14162,16 +14854,32 @@ Embedding = (function() {
       }, {
         key: 'Gist',
         regExp: /^\w+:\/\/gist\.github\.com\/[\w\-]+\/(\w+)/,
-        el: function(a) {
-          var content, el;
-          el = $.el('iframe');
-          el.setAttribute('sandbox', 'allow-scripts');
-          content = {
-            innerHTML: "<html><head><title>" + E(a.dataset.uid) + "</title></head><body><script src=\"https://gist.github.com/" + E(a.dataset.uid) + ".js\"></script></body></html>"
+        style: '',
+        el: (function() {
+          var counter;
+          counter = 0;
+          return function(a) {
+            var el;
+            el = $.el('pre', {
+              hidden: true,
+              id: "gist-embed-" + (counter++)
+            });
+            $.ajax("https://api.github.com/gists/" + a.dataset.uid, {
+              responseType: 'json',
+              onload: function() {
+                el.textContent = Object.values(this.response.files)[0].content;
+                el.className = 'prettyprint';
+                $.global(function() {
+                  return typeof window.prettyPrint === "function" ? window.prettyPrint((function() {}), document.getElementById(document.currentScript.dataset.id).parentNode) : void 0;
+                }, {
+                  id: el.id
+                });
+                return el.hidden = false;
+              }
+            });
+            return el;
           };
-          el.src = E.url(content);
-          return el;
-        },
+        })(),
         title: {
           api: function(uid) {
             return "https://api.github.com/gists/" + uid;
@@ -14197,18 +14905,17 @@ Embedding = (function() {
       }, {
         key: 'LiveLeak',
         regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*i=(\w+)/,
-        httpOnly: true,
         el: function(a) {
           var el;
           el = $.el('iframe', {
-            src: "http://www.liveleak.com/ll_embed?i=" + a.dataset.uid
+            src: "https://www.liveleak.com/ll_embed?i=" + a.dataset.uid
           });
           el.setAttribute("allowfullscreen", "true");
           return el;
         }
       }, {
         key: 'Loopvid',
-        regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|m2|pc|1c|pi|wl|ko|gc)\/[\w\-\/]+(?:,[\w\-\/]+)*|fc\/\w+\/\d+|https?:\/\/.+)/,
+        regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|m2|pc|1c|pi|ni|wl|ko|gc)\/[\w\-\/]+(?:,[\w\-\/]+)*|fc\/\w+\/\d+|https?:\/\/.+)/,
         style: 'max-width: 80vw; max-height: 80vh;',
         el: function(a) {
           var _, base, el, host, j, k, l, len, len1, len2, name, names, ref, ref1, type, types, url, urls;
@@ -14247,9 +14954,9 @@ Embedding = (function() {
                   case 'pf':
                     return ["https://kastden.org/_loopvid_media/pf/" + base, "https://web.archive.org/web/2/http://a.pomf.se/" + base];
                   case 'kd':
-                    return ["http://kastden.org/loopvid/" + base];
+                    return ["https://kastden.org/loopvid/" + base];
                   case 'lv':
-                    return ["http://lv.kastden.org/" + base];
+                    return ["https://lv.kastden.org/" + base];
                   case 'gd':
                     return ["https://docs.google.com/uc?export=download&id=" + base];
                   case 'gh':
@@ -14259,7 +14966,7 @@ Embedding = (function() {
                   case 'dx':
                     return ["https://dl.dropboxusercontent.com/" + base];
                   case 'nn':
-                    return ["http://naenara.eu/loopvids/" + base];
+                    return ["https://kastden.org/_loopvid_media/nn/" + base];
                   case 'cp':
                     return ["https://copy.com/" + base];
                   case 'wu':
@@ -14267,7 +14974,7 @@ Embedding = (function() {
                   case 'ig':
                     return ["https://i.imgur.com/" + base];
                   case 'ky':
-                    return ["https://kiyo.me/" + base];
+                    return ["https://kastden.org/_loopvid_media/ky/" + base];
                   case 'mf':
                     return ["https://kastden.org/_loopvid_media/mf/" + base, "https://web.archive.org/web/2/https://d.maxfile.ro/" + base];
                   case 'm2':
@@ -14278,12 +14985,14 @@ Embedding = (function() {
                     return ["http://b.1339.cf/" + base];
                   case 'pi':
                     return ["https://u.pomf.is/" + base];
+                  case 'ni':
+                    return ["https://u.nya.is/" + base];
                   case 'wl':
                     return ["http://webm.land/media/" + base];
                   case 'ko':
                     return ["https://kordy.kastden.org/loopvid/" + base];
                   case 'fc':
-                    return ["//i.4cdn.org/" + base + ".webm"];
+                    return ["//" + (ImageHost.host()) + "/" + base + ".webm"];
                   case 'gc':
                     return ["https://" + type + ".gfycat.com/" + name + ".webm"];
                 }
@@ -14300,13 +15009,13 @@ Embedding = (function() {
         }
       }, {
         key: 'Openings.moe',
-        regExp: /^\w+:\/\/openings.moe\/\?video=([^&=]+\.webm)/,
+        regExp: /^\w+:\/\/openings.moe\/\?video=([^.&=]+)/,
         style: 'max-width: 80vw; max-height: 80vh;',
         el: function(a) {
           return $.el('video', {
             controls: true,
             preload: 'auto',
-            src: "//openings.moe/video/" + a.dataset.uid,
+            src: "//openings.moe/video/" + a.dataset.uid + ".webm",
             loop: true
           });
         }
@@ -14330,7 +15039,7 @@ Embedding = (function() {
         },
         title: {
           api: function(uid) {
-            return "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F" + (encodeURIComponent(uid));
+            return location.protocol + "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F" + (encodeURIComponent(uid));
           },
           text: function(_) {
             return _.title;
@@ -14363,11 +15072,33 @@ Embedding = (function() {
         }
       }, {
         key: 'Twitter',
-        regExp: /^\w+:\/\/(?:www\.)?twitter\.com\/(\w+\/status\/\d+)/,
+        regExp: /^\w+:\/\/(?:www\.|mobile\.)?twitter\.com\/(\w+\/status\/\d+)/,
+        style: 'border: none; width: 550px; height: 250px; overflow: hidden; resize: both;',
         el: function(a) {
-          return $.el('iframe', {
-            src: "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid
+          var cont, el, onMessage;
+          el = $.el('iframe');
+          $.on(el, 'load', function() {
+            return this.contentWindow.postMessage({
+              element: 't',
+              query: 'height'
+            }, 'https://twitframe.com');
           });
+          onMessage = function(e) {
+            if (e.source === el.contentWindow && e.origin === 'https://twitframe.com') {
+              $.off(window, 'message', onMessage);
+              return (cont || el).style.height = (+$.minmax(e.data.height, 250, 0.8 * doc.clientHeight)) + "px";
+            }
+          };
+          $.on(window, 'message', onMessage);
+          el.src = "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid;
+          if ($.engine === 'gecko') {
+            el.style.cssText = 'border: none; width: 100%; height: 100%;';
+            cont = $.el('div');
+            $.add(cont, el);
+            return cont;
+          } else {
+            return el;
+          }
         }
       }, {
         key: 'Vimeo',
@@ -14425,7 +15156,7 @@ Embedding = (function() {
             start = 3600 * start.match(/(\d+)h/)[1] + 60 * start.match(/(\d+)m/)[1] + 1 * start.match(/(\d+)s/)[1];
           }
           el = $.el('iframe', {
-            src: "//www.youtube.com/embed/" + a.dataset.uid + "?wmode=opaque" + (start ? '&start=' + start : '')
+            src: "//www.youtube.com/embed/" + a.dataset.uid + "?rel=0&wmode=opaque" + (start ? '&start=' + start : '')
           });
           el.setAttribute("allowfullscreen", "true");
           return el;
@@ -14449,6 +15180,12 @@ Embedding = (function() {
             }
             return 'Not Found';
           }
+        },
+        preview: {
+          url: function(uid) {
+            return "https://img.youtube.com/vi/" + uid + "/0.jpg";
+          },
+          height: 360
         }
       }
     ]
@@ -14464,7 +15201,7 @@ Linkify = (function() {
   Linkify = {
     init: function() {
       var ref;
-      if (((ref = g.VIEW) !== 'index' && ref !== 'thread') || !Conf['Linkify']) {
+      if (((ref = g.VIEW) !== 'index' && ref !== 'thread' && ref !== 'archive') || !Conf['Linkify']) {
         return;
       }
       if (Conf['Comment Expansion']) {
@@ -14484,13 +15221,19 @@ Linkify = (function() {
       if (!Linkify.regString.test(this.info.comment)) {
         return;
       }
-      ref = $$('a[href^="http://i.4cdn.org/"], a[href^="https://i.4cdn.org/"], a[href^="http://is.4chan.org/"], a[href^="https://is.4chan.org/"]', this.nodes.comment);
+      ref = $$('a', this.nodes.comment);
       for (j = 0, len = ref.length; j < len; j++) {
         link = ref[j];
+        if (!(ImageHost.test(link.hostname))) {
+          continue;
+        }
         $.addClass(link, 'linkify');
         Embedding.process(link, this);
       }
       links = Linkify.process(this.nodes.comment);
+      if (ImageHost.useFaster) {
+        ImageHost.fixLinks(links);
+      }
       for (k = 0, len1 = links.length; k < len1; k++) {
         link = links[k];
         Embedding.process(link, this);
@@ -14521,6 +15264,9 @@ Linkify = (function() {
                 } else {
                   break;
                 }
+              }
+              if (saved.parentElement.nodeName === "A" && !Linkify.regString.test(word)) {
+                break;
               }
               endNode = saved;
               data = saved.data;
@@ -14628,7 +15374,7 @@ ArchiveLink = (function() {
       });
       entry = {
         el: div,
-        order: 90,
+        order: 60,
         open: function(arg) {
           var ID, board, thread;
           ID = arg.ID, thread = arg.thread, board = arg.board;
@@ -14663,14 +15409,15 @@ ArchiveLink = (function() {
         });
         return true;
       } : function(post) {
-        var value;
-        value = type === 'country' ? post.info.flagCode : Filter[type](post);
+        var typeParam, value;
+        typeParam = type === 'country' && post.info.flagCodeTroll ? 'tag' : type;
+        value = type === 'country' ? post.info.flagCode || post.info.flagCodeTroll : Filter[type](post);
         if (!value) {
           return false;
         }
         el.href = Redirect.to('search', {
           boardID: post.board.ID,
-          type: type,
+          type: typeParam,
           value: value,
           isSearch: true
         });
@@ -14684,6 +15431,49 @@ ArchiveLink = (function() {
   };
 
   return ArchiveLink;
+
+}).call(this);
+
+CopyTextLink = (function() {
+  var CopyTextLink;
+
+  CopyTextLink = {
+    init: function() {
+      var a, ref;
+      if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Menu'] && Conf['Copy Text Link'])) {
+        return;
+      }
+      a = $.el('a', {
+        className: 'copy-text-link',
+        href: 'javascript:;',
+        textContent: 'Copy Text'
+      });
+      $.on(a, 'click', CopyTextLink.copy);
+      return Menu.menu.addEntry({
+        el: a,
+        order: 12,
+        open: function(post) {
+          CopyTextLink.text = (post.origin || post).commentOrig();
+          return true;
+        }
+      });
+    },
+    copy: function() {
+      var el;
+      el = $.el('textarea', {
+        className: 'copy-text-element',
+        value: CopyTextLink.text
+      });
+      $.add(d.body, el);
+      el.select();
+      try {
+        d.execCommand('copy');
+      } catch (_error) {}
+      return $.rm(el);
+    }
+  };
+
+  return CopyTextLink;
 
 }).call(this);
 
@@ -14981,26 +15771,22 @@ ReportLink = (function() {
       }
       a = $.el('a', {
         className: 'report-link',
-        href: 'javascript:;'
+        href: 'javascript:;',
+        textContent: 'Report'
       });
       $.on(a, 'click', ReportLink.report);
       return Menu.menu.addEntry({
         el: a,
         order: 10,
         open: function(post) {
-          if (!(post.isDead || (post.thread.isDead && !post.thread.isArchived))) {
-            a.textContent = 'Report';
-            ReportLink.url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
-            if ((Conf['Use Recaptcha v1 in Reports'] && Main.jsEnabled) || d.cookie.indexOf('pass_enabled=1') >= 0) {
-              ReportLink.url += '&altc=1';
-              ReportLink.dims = 'width=350,height=275';
-            } else {
-              ReportLink.dims = 'width=400,height=550';
-            }
+          ReportLink.url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
+          if ((Conf['Use Recaptcha v1 in Reports'] && Main.jsEnabled) || d.cookie.indexOf('pass_enabled=1') >= 0) {
+            ReportLink.url += '&altc=1';
+            ReportLink.dims = 'width=350,height=275';
           } else {
-            ReportLink.url = '';
+            ReportLink.dims = 'width=400,height=550';
           }
-          return !!ReportLink.url;
+          return true;
         }
       });
     },
@@ -15280,7 +16066,7 @@ CatalogLinks = (function() {
           cb: this.node
         });
       }
-      if (Conf['Catalog Links']) {
+      if ((this.enabled = Conf['Catalog Links'])) {
         CatalogLinks.el = el = UI.checkbox('Header catalog links', 'Catalog Links');
         el.id = 'toggleCatalog';
         input = $('input', el);
@@ -15302,32 +16088,34 @@ CatalogLinks = (function() {
         }
       }
     },
-    initBoardList: function() {
-      if (!CatalogLinks.el) {
-        return;
-      }
-      return CatalogLinks.set(Conf['Header catalog links']);
-    },
     toggle: function() {
       $.event('CloseMenu');
       $.set('Header catalog links', this.checked);
       return CatalogLinks.set(this.checked);
     },
     set: function(useCatalog) {
-      var a, board, i, len, ref, ref1;
-      ref = $$('a:not([data-only])', Header.boardList).concat($$('a', Header.bottomBoardList));
-      for (i = 0, len = ref.length; i < len; i++) {
-        a = ref[i];
-        if (((ref1 = a.hostname) !== 'boards.4chan.org' && ref1 !== 'catalog.neet.tv') || !(board = a.pathname.split('/')[1]) || (board === 'f' || board === 'status' || board === '4chan') || a.pathname.split('/')[2] === 'archive' || $.hasClass(a, 'external')) {
+      Conf['Header catalog links'] = useCatalog;
+      CatalogLinks.setLinks(Header.boardList);
+      CatalogLinks.setLinks(Header.bottomBoardList);
+      CatalogLinks.el.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
+      return $('input', CatalogLinks.el).checked = useCatalog;
+    },
+    setLinks: function(list) {
+      var a, board, i, len, ref, ref1, ref2;
+      if (!(((ref = CatalogLinks.enabled) != null ? ref : Conf['Catalog Links']) && list)) {
+        return;
+      }
+      ref1 = $$('a:not([data-only])', list);
+      for (i = 0, len = ref1.length; i < len; i++) {
+        a = ref1[i];
+        if (((ref2 = a.hostname) !== 'boards.4chan.org' && ref2 !== 'catalog.neet.tv') || !(board = a.pathname.split('/')[1]) || (board === 'f' || board === 'status' || board === '4chan') || a.pathname.split('/')[2] === 'archive' || $.hasClass(a, 'external')) {
           continue;
         }
-        a.href = useCatalog ? CatalogLinks.catalog(board) : "/" + board + "/";
+        a.href = Conf['Header catalog links'] ? CatalogLinks.catalog(board) : "/" + board + "/";
         if (a.dataset.indexOptions && a.hostname === 'boards.4chan.org' && a.pathname.split('/')[2] === '') {
           a.href += (a.hash ? '/' : '#') + a.dataset.indexOptions;
         }
       }
-      CatalogLinks.el.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
-      return $('input', CatalogLinks.el).checked = useCatalog;
     },
     catalog: function(board) {
       if (board == null) {
@@ -15437,7 +16225,7 @@ ExpandComment = (function() {
         return;
       }
       a.textContent = "Post No." + post + " Loading...";
-      return $.cache("//a.4cdn.org" + (a.pathname.split(/\/+/).splice(0, 4).join('/')) + ".json", function() {
+      return $.cache(location.protocol + "//a.4cdn.org" + (a.pathname.split(/\/+/).splice(0, 4).join('/')) + ".json", function() {
         return ExpandComment.parse(this, a, post);
       });
     },
@@ -15559,7 +16347,7 @@ ExpandThread = (function() {
       });
     },
     cbToggle: function(e) {
-      if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+      if ($.modifiedClick(e)) {
         return;
       }
       e.preventDefault();
@@ -15580,7 +16368,7 @@ ExpandThread = (function() {
       var status;
       ExpandThread.statuses[thread] = status = {};
       a.textContent = Build.summaryText.apply(Build, ['...'].concat(slice.call(a.textContent.match(/\d+/g))));
-      return status.req = $.cache("//a.4cdn.org/" + thread.board + "/thread/" + thread + ".json", function() {
+      return status.req = $.cache(location.protocol + "//a.4cdn.org/" + thread.board + "/thread/" + thread + ".json", function() {
         delete status.req;
         return ExpandThread.parse(this, thread, a);
       });
@@ -15605,6 +16393,7 @@ ExpandThread = (function() {
             switch (g.BOARD.ID) {
               case 'b':
               case 'vg':
+              case 'bant':
                 return 3;
               case 't':
                 return 1;
@@ -15681,7 +16470,7 @@ FileInfo = (function() {
   FileInfo = {
     init: function() {
       var ref;
-      if (((ref = g.VIEW) !== 'index' && ref !== 'thread') || !Conf['File Info Formatting']) {
+      if (((ref = g.VIEW) !== 'index' && ref !== 'thread' && ref !== 'archive') || !Conf['File Info Formatting']) {
         return;
       }
       return Callbacks.Post.push({
@@ -15690,7 +16479,7 @@ FileInfo = (function() {
       });
     },
     node: function() {
-      var a, i, info, len, oldInfo, ref;
+      var a, i, info, j, len, len1, oldInfo, ref, ref1;
       if (!this.file) {
         return;
       }
@@ -15699,6 +16488,11 @@ FileInfo = (function() {
         for (i = 0, len = ref.length; i < len; i++) {
           a = ref[i];
           $.on(a, 'click', ImageCommon.download);
+        }
+        ref1 = $$('.file-info .quick-filter-md5', this.file.text);
+        for (j = 0, len1 = ref1.length; j < len1; j++) {
+          a = ref1[j];
+          $.on(a, 'click', Filter.quickFilterMD5);
         }
         return;
       }
@@ -15714,7 +16508,7 @@ FileInfo = (function() {
       return $.prepend(this.file.text, info);
     },
     format: function(formatString, post, outputNode) {
-      var a, i, len, output, ref;
+      var a, i, j, len, len1, output, ref, ref1;
       output = [];
       formatString.replace(/%(.)|[^%]+/g, function(s, c) {
         output.push(c in FileInfo.formatters ? FileInfo.formatters[c].call(post) : {
@@ -15729,6 +16523,11 @@ FileInfo = (function() {
       for (i = 0, len = ref.length; i < len; i++) {
         a = ref[i];
         $.on(a, 'click', ImageCommon.download);
+      }
+      ref1 = $$('.quick-filter-md5', outputNode);
+      for (j = 0, len1 = ref1.length; j < len1; j++) {
+        a = ref1[j];
+        $.on(a, 'click', Filter.quickFilterMD5);
       }
     },
     formatters: {
@@ -15774,6 +16573,11 @@ FileInfo = (function() {
       d: function() {
         return {
           innerHTML: "<a href=\"" + E(this.file.url) + "\" download=\"" + E(this.file.name) + "\" class=\"fa fa-download download-button\"></a>"
+        };
+      },
+      f: function() {
+        return {
+          innerHTML: "<a href=\"javascript:;\" class=\"fa fa-times quick-filter-md5\"></a>"
         };
       },
       p: function() {
@@ -15862,7 +16666,7 @@ Fourchan = (function() {
   Fourchan = {
     init: function() {
       var ref;
-      if ((ref = g.VIEW) !== 'index' && ref !== 'thread') {
+      if ((ref = g.VIEW) !== 'index' && ref !== 'thread' && ref !== 'archive') {
         return;
       }
       if (g.BOARD.ID === 'g') {
@@ -15990,7 +16794,7 @@ IDColor = (function() {
     },
     node: function() {
       var rgb, span, style, uid;
-      if (this.isClone || !((uid = this.info.uniqueID) && (span = $('span.hand', this.nodes.uniqueID)))) {
+      if (this.isClone || !((uid = this.info.uniqueID) && (span = this.nodes.uniqueID))) {
         return;
       }
       rgb = IDColor.ids[uid] || IDColor.compute(uid);
@@ -16037,8 +16841,8 @@ IDHighlight = (function() {
     },
     uniqueID: null,
     node: function() {
-      if (this.nodes.uniqueID) {
-        $.on(this.nodes.uniqueID, 'click', IDHighlight.click(this));
+      if (this.nodes.uniqueIDRoot) {
+        $.on(this.nodes.uniqueIDRoot, 'click', IDHighlight.click(this));
       }
       if (this.nodes.capcode) {
         $.on(this.nodes.capcode, 'click', IDHighlight.click(this));
@@ -16087,7 +16891,7 @@ IDPostCount = (function() {
     },
     node: function() {
       if (this.nodes.uniqueID && this.thread === IDPostCount.thread) {
-        return $.on($('span.hand', this.nodes.uniqueID), 'mouseover', IDPostCount.count);
+        return $.on(this.nodes.uniqueID, 'mouseover', IDPostCount.count);
       }
     },
     count: function() {
@@ -16135,7 +16939,7 @@ Keybinds = (function() {
       return Conf[hotkey] = key;
     },
     keydown: function(e) {
-      var form, i, key, len, notification, notifications, op, ref, ref1, ref2, ref3, ref4, ref5, searchInput, target, thread, threadRoot;
+      var form, i, key, len, notification, notifications, op, post, ref, ref1, ref2, ref3, ref4, ref5, searchInput, target, thread, threadRoot;
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -16313,13 +17117,13 @@ Keybinds = (function() {
           Gallery.cb.toggle();
           break;
         case Conf['fappeTyme']:
-          if (!(Conf['Fappe Tyme'] && ((ref2 = g.VIEW) === 'index' || ref2 === 'thread'))) {
+          if (!((ref2 = FappeTyme.nodes) != null ? ref2.fappe : void 0)) {
             return;
           }
           FappeTyme.toggle('fappe');
           break;
         case Conf['werkTyme']:
-          if (!(Conf['Werk Tyme'] && ((ref3 = g.VIEW) === 'index' || ref3 === 'thread'))) {
+          if (!((ref3 = FappeTyme.nodes) != null ? ref3.werk : void 0)) {
             return;
           }
           FappeTyme.toggle('werk');
@@ -16328,11 +17132,11 @@ Keybinds = (function() {
           if (Conf['JSON Index'] && g.VIEW === 'index' && g.BOARD.ID !== 'f') {
             Index.userPageNav(1);
           } else {
-            window.location = "/" + g.BOARD + "/";
+            location.href = "/" + g.BOARD + "/";
           }
           break;
         case Conf['Open front page']:
-          $.open("/" + g.BOARD + "/");
+          $.open(location.origin + "/" + g.BOARD + "/");
           break;
         case Conf['Next page']:
           if (!(g.VIEW === 'index' && g.BOARD.ID !== 'f')) {
@@ -16345,7 +17149,7 @@ Keybinds = (function() {
             $('.next button', Index.pagelist).click();
           } else {
             if (form = $('.next form')) {
-              window.location = form.action;
+              location.href = form.action;
             }
           }
           break;
@@ -16360,7 +17164,7 @@ Keybinds = (function() {
             $('.prev button', Index.pagelist).click();
           } else {
             if (form = $('.prev form')) {
-              window.location = form.action;
+              location.href = form.action;
             }
           }
           break;
@@ -16376,25 +17180,25 @@ Keybinds = (function() {
           if (!(Conf['JSON Index'] && g.BOARD.ID !== 'f')) {
             return;
           }
-          window.location = g.VIEW === 'index' ? '#paged' : "/" + g.BOARD + "/#paged";
+          location.href = g.VIEW === 'index' ? '#paged' : "/" + g.BOARD + "/#paged";
           break;
         case Conf['Infinite scrolling mode']:
           if (!(Conf['JSON Index'] && g.BOARD.ID !== 'f')) {
             return;
           }
-          window.location = g.VIEW === 'index' ? '#infinite' : "/" + g.BOARD + "/#infinite";
+          location.href = g.VIEW === 'index' ? '#infinite' : "/" + g.BOARD + "/#infinite";
           break;
         case Conf['All pages mode']:
           if (!(Conf['JSON Index'] && g.BOARD.ID !== 'f')) {
             return;
           }
-          window.location = g.VIEW === 'index' ? '#all-pages' : "/" + g.BOARD + "/#all-pages";
+          location.href = g.VIEW === 'index' ? '#all-pages' : "/" + g.BOARD + "/#all-pages";
           break;
         case Conf['Open catalog']:
           if (g.BOARD.ID === 'f') {
             return;
           }
-          window.location = CatalogLinks.catalog();
+          location.href = CatalogLinks.catalog();
           break;
         case Conf['Cycle sort type']:
           if (!(Conf['JSON Index'] && g.VIEW === 'index' && g.BOARD.ID !== 'f')) {
@@ -16456,6 +17260,14 @@ Keybinds = (function() {
           }
           Header.scrollTo(threadRoot);
           ThreadHiding.toggle(thread);
+          break;
+        case Conf['Quick Filter MD5']:
+          if (!threadRoot) {
+            return;
+          }
+          post = Keybinds.post(threadRoot);
+          Keybinds.hl(+1, threadRoot);
+          Filter.quickFilterMD5.call(post);
           break;
         case Conf['Previous Post Quoting You']:
           if (!(threadRoot && QuoteYou.db)) {
@@ -16530,10 +17342,13 @@ Keybinds = (function() {
       }
       return key;
     },
+    post: function(thread) {
+      return $('.post.highlight', thread) || $('.op', thread);
+    },
     qr: function(thread) {
       QR.open();
       if (thread != null) {
-        QR.quote.call($('input', $('.post.highlight', thread) || thread));
+        QR.quote.call(Keybinds.post(thread));
       }
       return QR.nodes.com.focus();
     },
@@ -16577,8 +17392,10 @@ Keybinds = (function() {
       if (all) {
         return ImageExpand.cb.toggleAll();
       } else {
-        post = Get.postFromNode($('.post.highlight', thread) || $('.op', thread));
-        return ImageExpand.toggle(post);
+        post = Get.postFromNode(Keybinds.post(thread));
+        if (post.file) {
+          return ImageExpand.toggle(post);
+        }
       }
     },
     open: function(thread, tab) {
@@ -16588,7 +17405,7 @@ Keybinds = (function() {
       }
       url = "/" + thread.board + "/thread/" + thread;
       if (tab) {
-        return $.open(url);
+        return $.open(location.origin + url);
       } else {
         return location.href = url;
       }
@@ -16867,7 +17684,7 @@ RelativeDates = (function() {
     INTERVAL: $.MINUTE / 2,
     init: function() {
       var ref;
-      if (((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Relative Post Dates'] && !Conf['Relative Date Title'] || g.VIEW === 'index' && Conf['JSON Index'] && g.BOARD.ID !== 'f') {
+      if (((ref = g.VIEW) === 'index' || ref === 'thread' || ref === 'archive') && Conf['Relative Post Dates'] && !Conf['Relative Date Title'] || g.VIEW === 'index' && Conf['JSON Index'] && g.BOARD.ID !== 'f') {
         this.flush();
         $.on(d, 'visibilitychange ThreadUpdate', this.flush);
       }
@@ -17040,18 +17857,18 @@ Report = (function() {
     },
     ready: function() {
       $.addStyle(CSS.report);
-      if (!Conf['Use Recaptcha v1 in Reports'] && !Conf['Force Noscript Captcha'] && Main.jsEnabled) {
-        return new MutationObserver(function() {
-          Report.fit('iframe[src^="https://www.google.com/recaptcha/api2/frame"]');
-          return Report.fit('body');
-        }).observe(d.body, {
-          childList: true,
-          attributes: true,
-          subtree: true
-        });
-      } else {
-        return Report.fit('body');
+      if (Conf['Archive Report']) {
+        Report.archive();
       }
+      new MutationObserver(function() {
+        Report.fit('iframe[src^="https://www.google.com/recaptcha/api2/frame"]');
+        return Report.fit('body');
+      }).observe(d.body, {
+        childList: true,
+        attributes: true,
+        subtree: true
+      });
+      return Report.fit('body');
     },
     fit: function(selector) {
       var dy, el;
@@ -17061,6 +17878,111 @@ Report = (function() {
       dy = el.getBoundingClientRect().bottom - doc.clientHeight + 8;
       if (dy > 0) {
         return window.resizeBy(0, dy);
+      }
+    },
+    archive: function() {
+      var enabled, fieldset, form, match, message, reason, submit, types, urls;
+      if (!(urls = Redirect.report(g.BOARD.ID)).length) {
+        return;
+      }
+      form = $('form');
+      types = $.id('reportTypes');
+      message = $('h3');
+      fieldset = $.el('fieldset', {
+        id: 'archive-report',
+        hidden: true
+      }, {
+        innerHTML: "<legend><label><input id=\"archive-report-enabled\" type=\"checkbox\" checked>Report illegal content to archives</label></legend><label for=\"archive-report-reason\">Details</label><textarea id=\"archive-report-reason\">Illegal content</textarea><button id=\"archive-report-submit\" hidden>Submit</button>"
+      });
+      enabled = $('#archive-report-enabled', fieldset);
+      reason = $('#archive-report-reason', fieldset);
+      submit = $('#archive-report-submit', fieldset);
+      if (form && types) {
+        fieldset.hidden = !$('[value=illegal]', types).checked;
+        $.on(types, 'change', function(e) {
+          fieldset.hidden = e.target.value !== 'illegal';
+          return Report.fit('body');
+        });
+        $.after(types, fieldset);
+        Report.fit('body');
+        $.one(form, 'submit', function(e) {
+          if (!fieldset.hidden && enabled.checked) {
+            e.preventDefault();
+            return Report.archiveSubmit(urls, reason.value, (function(_this) {
+              return function(results) {
+                _this.action = '#archiveresults=' + encodeURIComponent(JSON.stringify(results));
+                return _this.submit();
+              };
+            })(this));
+          }
+        });
+      } else if (message) {
+        enabled.checked = false;
+        fieldset.hidden = /Report submitted!/.test(message.textContent);
+        $.on(enabled, 'change', function() {
+          return submit.hidden = !this.checked;
+        });
+        $.after(message, fieldset);
+        $.on(submit, 'click', function() {
+          return Report.archiveSubmit(urls, reason.value, Report.archiveResults);
+        });
+      }
+      if ((match = location.hash.match(/^#archiveresults=(.*)$/))) {
+        try {
+          return Report.archiveResults(JSON.parse(decodeURIComponent(match[1])));
+        } catch (_error) {}
+      }
+    },
+    archiveSubmit: function(urls, reason, cb) {
+      var fn, form, i, len, name, ref, results, url;
+      form = $.formData({
+        board: g.BOARD.ID,
+        num: Report.postID,
+        reason: reason
+      });
+      results = [];
+      fn = function(name, url) {
+        return $.ajax(url, {
+          responseType: 'json',
+          onloadend: function() {
+            results.push([
+              name, this.response || {
+                error: ''
+              }
+            ]);
+            if (results.length === urls.length) {
+              return cb(results);
+            }
+          }
+        }, {
+          form: form
+        });
+      };
+      for (i = 0, len = urls.length; i < len; i++) {
+        ref = urls[i], name = ref[0], url = ref[1];
+        fn(name, url);
+      }
+    },
+    archiveResults: function(results) {
+      var fieldset, i, len, line, name, ref, response;
+      fieldset = $.id('archive-report');
+      for (i = 0, len = results.length; i < len; i++) {
+        ref = results[i], name = ref[0], response = ref[1];
+        line = $.el('h3', {
+          className: 'archive-report-response'
+        });
+        if ('success' in response) {
+          $.addClass(line, 'archive-report-success');
+          line.textContent = name + ": " + response.success;
+        } else {
+          $.addClass(line, 'archive-report-error');
+          line.textContent = name + ": " + (response.error || 'Error reporting post.');
+        }
+        if (fieldset) {
+          $.before(fieldset, line);
+        } else {
+          $.add(d.body, line);
+        }
       }
     }
   };
@@ -17110,7 +18032,7 @@ Time = (function() {
   Time = {
     init: function() {
       var ref;
-      if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Time Formatting'])) {
+      if (!(((ref = g.VIEW) === 'index' || ref === 'thread' || ref === 'archive') && Conf['Time Formatting'])) {
         return;
       }
       return Callbacks.Post.push({
@@ -17135,6 +18057,30 @@ Time = (function() {
     },
     day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    localeFormat: function(date, options, defaultValue) {
+      if (Conf['timeLocale']) {
+        try {
+          return Intl.DateTimeFormat(Conf['timeLocale'], options).format(date);
+        } catch (_error) {}
+      }
+      return defaultValue;
+    },
+    localeFormatPart: function(date, options, part, defaultValue) {
+      var parts;
+      if (Conf['timeLocale']) {
+        try {
+          parts = Intl.DateTimeFormat(Conf['timeLocale'], options).formatToParts(date);
+          return parts.map(function(x) {
+            if (x.type === part) {
+              return x.value;
+            } else {
+              return '';
+            }
+          }).join('');
+        } catch (_error) {}
+      }
+      return defaultValue;
+    },
     zeroPad: function(n) {
       if (n < 10) {
         return "0" + n;
@@ -17144,16 +18090,24 @@ Time = (function() {
     },
     formatters: {
       a: function() {
-        return Time.day[this.getDay()].slice(0, 3);
+        return Time.localeFormat(this, {
+          weekday: 'short'
+        }, Time.day[this.getDay()].slice(0, 3));
       },
       A: function() {
-        return Time.day[this.getDay()];
+        return Time.localeFormat(this, {
+          weekday: 'long'
+        }, Time.day[this.getDay()]);
       },
       b: function() {
-        return Time.month[this.getMonth()].slice(0, 3);
+        return Time.localeFormat(this, {
+          month: 'short'
+        }, Time.month[this.getMonth()].slice(0, 3));
       },
       B: function() {
-        return Time.month[this.getMonth()];
+        return Time.localeFormat(this, {
+          month: 'long'
+        }, Time.month[this.getMonth()]);
       },
       d: function() {
         return Time.zeroPad(this.getDate());
@@ -17180,18 +18134,13 @@ Time = (function() {
         return Time.zeroPad(this.getMinutes());
       },
       p: function() {
-        if (this.getHours() < 12) {
-          return 'AM';
-        } else {
-          return 'PM';
-        }
+        return Time.localeFormatPart(this, {
+          hour: 'numeric',
+          hour12: true
+        }, 'dayperiod', (this.getHours() < 12 ? 'AM' : 'PM'));
       },
       P: function() {
-        if (this.getHours() < 12) {
-          return 'am';
-        } else {
-          return 'pm';
-        }
+        return Time.formatters.p.call(this).toLowerCase();
       },
       S: function() {
         return Time.zeroPad(this.getSeconds());
@@ -17225,7 +18174,7 @@ Favicon = (function() {
       var href;
       Favicon.el.type = 'image/x-icon';
       href = Favicon.el.href;
-      Favicon.SFW = /ws\.ico$/.test(href);
+      Favicon.isSFW = /ws\.ico$/.test(href);
       Favicon["default"] = href;
       return Favicon["switch"]();
     },
@@ -17233,11 +18182,11 @@ Favicon = (function() {
       var f, i, items, t;
       items = {
         ferongr: ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///9zBQC/AADpDAP/gID/q6voCwJJTwpOAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAxUlEQVR42q1TOwrCQBB9s0FRtJI0WoqFtSLYegoP4gVSeJsUHsHSI3iFeIqRXXgwrhlXwYHHhLwPTB7B36abBCV+0pA4DUBQUNZYQptGtW3jtoKyxgoe0yrBCoyZfL/5ioQ3URZOXW9I341l3oo+NXEZiW4CEuIzvPECopED4OaZ3RNmeAm4u+a8Jr5f17VyVoL8fr8qcltzwlyyj2iqcgPOQ9ExkHAITgD75bYBe0A5S4H/P9htuWMF3QXoQpwaKeT+lnsC6JE5I6aq6fEAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///8AcH4AtswA2PJ55fKi6fIA1/FtpPADAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAxElEQVQ4y2NgoBq4/vE/HJOsBiRQUIfA2AzBqQYqUfn00/9FLz+BaQxDCKqBmX7jExijKEDSDJPHrnnbGQhGV4RmOFwdVkNwhQMheYwQxhaIi7b9Z9A3gWAQm2BUoQOgRhgA8o7j1ozLC4LCyAZcx6kZI5qg4kLKqggDFFWxJySsUQVzlb4pwgAJaTRvokcVNgOqOv8zcHBCsL07DgNg8YsczzA5MxtUL+DMD8g0slxI/H8GQ/P/DJKyeKIRpglXZsIiBwBhP5O+VbI/JgAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAFVBMVEX///8oeQBJ3ABV/wHM/7Lu/+ZU/gAqUP3dAAAAAXRSTlMAQObYZgAAAGJJREFUeF5Fi7ENg0AQBCfa/AFdDh2gdwPIogMK2E2+/xLslwOvdqRJhv+GQQPUCtJM7svankLrq/I+TY5e6Ueh1jyBMX7AFJi9vwfyVO4CbbO6jNYpp9GyVPbdkFhVgAQ2H0NOE5jk9DT8AAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAx0lEQVQ4y2NgoBYI+cfwH4ZJVgMS0KhEYGyG4FQDkzjzf9P/d/+fgWl0QwiqgSkI/c8IxsgKkDXD5LFq9rwDweiK0A2HqcNqCK5wICSPEcLYAtH+AMN/IXMIBrEJRie6OEgjDAC5x3FqxuUFNiEUA67j1IweTTBxBQ1puAG86jgSEraogskJWSBcwCGF5k30qMJmgMFEhv/MXBAs5oLDAFj8IsczTE7UEeECbhU8+QGZRpaTi2b4L2zF8J9TGk80wjThykzY5AAW/2O1C2mIbgAAAABJRU5ErkJggg=='],
-        'xat-': ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEX9AAD8AAD/AAD+AADAExKKXl2CfHqLkZFub2yfaF3bZ2PzZGL/zs//iYr/AAASAAAGAAAAAAAAAAAAAADpOCseAAAADHRSTlP9MAcAATVYeprJ5O/MbzqoAAAAXklEQVQY03VPQQ7AIAgz8QAG4dL//3VVcVk2Vw4tDVQp9YVyMACIEkIxDEQEGjHFnBjCbPU5EXBfnBns6WRG1Wbuvbtb0z9jr6Qh2KGQenp2/+xpsFQnrePAuulz7QUTuwm5NnwmIAAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAMAAACuAq9NAAAAY1BMVEUBAAACAQELCQkPDQwgFBMzKilOSEdva2iEgoCReHOadXClamDIaWbxcG7+hIX+mpv+m5z+oqP+tLX+zc7//f3+9PT97Oz23t750NDbra3zwL87LCwAAAAGAABHAADPAAD/AABkWeLDAAAAHHRSTlO5/fTv8Na2n42lsMvi8v3+/v749OaITDsDAQABSG2w8gAAAGdJREFUCNdNjtEKgDAIRYVGCmsyqCe7q/3/V2azQfpwPehVyQCIMIt4YYTeO7LHKMiGlDIkuh2qofR6obUqhtc4F637XreU1h+m41gcJX/DHyJWXYHzkCMm+hd3a4GezLNr8PQA4bQHEXEQFRJP5NAAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEUAAAAAAAAAAAAAAABFRUdsa2yRjop4dXVpZ2tdcI9dfKdBirUzlMBHpdxSquRisfOs2/99xv8umMMAAABljCUFAAAAEHRSTlN7FwUAQVt6kZ2/zej59vTv0aAplgAAAGNJREFUGNNtj1EOwCAIQ5eYIPCD0vvfdYi6LJvy0fICNVzl864DAECVuVKYAeDuEFVJkxPDmM1+TTh6n7oy0FvrWBmF1aIPYspnUGWvSE1A2KGgcvp2AtU3iGJOmcch6pHftTekXQrRd6slMAAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAMAAACuAq9NAAAAY1BMVEUAAAAAAAAAAAAAAAAREBAWFRY1NDROTE1iYGFzdXp4eoCAgYVlc4mHjZiYoa6zvcqy1/Pg8v+e1f+b1P6X0f2DyP5jsu49msgymcctkLomc5QbPU0SIiwNFxwumMMAAAAAAADALpU1AAAAHnRSTlPNLgcBAAABBxhdc4WznarD8P7+/v3+8/z9/vz2+PUOYDHSAAAAZElEQVQI102OsQ6AMAhEMWGDpTbUQUvu/79ShDYRhuMFDiAGIKIqEgUT3B0akQVxyhgp1XWYldLnhfXTkF5WHdZb69cz9YdPazNQdA0vRK2ahftQDGNjfHHXZjgSV5cRGQHCwS8j7A9loVSnzwAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEUAAAAAAAAAAAAAAAAfJSBLUU1ydHR8fn6Ri5Frbm9dn19jvEFt30tv5VB082KR/33Z/9Gq/5tmzDMAAADw+5ntAAAAEHRSTlP++ywHAAE2Wnuayez19O/+EzXeOQAAAF9JREFUGNN1TzESwCAIc3AABxDy/78WFXu91oYhIYcRSn2hHAwAxAEKMQy4O1pgijkxhMjqc8KhujgzoGaKzKjcRK13U2n8Z+wnaRB2KKievt2bPY0o5knrOETd9Ln2AuDLCz1j8HTeAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAMAAACuAq9NAAAAY1BMVEUPGgsCBAIBAQEBAQAAAQAAAAABAQEFBQQQEw85SDdVa1GhzJm967TZ+NLP+sbM+8S6/a3k/9+s/pyr/puX/oSd15KIuoGBj39tfm1qj2RepFlu2VRkwzZlyTNatC5myzMAAAAOPREWAAAAHnRSTlP4/fz331IPBQIBAAECOly37/7+/v7XwpWktNDy+f7X56yoAAAAZElEQVQI102NwQ7AIAhDMdku3JwkIiaz//+VQ9FkcCgvpUAMoKpX9YEJYww0s7YG4iW9Lwl3QCSUZhZSHsHKslqXknPpRPpDypkmtr0cWBGntnseOeKgGd6UAr1Vj8vw9sKFmz+fERAp5vutHwAAAABJRU5ErkJggg=='],
+        'xat-': ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAG1BMVEX+AACLkZFub2yfaF3zZGIAAAD/AAD/iYr/zs8IPcF6AAAABXRSTlMAeprJ7xzg6IEAAABZSURBVAjXY2DABKGBSkqioQwMrGmpxsZhaQEMDGFpIa5pqSCRtPDSNJBIaGh5eShQDYOye0V7iREKAyQFYoiCFAcyILQDGcGmEEZYkGoqiMHKysAQEICwGwAAjBmBqhYlagAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAPFBMVEUAAACEgoBva2ilamDxcG7IaWYgFBNOSEf//f0PDQwBAAA7LCwAAAD/AAD+hIX+m5z+zc5HAADPAAAGAADl032uAAAADHRSTlMAzNv0/vz+6v3+7ALrmfyXAAAAaUlEQVQY042PyxKAIAhFAc1eV7T6/3/N8VXOtAgWwBm4ANEPA8AswpySXHvvYZLlpBNrh9pDtcSqAQ1BUTVIjNUQY5icmwfglmXNgE0d6QBF9GigrU0A9LoM53U1kFzk6SBQuWfD/vHqDUCpBmVKTTM4AAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAIVBMVEUAAACRjop4dXVpZ2tdcI9dfKdisfMAAAAumMN9xv+s2/+PADT2AAAAB3RSTlMAepGdv83v3HIc4QAAAFxJREFUCNdjYMAE5YXKRuLlDAzsHe2uIRUdBQwMFR1l6R3tIJGOyukdIJHy8lkry4FqGEwzV62aFozMUAFJOQEZ4iDFhQwI7UBGaTiEUVFs3g5isLMzMBQUIOwGAJRlIu9hk08QAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAMFBMVEUAAACAgYVlc4ljsu4AAAAAAAAAAAAumMODyP6b1P6e1f/g8v89msgSIiwNFxwbPU3tQYj5AAAABnRSTlMAxej+9VTmD9ciAAAAZElEQVQI12NgwARpiUKKYmkMDGzlZUpK6eUJDAzp5clm5WUgkfKMtnKQSFpa54o0oBoGJYvZO88+gjJu7wMyhIBS2SCGGFDxaxADpP32NjAjSe0bSFd6epIaWISNjYEhJRVhNwAGlyJpYtcvcAAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAHlBMVEUfJSCRi5Frbm9dn19082KR/30AAABmzDOq/5vZ/9Gt/vt2AAAABnRSTlMAe5rJ7/4vxEp4AAAAWUlEQVQI12NgwARpiUpKYmkMDGzlZcbG6eUJDAzp5Slu5WUgkfLUsHKQSFpaRGsaUA2DsmvnjBAjFAZICsQQAylOZEBoBzKSzSCM9CS1MhCDjY2BISEBYTcAtgAcKSK2vuIAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAM1BMVEUAAACBj39tfm1qj2RepFlu2VQAAQAAAAAAAABmyzOX/oSr/pus/pzk/98PGgtatC4CBAI1ENblAAAACHRSTlMA09/p9v77ig0SBcQAAABnSURBVBjTjY9LDsAgCEQRsR2xWu9/2hK/adJFYQG8wABEPwyAYzNnSatjjPAiviWLhPCqI1R7HBrQdCmGBrEETTmnUAq/QMm5dODHyAQOXXR1zLUGsIEI7lonMGfeHQTq9xw4P159AIxSBSC53km7AAAAAElFTkSuQmCC'],
         Mayhem: ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABFklEQVR4AZ2R4WqEMBCEFy1yiJQQ14gcIhIuFBFR+qPQ93+v66QMksrlTwMfkZ2ZZbMKTgVqYIDl3YAbeCM31lJP/Zul4MAEPJjBQGNDLGsz8PQ6aqLAP5PTdd1WlmU09mSKtdTDRgrkzspJPKq6RxMahfj9yhOzQEZwZAwfzrk1ox3MXibIN8hO4MAjeV72CemJGWblnRsOYOdoGw0jebB20BPAwKzUQPlrFhrXFw1Wagu9yuzZwINzVAZCURRL+gRr7Wd8Vtqg4Th/lsUmewyk9WQ/A7NiwJz5VV/GmO+MNjMrFvh/NPDMigHTaeJN09a27ZHRJmalBg54CgfvAGYSLpoHjlmpuAwFdzDy7oGS/qIpM9UPFGg1b1kUlssAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABR0lEQVR4AYWSQWq0QBCFCw0SRIK0PQ4hiIhEZBhEySLyewUPEMgqR/JIXiDhzz7kKKYePIZajEzDRxfV9dWU3SO6IiVWUsVxT5R75Y4gTmwNnUh4kCulUiuV8sjChDjmKtaUcHgmHsnNrMPh0IVhiMIjKZGzNXDoyhMzF7C89z2KtFGD+FoNXEUKZdgpaPM8P++cDXTtBDca7EyQK8+bXTufYBccuvLAG26UnqN1LCgI4g/lm7zTgSux4vk0J8rnKw3+m1//pBPbBrVyGZVNmiAITviEtm3t+D+2QcJx7GUxlN4594K4ZY75Xzh0JVWqnad6TdP0H+LRNBjHcYNDV5xS32qwaC4my7Lwn6guu5QoomgbdFmWDYhnM8E8zxscuhLzPWtKA/dGqUizrityX9M0YX+DQ1ciXobnP6vgfmTOM7Znnk70B58pPaEvx+epAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA/ElEQVR4AZ3RUWqEMBSF4ftQZAhSREQJIiIXpQwi+tSldkFdWPsLhyEE0ocKH2Fyzg1mNJ4KAQ1arTUeeJMH6qwTUJmCHjMcC6KKtbSIylzdXpl18J/k4fdTpUFmPLOOa9bGe+P4+n5RYYfLXuiMsAlXofBxK2QXpvwN/jqg+AY91vR+pStk+apZe0fEhhMXDhUmWXEoO9WNmrWAzvRPq7jnB2jvUGfWTEgPcJzZFTbZk/0Tnh5QI+af6lVGvq/Do2atwVL4VJ+3QrZo1lr4Pw5wzVqDWaV7SUvHrZDNmrWAHq7g0rphkS3LXDMBVqFGhxGT1gGdDFnWaab6BRmXRvbxDmYiAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABQElEQVR4AY2SQUrEQBBFS9CMNFEkhAQdYmiCIUgcZlYGc4VsBcGVF/AuWXme4F7RtXiVWF9+Y9MYtOHRTdX/NZWaEj2RYpQTJeEdK4fKPuA7DjSGXiQkU0qlUqxySmFMEsYsNSU8zEmK4OwdEbmkKCclYoGmolfWCGyenh1O0EJE2gXNWpFC2S0IGrCQ29EbdPCPAmEHmXIxByf8hDAPD71yzAnXypatbSgoAN8Pyju5h4deMUrqJk1z+0uBN+/XX+gxfoFK2QafUJO2aRq//Q+/QIx2wr+Kwq0rusrP/QKf9MTCtbQLf9U1wNvYnz3qug45S68kSvVXgbPbx3nvYPXNOI7cRPWySukK+DcGCvA+urqZ3RmGAbmSXjFK5rpwW8nhWVJP04TYa9/3uO/goVciDiPlZhW8c8ZAHuRSeqIv32FK/GYGL8YAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA/ElEQVR4AZ3RUWqEMBSF4ftQZAihDCKKiAQJShERQx+6o662e2p/4TCEQF468BEm95yLovFr4PBEq9PjgTd5wBcZp6559AiIWDAq6KXV3aJMUMfDOsTf7Mf/XaFBAvYiE9W16b74/vl8UeBAlKOSmWAzUiXwcavMkrrFE9QXVJ+gx5q9XvUVivmqrr1jxIYLCacCs6y6S8psGNU1hw4Bu4JHuUB3pzJBHZcviLiKV9jkyO4vxHyBx1h+qlcY5b2Wj+raE0vlU33dKrNFXWsR/7EgqmtPBIXuIw+dt8osqGsOPaIGSeeGRbZiFtVxsAYeHSbMOgd0MhSzTp3mD4RaQX4aW3NMAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABP0lEQVR4AYWS0UqFQBCGhziImNRBRImDmUgiIaF0kWSP4AMEXXXTE/QiPpL3UdR19Crb/PAvLEtyFj5mmfn/cdxd0RUokbJXEsZYCZUd4D72NBG8wkKmlEqtVMoFhTFJmKuoKelBTVIkjbNE5IainJTIeZqaXjkg8fp+Z7GCjiLQbWgOihTKsCFowUZtoNef4HgDf4JMuTbe8n/Br8NDr5zxhBul52i3FBQE+xflmzzTA69ESmpPmubunwZfztc/6IncBrXSe7/QkK5tW3f8H7dBjHH8q6Kwt033V6Hb4JeeWPgsq42rugfYZ92psWscRwMPvZIo9bEGD2+F2YUnBizLwpeoXnYpbQM34kAB9peP58aueZ4NPPRKxPusaRoYG6UizbquyH1O04T4RA+8EvAwUr6sgjFnDuReLaUn+ANygUa7+9SCWgAAAABJRU5ErkJggg=='],
-        '4chanJS': ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAD/AABnZ2f///8nFk05AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAD/AAD///9nZ2f77Y6hAAAAAXRSTlMAQObYZgAAAEBJREFUeF6NjQEKACAMAnfW/98cAxFiBIngOsTqR8B1IGkeG9p5i7XabgAGZNigXgA8aoCUxvzWAIcBItGiSEwdccYA3BuRAWkAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAAul8NnZ2f////82iC9AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAAul8P///9nZ2cgIeMlAAAAAXRSTlMAQObYZgAAAEBJREFUeF6NjQEKACAMAnfW/98cAxFiBIngOsTqR8B1IGkeG9p5i7XabgAGZNigXgA8aoCUxvzWAIcBItGiSEwdccYA3BuRAWkAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAElBMVEUBAAAAAABmzDNlyjJnZ2f///+6o7dfAAAAAXRSTlMAQObYZgAAAERJREFUeF6NjkEKADEIA51o///lJZfQxUsHITogWi8AvwZJuxmYa25xDooBLEwOWFTYAsYVhdorLZt9Ng9xCUTCUCQ2H3F4ANrZ2WNiAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAElBMVEUBAAAAAABmzDP///9lyjJnZ2cIHys9AAAAAXRSTlMAQObYZgAAAENJREFUeF6NjUEKwEAMAjNm9/9fLkEslFwqgjoEUn8EfAqSdrkwzj6ieyyTkQEVGWRvANfO1iEX620AjgBEwqR4Y+sBeGAA6d+vQ4IAAAAASUVORK5CYII='],
+        '4chanJS': ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAD/AABnZ2f///8nFk05AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAAAAAD/AABmZmYA/wBD99DBAAAAAXRSTlMAQObYZgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAE9JREFUCNdljcsRACEIQ5MOiNKAdGAJ9N/Uiu7nsMzABHgB4B8ygFoZA2hhVWavhhGeURPJU9q45+17hGbfGxa82Ndex3hEM44SJGD2/b4AzDgGlHbl388AAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAAul8NnZ2f////82iC9AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAAAAAAul8NnZ2f/AAD7B+mqAAAAAXRSTlMAQObYZgAAAAlwSFlzAAALEgAACxIB0t1+/AAAAE9JREFUCNdljcsRACEIQ5MOiNKAdGAJ9N/Uiu7nsMzABHgB4B8ygFoZA2hhVWavhhGeURPJU9q45+17hGbfGxa82Ndex3hEM44SJGD2/b4AzDgGlHbl388AAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAElBMVEUBAAAAAABmzDNlyjJnZ2f///+6o7dfAAAAAXRSTlMAQObYZgAAAERJREFUeF6NjkEKADEIA51o///lJZfQxUsHITogWi8AvwZJuxmYa25xDooBLEwOWFTYAsYVhdorLZt9Ng9xCUTCUCQ2H3F4ANrZ2WNiAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAAAAABmzDNmZmb/AAC8/wCMAAAAAXRSTlMAQObYZgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAE9JREFUCNdljcsRACEIQ5MOiNKAdGAJ9N/Uiu7nsMzABHgB4B8ygFoZA2hhVWavhhGeURPJU9q45+17hGbfGxa82Ndex3hEM44SJGD2/b4AzDgGlHbl388AAAAASUVORK5CYII='],
         Original: ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX/////AAD///8AAABBZmS3AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAhElEQVR42q1RwQnAMAjMu5M4guAKXa4j5dUROo5tipSDcrFChUONd0di2m/hEGVOHDyIPufgwAFASDkpoSzmBrkJ2UMyR9LsJ3rvrqo3Rt1YMIMhhNnOxLMnoMFBxHyJAr2IOBFzA8U+6pLBdmEJTA0aMVjpDd6Loks0s5HZNwYx8tfZCZ0kll7ORffZAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX///8ul8P///8AAACaqgkzAAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAALVBMVEUAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OzvBwcH///8uS/CdAAAAA3RSTlMAx9dmesIgAAAAV0lEQVR42m2NWw6AIBAD1eILZO5/XI0UAgm7H9tOsu0yGWAQSOoFijHOxOANGqm/LczpOaXs4gISrPZ+gc2+hO5w2xdwgOjBFUIF+sEJrhUl9JFr+badFwR+BfqlmGUJAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX///9mzDP///8AAACT0n1lAAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAALVBMVEUAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztmzDPBwcH///+rsf3XAAAAA3RSTlMAx9dmesIgAAAAV0lEQVR42m2NWw6AIBAD1eIDhbn/cTVSCCTsfmw7ybbLZIBBIKkXKKU0E4M3aKT+tjCn5xiziwuIsNr7BTb7ErrDZV/AAaIHdwgV6AcnuFaU0Eeu5dt2XiUyBjCQ2bIrAAAAAElFTkSuQmCC'],
-        'Metro': ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAC/AABrZQDiAAAAAXRSTlMAQObYZgAAABJJREFUCB1jZGBgrMNAQEEc4gCSfAX5bRw/NQAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAJFBMVEUAAAAAAAAAAAAHAAAdAAApAAAsAAA4AABsAACQAAC/AAD///9SVhtjAAAAA3RSTlMAPse+s4iwAAAAM0lEQVQIW2NggAGuVasWgDBpDDAQUoSaob0Jao73lgVojOitUEazBZRRvR3KmJa5AO4KAGBtLuMAuhIIAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAAA1/GhpCidAAAAAXRSTlMAQObYZgAAABJJREFUCB1jZGBgrMNAQEEc4gCSfAX5bRw/NQAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAJFBMVEUAAAAAAAAAAAAACAkAISUALzQAMTcAQEcAeokAorYA1/H///8BrzTFAAAAA3RSTlMAPse+s4iwAAAAM0lEQVQIW2NggAGuVasWgDBpDDAQUoSaob0Jao73lgVojOitUEazBZRRvR3KmJa5AO4KAGBtLuMAuhIIAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAABV/wErM5hwAAAAAXRSTlMAQObYZgAAABJJREFUCB1jZGBgrMNAQEEc4gCSfAX5bRw/NQAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAJFBMVEUAAAAAAAAAAAADCgANKAASOAATOwAZTAAwkQBAwQBV/wH////+Fmy4AAAAA3RSTlMAPse+s4iwAAAAM0lEQVQIW2NggAGuVasWgDBpDDAQUoSaob0Jao73lgVojOitUEazBZRRvR3KmJa5AO4KAGBtLuMAuhIIAAAAAElFTkSuQmCC']
+        'Metro': ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAC/AABrZQDiAAAAAXRSTlMAQObYZgAAABJJREFUCB1jZGBgrMNAQEEc4gCSfAX5bRw/NQAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAJFBMVEUAAAAAAAAAAAC/AAD///8dAAApAABsAAAHAAA4AACQAAAsAABMCpCvAAAAA3RSTlMAPse+s4iwAAAAMklEQVQI12NggAFmY2MDECaNAQZCilAzVJyg5oS4GqAxUtygjIp2KGOKJ5SxepcB3BUAcdYRqxAtgFoAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAAA1/GhpCidAAAAAXRSTlMAQObYZgAAABJJREFUCB1jZGBgrMNAQEEc4gCSfAX5bRw/NQAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAJFBMVEUAAAAAAAAAAAAA1/H///8AISUALzQAeokACAkAQEcAorYAMTcE9WFNAAAAA3RSTlMAPse+s4iwAAAAMklEQVQI12NggAFmY2MDECaNAQZCilAzVJyg5oS4GqAxUtygjIp2KGOKJ5SxepcB3BUAcdYRqxAtgFoAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAABV/wErM5hwAAAAAXRSTlMAQObYZgAAABJJREFUCB1jZGBgrMNAQEEc4gCSfAX5bRw/NQAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAJFBMVEUAAAAAAAAAAABV/wH///8NKAASOAAwkQADCgAZTABAwQATOwC5e3VGAAAAA3RSTlMAPse+s4iwAAAAMklEQVQI12NggAFmY2MDECaNAQZCilAzVJyg5oS4GqAxUtygjIp2KGOKJ5SxepcB3BUAcdYRqxAtgFoAAAAASUVORK5CYII=']
       }[Conf['favicon']];
       f = Favicon;
       t = 'data:image/png;base64,';
@@ -17249,7 +18198,7 @@ Favicon = (function() {
       return f.update();
     },
     update: function() {
-      if (this.SFW) {
+      if (this.isSFW) {
         this.unread = this.unreadSFW;
         return this.unreadY = this.unreadSFWY;
       } else {
@@ -17257,6 +18206,8 @@ Favicon = (function() {
         return this.unreadY = this.unreadNSFWY;
       }
     },
+    SFW: '//s.4cdn.org/image/favicon-ws.ico',
+    NSFW: '//s.4cdn.org/image/favicon.ico',
     dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
     logo: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAgMAAAC+UIlYAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAGlJREFUWMPtlkEKADEIA/tJP9lXLttQto2yHxgDHozTi0ToGK2WKZZ+HAQQMZc+xBwI4EZ+wAC2IfPuSIDOZJrSZQEAX9eVJhhwIuUYAnQe8rhAEMAZlTI2MID9f5Clyh0JeE1V1ZEAvB4qDfwuJTSGRAAAAABJRU5ErkJggg=='
   };
@@ -17336,7 +18287,6 @@ ReplyPruning = (function() {
       if (!(g.VIEW === 'thread' && Conf['Reply Pruning'])) {
         return;
       }
-      this.active = !(Conf['Quote Threading'] && Conf['Thread Quotes']);
       this.container = $.frag();
       this.summary = $.el('span', {
         hidden: true,
@@ -17349,7 +18299,7 @@ ReplyPruning = (function() {
           return $.event('change', null, _this.inputs.enabled);
         };
       })(this));
-      label = UI.checkbox('Prune Replies', 'Show Last', this.active);
+      label = UI.checkbox('Prune Replies', 'Show Last', Conf['Prune All Threads']);
       el = $.el('span', {
         title: 'Maximum number of replies to show.'
       }, {
@@ -17360,6 +18310,7 @@ ReplyPruning = (function() {
         enabled: label.firstElementChild,
         replies: el.lastElementChild
       };
+      this.setEnabled.call(this.inputs.enabled);
       $.on(this.inputs.enabled, 'change', this.setEnabled);
       $.on(this.inputs.replies, 'change', $.cb.value);
       Header.menu.addEntry({
@@ -17394,6 +18345,12 @@ ReplyPruning = (function() {
     node: function() {
       var ref;
       ReplyPruning.thread = this;
+      if (this.isSticky) {
+        ReplyPruning.active = ReplyPruning.inputs.enabled.checked = true;
+        if (QuoteThreading.input) {
+          Conf['Thread Quotes'] = QuoteThreading.input.checked = false;
+        }
+      }
       this.posts.forEach(function(post) {
         if (post.isReply) {
           ReplyPruning.total++;
@@ -17402,7 +18359,7 @@ ReplyPruning = (function() {
           }
         }
       });
-      if (ReplyPruning.active && /^#p\d+$/.test(location.hash) && (0 <= (ref = this.posts.keys.indexOf(location.hash.slice(2))) && ref < 1 + Math.max(ReplyPruning.total - +Conf["Max Replies"], 0))) {
+      if (ReplyPruning.active && /^#p\d+$/.test(location.hash) && (1 <= (ref = this.posts.keys.indexOf(location.hash.slice(2))) && ref < 1 + Math.max(ReplyPruning.total - +Conf["Max Replies"], 0))) {
         ReplyPruning.active = ReplyPruning.inputs.enabled.checked = false;
       }
       $.after(this.OP.nodes.root, ReplyPruning.summary);
@@ -17427,7 +18384,7 @@ ReplyPruning = (function() {
       }
     },
     update: function() {
-      var boardTop, frag, hidden1, hidden2, oldPos, post, posts;
+      var boardTop, frag, hidden1, hidden2, node, oldPos, post, posts;
       hidden1 = ReplyPruning.hidden;
       hidden2 = ReplyPruning.active ? Math.max(ReplyPruning.total - +Conf["Max Replies"], 0) : 0;
       oldPos = d.body.clientHeight - window.scrollY;
@@ -17436,6 +18393,9 @@ ReplyPruning = (function() {
         while (ReplyPruning.hidden < hidden2 && ReplyPruning.position < posts.keys.length) {
           post = posts[posts.keys[ReplyPruning.position++]];
           if (post.isReply && !post.isFetchedQuote) {
+            while ((node = ReplyPruning.summary.nextSibling) && node !== post.nodes.root) {
+              $.add(ReplyPruning.container, node);
+            }
             $.add(ReplyPruning.container, post.nodes.root);
             ReplyPruning.hidden++;
             if (post.file) {
@@ -17448,6 +18408,9 @@ ReplyPruning = (function() {
         while (ReplyPruning.hidden > hidden2 && ReplyPruning.position > 0) {
           post = posts[posts.keys[--ReplyPruning.position]];
           if (post.isReply && !post.isFetchedQuote) {
+            while ((node = ReplyPruning.container.lastChild) && node !== post.nodes.root) {
+              $.prepend(frag, node);
+            }
             $.prepend(frag, post.nodes.root);
             ReplyPruning.hidden--;
             if (post.file) {
@@ -17497,7 +18460,7 @@ ThreadStats = (function() {
         $.extend(sc, statsHTML);
         Header.addShortcut('stats', sc, 200);
       } else {
-        this.dialog = sc = UI.dialog('thread-stats', 'bottom: 0px; right: 0px;', {
+        this.dialog = sc = UI.dialog('thread-stats', {
           innerHTML: "<div class=\"move\" title=\"" + E(statsTitle) + "\">" + (statsHTML).innerHTML + "</div>"
         });
         $.addClass(doc, 'float');
@@ -17574,7 +18537,7 @@ ThreadStats = (function() {
         return;
       }
       ThreadStats.timeout = setTimeout(ThreadStats.fetchPage, 2 * $.MINUTE);
-      return $.ajax("//a.4cdn.org/" + ThreadStats.thread.board + "/threads.json", {
+      return $.ajax(location.protocol + "//a.4cdn.org/" + ThreadStats.thread.board + "/threads.json", {
         onload: ThreadStats.onThreadsLoad
       }, {
         whenModified: 'ThreadStats'
@@ -17651,8 +18614,8 @@ ThreadUpdater = (function() {
         });
         Header.addShortcut('updater', sc, 100);
       } else {
-        this.dialog = sc = UI.dialog('updater', 'bottom: 0px; left: 0px;', {
-          innerHTML: "<div class=\"move\"></div><span id=\"update-status\"></span><span id=\"update-timer\" title=\"Update now\"></span>"
+        this.dialog = sc = UI.dialog('updater', {
+          innerHTML: "<div class=\"move\"></div><span id=\"update-status\" class=\"empty\"></span><span id=\"update-timer\" class=\"empty\" title=\"Update now\"></span>"
         });
         $.addClass(doc, 'float');
         $.ready(function() {
@@ -17799,7 +18762,7 @@ ThreadUpdater = (function() {
             }
             break;
           case 404:
-            return $.ajax("//a.4cdn.org/" + ThreadUpdater.thread.board + "/catalog.json", {
+            return $.ajax(location.protocol + "//a.4cdn.org/" + ThreadUpdater.thread.board + "/catalog.json", {
               onloadend: function() {
                 var confirmed, i, k, len, len1, page, ref, ref1, thread;
                 if (this.status === 200) {
@@ -17911,7 +18874,7 @@ ThreadUpdater = (function() {
       if ((ref = ThreadUpdater.req) != null) {
         ref.abort();
       }
-      return ThreadUpdater.req = $.ajax("//a.4cdn.org/" + ThreadUpdater.thread.board + "/thread/" + ThreadUpdater.thread + ".json", {
+      return ThreadUpdater.req = $.ajax(location.protocol + "//a.4cdn.org/" + ThreadUpdater.thread.board + "/thread/" + ThreadUpdater.thread + ".json", {
         onloadend: ThreadUpdater.cb.load,
         timeout: $.MINUTE
       }, {
@@ -18063,7 +19026,7 @@ ThreadWatcher = (function() {
 
   ThreadWatcher = {
     init: function() {
-      var sc;
+      var ref, sc;
       if (!(this.enabled = Conf['Thread Watcher'])) {
         return;
       }
@@ -18075,7 +19038,7 @@ ThreadWatcher = (function() {
         className: 'fa fa-eye'
       });
       this.db = new DataBoard('watchedThreads', this.refresh, true);
-      this.dialog = UI.dialog('thread-watcher', 'top: 50px; left: 0px;', {
+      this.dialog = UI.dialog('thread-watcher', {
         innerHTML: "<div class=\"move\">Thread Watcher <a class=\"refresh fa fa-refresh\" title=\"Check threads\" href=\"javascript:;\"></a><span id=\"watcher-status\"></span><a class=\"menu-button\" href=\"javascript:;\"><i class=\"fa fa-angle-down\"></i></a><a class=\"close\" href=\"javascript:;\">×</a></div><div id=\"watched-threads\"></div>"
       });
       this.status = $('#watcher-status', this.dialog);
@@ -18088,6 +19051,7 @@ ThreadWatcher = (function() {
       $.on(sc, 'click', this.toggleWatcher);
       $.on(this.refreshButton, 'click', this.buttonFetchAll);
       $.on(this.closeButton, 'click', this.toggleWatcher);
+      this.menu.addHeaderMenuEntry();
       $.onExists(doc, 'body', this.addDialog);
       switch (g.VIEW) {
         case 'index':
@@ -18132,6 +19096,9 @@ ThreadWatcher = (function() {
             return true;
           }
         });
+      }
+      if ((ref = g.VIEW) !== 'index' && ref !== 'thread') {
+        return;
       }
       Callbacks.Post.push({
         name: 'Thread Watcher',
@@ -18183,14 +19150,18 @@ ThreadWatcher = (function() {
       ThreadWatcher.setToggler(toggler, !!data);
       $.on(toggler, 'click', ThreadWatcher.cb.toggle);
       if (data && (data.excerpt == null)) {
-        ThreadWatcher.db.extend({
-          boardID: boardID,
-          threadID: threadID,
-          val: {
-            excerpt: Get.threadExcerpt(this.thread)
-          }
-        });
-        return ThreadWatcher.refresh();
+        return $.queueTask((function(_this) {
+          return function() {
+            ThreadWatcher.db.extend({
+              boardID: boardID,
+              threadID: threadID,
+              val: {
+                excerpt: Get.threadExcerpt(_this.thread)
+              }
+            });
+            return ThreadWatcher.refresh();
+          };
+        })(this));
       }
     },
     catalogNode: function() {
@@ -18281,6 +19252,11 @@ ThreadWatcher = (function() {
         for (threadID in ref) {
           data = ref[threadID];
           if (!(!(data != null ? data.isDead : void 0) && (ref1 = boardID + "." + threadID, indexOf.call(e.detail.threads, ref1) < 0))) {
+            continue;
+          }
+          if (!e.detail.threads.some(function(fullID) {
+            return +fullID.split('.')[1] > threadID;
+          })) {
             continue;
           }
           nKilled++;
@@ -18386,7 +19362,7 @@ ThreadWatcher = (function() {
         ThreadWatcher.status.textContent = '...';
         $.addClass(ThreadWatcher.refreshButton, 'fa-spin');
       }
-      req = $.ajax("//a.4cdn.org/" + boardID + "/thread/" + threadID + ".json", {
+      req = $.ajax(location.protocol + "//a.4cdn.org/" + boardID + "/thread/" + threadID + ".json", {
         onloadend: function() {
           return ThreadWatcher.parseStatus.call(this, thread);
         },
@@ -18397,7 +19373,7 @@ ThreadWatcher = (function() {
       return ThreadWatcher.requests.push(req);
     },
     parseStatus: function(arg) {
-      var boardID, data, i, isDead, lastReadPost, len, match, postObj, quotesYou, quotingYou, ref, ref1, regexp, threadID, unread;
+      var boardID, data, i, isDead, lastReadPost, len, match, postObj, quotesYou, quotingYou, ref, ref1, ref2, regexp, threadID, unread, youOP;
       boardID = arg.boardID, threadID = arg.threadID, data = arg.data;
       ThreadWatcher.fetched++;
       if (ThreadWatcher.fetched === ThreadWatcher.requests.length) {
@@ -18420,14 +19396,20 @@ ThreadWatcher = (function() {
           threadID: threadID,
           defaultValue: 0
         });
-        unread = quotingYou = 0;
-        ref = this.response.posts;
-        for (i = 0, len = ref.length; i < len; i++) {
-          postObj = ref[i];
+        unread = 0;
+        quotingYou = false;
+        youOP = !!((ref = QuoteYou.db) != null ? ref.get({
+          boardID: boardID,
+          threadID: threadID,
+          postID: threadID
+        }) : void 0);
+        ref1 = this.response.posts;
+        for (i = 0, len = ref1.length; i < len; i++) {
+          postObj = ref1[i];
           if (!(postObj.no > lastReadPost)) {
             continue;
           }
-          if ((ref1 = QuoteYou.db) != null ? ref1.get({
+          if ((ref2 = QuoteYou.db) != null ? ref2.get({
             boardID: boardID,
             threadID: threadID,
             postID: postObj.no
@@ -18435,7 +19417,11 @@ ThreadWatcher = (function() {
             continue;
           }
           unread++;
-          if (!(QuoteYou.db && postObj.com)) {
+          if (!quotingYou && !Conf['Require OP Quote Link'] && youOP && !Filter.isHidden(Build.parseJSON(postObj, boardID))) {
+            quotingYou = true;
+            continue;
+          }
+          if (!(!quotingYou && QuoteYou.db && postObj.com)) {
             continue;
           }
           quotesYou = false;
@@ -18451,7 +19437,7 @@ ThreadWatcher = (function() {
             }
           }
           if (quotesYou && !Filter.isHidden(Build.parseJSON(postObj, boardID))) {
-            quotingYou++;
+            quotingYou = true;
           }
         }
         if (isDead !== data.isDead || unread !== data.unread || quotingYou !== data.quotingYou) {
@@ -18592,8 +19578,9 @@ ThreadWatcher = (function() {
           ref = [thread.OP].concat(slice.call(thread.OP.clones));
           for (i = 0, len = ref.length; i < len; i++) {
             post = ref[i];
-            toggler = $('.watch-thread-link', post.nodes.info);
-            ThreadWatcher.setToggler(toggler, isWatched);
+            if ((toggler = $('.watch-thread-link', post.nodes.info))) {
+              ThreadWatcher.setToggler(toggler, isWatched);
+            }
           }
         }
         if (thread.catalogView) {
@@ -18750,7 +19737,6 @@ ThreadWatcher = (function() {
         $.on($('.menu-button', ThreadWatcher.dialog), 'click', function(e) {
           return menu.toggle(e, this, ThreadWatcher);
         });
-        this.addHeaderMenuEntry();
         return this.addMenuEntries();
       },
       addHeaderMenuEntry: function() {
@@ -18927,11 +19913,10 @@ Unread = (function() {
       }
     },
     scroll: function() {
-      var hash, position, ref, root;
+      var hash, position, root;
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
-      ReplyPruning.showIfHidden((ref = Unread.position) != null ? ref.data.nodes.root.id : void 0);
       position = Unread.positionPrev();
       while (position) {
         root = position.data.nodes.root;
@@ -18974,16 +19959,11 @@ Unread = (function() {
       return Unread.update();
     },
     addPost: function() {
-      var ref;
       if (this.isFetchedQuote || this.isClone) {
         return;
       }
       Unread.order.push(this);
-      if (this.ID <= Unread.lastReadPost || this.isHidden || ((ref = QuoteYou.db) != null ? ref.get({
-        boardID: this.board.ID,
-        threadID: this.thread.ID,
-        postID: this.ID
-      }) : void 0)) {
+      if (this.ID <= Unread.lastReadPost || this.isHidden || QuoteYou.isYou(this)) {
         return;
       }
       Unread.posts.add(this.ID);
@@ -19009,7 +19989,7 @@ Unread = (function() {
         return;
       }
       notif = new Notification(post.info.nameBlock + " replied to you", {
-        body: post.info.commentDisplay,
+        body: post.commentDisplay(),
         icon: Favicon.logo
       });
       notif.onclick = function() {
@@ -19042,7 +20022,7 @@ Unread = (function() {
       return Unread.update();
     },
     read: $.debounce(100, function(e) {
-      var ID, count, data, ref, ref1, root;
+      var ID, count, data, ref, root;
       if (!Unread.posts.size && Unread.readCount !== Unread.thread.posts.keys.length) {
         Unread.saveLastReadPost();
       }
@@ -19059,13 +20039,6 @@ Unread = (function() {
         count++;
         Unread.posts["delete"](ID);
         Unread.postsQuotingYou["delete"](ID);
-        if ((ref1 = QuoteYou.db) != null ? ref1.get({
-          boardID: data.board.ID,
-          threadID: data.thread.ID,
-          postID: ID
-        }) : void 0) {
-          QuoteYou.lastRead = root;
-        }
         Unread.position = Unread.position.next;
       }
       if (!count) {
@@ -19102,7 +20075,6 @@ Unread = (function() {
       if (Unread.thread.isDead && !Unread.thread.isArchived) {
         return;
       }
-      Unread.db.forceSync();
       return Unread.db.set({
         boardID: Unread.thread.board.ID,
         threadID: Unread.thread.ID,
@@ -19145,7 +20117,7 @@ Unread = (function() {
         return ThreadWatcher.update(Unread.thread.board.ID, Unread.thread.ID, {
           isDead: Unread.thread.isDead,
           unread: Unread.posts.size,
-          quotingYou: Unread.postsQuotingYou.size
+          quotingYou: !!(!Conf['Require OP Quote Link'] && QuoteYou.isYou(Unread.thread.OP) ? Unread.posts.size : Unread.postsQuotingYou.size)
         });
       }
     })
@@ -19158,16 +20130,115 @@ Unread = (function() {
 Captcha = {};
 
 (function() {
+  Captcha.cache = {
+    init: function() {
+      $.get('captchas', [], (function(_this) {
+        return function(arg) {
+          var captchas;
+          captchas = arg.captchas;
+          _this.sync(captchas);
+          return _this.clear();
+        };
+      })(this));
+      $.sync('captchas', this.sync.bind(this));
+      return $.on(d, 'SaveCaptcha', (function(_this) {
+        return function(e) {
+          return _this.save(e.detail);
+        };
+      })(this));
+    },
+    captchas: [],
+    getCount: function() {
+      return this.captchas.length;
+    },
+    needed: function() {
+      var captchaCount, postsCount;
+      captchaCount = this.captchas.length;
+      if (QR.req) {
+        captchaCount++;
+      }
+      postsCount = QR.posts.length;
+      if (postsCount === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
+        postsCount = 0;
+      }
+      return captchaCount < postsCount;
+    },
+    sync: function(captchas) {
+      if (captchas == null) {
+        captchas = [];
+      }
+      if (!(captchas instanceof Array)) {
+        captchas = [];
+      }
+      this.captchas = captchas;
+      return this.count();
+    },
+    getOne: function(isReply) {
+      var captcha, i;
+      this.clear();
+      i = this.captchas.findIndex(function(x) {
+        return isReply || (x.challenge == null);
+      });
+      if (i >= 0) {
+        captcha = this.captchas.splice(i, 1)[0];
+        $.set('captchas', this.captchas);
+        this.count();
+        return captcha;
+      } else {
+        return null;
+      }
+    },
+    save: function(captcha) {
+      $.forceSync('captchas');
+      this.captchas.push(captcha);
+      this.captchas.sort(function(a, b) {
+        return a.timeout - b.timeout;
+      });
+      $.set('captchas', this.captchas);
+      return this.count();
+    },
+    clear: function() {
+      var captcha, i, j, len, now, ref;
+      $.forceSync('captchas');
+      if (this.captchas.length) {
+        now = Date.now();
+        ref = this.captchas;
+        for (i = j = 0, len = ref.length; j < len; i = ++j) {
+          captcha = ref[i];
+          if (captcha.timeout > now) {
+            break;
+          }
+        }
+        if (i) {
+          this.captchas = this.captchas.slice(i);
+          $.set('captchas', this.captchas);
+          return this.count();
+        }
+      }
+    },
+    count: function() {
+      clearTimeout(this.timer);
+      if (this.captchas.length) {
+        this.timer = setTimeout(this.clear.bind(this), this.captchas[0].timeout - Date.now());
+      }
+      return $.event('CaptchaCount', this.captchas.length);
+    }
+  };
+
+}).call(this);
+
+(function() {
   Captcha.fixes = {
     imageKeys: '789456123uiojklm'.split('').concat(['Comma', 'Period']),
     imageKeys16: '7890uiopjkl'.split('').concat(['Semicolon', 'm', 'Comma', 'Period', 'Slash']),
     css: '.rc-imageselect-target > div:focus, .rc-image-tile-target:focus {\n  outline: 2px solid #4a90e2;\n}\n.rc-imageselect-target td:focus {\n  box-shadow: inset 0 0 0 2px #4a90e2;\n  outline: none;\n}\n.rc-button-default:focus {\n  box-shadow: inset 0 0 0 2px #0063d6;\n}',
-    cssNoscript: '.fbc-payload-imageselect {\n  position: relative;\n}\n.fbc-payload-imageselect > label {\n  position: absolute;\n  display: block;\n  height: 93.3px;\n  width: 93.3px;\n}\nlabel[data-row="0"] {top: 0px;}\nlabel[data-row="1"] {top: 93.3px;}\nlabel[data-row="2"] {top: 186.6px;}\nlabel[data-col="0"] {left: 0px;}\nlabel[data-col="1"] {left: 93.3px;}\nlabel[data-col="2"] {left: 186.6px;}\n.fbc-payload-imageselect > input:focus + label {\n  outline: 2px solid #4a90e2;\n}\n.fbc-button-verify input:focus {\n  box-shadow: inset 0 0 0 2px #0063d6;\n}\nbody.focus .fbc {\n  box-shadow: inset 0 0 0 2px #4a90e2;\n}',
+    cssNoscript: '.fbc-payload-imageselect {\n  position: relative;\n  /* XXX Fixes for Google\'s broken CSS */\n  display: inline-block;\n  margin-left: 0;\n}\n.fbc-payload-imageselect > label {\n  position: absolute;\n  display: block;\n  height: 93.3px;\n  width: 93.3px;\n}\nlabel[data-row="0"] {top: 0px;}\nlabel[data-row="1"] {top: 93.3px;}\nlabel[data-row="2"] {top: 186.6px;}\nlabel[data-col="0"] {left: 0px;}\nlabel[data-col="1"] {left: 93.3px;}\nlabel[data-col="2"] {left: 186.6px;}\n.fbc-payload-imageselect > input:focus + label {\n  outline: 2px solid #4a90e2;\n}\n.fbc-button-verify input:focus {\n  box-shadow: inset 0 0 0 2px #0063d6;\n}\nbody.focus .fbc {\n  box-shadow: inset 0 0 0 2px #4a90e2;\n}',
     init: function() {
       switch (location.pathname.split('/')[3]) {
         case 'anchor':
           return this.initMain();
         case 'frame':
+        case 'bframe':
           return this.initPopup();
         case 'fallback':
           return this.initNoscript();
@@ -19346,6 +20417,286 @@ Captcha = {};
 }).call(this);
 
 (function() {
+  Captcha.noscript = {
+    lifetime: 30 * $.MINUTE,
+    init: function() {
+      var container, input;
+      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
+        return;
+      }
+      if (!(this.isEnabled = !!$('#g-recaptcha, #captcha-forced-noscript'))) {
+        return;
+      }
+      container = $.el('div', {
+        className: 'captcha-img',
+        title: 'Reload reCAPTCHA'
+      });
+      input = $.el('input', {
+        className: 'captcha-input field',
+        title: 'Verification',
+        autocomplete: 'off',
+        spellcheck: false
+      });
+      this.nodes = {
+        container: container,
+        input: input
+      };
+      $.on(input, 'blur', QR.focusout);
+      $.on(input, 'focus', QR.focusin);
+      $.on(input, 'keydown', this.keydown.bind(this));
+      $.on(input, 'input', function() {
+        if (!Captcha.cache.getCount()) {
+          return QR.posts[0].preventAutoPost();
+        }
+      });
+      $.on(this.nodes.container, 'click', (function(_this) {
+        return function() {
+          _this.reload();
+          return _this.nodes.input.focus();
+        };
+      })(this));
+      this.conn = new Connection(null, 'https://www.google.com', {
+        challenge: this.load.bind(this),
+        token: this.save.bind(this),
+        error: this.error.bind(this)
+      });
+      $.addClass(QR.nodes.el, 'has-captcha', 'captcha-v1', 'noscript-captcha');
+      $.after(QR.nodes.com.parentNode, [container, input]);
+      Captcha.cache.init();
+      $.on(d, 'CaptchaCount', this.count.bind(this));
+      this.beforeSetup();
+      return this.setup();
+    },
+    initFrame: function() {
+      var cb, conn, img, ref, ref1;
+      conn = new Connection(window.parent, 'https://boards.4chan.org', {
+        response: function(response) {
+          $.id('recaptcha_response_field').value = response;
+          return HTMLFormElement.prototype.submit.call($('form'));
+        }
+      });
+      if (location.hash === '#response') {
+        conn.send({
+          token: (ref = $('textarea')) != null ? ref.value : void 0,
+          error: (ref1 = $('.recaptcha_input_area')) != null ? ref1.textContent.replace(/:$/, '') : void 0
+        });
+      }
+      if (!(img = $('img'))) {
+        return;
+      }
+      $('form').action = '#response';
+      cb = function() {
+        var canvas;
+        canvas = $.el('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        return conn.send({
+          challenge: canvas.toDataURL()
+        });
+      };
+      if (img.complete) {
+        return cb();
+      } else {
+        return $.on(img, 'load', cb);
+      }
+    },
+    timers: {},
+    iframeURL: function() {
+      var lang, url;
+      url = 'https://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc';
+      if (lang = Conf['captchaLanguage'].trim()) {
+        url += "&hl=" + (encodeURIComponent(lang));
+      }
+      return url;
+    },
+    cb: {
+      focus: function() {
+        return QR.captcha.setup(false, true);
+      }
+    },
+    beforeSetup: function() {
+      var container, input, ref;
+      ref = this.nodes, container = ref.container, input = ref.input;
+      container.hidden = true;
+      input.value = '';
+      input.placeholder = 'Focus to load reCAPTCHA';
+      this.count();
+      return $.on(input, 'focus click', this.cb.focus);
+    },
+    moreNeeded: function() {},
+    setup: function(focus, force) {
+      if (!(this.isEnabled && (force || Captcha.cache.needed()))) {
+        return;
+      }
+      if (!this.nodes.iframe) {
+        this.nodes.iframe = $.el('iframe', {
+          id: 'qr-captcha-iframe',
+          src: this.iframeURL()
+        });
+        $.add(QR.nodes.el, this.nodes.iframe);
+        this.conn.target = this.nodes.iframe;
+      } else if (!this.occupied || force) {
+        this.nodes.iframe.src = this.iframeURL();
+      }
+      this.occupied = true;
+      if (focus) {
+        return this.nodes.input.focus();
+      }
+    },
+    afterSetup: function() {
+      var container, input, ref;
+      ref = this.nodes, container = ref.container, input = ref.input;
+      container.hidden = false;
+      input.placeholder = 'Verification';
+      this.count();
+      $.off(input, 'focus click', this.cb.focus);
+      if (QR.nodes.el.getBoundingClientRect().bottom > doc.clientHeight) {
+        QR.nodes.el.style.top = '';
+        return QR.nodes.el.style.bottom = '0px';
+      }
+    },
+    destroy: function() {
+      if (!this.isEnabled) {
+        return;
+      }
+      $.rm(this.nodes.img);
+      delete this.nodes.img;
+      $.rm(this.nodes.iframe);
+      delete this.nodes.iframe;
+      delete this.occupied;
+      return this.beforeSetup();
+    },
+    getOne: function(isReply) {
+      var captcha;
+      if ((captcha = Captcha.cache.getOne(isReply))) {
+        return captcha;
+      } else if (/\S/.test(this.nodes.input.value)) {
+        return (function(_this) {
+          return function(cb) {
+            _this.submitCB = cb;
+            return _this.sendResponse();
+          };
+        })(this);
+      } else {
+        return null;
+      }
+    },
+    sendResponse: function() {
+      var response;
+      response = this.nodes.input.value;
+      if (/\S/.test(response)) {
+        return this.conn.send({
+          response: response
+        });
+      }
+    },
+    save: function(token) {
+      var captcha;
+      delete this.occupied;
+      this.nodes.input.value = '';
+      captcha = {
+        challenge: token,
+        response: 'manual_challenge',
+        timeout: this.timeout
+      };
+      if (this.submitCB) {
+        this.submitCB(captcha);
+        delete this.submitCB;
+        if (Captcha.cache.needed()) {
+          return this.reload();
+        } else {
+          return this.destroy();
+        }
+      } else {
+        Captcha.cache.save(captcha);
+        return this.reload();
+      }
+    },
+    error: function(message) {
+      this.occupied = true;
+      this.nodes.input.value = '';
+      if (this.submitCB) {
+        this.submitCB();
+        delete this.submitCB;
+      }
+      return QR.error("Captcha Error: " + message);
+    },
+    load: function(src) {
+      var container, img, input, ref;
+      ref = this.nodes, container = ref.container, input = ref.input, img = ref.img;
+      this.occupied = true;
+      this.timeout = Date.now() + this.lifetime;
+      if (!img) {
+        img = this.nodes.img = new Image();
+        $.one(img, 'load', this.afterSetup.bind(this));
+        $.on(img, 'load', function() {
+          return this.hidden = false;
+        });
+        $.add(container, img);
+      }
+      img.src = src;
+      input.value = '';
+      clearTimeout(this.timers.expire);
+      return this.timers.expire = setTimeout(this.expire.bind(this), this.lifetime);
+    },
+    count: function() {
+      var count, placeholder;
+      count = Captcha.cache.getCount();
+      placeholder = this.nodes.input.placeholder.replace(/\ \(.*\)$/, '');
+      placeholder += (function() {
+        switch (count) {
+          case 0:
+            if (placeholder === 'Verification') {
+              return ' (Shift + Enter to cache)';
+            } else {
+              return '';
+            }
+            break;
+          case 1:
+            return ' (1 cached captcha)';
+          default:
+            return " (" + count + " cached captchas)";
+        }
+      })();
+      this.nodes.input.placeholder = placeholder;
+      return this.nodes.input.alt = count;
+    },
+    expire: function() {
+      if (!this.nodes.iframe) {
+        return;
+      }
+      if (!d.hidden && (Captcha.cache.needed() || d.activeElement === this.nodes.input)) {
+        return this.reload();
+      } else {
+        return this.destroy();
+      }
+    },
+    reload: function() {
+      var ref;
+      this.nodes.iframe.src = this.iframeURL();
+      this.occupied = true;
+      return (ref = this.nodes.img) != null ? ref.hidden = true : void 0;
+    },
+    keydown: function(e) {
+      if (e.keyCode === 8 && !this.nodes.input.value) {
+        if (this.nodes.iframe) {
+          this.reload();
+        } else {
+          this.setup();
+        }
+      } else if (e.keyCode === 13 && e.shiftKey) {
+        this.sendResponse();
+      } else {
+        return;
+      }
+      return e.preventDefault();
+    }
+  };
+
+}).call(this);
+
+(function() {
   Captcha.replace = {
     init: function() {
       if (!(d.cookie.indexOf('pass_enabled=1') < 0)) {
@@ -19360,7 +20711,7 @@ Captcha = {};
         });
         return;
       }
-      if (((Conf['Use Recaptcha v1'] && location.hostname === 'boards.4chan.org') || (Conf['Use Recaptcha v1 in Reports'] && location.hostname === 'sys.4chan.org')) && Main.jsEnabled) {
+      if (location.hostname === 'sys.4chan.org' && Conf['Use Recaptcha v1 in Reports'] && Main.jsEnabled) {
         $.ready(Captcha.replace.v1);
         return;
       }
@@ -19380,7 +20731,7 @@ Captcha = {};
     },
     noscript: function() {
       var insert, noscript, original, span, toggle;
-      if (!((original = $('#g-recaptcha, #captchaContainerAlt')) && (noscript = $('noscript')))) {
+      if (!((original = $('#g-recaptcha')) && (noscript = $('noscript', original.parentNode)))) {
         return;
       }
       span = $.el('span', {
@@ -19399,23 +20750,19 @@ Captcha = {};
       }
     },
     v1: function() {
-      var form, link;
-      if (!$.id('g-recaptcha')) {
+      var container, old, script;
+      if (!(old = $.id('g-recaptcha'))) {
         return;
       }
-      Captcha.v1.replace();
-      if ((link = $.id('form-link'))) {
-        return $.on(link, 'click', function() {
-          return Captcha.v1.create();
-        });
-      } else if (location.hostname === 'boards.4chan.org') {
-        form = $.id('postForm');
-        return form.addEventListener('focus', (function() {
-          return Captcha.v1.create();
-        }), true);
-      } else {
-        return Captcha.v1.create();
-      }
+      script = $.el('script', {
+        src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
+      });
+      $.add(d.head, script);
+      container = $.el('div', {
+        id: 'captchaContainerAlt'
+      });
+      $.replace(old, container);
+      return Captcha.v1.create();
     },
     iframe: function(iframe) {
       var lang, src;
@@ -19459,11 +20806,11 @@ Captcha = {};
   Captcha.v1 = {
     blank: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='57'/>",
     init: function() {
-      var imgContainer, input;
+      var container, imgContainer, input;
       if (d.cookie.indexOf('pass_enabled=1') >= 0) {
         return;
       }
-      if (!(this.isEnabled = !!$('#g-recaptcha, #captchaContainerAlt'))) {
+      if (!(this.isEnabled = !!$('#g-recaptcha, #captcha-forced-noscript'))) {
         return;
       }
       imgContainer = $.el('div', {
@@ -19486,44 +20833,33 @@ Captcha = {};
       $.on(input, 'blur', QR.focusout);
       $.on(input, 'focus', QR.focusin);
       $.on(input, 'keydown', QR.captcha.keydown.bind(QR.captcha));
+      $.on(input, 'input', function() {
+        if (!Captcha.cache.getCount()) {
+          return QR.posts[0].preventAutoPost();
+        }
+      });
       $.on(this.nodes.img.parentNode, 'click', QR.captcha.reload.bind(QR.captcha));
       $.addClass(QR.nodes.el, 'has-captcha', 'captcha-v1');
       $.after(QR.nodes.com.parentNode, [imgContainer, input]);
-      this.captchas = [];
-      $.get('captchas', [], function(arg) {
-        var captchas;
-        captchas = arg.captchas;
-        QR.captcha.sync(captchas);
-        return QR.captcha.clear();
+      Captcha.cache.init();
+      $.on(d, 'CaptchaCount', this.count.bind(this));
+      this.script = $.el('script', {
+        src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
       });
-      $.sync('captchas', this.sync);
-      this.replace();
+      $.add(d.head, this.script);
+      container = $.el('div', {
+        id: 'captchaContainerAlt',
+        hidden: true
+      });
+      $.add(d.body, container);
       this.beforeSetup();
       if (Conf['Auto-load captcha']) {
         this.setup();
       }
-      new MutationObserver(this.afterSetup).observe($.id('captchaContainerAlt'), {
+      new MutationObserver(this.afterSetup).observe(container, {
         childList: true
       });
       return this.afterSetup();
-    },
-    replace: function() {
-      var container, old;
-      if (this.script) {
-        return;
-      }
-      if (!(this.script = $('script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]', d.head))) {
-        this.script = $.el('script', {
-          src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
-        });
-        $.add(d.head, this.script);
-      }
-      if (old = $.id('g-recaptcha')) {
-        container = $.el('div', {
-          id: 'captchaContainerAlt'
-        });
-        return $.replace(old, container);
-      }
     },
     create: function() {
       var cont, lang;
@@ -19561,9 +20897,6 @@ Captcha = {};
         container = document.getElementById('captchaContainerAlt');
         options = {
           theme: 'clean',
-          tabindex: {
-            "boards.4chan.org": 5
-          }[location.hostname],
           lang: container.dataset.lang
         };
         if (window.Recaptcha) {
@@ -19591,22 +20924,9 @@ Captcha = {};
       this.count();
       return $.on(input, 'focus click', this.cb.focus);
     },
-    needed: function() {
-      var captchaCount, postsCount;
-      captchaCount = this.captchas.length;
-      if (QR.req) {
-        captchaCount++;
-      }
-      postsCount = QR.posts.length;
-      if (postsCount === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
-        postsCount = 0;
-      }
-      return captchaCount < postsCount;
-    },
-    onNewPost: function() {},
-    onPostChange: function() {},
+    moreNeeded: function() {},
     setup: function(focus, force) {
-      if (!(this.isEnabled && (force || this.needed()))) {
+      if (!(this.isEnabled && (force || Captcha.cache.needed()))) {
         return;
       }
       this.create();
@@ -19662,19 +20982,9 @@ Captcha = {};
         return this.beforeSetup();
       }
     },
-    sync: function(captchas) {
-      if (captchas == null) {
-        captchas = [];
-      }
-      QR.captcha.captchas = captchas;
-      return QR.captcha.count();
-    },
-    getOne: function() {
+    getOne: function(isReply) {
       var captcha, challenge, response, timeout;
-      this.clear();
-      if (captcha = this.captchas.shift()) {
-        this.count();
-        $.set('captchas', this.captchas);
+      if ((captcha = Captcha.cache.getOne(isReply))) {
         return captcha;
       } else {
         challenge = this.nodes.img.alt;
@@ -19697,39 +21007,13 @@ Captcha = {};
         return;
       }
       this.nodes.input.value = '';
-      this.captchas.push({
+      Captcha.cache.save({
         challenge: this.nodes.img.alt,
         response: response,
         timeout: this.timeout
       });
-      this.captchas.sort(function(a, b) {
-        return a.timeout - b.timeout;
-      });
-      this.count();
       this.destroy();
-      this.setup(false, true);
-      return $.set('captchas', this.captchas);
-    },
-    clear: function() {
-      var captcha, i, j, len, now, ref;
-      if (!this.captchas.length) {
-        return;
-      }
-      $.forceSync('captchas');
-      now = Date.now();
-      ref = this.captchas;
-      for (i = j = 0, len = ref.length; j < len; i = ++j) {
-        captcha = ref[i];
-        if (captcha.timeout > now) {
-          break;
-        }
-      }
-      if (!i) {
-        return;
-      }
-      this.captchas = this.captchas.slice(i);
-      this.count();
-      return $.set('captchas', this.captchas);
+      return this.setup(false, true);
     },
     load: function() {
       var challenge, challenge_image;
@@ -19747,12 +21031,11 @@ Captcha = {};
       challenge = this.nodes.challenge.firstChild.value;
       this.nodes.img.alt = challenge;
       this.nodes.img.src = challenge_image.src;
-      this.nodes.input.value = '';
-      return this.clear();
+      return this.nodes.input.value = '';
     },
     count: function() {
       var count, placeholder;
-      count = this.captchas ? this.captchas.length : 0;
+      count = Captcha.cache.getCount();
       placeholder = this.nodes.input.placeholder.replace(/\ \(.*\)$/, '');
       placeholder += (function() {
         switch (count) {
@@ -19770,11 +21053,7 @@ Captcha = {};
         }
       })();
       this.nodes.input.placeholder = placeholder;
-      this.nodes.input.alt = count;
-      clearTimeout(this.timer);
-      if (count) {
-        return this.timer = setTimeout(this.clear.bind(this), this.captchas[0].timeout - Date.now());
-      }
+      return this.nodes.input.alt = count;
     },
     reload: function(focus) {
       $.global(function() {
@@ -19813,19 +21092,14 @@ Captcha = {};
       if (d.cookie.indexOf('pass_enabled=1') >= 0) {
         return;
       }
-      if (!(this.isEnabled = !!$('#g-recaptcha, #captchaContainerAlt, #captcha-forced-noscript'))) {
+      if (!(this.isEnabled = !!$('#g-recaptcha, #captcha-forced-noscript'))) {
         return;
       }
       if ((this.noscript = Conf['Force Noscript Captcha'] || !Main.jsEnabled)) {
         $.addClass(QR.nodes.el, 'noscript-captcha');
       }
-      this.captchas = [];
-      $.get('captchas', [], function(arg) {
-        var captchas;
-        captchas = arg.captchas;
-        return QR.captcha.sync(captchas);
-      });
-      $.sync('captchas', this.sync.bind(this));
+      Captcha.cache.init();
+      $.on(d, 'CaptchaCount', this.count.bind(this));
       root = $.el('div', {
         className: 'captcha-root'
       });
@@ -19860,7 +21134,7 @@ Captcha = {};
       })(this));
     },
     timeouts: {},
-    postsCount: 0,
+    prevNeeded: 0,
     noscriptURL: function() {
       var lang, url;
       url = 'https://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc';
@@ -19869,28 +21143,17 @@ Captcha = {};
       }
       return url;
     },
-    needed: function() {
-      var captchaCount;
-      captchaCount = this.captchas.length;
-      if (QR.req) {
-        captchaCount++;
-      }
-      this.postsCount = QR.posts.length;
-      if (this.postsCount === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
-        this.postsCount = 0;
-      }
-      return captchaCount < this.postsCount;
-    },
-    onNewPost: function() {
-      return this.setup();
-    },
-    onPostChange: function() {
-      if (this.postsCount === 0) {
-        this.setup();
-      }
-      if (QR.posts.length === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
-        return this.postsCount = 0;
-      }
+    moreNeeded: function() {
+      return $.queueTask((function(_this) {
+        return function() {
+          var needed;
+          needed = Captcha.cache.needed();
+          if (needed && !_this.prevNeeded) {
+            _this.setup(QR.cooldown.auto && d.activeElement === QR.nodes.status);
+          }
+          return _this.prevNeeded = needed;
+        };
+      })(this));
     },
     toggle: function() {
       if (this.nodes.container && !this.timeouts.destroy) {
@@ -19900,7 +21163,7 @@ Captcha = {};
       }
     },
     setup: function(focus, force) {
-      if (!(this.isEnabled && (this.needed() || force))) {
+      if (!(this.isEnabled && (Captcha.cache.needed() || force))) {
         return;
       }
       if (focus) {
@@ -19942,6 +21205,7 @@ Captcha = {};
       var div, iframe, textarea;
       iframe = $.el('iframe', {
         id: 'qr-captcha-iframe',
+        scrolling: 'no',
         src: this.noscriptURL()
       });
       div = $.el('div');
@@ -19978,12 +21242,12 @@ Captcha = {};
       });
     },
     afterSetup: function(mutations) {
-      var iframe, j, k, len, len1, mutation, node, ref, textarea;
-      for (j = 0, len = mutations.length; j < len; j++) {
-        mutation = mutations[j];
+      var i, iframe, j, len, len1, mutation, node, ref, textarea;
+      for (i = 0, len = mutations.length; i < len; i++) {
+        mutation = mutations[i];
         ref = mutation.addedNodes;
-        for (k = 0, len1 = ref.length; k < len1; k++) {
-          node = ref[k];
+        for (j = 0, len1 = ref.length; j < len1; j++) {
+          node = ref[j];
           if ((iframe = $.x('./descendant-or-self::iframe', node))) {
             this.setupIFrame(iframe);
           }
@@ -20005,11 +21269,6 @@ Captcha = {};
       if (d.activeElement === this.nodes.counter) {
         iframe.focus();
       }
-      $.global(function() {
-        var f;
-        f = document.querySelector('#qr iframe');
-        return f.focus = f.blur = function() {};
-      });
       if (((ref = $.engine) === 'blink' || ref === 'edge') && (ref1 = iframe.parentNode, indexOf.call($$('#qr .captcha-container > div > div:first-of-type'), ref1) >= 0)) {
         return $.on(iframe.parentNode, 'scroll', function() {
           return this.scrollTop = 0;
@@ -20030,58 +21289,32 @@ Captcha = {};
       })(this));
     },
     destroy: function() {
-      var garbage, i, ins, node, ref;
       if (!this.isEnabled) {
         return;
       }
       delete this.timeouts.destroy;
       $.rmClass(QR.nodes.el, 'captcha-open');
       if (this.nodes.container) {
+        $.global(function() {
+          var container;
+          container = document.querySelector('#qr .captcha-container');
+          return window.grecaptcha.reset(container.dataset.widgetID);
+        });
         $.rm(this.nodes.container);
-      }
-      delete this.nodes.container;
-      garbage = $.X('//iframe[starts-with(@src, "https://www.google.com/recaptcha/api2/frame")]/ancestor-or-self::*[parent::body]');
-      i = 0;
-      while (node = garbage.snapshotItem(i++)) {
-        if (((ref = (ins = node.nextSibling)) != null ? ref.nodeName : void 0) === 'INS') {
-          $.rm(ins);
-        }
-        $.rm(node);
+        return delete this.nodes.container;
       }
     },
-    sync: function(captchas) {
-      if (captchas == null) {
-        captchas = [];
-      }
-      this.captchas = captchas;
-      this.clear();
-      return this.count();
-    },
-    getOne: function() {
-      var captcha;
-      this.clear();
-      if ((captcha = this.captchas.shift())) {
-        $.set('captchas', this.captchas);
-        this.count();
-        return captcha;
-      } else {
-        return null;
-      }
+    getOne: function(isReply) {
+      return Captcha.cache.getOne(isReply);
     },
     save: function(pasted, token) {
       var base, focus, ref;
-      $.forceSync('captchas');
-      this.captchas.push({
+      Captcha.cache.save({
         response: token || $('textarea', this.nodes.container).value,
         timeout: Date.now() + this.lifetime
       });
-      this.captchas.sort(function(a, b) {
-        return a.timeout - b.timeout;
-      });
-      $.set('captchas', this.captchas);
-      this.count();
       focus = ((ref = d.activeElement) != null ? ref.nodeName : void 0) === 'IFRAME' && /https?:\/\/www\.google\.com\/recaptcha\//.test(d.activeElement.src);
-      if (this.needed()) {
+      if (Captcha.cache.needed()) {
         if (focus) {
           if (QR.cooldown.auto || Conf['Post on Captcha Completion']) {
             this.nodes.counter.focus();
@@ -20106,34 +21339,11 @@ Captcha = {};
         return QR.submit();
       }
     },
-    clear: function() {
-      var captcha, i, j, len, now, ref;
-      if (!this.captchas.length) {
-        return;
-      }
-      $.forceSync('captchas');
-      now = Date.now();
-      ref = this.captchas;
-      for (i = j = 0, len = ref.length; j < len; i = ++j) {
-        captcha = ref[i];
-        if (captcha.timeout > now) {
-          break;
-        }
-      }
-      if (!i) {
-        return;
-      }
-      this.captchas = this.captchas.slice(i);
-      this.count();
-      $.set('captchas', this.captchas);
-      return this.setup(d.activeElement === QR.nodes.status);
-    },
     count: function() {
-      this.nodes.counter.textContent = "Captchas: " + this.captchas.length;
-      clearTimeout(this.timeouts.clear);
-      if (this.captchas.length) {
-        return this.timeouts.clear = setTimeout(this.clear.bind(this), this.captchas[0].timeout - Date.now());
-      }
+      var count;
+      count = Captcha.cache.getCount();
+      this.nodes.counter.textContent = "Captchas: " + count;
+      return this.moreNeeded();
     },
     reload: function() {
       if ($('iframe[src^="https://www.google.com/recaptcha/api/fallback?"]', this.nodes.container)) {
@@ -20242,7 +21452,7 @@ QR = (function() {
       'video/webm': 'webm'
     },
     init: function() {
-      var sc, version;
+      var info, noscript, sc, version;
       if (!Conf['Quick Reply']) {
         return;
       }
@@ -20250,7 +21460,7 @@ QR = (function() {
       if (g.VIEW === 'archive') {
         return;
       }
-      version = Conf['Use Recaptcha v1'] && Main.jsEnabled ? 'v1' : 'v2';
+      version = Conf[g.VIEW === 'thread' ? 'Use Recaptcha v1' : 'Use Recaptcha v1 on Index'] && (Main.jsEnabled || location.protocol === 'https:') ? (noscript = location.protocol === 'https:' && (Conf['Force Noscript Captcha for v1'] || !Main.jsEnabled), (info = typeof GM !== "undefined" && GM !== null ? GM.info : void 0) && info.scriptHandler === 'Greasemonkey' && /^4\./.test(info.version) ? noscript = false : void 0, noscript ? 'noscript' : 'v1') : 'v2';
       this.captcha = Captcha[version];
       $.on(d, '4chanXInitFinished', function() {
         return BoardConfig.ready(QR.initReady);
@@ -20393,7 +21603,7 @@ QR = (function() {
       }
       QR.nodes.el.hidden = true;
       QR.cleanNotifications();
-      d.activeElement.blur();
+      QR.blur();
       $.rmClass(QR.nodes.el, 'dump');
       $.addClass(QR.shortcut, 'disabled');
       new QR.post(true);
@@ -20422,7 +21632,7 @@ QR = (function() {
       });
     },
     hide: function() {
-      d.activeElement.blur();
+      QR.blur();
       $.addClass(QR.nodes.el, 'autohide');
       return QR.nodes.autohide.checked = true;
     },
@@ -20435,6 +21645,11 @@ QR = (function() {
         return QR.hide();
       } else {
         return QR.unhide();
+      }
+    },
+    blur: function() {
+      if (QR.nodes.el.contains(d.activeElement)) {
+        return d.activeElement.blur();
       }
     },
     toggleSJIS: function(e) {
@@ -20511,6 +21726,11 @@ QR = (function() {
         }
       }
     },
+    connectionError: function() {
+      return $.el('span', {
+        innerHTML: "Connection error while posting. [<a href=\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#connection-errors\" target=\"_blank\">More info</a>]"
+      });
+    },
     notifications: [],
     cleanNotifications: function() {
       var j, len, notification, ref;
@@ -20548,7 +21768,7 @@ QR = (function() {
       }
     },
     quote: function(e) {
-      var ancestor, caretPos, com, frag, insideCode, j, k, l, len, len1, len2, len3, len4, len5, n, node, o, post, q, range, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, sel, text, thread;
+      var ancestor, caretPos, com, frag, i, insideCode, j, k, l, len, len1, len2, len3, n, node, o, post, postRange, range, ref, ref1, ref2, ref3, ref4, ref5, ref6, root, sel, text, thread;
       if (e != null) {
         e.preventDefault();
       }
@@ -20557,9 +21777,21 @@ QR = (function() {
       }
       sel = d.getSelection();
       post = Get.postFromNode(this);
+      root = post.nodes.root;
+      postRange = new Range();
+      postRange.selectNode(root);
       text = post.board.ID === g.BOARD.ID ? ">>" + post + "\n" : ">>>/" + post.board + "/" + post + "\n";
-      if (sel.toString().trim() && post === Get.postFromNode(sel.anchorNode)) {
-        range = sel.getRangeAt(0);
+      for (i = j = 0, ref = sel.rangeCount; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+        range = sel.getRangeAt(i);
+        if (range.compareBoundaryPoints(Range.START_TO_START, postRange) < 0) {
+          range.setStartBefore(root);
+        }
+        if (range.compareBoundaryPoints(Range.END_TO_END, postRange) > 0) {
+          range.setEndAfter(root);
+        }
+        if (!range.toString().trim()) {
+          continue;
+        }
         frag = range.cloneContents();
         ancestor = range.commonAncestorContainer;
         if ($.x('ancestor-or-self::*[self::s or contains(@class,"removed-spoiler")]', ancestor)) {
@@ -20570,37 +21802,28 @@ QR = (function() {
           $.prepend(frag, $.tn('[code]'));
           $.add(frag, $.tn('[/code]'));
         }
-        ref = $$((insideCode ? 'br' : '.prettyprint br'), frag);
-        for (j = 0, len = ref.length; j < len; j++) {
-          node = ref[j];
+        ref1 = $$((insideCode ? 'br' : '.prettyprint br'), frag);
+        for (k = 0, len = ref1.length; k < len; k++) {
+          node = ref1[k];
           $.replace(node, $.tn('\n'));
         }
-        ref1 = $$('br', frag);
-        for (k = 0, len1 = ref1.length; k < len1; k++) {
-          node = ref1[k];
+        ref2 = $$('br', frag);
+        for (l = 0, len1 = ref2.length; l < len1; l++) {
+          node = ref2[l];
           if (node !== frag.lastChild) {
             $.replace(node, $.tn('\n>'));
           }
         }
-        ref2 = $$('s, .removed-spoiler', frag);
-        for (l = 0, len2 = ref2.length; l < len2; l++) {
-          node = ref2[l];
-          $.replace(node, [$.tn('[spoiler]')].concat(slice.call(node.childNodes), [$.tn('[/spoiler]')]));
-        }
-        ref3 = $$('.prettyprint', frag);
-        for (n = 0, len3 = ref3.length; n < len3; n++) {
+        Post.prototype.insertTags(frag);
+        ref3 = $$('.linkify[data-original]', frag);
+        for (n = 0, len2 = ref3.length; n < len2; n++) {
           node = ref3[n];
-          $.replace(node, [$.tn('[code]')].concat(slice.call(node.childNodes), [$.tn('[/code]')]));
-        }
-        ref4 = $$('.linkify[data-original]', frag);
-        for (o = 0, len4 = ref4.length; o < len4; o++) {
-          node = ref4[o];
           $.replace(node, $.tn(node.dataset.original));
         }
-        ref5 = $$('.embedder', frag);
-        for (q = 0, len5 = ref5.length; q < len5; q++) {
-          node = ref5[q];
-          if (((ref6 = node.previousSibling) != null ? ref6.nodeValue : void 0) === ' ') {
+        ref4 = $$('.embedder', frag);
+        for (o = 0, len3 = ref4.length; o < len3; o++) {
+          node = ref4[o];
+          if (((ref5 = node.previousSibling) != null ? ref5.nodeValue : void 0) === ' ') {
             $.rm(node.previousSibling);
           }
           $.rm(node);
@@ -20608,7 +21831,7 @@ QR = (function() {
         text += ">" + (frag.textContent.trim()) + "\n";
       }
       QR.openPost();
-      ref7 = QR.nodes, com = ref7.com, thread = ref7.thread;
+      ref6 = QR.nodes, com = ref6.com, thread = ref6.thread;
       if (!com.value) {
         thread.value = Get.threadFromNode(this);
       }
@@ -20722,6 +21945,7 @@ QR = (function() {
     handleUrl: function(urlDefault) {
       var url;
       QR.open();
+      QR.selected.preventAutoPost();
       url = prompt('Enter a URL:', urlDefault);
       if (url === null) {
         return;
@@ -20804,7 +22028,7 @@ QR = (function() {
     dialog: function() {
       var classList, config, dialog, event, i, items, name, node, nodes, save, setNode;
       QR.nodes = nodes = {
-        el: dialog = UI.dialog('qr', 'top: 50px; right: 0px;', {
+        el: dialog = UI.dialog('qr', {
           innerHTML: "<div class=\"move\"><label><input type=\"checkbox\" id=\"autohide\" title=\"Auto-hide\">Quick Reply</label><a href=\"javascript:;\" class=\"close\" title=\"Close\">×</a><select data-name=\"thread\" title=\"Create a new thread / Reply\"><option value=\"new\">New thread</option></select></div><form><div class=\"persona\"><button type=\"button\" id=\"sjis-toggle\" title=\"Toggle Mona font\">∀</button><button type=\"button\" id=\"tex-preview-button\" title=\"Preview TeX\">T<sub>E</sub>X</button><input name=\"name\" data-name=\"name\" list=\"list-name\" placeholder=\"Name\" class=\"field\" size=\"1\"><input name=\"email\" data-name=\"email\" list=\"list-email\" placeholder=\"Options\" class=\"field\" size=\"1\"><input name=\"sub\" data-name=\"sub\" list=\"list-sub\" placeholder=\"Subject\" class=\"field\" size=\"1\"></div><div class=\"textarea\"><textarea data-name=\"com\" placeholder=\"Comment\" class=\"field\"></textarea><span id=\"char-count\"></span><div id=\"tex-preview\"></div></div><div id=\"dump-list-container\"><div id=\"dump-list\"></div><a id=\"add-post\" href=\"javascript:;\" title=\"Add a post\">+</a></div><div class=\"oekaki\" hidden><input type=\"button\" id=\"qr-draw-button\" value=\"Draw\"><label><span>Width:</span><input name=\"oekaki-width\" value=\"400\" type=\"number\" class=\"field\" size=\"1\"></label><label><span>Height:</span><input name=\"oekaki-height\" value=\"400\" type=\"number\" class=\"field\" size=\"1\"></label><span class=\"oekaki-bg\" title=\"Background Color\"><input name=\"oekaki-bg\" type=\"checkbox\" checked><input name=\"oekaki-bgcolor\" type=\"color\" value=\"#ffffff\"></span></div><div id=\"file-n-submit\"><input type=\"button\" id=\"qr-file-button\" value=\"Files\"><span id=\"qr-filename-container\" class=\"field\"><span id=\"qr-no-file\">No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><label id=\"qr-spoiler-label\"><input type=\"checkbox\" id=\"qr-file-spoiler\" title=\"Spoiler image\"><a class=\"checkbox-letter\">S</a></label><a id=\"qr-oekaki-button\" title=\"Edit in Tegaki\"><i class=\"fa fa-edit\"></i></a><a href=\"javascript:;\" id=\"qr-filerm\" title=\"Remove file\"><i class=\"fa fa-times-circle\"></i></a><a id=\"url-button\" title=\"Post from URL\"><i class=\"fa fa-link\"></i></a><a hidden id=\"paste-area\" title=\"Select to paste images\" class=\"fa fa-clipboard\" tabindex=\"-1\" contentEditable=\"true\"></a><a id=\"custom-cooldown-button\" title=\"Toggle custom cooldown\" class=\"disabled\"><i class=\"fa fa-clock-o\"></i></a><a id=\"dump-button\" title=\"Dump list\"><i class=\"fa fa-plus-square\"></i></a></span><input type=\"submit\"></div><select data-default=\"4\" name=\"filetag\"><option value=\"0\">Hentai</option><option value=\"6\">Porn</option><option value=\"1\">Japanese</option><option value=\"2\">Anime</option><option value=\"3\">Game</option><option value=\"5\">Loop</option><option value=\"4\" selected>Other</option></select><input type=\"file\" multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist> "
         })
       };
@@ -20859,6 +22083,7 @@ QR = (function() {
           return $.sync('customCooldownEnabled', QR.setCustomCooldown);
         });
       }
+      QR.flagsInput();
       $.on(nodes.autohide, 'change', QR.toggleHide);
       $.on(nodes.close, 'click', QR.close);
       $.on(nodes.form, 'submit', QR.submit);
@@ -20897,11 +22122,11 @@ QR = (function() {
       $.on(d, 'click', QR.focus);
       if ($.engine === 'gecko' && !window.DataTransferItemList) {
         nodes.pasteArea.hidden = false;
-        new MutationObserver(QR.pasteFF).observe(nodes.pasteArea, {
-          childList: true
-        });
       }
-      items = ['thread', 'name', 'email', 'sub', 'com', 'filename'];
+      new MutationObserver(QR.pasteFF).observe(nodes.pasteArea, {
+        childList: true
+      });
+      items = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag'];
       i = 0;
       save = function() {
         return QR.selected.save(this);
@@ -20935,6 +22160,44 @@ QR = (function() {
       QR.oekaki.setup();
       return $.event('QRDialogCreation', null, dialog);
     },
+    flags: function() {
+      var addFlag, ref, select, textContent, value;
+      select = $.el('select', {
+        name: 'flag',
+        className: 'flagSelector'
+      });
+      addFlag = function(value, textContent) {
+        return $.add(select, $.el('option', {
+          value: value,
+          textContent: textContent
+        }));
+      };
+      addFlag('0', 'Geographic Location');
+      ref = BoardConfig.troll_flags;
+      for (value in ref) {
+        textContent = ref[value];
+        addFlag(value, textContent);
+      }
+      return select;
+    },
+    flagsInput: function() {
+      var flag, nodes;
+      nodes = QR.nodes;
+      if (!nodes) {
+        return;
+      }
+      if (nodes.flag) {
+        $.rm(nodes.flag);
+        delete nodes.flag;
+      }
+      if (g.BOARD.ID === 'pol') {
+        flag = QR.flags();
+        flag.dataset.name = 'flag';
+        flag.dataset["default"] = '0';
+        nodes.flag = flag;
+        return $.add(nodes.form, flag);
+      }
+    },
     submit: function(e) {
       var captcha, cb, err, extra, filetag, formData, options, post, ref, thread, threadID;
       if (e != null) {
@@ -20944,6 +22207,7 @@ QR = (function() {
         QR.abort();
         return;
       }
+      $.forceSync('cooldowns');
       if (QR.cooldown.seconds) {
         QR.cooldown.auto = !QR.cooldown.auto;
         QR.status();
@@ -20974,7 +22238,7 @@ QR = (function() {
         err || (err = 'Original comment required.');
       }
       if (QR.captcha.isEnabled && !err) {
-        captcha = QR.captcha.getOne();
+        captcha = QR.captcha.getOne(!!threadID);
         if (!captcha) {
           err = 'No valid captcha.';
           QR.captcha.setup(!QR.cooldown.auto || d.activeElement === QR.nodes.status);
@@ -20988,12 +22252,6 @@ QR = (function() {
         return;
       }
       QR.cooldown.auto = QR.posts.length > 1;
-      if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
-        QR.hide();
-      }
-      if (!QR.cooldown.auto && $.x('ancestor::div[@id="qr"]', d.activeElement)) {
-        d.activeElement.blur();
-      }
       post.lock();
       formData = {
         resto: threadID,
@@ -21004,6 +22262,7 @@ QR = (function() {
         upfile: post.file,
         filetag: filetag,
         spoiler: post.spoiler,
+        flag: post.flag,
         mode: 'regist',
         pwd: QR.persona.getPassword()
       };
@@ -21013,12 +22272,15 @@ QR = (function() {
         onload: QR.response,
         onerror: function() {
           delete QR.req;
+          if (QR.currentCaptcha) {
+            Captcha.cache.save(QR.currentCaptcha);
+          }
+          delete QR.currentCaptcha;
           post.unlock();
-          QR.cooldown.auto = false;
+          QR.cooldown.auto = true;
+          QR.cooldown.addDelay(post, 2);
           QR.status();
-          return QR.error($.el('span', {
-            innerHTML: "Connection error while posting. [<a href=\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#connection-errors\" target=\"_blank\">More info</a>]"
-          }));
+          return QR.error(QR.connectionError());
         }
       };
       extra = {
@@ -21039,6 +22301,7 @@ QR = (function() {
       }
       cb = function(response) {
         if (response != null) {
+          QR.currentCaptcha = response;
           if (response.challenge != null) {
             extra.form.append('recaptcha_challenge_field', response.challenge);
             extra.form.append('recaptcha_response_field', response.response);
@@ -21062,7 +22325,7 @@ QR = (function() {
           } else {
             delete QR.req;
             post.unlock();
-            QR.cooldown.auto = !!QR.captcha.captchas.length;
+            QR.cooldown.auto = !!Captcha.cache.getCount();
             return QR.status();
           }
         });
@@ -21072,35 +22335,33 @@ QR = (function() {
       return QR.status();
     },
     response: function() {
-      var URL, _, ban, err, h1, isReply, lastPostToThread, m, open, post, postID, postsCount, ref, ref1, ref2, req, resDoc, seconds, threadID;
+      var URL, _, connErr, err, h1, isReply, lastPostToThread, m, open, post, postID, postsCount, ref, ref1, ref2, req, resDoc, seconds, threadID;
       req = QR.req;
       delete QR.req;
       post = QR.posts[0];
       post.unlock();
       resDoc = req.response;
-      if (ban = $('.banType', resDoc)) {
-        err = $.el('span', ban.textContent.toLowerCase() === 'banned' ? {
-          innerHTML: "You are banned on " + ($(".board", resDoc)).innerHTML + "! ;_;<br>Click <a href=\"//www.4chan.org/banned\" target=\"_blank\">here</a> to see the reason."
-        } : {
-          innerHTML: "You were issued a warning on " + ($(".board", resDoc)).innerHTML + " as " + ($(".nameBlock", resDoc)).innerHTML + ".<br>Reason: " + ($(".reason", resDoc)).innerHTML
-        });
-      } else if (err = resDoc.getElementById('errmsg')) {
+      if ((err = resDoc.getElementById('errmsg'))) {
         if ((ref = $('a', err)) != null) {
           ref.target = '_blank';
         }
-      } else if (resDoc.title !== 'Post successful!') {
-        err = 'Connection error with sys.4chan.org.';
+      } else if ((connErr = resDoc.title !== 'Post successful!')) {
+        err = QR.connectionError();
+        if (QR.currentCaptcha) {
+          Captcha.cache.save(QR.currentCaptcha);
+        }
       } else if (req.status !== 200) {
         err = "Error " + req.statusText + " (" + req.status + ")";
       }
+      delete QR.currentCaptcha;
       if (err) {
-        if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
+        if (/captcha|verification/i.test(err.textContent) || connErr) {
           if (/mistyped/i.test(err.textContent)) {
             err = 'You mistyped the CAPTCHA, or the CAPTCHA malfunctioned.';
           } else if (/expired/i.test(err.textContent)) {
             err = 'This CAPTCHA is no longer valid because it has expired.';
           }
-          QR.cooldown.auto = QR.captcha.isEnabled || err === 'Connection error with sys.4chan.org.';
+          QR.cooldown.auto = QR.captcha.isEnabled || connErr;
           QR.cooldown.addDelay(post, 2);
         } else if (err.textContent && (m = err.textContent.match(/(?:(\d+)\s+minutes?\s+)?(\d+)\s+second/i)) && !/duplicate|hour/i.test(err.textContent)) {
           QR.cooldown.auto = !/have\s+been\s+muted/i.test(err.textContent);
@@ -21114,9 +22375,6 @@ QR = (function() {
           QR.cooldown.auto = false;
         }
         QR.captcha.setup(QR.cooldown.auto && ((ref1 = d.activeElement) === QR.nodes.status || ref1 === d.body));
-        if (QR.captcha.isEnabled && !QR.captcha.captchas.length) {
-          QR.cooldown.auto = false;
-        }
         QR.status();
         QR.error(err);
         return;
@@ -21148,11 +22406,18 @@ QR = (function() {
           }
         }
       })());
-      if (!(Conf['Persistent QR'] || postsCount)) {
-        QR.close();
-      } else {
+      if (postsCount) {
         post.rm();
         QR.captcha.setup(d.activeElement === QR.nodes.status);
+      } else if (Conf['Persistent QR']) {
+        post.rm();
+        if (Conf['Auto Hide QR']) {
+          QR.hide();
+        } else {
+          QR.blur();
+        }
+      } else {
+        QR.close();
       }
       QR.cleanNotifications();
       if (Conf['Posting Success Notifications']) {
@@ -21164,7 +22429,7 @@ QR = (function() {
         open = Conf['Open Post in New Tab'] || postsCount ? function() {
           return $.open(URL);
         } : function() {
-          return window.location = URL;
+          return location.href = URL;
         };
         if (threadID === postID) {
           QR.waitForThread(URL, open);
@@ -21197,6 +22462,10 @@ QR = (function() {
       if (QR.req && !QR.req.isUploadFinished) {
         QR.req.abort();
         delete QR.req;
+        if (QR.currentCaptcha) {
+          Captcha.cache.save(QR.currentCaptcha);
+        }
+        delete QR.currentCaptcha;
         QR.posts[0].unlock();
         QR.cooldown.auto = false;
         QR.notifications.push(new Notice('info', 'QR upload aborted.', 5));
@@ -21213,35 +22482,23 @@ QR = (function() {
   QR.cooldown = {
     seconds: 0,
     delays: {
-      thread: 0,
-      reply: 0,
-      image: 0,
-      deletion: 60,
-      thread_global: 300
+      deletion: 60
     },
     init: function() {
       if (!Conf['Quick Reply']) {
         return;
       }
       this.data = Conf['cooldowns'];
+      this.changes = {};
       return $.sync('cooldowns', this.sync);
     },
     setup: function() {
-      var delay, i, key, len, m, ref, ref1, type;
-      if (m = Get.scriptData().match(/\bcooldowns *= *({[^}]+})/)) {
-        $.extend(QR.cooldown.delays, JSON.parse(m[1]));
-      }
-      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
-        ref = ['reply', 'image'];
-        for (i = 0, len = ref.length; i < len; i++) {
-          key = ref[i];
-          QR.cooldown.delays[key] = Math.ceil(QR.cooldown.delays[key] / 2);
-        }
-      }
+      var delay, ref, type;
+      $.extend(QR.cooldown.delays, g.BOARD.cooldowns());
       QR.cooldown.maxDelay = 0;
-      ref1 = QR.cooldown.delays;
-      for (type in ref1) {
-        delay = ref1[type];
+      ref = QR.cooldown.delays;
+      for (type in ref) {
+        delay = ref[type];
         if (type !== 'thread' && type !== 'thread_global') {
           QR.cooldown.maxDelay = Math.max(QR.cooldown.maxDelay, delay);
         }
@@ -21280,6 +22537,7 @@ QR = (function() {
           postID: postID
         });
       }
+      QR.cooldown.save();
       return QR.cooldown.start();
     },
     addDelay: function(post, delay) {
@@ -21290,6 +22548,7 @@ QR = (function() {
       cooldown = QR.cooldown.categorize(post);
       cooldown.delay = delay;
       QR.cooldown.set(g.BOARD.ID, Date.now(), cooldown);
+      QR.cooldown.save();
       return QR.cooldown.start();
     },
     addMute: function(delay) {
@@ -21300,6 +22559,7 @@ QR = (function() {
         type: 'mute',
         delay: delay
       });
+      QR.cooldown.save();
       return QR.cooldown.start();
     },
     "delete": function(post) {
@@ -21307,15 +22567,14 @@ QR = (function() {
       if (!QR.cooldown.data) {
         return;
       }
-      $.forceSync('cooldowns');
       cooldowns = ((base = QR.cooldown.data)[name = post.board.ID] || (base[name] = {}));
       for (id in cooldowns) {
         cooldown = cooldowns[id];
         if ((cooldown.delay == null) && cooldown.threadID === post.thread.ID && cooldown.postID === post.ID) {
-          delete cooldowns[id];
+          QR.cooldown.set(post.board.ID, id, null);
         }
       }
-      return QR.cooldown.save([post.board.ID]);
+      return QR.cooldown.save();
     },
     secondsDeletion: function(post) {
       var cooldown, cooldowns, seconds, start;
@@ -21344,28 +22603,49 @@ QR = (function() {
         };
       }
     },
-    set: function(scope, id, value) {
-      var base, cooldowns;
-      $.forceSync('cooldowns');
-      cooldowns = ((base = QR.cooldown.data)[scope] || (base[scope] = {}));
-      cooldowns[id] = value;
-      return $.set('cooldowns', QR.cooldown.data);
-    },
-    save: function(scopes) {
-      var data, i, len, scope;
-      data = QR.cooldown.data;
-      for (i = 0, len = scopes.length; i < len; i++) {
-        scope = scopes[i];
-        if (scope in data && !Object.keys(data[scope]).length) {
-          delete data[scope];
+    mergeChange: function(data, scope, id, value) {
+      if (value) {
+        return (data[scope] || (data[scope] = {}))[id] = value;
+      } else if (scope in data) {
+        delete data[scope][id];
+        if (Object.keys(data[scope]).length === 0) {
+          return delete data[scope];
         }
       }
-      return $.set('cooldowns', data);
     },
-    count: function() {
+    set: function(scope, id, value) {
+      var base;
+      QR.cooldown.mergeChange(QR.cooldown.data, scope, id, value);
+      return ((base = QR.cooldown.changes)[scope] || (base[scope] = {}))[id] = value;
+    },
+    save: function() {
+      var changes;
+      changes = QR.cooldown.changes;
+      if (!Object.keys(changes).length) {
+        return;
+      }
+      return $.get('cooldowns', {}, function(arg) {
+        var cooldowns, id, ref, scope, value;
+        cooldowns = arg.cooldowns;
+        for (scope in QR.cooldown.changes) {
+          ref = QR.cooldown.changes[scope];
+          for (id in ref) {
+            value = ref[id];
+            QR.cooldown.mergeChange(cooldowns, scope, id, value);
+          }
+          QR.cooldown.data = cooldowns;
+        }
+        return $.set('cooldowns', cooldowns, function() {
+          return QR.cooldown.changes = {};
+        });
+      });
+    },
+    update: function() {
       var base, cooldown, cooldowns, elapsed, i, len, maxDelay, nCooldowns, now, ref, ref1, save, scope, seconds, start, suffix, threadID, type, update;
-      $.forceSync('cooldowns');
-      save = [];
+      if (!QR.cooldown.isCounting) {
+        return;
+      }
+      save = false;
       nCooldowns = 0;
       now = Date.now();
       ref = QR.cooldown.categorize(QR.posts[0]), type = ref.type, threadID = ref.threadID;
@@ -21380,14 +22660,14 @@ QR = (function() {
             start = +start;
             elapsed = Math.floor((now - start) / $.SECOND);
             if (elapsed < 0) {
-              delete cooldowns[start];
-              save.push(scope);
+              QR.cooldown.set(scope, start, null);
+              save = true;
               continue;
             }
             if (cooldown.delay != null) {
               if (cooldown.delay <= elapsed) {
-                delete cooldowns[start];
-                save.push(scope);
+                QR.cooldown.set(scope, start, null);
+                save = true;
               } else if ((cooldown.type === type && cooldown.threadID === threadID) || cooldown.type === 'mute') {
                 seconds = Math.max(seconds, cooldown.delay - elapsed);
               }
@@ -21398,23 +22678,23 @@ QR = (function() {
               maxDelay = Math.max(maxDelay, parseInt(Conf['customCooldown'], 10));
             }
             if (maxDelay <= elapsed) {
-              delete cooldowns[start];
-              save.push(scope);
+              QR.cooldown.set(scope, start, null);
+              save = true;
               continue;
             }
             if ((type === 'thread') === (cooldown.threadID === cooldown.postID) && cooldown.boardID !== g.BOARD.ID) {
               suffix = scope === 'global' ? '_global' : '';
               seconds = Math.max(seconds, QR.cooldown.delays[type + suffix] - elapsed);
-            }
-            if (QR.cooldown.customCooldown) {
-              seconds = Math.max(seconds, parseInt(Conf['customCooldown'], 10) - elapsed);
+              if (QR.cooldown.customCooldown) {
+                seconds = Math.max(seconds, parseInt(Conf['customCooldown'], 10) - elapsed);
+              }
             }
           }
           nCooldowns += Object.keys(cooldowns).length;
         }
       }
-      if (save.length) {
-        QR.cooldown.save(save);
+      if (save) {
+        QR.cooldown.save;
       }
       if (nCooldowns) {
         clearTimeout(QR.cooldown.timeout);
@@ -21425,9 +22705,12 @@ QR = (function() {
       update = seconds !== QR.cooldown.seconds;
       QR.cooldown.seconds = seconds;
       if (update) {
-        QR.status();
+        return QR.status();
       }
-      if (seconds === 0 && QR.cooldown.auto && !QR.req) {
+    },
+    count: function() {
+      QR.cooldown.update();
+      if (QR.cooldown.seconds === 0 && QR.cooldown.auto && !QR.req) {
         return QR.submit();
       }
     }
@@ -21451,7 +22734,7 @@ QR = (function() {
         $.on(a, 'click', this.editFile);
         return Menu.menu.addEntry({
           el: a,
-          order: 95,
+          order: 90,
           open: function(post) {
             var file;
             QR.oekaki.menu.post = post;
@@ -21730,7 +23013,8 @@ QR = (function() {
         var persona;
         persona = arg['QR.persona'];
         persona = {
-          name: post.name
+          name: post.name,
+          flag: post.flag
         };
         return $.set('QR.persona', persona);
       });
@@ -21773,8 +23057,9 @@ QR = (function() {
         return function(e) {
           _this.spoiler = e.target.checked;
           if (_this === QR.selected) {
-            return QR.nodes.spoiler.checked = _this.spoiler;
+            QR.nodes.spoiler.checked = _this.spoiler;
           }
+          return _this.preventAutoPost();
         };
       })(this));
       ref = $$('label', el);
@@ -21799,6 +23084,9 @@ QR = (function() {
           _this.name = 'name' in QR.persona.always ? QR.persona.always.name : prev ? prev.name : persona.name;
           _this.email = 'email' in QR.persona.always ? QR.persona.always.email : '';
           _this.sub = 'sub' in QR.persona.always ? QR.persona.always.sub : '';
+          if (QR.nodes.flag) {
+            _this.flag = prev ? prev.flag : persona.flag;
+          }
           if (QR.selected === _this) {
             return _this.load();
           }
@@ -21808,9 +23096,7 @@ QR = (function() {
         this.select();
       }
       this.unlock();
-      $.queueTask(function() {
-        return QR.captcha.onNewPost();
-      });
+      QR.captcha.moreNeeded();
     }
 
     _Class.prototype.rm = function() {
@@ -21842,7 +23128,7 @@ QR = (function() {
       if (this !== QR.selected) {
         return;
       }
-      ref = ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler'];
+      ref = ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'filename', 'spoiler', 'flag'];
       for (i = 0, len = ref.length; i < len; i++) {
         name = ref[i];
         if (node = QR.nodes[name]) {
@@ -21875,7 +23161,7 @@ QR = (function() {
 
     _Class.prototype.load = function() {
       var i, len, name, node, ref;
-      ref = ['thread', 'name', 'email', 'sub', 'com', 'filename'];
+      ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag'];
       for (i = 0, len = ref.length; i < len; i++) {
         name = ref[i];
         if (!(node = QR.nodes[name])) {
@@ -21888,8 +23174,8 @@ QR = (function() {
       return QR.characterCount();
     };
 
-    _Class.prototype.save = function(input) {
-      var name, prev, ref;
+    _Class.prototype.save = function(input, forced) {
+      var name, prev;
       if (input.type === 'checkbox') {
         this.spoiler = input.checked;
         return;
@@ -21900,23 +23186,26 @@ QR = (function() {
       switch (name) {
         case 'thread':
           (this.thread !== 'new' ? $.addClass : $.rmClass)(QR.nodes.el, 'reply-to-thread');
-          return QR.status();
+          QR.status();
+          break;
         case 'com':
           this.updateComment();
-          if (QR.cooldown.auto && this === QR.posts[0] && (0 < (ref = QR.cooldown.seconds) && ref <= 5)) {
-            return QR.cooldown.auto = false;
-          }
           break;
         case 'filename':
           if (!this.file) {
             return;
           }
           this.saveFilename();
-          return this.updateFilename();
+          this.updateFilename();
+          break;
         case 'name':
-          if (this.name !== prev) {
-            return QR.persona.set(this);
+        case 'flag':
+          if (this[name] !== prev) {
+            QR.persona.set(this);
           }
+      }
+      if (!forced) {
+        return this.preventAutoPost();
       }
     };
 
@@ -21925,13 +23214,22 @@ QR = (function() {
       if (this !== QR.selected) {
         return;
       }
-      ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler'];
+      ref = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'spoiler', 'flag'];
       for (i = 0, len = ref.length; i < len; i++) {
         name = ref[i];
         if (!(node = QR.nodes[name])) {
           continue;
         }
-        this.save(node);
+        this.save(node, true);
+      }
+    };
+
+    _Class.prototype.preventAutoPost = function() {
+      if (QR.cooldown.auto && this === QR.posts[0]) {
+        QR.cooldown.update();
+        if (QR.cooldown.seconds <= 5) {
+          return QR.cooldown.auto = false;
+        }
       }
     };
 
@@ -21948,9 +23246,7 @@ QR = (function() {
         QR.characterCount();
       }
       this.nodes.span.textContent = this.com;
-      return $.queueTask(function() {
-        return QR.captcha.onPostChange();
-      });
+      return QR.captcha.moreNeeded();
     };
 
     _Class.rmErrored = function(e) {
@@ -21972,13 +23268,13 @@ QR = (function() {
       }
     };
 
-    _Class.prototype.error = function(className, message) {
+    _Class.prototype.error = function(className, message, link) {
       var div, ref, rm, rmAll;
       div = $.el('div', {
         className: className
       });
       $.extend(div, {
-        innerHTML: E(message) + "<br>[<a href=\"javascript:;\">delete</a>] [<a href=\"javascript:;\">delete all</a>]"
+        innerHTML: E(message) + ((link) ? " [<a href=\"" + E(link) + "\" target=\"_blank\">More info</a>]" : "") + "<br>[<a href=\"javascript:;\">delete post</a>] [<a href=\"javascript:;\">delete all</a>]"
       });
       (this.errors || (this.errors = [])).push(div);
       ref = $$('a', div), rm = ref[0], rmAll = ref[1];
@@ -22001,8 +23297,8 @@ QR = (function() {
       return QR.error(div, true);
     };
 
-    _Class.prototype.fileError = function(message) {
-      return this.error('file-error', this.filename + ": " + message);
+    _Class.prototype.fileError = function(message, link) {
+      return this.error('file-error', this.filename + ": " + message, link);
     };
 
     _Class.prototype.dismissErrors = function(test) {
@@ -22037,9 +23333,7 @@ QR = (function() {
       this.filesize = $.bytesToString(this.file.size);
       this.checkSize();
       $.addClass(this.nodes.el, 'has-file');
-      $.queueTask(function() {
-        return QR.captcha.onPostChange();
-      });
+      QR.captcha.moreNeeded();
       URL.revokeObjectURL(this.URL);
       this.saveFilename();
       if (this === QR.selected) {
@@ -22049,10 +23343,11 @@ QR = (function() {
       }
       this.nodes.el.style.backgroundImage = '';
       if (ref = this.file.type, indexOf.call(QR.mimeTypes, ref) < 0) {
-        return this.fileError('Unsupported file type.');
+        this.fileError('Unsupported file type.');
       } else if (/^(image|video)\//.test(this.file.type)) {
-        return this.readFile();
+        this.readFile();
       }
+      return this.preventAutoPost();
     };
 
     _Class.prototype.checkSize = function() {
@@ -22086,7 +23381,7 @@ QR = (function() {
         return function() {
           $.off(el, event, onload);
           $.off(el, 'error', onerror);
-          _this.fileError((isVideo ? 'Video' : 'Image') + " appears corrupt");
+          _this.fileError("Corrupt " + (isVideo ? 'video' : 'image') + " or error reading metadata.", 'https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#error-reading-metadata');
           return URL.revokeObjectURL(el.src);
         };
       })(this);
@@ -22120,7 +23415,7 @@ QR = (function() {
         } else if (duration > QR.max_duration_video) {
           this.fileError("Video too long (video: " + duration + "s, max: " + QR.max_duration_video + "s)");
         }
-        if (((ref = g.BOARD.ID) !== 'gif' && ref !== 'wsg') && $.hasAudio(el)) {
+        if (((ref = g.BOARD.ID) !== 'gif' && ref !== 'wsg' && ref !== 'r' && ref !== 'wsr') && $.hasAudio(el)) {
           return this.fileError('Audio not allowed');
         }
       }
@@ -22177,9 +23472,10 @@ QR = (function() {
       $.rmClass(this.nodes.el, 'has-file');
       this.showFileData();
       URL.revokeObjectURL(this.URL);
-      return this.dismissErrors(function(error) {
+      this.dismissErrors(function(error) {
         return $.hasClass(error, 'file-error');
       });
+      return this.preventAutoPost();
     };
 
     _Class.prototype.saveFilename = function() {
@@ -22221,6 +23517,7 @@ QR = (function() {
     _Class.prototype.pasteText = function(file) {
       var reader;
       this.pasting = true;
+      this.preventAutoPost();
       reader = new FileReader();
       reader.onload = (function(_this) {
         return function(e) {
@@ -22269,6 +23566,9 @@ QR = (function() {
       };
       oldIndex = index(el);
       newIndex = index(this);
+      if (QR.posts[oldIndex].isLocked || QR.posts[newIndex].isLocked) {
+        return;
+      }
       (oldIndex < newIndex ? $.after : $.before)(this, el);
       post = QR.posts.splice(oldIndex, 1)[0];
       QR.posts.splice(newIndex, 0, post);
@@ -22291,6 +23591,9 @@ QuoteBacklink = (function() {
       if (((ref = g.VIEW) !== 'index' && ref !== 'thread') || !Conf['Quote Backlinks']) {
         return;
       }
+      if ((this.bottomBacklinks = Conf['Bottom Backlinks'])) {
+        $.addClass(doc, 'bottom-backlinks');
+      }
       Callbacks.Post.push({
         name: 'Quote Backlinking Part 1',
         cb: this.firstNode
@@ -22301,15 +23604,11 @@ QuoteBacklink = (function() {
       });
     },
     firstNode: function() {
-      var a, clone, container, containers, hash, i, j, k, len, len1, len2, link, markYours, nodes, post, quote, ref, ref1, ref2;
+      var a, clone, container, containers, hash, i, j, k, len, len1, len2, link, markYours, nodes, post, quote, ref, ref1;
       if (this.isClone || !this.quotes.length || this.isRebuilt) {
         return;
       }
-      markYours = Conf['Mark Quotes of You'] && ((ref = QuoteYou.db) != null ? ref.get({
-        boardID: this.board.ID,
-        threadID: this.thread.ID,
-        postID: this.ID
-      }) : void 0);
+      markYours = Conf['Mark Quotes of You'] && QuoteYou.isYou(this);
       a = $.el('a', {
         href: Build.postURL(this.board.ID, this.thread.ID, this.ID),
         className: this.isHidden ? 'filtered backlink' : 'backlink',
@@ -22325,14 +23624,14 @@ QuoteBacklink = (function() {
       if (markYours) {
         $.add(a, QuoteYou.mark.cloneNode(true));
       }
-      ref1 = this.quotes;
-      for (i = 0, len = ref1.length; i < len; i++) {
-        quote = ref1[i];
+      ref = this.quotes;
+      for (i = 0, len = ref.length; i < len; i++) {
+        quote = ref[i];
         containers = [QuoteBacklink.getContainer(quote)];
         if ((post = g.posts[quote]) && post.nodes.backlinkContainer) {
-          ref2 = post.clones;
-          for (j = 0, len1 = ref2.length; j < len1; j++) {
-            clone = ref2[j];
+          ref1 = post.clones;
+          for (j = 0, len1 = ref1.length; j < len1; j++) {
+            clone = ref1[j];
             containers.push(clone.nodes.backlinkContainer);
           }
         }
@@ -22357,7 +23656,7 @@ QuoteBacklink = (function() {
     secondNode: function() {
       var container;
       if (this.isClone && (this.origin.isReply || Conf['OP Backlinks'])) {
-        this.nodes.backlinkContainer = $('.container', this.nodes.info);
+        this.nodes.backlinkContainer = $('.container', this.nodes.post);
         return;
       }
       if (!(this.isReply || Conf['OP Backlinks'])) {
@@ -22365,7 +23664,11 @@ QuoteBacklink = (function() {
       }
       container = QuoteBacklink.getContainer(this.fullID);
       this.nodes.backlinkContainer = container;
-      return $.add(this.nodes.info, container);
+      if (QuoteBacklink.bottomBacklinks) {
+        return $.add(this.nodes.post, container);
+      } else {
+        return $.add(this.nodes.info, container);
+      }
     },
     getContainer: function(id) {
       var base;
@@ -22477,7 +23780,7 @@ QuoteInline = (function() {
     },
     toggle: function(e) {
       var boardID, context, postID, quoter, ref, ref1, threadID;
-      if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+      if ($.modifiedClick(e)) {
         return;
       }
       ref = Get.postDataFromLink(this), boardID = ref.boardID, threadID = ref.threadID, postID = ref.postID;
@@ -22502,7 +23805,7 @@ QuoteInline = (function() {
     },
     findRoot: function(quotelink, isBacklink) {
       if (isBacklink) {
-        return quotelink.parentNode.parentNode;
+        return $.x('ancestor::*[parent::*[contains(@class,"post")]][1]', quotelink);
       } else {
         return $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
       }
@@ -22624,7 +23927,17 @@ QuotePreview = (function() {
   QuotePreview = {
     init: function() {
       var ref;
-      if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Quote Previewing'])) {
+      if (!Conf['Quote Previewing']) {
+        return;
+      }
+      if (g.VIEW === 'archive') {
+        $.on(d, 'mouseover', function(e) {
+          if (e.target.nodeName === 'A' && $.hasClass(e.target, 'quotelink')) {
+            return QuotePreview.mouseover.call(e.target, e);
+          }
+        });
+      }
+      if ((ref = g.VIEW) !== 'index' && ref !== 'thread') {
         return;
       }
       if (Conf['Comment Expansion']) {
@@ -22779,10 +24092,13 @@ QuoteThreading =
     inserted: {},
     setEnabled: function() {
       var other, ref;
-      other = (ref = ReplyPruning.inputs) != null ? ref.enabled : void 0;
-      if (this.checked && (other != null ? other.checked : void 0)) {
-        other.checked = false;
-        $.event('change', null, other);
+      if (this.checked) {
+        $.set('Prune All Threads', false);
+        other = (ref = ReplyPruning.inputs) != null ? ref.enabled : void 0;
+        if (other != null ? other.checked : void 0) {
+          other.checked = false;
+          $.event('change', null, other);
+        }
       }
       return $.cb.checked.call(this);
     },
@@ -22971,7 +24287,7 @@ QuoteYou = (function() {
           });
         }
       });
-      if ((ref = g.VIEW) !== 'index' && ref !== 'thread') {
+      if ((ref = g.VIEW) !== 'index' && ref !== 'thread' && ref !== 'archive') {
         return;
       }
       if (Conf['Highlight Own Posts']) {
@@ -22987,21 +24303,26 @@ QuoteYou = (function() {
         textContent: '\u00A0(You)',
         className: 'qmark-you'
       });
-      return Callbacks.Post.push({
+      Callbacks.Post.push({
         name: 'Mark Quotes of You',
         cb: this.node
       });
+      return QuoteYou.menu.init();
+    },
+    isYou: function(post) {
+      var ref;
+      return !!((ref = QuoteYou.db) != null ? ref.get({
+        boardID: post.board.ID,
+        threadID: post.thread.ID,
+        postID: post.ID
+      }) : void 0);
     },
     node: function() {
       var i, len, quotelink, ref;
       if (this.isClone) {
         return;
       }
-      if (QuoteYou.db.get({
-        boardID: this.board.ID,
-        threadID: this.thread.ID,
-        postID: this.ID
-      })) {
+      if (QuoteYou.isYou(this)) {
         $.addClass(this.nodes.root, 'yourPost');
       }
       if (!this.quotes.length) {
@@ -23018,6 +24339,63 @@ QuoteYou = (function() {
         }
         $.addClass(quotelink, 'you');
         $.addClass(this.nodes.root, 'quotesYou');
+      }
+    },
+    menu: {
+      init: function() {
+        var input, label, ref;
+        label = $.el('label', {
+          className: 'toggle-you'
+        }, {
+          innerHTML: "<input type=\"checkbox\"> You"
+        });
+        input = $('input', label);
+        $.on(input, 'change', QuoteYou.menu.toggle);
+        return (ref = Menu.menu) != null ? ref.addEntry({
+          el: label,
+          order: 80,
+          open: function(post) {
+            QuoteYou.menu.post = post.origin || post;
+            input.checked = QuoteYou.isYou(post);
+            return true;
+          }
+        }) : void 0;
+      },
+      toggle: function() {
+        var clone, data, i, j, len, len1, post, quotelink, quoter, ref, ref1;
+        post = QuoteYou.menu.post;
+        data = {
+          boardID: post.board.ID,
+          threadID: post.thread.ID,
+          postID: post.ID,
+          val: true
+        };
+        if (this.checked) {
+          QuoteYou.db.set(data);
+        } else {
+          QuoteYou.db["delete"](data);
+        }
+        ref = [post].concat(post.clones);
+        for (i = 0, len = ref.length; i < len; i++) {
+          clone = ref[i];
+          clone.nodes.root.classList.toggle('yourPost', this.checked);
+        }
+        ref1 = Get.allQuotelinksLinkingTo(post);
+        for (j = 0, len1 = ref1.length; j < len1; j++) {
+          quotelink = ref1[j];
+          if (this.checked) {
+            if (Conf['Mark Quotes of You']) {
+              $.add(quotelink, QuoteYou.mark.cloneNode(true));
+            }
+          } else {
+            $.rm($('.qmark-you', quotelink));
+          }
+          quotelink.classList.toggle('you', this.checked);
+          if ($.hasClass(quotelink, 'quotelink')) {
+            quoter = Get.postFromNode(quotelink).nodes.root;
+            quoter.classList.toggle('quotesYou', !!$('.quotelink.you', quoter));
+          }
+        }
       }
     },
     cb: {
@@ -23053,7 +24431,7 @@ QuoteYou = (function() {
           return false;
         } else {
           QuoteYou.lastRead = root;
-          window.location = "#" + post.id;
+          location.href = "#" + post.id;
           Header.scrollTo(post);
           $.addClass(post, 'highlight');
           return true;
@@ -23113,7 +24491,7 @@ Quotify = (function() {
       }
       boardID = m[1];
       threadID = m[2];
-      postID = link.hash.match(/^#p?(\d+)$|$/)[1] || threadID;
+      postID = link.hash.match(/^#[pq]?(\d+)$|$/)[1] || threadID;
       if (Redirect.to('post', {
         boardID: boardID,
         postID: postID
@@ -23223,15 +24601,27 @@ Main = (function() {
 
   Main = {
     init: function() {
-      var db, flatten, items, j, key, len, ref;
+      var db, flatten, i, items, j, k, key, len, ref, ref1, w;
       if (d.body && !$('title', d.head)) {
         return;
       }
-      if (window['4chan X antidup']) {
-        return;
-      }
-      window['4chan X antidup'] = true;
+      try {
+        w = window;
+        if ($.platform === 'crx') {
+          w = w.wrappedJSObject || w;
+        }
+        if ('4chan X antidup' in w) {
+          return;
+        }
+        w['4chan X antidup'] = true;
+      } catch (_error) {}
       if (location.hostname === 'www.google.com') {
+        if (location.pathname === '/recaptcha/api/noscript') {
+          $.ready(function() {
+            return Captcha.noscript.initFrame();
+          });
+          return;
+        }
         $.get('Captcha Fixes', true, function(arg) {
           var enabled;
           enabled = arg['Captcha Fixes'];
@@ -23244,13 +24634,22 @@ Main = (function() {
         return;
       }
       try {
-        if (window.frameElement && window.frameElement.src === '') {
+        if (window.frameElement && ((ref = window.frameElement.src) === '' || ref === 'about:blank')) {
           return;
         }
       } catch (_error) {}
       if (location.hostname === 'boards.4chan.org' && d.documentElement && !d.doctype) {
         return;
       }
+      if (doc && $.hasClass(doc, 'fourchan-x')) {
+        return;
+      }
+      $.asap(docSet, function() {
+        $.addClass(doc, 'fourchan-x', 'seaweedchan');
+        if ($.engine) {
+          return $.addClass(doc, "ua-" + $.engine);
+        }
+      });
       $.on(d, '4chanXInitFinished', function() {
         if (Main.expectInitFinished) {
           return delete Main.expectInitFinished;
@@ -23273,9 +24672,9 @@ Main = (function() {
         }
       };
       flatten(null, Config);
-      ref = DataBoard.keys;
-      for (j = 0, len = ref.length; j < len; j++) {
-        db = ref[j];
+      ref1 = DataBoard.keys;
+      for (j = 0, len = ref1.length; j < len; j++) {
+        db = ref1[j];
         Conf[db] = {
           boards: {}
         };
@@ -23287,6 +24686,9 @@ Main = (function() {
       Conf['selectedArchives'] = {};
       Conf['cooldowns'] = {};
       Conf['Index Sort'] = {};
+      for (i = k = 0; k < 2; i = ++k) {
+        Conf["Last Long Reply Thresholds " + i] = {};
+      }
       Conf['Except Archives from Encryption'] = false;
       Conf['JSON Navigation'] = true;
       Conf['Oekaki Links'] = true;
@@ -23307,8 +24709,13 @@ Main = (function() {
       }
       items['previousversion'] = void 0;
       return ($.getSync || $.get)(items, function(items) {
+        var ref2;
+        if (!$.perProtocolSettings && ((ref2 = items['Redirect to HTTPS']) != null ? ref2 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
+          location.replace('https:' + location.host + location.pathname + location.search + location.hash);
+          return;
+        }
         return $.asap(docSet, function() {
-          var ref1, val;
+          var ref3, val;
           if ($.cantSet) {
 
           } else if (items.previousversion == null) {
@@ -23321,7 +24728,7 @@ Main = (function() {
           }
           for (key in Conf) {
             val = Conf[key];
-            Conf[key] = (ref1 = items[key]) != null ? ref1 : val;
+            Conf[key] = (ref3 = items[key]) != null ? ref3 : val;
           }
           return Main.initFeatures();
         });
@@ -23382,33 +24789,36 @@ Main = (function() {
             PostSuccessful.init();
           }
           return;
-        case 'i.4cdn.org':
-        case 'is.4chan.org':
-          if (!(pathname[2] && !/s\.jpg$/.test(pathname[2]))) {
-            return;
-          }
-          $.asap((function() {
-            return d.readyState !== 'loading';
-          }), function() {
-            var ref, video;
-            if (Conf['404 Redirect'] && ((ref = d.title) === '4chan - Temporarily Offline' || ref === '4chan - 404 Not Found')) {
-              return Redirect.navigate('file', {
-                boardID: g.BOARD.ID,
-                filename: pathname[pathname.length - 1]
-              });
-            } else if (video = $('video')) {
-              if (Conf['Volume in New Tab']) {
-                Volume.setup(video);
-              }
-              if (Conf['Loop in New Tab']) {
-                video.loop = true;
-                video.controls = false;
-                video.play();
-                return ImageCommon.addControls(video);
-              }
-            }
-          });
+      }
+      if (ImageHost.test(hostname)) {
+        if (!(pathname[2] && !/[sm]\.jpg$/.test(pathname[2]))) {
           return;
+        }
+        $.asap((function() {
+          return d.readyState !== 'loading';
+        }), function() {
+          var ref, video;
+          if (Conf['404 Redirect'] && ((ref = d.title) === '4chan - Temporarily Offline' || ref === '4chan - 404 Not Found')) {
+            return Redirect.navigate('file', {
+              boardID: g.BOARD.ID,
+              filename: pathname[pathname.length - 1]
+            });
+          } else if (video = $('video')) {
+            if (Conf['Volume in New Tab']) {
+              Volume.setup(video);
+            }
+            if (Conf['Loop in New Tab']) {
+              video.loop = true;
+              video.controls = false;
+              video.play();
+              return ImageCommon.addControls(video);
+            }
+          }
+        });
+        return;
+      }
+      if (hostname !== 'boards.4chan.org') {
+        return;
       }
       if ((ref = pathname[2]) === 'thread' || ref === 'res') {
         g.VIEW = 'thread';
@@ -23446,12 +24856,8 @@ Main = (function() {
       if ((ref = $('link[href*=mobile]', d.head)) != null) {
         ref.disabled = true;
       }
-      $.addClass(doc, 'fourchan-x', 'seaweedchan');
       $.addClass(doc, g.VIEW === 'thread' ? 'thread-view' : g.VIEW);
-      if ($.engine) {
-        $.addClass(doc, "ua-" + $.engine);
-      }
-      $.onExists(doc, '.ad-cnt, .adg-rects', function(ad) {
+      $.onExists(doc, '.ad-cnt, .adg-rects > .desktop', function(ad) {
         return $.onExists(ad, 'img, iframe', function() {
           return $.addClass(doc, 'ads-loaded');
         });
@@ -23485,14 +24891,7 @@ Main = (function() {
       return Main.setClass();
     },
     setClass: function() {
-      var mainStyleSheet, setStyle, spooky, style, styleSheets;
-      if ((spooky = $('link[rel="stylesheet"][href^="//s.4cdn.org/css/spooky."]', d.head))) {
-        spooky.removeAttribute('media');
-        if (getComputedStyle(d.body).color === 'rgb(196, 151, 86)') {
-          $.addClass(doc, 'spooky');
-          return;
-        }
-      }
+      var mainStyleSheet, setStyle, style, styleSheets;
       if (g.VIEW === 'catalog') {
         $.addClass(doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace(/_+/g, '-'));
         return;
@@ -23508,6 +24907,12 @@ Main = (function() {
           styleSheet = styleSheets[j];
           if (styleSheet.href === (mainStyleSheet != null ? mainStyleSheet.href : void 0)) {
             style = styleSheet.title.toLowerCase().replace('new', '').trim().replace(/\s+/g, '-');
+            if (style === '_special') {
+              style = styleSheet.href.match(/[a-z]*(?=[^\/]*$)/)[0];
+            }
+            if (style !== 'yotsuba' && style !== 'yotsuba-b' && style !== 'futaba' && style !== 'burichan' && style !== 'photon' && style !== 'tomorrow' && style !== 'spooky') {
+              style = null;
+            }
             break;
           }
         }
@@ -23608,7 +25013,7 @@ Main = (function() {
           threads[0].ipCount = (m = scriptData.match(/\bunique_ips *= *(\d+)\b/)) ? +m[1] : void 0;
         }
         if (g.BOARD.ID === 'f' && g.VIEW === 'thread') {
-          $.ajax("//a.4cdn.org/f/thread/" + g.THREADID + ".json", {
+          $.ajax(location.protocol + "//a.4cdn.org/f/thread/" + g.THREADID + ".json", {
             timeout: $.MINUTE,
             onloadend: function() {
               if (this.response && posts[0].file) {
@@ -23753,7 +25158,7 @@ Main = (function() {
         }
       });
     },
-    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning]]
+    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Copy Text Link', CopyTextLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning]]
   };
 
   return Main;

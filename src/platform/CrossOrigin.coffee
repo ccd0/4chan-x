@@ -14,7 +14,8 @@ CrossOrigin =
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
-    if url.split('/')[...3].join('/') in ["#{location.protocol}//i.4cdn.org", "#{location.protocol}//is.4chan.org"]
+    parts = url.split '/'
+    if parts[0] is location.protocol and parts[1] is '' and ImageHost.test(parts[2])
       xhr = new XMLHttpRequest()
       xhr.open 'GET', url, true
       xhr.setRequestHeader key, value for key, value of headers
@@ -62,7 +63,7 @@ CrossOrigin =
       options.overrideMimeType = 'text/plain; charset=x-user-defined'
     else
       options.responseType = 'arraybuffer'
-    GM_xmlhttpRequest options
+    (GM?.xmlHttpRequest or GM_xmlhttpRequest) options
     <% } %>
 
   file: (url, cb) ->
@@ -98,7 +99,7 @@ CrossOrigin =
         return
       callbacks[url] = [cb]
       <% if (type === 'userscript') { %>
-      GM_xmlhttpRequest
+      (GM?.xmlHttpRequest or GM_xmlhttpRequest)
         method: "GET"
         url: url+''
         onload: (xhr) ->

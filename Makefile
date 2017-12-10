@@ -87,7 +87,7 @@ crx_contents := script.js eventPage.js icon16.png icon48.png icon128.png manifes
 
 release := \
  $(foreach f, \
-  $(foreach c,. -beta.,$(name)$(c)crx updates$(c)xml $(name)$(c)user.js $(name)$(c)meta.js) \
+  $(foreach c,. -beta.,$(name)$(c)crx updates$(c)xml updates$(c)json $(name)$(c)user.js $(name)$(c)meta.js) \
   $(name)-noupdate.crx \
   $(name)-noupdate.user.js \
   $(name).zip \
@@ -115,8 +115,8 @@ node_modules/%/package.json : .events/npm
 
 else
 
-node_modules/%/package.json :
-	npm install $*
+node_modules/%/package.json : package.json
+	npm install $(call QUOTE,$*@$(version_$*))
 
 endif
 
@@ -184,12 +184,15 @@ testbuilds/crx$1/manifest.json : src/meta/manifest.json version.json $(template_
 testbuilds/updates$1.xml : src/meta/updates.xml version.json $(template_deps) | testbuilds/crx$1
 	$(template) $$< $$@ type=crx channel=$1
 
+testbuilds/updates$1.json : src/meta/updates.json version.json $(template_deps) | testbuilds/crx$1
+	$(template) $$< $$@ type=crx channel=$1
+
 testbuilds/$(name)$1.crx.zip : \
  $(foreach f,$(crx_contents),testbuilds/crx$1/$(f)) \
  package.json version.json tools/zip-crx.js node_modules/jszip/package.json
 	node tools/zip-crx.js $1
 
-testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.js node_modules/crx/package.json
+testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.js node_modules/node-rsa/package.json
 	node tools/sign.js $1
 
 testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.json $(template_deps) | testbuilds
@@ -260,7 +263,7 @@ distready : dist $(wildcard dist/* dist/*/*)
 	git push web $(meta_distBranch)
 	echo -> $@
 
-.events2/push-store : .git/refs/tags/stable | .events2 distready node_modules/webstore-upload/package.json
+.events2/push-store : .git/refs/tags/stable | .events2 distready node_modules/webstore-upload/package.json node_modules/request/package.json
 	node tools/webstore.js
 	echo -> $@
 
@@ -342,7 +345,7 @@ stable : distready
 	git push . HEAD:bstable
 	git tag -af stable -m "$(meta_name) v$(version)."
 	cd dist && git merge --no-commit -s ours stable
-	cd dist && git checkout stable "builds/$(name).*" builds/updates.xml
+	cd dist && git checkout stable "builds/$(name).*" builds/updates.xml builds/updates.json
 	cd dist && git commit -am "Move $(meta_name) v$(version) to stable channel."
 
 web : index.html distready

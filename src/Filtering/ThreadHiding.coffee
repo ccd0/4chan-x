@@ -182,7 +182,8 @@ ThreadHiding =
     return if thread.isHidden
     threadRoot = thread.nodes.root
     thread.isHidden = true
-    Index.updateHideLabel() if Conf['JSON Index']
+    Index.updateHideLabel()
+    $.rm thread.catalogView.nodes.root if thread.catalogView and !Index.showHiddenThreads
 
     return threadRoot.hidden = true unless makeStub
 
@@ -194,4 +195,5 @@ ThreadHiding =
       delete thread.stub
     threadRoot = thread.nodes.root
     threadRoot.hidden = thread.isHidden = false
-    Index.updateHideLabel() if Conf['JSON Index']
+    Index.updateHideLabel()
+    $.rm thread.catalogView.nodes.root if thread.catalogView and Index.showHiddenThreads

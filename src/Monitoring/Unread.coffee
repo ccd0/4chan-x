@@ -76,8 +76,6 @@ Unread =
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
 
-    ReplyPruning.showIfHidden Unread.position?.data.nodes.root.id
-
     position = Unread.positionPrev()
     while position
       {root} = position.data.nodes
@@ -114,11 +112,7 @@ Unread =
   addPost: ->
     return if @isFetchedQuote or @isClone
     Unread.order.push @
-    return if @ID <= Unread.lastReadPost or @isHidden or QuoteYou.db?.get {
-      boardID:  @board.ID
-      threadID: @thread.ID
-      postID:   @ID
-    }
+    return if @ID <= Unread.lastReadPost or @isHidden or QuoteYou.isYou(@)
     Unread.posts.add @ID
     Unread.addPostQuotingYou @
     Unread.position ?= Unread.order[@ID]
@@ -173,13 +167,6 @@ Unread =
       count++
       Unread.posts.delete ID
       Unread.postsQuotingYou.delete ID
-
-      if QuoteYou.db?.get {
-        boardID:  data.board.ID
-        threadID: data.thread.ID
-        postID:   ID
-      }
-        QuoteYou.lastRead = root
       Unread.position = Unread.position.next
 
     return unless count
@@ -203,7 +190,6 @@ Unread =
         Unread.lastReadPost = ID
       Unread.readCount++
     return if Unread.thread.isDead and !Unread.thread.isArchived
-    Unread.db.forceSync()
     Unread.db.set
       boardID:  Unread.thread.board.ID
       threadID: Unread.thread.ID
@@ -251,4 +237,4 @@ Unread =
       ThreadWatcher.update Unread.thread.board.ID, Unread.thread.ID,
         isDead: Unread.thread.isDead
         unread: Unread.posts.size
-        quotingYou: Unread.postsQuotingYou.size
+        quotingYou: !!(if !Conf['Require OP Quote Link'] and QuoteYou.isYou(Unread.thread.OP) then Unread.posts.size else Unread.postsQuotingYou.size)

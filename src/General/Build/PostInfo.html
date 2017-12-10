@@ -8,17 +8,18 @@
       ?{pass}{ <span title="Pass user since ${pass}" class="n-pu"></span>}
       ?{capcode}{ <strong class="capcode hand id_${capcodeLC}" title="Highlight posts by ${capcodePlural}">## ${capcode}</strong>}
     ?{email}{</a>}
-    ?{boardID === "f" && !o.isReply || capcode}{}{ }
-    ?{capcode}{ <img src="${staticPath}${capcodeLC}icon${gifIcon}" alt="${capcode} Icon" title="This user is ${capcodeDescription}." class="identityIcon retina">}
+    ?{boardID === "f" && !o.isReply || capcodeDescription}{}{ }
+    ?{capcodeDescription}{ <img src="${staticPath}${capcodeLC}icon${gifIcon}" alt="${capcode} Icon" title="This user is ${capcodeDescription}." class="identityIcon retina">}
     ?{uniqueID && !capcode}{ <span class="posteruid id_${uniqueID}">(ID: <span class="hand" title="Highlight posts by this ID">${uniqueID}</span>)</span>}
     ?{flagCode}{ <span title="${flag}" class="flag flag-${flagCode.toLowerCase()}"></span>}
+    ?{flagCodeTroll}{ <img src="${staticPath}country/troll/${flagCodeTroll.toLowerCase()}.gif" alt="${flagCodeTroll}" title="${flag}" class="countryFlag">}
   </span> 
   <span class="dateTime" data-utc="${dateUTC}">${dateText}</span> 
   <span class="postNum?{!(boardID === "f" && !o.isReply)}{ desktop}">
     <a href="${postLink}" title="Link to this post">No.</a>
     <a href="${quoteLink}" title="Reply to this post">${ID}</a>
-    ?{o.isSticky}{ <img src="${staticPath}sticky${gifIcon}" alt="Sticky" title="Sticky" class="stickyIcon retina">}
-    ?{o.isClosed && !o.isArchived}{ <img src="${staticPath}closed${gifIcon}" alt="Closed" title="Closed" class="closedIcon retina">}
+    ?{o.isSticky}{ <img src="${staticPath}sticky${gifIcon}" alt="Sticky" title="Sticky"?{boardID === "f"}{ style="height: 18px; width: 18px;"}{ class="stickyIcon retina"}>}
+    ?{o.isClosed && !o.isArchived}{ <img src="${staticPath}closed${gifIcon}" alt="Closed" title="Closed"?{boardID === "f"}{ style="height: 18px; width: 18px;"}{ class="closedIcon retina"}>}
     ?{o.isArchived}{ <img src="${staticPath}archived${gifIcon}" alt="Archived" title="Archived" class="archivedIcon retina">}
     ?{!o.isReply && g.VIEW === "index"}{ &nbsp; <span>[<a href="/${boardID}/thread/${threadID}" class="replylink">Reply</a>]</span>}
   </span>

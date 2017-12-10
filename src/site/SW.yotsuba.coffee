@@ -35,7 +35,7 @@ SW.yotsuba =
     quotelink: ':not(pre) > .quotelink' # XXX https://github.com/4chan/4chan-JS/issues/77: 4chan currently creates quote links inside [code] tags; ignore them
 
   xpath:
-    thread:        'div[@class="thread"]'
+    thread:        'div[contains(concat(" ",@class," ")," thread ")]'
     postContainer: 'div[contains(@class,"postContainer")]'
 
   regexp:
@@ -45,8 +45,10 @@ SW.yotsuba =
         ([^/]+) # boardID
         /+thread/+
         (\d+)   # threadID
-        (?:[/?][^#]*)?#p
+        (?:[/?][^#]*)?
+        (?:#p
         (\d+)   # postID
+        )?
         $
       ///
 
@@ -69,11 +71,17 @@ SW.yotsuba =
 
     if g.BOARD.ID is 'f' and thread.OP.file
       {file} = thread.OP
-      $.ajax "//a.4cdn.org/f/thread/#{thread}.json",
+      $.ajax "#{location.protocol}//a.4cdn.org/f/thread/#{thread}.json",
         timeout: $.MINUTE
         onloadend: ->
           if @response
             file.text.dataset.md5 = file.MD5 = @response.posts[0].md5
+
+  parseNodes: (post, nodes) ->
+    # Add CSS classes to sticky/closed icons on /f/ to match other boards.
+    if post.boardID is 'f'
+      for type in ['Sticky', 'Closed'] when (icon = $ "img[alt=#{type}]", nodes.info)
+        $.addClass icon, "#{type.toLowerCase()}Icon", 'retina'
 
   parseFile: (post, file) ->
     {text, link, thumb} = file
@@ -83,11 +91,14 @@ SW.yotsuba =
       size:       info[1]
       dimensions: info[0].match(/\d+x\d+/)?[0]
       tag:        info[0].match(/,[^,]*, ([a-z]+)\)/i)?[1]
+      MD5:        text.dataset.md5
     if thumb
       $.extend file,
-        thumbURL:  if (m = link.href.match /\d+(?=\.\w+$)/) then "#{location.protocol}//i.4cdn.org/#{post.board}/#{m[0]}s.jpg"
+        thumbURL:  thumb.src
         MD5:       thumb.dataset.md5
         isSpoiler: $.hasClass thumb.parentNode, 'imgspoiler'
+      if file.isSpoiler
+        file.thumbURL = if (m = link.href.match /\d+(?=\.\w+$)/) then "#{location.protocol}//#{ImageHost.thumbHost()}/#{post.board}/#{m[0]}s.jpg"
     true
 
   cleanComment: (bq) ->
@@ -101,3 +112,10 @@ SW.yotsuba =
   cleanCommentDisplay: (bq) ->
     $.rm b if (b = $ 'b', bq) and /^Rolled /.test(b.textContent)
     $.rm $('.fortune', bq)
+
+  insertTags: (bq) ->
+    for node in $$ 's, .removed-spoiler', bq
+      $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
+    for node in $$ '.prettyprint', bq
+      $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
+    return

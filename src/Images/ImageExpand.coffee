@@ -41,7 +41,7 @@ ImageExpand =
 
   cb:
     toggle: (e) ->
-      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+      return if $.modifiedClick e
       post = Get.postFromNode @
       {file} = post
       return if file.isExpanded and ImageCommon.onControls e

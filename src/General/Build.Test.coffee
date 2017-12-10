@@ -26,6 +26,7 @@ Build.Test =
       href = el.href
       href = href.replace /(^\w+:\/\/boards.4chan.org\/[^\/]+\/thread\/\d+)\/.*/, '$1'
       el.setAttribute 'href', href
+    ImageHost.fixLinks $$('.fileText > a, a.fileThumb', root2)
     for el in $$ 'img[src]', root2
       el.src = el.src.replace /(spoiler-\w+)\d(\.png)$/, '$11$2'
     for el in $$ 'pre.prettyprinted', root2
@@ -38,6 +39,8 @@ Build.Test =
       $.rmClass el, 'prettyprinted'
     for el in $$ 'pre[style=""]', root2
       el.removeAttribute 'style'
+    # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
+    $('.fileInfo[data-md5]', root2)?.removeAttribute 'data-md5'
     textNodes = $.X './/text()', root2
     i = 0
     while (node = textNodes.snapshotItem i++)
@@ -62,7 +65,7 @@ Build.Test =
 
   testOne: (post) ->
     Build.Test.postsRemaining++
-    $.cache "//a.4cdn.org/#{post.board.ID}/thread/#{post.thread.ID}.json", ->
+    $.cache "#{location.protocol}//a.4cdn.org/#{post.board.ID}/thread/#{post.thread.ID}.json", ->
       {posts} = @response
       Build.spoilerRange[post.board.ID] = posts[0].custom_spoiler
       for postData in posts
@@ -86,7 +89,7 @@ Build.Test =
             c.log x.outerHTML
             c.log y.outerHTML
 
-          for key of Config.filter when not (key is 'MD5' and post.board.ID is 'f')
+          for key of Config.filter when not key is 'General' and not (key is 'MD5' and post.board.ID is 'f')
             val1 = Filter[key] obj
             val2 = Filter[key] post2
             if val1 isnt val2

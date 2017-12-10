@@ -25,7 +25,7 @@ CatalogLinks =
         name: 'Catalog Link Rewrite'
         cb:   @node
 
-    if Conf['Catalog Links']
+    if (@enabled = Conf['Catalog Links'])
       CatalogLinks.el = el = UI.checkbox 'Header catalog links', 'Catalog Links'
       el.id = 'toggleCatalog'
       input = $ 'input', el
@@ -55,7 +55,7 @@ CatalogLinks =
 
   # Also called by Header when board lists are loaded / generated.
   setLinks: (list) ->
-    return unless CatalogLinks.el and list
+    return unless (CatalogLinks.enabled ? Conf['Catalog Links']) and list
 
     for a in $$('a:not([data-only])', list)
       continue if (

@@ -39,10 +39,12 @@ QuoteThreading =
   inserted: {}
 
   setEnabled: ->
-    other = ReplyPruning.inputs?.enabled
-    if @checked and other?.checked
-      other.checked = false
-      $.event 'change', null, other
+    if @checked
+      $.set 'Prune All Threads', false
+      other = ReplyPruning.inputs?.enabled
+      if other?.checked
+        other.checked = false
+        $.event 'change', null, other
     $.cb.checked.call @
 
   setThread: ->

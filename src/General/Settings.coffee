@@ -113,7 +113,7 @@ Settings =
             Enable it on boards.4chan.org in your browser's privacy settings (may be listed as part of "local data" or "cookies").
           """
     ads: (cb) ->
-      $.onExists doc, '.ad-cnt, .adg-rects', (ad) -> $.onExists ad, 'img, iframe', ->
+      $.onExists doc, '.adg-rects > .desktop', (ad) -> $.onExists ad, 'iframe', ->
         url = Redirect.to 'thread', {boardID: 'qa', threadID: 362590}
         cb $.el 'li',
           <%= html(
@@ -162,8 +162,12 @@ Settings =
       addCheckboxes fs, obj
       $.add section, fs
     addCheckboxes $('div[data-name="JSON Index"] > .suboption-list', section), Config.Index
+
+    # Unsupported options
     if $.engine isnt 'gecko'
-      $('div[data-name="Remember QR Size"]', section).hidden = true # XXX not supported
+      $('div[data-name="Remember QR Size"]', section).hidden = true
+    if $.perProtocolSettings
+      $('div[data-name="Redirect to HTTPS"]', section).hidden = true
 
     $.get items, (items) ->
       for key, val of items
@@ -334,7 +338,20 @@ Settings =
       set 'usercss', Config['usercss'] unless data['usercss']?
       if data['usercss'].indexOf(css) < 0
         set 'usercss', css + '\n\n' + data['usercss']
+    # XXX https://github.com/greasemonkey/greasemonkey/issues/2600
+    if (corrupted = (version[0] is '"'))
+      try
+        version = JSON.parse version
     compareString = version.replace(/\d+/g, (x) -> ('0000'+x)[-5..])
+    if compareString < '00001.00013.00014.00008'
+      for key, val of data when typeof val is 'string' and typeof Conf[key] isnt 'string' and key not in ['Index Sort', 'Last Long Reply Thresholds 0', 'Last Long Reply Thresholds 1']
+        corrupted = true
+        break
+    if corrupted
+      for key, val of data when typeof val is 'string'
+        try
+          val2 = JSON.parse val
+          set key, val2
     if compareString < '00001.00011.00008.00000'
       unless data['Fixed Thread Watcher']?
         set 'Fixed Thread Watcher', data['Toggleable Thread Watcher'] ? true
@@ -406,8 +423,23 @@ Settings =
       if not data['Persistent Thread Watcher']? and data['Toggleable Thread Watcher']?
         set 'Persistent Thread Watcher', not data['Toggleable Thread Watcher']
     if compareString < '00001.00012.00003.00000'
-      for key in ['Image Hover in Catalog', 'Auto Watch', 'Auto Watch Reply', 'Auto Prune']
+      for key in ['Image Hover in Catalog', 'Auto Watch', 'Auto Watch Reply']
         setD key, false
+    if compareString < '00001.00013.00001.00002'
+      addSauces ['#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights']
+    if compareString < '00001.00013.00005.00000'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(/^(#?\s*)http:\/\/regex\.info\/exif\.cgi/mg, '$1http://exif.regex.info/exif.cgi')
+      addSauces Config['sauces'].match(/# Known filename formats:(?:\n.+)*|$/)[0].split('\n')
+    if compareString < '00001.00013.00007.00002'
+      setD 'Require OP Quote Link', true
+    if compareString < '00001.00013.00008.00000'
+      setD 'Download Link', true
+    if compareString < '00001.00013.00009.00003'
+      if data['jsWhitelist']?
+        list = data['jsWhitelist'].split('\n')
+        if 'https://cdnjs.cloudflare.com' not in list and 'https://cdn.mathjax.org' in list
+          set 'jsWhitelist', data['jsWhitelist'] + '\n\nhttps://cdnjs.cloudflare.com'
     changes
 
   loadSettings: (data, cb) ->
@@ -441,11 +473,13 @@ Settings =
         name: name
         className: 'field'
         spellcheck: false
-      $.get name, Conf[name], (item) ->
-        (ta.value = item[name])
       $.on ta, 'change', $.cb.value
-      $.add div, ta
+      $.get name, Conf[name], (item) ->
+        ta.value = item[name]
+        $.add div, ta
       return
+    filterTypes = Object.keys(Config.filter).filter((x) -> x isnt 'general').map (x, i) ->
+      <%= html('?{i}{,}<wbr>${x}') %>
     $.extend div, <%= readHTML('Filter-guide.html') %>
     $('.warning', div).hidden = Conf['Filter']
 
@@ -454,7 +488,8 @@ Settings =
     $('.warning', section).hidden = Conf['Sauce']
     ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
-      (ta.value = item['sauces'])
+      ta.value = item['sauces']
+      (ta.hidden = false) # XXX prevent Firefox from adding initialization to undo queue
     $.on ta, 'change', $.cb.value
 
   advanced: (section) ->
@@ -471,7 +506,7 @@ Settings =
       $.id('lastarchivecheck').textContent = 'never'
 
     items = {}
-    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
+    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'timeLocale', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
       items[name] = Conf[name]
       input = inputs[name]
       event = if name in ['archiveLists', 'archiveAutoUpdate', 'QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
@@ -482,6 +517,7 @@ Settings =
       for key, val of items
         input = inputs[key]
         input[if input.type is 'checkbox' then 'checked' else 'value'] = val
+        input.hidden = false # XXX prevent Firefox from adding initialization to undo queue
         if key of Settings
           Settings[key].call input
       return
@@ -623,6 +659,9 @@ Settings =
   time: ->
     @nextElementSibling.textContent = Time.format @value, new Date()
 
+  timeLocale: ->
+    Settings.time.call $('[name=time]', Settings.dialog)
+
   backlink: ->
     @nextElementSibling.textContent = @value.replace /%(?:id|%)/g, (x) -> ({'%id': '123456789', '%%': '%'})[x]
 
@@ -630,7 +669,7 @@ Settings =
     data =
       isReply: true
       file:
-        url: '//i.4cdn.org/g/1334437723720.jpg'
+        url: "//#{ImageHost.host()}/g/1334437723720.jpg"
         name: 'd9bb2efc98dd0df141a94399ff5880b7.jpg'
         size: '276 KB'
         sizeInBytes: 276 * 1024
@@ -645,10 +684,11 @@ Settings =
     Favicon.switch()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
     img = @nextElementSibling.children
-    img[0].src = Favicon.default
-    img[1].src = Favicon.unreadSFW
-    img[2].src = Favicon.unreadNSFW
-    img[3].src = Favicon.unreadDead
+    f = Favicon
+    for icon, i in [f.SFW, f.unreadSFW, f.unreadSFWY, f.NSFW, f.unreadNSFW, f.unreadNSFWY, f.dead, f.unreadDead, f.unreadDeadY]
+      $.add @nextElementSibling, $.el('img') unless img[i]
+      img[i].src = icon
+    return
 
   togglecss: ->
     if $('textarea[name=usercss]', $.x 'ancestor::fieldset[1]', @).disabled = $.id('apply-css').disabled = !@checked

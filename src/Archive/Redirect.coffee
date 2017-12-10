@@ -126,6 +126,7 @@ Redirect =
     url
 
   file: (archive, {boardID, filename}) ->
+    filename = encodeURIComponent Build.unescape decodeURIComponent filename if boardID is 'f'
     "#{Redirect.protocol archive}#{archive.domain}/#{boardID}/full_image/#{filename}"
 
   board: (archive, {boardID}) ->
@@ -139,7 +140,11 @@ Redirect =
     else
       type
     if type is 'capcode'
-      value = {'Developer': 'dev'}[value] or value.toLowerCase()
+      # https://github.com/pleebe/FoolFuuka/blob/bf4224eed04637a4d0bd4411c2bf5f9945dfec0b/src/Model/Search.php#L363
+      value = {
+        'Developer': 'dev'
+        'Verified':  'ver'
+      }[value] or value.toLowerCase()
     else if type is 'image'
       value = value.replace /[+/=]/g, (c) -> ({'+': '-', '/': '_', '=': ''})[c]
     value = encodeURIComponent value
@@ -150,6 +155,14 @@ Redirect =
     else
       "#{boardID}/?task=search2&search_#{type}=#{value}"
     "#{Redirect.protocol archive}#{archive.domain}/#{path}"
+
+  report: (boardID) ->
+    urls = []
+    for archive in Conf['archives']
+      {software, https, reports, boards, name, domain} = archive
+      if software is 'foolfuuka' and https and reports and boards instanceof Array and boardID in boards
+        urls.push [name, "https://#{domain}/_/api/chan/offsite_report/"]
+    urls
 
   securityCheck: (url) ->
     /^https:\/\//.test(url) or

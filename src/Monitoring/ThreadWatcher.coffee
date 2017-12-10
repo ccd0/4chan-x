@@ -10,7 +10,7 @@ ThreadWatcher =
       className: 'fa fa-eye'
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
-    @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', <%= readHTML('ThreadWatcher.html') %>
+    @dialog = UI.dialog 'thread-watcher', <%= readHTML('ThreadWatcher.html') %>
 
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
@@ -24,6 +24,7 @@ ThreadWatcher =
     $.on @refreshButton, 'click', @buttonFetchAll
     $.on @closeButton, 'click', @toggleWatcher
 
+    @menu.addHeaderMenuEntry()
     $.onExists doc, 'body', @addDialog
 
     switch g.VIEW
@@ -62,6 +63,8 @@ ThreadWatcher =
           $.on @el, 'click', @cb
           true
 
+    return unless g.VIEW in ['index', 'thread']
+
     Callbacks.Post.push
       name: 'Thread Watcher'
       cb:   @node
@@ -95,8 +98,9 @@ ThreadWatcher =
     $.on toggler, 'click', ThreadWatcher.cb.toggle
     # Add missing excerpt for threads added by Auto Watch
     if data and not data.excerpt?
-      ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt @thread}}
-      ThreadWatcher.refresh()
+      $.queueTask =>
+        ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt @thread}}
+        ThreadWatcher.refresh()
 
   catalogNode: ->
     $.addClass @nodes.root, 'watched' if ThreadWatcher.isWatched @thread
@@ -144,6 +148,8 @@ ThreadWatcher =
       boardID = g.BOARD.ID
       nKilled = 0
       for threadID, data of db.data.boards[boardID] when not data?.isDead and "#{boardID}.#{threadID}" not in e.detail.threads
+        # Don't prune threads that have yet to appear in index.
+        continue unless e.detail.threads.some (fullID) -> +fullID.split('.')[1] > threadID
         nKilled++
         if Conf['Auto Prune'] or not (data and typeof data is 'object') # corrupt data
           db.delete {boardID, threadID}
@@ -205,7 +211,7 @@ ThreadWatcher =
     if ThreadWatcher.requests.length is 0
       ThreadWatcher.status.textContent = '...'
       $.addClass ThreadWatcher.refreshButton, 'fa-spin'
-    req = $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
+    req = $.ajax "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
       onloadend: ->
         ThreadWatcher.parseStatus.call @, thread
       timeout: $.MINUTE
@@ -232,7 +238,9 @@ ThreadWatcher =
         threadID: threadID
         defaultValue: 0
 
-      unread = quotingYou = 0
+      unread = 0
+      quotingYou = false
+      youOP = !!QuoteYou.db?.get {boardID, threadID, postID: threadID}
 
       for postObj in @response.posts
         continue unless postObj.no > lastReadPost
@@ -240,7 +248,11 @@ ThreadWatcher =
 
         unread++
 
-        continue unless QuoteYou.db and postObj.com
+        if !quotingYou and !Conf['Require OP Quote Link'] and youOP and not Filter.isHidden(Build.parseJSON postObj, boardID)
+          quotingYou = true
+          continue
+
+        continue unless !quotingYou and QuoteYou.db and postObj.com
 
         quotesYou = false
         regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
@@ -253,7 +265,7 @@ ThreadWatcher =
             quotesYou = true
             break
         if quotesYou and not Filter.isHidden(Build.parseJSON postObj, boardID)
-          quotingYou++
+          quotingYou = true
 
       if isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou
         ThreadWatcher.db.extend {boardID, threadID, val: {isDead, unread, quotingYou}}
@@ -336,8 +348,8 @@ ThreadWatcher =
       isWatched = ThreadWatcher.isWatched thread
       if thread.OP
         for post in [thread.OP, thread.OP.clones...]
-          toggler = $ '.watch-thread-link', post.nodes.info
-          ThreadWatcher.setToggler toggler, isWatched
+          if (toggler = $ '.watch-thread-link', post.nodes.info)
+            ThreadWatcher.setToggler toggler, isWatched
       (thread.catalogView.nodes.root.classList.toggle 'watched', isWatched if thread.catalogView)
 
     if Conf['Pin Watched Threads']
@@ -411,7 +423,6 @@ ThreadWatcher =
       menu = @menu = new UI.Menu 'thread watcher'
       $.on $('.menu-button', ThreadWatcher.dialog), 'click', (e) ->
         menu.toggle e, @, ThreadWatcher
-      @addHeaderMenuEntry()
       @addMenuEntries()
 
     addHeaderMenuEntry: ->

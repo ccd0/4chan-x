@@ -18,6 +18,9 @@ Captcha.fixes =
   cssNoscript: '''
     .fbc-payload-imageselect {
       position: relative;
+      /* XXX Fixes for Google's broken CSS */
+      display: inline-block;
+      margin-left: 0;
     }
     .fbc-payload-imageselect > label {
       position: absolute;
@@ -45,7 +48,7 @@ Captcha.fixes =
   init: ->
     switch location.pathname.split('/')[3]
       when 'anchor'   then @initMain()
-      when 'frame'    then @initPopup()
+      when 'frame', 'bframe' then @initPopup()
       when 'fallback' then @initNoscript()
 
   initMain: ->

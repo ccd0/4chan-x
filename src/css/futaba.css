@@ -55,6 +55,11 @@
   color: #F0E0D6;
 }
 
+/* Anonymize */
+:root.futaba.anonymize .name::before {
+  font-size: 12pt;
+}
+
 /* QR */
 .futaba #dump-list::-webkit-scrollbar-thumb {
   background-color: #F0E0D6;

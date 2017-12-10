@@ -14,6 +14,11 @@ QuoteBacklink =
   init: ->
     return if g.VIEW not in ['index', 'thread'] or !Conf['Quote Backlinks']
 
+    # Add a class to differentiate when backlinks are at
+    # the top (default) or bottom of a post
+    if (@bottomBacklinks = Conf['Bottom Backlinks'])
+      $.addClass doc, 'bottom-backlinks'
+
     Callbacks.Post.push
       name: 'Quote Backlinking Part 1'
       cb:   @firstNode
@@ -22,7 +27,7 @@ QuoteBacklink =
       cb:   @secondNode
   firstNode: ->
     return if @isClone or !@quotes.length or @isRebuilt
-    markYours = Conf['Mark Quotes of You'] and QuoteYou.db?.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
+    markYours = Conf['Mark Quotes of You'] and QuoteYou.isYou(@)
     a = $.el 'a',
       href: Build.postURL @board.ID, @thread.ID, @ID
       className: if @isHidden then 'filtered backlink' else 'backlink'
@@ -49,13 +54,16 @@ QuoteBacklink =
     return
   secondNode: ->
     if @isClone and (@origin.isReply or Conf['OP Backlinks'])
-      @nodes.backlinkContainer = $ '.container', @nodes.info
+      @nodes.backlinkContainer = $ '.container', @nodes.post
       return
     # Don't backlink the OP.
     return unless @isReply or Conf['OP Backlinks']
     container = QuoteBacklink.getContainer @fullID
     @nodes.backlinkContainer = container
-    $.add @nodes.info, container
+    if QuoteBacklink.bottomBacklinks
+      $.add @nodes.post, container
+    else
+      $.add @nodes.info, container
   getContainer: (id) ->
     @containers[id] or=
       $.el 'span', className: 'container'

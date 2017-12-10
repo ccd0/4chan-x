@@ -90,7 +90,9 @@ Header =
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
 
-    $.onExists doc, '#boardNavDesktop > *', Header.setBoardList
+    # Wait for #boardNavMobile instead of #boardNavDesktop,
+    # it might be incomplete otherwise.
+    $.onExists doc, '#boardNavMobile', Header.setBoardList
 
     Main.ready ->
       if not (footer = $.id 'boardNavDesktopFoot')
@@ -268,7 +270,7 @@ Header =
         return a.firstChild # Its text node.
 
     if /-expired/.test t
-      if boardID not in ['b', 'f', 'trash']
+      if boardID not in ['b', 'f', 'trash', 'bant']
         a.href = "/#{boardID}/archive"
       else
         return a.firstChild # Its text node.

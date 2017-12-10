@@ -19,7 +19,7 @@ ThreadStats =
       Header.addShortcut 'stats', sc, 200
 
     else
-      @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',
+      @dialog = sc = UI.dialog 'thread-stats',
         <%= html('<div class="move" title="${statsTitle}">&{statsHTML}</div>') %>
       $.addClass doc, 'float'
       $.ready ->
@@ -75,7 +75,7 @@ ThreadStats =
       $.addClass ThreadStats.pageCountEl, 'warning'
       return
     ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 2 * $.MINUTE
-    $.ajax "//a.4cdn.org/#{ThreadStats.thread.board}/threads.json", onload: ThreadStats.onThreadsLoad,
+    $.ajax "#{location.protocol}//a.4cdn.org/#{ThreadStats.thread.board}/threads.json", onload: ThreadStats.onThreadsLoad,
       whenModified: 'ThreadStats'
 
   onThreadsLoad: ->

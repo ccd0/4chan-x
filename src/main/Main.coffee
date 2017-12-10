@@ -4,10 +4,17 @@ Main =
     return if d.body and not $ 'title', d.head
 
     # XXX dwb userscripts extension reloads scripts run at document-start when replaceState/pushState is called.
-    return if window['<%= meta.name %> antidup']
-    window['<%= meta.name %> antidup'] = true
+    # XXX Firefox reinjects WebExtension content scripts when extension is updated / reloaded.
+    try
+      w = window
+      w = (w.wrappedJSObject or w) if $.platform is 'crx'
+      return if '<%= meta.name %> antidup' of w
+      w['<%= meta.name %> antidup'] = true
 
     if location.hostname is 'www.google.com'
+      if location.pathname is '/recaptcha/api/noscript'
+        $.ready -> Captcha.noscript.initFrame()
+        return
       $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
         if enabled
           $.ready -> Captcha.fixes.init()
@@ -15,12 +22,16 @@ Main =
 
     # Don't run inside ad iframes.
     try
-      return if window.frameElement and window.frameElement.src is ''
+      return if window.frameElement and window.frameElement.src in ['', 'about:blank']
 
     # Don't run inside MathJax popups.
     return if location.hostname is 'boards.4chan.org' and d.documentElement and not d.doctype
 
     # Detect multiple copies of 4chan X
+    return if doc and $.hasClass(doc, 'fourchan-x')
+    $.asap docSet, ->
+      $.addClass doc, 'fourchan-x', 'seaweedchan'
+      $.addClass doc, "ua-#{$.engine}" if $.engine
     $.on d, '4chanXInitFinished', ->
       if Main.expectInitFinished
         delete Main.expectInitFinished
@@ -48,6 +59,7 @@ Main =
     Conf['selectedArchives'] = {}
     Conf['cooldowns'] = {}
     Conf['Index Sort'] = {}
+    Conf["Last Long Reply Thresholds #{i}"] = {} for i in [0...2]
 
     # XXX old key names
     Conf['Except Archives from Encryption'] = false
@@ -67,6 +79,9 @@ Main =
     items[key] = undefined for key of Conf
     items['previousversion'] = undefined
     ($.getSync or $.get) items, (items) ->
+      if !$.perProtocolSettings and (items['Redirect to HTTPS'] ? Conf['Redirect to HTTPS']) and location.protocol isnt 'https:'
+        location.replace('https:' + location.host + location.pathname + location.search + location.hash)
+        return
       $.asap docSet, ->
 
         # Don't hide the local storage warning behind a settings panel.
@@ -132,23 +147,26 @@ Main =
         else if pathname[2] is 'post'
           PostSuccessful.init()
         return
-      when 'i.4cdn.org', 'is.4chan.org'
-        return unless pathname[2] and not /[sm]\.jpg$/.test(pathname[2])
-        $.asap (-> d.readyState isnt 'loading'), ->
-          if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
-            Redirect.navigate 'file', {
-              boardID:  g.BOARD.ID
-              filename: pathname[pathname.length - 1]
-            }
-          else if video = $ 'video'
-            if Conf['Volume in New Tab']
-              Volume.setup video
-            if Conf['Loop in New Tab']
-              video.loop = true
-              video.controls = false
-              video.play()
-              ImageCommon.addControls video
-        return
+
+    if ImageHost.test hostname
+      return unless pathname[2] and not /[sm]\.jpg$/.test(pathname[2])
+      $.asap (-> d.readyState isnt 'loading'), ->
+        if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
+          Redirect.navigate 'file', {
+            boardID:  g.BOARD.ID
+            filename: pathname[pathname.length - 1]
+          }
+        else if video = $ 'video'
+          if Conf['Volume in New Tab']
+            Volume.setup video
+          if Conf['Loop in New Tab']
+            video.loop = true
+            video.controls = false
+            video.play()
+            ImageCommon.addControls video
+      return
+
+    return unless hostname is 'boards.4chan.org'
 
     if pathname[2] in ['thread', 'res']
       g.VIEW     = 'thread'
@@ -187,10 +205,8 @@ Main =
 
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
-    $.addClass doc, 'fourchan-x', 'seaweedchan'
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
-    $.addClass doc, "ua-#{$.engine}" if $.engine
-    $.onExists doc, '.ad-cnt, .adg-rects', (ad) -> $.onExists ad, 'img, iframe', -> $.addClass doc, 'ads-loaded'
+    $.onExists doc, '.ad-cnt, .adg-rects > .desktop', (ad) -> $.onExists ad, 'img, iframe', -> $.addClass doc, 'ads-loaded'
     $.addClass doc, 'autohiding-scrollbar' if Conf['Autohiding Scrollbar']
     $.ready ->
       if d.body.clientHeight > doc.clientHeight and (window.innerWidth is doc.clientWidth) isnt Conf['Autohiding Scrollbar']
@@ -208,12 +224,6 @@ Main =
     Main.setClass()
 
   setClass: ->
-    if (spooky = $ 'link[rel="stylesheet"][href^="//s.4cdn.org/css/spooky."]', d.head)
-      spooky.removeAttribute 'media'
-      if getComputedStyle(d.body).color is 'rgb(196, 151, 86)' # not blocked
-        $.addClass doc, 'spooky'
-        return
-
     if g.VIEW is 'catalog'
       $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
       return
@@ -227,6 +237,8 @@ Main =
       for styleSheet in styleSheets
         if styleSheet.href is mainStyleSheet?.href
           style = styleSheet.title.toLowerCase().replace('new', '').trim().replace /\s+/g, '-'
+          style = styleSheet.href.match(/[a-z]*(?=[^/]*$)/)[0] if style is '_special'
+          style = null unless style in ['yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'photon', 'tomorrow', 'spooky']
           break
       if style
         $.addClass doc, style
@@ -451,6 +463,7 @@ Main =
     ['Menu',                      Menu]
     ['Index Generator (Menu)',    Index.menu]
     ['Report Link',               ReportLink]
+    ['Copy Text Link',            CopyTextLink]
     ['Thread Hiding (Menu)',      ThreadHiding.menu]
     ['Reply Hiding (Menu)',       PostHiding.menu]
     ['Delete Link',               DeleteLink]

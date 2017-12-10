@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.0.20
+// @version      1.13.14.11
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -16,10 +16,16 @@
 // @include      https://i.4cdn.org/*
 // @include      http://is.4chan.org/*
 // @include      https://is.4chan.org/*
+// @include      http://is2.4chan.org/*
+// @include      https://is2.4chan.org/*
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      https://www.google.com/recaptcha/api2/frame?*&k=887877714&*
+// @include      https://www.google.com/recaptcha/api2/bframe?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      http://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      http://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
+// @include      https://www.google.com/recaptcha/api/noscript?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @exclude      http://www.4chan.org/pass
 // @exclude      https://www.4chan.org/pass
 // @exclude      http://www.4chan.org/pass?*
@@ -32,8 +38,8 @@
 // @exclude      https://www.4chan.org/donate
 // @exclude      http://www.4chan.org/donate?*
 // @exclude      https://www.4chan.org/donate?*
-// @connect      i.4cdn.org
-// @connect      is.4chan.org
+// @connect      4chan.org
+// @connect      4cdn.org
 // @connect      *
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -42,6 +48,12 @@
 // @grant        GM_addValueChangeListener
 // @grant        GM_openInTab
 // @grant        GM_xmlhttpRequest
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
+// @grant        GM.listValues
+// @grant        GM.openInTab
+// @grant        GM.xmlHttpRequest
 // @run-at       document-start
 // @updateURL    https://www.4chan-x.net/builds/4chan-X.meta.js
 // @downloadURL  https://www.4chan-x.net/builds/4chan-X.user.js

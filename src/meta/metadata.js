@@ -25,7 +25,7 @@
       return expand(matches, /^\*/, ['http', 'https']);
     }
     return [].concat(
-      expandMatches(meta.matches).map(function(match) {
+      expandMatches(meta.includes_only.concat(meta.matches)).map(function(match) {
         return '// @include      ' + match;
       }),
       expandMatches(meta.exclude_matches).map(function(match) {
@@ -34,8 +34,8 @@
     ).join('\n');
   })()
 %>
-// @connect      i.4cdn.org
-// @connect      is.4chan.org
+// @connect      4chan.org
+// @connect      4cdn.org
 // @connect      *
 <%=
   meta.grants.map(function(grant) {

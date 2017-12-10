@@ -52,6 +52,7 @@ Build =
       pass:     if data.since4pass? then "#{data.since4pass}" else undefined
       uniqueID: data.id
       flagCode: data.country
+      flagCodeTroll: data.troll_country
       flag:     Build.unescape data.country_name
       dateUTC:  data.time
       dateText: data.now
@@ -64,14 +65,14 @@ Build =
       o.file =
         name:      (Build.unescape data.filename) + data.ext
         url: if boardID is 'f'
-          "#{location.protocol}//i.4cdn.org/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
+          "#{location.protocol}//#{ImageHost.flashHost()}/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
         else
-          "#{location.protocol}//#{if data.no % 3 then 'i.4cdn.org' else 'is.4chan.org'}/#{boardID}/#{data.tim}#{data.ext}"
+          "#{location.protocol}//#{ImageHost.host()}/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h
         width:     data.w
         MD5:       data.md5
         size:      $.bytesToString data.fsize
-        thumbURL:  "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}s.jpg"
+        thumbURL:  "#{location.protocol}//#{ImageHost.thumbHost()}/#{boardID}/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
@@ -104,7 +105,7 @@ Build =
 
   post: (o) ->
     {ID, threadID, boardID, file} = o
-    {subject, email, name, tripcode, capcode, pass, uniqueID, flagCode, flag, dateUTC, dateText, commentHTML} = o.info
+    {subject, email, name, tripcode, capcode, pass, uniqueID, flagCode, flagCodeTroll, flag, dateUTC, dateText, commentHTML} = o.info
     {staticPath, gifIcon} = Build
 
     ### Post Info ###
@@ -114,6 +115,9 @@ Build =
       if capcode is 'Founder'
         capcodePlural      = 'the Founder'
         capcodeDescription = "4chan's Founder"
+      else if capcode is 'Verified'
+        capcodePlural      = 'Verified Users'
+        capcodeDescription = ''
       else
         capcodeLong   = {'Admin': 'Administrator', 'Mod': 'Moderator'}[capcode] or capcode
         capcodePlural = "#{capcodeLong}s"

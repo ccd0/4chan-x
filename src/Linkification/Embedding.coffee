@@ -1,15 +1,20 @@
 Embedding =
   init: ->
-    return unless Conf['Embedding'] or Conf['Link Title']
+    return unless g.VIEW in ['index', 'thread', 'archive'] and Conf['Linkify'] and (Conf['Embedding'] or Conf['Link Title'] or Conf['Cover Preview'])
     @types = {}
     @types[type.key] = type for type in @ordered_types
 
-    if Conf['Embedding']
-      @dialog = UI.dialog 'embedding', 'top: 50px; right: 0px;',
+    if Conf['Embedding'] and g.VIEW isnt 'archive'
+      @dialog = UI.dialog 'embedding',
         <%= readHTML('Embed.html') %>
       @media = $ '#media-embed', @dialog
       $.one d, '4chanXInitFinished', @ready
-
+      $.on  d, 'IndexRefreshInternal', ->
+        g.posts.forEach (post) ->
+          for post in [post, post.clones...]
+            for embed in post.nodes.embedlinks
+              Embedding.cb.catalogRemove.call embed
+          return
     if Conf['Link Title']
       $.on d, '4chanXInitFinished PostsInserted', ->
         for key, service of Embedding.types when service.title?.batchSize
@@ -17,21 +22,29 @@ Embedding =
         return
 
   events: (post) ->
-    return unless Conf['Embedding']
-    i = 0
-    items = $$ '.embedder', post.nodes.comment
-    while el = items[i++]
-      $.on el, 'click', Embedding.cb.click
-      Embedding.cb.toggle.call el if $.hasClass el, 'embedded'
-    return
+    return if g.VIEW is 'archive'
+    if Conf['Embedding']
+      i = 0
+      items = post.nodes.embedlinks = $$ '.embedder', post.nodes.comment
+      while el = items[i++]
+        $.on el, 'click', Embedding.cb.click
+        Embedding.cb.toggle.call el if $.hasClass el, 'embedded'
+    if Conf['Cover Preview']
+      i = 0
+      items = $$ '.linkify', post.nodes.comment
+      while el = items[i++]
+        if (data = Embedding.services el)
+          Embedding.preview data
+      return
 
   process: (link, post) ->
-    return unless Conf['Embedding'] or Conf['Link Title']
+    return unless Conf['Embedding'] or Conf['Link Title'] or Conf['Cover Preview']
     return if $.x 'ancestor::pre', link
     if data = Embedding.services link
       data.post = post
-      Embedding.embed data if Conf['Embedding']
+      Embedding.embed data if Conf['Embedding'] and g.VIEW isnt 'archive'
       Embedding.title data if Conf['Link Title']
+      Embedding.preview data if Conf['Cover Preview'] and g.VIEW isnt 'archive'
 
   services: (link) ->
     {href} = link
@@ -42,7 +55,6 @@ Embedding =
   embed: (data) ->
     {key, uid, options, link, post} = data
     {href} = link
-    return if Embedding.types[key].httpOnly and location.protocol isnt 'http:'
 
     $.addClass link, key.toLowerCase()
 
@@ -56,13 +68,13 @@ Embedding =
 
     $.on embed, 'click', Embedding.cb.click
     $.after link, [$.tn(' '), embed]
+    post.nodes.embedlinks.push embed
 
     if Conf['Auto-embed'] and !Conf['Floating Embeds'] and !post.isFetchedQuote
-      autoEmbed = ->
-        if doc.contains(embed) and not $.hasClass(doc, 'catalog-mode')
-          $.off d, 'PostsInserted', autoEmbed
-          Embedding.cb.toggle.call embed
-      $.on d, 'PostsInserted', autoEmbed
+      if $.hasClass(doc, 'catalog-mode')
+        $.addClass embed, 'embed-removed'
+      else
+        Embedding.cb.toggle.call embed
 
   ready: ->
     return if !Main.isThisPageLegit()
@@ -84,11 +96,11 @@ Embedding =
     if Embedding.dragEmbed.mouseup
       $.off d, 'mouseup', Embedding.dragEmbed
       Embedding.dragEmbed.mouseup = false
-      style.visibility = ''
+      style.pointerEvents = ''
       return
     $.on d, 'mouseup', Embedding.dragEmbed
     Embedding.dragEmbed.mouseup = true
-    style.visibility = 'hidden'
+    style.pointerEvents = 'none'
 
   title: (data) ->
     {key, uid, options, link, post} = data
@@ -114,10 +126,27 @@ Embedding =
         $.extend data.link, <%= html('[${data.key}] <span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>') %>
     return
 
+  preview: (data) ->
+    {key, uid, link} = data
+    return if not (service = Embedding.types[key].preview)
+    $.on link, 'mouseover', (e) ->
+      src = service.url uid
+      {height} = service
+      el = $.el 'img',
+        src: src
+        id: 'ihover'
+      $.add d.body, el
+      UI.hover
+        root: link
+        el: el
+        latestEvent: e
+        endEvents: 'mouseout click'
+        height: height
+
   cb:
     click: (e) ->
       e.preventDefault()
-      if Conf['Floating Embeds'] or $.hasClass(doc, 'catalog-mode')
+      if not $.hasClass(@, 'embedded') and (Conf['Floating Embeds'] or $.hasClass(doc, 'catalog-mode'))
         return if not (div = Embedding.media.firstChild)
         $.replace div, Embedding.cb.embed @
         Embedding.lastEmbed = Get.postFromNode(@).nodes.root
@@ -144,6 +173,12 @@ Embedding =
         'border: none; width: 640px; height: 360px;'
 
       return container
+
+    catalogRemove: ->
+      isCatalog = $.hasClass(doc, 'catalog-mode')
+      if (isCatalog and $.hasClass(@, 'embedded')) or (!isCatalog and $.hasClass(@, 'embed-removed'))
+        Embedding.cb.toggle.call @
+        $.toggleClass @, 'embed-removed'
 
     title: (req, data) ->
       {key, uid, options, link, post} = data
@@ -194,7 +229,7 @@ Embedding =
           controls: true
           preload:  'auto'
           src:      a.dataset.href
-          loop:     /^https?:\/\/i\.4cdn\.org\//.test a.dataset.href
+          loop:     ImageHost.test a.dataset.href.split('/')[2]
         $.on el, 'loadedmetadata', ->
           if el.videoHeight is 0 and el.parentNode
             $.replace el, Embedding.types.audio.el(a)
@@ -203,15 +238,14 @@ Embedding =
         el
     ,
       key: 'Clyp'
-      regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w+)/
-      style: ''
+      regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w{8})/
+      style: 'border: 0; width: 640px; height: 160px;'
       el: (a) ->
-        el = $.el 'audio',
-          controls: true
-          preload: 'auto'
-        type = if el.canPlayType 'audio/ogg' then 'ogg' else 'mp3'
-        el.src = "https://clyp.it/#{a.dataset.uid}.#{type}"
-        el
+        $.el 'iframe',
+          src: "https://clyp.it/#{a.dataset.uid}/widget"
+      title:
+        api: (uid) -> "https://api.clyp.it/#{uid}"
+        text: (_) -> _.Title
     ,
       key: 'Dailymotion'
       regExp:  /^\w+:\/\/(?:(?:www\.)?dailymotion\.com\/(?:embed\/)?video|dai\.ly)\/([A-Za-z0-9]+)[^?]*(.*)/
@@ -224,6 +258,9 @@ Embedding =
       title:
         api: (uid) -> "https://api.dailymotion.com/video/#{uid}"
         text: (_) -> _.title
+      preview:
+        url: (uid) -> "https://www.dailymotion.com/thumbnail/video/#{uid}"
+        height: 240
     ,
       key: 'Gfycat'
       regExp: /^\w+:\/\/(?:www\.)?gfycat\.com\/(?:iframe\/)?(\w+)/
@@ -233,12 +270,23 @@ Embedding =
     ,
       key: 'Gist'
       regExp: /^\w+:\/\/gist\.github\.com\/[\w\-]+\/(\w+)/
-      el: (a) ->
-        el = $.el 'iframe'
-        el.setAttribute 'sandbox', 'allow-scripts'
-        content = <%= html('<html><head><title>${a.dataset.uid}</title></head><body><script src="https://gist.github.com/${a.dataset.uid}.js"></script></body></html>') %>
-        el.src = E.url content
-        el
+      style: ''
+      el: do ->
+        counter = 0
+        (a) ->
+          el = $.el 'pre',
+            hidden: true
+            id: "gist-embed-#{counter++}"
+          $.ajax "https://api.github.com/gists/#{a.dataset.uid}",
+            responseType: 'json'
+            onload: ->
+              el.textContent = Object.values(@response.files)[0].content
+              el.className = 'prettyprint'
+              $.global ->
+                window.prettyPrint? (() ->), document.getElementById(document.currentScript.dataset.id).parentNode
+              , id: el.id
+              el.hidden = false
+          el
       title:
         api: (uid) -> "https://api.github.com/gists/#{uid}"
         text: ({files}) ->
@@ -252,15 +300,14 @@ Embedding =
     ,
       key: 'LiveLeak'
       regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*i=(\w+)/
-      httpOnly: true
       el: (a) ->
         el = $.el 'iframe',
-          src: "http://www.liveleak.com/ll_embed?i=#{a.dataset.uid}",
+          src: "https://www.liveleak.com/ll_embed?i=#{a.dataset.uid}",
         el.setAttribute "allowfullscreen", "true"
         el
     ,
       key: 'Loopvid'
-      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|m2|pc|1c|pi|wl|ko|gc)\/[\w\-\/]+(?:,[\w\-\/]+)*|fc\/\w+\/\d+|https?:\/\/.+)/
+      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|m2|pc|1c|pi|ni|wl|ko|gc)\/[\w\-\/]+(?:,[\w\-\/]+)*|fc\/\w+\/\d+|https?:\/\/.+)/
       style: 'max-width: 80vw; max-height: 80vh;'
       el: (a) ->
         el = $.el 'video',
@@ -281,38 +328,39 @@ Embedding =
             urls = switch host
               # list from src/common.py at http://loopvid.appspot.com/source.html
               when 'pf' then ["https://kastden.org/_loopvid_media/pf/#{base}", "https://web.archive.org/web/2/http://a.pomf.se/#{base}"]
-              when 'kd' then ["http://kastden.org/loopvid/#{base}"]
-              when 'lv' then ["http://lv.kastden.org/#{base}"]
+              when 'kd' then ["https://kastden.org/loopvid/#{base}"]
+              when 'lv' then ["https://lv.kastden.org/#{base}"]
               when 'gd' then ["https://docs.google.com/uc?export=download&id=#{base}"]
               when 'gh' then ["https://googledrive.com/host/#{base}"]
               when 'db' then ["https://dl.dropboxusercontent.com/u/#{base}"]
               when 'dx' then ["https://dl.dropboxusercontent.com/#{base}"]
-              when 'nn' then ["http://naenara.eu/loopvids/#{base}"]
+              when 'nn' then ["https://kastden.org/_loopvid_media/nn/#{base}"]
               when 'cp' then ["https://copy.com/#{base}"]
               when 'wu' then ["http://webmup.com/#{base}/vid.webm"]
               when 'ig' then ["https://i.imgur.com/#{base}"]
-              when 'ky' then ["https://kiyo.me/#{base}"]
+              when 'ky' then ["https://kastden.org/_loopvid_media/ky/#{base}"]
               when 'mf' then ["https://kastden.org/_loopvid_media/mf/#{base}", "https://web.archive.org/web/2/https://d.maxfile.ro/#{base}"]
               when 'm2' then ["https://kastden.org/_loopvid_media/m2/#{base}"]
               when 'pc' then ["http://a.pomf.cat/#{base}"]
               when '1c' then ["http://b.1339.cf/#{base}"]
               when 'pi' then ["https://u.pomf.is/#{base}"]
+              when 'ni' then ["https://u.nya.is/#{base}"]
               when 'wl' then ["http://webm.land/media/#{base}"]
               when 'ko' then ["https://kordy.kastden.org/loopvid/#{base}"]
-              when 'fc' then ["//i.4cdn.org/#{base}.webm"]
+              when 'fc' then ["//#{ImageHost.host()}/#{base}.webm"]
               when 'gc' then ["https://#{type}.gfycat.com/#{name}.webm"]
             for url in urls
               $.add el, $.el 'source', src: url
         el
     ,
       key: 'Openings.moe'
-      regExp: /^\w+:\/\/openings.moe\/\?video=([^&=]+\.webm)/
+      regExp: /^\w+:\/\/openings.moe\/\?video=([^.&=]+)/
       style: 'max-width: 80vw; max-height: 80vh;'
       el: (a) ->
         $.el 'video',
           controls: true
           preload:  'auto'
-          src:      "//openings.moe/video/#{a.dataset.uid}"
+          src:      "//openings.moe/video/#{a.dataset.uid}.webm"
           loop:     true
     ,
       key: 'Pastebin'
@@ -328,7 +376,7 @@ Embedding =
         $.el 'iframe',
           src: "https://w.soundcloud.com/player/?visual=true&show_comments=false&url=https%3A%2F%2Fsoundcloud.com%2F#{encodeURIComponent a.dataset.uid}"
       title:
-        api: (uid) -> "//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F#{encodeURIComponent uid}"
+        api: (uid) -> "#{location.protocol}//soundcloud.com/oembed?format=json&url=https%3A%2F%2Fsoundcloud.com%2F#{encodeURIComponent uid}"
         text: (_) -> _.title
     ,
       key: 'StrawPoll'
@@ -351,10 +399,26 @@ Embedding =
         el
     ,
       key: 'Twitter'
-      regExp: /^\w+:\/\/(?:www\.)?twitter\.com\/(\w+\/status\/\d+)/
+      regExp: /^\w+:\/\/(?:www\.|mobile\.)?twitter\.com\/(\w+\/status\/\d+)/
+      style: 'border: none; width: 550px; height: 250px; overflow: hidden; resize: both;'
       el: (a) ->
-        $.el 'iframe',
-          src: "https://twitframe.com/show?url=https://twitter.com/#{a.dataset.uid}"
+        el = $.el 'iframe'
+        $.on el, 'load', ->
+          @contentWindow.postMessage {element: 't', query: 'height'}, 'https://twitframe.com'
+        onMessage = (e) ->
+          if e.source is el.contentWindow and e.origin is 'https://twitframe.com'
+            $.off window, 'message', onMessage
+            (cont or el).style.height = "#{+$.minmax(e.data.height, 250, 0.8 * doc.clientHeight)}px"
+        $.on window, 'message', onMessage
+        el.src = "https://twitframe.com/show?url=https://twitter.com/#{a.dataset.uid}"
+        if $.engine is 'gecko'
+          # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=680823
+          el.style.cssText = 'border: none; width: 100%; height: 100%;'
+          cont = $.el 'div'
+          $.add cont, el
+          cont
+        else
+          el
     ,
       key: 'Vimeo'
       regExp:  /^\w+:\/\/(?:www\.)?vimeo\.com\/(\d+)/
@@ -394,7 +458,7 @@ Embedding =
           start += ' 0h0m0s'
           start = 3600 * start.match(/(\d+)h/)[1] + 60 * start.match(/(\d+)m/)[1] + 1 * start.match(/(\d+)s/)[1]
         el = $.el 'iframe',
-          src: "//www.youtube.com/embed/#{a.dataset.uid}?wmode=opaque#{if start then '&start=' + start else ''}"
+          src: "//www.youtube.com/embed/#{a.dataset.uid}?rel=0&wmode=opaque#{if start then '&start=' + start else ''}"
         el.setAttribute "allowfullscreen", "true"
         el
       title:
@@ -407,4 +471,7 @@ Embedding =
           for item in data.items when item.id is uid
             return item.snippet.title
           'Not Found'
+      preview:
+        url: (uid) -> "https://img.youtube.com/vi/#{uid}/0.jpg"
+        height: 360
   ]

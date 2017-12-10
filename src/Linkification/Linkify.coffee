@@ -1,6 +1,6 @@
 Linkify =
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or not Conf['Linkify']
+    return if g.VIEW not in ['index', 'thread', 'archive'] or not Conf['Linkify']
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
@@ -14,10 +14,11 @@ Linkify =
   node: ->
     return Embedding.events @ if @isClone
     return unless Linkify.regString.test @info.comment
-    for link in $$ 'a[href^="http://i.4cdn.org/"], a[href^="https://i.4cdn.org/"], a[href^="http://is.4chan.org/"], a[href^="https://is.4chan.org/"]', @nodes.comment
+    for link in $$ 'a', @nodes.comment when ImageHost.test link.hostname
       $.addClass link, 'linkify'
       Embedding.process link, @
     links = Linkify.process @nodes.comment
+    ImageHost.fixLinks links if ImageHost.useFaster
     Embedding.process link, @ for link in links
     return
 
@@ -50,6 +51,9 @@ Linkify =
                 continue
               else
                 break
+
+            if saved.parentElement.nodeName is "A" and not Linkify.regString.test(word)
+              break
 
             endNode  = saved
             {data}   = saved

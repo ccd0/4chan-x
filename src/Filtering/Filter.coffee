@@ -11,7 +11,6 @@ Filter =
     sfwBoards  = BoardConfig.sfwBoards(true).join(',')
 
     for key of Config.filter
-      @filters[key] = []
       for line in Conf[key].split '\n'
         continue if line[0] is '#'
 
@@ -75,11 +74,20 @@ Filter =
           top = filter.match(/top:(yes|no)/)?[1] or 'yes'
           top = top is 'yes' # Turn it into a boolean
 
-        @filters[key].push @createFilter regexp, boards, excludes, op, stub, hl, top
+        # Fields that this filter applies to (for 'general' filters)
+        if key is 'general'
+          if (types = filter.match /(?:^|;)\s*type:([^;]*)/)
+            types = types[1].split(',').filter (x) ->
+              x of Config.filter and x isnt 'general'
+          else
+            types = ['subject', 'name', 'filename', 'comment']
 
-      # Only execute filter types that contain valid filters.
-      unless @filters[key].length
-        delete @filters[key]
+        filter = @createFilter regexp, boards, excludes, op, stub, hl, top
+        if key is 'general'
+          for type in types
+            (@filters[type] or= []).push filter
+        else
+          (@filters[key] or= []).push filter
 
     return unless Object.keys(@filters).length
     Callbacks.Post.push
@@ -113,19 +121,25 @@ Filter =
 
   test: (post, hideable=true) ->
     return post.filterResults if post.filterResults
-    hl  = undefined
-    top = false
+    hide = false
+    stub = true
+    hl   = undefined
+    top  = false
     for key of Filter.filters when ((value = Filter[key] post)?)
       # Continue if there's nothing to filter (no tripcode for example).
       for filter in Filter.filters[key] when (result = filter value, post.boardID, post.isReply)
-        {hide, stub} = result
-        if hide
-          return {hide, stub} if hideable
+        if result.hide
+          if hideable
+            hide = true
+            stub and= result.stub
         else
           unless hl and result.class in hl
             (hl or= []).push result.class
           top or= result.top
-    {hl, top}
+    if hide
+      {hide, stub}
+    else
+      {hl, top}
 
   node: ->
     return if @isClone
@@ -150,13 +164,63 @@ Filter =
   tripcode:   (post) -> post.info.tripcode
   capcode:    (post) -> post.info.capcode
   pass:       (post) -> post.info.pass
-  subject:    (post) -> post.info.subject
+  subject:    (post) -> post.info.subject or (if post.isReply then undefined else '')
   comment:    (post) -> (post.info.comment ?= Build.parseComment post.info.commentHTML.innerHTML)
   flag:       (post) -> post.info.flag
   filename:   (post) -> post.file?.name
   dimensions: (post) -> post.file?.dimensions
   filesize:   (post) -> post.file?.size
   MD5:        (post) -> post.file?.MD5
+
+  addFilter: (type, re, cb) ->
+    $.get type, Conf[type], (item) ->
+      save = item[type]
+      # Add a new line before the regexp unless the text is empty.
+      save =
+        if save
+          "#{save}\n#{re}"
+        else
+          re
+      $.set type, save, cb
+
+  quickFilterMD5: ->
+    post = Get.postFromNode @
+    return unless post.file
+    Filter.addFilter 'MD5', "/#{post.file.MD5}/"
+    origin = post.origin or post
+    if origin.isReply
+      PostHiding.hide origin
+    else if g.VIEW is 'index'
+      ThreadHiding.hide origin.thread
+    # If post is still visible, give an indication that the MD5 was filtered.
+    if post.nodes.post.getBoundingClientRect().height
+      new Notice 'info', 'MD5 filtered.', 2
+
+  escape: (value) ->
+    value.replace ///
+      /
+      | \\
+      | \^
+      | \$
+      | \n
+      | \.
+      | \(
+      | \)
+      | \{
+      | \}
+      | \[
+      | \]
+      | \?
+      | \*
+      | \+
+      | \|
+      ///g, (c) ->
+        if c is '\n'
+          '\\n'
+        else if c is '\\'
+          '\\\\'
+        else
+          "\\#{c}"
 
   menu:
     init: ->
@@ -210,53 +274,20 @@ Filter =
       {type} = @dataset
       # Convert value -> regexp, unless type is MD5
       value = Filter[type] Filter.menu.post
-      re = if type in ['uniqueID', 'MD5'] then value else value.replace ///
-        /
-        | \\
-        | \^
-        | \$
-        | \n
-        | \.
-        | \(
-        | \)
-        | \{
-        | \}
-        | \[
-        | \]
-        | \?
-        | \*
-        | \+
-        | \|
-        ///g, (c) ->
-          if c is '\n'
-            '\\n'
-          else if c is '\\'
-            '\\\\'
-          else
-            "\\#{c}"
-
+      re = if type in ['uniqueID', 'MD5'] then value else Filter.escape(value)
       re = if type in ['uniqueID', 'MD5']
         "/#{re}/"
       else
         "/^#{re}$/"
 
-      # Add a new line before the regexp unless the text is empty.
-      $.get type, Conf[type], (item) ->
-        save = item[type]
-        save =
-          if save
-            "#{save}\n#{re}"
-          else
-            re
-        $.set type, save
-
+      Filter.addFilter type, re, ->
         # Open the settings and display & focus the relevant filter textarea.
         Settings.open 'Filter'
         section = $ '.section-container'
         select = $ 'select[name=filter]', section
         select.value = type
         Settings.selectFilter.call select
-        ta = $ 'textarea', section
-        tl = ta.textLength
-        ta.setSelectionRange tl, tl
-        ta.focus()
+        $.onExists section, 'textarea', (ta) ->
+          tl = ta.textLength
+          ta.setSelectionRange tl, tl
+          ta.focus()

@@ -34,7 +34,7 @@ ImageCommon =
     return true
 
   isFromArchive: (file) ->
-    file.src.split('/')[2] not in ['i.4cdn.org', 'is.4chan.org']
+    !ImageHost.test(file.src.split('/')[2])
 
   error: (file, post, delay, cb) ->
     src = post.file.url.split '/'
@@ -54,7 +54,7 @@ ImageCommon =
         clearTimeout timeoutID if delay?
         cb URL
 
-    $.ajax "//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
+    $.ajax "#{location.protocol}//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
       post.kill !post.isClone if @status is 404
       return redirect() if @status isnt 200
       for postObj in @response.posts

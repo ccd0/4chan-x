@@ -1,7 +1,7 @@
 ?{file}{
   <div class="file" id="f${ID}">
   ?{boardID === "f"}{
-    <div class="fileInfo"><span class="fileText" id="fT${ID}">
+    <div class="fileInfo" data-md5="${file.MD5}"><span class="fileText" id="fT${ID}">
       File: 
       <a data-width="${file.width}" data-height="${file.height}" href="${fileURL}" target="_blank">${file.name}</a>
       -(${file.size}, ${file.dimensions}?{file.tag}{, ${file.tag}})

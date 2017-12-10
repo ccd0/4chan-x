@@ -22,9 +22,8 @@
 <p>If you're looking for a maintained fork of OneeChan (a style script used in addition to 4chan X), try
 <a href="https://github.com/Nebukazar/OneeChan">https://github.com/Nebukazar/OneeChan</a>.</p>
 <h2 id="please-note">Please note</h2>
-<p><strong>Uninstalling</strong>: 4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the <code>[Settings]</code> link in the top right corner, uncheck &quot;<code>Disable the native extension</code>&quot; in the panel that appears, and click the &quot;<code>Save Settings</code>&quot; button.</p>
-<p><strong>Private browsing</strong>: 4chan X does not yet support private browsing / incognito mode. Although it may work in this mode, browsing data recorded by 4chan X, such as your last read post in a thread and which posts are yours, will still need to be cleared manually by resetting your settings. To control what browsing data 4chan X records, use the <code>Remember Last Read Post</code> and <code>Remember Your Posts</code> options in the settings panel.</p>
-<p><strong>HTTPS</strong>: 4chan X currently shares your settings and post history between the HTTP and HTTPS versions of 4chan. If you are concerned about protecting your privacy against a man-in-the-middle attack, you should disable 4chan X on the HTTP version of 4chan and/or install <a href="https://www.eff.org/https-everywhere">HTTPS Everywhere</a>.</p>
+<p><strong>Uninstalling</strong>: 4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the <code>[Settings]</code> link in the top right corner, uncheck &quot;<code>Disable the native extension</code>&quot; in the panel that appears, and click the &quot;<code>Save Settings</code>&quot; button. If you don't see a &quot;<code>Save Settings</code>&quot; button, it may be being hidden by your ad blocker.</p>
+<p><strong>Private browsing</strong>: By default, 4chan X remembers your last read post in a thread and which posts were made by you, even if you are in private browsing / incognito mode. If you want to turn this off, uncheck the <code>Remember Last Read Post</code> and <code>Remember Your Posts</code> options in the settings panel. You can clear all 4chan browsing history saved by 4chan X by resetting your settings.</p>
 <h2 id="install">Install</h2>
 <input hidden type="checkbox" id="firefox-hide"><div><h3 id="firefox"><label for="firefox-hide">Firefox</label></h3>
 <p>Install <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey</a>, then <strong><a href="https://www.4chan-x.net/builds/4chan-X.user.js">click here to install 4chan X</a></strong>.</p>
@@ -119,8 +118,12 @@ var engine = (function() {
   if (/Gecko\/|Goanna/.test(navigator.userAgent)) return 'gecko';
   if (/Presto\//.test(navigator.userAgent)) return 'presto';
 })();
-if (engine) {
-  var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk': 'webkit', 'ms-edge': 'edge', 'other-browsers': ''};
+var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk': 'webkit', 'ms-edge': 'edge', 'other-browsers': ''};
+if (location.hash.slice(1) in engines) {
+  for (browser in engines) {
+    document.getElementById(browser + '-hide').checked = (browser !== location.hash.slice(1));
+  }
+} else if (engine) {
   for (browser in engines) {
     document.getElementById(browser + '-hide').checked = (engines[browser].indexOf(engine) < 0);
   }

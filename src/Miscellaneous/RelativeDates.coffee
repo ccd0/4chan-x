@@ -3,7 +3,7 @@ RelativeDates =
 
   init: ->
     if (
-      g.VIEW in ['index', 'thread'] and Conf['Relative Post Dates'] and !Conf['Relative Date Title'] or
+      g.VIEW in ['index', 'thread', 'archive'] and Conf['Relative Post Dates'] and !Conf['Relative Date Title'] or
       g.VIEW is 'index' and Conf['JSON Index'] and g.BOARD.ID isnt 'f'
     )
       @flush()

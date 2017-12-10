@@ -10,7 +10,7 @@ QuoteYou =
         {boardID, threadID, postID} = e.detail
         (QuoteYou.db.set {boardID, threadID, postID, val: true})
 
-    return unless g.VIEW in ['index', 'thread']
+    return unless g.VIEW in ['index', 'thread', 'archive']
 
     if Conf['Highlight Own Posts']
       $.addClass doc, 'highlight-own'
@@ -29,10 +29,19 @@ QuoteYou =
       name: 'Mark Quotes of You'
       cb:   @node
 
+    QuoteYou.menu.init()
+
+  isYou: (post) ->
+    !!QuoteYou.db?.get {
+      boardID:  post.board.ID
+      threadID: post.thread.ID
+      postID:   post.ID
+    }
+
   node: ->
     return if @isClone
 
-    if QuoteYou.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
+    if QuoteYou.isYou @
       $.addClass @nodes.root, 'yourPost'
 
     # Stop there if there's no quotes in that post.
@@ -43,6 +52,42 @@ QuoteYou =
         $.addClass quotelink, 'you'
         $.addClass @nodes.root, 'quotesYou'
     return
+
+  menu:
+    init: ->
+      label = $.el 'label',
+        className: 'toggle-you'
+      ,
+        <%= html('<input type="checkbox"> You') %>
+      input = $ 'input', label
+      $.on input, 'change', QuoteYou.menu.toggle
+      Menu.menu?.addEntry
+        el: label
+        order: 80
+        open: (post) ->
+          QuoteYou.menu.post = (post.origin or post)
+          input.checked = QuoteYou.isYou post
+          true
+
+    toggle: ->
+      {post} = QuoteYou.menu
+      data = {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID, val: true}
+      if @checked
+        QuoteYou.db.set data
+      else
+        QuoteYou.db.delete data
+      for clone in [post].concat post.clones
+        clone.nodes.root.classList.toggle 'yourPost', @checked
+      for quotelink in Get.allQuotelinksLinkingTo post
+        if @checked
+          $.add quotelink, QuoteYou.mark.cloneNode(true) if Conf['Mark Quotes of You']
+        else
+          $.rm $('.qmark-you', quotelink)
+        quotelink.classList.toggle 'you', @checked
+        if $.hasClass quotelink, 'quotelink'
+          quoter = Get.postFromNode(quotelink).nodes.root
+          quoter.classList.toggle 'quotesYou', !!$('.quotelink.you', quoter)
+      return
 
   cb:
     seek: (type) ->
@@ -70,7 +115,7 @@ QuoteYou =
         return false
       else
         QuoteYou.lastRead = root
-        window.location = "##{post.id}"
+        location.href = "##{post.id}"
         Header.scrollTo post
         $.addClass post, 'highlight'
         return true

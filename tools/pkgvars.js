@@ -2,9 +2,17 @@ var fs = require('fs');
 
 var pkg = JSON.parse(fs.readFileSync('package.json'));
 
-console.log(
-`$(eval name := ${pkg.name})
-$(eval meta_name := ${pkg.meta.name})
-$(eval meta_distBranch := ${pkg.meta.distBranch})
-$(eval meta_uploadPath := ${pkg.meta.uploadPath})
-`);
+var vars = {};
+var k;
+
+vars.name = pkg.name;
+for (k in pkg.meta) {
+  vars[`meta_${k}`] = pkg.meta[k];
+}
+for (k in pkg.devDependencies) {
+  vars[`version_${k}`] = pkg.devDependencies[k];
+}
+
+for (k in vars) {
+  console.log(`\$(eval ${k} := ${vars[k]})`);
+}

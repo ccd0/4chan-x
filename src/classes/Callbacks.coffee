@@ -11,6 +11,8 @@ class Callbacks
     @[name] = cb
 
   execute: (node, keys=@keys) ->
+    return if node.callbacksExecuted
+    node.callbacksExecuted = true
     for name in keys
       try
         @[name]?.call node

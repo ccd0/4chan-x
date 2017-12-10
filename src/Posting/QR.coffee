@@ -28,7 +28,13 @@ QR =
 
     return if g.VIEW is 'archive'
 
-    version = if Conf['Use Recaptcha v1'] and Main.jsEnabled then 'v1' else 'v2'
+    version = if Conf[if g.VIEW is 'thread' then 'Use Recaptcha v1' else 'Use Recaptcha v1 on Index'] and (Main.jsEnabled or location.protocol is 'https:')
+      noscript = location.protocol is 'https:' and (Conf['Force Noscript Captcha for v1'] or not Main.jsEnabled)
+      # XXX Frames not yet supported in GM4.
+      noscript = false if (info = GM?.info) and info.scriptHandler is 'Greasemonkey' and /^4\./.test(info.version)
+      if noscript then 'noscript' else 'v1'
+    else
+      'v2'
     @captcha = Captcha[version]
 
     $.on d, '4chanXInitFinished', -> BoardConfig.ready QR.initReady
@@ -146,7 +152,7 @@ QR =
       return
     QR.nodes.el.hidden = true
     QR.cleanNotifications()
-    d.activeElement.blur()
+    QR.blur()
     $.rmClass QR.nodes.el, 'dump'
     $.addClass QR.shortcut, 'disabled'
     new QR.post true
@@ -168,7 +174,7 @@ QR =
       getComputedStyle(el).visibility isnt 'hidden' and el.getBoundingClientRect().bottom > 0
 
   hide: ->
-    d.activeElement.blur()
+    QR.blur()
     $.addClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = true
 
@@ -181,6 +187,9 @@ QR =
       QR.hide()
     else
       QR.unhide()
+
+  blur: ->
+    d.activeElement.blur() if QR.nodes.el.contains(d.activeElement)
 
   toggleSJIS: (e) ->
     e.preventDefault()
@@ -241,6 +250,13 @@ QR =
             notif.close()
           , 7 * $.SECOND
 
+  connectionError: ->
+    $.el 'span',
+      <%= html(
+        'Connection error while posting. ' +
+        '[<a href="' + meta.faq + '#connection-errors" target="_blank">More info</a>]'
+      ) %>
+
   notifications: []
 
   cleanNotifications: ->
@@ -283,9 +299,20 @@ QR =
     return unless QR.postingIsEnabled
     sel  = d.getSelection()
     post = Get.postFromNode @
+    {root} = post.nodes
+    postRange = new Range()
+    postRange.selectNode root
     text = if post.board.ID is g.BOARD.ID then ">>#{post}\n" else ">>>/#{post.board}/#{post}\n"
-    if sel.toString().trim() and post is Get.postFromNode sel.anchorNode
-      range = sel.getRangeAt 0
+    for i in [0...sel.rangeCount]
+      range = sel.getRangeAt i
+      # Trim range to be fully inside post
+      if range.compareBoundaryPoints(Range.START_TO_START, postRange) < 0
+        range.setStartBefore root
+      if range.compareBoundaryPoints(Range.END_TO_END, postRange) > 0
+        range.setEndAfter root
+
+      continue unless range.toString().trim()
+
       frag  = range.cloneContents()
       ancestor = range.commonAncestorContainer
       # Quoting the insides of a spoiler/code tag.
@@ -299,10 +326,7 @@ QR =
         $.replace node, $.tn '\n'
       for node in $$ 'br', frag
         $.replace node, $.tn '\n>' unless node is frag.lastChild
-      for node in $$ 's, .removed-spoiler', frag
-        $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
-      for node in $$ '.prettyprint', frag
-        $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
+      Site.insertTags?(frag)
       for node in $$ '.linkify[data-original]', frag
         $.replace node, $.tn node.dataset.original
       for node in $$ '.embedder', frag
@@ -398,6 +422,7 @@ QR =
 
   handleUrl: (urlDefault) ->
     QR.open()
+    QR.selected.preventAutoPost()
     url = prompt 'Enter a URL:', urlDefault
     return if url is null
     QR.nodes.fileButton.focus()
@@ -456,7 +481,7 @@ QR =
 
   dialog: ->
     QR.nodes = nodes =
-      el: dialog = UI.dialog 'qr', 'top: 50px; right: 0px;',
+      el: dialog = UI.dialog 'qr',
         <%= readHTML('QuickReply.html') %>
 
     setNode = (name, query) ->
@@ -509,6 +534,8 @@ QR =
         QR.setCustomCooldown customCooldownEnabled
         $.sync 'customCooldownEnabled', QR.setCustomCooldown
 
+    QR.flagsInput()
+
     $.on nodes.autohide,       'change',    QR.toggleHide
     $.on nodes.close,          'click',     QR.close
     $.on nodes.form,           'submit',    QR.submit
@@ -538,10 +565,10 @@ QR =
     # https://bugzilla.mozilla.org/show_bug.cgi?id=906420
     if $.engine is 'gecko' and not window.DataTransferItemList
       nodes.pasteArea.hidden = false
-      new MutationObserver(QR.pasteFF).observe nodes.pasteArea, {childList: true}
+    new MutationObserver(QR.pasteFF).observe nodes.pasteArea, {childList: true}
 
     # save selected post's data
-    items = ['thread', 'name', 'email', 'sub', 'com', 'filename']
+    items = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag']
     i = 0
     save = -> QR.selected.save @
     while name = items[i++]
@@ -572,6 +599,34 @@ QR =
     # Use it to extend the QR's functionalities, or for XTRM RICE.
     $.event 'QRDialogCreation', null, dialog
 
+  flags: ->
+    select = $.el 'select',
+      name:      'flag'
+      className: 'flagSelector'
+
+    addFlag = (value, textContent) ->
+      $.add select, $.el 'option', {value, textContent}
+
+    addFlag '0', 'Geographic Location'
+    for value, textContent of BoardConfig.troll_flags
+      addFlag value, textContent
+
+    select
+
+  flagsInput: ->
+    {nodes} = QR
+    return if not nodes
+    if nodes.flag
+      $.rm nodes.flag
+      delete nodes.flag
+
+    if g.BOARD.ID is 'pol'
+      flag = QR.flags()
+      flag.dataset.name    = 'flag'
+      flag.dataset.default = '0'
+      nodes.flag = flag
+      $.add nodes.form, flag
+
   submit: (e) ->
     e?.preventDefault()
 
@@ -579,6 +634,7 @@ QR =
       QR.abort()
       return
 
+    $.forceSync 'cooldowns'
     if QR.cooldown.seconds
       QR.cooldown.auto = !QR.cooldown.auto
       QR.status()
@@ -609,7 +665,7 @@ QR =
       err or= 'Original comment required.'
 
     if QR.captcha.isEnabled and !err
-      captcha = QR.captcha.getOne()
+      captcha = QR.captcha.getOne(!!threadID)
       unless captcha
         err = 'No valid captcha.'
         QR.captcha.setup(!QR.cooldown.auto or d.activeElement is QR.nodes.status)
@@ -624,11 +680,6 @@ QR =
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.posts.length > 1
-    if Conf['Auto Hide QR'] and !QR.cooldown.auto
-      QR.hide()
-    if !QR.cooldown.auto and $.x 'ancestor::div[@id="qr"]', d.activeElement
-      # Unfocus the focused element if it is one within the QR and we're not auto-posting.
-      d.activeElement.blur()
 
     post.lock()
 
@@ -641,6 +692,7 @@ QR =
       upfile:   post.file
       filetag:  filetag
       spoiler:  post.spoiler
+      flag:     post.flag
       mode:     'regist'
       pwd:      QR.persona.getPassword()
 
@@ -649,16 +701,16 @@ QR =
       withCredentials: true
       onload: QR.response
       onerror: ->
-        # Connection error, or www.4chan.org/banned
+        # On connection error, the post most likely didn't go through.
+        # If the post did go through, it should be stopped by the duplicate reply cooldown.
         delete QR.req
+        Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
+        delete QR.currentCaptcha
         post.unlock()
-        QR.cooldown.auto = false
+        QR.cooldown.auto = true
+        QR.cooldown.addDelay post, 2
         QR.status()
-        QR.error $.el 'span',
-          <%= html(
-            'Connection error while posting. ' +
-            '[<a href="' + meta.faq + '#connection-errors" target="_blank">More info</a>]'
-          ) %>
+        QR.error QR.connectionError()
     extra =
       form: $.formData formData
     if Conf['Show Upload Progress']
@@ -675,6 +727,7 @@ QR =
 
     cb = (response) ->
       if response?
+        QR.currentCaptcha = response
         if response.challenge?
           extra.form.append 'recaptcha_challenge_field', response.challenge
           extra.form.append 'recaptcha_response_field', response.response
@@ -694,7 +747,7 @@ QR =
         else
           delete QR.req
           post.unlock()
-          QR.cooldown.auto = !!QR.captcha.captchas.length
+          QR.cooldown.auto = !!Captcha.cache.getCount()
           QR.status()
     else
       cb captcha
@@ -711,21 +764,18 @@ QR =
     post.unlock()
 
     resDoc  = req.response
-    if ban  = $ '.banType', resDoc # banned/warning
-      err   = $.el 'span',
-        if ban.textContent.toLowerCase() is 'banned'
-          <%= html('You are banned on &{$(".board", resDoc)}! ;_;<br>Click <a href="//www.4chan.org/banned" target="_blank">here</a> to see the reason.') %>
-        else
-          <%= html('You were issued a warning on &{$(".board", resDoc)} as &{$(".nameBlock", resDoc)}.<br>Reason: &{$(".reason", resDoc)}') %>
-    else if err = resDoc.getElementById 'errmsg' # error!
+    if (err = resDoc.getElementById 'errmsg') # error!
       $('a', err)?.target = '_blank' # duplicate image link
-    else if resDoc.title isnt 'Post successful!'
-      err = 'Connection error with sys.4chan.org.'
+    else if (connErr = resDoc.title isnt 'Post successful!')
+      err = QR.connectionError()
+      Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
     else if req.status isnt 200
       err = "Error #{req.statusText} (#{req.status})"
 
+    delete QR.currentCaptcha
+
     if err
-      if /captcha|verification/i.test(err.textContent) or err is 'Connection error with sys.4chan.org.'
+      if /captcha|verification/i.test(err.textContent) or connErr
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent
           err = 'You mistyped the CAPTCHA, or the CAPTCHA malfunctioned.'
@@ -733,9 +783,10 @@ QR =
           err = 'This CAPTCHA is no longer valid because it has expired.'
         # Something must've gone terribly wrong if you get captcha errors without captchas.
         # Don't auto-post indefinitely in that case.
-        QR.cooldown.auto = QR.captcha.isEnabled or err is 'Connection error with sys.4chan.org.'
+        QR.cooldown.auto = QR.captcha.isEnabled or connErr
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
+        # If the post did go through, it should be stopped by the duplicate reply cooldown.
         QR.cooldown.addDelay post, 2
       else if err.textContent and (m = err.textContent.match /(?:(\d+)\s+minutes?\s+)?(\d+)\s+second/i) and !/duplicate|hour/i.test(err.textContent)
         QR.cooldown.auto = !/have\s+been\s+muted/i.test(err.textContent)
@@ -747,7 +798,6 @@ QR =
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.captcha.setup(QR.cooldown.auto and d.activeElement in [QR.nodes.status, d.body])
-      QR.cooldown.auto = false if QR.captcha.isEnabled and !QR.captcha.captchas.length
       QR.status()
       QR.error err
       return
@@ -774,11 +824,17 @@ QR =
 
     lastPostToThread = not (do -> return true for p in QR.posts[1..] when p.thread is post.thread)
 
-    unless Conf['Persistent QR'] or postsCount
-      QR.close()
-    else
+    if postsCount
       post.rm()
       QR.captcha.setup(d.activeElement is QR.nodes.status)
+    else if Conf['Persistent QR']
+      post.rm()
+      if Conf['Auto Hide QR']
+        QR.hide()
+      else
+        QR.blur()
+    else
+      QR.close()
 
     QR.cleanNotifications()
     if Conf['Posting Success Notifications']
@@ -796,7 +852,7 @@ QR =
       open = if Conf['Open Post in New Tab'] or postsCount
         -> $.open URL
       else
-        -> window.location = URL
+        -> location.href = URL
 
       if threadID is postID
         # XXX 4chan sometimes responds before the thread exists.
@@ -824,6 +880,8 @@ QR =
     if QR.req and !QR.req.isUploadFinished
       QR.req.abort()
       delete QR.req
+      Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
+      delete QR.currentCaptcha
       QR.posts[0].unlock()
       QR.cooldown.auto = false
       QR.notifications.push new Notice 'info', 'QR upload aborted.', 5
