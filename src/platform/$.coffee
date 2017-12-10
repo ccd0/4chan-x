@@ -512,7 +512,7 @@ if GM?.deleteValue? and window.BroadcastChannel and not GM_addValueChangeListene
 
   $.on $.syncChannel, 'message', (e) ->
     for key, val of e.data when (cb = $.syncing[key])
-      cb val, key
+      cb JSON.parse(JSON.stringify(val)), key
 
   $.sync = (key, cb) ->
     $.syncing[key] = cb
