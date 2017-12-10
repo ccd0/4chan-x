@@ -45,6 +45,9 @@ SW.tinyboard =
         $
       ///
 
+  bgColoredEl: ->
+    $.el 'div', className: 'post reply'
+
   parseNodes: (post, nodes) ->
     # Add vichan's span.poster_id around the ID if not already present.
     return if nodes.uniqueID

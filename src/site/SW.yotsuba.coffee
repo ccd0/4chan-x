@@ -52,6 +52,9 @@ SW.yotsuba =
         $
       ///
 
+  bgColoredEl: ->
+    $.el 'div', className: 'reply'
+
   isThisPageLegit: ->
     # not 404 error page or similar.
     location.hostname is 'boards.4chan.org' and
