@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.14.10
+// @version      1.13.14.12
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.10',
+  VERSION:   '1.13.14.12',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5005,7 +5005,7 @@ $ = (function() {
       for (key in ref) {
         val = ref[key];
         if ((cb = $.syncing[key])) {
-          results.push(cb(val, key));
+          results.push(cb(JSON.parse(JSON.stringify(val)), key));
         }
       }
       return results;
@@ -11368,7 +11368,7 @@ Settings = (function() {
       }
     },
     upgrade: function(data, version) {
-      var addCSS, addSauces, boardID, changes, compareString, corrupted, j, k, key, len, len1, list, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, val, val2, value;
+      var addCSS, addSauces, boardID, changes, compareString, corrupted, j, k, key, len, len1, list, message, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, val, val2, value;
       changes = {};
       set = function(key, value) {
         return data[key] = changes[key] = value;
@@ -11600,6 +11600,12 @@ Settings = (function() {
             set('jsWhitelist', data['jsWhitelist'] + '\n\nhttps://cdnjs.cloudflare.com');
           }
         }
+      }
+      if (compareString < '00001.00013.00014.00012') {
+        message = $.el('div', {
+          innerHTML: "Feedback request: <a href=\"https://desuarchive.org/qa/thread/1769829/\" target=\"_blank\"><br>What features from 4chan X do you wish were available on other sites you use?</a>"
+        });
+        new Notice('info', message);
       }
       return changes;
     },
