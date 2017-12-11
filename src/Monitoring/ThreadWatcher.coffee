@@ -196,13 +196,15 @@ ThreadWatcher =
       ThreadWatcher.fetchAllStatus()
 
   fetchAllStatus: ->
-    ThreadWatcher.db.forceSync()
-    ThreadWatcher.unreaddb.forceSync()
-    QuoteYou.db?.forceSync()
-    return unless (threads = ThreadWatcher.getAll()).length
-    for thread in threads
-      ThreadWatcher.fetchStatus thread
-    return
+    dbs = [ThreadWatcher.db, ThreadWatcher.unreaddb, QuoteYou.db].filter((x) -> x)
+    n = 0
+    for db in dbs
+      db.forceSync ->
+        if (++n) is dbs.length
+          threads = ThreadWatcher.getAll()
+          for thread in threads
+            ThreadWatcher.fetchStatus thread
+          return
 
   fetchStatus: (thread, force) ->
     {boardID, threadID, data} = thread

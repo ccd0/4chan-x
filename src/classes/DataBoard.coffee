@@ -29,6 +29,16 @@ class DataBoard
         @sync?() if snapshot1 isnt snapshot2
         cb?()
 
+  forceSync: (cb) ->
+    snapshot1 = JSON.stringify @data
+    {changes} = @
+    $.get @key, {boards: {}}, (items) =>
+      @data = items[@key]
+      snapshot2 = JSON.stringify @data
+      c() for c in changes
+      @sync?() if snapshot1 isnt snapshot2
+      cb?()
+
   delete: ({boardID, threadID, postID}) ->
     @save =>
       if postID
@@ -91,9 +101,6 @@ class DataBoard
         else
           thread
     val or defaultValue
-
-  forceSync: ->
-    $.forceSync @key
 
   clean: ->
     for boardID, val of @data.boards
