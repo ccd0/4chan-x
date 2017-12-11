@@ -71,8 +71,9 @@ Main =
     Conf['Toggleable Thread Watcher'] = true
 
     # Enforce JS whitelist
-    ($.getSync or $.get) {'jsWhitelist': Conf['jsWhitelist']}, ({jsWhitelist}) ->
-      $.addCSP "script-src #{jsWhitelist.replace(/^#.*$/mg, '').replace(/[\s;]+/g, ' ').trim()}"
+    if /\.4chan\.org$/.test(location.hostname)
+      ($.getSync or $.get) {'jsWhitelist': Conf['jsWhitelist']}, ({jsWhitelist}) ->
+        $.addCSP "script-src #{jsWhitelist.replace(/^#.*$/mg, '').replace(/[\s;]+/g, ' ').trim()}"
 
     # Get saved values as items
     items = {}
