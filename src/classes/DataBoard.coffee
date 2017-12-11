@@ -2,7 +2,7 @@ class DataBoard
   @keys = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads', 'customTitles']
 
   constructor: (@key, sync, dontClean) ->
-    @data = Conf[@key]
+    @initData Conf[@key]
     $.sync @key, @onSync
     @clean() unless dontClean
     return unless sync
@@ -13,7 +13,13 @@ class DataBoard
       @sync = sync
     $.on d, '4chanXInitFinished', init
 
-  save: (cb) -> $.set @key, @data, cb
+  initData: (@allData) ->
+    if Site.hostname is '4chan.org' and @allData.boards
+      @data = @allData
+    else
+      @data = (@allData[Site.hostname] or= boards: {})
+
+  save: (cb) -> $.set @key, @allData, cb
 
   delete: ({boardID, threadID, postID}) ->
     $.forceSync @key
@@ -112,5 +118,5 @@ class DataBoard
     @save()
 
   onSync: (data) =>
-    @data = data or boards: {}
+    @initData data
     @sync?()

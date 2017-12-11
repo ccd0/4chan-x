@@ -53,7 +53,7 @@ Main =
     flatten null, Config
 
     for db in DataBoard.keys
-      Conf[db] = boards: {}
+      Conf[db] = {}
     Conf['boardConfig'] = boards: {}
     Conf['archives'] = Redirect.archives
     Conf['selectedArchives'] = {}
