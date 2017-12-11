@@ -185,9 +185,8 @@ ThreadWatcher =
     interval = if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] then 5 * $.MINUTE else 2 * $.HOUR
     now = Date.now()
     unless now - interval < (db.data.lastChecked or 0) <= now
-      ThreadWatcher.fetchAllStatus() # calls forceSync
-      db.data.lastChecked = now
-      db.save()
+      ThreadWatcher.fetchAllStatus()
+      db.setLastChecked()
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
 
   buttonFetchAll: ->
