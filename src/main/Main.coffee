@@ -183,6 +183,7 @@ Main =
 
     # c.time 'All initializations'
     for [name, feature] in Main.features
+      continue if Site.disabledFeatures and name in Site.disabledFeatures
       # c.time "#{name} initialization"
       try
         feature.init()
@@ -281,7 +282,7 @@ Main =
       new Notice 'warning', msg
 
     # Parse HTML or skip it and start building from JSON.
-    unless Conf['JSON Index'] and g.VIEW is 'index'
+    unless Index.enabled
       Main.initThread() 
     else
       Main.expectInitFinished = true

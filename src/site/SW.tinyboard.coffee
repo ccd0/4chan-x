@@ -1,6 +1,40 @@
 SW.tinyboard =
   isOPContainerThread: true
 
+  disabledFeatures: [
+    'Board Configuration'
+    'Normalize URL'
+    'Captcha Configuration'
+    'Image Host Rewriting'
+    'Redirect'
+    'Index Generator'
+    'Announcement Hiding'
+    'Fourchan thingies'
+    'Custom CSS'
+    'Resurrect Quotes'
+    'Quick Reply Personas'
+    'Quick Reply'
+    'Cooldown'
+    'Pass Link'
+    'Index Generator (Menu)'
+    'Edit Link'
+    'Archive Link'
+    'Quote Inlining'
+    'Quote Previewing'
+    'Quote Backlinks'
+    'Comment Expansion'
+    'Thread Expansion'
+    'Thread Stats'
+    'Thread Updater'
+    'Mark New IPs'
+    'Banner'
+    'Flash Features'
+    'Reply Pruning'
+    <% if (readJSON('/.tests_enabled')) { %>
+    'Build Test'
+    <% } %>
+  ]
+
   detect: ->
     for script in $$ 'script:not([src])', d.head
       return true if /\bvar configRoot=".*?"/.test(script.textContent)
