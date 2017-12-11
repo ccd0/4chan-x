@@ -1,6 +1,11 @@
 SW.tinyboard =
   isOPContainerThread: true
 
+  detect: ->
+    for script in $$ 'script:not([src])', d.head
+      return true if /\bvar configRoot=".*?"/.test(script.textContent)
+    false
+
   selectors:
     board:         'form[name="postcontrols"]'
     thread:        'div[id^="thread_"]'
