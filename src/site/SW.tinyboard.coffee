@@ -102,7 +102,7 @@ SW.tinyboard =
 
   parseFile: (post, file) ->
     {text, link, thumb} = file
-    return false if text.parentNode isnt post.nodes.root # file belongs to a reply
+    return false if $.x("ancestor::#{Site.xpath.postContainer}", text) isnt post.nodes.root # file belongs to a reply
     return false if not (infoNode = $ '.unimportant', text)
     return false if not (info = infoNode.textContent.match /\((Spoiler Image, )?([\d.]+ [KMG]?B).*\)/)
     nameNode = $ '.postfilename', text
