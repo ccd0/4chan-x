@@ -67,6 +67,7 @@ SW.tinyboard =
     comment:   '.body'
     spoiler:   '.spoiler'
     quotelink: 'a[onclick^="highlightReply("]'
+    boardList: '.boardlist'
 
   xpath:
     thread:        'div[starts-with(@id,"thread_")]'

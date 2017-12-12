@@ -84,15 +84,15 @@ Header =
     $.on window, 'load popstate', Header.hashScroll
     $.on d, 'CreateNotification', @createNotification
 
+    @setBoardList()
+
     $.onExists doc, 'body', =>
       return unless Main.isThisPageLegit()
       $.prepend d.body, @bar
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
 
-    # Wait for #boardNavMobile instead of #boardNavDesktop,
-    # it might be incomplete otherwise.
-    $.onExists doc, '#boardNavMobile', Header.setBoardList
+    $.onExists doc, "#{Site.selectors.boardList} + *", Header.generateFullBoardList
 
     Main.ready ->
       if not (footer = $.id 'boardNavDesktopFoot')
@@ -154,9 +154,20 @@ Header =
     btn = $('.hide-board-list-button', boardList)
     $.on btn, 'click', Header.toggleBoardList
 
+    $.add Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
+
+    Header.setCustomNav Conf['Custom Board Navigation']
+    Header.generateBoardList Conf['boardnav']
+
+    $.sync 'Custom Board Navigation', Header.setCustomNav
+    $.sync 'boardnav', Header.generateBoardList
+
+  generateFullBoardList: ->
     nodes = []
     spacer = -> $.el 'span', className: 'spacer'
-    for node in $('#boardNavDesktop > .boardList').childNodes
+    items = $.X './/a|.//text()[not(ancestor::a)]', $(Site.selectors.boardList)
+    i = 0
+    while node = items.snapshotItem i++
       switch node.nodeName
         when '#text'
           for chr in node.nodeValue
@@ -169,17 +180,9 @@ Header =
           a = node.cloneNode true
           a.className = 'current' if a.pathname.split('/')[1] is g.BOARD.ID
           nodes.push a
-    fullBoardList = $ '.boardList', boardList
+    fullBoardList = $ '.boardList', Header.boardList
     $.add fullBoardList, nodes
     CatalogLinks.setLinks fullBoardList
-
-    $.add Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
-
-    Header.setCustomNav Conf['Custom Board Navigation']
-    Header.generateBoardList Conf['boardnav']
-
-    $.sync 'Custom Board Navigation', Header.setCustomNav
-    $.sync 'boardnav', Header.generateBoardList
 
   generateBoardList: (boardnav) ->
     list = $ '#custom-board-list', Header.boardList
