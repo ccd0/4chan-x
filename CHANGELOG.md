@@ -4,6 +4,9 @@
 
 ### v1.13.15
 
+**v1.13.15.1** *(2017-12-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.14.13: Quick workaround for new ad breaking 4chan.
+
 **v1.13.15.0** *(2017-12-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.13.14.12.
 - Better protection against race conditions that can lead to data loss.
