@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.14.12
+// @version      1.13.14.13
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.12',
+  VERSION:   '1.13.14.13',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -24677,6 +24677,7 @@ Main = (function() {
           Conf[parent] = obj;
         }
       };
+      $.onExists(doc, '#delform > .adg-rects', $.rm);
       flatten(null, Config);
       ref1 = DataBoard.keys;
       for (j = 0, len = ref1.length; j < len; j++) {
