@@ -10,6 +10,9 @@
 
 ### v1.13.14
 
+**v1.13.14.13** *(2017-12-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.13/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.13/builds/4chan-X-noupdate.crx)]
+- Quick workaround for new ad breaking 4chan.
+
 **v1.13.14.12** *(2017-12-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.12/builds/4chan-X-noupdate.crx)]
 - Feedback request.
 
