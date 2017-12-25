@@ -227,7 +227,17 @@ Header =
       return a
 
     boardID = t.split('-')[0]
-    boardID = g.BOARD.ID if boardID is 'current'
+    if boardID is 'current'
+      if location.hostname is 'boards.4chan.org'
+        boardID = g.BOARD.ID
+      else
+        a = $.el 'a',
+          href: "/#{g.BOARD.ID}/"
+          textContent: text or g.BOARD.ID
+          className: 'current'
+        if /-(catalog|archive|expired)/.test(t)
+          a = a.firstChild # Its text node.
+        return a
 
     a = do ->
       if boardID is '@'
@@ -240,13 +250,13 @@ Header =
         return a.cloneNode true
 
       a = $.el 'a',
-        href: "/#{boardID}/"
+        href: "//boards.4chan.org/#{boardID}/"
         textContent: boardID
       a.href += g.VIEW if g.VIEW in ['catalog', 'archive']
-      a.className = 'current' if boardID is g.BOARD.ID
+      a.className = 'current' if a.hostname is location.hostname and boardID is g.BOARD.ID
       a
 
-    a.textContent = if /-title/.test(t) or /-replace/.test(t) and boardID is g.BOARD.ID
+    a.textContent = if /-title/.test(t) or /-replace/.test(t) and a.hostname is location.hostname and boardID is g.BOARD.ID
       a.title or a.textContent
     else if /-full/.test t
       ("/#{boardID}/") + (if a.title then " - #{a.title}" else '')
@@ -274,7 +284,7 @@ Header =
 
     if /-expired/.test t
       if boardID not in ['b', 'f', 'trash', 'bant']
-        a.href = "/#{boardID}/archive"
+        a.href = "//boards.4chan.org/#{boardID}/archive"
       else
         return a.firstChild # Its text node.
 
