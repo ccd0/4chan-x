@@ -166,7 +166,7 @@ Settings =
     # Unsupported options
     if $.engine isnt 'gecko'
       $('div[data-name="Remember QR Size"]', section).hidden = true
-    if $.perProtocolSettings
+    if $.perProtocolSettings or location.protocol isnt 'https:'
       $('div[data-name="Redirect to HTTPS"]', section).hidden = true
 
     $.get items, (items) ->
