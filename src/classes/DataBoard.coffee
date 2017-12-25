@@ -109,6 +109,9 @@ class DataBoard
     val or defaultValue
 
   clean: ->
+    # XXX not yet multisite ready
+    return unless Site.software is 'yotsuba'
+
     for boardID, val of @data.boards
       @deleteIfEmpty {boardID}
 
