@@ -76,7 +76,7 @@ CatalogLinks =
 
   catalog: (board=g.BOARD.ID) ->
     if Conf['External Catalog'] and board in ['a', 'c', 'g', 'biz', 'k', 'm', 'o', 'p', 'v', 'vg', 'vr', 'w', 'wg', 'cm', '3', 'adv', 'an', 'asp', 'cgl', 'ck', 'co', 'diy', 'fa', 'fit', 'gd', 'int', 'jp', 'lit', 'mlp', 'mu', 'n', 'out', 'po', 'sci', 'sp', 'tg', 'toy', 'trv', 'tv', 'vp', 'wsg', 'x', 'f', 'pol', 's4s', 'lgbt']
-      "http://catalog.neet.tv/#{board}/"
+      "//catalog.neet.tv/#{board}/"
     else if Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
       if location.hostname is 'boards.4chan.org' and g.BOARD.ID is board and g.VIEW is 'index' then '#catalog' else "//boards.4chan.org/#{board}/#catalog"
     else
