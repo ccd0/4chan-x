@@ -50,6 +50,9 @@ Main =
         Conf[parent] = obj
       return
 
+    # XXX Remove document-breaking ad
+    $.onExists doc, '#delform > .adg-rects', $.rm
+
     flatten null, Config
 
     for db in DataBoard.keys

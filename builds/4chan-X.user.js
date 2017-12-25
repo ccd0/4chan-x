@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.14.12
+// @version      1.13.15.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.12',
+  VERSION:   '1.13.15.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5621,35 +5621,91 @@ DataBoard = (function() {
       $.on(d, '4chanXInitFinished', init);
     }
 
-    DataBoard.prototype.save = function(cb) {
-      return $.set(this.key, this.data, cb);
+    DataBoard.prototype.changes = [];
+
+    DataBoard.prototype.save = function(change, cb) {
+      var changes, snapshot1;
+      snapshot1 = JSON.stringify(this.data);
+      change();
+      changes = this.changes;
+      changes.push(change);
+      return $.get(this.key, {
+        boards: {}
+      }, (function(_this) {
+        return function(items) {
+          var c, i, len, snapshot2;
+          _this.data = items[_this.key];
+          snapshot2 = JSON.stringify(_this.data);
+          for (i = 0, len = changes.length; i < len; i++) {
+            c = changes[i];
+            c();
+          }
+          return $.set(_this.key, _this.data, function() {
+            _this.changes = [];
+            if (snapshot1 !== snapshot2) {
+              if (typeof _this.sync === "function") {
+                _this.sync();
+              }
+            }
+            return typeof cb === "function" ? cb() : void 0;
+          });
+        };
+      })(this));
+    };
+
+    DataBoard.prototype.forceSync = function(cb) {
+      var changes, snapshot1;
+      snapshot1 = JSON.stringify(this.data);
+      changes = this.changes;
+      return $.get(this.key, {
+        boards: {}
+      }, (function(_this) {
+        return function(items) {
+          var c, i, len, snapshot2;
+          _this.data = items[_this.key];
+          snapshot2 = JSON.stringify(_this.data);
+          for (i = 0, len = changes.length; i < len; i++) {
+            c = changes[i];
+            c();
+          }
+          if (snapshot1 !== snapshot2) {
+            if (typeof _this.sync === "function") {
+              _this.sync();
+            }
+          }
+          return typeof cb === "function" ? cb() : void 0;
+        };
+      })(this));
     };
 
     DataBoard.prototype["delete"] = function(arg) {
-      var boardID, postID, ref, threadID;
+      var boardID, postID, threadID;
       boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID;
-      $.forceSync(this.key);
-      if (postID) {
-        if (!((ref = this.data.boards[boardID]) != null ? ref[threadID] : void 0)) {
-          return;
-        }
-        delete this.data.boards[boardID][threadID][postID];
-        this.deleteIfEmpty({
-          boardID: boardID,
-          threadID: threadID
-        });
-      } else if (threadID) {
-        if (!this.data.boards[boardID]) {
-          return;
-        }
-        delete this.data.boards[boardID][threadID];
-        this.deleteIfEmpty({
-          boardID: boardID
-        });
-      } else {
-        delete this.data.boards[boardID];
-      }
-      return this.save();
+      return this.save((function(_this) {
+        return function() {
+          var ref;
+          if (postID) {
+            if (!((ref = _this.data.boards[boardID]) != null ? ref[threadID] : void 0)) {
+              return;
+            }
+            delete _this.data.boards[boardID][threadID][postID];
+            return _this.deleteIfEmpty({
+              boardID: boardID,
+              threadID: threadID
+            });
+          } else if (threadID) {
+            if (!_this.data.boards[boardID]) {
+              return;
+            }
+            delete _this.data.boards[boardID][threadID];
+            return _this.deleteIfEmpty({
+              boardID: boardID
+            });
+          } else {
+            return delete _this.data.boards[boardID];
+          }
+        };
+      })(this));
     };
 
     DataBoard.prototype.deleteIfEmpty = function(arg) {
@@ -5668,45 +5724,59 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype.set = function(data, cb) {
-      $.forceSync(this.key);
-      return this.setUnsafe(data, cb);
+      return this.save((function(_this) {
+        return function() {
+          return _this.setUnsafe(data);
+        };
+      })(this), cb);
     };
 
-    DataBoard.prototype.setUnsafe = function(arg, cb) {
+    DataBoard.prototype.setUnsafe = function(arg) {
       var base, base1, base2, boardID, postID, threadID, val;
       boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, val = arg.val;
       if (postID !== void 0) {
-        ((base = ((base1 = this.data.boards)[boardID] || (base1[boardID] = {})))[threadID] || (base[threadID] = {}))[postID] = val;
+        return ((base = ((base1 = this.data.boards)[boardID] || (base1[boardID] = {})))[threadID] || (base[threadID] = {}))[postID] = val;
       } else if (threadID !== void 0) {
-        ((base2 = this.data.boards)[boardID] || (base2[boardID] = {}))[threadID] = val;
+        return ((base2 = this.data.boards)[boardID] || (base2[boardID] = {}))[threadID] = val;
       } else {
-        this.data.boards[boardID] = val;
+        return this.data.boards[boardID] = val;
       }
-      return this.save(cb);
     };
 
     DataBoard.prototype.extend = function(arg, cb) {
-      var boardID, i, key, len, oldVal, postID, ref, rm, threadID, val;
+      var boardID, postID, rm, threadID, val;
       boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, val = arg.val, rm = arg.rm;
-      $.forceSync(this.key);
-      oldVal = this.get({
-        boardID: boardID,
-        threadID: threadID,
-        postID: postID,
-        val: {}
-      });
-      ref = rm || [];
-      for (i = 0, len = ref.length; i < len; i++) {
-        key = ref[i];
-        delete oldVal[key];
-      }
-      $.extend(oldVal, val);
-      return this.setUnsafe({
-        boardID: boardID,
-        threadID: threadID,
-        postID: postID,
-        val: oldVal
-      }, cb);
+      return this.save((function(_this) {
+        return function() {
+          var i, key, len, oldVal, ref;
+          oldVal = _this.get({
+            boardID: boardID,
+            threadID: threadID,
+            postID: postID,
+            val: {}
+          });
+          ref = rm || [];
+          for (i = 0, len = ref.length; i < len; i++) {
+            key = ref[i];
+            delete oldVal[key];
+          }
+          $.extend(oldVal, val);
+          return _this.setUnsafe({
+            boardID: boardID,
+            threadID: threadID,
+            postID: postID,
+            val: oldVal
+          });
+        };
+      })(this), cb);
+    };
+
+    DataBoard.prototype.setLastChecked = function() {
+      return this.save((function(_this) {
+        return function() {
+          return _this.data.lastChecked = Date.now();
+        };
+      })(this));
     };
 
     DataBoard.prototype.get = function(arg) {
@@ -5732,13 +5802,8 @@ DataBoard = (function() {
       return val || defaultValue;
     };
 
-    DataBoard.prototype.forceSync = function() {
-      return $.forceSync(this.key);
-    };
-
     DataBoard.prototype.clean = function() {
       var boardID, now, ref, ref1, val;
-      $.forceSync(this.key);
       ref = this.data.boards;
       for (boardID in ref) {
         val = ref[boardID];
@@ -5804,7 +5869,7 @@ DataBoard = (function() {
       this.deleteIfEmpty({
         boardID: boardID
       });
-      return this.save();
+      return $.set(this.key, this.data);
     };
 
     DataBoard.prototype.onSync = function(data) {
@@ -19331,8 +19396,7 @@ ThreadWatcher = (function() {
       now = Date.now();
       if (!((now - interval < (ref = db.data.lastChecked || 0) && ref <= now))) {
         ThreadWatcher.fetchAllStatus();
-        db.data.lastChecked = now;
-        db.save();
+        db.setLastChecked();
       }
       return ThreadWatcher.timeout = setTimeout(ThreadWatcher.fetchAuto, interval);
     },
@@ -19344,19 +19408,26 @@ ThreadWatcher = (function() {
       }
     },
     fetchAllStatus: function() {
-      var i, len, ref, thread, threads;
-      ThreadWatcher.db.forceSync();
-      ThreadWatcher.unreaddb.forceSync();
-      if ((ref = QuoteYou.db) != null) {
-        ref.forceSync();
+      var db, dbs, i, len, n, results;
+      dbs = [ThreadWatcher.db, ThreadWatcher.unreaddb, QuoteYou.db].filter(function(x) {
+        return x;
+      });
+      n = 0;
+      results = [];
+      for (i = 0, len = dbs.length; i < len; i++) {
+        db = dbs[i];
+        results.push(db.forceSync(function() {
+          var j, len1, thread, threads;
+          if ((++n) === dbs.length) {
+            threads = ThreadWatcher.getAll();
+            for (j = 0, len1 = threads.length; j < len1; j++) {
+              thread = threads[j];
+              ThreadWatcher.fetchStatus(thread);
+            }
+          }
+        }));
       }
-      if (!(threads = ThreadWatcher.getAll()).length) {
-        return;
-      }
-      for (i = 0, len = threads.length; i < len; i++) {
-        thread = threads[i];
-        ThreadWatcher.fetchStatus(thread);
-      }
+      return results;
     },
     fetchStatus: function(thread, force) {
       var boardID, data, req, threadID;
@@ -24281,9 +24352,11 @@ QuoteYou = (function() {
         return Conf['Remember Your Posts'] = enabled;
       });
       $.on(d, 'QRPostSuccessful', function(e) {
-        var boardID, postID, ref, threadID;
-        $.forceSync('Remember Your Posts');
-        if (Conf['Remember Your Posts']) {
+        return $.get('Remember Your Posts', Conf['Remember Your Posts'], function(items) {
+          var boardID, postID, ref, threadID;
+          if (!items['Remember Your Posts']) {
+            return;
+          }
           ref = e.detail, boardID = ref.boardID, threadID = ref.threadID, postID = ref.postID;
           return QuoteYou.db.set({
             boardID: boardID,
@@ -24291,7 +24364,7 @@ QuoteYou = (function() {
             postID: postID,
             val: true
           });
-        }
+        });
       });
       if ((ref = g.VIEW) !== 'index' && ref !== 'thread' && ref !== 'archive') {
         return;
@@ -24677,6 +24750,7 @@ Main = (function() {
           Conf[parent] = obj;
         }
       };
+      $.onExists(doc, '#delform > .adg-rects', $.rm);
       flatten(null, Config);
       ref1 = DataBoard.keys;
       for (j = 0, len = ref1.length; j < len; j++) {

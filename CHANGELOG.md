@@ -2,7 +2,19 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.13.15
+
+**v1.13.15.1** *(2017-12-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.14.13: Quick workaround for new ad breaking 4chan.
+
+**v1.13.15.0** *(2017-12-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.14.12.
+- Better protection against race conditions that can lead to data loss.
+
 ### v1.13.14
+
+**v1.13.14.13** *(2017-12-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.13/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.13/builds/4chan-X-noupdate.crx)]
+- Quick workaround for new ad breaking 4chan.
 
 **v1.13.14.12** *(2017-12-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.12/builds/4chan-X-noupdate.crx)]
 - Feedback request.
