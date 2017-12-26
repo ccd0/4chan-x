@@ -171,9 +171,9 @@ Main =
     if pathname[2] in ['thread', 'res']
       g.VIEW     = 'thread'
       g.THREADID = +pathname[3]
-    else if pathname[2] in ['catalog', 'archive']
-      g.VIEW = pathname[2]
-    else if pathname[2].match /^\d*$/
+    else if /^(?:catalog|archive)(?:\.html)?$/.test(pathname[2])
+      g.VIEW = pathname[2].replace('.html', '')
+    else if /^(?:index|\d*)(?:\.html)?$/.test(pathname[2])
       g.VIEW = 'index'
     else
       return
