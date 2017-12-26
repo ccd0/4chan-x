@@ -1270,7 +1270,7 @@ span.hide-announcement {
 .expanded-image > .post > .file > .fileThumb > img[data-md5] {
   display: none;
 }
-.full-image {
+.full-image[data-full-i-d] {
   display: none;
   cursor: pointer;
 }

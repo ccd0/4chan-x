@@ -22,6 +22,8 @@ SW.tinyboard =
     'Quote Previewing'
     'Quote Backlinks'
     'File Info Formatting'
+    'Image Expansion'
+    'Image Expansion (Menu)'
     'Comment Expansion'
     'Thread Expansion'
     'Thread Stats'
