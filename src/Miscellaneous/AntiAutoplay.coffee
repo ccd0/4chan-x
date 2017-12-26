@@ -22,9 +22,12 @@ AntiAutoplay =
 
   process: (root) ->
     for iframe in $$ 'iframe[src*="youtube"][src*="autoplay=1"]', root
-      iframe.src = iframe.src.replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', '')
-      $.addClass iframe, 'autoplay-removed'
+      AntiAutoplay.processVideo iframe, 'src'
     for object in $$ 'object[data*="youtube"][data*="autoplay=1"]', root
-      object.data = object.data.replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', '')
-      $.addClass object, 'autoplay-removed'
+      AntiAutoplay.processVideo object, 'data'
     return
+
+  processVideo: (el, attr) ->
+    el[attr] = el[attr].replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', '')
+    el.style.display = 'block' if window.getComputedStyle(el).display is 'hidden'
+    $.addClass el, 'autoplay-removed'

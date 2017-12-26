@@ -156,10 +156,9 @@ audio.controls-added {
   text-align: center;
 }
 :root.anti-autoplay .autoplay-removed {
-  display: block !important;
   visibility: visible !important;
   min-width: 640px;
-  min-height: 390px;
+  min-height: 360px;
 }
 
 /* fixed, z-index */
