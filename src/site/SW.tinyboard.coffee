@@ -117,3 +117,7 @@ SW.tinyboard =
         thumbURL:  if '/static/' in thumb.src then link.href else thumb.src
         isSpoiler: !!info[1]
     true
+
+  isThumbExpanded: (file) ->
+    # Detect old Tinyboard image expansion that changes src attribute on thumbnail.
+    $.hasClass file.thumb.parentNode, 'expanded'
