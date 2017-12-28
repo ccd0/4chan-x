@@ -16,7 +16,7 @@ Volume =
         name: 'Mouse Wheel Volume'
         cb:   @node
 
-    return unless g.BOARD.ID in ['gif', 'wsg', 'r', 'wsr']
+    return if BoardConfig.noAudio(g.BOARD.ID)
 
     if Conf['Mouse Wheel Volume']
       Callbacks.CatalogThread.push
@@ -60,7 +60,7 @@ Volume =
       Volume.inputs.volume.value = volume
 
   node: ->
-    return unless @board.ID in ['gif', 'wsg'] and @file?.isVideo
+    return unless !BoardConfig.noAudio(@board.ID) and @file?.isVideo
     $.on @file.thumb,                                 'wheel', Volume.wheel.bind(Header.hover)
     $.on ($('.file-info', @file.text) or @file.link), 'wheel', Volume.wheel.bind(@file.thumbLink)
 

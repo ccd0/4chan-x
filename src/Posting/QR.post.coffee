@@ -265,7 +265,7 @@ QR.post = class
         @fileError 'Video lacks duration metadata (try remuxing)'
       else if duration > QR.max_duration_video
         @fileError "Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
-      if g.BOARD.ID not in ['gif', 'wsg', 'r', 'wsr'] and $.hasAudio el
+      if BoardConfig.noAudio(g.BOARD.ID) and $.hasAudio(el)
         @fileError 'Audio not allowed'
 
   setThumbnail: (el) ->

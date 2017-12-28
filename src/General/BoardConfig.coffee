@@ -41,3 +41,7 @@ BoardConfig =
 
   sfwBoards: (sfw) ->
     board for board, data of (@boards or Conf['boardConfig'].boards) when !!data.ws_board is sfw
+
+  noAudio: (boardID) ->
+    boards = @boards or Conf['boardConfig'].boards
+    boards and !boards[boardID].webm_audio

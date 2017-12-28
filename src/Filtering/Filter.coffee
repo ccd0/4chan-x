@@ -125,6 +125,8 @@ Filter =
     stub = true
     hl   = undefined
     top  = false
+    if QuoteYou.isYou(post)
+      hideable = false
     for key of Filter.filters when ((value = Filter[key] post)?)
       # Continue if there's nothing to filter (no tripcode for example).
       for filter in Filter.filters[key] when (result = filter value, post.boardID, post.isReply)
