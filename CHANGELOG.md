@@ -4,6 +4,12 @@
 
 ### v1.13.15
 
+**v1.13.15.2** *(2017-12-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.2/builds/4chan-X-noupdate.crx)]
+- Fix scroll wheel volume adjustment on /r/ and /wsr/. Also read list of boards allowing audio from 4chan's boards.json.
+- Minor Fixes to `Disable Autoplaying Sounds`.
+- Use HTTPS for catalog.neet.tv if on HTTPS 4chan page.
+- (pentargency) Prevent filtering of own posts.
+
 **v1.13.15.1** *(2017-12-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.1/builds/4chan-X-noupdate.crx)]
 - Merge v1.13.14.13: Quick workaround for new ad breaking 4chan.
 
