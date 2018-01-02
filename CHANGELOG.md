@@ -4,6 +4,9 @@
 
 ### v1.13.15
 
+**v1.13.15.3** *(2018-01-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.3/builds/4chan-X-noupdate.crx)]
+- Fix removal of stale cached thread data on index refresh which was broken by updates for GM4.
+
 **v1.13.15.2** *(2017-12-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.2/builds/4chan-X-noupdate.crx)]
 - Fix scroll wheel volume adjustment on /r/ and /wsr/. Also read list of boards allowing audio from 4chan's boards.json.
 - Minor Fixes to `Disable Autoplaying Sounds`.
