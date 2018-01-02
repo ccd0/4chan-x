@@ -650,7 +650,7 @@ Index =
     RelativeDates.update timeEl
 
   parse: (pages) ->
-    $.cleanCache (url) -> /^\/\/a\.4cdn\.org\//.test url
+    $.cleanCache (url) -> /^https?:\/\/a\.4cdn\.org\//.test url
     Index.parseThreadList pages
     Index.changed.threads = true
     Index.pageLoad()

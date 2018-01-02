@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.15.2
+// @version      1.13.15.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.15.2',
+  VERSION:   '1.13.15.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -10478,7 +10478,7 @@ Index = (function() {
     },
     parse: function(pages) {
       $.cleanCache(function(url) {
-        return /^\/\/a\.4cdn\.org\//.test(url);
+        return /^https?:\/\/a\.4cdn\.org\//.test(url);
       });
       Index.parseThreadList(pages);
       Index.changed.threads = true;
