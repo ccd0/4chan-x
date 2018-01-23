@@ -502,25 +502,9 @@ Config =
         true
         'Make captcha easier to use, especially with the keyboard.'
       ]
-      'Use Recaptcha v1': [
-        false
-        'Use the old text version of Recaptcha in the post form in threads.'
-      ]
-      'Use Recaptcha v1 on Index': [
-        false
-        'Use the old text version of Recaptcha on the index and catalog. Warning: May interfere with starting threads.'
-      ]
-      'Use Recaptcha v1 in Reports': [
-        false
-        'Use the text captcha in the report window.'
-      ]
       'Force Noscript Captcha': [
         false
         'Use the non-Javascript fallback captcha even if Javascript is enabled (Recaptcha v2 only).'
-      ]
-      'Force Noscript Captcha for v1': [
-        true
-        'Force the non-Javascript fallback captcha for Recaptcha v1. Currently only works on HTTPS.'
       ]
       'Pass Link': [
         false
