@@ -4,6 +4,11 @@
 
 ### v1.13.15
 
+**v1.13.15.4** *(2018-01-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.4/builds/4chan-X-noupdate.crx)]
+- Remove Recaptcha v1 options.
+- Don't require captcha if cookie is set indicating captcha not needed yet. #1767
+- Revert race condition bugfixes from v1.13.15.0 until I'm sure they're not making things worse.
+
 **v1.13.15.3** *(2018-01-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.3/builds/4chan-X-noupdate.crx)]
 - Fix removal of stale cached thread data on index refresh which was broken by updates for GM4.
 
