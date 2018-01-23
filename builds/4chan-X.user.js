@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.14.13
+// @version      1.13.15.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.14.13',
+  VERSION:   '1.13.15.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -322,11 +322,7 @@ Config = (function() {
         'Auto-load captcha': [false, 'Automatically load the captcha in the QR even if your post is empty.', 1],
         'Post on Captcha Completion': [false, 'Submit the post immediately when the captcha is completed.', 1],
         'Captcha Fixes': [true, 'Make captcha easier to use, especially with the keyboard.'],
-        'Use Recaptcha v1': [false, 'Use the old text version of Recaptcha in the post form in threads.'],
-        'Use Recaptcha v1 on Index': [false, 'Use the old text version of Recaptcha on the index and catalog. Warning: May interfere with starting threads.'],
-        'Use Recaptcha v1 in Reports': [false, 'Use the text captcha in the report window.'],
-        'Force Noscript Captcha': [false, 'Use the non-Javascript fallback captcha even if Javascript is enabled (Recaptcha v2 only).'],
-        'Force Noscript Captcha for v1': [true, 'Force the non-Javascript fallback captcha for Recaptcha v1. Currently only works on HTTPS.'],
+        'Force Noscript Captcha': [false, 'Use the non-Javascript fallback captcha even if Javascript is enabled.'],
         'Pass Link': [false, 'Add a 4chan Pass login link to the bottom of the page.']
       },
       'Quote Links': {
@@ -1375,10 +1371,9 @@ audio.controls-added {\n\
   text-align: center;\n\
 }\n\
 :root.anti-autoplay .autoplay-removed {\n\
-  display: block !important;\n\
   visibility: visible !important;\n\
   min-width: 640px;\n\
-  min-height: 390px;\n\
+  min-height: 360px;\n\
 }\n\
 /* fixed, z-index */\n\
 #overlay,\n\
@@ -1813,6 +1808,9 @@ div[data-checked=\"false\"] > .suboption-list {\n\
   height: .6em;\n\
   border-left: 1px solid;\n\
   border-bottom: 1px solid;\n\
+}\n\
+#fourchanx-settings .section-main p {\n\
+  margin: .5em 0 0;\n\
 }\n\
 .section-filter ul {\n\
   padding: 0;\n\
@@ -7528,6 +7526,9 @@ Filter = (function() {
       stub = true;
       hl = void 0;
       top = false;
+      if (QuoteYou.isYou(post)) {
+        hideable = false;
+      }
       for (key in Filter.filters) {
         if (((value = Filter[key](post)) != null)) {
           ref = Filter.filters[key];
@@ -8500,6 +8501,11 @@ BoardConfig = (function() {
         }
       }
       return results;
+    },
+    noAudio: function(boardID) {
+      var boards;
+      boards = this.boards || Conf['boardConfig'].boards;
+      return boards && !boards[boardID].webm_audio;
     }
   };
 
@@ -10406,7 +10412,7 @@ Index = (function() {
     },
     parse: function(pages) {
       $.cleanCache(function(url) {
-        return /^\/\/a\.4cdn\.org\//.test(url);
+        return /^https?:\/\/a\.4cdn\.org\//.test(url);
       });
       Index.parseThreadList(pages);
       Index.changed.threads = true;
@@ -11082,7 +11088,7 @@ Settings = (function() {
       }
     },
     main: function(section) {
-      var addCheckboxes, addWarning, button, div, fs, inputs, items, key, obj, ref, ref1, warning, warnings;
+      var addCheckboxes, addWarning, button, div, fs, inputs, items, key, keyFS, obj, ref, ref1, warning, warnings;
       warnings = $.el('fieldset', {
         hidden: true
       }, {
@@ -11136,12 +11142,17 @@ Settings = (function() {
         return results;
       };
       ref1 = Config.main;
-      for (key in ref1) {
-        obj = ref1[key];
+      for (keyFS in ref1) {
+        obj = ref1[keyFS];
         fs = $.el('fieldset', {
-          innerHTML: "<legend>" + E(key) + "</legend>"
+          innerHTML: "<legend>" + E(keyFS) + "</legend>"
         });
         addCheckboxes(fs, obj);
+        if (keyFS === 'Posting and Captchas') {
+          $.add(fs, $.el('p', {
+            innerHTML: "For more info on captcha options and issues, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Captcha-FAQ\" target=\"_blank\">captcha FAQ</a>."
+          }));
+        }
         $.add(section, fs);
       }
       addCheckboxes($('div[data-name="JSON Index"] > .suboption-list', section), Config.Index);
@@ -14308,7 +14319,7 @@ Volume = (function() {
 
   Volume = {
     init: function() {
-      var ref, ref1, unmuteEntry, volumeEntry;
+      var ref, unmuteEntry, volumeEntry;
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && (Conf['Image Expansion'] || Conf['Image Hover'] || Conf['Image Hover in Catalog'] || Conf['Gallery']))) {
         return;
       }
@@ -14328,7 +14339,7 @@ Volume = (function() {
           cb: this.node
         });
       }
-      if ((ref1 = g.BOARD.ID) !== 'gif' && ref1 !== 'wsg' && ref1 !== 'r' && ref1 !== 'wsr') {
+      if (BoardConfig.noAudio(g.BOARD.ID)) {
         return;
       }
       if (Conf['Mouse Wheel Volume']) {
@@ -14386,8 +14397,8 @@ Volume = (function() {
       }
     },
     node: function() {
-      var ref, ref1;
-      if (!(((ref = this.board.ID) === 'gif' || ref === 'wsg') && ((ref1 = this.file) != null ? ref1.isVideo : void 0))) {
+      var ref;
+      if (!(!BoardConfig.noAudio(this.board.ID) && ((ref = this.file) != null ? ref.isVideo : void 0))) {
         return;
       }
       $.on(this.file.thumb, 'wheel', Volume.wheel.bind(Header.hover));
@@ -15859,15 +15870,20 @@ AntiAutoplay = (function() {
       ref = $$('iframe[src*="youtube"][src*="autoplay=1"]', root);
       for (i = 0, len = ref.length; i < len; i++) {
         iframe = ref[i];
-        iframe.src = iframe.src.replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', '');
-        $.addClass(iframe, 'autoplay-removed');
+        AntiAutoplay.processVideo(iframe, 'src');
       }
       ref1 = $$('object[data*="youtube"][data*="autoplay=1"]', root);
       for (j = 0, len1 = ref1.length; j < len1; j++) {
         object = ref1[j];
-        object.data = object.data.replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', '');
-        $.addClass(object, 'autoplay-removed');
+        AntiAutoplay.processVideo(object, 'data');
       }
+    },
+    processVideo: function(el, attr) {
+      el[attr] = el[attr].replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', '');
+      if (window.getComputedStyle(el).display === 'hidden') {
+        el.style.display = 'block';
+      }
+      return $.addClass(el, 'autoplay-removed');
     }
   };
 
@@ -16128,7 +16144,7 @@ CatalogLinks = (function() {
         board = g.BOARD.ID;
       }
       if (Conf['External Catalog'] && (board === 'a' || board === 'c' || board === 'g' || board === 'biz' || board === 'k' || board === 'm' || board === 'o' || board === 'p' || board === 'v' || board === 'vg' || board === 'vr' || board === 'w' || board === 'wg' || board === 'cm' || board === '3' || board === 'adv' || board === 'an' || board === 'asp' || board === 'cgl' || board === 'ck' || board === 'co' || board === 'diy' || board === 'fa' || board === 'fit' || board === 'gd' || board === 'int' || board === 'jp' || board === 'lit' || board === 'mlp' || board === 'mu' || board === 'n' || board === 'out' || board === 'po' || board === 'sci' || board === 'sp' || board === 'tg' || board === 'toy' || board === 'trv' || board === 'tv' || board === 'vp' || board === 'wsg' || board === 'x' || board === 'f' || board === 'pol' || board === 's4s' || board === 'lgbt')) {
-        return "http://catalog.neet.tv/" + board + "/";
+        return "//catalog.neet.tv/" + board + "/";
       } else if (Conf['JSON Index'] && Conf['Use 4chan X Catalog']) {
         if (g.BOARD.ID === board && g.VIEW === 'index') {
           return '#catalog';
@@ -20160,7 +20176,7 @@ Captcha = {};
     needed: function() {
       var captchaCount, postsCount;
       captchaCount = this.captchas.length;
-      if (QR.req) {
+      if (QR.req || /\b_ct=/.test(d.cookie)) {
         captchaCount++;
       }
       postsCount = QR.posts.length;
@@ -22243,7 +22259,7 @@ QR = (function() {
       if (g.BOARD.ID === 'r9k' && !((ref = post.com) != null ? ref.match(/[a-z-]/i) : void 0)) {
         err || (err = 'Original comment required.');
       }
-      if (QR.captcha.isEnabled && !err) {
+      if (QR.captcha.isEnabled && !/\b_ct=/.test(d.cookie) && !err) {
         captcha = QR.captcha.getOne(!!threadID);
         if (!captcha) {
           err = 'No valid captcha.';
@@ -23397,7 +23413,7 @@ QR = (function() {
     };
 
     _Class.prototype.checkDimensions = function(el) {
-      var duration, height, max_height, max_width, ref, videoHeight, videoWidth, width;
+      var duration, height, max_height, max_width, videoHeight, videoWidth, width;
       if (el.tagName === 'IMG') {
         height = el.height, width = el.width;
         if (height > QR.max_height || width > QR.max_width) {
@@ -23421,7 +23437,7 @@ QR = (function() {
         } else if (duration > QR.max_duration_video) {
           this.fileError("Video too long (video: " + duration + "s, max: " + QR.max_duration_video + "s)");
         }
-        if (((ref = g.BOARD.ID) !== 'gif' && ref !== 'wsg' && ref !== 'r' && ref !== 'wsr') && $.hasAudio(el)) {
+        if (BoardConfig.noAudio(g.BOARD.ID) && $.hasAudio(el)) {
           return this.fileError('Audio not allowed');
         }
       }
@@ -24318,8 +24334,8 @@ QuoteYou = (function() {
     isYou: function(post) {
       var ref;
       return !!((ref = QuoteYou.db) != null ? ref.get({
-        boardID: post.board.ID,
-        threadID: post.thread.ID,
+        boardID: post.boardID,
+        threadID: post.threadID,
         postID: post.ID
       }) : void 0);
     },
