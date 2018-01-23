@@ -156,10 +156,13 @@ Settings =
           containers.splice level+1, containers.length - (level+1)
         $.add containers[level], div
 
-    for key, obj of Config.main
+    for keyFS, obj of Config.main
       fs = $.el 'fieldset',
-        <%= html('<legend>${key}</legend>') %>
+        <%= html('<legend>${keyFS}</legend>') %>
       addCheckboxes fs, obj
+      if keyFS is 'Posting and Captchas'
+        $.add fs, $.el 'p',
+          <%= html('For more info on captcha options and issues, see the <a href="' + meta.captchaFAQ + '" target="_blank">captcha FAQ</a>.') %>
       $.add section, fs
     addCheckboxes $('div[data-name="JSON Index"] > .suboption-list', section), Config.Index
 

@@ -597,6 +597,9 @@ div[data-checked="false"] > .suboption-list {
   border-left: 1px solid;
   border-bottom: 1px solid;
 }
+#fourchanx-settings .section-main p {
+  margin: .5em 0 0;
+}
 .section-filter ul {
   padding: 0;
 }
