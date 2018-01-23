@@ -504,7 +504,7 @@ Config =
       ]
       'Force Noscript Captcha': [
         false
-        'Use the non-Javascript fallback captcha even if Javascript is enabled (Recaptcha v2 only).'
+        'Use the non-Javascript fallback captcha even if Javascript is enabled.'
       ]
       'Pass Link': [
         false
