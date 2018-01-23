@@ -185,8 +185,9 @@ ThreadWatcher =
     interval = if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] then 5 * $.MINUTE else 2 * $.HOUR
     now = Date.now()
     unless now - interval < (db.data.lastChecked or 0) <= now
-      ThreadWatcher.fetchAllStatus()
-      db.setLastChecked()
+      ThreadWatcher.fetchAllStatus() # calls forceSync
+      db.data.lastChecked = now
+      db.save()
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
 
   buttonFetchAll: ->
@@ -196,15 +197,13 @@ ThreadWatcher =
       ThreadWatcher.fetchAllStatus()
 
   fetchAllStatus: ->
-    dbs = [ThreadWatcher.db, ThreadWatcher.unreaddb, QuoteYou.db].filter((x) -> x)
-    n = 0
-    for db in dbs
-      db.forceSync ->
-        if (++n) is dbs.length
-          threads = ThreadWatcher.getAll()
-          for thread in threads
-            ThreadWatcher.fetchStatus thread
-          return
+    ThreadWatcher.db.forceSync()
+    ThreadWatcher.unreaddb.forceSync()
+    QuoteYou.db?.forceSync()
+    return unless (threads = ThreadWatcher.getAll()).length
+    for thread in threads
+      ThreadWatcher.fetchStatus thread
+    return
 
   fetchStatus: (thread, force) ->
     {boardID, threadID, data} = thread
