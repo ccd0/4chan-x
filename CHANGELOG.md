@@ -4,6 +4,9 @@
 
 ### v1.13.15
 
+**v1.13.15.5** *(2018-01-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.5/builds/4chan-X-noupdate.crx)]
+- Add link in settings to captcha FAQ.
+
 **v1.13.15.4** *(2018-01-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.4/builds/4chan-X-noupdate.crx)]
 - Remove Recaptcha v1 options.
 - Don't require captcha if cookie is set indicating captcha not needed yet. #1767
