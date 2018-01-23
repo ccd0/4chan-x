@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.15.4
+// @version      1.13.15.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.15.4',
+  VERSION:   '1.13.15.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -322,7 +322,7 @@ Config = (function() {
         'Auto-load captcha': [false, 'Automatically load the captcha in the QR even if your post is empty.', 1],
         'Post on Captcha Completion': [false, 'Submit the post immediately when the captcha is completed.', 1],
         'Captcha Fixes': [true, 'Make captcha easier to use, especially with the keyboard.'],
-        'Force Noscript Captcha': [false, 'Use the non-Javascript fallback captcha even if Javascript is enabled (Recaptcha v2 only).'],
+        'Force Noscript Captcha': [false, 'Use the non-Javascript fallback captcha even if Javascript is enabled.'],
         'Pass Link': [false, 'Add a 4chan Pass login link to the bottom of the page.']
       },
       'Quote Links': {
@@ -1808,6 +1808,9 @@ div[data-checked=\"false\"] > .suboption-list {\n\
   height: .6em;\n\
   border-left: 1px solid;\n\
   border-bottom: 1px solid;\n\
+}\n\
+#fourchanx-settings .section-main p {\n\
+  margin: .5em 0 0;\n\
 }\n\
 .section-filter ul {\n\
   padding: 0;\n\
@@ -11085,7 +11088,7 @@ Settings = (function() {
       }
     },
     main: function(section) {
-      var addCheckboxes, addWarning, button, div, fs, inputs, items, key, obj, ref, ref1, warning, warnings;
+      var addCheckboxes, addWarning, button, div, fs, inputs, items, key, keyFS, obj, ref, ref1, warning, warnings;
       warnings = $.el('fieldset', {
         hidden: true
       }, {
@@ -11139,12 +11142,17 @@ Settings = (function() {
         return results;
       };
       ref1 = Config.main;
-      for (key in ref1) {
-        obj = ref1[key];
+      for (keyFS in ref1) {
+        obj = ref1[keyFS];
         fs = $.el('fieldset', {
-          innerHTML: "<legend>" + E(key) + "</legend>"
+          innerHTML: "<legend>" + E(keyFS) + "</legend>"
         });
         addCheckboxes(fs, obj);
+        if (keyFS === 'Posting and Captchas') {
+          $.add(fs, $.el('p', {
+            innerHTML: "For more info on captcha options and issues, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Captcha-FAQ\" target=\"_blank\">captcha FAQ</a>."
+          }));
+        }
         $.add(section, fs);
       }
       addCheckboxes($('div[data-name="JSON Index"] > .suboption-list', section), Config.Index);
