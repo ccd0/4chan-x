@@ -1,6 +1,6 @@
 CatalogLinks =
   init: ->
-    if (Conf['External Catalog'] or Conf['JSON Index']) and !(Conf['JSON Index'] and g.VIEW is 'index')
+    if Site.software is 'yotsuba' and (Conf['External Catalog'] or Conf['JSON Index']) and !(Conf['JSON Index'] and g.VIEW is 'index')
       selector = switch g.VIEW
         when 'thread', 'archive' then '.navLinks.desktop > a'
         when 'catalog'           then '.navLinks > :first-child > a'
@@ -20,7 +20,7 @@ CatalogLinks =
             $.after link.parentNode, [$.tn(' '), catalogLink]
         return
 
-    if Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
+    if Site.software is 'yotsuba' and Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
       Callbacks.Post.push
         name: 'Catalog Link Rewrite'
         cb:   @node
