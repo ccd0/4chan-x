@@ -9,7 +9,6 @@ SW.tinyboard =
     'Index Generator'
     'Announcement Hiding'
     'Fourchan thingies'
-    'Custom CSS'
     'Resurrect Quotes'
     'Quick Reply Personas'
     'Quick Reply'
