@@ -13,21 +13,44 @@ class DataBoard
       @sync = sync
     $.on d, '4chanXInitFinished', init
 
-  save: (cb) -> $.set @key, @data, cb
+  changes: []
+
+  save: (change, cb) ->
+    snapshot1 = JSON.stringify @data
+    change()
+    {changes} = @
+    changes.push change
+    $.get @key, {boards: {}}, (items) =>
+      @data = items[@key]
+      snapshot2 = JSON.stringify @data
+      c() for c in changes
+      $.set @key, @data, =>
+        @changes = []
+        @sync?() if snapshot1 isnt snapshot2
+        cb?()
+
+  forceSync: (cb) ->
+    snapshot1 = JSON.stringify @data
+    {changes} = @
+    $.get @key, {boards: {}}, (items) =>
+      @data = items[@key]
+      snapshot2 = JSON.stringify @data
+      c() for c in changes
+      @sync?() if snapshot1 isnt snapshot2
+      cb?()
 
   delete: ({boardID, threadID, postID}) ->
-    $.forceSync @key
-    if postID
-      return unless @data.boards[boardID]?[threadID]
-      delete @data.boards[boardID][threadID][postID]
-      @deleteIfEmpty {boardID, threadID}
-    else if threadID
-      return unless @data.boards[boardID]
-      delete @data.boards[boardID][threadID]
-      @deleteIfEmpty {boardID}
-    else
-      delete @data.boards[boardID]
-    @save()
+    @save =>
+      if postID
+        return unless @data.boards[boardID]?[threadID]
+        delete @data.boards[boardID][threadID][postID]
+        @deleteIfEmpty {boardID, threadID}
+      else if threadID
+        return unless @data.boards[boardID]
+        delete @data.boards[boardID][threadID]
+        @deleteIfEmpty {boardID}
+      else
+        delete @data.boards[boardID]
 
   deleteIfEmpty: ({boardID, threadID}) ->
     if threadID
@@ -38,24 +61,29 @@ class DataBoard
       delete @data.boards[boardID]
 
   set: (data, cb) ->
-    $.forceSync @key
-    @setUnsafe data, cb
+    @save =>
+      @setUnsafe data
+    , cb
 
-  setUnsafe: ({boardID, threadID, postID, val}, cb) ->
+  setUnsafe: ({boardID, threadID, postID, val}) ->
     if postID isnt undefined
       ((@data.boards[boardID] or= {})[threadID] or= {})[postID] = val
     else if threadID isnt undefined
       (@data.boards[boardID] or= {})[threadID] = val
     else
       @data.boards[boardID] = val
-    @save cb
 
   extend: ({boardID, threadID, postID, val, rm}, cb) ->
-    $.forceSync @key
-    oldVal = @get {boardID, threadID, postID, val: {}}
-    delete oldVal[key] for key in rm or []
-    $.extend oldVal, val
-    @setUnsafe {boardID, threadID, postID, val: oldVal}, cb
+    @save =>
+      oldVal = @get {boardID, threadID, postID, val: {}}
+      delete oldVal[key] for key in rm or []
+      $.extend oldVal, val
+      @setUnsafe {boardID, threadID, postID, val: oldVal}
+    , cb
+
+  setLastChecked: ->
+    @save =>
+      @data.lastChecked = Date.now()
 
   get: ({boardID, threadID, postID, defaultValue}) ->
     if board = @data.boards[boardID]
@@ -74,11 +102,7 @@ class DataBoard
           thread
     val or defaultValue
 
-  forceSync: ->
-    $.forceSync @key
-
   clean: ->
-    $.forceSync @key
     for boardID, val of @data.boards
       @deleteIfEmpty {boardID}
 
@@ -109,7 +133,7 @@ class DataBoard
         threads[ID] = board[ID] if ID of board
     @data.boards[boardID] = threads
     @deleteIfEmpty {boardID}
-    @save()
+    $.set @key, @data
 
   onSync: (data) =>
     @data = data or boards: {}
