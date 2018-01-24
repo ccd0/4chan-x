@@ -33,8 +33,8 @@ Note: This version of 4chan X does not work with Opera 12. If you need Opera 12 
 ### Safari
 Install [JS Blocker](http://jsblocker.toggleable.com/) or [Tampermonkey](http://tampermonkey.net/?browser=safari), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
 
-### WebKitGTK+
-Several WebKitGTK+ based browsers have support for userscripts and can run 4chan X. Due to the lack of the cross-site GM_* API, and lack of support for userscripts in iframes, not all features will work. You may experience crashes when repeatedly solving the default image-based captchas. You can avoid this problem by enabling `Use Recaptcha v1` in your settings.
+### WebKitGTK+ / QtWebKit / QtWebEngine
+Several minimal browsers have support for userscripts and can run 4chan X. Due to the lack of the cross-site GM_* API, and lack of support for userscripts in iframes, not all features will work. You may experience crashes when repeatedly solving the default image-based captchas. You can avoid this problem by enabling `Use Recaptcha v1` in your settings.
 
 - **dwb**: Install the userscripts extension, then save the [script](https://www.4chan-x.net/builds/4chan-X.user.js) to the `$XDG_CONFIG_HOME/dwb/greasemonkey` or `$HOME/.config/dwb/greasemonkey` directory (creating it if necessary):
 
@@ -55,6 +55,12 @@ Several WebKitGTK+ based browsers have support for userscripts and can run 4chan
   echo '@on_event LOAD_COMMIT spawn @scripts_dir/userscript.sh document-start' >> "${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config"
   echo '@on_event LOAD_FINISH spawn @scripts_dir/userscript.sh document-end'   >> "${XDG_CONFIG_HOME:-$HOME/.config}/uzbl/config"
   wget -P "${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts" https://www.4chan-x.net/builds/4chan-X.user.js
+  ```
+
+- **qutebrowser**: Save the [script](https://www.4chan-x.net/builds/4chan-X.user.js) to the `$XDG_DATA_HOME/qutebrowser/greasemonkey` or `$HOME/.local/share/qutebrowser/greasemonkey` directory:
+
+  ```
+  wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/qutebrowser/greasemonkey https://www.4chan-x.net/builds/4chan-X.user.js
   ```
 
 ### MS Edge
