@@ -15,6 +15,8 @@ SW.tinyboard =
     'Cooldown'
     'Pass Link'
     'Index Generator (Menu)'
+    'Report Link'
+    'Delete Link'
     'Edit Link'
     'Archive Link'
     'Quote Inlining'
