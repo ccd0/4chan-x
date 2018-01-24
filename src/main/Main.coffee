@@ -206,6 +206,8 @@ Main =
 
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
+    doc.dataset.host = location.host
+    $.addClass doc, "sw-#{Site.software}"
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
     $.onExists doc, '.ad-cnt, .adg-rects > .desktop', (ad) -> $.onExists ad, 'img, iframe', -> $.addClass doc, 'ads-loaded'
     $.addClass doc, 'autohiding-scrollbar' if Conf['Autohiding Scrollbar']
