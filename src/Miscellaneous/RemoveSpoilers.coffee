@@ -16,7 +16,7 @@ RemoveSpoilers =
     RemoveSpoilers.unspoiler @nodes.comment
 
   unspoiler: (el) ->
-    spoilers = $$ 's', el
+    spoilers = $$ 's, .spoiler', el
     for spoiler in spoilers
       span = $.el 'span', className: 'removed-spoiler'
       $.replace spoiler, span
