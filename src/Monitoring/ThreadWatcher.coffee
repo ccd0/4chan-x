@@ -24,6 +24,8 @@ ThreadWatcher =
     $.on @refreshButton, 'click', @buttonFetchAll
     $.on @closeButton, 'click', @toggleWatcher
 
+    @refreshButton.hidden = true unless Site.software is 'yotsuba'
+
     @menu.addHeaderMenuEntry()
     $.onExists doc, 'body', @addDialog
 
@@ -179,6 +181,7 @@ ThreadWatcher =
     ThreadWatcher.clearRequests()
 
   fetchAuto: ->
+    return unless Site.software is 'yotsuba'
     clearTimeout ThreadWatcher.timeout
     return unless Conf['Auto Update Thread Watcher']
     {db} = ThreadWatcher
@@ -196,6 +199,7 @@ ThreadWatcher =
       ThreadWatcher.fetchAllStatus()
 
   fetchAllStatus: ->
+    return unless Site.software is 'yotsuba'
     dbs = [ThreadWatcher.db, ThreadWatcher.unreaddb, QuoteYou.db].filter((x) -> x)
     n = 0
     for db in dbs
@@ -207,6 +211,7 @@ ThreadWatcher =
           return
 
   fetchStatus: (thread, force) ->
+    return unless Site.software is 'yotsuba'
     {boardID, threadID, data} = thread
     return if data.isDead and not force
     if ThreadWatcher.requests.length is 0
