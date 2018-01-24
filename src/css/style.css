@@ -144,6 +144,20 @@ div.center[style] {
   display: none !important;
 }
 
+/* Tinyboard / vichan conflicts */
+#menu > .hide-thread-link {
+  width: auto;
+  height: auto;
+  overflow: visible;
+  background-image: none;
+}
+#menu label.entry {
+  display: block;
+}
+#fourchanx-settings label {
+  display: inline;
+}
+
 /* Anti-autoplay */
 audio.controls-added {
   display: block;
@@ -688,6 +702,9 @@ div[data-checked="false"] > .suboption-list {
 }
 #fourchanx-settings p {
   margin: 1em 0px;
+}
+#fourchanx-settings table {
+  margin: auto;
 }
 .unscroll {
   overflow: hidden;
