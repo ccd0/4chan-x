@@ -14,7 +14,7 @@ Linkify =
   node: ->
     return Embedding.events @ if @isClone
     return unless Linkify.regString.test @info.comment
-    for link in $$ 'a', @nodes.comment when ImageHost.test link.hostname
+    for link in $$ 'a', @nodes.comment when ImageHost.test(link.hostname) or /\bnofollow\b/.test(link.rel)
       $.addClass link, 'linkify'
       Embedding.process link, @
     links = Linkify.process @nodes.comment
