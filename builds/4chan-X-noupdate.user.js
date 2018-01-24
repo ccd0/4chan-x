@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.0.0
+// @version      1.14.0.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.0.0',
+  VERSION:   '1.14.0.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -8892,6 +8892,10 @@ BoardConfig = (function() {
       }
       boards = this.boards || Conf['boardConfig'].boards;
       return boards && !boards[boardID].webm_audio;
+    },
+    title: function(boardID) {
+      var ref, ref1;
+      return ((ref = this.boards || Conf['boardConfig'].boards) != null ? (ref1 = ref[boardID]) != null ? ref1.title : void 0 : void 0) || '';
     }
   };
 
@@ -9522,14 +9526,13 @@ Header = (function() {
       return CatalogLinks.setLinks(fullBoardList);
     },
     generateBoardList: function(boardnav) {
-      var as, list, nodes, re, t;
+      var list, nodes, re, t;
       list = $('#custom-board-list', Header.boardList);
       $.rmAll(list);
       if (!boardnav) {
         return;
       }
       boardnav = boardnav.replace(/(\r\n|\n|\r)/g, ' ');
-      as = $$('#full-board-list a[title]', Header.boardList);
       re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g;
       nodes = (function() {
         var j, len, ref, results;
@@ -9537,14 +9540,14 @@ Header = (function() {
         results = [];
         for (j = 0, len = ref.length; j < len; j++) {
           t = ref[j];
-          results.push(Header.mapCustomNavigation(t, as));
+          results.push(Header.mapCustomNavigation(t));
         }
         return results;
       })();
       $.add(list, nodes);
       return CatalogLinks.setLinks(list);
     },
-    mapCustomNavigation: function(t, as) {
+    mapCustomNavigation: function(t) {
       var a, boardID, href, indexOptions, m, text, url;
       if (/^[^\w@]/.test(t)) {
         return $.tn(t);
@@ -9595,7 +9598,7 @@ Header = (function() {
         }
       }
       a = (function() {
-        var j, len, ref;
+        var ref;
         if (boardID === '@') {
           return $.el('a', {
             href: 'https://twitter.com/4chan',
@@ -9603,15 +9606,10 @@ Header = (function() {
             textContent: '@'
           });
         }
-        for (j = 0, len = as.length; j < len; j++) {
-          a = as[j];
-          if (a.textContent === boardID) {
-            return a.cloneNode(true);
-          }
-        }
         a = $.el('a', {
           href: "//boards.4chan.org/" + boardID + "/",
-          textContent: boardID
+          textContent: boardID,
+          title: BoardConfig.title(boardID)
         });
         if ((ref = g.VIEW) === 'catalog' || ref === 'archive') {
           a.href += g.VIEW;

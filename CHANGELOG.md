@@ -4,6 +4,9 @@
 
 ## v1.14.0
 
+**v1.14.0.1** *(2018-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.1/builds/4chan-X-noupdate.crx)]
+- Fix custom navigation bug from v1.14.0.0 #1774 and older issues #384, #642.
+
 **v1.14.0.0** *(2018-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.13.15.5.
 - Preliminary support for Tinyboard / vichan based imageboards. Only a subset of features are working. To use 4chan X on a site, use the userscript version of 4chan X and add the site the user `@match` rules. In the instructions below, replace "examplechan.com" with the site you want to add:
