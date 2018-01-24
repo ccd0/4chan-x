@@ -1,6 +1,9 @@
 SW.yotsuba =
   isOPContainerThread: false
 
+  urls:
+    thread: ({boardID, threadID}) -> "#{boardID}/thread/#{threadID}"
+
   selectors:
     board:         '.board'
     thread:        '.thread'

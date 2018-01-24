@@ -304,7 +304,7 @@ ThreadWatcher =
     excerpt or= "/#{boardID}/ - No.#{threadID}"
 
     link = $.el 'a',
-      href: "/#{boardID}/thread/#{threadID}"
+      href: "/#{Site.urls.thread({boardID, threadID})}"
       title: excerpt
       className: 'watcher-link'
 

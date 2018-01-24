@@ -47,6 +47,9 @@ SW.tinyboard =
       return true if /\bvar configRoot=".*?"/.test(script.textContent)
     false
 
+  urls:
+    thread: ({boardID, threadID}) -> "#{boardID}/res/#{threadID}.html"
+
   selectors:
     board:         'form[name="postcontrols"]'
     thread:        'div[id^="thread_"]'
