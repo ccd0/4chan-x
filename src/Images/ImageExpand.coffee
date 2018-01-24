@@ -1,6 +1,6 @@
 ImageExpand =
   init: ->
-    return if not (@enabled = Conf['Image Expansion'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f')
+    return if not (@enabled = Conf['Image Expansion'] and g.VIEW in ['index', 'thread'])
 
     @EAI = $.el 'a',
       className: 'expand-all-shortcut fa fa-expand'

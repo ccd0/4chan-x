@@ -1,6 +1,6 @@
 Gallery =
   init: ->
-    return if not (@enabled = Conf['Gallery'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f')
+    return if not (@enabled = Conf['Gallery'] and g.VIEW in ['index', 'thread'])
 
     @delay = Conf['Slide Delay']
 
