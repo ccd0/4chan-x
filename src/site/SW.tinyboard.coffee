@@ -23,6 +23,7 @@ SW.tinyboard =
     'Quote Previewing'
     'Quote Backlinks'
     'File Info Formatting'
+    'Fappe Tyme'
     'Image Expansion'
     'Image Expansion (Menu)'
     'Comment Expansion'
