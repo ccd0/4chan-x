@@ -252,11 +252,15 @@ Main =
         div.style.position = 'absolute';
         div.style.visibility = 'hidden';
         $.add d.body, div
-        bgColor = window.getComputedStyle(div).backgroundColor
+        sDiv = window.getComputedStyle(div)
+        bgColor = sDiv.backgroundColor
         $.rm div
+        unless /^rgb\(/.test(bgColor) and sDiv.backgroundImage is 'none'
+          s = window.getComputedStyle(d.body)
+          bgColor = "#{s.backgroundColor} #{s.backgroundImage} #{s.backgroundRepeat} #{s.backgroundPosition}"
         Main.bgColorStyle.textContent = """
           .dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post {
-            background-color: #{bgColor};
+            background: #{bgColor};
           }
         """
         $.after $.id('fourchanx-css'), Main.bgColorStyle
