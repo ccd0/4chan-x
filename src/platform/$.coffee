@@ -384,6 +384,10 @@ $.oneItemSugar = (fn) ->
 
 $.syncing = {}
 
+$.securityCheck = (data) ->
+  if location.protocol isnt 'https:'
+    delete data['Redirect to HTTPS']
+
 <% if (type === 'crx') { %>
 # https://developer.chrome.com/extensions/storage.html
 $.oldValue =
@@ -485,6 +489,7 @@ do ->
 
   $.set = $.oneItemSugar (data, cb) ->
     return unless $.crxWorking()
+    $.securityCheck data
     $.extend items.local, data
     setArea 'local', cb
 
@@ -536,6 +541,7 @@ if GM?.deleteValue? and window.BroadcastChannel and not GM_addValueChangeListene
       cb items
 
   $.set = $.oneItemSugar (items, cb) ->
+    $.securityCheck items
     Promise.all(GM.setValue(g.NAMESPACE + key, JSON.stringify(val)) for key, val of items).then ->
       $.syncChannel.postMessage items
       cb?()
@@ -655,6 +661,7 @@ else
     cb items
 
   $.set = $.oneItemSugar (items, cb) ->
+    $.securityCheck items
     $.queueTask ->
       for key, value of items
         $.setValue(g.NAMESPACE + key, JSON.stringify value)

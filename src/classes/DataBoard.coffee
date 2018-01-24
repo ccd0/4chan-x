@@ -2,7 +2,7 @@ class DataBoard
   @keys = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads', 'customTitles']
 
   constructor: (@key, sync, dontClean) ->
-    @data = Conf[@key]
+    @initData Conf[@key]
     $.sync @key, @onSync
     @clean() unless dontClean
     return unless sync
@@ -13,28 +13,34 @@ class DataBoard
       @sync = sync
     $.on d, '4chanXInitFinished', init
 
+  initData: (@allData) ->
+    if Site.hostname is '4chan.org' and @allData.boards
+      @data = @allData
+    else
+      @data = (@allData[Site.hostname] or= boards: {})
+
   changes: []
 
   save: (change, cb) ->
-    snapshot1 = JSON.stringify @data
+    snapshot1 = JSON.stringify @allData
     change()
     {changes} = @
     changes.push change
     $.get @key, {boards: {}}, (items) =>
-      @data = items[@key]
-      snapshot2 = JSON.stringify @data
+      @initData items[@key]
+      snapshot2 = JSON.stringify @allData
       c() for c in changes
-      $.set @key, @data, =>
+      $.set @key, @allData, =>
         @changes = []
         @sync?() if snapshot1 isnt snapshot2
         cb?()
 
   forceSync: (cb) ->
-    snapshot1 = JSON.stringify @data
+    snapshot1 = JSON.stringify @allData
     {changes} = @
     $.get @key, {boards: {}}, (items) =>
-      @data = items[@key]
-      snapshot2 = JSON.stringify @data
+      @initData items[@key]
+      snapshot2 = JSON.stringify @allData
       c() for c in changes
       @sync?() if snapshot1 isnt snapshot2
       cb?()
@@ -103,6 +109,9 @@ class DataBoard
     val or defaultValue
 
   clean: ->
+    # XXX not yet multisite ready
+    return unless Site.software is 'yotsuba'
+
     for boardID, val of @data.boards
       @deleteIfEmpty {boardID}
 
@@ -133,8 +142,8 @@ class DataBoard
         threads[ID] = board[ID] if ID of board
     @data.boards[boardID] = threads
     @deleteIfEmpty {boardID}
-    $.set @key, @data
+    $.set @key, @allData
 
   onSync: (data) =>
-    @data = data or boards: {}
+    @initData data
     @sync?()

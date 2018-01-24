@@ -82,8 +82,8 @@ Gallery =
 
     $.on window, 'resize', Gallery.cb.setHeight
 
-    for file in $$ '.post .file'
-      post = Get.postFromNode file
+    for postThumb in $$ Site.selectors.file.thumb
+      post = Get.postFromNode postThumb
       continue unless post.file?.thumb
       Gallery.generateThumb post
       # If no image to open is given, pick image we have scrolled to.

@@ -1119,3 +1119,7 @@ Config =
     'updater.position':        'bottom: 0px; left: 0px;'
     'thread-watcher.position': 'top: 50px; left: 0px;'
     'qr.position':             'top: 50px; right: 0px;'
+
+  siteSoftware: """
+    4chan.org yotsuba
+  """

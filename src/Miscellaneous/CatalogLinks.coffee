@@ -78,12 +78,12 @@ CatalogLinks =
     if Conf['External Catalog'] and board in ['a', 'c', 'g', 'biz', 'k', 'm', 'o', 'p', 'v', 'vg', 'vr', 'w', 'wg', 'cm', '3', 'adv', 'an', 'asp', 'cgl', 'ck', 'co', 'diy', 'fa', 'fit', 'gd', 'int', 'jp', 'lit', 'mlp', 'mu', 'n', 'out', 'po', 'sci', 'sp', 'tg', 'toy', 'trv', 'tv', 'vp', 'wsg', 'x', 'f', 'pol', 's4s', 'lgbt']
       "//catalog.neet.tv/#{board}/"
     else if Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
-      if g.BOARD.ID is board and g.VIEW is 'index' then '#catalog' else "/#{board}/#catalog"
+      if location.hostname is 'boards.4chan.org' and g.BOARD.ID is board and g.VIEW is 'index' then '#catalog' else "//boards.4chan.org/#{board}/#catalog"
     else
-      "/#{board}/catalog"
+      "//boards.4chan.org/#{board}/catalog"
 
   index: (board=g.BOARD.ID) ->
     if Conf['JSON Index'] and board isnt 'f'
-      if g.BOARD.ID is board and g.VIEW is 'index' then '#index' else "/#{board}/#index"
+      if location.hostname is 'boards.4chan.org' and g.BOARD.ID is board and g.VIEW is 'index' then '#index' else "//boards.4chan.org/#{board}/#index"
     else
-      "/#{board}/"
+      "//boards.4chan.org/#{board}/"

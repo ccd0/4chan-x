@@ -84,15 +84,15 @@ Header =
     $.on window, 'load popstate', Header.hashScroll
     $.on d, 'CreateNotification', @createNotification
 
+    @setBoardList()
+
     $.onExists doc, 'body', =>
       return unless Main.isThisPageLegit()
       $.prepend d.body, @bar
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
 
-    # Wait for #boardNavMobile instead of #boardNavDesktop,
-    # it might be incomplete otherwise.
-    $.onExists doc, '#boardNavMobile', Header.setBoardList
+    $.onExists doc, "#{Site.selectors.boardList} + *", Header.generateFullBoardList
 
     Main.ready ->
       if not (footer = $.id 'boardNavDesktopFoot')
@@ -154,9 +154,20 @@ Header =
     btn = $('.hide-board-list-button', boardList)
     $.on btn, 'click', Header.toggleBoardList
 
+    $.add Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
+
+    Header.setCustomNav Conf['Custom Board Navigation']
+    Header.generateBoardList Conf['boardnav']
+
+    $.sync 'Custom Board Navigation', Header.setCustomNav
+    $.sync 'boardnav', Header.generateBoardList
+
+  generateFullBoardList: ->
     nodes = []
     spacer = -> $.el 'span', className: 'spacer'
-    for node in $('#boardNavDesktop > .boardList').childNodes
+    items = $.X './/a|.//text()[not(ancestor::a)]', $(Site.selectors.boardList)
+    i = 0
+    while node = items.snapshotItem i++
       switch node.nodeName
         when '#text'
           for chr in node.nodeValue
@@ -169,17 +180,9 @@ Header =
           a = node.cloneNode true
           a.className = 'current' if a.pathname.split('/')[1] is g.BOARD.ID
           nodes.push a
-    fullBoardList = $ '.boardList', boardList
+    fullBoardList = $ '.boardList', Header.boardList
     $.add fullBoardList, nodes
     CatalogLinks.setLinks fullBoardList
-
-    $.add Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
-
-    Header.setCustomNav Conf['Custom Board Navigation']
-    Header.generateBoardList Conf['boardnav']
-
-    $.sync 'Custom Board Navigation', Header.setCustomNav
-    $.sync 'boardnav', Header.generateBoardList
 
   generateBoardList: (boardnav) ->
     list = $ '#custom-board-list', Header.boardList
@@ -224,7 +227,17 @@ Header =
       return a
 
     boardID = t.split('-')[0]
-    boardID = g.BOARD.ID if boardID is 'current'
+    if boardID is 'current'
+      if location.hostname is 'boards.4chan.org'
+        boardID = g.BOARD.ID
+      else
+        a = $.el 'a',
+          href: "/#{g.BOARD.ID}/"
+          textContent: text or g.BOARD.ID
+          className: 'current'
+        if /-(catalog|archive|expired)/.test(t)
+          a = a.firstChild # Its text node.
+        return a
 
     a = do ->
       if boardID is '@'
@@ -237,13 +250,13 @@ Header =
         return a.cloneNode true
 
       a = $.el 'a',
-        href: "/#{boardID}/"
+        href: "//boards.4chan.org/#{boardID}/"
         textContent: boardID
       a.href += g.VIEW if g.VIEW in ['catalog', 'archive']
-      a.className = 'current' if boardID is g.BOARD.ID
+      a.className = 'current' if a.hostname is location.hostname and boardID is g.BOARD.ID
       a
 
-    a.textContent = if /-title/.test(t) or /-replace/.test(t) and boardID is g.BOARD.ID
+    a.textContent = if /-title/.test(t) or /-replace/.test(t) and a.hostname is location.hostname and boardID is g.BOARD.ID
       a.title or a.textContent
     else if /-full/.test t
       ("/#{boardID}/") + (if a.title then " - #{a.title}" else '')
@@ -271,7 +284,7 @@ Header =
 
     if /-expired/.test t
       if boardID not in ['b', 'f', 'trash', 'bant']
-        a.href = "/#{boardID}/archive"
+        a.href = "//boards.4chan.org/#{boardID}/archive"
       else
         return a.firstChild # Its text node.
 
