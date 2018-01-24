@@ -157,6 +157,10 @@ div.center[style] {
 #fourchanx-settings label {
   display: inline;
 }
+.intro a[href="javascript:;"],
+#menu a {
+  margin: 0;
+}
 
 /* Anti-autoplay */
 audio.controls-added {
