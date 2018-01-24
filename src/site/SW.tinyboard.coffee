@@ -110,7 +110,7 @@ SW.tinyboard =
   parseFile: (post, file) ->
     {text, link, thumb} = file
     return false if $.x("ancestor::#{Site.xpath.postContainer}[1]", text) isnt post.nodes.root # file belongs to a reply
-    return false if not (infoNode = link.nextElementSibling)
+    return false if not (infoNode = if '(' in link.nextSibling?.textContent then link.nextSibling else link.nextElementSibling)
     return false if not (info = infoNode.textContent.match /\((Spoiler Image, )?([\d.]+ [KMG]?B).*\)/)
     nameNode = $ '.postfilename', text
     $.extend file,
@@ -120,7 +120,7 @@ SW.tinyboard =
     if thumb
       $.extend file,
         thumbURL:  if '/static/' in thumb.src then link.href else thumb.src
-        isSpoiler: !!info[1]
+        isSpoiler: !!info[1] or link.textContent is 'Spoiler Image'
     true
 
   isThumbExpanded: (file) ->
