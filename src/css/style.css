@@ -1653,23 +1653,6 @@ input.field.tripped:not(:hover):not(:focus) {
   top: 2px;
 }
 
-/* Recaptcha v1 */
-.captcha-img {
-  margin: 0px;
-  text-align: center;
-  background-image: #fff;
-  font-size: 0px;
-  min-height: 59px;
-  min-width: 302px;
-}
-.captcha-input {
-  width: 100%;
-  margin: 1px 0 0;
-}
-#qr.captcha-v1 #qr-captcha-iframe {
-  display: none;
-}
-
 /* Recaptcha v2 */
 #qr .captcha-root {
   position: relative;

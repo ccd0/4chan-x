@@ -2,16 +2,6 @@ Captcha.replace =
   init: ->
     return unless d.cookie.indexOf('pass_enabled=1') < 0
 
-    if location.hostname is 'sys.4chan.org' and /[?&]altc\b/.test(location.search) and Main.jsEnabled
-      $.onExists doc, 'script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]', ->
-        $.global -> window.el.onload = null
-        Captcha.v1.create()
-      return
-
-    if location.hostname is 'sys.4chan.org' and Conf['Use Recaptcha v1 in Reports'] and Main.jsEnabled
-      $.ready Captcha.replace.v1
-      return
-
     if Conf['Force Noscript Captcha'] and Main.jsEnabled
       $.ready Captcha.replace.noscript
       return
@@ -35,16 +25,6 @@ Captcha.replace =
       $.on toggle, 'click', insert
     else
       insert()
-
-  v1: ->
-    return if not (old = $.id 'g-recaptcha')
-    script = $.el 'script',
-      src: '//www.google.com/recaptcha/api/js/recaptcha_ajax.js'
-    $.add d.head, script
-    container = $.el 'div',
-      id: 'captchaContainerAlt'
-    $.replace old, container
-    Captcha.v1.create()
 
   iframe: (iframe) ->
     if (lang = Conf['captchaLanguage'].trim())

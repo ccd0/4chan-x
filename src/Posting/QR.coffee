@@ -28,14 +28,7 @@ QR =
 
     return if g.VIEW is 'archive'
 
-    version = if Conf[if g.VIEW is 'thread' then 'Use Recaptcha v1' else 'Use Recaptcha v1 on Index'] and (Main.jsEnabled or location.protocol is 'https:')
-      noscript = location.protocol is 'https:' and (Conf['Force Noscript Captcha for v1'] or not Main.jsEnabled)
-      # XXX Frames not yet supported in GM4.
-      noscript = false if (info = GM?.info) and info.scriptHandler is 'Greasemonkey' and /^4\./.test(info.version)
-      if noscript then 'noscript' else 'v1'
-    else
-      'v2'
-    @captcha = Captcha[version]
+    @captcha = Captcha.v2
 
     $.on d, '4chanXInitFinished', -> BoardConfig.ready QR.initReady
 

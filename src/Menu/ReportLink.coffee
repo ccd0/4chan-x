@@ -13,8 +13,7 @@ ReportLink =
       order: 10
       open: (post) ->
         ReportLink.url = "//sys.4chan.org/#{post.board}/imgboard.php?mode=report&no=#{post}"
-        if (Conf['Use Recaptcha v1 in Reports'] and Main.jsEnabled) or d.cookie.indexOf('pass_enabled=1') >= 0
-          ReportLink.url += '&altc=1'
+        if d.cookie.indexOf('pass_enabled=1') >= 0
           ReportLink.dims = 'width=350,height=275'
         else
           ReportLink.dims = 'width=400,height=550'

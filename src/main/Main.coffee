@@ -12,9 +12,6 @@ Main =
       w['<%= meta.name %> antidup'] = true
 
     if location.hostname is 'www.google.com'
-      if location.pathname is '/recaptcha/api/noscript'
-        $.ready -> Captcha.noscript.initFrame()
-        return
       $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
         if enabled
           $.ready -> Captcha.fixes.init()
