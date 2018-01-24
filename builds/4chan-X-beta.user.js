@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.0.1
+// @version      1.14.0.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.0.1',
+  VERSION:   '1.14.0.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -6559,7 +6559,7 @@ Post = (function() {
       }
       $.extend(file, {
         url: file.link.href,
-        isImage: /(jpg|png|gif)$/i.test(file.link.href),
+        isImage: /(jpe?g|png|gif)$/i.test(file.link.href),
         isVideo: /(webm|mp4)$/i.test(file.link.href)
       });
       size = +file.size.match(/[\d.]+/)[0];
@@ -7159,6 +7159,13 @@ SW = {};
       }
       return false;
     },
+    urls: {
+      thread: function(arg) {
+        var boardID, threadID;
+        boardID = arg.boardID, threadID = arg.threadID;
+        return boardID + "/res/" + threadID + ".html";
+      }
+    },
     selectors: {
       board: 'form[name="postcontrols"]',
       thread: 'div[id^="thread_"]',
@@ -7258,6 +7265,13 @@ SW = {};
 
   SW.yotsuba = {
     isOPContainerThread: false,
+    urls: {
+      thread: function(arg) {
+        var boardID, threadID;
+        boardID = arg.boardID, threadID = arg.threadID;
+        return boardID + "/thread/" + threadID;
+      }
+    },
     selectors: {
       board: '.board',
       thread: '.thread',
@@ -14089,7 +14103,7 @@ ImageHover = (function() {
       }
     },
     node: function() {
-      if (!(this.file && (this.file.isImage || this.file.isVideo))) {
+      if (!(this.file && (this.file.isImage || this.file.isVideo) && this.file.thumb)) {
         return;
       }
       return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover(this));
@@ -14790,7 +14804,9 @@ Volume = (function() {
       if (!(!BoardConfig.noAudio(this.board.ID) && ((ref = this.file) != null ? ref.isVideo : void 0))) {
         return;
       }
-      $.on(this.file.thumb, 'wheel', Volume.wheel.bind(Header.hover));
+      if (this.file.thumb) {
+        $.on(this.file.thumb, 'wheel', Volume.wheel.bind(Header.hover));
+      }
       return $.on($('.file-info', this.file.text) || this.file.link, 'wheel', Volume.wheel.bind(this.file.thumbLink));
     },
     catalogNode: function() {
@@ -19931,7 +19947,10 @@ ThreadWatcher = (function() {
       excerpt = data.excerpt;
       excerpt || (excerpt = "/" + boardID + "/ - No." + threadID);
       link = $.el('a', {
-        href: "/" + boardID + "/thread/" + threadID,
+        href: "/" + (Site.urls.thread({
+          boardID: boardID,
+          threadID: threadID
+        })),
         title: excerpt,
         className: 'watcher-link'
       });

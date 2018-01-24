@@ -4,6 +4,9 @@
 
 ## v1.14.0
 
+**v1.14.0.2** *(2018-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.2/builds/4chan-X-noupdate.crx)]
+- Small bugfixes for Tinyboard.
+
 **v1.14.0.1** *(2018-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.1/builds/4chan-X-noupdate.crx)]
 - Fix custom navigation bug from v1.14.0.0 #1774 and older issues #384, #642.
 
