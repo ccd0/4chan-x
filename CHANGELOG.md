@@ -7,10 +7,11 @@
 **v1.14.0.0** *(2018-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.13.15.5.
 - Preliminary support for Tinyboard / vichan based imageboards. Only a subset of features are working. To use 4chan X on a site, use the userscript version of 4chan X and add the site the user `@match` rules. In the instructions below, replace "examplechan.com" with the site you want to add:
-  - Greasemonkey 4: [Not implemented yet](https://github.com/greasemonkey/greasemonkey/issues/2728). Use Violentmonkey or Tampermonkey for now.
+  - Greasemonkey 4: [Not implemented yet](https://github.com/greasemonkey/greasemonkey/issues/2728). Use Violentmonkey or Tampermonkey for now, or edit the script if you are not auto-updating.
   - Greasemonkey 3: Go to the "User Scripts" tab of about:addons, find 4chan X, and click "Options". On the "User Settings" tab, click the "Add" button next to "Matched Pages". Enter `https://examplechan.com/*`.
   - Violentmonkey: Open the Violentmonkey settings page and find 4chan X. Click the edit button (looks like `</>`). Go to the "Settings" tab and enter `https://examplechan.com/*` in the "@match rules" field. Click save.
   - Tampermonkey: Open the Tampermonkey settings page, go to the "Installed userscripts" tab, and find 4chan X. Click the edit button (pencil on paper). Go to the "Settings" tab and click the "Add" button below "User matches". Enter `https://examplechan.com/*`.
+  - If you are not auto-updating 4chan X, you can also edit the script, adding `// @match https://examplechan.com/*` (recommended) or `// @include https://examplechan.com/*` (some browsers / script engines may not support `@match`) after the existing `// @include` lines.
 
 ### v1.13.15
 
