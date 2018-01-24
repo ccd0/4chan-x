@@ -66,7 +66,7 @@ class Menu
     $.on d, 'click CloseMenu', @close
     $.on d, 'scroll', @setPosition
     $.on window, 'resize', @setPosition
-    $.add button, menu
+    $.after button, menu
 
     @setPosition()
 
