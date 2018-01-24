@@ -249,10 +249,10 @@ Main =
         div.style.position = 'absolute';
         div.style.visibility = 'hidden';
         $.add d.body, div
-        sDiv = window.getComputedStyle(div)
-        bgColor = sDiv.backgroundColor
+        bgColor = window.getComputedStyle(div).backgroundColor
         $.rm div
-        unless /^rgb\(/.test(bgColor) and sDiv.backgroundImage is 'none'
+        # Use body background if reply background is transparent
+        unless /^rgb\(/.test(bgColor)
           s = window.getComputedStyle(d.body)
           bgColor = "#{s.backgroundColor} #{s.backgroundImage} #{s.backgroundRepeat} #{s.backgroundPosition}"
         Main.bgColorStyle.textContent = """
