@@ -11,7 +11,7 @@ ImageHover =
         cb:   @catalogNode
 
   node: ->
-    return unless @file and (@file.isImage or @file.isVideo)
+    return unless @file and (@file.isImage or @file.isVideo) and @file.thumb
     $.on @file.thumb, 'mouseover', ImageHover.mouseover @
 
   catalogNode: ->

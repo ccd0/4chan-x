@@ -61,7 +61,7 @@ Volume =
 
   node: ->
     return unless !BoardConfig.noAudio(@board.ID) and @file?.isVideo
-    $.on @file.thumb,                                 'wheel', Volume.wheel.bind(Header.hover)
+    $.on @file.thumb,                                 'wheel', Volume.wheel.bind(Header.hover) if @file.thumb
     $.on ($('.file-info', @file.text) or @file.link), 'wheel', Volume.wheel.bind(@file.thumbLink)
 
   catalogNode: ->
