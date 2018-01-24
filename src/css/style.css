@@ -2044,6 +2044,7 @@ a:only-of-type > .remove {
 #menu {
   position: fixed;
   outline: none;
+  font-weight: normal;
 }
 #menu, .submenu {
   border-radius: 3px;
