@@ -232,7 +232,7 @@ Header =
         boardID = g.BOARD.ID
       else
         a = $.el 'a',
-          href: "/#{g.BOARD.ID}/"
+          href: "//boards.4chan.org/#{g.BOARD.ID}/"
           textContent: text or g.BOARD.ID
           className: 'current'
         if /-(catalog|archive|expired)/.test(t)

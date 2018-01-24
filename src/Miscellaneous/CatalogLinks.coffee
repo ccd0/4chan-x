@@ -68,7 +68,7 @@ CatalogLinks =
 
       # Href is easier than pathname because then we don't have
       # conditions where External Catalog has been disabled between switches.
-      a.href = if Conf['Header catalog links'] then CatalogLinks.catalog(board) else "/#{board}/"
+      a.href = if Conf['Header catalog links'] then CatalogLinks.catalog(board) else "//boards.4chan.org/#{board}/"
 
       if a.dataset.indexOptions and a.hostname is 'boards.4chan.org' and a.pathname.split('/')[2] is ''
         a.href += (if a.hash then '/' else '#') + a.dataset.indexOptions
