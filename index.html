@@ -39,7 +39,7 @@
 <p>Note: This version of 4chan X does not work with Opera 12. If you need Opera 12 support, try <a href="https://github.com/loadletter/4chan-x">loadletter's fork</a> instead.</p>
 </div><input hidden type="checkbox" id="safari-hide"><div><h3 id="safari"><label for="safari-hide">Safari</label></h3>
 <p>Install <a href="http://jsblocker.toggleable.com/">JS Blocker</a> or <a href="http://tampermonkey.net/?browser=safari">Tampermonkey</a>, then <strong><a href="https://www.4chan-x.net/builds/4chan-X.user.js">click here to install 4chan X</a></strong>.</p>
-</div><input hidden type="checkbox" id="webkitgtk-hide"><div><h3 id="webkitgtk"><label for="webkitgtk-hide">WebKitGTK+ / QtWebKit / QtWebEngine</label></h3>
+</div><input hidden type="checkbox" id="webkitgtk-qtwebkit-qtwebengine-hide"><div><h3 id="webkitgtk-qtwebkit-qtwebengine"><label for="webkitgtk-qtwebkit-qtwebengine-hide">WebKitGTK+ / QtWebKit / QtWebEngine</label></h3>
 <p>Several minimal browsers have support for userscripts and can run 4chan X. Due to the lack of the cross-site GM_* API, and lack of support for userscripts in iframes, not all features will work. You may experience crashes when repeatedly solving the default image-based captchas. You can avoid this problem by enabling <code>Use Recaptcha v1</code> in your settings.</p>
 <ul>
 <li>
@@ -65,7 +65,7 @@ wget -P &quot;${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts&quot; https:
 </li>
 <li>
 <p><strong>qutebrowser</strong>: Save the <a href="https://www.4chan-x.net/builds/4chan-X.user.js">script</a> to the <code>$XDG_DATA_HOME/qutebrowser/greasemonkey</code> or <code>$HOME/.local/share/qutebrowser/greasemonkey</code> directory:</p>
-<pre><code> wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/qutebrowser/greasemonkey https://www.4chan-x.net/builds/4chan-X.user.js
+<pre><code>wget -P ${XDG_DATA_HOME:-$HOME/.local/share}/qutebrowser/greasemonkey https://www.4chan-x.net/builds/4chan-X.user.js
 </code></pre>
 </li>
 </ul>
@@ -123,7 +123,7 @@ var engine = (function() {
   if (/Gecko\/|Goanna/.test(navigator.userAgent)) return 'gecko';
   if (/Presto\//.test(navigator.userAgent)) return 'presto';
 })();
-var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk': 'webkit', 'ms-edge': 'edge', 'other-browsers': ''};
+var engines = {'firefox': 'gecko', 'chromium': 'blink presto', 'safari': 'webkit', 'webkitgtk-qtwebkit-qtwebengine': 'webkit', 'ms-edge': 'edge', 'other-browsers': ''};
 if (location.hash.slice(1) in engines) {
   for (browser in engines) {
     document.getElementById(browser + '-hide').checked = (browser !== location.hash.slice(1));
