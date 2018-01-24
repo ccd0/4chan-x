@@ -269,7 +269,7 @@ Filter =
         el: el
         open: (post) ->
           value = Filter[type] post
-          value? and not (g.BOARD.ID is 'f' and type is 'MD5')
+          value?
       }
 
     makeFilter: ->
