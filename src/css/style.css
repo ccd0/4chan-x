@@ -1481,6 +1481,7 @@ input[name="Default Volume"] {
   font-size: 0;
 }
 :root.anonymize .postertrip,
+:root.anonymize .trip,
 :root.anonymize .n-pu {
   display: none;
 }
