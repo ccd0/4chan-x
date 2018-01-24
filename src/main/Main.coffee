@@ -170,7 +170,7 @@ Main =
 
     if pathname[2] in ['thread', 'res']
       g.VIEW     = 'thread'
-      g.THREADID = +pathname[3]
+      g.THREADID = +pathname[3].replace('.html', '')
     else if /^(?:catalog|archive)(?:\.html)?$/.test(pathname[2])
       g.VIEW = pathname[2].replace('.html', '')
     else if /^(?:index|\d*)(?:\.html)?$/.test(pathname[2])
