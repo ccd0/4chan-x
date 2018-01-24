@@ -189,13 +189,12 @@ Header =
     $.rmAll list
     return unless boardnav
     boardnav = boardnav.replace /(\r\n|\n|\r)/g, ' '
-    as = $$ '#full-board-list a[title]', Header.boardList
     re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g
-    nodes = (Header.mapCustomNavigation t, as for t in boardnav.match re)
+    nodes = (Header.mapCustomNavigation(t) for t in boardnav.match re)
     $.add list, nodes
     CatalogLinks.setLinks list
 
-  mapCustomNavigation: (t, as) ->
+  mapCustomNavigation: (t) ->
     if /^[^\w@]/.test t
       return $.tn t
 
@@ -246,12 +245,10 @@ Header =
           title: '4chan Twitter'
           textContent: '@'
 
-      for a in as when a.textContent is boardID
-        return a.cloneNode true
-
       a = $.el 'a',
         href: "//boards.4chan.org/#{boardID}/"
         textContent: boardID
+        title: BoardConfig.title(boardID)
       a.href += g.VIEW if g.VIEW in ['catalog', 'archive']
       a.className = 'current' if a.hostname is location.hostname and boardID is g.BOARD.ID
       a

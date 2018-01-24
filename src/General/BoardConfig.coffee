@@ -46,3 +46,6 @@ BoardConfig =
     return false unless Site.software is 'yotsuba'
     boards = @boards or Conf['boardConfig'].boards
     boards and !boards[boardID].webm_audio
+
+  title: (boardID) ->
+    (@boards or Conf['boardConfig'].boards)?[boardID]?.title or ''
