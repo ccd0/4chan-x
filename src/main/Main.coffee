@@ -304,14 +304,18 @@ Main =
       posts   = []
 
       for threadRoot in $$(s.thread, board)
-        thread = new Thread +threadRoot.id.match(/\d*$/)[0], g.BOARD
+        boardObj = if (boardID = threadRoot.dataset.board)
+          g.boards[boardID] or new Board(boardID)
+        else
+          g.BOARD
+        thread = new Thread +threadRoot.id.match(/\d*$/)[0], boardObj
         thread.nodes.root = threadRoot
         threads.push thread
         postRoots = $$ s.postContainer, threadRoot
         postRoots.unshift threadRoot if Site.isOPContainerThread
         for postRoot in postRoots when $(s.comment, postRoot)
           try
-            posts.push new Post postRoot, thread, g.BOARD
+            posts.push new Post postRoot, thread, thread.board
           catch err
             # Skip posts that we failed to parse.
             unless errors

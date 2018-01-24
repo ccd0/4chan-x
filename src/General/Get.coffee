@@ -10,7 +10,7 @@ Get =
     excerpt
   threadFromRoot: (root) ->
     return null unless root?
-    g.threads["#{g.BOARD}.#{root.id.match(/\d*$/)[0]}"]
+    g.threads["#{root.dataset.board or g.BOARD.ID}.#{root.id.match(/\d*$/)[0]}"]
   threadFromNode: (node) ->
     Get.threadFromRoot $.x "ancestor-or-self::#{Site.xpath.thread}", node
   postFromRoot: (root) ->
