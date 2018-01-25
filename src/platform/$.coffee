@@ -664,7 +664,7 @@ else
     # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
     # Also support case where GM_listValues is not defined.
     $.delete Object.keys(Conf)
-    $.delete ['previousversion', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']
+    $.delete ['previousversion', 'QR Size', 'QR.persona', 'hiddenPSA']
     try
       $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''
     cb?()
