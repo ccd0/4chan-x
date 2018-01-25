@@ -8,7 +8,9 @@ Time =
 
   node: ->
     return if @isClone
-    @nodes.date.textContent = Time.format Conf['time'], @info.date
+    {textContent} = @nodes.date
+    @nodes.date.textContent = textContent.match(/^\s*/)[0] + Time.format(Conf['time'], @info.date) + textContent.match(/\s*$/)[0]
+
   format: (formatString, date) ->
     formatString.replace /%(.)/g, (s, c) ->
       if c of Time.formatters
