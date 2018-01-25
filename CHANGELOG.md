@@ -4,6 +4,10 @@
 
 ### v1.13.15
 
+**v1.13.15.6** *(2018-01-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.6/builds/4chan-X-noupdate.crx)]
+- Bugfix to captcha opening logic. Don't ask user for new captchas when we have a bypass cookie or at least one captcha, even when many posts are queued.
+- Don't save captchas to disk or share them between tabs. They are too short-lived to be worth it now. This should reduce associated I/O errors.
+
 **v1.13.15.5** *(2018-01-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.5/builds/4chan-X-noupdate.crx)]
 - Add link in settings to captcha FAQ.
 
