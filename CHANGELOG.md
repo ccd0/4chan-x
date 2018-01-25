@@ -4,6 +4,10 @@
 
 ## v1.14.0
 
+**v1.14.0.3** *(2018-01-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.3/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.15.6: Bugfix to captcha opening logic. Don't ask user for new captchas when we have a bypass cookie or at least one captcha, even when many posts are queued.
+- Merge v1.13.15.6: Do not save captchas to disk or share them between tabs. They are too short-lived to be worth it now. This should reduce associated I/O errors.
+
 **v1.14.0.2** *(2018-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.2/builds/4chan-X-noupdate.crx)]
 - Small bugfixes for Tinyboard.
 

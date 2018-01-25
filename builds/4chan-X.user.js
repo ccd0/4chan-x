@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.0.2
+// @version      1.14.0.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.0.2',
+  VERSION:   '1.14.0.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5274,7 +5274,7 @@ $ = (function() {
     });
     $.clear = function(cb) {
       $["delete"](Object.keys(Conf));
-      $["delete"](['previousversion', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']);
+      $["delete"](['previousversion', 'QR Size', 'QR.persona', 'hiddenPSA']);
       try {
         $["delete"]($.listValues().map(function(key) {
           return key.replace(g.NAMESPACE, '');
@@ -20579,15 +20579,6 @@ Captcha = {};
 (function() {
   Captcha.cache = {
     init: function() {
-      $.get('captchas', [], (function(_this) {
-        return function(arg) {
-          var captchas;
-          captchas = arg.captchas;
-          _this.sync(captchas);
-          return _this.clear();
-        };
-      })(this));
-      $.sync('captchas', this.sync.bind(this));
       return $.on(d, 'SaveCaptcha', (function(_this) {
         return function(e) {
           return _this.save(e.detail);
@@ -20599,26 +20590,7 @@ Captcha = {};
       return this.captchas.length;
     },
     needed: function() {
-      var captchaCount, postsCount;
-      captchaCount = this.captchas.length;
-      if (QR.req || /\b_ct=/.test(d.cookie)) {
-        captchaCount++;
-      }
-      postsCount = QR.posts.length;
-      if (postsCount === 1 && !Conf['Auto-load captcha'] && !QR.posts[0].com && !QR.posts[0].file) {
-        postsCount = 0;
-      }
-      return captchaCount < postsCount;
-    },
-    sync: function(captchas) {
-      if (captchas == null) {
-        captchas = [];
-      }
-      if (!(captchas instanceof Array)) {
-        captchas = [];
-      }
-      this.captchas = captchas;
-      return this.count();
+      return !(/\b_ct=/.test(d.cookie) || this.captchas.length || QR.req) && (QR.posts.length > 1 || Conf['Auto-load captcha'] || QR.posts[0].com || QR.posts[0].file);
     },
     getOne: function(isReply) {
       var captcha, i;
@@ -20628,7 +20600,6 @@ Captcha = {};
       });
       if (i >= 0) {
         captcha = this.captchas.splice(i, 1)[0];
-        $.set('captchas', this.captchas);
         this.count();
         return captcha;
       } else {
@@ -20636,17 +20607,14 @@ Captcha = {};
       }
     },
     save: function(captcha) {
-      $.forceSync('captchas');
       this.captchas.push(captcha);
       this.captchas.sort(function(a, b) {
         return a.timeout - b.timeout;
       });
-      $.set('captchas', this.captchas);
       return this.count();
     },
     clear: function() {
       var captcha, i, j, len, now, ref;
-      $.forceSync('captchas');
       if (this.captchas.length) {
         now = Date.now();
         ref = this.captchas;
@@ -20658,7 +20626,6 @@ Captcha = {};
         }
         if (i) {
           this.captchas = this.captchas.slice(i);
-          $.set('captchas', this.captchas);
           return this.count();
         }
       }
