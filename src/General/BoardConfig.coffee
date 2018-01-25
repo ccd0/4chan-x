@@ -45,7 +45,7 @@ BoardConfig =
   noAudio: (boardID) ->
     return false unless Site.software is 'yotsuba'
     boards = @boards or Conf['boardConfig'].boards
-    boards and !boards[boardID].webm_audio
+    boards and boards[boardID] and !boards[boardID].webm_audio
 
   title: (boardID) ->
     (@boards or Conf['boardConfig'].boards)?[boardID]?.title or ''
