@@ -44,4 +44,4 @@ BoardConfig =
 
   noAudio: (boardID) ->
     boards = @boards or Conf['boardConfig'].boards
-    boards and !boards[boardID].webm_audio
+    boards and boards[boardID] and !boards[boardID].webm_audio
