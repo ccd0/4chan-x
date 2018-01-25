@@ -13,11 +13,11 @@ Captcha.cache =
     @captchas.length
 
   needed: ->
-    captchaCount = @captchas.length
-    captchaCount++ if QR.req or /\b_ct=/.test(d.cookie)
-    postsCount = QR.posts.length
-    postsCount = 0 if postsCount is 1 and !Conf['Auto-load captcha'] and !QR.posts[0].com and !QR.posts[0].file
-    captchaCount < postsCount
+    not (
+      /\b_ct=/.test(d.cookie) or @captchas.length or QR.req
+    ) and (
+      QR.posts.length > 1 or Conf['Auto-load captcha'] or QR.posts[0].com or QR.posts[0].file
+    )
 
   sync: (captchas=[]) ->
     captchas = [] unless captchas instanceof Array
