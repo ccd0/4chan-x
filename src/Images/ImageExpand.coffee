@@ -182,7 +182,7 @@ ImageExpand =
 
     if isVideo
       # add contract link to file info
-      if Conf['Show Controls'] and Conf['Click Passthrough'] and !file.videoControls
+      if !file.videoControls
         file.videoControls = ImageExpand.videoControls.cloneNode true
         $.add file.text, file.videoControls
 
