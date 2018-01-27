@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.0.3
+// @version      1.14.0.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.0.3',
+  VERSION:   '1.14.0.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -8905,7 +8905,7 @@ BoardConfig = (function() {
         return false;
       }
       boards = this.boards || Conf['boardConfig'].boards;
-      return boards && !boards[boardID].webm_audio;
+      return boards && boards[boardID] && !boards[boardID].webm_audio;
     },
     title: function(boardID) {
       var ref, ref1;
@@ -13847,7 +13847,7 @@ ImageExpand = (function() {
       el.className = 'full-image';
       $.after(thumb, el);
       if (isVideo) {
-        if (Conf['Show Controls'] && Conf['Click Passthrough'] && !file.videoControls) {
+        if (!file.videoControls) {
           file.videoControls = ImageExpand.videoControls.cloneNode(true);
           $.add(file.text, file.videoControls);
         }
@@ -18467,10 +18467,12 @@ Time = (function() {
       });
     },
     node: function() {
+      var textContent;
       if (this.isClone) {
         return;
       }
-      return this.nodes.date.textContent = Time.format(Conf['time'], this.info.date);
+      textContent = this.nodes.date.textContent;
+      return this.nodes.date.textContent = textContent.match(/^\s*/)[0] + Time.format(Conf['time'], this.info.date) + textContent.match(/\s*$/)[0];
     },
     format: function(formatString, date) {
       return formatString.replace(/%(.)/g, function(s, c) {
