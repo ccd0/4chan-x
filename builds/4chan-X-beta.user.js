@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.15.6
+// @version      1.13.15.7
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.15.6',
+  VERSION:   '1.13.15.7',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -8505,7 +8505,7 @@ BoardConfig = (function() {
     noAudio: function(boardID) {
       var boards;
       boards = this.boards || Conf['boardConfig'].boards;
-      return boards && !boards[boardID].webm_audio;
+      return boards && boards[boardID] && !boards[boardID].webm_audio;
     }
   };
 
@@ -13444,7 +13444,7 @@ ImageExpand = (function() {
       el.className = 'full-image';
       $.after(thumb, el);
       if (isVideo) {
-        if (Conf['Show Controls'] && Conf['Click Passthrough'] && !file.videoControls) {
+        if (!file.videoControls) {
           file.videoControls = ImageExpand.videoControls.cloneNode(true);
           $.add(file.text, file.videoControls);
         }
