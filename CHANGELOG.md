@@ -4,6 +4,9 @@
 
 ### v1.13.15
 
+**v1.13.15.8** *(2018-02-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.8/builds/4chan-X-noupdate.crx)]
+- Captcha bypass cookie does not work for starting threads. Updating to treat this case correctly.
+
 **v1.13.15.7** *(2018-01-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.7/builds/4chan-X-noupdate.crx)]
 - Show video contract button unconditionally for now due to changes in Firefox.
 - Fix webm_audio undefined error shown on first install of script. #1778
