@@ -10,7 +10,7 @@ Captcha.cache =
 
   needed: ->
     not (
-      /\b_ct=/.test(d.cookie) or @captchas.length or QR.req
+      (/\b_ct=/.test(d.cookie) and QR.posts[0].thread isnt 'new') or @captchas.length or QR.req
     ) and (
       QR.posts.length > 1 or Conf['Auto-load captcha'] or QR.posts[0].com or QR.posts[0].file
     )

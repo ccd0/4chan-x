@@ -657,7 +657,7 @@ QR =
     if g.BOARD.ID is 'r9k' and !post.com?.match(/[a-z-]/i)
       err or= 'Original comment required.'
 
-    if QR.captcha.isEnabled and !/\b_ct=/.test(d.cookie) and !err
+    if QR.captcha.isEnabled and !(/\b_ct=/.test(d.cookie) and threadID) and !err
       captcha = QR.captcha.getOne(!!threadID)
       unless captcha
         err = 'No valid captcha.'
