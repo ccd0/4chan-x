@@ -4,6 +4,9 @@
 
 ## v1.14.0
 
+**v1.14.0.5** *(2018-02-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.5/builds/4chan-X-noupdate.crx)]
+- Merge branch v1.13.15.8: Captcha bypass cookie does not work for starting threads. Updating to treat this case correctly.
+
 **v1.14.0.4** *(2018-01-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.4/builds/4chan-X-noupdate.crx)]
 - Merge v1.13.15.7: Show video contract button unconditionally for now due to changes in Firefox.
 - Merge v1.13.15.7: Fix webm_audio undefined error shown on first install of script. #1778
