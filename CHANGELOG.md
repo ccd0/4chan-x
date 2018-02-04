@@ -4,6 +4,9 @@
 
 ## v1.14.0
 
+**v1.14.0.6** *(2018-02-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.6/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.14.0.0 that broke 404 redirect and other features on image URLs. #1789
+
 **v1.14.0.5** *(2018-02-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.5/builds/4chan-X-noupdate.crx)]
 - Merge branch v1.13.15.8: Captcha bypass cookie does not work for starting threads. Updating to treat this case correctly.
 
