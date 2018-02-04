@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.0.5
+// @version      1.14.0.6
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.0.5',
+  VERSION:   '1.14.0.6',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -509,7 +509,7 @@ Config = (function() {
       'thread-watcher.position': 'top: 50px; left: 0px;',
       'qr.position': 'top: 50px; right: 0px;'
     },
-    siteSoftware: "4chan.org yotsuba"
+    siteSoftware: "4chan.org yotsuba\n4cdn.org yotsuba"
   };
 
   return Config;
@@ -12019,6 +12019,11 @@ Settings = (function() {
           innerHTML: "Feedback request: <a href=\"https://desuarchive.org/qa/thread/1769829/\" target=\"_blank\"><br>What features from 4chan X do you wish were available on other sites you use?</a>"
         });
         new Notice('info', message);
+      }
+      if (compareString < '00001.00014.00000.00006') {
+        if (data['siteSoftware'] != null) {
+          set('siteSoftware', data['siteSoftware'] + '\n4cdn.org yotsuba');
+        }
       }
       return changes;
     },
