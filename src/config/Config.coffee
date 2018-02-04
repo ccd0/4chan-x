@@ -1122,4 +1122,5 @@ Config =
 
   siteSoftware: """
     4chan.org yotsuba
+    4cdn.org yotsuba
   """
