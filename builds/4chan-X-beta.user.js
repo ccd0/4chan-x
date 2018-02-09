@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.15.8
+// @version      1.13.15.9
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.15.8',
+  VERSION:   '1.13.15.9',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -24627,9 +24627,6 @@ Main = (function() {
           return;
         }
       } catch (_error) {}
-      if (location.hostname === 'boards.4chan.org' && d.documentElement && !d.doctype) {
-        return;
-      }
       if (doc && $.hasClass(doc, 'fourchan-x')) {
         return;
       }
@@ -24944,7 +24941,7 @@ Main = (function() {
         });
         return;
       }
-      if ((ref1 = d.title) === '4chan - Temporarily Offline' || ref1 === '4chan - 404 Not Found') {
+      if ((ref1 = d.title) === '4chan - Temporarily Offline' || ref1 === '4chan - 404 Not Found' || ref1 === 'MathJax Equation Source') {
         return;
       }
       if (((ref2 = g.VIEW) === 'index' || ref2 === 'thread') && !$('.board + *')) {
@@ -25137,7 +25134,7 @@ Main = (function() {
     isThisPageLegit: function() {
       var ref;
       if (!('thisPageIsLegit' in Main)) {
-        Main.thisPageIsLegit = location.hostname === 'boards.4chan.org' && !$('link[href*="favicon-status.ico"]', d.head) && ((ref = d.title) !== '4chan - Temporarily Offline' && ref !== '4chan - Error' && ref !== '504 Gateway Time-out');
+        Main.thisPageIsLegit = location.hostname === 'boards.4chan.org' && !$('link[href*="favicon-status.ico"]', d.head) && ((ref = d.title) !== '4chan - Temporarily Offline' && ref !== '4chan - Error' && ref !== '504 Gateway Time-out' && ref !== 'MathJax Equation Source');
       }
       return Main.thisPageIsLegit;
     },
