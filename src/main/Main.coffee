@@ -24,9 +24,6 @@ Main =
     try
       return if window.frameElement and window.frameElement.src in ['', 'about:blank']
 
-    # Don't run inside MathJax popups.
-    return if location.hostname is 'boards.4chan.org' and d.documentElement and not d.doctype
-
     # Detect multiple copies of 4chan X
     return if doc and $.hasClass(doc, 'fourchan-x')
     $.asap docSet, ->
@@ -276,7 +273,7 @@ Main =
           , "/#{g.BOARD}/"
       return
 
-    return if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
+    return if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found', 'MathJax Equation Source']
 
     if g.VIEW in ['index', 'thread'] and not $('.board + *')
       msg = $.el 'div',
@@ -428,7 +425,7 @@ Main =
     unless 'thisPageIsLegit' of Main
       Main.thisPageIsLegit = location.hostname is 'boards.4chan.org' and
         !$('link[href*="favicon-status.ico"]', d.head) and
-        d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out']
+        d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out', 'MathJax Equation Source']
     Main.thisPageIsLegit
 
   ready: (cb) ->
