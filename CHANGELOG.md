@@ -36,6 +36,9 @@
 
 ### v1.13.15
 
+**v1.13.15.9** *(2018-02-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.9/builds/4chan-X-noupdate.crx)]
+- Fix 404 redirection on error pages without doctype. #1811
+
 **v1.13.15.8** *(2018-02-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.8/builds/4chan-X-noupdate.crx)]
 - Captcha bypass cookie does not work for starting threads. Updating to treat this case correctly.
 

@@ -63,7 +63,7 @@ SW.yotsuba =
     # not 404 error page or similar.
     location.hostname is 'boards.4chan.org' and
     !$('link[href*="favicon-status.ico"]', d.head) and
-    d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out']
+    d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out', 'MathJax Equation Source']
 
   is404: ->
     # XXX Sometimes threads don't 404 but are left over as stubs containing one garbage reply post.
