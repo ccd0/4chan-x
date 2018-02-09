@@ -4,6 +4,9 @@
 
 ## v1.14.0
 
+**v1.14.0.7** *(2018-02-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.7/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.15.9: Fix 404 redirection on error pages without doctype. #1811
+
 **v1.14.0.6** *(2018-02-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.6/builds/4chan-X-noupdate.crx)]
 - Fix bug from v1.14.0.0 that broke 404 redirect and other features on image URLs. #1789
 

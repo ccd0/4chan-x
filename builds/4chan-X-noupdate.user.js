@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.0.6
+// @version      1.14.0.7
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.0.6',
+  VERSION:   '1.14.0.7',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -7323,7 +7323,7 @@ SW = {};
     },
     isThisPageLegit: function() {
       var ref;
-      return location.hostname === 'boards.4chan.org' && !$('link[href*="favicon-status.ico"]', d.head) && ((ref = d.title) !== '4chan - Temporarily Offline' && ref !== '4chan - Error' && ref !== '504 Gateway Time-out');
+      return location.hostname === 'boards.4chan.org' && d.doctype && !$('link[href*="favicon-status.ico"]', d.head) && ((ref = d.title) !== '4chan - Temporarily Offline' && ref !== '4chan - Error' && ref !== '504 Gateway Time-out' && ref !== 'MathJax Equation Source');
     },
     is404: function() {
       var ref;
@@ -24469,9 +24469,6 @@ Main = (function() {
           return;
         }
       } catch (_error) {}
-      if (location.hostname === 'boards.4chan.org' && d.documentElement && !d.doctype) {
-        return;
-      }
       if (doc && $.hasClass(doc, 'fourchan-x')) {
         return;
       }
