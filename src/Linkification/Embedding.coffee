@@ -384,7 +384,7 @@ Embedding =
       style: 'border: 0; width: 600px; height: 406px;'
       el: (a) ->
         $.el 'iframe',
-          src: "//www.strawpoll.me/embed_1/#{a.dataset.uid}"
+          src: "https://www.strawpoll.me/embed_1/#{a.dataset.uid}"
     ,
       key: 'TwitchTV'
       regExp: /^\w+:\/\/(?:www\.|secure\.)?twitch\.tv\/(\w[^#\&\?]*)/
