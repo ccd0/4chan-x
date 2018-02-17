@@ -4,6 +4,10 @@
 
 ## v1.14.0
 
+**v1.14.0.8** *(2018-02-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.8/builds/4chan-X-noupdate.crx)]
+- Possible workaround for Cloudflare 503 issue. #1746
+- Strawpoll embedding update.
+
 **v1.14.0.7** *(2018-02-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.7/builds/4chan-X-noupdate.crx)]
 - Merge v1.13.15.9: Fix 404 redirection on error pages without doctype. #1811
 

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.0.7
+// @version      1.14.0.8
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.0.7',
+  VERSION:   '1.14.0.8',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -4533,6 +4533,7 @@ $ = (function() {
             return (lastModified[whenModified] || (lastModified[whenModified] = {}))[url] = r.getResponseHeader('Last-Modified');
           });
         }
+        r.withCredentials = true;
         $.extend(r, options);
         $.extend(r.upload, upCallbacks);
         $.on(r, 'error', function() {
@@ -15478,7 +15479,7 @@ Embedding = (function() {
         style: 'border: 0; width: 600px; height: 406px;',
         el: function(a) {
           return $.el('iframe', {
-            src: "//www.strawpoll.me/embed_1/" + a.dataset.uid
+            src: "https://www.strawpoll.me/embed_1/" + a.dataset.uid
           });
         }
       }, {
