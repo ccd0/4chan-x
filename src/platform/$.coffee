@@ -64,6 +64,7 @@ $.ajax = do ->
       if whenModified
         r.setRequestHeader 'If-Modified-Since', lastModified[whenModified][url] if lastModified[whenModified]?[url]?
         $.on r, 'load', -> (lastModified[whenModified] or= {})[url] = r.getResponseHeader 'Last-Modified'
+      r.withCredentials = true
       $.extend r, options
       $.extend r.upload, upCallbacks
       # connection error or content blocker
