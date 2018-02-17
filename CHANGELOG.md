@@ -4,6 +4,9 @@
 
 ## v1.14.0
 
+**v1.14.0.9** *(2018-02-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.9/builds/4chan-X-noupdate.crx)]
+- Revert "Possible workaround for Cloudflare 503 issue. #1746"
+
 **v1.14.0.8** *(2018-02-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.8/builds/4chan-X-noupdate.crx)]
 - Possible workaround for Cloudflare 503 issue. #1746
 - Strawpoll embedding update.
