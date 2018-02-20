@@ -420,6 +420,15 @@ Embedding =
         else
           el
     ,
+      key: 'VidLii'
+      regExp:  /^\w+:\/\/(?:www\.)?vidlii\.com\/watch\?v=(\w{11})/
+      style: 'border: none; width: 640px; height: 392px;'
+      el: (a) ->
+        el = $.el 'iframe',
+          src: "https://www.vidlii.com/embed?v=#{a.dataset.uid}&a=0"
+        el.setAttribute "allowfullscreen", "true"
+        el
+    ,
       key: 'Vimeo'
       regExp:  /^\w+:\/\/(?:www\.)?vimeo\.com\/(\d+)/
       el: (a) ->
