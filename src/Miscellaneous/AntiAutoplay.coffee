@@ -29,5 +29,5 @@ AntiAutoplay =
 
   processVideo: (el, attr) ->
     el[attr] = el[attr].replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', '')
-    el.style.display = 'block' if window.getComputedStyle(el).display is 'hidden'
+    el.style.display = 'block' if window.getComputedStyle(el).display is 'none'
     $.addClass el, 'autoplay-removed'
