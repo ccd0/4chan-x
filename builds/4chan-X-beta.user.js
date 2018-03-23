@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.0.10
+// @version      1.14.0.11
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.0.10',
+  VERSION:   '1.14.0.11',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -16306,7 +16306,7 @@ AntiAutoplay = (function() {
     },
     processVideo: function(el, attr) {
       el[attr] = el[attr].replace(/\?autoplay=1&?/, '?').replace('&autoplay=1', '');
-      if (window.getComputedStyle(el).display === 'hidden') {
+      if (window.getComputedStyle(el).display === 'none') {
         el.style.display = 'block';
       }
       return $.addClass(el, 'autoplay-removed');

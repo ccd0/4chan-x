@@ -4,6 +4,9 @@
 
 ## v1.14.0
 
+**v1.14.0.11** *(2018-03-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.11/builds/4chan-X-noupdate.crx)]
+- Fix anti-autoplay regression causing some videos not to show up.
+
 **v1.14.0.10** *(2018-02-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.10/builds/4chan-X-noupdate.crx)]
 - Support VidLii embedding.
 
