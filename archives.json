@@ -19,15 +19,6 @@
   "files": ["bant", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
   "reports": true
 }, {
-  "uid": 5,
-  "name": "Love is Over",
-  "domain": "archive.loveisover.me",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["c", "d", "e", "i", "lgbt", "t", "u"],
-  "files": ["c", "d", "e", "i", "lgbt", "t", "u"]
-}, {
   "uid": 8,
   "name": "Rebecca Black Tech",
   "domain": "archive.rebeccablacktech.com",
