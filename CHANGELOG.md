@@ -4,6 +4,9 @@
 
 ## v1.14.0
 
+**v1.14.0.12** *(2018-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.12/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.15.10: Show 2018 Apr 01 team names in thread updates and other posts generated from JSON.
+
 **v1.14.0.11** *(2018-03-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.11/builds/4chan-X-noupdate.crx)]
 - Fix anti-autoplay regression causing some videos not to show up.
 
