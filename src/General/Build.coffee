@@ -44,6 +44,7 @@ Build =
       isArchived: !!data.archived
       # file status
       fileDeleted: !!data.filedeleted
+      xa18:     data.xa18
     o.info =
       subject:  Build.unescape data.sub
       email:    Build.unescape data.email
