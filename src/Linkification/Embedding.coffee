@@ -455,7 +455,7 @@ Embedding =
           controls: true
           preload: 'auto'
         type = if el.canPlayType 'audio/webm' then 'webm' else 'mp3'
-        el.src = "http://vocaroo.com/media_command.php?media=#{a.dataset.uid}&command=download_#{type}"
+        el.src = "//vocaroo.com/media_command.php?media=#{a.dataset.uid}&command=download_#{type}"
         el
     ,
       key: 'YouTube'
