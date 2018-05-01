@@ -78,7 +78,7 @@ Main =
     items['previousversion'] = undefined
     ($.getSync or $.get) items, (items) ->
       if !$.perProtocolSettings and /\.4chan\.org$/.test(location.hostname) and (items['Redirect to HTTPS'] ? Conf['Redirect to HTTPS']) and location.protocol isnt 'https:'
-        location.replace('https:' + location.host + location.pathname + location.search + location.hash)
+        location.replace('https://' + location.host + location.pathname + location.search + location.hash)
         return
       $.asap docSet, ->
 
