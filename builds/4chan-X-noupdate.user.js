@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.0.12
+// @version      1.14.0.13
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.0.12',
+  VERSION:   '1.14.0.13',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5654,25 +5654,29 @@ DataBoard = (function() {
     DataBoard.prototype.changes = [];
 
     DataBoard.prototype.save = function(change, cb) {
-      var changes, snapshot1;
-      snapshot1 = JSON.stringify(this.allData);
       change();
-      changes = this.changes;
-      changes.push(change);
+      this.changes.push(change);
       return $.get(this.key, {
         boards: {}
       }, (function(_this) {
         return function(items) {
-          var c, i, len, snapshot2;
-          _this.initData(items[_this.key]);
-          snapshot2 = JSON.stringify(_this.allData);
-          for (i = 0, len = changes.length; i < len; i++) {
-            c = changes[i];
-            c();
+          var i, len, needSync, ref;
+          if (!_this.changes.length) {
+            return;
           }
+          needSync = (items[_this.key].version || 0) > (_this.allData.version || 0);
+          if (needSync) {
+            _this.initData(items[_this.key]);
+            ref = _this.changes;
+            for (i = 0, len = ref.length; i < len; i++) {
+              change = ref[i];
+              change();
+            }
+          }
+          _this.changes = [];
+          _this.allData.version = (_this.allData.version || 0) + 1;
           return $.set(_this.key, _this.allData, function() {
-            _this.changes = [];
-            if (snapshot1 !== snapshot2) {
+            if (needSync) {
               if (typeof _this.sync === "function") {
                 _this.sync();
               }
@@ -5684,21 +5688,18 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype.forceSync = function(cb) {
-      var changes, snapshot1;
-      snapshot1 = JSON.stringify(this.allData);
-      changes = this.changes;
       return $.get(this.key, {
         boards: {}
       }, (function(_this) {
         return function(items) {
-          var c, i, len, snapshot2;
-          _this.initData(items[_this.key]);
-          snapshot2 = JSON.stringify(_this.allData);
-          for (i = 0, len = changes.length; i < len; i++) {
-            c = changes[i];
-            c();
-          }
-          if (snapshot1 !== snapshot2) {
+          var change, i, len, ref;
+          if ((items[_this.key].version || 0) > (_this.allData.version || 0)) {
+            _this.initData(items[_this.key]);
+            ref = _this.changes;
+            for (i = 0, len = ref.length; i < len; i++) {
+              change = ref[i];
+              change();
+            }
             if (typeof _this.sync === "function") {
               _this.sync();
             }
@@ -5906,6 +5907,9 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype.onSync = function(data) {
+      if (!((data.version || 0) > (this.allData.version || 0))) {
+        return;
+      }
       this.initData(data);
       return typeof this.sync === "function" ? this.sync() : void 0;
     };

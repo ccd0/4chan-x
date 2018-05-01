@@ -4,6 +4,9 @@
 
 ## v1.14.0
 
+**v1.14.0.13** *(2018-05-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.13/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.13/builds/4chan-X-noupdate.crx)]
+- Fix some bugs in data storage.
+
 **v1.14.0.12** *(2018-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.12/builds/4chan-X-noupdate.crx)]
 - Merge v1.13.15.10: Show 2018 Apr 01 team names in thread updates and other posts generated from JSON.
 
