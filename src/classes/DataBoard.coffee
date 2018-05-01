@@ -22,27 +22,26 @@ class DataBoard
   changes: []
 
   save: (change, cb) ->
-    snapshot1 = JSON.stringify @allData
     change()
-    {changes} = @
-    changes.push change
+    @changes.push change
     $.get @key, {boards: {}}, (items) =>
-      @initData items[@key]
-      snapshot2 = JSON.stringify @allData
-      c() for c in changes
+      return unless @changes.length
+      needSync = ((items[@key].version or 0) > (@allData.version or 0))
+      if needSync
+        @initData items[@key]
+        change() for change in @changes
+      @changes = []
+      @allData.version = (@allData.version or 0) + 1
       $.set @key, @allData, =>
-        @changes = []
-        @sync?() if snapshot1 isnt snapshot2
+        @sync?() if needSync
         cb?()
 
   forceSync: (cb) ->
-    snapshot1 = JSON.stringify @allData
-    {changes} = @
     $.get @key, {boards: {}}, (items) =>
-      @initData items[@key]
-      snapshot2 = JSON.stringify @allData
-      c() for c in changes
-      @sync?() if snapshot1 isnt snapshot2
+      if (items[@key].version or 0) > (@allData.version or 0)
+        @initData items[@key]
+        change() for change in @changes
+        @sync?()
       cb?()
 
   delete: ({boardID, threadID, postID}) ->
@@ -145,5 +144,6 @@ class DataBoard
     $.set @key, @allData
 
   onSync: (data) =>
+    return unless (data.version or 0) > (@allData.version or 0)
     @initData data
     @sync?()
