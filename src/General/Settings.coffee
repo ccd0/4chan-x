@@ -443,12 +443,6 @@ Settings =
         list = data['jsWhitelist'].split('\n')
         if 'https://cdnjs.cloudflare.com' not in list and 'https://cdn.mathjax.org' in list
           set 'jsWhitelist', data['jsWhitelist'] + '\n\nhttps://cdnjs.cloudflare.com'
-    if compareString < '00001.00013.00014.00012'
-      message = $.el 'div',
-        <%= html(
-          'Feedback request: <a href="https://desuarchive.org/qa/thread/1769829/" target="_blank"><br>What features from 4chan X do you wish were available on other sites you use?</a>'
-        ) %>
-      new Notice 'info', message
     if compareString < '00001.00014.00000.00006'
       if data['siteSoftware']?
         set 'siteSoftware', data['siteSoftware'] + '\n4cdn.org yotsuba'
