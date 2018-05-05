@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.13.15.10
+// @version      1.13.15.11
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.15.10',
+  VERSION:   '1.13.15.11',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -24657,7 +24657,10 @@ Main = (function() {
           Conf[parent] = obj;
         }
       };
-      $.onExists(doc, '#delform > .adg-rects', $.rm);
+      if (location.hostname === 'boards.4chan.org') {
+        $.onExists(doc, '#delform > .adg-rects', $.rm);
+        $.onExists(doc, '#adg-ol', $.rm);
+      }
       flatten(null, Config);
       ref1 = DataBoard.keys;
       for (j = 0, len = ref1.length; j < len; j++) {
@@ -24698,7 +24701,7 @@ Main = (function() {
       return ($.getSync || $.get)(items, function(items) {
         var ref2;
         if (!$.perProtocolSettings && ((ref2 = items['Redirect to HTTPS']) != null ? ref2 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
-          location.replace('https:' + location.host + location.pathname + location.search + location.hash);
+          location.replace('https://' + location.host + location.pathname + location.search + location.hash);
           return;
         }
         return $.asap(docSet, function() {
