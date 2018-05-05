@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.0.13
+// @version      1.14.0.14
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.0.13',
+  VERSION:   '1.14.0.14',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -11790,7 +11790,7 @@ Settings = (function() {
       }
     },
     upgrade: function(data, version) {
-      var addCSS, addSauces, boardID, changes, compareString, corrupted, j, k, key, len, len1, list, message, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, val, val2, value;
+      var addCSS, addSauces, boardID, changes, compareString, corrupted, j, k, key, len, len1, list, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, val, val2, value;
       changes = {};
       set = function(key, value) {
         return data[key] = changes[key] = value;
@@ -12022,12 +12022,6 @@ Settings = (function() {
             set('jsWhitelist', data['jsWhitelist'] + '\n\nhttps://cdnjs.cloudflare.com');
           }
         }
-      }
-      if (compareString < '00001.00013.00014.00012') {
-        message = $.el('div', {
-          innerHTML: "Feedback request: <a href=\"https://desuarchive.org/qa/thread/1769829/\" target=\"_blank\"><br>What features from 4chan X do you wish were available on other sites you use?</a>"
-        });
-        new Notice('info', message);
       }
       if (compareString < '00001.00014.00000.00006') {
         if (data['siteSoftware'] != null) {
@@ -15587,7 +15581,7 @@ Embedding = (function() {
             preload: 'auto'
           });
           type = el.canPlayType('audio/webm') ? 'webm' : 'mp3';
-          el.src = "http://vocaroo.com/media_command.php?media=" + a.dataset.uid + "&command=download_" + type;
+          el.src = "//vocaroo.com/media_command.php?media=" + a.dataset.uid + "&command=download_" + type;
           return el;
         }
       }, {
@@ -24520,7 +24514,10 @@ Main = (function() {
           Conf[parent] = obj;
         }
       };
-      $.onExists(doc, '#delform > .adg-rects', $.rm);
+      if (location.hostname === 'boards.4chan.org') {
+        $.onExists(doc, '#delform > .adg-rects', $.rm);
+        $.onExists(doc, '#adg-ol', $.rm);
+      }
       flatten(null, Config);
       ref1 = DataBoard.keys;
       for (j = 0, len = ref1.length; j < len; j++) {
@@ -24561,7 +24558,7 @@ Main = (function() {
       return ($.getSync || $.get)(items, function(items) {
         var ref2;
         if (!$.perProtocolSettings && /\.4chan\.org$/.test(location.hostname) && ((ref2 = items['Redirect to HTTPS']) != null ? ref2 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
-          location.replace('https:' + location.host + location.pathname + location.search + location.hash);
+          location.replace('https://' + location.host + location.pathname + location.search + location.hash);
           return;
         }
         return $.asap(docSet, function() {
