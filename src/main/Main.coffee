@@ -48,7 +48,9 @@ Main =
       return
 
     # XXX Remove document-breaking ad
-    $.onExists doc, '#delform > .adg-rects', $.rm
+    if location.hostname is 'boards.4chan.org'
+      $.onExists doc, '#delform > .adg-rects', $.rm
+      $.onExists doc, '#adg-ol', $.rm
 
     flatten null, Config
 
