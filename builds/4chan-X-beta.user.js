@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.13.15.11
+// @version      1.13.15.12
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -159,7 +159,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.13.15.11',
+  VERSION:   '1.13.15.12',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -11379,7 +11379,7 @@ Settings = (function() {
       }
     },
     upgrade: function(data, version) {
-      var addCSS, addSauces, boardID, changes, compareString, corrupted, j, k, key, len, len1, list, message, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, val, val2, value;
+      var addCSS, addSauces, boardID, changes, compareString, corrupted, j, k, key, len, len1, list, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, val, val2, value;
       changes = {};
       set = function(key, value) {
         return data[key] = changes[key] = value;
@@ -11611,12 +11611,6 @@ Settings = (function() {
             set('jsWhitelist', data['jsWhitelist'] + '\n\nhttps://cdnjs.cloudflare.com');
           }
         }
-      }
-      if (compareString < '00001.00013.00014.00012') {
-        message = $.el('div', {
-          innerHTML: "Feedback request: <a href=\"https://desuarchive.org/qa/thread/1769829/\" target=\"_blank\"><br>What features from 4chan X do you wish were available on other sites you use?</a>"
-        });
-        new Notice('info', message);
       }
       return changes;
     },
@@ -24658,8 +24652,21 @@ Main = (function() {
         }
       };
       if (location.hostname === 'boards.4chan.org') {
-        $.onExists(doc, '#delform > .adg-rects', $.rm);
-        $.onExists(doc, '#adg-ol', $.rm);
+        $.global(function() {
+          var fromCharCode0;
+          fromCharCode0 = String.fromCharCode;
+          return String.fromCharCode = function() {
+            if (document.body) {
+              String.fromCharCode = fromCharCode0;
+            } else if (document.currentScript && !document.currentScript.src) {
+              throw Error();
+            }
+            return fromCharCode0.apply(this, arguments);
+          };
+        });
+        $.asap(docSet, function() {
+          return $.onExists(doc, 'iframe[srcdoc]', $.rm);
+        });
       }
       flatten(null, Config);
       ref1 = DataBoard.keys;
