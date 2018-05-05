@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.0.14
+// @version      1.14.0.15
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.0.14',
+  VERSION:   '1.14.0.15',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -24515,8 +24515,21 @@ Main = (function() {
         }
       };
       if (location.hostname === 'boards.4chan.org') {
-        $.onExists(doc, '#delform > .adg-rects', $.rm);
-        $.onExists(doc, '#adg-ol', $.rm);
+        $.global(function() {
+          var fromCharCode0;
+          fromCharCode0 = String.fromCharCode;
+          return String.fromCharCode = function() {
+            if (document.body) {
+              String.fromCharCode = fromCharCode0;
+            } else if (document.currentScript && !document.currentScript.src) {
+              throw Error();
+            }
+            return fromCharCode0.apply(this, arguments);
+          };
+        });
+        $.asap(docSet, function() {
+          return $.onExists(doc, 'iframe[srcdoc]', $.rm);
+        });
       }
       flatten(null, Config);
       ref1 = DataBoard.keys;

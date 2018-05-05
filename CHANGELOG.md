@@ -4,6 +4,9 @@
 
 ## v1.14.0
 
+**v1.14.0.15** *(2018-05-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.15/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.15/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.15.12: Update workaround for ad breaking 4chan, take two.
+
 **v1.14.0.14** *(2018-05-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.14/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.14/builds/4chan-X-noupdate.crx)]
 - Merge v1.13.15.11: Fix issue with HTTPS Redirect. #1876
 - Merge v1.13.15.11: Update workaround for ad breaking 4chan.
