@@ -49,8 +49,16 @@ Main =
 
     # XXX Remove document-breaking ad
     if location.hostname is 'boards.4chan.org'
-      $.onExists doc, '#delform > .adg-rects', $.rm
-      $.onExists doc, '#adg-ol', $.rm
+      $.global ->
+        fromCharCode0 = String.fromCharCode
+        String.fromCharCode = ->
+          if document.body
+            String.fromCharCode = fromCharCode0
+          else if document.currentScript and not document.currentScript.src
+            throw Error()
+          fromCharCode0.apply @, arguments
+      $.asap docSet, ->
+        $.onExists doc, 'iframe[srcdoc]', $.rm
 
     flatten null, Config
 
