@@ -105,12 +105,4 @@
   "boards": ["h", "hc", "hm", "r", "s", "soc"],
   "files": ["h", "hc", "hm", "r", "s", "soc"],
   "reports": true
-}, {
-  "uid": 33,
-  "name": "YEET Archive",
-  "domain": "archive.yeet.net",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["g", "k", "qa", "s4s"]
 }]
