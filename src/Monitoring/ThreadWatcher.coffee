@@ -44,6 +44,7 @@ ThreadWatcher =
     Header.addShortcut 'watcher', sc, 510
 
     ThreadWatcher.fetchAuto()
+    $.on window, 'visibilitychange focus', -> $.queueTask ThreadWatcher.fetchAuto
 
     if Conf['Menu'] and Index.enabled
       Menu.menu.addEntry
@@ -187,7 +188,7 @@ ThreadWatcher =
     {db} = ThreadWatcher
     interval = if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] then 5 * $.MINUTE else 2 * $.HOUR
     now = Date.now()
-    unless now - interval < (db.data.lastChecked or 0) <= now
+    unless now - interval < (db.data.lastChecked or 0) <= now or d.hidden or not d.hasFocus()
       ThreadWatcher.fetchAllStatus()
       db.setLastChecked()
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
