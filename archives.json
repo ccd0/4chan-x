@@ -102,7 +102,7 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["h", "hc", "hm", "r", "s", "soc"],
-  "files": ["h", "hc", "hm", "r", "s", "soc"],
+  "boards": ["h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u"],
+  "files": ["h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u"],
   "reports": true
 }]
