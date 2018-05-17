@@ -2,6 +2,13 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.1
+
+**v1.14.1.0** *(2018-05-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.0.15.
+- Allow the Quick Reply to be used on pages without an original post form such as archived threads. #242
+- Only autorefresh thread watcher from current tab.
+
 ## v1.14.0
 
 **v1.14.0.15** *(2018-05-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.15/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.15/builds/4chan-X-noupdate.crx)]
