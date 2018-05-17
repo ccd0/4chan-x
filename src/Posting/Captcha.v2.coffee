@@ -3,7 +3,7 @@ Captcha.v2 =
 
   init: ->
     return if d.cookie.indexOf('pass_enabled=1') >= 0
-    return if not (@isEnabled = !!$ '#g-recaptcha, #captcha-forced-noscript')
+    return if not (@isEnabled = !!$('#g-recaptcha, #captcha-forced-noscript') or !$.id('postForm'))
 
     if (@noscript = Conf['Force Noscript Captcha'] or not Main.jsEnabled)
       $.addClass QR.nodes.el, 'noscript-captcha'
@@ -112,6 +112,10 @@ Captcha.v2 =
         window.onRecaptchaLoaded = ->
           render()
           cbNative()
+        unless document.head.querySelector 'script[src^="https://www.google.com/recaptcha/api.js"]'
+          script = document.createElement 'script'
+          script.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoaded&render=explicit'
+          document.head.appendChild script
 
   afterSetup: (mutations) ->
     for mutation in mutations

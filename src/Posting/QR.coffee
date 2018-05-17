@@ -26,8 +26,6 @@ QR =
 
     @posts = []
 
-    return if g.VIEW is 'archive'
-
     @captcha = Captcha.v2
 
     $.on d, '4chanXInitFinished', -> BoardConfig.ready QR.initReady
@@ -52,8 +50,7 @@ QR =
     Header.addShortcut 'qr', sc, 540
 
   initReady: ->
-    QR.postingIsEnabled = !!$.id 'postForm'
-    return unless QR.postingIsEnabled
+    QR.postingIsEnabled = true
 
     {config} = g.BOARD
     prop = (key, def) -> +(config[key] ? def)
@@ -72,14 +69,18 @@ QR =
     QR.forcedAnon = !!config.forced_anon
     QR.spoiler    = !!config.spoilers
 
-    link = $.el 'h1',
-      className: "qr-link-container"
-    $.extend link, <%= html('<a href="javascript:;" class="qr-link">?{g.VIEW === "thread"}{Reply to Thread}{Start a Thread}</a>') %>
+    if (origToggle = $.id 'togglePostFormLink')
+      link = $.el 'h1',
+        className: "qr-link-container"
+      $.extend link, <%= html('<a href="javascript:;" class="qr-link">?{g.VIEW === "thread"}{Reply to Thread}{Start a Thread}</a>') %>
 
-    QR.link = link.firstElementChild
-    $.on link.firstChild, 'click', ->
-      QR.open()
-      QR.nodes.com.focus()
+      QR.link = link.firstElementChild
+      $.on link.firstChild, 'click', ->
+        QR.open()
+        QR.nodes.com.focus()
+
+      $.before origToggle, link
+      origToggle.firstElementChild.textContent = 'Original Form'
 
     if g.VIEW is 'thread'
       linkBot = $.el 'div',
@@ -91,10 +92,6 @@ QR =
         QR.nodes.com.focus()
 
       $.prepend navLinksBot, linkBot if (navLinksBot = $ '.navLinksBot')
-
-    origToggle = $.id 'togglePostFormLink'
-    $.before origToggle, link
-    origToggle.firstElementChild.textContent = 'Original Form'
 
     $.on d, 'QRGetFile',          QR.getFile
     $.on d, 'QRSetFile',          QR.setFile
