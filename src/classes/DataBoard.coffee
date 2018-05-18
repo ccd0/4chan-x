@@ -123,9 +123,9 @@ class DataBoard
 
   ajaxClean: (boardID) ->
     $.cache "#{location.protocol}//a.4cdn.org/#{boardID}/threads.json", (e1) =>
-      return unless e1.target.status in [200, 404]
+      return unless e1.target.status is 200
       $.cache "#{location.protocol}//a.4cdn.org/#{boardID}/archive.json", (e2) =>
-        return unless e2.target.status in [200, 404]
+        return unless e2.target.status is 200 or boardID in ['b', 'f', 'trash', 'bant']
         @ajaxCleanParse boardID, e1.target.response, e2.target.response
 
   ajaxCleanParse: (boardID, response1, response2) ->
