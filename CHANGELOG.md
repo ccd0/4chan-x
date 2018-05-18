@@ -4,6 +4,9 @@
 
 ### v1.14.1
 
+**v1.14.1.1** *(2018-05-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.1/builds/4chan-X-noupdate.crx)]
+- Possible fix for data loss issues. #1875
+
 **v1.14.1.0** *(2018-05-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.0.15.
 - Allow the Quick Reply to be used on pages without an original post form such as archived threads. #242

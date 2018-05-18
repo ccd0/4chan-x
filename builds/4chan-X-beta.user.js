@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.1.0
+// @version      1.14.1.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.1.0',
+  VERSION:   '1.14.1.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5857,13 +5857,11 @@ DataBoard = (function() {
     DataBoard.prototype.ajaxClean = function(boardID) {
       return $.cache(location.protocol + "//a.4cdn.org/" + boardID + "/threads.json", (function(_this) {
         return function(e1) {
-          var ref;
-          if ((ref = e1.target.status) !== 200 && ref !== 404) {
+          if (e1.target.status !== 200) {
             return;
           }
           return $.cache(location.protocol + "//a.4cdn.org/" + boardID + "/archive.json", function(e2) {
-            var ref1;
-            if ((ref1 = e2.target.status) !== 200 && ref1 !== 404) {
+            if (!(e2.target.status === 200 || (boardID === 'b' || boardID === 'f' || boardID === 'trash' || boardID === 'bant'))) {
               return;
             }
             return _this.ajaxCleanParse(boardID, e1.target.response, e2.target.response);
