@@ -4,6 +4,9 @@
 
 ### v1.14.1
 
+**v1.14.1.2** *(2018-05-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.2/builds/4chan-X-noupdate.crx)]
+- Disable JS whitelist if 4chan X loads too late for it to be effective.
+
 **v1.14.1.1** *(2018-05-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.1/builds/4chan-X-noupdate.crx)]
 - Possible fix for data loss issues. #1875
 

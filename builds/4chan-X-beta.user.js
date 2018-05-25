@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.1.1
+// @version      1.14.1.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.1.1',
+  VERSION:   '1.14.1.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -24554,7 +24554,9 @@ Main = (function() {
       Conf['QR Shortcut'] = true;
       Conf['Bottom QR Link'] = true;
       Conf['Toggleable Thread Watcher'] = true;
-      if (/\.4chan\.org$/.test(location.hostname)) {
+      if (/\.4chan\.org$/.test(location.hostname) && !$$('script:not([src])', d).filter(function(s) {
+        return /this\[/.test(s.textContent);
+      }).length) {
         ($.getSync || $.get)({
           'jsWhitelist': Conf['jsWhitelist']
         }, function(arg) {
