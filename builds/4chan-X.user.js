@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.0.15
+// @version      1.14.1.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -157,7 +157,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.0.15',
+  VERSION:   '1.14.1.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5857,13 +5857,11 @@ DataBoard = (function() {
     DataBoard.prototype.ajaxClean = function(boardID) {
       return $.cache(location.protocol + "//a.4cdn.org/" + boardID + "/threads.json", (function(_this) {
         return function(e1) {
-          var ref;
-          if ((ref = e1.target.status) !== 200 && ref !== 404) {
+          if (e1.target.status !== 200) {
             return;
           }
           return $.cache(location.protocol + "//a.4cdn.org/" + boardID + "/archive.json", function(e2) {
-            var ref1;
-            if ((ref1 = e2.target.status) !== 200 && ref1 !== 404) {
+            if (!(e2.target.status === 200 || (boardID === 'b' || boardID === 'f' || boardID === 'trash' || boardID === 'bant'))) {
               return;
             }
             return _this.ajaxCleanParse(boardID, e1.target.response, e2.target.response);
@@ -7516,13 +7514,12 @@ Redirect = (function() {
       { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ], "reports": true },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
       { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
-      { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ], "files": [ "a", "cm", "ic", "sci", "tg", "v", "vg", "y" ] },
+      { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "cm", "co", "ic", "sci", "tg", "v", "vg", "vip", "y" ], "files": [ "a", "cm", "co", "ic", "sci", "tg", "v", "vg", "vip", "y" ] },
       { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v" ], "files": [] },
       { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
       { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
-      { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "r", "s", "soc" ], "files": [ "h", "hc", "hm", "r", "s", "soc" ], "reports": true },
-      { "uid": 33, "name": "YEET Archive", "domain": "archive.yeet.net", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "k", "qa", "s4s" ] }
+      { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u" ], "files": [ "h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u" ], "reports": true }
     ],
     init: function() {
       var now, ref;
@@ -19520,6 +19517,9 @@ ThreadWatcher = (function() {
       }
       Header.addShortcut('watcher', sc, 510);
       ThreadWatcher.fetchAuto();
+      $.on(window, 'visibilitychange focus', function() {
+        return $.queueTask(ThreadWatcher.fetchAuto);
+      });
       if (Conf['Menu'] && Index.enabled) {
         Menu.menu.addEntry({
           el: $.el('a', {
@@ -19777,7 +19777,7 @@ ThreadWatcher = (function() {
       db = ThreadWatcher.db;
       interval = ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] ? 5 * $.MINUTE : 2 * $.HOUR;
       now = Date.now();
-      if (!((now - interval < (ref = db.data.lastChecked || 0) && ref <= now))) {
+      if (!((now - interval < (ref = db.data.lastChecked || 0) && ref <= now) || d.hidden || !d.hasFocus())) {
         ThreadWatcher.fetchAllStatus();
         db.setLastChecked();
       }
@@ -20940,7 +20940,7 @@ Captcha = {};
       if (d.cookie.indexOf('pass_enabled=1') >= 0) {
         return;
       }
-      if (!(this.isEnabled = !!$('#g-recaptcha, #captcha-forced-noscript'))) {
+      if (!(this.isEnabled = !!$('#g-recaptcha, #captcha-forced-noscript') || !$.id('postForm'))) {
         return;
       }
       if ((this.noscript = Conf['Force Noscript Captcha'] || !Main.jsEnabled)) {
@@ -21063,7 +21063,7 @@ Captcha = {};
     },
     setupJS: function() {
       return $.global(function() {
-        var cbNative, render;
+        var cbNative, render, script;
         render = function() {
           var classList, container;
           classList = document.documentElement.classList;
@@ -21082,10 +21082,15 @@ Captcha = {};
           return render();
         } else {
           cbNative = window.onRecaptchaLoaded;
-          return window.onRecaptchaLoaded = function() {
+          window.onRecaptchaLoaded = function() {
             render();
             return cbNative();
           };
+          if (!document.head.querySelector('script[src^="https://www.google.com/recaptcha/api.js"]')) {
+            script = document.createElement('script');
+            script.src = 'https://www.google.com/recaptcha/api.js?onload=onRecaptchaLoaded&render=explicit';
+            return document.head.appendChild(script);
+          }
         }
       });
     },
@@ -21305,9 +21310,6 @@ QR = (function() {
         return;
       }
       this.posts = [];
-      if (g.VIEW === 'archive') {
-        return;
-      }
       this.captcha = Captcha.v2;
       $.on(d, '4chanXInitFinished', function() {
         return BoardConfig.ready(QR.initReady);
@@ -21337,10 +21339,7 @@ QR = (function() {
     },
     initReady: function() {
       var config, link, linkBot, navLinksBot, origToggle, prop;
-      QR.postingIsEnabled = !!$.id('postForm');
-      if (!QR.postingIsEnabled) {
-        return;
-      }
+      QR.postingIsEnabled = true;
       config = g.BOARD.config;
       prop = function(key, def) {
         var ref;
@@ -21356,17 +21355,21 @@ QR = (function() {
       QR.max_duration_video = prop('max_webm_duration', 120);
       QR.forcedAnon = !!config.forced_anon;
       QR.spoiler = !!config.spoilers;
-      link = $.el('h1', {
-        className: "qr-link-container"
-      });
-      $.extend(link, {
-        innerHTML: "<a href=\"javascript:;\" class=\"qr-link\">" + ((g.VIEW === "thread") ? "Reply to Thread" : "Start a Thread") + "</a>"
-      });
-      QR.link = link.firstElementChild;
-      $.on(link.firstChild, 'click', function() {
-        QR.open();
-        return QR.nodes.com.focus();
-      });
+      if ((origToggle = $.id('togglePostFormLink'))) {
+        link = $.el('h1', {
+          className: "qr-link-container"
+        });
+        $.extend(link, {
+          innerHTML: "<a href=\"javascript:;\" class=\"qr-link\">" + ((g.VIEW === "thread") ? "Reply to Thread" : "Start a Thread") + "</a>"
+        });
+        QR.link = link.firstElementChild;
+        $.on(link.firstChild, 'click', function() {
+          QR.open();
+          return QR.nodes.com.focus();
+        });
+        $.before(origToggle, link);
+        origToggle.firstElementChild.textContent = 'Original Form';
+      }
       if (g.VIEW === 'thread') {
         linkBot = $.el('div', {
           className: "brackets-wrap qr-link-container-bottom"
@@ -21382,9 +21385,6 @@ QR = (function() {
           $.prepend(navLinksBot, linkBot);
         }
       }
-      origToggle = $.id('togglePostFormLink');
-      $.before(origToggle, link);
-      origToggle.firstElementChild.textContent = 'Original Form';
       $.on(d, 'QRGetFile', QR.getFile);
       $.on(d, 'QRSetFile', QR.setFile);
       $.on(d, 'paste', QR.paste);
@@ -24554,7 +24554,9 @@ Main = (function() {
       Conf['QR Shortcut'] = true;
       Conf['Bottom QR Link'] = true;
       Conf['Toggleable Thread Watcher'] = true;
-      if (/\.4chan\.org$/.test(location.hostname)) {
+      if (/\.4chan\.org$/.test(location.hostname) && !$$('script:not([src])', d).filter(function(s) {
+        return /this\[/.test(s.textContent);
+      }).length) {
         ($.getSync || $.get)({
           'jsWhitelist': Conf['jsWhitelist']
         }, function(arg) {
