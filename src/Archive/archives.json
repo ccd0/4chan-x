@@ -36,7 +36,8 @@
   "https": true,
   "software": "fuuka",
   "boards": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"],
-  "files": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"]
+  "files": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"],
+  "search": ["biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr"]
 }, {
   "uid": 23,
   "name": "Desuarchive",
@@ -55,7 +56,8 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["a", "cm", "co", "ic", "sci", "tg", "v", "vg", "vip", "y"],
-  "files": ["a", "cm", "co", "ic", "sci", "tg", "v", "vg", "vip", "y"]
+  "files": ["a", "cm", "co", "ic", "sci", "tg", "v", "vg", "vip", "y"],
+  "search": ["a", "cm", "co", "ic", "sci", "tg", "v", "vg", "y"]
 }, {
   "uid": 25,
   "name": "arch.b4k.co",
@@ -64,7 +66,8 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["g", "jp", "mlp", "v"],
-  "files": []
+  "files": [],
+  "search": ["jp", "mlp"]
 }, {
   "uid": 28,
   "name": "bstats",
