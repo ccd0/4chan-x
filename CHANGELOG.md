@@ -4,6 +4,9 @@
 
 ### v1.14.2
 
+**v1.14.2.1** *(2018-06-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.2.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.2.1/builds/4chan-X-noupdate.crx)]
+- New fix for data loss issues. #1910
+
 **v1.14.2.0** *(2018-06-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.2.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.2.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.1.2.
 - Revert workaround for #1323 (7b8c2df5e4aae96b47771c0bb90989765d719d5c) which may be contributing for data corruption issues. #1910
