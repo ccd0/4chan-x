@@ -420,6 +420,12 @@ Embedding =
         else
           el
     ,
+      key: 'TwitterImage'
+      regExp: /^\w+:\/\/pbs\.twimg\.com\/media\/([\w-]{15}\.(?:gif|png|jpg):\w+)/i
+      style: ''
+      el: (a) ->
+        $.el 'div', <%= html('<a target="_blank" href="https://pbs.twimg.com/media/${a.dataset.uid}"><img src="https://pbs.twimg.com/media/${a.dataset.uid}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
+    ,
       key: 'VidLii'
       regExp:  /^\w+:\/\/(?:www\.)?vidlii\.com\/watch\?v=(\w{11})/
       style: 'border: none; width: 640px; height: 392px;'
