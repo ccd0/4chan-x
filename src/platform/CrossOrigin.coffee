@@ -86,6 +86,7 @@ CrossOrigin =
   # Attempts to fetch `url` in JSON format using cross-origin privileges, if available.
   # On success, calls `cb` with a `this` containing properties `status`, `statusText`, `response` and caches result.
   # On error/abort, calls `cb` with a `this` of `{}`.
+  # If `bypassCache` is true, ignores previously cached results.
   json: do ->
     callbacks = {}
     results = {}
@@ -99,7 +100,7 @@ CrossOrigin =
         $.queueTask -> cb.call {}
       delete callbacks[url]
 
-    (url, cb) ->
+    (url, cb, bypassCache) ->
       <% if (type === 'crx') { %>
       plainAJAX = (/^https:\/\//.test(url) or location.protocol is 'http:')
       <% } %>
@@ -107,12 +108,16 @@ CrossOrigin =
       plainAJAX = not (GM?.xmlHttpRequest? or GM_xmlhttpRequest?)
       <% } %>
       if plainAJAX
+        if bypassCache
+          $.cleanCache (url2) -> url2 is url
         if (req = $.cache url, cb, responseType: 'json')
           $.on req, 'abort error', -> cb.call({})
         else
           cb.call {}
         return
 
+      if bypassCache
+        delete results[url]
       if results[url]
         cb.call results[url]
         return

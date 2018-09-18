@@ -46,13 +46,12 @@ Redirect =
       url = url.trim()
       urls.push url if url
 
+    fail = (url, action, msg) ->
+      new Notice 'warning', "Error #{action} archive data from\n#{url}\n#{msg}", 20
+
     load = (i) -> ->
-      fail = (action, msg) -> new Notice 'warning', "Error #{action} archive data from\n#{urls[i]}\n#{msg}", 20
-      return fail 'fetching', (if @status then "Error #{@statusText} (#{@status})" else 'Connection Error') unless @status is 200
-      try
-        response = JSON.parse @response
-      catch err
-        return fail 'parsing', err.message
+      return fail urls[i], 'fetching', (if @status then "Error #{@statusText} (#{@status})" else 'Connection Error') unless @status is 200
+      {response} = @
       response = [response] unless response instanceof Array
       responses[i] = response
       nloaded++
@@ -62,13 +61,14 @@ Redirect =
     if urls.length
       for url, i in urls
         if url[0] in ['[', '{']
-          load(i).call
-            status:   200
-            response: url
+          try
+            response = JSON.parse url
+          catch err
+            fail url, 'parsing', err.message
+            continue
+          load(i).call {status: 200, response}
         else
-          $.ajax url,
-            responseType: 'text'
-            onloadend: load(i)
+          CrossOrigin.json url, load(i), true
     else
       Redirect.parse [], cb
     return
