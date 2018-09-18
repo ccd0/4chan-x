@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.2.1
+// @version      1.14.3.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -38,6 +38,24 @@
 // @exclude      https://www.4chan.org/donate?*
 // @connect      4chan.org
 // @connect      4cdn.org
+// @connect      mayhemydg.github.io
+// @connect      archive.4plebs.org
+// @connect      archive.nyafuu.org
+// @connect      archive.rebeccablacktech.com
+// @connect      warosu.org
+// @connect      desuarchive.org
+// @connect      boards.fireden.net
+// @connect      arch.b4k.co
+// @connect      archive.b-stats.org
+// @connect      archived.moe
+// @connect      thebarchive.com
+// @connect      archiveofsins.com
+// @connect      api.clyp.it
+// @connect      api.dailymotion.com
+// @connect      api.github.com
+// @connect      soundcloud.com
+// @connect      vimeo.com
+// @connect      www.googleapis.com
 // @connect      *
 // @grant        GM_getValue
 // @grant        GM_setValue
