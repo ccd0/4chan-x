@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.2.1
+// @version      1.14.3.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -38,6 +38,24 @@
 // @exclude      https://www.4chan.org/donate?*
 // @connect      4chan.org
 // @connect      4cdn.org
+// @connect      mayhemydg.github.io
+// @connect      archive.4plebs.org
+// @connect      archive.nyafuu.org
+// @connect      archive.rebeccablacktech.com
+// @connect      warosu.org
+// @connect      desuarchive.org
+// @connect      boards.fireden.net
+// @connect      arch.b4k.co
+// @connect      archive.b-stats.org
+// @connect      archived.moe
+// @connect      thebarchive.com
+// @connect      archiveofsins.com
+// @connect      api.clyp.it
+// @connect      api.dailymotion.com
+// @connect      api.github.com
+// @connect      soundcloud.com
+// @connect      vimeo.com
+// @connect      www.googleapis.com
 // @connect      *
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -157,7 +175,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.2.1',
+  VERSION:   '1.14.3.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5361,12 +5379,56 @@ CrossOrigin = (function() {
       });
     },
     json: (function() {
-      var callbacks, responses;
+      var callbacks, failure, results, success;
       callbacks = {};
-      responses = {};
-      return function(url, cb) {
-        if (responses[url]) {
-          cb(responses[url]);
+      results = {};
+      success = function(url, result) {
+        var cb, j, len, ref;
+        ref = callbacks[url];
+        for (j = 0, len = ref.length; j < len; j++) {
+          cb = ref[j];
+          $.queueTask(function() {
+            return cb.call(result);
+          });
+        }
+        delete callbacks[url];
+        return results[url] = result;
+      };
+      failure = function(url) {
+        var cb, j, len, ref;
+        ref = callbacks[url];
+        for (j = 0, len = ref.length; j < len; j++) {
+          cb = ref[j];
+          $.queueTask(function() {
+            return cb.call({});
+          });
+        }
+        return delete callbacks[url];
+      };
+      return function(url, cb, bypassCache) {
+        var req;
+        if (!(((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) != null) || (typeof GM_xmlhttpRequest !== "undefined" && GM_xmlhttpRequest !== null))) {
+          if (bypassCache) {
+            $.cleanCache(function(url2) {
+              return url2 === url;
+            });
+          }
+          if ((req = $.cache(url, cb, {
+            responseType: 'json'
+          }))) {
+            $.on(req, 'abort error', function() {
+              return cb.call({});
+            });
+          } else {
+            cb.call({});
+          }
+          return;
+        }
+        if (bypassCache) {
+          delete results[url];
+        }
+        if (results[url]) {
+          cb.call(results[url]);
           return;
         }
         if (callbacks[url]) {
@@ -5378,21 +5440,24 @@ CrossOrigin = (function() {
           method: "GET",
           url: url + '',
           onload: function(xhr) {
-            var j, len, ref, response;
-            response = JSON.parse(xhr.responseText);
-            ref = callbacks[url];
-            for (j = 0, len = ref.length; j < len; j++) {
-              cb = ref[j];
-              cb(response);
+            var response, status, statusText;
+            status = xhr.status, statusText = xhr.statusText;
+            try {
+              response = JSON.parse(xhr.responseText);
+              return success(url, {
+                status: status,
+                statusText: statusText,
+                response: response
+              });
+            } catch (_error) {
+              return failure(url);
             }
-            delete callbacks[url];
-            return responses[url] = response;
           },
           onerror: function() {
-            return delete callbacks[url];
+            return failure(url);
           },
           onabort: function() {
-            return delete callbacks[url];
+            return failure(url);
           }
         });
       };
@@ -6024,7 +6089,7 @@ Fetcher = (function() {
     };
 
     Fetcher.prototype.archivedPost = function() {
-      var archive, url;
+      var archive, encryptionOK, that, url;
       if (!Conf['Resurrect Quotes']) {
         return false;
       }
@@ -6035,33 +6100,23 @@ Fetcher = (function() {
         return false;
       }
       archive = Redirect.data.post[this.boardID];
-      if (/^https:\/\//.test(url) || location.protocol === 'http:') {
-        $.cache(url, (function(_this) {
-          return function(e) {
-            return _this.parseArchivedPost(e.target.response, url, archive);
-          };
-        })(this), {
-          responseType: 'json',
-          withCredentials: archive.withCredentials
-        });
-        return true;
-      } else if (Conf['Exempt Archives from Encryption']) {
-        CrossOrigin.json(url, (function(_this) {
-          return function(response) {
-            var key, media, ref;
-            media = response.media;
-            if (media) {
-              for (key in media) {
-                if (/_link$/.test(key)) {
-                  if (!((ref = media[key]) != null ? ref.match(/^http:\/\//) : void 0)) {
-                    delete media[key];
-                  }
+      encryptionOK = /^https:\/\//.test(url) || location.protocol === 'http:';
+      if (encryptionOK || Conf['Exempt Archives from Encryption']) {
+        that = this;
+        CrossOrigin.json(url, function() {
+          var key, media, ref, ref1;
+          if (!encryptionOK && ((ref = this.response) != null ? ref.media : void 0)) {
+            media = this.response.media;
+            for (key in media) {
+              if (/_link$/.test(key)) {
+                if (!((ref1 = media[key]) != null ? ref1.match(/^http:\/\//) : void 0)) {
+                  delete media[key];
                 }
               }
             }
-            return _this.parseArchivedPost(response, url, archive);
-          };
-        })(this));
+          }
+          return that.parseArchivedPost(this.response, url, archive);
+        });
         return true;
       }
       return false;
@@ -7568,7 +7623,7 @@ Redirect = (function() {
       return Redirect.data = o;
     },
     update: function(cb) {
-      var i, j, k, len, len1, load, nloaded, ref, ref1, responses, url, urls;
+      var err, fail, i, j, k, len, len1, load, nloaded, ref, ref1, response, responses, url, urls;
       urls = [];
       responses = [];
       nloaded = 0;
@@ -7583,21 +7638,16 @@ Redirect = (function() {
           urls.push(url);
         }
       }
+      fail = function(url, action, msg) {
+        return new Notice('warning', "Error " + action + " archive data from\n" + url + "\n" + msg, 20);
+      };
       load = function(i) {
         return function() {
-          var err, fail, response;
-          fail = function(action, msg) {
-            return new Notice('warning', "Error " + action + " archive data from\n" + urls[i] + "\n" + msg, 20);
-          };
+          var response;
           if (this.status !== 200) {
-            return fail('fetching', (this.status ? "Error " + this.statusText + " (" + this.status + ")" : 'Connection Error'));
+            return fail(urls[i], 'fetching', (this.status ? "Error " + this.statusText + " (" + this.status + ")" : 'Connection Error'));
           }
-          try {
-            response = JSON.parse(this.response);
-          } catch (_error) {
-            err = _error;
-            return fail('parsing', err.message);
-          }
+          response = this.response;
           if (!(response instanceof Array)) {
             response = [response];
           }
@@ -7612,15 +7662,19 @@ Redirect = (function() {
         for (i = k = 0, len1 = urls.length; k < len1; i = ++k) {
           url = urls[i];
           if ((ref1 = url[0]) === '[' || ref1 === '{') {
+            try {
+              response = JSON.parse(url);
+            } catch (_error) {
+              err = _error;
+              fail(url, 'parsing', err.message);
+              continue;
+            }
             load(i).call({
               status: 200,
-              response: url
+              response: response
             });
           } else {
-            $.ajax(url, {
-              responseType: 'text',
-              onloadend: load(i)
-            });
+            CrossOrigin.json(url, load(i), true);
           }
         }
       } else {
@@ -15022,19 +15076,13 @@ Embedding = (function() {
           return Embedding.flushTitles(service);
         }
       } else {
-        if (!$.cache(service.api(uid), (function() {
+        return CrossOrigin.json(service.api(uid), (function() {
           return Embedding.cb.title(this, data);
-        }), {
-          responseType: 'json'
-        })) {
-          return $.extend(link, {
-            innerHTML: "[" + E(key) + "] <span class=\"warning\">Title Link Blocked</span> (are you using NoScript?)</a>"
-          });
-        }
+        }));
       }
     },
     flushTitles: function(service) {
-      var cb, data, j, len, queue;
+      var cb, data, queue;
       queue = service.queue;
       if (!(queue != null ? queue.length : void 0)) {
         return;
@@ -15047,7 +15095,7 @@ Embedding = (function() {
           Embedding.cb.title(this, data);
         }
       };
-      if (!$.cache(service.api((function() {
+      return CrossOrigin.json(service.api((function() {
         var j, len, results;
         results = [];
         for (j = 0, len = queue.length; j < len; j++) {
@@ -15055,16 +15103,7 @@ Embedding = (function() {
           results.push(data.uid);
         }
         return results;
-      })()), cb, {
-        responseType: 'json'
-      })) {
-        for (j = 0, len = queue.length; j < len; j++) {
-          data = queue[j];
-          $.extend(data.link, {
-            innerHTML: "[" + E(data.key) + "] <span class=\"warning\">Title Link Blocked</span> (are you using NoScript?)</a>"
-          });
-        }
-      }
+      })()), cb);
     },
     preview: function(data) {
       var key, link, service, uid;
@@ -15132,6 +15171,9 @@ Embedding = (function() {
       },
       title: function(req, data) {
         var base1, j, k, key, len, len1, link, link2, options, post, post2, ref, ref1, service, status, text, uid;
+        if (!req.status) {
+          return;
+        }
         key = data.key, uid = data.uid, options = data.options, link = data.link, post = data.post;
         status = req.status;
         service = Embedding.types[key].title;
@@ -15275,18 +15317,15 @@ Embedding = (function() {
               hidden: true,
               id: "gist-embed-" + (counter++)
             });
-            $.ajax("https://api.github.com/gists/" + a.dataset.uid, {
-              responseType: 'json',
-              onload: function() {
-                el.textContent = Object.values(this.response.files)[0].content;
-                el.className = 'prettyprint';
-                $.global(function() {
-                  return typeof window.prettyPrint === "function" ? window.prettyPrint((function() {}), document.getElementById(document.currentScript.dataset.id).parentNode) : void 0;
-                }, {
-                  id: el.id
-                });
-                return el.hidden = false;
-              }
+            CrossOrigin.json("https://api.github.com/gists/" + a.dataset.uid, function() {
+              el.textContent = Object.values(this.response.files)[0].content;
+              el.className = 'prettyprint';
+              $.global(function() {
+                return typeof window.prettyPrint === "function" ? window.prettyPrint((function() {}), document.getElementById(document.currentScript.dataset.id).parentNode) : void 0;
+              }, {
+                id: el.id
+              });
+              return el.hidden = false;
             });
             return el;
           };

@@ -2,6 +2,12 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.3
+
+**v1.14.3.0** *(2018-09-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.2.1.
+- Fix issues with archives, Link Title, and Github Gist embedding caused by ad blocking changes.
+
 ### v1.14.2
 
 **v1.14.2.1** *(2018-06-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.2.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.2.1/builds/4chan-X-noupdate.crx)]
