@@ -104,17 +104,11 @@ class Fetcher
     return false unless Conf['Resurrect Quotes']
     return false if not (url = Redirect.to 'post', {@boardID, @postID})
     archive = Redirect.data.post[@boardID]
-    if /^https:\/\//.test(url) or location.protocol is 'http:'
-      $.cache url, (e) =>
-        @parseArchivedPost e.target.response, url, archive
-      ,
-        responseType: 'json'
-        withCredentials: archive.withCredentials
-      return true
-    else if Conf['Exempt Archives from Encryption']
+    encryptionOK = /^https:\/\//.test(url) or location.protocol is 'http:'
+    if encryptionOK or Conf['Exempt Archives from Encryption']
       CrossOrigin.json url, (response) =>
         {media} = response
-        if media then for key of media when /_link$/.test key
+        if !encryptionOK and media then for key of media when /_link$/.test key
           # Image/thumbnail URLs loaded over HTTP can be modified in transit.
           # Require them to be from an HTTP host so that no referrer is sent to them from an HTTPS page.
           delete media[key] unless media[key]?.match /^http:\/\//

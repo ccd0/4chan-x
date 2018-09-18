@@ -36,6 +36,11 @@
 %>
 // @connect      4chan.org
 // @connect      4cdn.org
+<%=
+  readJSON('/src/Archive/archives.json').map(function(archive) {
+    return '// @connect      ' + archive.domain;
+  }).join('\n')
+%>
 // @connect      *
 <%=
   meta.grants.map(function(grant) {
