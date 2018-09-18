@@ -83,45 +83,62 @@ CrossOrigin =
       blob.name = name
       cb blob
 
+  # Attempts to fetch `url` in JSON format using cross-origin privileges, if available.
+  # On success, calls `cb` with a `this` containing properties `status`, `statusText`, `response` and caches result.
+  # On error/abort, calls `cb` with a `this` of `{}`.
   json: do ->
     callbacks = {}
-    responses = {}
+    results = {}
+    success = (url, result) ->
+      for cb in callbacks[url]
+        $.queueTask -> cb.call result
+      delete callbacks[url]
+      results[url] = result
+    failure = (url) ->
+      for cb in callbacks[url]
+        $.queueTask -> cb.call {}
+      delete callbacks[url]
+
     (url, cb) ->
       <% if (type === 'crx') { %>
-      if /^https:\/\//.test(url) or location.protocol is 'http:'
-        return $.cache url, (-> cb @response), responseType: 'json'
+      plainAJAX = (/^https:\/\//.test(url) or location.protocol is 'http:')
       <% } %>
       <% if (type === 'userscript') { %>
-      unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
-        return $.cache url, (-> cb @response), responseType: 'json'
+      plainAJAX = not (GM?.xmlHttpRequest? or GM_xmlhttpRequest?)
       <% } %>
-      if responses[url]
-        cb responses[url]
+      if plainAJAX
+        if (req = $.cache url, cb, responseType: 'json')
+          $.on req, 'abort error', -> cb.call({})
+        else
+          cb.call {}
+        return
+
+      if results[url]
+        cb.call results[url]
         return
       if callbacks[url]
         callbacks[url].push cb
         return
       callbacks[url] = [cb]
+
       <% if (type === 'userscript') { %>
       (GM?.xmlHttpRequest or GM_xmlhttpRequest)
         method: "GET"
         url: url+''
         onload: (xhr) ->
-          response = JSON.parse xhr.responseText
-          cb response for cb in callbacks[url]
-          delete callbacks[url]
-          responses[url] = response
-        onerror: ->
-          delete callbacks[url]
-        onabort: ->
-          delete callbacks[url]
+          {status, statusText} = xhr
+          try
+            response = JSON.parse(xhr.responseText)
+            success url, {status, statusText, response}
+          catch
+            failure url
+        onerror: -> failure(url)
+        onabort: -> failure(url)
       <% } %>
       <% if (type === 'crx') { %>
-      eventPageRequest url, 'json', ({response, error}) ->
-        if error
-          delete callbacks[url]
+      eventPageRequest url, 'json', (result) ->
+        if result.status
+          success url, result
         else
-          cb response for cb in callbacks[url]
-          delete callbacks[url]
-          responses[url] = response
+          failure url
       <% } %>

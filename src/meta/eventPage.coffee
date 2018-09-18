@@ -27,15 +27,15 @@ ajax = (request, sender, sendResponse) ->
   xhr.open 'GET', request.url, true
   xhr.responseType = request.responseType
   xhr.addEventListener 'load', ->
+    {status, statusText, response} = @
     if @readyState is @DONE && xhr.status is 200
-      {response} = @
       if request.responseType is 'arraybuffer'
         response = [new Uint8Array(response)...]
         contentType = @getResponseHeader 'Content-Type'
         contentDisposition = @getResponseHeader 'Content-Disposition'
-      chrome.tabs.sendMessage sender.tab.id, {id, response, contentType, contentDisposition}
+      chrome.tabs.sendMessage sender.tab.id, {id, status, statusText, response, contentType, contentDisposition}
     else
-      chrome.tabs.sendMessage sender.tab.id, {id, error: true}
+      chrome.tabs.sendMessage sender.tab.id, {id, status, statusText, response, error: true}
   , false
   xhr.addEventListener 'error', ->
     chrome.tabs.sendMessage sender.tab.id, {id, error: true}

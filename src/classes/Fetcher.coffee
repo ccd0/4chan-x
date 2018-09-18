@@ -106,13 +106,15 @@ class Fetcher
     archive = Redirect.data.post[@boardID]
     encryptionOK = /^https:\/\//.test(url) or location.protocol is 'http:'
     if encryptionOK or Conf['Exempt Archives from Encryption']
-      CrossOrigin.json url, (response) =>
-        {media} = response
-        if !encryptionOK and media then for key of media when /_link$/.test key
-          # Image/thumbnail URLs loaded over HTTP can be modified in transit.
-          # Require them to be from an HTTP host so that no referrer is sent to them from an HTTPS page.
-          delete media[key] unless media[key]?.match /^http:\/\//
-        @parseArchivedPost response, url, archive
+      that = @
+      CrossOrigin.json url, ->
+        if !encryptionOK and @response?.media
+          {media} = @response
+          for key of media when /_link$/.test key
+            # Image/thumbnail URLs loaded over HTTP can be modified in transit.
+            # Require them to be from an HTTP host so that no referrer is sent to them from an HTTPS page.
+            delete media[key] unless media[key]?.match /^http:\/\//
+        that.parseArchivedPost @response, url, archive
       return true
     return false
 
