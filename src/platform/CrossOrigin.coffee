@@ -91,6 +91,10 @@ CrossOrigin =
       if /^https:\/\//.test(url) or location.protocol is 'http:'
         return $.cache url, (-> cb @response), responseType: 'json'
       <% } %>
+      <% if (type === 'userscript') { %>
+      unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
+        return $.cache url, (-> cb @response), responseType: 'json'
+      <% } %>
       if responses[url]
         cb responses[url]
         return
