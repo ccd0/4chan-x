@@ -111,8 +111,7 @@ Embedding =
       if service.queue.length >= service.batchSize
         Embedding.flushTitles service
     else
-      unless CrossOrigin.json service.api(uid), (-> Embedding.cb.title @, data)
-        $.extend link, <%= html('[${key}] <span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>') %>
+      CrossOrigin.json service.api(uid), (-> Embedding.cb.title @, data)
 
   flushTitles: (service) ->
     {queue} = service
@@ -121,10 +120,7 @@ Embedding =
     cb = ->
       Embedding.cb.title @, data for data in queue
       return
-    unless CrossOrigin.json service.api(data.uid for data in queue), cb
-      for data in queue
-        $.extend data.link, <%= html('[${data.key}] <span class="warning">Title Link Blocked</span> (are you using NoScript?)</a>') %>
-    return
+    CrossOrigin.json service.api(data.uid for data in queue), cb
 
   preview: (data) ->
     {key, uid, link} = data
@@ -181,6 +177,8 @@ Embedding =
         $.toggleClass @, 'embed-removed'
 
     title: (req, data) ->
+      return unless req.status
+
       {key, uid, options, link, post} = data
       {status} = req
       service = Embedding.types[key].title
