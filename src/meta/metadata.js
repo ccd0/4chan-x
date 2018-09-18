@@ -42,6 +42,12 @@
     return '// @connect      ' + archive.domain;
   }).join('\n')
 %>
+// @connect      api.clyp.it
+// @connect      api.dailymotion.com
+// @connect      api.github.com
+// @connect      soundcloud.com
+// @connect      vimeo.com
+// @connect      www.googleapis.com
 // @connect      *
 <%=
   meta.grants.map(function(grant) {
