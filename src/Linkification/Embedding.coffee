@@ -277,15 +277,13 @@ Embedding =
           el = $.el 'pre',
             hidden: true
             id: "gist-embed-#{counter++}"
-          $.ajax "https://api.github.com/gists/#{a.dataset.uid}",
-            responseType: 'json'
-            onload: ->
-              el.textContent = Object.values(@response.files)[0].content
-              el.className = 'prettyprint'
-              $.global ->
-                window.prettyPrint? (() ->), document.getElementById(document.currentScript.dataset.id).parentNode
-              , id: el.id
-              el.hidden = false
+          CrossOrigin.json "https://api.github.com/gists/#{a.dataset.uid}", ->
+            el.textContent = Object.values(@response.files)[0].content
+            el.className = 'prettyprint'
+            $.global ->
+              window.prettyPrint? (() ->), document.getElementById(document.currentScript.dataset.id).parentNode
+            , id: el.id
+            el.hidden = false
           el
       title:
         api: (uid) -> "https://api.github.com/gists/#{uid}"
