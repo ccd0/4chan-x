@@ -199,7 +199,7 @@ Settings =
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
       $.get 'hiddenThreads', {}, ({hiddenThreads}) ->
-        if $.hasStorage
+        if $.hasStorage and Site.software is 'yotsuba'
           for boardID of hiddenThreads.boards
             localStorage.removeItem "4chan-hide-t-#{boardID}"
         ($.delete ['hiddenThreads', 'hiddenPosts'])
