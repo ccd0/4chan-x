@@ -14,24 +14,9 @@ CrossOrigin =
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
-    parts = url.split '/'
-    if parts[0] is location.protocol and parts[1] is '' and ImageHost.test(parts[2])
-      xhr = new XMLHttpRequest()
-      xhr.open 'GET', url, true
-      xhr.setRequestHeader key, value for key, value of headers
-      xhr.responseType = 'arraybuffer'
-      xhr.onload = ->
-        return cb null unless @readyState is @DONE and @status in [200, 206]
-        contentType        = @getResponseHeader 'Content-Type'
-        contentDisposition = @getResponseHeader 'Content-Disposition'
-        cb new Uint8Array(@response), contentType, contentDisposition
-      xhr.onerror = xhr.onabort = ->
-        cb null
-      xhr.send()
-    else
-      eventPageRequest url, 'arraybuffer', ({response, contentType, contentDisposition, error}) ->
-        return cb null if error
-        cb new Uint8Array(response), contentType, contentDisposition
+    eventPageRequest url, 'arraybuffer', ({response, contentType, contentDisposition, error}) ->
+      return cb null if error
+      cb new Uint8Array(response), contentType, contentDisposition
     <% } %>
     <% if (type === 'userscript') { %>
     # Use workaround for binary data in Greasemonkey versions < 3.2, in Pale Moon for all GM versions, and in JS Blocker (Safari).
