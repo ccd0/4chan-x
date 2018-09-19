@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.3.0
+// @version      1.14.3.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -175,7 +175,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.3.0',
+  VERSION:   '1.14.3.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -11624,17 +11624,40 @@ Settings = (function() {
         hiddenThreads: {},
         hiddenPosts: {}
       }, function(arg) {
-        var ID, board, hiddenNum, hiddenPosts, hiddenThreads, ref2, ref3, thread;
+        var ID, board, hiddenNum, hiddenPosts, hiddenThreads, ref2, ref3, ref4, ref5, site, thread;
         hiddenThreads = arg.hiddenThreads, hiddenPosts = arg.hiddenPosts;
         hiddenNum = 0;
-        ref2 = hiddenThreads.boards;
-        for (ID in ref2) {
-          board = ref2[ID];
-          hiddenNum += Object.keys(board).length;
+        for (ID in hiddenThreads) {
+          site = hiddenThreads[ID];
+          if (ID !== 'boards') {
+            ref2 = site.boards;
+            for (ID in ref2) {
+              board = ref2[ID];
+              hiddenNum += Object.keys(board).length;
+            }
+          }
         }
-        ref3 = hiddenPosts.boards;
+        ref3 = hiddenThreads.boards;
         for (ID in ref3) {
           board = ref3[ID];
+          hiddenNum += Object.keys(board).length;
+        }
+        for (ID in hiddenPosts) {
+          site = hiddenPosts[ID];
+          if (ID !== 'boards') {
+            ref4 = site.boards;
+            for (ID in ref4) {
+              board = ref4[ID];
+              for (ID in board) {
+                thread = board[ID];
+                hiddenNum += Object.keys(thread).length;
+              }
+            }
+          }
+        }
+        ref5 = hiddenPosts.boards;
+        for (ID in ref5) {
+          board = ref5[ID];
           for (ID in board) {
             thread = board[ID];
             hiddenNum += Object.keys(thread).length;
@@ -11647,7 +11670,7 @@ Settings = (function() {
         return $.get('hiddenThreads', {}, function(arg) {
           var boardID, hiddenThreads;
           hiddenThreads = arg.hiddenThreads;
-          if ($.hasStorage) {
+          if ($.hasStorage && Site.software === 'yotsuba') {
             for (boardID in hiddenThreads.boards) {
               localStorage.removeItem("4chan-hide-t-" + boardID);
             }
@@ -18358,15 +18381,18 @@ Report = (function() {
         id: 'archive-report',
         hidden: true
       }, {
-        innerHTML: "<legend><label><input id=\"archive-report-enabled\" type=\"checkbox\" checked>Report illegal content to archives</label></legend><label for=\"archive-report-reason\">Details</label><textarea id=\"archive-report-reason\">Illegal content</textarea><button id=\"archive-report-submit\" hidden>Submit</button>"
+        innerHTML: "<legend><label><input id=\"archive-report-enabled\" type=\"checkbox\">Report illegal content to archives</label></legend><label for=\"archive-report-reason\">Details</label><textarea id=\"archive-report-reason\" disabled>Illegal content</textarea><button id=\"archive-report-submit\" hidden>Submit</button>"
       });
       enabled = $('#archive-report-enabled', fieldset);
       reason = $('#archive-report-reason', fieldset);
       submit = $('#archive-report-submit', fieldset);
+      $.on(enabled, 'change', function() {
+        return reason.disabled = !this.checked;
+      });
       if (form && types) {
-        fieldset.hidden = !$('[value=illegal]', types).checked;
+        fieldset.hidden = !$('[value="31"]', types).checked;
         $.on(types, 'change', function(e) {
-          fieldset.hidden = e.target.value !== 'illegal';
+          fieldset.hidden = e.target.value !== '31';
           return Report.fit('body');
         });
         $.after(types, fieldset);
@@ -18383,7 +18409,6 @@ Report = (function() {
           }
         });
       } else if (message) {
-        enabled.checked = false;
         fieldset.hidden = /Report submitted!/.test(message.textContent);
         $.on(enabled, 'change', function() {
           return submit.hidden = !this.checked;

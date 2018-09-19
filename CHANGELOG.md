@@ -4,6 +4,12 @@
 
 ### v1.14.3
 
+**v1.14.3.1** *(2018-09-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.1/builds/4chan-X-noupdate.crx)]
+- Fix ad blocking related issues with image downloading. #2066
+- Fix bug with hidden posts count on button in settings.
+- Update reporting to archive to work with new report form. This still doesn't work with ad blocking enabled, but you can add `@@||$xmlhttprequest,domain=sys.4chan.org` to your filters to make it work.
+- Uncheck 'Report to Archives' checkbox and disable details field by default. #1745
+
 **v1.14.3.0** *(2018-09-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.2.1.
 - Fix issues with archives, Link Title, and Github Gist embedding caused by ad blocking changes.
