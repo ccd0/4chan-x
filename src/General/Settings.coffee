@@ -183,8 +183,15 @@ Settings =
     button = $ 'button', div
     $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
       hiddenNum = 0
+      for ID, site of hiddenThreads when ID isnt 'boards'
+        for ID, board of site.boards
+          hiddenNum += Object.keys(board).length
       for ID, board of hiddenThreads.boards
         hiddenNum += Object.keys(board).length
+      for ID, site of hiddenPosts when ID isnt 'boards'
+        for ID, board of site.boards
+          for ID, thread of board
+            hiddenNum += Object.keys(thread).length
       for ID, board of hiddenPosts.boards
         for ID, thread of board
           hiddenNum += Object.keys(thread).length
