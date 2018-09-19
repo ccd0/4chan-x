@@ -40,6 +40,9 @@ Report =
     reason  = $ '#archive-report-reason',  fieldset
     submit  = $ '#archive-report-submit',  fieldset
 
+    $.on enabled, 'change', ->
+      reason.disabled = !@checked
+
     if form and types
       fieldset.hidden = !$('[value="31"]', types).checked
       $.on types, 'change', (e) ->
@@ -54,7 +57,6 @@ Report =
             @action = '#archiveresults=' + encodeURIComponent JSON.stringify results
             @submit()
     else if message
-      enabled.checked = false
       fieldset.hidden = /Report submitted!/.test(message.textContent)
       $.on enabled, 'change', ->
         submit.hidden = !@checked
