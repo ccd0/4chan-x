@@ -41,9 +41,9 @@ Report =
     submit  = $ '#archive-report-submit',  fieldset
 
     if form and types
-      fieldset.hidden = !$('[value=illegal]', types).checked
+      fieldset.hidden = !$('[value="31"]', types).checked
       $.on types, 'change', (e) ->
-        fieldset.hidden = (e.target.value isnt 'illegal')
+        fieldset.hidden = (e.target.value isnt '31')
         Report.fit 'body'
       $.after types, fieldset
       Report.fit 'body'
