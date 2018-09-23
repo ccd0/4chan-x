@@ -832,6 +832,7 @@ Config =
     http://cdn.mathjax.org
     https://cdn.mathjax.org
     https://cdnjs.cloudflare.com
+    https://rawgit.com
     'self'
     'unsafe-inline'
     'unsafe-eval'
