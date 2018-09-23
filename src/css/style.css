@@ -130,9 +130,8 @@ body.is_catalog .thread > a > img {
 .ad-cnt > *, .adg-rects > * {
   height: auto !important;
 }
-:root:not(.ads-loaded) .ad-plea,
 :root:not(.ads-loaded) hr.abovePostForm,
-:root:not(.ads-loaded) .ad-plea-bottom + hr,
+:root:not(.ads-loaded) .adg-rects > hr,
 #adg-ol + hr {
   display: none;
 }
