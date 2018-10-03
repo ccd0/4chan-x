@@ -519,7 +519,7 @@ Settings =
       $.id('lastarchivecheck').textContent = 'never'
 
     items = {}
-    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'timeLocale', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
+    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'timeLocale', 'backlink', 'pastedname', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
       items[name] = Conf[name]
       input = inputs[name]
       event = if name in ['archiveLists', 'archiveAutoUpdate', 'QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
@@ -677,6 +677,9 @@ Settings =
 
   backlink: ->
     @nextElementSibling.textContent = @value.replace /%(?:id|%)/g, (x) -> ({'%id': '123456789', '%%': '%'})[x]
+
+  pastedname: -> 
+    @nextElementSibling.textContent = "#{@value}.png"
 
   fileInfo: ->
     data =

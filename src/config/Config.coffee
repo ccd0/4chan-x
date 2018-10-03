@@ -851,6 +851,8 @@ Config =
 
   backlink: '>>%id'
 
+  pastedname: 'file'
+
   fileInfo: '%l %d (%p%s, %r%g)'
 
   favicon: 'ferongr'
