@@ -678,9 +678,6 @@ Settings =
   backlink: ->
     @nextElementSibling.textContent = @value.replace /%(?:id|%)/g, (x) -> ({'%id': '123456789', '%%': '%'})[x]
 
-  pastedname: -> 
-    @nextElementSibling.textContent = "#{@value}.png"
-
   fileInfo: ->
     data =
       isReply: true
