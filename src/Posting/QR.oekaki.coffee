@@ -55,9 +55,8 @@ QR.oekaki =
             bubbles: true
             detail: {file, name: FCX.oekakiName, source}
           }
-    if $ 'link[href^="//s.4cdn.org/css/painter"]', d.head
-      QR.oekaki.load ->
-        $('#qr .oekaki').hidden = false
+      if window.Tegaki
+        document.querySelector('#qr .oekaki').hidden = false
 
   load: (cb) ->
     n = 0
