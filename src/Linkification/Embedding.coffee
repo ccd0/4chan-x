@@ -215,7 +215,7 @@ Embedding =
           src:         a.dataset.href
     ,
       key: 'image'
-      regExp: /^[^?#]+\.(?:gif|png|jpg|jpeg|bmp)(?:[?#]|$)/i
+      regExp: /^[^?#]+\.(?:gif|png|jpg|jpeg|bmp)(?::\w+)?(?:[?#]|$)/i
       style: ''
       el: (a) ->
         $.el 'div', <%= html('<a target="_blank" href="${a.dataset.href}"><img src="${a.dataset.href}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
@@ -419,12 +419,6 @@ Embedding =
           cont
         else
           el
-    ,
-      key: 'TwitterImage'
-      regExp: /^\w+:\/\/pbs\.twimg\.com\/media\/([\w-]{15}\.(?:gif|png|jpg):\w+)/i
-      style: ''
-      el: (a) ->
-        $.el 'div', <%= html('<a target="_blank" href="https://pbs.twimg.com/media/${a.dataset.uid}"><img src="https://pbs.twimg.com/media/${a.dataset.uid}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
     ,
       key: 'VidLii'
       regExp:  /^\w+:\/\/(?:www\.)?vidlii\.com\/watch\?v=(\w{11})/
