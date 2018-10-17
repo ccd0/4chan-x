@@ -61,6 +61,7 @@ class Post
 
     @board.posts.push  @ID, @
     @thread.posts.push @ID, @
+    @thread.lastPost = @ID if @ID > @thread.lastPost
     g.posts.push   @fullID, @
 
   parseNodes: (root) ->

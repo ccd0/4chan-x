@@ -1063,6 +1063,18 @@ span.hide-announcement {
   margin: 0;
   border-color: rgb(255,0,0);
 }
+.unread-mark-read {
+  float: right;
+  clear: both;
+  height: 0;
+  width: 100%;
+  position: relative;
+  top: -1em;
+  text-align: right;
+}
+:not(.unread-thread) > .unread-mark-read {
+  visibility: hidden;
+}
 
 /* Thread Updater */
 #updater {

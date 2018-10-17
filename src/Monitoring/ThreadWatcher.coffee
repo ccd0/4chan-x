@@ -16,7 +16,7 @@ ThreadWatcher =
     @list   = @dialog.lastElementChild
     @refreshButton = $ '.refresh', @dialog
     @closeButton = $('.move > .close', @dialog)
-    @unreaddb = Unread.db or new DataBoard 'lastReadPosts'
+    @unreaddb = Unread.db or UnreadIndex.db or new DataBoard 'lastReadPosts'
     @unreadEnabled = Conf['Remember Last Read Post'] and Site.software is 'yotsuba'
 
     $.on d, 'QRPostSuccessful',   @cb.post

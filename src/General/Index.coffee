@@ -713,6 +713,7 @@ Index =
           thread = new Thread ID, g.BOARD
           newThreads.push thread
         thread.json = threadData
+        thread.lastPost = if threadData.last_replies then threadData.last_replies[threadData.last_replies.length - 1].no else ID
         threads.push thread
 
         if ((OP = thread.OP) and not OP.isFetchedQuote)
