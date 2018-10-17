@@ -178,7 +178,7 @@ Build =
       textContent: Build.summaryText '', posts, files
       href: "/#{boardID}/thread/#{threadID}"
 
-  thread: (thread, data) ->
+  thread: (thread, data, withReplies) ->
     if (root = thread.nodes.root)
       $.rmAll root
     else
@@ -187,8 +187,8 @@ Build =
         id: "t#{data.no}"
     $.add root, Build.hat.cloneNode(false) if Build.hat
     $.add root, thread.OP.nodes.root
-    if data.omitted_posts or !Conf['Show Replies'] and data.replies
-      [posts, files] = if Conf['Show Replies']
+    if data.omitted_posts or !withReplies and data.replies
+      [posts, files] = if withReplies
         # XXX data.omitted_images is not accurate.
         [data.omitted_posts, data.images - data.last_replies.filter((data) -> !!data.ext).length]
       else

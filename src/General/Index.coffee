@@ -691,7 +691,7 @@ Index =
   isHiddenReply: (threadID, replyData) ->
     PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) or Filter.isHidden(Build.parseJSON replyData, g.BOARD.ID)
 
-  buildThreads: (threadIDs, isCatalog) ->
+  buildThreads: (threadIDs, isCatalog, withReplies) ->
     threads    = []
     newThreads = []
     newPosts   = []
@@ -724,7 +724,8 @@ Index =
           OP.filterResults = obj.filterResults
           newPosts.push OP
 
-        Build.thread thread, threadData unless isCatalog and thread.nodes.root
+        unless isCatalog and thread.nodes.root
+          Build.thread thread, threadData, withReplies
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
@@ -732,6 +733,9 @@ Index =
           message: "Parsing of Thread No.#{thread} failed. Thread will be skipped."
           error: err
     Main.handleErrors errors if errors
+
+    if withReplies
+      newPosts = newPosts.concat(Index.buildReplies threads)
 
     Main.callbackNodes 'Thread', newThreads
     Main.callbackNodes 'Post',   newPosts
@@ -761,7 +765,7 @@ Index =
       $.add thread.nodes.root, nodes
 
     Main.handleErrors errors if errors
-    Main.callbackNodes 'Post', posts
+    posts
 
   buildCatalogViews: (threads) ->
     catalogThreads = []
@@ -873,8 +877,7 @@ Index =
     Index.sortedThreadIDs[offset ... offset + nodesPerPage]
 
   buildStructure: (threadIDs) ->
-    threads = Index.buildThreads threadIDs, false
-    Index.buildReplies threads if Conf['Show Replies']
+    threads = Index.buildThreads threadIDs, false, Conf['Show Replies']
     nodes = []
     for thread in threads
       nodes.push thread.nodes.root, $.el('hr')
