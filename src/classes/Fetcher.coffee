@@ -48,7 +48,7 @@ class Fetcher
 
     $.rmAll @root
     $.add @root, nodes.root
-    $.event 'PostsInserted'
+    $.event 'PostsInserted', null, @root
 
   fetchedPost: (req, isCached) ->
     # In case of multiple callbacks for the same request,

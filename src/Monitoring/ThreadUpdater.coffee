@@ -337,7 +337,7 @@ ThreadUpdater =
         unless QuoteThreading.insert post
           firstPost or= post.nodes.root
           $.add ThreadUpdater.root, post.nodes.root
-      $.event 'PostsInserted'
+      $.event 'PostsInserted', null, ThreadUpdater.root
 
       if scroll
         if Conf['Bottom Scroll']

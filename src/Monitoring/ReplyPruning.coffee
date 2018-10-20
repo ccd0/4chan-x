@@ -122,7 +122,7 @@ ReplyPruning =
           ReplyPruning.hidden--
           ReplyPruning.hiddenFiles-- if post.file
       $.after ReplyPruning.summary, frag
-      $.event 'PostsInserted'
+      $.event 'PostsInserted', null, ReplyPruning.summary.parentNode
 
     ReplyPruning.summary.textContent = if ReplyPruning.active
       Build.summaryText '+', ReplyPruning.hidden, ReplyPruning.hiddenFiles

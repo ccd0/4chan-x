@@ -152,7 +152,7 @@ Index =
       board = $ '.board'
       $.replace board, Index.root
       if Index.loaded
-        $.event 'PostsInserted'
+        $.event 'PostsInserted', null, Index.root
       # Hacks:
       # - When removing an element from the document during page load,
       #   its ancestors will still be correctly created inside of it.
@@ -884,7 +884,7 @@ Index =
       nodes.push thread.nodes.root, $.el('hr')
     $.add Index.root, nodes
     if Index.root.parentNode
-      $.event 'PostsInserted'
+      $.event 'PostsInserted', null, Index.root
     Index.loaded = true
     return
 
@@ -901,7 +901,7 @@ Index =
         $.queueTask fn
       else
         if Index.root.parentNode
-          $.event 'PostsInserted'
+          $.event 'PostsInserted', null, Index.root
         Index.loaded = true
     fn()
     return

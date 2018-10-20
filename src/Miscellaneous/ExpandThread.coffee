@@ -98,7 +98,7 @@ ExpandThread =
       postsRoot.push root
     Main.callbackNodes 'Post', posts
     $.after a, postsRoot
-    $.event 'PostsInserted'
+    $.event 'PostsInserted', null, a.parentNode
 
     postsCount    = postsRoot.length
     a.textContent = Build.summaryText '-', postsCount, filesCount
