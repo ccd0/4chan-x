@@ -1059,7 +1059,7 @@ span.hide-announcement {
 }
 
 /* Unread */
-#unread-line {
+.unread-line {
   margin: 0;
   border-color: rgb(255,0,0);
 }

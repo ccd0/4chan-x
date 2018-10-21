@@ -1,69 +1,109 @@
 UnreadIndex =
-  hasUnread: {}
+  lastReadPost: {}
+  hr: {}
   markReadLink: {}
 
   init: ->
-    return unless g.VIEW is 'index' and Conf['Remember Last Read Post'] and Conf['Mark Read from Index']
+    return unless g.VIEW is 'index' and Conf['Remember Last Read Post'] and Conf['Unread Line in Index']
 
     @db = new DataBoard 'lastReadPosts', @sync
 
-    if Index.enabled
-      $.on d, 'IndexRefreshInternal',
-        @onIndexRefresh
-    else
-      Callbacks.Thread.push
-        name: 'Mark Read from Index'
-        cb:   @node
+    Callbacks.Thread.push
+      name: 'Unread Line in Index'
+      cb:   @node
 
-    Callbacks.Post.push
-      name: 'Mark Read from Index'
-      cb:   @addPost
-
-  onIndexRefresh: ->
-    g.threads.forEach (thread) ->
-      UnreadIndex.addMarkReadLink thread
-      UnreadIndex.update thread
+    $.on d, 'IndexRefreshInternal', @onIndexRefresh
+    $.on d, 'PostsInserted', @onPostsInserted
 
   node: ->
-    UnreadIndex.addMarkReadLink @
-    UnreadIndex.update @
+    UnreadIndex.lastReadPost[@fullID] = UnreadIndex.db.get(
+      boardID: @board.ID
+      threadID: @ID
+    ) or 0
+    if !Index.enabled # let onIndexRefresh handle JSON Index
+      UnreadIndex.update @
 
-  addPost: ->
-    if @ID is @thread.lastPost
-      UnreadIndex.update @thread
+  onIndexRefresh: (e) ->
+    return if e.detail.isCatalog
+    for threadID in e.detail.threadIDs
+      thread = g.threads[threadID]
+      UnreadIndex.update thread
+
+  onPostsInserted: (e) ->
+    return if e.target is Index.root # onIndexRefresh handles this case
+    thread = Get.threadFromNode e.target
+    return if !thread or thread.nodes.root isnt e.target
+    UnreadIndex.update thread
 
   sync: ->
-    g.threads.forEach UnreadIndex.update
+    g.threads.forEach (thread) ->
+      lastReadPost = UnreadIndex.db.get(
+        boardID: thread.board.ID
+        threadID: thread.ID
+      ) or 0
+      if lastReadPost isnt UnreadIndex.lastReadPost[thread.fullID]
+        UnreadIndex.lastReadPost[thread.fullID] = lastReadPost
+        if thread.nodes.root?.parentNode
+          UnreadIndex.update thread
 
-  addMarkReadLink: (thread) ->
-    return unless thread.nodes.root
+  update: (thread) ->
+    lastReadPost = UnreadIndex.lastReadPost[thread.fullID]
+    repliesShown = 0
+    repliesRead = 0
+    firstUnread = null
+    thread.posts.forEach (post) ->
+      if post.isReply and post.nodes.root.parentNode is thread.nodes.root
+        repliesShown++
+        if post.ID <= lastReadPost
+          repliesRead++
+        else if (!firstUnread or post.ID < firstUnread.ID) and !post.isHidden and !QuoteYou.isYou(post)
+          firstUnread = post
+
+    hr = UnreadIndex.hr[thread.fullID]
+    if firstUnread and (repliesRead or lastReadPost is thread.OP.ID)
+      if !hr
+        hr = UnreadIndex.hr[thread.fullID] = $.el 'hr',
+          className: 'unread-line'
+      $.before firstUnread.nodes.root, hr
+    else
+      $.rm hr
+
+    hasUnread = if repliesShown
+      firstUnread or !repliesRead
+    else if Index.enabled
+      Index.lastPost(thread.ID) > lastReadPost
+    else
+      thread.OP.ID > lastReadPost
+    thread.nodes.root.classList.toggle 'unread-thread', hasUnread
+
     link = UnreadIndex.markReadLink[thread.fullID]
-    unless link
+    if !link
       link = UnreadIndex.markReadLink[thread.fullID] = $.el 'a',
         className: 'unread-mark-read brackets-wrap'
         href: 'javascript:;'
         textContent: 'Mark Read'
       $.on link, 'click', UnreadIndex.markRead
-    if link.parentNode isnt thread.nodes.root
+    if (divider = $ Site.selectors.threadDivider, thread.nodes.root) # divider inside thread as in Tinyboard
+      $.before divider, link
+    else
       $.add thread.nodes.root, link
-
-  update: (thread) ->
-    return unless thread.nodes.root
-    lastReadPost = UnreadIndex.db.get(
-      boardID: thread.board.ID
-      threadID: thread.ID
-    ) or 0
-    hasUnread = (lastReadPost < thread.lastPost)
-    if hasUnread isnt UnreadIndex.hasUnread[thread.fullID]
-      thread.nodes.root.classList.toggle 'unread-thread', hasUnread
 
   markRead: ->
     thread = Get.threadFromNode @
+    if Index.enabled
+      lastPost = Index.lastPost(thread.ID)
+    else
+      lastPost = 0
+      thread.posts.forEach (post) ->
+        if post.ID > lastPost and !post.isFetchedQuote
+          lastPost = post.ID
+    UnreadIndex.lastReadPost[thread.fullID] = lastPost
     UnreadIndex.db.set
       boardID:  thread.board.ID
       threadID: thread.ID
-      val:      thread.lastPost
-    UnreadIndex.update thread
+      val:      lastPost
+    $.rm UnreadIndex.hr[thread.fullID]
+    $.rm UnreadIndex.markReadLink[thread.fullID]
     ThreadWatcher.update thread.board.ID, thread.ID,
       unread: 0
       quotingYou: false

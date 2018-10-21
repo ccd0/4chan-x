@@ -691,6 +691,10 @@ Index =
   isHiddenReply: (threadID, replyData) ->
     PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) or Filter.isHidden(Build.parseJSON replyData, g.BOARD.ID)
 
+  lastPost: (threadID) ->
+    threadData = Index.liveThreadDict[threadID]
+    if threadData?.last_replies then threadData.last_replies[threadData.last_replies.length - 1].no else threadID
+
   buildThreads: (threadIDs, isCatalog, withReplies) ->
     threads    = []
     newThreads = []
@@ -713,7 +717,6 @@ Index =
           thread = new Thread ID, g.BOARD
           newThreads.push thread
         thread.json = threadData
-        thread.lastPost = if threadData.last_replies then threadData.last_replies[threadData.last_replies.length - 1].no else ID
         threads.push thread
 
         if ((OP = thread.OP) and not OP.isFetchedQuote)
@@ -741,7 +744,7 @@ Index =
     Main.callbackNodes 'Thread', newThreads
     Main.callbackNodes 'Post',   newPosts
     Index.updateHideLabel()
-    $.event 'IndexRefreshInternal'
+    $.event 'IndexRefreshInternal', {threadIDs: (t.fullID for t in threads), isCatalog}
 
     threads
 

@@ -154,7 +154,7 @@
 }
 
 /* Unread */
-:root.tomorrow #unread-line {
+:root.tomorrow .unread-line {
   border-color: rgb(197, 200, 198);
 }
 

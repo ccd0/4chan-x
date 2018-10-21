@@ -68,6 +68,8 @@ ExpandThread =
     postsCount = 0
     filesCount = 0
     for reply in replies
+      # rm elements above post such as unread line
+      $.rm node while (node = a.nextSibling) and node isnt reply
       # rm clones
       inlined.click() while inlined = $ '.inlined', reply if Conf['Quote Inlining']
       postsCount++

@@ -510,7 +510,7 @@ Main =
     ['Thread Expansion',          ExpandThread]
     ['Favicon',                   Favicon]
     ['Unread',                    Unread]
-    ['Mark Read from Index',      UnreadIndex]
+    ['Unread Line in Index',      UnreadIndex]
     ['Quote Threading',           QuoteThreading]
     ['Thread Stats',              ThreadStats]
     ['Thread Updater',            ThreadUpdater]

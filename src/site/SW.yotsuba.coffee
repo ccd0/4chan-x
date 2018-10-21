@@ -7,6 +7,7 @@ SW.yotsuba =
   selectors:
     board:         '.board'
     thread:        '.thread'
+    threadDivider: '.board > hr'
     postContainer: '.postContainer'
     sideArrows:    '.sideArrows'
     post:          '.post'

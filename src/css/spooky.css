@@ -147,7 +147,7 @@
 }
 
 /* Unread */
-:root.spooky #unread-line {
+:root.spooky .unread-line {
   border-color: rgb(197, 200, 198);
 }
 

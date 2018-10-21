@@ -383,9 +383,9 @@ Config =
         'Scroll back to the last read post when reopening a thread.'
         1
       ]
-      'Mark Read from Index': [
+      'Unread Line in Index': [
         false
-        'Add links in the index for marking threads read.'
+        'Show a line between read and unread posts in threads in the index.'
         1
       ]
       'Remove Thread Excerpt': [

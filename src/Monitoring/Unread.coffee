@@ -15,6 +15,7 @@ Unread =
 
     @hr = $.el 'hr',
       id: 'unread-line'
+      className: 'unread-line'
     @posts = new Set()
     @postsQuotingYou = new Set()
     @order = new RandomAccessList()

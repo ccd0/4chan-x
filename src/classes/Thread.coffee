@@ -13,14 +13,12 @@ class Thread
     @fileLimit  = false
     @ipCount    = undefined
     @json       = null
-    @lastPost   = 0
 
     @OP = null
     @catalogView = null
 
     @nodes =
-      root:    null
-      summary: null
+      root: null
 
     @board.threads.push @ID, @
     g.threads.push  @fullID, @
