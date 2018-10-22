@@ -4,6 +4,9 @@
 
 ### v1.14.3
 
+**v1.14.3.2** *(2018-10-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.2/builds/4chan-X-noupdate.crx)]
+- whatanime.ga is now trace.moe #2106
+
 **v1.14.3.1** *(2018-09-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.1/builds/4chan-X-noupdate.crx)]
 - Fix ad blocking related issues with image downloading. #2066
 - Fix bug with hidden posts count on button in settings.
