@@ -2,6 +2,17 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.4
+
+**v1.14.4.0** *(2018-10-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.3.2.
+- (pentargency) Add field in Advanced settings allowing user to customize filename of images pasted into Quick Reply box
+- (HushBugger) Embed images that have Twitter-style suffixes (e.g. .jpg:orig)
+- The `PostsInserted` event is now fired on the common ancestor of the inserted posts. It bubbles, so listeners registered on the document will still work.
+- Load Tegaki from rawgit.com if loading from s.4cdn.org fails or is blocked.
+- Add `Unread Line in Index` option (default: off), which adds a line to threads in the index showing which posts are new, and adds a link to mark them read.
+- Minor bugfixes.
+
 ### v1.14.3
 
 **v1.14.3.2** *(2018-10-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.2/builds/4chan-X-noupdate.crx)]
