@@ -748,7 +748,7 @@ Config =
 
     # Specialized reverse image search:
     //iqdb.org/?url=%IMG
-    https://whatanime.ga/?auto&url=%IMG;text:wait
+    https://trace.moe/?auto&url=%IMG;text:wait
     #//3d.iqdb.org/?url=%IMG
     #//saucenao.com/search.php?url=%IMG
 

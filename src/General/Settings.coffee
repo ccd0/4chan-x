@@ -453,6 +453,9 @@ Settings =
     if compareString < '00001.00014.00000.00006'
       if data['siteSoftware']?
         set 'siteSoftware', data['siteSoftware'] + '\n4cdn.org yotsuba'
+    if compareString < '00001.00014.00003.00002'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(/^(#?\s*)https:\/\/whatanime\.ga\//mg, '$1https://trace.moe/')
     changes
 
   loadSettings: (data, cb) ->
