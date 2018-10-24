@@ -38,6 +38,7 @@ QR.oekaki =
                 QR.handleFiles [snapshot]
                 QR.oekaki.edit()
             video.currentTime = currentTime
+          $.on video, 'error', -> QR.openError()
           video.src = URL.createObjectURL blob
         else
           blob.name = post.file.name

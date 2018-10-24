@@ -355,11 +355,16 @@ QR =
     return unless file and /^(image|video)\//.test(file.type)
     isVideo = /^video\//.test file
     el = $.el (if isVideo then 'video' else 'img')
-    $.on el, 'error', -> QR.error 'Could not open file.'
+    $.on el, 'error', -> QR.openError()
     $.on el, (if isVideo then 'loadeddata' else 'load'), ->
       e.target.getContext('2d').drawImage el, 0, 0
       URL.revokeObjectURL el.src
     el.src = URL.createObjectURL file
+
+  openError: ->
+    div = $.el 'div'
+    $.extend div, <%= html('Could not open file. [<a href="' + meta.faq + '#error-reading-metadata" target="_blank">More info</a>]') %>
+    QR.error div
 
   setFile: (e) ->
     {file, name, source} = e.detail
