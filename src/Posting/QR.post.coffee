@@ -239,11 +239,16 @@ QR.post = class
       $.off el, 'error', onerror
       @checkDimensions el
       @setThumbnail el
+      $.event 'QRMetadata', null, @nodes.el
     onerror = =>
       $.off el, event, onload
       $.off el, 'error', onerror
       @fileError "Corrupt #{if isVideo then 'video' else 'image'} or error reading metadata.", '<%= meta.faq %>#error-reading-metadata'
       URL.revokeObjectURL el.src
+      # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
+      @nodes.el.removeAttribute 'data-height'
+      $.event 'QRMetadata', null, @nodes.el
+    @nodes.el.dataset.height = 'loading'
     $.on el, event, onload
     $.on el, 'error', onerror
     el.src = URL.createObjectURL @file

@@ -94,6 +94,7 @@ QR =
       $.prepend navLinksBot, linkBot if (navLinksBot = $ '.navLinksBot')
 
     $.on d, 'QRGetFile',          QR.getFile
+    $.on d, 'QRDrawFile',         QR.drawFile
     $.on d, 'QRSetFile',          QR.setFile
 
     $.on d, 'paste',              QR.paste
@@ -348,6 +349,17 @@ QR =
 
   getFile: ->
     $.event 'QRFile', QR.selected?.file
+
+  drawFile: (e) ->
+    file = QR.selected?.file
+    return unless file and /^(image|video)\//.test(file.type)
+    isVideo = /^video\//.test file
+    el = $.el (if isVideo then 'video' else 'img')
+    $.on el, 'error', -> QR.error 'Could not open file.'
+    $.on el, (if isVideo then 'loadeddata' else 'load'), ->
+      e.target.getContext('2d').drawImage el, 0, 0
+      URL.revokeObjectURL el.src
+    el.src = URL.createObjectURL file
 
   setFile: (e) ->
     {file, name, source} = e.detail
