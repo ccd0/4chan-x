@@ -213,6 +213,8 @@ QR.post = class
       @showFileData()
     else
       @updateFilename()
+    @rmMetadata()
+    @nodes.el.dataset.type = @file.type
     @nodes.el.style.backgroundImage = ''
     unless @file.type in QR.mimeTypes
       @fileError 'Unsupported file type.'
@@ -249,12 +251,17 @@ QR.post = class
   checkDimensions: (el) ->
     if el.tagName is 'IMG'
       {height, width} = el
+      @nodes.el.dataset.height = height
+      @nodes.el.dataset.width = width
       if height > QR.max_height or width > QR.max_width
         @fileError "Image too large (image: #{height}x#{width}px, max: #{QR.max_height}x#{QR.max_width}px)"
       if height < QR.min_height or width < QR.min_width
         @fileError "Image too small (image: #{height}x#{width}px, min: #{QR.min_height}x#{QR.min_width}px)"
     else
       {videoHeight, videoWidth, duration} = el
+      @nodes.el.dataset.height = videoHeight
+      @nodes.el.dataset.width = videoWidth
+      @nodes.el.dataset.duration = duration
       max_height = Math.min(QR.max_height, QR.max_height_video)
       max_width  = Math.min(QR.max_width,  QR.max_width_video)
       if videoHeight > max_height or videoWidth > max_width
@@ -310,12 +317,19 @@ QR.post = class
     delete @filesize
     @nodes.el.removeAttribute 'title'
     QR.nodes.filename.removeAttribute 'title'
+    @rmMetadata()
     @nodes.el.style.backgroundImage = ''
     $.rmClass @nodes.el, 'has-file'
     @showFileData()
     URL.revokeObjectURL @URL
     @dismissErrors (error) -> $.hasClass error, 'file-error'
     @preventAutoPost()
+
+  rmMetadata: ->
+    for attr in ['type', 'height', 'width', 'duration']
+      # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
+      @nodes.el.removeAttribute "data-#{attr}"
+    return
 
   saveFilename: ->
     @file.newName = (@filename or '').replace /[/\\]/g, '-'
