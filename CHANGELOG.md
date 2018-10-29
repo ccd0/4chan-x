@@ -4,6 +4,11 @@
 
 ### v1.14.4
 
+**v1.14.4.1** *(2018-10-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.1/builds/4chan-X-noupdate.crx)]
+- Move drawing of QR file onto Tegaki canvas into 4chan X so it is less likely to be affected by ad blocking.
+- Add link to FAQ section in 'Could not open file.' error.
+- Make metadata for files selected in Quick Reply available as data-type, data-height, data-width, and data-duration attributes on thumbnail.
+
 **v1.14.4.0** *(2018-10-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.3.2.
 - (pentargency) Add field in Advanced settings allowing user to customize filename of images pasted into Quick Reply box

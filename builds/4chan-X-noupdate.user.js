@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.4.0
+// @version      1.14.4.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -175,7 +175,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.4.0',
+  VERSION:   '1.14.4.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -21622,6 +21622,7 @@ QR = (function() {
         }
       }
       $.on(d, 'QRGetFile', QR.getFile);
+      $.on(d, 'QRDrawFile', QR.drawFile);
       $.on(d, 'QRSetFile', QR.setFile);
       $.on(d, 'paste', QR.paste);
       $.on(d, 'dragover', QR.dragOver);
@@ -21939,6 +21940,31 @@ QR = (function() {
     getFile: function() {
       var ref;
       return $.event('QRFile', (ref = QR.selected) != null ? ref.file : void 0);
+    },
+    drawFile: function(e) {
+      var el, file, isVideo, ref;
+      file = (ref = QR.selected) != null ? ref.file : void 0;
+      if (!(file && /^(image|video)\//.test(file.type))) {
+        return;
+      }
+      isVideo = /^video\//.test(file);
+      el = $.el((isVideo ? 'video' : 'img'));
+      $.on(el, 'error', function() {
+        return QR.openError();
+      });
+      $.on(el, (isVideo ? 'loadeddata' : 'load'), function() {
+        e.target.getContext('2d').drawImage(el, 0, 0);
+        return URL.revokeObjectURL(el.src);
+      });
+      return el.src = URL.createObjectURL(file);
+    },
+    openError: function() {
+      var div;
+      div = $.el('div');
+      $.extend(div, {
+        innerHTML: "Could not open file. [<a href=\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#error-reading-metadata\" target=\"_blank\">More info</a>]"
+      });
+      return QR.error(div);
     },
     setFile: function(e) {
       var file, name, ref, source;
@@ -22856,6 +22882,9 @@ QR = (function() {
               });
               return video.currentTime = currentTime;
             });
+            $.on(video, 'error', function() {
+              return QR.openError();
+            });
             return video.src = URL.createObjectURL(blob);
           } else {
             blob.name = post.file.name;
@@ -22977,45 +23006,46 @@ QR = (function() {
             }));
           };
           cb = function(e) {
-            var file, isVideo;
-            document.removeEventListener('QRFile', cb, false);
-            if (!e.detail) {
+            var selected;
+            if (e) {
+              this.removeEventListener('QRMetadata', cb, false);
+            }
+            selected = document.getElementById('selected');
+            if (!(selected != null ? selected.dataset.type : void 0)) {
               return error('No file to edit.');
             }
-            if (!/^(image|video)\//.test(e.detail.type)) {
+            if (!/^(image|video)\//.test(selected.dataset.type)) {
               return error('Not an image.');
             }
-            isVideo = /^video\//.test(e.detail.type);
-            file = document.createElement(isVideo ? 'video' : 'img');
-            file.addEventListener('error', function() {
-              return error('Could not open file.', false);
+            if (!selected.dataset.height) {
+              return error('Metadata not available.');
+            }
+            if (selected.dataset.height === 'loading') {
+              selected.addEventListener('QRMetadata', cb, false);
+              return;
+            }
+            if (Tegaki.bg) {
+              Tegaki.destroy();
+            }
+            FCX.oekakiName = name;
+            Tegaki.open({
+              onDone: FCX.oekakiCB,
+              onCancel: function() {
+                return Tegaki.bgColor = '#ffffff';
+              },
+              width: +selected.dataset.width,
+              height: +selected.dataset.height,
+              bgColor: 'transparent'
             });
-            file.addEventListener((isVideo ? 'loadeddata' : 'load'), function() {
-              if (Tegaki.bg) {
-                Tegaki.destroy();
-              }
-              FCX.oekakiName = name;
-              Tegaki.open({
-                onDone: FCX.oekakiCB,
-                onCancel: function() {
-                  return Tegaki.bgColor = '#ffffff';
-                },
-                width: file.naturalWidth || file.videoWidth,
-                height: file.naturalHeight || file.videoHeight,
-                bgColor: 'transparent'
-              });
-              return Tegaki.activeCtx.drawImage(file, 0, 0);
-            }, false);
-            return file.src = URL.createObjectURL(e.detail);
+            return Tegaki.activeCtx.canvas.dispatchEvent(new CustomEvent('QRDrawFile', {
+              bubbles: true
+            }));
           };
           if (Tegaki.bg && Tegaki.onDoneCb === FCX.oekakiCB && source === FCX.oekakiLatest) {
             FCX.oekakiName = name;
             return Tegaki.resume();
           } else {
-            document.addEventListener('QRFile', cb, false);
-            return document.dispatchEvent(new CustomEvent('QRGetFile', {
-              bubbles: true
-            }));
+            return cb();
           }
         });
       });
@@ -23447,6 +23477,8 @@ QR = (function() {
       } else {
         this.updateFilename();
       }
+      this.rmMetadata();
+      this.nodes.el.dataset.type = this.file.type;
       this.nodes.el.style.backgroundImage = '';
       if (ref = this.file.type, indexOf.call(QR.mimeTypes, ref) < 0) {
         this.fileError('Unsupported file type.');
@@ -23480,7 +23512,8 @@ QR = (function() {
           $.off(el, event, onload);
           $.off(el, 'error', onerror);
           _this.checkDimensions(el);
-          return _this.setThumbnail(el);
+          _this.setThumbnail(el);
+          return $.event('QRMetadata', null, _this.nodes.el);
         };
       })(this);
       onerror = (function(_this) {
@@ -23488,9 +23521,12 @@ QR = (function() {
           $.off(el, event, onload);
           $.off(el, 'error', onerror);
           _this.fileError("Corrupt " + (isVideo ? 'video' : 'image') + " or error reading metadata.", 'https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#error-reading-metadata');
-          return URL.revokeObjectURL(el.src);
+          URL.revokeObjectURL(el.src);
+          _this.nodes.el.removeAttribute('data-height');
+          return $.event('QRMetadata', null, _this.nodes.el);
         };
       })(this);
+      this.nodes.el.dataset.height = 'loading';
       $.on(el, event, onload);
       $.on(el, 'error', onerror);
       return el.src = URL.createObjectURL(this.file);
@@ -23500,6 +23536,8 @@ QR = (function() {
       var duration, height, max_height, max_width, videoHeight, videoWidth, width;
       if (el.tagName === 'IMG') {
         height = el.height, width = el.width;
+        this.nodes.el.dataset.height = height;
+        this.nodes.el.dataset.width = width;
         if (height > QR.max_height || width > QR.max_width) {
           this.fileError("Image too large (image: " + height + "x" + width + "px, max: " + QR.max_height + "x" + QR.max_width + "px)");
         }
@@ -23508,6 +23546,9 @@ QR = (function() {
         }
       } else {
         videoHeight = el.videoHeight, videoWidth = el.videoWidth, duration = el.duration;
+        this.nodes.el.dataset.height = videoHeight;
+        this.nodes.el.dataset.width = videoWidth;
+        this.nodes.el.dataset.duration = duration;
         max_height = Math.min(QR.max_height, QR.max_height_video);
         max_width = Math.min(QR.max_width, QR.max_width_video);
         if (videoHeight > max_height || videoWidth > max_width) {
@@ -23574,6 +23615,7 @@ QR = (function() {
       delete this.filesize;
       this.nodes.el.removeAttribute('title');
       QR.nodes.filename.removeAttribute('title');
+      this.rmMetadata();
       this.nodes.el.style.backgroundImage = '';
       $.rmClass(this.nodes.el, 'has-file');
       this.showFileData();
@@ -23582,6 +23624,15 @@ QR = (function() {
         return $.hasClass(error, 'file-error');
       });
       return this.preventAutoPost();
+    };
+
+    _Class.prototype.rmMetadata = function() {
+      var attr, i, len, ref;
+      ref = ['type', 'height', 'width', 'duration'];
+      for (i = 0, len = ref.length; i < len; i++) {
+        attr = ref[i];
+        this.nodes.el.removeAttribute("data-" + attr);
+      }
     };
 
     _Class.prototype.saveFilename = function() {
