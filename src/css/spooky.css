@@ -149,6 +149,8 @@
 /* Unread */
 :root.spooky .unread-line {
   border-color: rgb(197, 200, 198);
+  visibility: visible;
+  opacity: 1;
 }
 
 /* Thread Watcher */
