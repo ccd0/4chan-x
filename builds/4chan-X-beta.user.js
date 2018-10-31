@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.4.1
+// @version      1.14.4.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -175,7 +175,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.4.1',
+  VERSION:   '1.14.4.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -4317,6 +4317,8 @@ a:only-of-type > .remove {\n\
 /* Unread */\n\
 :root.spooky .unread-line {\n\
   border-color: rgb(197, 200, 198);\n\
+  visibility: visible;\n\
+  opacity: 1;\n\
 }\n\
 /* Thread Watcher */\n\
 :root.spooky .replies-quoting-you > a, :root.spooky #watcher-link.replies-quoting-you {\n\
