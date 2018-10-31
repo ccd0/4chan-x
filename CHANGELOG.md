@@ -4,6 +4,9 @@
 
 ### v1.14.4
 
+**v1.14.4.2** *(2018-10-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.2/builds/4chan-X-noupdate.crx)]
+- Fix unread line becoming invisible on Halloween theme.
+
 **v1.14.4.1** *(2018-10-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.1/builds/4chan-X-noupdate.crx)]
 - Move drawing of QR file onto Tegaki canvas into 4chan X so it is less likely to be affected by ad blocking.
 - Add link to FAQ section in 'Could not open file.' error.
