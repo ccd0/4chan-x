@@ -53,13 +53,15 @@ ImageExpand =
 
     toggleAll: ->
       $.event 'CloseMenu'
+      threadRoot = Nav.getThread()
       toggle = (post) ->
         {file} = post
         return unless file and (file.isImage or file.isVideo) and doc.contains post.nodes.root
         if ImageExpand.on and
-          (!Conf['Expand spoilers'] and file.isSpoiler or
-          !Conf['Expand videos']    and file.isVideo or
-          Conf['Expand from here']  and Header.getTopOf(file.thumb) < 0)
+          (!Conf['Expand spoilers']  and file.isSpoiler or
+          !Conf['Expand videos']     and file.isVideo or
+          Conf['Expand from here']   and Header.getTopOf(file.thumb) < 0 or
+          Conf['Expand thread only'] and g.VIEW is 'index' and !threadRoot?.contains(file.thumb))
             return
         $.queueTask func, post
 

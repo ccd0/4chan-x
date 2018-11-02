@@ -620,6 +620,10 @@ Config =
       false
       'Expand all images only from current position to thread end.'
     ]
+    'Expand thread only': [
+      false
+      'In index, expand all images only within the current thread.'
+    ]
     'Advance on contract': [
       false
       'Advance to next post when contracting an expanded image.'
