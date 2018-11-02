@@ -182,6 +182,8 @@ Keybinds =
       when Conf['Expand thread']
         return unless g.VIEW is 'index' and threadRoot
         ExpandThread.toggle thread
+        # Keep thread from moving off screen when contracted.
+        Header.scrollTo threadRoot
       when Conf['Open thread']
         return unless g.VIEW is 'index' and threadRoot
         Keybinds.open thread
