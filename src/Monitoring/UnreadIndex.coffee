@@ -6,6 +6,7 @@ UnreadIndex =
   init: ->
     return unless g.VIEW is 'index' and Conf['Remember Last Read Post'] and Conf['Unread Line in Index']
 
+    @enabled = true
     @db = new DataBoard 'lastReadPosts', @sync
 
     Callbacks.Thread.push

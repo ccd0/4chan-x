@@ -109,6 +109,9 @@ Keybinds =
       when Conf['Toggle thread watcher']
         return unless ThreadWatcher.enabled
         ThreadWatcher.toggleWatcher()
+      when Conf['Mark thread read']
+        return unless g.VIEW is 'index' and thread and UnreadIndex.enabled
+        UnreadIndex.markRead.call threadRoot
       # Images
       when Conf['Expand image']
         return unless ImageExpand.enabled and threadRoot

@@ -947,6 +947,10 @@ Config =
       't'
       'Toggle visibility of thread watcher.'
     ]
+    'Mark thread read': [
+      'Ctrl+0'
+      'Mark thread read from index (requires "Unread Line in Index").'
+    ]
     # Images
     'Expand image': [
       'Shift+e'
