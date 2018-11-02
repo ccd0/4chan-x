@@ -157,6 +157,9 @@
 :root.tomorrow .unread-line {
   border-color: rgb(197, 200, 198);
 }
+:root.tomorrow .unread-mark-read {
+  background-color: rgba(40,42,46,0.5);
+}
 
 /* Thread Watcher */
 :root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.replies-quoting-you {

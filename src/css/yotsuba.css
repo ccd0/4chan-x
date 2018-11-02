@@ -82,6 +82,11 @@
   background: rgba(255, 255, 255, .33);
 }
 
+/* Unread */
+:root.yotsuba .unread-mark-read {
+  background-color: rgba(240,224,214,0.5);
+}
+
 /* Thread Watcher */
 :root.yotsuba .replies-quoting-you > a, :root.yotsuba #watcher-link.replies-quoting-you {
   color: #F00;

@@ -152,6 +152,9 @@
   visibility: visible;
   opacity: 1;
 }
+:root.spooky .unread-mark-read {
+  background-color: rgba(23,21,38,0.5);
+}
 
 /* Thread Watcher */
 :root.spooky .replies-quoting-you > a, :root.spooky #watcher-link.replies-quoting-you {

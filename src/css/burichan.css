@@ -87,6 +87,11 @@
   background: rgba(255, 255, 255, .33);
 }
 
+/* Unread */
+:root.burichan .unread-mark-read {
+  background-color: rgba(214,218,240,0.5);
+}
+
 /* Thread Watcher */
 :root.burichan .replies-quoting-you > a, :root.burichan #watcher-link.replies-quoting-you {
   color: #F00;

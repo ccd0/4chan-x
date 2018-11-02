@@ -1066,14 +1066,11 @@ span.hide-announcement {
 .unread-mark-read {
   float: right;
   clear: both;
-  height: 0;
   width: 100%;
-  position: relative;
-  top: -1em;
   text-align: right;
 }
 :not(.unread-thread) > .unread-mark-read {
-  visibility: hidden;
+  display: none;
 }
 
 /* Thread Updater */

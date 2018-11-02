@@ -263,7 +263,7 @@ Main =
           s = window.getComputedStyle(d.body)
           bgColor = "#{s.backgroundColor} #{s.backgroundImage} #{s.backgroundRepeat} #{s.backgroundPosition}"
         Main.bgColorStyle.textContent = """
-          .dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post {
+          .dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post, .unread-mark-read {
             background: #{bgColor};
           }
         """

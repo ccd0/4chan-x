@@ -87,6 +87,11 @@
   background: rgba(255, 255, 255, .33);
 }
 
+/* Unread */
+:root.futaba .unread-mark-read {
+  background-color: rgba(240,224,214,0.5);
+}
+
 /* Thread Watcher */
 :root.futaba .replies-quoting-you > a, :root.futaba #watcher-link.replies-quoting-you {
   color: #F00;
