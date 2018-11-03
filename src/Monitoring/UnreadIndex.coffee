@@ -108,6 +108,9 @@ UnreadIndex =
       val:      lastPost
     $.rm UnreadIndex.hr[thread.fullID]
     thread.nodes.root.classList.remove 'unread-thread'
+    if thread.ID of ExpandThread.statuses
+      ExpandThread.toggle thread
+      Header.scrollToIfNeeded thread.nodes.root
     ThreadWatcher.update thread.board.ID, thread.ID,
       unread: 0
       quotingYou: false
