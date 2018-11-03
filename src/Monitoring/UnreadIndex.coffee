@@ -34,7 +34,10 @@ UnreadIndex =
     return if e.target is Index.root # onIndexRefresh handles this case
     thread = Get.threadFromNode e.target
     return if !thread or thread.nodes.root isnt e.target
+    wasVisible = !!UnreadIndex.hr[thread.fullID]?.parentNode
     UnreadIndex.update thread
+    if Conf['Scroll to Last Read Post'] and !wasVisible and !!UnreadIndex.hr[thread.fullID]?.parentNode
+      Header.scrollToIfNeeded UnreadIndex.hr[thread.fullID], true
 
   sync: ->
     g.threads.forEach (thread) ->
