@@ -109,8 +109,9 @@ UnreadIndex =
     $.rm UnreadIndex.hr[thread.fullID]
     thread.nodes.root.classList.remove 'unread-thread'
     if thread.ID of ExpandThread.statuses
+      {bottom} = thread.nodes.root.getBoundingClientRect()
       ExpandThread.toggle thread
-      Header.scrollToIfNeeded thread.nodes.root
+      window.scrollBy 0, (thread.nodes.root.getBoundingClientRect().bottom - bottom)
     ThreadWatcher.update thread.board.ID, thread.ID,
       unread: 0
       quotingYou: false
