@@ -33,6 +33,15 @@ ExpandThread =
     e.preventDefault()
     ExpandThread.toggle Get.threadFromNode @
 
+  cbToggleBottom: (e) ->
+    return if $.modifiedClick e
+    e.preventDefault()
+    thread = Get.threadFromNode @
+    $.rm @ # remove before fixing bottom of thread position
+    {bottom} = thread.nodes.root.getBoundingClientRect()
+    ExpandThread.toggle thread
+    window.scrollBy 0, (thread.nodes.root.getBoundingClientRect().bottom - bottom)
+
   toggle: (thread) ->
     return if not (thread.nodes.root and (a = $ '.summary', thread.nodes.root))
     if thread.ID of ExpandThread.statuses
@@ -76,6 +85,7 @@ ExpandThread =
       filesCount++ if 'file' of Get.postFromRoot reply
       $.rm reply
     a.textContent = Build.summaryText '+', postsCount, filesCount
+    $.rm $('.summary-bottom', threadRoot)
 
   parse: (req, thread, a) ->
     if req.status not in [200, 304]
@@ -91,7 +101,8 @@ ExpandThread =
       continue if postData.no is thread.ID
       if (post = thread.posts[postData.no]) and not post.isFetchedQuote
         filesCount++ if 'file' of post
-        postsRoot.push post.nodes.root
+        {root} = post.nodes
+        postsRoot.push root
         continue
       root = Build.postFromObject postData, thread.board.ID
       post = new Post root, thread, thread.board
@@ -104,3 +115,9 @@ ExpandThread =
 
     postsCount    = postsRoot.length
     a.textContent = Build.summaryText '-', postsCount, filesCount
+
+    if root
+      a2 = a.cloneNode true
+      a2.classList.add 'summary-bottom'
+      $.on a2, 'click', ExpandThread.cbToggleBottom
+      $.after root, a2
