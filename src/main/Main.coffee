@@ -257,14 +257,19 @@ Main =
         div.style.visibility = 'hidden';
         $.add d.body, div
         bgColor = window.getComputedStyle(div).backgroundColor
+        c.log(bgColor)
         $.rm div
+        rgb = bgColor.match(/[\d.]+/g)
         # Use body background if reply background is transparent
         unless /^rgb\(/.test(bgColor)
           s = window.getComputedStyle(d.body)
           bgColor = "#{s.backgroundColor} #{s.backgroundImage} #{s.backgroundRepeat} #{s.backgroundPosition}"
         Main.bgColorStyle.textContent = """
-          .dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post, .unread-mark-read {
+          .dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post {
             background: #{bgColor};
+          }
+          .unread-mark-read {
+            background-color: rgba(#{rgb[...3].join(', ')}, #{0.5*(rgb[3] || 1)});
           }
         """
         $.after $.id('fourchanx-css'), Main.bgColorStyle
