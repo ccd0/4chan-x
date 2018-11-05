@@ -54,6 +54,7 @@ SW.tinyboard =
     board:         'form[name="postcontrols"]'
     thread:        'div[id^="thread_"]'
     threadDivider: 'div[id^="thread_"] > hr:last-of-type'
+    summary:       '.omitted'
     postContainer: '.reply' # postContainer is thread for OP
     infoRoot:      '.intro'
     info:

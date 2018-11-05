@@ -8,6 +8,7 @@ SW.yotsuba =
     board:         '.board'
     thread:        '.thread'
     threadDivider: '.board > hr'
+    summary:       '.summary'
     postContainer: '.postContainer'
     sideArrows:    '.sideArrows'
     post:          '.post'

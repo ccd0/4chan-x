@@ -64,7 +64,7 @@ UnreadIndex =
           firstUnread = post
 
     hr = UnreadIndex.hr[thread.fullID]
-    if firstUnread and (repliesRead or lastReadPost is thread.OP.ID)
+    if firstUnread and (repliesRead or (lastReadPost is thread.OP.ID and (!$(Site.selectors.summary, thread.nodes.root) or thread.ID of ExpandThread.statuses)))
       if !hr
         hr = UnreadIndex.hr[thread.fullID] = $.el 'hr',
           className: 'unread-line'
