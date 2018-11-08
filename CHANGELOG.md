@@ -4,6 +4,14 @@
 
 ### v1.14.4
 
+**v1.14.4.3** *(2018-11-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.3/builds/4chan-X-noupdate.crx)]
+- Add extra collapse link at bottom of expanded threads.
+- Add option `Expand thread only` in `Image Expansion` menu; makes expanding all images when in index only operate within current thread.
+- Keep threads from moving off screen when contracted via keybind.
+- Make `Mark Read` button extend across whole document.
+- Add keybind to mark thread read from index (if `Unread Line in Index` enabled). Default is `Ctrl+0`.
+- Make `Scroll to Last Read Post` operate in index if `Unread Line in Index` enabled.
+
 **v1.14.4.2** *(2018-10-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.2/builds/4chan-X-noupdate.crx)]
 - Fix unread line becoming invisible on Halloween theme.
 
