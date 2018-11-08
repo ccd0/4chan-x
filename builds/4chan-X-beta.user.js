@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.4.2
+// @version      1.14.4.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -175,7 +175,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.4.2',
+  VERSION:   '1.14.4.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -369,6 +369,7 @@ Config = (function() {
       'Expand spoilers': [true, 'Expand all images along with spoilers.'],
       'Expand videos': [true, 'Expand all images also expands videos.'],
       'Expand from here': [false, 'Expand all images only from current position to thread end.'],
+      'Expand thread only': [false, 'In index, expand all images only within the current thread.'],
       'Advance on contract': [false, 'Advance to next post when contracting an expanded image.']
     },
     gallery: {
@@ -472,6 +473,7 @@ Config = (function() {
       'Update': ['r', 'Update the thread / refresh the index.'],
       'Update thread watcher': ['Shift+r', 'Manually refresh thread watcher.'],
       'Toggle thread watcher': ['t', 'Toggle visibility of thread watcher.'],
+      'Mark thread read': ['Ctrl+0', 'Mark thread read from index (requires "Unread Line in Index").'],
       'Expand image': ['Shift+e', 'Expand selected image.'],
       'Expand images': ['e', 'Expand all images.'],
       'Open Gallery': ['g', 'Opens the gallery.'],
@@ -2291,14 +2293,11 @@ span.hide-announcement {\n\
 .unread-mark-read {\n\
   float: right;\n\
   clear: both;\n\
-  height: 0;\n\
   width: 100%;\n\
-  position: relative;\n\
-  top: -1em;\n\
   text-align: right;\n\
 }\n\
 :not(.unread-thread) > .unread-mark-read {\n\
-  visibility: hidden;\n\
+  display: none;\n\
 }\n\
 /* Thread Updater */\n\
 #updater {\n\
@@ -3659,6 +3658,10 @@ a:only-of-type > .remove {\n\
 :root.yotsuba .focused.entry {\n\
   background: rgba(255, 255, 255, .33);\n\
 }\n\
+/* Unread */\n\
+:root.yotsuba .unread-mark-read {\n\
+  background-color: rgba(240,224,214,0.5);\n\
+}\n\
 /* Thread Watcher */\n\
 :root.yotsuba .replies-quoting-you > a, :root.yotsuba #watcher-link.replies-quoting-you {\n\
   color: #F00;\n\
@@ -3743,6 +3746,10 @@ a:only-of-type > .remove {\n\
 }\n\
 :root.yotsuba-b .focused.entry {\n\
   background: rgba(255, 255, 255, .33);\n\
+}\n\
+/* Unread */\n\
+:root.yotsuba-b .unread-mark-read {\n\
+  background-color: rgba(214,218,240,0.5);\n\
 }\n\
 /* Thread Watcher */\n\
 :root.yotsuba-b .replies-quoting-you > a, :root.yotsuba-b #watcher-link.replies-quoting-you {\n\
@@ -3833,6 +3840,10 @@ a:only-of-type > .remove {\n\
 :root.futaba .focused.entry {\n\
   background: rgba(255, 255, 255, .33);\n\
 }\n\
+/* Unread */\n\
+:root.futaba .unread-mark-read {\n\
+  background-color: rgba(240,224,214,0.5);\n\
+}\n\
 /* Thread Watcher */\n\
 :root.futaba .replies-quoting-you > a, :root.futaba #watcher-link.replies-quoting-you {\n\
   color: #F00;\n\
@@ -3921,6 +3932,10 @@ a:only-of-type > .remove {\n\
 }\n\
 :root.burichan .focused.entry {\n\
   background: rgba(255, 255, 255, .33);\n\
+}\n\
+/* Unread */\n\
+:root.burichan .unread-mark-read {\n\
+  background-color: rgba(214,218,240,0.5);\n\
 }\n\
 /* Thread Watcher */\n\
 :root.burichan .replies-quoting-you > a, :root.burichan #watcher-link.replies-quoting-you {\n\
@@ -4080,6 +4095,9 @@ a:only-of-type > .remove {\n\
 :root.tomorrow .unread-line {\n\
   border-color: rgb(197, 200, 198);\n\
 }\n\
+:root.tomorrow .unread-mark-read {\n\
+  background-color: rgba(40,42,46,0.5);\n\
+}\n\
 /* Thread Watcher */\n\
 :root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.replies-quoting-you {\n\
   color: #F00 !important;\n\
@@ -4167,6 +4185,10 @@ a:only-of-type > .remove {\n\
 }\n\
 :root.photon .focused.entry {\n\
   background: rgba(255, 255, 255, .33);\n\
+}\n\
+/* Unread */\n\
+:root.photon .unread-mark-read {\n\
+  background-color: rgba(221,221,221,0.5);\n\
 }\n\
 /* Thread Watcher */\n\
 :root.photon .replies-quoting-you > a, :root.photon #watcher-link.replies-quoting-you {\n\
@@ -4319,6 +4341,9 @@ a:only-of-type > .remove {\n\
   border-color: rgb(197, 200, 198);\n\
   visibility: visible;\n\
   opacity: 1;\n\
+}\n\
+:root.spooky .unread-mark-read {\n\
+  background-color: rgba(23,21,38,0.5);\n\
 }\n\
 /* Thread Watcher */\n\
 :root.spooky .replies-quoting-you > a, :root.spooky #watcher-link.replies-quoting-you {\n\
@@ -7231,6 +7256,7 @@ SW = {};
       board: 'form[name="postcontrols"]',
       thread: 'div[id^="thread_"]',
       threadDivider: 'div[id^="thread_"] > hr:last-of-type',
+      summary: '.omitted',
       postContainer: '.reply',
       infoRoot: '.intro',
       info: {
@@ -7338,6 +7364,7 @@ SW = {};
       board: '.board',
       thread: '.thread',
       threadDivider: '.board > hr',
+      summary: '.summary',
       postContainer: '.postContainer',
       sideArrows: '.sideArrows',
       post: '.post',
@@ -13794,15 +13821,16 @@ ImageExpand = (function() {
         }
       },
       toggleAll: function() {
-        var func, toggle;
+        var func, threadRoot, toggle;
         $.event('CloseMenu');
+        threadRoot = Nav.getThread();
         toggle = function(post) {
           var file;
           file = post.file;
           if (!(file && (file.isImage || file.isVideo) && doc.contains(post.nodes.root))) {
             return;
           }
-          if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || !Conf['Expand videos'] && file.isVideo || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0)) {
+          if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || !Conf['Expand videos'] && file.isVideo || Conf['Expand from here'] && Header.getTopOf(file.thumb) < 0 || Conf['Expand thread only'] && g.VIEW === 'index' && !(threadRoot != null ? threadRoot.contains(file.thumb) : void 0))) {
             return;
           }
           return $.queueTask(func, post);
@@ -16884,6 +16912,18 @@ ExpandThread = (function() {
       e.preventDefault();
       return ExpandThread.toggle(Get.threadFromNode(this));
     },
+    cbToggleBottom: function(e) {
+      var bottom, thread;
+      if ($.modifiedClick(e)) {
+        return;
+      }
+      e.preventDefault();
+      thread = Get.threadFromNode(this);
+      $.rm(this);
+      bottom = thread.nodes.root.getBoundingClientRect().bottom;
+      ExpandThread.toggle(thread);
+      return window.scrollBy(0, thread.nodes.root.getBoundingClientRect().bottom - bottom);
+    },
     toggle: function(thread) {
       var a;
       if (!(thread.nodes.root && (a = $('.summary', thread.nodes.root)))) {
@@ -16953,10 +16993,11 @@ ExpandThread = (function() {
         }
         $.rm(reply);
       }
-      return a.textContent = Build.summaryText('+', postsCount, filesCount);
+      a.textContent = Build.summaryText('+', postsCount, filesCount);
+      return $.rm($('.summary-bottom', threadRoot));
     },
     parse: function(req, thread, a) {
-      var filesCount, i, len, post, postData, posts, postsCount, postsRoot, ref, ref1, root;
+      var a2, filesCount, i, len, post, postData, posts, postsCount, postsRoot, ref, ref1, root;
       if ((ref = req.status) !== 200 && ref !== 304) {
         a.textContent = "Error " + req.statusText + " (" + req.status + ")";
         return;
@@ -16975,7 +17016,8 @@ ExpandThread = (function() {
           if ('file' in post) {
             filesCount++;
           }
-          postsRoot.push(post.nodes.root);
+          root = post.nodes.root;
+          postsRoot.push(root);
           continue;
         }
         root = Build.postFromObject(postData, thread.board.ID);
@@ -16990,7 +17032,13 @@ ExpandThread = (function() {
       $.after(a, postsRoot);
       $.event('PostsInserted', null, a.parentNode);
       postsCount = postsRoot.length;
-      return a.textContent = Build.summaryText('-', postsCount, filesCount);
+      a.textContent = Build.summaryText('-', postsCount, filesCount);
+      if (root) {
+        a2 = a.cloneNode(true);
+        a2.classList.add('summary-bottom');
+        $.on(a2, 'click', ExpandThread.cbToggleBottom);
+        return $.after(root, a2);
+      }
     }
   };
 
@@ -17632,6 +17680,12 @@ Keybinds = (function() {
           }
           ThreadWatcher.toggleWatcher();
           break;
+        case Conf['Mark thread read']:
+          if (!(g.VIEW === 'index' && thread && UnreadIndex.enabled)) {
+            return;
+          }
+          UnreadIndex.markRead.call(threadRoot);
+          break;
         case Conf['Expand image']:
           if (!(ImageExpand.enabled && threadRoot)) {
             return;
@@ -17757,6 +17811,7 @@ Keybinds = (function() {
             return;
           }
           ExpandThread.toggle(thread);
+          Header.scrollTo(threadRoot);
           break;
         case Conf['Open thread']:
           if (!(g.VIEW === 'index' && threadRoot)) {
@@ -20701,6 +20756,7 @@ UnreadIndex = (function() {
       if (!(g.VIEW === 'index' && Conf['Remember Last Read Post'] && Conf['Unread Line in Index'])) {
         return;
       }
+      this.enabled = true;
       this.db = new DataBoard('lastReadPosts', this.sync);
       Callbacks.Thread.push({
         name: 'Unread Line in Index',
@@ -20733,7 +20789,7 @@ UnreadIndex = (function() {
       return results;
     },
     onPostsInserted: function(e) {
-      var thread;
+      var ref, ref1, thread, wasVisible;
       if (e.target === Index.root) {
         return;
       }
@@ -20741,7 +20797,11 @@ UnreadIndex = (function() {
       if (!thread || thread.nodes.root !== e.target) {
         return;
       }
-      return UnreadIndex.update(thread);
+      wasVisible = !!((ref = UnreadIndex.hr[thread.fullID]) != null ? ref.parentNode : void 0);
+      UnreadIndex.update(thread);
+      if (Conf['Scroll to Last Read Post'] && !wasVisible && !!((ref1 = UnreadIndex.hr[thread.fullID]) != null ? ref1.parentNode : void 0)) {
+        return Header.scrollToIfNeeded(UnreadIndex.hr[thread.fullID], true);
+      }
     },
     sync: function() {
       return g.threads.forEach(function(thread) {
@@ -20775,7 +20835,7 @@ UnreadIndex = (function() {
         }
       });
       hr = UnreadIndex.hr[thread.fullID];
-      if (firstUnread && (repliesRead || lastReadPost === thread.OP.ID)) {
+      if (firstUnread && (repliesRead || (lastReadPost === thread.OP.ID && (!$(Site.selectors.summary, thread.nodes.root) || thread.ID in ExpandThread.statuses)))) {
         if (!hr) {
           hr = UnreadIndex.hr[thread.fullID] = $.el('hr', {
             className: 'unread-line'
@@ -20822,7 +20882,7 @@ UnreadIndex = (function() {
         val: lastPost
       });
       $.rm(UnreadIndex.hr[thread.fullID]);
-      $.rm(UnreadIndex.markReadLink[thread.fullID]);
+      thread.nodes.root.classList.remove('unread-thread');
       return ThreadWatcher.update(thread.board.ID, thread.ID, {
         unread: 0,
         quotingYou: false
@@ -25075,7 +25135,7 @@ Main = (function() {
       mainStyleSheet = $('link[title=switch]', d.head);
       styleSheets = $$('link[rel="alternate stylesheet"]', d.head);
       setStyle = function() {
-        var bgColor, div, j, len, s, styleSheet;
+        var bgColor, div, j, len, rgb, s, styleSheet;
         $.rmClass(doc, style);
         style = null;
         for (j = 0, len = styleSheets.length; j < len; j++) {
@@ -25100,12 +25160,14 @@ Main = (function() {
           div.style.visibility = 'hidden';
           $.add(d.body, div);
           bgColor = window.getComputedStyle(div).backgroundColor;
+          c.log(bgColor);
           $.rm(div);
+          rgb = bgColor.match(/[\d.]+/g);
           if (!/^rgb\(/.test(bgColor)) {
             s = window.getComputedStyle(d.body);
             bgColor = s.backgroundColor + " " + s.backgroundImage + " " + s.backgroundRepeat + " " + s.backgroundPosition;
           }
-          Main.bgColorStyle.textContent = ".dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post {\n  background: " + bgColor + ";\n}";
+          Main.bgColorStyle.textContent = ".dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post {\n  background: " + bgColor + ";\n}\n.unread-mark-read {\n  background-color: rgba(" + (rgb.slice(0, 3).join(', ')) + ", " + (0.5 * (rgb[3] || 1)) + ");\n}";
           return $.after($.id('fourchanx-css'), Main.bgColorStyle);
         }
       };
