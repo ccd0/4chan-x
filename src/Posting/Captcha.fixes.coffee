@@ -73,8 +73,15 @@ Captcha.fixes =
 
   initNoscript: ->
     @noscript = true
-    data = if (token = $('.fbc-verification-token > textarea')?.value) then {token} else {working: true}
-    new Connection(window.parent, '*').send data
+    form = $ '.fbc-imageselect-challenge > form'
+    data =
+      if (token = $('.fbc-verification-token > textarea')?.value)
+        {token}
+      else if $('.fbc-imageselect-challenge > form')
+        {working: true}
+      else
+        null
+    new Connection(window.parent, '*').send data if data
     d.body.classList.toggle 'focus', d.hasFocus()
     $.on window, 'focus blur', -> d.body.classList.toggle 'focus', d.hasFocus()
 
@@ -85,7 +92,7 @@ Captcha.fixes =
     $.addStyle @cssNoscript
     @addLabels()
     $.on d, 'keydown', @keybinds.bind(@)
-    $.on $('.fbc-imageselect-challenge > form'), 'submit', @checkForm.bind(@)
+    $.on form, 'submit', @checkForm.bind(@)
 
   fixImages: ->
     @images = $$ '.rc-image-tile-target'
