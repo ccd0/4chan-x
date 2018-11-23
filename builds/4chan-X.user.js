@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.4.3
+// @version      1.14.4.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -12,12 +12,22 @@
 // @include      https://sys.4chan.org/*
 // @include      http://www.4chan.org/*
 // @include      https://www.4chan.org/*
+// @include      http://boards.4channel.org/*
+// @include      https://boards.4channel.org/*
+// @include      http://sys.4channel.org/*
+// @include      https://sys.4channel.org/*
+// @include      http://www.4channel.org/*
+// @include      https://www.4channel.org/*
 // @include      http://i.4cdn.org/*
 // @include      https://i.4cdn.org/*
 // @include      http://is.4chan.org/*
 // @include      https://is.4chan.org/*
 // @include      http://is2.4chan.org/*
 // @include      https://is2.4chan.org/*
+// @include      http://is.4channel.org/*
+// @include      https://is.4channel.org/*
+// @include      http://is2.4channel.org/*
+// @include      https://is2.4channel.org/*
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=887877714&*
@@ -36,7 +46,20 @@
 // @exclude      https://www.4chan.org/donate
 // @exclude      http://www.4chan.org/donate?*
 // @exclude      https://www.4chan.org/donate?*
+// @exclude      http://www.4channel.org/pass
+// @exclude      https://www.4channel.org/pass
+// @exclude      http://www.4channel.org/pass?*
+// @exclude      https://www.4channel.org/pass?*
+// @exclude      http://www.4channel.org/advertise
+// @exclude      https://www.4channel.org/advertise
+// @exclude      http://www.4channel.org/advertise?*
+// @exclude      https://www.4channel.org/advertise?*
+// @exclude      http://www.4channel.org/donate
+// @exclude      https://www.4channel.org/donate
+// @exclude      http://www.4channel.org/donate?*
+// @exclude      https://www.4channel.org/donate?*
 // @connect      4chan.org
+// @connect      4channel.org
 // @connect      4cdn.org
 // @connect      mayhemydg.github.io
 // @connect      archive.4plebs.org
@@ -175,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.4.3',
+  VERSION:   '1.14.4.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -531,7 +554,7 @@ Config = (function() {
       'thread-watcher.position': 'top: 50px; left: 0px;',
       'qr.position': 'top: 50px; right: 0px;'
     },
-    siteSoftware: "4chan.org yotsuba\n4cdn.org yotsuba"
+    siteSoftware: "4chan.org yotsuba\n4channel.org yotsuba\n4cdn.org yotsuba"
   };
 
   return Config;
@@ -7404,7 +7427,7 @@ SW = {};
       postContainer: 'div[contains(@class,"postContainer")]'
     },
     regexp: {
-      quotelink: /^https?:\/\/boards\.4chan\.org\/+([^\/]+)\/+thread\/+(\d+)(?:[\/?][^#]*)?(?:#p(\d+))?$/
+      quotelink: /^https?:\/\/boards\.4chan(?:nel)?\.org\/+([^\/]+)\/+thread\/+(\d+)(?:[\/?][^#]*)?(?:#p(\d+))?$/
     },
     bgColoredEl: function() {
       return $.el('div', {
@@ -7412,8 +7435,8 @@ SW = {};
       });
     },
     isThisPageLegit: function() {
-      var ref;
-      return location.hostname === 'boards.4chan.org' && d.doctype && !$('link[href*="favicon-status.ico"]', d.head) && ((ref = d.title) !== '4chan - Temporarily Offline' && ref !== '4chan - Error' && ref !== '504 Gateway Time-out' && ref !== 'MathJax Equation Source');
+      var ref, ref1;
+      return ((ref = location.hostname) === 'boards.4chan.org' || ref === 'boards.4channel.org') && d.doctype && !$('link[href*="favicon-status.ico"]', d.head) && ((ref1 = d.title) !== '4chan - Temporarily Offline' && ref1 !== '4chan - Error' && ref1 !== '504 Gateway Time-out' && ref1 !== 'MathJax Equation Source');
     },
     is404: function() {
       var ref;
@@ -7424,7 +7447,8 @@ SW = {};
       return ((ref = g.VIEW) === 'index' || ref === 'thread') && !$('.board + *');
     },
     isAuxiliaryPage: function() {
-      return location.hostname !== 'boards.4chan.org';
+      var ref;
+      return (ref = location.hostname) !== 'boards.4chan.org' && ref !== 'boards.4channel.org';
     },
     scriptData: function() {
       var j, len, ref, script;
@@ -8986,6 +9010,13 @@ BoardConfig = (function() {
       }
       return results;
     },
+    isSFW: function(board) {
+      var ref;
+      return !!((ref = (this.boards || Conf['boardConfig'].boards)[board]) != null ? ref.ws_board : void 0);
+    },
+    domain: function(board) {
+      return "boards." + (BoardConfig.isSFW(board) ? '4channel' : '4chan') + ".org";
+    },
     noAudio: function(boardID) {
       var boards;
       if (Site.software !== 'yotsuba') {
@@ -9650,7 +9681,7 @@ Header = (function() {
       return CatalogLinks.setLinks(list);
     },
     mapCustomNavigation: function(t) {
-      var a, boardID, href, indexOptions, m, text, url;
+      var a, boardID, href, indexOptions, m, ref, ref1, text, url;
       if (/^[^\w@]/.test(t)) {
         return $.tn(t);
       }
@@ -9685,7 +9716,7 @@ Header = (function() {
       }
       boardID = t.split('-')[0];
       if (boardID === 'current') {
-        if (location.hostname === 'boards.4chan.org') {
+        if ((ref = location.hostname) === 'boards.4chan.org' || ref === 'boards.4channel.org') {
           boardID = g.BOARD.ID;
         } else {
           a = $.el('a', {
@@ -9700,7 +9731,7 @@ Header = (function() {
         }
       }
       a = (function() {
-        var ref;
+        var ref1;
         if (boardID === '@') {
           return $.el('a', {
             href: 'https://twitter.com/4chan',
@@ -9709,11 +9740,11 @@ Header = (function() {
           });
         }
         a = $.el('a', {
-          href: "//boards.4chan.org/" + boardID + "/",
+          href: "//" + (BoardConfig.domain(boardID)) + "/" + boardID + "/",
           textContent: boardID,
           title: BoardConfig.title(boardID)
         });
-        if ((ref = g.VIEW) === 'catalog' || ref === 'archive') {
+        if ((ref1 = g.VIEW) === 'catalog' || ref1 === 'archive') {
           a.href += g.VIEW;
         }
         if (a.hostname === location.hostname && boardID === g.BOARD.ID) {
@@ -9735,7 +9766,7 @@ Header = (function() {
       }
       if (Conf['JSON Index'] && indexOptions) {
         a.dataset.indexOptions = indexOptions;
-        if (a.hostname === 'boards.4chan.org' && a.pathname.split('/')[2] === '') {
+        if (((ref1 = a.hostname) === 'boards.4chan.org' || ref1 === 'boards.4channel.org') && a.pathname.split('/')[2] === '') {
           a.href += (a.hash ? '/' : '#') + indexOptions;
         }
       }
@@ -9750,7 +9781,7 @@ Header = (function() {
       }
       if (/-expired/.test(t)) {
         if (boardID !== 'b' && boardID !== 'f' && boardID !== 'trash' && boardID !== 'bant') {
-          a.href = "//boards.4chan.org/" + boardID + "/archive";
+          a.href = "//" + (BoardConfig.domain(boardID)) + "/" + boardID + "/archive";
         } else {
           return a.firstChild;
         }
@@ -11578,7 +11609,7 @@ Settings = (function() {
         if ($.cantSync) {
           why = $.cantSet ? 'save your settings' : 'synchronize settings between tabs';
           return cb($.el('li', {
-            textContent: "4chan X needs local storage to " + why + ".\nEnable it on boards.4chan.org in your browser's privacy settings (may be listed as part of \"local data\" or \"cookies\")."
+            textContent: "4chan X needs local storage to " + why + ".\nEnable it on boards." + (location.hostname.split('.')[1]) + ".org in your browser's privacy settings (may be listed as part of \"local data\" or \"cookies\")."
           }));
         }
       },
@@ -12153,6 +12184,11 @@ Settings = (function() {
       if (compareString < '00001.00014.00003.00002') {
         if (data['sauces'] != null) {
           set('sauces', data['sauces'].replace(/^(#?\s*)https:\/\/whatanime\.ga\//mg, '$1https://trace.moe/'));
+        }
+      }
+      if (compareString < '00001.00014.00004.00004') {
+        if ((data['siteSoftware'] != null) && !/^4channel\.org yotsuba$/m.test(data['siteSoftware'])) {
+          set('siteSoftware', data['siteSoftware'] + '\n4channel.org yotsuba');
         }
       }
       return changes;
@@ -14185,7 +14221,7 @@ ImageHost = (function() {
     test: function(hostname) {
       return hostname === 'i.4cdn.org' || ImageHost.regex.test(hostname);
     },
-    regex: /^is\d*\.4chan\.org$/,
+    regex: /^is\d*\.4chan(?:nel)?\.org$/,
     node: function() {
       var host;
       if (this.isClone) {
@@ -16334,7 +16370,7 @@ ReportLink = (function() {
         el: a,
         order: 10,
         open: function(post) {
-          ReportLink.url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
+          ReportLink.url = "//sys." + (location.hostname.split('.')[1]) + ".org/" + post.board + "/imgboard.php?mode=report&no=" + post;
           if (d.cookie.indexOf('pass_enabled=1') >= 0) {
             ReportLink.dims = 'width=350,height=275';
           } else {
@@ -16642,8 +16678,8 @@ CatalogLinks = (function() {
       ref = $$('a', this.nodes.comment);
       for (i = 0, len = ref.length; i < len; i++) {
         a = ref[i];
-        if (m = a.href.match(/^https?:\/\/boards\.4chan\.org\/([^\/]+)\/catalog(#s=.*)?/)) {
-          a.href = "//boards.4chan.org/" + m[1] + "/" + (m[2] || '#catalog');
+        if (m = a.href.match(/^https?:\/\/boards\.4chan(?:nel)?\.org\/([^\/]+)\/catalog(#s=.*)?/)) {
+          a.href = "//boards.4chan(?:nel)?.org/" + m[1] + "/" + (m[2] || '#catalog');
         }
       }
     },
@@ -16660,50 +16696,52 @@ CatalogLinks = (function() {
       return $('input', CatalogLinks.el).checked = useCatalog;
     },
     setLinks: function(list) {
-      var a, board, i, len, ref, ref1, ref2;
+      var a, board, i, len, ref, ref1, ref2, ref3;
       if (!(((ref = CatalogLinks.enabled) != null ? ref : Conf['Catalog Links']) && list)) {
         return;
       }
       ref1 = $$('a:not([data-only])', list);
       for (i = 0, len = ref1.length; i < len; i++) {
         a = ref1[i];
-        if (((ref2 = a.hostname) !== 'boards.4chan.org' && ref2 !== 'catalog.neet.tv') || !(board = a.pathname.split('/')[1]) || (board === 'f' || board === 'status' || board === '4chan') || a.pathname.split('/')[2] === 'archive' || $.hasClass(a, 'external')) {
+        if (((ref2 = a.hostname) !== 'boards.4chan.org' && ref2 !== 'boards.4channel.org' && ref2 !== 'catalog.neet.tv') || !(board = a.pathname.split('/')[1]) || (board === 'f' || board === 'status' || board === '4chan') || a.pathname.split('/')[2] === 'archive' || $.hasClass(a, 'external')) {
           continue;
         }
-        a.href = Conf['Header catalog links'] ? CatalogLinks.catalog(board) : "//boards.4chan.org/" + board + "/";
-        if (a.dataset.indexOptions && a.hostname === 'boards.4chan.org' && a.pathname.split('/')[2] === '') {
+        a.href = Conf['Header catalog links'] ? CatalogLinks.catalog(board) : "//" + (BoardConfig.domain(board)) + "/" + board + "/";
+        if (a.dataset.indexOptions && ((ref3 = a.hostname) === 'boards.4chan.org' || ref3 === 'boards.4channel.org') && a.pathname.split('/')[2] === '') {
           a.href += (a.hash ? '/' : '#') + a.dataset.indexOptions;
         }
       }
     },
     catalog: function(board) {
+      var ref;
       if (board == null) {
         board = g.BOARD.ID;
       }
       if (Conf['External Catalog'] && (board === 'a' || board === 'c' || board === 'g' || board === 'biz' || board === 'k' || board === 'm' || board === 'o' || board === 'p' || board === 'v' || board === 'vg' || board === 'vr' || board === 'w' || board === 'wg' || board === 'cm' || board === '3' || board === 'adv' || board === 'an' || board === 'asp' || board === 'cgl' || board === 'ck' || board === 'co' || board === 'diy' || board === 'fa' || board === 'fit' || board === 'gd' || board === 'int' || board === 'jp' || board === 'lit' || board === 'mlp' || board === 'mu' || board === 'n' || board === 'out' || board === 'po' || board === 'sci' || board === 'sp' || board === 'tg' || board === 'toy' || board === 'trv' || board === 'tv' || board === 'vp' || board === 'wsg' || board === 'x' || board === 'f' || board === 'pol' || board === 's4s' || board === 'lgbt')) {
         return "//catalog.neet.tv/" + board + "/";
       } else if (Conf['JSON Index'] && Conf['Use 4chan X Catalog']) {
-        if (location.hostname === 'boards.4chan.org' && g.BOARD.ID === board && g.VIEW === 'index') {
+        if (((ref = location.hostname) === 'boards.4chan.org' || ref === 'boards.4channel.org') && g.BOARD.ID === board && g.VIEW === 'index') {
           return '#catalog';
         } else {
-          return "//boards.4chan.org/" + board + "/#catalog";
+          return "//" + (BoardConfig.domain(board)) + "/" + board + "/#catalog";
         }
       } else {
-        return "//boards.4chan.org/" + board + "/catalog";
+        return "//" + (BoardConfig.domain(board)) + "/" + board + "/catalog";
       }
     },
     index: function(board) {
+      var ref;
       if (board == null) {
         board = g.BOARD.ID;
       }
       if (Conf['JSON Index'] && board !== 'f') {
-        if (location.hostname === 'boards.4chan.org' && g.BOARD.ID === board && g.VIEW === 'index') {
+        if (((ref = location.hostname) === 'boards.4chan.org' || ref === 'boards.4channel.org') && g.BOARD.ID === board && g.VIEW === 'index') {
           return '#index';
         } else {
-          return "//boards.4chan.org/" + board + "/#index";
+          return "//" + (BoardConfig.domain(board)) + "/" + board + "/#index";
         }
       } else {
-        return "//boards.4chan.org/" + board + "/";
+        return "//" + (BoardConfig.domain(board)) + "/" + board + "/";
       }
     }
   };
@@ -21013,14 +21051,17 @@ Captcha = {};
       return $.on(d, 'keydown', this.keybinds.bind(this));
     },
     initNoscript: function() {
-      var data, ref, token;
+      var data, form, ref, token;
       this.noscript = true;
+      form = $('.fbc-imageselect-challenge > form');
       data = (token = (ref = $('.fbc-verification-token > textarea')) != null ? ref.value : void 0) ? {
         token: token
-      } : {
+      } : $('.fbc-imageselect-challenge > form') ? {
         working: true
-      };
-      new Connection(window.parent, '*').send(data);
+      } : null;
+      if (data) {
+        new Connection(window.parent, '*').send(data);
+      }
       d.body.classList.toggle('focus', d.hasFocus());
       $.on(window, 'focus blur', function() {
         return d.body.classList.toggle('focus', d.hasFocus());
@@ -21033,7 +21074,7 @@ Captcha = {};
       $.addStyle(this.cssNoscript);
       this.addLabels();
       $.on(d, 'keydown', this.keybinds.bind(this));
-      return $.on($('.fbc-imageselect-challenge > form'), 'submit', this.checkForm.bind(this));
+      return $.on(form, 'submit', this.checkForm.bind(this));
     },
     fixImages: function() {
       var img, j, len, ref;
@@ -21153,6 +21194,7 @@ Captcha = {};
 (function() {
   Captcha.replace = {
     init: function() {
+      var ref;
       if (!(d.cookie.indexOf('pass_enabled=1') < 0)) {
         return;
       }
@@ -21161,7 +21203,7 @@ Captcha = {};
         return;
       }
       if (Conf['captchaLanguage'].trim() || Conf['Captcha Fixes']) {
-        if (location.hostname === 'boards.4chan.org') {
+        if ((ref = location.hostname) === 'boards.4chan.org' || ref === 'boards.4channel.org') {
           return $.onExists(doc, '#captchaFormPart', function(node) {
             return $.onExists(node, 'iframe', Captcha.replace.iframe);
           });
@@ -21534,7 +21576,7 @@ PassLink = (function() {
         innerHTML: "<a href=\"javascript:;\">4chan Pass</a>"
       });
       $.on(passLink.firstElementChild, 'click', function() {
-        return window.open('//sys.4chan.org/auth', Date.now(), 'width=500,height=280,toolbar=0');
+        return window.open("//sys." + (location.hostname.split('.')[1]) + ".org/auth", Date.now(), 'width=500,height=280,toolbar=0');
       });
       return $.before(styleSelector.previousSibling, [passLink, $.tn('\u00A0\u00A0')]);
     }
@@ -24703,11 +24745,11 @@ Quotify = (function() {
       }
     },
     parseArchivelink: function(link) {
-      var boardID, m, postID, threadID;
+      var boardID, m, postID, ref, threadID;
       if (!(m = link.pathname.match(/^\/([^\/]+)\/thread\/S?(\d+)\/?$/))) {
         return;
       }
-      if (link.hostname === 'boards.4chan.org') {
+      if ((ref = link.hostname) === 'boards.4chan.org' || ref === 'boards.4channel.org') {
         return;
       }
       boardID = m[1];
@@ -24823,7 +24865,7 @@ Main = (function() {
 
   Main = {
     init: function() {
-      var db, flatten, i, items, j, k, key, len, ref, ref1, w;
+      var db, flatten, i, items, j, k, key, len, ref, ref1, ref2, w;
       if (d.body && !$('title', d.head)) {
         return;
       }
@@ -24884,7 +24926,7 @@ Main = (function() {
           Conf[parent] = obj;
         }
       };
-      if (location.hostname === 'boards.4chan.org') {
+      if ((ref1 = location.hostname) === 'boards.4chan.org' || ref1 === 'boards.4channel.org') {
         $.global(function() {
           var fromCharCode0;
           fromCharCode0 = String.fromCharCode;
@@ -24902,9 +24944,9 @@ Main = (function() {
         });
       }
       flatten(null, Config);
-      ref1 = DataBoard.keys;
-      for (j = 0, len = ref1.length; j < len; j++) {
-        db = ref1[j];
+      ref2 = DataBoard.keys;
+      for (j = 0, len = ref2.length; j < len; j++) {
+        db = ref2[j];
         Conf[db] = {};
       }
       Conf['boardConfig'] = {
@@ -24924,7 +24966,7 @@ Main = (function() {
       Conf['QR Shortcut'] = true;
       Conf['Bottom QR Link'] = true;
       Conf['Toggleable Thread Watcher'] = true;
-      if (/\.4chan\.org$/.test(location.hostname) && !$$('script:not([src])', d).filter(function(s) {
+      if (/\.4chan(?:nel)?\.org$/.test(location.hostname) && !$$('script:not([src])', d).filter(function(s) {
         return /this\[/.test(s.textContent);
       }).length) {
         ($.getSync || $.get)({
@@ -24941,13 +24983,13 @@ Main = (function() {
       }
       items['previousversion'] = void 0;
       return ($.getSync || $.get)(items, function(items) {
-        var ref2;
-        if (!$.perProtocolSettings && /\.4chan\.org$/.test(location.hostname) && ((ref2 = items['Redirect to HTTPS']) != null ? ref2 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
+        var ref3;
+        if (!$.perProtocolSettings && /\.4chan(?:nel)?\.org$/.test(location.hostname) && ((ref3 = items['Redirect to HTTPS']) != null ? ref3 : Conf['Redirect to HTTPS']) && location.protocol !== 'https:') {
           location.replace('https://' + location.host + location.pathname + location.search + location.hash);
           return;
         }
         return $.asap(docSet, function() {
-          var ref3, val;
+          var ref4, val;
           if ($.cantSet) {
 
           } else if (items.previousversion == null) {
@@ -24960,7 +25002,7 @@ Main = (function() {
           }
           for (key in Conf) {
             val = Conf[key];
-            Conf[key] = (ref3 = items[key]) != null ? ref3 : val;
+            Conf[key] = (ref4 = items[key]) != null ? ref4 : val;
           }
           return Site.init(Main.initFeatures);
         });
@@ -24985,7 +25027,7 @@ Main = (function() {
       var err, feature, hostname, j, len, match, name, pathname, ref, ref1, ref2, search;
       hostname = location.hostname, search = location.search;
       pathname = location.pathname.split(/\/+/);
-      if (hostname !== 'www.4chan.org') {
+      if (hostname !== 'www.4chan.org' && hostname !== 'www.4channel.org') {
         g.BOARD = new Board(pathname[1]);
       }
       $.global(function() {
@@ -24995,12 +25037,14 @@ Main = (function() {
       Main.jsEnabled = $.hasClass(doc, 'js-enabled');
       switch (hostname) {
         case 'www.4chan.org':
+        case 'www.4channel.org':
           $.onExists(doc, 'body', function() {
             return $.addStyle(CSS.www);
           });
           Captcha.replace.init();
           return;
         case 'sys.4chan.org':
+        case 'sys.4channel.org':
           if (pathname[2] === 'imgboard.php') {
             if (/\bmode=report\b/.test(search)) {
               Report.init();

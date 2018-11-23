@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.4.3
+// @version      1.14.4.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -12,12 +12,22 @@
 // @include      https://sys.4chan.org/*
 // @include      http://www.4chan.org/*
 // @include      https://www.4chan.org/*
+// @include      http://boards.4channel.org/*
+// @include      https://boards.4channel.org/*
+// @include      http://sys.4channel.org/*
+// @include      https://sys.4channel.org/*
+// @include      http://www.4channel.org/*
+// @include      https://www.4channel.org/*
 // @include      http://i.4cdn.org/*
 // @include      https://i.4cdn.org/*
 // @include      http://is.4chan.org/*
 // @include      https://is.4chan.org/*
 // @include      http://is2.4chan.org/*
 // @include      https://is2.4chan.org/*
+// @include      http://is.4channel.org/*
+// @include      https://is.4channel.org/*
+// @include      http://is2.4channel.org/*
+// @include      https://is2.4channel.org/*
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=887877714&*
@@ -36,7 +46,20 @@
 // @exclude      https://www.4chan.org/donate
 // @exclude      http://www.4chan.org/donate?*
 // @exclude      https://www.4chan.org/donate?*
+// @exclude      http://www.4channel.org/pass
+// @exclude      https://www.4channel.org/pass
+// @exclude      http://www.4channel.org/pass?*
+// @exclude      https://www.4channel.org/pass?*
+// @exclude      http://www.4channel.org/advertise
+// @exclude      https://www.4channel.org/advertise
+// @exclude      http://www.4channel.org/advertise?*
+// @exclude      https://www.4channel.org/advertise?*
+// @exclude      http://www.4channel.org/donate
+// @exclude      https://www.4channel.org/donate
+// @exclude      http://www.4channel.org/donate?*
+// @exclude      https://www.4channel.org/donate?*
 // @connect      4chan.org
+// @connect      4channel.org
 // @connect      4cdn.org
 // @connect      mayhemydg.github.io
 // @connect      archive.4plebs.org

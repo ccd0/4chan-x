@@ -4,6 +4,10 @@
 
 ### v1.14.4
 
+**v1.14.4.4** *(2018-11-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.4/builds/4chan-X-noupdate.crx)]
+- Update for 4channel.org
+- Don't remove code paste field if the captcha is refusing to serve a challenge.
+
 **v1.14.4.3** *(2018-11-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.3/builds/4chan-X-noupdate.crx)]
 - Add extra collapse link at bottom of expanded threads.
 - Add option `Expand thread only` in `Image Expansion` menu; makes expanding all images when in index only operate within current thread.
