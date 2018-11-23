@@ -227,7 +227,7 @@ Header =
 
     boardID = t.split('-')[0]
     if boardID is 'current'
-      if location.hostname is 'boards.4chan.org'
+      if location.hostname in ['boards.4chan.org', 'boards.4channel.org']
         boardID = g.BOARD.ID
       else
         a = $.el 'a',
@@ -246,7 +246,7 @@ Header =
           textContent: '@'
 
       a = $.el 'a',
-        href: "//boards.4chan.org/#{boardID}/"
+        href: "//#{BoardConfig.domain(boardID)}/#{boardID}/"
         textContent: boardID
         title: BoardConfig.title(boardID)
       a.href += g.VIEW if g.VIEW in ['catalog', 'archive']
@@ -270,7 +270,7 @@ Header =
 
     if Conf['JSON Index'] and indexOptions
       a.dataset.indexOptions = indexOptions
-      if a.hostname is 'boards.4chan.org' and a.pathname.split('/')[2] is ''
+      if a.hostname in ['boards.4chan.org', 'boards.4channel.org'] and a.pathname.split('/')[2] is ''
         a.href += (if a.hash then '/' else '#') + indexOptions
 
     if /-archive/.test t
@@ -281,7 +281,7 @@ Header =
 
     if /-expired/.test t
       if boardID not in ['b', 'f', 'trash', 'bant']
-        a.href = "//boards.4chan.org/#{boardID}/archive"
+        a.href = "//#{BoardConfig.domain(boardID)}/#{boardID}/archive"
       else
         return a.firstChild # Its text node.
 

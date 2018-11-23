@@ -110,7 +110,7 @@ Settings =
         cb $.el 'li',
           textContent: """
             <%= meta.name %> needs local storage to #{why}.
-            Enable it on boards.4chan.org in your browser's privacy settings (may be listed as part of "local data" or "cookies").
+            Enable it on boards.#{location.hostname.split('.')[1]}.org in your browser's privacy settings (may be listed as part of "local data" or "cookies").
           """
     ads: (cb) ->
       $.onExists doc, '.adg-rects > .desktop', (ad) -> $.onExists ad, 'iframe', ->
@@ -456,6 +456,9 @@ Settings =
     if compareString < '00001.00014.00003.00002'
       if data['sauces']?
         set 'sauces', data['sauces'].replace(/^(#?\s*)https:\/\/whatanime\.ga\//mg, '$1https://trace.moe/')
+    if compareString < '00001.00014.00004.00004'
+      if data['siteSoftware']? and !/^4channel\.org yotsuba$/m.test(data['siteSoftware'])
+        set 'siteSoftware', data['siteSoftware'] + '\n4channel.org yotsuba'
     changes
 
   loadSettings: (data, cb) ->

@@ -45,7 +45,7 @@ Main =
       return
 
     # XXX Remove document-breaking ad
-    if location.hostname is 'boards.4chan.org'
+    if location.hostname in ['boards.4chan.org', 'boards.4channel.org']
       $.global ->
         fromCharCode0 = String.fromCharCode
         String.fromCharCode = ->
@@ -78,7 +78,7 @@ Main =
     Conf['Toggleable Thread Watcher'] = true
 
     # Enforce JS whitelist
-    if /\.4chan\.org$/.test(location.hostname) and !$$('script:not([src])', d).filter((s) -> /this\[/.test(s.textContent)).length
+    if /\.4chan(?:nel)?\.org$/.test(location.hostname) and !$$('script:not([src])', d).filter((s) -> /this\[/.test(s.textContent)).length
       ($.getSync or $.get) {'jsWhitelist': Conf['jsWhitelist']}, ({jsWhitelist}) ->
         $.addCSP "script-src #{jsWhitelist.replace(/^#.*$/mg, '').replace(/[\s;]+/g, ' ').trim()}"
 
@@ -87,7 +87,7 @@ Main =
     items[key] = undefined for key of Conf
     items['previousversion'] = undefined
     ($.getSync or $.get) items, (items) ->
-      if !$.perProtocolSettings and /\.4chan\.org$/.test(location.hostname) and (items['Redirect to HTTPS'] ? Conf['Redirect to HTTPS']) and location.protocol isnt 'https:'
+      if !$.perProtocolSettings and /\.4chan(?:nel)?\.org$/.test(location.hostname) and (items['Redirect to HTTPS'] ? Conf['Redirect to HTTPS']) and location.protocol isnt 'https:'
         location.replace('https://' + location.host + location.pathname + location.search + location.hash)
         return
       $.asap docSet, ->
@@ -125,7 +125,7 @@ Main =
   initFeatures: ->
     {hostname, search} = location
     pathname = location.pathname.split /\/+/
-    g.BOARD = new Board pathname[1] unless hostname is 'www.4chan.org'
+    g.BOARD = new Board pathname[1] unless hostname in ['www.4chan.org', 'www.4channel.org']
 
     $.global ->
       document.documentElement.classList.add 'js-enabled'
@@ -133,11 +133,11 @@ Main =
     Main.jsEnabled = $.hasClass doc, 'js-enabled'
 
     switch hostname
-      when 'www.4chan.org'
+      when 'www.4chan.org', 'www.4channel.org'
         $.onExists doc, 'body', -> $.addStyle CSS.www
         Captcha.replace.init()
         return
-      when 'sys.4chan.org'
+      when 'sys.4chan.org', 'sys.4channel.org'
         if pathname[2] is 'imgboard.php'
           if /\bmode=report\b/.test search
             Report.init()

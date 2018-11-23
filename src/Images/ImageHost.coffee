@@ -14,7 +14,7 @@ ImageHost =
   test: (hostname) ->
     hostname is 'i.4cdn.org' or ImageHost.regex.test(hostname)
 
-  regex: /^is\d*\.4chan\.org$/
+  regex: /^is\d*\.4chan(?:nel)?\.org$/
 
   node: ->
     return if @isClone

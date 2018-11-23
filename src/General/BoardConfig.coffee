@@ -42,6 +42,12 @@ BoardConfig =
   sfwBoards: (sfw) ->
     board for board, data of (@boards or Conf['boardConfig'].boards) when !!data.ws_board is sfw
 
+  isSFW: (board) ->
+    !!(@boards or Conf['boardConfig'].boards)[board]?.ws_board
+
+  domain: (board) ->
+    "boards.#{if BoardConfig.isSFW(board) then '4channel' else '4chan'}.org"
+
   noAudio: (boardID) ->
     return false unless Site.software is 'yotsuba'
     boards = @boards or Conf['boardConfig'].boards

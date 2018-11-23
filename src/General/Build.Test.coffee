@@ -24,7 +24,7 @@ Build.Test =
       $.rm el
     for el in $$ 'a[href]', root2
       href = el.href
-      href = href.replace /(^\w+:\/\/boards.4chan.org\/[^\/]+\/thread\/\d+)\/.*/, '$1'
+      href = href.replace /(^\w+:\/\/boards\.4chan(?:nel)?\.org\/[^\/]+\/thread\/\d+)\/.*/, '$1'
       el.setAttribute 'href', href
     ImageHost.fixLinks $$('.fileText > a, a.fileThumb', root2)
     for el in $$ 'img[src]', root2

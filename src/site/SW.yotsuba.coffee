@@ -47,7 +47,7 @@ SW.yotsuba =
   regexp:
     quotelink:
       ///
-        ^https?://boards\.4chan\.org/+
+        ^https?://boards\.4chan(?:nel)?\.org/+
         ([^/]+) # boardID
         /+thread/+
         (\d+)   # threadID
@@ -63,7 +63,7 @@ SW.yotsuba =
 
   isThisPageLegit: ->
     # not 404 error page or similar.
-    location.hostname is 'boards.4chan.org' and
+    location.hostname in ['boards.4chan.org', 'boards.4channel.org'] and
     d.doctype and
     !$('link[href*="favicon-status.ico"]', d.head) and
     d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out', 'MathJax Equation Source']
@@ -76,7 +76,7 @@ SW.yotsuba =
     return g.VIEW in ['index', 'thread'] and not $('.board + *')
 
   isAuxiliaryPage: ->
-    location.hostname isnt 'boards.4chan.org'
+    location.hostname not in ['boards.4chan.org', 'boards.4channel.org']
 
   scriptData: ->
     for script in $$ 'script:not([src])', d.head

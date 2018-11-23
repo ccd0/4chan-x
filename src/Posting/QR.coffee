@@ -740,7 +740,7 @@ QR =
           extra.form.append 'recaptcha_response_field', response.response
         else
           extra.form.append 'g-recaptcha-response', response.response
-      QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
+      QR.req = $.ajax "https://sys.#{location.hostname.split('.')[1]}.org/#{g.BOARD}/post", options, extra
       QR.req.progress = '...'
 
     if typeof captcha is 'function'

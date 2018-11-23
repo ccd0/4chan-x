@@ -35,6 +35,7 @@
   })()
 %>
 // @connect      4chan.org
+// @connect      4channel.org
 // @connect      4cdn.org
 // @connect      mayhemydg.github.io
 <%=
