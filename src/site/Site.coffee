@@ -7,6 +7,7 @@ Site =
     {hostname} = location
     while hostname and hostname not of swDict
       hostname = hostname.replace(/^[^.]*\.?/, '')
+    hostname = '4chan.org' if hostname is '4channel.org'
     if hostname
       @set hostname, swDict[hostname]
       cb()
