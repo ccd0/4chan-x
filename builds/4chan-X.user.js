@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.4.4
+// @version      1.14.4.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.4.4',
+  VERSION:   '1.14.4.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -7579,6 +7579,9 @@ Site = (function() {
       hostname = location.hostname;
       while (hostname && !(hostname in swDict)) {
         hostname = hostname.replace(/^[^.]*\.?/, '');
+      }
+      if (hostname === '4channel.org') {
+        hostname = '4chan.org';
       }
       if (hostname) {
         this.set(hostname, swDict[hostname]);

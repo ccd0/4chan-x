@@ -4,6 +4,9 @@
 
 ### v1.14.4
 
+**v1.14.4.5** *(2018-11-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.5/builds/4chan-X-noupdate.crx)]
+- Fix bug in previous version causing 4channel.org to be seen as separate site in thread watcher etc.
+
 **v1.14.4.4** *(2018-11-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.4/builds/4chan-X-noupdate.crx)]
 - Update for 4channel.org
 - Don't remove code paste field if the captcha is refusing to serve a challenge.
