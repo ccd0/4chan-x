@@ -40,5 +40,3 @@ MarkNewIPs =
   markOld: (post) ->
     post.nodes.nameBlock.title = 'Not the first post from this IP.'
     $.addClass post.nodes.root, 'old-ip'
-
-return MarkNewIPs

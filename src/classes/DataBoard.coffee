@@ -2,7 +2,7 @@ class DataBoard
   @keys = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads', 'customTitles']
 
   constructor: (@key, sync, dontClean) ->
-    @data = Conf[@key]
+    @initData Conf[@key]
     $.sync @key, @onSync
     @clean() unless dontClean
     return unless sync
@@ -13,24 +13,51 @@ class DataBoard
       @sync = sync
     $.on d, '4chanXInitFinished', init
 
-  save: (cb) -> $.set @key, @data, cb
+  initData: (@allData) ->
+    if Site.hostname is '4chan.org' and @allData.boards
+      @data = @allData
+    else
+      @data = (@allData[Site.hostname] or= boards: {})
+
+  changes: []
+
+  save: (change, cb) ->
+    change()
+    @changes.push change
+    $.get @key, {boards: {}}, (items) =>
+      return unless @changes.length
+      needSync = ((items[@key].version or 0) > (@allData.version or 0))
+      if needSync
+        @initData items[@key]
+        change() for change in @changes
+      @changes = []
+      @allData.version = (@allData.version or 0) + 1
+      $.set @key, @allData, =>
+        @sync?() if needSync
+        cb?()
+
+  forceSync: (cb) ->
+    $.get @key, {boards: {}}, (items) =>
+      if (items[@key].version or 0) > (@allData.version or 0)
+        @initData items[@key]
+        change() for change in @changes
+        @sync?()
+      cb?()
 
   delete: ({boardID, threadID, postID}) ->
-    $.forceSync @key
-    if postID
-      return unless @data.boards[boardID]?[threadID]
-      delete @data.boards[boardID][threadID][postID]
-      @deleteIfEmpty {boardID, threadID}
-    else if threadID
-      return unless @data.boards[boardID]
-      delete @data.boards[boardID][threadID]
-      @deleteIfEmpty {boardID}
-    else
-      delete @data.boards[boardID]
-    @save()
+    @save =>
+      if postID
+        return unless @data.boards[boardID]?[threadID]
+        delete @data.boards[boardID][threadID][postID]
+        @deleteIfEmpty {boardID, threadID}
+      else if threadID
+        return unless @data.boards[boardID]
+        delete @data.boards[boardID][threadID]
+        @deleteIfEmpty {boardID}
+      else
+        delete @data.boards[boardID]
 
   deleteIfEmpty: ({boardID, threadID}) ->
-    $.forceSync @key
     if threadID
       unless Object.keys(@data.boards[boardID][threadID]).length
         delete @data.boards[boardID][threadID]
@@ -38,15 +65,30 @@ class DataBoard
     else unless Object.keys(@data.boards[boardID]).length
       delete @data.boards[boardID]
 
-  set: ({boardID, threadID, postID, val}, cb) ->
-    $.forceSync @key
+  set: (data, cb) ->
+    @save =>
+      @setUnsafe data
+    , cb
+
+  setUnsafe: ({boardID, threadID, postID, val}) ->
     if postID isnt undefined
       ((@data.boards[boardID] or= {})[threadID] or= {})[postID] = val
     else if threadID isnt undefined
       (@data.boards[boardID] or= {})[threadID] = val
     else
       @data.boards[boardID] = val
-    @save cb
+
+  extend: ({boardID, threadID, postID, val, rm}, cb) ->
+    @save =>
+      oldVal = @get {boardID, threadID, postID, val: {}}
+      delete oldVal[key] for key in rm or []
+      $.extend oldVal, val
+      @setUnsafe {boardID, threadID, postID, val: oldVal}
+    , cb
+
+  setLastChecked: ->
+    @save =>
+      @data.lastChecked = Date.now()
 
   get: ({boardID, threadID, postID, defaultValue}) ->
     if board = @data.boards[boardID]
@@ -65,30 +107,30 @@ class DataBoard
           thread
     val or defaultValue
 
-  forceSync: ->
-    $.forceSync @key
-
   clean: ->
-    $.forceSync @key
+    # XXX not yet multisite ready
+    return unless Site.software is 'yotsuba'
+
     for boardID, val of @data.boards
       @deleteIfEmpty {boardID}
 
     now = Date.now()
-    if (@data.lastChecked or 0) < now - 2 * $.HOUR
+    unless now - 2 * $.HOUR < (@data.lastChecked or 0) <= now
       @data.lastChecked = now
       for boardID of @data.boards
         @ajaxClean boardID
     return
 
   ajaxClean: (boardID) ->
-    $.cache "//a.4cdn.org/#{boardID}/threads.json", (e1) =>
-      return unless e1.target.status in [200, 404]
-      $.cache "//a.4cdn.org/#{boardID}/archive.json", (e2) =>
-        return unless e2.target.status in [200, 404]
-        @ajaxCleanParse boardID, e1.target.response, e2.target.response
+    $.cache "#{location.protocol}//a.4cdn.org/#{boardID}/threads.json", (e1) =>
+      return unless e1.target.status is 200
+      response1 = e1.target.response
+      $.cache "#{location.protocol}//a.4cdn.org/#{boardID}/archive.json", (e2) =>
+        return unless e2.target.status is 200 or boardID in ['b', 'f', 'trash', 'bant']
+        @ajaxCleanParse boardID, response1, e2.target.response
 
   ajaxCleanParse: (boardID, response1, response2) ->
-    return unless (board = @data.boards[boardID])
+    return if not (board = @data.boards[boardID])
     threads = {}
     if response1
       for page in response1
@@ -100,10 +142,9 @@ class DataBoard
         threads[ID] = board[ID] if ID of board
     @data.boards[boardID] = threads
     @deleteIfEmpty {boardID}
-    @save()
+    $.set @key, @allData
 
   onSync: (data) =>
-    @data = data or boards: {}
+    return unless (data.version or 0) > (@allData.version or 0)
+    @initData data
     @sync?()
-
-return DataBoard

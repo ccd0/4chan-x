@@ -4,9 +4,18 @@ class Fetcher
       @insert post
       return
 
+    # 4chan X catalog data
+    if (post = Index.replyData?["#{@boardID}.#{@postID}"]) and (thread = g.threads["#{@boardID}.#{@threadID}"])
+      board  = g.boards[@boardID]
+      post = new Post Build.postFromObject(post, @boardID), thread, board
+      post.isFetchedQuote = true
+      Main.callbackNodes 'Post', [post]
+      @insert post
+      return
+
     @root.textContent = "Loading post No.#{@postID}..."
     if @threadID
-      $.cache "//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json", (e, isCached) =>
+      $.cache "#{location.protocol}//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json", (e, isCached) =>
         @fetchedPost e.target, isCached
     else
       @archivedPost()
@@ -14,6 +23,7 @@ class Fetcher
   insert: (post) ->
     # Stop here if the container has been removed while loading.
     return unless @root.parentNode
+    @quoter or= post
     clone = post.addClone @quoter.context, ($.hasClass @root, 'dialog')
     Main.callbackNodes 'Post', [clone]
 
@@ -38,7 +48,7 @@ class Fetcher
 
     $.rmAll @root
     $.add @root, nodes.root
-    $.event 'PostsInserted'
+    $.event 'PostsInserted', null, @root
 
   fetchedPost: (req, isCached) ->
     # In case of multiple callbacks for the same request,
@@ -68,7 +78,7 @@ class Fetcher
     if post.no isnt @postID
       # Cached requests can be stale and must be rechecked.
       if isCached
-        api = "//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json"
+        api = "#{location.protocol}//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json"
         $.cleanCache (url) -> url is api
         $.cache api, (e) =>
           @fetchedPost e.target, false
@@ -92,23 +102,19 @@ class Fetcher
 
   archivedPost: ->
     return false unless Conf['Resurrect Quotes']
-    return false unless url = Redirect.to 'post', {@boardID, @postID}
+    return false if not (url = Redirect.to 'post', {@boardID, @postID})
     archive = Redirect.data.post[@boardID]
-    if /^https:\/\//.test(url) or location.protocol is 'http:'
-      $.cache url, (e) =>
-        @parseArchivedPost e.target.response, url, archive
-      ,
-        responseType: 'json'
-        withCredentials: archive.withCredentials
-      return true
-    else if Conf['Exempt Archives from Encryption']
-      CrossOrigin.json url, (response) =>
-        {media} = response
-        if media then for key of media when /_link$/.test key
-          # Image/thumbnail URLs loaded over HTTP can be modified in transit.
-          # Require them to be from an HTTP host so that no referrer is sent to them from an HTTPS page.
-          delete media[key] unless media[key]?.match /^http:\/\//
-        @parseArchivedPost response, url, archive
+    encryptionOK = /^https:\/\//.test(url) or location.protocol is 'http:'
+    if encryptionOK or Conf['Exempt Archives from Encryption']
+      that = @
+      CrossOrigin.json url, ->
+        if !encryptionOK and @response?.media
+          {media} = @response
+          for key of media when /_link$/.test key
+            # Image/thumbnail URLs loaded over HTTP can be modified in transit.
+            # Require them to be from an HTTP host so that no referrer is sent to them from an HTTPS page.
+            delete media[key] unless media[key]?.match /^http:\/\//
+        that.parseArchivedPost @response, url, archive
       return true
     return false
 
@@ -148,7 +154,7 @@ class Fetcher
 
     @threadID = +data.thread_num
     o =
-      postID:   @postID
+      ID:       @postID
       threadID: @threadID
       boardID:  @boardID
       isReply:  @postID isnt @threadID
@@ -158,29 +164,42 @@ class Fetcher
       name:     data.name or ''
       tripcode: data.trip
       capcode:  switch data.capcode
+        # https://github.com/pleebe/FoolFuuka/blob/bf4224eed04637a4d0bd4411c2bf5f9945dfec0b/assets/themes/foolz/foolfuuka-theme-fuuka/src/Partial/Board.php#L77
         when 'M' then 'Mod'
         when 'A' then 'Admin'
         when 'D' then 'Developer'
+        when 'V' then 'Verified'
+        when 'F' then 'Founder'
+        when 'G' then 'Manager'
       uniqueID: data.poster_hash
       flagCode: data.poster_country
-      flag:     data.poster_country_name
+      flagCodeTroll: data.troll_country_code
+      flag:     data.poster_country_name or data.troll_country_name
       dateUTC:  data.timestamp
       dateText: data.fourchan_date
       commentHTML: comment
     delete o.info.uniqueID if o.info.capcode
-    if data.media?.media_filename
+    if data.media and !!+data.media.banned
+      o.fileDeleted = true
+    else if data.media?.media_filename
+      {thumb_link} = data.media
       # Fix URLs missing origin
-      for key, val of data.media when /_link$/.test(key) and val?[0] is '/'
-        data.media[key] = url.split('/', 3).join('/') + val
+      thumb_link = url.split('/', 3).join('/') + thumb_link if thumb_link?[0] is '/'
+      thumb_link = '' unless Redirect.securityCheck thumb_link
+      media_link = Redirect.to('file', {boardID: @boardID, filename: data.media.media_orig})
+      media_link = '' unless Redirect.securityCheck media_link
       o.file =
         name:      data.media.media_filename
-        url:       data.media.media_link or data.media.remote_media_link or
-                     "#{location.protocol}//i.4cdn.org/#{@boardID}/#{encodeURIComponent data.media[if @boardID is 'f' then 'media_filename' else 'media_orig']}"
+        url:       media_link or
+                     if @boardID is 'f'
+                       "#{location.protocol}//#{ImageHost.flashHost()}/#{@boardID}/#{encodeURIComponent E data.media.media_filename}"
+                     else
+                       "#{location.protocol}//#{ImageHost.host()}/#{@boardID}/#{data.media.media_orig}"
         height:    data.media.media_h
         width:     data.media.media_w
         MD5:       data.media.media_hash
         size:      $.bytesToString data.media.media_size
-        thumbURL:  data.media.thumb_link or "#{location.protocol}//i.4cdn.org/#{@boardID}/#{data.media.preview_orig}"
+        thumbURL:  thumb_link or "#{location.protocol}//#{ImageHost.thumbHost()}/#{@boardID}/#{data.media.preview_orig}"
         theight:   data.media.preview_h
         twidth:    data.media.preview_w
         isSpoiler: data.media.spoiler is '1'
@@ -220,5 +239,3 @@ class Fetcher
     '[/green]':   <%= html('</span>') %>
     '[blue]':     <%= html('<span class="mu-b">') %>
     '[/blue]':    <%= html('</span>') %>
-
-return Fetcher

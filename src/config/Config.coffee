@@ -1,6 +1,10 @@
 Config =
   main:
     'Miscellaneous':
+      'Redirect to HTTPS': [
+        true
+        'Redirect to the HTTPS version of 4chan.'
+      ]
       'JSON Index': [
         true
         'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'
@@ -38,6 +42,10 @@ Config =
       '404 Redirect': [
         true
         'Redirect dead threads and images to the archives.'
+      ]
+      'Archive Report': [
+        true
+        'Enable reporting posts to supported archives.'
       ]
       'Exempt Archives from Encryption': [
         true
@@ -136,6 +144,11 @@ Config =
         'Replace the link of a supported site with its actual title.'
         1
       ]
+      'Cover Preview': [
+        true
+        'Show preview of supported links on hover.'
+        1
+      ]
       'Embedding': [
         true
         'Embed supported services. Note: Some services don\'t work on HTTPS.'
@@ -193,12 +206,12 @@ Config =
         'Show full image / video on mouseover.'
       ]
       'Image Hover in Catalog': [
-        false
+        true
         'Show full image / video on mouseover in <%= meta.name %> catalog.'
       ]
       'Gallery': [
         true
-        'Adds a simple and cute image gallery.'
+        'Adds a simple and cute image gallery. Has more options in the gallery menu.'
       ]
       'Fullscreen Gallery': [
         false
@@ -254,6 +267,10 @@ Config =
         true
         'Videos begin playing immediately when opened.'
       ]
+      'Restart when Opened': [
+        false
+        'Restart GIFs and WebMs when you hover over or expand them.'
+      ]
       'Show Controls': [
         true
         'Show controls on videos expanded inline.'
@@ -279,6 +296,10 @@ Config =
         true
         'Apply <%= meta.name %> mute and volume settings to videos opened in their own tabs.'
       ]
+      'Use Faster Image Host': [
+        true
+        'Change is*.4chan.org links to point to the faster i.4cdn.org host.'
+      ]
 
     'Menu':
       'Menu': [
@@ -288,6 +309,11 @@ Config =
       'Report Link': [
         true
         'Add a report link to the menu.'
+        1
+      ]
+      'Copy Text Link': [
+        true
+        'Add a link to copy the post\'s text.'
         1
       ]
       'Thread Hiding Link': [
@@ -316,7 +342,7 @@ Config =
         1
       ]
       'Download Link': [
-        true
+        false
         'Add a download with original filename link to the menu.'
         1
       ]
@@ -357,6 +383,15 @@ Config =
         'Scroll back to the last read post when reopening a thread.'
         1
       ]
+      'Unread Line in Index': [
+        false
+        'Show a line between read and unread posts in threads in the index.'
+        1
+      ]
+      'Remove Thread Excerpt': [
+        false
+        'Replace the excerpt of the thread in the tab title with the board title.'
+      ]
       'Thread Stats': [
         true
         'Display reply and image count.'
@@ -377,16 +412,16 @@ Config =
       ]
       'Thread Watcher': [
         true
-        'Bookmark threads.'
+        'Bookmark threads. Has more options in the thread watcher menu.'
       ]
       'Fixed Thread Watcher': [
         true
         'Makes the thread watcher scroll with the page.'
         1
       ]
-      'Toggleable Thread Watcher': [
-        true
-        'Adds a shortcut for the thread watcher and hides the watcher by default.'
+      'Persistent Thread Watcher': [
+        false
+        'The thread watcher will be visible when the page is loaded.'
         1
       ]
       'Mark New IPs': [
@@ -395,7 +430,12 @@ Config =
       ]
       'Reply Pruning': [
         true
-        'Hide old replies in long threads. Number of replies shown can be set from header menu.'
+        'Add option in header menu to hide old replies in long threads. Activated by default in stickies.'
+      ]
+      'Prune All Threads': [
+        false
+        'Activate Reply Pruning by default in all threads.'
+        1
       ]
 
     'Posting and Captchas':
@@ -411,6 +451,11 @@ Config =
       'Auto Hide QR': [
         true
         'Automatically hide the quick reply when posting.'
+        2
+      ]
+      'Open Post in New Tab': [
+        true
+        'Open new threads in a new tab, and open replies in a new tab if you\'re not already in the thread.'
         1
       ]
       'Remember QR Size': [
@@ -462,17 +507,9 @@ Config =
         true
         'Make captcha easier to use, especially with the keyboard.'
       ]
-      'Use Recaptcha v1': [
-        false
-        'Use the old text version of Recaptcha in the post form.'
-      ]
-      'Use Recaptcha v1 in Reports': [
-        false
-        'Use the text captcha in the report window.'
-      ]
       'Force Noscript Captcha': [
         false
-        'Use the non-Javascript fallback captcha even if Javascript is enabled (Recaptcha v2 only).'
+        'Use the non-Javascript fallback captcha even if Javascript is enabled.'
       ]
       'Pass Link': [
         false
@@ -487,6 +524,11 @@ Config =
       'OP Backlinks': [
         true
         'Add backlinks to the OP.'
+        1
+      ]
+      'Bottom Backlinks': [
+        false
+        'Place backlinks at the bottom of posts.'
         1
       ]
       'Quote Inlining': [
@@ -578,6 +620,10 @@ Config =
       false
       'Expand all images only from current position to thread end.'
     ]
+    'Expand thread only': [
+      false
+      'In index, expand all images only within the current thread.'
+    ]
     'Advance on contract': [
       false
       'Advance to next post when contracting an expanded image.'
@@ -615,11 +661,11 @@ Config =
       'Periodically check status of watched threads.'
     ]
     'Auto Watch': [
-      false
+      true
       'Automatically watch threads you start.'
     ]
     'Auto Watch Reply': [
-      false
+      true
       'Automatically watch threads you reply to.'
     ]
     'Auto Prune': [
@@ -630,8 +676,14 @@ Config =
       true
       'Show number of unread posts in watched threads.'
     ]
+    'Require OP Quote Link': [
+      false
+      'For purposes of thread watcher highlighting, only consider posts with a quote link to the OP as replies to the OP.'
+    ]
 
   filter:
+    general: ''
+
     postID: """
       # Highlight dubs on [s4s]:
       #/(\\d)\\1$/;highlight;top:no;boards:s4s
@@ -657,6 +709,11 @@ Config =
       #/Mod$/;highlight:mod;op:yes
       # Set a custom class for admins:
       #/Admin$/;highlight:admin;op:yes
+    """
+
+    pass: """
+      # Filter anyone using since4pass:
+      #/./
     """
 
     subject: """
@@ -685,14 +742,22 @@ Config =
     MD5: ''
 
   sauces: """
+    # Known filename formats:
+    http://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/
+    //%$1.deviantart.com/gallery/#/d%$2;regexp:/^\\w+_by_(\\w+)-d([\\da-z]+)/
+    //imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/
+    http://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/
+    https://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/
+
     # Reverse image search:
     https://www.google.com/searchbyimage?image_url=%IMG&safe=off
-    #https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG
+    https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG
     #//tineye.com/search?url=%IMG
+    #//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights
 
     # Specialized reverse image search:
     //iqdb.org/?url=%IMG
-    https://whatanime.ga/?auto&url=%IMG;text:wait
+    https://trace.moe/?auto&url=%IMG;text:wait
     #//3d.iqdb.org/?url=%IMG
     #//saucenao.com/search.php?url=%IMG
 
@@ -704,7 +769,7 @@ Config =
     #https://foolz.fireden.net/_/search/image/%sMD5/
 
     # Other tools:
-    #http://regex.info/exif.cgi?imgurl=%URL
+    #http://exif.regex.info/exif.cgi?imgurl=%URL
     #//imgops.com/%URL;types:gif,jpg,png
     #//www.gif-explode.com/%URL;types:gif
   """
@@ -718,10 +783,12 @@ Config =
     'Index Mode': 'paged'
     'Previous Index Mode': 'paged'
     'Index Size': 'small'
-    'Show Replies': true
-    'Pin Watched Threads': false
-    'Anchor Hidden Threads': true
-    'Refreshed Navigation': false
+    'Show Replies':          [true,  'Show replies in the index, and also in the catalog if "Catalog hover expand" is checked.']
+    'Catalog Hover Expand':  [false, 'Expand the comment and show more details when you hover over a thread in the catalog.']
+    'Catalog Hover Toggle':  [true,  'Turn "Catalog hover expand" on and off by clicking in the catalog.']
+    'Pin Watched Threads':   [false, 'Move watched threads to the start of the index.']
+    'Anchor Hidden Threads': [true,  'Move hidden threads to the end of the index.']
+    'Refreshed Navigation':  [false, 'Refresh index when navigating through pages.']
 
   Header:
     'Fixed Header':               true
@@ -773,18 +840,29 @@ Config =
     https://www.gstatic.com
     http://cdn.mathjax.org
     https://cdn.mathjax.org
+    https://cdnjs.cloudflare.com
+    https://rawgit.com
     'self'
     'unsafe-inline'
     'unsafe-eval'
+
+    # Banner ads
+    #http://s.zkcdn.net/ados.js
+    #https://s.zkcdn.net/ados.js
+    #http://engine.4chan-ads.org
+    #https://engine.4chan-ads.org
   '''
 
   captchaLanguage: ''
 
   time: '%m/%d/%y(%a)%H:%M:%S'
+  timeLocale: ''
 
   backlink: '>>%id'
 
-  fileInfo: '%l (%p%s, %r%g)'
+  pastedname: 'file'
+
+  fileInfo: '%l %d (%p%s, %r%g)'
 
   favicon: 'ferongr'
 
@@ -840,6 +918,18 @@ Config =
       'Alt+s'
       'Toggle sage in options field.'
     ]
+    'Toggle Cooldown': [
+      'Alt+Comma'
+      'Toggle custom cooldown timer.'
+    ]
+    'Post from URL': [
+      'Alt+l'
+      'Post from URL.'
+    ]
+    'Add new post': [
+      'Alt+n'
+      'Add new post to the QR dump list.'
+    ]
     'Submit QR': [
       'Ctrl+Enter'
       'Submit post.'
@@ -857,6 +947,14 @@ Config =
       'Shift+r'
       'Manually refresh thread watcher.'
     ]
+    'Toggle thread watcher': [
+      't'
+      'Toggle visibility of thread watcher.'
+    ]
+    'Mark thread read': [
+      'Ctrl+0'
+      'Mark thread read from index (requires "Unread Line in Index").'
+    ]
     # Images
     'Expand image': [
       'Shift+e'
@@ -870,6 +968,18 @@ Config =
       'g'
       'Opens the gallery.'
     ]
+    'Next Gallery Image': [
+      'Right',
+      'Go to the next image in gallery mode.'
+    ]
+    'Previous Gallery Image': [
+      'Left',
+      'Go to the previous image in gallery mode.'
+    ]
+    'Advance Gallery': [
+      'Enter',
+      'Go to next image or, if Autoplay is off, play video.'
+    ],
     'Pause': [
       'p'
       'Pause/play videos in the gallery.'
@@ -965,6 +1075,10 @@ Config =
       'x'
       'Hide thread.'
     ]
+    'Quick Filter MD5': [
+      '5'
+      'Add the MD5 of the selected image to the filter list.'
+    ]
     'Previous Post Quoting You': [
       'Alt+Up'
       'Scroll to the previous post that quotes you.'
@@ -1015,4 +1129,15 @@ Config =
 
   'Autohiding Scrollbar': false
 
-return Config
+  position:
+    'embedding.position':      'top: 50px; right: 0px;'
+    'thread-stats.position':   'bottom: 0px; right: 0px;'
+    'updater.position':        'bottom: 0px; left: 0px;'
+    'thread-watcher.position': 'top: 50px; left: 0px;'
+    'qr.position':             'top: 50px; right: 0px;'
+
+  siteSoftware: """
+    4chan.org yotsuba
+    4channel.org yotsuba
+    4cdn.org yotsuba
+  """

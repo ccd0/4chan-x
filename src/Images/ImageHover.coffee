@@ -11,7 +11,7 @@ ImageHover =
         cb:   @catalogNode
 
   node: ->
-    return unless @file and (@file.isImage or @file.isVideo)
+    return unless @file and (@file.isImage or @file.isVideo) and @file.thumb
     $.on @file.thumb, 'mouseover', ImageHover.mouseover @
 
   catalogNode: ->
@@ -23,7 +23,7 @@ ImageHover =
     return unless doc.contains @
     {file} = post
     {isVideo} = file
-    return if file.isExpanding or file.isExpanded
+    return if file.isExpanding or file.isExpanded or Site.isThumbExpanded?(file)
     error = ImageHover.error post
     if ImageCommon.cache?.dataset.fullID is post.fullID
       el = ImageCommon.popCache()
@@ -34,6 +34,9 @@ ImageHover =
       $.on el, 'error', error
       el.src = file.url
 
+    if Conf['Restart when Opened']
+      ImageCommon.rewind el
+      ImageCommon.rewind @
     el.id = 'ihover'
     $.add Header.hover, el
     if isVideo
@@ -71,5 +74,3 @@ ImageHover =
         @src = URL + if @src is URL then '?' + Date.now() else ''
       else
         $.rm @
-
-return ImageHover

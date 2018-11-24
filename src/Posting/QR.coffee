@@ -26,12 +26,9 @@ QR =
 
     @posts = []
 
-    return if g.VIEW is 'archive'
+    @captcha = Captcha.v2
 
-    version = if Conf['Use Recaptcha v1'] and Main.jsEnabled then 'v1' else 'v2'
-    @captcha = Captcha[version]
-
-    $.on d, '4chanXInitFinished', @initReady
+    $.on d, '4chanXInitFinished', -> BoardConfig.ready QR.initReady
 
     Callbacks.Post.push
       name: 'Quick Reply'
@@ -53,18 +50,37 @@ QR =
     Header.addShortcut 'qr', sc, 540
 
   initReady: ->
-    $.off d, '4chanXInitFinished', @initReady
-    QR.postingIsEnabled = !!$.id 'postForm'
-    return unless QR.postingIsEnabled
+    QR.postingIsEnabled = true
 
-    link = $.el 'h1',
-      className: "qr-link-container"
-    $.extend link, <%= html('<a href="javascript:;" class="qr-link">?{g.VIEW === "thread"}{Reply to Thread}{Start a Thread}</a>') %>
+    {config} = g.BOARD
+    prop = (key, def) -> +(config[key] ? def)
 
-    QR.link = link.firstElementChild
-    $.on link.firstChild, 'click', ->
-      QR.open()
-      QR.nodes.com.focus()
+    QR.min_width  = prop 'min_image_width',  1
+    QR.min_height = prop 'min_image_height', 1
+    QR.max_width  = QR.max_height = 10000
+
+    QR.max_size       = prop 'max_filesize',      4194304
+    QR.max_size_video = prop 'max_webm_filesize', QR.max_size
+    QR.max_comment    = prop 'max_comment_chars', 2000
+
+    QR.max_width_video = QR.max_height_video = 2048
+    QR.max_duration_video = prop 'max_webm_duration', 120
+
+    QR.forcedAnon = !!config.forced_anon
+    QR.spoiler    = !!config.spoilers
+
+    if (origToggle = $.id 'togglePostFormLink')
+      link = $.el 'h1',
+        className: "qr-link-container"
+      $.extend link, <%= html('<a href="javascript:;" class="qr-link">?{g.VIEW === "thread"}{Reply to Thread}{Start a Thread}</a>') %>
+
+      QR.link = link.firstElementChild
+      $.on link.firstChild, 'click', ->
+        QR.open()
+        QR.nodes.com.focus()
+
+      $.before origToggle, link
+      origToggle.firstElementChild.textContent = 'Original Form'
 
     if g.VIEW is 'thread'
       linkBot = $.el 'div',
@@ -77,11 +93,8 @@ QR =
 
       $.prepend navLinksBot, linkBot if (navLinksBot = $ '.navLinksBot')
 
-    origToggle = $.id 'togglePostFormLink'
-    $.before origToggle, link
-    origToggle.firstElementChild.textContent = 'Original Form'
-
     $.on d, 'QRGetFile',          QR.getFile
+    $.on d, 'QRDrawFile',         QR.drawFile
     $.on d, 'QRSetFile',          QR.setFile
 
     $.on d, 'paste',              QR.paste
@@ -89,7 +102,7 @@ QR =
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
 
-    $.on d, 'IndexRefresh', QR.generatePostableThreadsList
+    $.on d, 'IndexRefreshInternal', QR.generatePostableThreadsList
     $.on d, 'ThreadUpdate', QR.statusCheck
 
     return if !Conf['Persistent QR']
@@ -130,7 +143,7 @@ QR =
       return
     QR.nodes.el.hidden = true
     QR.cleanNotifications()
-    d.activeElement.blur()
+    QR.blur()
     $.rmClass QR.nodes.el, 'dump'
     $.addClass QR.shortcut, 'disabled'
     new QR.post true
@@ -152,7 +165,7 @@ QR =
       getComputedStyle(el).visibility isnt 'hidden' and el.getBoundingClientRect().bottom > 0
 
   hide: ->
-    d.activeElement.blur()
+    QR.blur()
     $.addClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = true
 
@@ -165,6 +178,9 @@ QR =
       QR.hide()
     else
       QR.unhide()
+
+  blur: ->
+    d.activeElement.blur() if QR.nodes.el.contains(d.activeElement)
 
   toggleSJIS: (e) ->
     e.preventDefault()
@@ -181,13 +197,21 @@ QR =
   texPreviewHide: ->
     $.rmClass QR.nodes.el, 'tex-preview'
 
+  addPost: ->
+    wasOpen = (QR.nodes and !QR.nodes.el.hidden)
+    QR.open()
+    if wasOpen
+      $.addClass QR.nodes.el, 'dump'
+      new QR.post true
+    QR.nodes.com.focus()
+
   setCustomCooldown: (enabled) ->
     Conf['customCooldownEnabled'] = enabled
     QR.cooldown.customCooldown = enabled
     QR.nodes.customCooldown.classList.toggle 'disabled', !enabled
 
   toggleCustomCooldown: ->
-    enabled = $.hasClass @, 'disabled'
+    enabled = $.hasClass QR.nodes.customCooldown, 'disabled'
     QR.setCustomCooldown enabled
     $.set 'customCooldownEnabled', enabled
 
@@ -216,6 +240,13 @@ QR =
             notif.onclose = null
             notif.close()
           , 7 * $.SECOND
+
+  connectionError: ->
+    $.el 'span',
+      <%= html(
+        'Connection error while posting. ' +
+        '[<a href="' + meta.faq + '#connection-errors" target="_blank">More info</a>]'
+      ) %>
 
   notifications: []
 
@@ -259,9 +290,20 @@ QR =
     return unless QR.postingIsEnabled
     sel  = d.getSelection()
     post = Get.postFromNode @
+    {root} = post.nodes
+    postRange = new Range()
+    postRange.selectNode root
     text = if post.board.ID is g.BOARD.ID then ">>#{post}\n" else ">>>/#{post.board}/#{post}\n"
-    if sel.toString().trim() and post is Get.postFromNode sel.anchorNode
-      range = sel.getRangeAt 0
+    for i in [0...sel.rangeCount]
+      range = sel.getRangeAt i
+      # Trim range to be fully inside post
+      if range.compareBoundaryPoints(Range.START_TO_START, postRange) < 0
+        range.setStartBefore root
+      if range.compareBoundaryPoints(Range.END_TO_END, postRange) > 0
+        range.setEndAfter root
+
+      continue unless range.toString().trim()
+
       frag  = range.cloneContents()
       ancestor = range.commonAncestorContainer
       # Quoting the insides of a spoiler/code tag.
@@ -275,10 +317,7 @@ QR =
         $.replace node, $.tn '\n'
       for node in $$ 'br', frag
         $.replace node, $.tn '\n>' unless node is frag.lastChild
-      for node in $$ 's, .removed-spoiler', frag
-        $.replace node, [$.tn('[spoiler]'), node.childNodes..., $.tn '[/spoiler]']
-      for node in $$ '.prettyprint', frag
-        $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
+      Site.insertTags?(frag)
       for node in $$ '.linkify[data-original]', frag
         $.replace node, $.tn node.dataset.original
       for node in $$ '.embedder', frag
@@ -311,6 +350,22 @@ QR =
   getFile: ->
     $.event 'QRFile', QR.selected?.file
 
+  drawFile: (e) ->
+    file = QR.selected?.file
+    return unless file and /^(image|video)\//.test(file.type)
+    isVideo = /^video\//.test file
+    el = $.el (if isVideo then 'video' else 'img')
+    $.on el, 'error', -> QR.openError()
+    $.on el, (if isVideo then 'loadeddata' else 'load'), ->
+      e.target.getContext('2d').drawImage el, 0, 0
+      URL.revokeObjectURL el.src
+    el.src = URL.createObjectURL file
+
+  openError: ->
+    div = $.el 'div'
+    $.extend div, <%= html('Could not open file. [<a href="' + meta.faq + '#error-reading-metadata" target="_blank">More info</a>]') %>
+    QR.error div
+
   setFile: (e) ->
     {file, name, source} = e.detail
     file.name   = name   if name?
@@ -337,16 +392,21 @@ QR =
 
   paste: (e) ->
     return unless e.clipboardData.items
-    files = []
-    for item in e.clipboardData.items when item.kind is 'file'
-      blob = item.getAsFile()
-      blob.name  = 'file'
-      blob.name += '.' + blob.type.split('/')[1] if blob.type
-      files.push blob
-    return unless files.length
-    QR.open()
-    QR.handleFiles files
-    $.addClass QR.nodes.el, 'dump'
+    file = null
+    score = -1
+    for item in e.clipboardData.items when item.kind is 'file' and (file2 = item.getAsFile())
+      score2 = 2*(file2.size <= QR.max_size) + (file2.type is 'image/png')
+      if score2 > score
+        file = file2
+        score = score2
+    if file
+      {type} = file
+      blob = new Blob [file], {type}
+      blob.name = "#{Conf['pastedname']}.#{QR.extensionFromType[type] or 'jpg'}"
+      QR.open()
+      QR.handleFiles [blob]
+      $.addClass QR.nodes.el, 'dump'
+    return
 
   pasteFF: ->
     {pasteArea} = QR.nodes
@@ -361,13 +421,15 @@ QR =
         for i in [0...bstr.length]
           arr[i] = bstr.charCodeAt(i)
         blob = new Blob [arr], {type: m[1]}
-        blob.name = "file.#{m[2]}"
+        blob.name = "#{Conf['pastedname']}.#{m[2]}"
         QR.handleFiles [blob]
       else if /^https?:\/\//.test src
         QR.handleUrl src
     return
 
   handleUrl: (urlDefault) ->
+    QR.open()
+    QR.selected.preventAutoPost()
     url = prompt 'Enter a URL:', urlDefault
     return if url is null
     QR.nodes.fileButton.focus()
@@ -426,7 +488,7 @@ QR =
 
   dialog: ->
     QR.nodes = nodes =
-      el: dialog = UI.dialog 'qr', 'top: 50px; right: 0px;',
+      el: dialog = UI.dialog 'qr',
         <%= readHTML('QuickReply.html') %>
 
     setNode = (name, query) ->
@@ -464,41 +526,22 @@ QR =
     setNode 'flashTag',       '[name=filetag]'
     setNode 'fileInput',      '[type=file]'
 
-    rules = $('ul.rules').textContent.trim()
-    match_min = rules.match(/.+smaller than (\d+)x(\d+).+/)
-    match_max = rules.match(/.+greater than (\d+)x(\d+).+/)
-    QR.min_width  = +match_min?[1] or 1
-    QR.min_height = +match_min?[2] or 1
-    QR.max_width  = +match_max?[1] or 10000
-    QR.max_height = +match_max?[2] or 10000
-
-    scriptData = Get.scriptData()
-    QR.max_size       = if (m = scriptData.match /\bmaxFilesize *= *(\d+)\b/)     then +m[1] else 4194304
-    QR.max_size_video = if (m = scriptData.match /\bmaxWebmFilesize *= *(\d+)\b/) then +m[1] else QR.max_size
-    QR.max_comment    = if (m = scriptData.match /\bcomlen *= *(\d+)\b/)          then +m[1] else 2000
-
-    QR.max_width_video = QR.max_height_video = 2048
-    QR.max_duration_video = if g.BOARD.ID in ['gif', 'wsg'] then 300 else 120
-
-    if Conf['Show New Thread Option in Threads']
-      $.addClass QR.nodes.el, 'show-new-thread-option'
-
-    QR.forcedAnon = !!$ 'form[name="post"] input[name="name"][type="hidden"]'
-    if QR.forcedAnon
-      $.addClass QR.nodes.el, 'forced-anon'
-
-    QR.spoiler = !!$ '.postForm input[name=spoiler]'
-    if QR.spoiler
-      $.addClass QR.nodes.el, 'has-spoiler'
-
-    if g.BOARD.ID is 'jp' and Conf['sjisPreview']
-      $.addClass QR.nodes.el, 'sjis-preview'
+    {config} = g.BOARD
+    {classList} = QR.nodes.el
+    classList.toggle 'forced-anon',  QR.forcedAnon
+    classList.toggle 'has-spoiler',  QR.spoiler
+    classList.toggle 'has-sjis',     !!config.sjis_tags
+    classList.toggle 'has-math',     !!config.math_tags
+    classList.toggle 'sjis-preview', !!config.sjis_tags and Conf['sjisPreview']
+    classList.toggle 'show-new-thread-option', Conf['Show New Thread Option in Threads']
 
     if parseInt(Conf['customCooldown'], 10) > 0
       $.addClass QR.nodes.fileSubmit, 'custom-cooldown'
       $.get 'customCooldownEnabled', Conf['customCooldownEnabled'], ({customCooldownEnabled}) ->
         QR.setCustomCooldown customCooldownEnabled
         $.sync 'customCooldownEnabled', QR.setCustomCooldown
+
+    QR.flagsInput()
 
     $.on nodes.autohide,       'change',    QR.toggleHide
     $.on nodes.close,          'click',     QR.close
@@ -525,23 +568,25 @@ QR =
     # We don't receive blur events from captcha iframe.
     $.on d, 'click', QR.focus
 
-    if $.engine is 'gecko'
+    # XXX Workaround for image pasting in Firefox, obsolete as of v50.
+    # https://bugzilla.mozilla.org/show_bug.cgi?id=906420
+    if $.engine is 'gecko' and not window.DataTransferItemList
       nodes.pasteArea.hidden = false
-      new MutationObserver(QR.pasteFF).observe nodes.pasteArea, {childList: true}
+    new MutationObserver(QR.pasteFF).observe nodes.pasteArea, {childList: true}
 
     # save selected post's data
-    items = ['thread', 'name', 'email', 'sub', 'com', 'filename']
+    items = ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag']
     i = 0
     save = -> QR.selected.save @
     while name = items[i++]
-      continue unless node = nodes[name]
+      continue if not (node = nodes[name])
       event = if node.nodeName is 'SELECT' then 'change' else 'input'
       $.on nodes[name], event, save
 
     # XXX Blink and WebKit treat width and height of <textarea>s as min-width and min-height
     if $.engine is 'gecko' and Conf['Remember QR Size']
       $.get 'QR Size', '', (item) ->
-        nodes.com.style.cssText = item['QR Size']
+        (nodes.com.style.cssText = item['QR Size'])
       $.on nodes.com, 'mouseup', (e) ->
         return if e.button isnt 0
         $.set 'QR Size', @style.cssText
@@ -561,6 +606,34 @@ QR =
     # Use it to extend the QR's functionalities, or for XTRM RICE.
     $.event 'QRDialogCreation', null, dialog
 
+  flags: ->
+    select = $.el 'select',
+      name:      'flag'
+      className: 'flagSelector'
+
+    addFlag = (value, textContent) ->
+      $.add select, $.el 'option', {value, textContent}
+
+    addFlag '0', 'Geographic Location'
+    for value, textContent of BoardConfig.troll_flags
+      addFlag value, textContent
+
+    select
+
+  flagsInput: ->
+    {nodes} = QR
+    return if not nodes
+    if nodes.flag
+      $.rm nodes.flag
+      delete nodes.flag
+
+    if g.BOARD.ID is 'pol'
+      flag = QR.flags()
+      flag.dataset.name    = 'flag'
+      flag.dataset.default = '0'
+      nodes.flag = flag
+      $.add nodes.form, flag
+
   submit: (e) ->
     e?.preventDefault()
 
@@ -568,6 +641,7 @@ QR =
       QR.abort()
       return
 
+    $.forceSync 'cooldowns'
     if QR.cooldown.seconds
       QR.cooldown.auto = !QR.cooldown.auto
       QR.status()
@@ -583,9 +657,9 @@ QR =
     # prevent errors
     if threadID is 'new'
       threadID = null
-      if g.BOARD.ID is 'vg' and !post.sub
+      if !!g.BOARD.config.require_subject and !post.sub
         err = 'New threads require a subject.'
-      else unless $.hasClass(d.body, 'text_only') or post.file or (textOnly = !!$ 'input[name=textonly]', $.id 'postForm')
+      else unless !!g.BOARD.config.text_only or post.file
         err = 'No file selected.'
     else if g.BOARD.threads[threadID].isClosed
       err = 'You can\'t reply to this thread anymore.'
@@ -597,8 +671,8 @@ QR =
     if g.BOARD.ID is 'r9k' and !post.com?.match(/[a-z-]/i)
       err or= 'Original comment required.'
 
-    if QR.captcha.isEnabled and !err
-      captcha = QR.captcha.getOne()
+    if QR.captcha.isEnabled and !(/\b_ct=/.test(d.cookie) and threadID) and !err
+      captcha = QR.captcha.getOne(!!threadID)
       unless captcha
         err = 'No valid captcha.'
         QR.captcha.setup(!QR.cooldown.auto or d.activeElement is QR.nodes.status)
@@ -613,11 +687,6 @@ QR =
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.posts.length > 1
-    if Conf['Auto Hide QR'] and !QR.cooldown.auto
-      QR.hide()
-    if !QR.cooldown.auto and $.x 'ancestor::div[@id="qr"]', d.activeElement
-      # Unfocus the focused element if it is one within the QR and we're not auto-posting.
-      d.activeElement.blur()
 
     post.lock()
 
@@ -630,7 +699,7 @@ QR =
       upfile:   post.file
       filetag:  filetag
       spoiler:  post.spoiler
-      textonly: textOnly
+      flag:     post.flag
       mode:     'regist'
       pwd:      QR.persona.getPassword()
 
@@ -639,16 +708,16 @@ QR =
       withCredentials: true
       onload: QR.response
       onerror: ->
-        # Connection error, or www.4chan.org/banned
+        # On connection error, the post most likely didn't go through.
+        # If the post did go through, it should be stopped by the duplicate reply cooldown.
         delete QR.req
+        Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
+        delete QR.currentCaptcha
         post.unlock()
-        QR.cooldown.auto = false
+        QR.cooldown.auto = true
+        QR.cooldown.addDelay post, 2
         QR.status()
-        QR.error $.el 'span',
-          <%= html(
-            'Connection error while posting. ' +
-            '[<a href="' + meta.faq + '#connection-errors" target="_blank">More info</a>]'
-          ) %>
+        QR.error QR.connectionError()
     extra =
       form: $.formData formData
     if Conf['Show Upload Progress']
@@ -665,6 +734,7 @@ QR =
 
     cb = (response) ->
       if response?
+        QR.currentCaptcha = response
         if response.challenge?
           extra.form.append 'recaptcha_challenge_field', response.challenge
           extra.form.append 'recaptcha_response_field', response.response
@@ -684,7 +754,7 @@ QR =
         else
           delete QR.req
           post.unlock()
-          QR.cooldown.auto = !!QR.captcha.captchas.length
+          QR.cooldown.auto = !!Captcha.cache.getCount()
           QR.status()
     else
       cb captcha
@@ -701,21 +771,18 @@ QR =
     post.unlock()
 
     resDoc  = req.response
-    if ban  = $ '.banType', resDoc # banned/warning
-      err   = $.el 'span',
-        if ban.textContent.toLowerCase() is 'banned'
-          <%= html('You are banned on &{$(".board", resDoc)}! ;_;<br>Click <a href="//www.4chan.org/banned" target="_blank">here</a> to see the reason.') %>
-        else
-          <%= html('You were issued a warning on &{$(".board", resDoc)} as &{$(".nameBlock", resDoc)}.<br>Reason: &{$(".reason", resDoc)}') %>
-    else if err = resDoc.getElementById 'errmsg' # error!
+    if (err = resDoc.getElementById 'errmsg') # error!
       $('a', err)?.target = '_blank' # duplicate image link
-    else if resDoc.title isnt 'Post successful!'
-      err = 'Connection error with sys.4chan.org.'
+    else if (connErr = resDoc.title isnt 'Post successful!')
+      err = QR.connectionError()
+      Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
     else if req.status isnt 200
       err = "Error #{req.statusText} (#{req.status})"
 
+    delete QR.currentCaptcha
+
     if err
-      if /captcha|verification/i.test(err.textContent) or err is 'Connection error with sys.4chan.org.'
+      if /captcha|verification/i.test(err.textContent) or connErr
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent
           err = 'You mistyped the CAPTCHA, or the CAPTCHA malfunctioned.'
@@ -723,9 +790,10 @@ QR =
           err = 'This CAPTCHA is no longer valid because it has expired.'
         # Something must've gone terribly wrong if you get captcha errors without captchas.
         # Don't auto-post indefinitely in that case.
-        QR.cooldown.auto = QR.captcha.isEnabled or err is 'Connection error with sys.4chan.org.'
+        QR.cooldown.auto = QR.captcha.isEnabled or connErr
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
+        # If the post did go through, it should be stopped by the duplicate reply cooldown.
         QR.cooldown.addDelay post, 2
       else if err.textContent and (m = err.textContent.match /(?:(\d+)\s+minutes?\s+)?(\d+)\s+second/i) and !/duplicate|hour/i.test(err.textContent)
         QR.cooldown.auto = !/have\s+been\s+muted/i.test(err.textContent)
@@ -737,7 +805,6 @@ QR =
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.captcha.setup(QR.cooldown.auto and d.activeElement in [QR.nodes.status, d.body])
-      QR.cooldown.auto = false if QR.captcha.isEnabled and !QR.captcha.captchas.length
       QR.status()
       QR.error err
       return
@@ -755,6 +822,7 @@ QR =
       threadID
       postID
     }
+    # XXX deprecated
     $.event 'QRPostSuccessful_', {boardID: g.BOARD.ID, threadID, postID}
 
     # Enable auto-posting if we have stuff left to post, disable it otherwise.
@@ -763,11 +831,17 @@ QR =
 
     lastPostToThread = not (do -> return true for p in QR.posts[1..] when p.thread is post.thread)
 
-    unless Conf['Persistent QR'] or postsCount
-      QR.close()
-    else
+    if postsCount
       post.rm()
       QR.captcha.setup(d.activeElement is QR.nodes.status)
+    else if Conf['Persistent QR']
+      post.rm()
+      if Conf['Auto Hide QR']
+        QR.hide()
+      else
+        QR.blur()
+    else
+      QR.close()
 
     QR.cleanNotifications()
     if Conf['Posting Success Notifications']
@@ -775,28 +849,34 @@ QR =
 
     QR.cooldown.add threadID, postID
 
-    url = if threadID is postID # new thread
+    URL = if threadID is postID then ( # new thread
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}"
-    else if threadID isnt g.THREADID and lastPostToThread # replying from the index or a different thread
+    ) else if threadID isnt g.THREADID and lastPostToThread and Conf['Open Post in New Tab'] then ( # replying from the index or a different thread
       "#{window.location.origin}/#{g.BOARD}/thread/#{threadID}#p#{postID}"
+    ) else undefined
 
-    if url
+    if URL
+      open = if Conf['Open Post in New Tab'] or postsCount
+        -> $.open URL
+      else
+        -> location.href = URL
+
       if threadID is postID
         # XXX 4chan sometimes responds before the thread exists.
-        QR.waitForThread url
+        QR.waitForThread URL, open
       else
-        $.open url
+        open()
 
     QR.status()
 
-  waitForThread: (url) ->
+  waitForThread: (url, cb) ->
     attempts = 0
     check = ->
       $.ajax url,
         onloadend: ->
           attempts++
           if attempts >= 6 or @status is 200
-            $.open url
+            cb()
           else
             setTimeout check, attempts * $.SECOND
       ,
@@ -807,9 +887,9 @@ QR =
     if QR.req and !QR.req.isUploadFinished
       QR.req.abort()
       delete QR.req
+      Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
+      delete QR.currentCaptcha
       QR.posts[0].unlock()
       QR.cooldown.auto = false
       QR.notifications.push new Notice 'info', 'QR upload aborted.', 5
     QR.status()
-
-return QR

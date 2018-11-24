@@ -9,10 +9,6 @@ RemoveSpoilers =
       name: 'Reveal Spoilers'
       cb:   @node
 
-    Callbacks.CatalogThread.push
-      name: 'Reveal Spoilers'
-      cb:   @node
-
     if g.VIEW is 'archive'
       $.ready -> RemoveSpoilers.unspoiler $.id 'arc-list'
 
@@ -20,11 +16,9 @@ RemoveSpoilers =
     RemoveSpoilers.unspoiler @nodes.comment
 
   unspoiler: (el) ->
-    spoilers = $$ 's', el
+    spoilers = $$ 's, .spoiler', el
     for spoiler in spoilers
       span = $.el 'span', className: 'removed-spoiler'
       $.replace spoiler, span
       $.add span, [spoiler.childNodes...]
     return
-
-return RemoveSpoilers

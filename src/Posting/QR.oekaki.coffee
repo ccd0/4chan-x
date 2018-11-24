@@ -11,7 +11,7 @@ QR.oekaki =
 
       Menu.menu.addEntry
         el: a
-        order: 95
+        order: 90
         open: (post) ->
           QR.oekaki.menu.post = post
           {file} = post
@@ -38,6 +38,7 @@ QR.oekaki =
                 QR.handleFiles [snapshot]
                 QR.oekaki.edit()
             video.currentTime = currentTime
+          $.on video, 'error', -> QR.openError()
           video.src = URL.createObjectURL blob
         else
           blob.name = post.file.name
@@ -51,26 +52,42 @@ QR.oekaki =
         window.Tegaki.flatten().toBlob (file) ->
           source = "oekaki-#{Date.now()}"
           FCX.oekakiLatest = source
-          document.dispatchEvent new CustomEvent 'QRSetFile',
+          document.dispatchEvent new CustomEvent 'QRSetFile', {
             bubbles: true
             detail: {file, name: FCX.oekakiName, source}
+          }
       if window.Tegaki
         document.querySelector('#qr .oekaki').hidden = false
 
   load: (cb) ->
-    if $ 'script[src^="//s.4cdn.org/js/painter"]', d.head
-      cb()
+    n = 0
+    onload = ->
+      cb() if ++n is 2
+    onerror = ->
+      $.rm @
+      script = $.el 'script',
+        src: 'https://rawgit.com/desuwa/tegaki/master/tegaki.js'
+      $.on script, 'load', onload
+      $.add d.head, script
+    script = $ 'script[src^="//s.4cdn.org/js/painter"], script[src="https://rawgit.com/desuwa/tegaki/master/tegaki.js"]', d.head
+    if script
+      if !script.dataset.success
+        $.global ->
+          document.querySelector('script[src^="//s.4cdn.org/js/painter"], script[src="https://rawgit.com/desuwa/tegaki/master/tegaki.js"]').dataset.success = !!window.Tegaki
+      if script.dataset.success is 'true'
+        cb()
+      else
+        n = 1
+        onerror.call script
     else
       style = $.el 'link',
         rel: 'stylesheet'
         href: "//s.4cdn.org/css/painter.#{Date.now()}.css"
       script = $.el 'script',
         src: "//s.4cdn.org/js/painter.min.#{Date.now()}.js"
-      n = 0
-      onload = ->
-        cb() if ++n is 2
       $.on style,  'load', onload
       $.on script, 'load', onload
+      $.on script, 'error', onerror
       $.add d.head, [style, script]
 
   draw: ->
@@ -101,34 +118,33 @@ QR.oekaki =
       name     = document.getElementById('qr-filename').value.replace(/\.\w+$/, '') + '.png'
       {source} = document.getElementById('file-n-submit').dataset
       error = (content) ->
-        document.dispatchEvent new CustomEvent 'CreateNotification',
+        document.dispatchEvent new CustomEvent 'CreateNotification', {
           bubbles: true
           detail: {type: 'warning', content, lifetime: 20}
+        }
       cb = (e) ->
-        document.removeEventListener 'QRFile', cb, false
-        return error 'No file to edit.' unless e.detail
-        return error 'Not an image.'    unless /^(image|video)\//.test e.detail.type
-        isVideo = /^video\//.test e.detail.type
-        file = document.createElement(if isVideo then 'video' else 'img')
-        file.addEventListener 'error', -> error 'Could not open file.', false
-        file.addEventListener (if isVideo then 'loadeddata' else 'load'), ->
-          Tegaki.destroy() if Tegaki.bg
-          FCX.oekakiName = name
-          Tegaki.open
-            onDone: FCX.oekakiCB
-            onCancel: -> Tegaki.bgColor = '#ffffff'
-            width:  file.naturalWidth  or file.videoWidth
-            height: file.naturalHeight or file.videoHeight
-            bgColor: 'transparent'
-          Tegaki.activeCtx.drawImage file, 0, 0
-        , false
-        file.src = URL.createObjectURL e.detail
+        @removeEventListener('QRMetadata', cb, false) if e
+        selected = document.getElementById 'selected'
+        return error 'No file to edit.'        unless selected?.dataset.type
+        return error 'Not an image.'           unless /^(image|video)\//.test selected.dataset.type
+        return error 'Metadata not available.' unless selected.dataset.height
+        if selected.dataset.height is 'loading'
+          selected.addEventListener('QRMetadata', cb, false)
+          return
+        Tegaki.destroy() if Tegaki.bg
+        FCX.oekakiName = name
+        Tegaki.open
+          onDone: FCX.oekakiCB
+          onCancel: -> Tegaki.bgColor = '#ffffff'
+          width:  +selected.dataset.width
+          height: +selected.dataset.height
+          bgColor: 'transparent'
+        Tegaki.activeCtx.canvas.dispatchEvent new CustomEvent 'QRDrawFile', {bubbles: true}
       if Tegaki.bg and Tegaki.onDoneCb is FCX.oekakiCB and source is FCX.oekakiLatest
         FCX.oekakiName = name
         Tegaki.resume()
       else
-        document.addEventListener 'QRFile', cb, false
-        document.dispatchEvent new CustomEvent 'QRGetFile', {bubbles: true}
+        cb()
 
   toggle: ->
     QR.oekaki.load ->

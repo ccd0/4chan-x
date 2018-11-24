@@ -15,7 +15,7 @@
     <b>Archive Lists</b>: Each line below should be an archive list in <a href="https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md" target="_blank">this format</a> or a URL to load an archive list from.<br>
     Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).
   </div>
-  <textarea name="archiveLists" class="field" spellcheck="false"></textarea>
+  <textarea hidden name="archiveLists" class="field" spellcheck="false"></textarea>
   <button id="update-archives">Update now</button> Last updated: <time id="lastarchivecheck"></time> <label><input type="checkbox" name="archiveAutoUpdate"> Auto-update</label>
 </fieldset>
 
@@ -27,7 +27,7 @@
 
 <fieldset>
   <legend>Custom Board Navigation</legend>
-  <div><textarea name="boardnav" class="field" spellcheck="false"></textarea></div>
+  <div><textarea hidden name="boardnav" class="field" spellcheck="false"></textarea></div>
   <span class="note">New lines will be converted into spaces.</span><br><br>
   <div class="note">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div>
   <div>Board link: <code>g</code></div>
@@ -40,7 +40,7 @@
   <div>Index-only link: <code>g-index</code></div>
   <div>Catalog-only link: <code>g-catalog</code></div>
   <div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div>
-  <div>Index sort: <code>g-sort:&quot;creation date&quot;</code></div>
+  <div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div>
   <div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div>
   <div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div>
   <div>Full board list toggle: <code>toggle-all</code></div>
@@ -64,6 +64,7 @@
   <div>Minute: <code>%M</code></div>
   <div>Second: <code>%S</code></div>
   <div>Literal <code>%</code>: <code>%%</code></div>
+  <div><a href="https://www.w3.org/International/articles/language-tags/" target="_blank">Language tag</a>: <input name="timeLocale" class="field" spellcheck="false"></div>
 </fieldset>
 
 <fieldset>
@@ -72,11 +73,17 @@
 </fieldset>
 
 <fieldset>
+  <legend>Default pasted content filename</legend>
+  <div><input name="pastedname" class="field" spellcheck="false">.png</div>
+</fieldset>
+
+<fieldset>
   <legend>File Info Formatting <span class="warning" data-feature="File Info Formatting">is disabled.</span></legend>
   <div><input name="fileInfo" class="field" spellcheck="false">: <span class="file-info file-info-preview"></span></div>
   <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div>
   <div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div>
   <div>Download button: <code>%d</code></div>
+  <div>Quick filter MD5: <code>%f</code></div>
   <div>Spoiler indicator: <code>%p</code></div>
   <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>
   <div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div>
@@ -86,7 +93,7 @@
 
 <fieldset>
   <legend>Quick Reply Personas</legend>
-  <textarea class="personafield field" name="QR.personas" spellcheck="false"></textarea>
+  <textarea hidden class="personafield field" name="QR.personas" spellcheck="false"></textarea>
   <p>
     One item per line.<br>
     Items will be added in the relevant input&#039;s auto-completion list.<br>
@@ -111,12 +118,7 @@
     <option value="Original">Original</option>
     <option value="Metro">Metro</option>
   </select>
-  <span class="favicon-preview">
-    <img src="data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D">
-    <img src="data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D">
-    <img src="data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D">
-    <img src="data:image/gif;base64,R0lGODlhEAAQAPAAAAAAAAAAACH5BAEAAAAALAAAAAAQABAAAAIOhI%2Bpy%2B0Po5y02ouzPgUAOw%3D%3D">
-  </span>
+  <span class="favicon-preview"></span>
 </fieldset>
 
 <fieldset>
@@ -137,12 +139,16 @@
   <legend>
     <label><input type="checkbox" name="Custom CSS"> Custom CSS</label>
   </legend>
+  <div>For more information about customizing 4chan X&#039;s CSS, see the <a href="<%= meta.cssGuide %>" target="_blank">styling guide</a>.</div>
   <button id="apply-css">Apply CSS</button>
-  <textarea name="usercss" class="field" spellcheck="false"></textarea>
+  <textarea hidden name="usercss" class="field" spellcheck="false"></textarea>
 </fieldset>
 
 <fieldset>
   <legend>Javascript Whitelist</legend>
-  <div>Sources from which Javascript is allowed to be loaded by <a href="http://content-security-policy.com/#source_list" target="_blank">Content Security Policy</a>.</div>
-  <textarea name="jsWhitelist" class="field" spellcheck="false"></textarea>
+  <div>
+    Sources from which Javascript is allowed to be loaded by <a href="http://content-security-policy.com/#source_list" target="_blank">Content Security Policy</a>.<br>
+    Lines starting with a <code>#</code> will be ignored.
+  </div>
+  <textarea hidden name="jsWhitelist" class="field" spellcheck="false"></textarea>
 </fieldset>

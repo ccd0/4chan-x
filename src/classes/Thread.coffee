@@ -6,23 +6,26 @@ class Thread
     @posts      = new SimpleDict()
     @isDead     = false
     @isHidden   = false
-    @isOnTop    = false
     @isSticky   = false
     @isClosed   = false
     @isArchived = false
     @postLimit  = false
     @fileLimit  = false
     @ipCount    = undefined
+    @json       = null
 
     @OP = null
     @catalogView = null
+
+    @nodes =
+      root: null
 
     @board.threads.push @ID, @
     g.threads.push  @fullID, @
 
   setPage: (pageNum) ->
     {info, reply} = @OP.nodes
-    unless (icon = $ '.page-num', info)
+    if not (icon = $ '.page-num', info)
       icon = $.el 'span', className: 'page-num'
       $.replace reply.parentNode.previousSibling, [$.tn(' '), icon, $.tn(' ')]
     icon.title       = "This thread is on page #{pageNum} in the original index."
@@ -59,6 +62,8 @@ class Thread
       alt:   type
       title: type
       className: "#{typeLC}Icon retina"
+    if g.BOARD.ID is 'f'
+      icon.style.cssText = 'height: 18px; width: 18px;'
 
     root = if type isnt 'Sticky' and @isSticky
       $ '.stickyIcon', @OP.nodes.info
@@ -73,8 +78,12 @@ class Thread
     @isDead = true
 
   collect: ->
-    @posts.forEach (post) -> post.collect()
-    g.threads.rm @fullID
-    @board.threads.rm @
-
-return Thread
+    n = 0
+    @posts.forEach (post) ->
+      if post.clones.length
+        n++
+      else
+        post.collect()
+    unless n
+      g.threads.rm @fullID
+      @board.threads.rm @

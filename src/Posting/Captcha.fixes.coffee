@@ -18,6 +18,9 @@ Captcha.fixes =
   cssNoscript: '''
     .fbc-payload-imageselect {
       position: relative;
+      /* XXX Fixes for Google's broken CSS */
+      display: inline-block;
+      margin-left: 0;
     }
     .fbc-payload-imageselect > label {
       position: absolute;
@@ -45,7 +48,7 @@ Captcha.fixes =
   init: ->
     switch location.pathname.split('/')[3]
       when 'anchor'   then @initMain()
-      when 'frame'    then @initPopup()
+      when 'frame', 'bframe' then @initPopup()
       when 'fallback' then @initNoscript()
 
   initMain: ->
@@ -70,8 +73,15 @@ Captcha.fixes =
 
   initNoscript: ->
     @noscript = true
-    data = if (token = $('.fbc-verification-token > textarea')?.value) then {token} else {working: true}
-    new Connection(window.parent, '*').send data
+    form = $ '.fbc-imageselect-challenge > form'
+    data =
+      if (token = $('.fbc-verification-token > textarea')?.value)
+        {token}
+      else if $('.fbc-imageselect-challenge > form')
+        {working: true}
+      else
+        null
+    new Connection(window.parent, '*').send data if data
     d.body.classList.toggle 'focus', d.hasFocus()
     $.on window, 'focus blur', -> d.body.classList.toggle 'focus', d.hasFocus()
 
@@ -82,7 +92,7 @@ Captcha.fixes =
     $.addStyle @cssNoscript
     @addLabels()
     $.on d, 'keydown', @keybinds.bind(@)
-    $.on $('.fbc-imageselect-challenge > form'), 'submit', @checkForm.bind(@)
+    $.on form, 'submit', @checkForm.bind(@)
 
   fixImages: ->
     @images = $$ '.rc-image-tile-target'

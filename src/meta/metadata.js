@@ -25,7 +25,7 @@
       return expand(matches, /^\*/, ['http', 'https']);
     }
     return [].concat(
-      expandMatches(meta.matches).map(function(match) {
+      expandMatches(meta.includes_only.concat(meta.matches)).map(function(match) {
         return '// @include      ' + match;
       }),
       expandMatches(meta.exclude_matches).map(function(match) {
@@ -34,7 +34,21 @@
     ).join('\n');
   })()
 %>
-// @connect      i.4cdn.org
+// @connect      4chan.org
+// @connect      4channel.org
+// @connect      4cdn.org
+// @connect      mayhemydg.github.io
+<%=
+  readJSON('/src/Archive/archives.json').map(function(archive) {
+    return '// @connect      ' + archive.domain;
+  }).join('\n')
+%>
+// @connect      api.clyp.it
+// @connect      api.dailymotion.com
+// @connect      api.github.com
+// @connect      soundcloud.com
+// @connect      vimeo.com
+// @connect      www.googleapis.com
 // @connect      *
 <%=
   meta.grants.map(function(grant) {

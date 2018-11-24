@@ -30,6 +30,17 @@
   background-color: #D6DAF0;
 }
 
+/* Catalog */
+:root.yotsuba-b.catalog-hover-expand .catalog-container:hover > .post {
+  background-color: #D6DAF0;
+}
+:root.yotsuba-b.werkTyme .catalog-thread:not(:hover),
+:root.yotsuba-b.werkTyme:not(.catalog-hover-expand) .catalog-thread,
+:root.yotsuba-b.catalog-hover-expand .catalog-container:hover > .post,
+:root.yotsuba-b.catalog-hover-expand .catalog-container:hover .catalog-reply {
+  border-color: #B7C5D9;
+}
+
 /* Quote */
 :root.yotsuba-b .backlink.deadlink {
   color: #34345C !important;
@@ -72,8 +83,13 @@
   background: rgba(255, 255, 255, .33);
 }
 
+/* Unread */
+:root.yotsuba-b .unread-mark-read {
+  background-color: rgba(214,218,240,0.5);
+}
+
 /* Thread Watcher */
-:root.yotsuba-b .replies-quoting-you > a, :root.yotsuba-b #watcher-link.disabled.replies-quoting-you {
+:root.yotsuba-b .replies-quoting-you > a, :root.yotsuba-b #watcher-link.replies-quoting-you {
   color: #F00;
 }
 

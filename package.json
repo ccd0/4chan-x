@@ -9,29 +9,58 @@
     "downloads": "https://www.4chan-x.net/builds/",
     "oldVersions": "https://raw.githubusercontent.com/ccd0/4chan-x/",
     "faq": "https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions",
+    "captchaFAQ": "https://github.com/ccd0/4chan-x/wiki/Captcha-FAQ",
+    "cssGuide": "https://github.com/ccd0/4chan-x/wiki/Styling-Guide",
     "license": "https://github.com/ccd0/4chan-x/blob/master/LICENSE",
     "changelog": "https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md",
     "issues": "https://gitreports.com/issue/ccd0/4chan-x",
     "newIssue": "https://gitreports.com/issue/ccd0/4chan-x?issue_title=%title&details=%details",
     "newIssueMaxLength": 8181,
     "appid": "lacclbnghgdicfifcamcmcnilckjamag",
+    "appidGecko": "4chan-x@4chan-x.net",
     "chromeStoreID": "ohnjgmpcibpbafdlkimncjhflgedgpam",
     "recaptchaKey": "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc",
     "youtubeAPIKey": "AIzaSyB5_zaen_-46Uhz1xGR-lz1YoUMHqCD6CE",
     "distBranch": "gh-pages",
     "uploadPath": "www.4chan-x.net:/var/www/html/",
-    "matches": [
+    "includes_only": [
       "*://boards.4chan.org/*",
       "*://sys.4chan.org/*",
       "*://www.4chan.org/*",
+      "*://boards.4channel.org/*",
+      "*://sys.4channel.org/*",
+      "*://www.4channel.org/*",
       "*://i.4cdn.org/*",
+      "*://is.4chan.org/*",
+      "*://is2.4chan.org/*",
+      "*://is.4channel.org/*",
+      "*://is2.4channel.org/*"
+    ],
+    "matches_only": [
+      "*://*.4chan.org/*",
+      "*://*.4channel.org/*",
+      "*://*.4cdn.org/*"
+    ],
+    "matches": [
       "https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
       "https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
+      "https://www.google.com/recaptcha/api2/frame?*&k=887877714&*",
+      "https://www.google.com/recaptcha/api2/bframe?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
       "*://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*"
     ],
     "exclude_matches": [
       "*://www.4chan.org/pass",
-      "*://www.4chan.org/pass?*"
+      "*://www.4chan.org/pass?*",
+      "*://www.4chan.org/advertise",
+      "*://www.4chan.org/advertise?*",
+      "*://www.4chan.org/donate",
+      "*://www.4chan.org/donate?*",
+      "*://www.4channel.org/pass",
+      "*://www.4channel.org/pass?*",
+      "*://www.4channel.org/advertise",
+      "*://www.4channel.org/advertise?*",
+      "*://www.4channel.org/donate",
+      "*://www.4channel.org/donate?*"
     ],
     "grants": [
       "GM_getValue",
@@ -40,7 +69,13 @@
       "GM_listValues",
       "GM_addValueChangeListener",
       "GM_openInTab",
-      "GM_xmlhttpRequest"
+      "GM_xmlhttpRequest",
+      "GM.getValue",
+      "GM.setValue",
+      "GM.deleteValue",
+      "GM.listValues",
+      "GM.openInTab",
+      "GM.xmlHttpRequest"
     ],
     "min": {
       "chrome": "33",
@@ -50,15 +85,15 @@
   },
   "devDependencies": {
     "coffee-script": "=1.9.3",
-    "crx": "^3.0.3",
-    "esprima": "^2.7.2",
+    "esprima": "^4.0.0",
     "font-awesome": "=4.6.3",
-    "jshint": "^2.9.2",
-    "jszip": "^3.0.0",
-    "lodash.template": "^4.2.5",
-    "markdown-it": "^6.0.5",
-    "markdown-it-anchor": "^2.5.0",
-    "request": "^2.72.0",
+    "jshint": "^2.9.5",
+    "jszip": "^3.1.4",
+    "lodash.template": "^4.4.0",
+    "markdown-it": "^8.4.0",
+    "markdown-it-anchor": "^4.0.0",
+    "node-rsa": "^0.4.2",
+    "request": "^2.83.0",
     "webstore-upload": "0.0.7"
   },
   "repository": {

@@ -1,6 +1,13 @@
 QuotePreview =
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Quote Previewing']
+    return unless Conf['Quote Previewing']
+
+    if g.VIEW is 'archive'
+      $.on d, 'mouseover', (e) ->
+        if e.target.nodeName is 'A' and $.hasClass(e.target, 'quotelink')
+          QuotePreview.mouseover.call e.target, e
+
+    return unless g.VIEW in ['index', 'thread']
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
@@ -15,7 +22,7 @@ QuotePreview =
     return
 
   mouseover: (e) ->
-    return if $.hasClass(@, 'inlined') or !d.contains(@)
+    return if ($.hasClass(@, 'inlined') and not $.hasClass(doc, 'catalog-mode')) or not d.contains(@)
 
     {boardID, threadID, postID} = Get.postDataFromLink @
 
@@ -43,7 +50,7 @@ QuotePreview =
 
   mouseout: ->
     # Stop if it only contains text.
-    return unless root = @el.firstElementChild
+    return if not (root = @el.firstElementChild)
 
     clone = Get.postFromRoot root
     post  = clone.origin
@@ -53,5 +60,3 @@ QuotePreview =
     for post in [post].concat post.clones
       $.rmClass post.nodes.post, 'qphl'
     return
-
-return QuotePreview

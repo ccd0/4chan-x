@@ -1,47 +1,52 @@
 ThreadWatcher =
   init: ->
-    return unless (@enabled = Conf['Thread Watcher'])
+    return if not (@enabled = Conf['Thread Watcher'])
 
     @shortcut = sc = $.el 'a',
       id:   'watcher-link'
       textContent: 'Watcher'
       title: 'Thread Watcher'
       href: 'javascript:;'
-      className: 'disabled fa fa-eye'
+      className: 'fa fa-eye'
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
-    @dialog = UI.dialog 'thread-watcher', 'top: 50px; left: 0px;', <%= readHTML('ThreadWatcher.html') %>
+    @dialog = UI.dialog 'thread-watcher', <%= readHTML('ThreadWatcher.html') %>
 
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
     @refreshButton = $ '.refresh', @dialog
     @closeButton = $('.move > .close', @dialog)
-    @unreaddb = Unread.db or new DataBoard 'lastReadPosts'
-    @unreadEnabled = Conf['Remember Last Read Post']
+    @unreaddb = Unread.db or UnreadIndex.db or new DataBoard 'lastReadPosts'
+    @unreadEnabled = Conf['Remember Last Read Post'] and Site.software is 'yotsuba'
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on sc, 'click', @toggleWatcher
     $.on @refreshButton, 'click', @buttonFetchAll
     $.on @closeButton, 'click', @toggleWatcher
 
-    $.on d, '4chanXInitFinished', @ready
+    @refreshButton.hidden = true unless Site.software is 'yotsuba'
+
+    @menu.addHeaderMenuEntry()
+    $.onExists doc, 'body', @addDialog
 
     switch g.VIEW
       when 'index'
-        $.on d, 'IndexRefresh', @cb.onIndexRefresh
+        $.on d, 'IndexUpdate', @cb.onIndexUpdate
       when 'thread'
         $.on d, 'ThreadUpdate', @cb.onThreadRefresh
 
     if Conf['Fixed Thread Watcher']
       $.addClass doc, 'fixed-watcher'
-    if Conf['Toggleable Thread Watcher']
+    if !Conf['Persistent Thread Watcher']
+      $.addClass ThreadWatcher.shortcut, 'disabled'
       @dialog.hidden = true
-      Header.addShortcut 'watcher', sc, 510
-      $.addClass doc, 'toggleable-watcher'
+
+    Header.addShortcut 'watcher', sc, 510
 
     ThreadWatcher.fetchAuto()
+    $.on window, 'visibilitychange focus', -> $.queueTask ThreadWatcher.fetchAuto
 
-    if g.VIEW is 'index' and Conf['JSON Index'] and Conf['Menu'] and g.BOARD.ID isnt 'f'
+    if Conf['Menu'] and Index.enabled
       Menu.menu.addEntry
         el: $.el 'a',
           href:      'javascript:;'
@@ -61,6 +66,8 @@ ThreadWatcher =
           $.on @el, 'click', @cb
           true
 
+    return unless g.VIEW in ['index', 'thread']
+
     Callbacks.Post.push
       name: 'Thread Watcher'
       cb:   @node
@@ -69,40 +76,46 @@ ThreadWatcher =
       cb:   @catalogNode
 
   isWatched: (thread) ->
-    ThreadWatcher.db?.get {boardID: thread.board.ID, threadID: thread.ID}
+    !!ThreadWatcher.db?.get {boardID: thread.board.ID, threadID: thread.ID}
+
+  isWatchedRaw: (boardID, threadID) ->
+    !!ThreadWatcher.db?.get {boardID, threadID}
+
+  setToggler: (toggler, isWatched) ->
+    toggler.classList.toggle 'watched', isWatched
+    toggler.title = "#{if isWatched then 'Unwatch' else 'Watch'} Thread"
 
   node: ->
     return if @isReply
     if @isClone
-      toggler = $ '.watch-thread-link', @nodes.post
+      toggler = $ '.watch-thread-link', @nodes.info
     else
       toggler = $.el 'a',
         href: 'javascript:;'
         className: 'watch-thread-link'
-      $.before $('input', @nodes.post), toggler
+      $.before $('input', @nodes.info), toggler
+    boardID = @board.ID
+    threadID = @thread.ID
+    data = ThreadWatcher.db.get {boardID, threadID}
+    ThreadWatcher.setToggler toggler, !!data
     $.on toggler, 'click', ThreadWatcher.cb.toggle
+    # Add missing excerpt for threads added by Auto Watch
+    if data and not data.excerpt?
+      $.queueTask =>
+        ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt @thread}}
+        ThreadWatcher.refresh()
 
   catalogNode: ->
     $.addClass @nodes.root, 'watched' if ThreadWatcher.isWatched @thread
-    $.on @nodes.thumb.parentNode, 'click', (e) =>
+    $.on @nodes.root, 'mousedown click', (e) =>
       return unless e.button is 0 and e.altKey
-      ThreadWatcher.toggle @thread
-      e.preventDefault()
-    $.on @nodes.thumb.parentNode, 'mousedown', (e) ->
-      # Prevent highlighting thumbnail in Firefox.
-      e.preventDefault() if e.button is 0 and e.altKey
+      ThreadWatcher.toggle @thread if e.type is 'click'
+      e.preventDefault() # Also on mousedown to prevent highlighting thumbnail in Firefox.
 
-  ready: ->
-    $.off d, '4chanXInitFinished', ThreadWatcher.ready
+  addDialog: ->
     return unless Main.isThisPageLegit()
-    ThreadWatcher.refresh()
-    $.add d.body, ThreadWatcher.dialog
-
-    return unless Conf['Auto Watch']
-    $.get 'AutoWatch', 0, ({AutoWatch}) ->
-      return unless thread = g.BOARD.threads[AutoWatch]
-      ThreadWatcher.add thread
-      $.delete 'AutoWatch'
+    ThreadWatcher.build()
+    $.prepend d.body, ThreadWatcher.dialog
 
   toggleWatcher: ->
     $.toggleClass ThreadWatcher.shortcut, 'disabled'
@@ -116,18 +129,13 @@ ThreadWatcher =
       $.event 'CloseMenu'
     pruneDeads: ->
       return if $.hasClass @, 'disabled'
-      ThreadWatcher.db.forceSync()
       for {boardID, threadID, data} in ThreadWatcher.getAll() when data.isDead
-        delete ThreadWatcher.db.data.boards[boardID][threadID]
-        ThreadWatcher.db.deleteIfEmpty {boardID}
-      ThreadWatcher.db.save()
+        ThreadWatcher.db.delete {boardID, threadID}
       ThreadWatcher.refresh()
       $.event 'CloseMenu'
     toggle: ->
       {thread} = Get.postFromNode @
-      Index.followedThreadID = thread.ID
       ThreadWatcher.toggle thread
-      delete Index.followedThreadID
     rm: ->
       [boardID, threadID] = @parentNode.dataset.fullID.split '.'
       ThreadWatcher.rm boardID, +threadID
@@ -135,25 +143,27 @@ ThreadWatcher =
       {boardID, threadID, postID} = e.detail
       if postID is threadID
         if Conf['Auto Watch']
-          $.set 'AutoWatch', threadID
+          ThreadWatcher.addRaw boardID, threadID, {}
       else if Conf['Auto Watch Reply']
         ThreadWatcher.add g.threads[boardID + '.' + threadID]
-    onIndexRefresh: ->
+    onIndexUpdate: (e) ->
       {db}    = ThreadWatcher
       boardID = g.BOARD.ID
-      db.forceSync()
-      for threadID, data of db.data.boards[boardID] when not data?.isDead and threadID not of g.BOARD.threads
+      nKilled = 0
+      for threadID, data of db.data.boards[boardID] when not data?.isDead and "#{boardID}.#{threadID}" not in e.detail.threads
+        # Don't prune threads that have yet to appear in index.
+        continue unless e.detail.threads.some (fullID) -> +fullID.split('.')[1] > threadID
+        nKilled++
         if Conf['Auto Prune'] or not (data and typeof data is 'object') # corrupt data
           db.delete {boardID, threadID}
         else
+          db.extend {boardID, threadID, val: {isDead: true}}
           if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
             ThreadWatcher.fetchStatus {boardID, threadID, data}
-          data.isDead = true
-          db.set {boardID, threadID, val: data}
-      ThreadWatcher.refresh()
+      ThreadWatcher.refresh() if nKilled
     onThreadRefresh: (e) ->
       thread = g.threads[e.detail.threadID]
-      return unless e.detail[404] and ThreadWatcher.db.get {boardID: thread.board.ID, threadID: thread.ID}
+      return unless e.detail[404] and ThreadWatcher.isWatched thread
       # Update dead status.
       ThreadWatcher.add thread
 
@@ -172,15 +182,15 @@ ThreadWatcher =
     ThreadWatcher.clearRequests()
 
   fetchAuto: ->
+    return unless Site.software is 'yotsuba'
     clearTimeout ThreadWatcher.timeout
     return unless Conf['Auto Update Thread Watcher']
     {db} = ThreadWatcher
     interval = if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] then 5 * $.MINUTE else 2 * $.HOUR
     now = Date.now()
-    if now >= (db.data.lastChecked or 0) + interval
-      db.data.lastChecked = now
+    unless now - interval < (db.data.lastChecked or 0) <= now or d.hidden or not d.hasFocus()
       ThreadWatcher.fetchAllStatus()
-      db.save()
+      db.setLastChecked()
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
 
   buttonFetchAll: ->
@@ -190,21 +200,25 @@ ThreadWatcher =
       ThreadWatcher.fetchAllStatus()
 
   fetchAllStatus: ->
-    ThreadWatcher.db.forceSync()
-    ThreadWatcher.unreaddb.forceSync()
-    QuoteYou.db?.forceSync()
-    return unless (threads = ThreadWatcher.getAll()).length
-    for thread in threads
-      ThreadWatcher.fetchStatus thread
-    return
+    return unless Site.software is 'yotsuba'
+    dbs = [ThreadWatcher.db, ThreadWatcher.unreaddb, QuoteYou.db].filter((x) -> x)
+    n = 0
+    for db in dbs
+      db.forceSync ->
+        if (++n) is dbs.length
+          threads = ThreadWatcher.getAll()
+          for thread in threads
+            ThreadWatcher.fetchStatus thread
+          return
 
   fetchStatus: (thread, force) ->
+    return unless Site.software is 'yotsuba'
     {boardID, threadID, data} = thread
     return if data.isDead and not force
     if ThreadWatcher.requests.length is 0
       ThreadWatcher.status.textContent = '...'
       $.addClass ThreadWatcher.refreshButton, 'fa-spin'
-    req = $.ajax "//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
+    req = $.ajax "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
       onloadend: ->
         ThreadWatcher.parseStatus.call @, thread
       timeout: $.MINUTE
@@ -231,7 +245,9 @@ ThreadWatcher =
         threadID: threadID
         defaultValue: 0
 
-      unread = quotingYou = 0
+      unread = 0
+      quotingYou = false
+      youOP = !!QuoteYou.db?.get {boardID, threadID, postID: threadID}
 
       for postObj in @response.posts
         continue unless postObj.no > lastReadPost
@@ -239,7 +255,11 @@ ThreadWatcher =
 
         unread++
 
-        continue unless QuoteYou.db and postObj.com
+        if !quotingYou and !Conf['Require OP Quote Link'] and youOP and not Filter.isHidden(Build.parseJSON postObj, boardID)
+          quotingYou = true
+          continue
+
+        continue unless !quotingYou and QuoteYou.db and postObj.com
 
         quotesYou = false
         regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
@@ -252,23 +272,17 @@ ThreadWatcher =
             quotesYou = true
             break
         if quotesYou and not Filter.isHidden(Build.parseJSON postObj, boardID)
-          quotingYou++
+          quotingYou = true
 
       if isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou
-        data.isDead = isDead
-        data.unread = unread
-        data.quotingYou = quotingYou
-        ThreadWatcher.db.set {boardID, threadID, val: data}
+        ThreadWatcher.db.extend {boardID, threadID, val: {isDead, unread, quotingYou}}
         ThreadWatcher.refresh()
 
     else if @status is 404
       if Conf['Auto Prune']
         ThreadWatcher.db.delete {boardID, threadID}
       else
-        data.isDead = true
-        delete data.unread
-        delete data.quotingYou
-        ThreadWatcher.db.set {boardID, threadID, val: data}
+        ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true}, rm: ['unread', 'quotingYou']}
 
       ThreadWatcher.refresh()
 
@@ -287,9 +301,12 @@ ThreadWatcher =
       href: 'javascript:;'
     $.on x, 'click', ThreadWatcher.cb.rm
 
+    {excerpt} = data
+    excerpt or= "/#{boardID}/ - No.#{threadID}"
+
     link = $.el 'a',
-      href: "/#{boardID}/thread/#{threadID}"
-      title: data.excerpt
+      href: "/#{Site.urls.thread({boardID, threadID})}"
+      title: excerpt
       className: 'watcher-link'
 
     if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] and data.unread?
@@ -299,7 +316,7 @@ ThreadWatcher =
       $.add link, count
 
     title = $.el 'span',
-      textContent: data.excerpt
+      textContent: excerpt
       className: 'watcher-title'
     $.add link, title
 
@@ -315,32 +332,35 @@ ThreadWatcher =
     $.add div, [x, $.tn(' '), link]
     div
 
-  refresh: ->
+  build: ->
     nodes = []
     for {boardID, threadID, data} in ThreadWatcher.getAll()
+      # Add missing excerpt for threads added by Auto Watch
+      if not data.excerpt? and (thread = g.threads["#{boardID}.#{threadID}"])
+        ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt thread}}
       nodes.push ThreadWatcher.makeLine boardID, threadID, data
-
     {list} = ThreadWatcher
     $.rmAll list
     $.add list, nodes
 
-    g.threads.forEach (thread) ->
-      helper = if ThreadWatcher.isWatched thread then ['addClass', 'Unwatch'] else ['rmClass', 'Watch']
-      if thread.OP
-        for post in [thread.OP, thread.OP.clones...]
-          toggler = $ '.watch-thread-link', post.nodes.post
-          $[helper[0]] toggler, 'watched'
-          toggler.title = "#{helper[1]} Thread"
-      $[helper[0]] thread.catalogView.nodes.root, 'watched' if thread.catalogView
-
     ThreadWatcher.refreshIcon()
-
     for refresher in ThreadWatcher.menu.refreshers
       refresher()
+    return
 
-    if Index.nodes and Conf['Pin Watched Threads']
-      Index.sort()
-      Index.buildIndex()
+  refresh: ->
+    ThreadWatcher.build()
+
+    g.threads.forEach (thread) ->
+      isWatched = ThreadWatcher.isWatched thread
+      if thread.OP
+        for post in [thread.OP, thread.OP.clones...]
+          if (toggler = $ '.watch-thread-link', post.nodes.info)
+            ThreadWatcher.setToggler toggler, isWatched
+      (thread.catalogView.nodes.root.classList.toggle 'watched', isWatched if thread.catalogView)
+
+    if Conf['Pin Watched Threads']
+      $.event 'SortIndex', {deferred: Conf['Index Mode'] isnt 'catalog'}
 
   refreshIcon: ->
     for className in ['replies-unread', 'replies-quoting-you']
@@ -348,7 +368,7 @@ ThreadWatcher =
     return
 
   update: (boardID, threadID, newData) ->
-    return unless data = ThreadWatcher.db?.get {boardID, threadID}
+    return if not (data = ThreadWatcher.db?.get {boardID, threadID})
     if newData.isDead and Conf['Auto Prune']
       ThreadWatcher.db.delete {boardID, threadID}
       ThreadWatcher.refresh()
@@ -356,10 +376,8 @@ ThreadWatcher =
     n = 0
     n++ for key, val of newData when data[key] isnt val
     return unless n
-    ThreadWatcher.db.forceSync()
-    return unless data = ThreadWatcher.db.get {boardID, threadID}
-    $.extend data, newData
-    ThreadWatcher.db.set {boardID, threadID, val: data}
+    return if not (data = ThreadWatcher.db.get {boardID, threadID})
+    ThreadWatcher.db.extend {boardID, threadID, val: newData}
     if line = $ "#watched-threads > [data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
       newLine = ThreadWatcher.makeLine boardID, threadID, data
       $.replace line, newLine
@@ -368,15 +386,12 @@ ThreadWatcher =
       ThreadWatcher.refresh()
 
   set404: (boardID, threadID, cb) ->
-    return cb() unless data = ThreadWatcher.db?.get {boardID, threadID}
+    return cb() if not (data = ThreadWatcher.db?.get {boardID, threadID})
     if Conf['Auto Prune']
       ThreadWatcher.db.delete {boardID, threadID}
       return cb()
     return cb() if data.isDead and not (data.unread? or data.quotingYou?)
-    data.isDead = true
-    delete data.unread
-    delete data.quotingYou
-    ThreadWatcher.db.set {boardID, threadID, val: data}, cb
+    ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true}, rm: ['unread', 'quotingYou']}, cb
 
   toggle: (thread) ->
     boardID  = thread.board.ID
@@ -396,6 +411,9 @@ ThreadWatcher =
         return
       data.isDead = true
     data.excerpt  = Get.threadExcerpt thread
+    ThreadWatcher.addRaw boardID, threadID, data
+
+  addRaw: (boardID, threadID, data) ->
     ThreadWatcher.db.set {boardID, threadID, val: data}
     ThreadWatcher.refresh()
     if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
@@ -412,7 +430,6 @@ ThreadWatcher =
       menu = @menu = new UI.Menu 'thread watcher'
       $.on $('.menu-button', ThreadWatcher.dialog), 'click', (e) ->
         menu.toggle e, @, ThreadWatcher
-      @addHeaderMenuEntry()
       @addMenuEntries()
 
     addHeaderMenuEntry: ->
@@ -482,5 +499,3 @@ ThreadWatcher =
       $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Unread Count']
       $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Unread Count', 'Auto Update Thread Watcher']
       entry
-
-return ThreadWatcher

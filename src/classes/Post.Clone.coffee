@@ -11,22 +11,29 @@ Post.Clone = class extends Post
       @cloneWithoutVideo nodes.root
     else
       nodes.root.cloneNode true
-    Post.Clone.prefix or= 0
+    Post.Clone.suffix or= 0
     for node in [root, $$('[id]', root)...]
-      node.id = Post.Clone.prefix + node.id
-    Post.Clone.prefix++
-
-    @nodes = @parseNodes root
+      node.id += "_#{Post.Clone.suffix}"
+    Post.Clone.suffix++
 
     # Remove inlined posts inside of this post.
-    for inline  in $$ '.inline',  @nodes.post
+    for inline  in $$ '.inline', root
       $.rm inline
-    for inlined in $$ '.inlined', @nodes.post
+    for inlined in $$ '.inlined', root
       $.rmClass inlined, 'inlined'
+
+    @nodes = @parseNodes root
 
     root.hidden = false # post hiding
     $.rmClass root,        'forwarded' # quote inlining
     $.rmClass @nodes.post, 'highlight' # keybind navigation, ID highlighting
+
+    # Remove catalog stuff.
+    unless @isReply
+      @setCatalogOP false
+      $.rm $('.catalog-link', @nodes.post)
+      $.rm $('.catalog-stats', @nodes.post)
+      $.rm $('.catalog-replies', @nodes.post)
 
     @parseQuotes()
     @quotes = [@origin.quotes...]
@@ -37,19 +44,13 @@ Post.Clone = class extends Post
       @file = {}
       for key, val of @origin.file
         @file[key] = val
-      file = $ '.file', @nodes.post
-      @file.text  = file.firstElementChild
-      @file.link  = $ '.fileText > a, .fileText-original', file
-      @file.thumb = $ '.fileThumb > [data-md5]', file
-      @file.fullImage = $ '.full-image', file
+      for key, selector of Site.selectors.file
+        @file[key] = $ selector, @nodes.root
+      @file.thumbLink = @file.thumb?.parentNode
+      @file.fullImage = $ '.full-image', @file.thumbLink if @file.thumbLink
       @file.videoControls = $ '.video-controls', @file.text
 
       @file.thumb.muted = true if @file.videoThumb
-
-      if @file.thumb?.dataset.src
-        @file.thumb.src = @file.thumb.dataset.src
-        # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
-        @file.thumb.removeAttribute 'data-src'
 
       # Contract thumbnails in quote preview
       ImageExpand.contract @ if @file.thumb and contractThumb

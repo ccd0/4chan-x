@@ -132,5 +132,3 @@ DeleteLink =
         for fileOnly in [false, true] when DeleteLink.auto[+fileOnly][post.fullID]
           DeleteLink.delete post, fileOnly
       return
-
-return DeleteLink

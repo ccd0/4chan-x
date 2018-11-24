@@ -6,7 +6,7 @@ Build =
   unescape: (text) ->
     return text unless text?
     text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt|#44);/g, (c) ->
-      {'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','}[c]
+      (({'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','})[c])
 
   shortFilename: (filename) ->
     ext = filename.match(/\.?[^\.]*$/)[0]
@@ -34,7 +34,7 @@ Build =
   parseJSON: (data, boardID) ->
     o =
       # id
-      postID:   data.no
+      ID:       data.no
       threadID: data.resto or data.no
       boardID:  boardID
       isReply:  !!data.resto
@@ -44,13 +44,16 @@ Build =
       isArchived: !!data.archived
       # file status
       fileDeleted: !!data.filedeleted
+      xa18:     data.xa18
     o.info =
       subject:  Build.unescape data.sub
       email:    Build.unescape data.email
       name:     Build.unescape(data.name) or ''
       tripcode: data.trip
+      pass:     if data.since4pass? then "#{data.since4pass}" else undefined
       uniqueID: data.id
       flagCode: data.country
+      flagCodeTroll: data.troll_country
       flag:     Build.unescape data.country_name
       dateUTC:  data.time
       dateText: data.now
@@ -63,18 +66,19 @@ Build =
       o.file =
         name:      (Build.unescape data.filename) + data.ext
         url: if boardID is 'f'
-          "#{location.protocol}//i.4cdn.org/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
+          "#{location.protocol}//#{ImageHost.flashHost()}/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
         else
-          "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}#{data.ext}"
+          "#{location.protocol}//#{ImageHost.host()}/#{boardID}/#{data.tim}#{data.ext}"
         height:    data.h
         width:     data.w
         MD5:       data.md5
         size:      $.bytesToString data.fsize
-        thumbURL:  "#{location.protocol}//i.4cdn.org/#{boardID}/#{data.tim}s.jpg"
+        thumbURL:  "#{location.protocol}//#{ImageHost.thumbHost()}/#{boardID}/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
         tag:       data.tag
+        hasDownscale: !!data.m_img
       o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
     o
 
@@ -82,18 +86,27 @@ Build =
     html = html
       .replace(/<br\b[^<]*>/gi, '\n')
       .replace(/\n\n<span\b[^<]* class="abbr"[^]*$/i, '') # EXIF data (/p/)
-      .replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '')       # Rolls (/tg/)
-      .replace(/<span\b[^<]* class="fortune"[^]*$/i, '')  # Fortunes (/s4s/)
       .replace(/<[^>]*>/g, '')
     Build.unescape html
 
-  postFromObject: (data, boardID, suppressThumb) ->
-    o = Build.parseJSON data, boardID
-    Build.post o, suppressThumb
+  parseCommentDisplay: (html) ->
+    # Hide spoilers.
+    unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
+      while (html2 = html.replace /<s>(?:(?!<\/?s>).)*<\/s>/g, '[spoiler]') isnt html
+        html = html2
+    html = html
+      .replace(/^<b\b[^<]*>Rolled [^<]*<\/b>/i, '')      # Rolls (/tg/, /qst/)
+      .replace(/<span\b[^<]* class="fortune"[^]*$/i, '') # Fortunes (/s4s/)
+    # Remove preceding and following new lines, trailing spaces.
+    Build.parseComment(html).trim().replace(/\s+$/gm, '')
 
-  post: (o, suppressThumb) ->
-    {postID, threadID, boardID, file} = o
-    {subject, email, name, tripcode, capcode, uniqueID, flagCode, flag, dateUTC, dateText, commentHTML} = o.info
+  postFromObject: (data, boardID) ->
+    o = Build.parseJSON data, boardID
+    Build.post o
+
+  post: (o) ->
+    {ID, threadID, boardID, file} = o
+    {subject, email, name, tripcode, capcode, pass, uniqueID, flagCode, flagCodeTroll, flag, dateUTC, dateText, commentHTML} = o.info
     {staticPath, gifIcon} = Build
 
     ### Post Info ###
@@ -103,16 +116,19 @@ Build =
       if capcode is 'Founder'
         capcodePlural      = 'the Founder'
         capcodeDescription = "4chan's Founder"
+      else if capcode is 'Verified'
+        capcodePlural      = 'Verified Users'
+        capcodeDescription = ''
       else
         capcodeLong   = {'Admin': 'Administrator', 'Mod': 'Moderator'}[capcode] or capcode
         capcodePlural = "#{capcodeLong}s"
         capcodeDescription = "a 4chan #{capcodeLong}"
 
-    postLink = Build.postURL boardID, threadID, postID
+    postLink = Build.postURL boardID, threadID, ID
     quoteLink = if Build.sameThread boardID, threadID
-      "javascript:quote('#{+postID}');"
+      "javascript:quote('#{+ID}');"
     else
-      "/#{boardID}/thread/#{threadID}#q#{postID}"
+      "/#{boardID}/thread/#{threadID}#q#{ID}"
 
     postInfo = <%= readHTML('PostInfo.html') %>
 
@@ -134,14 +150,14 @@ Build =
 
     container = $.el 'div',
       className: "postContainer #{postClass}Container"
-      id:        "pc#{postID}"
+      id:        "pc#{ID}"
     $.extend container, wholePost
 
     # Fix quotelinks
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
       if (href[0] is '#') and !(Build.sameThread boardID, threadID)
-        quote.href = "/#{boardID}/thread/#{threadID}" + href
+        quote.href = ("/#{boardID}/thread/#{threadID}") + href
       else if (match = href.match /^\/([^\/]+)\/thread\/(\d+)/) and (Build.sameThread match[1], match[2])
         quote.href = href.match(/(#[^#]*)?$/)[0] or '#'
       else if /^\d+(#|$)/.test(href) and not (g.VIEW is 'thread' and g.BOARD.ID is boardID) # used on /f/
@@ -162,100 +178,77 @@ Build =
       textContent: Build.summaryText '', posts, files
       href: "/#{boardID}/thread/#{threadID}"
 
-  thread: (board, data) ->
-    Build.spoilerRange[board] = data.custom_spoiler
-
-    if OP = board.posts[data.no]
-      OP = null if OP.isFetchedQuote
-
-    if OP and (root = OP.nodes.root.parentNode)
+  thread: (thread, data, withReplies) ->
+    if (root = thread.nodes.root)
       $.rmAll root
     else
-      root = $.el 'div',
+      thread.nodes.root = root = $.el 'div',
         className: 'thread'
         id: "t#{data.no}"
-
-    $.add root, Build.excerptThread(board, data, OP)
-    root
-
-  excerptThread: (board, data, OP) ->
-    nodes = [if OP then OP.nodes.root else Build.postFromObject data, board.ID, true]
-    if data.omitted_posts or !Conf['Show Replies'] and data.replies
-      [posts, files] = if Conf['Show Replies']
+    $.add root, Build.hat.cloneNode(false) if Build.hat
+    $.add root, thread.OP.nodes.root
+    if data.omitted_posts or !withReplies and data.replies
+      [posts, files] = if withReplies
         # XXX data.omitted_images is not accurate.
         [data.omitted_posts, data.images - data.last_replies.filter((data) -> !!data.ext).length]
       else
         [data.replies, data.images]
-      nodes.push Build.summary board.ID, data.no, posts, files
-    nodes
+      summary = Build.summary thread.board.ID, data.no, posts, files
+      $.add root, summary
+    root
 
-  catalogThread: (thread) ->
+  catalogThread: (thread, data, pageCount) ->
     {staticPath, gifIcon} = Build
-    data = Index.liveThreadData[Index.liveThreadIDs.indexOf thread.ID]
+    {tn_w, tn_h} = data
 
     if data.spoiler and !Conf['Reveal Spoiler Thumbnails']
       src = "#{staticPath}spoiler"
       if spoilerRange = Build.spoilerRange[thread.board]
         # Randomize the spoiler image.
-        src += "-#{thread.board}" + Math.floor 1 + spoilerRange * Math.random()
+        src += ("-#{thread.board}") + Math.floor 1 + spoilerRange * Math.random()
       src += '.png'
       imgClass = 'spoiler-file'
+      cssText = "--tn-w: 100; --tn-h: 100;"
     else if data.filedeleted
       src = "#{staticPath}filedeleted-res#{gifIcon}"
       imgClass = 'deleted-file'
     else if thread.OP.file
       src = thread.OP.file.thumbURL
+      ratio = 250 / Math.max(tn_w, tn_h)
+      cssText = "--tn-w: #{tn_w * ratio}; --tn-h: #{tn_h * ratio};"
     else
       src = "#{staticPath}nofile.png"
       imgClass = 'no-file'
 
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
-    pageCount = Index.liveThreadIDs.indexOf(thread.ID) // Index.threadsNumPerPage + 1
 
-    comment = innerHTML: data.com or ''
+    container = $.el 'div', <%= readHTML('CatalogThread.html') %>
+    $.before thread.OP.nodes.info, [container.childNodes...]
+
+    for br in $$('br', thread.OP.nodes.comment) when br.previousSibling and br.previousSibling.nodeName is 'BR'
+      $.addClass br, 'extra-linebreak'
 
     root = $.el 'div',
-      className: 'catalog-thread'
-
-    $.extend root, <%= readHTML('CatalogThread.html') %>
-
-    root.dataset.fullID = thread.fullID
+      className: 'thread catalog-thread'
+      id: "t#{thread}"
     $.addClass root, thread.OP.highlights... if thread.OP.highlights
-
-    for quote in $$ '.quotelink', root.lastElementChild
-      href = quote.getAttribute 'href'
-      quote.href = "/#{thread.board}/thread/#{thread.ID}" + href if href[0] is '#'
-
-    for exif in $$ '.abbr, .exif', root.lastElementChild
-      $.rm exif
-
-    for pp in $$ '.prettyprint', root.lastElementChild
-      cc = $.el 'span', className: 'catalog-code'
-      $.add cc, [pp.childNodes...]
-      $.replace pp, cc
-
-    for br in $$ 'br', root.lastElementChild when br.previousSibling?.nodeName is 'BR'
-      $.rm br
-
-    if thread.isSticky
-      $.add $('.catalog-icons', root), $.el 'img',
-        src: "#{staticPath}sticky#{gifIcon}"
-        className: 'stickyIcon'
-        title: 'Sticky'
-
-    if thread.isClosed
-      $.add $('.catalog-icons', root), $.el 'img',
-        src: "#{staticPath}closed#{gifIcon}"
-        className: 'closedIcon'
-        title: 'Closed'
-
-    if data.bumplimit
-      $.addClass $('.post-count', root), 'warning'
-
-    if data.imagelimit
-      $.addClass $('.file-count', root), 'warning'
+    $.addClass root, 'noFile' unless thread.OP.file
+    root.style.cssText = cssText or ''
 
     root
 
-return Build
+  catalogReply: (thread, data) ->
+    excerpt = ''
+    if data.com
+      excerpt = Build.parseCommentDisplay(data.com).replace(/>>\d+/g, '').trim().replace(/\n+/g, ' // ')
+    if data.ext
+      excerpt or= "#{Build.unescape data.filename}#{data.ext}"
+    if data.com
+      excerpt or= Build.unescape data.com.replace(/<br\b[^<]*>/gi, ' // ')
+    excerpt or= '\xA0'
+    excerpt = "#{excerpt[...70]}..." if excerpt.length > 73
+
+    link = Build.postURL thread.board.ID, thread.ID, data.no
+    $.el 'div', {className: 'catalog-reply'},
+      <%= readHTML('CatalogReply.html') %>

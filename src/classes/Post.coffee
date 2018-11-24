@@ -6,31 +6,42 @@ class Post
     @normalizedOriginal = Build.Test.normalize root
     <% } %>
 
-    @ID      = +root.id[2..]
-    @fullID  = "#{@board}.#{@ID}"
-    @context = @
+    @ID       = +root.id.match(/\d*$/)[0]
+    @threadID = @thread.ID
+    @boardID  = @board.ID
+    @fullID   = "#{@board}.#{@ID}"
+    @context  = @
 
     root.dataset.fullID = @fullID
 
     @nodes = @parseNodes root
 
-    unless (@isReply = $.hasClass @nodes.post, 'reply')
+    if not (@isReply = @ID isnt @threadID)
       @thread.OP = @
-      @thread.isArchived = !!$ '.archivedIcon', @nodes.info
-      @thread.isSticky   = !!$ '.stickyIcon', @nodes.info
-      @thread.isClosed   = @thread.isArchived or !!$ '.closedIcon', @nodes.info
-      @thread.kill() if @thread.isArchived
+      for key in ['isSticky', 'isClosed', 'isArchived']
+        @thread[key] = if (selector = Site.selectors.icons[key]) then !!$(selector, @nodes.info) else false
+      if @thread.isArchived
+        @thread.isClosed = true
+        @thread.kill()
 
     @info =
-      nameBlock: if Conf['Anonymize'] then 'Anonymous' else @nodes.nameBlock.textContent.trim()
       subject:   @nodes.subject?.textContent or undefined
       name:      @nodes.name?.textContent
       tripcode:  @nodes.tripcode?.textContent
-      uniqueID:  @nodes.uniqueID?.firstElementChild.textContent
+      uniqueID:  @nodes.uniqueID?.textContent
       capcode:   @nodes.capcode?.textContent.replace '## ', ''
+      pass:      @nodes.pass?.title.match(/\d*$/)[0]
       flagCode:  @nodes.flag?.className.match(/flag-(\w+)/)?[1].toUpperCase()
+      flagCodeTroll: @nodes.flag?.src?.match(/(\w+)\.gif$/)?[1].toUpperCase()
       flag:      @nodes.flag?.title
-      date:      if @nodes.date then new Date(@nodes.date.dataset.utc * 1000)
+      date:      if @nodes.date then new Date(@nodes.date.getAttribute('datetime')?.trim() or (@nodes.date.dataset.utc * 1000))
+
+    if Conf['Anonymize']
+      @info.nameBlock = 'Anonymous'
+    else
+      @info.nameBlock = "#{@info.name or ''} #{@info.tripcode or ''}".trim()
+    @info.nameBlock += " ## #{@info.capcode}"     if @info.capcode
+    @info.nameBlock += " (ID: #{@info.uniqueID})" if @info.uniqueID
 
     @parseComment()
     @parseQuotes()
@@ -53,27 +64,21 @@ class Post
     g.posts.push   @fullID, @
 
   parseNodes: (root) ->
-    post = $ '.post',     root
-    info = $ '.postInfo', post
+    s = Site.selectors
+    post = $(s.post, root) or root
+    info = $ s.infoRoot, post
     nodes =
       root:       root
       post:       post
       info:       info
-      subject:    $ '.subject',            info
-      name:       $ '.name',               info
-      email:      $ '.useremail',          info
-      tripcode:   $ '.postertrip',         info
-      uniqueID:   $ '.posteruid',          info
-      capcode:    $ '.capcode.hand',       info
-      flag:       $ '.flag, .countryFlag', info
-      date:       $ '.dateTime',           info
-      nameBlock:  $ '.nameBlock',          info
-      quote:      $ '.postNum > a:nth-of-type(2)', info
-      reply:      $ '.replylink',          info
-      comment:    $ '.postMessage', post
-      links:      []
+      comment:    $ s.comment, post
       quotelinks: []
       archivelinks: []
+      embedlinks:   []
+    for key, selector of s.info
+      nodes[key] = $ selector, info
+    Site.parseNodes?(@, nodes)
+    nodes.uniqueIDRoot or= nodes.uniqueID
 
     # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
     # https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/7560353/
@@ -81,9 +86,9 @@ class Post
       Object.defineProperty nodes, 'backlinks',
         configurable: true
         enumerable:   true
-        get: -> info.getElementsByClassName 'backlink'
+        get: -> post.getElementsByClassName 'backlink'
     else
-      nodes.backlinks = info.getElementsByClassName 'backlink'
+      nodes.backlinks = post.getElementsByClassName 'backlink'
 
     nodes
 
@@ -96,29 +101,28 @@ class Post
     # Remove:
     #   'Comment too long'...
     #   EXIF data. (/p/)
-    #   Rolls. (/tg/)
-    #   Fortunes. (/s4s/)
-    bq = @nodes.comment.cloneNode true
-    for node in $$ '.abbr + br, .exif, b, .fortune', bq
-      $.rm node
-    if abbr = $ '.abbr', bq
-      $.rm abbr
+    @nodes.commentClean = bq = @nodes.comment.cloneNode true
+    Site.cleanComment?(bq)
     @info.comment = @nodesToText bq
-    if abbr
-      @info.comment = @info.comment.replace /\n\n$/, ''
 
-    # Hide spoilers.
-    # Remove:
+  commentDisplay: ->
+    # Get the comment's text for display purposes (e.g. notifications, excerpts).
+    # In addition to what's done in generating `@info.comment`, remove:
+    #   Spoilers. (filter to '[spoiler]')
+    #   Rolls. (/tg/, /qst/)
+    #   Fortunes. (/s4s/)
     #   Preceding and following new lines.
     #   Trailing spaces.
-    commentDisplay = @info.comment
-    unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
-      spoilers = $$ 's', bq
-      if spoilers.length
-        for node in spoilers
-          $.replace node, $.tn '[spoiler]'
-        commentDisplay = @nodesToText bq
-    @info.commentDisplay = commentDisplay.trim().replace /\s+$/gm, ''
+    bq = @nodes.commentClean.cloneNode true
+    @cleanSpoilers bq unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
+    Site.cleanCommentDisplay?(bq)
+    @nodesToText(bq).trim().replace(/\s+$/gm, '')
+
+  commentOrig: ->
+    # Get the comment's text for reposting purposes.
+    bq = @nodes.commentClean.cloneNode true
+    Site.insertTags?(bq)
+    @nodesToText bq
 
   nodesToText: (bq) ->
     text = ""
@@ -128,11 +132,15 @@ class Post
       text += node.data or '\n'
     text
 
+  cleanSpoilers: (bq) ->
+    spoilers = $$ Site.selectors.spoiler, bq
+    for node in spoilers
+      $.replace node, $.tn '[spoiler]'
+    return
+
   parseQuotes: ->
     @quotes = []
-    # XXX https://github.com/4chan/4chan-JS/issues/77
-    # 4chan currently creates quote links inside [code] tags; ignore them
-    for quotelink in $$ ':not(pre) > .quotelink', @nodes.comment
+    for quotelink in $$ Site.selectors.quotelink, @nodes.comment
       @parseQuote quotelink
     return
 
@@ -143,13 +151,7 @@ class Post
     #  - catalog links. (>>>/b/catalog or >>>/b/search)
     #  - rules links. (>>>/a/rules)
     #  - text-board quotelinks. (>>>/img/1234)
-    match = quotelink.href.match ///
-      ^https?://boards\.4chan\.org/+
-      ([^/]+) # boardID
-      /+(?:res|thread)/+\d+(?:[/?][^#]*)?#p
-      (\d+)   # postID
-      $
-    ///
+    match = quotelink.href.match Site.regexp.quotelink
     return unless match or (@isClone and quotelink.dataset.postID) # normal or resurrected quote
 
     @nodes.quotelinks.push quotelink
@@ -157,34 +159,34 @@ class Post
     return if @isClone
 
     # ES6 Set when?
-    fullID = "#{match[1]}.#{match[2]}"
+    fullID = "#{match[1]}.#{match[3]}"
     @quotes.push fullID unless fullID in @quotes
 
   parseFile: ->
-    return unless fileEl = $ '.file', @nodes.post
-    return unless link   = $ '.fileText > a, .fileText-original > a', fileEl
-    return unless info   = link.nextSibling?.textContent.match /\(([\d.]+ [KMG]?B).*\)/
-    fileText = fileEl.firstElementChild
-    @file =
-      text:       fileText
-      link:       link
-      url:        link.href
-      name:       fileText.title or link.title or link.textContent
-      size:       info[1]
-      isImage:    /(jpg|png|gif)$/i.test link.href
-      isVideo:    /webm$/i.test link.href
-      dimensions: info[0].match(/\d+x\d+/)?[0]
-      tag:        info[0].match(/,[^,]*, ([a-z]+)\)/i)?[1]
-    size  = +@file.size.match(/[\d.]+/)[0]
-    unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
+    file = {}
+    for key, selector of Site.selectors.file
+      file[key] = $ selector, @nodes.root
+    file.thumbLink = file.thumb?.parentNode
+
+    return if not (file.text and file.link)
+    return if not Site.parseFile @, file
+
+    $.extend file,
+      url:     file.link.href
+      isImage: /(jpe?g|png|gif)$/i.test file.link.href
+      isVideo: /(webm|mp4)$/i.test file.link.href
+    size  = +file.size.match(/[\d.]+/)[0]
+    unit  = ['B', 'KB', 'MB', 'GB'].indexOf file.size.match(/\w+$/)[0]
     size *= 1024 while unit-- > 0
-    @file.sizeInBytes = size
-    if (thumb = $ '.fileThumb > [data-md5]', fileEl)
-      $.extend @file,
-        thumb:     thumb
-        thumbURL:  if m = link.href.match(/\d+(?=\.\w+$)/) then "#{location.protocol}//i.4cdn.org/#{@board}/#{m[0]}s.jpg"
-        MD5:       thumb.dataset.md5
-        isSpoiler: $.hasClass thumb.parentNode, 'imgspoiler'
+    file.sizeInBytes = size
+
+    @file = file
+
+  @deadMark =
+    # \u00A0 is nbsp
+    $.el 'span',
+      textContent: '\u00A0(Dead)'
+      className:   'qmark-dead'
 
   kill: (file) ->
     if file
@@ -197,7 +199,7 @@ class Post
       $.rmClass  @nodes.root, 'deleted-file'
       $.addClass @nodes.root, 'deleted-post'
 
-    unless (strong = $ 'strong.warning', @nodes.info)
+    if not (strong = $ 'strong.warning', @nodes.info)
       strong = $.el 'strong',
         className: 'warning'
       $.after $('input', @nodes.info), strong
@@ -211,7 +213,7 @@ class Post
     # Get quotelinks/backlinks to this post
     # and paint them (Dead).
     for quotelink in Get.allQuotelinksLinkingTo @ when not $.hasClass quotelink, 'deadlink'
-      quotelink.textContent = quotelink.textContent + '\u00A0(Dead)'
+      $.add quotelink, Post.deadMark.cloneNode(true)
       $.addClass quotelink, 'deadlink'
     return
 
@@ -232,7 +234,7 @@ class Post
       clone.resurrect()
 
     for quotelink in Get.allQuotelinksLinkingTo @ when $.hasClass quotelink, 'deadlink'
-      quotelink.textContent = quotelink.textContent.replace '\u00A0(Dead)', ''
+      $.rm $('.qmark-dead', quotelink)
       $.rmClass quotelink, 'deadlink'
     return
 
@@ -242,6 +244,8 @@ class Post
     @board.posts.rm @
 
   addClone: (context, contractThumb) ->
+    # Callbacks may not have been run yet due to anti-browser-lock delay in Main.callbackNodesDB.
+    Callbacks.Post.execute @
     new Post.Clone @, context, contractThumb
 
   rmClone: (index) ->
@@ -250,4 +254,9 @@ class Post
       clone.nodes.root.dataset.clone = index++
     return
 
-return Post
+  setCatalogOP: (isCatalogOP) ->
+    @nodes.root.classList.toggle 'catalog-container', isCatalogOP
+    @nodes.root.classList.toggle 'opContainer', !isCatalogOP
+    @nodes.post.classList.toggle 'catalog-post', isCatalogOP
+    @nodes.post.classList.toggle 'op', !isCatalogOP
+    @nodes.post.style.left = @nodes.post.style.right = null

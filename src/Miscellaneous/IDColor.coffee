@@ -10,7 +10,7 @@ IDColor =
       cb:   @node
 
   node: ->
-    return if @isClone or !((uid = @info.uniqueID) and (span = $ 'span.hand', @nodes.uniqueID))
+    return if @isClone or !((uid = @info.uniqueID) and (span = @nodes.uniqueID))
 
     rgb = IDColor.ids[uid] or IDColor.compute uid
 
@@ -47,5 +47,3 @@ IDColor =
     while i < 8
       msg = (msg << 5) - msg + uid.charCodeAt i++
     msg
-
-return IDColor

@@ -17,7 +17,7 @@ Keybinds =
     Conf[hotkey] = key
 
   keydown: (e) ->
-    return unless key = Keybinds.keyCode e
+    return if not (key = Keybinds.keyCode e)
     {target} = e
     if target.nodeName in ['INPUT', 'TEXTAREA']
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test(key) and not /^Alt\+(\d|Up|Down|Left|Right)$/.test(key)
@@ -77,6 +77,15 @@ Keybinds =
       when Conf['Toggle sage']
         return unless QR.nodes and !QR.nodes.el.hidden
         Keybinds.sage()
+      when Conf['Toggle Cooldown']
+        return unless QR.nodes and !QR.nodes.el.hidden and $.hasClass(QR.nodes.fileSubmit, 'custom-cooldown')
+        QR.toggleCustomCooldown()
+      when Conf['Post from URL']
+        return unless QR.postingIsEnabled
+        QR.handleUrl ''
+      when Conf['Add new post']
+        return unless QR.postingIsEnabled
+        QR.addPost()
       when Conf['Submit QR']
         return unless QR.nodes and !QR.nodes.el.hidden
         QR.submit() if !QR.status()
@@ -97,6 +106,12 @@ Keybinds =
       when Conf['Update thread watcher']
         return unless ThreadWatcher.enabled
         ThreadWatcher.buttonFetchAll()
+      when Conf['Toggle thread watcher']
+        return unless ThreadWatcher.enabled
+        ThreadWatcher.toggleWatcher()
+      when Conf['Mark thread read']
+        return unless g.VIEW is 'index' and thread and UnreadIndex.enabled
+        UnreadIndex.markRead.call threadRoot
       # Images
       when Conf['Expand image']
         return unless ImageExpand.enabled and threadRoot
@@ -108,19 +123,19 @@ Keybinds =
         return unless Gallery.enabled
         Gallery.cb.toggle()
       when Conf['fappeTyme']
-        return unless Conf['Fappe Tyme'] and g.VIEW in ['index', 'thread']
+        return unless FappeTyme.nodes?.fappe
         FappeTyme.toggle 'fappe'
       when Conf['werkTyme']
-        return unless Conf['Werk Tyme'] and g.VIEW in ['index', 'thread']
+        return unless FappeTyme.nodes?.werk
         FappeTyme.toggle 'werk'
       # Board Navigation
       when Conf['Front page']
         if Conf['JSON Index'] and g.VIEW is 'index' and g.BOARD.ID isnt 'f'
           Index.userPageNav 1
         else
-          window.location = "/#{g.BOARD}/"
+          location.href = "/#{g.BOARD}/"
       when Conf['Open front page']
-        $.open "/#{g.BOARD}/"
+        $.open "#{location.origin}/#{g.BOARD}/"
       when Conf['Next page']
         return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         if Conf['JSON Index']
@@ -128,7 +143,7 @@ Keybinds =
           $('.next button', Index.pagelist).click()
         else
           if form = $ '.next form'
-            window.location = form.action
+            location.href = form.action
       when Conf['Previous page']
         return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         if Conf['JSON Index']
@@ -136,7 +151,7 @@ Keybinds =
           $('.prev button', Index.pagelist).click()
         else
           if form = $ '.prev form'
-            window.location = form.action
+            location.href = form.action
       when Conf['Search form']
         return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         searchInput = if Conf['JSON Index'] then Index.searchInput else $.id('search-box')
@@ -144,16 +159,16 @@ Keybinds =
         searchInput.focus()
       when Conf['Paged mode']
         return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
-        window.location = if g.VIEW is 'index' then '#paged' else "/#{g.BOARD}/#paged"
+        location.href = if g.VIEW is 'index' then '#paged' else "/#{g.BOARD}/#paged"
       when Conf['Infinite scrolling mode']
         return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
-        window.location = if g.VIEW is 'index' then '#infinite' else "/#{g.BOARD}/#infinite"
+        location.href = if g.VIEW is 'index' then '#infinite' else "/#{g.BOARD}/#infinite"
       when Conf['All pages mode']
         return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
-        window.location = if g.VIEW is 'index' then '#all-pages' else "/#{g.BOARD}/#all-pages"
+        location.href = if g.VIEW is 'index' then '#all-pages' else "/#{g.BOARD}/#all-pages"
       when Conf['Open catalog']
         return if g.BOARD.ID is 'f'
-        window.location = CatalogLinks.catalog()
+        location.href = CatalogLinks.catalog()
       when Conf['Cycle sort type']
         return unless Conf['JSON Index'] and g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         Index.cycleSortType()
@@ -167,6 +182,8 @@ Keybinds =
       when Conf['Expand thread']
         return unless g.VIEW is 'index' and threadRoot
         ExpandThread.toggle thread
+        # Keep thread from moving off screen when contracted.
+        Header.scrollTo threadRoot
       when Conf['Open thread']
         return unless g.VIEW is 'index' and threadRoot
         Keybinds.open thread
@@ -187,6 +204,11 @@ Keybinds =
         return unless thread and ThreadHiding.db
         Header.scrollTo threadRoot
         ThreadHiding.toggle thread
+      when Conf['Quick Filter MD5']
+        return unless threadRoot
+        post = Keybinds.post threadRoot
+        Keybinds.hl +1, threadRoot
+        Filter.quickFilterMD5.call post
       when Conf['Previous Post Quoting You']
         return unless threadRoot and QuoteYou.db
         QuoteYou.cb.seek 'preceding'
@@ -194,7 +216,7 @@ Keybinds =
         return unless threadRoot and QuoteYou.db
         QuoteYou.cb.seek 'following'
       <% if (readJSON('/.tests_enabled')) { %>
-      when 't'
+      when 'v'
         return unless threadRoot
         Build.Test.testAll()
       <% } %>
@@ -243,19 +265,24 @@ Keybinds =
       if e.shiftKey then key = 'Shift+' + key
     key
 
+  post: (thread) ->
+    $('.post.highlight', thread) or $('.op', thread)
+
   qr: (thread) ->
     QR.open()
     if thread?
-      QR.quote.call $ 'input', $('.post.highlight', thread) or thread
+      QR.quote.call Keybinds.post thread
     QR.nodes.com.focus()
 
   tags: (tag, ta) ->
-    supported = switch tag
-      when 'spoiler'     then !!$ '.postForm input[name=spoiler]'
-      when 'code'        then g.BOARD.ID is 'g'
-      when 'math', 'eqn' then g.BOARD.ID is 'sci'
-      when 'sjis'        then g.BOARD.ID is 'jp'
-    new Notice 'warning', "[#{tag}] tags are not supported on /#{g.BOARD}/.", 20 unless supported
+    BoardConfig.ready ->
+      {config} = g.BOARD
+      supported = switch tag
+        when 'spoiler'     then !!config.spoilers
+        when 'code'        then !!config.code_tags
+        when 'math', 'eqn' then !!config.math_tags
+        when 'sjis'        then !!config.sjis_tags
+      (new Notice 'warning', "[#{tag}] tags are not supported on /#{g.BOARD}/.", 20 unless supported)
 
     value    = ta.value
     selStart = ta.selectionStart
@@ -267,7 +294,7 @@ Keybinds =
       value[selEnd..]
 
     # Move the caret to the end of the selection.
-    range = "[#{tag}]".length + selEnd
+    range = ("[#{tag}]").length + selEnd
     ta.setSelectionRange range, range
 
     # Fire the 'input' event
@@ -283,14 +310,14 @@ Keybinds =
     if all
       ImageExpand.cb.toggleAll()
     else
-      post = Get.postFromNode $('.post.highlight', thread) or $ '.op', thread
-      ImageExpand.toggle post
+      post = Get.postFromNode Keybinds.post thread
+      ImageExpand.toggle post if post.file
 
   open: (thread, tab) ->
     return if g.VIEW isnt 'index'
     url = "/#{thread.board}/thread/#{thread}"
     if tab
-      $.open url
+      $.open location.origin + url
     else
       location.href = url
 
@@ -309,7 +336,7 @@ Keybinds =
           'following'
         else
           'preceding'
-        return unless next = $.x "#{axis}-sibling::div[contains(@class,'replyContainer') and not(@hidden) and not(child::div[@class='stub'])][1]/child::div[contains(@class,'reply')]", root
+        return if not (next = $.x "#{axis}-sibling::div[contains(@class,'replyContainer') and not(@hidden) and not(child::div[@class='stub'])][1]/child::div[contains(@class,'reply')]", root)
         Header.scrollToIfNeeded next, delta is +1
         @focus next
         $.rmClass postEl, 'highlight'
@@ -325,5 +352,3 @@ Keybinds =
 
   focus: (post) ->
     $.addClass post, 'highlight'
-
-return Keybinds

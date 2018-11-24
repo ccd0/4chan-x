@@ -7,11 +7,11 @@
 </p>
 <ul>You can use these settings with each regular expression, separate them with semicolons:
   <li>
-    Per boards, separate them with commas. It is global if not specified.<br>
-    For example: <code>boards:a,jp;</code>.
+    Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>
+    For example: <code>boards:a,jp;</code>.<br>
   </li>
   <li>
-    In case of a global rule, select boards to be excluded from the filter.<br>
+    In case of a global rule or one that uses <code>sfw</code>/<code>nsfw</code>, select boards to be excluded from the filter.<br>
     For example: <code>exclude:vg,v;</code>.
   </li>
   <li>
@@ -29,6 +29,11 @@
   <li>
     Highlighted OPs will have their threads put on top of the board index by default.<br>
     For example: <code>top:yes;</code> or <code>top:no;</code>.
+  </li>
+  <li>
+    Filters in the "General" section apply to multiple fields, by default <code>subject,name,filename,comment</code>.<br>
+    The fields can be specified with the <code>type</code> option, separated by commas.<br>
+    For example: <code>type:@{filterTypes};</code>.
   </li>
 </ul>
 <p>

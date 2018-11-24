@@ -1,6 +1,6 @@
 ImageExpand =
   init: ->
-    return unless @enabled = Conf['Image Expansion'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
+    return if not (@enabled = Conf['Image Expansion'] and g.VIEW in ['index', 'thread'])
 
     @EAI = $.el 'a',
       className: 'expand-all-shortcut fa fa-expand'
@@ -20,7 +20,7 @@ ImageExpand =
 
   node: ->
     return unless @file and (@file.isImage or @file.isVideo)
-    $.on @file.thumb.parentNode, 'click', ImageExpand.cb.toggle
+    $.on @file.thumbLink, 'click', ImageExpand.cb.toggle
 
     if @isClone 
       if @file.isExpanding
@@ -41,7 +41,7 @@ ImageExpand =
 
   cb:
     toggle: (e) ->
-      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+      return if $.modifiedClick e
       post = Get.postFromNode @
       {file} = post
       return if file.isExpanded and ImageCommon.onControls e
@@ -53,13 +53,15 @@ ImageExpand =
 
     toggleAll: ->
       $.event 'CloseMenu'
+      threadRoot = Nav.getThread()
       toggle = (post) ->
         {file} = post
         return unless file and (file.isImage or file.isVideo) and doc.contains post.nodes.root
         if ImageExpand.on and
-          (!Conf['Expand spoilers'] and file.isSpoiler or
-          !Conf['Expand videos']    and file.isVideo or
-          Conf['Expand from here']  and Header.getTopOf(file.thumb) < 0)
+          (!Conf['Expand spoilers']  and file.isSpoiler or
+          !Conf['Expand videos']     and file.isVideo or
+          Conf['Expand from here']   and Header.getTopOf(file.thumb) < 0 or
+          Conf['Expand thread only'] and g.VIEW is 'index' and !threadRoot?.contains(file.thumb))
             return
         $.queueTask func, post
 
@@ -122,8 +124,8 @@ ImageExpand =
     $.rmClass post.nodes.root, 'expanded-image'
     $.rmClass file.thumb,      'expanding'
     $.rm file.videoControls
-    file.thumb.parentNode.href   = file.url
-    file.thumb.parentNode.target = '_blank'
+    file.thumbLink.href   = file.url
+    file.thumbLink.target = '_blank'
     for x in ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying', 'scrollIntoView']
       delete file[x]
 
@@ -146,6 +148,7 @@ ImageExpand =
       ImageCommon.pause el
       for eventName, cb of ImageExpand.videoCB
         $.off el, eventName, cb
+    ImageCommon.rewind file.thumb if Conf['Restart when Opened']
     delete file.fullImage
     $.queueTask ->
       # XXX Work around Chrome/Chromium not firing mouseover on the thumbnail.
@@ -157,7 +160,7 @@ ImageExpand =
   expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
     {file} = post
-    {thumb, isVideo} = file
+    {thumb, thumbLink, isVideo} = file
     return if post.isHidden or file.isExpanding or file.isExpanded
 
     $.addClass thumb, 'expanding'
@@ -168,6 +171,7 @@ ImageExpand =
     else if ImageCommon.cache?.dataset.fullID is post.fullID
       el = file.fullImage = ImageCommon.popCache()
       $.on el, 'error', ImageExpand.error
+      ImageCommon.rewind el if Conf['Restart when Opened'] and el.id isnt 'ihover'
       el.removeAttribute 'id'
     else
       el = file.fullImage = $.el (if isVideo then 'video' else 'img')
@@ -180,13 +184,13 @@ ImageExpand =
 
     if isVideo
       # add contract link to file info
-      if Conf['Show Controls'] and Conf['Click Passthrough'] and !file.videoControls
+      if !file.videoControls
         file.videoControls = ImageExpand.videoControls.cloneNode true
         $.add file.text, file.videoControls
 
       # disable link to file so native controls can work
-      thumb.parentNode.removeAttribute 'href'
-      thumb.parentNode.removeAttribute 'target'
+      thumbLink.removeAttribute 'href'
+      thumbLink.removeAttribute 'target'
 
       el.loop = true
       Volume.setup el
@@ -266,12 +270,12 @@ ImageExpand =
     if ImageCommon.decodeError @, post
       return ImageExpand.contract post
     # Don't autoretry images from the archive.
-    unless @src.split('/')[2] is 'i.4cdn.org'
+    if ImageCommon.isFromArchive @
       return ImageExpand.contract post
     ImageCommon.error @, post, 10 * $.SECOND, (URL) ->
       if post.file.isExpanding or post.file.isExpanded
         ImageExpand.contract post
-        ImageExpand.expand post, URL if URL
+        (ImageExpand.expand post, URL if URL)
 
   menu:
     init: ->
@@ -300,5 +304,3 @@ ImageExpand =
       $.event 'change', null, input
       $.on input, 'change', $.cb.checked
       el: label
-
-return ImageExpand

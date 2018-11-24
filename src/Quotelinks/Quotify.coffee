@@ -2,6 +2,8 @@ Quotify =
   init: ->
     return if g.VIEW not in ['index', 'thread'] or !Conf['Resurrect Quotes']
 
+    $.addClass doc, 'resurrect-quotes'
+
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
@@ -20,11 +22,11 @@ Quotify =
     return
 
   parseArchivelink: (link) ->
-    return unless (m = link.pathname.match /^\/([^/]+)\/thread\/S?(\d+)\/?$/)
-    return if link.hostname is 'boards.4chan.org'
+    return if not (m = link.pathname.match /^\/([^/]+)\/thread\/S?(\d+)\/?$/)
+    return if link.hostname in ['boards.4chan.org', 'boards.4channel.org']
     boardID  = m[1]
     threadID = m[2]
-    postID   = link.hash.match(/^#p?(\d+)$|$/)[1] or threadID
+    postID   = link.hash.match(/^#[pq]?(\d+)$|$/)[1] or threadID
     if Redirect.to 'post', {boardID, postID}
       $.addClass link, 'quotelink'
       $.extend link.dataset, {boardID, threadID, postID}
@@ -41,7 +43,7 @@ Quotify =
       return
 
     quote = deadlink.textContent
-    return unless postID = quote.match(/\d+$/)?[0]
+    return if not (postID = quote.match(/\d+$/)?[0])
     if postID[0] is '0'
       # Fix quotelinks that start with a `0`.
       Quotify.fixDeadlink deadlink
@@ -65,7 +67,8 @@ Quotify =
         a = $.el 'a',
           href:        Build.postURL boardID, post.thread.ID, postID
           className:   'quotelink deadlink'
-          textContent: "#{quote}\u00A0(Dead)"
+          textContent: quote
+        $.add a, Post.deadMark.cloneNode(true)
         $.extend a.dataset, {boardID, threadID: post.thread.ID, postID}
 
     else
@@ -76,7 +79,8 @@ Quotify =
         a = $.el 'a',
           href:        redirect or 'javascript:;'
           className:   'deadlink'
-          textContent: "#{quote}\u00A0(Dead)"
+          textContent: quote
+        $.add a, Post.deadMark.cloneNode(true)
         if fetchable
           # Make it function as a normal quote if we can fetch the post.
           $.addClass a, 'quotelink'
@@ -85,7 +89,7 @@ Quotify =
     @quotes.push quoteID unless quoteID in @quotes
 
     unless a
-      deadlink.textContent = "#{quote}\u00A0(Dead)"
+      $.add deadlink, Post.deadMark.cloneNode(true)
       return
 
     $.replace deadlink, a
@@ -99,5 +103,3 @@ Quotify =
       $.before deadlink, green
       $.add green, deadlink
     $.replace deadlink, [deadlink.childNodes...]
-
-return Quotify

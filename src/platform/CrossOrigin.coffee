@@ -14,23 +14,9 @@ CrossOrigin =
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
-    if /^https:\/\//.test(url) or location.protocol is 'http:'
-      xhr = new XMLHttpRequest()
-      xhr.open 'GET', url, true
-      xhr.setRequestHeader key, value for key, value of headers
-      xhr.responseType = 'arraybuffer'
-      xhr.onload = ->
-        return cb null unless @readyState is @DONE and @status in [200, 206]
-        contentType        = @getResponseHeader 'Content-Type'
-        contentDisposition = @getResponseHeader 'Content-Disposition'
-        cb new Uint8Array(@response), contentType, contentDisposition
-      xhr.onerror = xhr.onabort = ->
-        cb null
-      xhr.send()
-    else
-      eventPageRequest url, 'arraybuffer', ({response, contentType, contentDisposition, error}) ->
-        return cb null if error
-        cb new Uint8Array(response), contentType, contentDisposition
+    eventPageRequest url, 'arraybuffer', ({response, contentType, contentDisposition, error}) ->
+      return cb null if error
+      cb new Uint8Array(response), contentType, contentDisposition
     <% } %>
     <% if (type === 'userscript') { %>
     # Use workaround for binary data in Greasemonkey versions < 3.2, in Pale Moon for all GM versions, and in JS Blocker (Safari).
@@ -62,7 +48,7 @@ CrossOrigin =
       options.overrideMimeType = 'text/plain; charset=x-user-defined'
     else
       options.responseType = 'arraybuffer'
-    GM_xmlhttpRequest options
+    (GM?.xmlHttpRequest or GM_xmlhttpRequest) options
     <% } %>
 
   file: (url, cb) ->
@@ -82,43 +68,63 @@ CrossOrigin =
       blob.name = name
       cb blob
 
+  # Attempts to fetch `url` in JSON format using cross-origin privileges, if available.
+  # On success, calls `cb` with a `this` containing properties `status`, `statusText`, `response` and caches result.
+  # On error/abort, calls `cb` with a `this` of `{}`.
+  # If `bypassCache` is true, ignores previously cached results.
   json: do ->
     callbacks = {}
-    responses = {}
-    (url, cb) ->
-      <% if (type === 'crx') { %>
-      if /^https:\/\//.test(url) or location.protocol is 'http:'
-        return $.cache url, (-> cb @response), responseType: 'json'
+    results = {}
+    success = (url, result) ->
+      for cb in callbacks[url]
+        $.queueTask -> cb.call result
+      delete callbacks[url]
+      results[url] = result
+    failure = (url) ->
+      for cb in callbacks[url]
+        $.queueTask -> cb.call {}
+      delete callbacks[url]
+
+    (url, cb, bypassCache) ->
+      <% if (type === 'userscript') { %>
+      unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
+        if bypassCache
+          $.cleanCache (url2) -> url2 is url
+        if (req = $.cache url, cb, responseType: 'json')
+          $.on req, 'abort error', -> cb.call({})
+        else
+          cb.call {}
+        return
       <% } %>
-      if responses[url]
-        cb responses[url]
+
+      if bypassCache
+        delete results[url]
+      if results[url]
+        cb.call results[url]
         return
       if callbacks[url]
         callbacks[url].push cb
         return
       callbacks[url] = [cb]
+
       <% if (type === 'userscript') { %>
-      GM_xmlhttpRequest
+      (GM?.xmlHttpRequest or GM_xmlhttpRequest)
         method: "GET"
         url: url+''
         onload: (xhr) ->
-          response = JSON.parse xhr.responseText
-          cb response for cb in callbacks[url]
-          delete callbacks[url]
-          responses[url] = response
-        onerror: ->
-          delete callbacks[url]
-        onabort: ->
-          delete callbacks[url]
+          {status, statusText} = xhr
+          try
+            response = JSON.parse(xhr.responseText)
+            success url, {status, statusText, response}
+          catch
+            failure url
+        onerror: -> failure(url)
+        onabort: -> failure(url)
       <% } %>
       <% if (type === 'crx') { %>
-      eventPageRequest url, 'json', ({response, error}) ->
-        if error
-          delete callbacks[url]
+      eventPageRequest url, 'json', (result) ->
+        if result.status
+          success url, result
         else
-          cb response for cb in callbacks[url]
-          delete callbacks[url]
-          responses[url] = response
+          failure url
       <% } %>
-
-return CrossOrigin

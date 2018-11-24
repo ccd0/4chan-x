@@ -7,7 +7,7 @@ ArchiveLink =
 
     entry =
       el: div
-      order: 90
+      order: 60
       open: ({ID, thread, board}) ->
         !!Redirect.to 'thread', {postID: ID, threadID: thread.ID, boardID: board.ID}
       subEntries: []
@@ -38,15 +38,19 @@ ArchiveLink =
         true
     else
       (post) ->
+        typeParam = if type is 'country' and post.info.flagCodeTroll
+          'tag'
+        else
+          type
         value = if type is 'country'
-          post.info.flagCode
+          post.info.flagCode or post.info.flagCodeTroll
         else
           Filter[type] post
         # We want to parse the exact same stuff as the filter does already.
         return false unless value
         el.href = Redirect.to 'search',
           boardID:  post.board.ID
-          type:     type
+          type:     typeParam
           value:    value
           isSearch: true
         true
@@ -55,5 +59,3 @@ ArchiveLink =
       el: el
       open: open
     }
-
-return ArchiveLink

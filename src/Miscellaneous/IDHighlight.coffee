@@ -9,8 +9,8 @@ IDHighlight =
   uniqueID: null
 
   node: ->
-    $.on @nodes.uniqueID, 'click', IDHighlight.click @ if @nodes.uniqueID
-    $.on @nodes.capcode,  'click', IDHighlight.click @ if @nodes.capcode
+    $.on @nodes.uniqueIDRoot, 'click', IDHighlight.click @ if @nodes.uniqueIDRoot
+    $.on @nodes.capcode,      'click', IDHighlight.click @ if @nodes.capcode
     IDHighlight.set @ unless @isClone
 
   set: (post) ->
@@ -21,5 +21,3 @@ IDHighlight =
     uniqueID = post.info.uniqueID or post.info.capcode
     IDHighlight.uniqueID = if IDHighlight.uniqueID is uniqueID then null else uniqueID
     g.posts.forEach IDHighlight.set
-
-return IDHighlight

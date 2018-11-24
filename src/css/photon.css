@@ -31,8 +31,14 @@
 }
 
 /* Catalog */
-:root.photon .catalog-code {
-  background-color: rgba(150, 150, 150, 0.2);
+:root.photon.catalog-hover-expand .catalog-container:hover > .post {
+  background-color: #DDD;
+}
+:root.photon.werkTyme .catalog-thread:not(:hover),
+:root.photon.werkTyme:not(.catalog-hover-expand) .catalog-thread,
+:root.photon.catalog-hover-expand .catalog-container:hover > .post,
+:root.photon.catalog-hover-expand .catalog-container:hover .catalog-reply {
+  border-color: #CCC;
 }
 
 /* Quote */
@@ -79,8 +85,13 @@
   background: rgba(255, 255, 255, .33);
 }
 
+/* Unread */
+:root.photon .unread-mark-read {
+  background-color: rgba(221,221,221,0.5);
+}
+
 /* Thread Watcher */
-:root.photon .replies-quoting-you > a, :root.photon #watcher-link.disabled.replies-quoting-you {
+:root.photon .replies-quoting-you > a, :root.photon #watcher-link.replies-quoting-you {
   color: #00F !important;
 }
 

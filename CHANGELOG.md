@@ -1,6 +1,755 @@
 **Note**: Installing the script from one of the links below will disable automatic updates. If you want automatic updates, install the script from the links on the [main page](https://www.4chan-x.net/).
 
+-Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
+
+### v1.14.4
+
+**v1.14.4.5** *(2018-11-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.5/builds/4chan-X-noupdate.crx)]
+- Fix bug in previous version causing 4channel.org to be seen as separate site in thread watcher etc.
+
+**v1.14.4.4** *(2018-11-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.4/builds/4chan-X-noupdate.crx)]
+- Update for 4channel.org
+- Don't remove code paste field if the captcha is refusing to serve a challenge.
+
+**v1.14.4.3** *(2018-11-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.3/builds/4chan-X-noupdate.crx)]
+- Add extra collapse link at bottom of expanded threads.
+- Add option `Expand thread only` in `Image Expansion` menu; makes expanding all images when in index only operate within current thread.
+- Keep threads from moving off screen when contracted via keybind.
+- Make `Mark Read` button extend across whole document.
+- Add keybind to mark thread read from index (if `Unread Line in Index` enabled). Default is `Ctrl+0`.
+- Make `Scroll to Last Read Post` operate in index if `Unread Line in Index` enabled.
+
+**v1.14.4.2** *(2018-10-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.2/builds/4chan-X-noupdate.crx)]
+- Fix unread line becoming invisible on Halloween theme.
+
+**v1.14.4.1** *(2018-10-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.1/builds/4chan-X-noupdate.crx)]
+- Move drawing of QR file onto Tegaki canvas into 4chan X so it is less likely to be affected by ad blocking.
+- Add link to FAQ section in 'Could not open file.' error.
+- Make metadata for files selected in Quick Reply available as data-type, data-height, data-width, and data-duration attributes on thumbnail.
+
+**v1.14.4.0** *(2018-10-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.3.2.
+- (pentargency) Add field in Advanced settings allowing user to customize filename of images pasted into Quick Reply box
+- (HushBugger) Embed images that have Twitter-style suffixes (e.g. .jpg:orig)
+- The `PostsInserted` event is now fired on the common ancestor of the inserted posts. It bubbles, so listeners registered on the document will still work.
+- Load Tegaki from rawgit.com if loading from s.4cdn.org fails or is blocked.
+- Add `Unread Line in Index` option (default: off), which adds a line to threads in the index showing which posts are new, and adds a link to mark them read.
+- Minor bugfixes.
+
+### v1.14.3
+
+**v1.14.3.2** *(2018-10-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.2/builds/4chan-X-noupdate.crx)]
+- whatanime.ga is now trace.moe #2106
+
+**v1.14.3.1** *(2018-09-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.1/builds/4chan-X-noupdate.crx)]
+- Fix ad blocking related issues with image downloading. #2066
+- Fix bug with hidden posts count on button in settings.
+- Update reporting to archive to work with new report form. This still doesn't work with ad blocking enabled, but you can add `@@||$xmlhttprequest,domain=sys.4chan.org` to your filters to make it work.
+- Uncheck 'Report to Archives' checkbox and disable details field by default. #1745
+
+**v1.14.3.0** *(2018-09-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.3.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.2.1.
+- Fix issues with archives, Link Title, and Github Gist embedding caused by ad blocking changes.
+
+### v1.14.2
+
+**v1.14.2.1** *(2018-06-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.2.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.2.1/builds/4chan-X-noupdate.crx)]
+- New fix for data loss issues. #1910
+
+**v1.14.2.0** *(2018-06-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.2.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.2.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.1.2.
+- Revert workaround for #1323 (7b8c2df5e4aae96b47771c0bb90989765d719d5c) which may be contributing for data corruption issues. #1910
+
+### v1.14.1
+
+**v1.14.1.2** *(2018-05-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.2/builds/4chan-X-noupdate.crx)]
+- Disable JS whitelist if 4chan X loads too late for it to be effective.
+
+**v1.14.1.1** *(2018-05-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.1/builds/4chan-X-noupdate.crx)]
+- Possible fix for data loss issues. #1875
+
+**v1.14.1.0** *(2018-05-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.1.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.0.15.
+- Allow the Quick Reply to be used on pages without an original post form such as archived threads. #242
+- Only autorefresh thread watcher from current tab.
+
+## v1.14.0
+
+**v1.14.0.15** *(2018-05-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.15/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.15/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.15.12: Update workaround for ad breaking 4chan, take two.
+
+**v1.14.0.14** *(2018-05-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.14/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.14/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.15.11: Fix issue with HTTPS Redirect. #1876
+- Merge v1.13.15.11: Update workaround for ad breaking 4chan.
+- (saxamaphone69) Support Vocaroo HTTPS embedding.
+
+**v1.14.0.13** *(2018-05-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.13/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.13/builds/4chan-X-noupdate.crx)]
+- Fix some bugs in data storage.
+
+**v1.14.0.12** *(2018-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.12/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.15.10: Show 2018 Apr 01 team names in thread updates and other posts generated from JSON.
+
+**v1.14.0.11** *(2018-03-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.11/builds/4chan-X-noupdate.crx)]
+- Fix anti-autoplay regression causing some videos not to show up.
+
+**v1.14.0.10** *(2018-02-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.10/builds/4chan-X-noupdate.crx)]
+- Support VidLii embedding.
+
+**v1.14.0.9** *(2018-02-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.9/builds/4chan-X-noupdate.crx)]
+- Revert "Possible workaround for Cloudflare 503 issue. #1746"
+
+**v1.14.0.8** *(2018-02-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.8/builds/4chan-X-noupdate.crx)]
+- Possible workaround for Cloudflare 503 issue. #1746
+- Strawpoll embedding update.
+
+**v1.14.0.7** *(2018-02-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.7/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.15.9: Fix 404 redirection on error pages without doctype. #1811
+
+**v1.14.0.6** *(2018-02-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.6/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.14.0.0 that broke 404 redirect and other features on image URLs. #1789
+
+**v1.14.0.5** *(2018-02-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.5/builds/4chan-X-noupdate.crx)]
+- Merge branch v1.13.15.8: Captcha bypass cookie does not work for starting threads. Updating to treat this case correctly.
+
+**v1.14.0.4** *(2018-01-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.4/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.15.7: Show video contract button unconditionally for now due to changes in Firefox.
+- Merge v1.13.15.7: Fix webm_audio undefined error shown on first install of script. #1778
+- Time Formatting whitespace fix for Tinyboard.
+
+**v1.14.0.3** *(2018-01-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.3/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.15.6: Bugfix to captcha opening logic. Don't ask user for new captchas when we have a bypass cookie or at least one captcha, even when many posts are queued.
+- Merge v1.13.15.6: Do not save captchas to disk or share them between tabs. They are too short-lived to be worth it now. This should reduce associated I/O errors.
+
+**v1.14.0.2** *(2018-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.2/builds/4chan-X-noupdate.crx)]
+- Small bugfixes for Tinyboard.
+
+**v1.14.0.1** *(2018-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.1/builds/4chan-X-noupdate.crx)]
+- Fix custom navigation bug from v1.14.0.0 #1774 and older issues #384, #642.
+
+**v1.14.0.0** *(2018-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.0.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.15.5.
+- Preliminary support for Tinyboard / vichan based imageboards. Only a subset of features are working. To use 4chan X on a site, use the userscript version of 4chan X and add the site the user `@match` rules. In the instructions below, replace "examplechan.com" with the site you want to add:
+  - Greasemonkey 4: [Not implemented yet](https://github.com/greasemonkey/greasemonkey/issues/2728). Use Violentmonkey or Tampermonkey for now, or edit the script if you are not auto-updating.
+  - Greasemonkey 3: Go to the "User Scripts" tab of about:addons, find 4chan X, and click "Options". On the "User Settings" tab, click the "Add" button next to "Matched Pages". Enter `https://examplechan.com/*`.
+  - Violentmonkey: Open the Violentmonkey settings page and find 4chan X. Click the edit button (looks like `</>`). Go to the "Settings" tab and enter `https://examplechan.com/*` in the "@match rules" field. Click save.
+  - Tampermonkey: Open the Tampermonkey settings page, go to the "Installed userscripts" tab, and find 4chan X. Click the edit button (pencil on paper). Go to the "Settings" tab and click the "Add" button below "User matches". Enter `https://examplechan.com/*`.
+  - If you are not auto-updating 4chan X, you can also edit the script, adding `// @match https://examplechan.com/*` (recommended) or `// @include https://examplechan.com/*` (some browsers / script engines may not support `@match`) after the existing `// @include` lines.
+
+### v1.13.15
+
+**v1.13.15.12** *(2018-05-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.12/builds/4chan-X-noupdate.crx)]
+- Update workaround for ad breaking 4chan, take two.
+
+**v1.13.15.11** *(2018-05-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.11/builds/4chan-X-noupdate.crx)]
+- Fix issue with HTTPS Redirect. #1876
+- Update workaround for ad breaking 4chan.
+
+**v1.13.15.10** *(2018-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.10/builds/4chan-X-noupdate.crx)]
+- Fix anti-autoplay regression causing some videos not to show up.
+- Show 2018 Apr 01 team names in thread updates and other posts generated from JSON.
+
+**v1.13.15.9** *(2018-02-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.9/builds/4chan-X-noupdate.crx)]
+- Fix 404 redirection on error pages without doctype. #1811
+
+**v1.13.15.8** *(2018-02-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.8/builds/4chan-X-noupdate.crx)]
+- Captcha bypass cookie does not work for starting threads. Updating to treat this case correctly.
+
+**v1.13.15.7** *(2018-01-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.7/builds/4chan-X-noupdate.crx)]
+- Show video contract button unconditionally for now due to changes in Firefox.
+- Fix webm_audio undefined error shown on first install of script. #1778
+
+**v1.13.15.6** *(2018-01-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.6/builds/4chan-X-noupdate.crx)]
+- Bugfix to captcha opening logic. Don't ask user for new captchas when we have a bypass cookie or at least one captcha, even when many posts are queued.
+- Don't save captchas to disk or share them between tabs. They are too short-lived to be worth it now. This should reduce associated I/O errors.
+
+**v1.13.15.5** *(2018-01-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.5/builds/4chan-X-noupdate.crx)]
+- Add link in settings to captcha FAQ.
+
+**v1.13.15.4** *(2018-01-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.4/builds/4chan-X-noupdate.crx)]
+- Remove Recaptcha v1 options.
+- Don't require captcha if cookie is set indicating captcha not needed yet. #1767
+- Revert race condition bugfixes from v1.13.15.0 until I'm sure they're not making things worse.
+
+**v1.13.15.3** *(2018-01-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.3/builds/4chan-X-noupdate.crx)]
+- Fix removal of stale cached thread data on index refresh which was broken by updates for GM4.
+
+**v1.13.15.2** *(2017-12-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.2/builds/4chan-X-noupdate.crx)]
+- Fix scroll wheel volume adjustment on /r/ and /wsr/. Also read list of boards allowing audio from 4chan's boards.json.
+- Minor Fixes to `Disable Autoplaying Sounds`.
+- Use HTTPS for catalog.neet.tv if on HTTPS 4chan page.
+- (pentargency) Prevent filtering of own posts.
+
+**v1.13.15.1** *(2017-12-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.14.13: Quick workaround for new ad breaking 4chan.
+
+**v1.13.15.0** *(2017-12-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.15.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.14.12.
+- Better protection against race conditions that can lead to data loss.
+
+### v1.13.14
+
+**v1.13.14.13** *(2017-12-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.13/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.13/builds/4chan-X-noupdate.crx)]
+- Quick workaround for new ad breaking 4chan.
+
+**v1.13.14.12** *(2017-12-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.12/builds/4chan-X-noupdate.crx)]
+- Feedback request.
+
+**v1.13.14.11** *(2017-12-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.11/builds/4chan-X-noupdate.crx)]
+- Fix bug causing Quick Reply errors. #1652
+
+**v1.13.14.10** *(2017-11-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.10/builds/4chan-X-noupdate.crx)]
+- Attempt to fix navigation keybind issue in Violentmonkey. #1656
+
+**v1.13.14.9** *(2017-11-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.9/builds/4chan-X-noupdate.crx)]
+- Hard disable 'Force Noscript Captcha for v1' in GM4 for now.
+- Work around double loading issue in Greasemonkey 4. #1629
+- Fix 'Open front page' keybind in Tampermonkey.
+
+**v1.13.14.8** *(2017-11-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.8/builds/4chan-X-noupdate.crx)]
+- Yet more Greasemonkey 4 related fixes.
+
+**v1.13.14.7** *(2017-11-15)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.7/builds/4chan-X-noupdate.crx)]
+- More Greasemonkey 4 related fixes.
+
+**v1.13.14.6** *(2017-11-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.6/builds/4chan-X-noupdate.crx)]
+- Turn 'Force Noscript Captcha for v1' off by default in GM4 due to missing frame support.
+- Fix bugs related to 4chan's ads.
+
+**v1.13.14.5** *(2017-10-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.5/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.13.3: Update for Halloween theme compatibility.
+
+**v1.13.14.4** *(2017-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.4/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.13.2: Drop now redundant /qa/ message.
+- Read /pol/ flags from 4chan API instead of hardcoding them.
+
+**v1.13.14.3** *(2017-10-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.3/builds/4chan-X-noupdate.crx)]
+- CSS tweaks to bottom backlinks.
+
+**v1.13.14.2** *(2017-10-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.2/builds/4chan-X-noupdate.crx)]
+- Fix bottom backlinks related error.
+
+**v1.13.14.1** *(2017-10-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.1/builds/4chan-X-noupdate.crx)]
+- Bugfix: hide OP bottom backlinks in catalog mode.
+
+**v1.13.14.0** *(2017-10-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.14.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.13.1.
+- (saxamaphone69) Implement `Bottom Backlinks` option to place backlinks below the post content rather than above it. #101
+
+### v1.13.13
+
+**v1.13.13.3** *(2017-10-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.3/builds/4chan-X-noupdate.crx)]
+- Update for Halloween theme compatibility.
+
+**v1.13.13.2** *(2017-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.2/builds/4chan-X-noupdate.crx)]
+- Drop now redundant /qa/ message.
+- Add Catalonia to /pol/ flags.
+
+**v1.13.13.1** *(2017-10-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.1/builds/4chan-X-noupdate.crx)]
+- Fix setting clearing/importing in GM4. #1531
+- Fix issue with new Tampermonkey version on Edge. #1534
+
+**v1.13.13.0** *(2017-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.13.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.12.3.
+- Experimental support for installing the Chrome extension version in Firefox.
+- Minor bugfixes.
+
+### v1.13.12
+
+**v1.13.12.3** *(2017-10-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.3/builds/4chan-X-noupdate.crx)]
+- Fix QR resizing bug in Chrome. #1516
+
+**v1.13.12.2** *(2017-10-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.2/builds/4chan-X-noupdate.crx)]
+- Workaround for Twitter embed height issues. #1517
+
+**v1.13.12.1** *(2017-09-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.11.5: Fix lag after settings changes.
+
+**v1.13.12.0** *(2017-09-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.12.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.11.4.
+- Preliminary support for Greasemonkey 4.
+- Minor custom cooldown bugfix.
+- (BeltranBot) Fix 'open thread in new tab' keybind for VM/TM
+
+### v1.13.11
+
+**v1.13.11.5** *(2017-09-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.5/builds/4chan-X-noupdate.crx)]
+- Fix lag after settings changes.
+
+**v1.13.11.4** *(2017-08-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.4/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.10.7: Fix quote preview bug when reply is in index data but no thread object exists. #1478
+
+**v1.13.11.3** *(2017-08-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.3/builds/4chan-X-noupdate.crx)]
+- Add language setting for time formatting.
+
+**v1.13.11.2** *(2017-08-12)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.2/builds/4chan-X-noupdate.crx)]
+- Last Long Reply order will now ignore hidden and filtered replies.
+
+**v1.13.11.1** *(2017-08-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.10.6: Disable 'Redirect to HTTPS' on platforms where we use localStorage for saving settings.
+
+**v1.13.11.0** *(2017-08-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.11.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.10.5.
+- Support [spoiler] and [code] tags in 'Copy Text' menu item.
+- Trim quoted text to text fully inside post. #1108
+
+### v1.13.10
+
+**v1.13.10.7** *(2017-08-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.7/builds/4chan-X-noupdate.crx)]
+- Fix quote preview bug when reply is in index data but no thread object exists. #1478
+
+**v1.13.10.6** *(2017-08-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.6/builds/4chan-X-noupdate.crx)]
+- Disable 'Redirect to HTTPS' on platforms where we use localStorage for saving settings.
+
+**v1.13.10.5** *(2017-08-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.5/builds/4chan-X-noupdate.crx)]
+- Better parsing of archive links for Quote Inlining / Hover.
+- Add Board Tips.
+
+**v1.13.10.4** *(2017-07-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.4/builds/4chan-X-noupdate.crx)]
+- Reduce disk reads preformed by QR Cooldown.
+- Change the MD5 Quick Filter button from a trash can to an X.
+
+**v1.13.10.3** *(2017-07-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.3/builds/4chan-X-noupdate.crx)]
+- Fix double sticky icon bug on /f/.
+
+**v1.13.10.2** *(2017-07-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.2/builds/4chan-X-noupdate.crx)]
+- Add an API for adding captchas to 4chan X's cache (`SaveCaptcha` event).
+
+**v1.13.10.1** *(2017-07-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.1/builds/4chan-X-noupdate.crx)]
+- Add `Redirect to HTTPS` setting and turn it on by default. #885
+- Turn `Force Noscript Captcha for v1` on by default.
+- Add "General" filter category for filters that apply to multiple fields given by `type` option. #1124
+- Various embedding updates and bugfixes, including Link Title support for Clyp.
+- (friendlyanon) Add menu item to copy a post's clean text.
+
+**v1.13.10.0** *(2017-07-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.10.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.9.6.
+- Support adjusting the length thresholds for 'Last Long Reply' order. Thresholds can be set separately for replies with and without images.
+- In Last Long Reply order, if no visible reply meets threshold and there are omitted replies, sort by first visible reply.
+- When multiple filters hide a post, non-stub filters should override with-stub filters. #1414
+- (rivertam) Add more customizable keybindings for gallery image navigation.
+
+### v1.13.9
+
+**v1.13.9.6** *(2017-06-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.6/builds/4chan-X-noupdate.crx)]
+- Include link to FAQ entry about [blob: blocking issue](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#error-reading-metadata) in warning message when can't read file metadata. #1417
+
+**v1.13.9.5** *(2017-06-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.5/builds/4chan-X-noupdate.crx)]
+- Support /pol/ custom flags in archive-related features. #1403
+
+**v1.13.9.4** *(2017-06-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.4/builds/4chan-X-noupdate.crx)]
+- Update for restoration of custom flags on /pol/. #1403
+
+**v1.13.9.3** *(2017-05-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.3/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.8.7: Fix MathJax on /sci/. #1356
+- Merge v1.13.8.7: Minor fixes for new board /bant/.
+- Restore 'Use Recaptcha v1 in Reports' functionality when reporting from native catalog. #1346
+- Fix noscript captcha in original post form on /f/.
+- (mahkoh) Hide related videos when a youtube video is paused.
+
+**v1.13.9.2** *(2017-04-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.2/builds/4chan-X-noupdate.crx)]
+- Workaround for issues with cooldown timer and other things starting in Firefox 53. #1323
+
+**v1.13.9.1** *(2017-04-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.1/builds/4chan-X-noupdate.crx)]
+- Fix captcha cleanup. #1341
+
+**v1.13.9.0** *(2017-04-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.9.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.8.5.
+- Restore support for noscript fallback version of Recaptcha v1. Can be activated through new `Force Noscript Captcha for v1` option. Only working on HTTPS currently. If used, this will validate captchas before posting.
+- `Use Recaptcha v1` will no longer replace the captcha in the original post form.
+- Make possible filtering threads without subject. #1328
+- (saxamaphone69) Small CSS fixes. #1326
+
+### v1.13.8
+
+**v1.13.8.8** *(2017-06-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.8/builds/4chan-X-noupdate.crx)]
+- Update for restoration of custom flags on /pol/. #1403
+
+**v1.13.8.7** *(2017-05-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.7/builds/4chan-X-noupdate.crx)]
+- Fix MathJax on /sci/. #1356
+- Minor fixes for new board /bant/.
+
+**v1.13.8.6** *(2017-04-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.6/builds/4chan-X-noupdate.crx)]
+- Workaround for issues with cooldown timer and other things starting in Firefox 53. #1323
+- Fix captcha cleanup. #1341
+
+**v1.13.8.5** *(2017-03-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.5/builds/4chan-X-noupdate.crx)]
+- WebM with audio is now allowed on /wsr/ and /r/. #1319
+- Minor bugfixes.
+
+**v1.13.8.4** *(2017-02-21)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.4/builds/4chan-X-noupdate.crx)]
+- As a workaround for 4chan's recent removal of the ability to start new threads using the v1 (text) Recaptcha, the `Use Recaptcha v1` option now only applies within threads. You can enable the new option `Use Recaptcha v1 on Index` to get Recaptcha v1 in the index and catalog, but unless 4chan's change is reverted, this will interfere with starting threads.
+
+**v1.13.8.3** *(2017-02-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.3/builds/4chan-X-noupdate.crx)]
+- Make posts from archives with files deleted (by archive) show as "File Deleted". #1287
+
+**v1.13.8.2** *(2017-02-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.2/builds/4chan-X-noupdate.crx)]
+- Update for recent site changes. Fixes quote preview on archive page.
+
+**v1.13.8.1** *(2017-02-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.1/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.8.0 causing v1 captcha sometimes not to reload when needed.
+
+**v1.13.8.0** *(2017-02-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.8.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.7.2.
+- Retry posting on connection errors using the same captcha.
+- Don't autohide QR while uploading is in progress. (#222) Also, `Auto Hide QR` is now a suboption of `Persistent QR`.
+- Various minor captcha-related bugfixes and improvements.
+- Sauce link optimizations and bugfixes.
+- Move You checkbox down in menu (beneath Archive). #1277
+- Turn `Download Link` off by default in new installs. #1222
+
+### v1.13.7
+
+**v1.13.7.2** *(2017-02-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.2/builds/4chan-X-noupdate.crx)]
+- Add `Require OP Quote Link` option (off by default in new installs) to Thread Watcher menu: For purposes of thread watcher highlighting, only consider posts with a quote link to the OP as replies to the OP.
+- Turn on `Require OP Quote Link` for upgrading users as it is the old behavior.
+
+**v1.13.7.1** *(2017-02-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.5.3: Update for Recaptcha changes.
+
+**v1.13.7.0** *(2017-02-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.7.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.6.1.
+- Fix scroll bars sometimes appearing on noscript captcha in QR.
+
+### v1.13.6
+
+**v1.13.6.1** *(2017-01-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.1/builds/4chan-X-noupdate.crx)]
+- Add CSS class `toggle-you` to menu entry for marking posts as yours.
+
+**v1.13.6.0** *(2017-01-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.6.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.5.2.
+- Add item in the post menu to mark/unmark posts as yours. #195
+- When you are the OP of a thread, any unread reply to the thread will now light up the `Thread Watcher` icon, not just replies with quote links to you. #913
+- Show `##Manager`, `##Founder`, and `##Verified` capcodes in posts loaded from the archives. Also support searching for them from the post menu.
+- Make `Anonymize` more efficient, and extend it to the /f/ index and native catalog. #1111
+- If `Quote Preview` is enabled, links to threads in the internal archive will show previews of the OP on hover, as in the native extension. #1256
+- If we detect the QR paste icon isn't needed, hide it instead of disabling it so it can be brought back with CSS if necessary.
+- Don't show archive report form on the "Report submitted!" page.
+
+### v1.13.5
+
+**v1.13.5.3** *(2017-02-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.3/builds/4chan-X-noupdate.crx)]
+- Update for Recaptcha changes.
+
+**v1.13.5.2** *(2017-01-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.2/builds/4chan-X-noupdate.crx)]
+- Improvements to Sauce settings panel.
+- Minor bugfixes.
+
+**v1.13.5.1** *(2017-01-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.1/builds/4chan-X-noupdate.crx)]
+- Fix appearance of the new ##Verified capcode in posts added by updater and cross-thread quote previews.
+
+**v1.13.5.0** *(2017-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.5.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.4.1.
+- Bring back `Archive Report` feature, now with reporting to multiple archives through the offsite reports API of https://github.com/pleebe/foolfuuka-plugin-popup-report. #1260
+- Add filename regular expression matching to Sauce. Sauce will now recognize Pixiv, DeviantArt, Imgur, Flickr, and Facebook filenames and link to the page the image came from. #1183
+- Update regex.info -> exif.regex.info in Sauce links.
+- Parameters in Sauce links will only be expanded in the URL and displayed text.
+- Posts fetched from an archive now have their file links point to the archive chosen by the user for file redirection, rather than the URL given by the archive. #1255
+- Minor bugfixes.
+
+### v1.13.4
+
+**v1.13.4.1** *(2017-01-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.4.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.4.1/builds/4chan-X-noupdate.crx)]
+- Revert Data Saver workarounds. They didn't work. This release is the same as v1.13.3.0 except for the version number. #1241
+
+**v1.13.4.0** *(2017-01-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.4.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.4.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.3.0.
+- Tell Chrome Data Saver not to convert images to WebP when posting images from URLs. #1241
+
+### v1.13.3
+
+**v1.13.3.0** *(2017-01-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.3.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.3.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.2.4.
+- Full support for new is2.4chan.org host.
+- Use is.4chan.org for building posts if `Use Faster Image Host` is off.
+
+### v1.13.2
+
+**v1.13.2.4** *(2017-01-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.4/builds/4chan-X-noupdate.crx)]
+- Change is2.4chan.org image links to i.4cdn.org also.
+
+**v1.13.2.3** *(2016-12-21)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.3/builds/4chan-X-noupdate.crx)]
+- Update for new Recaptcha URL. Restores image selection by keyboard. #1234
+
+**v1.13.2.2** *(2016-11-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.2/builds/4chan-X-noupdate.crx)]
+- Drop support for is.4chan.org in posts generated from JSON for now. (This only affects users with `Use Faster Image Host` off.)
+
+**v1.13.2.1** *(2016-11-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.1/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.2.0 causing errors when non-embeddable link is in inlined/previewed quote.
+
+**v1.13.2.0** *(2016-11-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.2.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.1.12.
+- (ihavenoface) Add `Cover Preview` function: Show preview of supported links on hover.
+  - Currently supported: Youtube and Dailymotion.
+- (ihavenoface) Keep floating embeds visible while moving the window.
+- Various embedding-related bugfixes, including performance issue from v1.13.0.0 when switching to catalog.
+- Make floating updater draggable by any edge so it doesn't get stuck at the top. #1031
+
+### v1.13.1
+
+**v1.13.1.12** *(2016-11-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.12/builds/4chan-X-noupdate.crx)]
+- Fix race condition bug from v1.13.0.0 causing 'Watch thread' item to sometimes not appear in header menu.
+- Turn `Auto Prune` in Thread Watcher options back off by default.
+
+**v1.13.1.11** *(2016-11-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.11/builds/4chan-X-noupdate.crx)]
+- Revert performance issue fix from v1.13.1.10 as it may cause more issues than it solves.
+
+**v1.13.1.10** *(2016-11-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.10/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.0 causing `Auto-embed` to sometimes not work.
+- Fix performance issue from v1.13.0.0 due to all link embeds in OPs being reloaded upon switching to catalog mode.
+- Include Yandex in default sauce links.
+
+**v1.13.1.9** *(2016-11-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.9/builds/4chan-X-noupdate.crx)]
+- Change replies-quoting-you exclamation mark from red to green on dead-thread icon in 4chanJS set.
+
+**v1.13.1.8** *(2016-11-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.8/builds/4chan-X-noupdate.crx)]
+- Rearrange some options.
+
+**v1.13.1.7** *(2016-11-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.7/builds/4chan-X-noupdate.crx)]
+- Fix in-comment links to is.4chan.org.
+
+**v1.13.1.6** *(2016-11-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.6/builds/4chan-X-noupdate.crx)]
+- (desaku) Update 4chanJS favicons to reflect the native extension. #1038
+- Fix reply-to-you favicons in `xat-` set looking blurry.
+- Show all icons in Favicon settings. #1191
+
+**v1.13.1.5** *(2016-11-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.5/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.0.25: Fix bug from v1.13.0.0 causing errors on index refresh in certain cases when creating threads with cookies disabled. #1184
+- Merge v1.13.0.25: Better link text in file error message: 'delete' -> 'delete post'. #1186
+- Merge v1.13.0.25: Fix bug causing auto-pruning if you refreshed the index too soon after creating a thread.
+- Add `Catalog Hover Toggle` setting, which sets whether clicking in the catalog toggles `Catalog Hover Expand`.
+- Improved support for those who want to unblock the top banner ads. See the [FAQ](https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#ads) for how to do so.
+
+**v1.13.1.4** *(2016-11-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.4/builds/4chan-X-noupdate.crx)]
+- Fix deletion cooldown bug from v1.13.1.0.
+
+**v1.13.1.3** *(2016-11-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.3/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.0.24: Fix bug from v1.13.0.0 causing lack of scroll bar when `Fit width` is disabled and images overflow screen.
+
+**v1.13.1.2** *(2016-11-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.2/builds/4chan-X-noupdate.crx)]
+- Merge v1.13.0.23: Fix bug from v1.13.0.0 affecting the catalog sorting order of recently hidden/shown threads.
+- Merge v1.13.0.23: Cosmetic fixes for bottom ad changes.
+- Reply Pruning is no longer activated by default except in stickies. Added `Prune All Threads` option (default: false) to activate Reply Pruning by default in all threads.
+- Reply Pruning will no longer be deactivated by `Scroll to Last Read Post` in order to unhide the last read post, or by following links to the OP.
+- Add option for quick MD5-filtering button (`%f`) to File Info Formatting (Advanced settings tab).
+- Add keybind for filtering image MD5s (default: `5`).
+- (ihavenoface) Add Bing reverse image search to Sauce examples.
+- Various minor bugfixes.
+
+**v1.13.1.1** *(2016-11-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.1/builds/4chan-X-noupdate.crx)]
+- Fix bug causing replies to not immediately show when catalog thread is clicked.
+
+**v1.13.1.0** *(2016-11-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.1.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.13.0.22.
+- Only activate `Catalog Hover Expand` when catalog is clicked. Deactivate on second click. Turn `Catalog Hover Expand` back on by default.
+- (Koushien) Add checkbox after Index dropdowns to reverse the sort order of the index. Also:
+  - Let custom board navigation accept "rev" option as part of the sort option, e.g. `g-sort:"creation date rev"`.
+  - Support hash commands of the form `#bump-order-rev` to open the index with reverse sorting on.
+- Prevent auto-posting when editing any part of the first post in the last 5 seconds of the cooldown, not just when editing the comment.
+- Make rewriting of is.4chan.org links to i.4cdn.org optional (`Use Faster Image Host`, default: true).
+- Include rolls and fortunes in filterable text but continue removing them from notifications and thread excerpts.
+- Various minor bugfixes.
+
+## v1.13.0
+
+**v1.13.0.25** *(2016-11-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.25/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.25/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.0 causing errors on index refresh in certain cases when creating threads with cookies disabled. #1184
+- Better link text in file error message: 'delete' -> 'delete post'. #1186
+- Fix bug causing auto-pruning if you refreshed the index too soon after creating a thread.
+
+**v1.13.0.24** *(2016-11-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.24/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.24/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.0 causing lack of scroll bar when `Fit width` is disabled and images overflow screen.
+
+**v1.13.0.23** *(2016-11-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.23/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.23/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.0 affecting the catalog sorting order of recently hidden/shown threads.
+- Cosmetic fixes for bottom ad changes.
+
+**v1.13.0.22** *(2016-11-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.22/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.22/builds/4chan-X-noupdate.crx)]
+- Turn `Catalog Hover Expand` off by default for now.
+- Adjust catalog CSS; opt for more entries displayed as it was previously.
+
+**v1.13.0.21** *(2016-11-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.21/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.21/builds/4chan-X-noupdate.crx)]
+- Prevent hovered catalog threads from going offscreen if the extra padding on `.board` is removed.
+
+**v1.13.0.20** *(2016-11-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.20/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.20/builds/4chan-X-noupdate.crx)]
+- Bugfix: Don't add embedding window to error pages.
+- Hide EXIF data in /p/ catalog except on hover.
+
+**v1.13.0.19** *(2016-10-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.19/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.19/builds/4chan-X-noupdate.crx)]
+- Bring back CSS tweaks for Halloween theme.
+
+**v1.13.0.18** *(2016-10-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.18/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.18/builds/4chan-X-noupdate.crx)]
+- Improve robustness against invalid settings data, including thread watcher timestamps from future.
+
+**v1.13.0.17** *(2016-10-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.17/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.17/builds/4chan-X-noupdate.crx)]
+- Various regression and bug fixes.
+
+**v1.13.0.16** *(2016-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.16/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.16/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.3.11: Update due to 4chan's ad changes, part two.
+
+**v1.13.0.15** *(2016-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.15/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.15/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.3.10: Update due to 4chan's ad changes.
+
+**v1.13.0.14** *(2016-10-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.14/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.14/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.3 causing index/catalog search to not search comment.
+
+**v1.13.0.13** *(2016-10-15)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.13/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.13/builds/4chan-X-noupdate.crx)]
+- Add styling guide link to custom CSS section.
+- Add basic support for is.4chan.org domain.
+
+**v1.13.0.12** *(2016-10-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.12/builds/4chan-X-noupdate.crx)]
+- Switch back to using `border` rather than `outline` for highlighting watched threads in catalog.
+- Restore hiding of extra linebreaks in catalog. Show them at reduced height on hover.
+
+**v1.13.0.11** *(2016-10-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.11/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.3.8: Don't run 4chan X on the donation or advertisement purchase pages (it already didn't run on the pass purchase page).
+
+**v1.13.0.10** *(2016-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.10/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.3.7: Workaround for problem on 4chan's end with images not loading.
+
+**v1.13.0.9** *(2016-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.9/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.0 that broke Quote Inlining / Previewing of OPs on /f/.
+
+**v1.13.0.8** *(2016-10-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.8/builds/4chan-X-noupdate.crx)]
+- (AchtBit) Add keybind for toggling custom cooldown (default: `Alt+Comma`).
+- Add keybind to post file from URL (default: `Alt+l`).
+- Add keybind for adding new post to QR dump list (default: `Alt+n`).
+
+**v1.13.0.7** *(2016-10-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.7/builds/4chan-X-noupdate.crx)]
+- Fix filenames not being properly unescaped in catalog replies.
+
+**v1.13.0.6** *(2016-10-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.6/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.13.0.3 causing threads to be incorrectly pruned / marked dead in Thread Watcher.
+
+**v1.13.0.5** *(2016-10-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.5/builds/4chan-X-noupdate.crx)]
+- (dzamie) `sfw` and `nsfw` can be used in the `boards` options of filters.
+- Mirror most of `Index Navigation` menu settings in main settings panel.
+- Fix a hidden threads related bug from v1.13.0.4.
+
+**v1.13.0.4** *(2016-10-03)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.4/builds/4chan-X-noupdate.crx)]
+- Performance work and bug fixes related to recent catalog changes.
+- Don't show excerpts of hidden or filtered replies in the catalog.
+
+**v1.13.0.3** *(2016-10-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.3/builds/4chan-X-noupdate.crx)]
+- Add `Pass Date` to filterable items.
+- Show Pass flair in posts constructed from JSON.
+- Anonymize will now hide Pass flair.
+- Change reply cooldowns to their reduced values for Pass users.
+- Make the JSON index load quicker.
+
+**v1.13.0.2** *(2016-10-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.2/builds/4chan-X-noupdate.crx)]
+- Party hat CSS tweaks.
+
+**v1.13.0.1** *(2016-10-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.3.5: Fix cooldowns.
+- Merge v1.12.3.5: Fix party hat alignment when Thread Hiding Buttons are enabled.
+
+**v1.13.0.0** *(2016-09-29)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.13.0.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.12.3.4.
+- Major rework of the 4chan X catalog:
+  - Hovering over a thread in the catalog now shows the full comment, as well as the poster name, flag (if available), post date, file info, and if `Show replies` is checked in the `Index Navigation` submenu in the header, excerpts of the last few replies along with how long ago they were made. The full reply can be shown by hovering over the "..." at the end of the excerpt. This can all be disabled by unchecking `Catalog hover expand`, also under `Index Navigation` in the header menu.
+  - The `Quote Preview`, `Resurrect Quotes` (from the archives), `Mark Quotes of You`, `Embedding` (via floating embeds), and `Gallery` features now work in the catalog, and the `File Info Formatting`, `Time Formatting`, `Relative Post Dates`, and `Relative Date Title` settings apply to the extra details shown on hover.
+  - The appearance of the catalog when `Werk Tyme` (thumbnail hiding) is enabled has been redesigned.
+  - HTML-wise, the posts shown in the catalog are now normal posts that have been restyled, and to which `.catalog-link`, `.catalog-stats`, and `.catalog-replies` elements have been added. The class names on the post and its immediate ancestors are `post catalog-post`, `postContainer catalog-container`, and `thread catalog-thread` (only the last of which is a newly created element for the catalog). You may need to update your custom CSS due to the changes.
+- The default `File Info Formatting` setting has been changed to "%L %d (%p%s, %r%g)". It now includes a download button by default (the "%d").
+- The `(You)`, `(OP)`, `(Cross-thread)` and `(Dead)` quote markers are now inside `<span>` elements with the CSS classes `qmark-you`, `qmark-op`, `qmark-ct`, and `qmark-dead`, respectively, making it possible to style them.
+- 4chan's default strikethrough is only removed from dead quotelinks if `Resurrect Quotes` is enabled.
+- The thread watcher header icon, which lights up when you are replied to, will no longer go out when the thread watcher is opened.
+- The index is no longer immedately resorted when `Pin watched threads` is enabled and you watch/unwatch a thread, and is only resorted when you refresh. The catalog is still immediately resorted.
+- The `Persistent Thread Watcher` loads a little quicker.
+- Very long filenames in posts now wrap properly, at least in Webkit-based browsers, and possibly at a later date in others.
+- The error messages displayed when the Chrome extension updates but the tab has not been reloaded have been replaced with a single warning message asking you to reload the tab.
+- API change: The conditions under which the `IndexRefresh` event is fired have changed to better serve the needs of clients (particularly Name Sync, which is the only extension I know of using this). It now fires whenever new posts are added to the index (including the initial ones, and including posts in the non-JSON index), and always fires after `4chanXInitFinished`.
+
+### v1.12.3
+
+**v1.12.3.11** *(2016-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.11/builds/4chan-X-noupdate.crx)]
+- Update due to 4chan's ad changes, part two.
+
+**v1.12.3.10** *(2016-10-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.10/builds/4chan-X-noupdate.crx)]
+- Update due to 4chan's ad changes.
+
+**v1.12.3.9** *(2016-10-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.9/builds/4chan-X-noupdate.crx)]
+- Add basic support for is.4chan.org domain.
+
+**v1.12.3.8** *(2016-10-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.8/builds/4chan-X-noupdate.crx)]
+- Don't run 4chan X on the donation or advertisement purchase pages (it already didn't run on the pass purchase page).
+
+**v1.12.3.7** *(2016-10-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.7/builds/4chan-X-noupdate.crx)]
+- Workaround for problem on 4chan's end with images not loading.
+- The error messages displayed when the Chrome extension updates but the tab has not been reloaded have been replaced with a single warning message asking you to reload the tab.
+
+**v1.12.3.6** *(2016-10-03)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.6/builds/4chan-X-noupdate.crx)]
+- Add `Pass Date` to filterable items.
+- Show Pass flair in posts constructed from JSON.
+- Anonymize will now hide Pass flair.
+- Change reply cooldowns to their reduced values for Pass users.
+
+**v1.12.3.5** *(2016-10-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.5/builds/4chan-X-noupdate.crx)]
+- Fix cooldowns.
+- Fix party hat alignment when Thread Hiding Buttons are enabled.
+
+**v1.12.3.4** *(2016-09-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.4/builds/4chan-X-noupdate.crx)]
+- Let board banners show. You may need to add the an exception to your ad blocker's cosmetic filters: `boards.4chan.org#@#.middlead` If you do want to hide them, you can add `.middlead {display: none;}` to custom CSS.
+
+**v1.12.3.3** *(2016-09-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.3/builds/4chan-X-noupdate.crx)]
+- Fix `Loop in New Tab` and `Volume in New Tab` which were broken by a regression in v1.12.1.3.
+
+**v1.12.3.2** *(2016-09-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.2/builds/4chan-X-noupdate.crx)]
+- Fix Thread Watcher icon not lighting up when `Persistent Thread Watcher` is enabled.
+- Fix TeX sometimes not working in /sci/ catalog.
+
+**v1.12.3.1** *(2016-09-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.1/builds/4chan-X-noupdate.crx)]
+- Fix scrollbar in captcha bug.
+
+**v1.12.3.0** *(2016-09-12)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.3.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.12.2.1.
+- Support comments in `Javascript Whitelist`.
+- `Image Hover in Catalog`, `Auto Watch`, `Auto Watch Reply`, and `Auto Prune` are now on by default in new installs.
+- Various bug fixes.
+
+### v1.12.2
+
+**v1.12.2.1** *(2016-07-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.2.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.2.1/builds/4chan-X-noupdate.crx)]
+- Fix frequent connection errors from timeout fetching board configuration.
+
+**v1.12.2.0** *(2016-07-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.2.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.2.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.12.1.5.
+- Support image pasting in Firefox 50+ without selecting paste icon in Quick Reply.
+- Improve 4chan X's ability to deal with 4chan changes without a script update.
+
+### v1.12.1
+
+**v1.12.1.5** *(2016-07-10)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.5/builds/4chan-X-noupdate.crx)]
+- Restore `Remove Thread Excerpt` option.
+
+**v1.12.1.4** *(2016-07-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.4/builds/4chan-X-noupdate.crx)]
+- Re-fix scrolling on space in captcha in Chromium-based browsers.
+
+**v1.12.1.3** *(2016-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.3/builds/4chan-X-noupdate.crx)]
+- Fix error message in MathJax popups in Firefox.
+
+**v1.12.1.2** *(2016-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.2/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.0.9: Partially revert removal of workarounds for old Chromium versions.
+
+**v1.12.1.1** *(2016-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.12.0.8: Restore `Restart when Opened` option.
+
+**v1.12.1.0** *(2016-07-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.1.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.12.0.7.
+- (dzamie) Replace `Toggleable Thread Watcher` setting with `Persistent Thread Watcher` setting (off by default). With `Persistent Thread Watcher` on, the thread watcher is shown by default, but can still be hidden.
+- (dzamie) Add `Toggle thread watcher` keybind (default: "t").
+- Make 'all websites' permission optional for Chrome extension.
+
 ## v1.12.0
+
+**v1.12.0.9** *(2016-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.9/builds/4chan-X-noupdate.crx)]
+- Partially revert removal of workarounds for old Chromium versions.
+
+**v1.12.0.8** *(2016-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.8/builds/4chan-X-noupdate.crx)]
+- Restore `Restart when Opened` option.
+
+**v1.12.0.7** *(2016-07-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.7/builds/4chan-X-noupdate.crx)]
+- Restore `Open Post in New Tab` option.
 
 **v1.12.0.6** *(2016-06-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.6/builds/4chan-X-noupdate.crx)]
 - Merge v1.11.35.9: Update archive list, and update cuckchan.org -> desuarchive.org in sauce examples.
@@ -23,7 +772,7 @@
 **v1.12.0.0** *(2016-06-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.12.0.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.11.35.6.
 - Some workarounds for old browsers have been dropped. Those using versions older than Chromium/Chrome 38, Maxthon 4.9, or SeaMonkey 2.35 may need to upgrade for 4chan X to work.
-- Some obsolete or not-often-used options have been removed:
+- Some obsolete or not-often-used options have been removed.  Please speak up if you want any of these options restored by [opening an issue](https://gitreports.com/issue/ccd0/4chan-x).
   - `Archive Report`, `Restart when Opened`, `Show Name and Subject`, `Thread Excerpt`, and `Remove Thread Excerpt` have been removed.
   - The options to disable `QR Shortcut`, `Bottom QR Link`, and `Open Post in New Tab` have been removed.
   - The `disabled` option in the archive choices section of the Advanced settings have been removed. A better way to disable access to a particular archive is to add (using 4plebs as an example) `{"uid": 3, "boards": []}` to the `Archive Lists` setting.
@@ -41,8 +790,6 @@
   - `.qr-shortcut` is now `#shortcut-qr > a`
 - The captcha complaint links have been removed.
 - The options `Exempt Archives from Encryption` and `Show New Thread Option in Threads` will be enabled by default in new installs.
-
-**Note**: Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (currently ccd0). (This practice was abandoned starting in v1.12.0; in general it's better to check the git logs.)
 
 ### v1.11.35
 

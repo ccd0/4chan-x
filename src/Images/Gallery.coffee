@@ -1,6 +1,6 @@
 Gallery =
   init: ->
-    return unless @enabled = Conf['Gallery'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
+    return if not (@enabled = Conf['Gallery'] and g.VIEW in ['index', 'thread'])
 
     @delay = Conf['Slide Delay']
 
@@ -25,7 +25,7 @@ Gallery =
       Gallery.nodes.total.textContent = Gallery.images.length
 
     unless Conf['Image Expansion']
-      $.on @file.thumb.parentNode, 'click', Gallery.cb.image
+      $.on @file.thumbLink, 'click', Gallery.cb.image
 
   build: (image) ->
     {cb} = Gallery
@@ -82,13 +82,13 @@ Gallery =
 
     $.on window, 'resize', Gallery.cb.setHeight
 
-    for file in $$ '.post .file'
-      post = Get.postFromNode file
+    for postThumb in $$ Site.selectors.file.thumb
+      post = Get.postFromNode postThumb
       continue unless post.file?.thumb
       Gallery.generateThumb post
       # If no image to open is given, pick image we have scrolled to.
       if !image and Gallery.fullIDs[post.fullID]
-        candidate = post.file.thumb.parentNode
+        candidate = post.file.thumbLink
         if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
           image = candidate
     $.addClass doc, 'gallery-open'
@@ -132,9 +132,8 @@ Gallery =
 
   load: (thumb, errorCB) ->
     ext = thumb.href.match /\w*$/
-    elType = {'webm': 'video', 'pdf': 'iframe'}[ext] or 'img'
-    file = $.el elType,
-      title: thumb.title
+    elType = {'webm': 'video', 'mp4': 'video', 'pdf': 'iframe'}[ext] or 'img'
+    file = $.el elType
     $.extend file.dataset, thumb.dataset
     $.on file, 'error', errorCB
     file.src = thumb.href
@@ -195,11 +194,11 @@ Gallery =
   error: ->
     if @error?.code is MediaError.MEDIA_ERR_DECODE
       return new Notice 'error', 'Corrupt or unplayable video', 30
-    return unless @src.split('/')[2] is 'i.4cdn.org'
+    return if ImageCommon.isFromArchive @
     ImageCommon.error @, g.posts[@dataset.post], null, (url) =>
       return unless url
       Gallery.images[@dataset.id].href = url
-      @src = url if Gallery.nodes.current is @
+      (@src = url if Gallery.nodes.current is @)
 
   cacheError: ->
     delete Gallery.cache
@@ -233,16 +232,16 @@ Gallery =
 
   cb:
     keybinds: (e) ->
-      return unless key = Keybinds.keyCode e
+      return if not (key = Keybinds.keyCode e)
 
       cb = switch key
         when Conf['Close'], Conf['Open Gallery']
           Gallery.cb.close
-        when 'Right'
+        when Conf['Next Gallery Image']
           Gallery.cb.next
-        when 'Enter'
+        when Conf['Advance Gallery']
           Gallery.cb.advance
-        when 'Left', ''
+        when Conf['Previous Gallery Image']
           Gallery.cb.prev
         when Conf['Pause']
           Gallery.cb.pause
@@ -330,7 +329,7 @@ Gallery =
         style.minHeight = minHeight + 'px'
         style.minWidth = (width / height * minHeight) + 'px'
       else
-        style.minHeight = style.minWidth = null
+        style.minHeight = style.minWidth = ''
 
     setDelay: -> Gallery.delay = +@value
 
@@ -367,5 +366,3 @@ Gallery =
       subEntries.push el: delayLabel
 
       subEntries
-
-return Gallery

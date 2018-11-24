@@ -16,7 +16,7 @@ Volume =
         name: 'Mouse Wheel Volume'
         cb:   @node
 
-    return unless g.BOARD.ID in ['gif', 'wsg']
+    return if BoardConfig.noAudio(g.BOARD.ID)
 
     if Conf['Mouse Wheel Volume']
       Callbacks.CatalogThread.push
@@ -60,9 +60,9 @@ Volume =
       Volume.inputs.volume.value = volume
 
   node: ->
-    return unless @board.ID in ['gif', 'wsg'] and @file?.isVideo
-    $.on @file.thumb,        'wheel', Volume.wheel.bind(Header.hover)
-    $.on $('a', @file.text), 'wheel', Volume.wheel.bind(@file.thumb.parentNode)
+    return unless !BoardConfig.noAudio(@board.ID) and @file?.isVideo
+    $.on @file.thumb,                                 'wheel', Volume.wheel.bind(Header.hover) if @file.thumb
+    $.on ($('.file-info', @file.text) or @file.link), 'wheel', Volume.wheel.bind(@file.thumbLink)
 
   catalogNode: ->
     {file} = @thread.OP
@@ -71,12 +71,10 @@ Volume =
 
   wheel: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey
-    return unless el = $ 'video:not([data-md5])', @
+    return if not (el = $ 'video:not([data-md5])', @)
     return if el.muted or not $.hasAudio el
     volume = el.volume + 0.1
     volume *= 1.1 if e.deltaY < 0
     volume /= 1.1 if e.deltaY > 0
     el.volume = $.minmax volume - 0.1, 0, 1
     e.preventDefault()
-
-return Volume

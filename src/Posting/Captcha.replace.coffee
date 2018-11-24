@@ -2,31 +2,18 @@ Captcha.replace =
   init: ->
     return unless d.cookie.indexOf('pass_enabled=1') < 0
 
-    if location.hostname is 'sys.4chan.org' and /[?&]altc\b/.test(location.search) and Main.jsEnabled
-      $.onExists doc, 'script[src="//www.google.com/recaptcha/api/js/recaptcha_ajax.js"]', ->
-        $.global -> window.el.onload = null
-        Captcha.v1.create()
-      return
-
-    if (
-      (Conf['Use Recaptcha v1'] and location.hostname is 'boards.4chan.org') or
-      (Conf['Use Recaptcha v1 in Reports'] and location.hostname is 'sys.4chan.org')
-    ) and Main.jsEnabled
-      $.ready Captcha.replace.v1
-      return
-
     if Conf['Force Noscript Captcha'] and Main.jsEnabled
       $.ready Captcha.replace.noscript
       return
 
     if Conf['captchaLanguage'].trim() or Conf['Captcha Fixes']
-      if location.hostname is 'boards.4chan.org'
+      if location.hostname in ['boards.4chan.org', 'boards.4channel.org']
         $.onExists doc, '#captchaFormPart', (node) -> $.onExists node, 'iframe', Captcha.replace.iframe
       else
         $.onExists doc, 'iframe', Captcha.replace.iframe
 
   noscript: ->
-    return unless (original = $ '#g-recaptcha, #captchaContainerAlt') and (noscript = $ 'noscript')
+    return if not ((original = $ '#g-recaptcha') and (noscript = $ 'noscript', original.parentNode))
     span = $.el 'span',
       id: 'captcha-forced-noscript'
     $.replace noscript, span
@@ -38,17 +25,6 @@ Captcha.replace =
       $.on toggle, 'click', insert
     else
       insert()
-
-  v1: ->
-    return unless $.id 'g-recaptcha'
-    Captcha.v1.replace()
-    if (link = $.id 'form-link')
-      $.on link, 'click', -> Captcha.v1.create()
-    else if location.hostname is 'boards.4chan.org'
-      form = $.id 'postForm'
-      form.addEventListener 'focus', (-> Captcha.v1.create()), true
-    else
-      Captcha.v1.create()
 
   iframe: (iframe) ->
     if (lang = Conf['captchaLanguage'].trim())

@@ -39,6 +39,7 @@ Nav =
       Nav.scroll +1
 
   getThread: ->
+    return $ '.board' if $.hasClass doc, 'catalog-mode'
     for threadRoot in $$ '.thread'
       thread = Get.threadFromRoot threadRoot
       continue if thread.isHidden and !thread.stub
@@ -74,8 +75,6 @@ Nav =
     if extra > 0
       d.body.style.marginBottom = "#{extra}px"
     else
-      d.body.style.marginBottom = null
+      d.body.style.marginBottom = ''
       delete Nav.haveExtra
       $.off d, 'scroll', Nav.removeExtra
-
-return Nav

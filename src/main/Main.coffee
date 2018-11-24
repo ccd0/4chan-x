@@ -4,8 +4,12 @@ Main =
     return if d.body and not $ 'title', d.head
 
     # XXX dwb userscripts extension reloads scripts run at document-start when replaceState/pushState is called.
-    return if window['<%= meta.name %> antidup']
-    window['<%= meta.name %> antidup'] = true
+    # XXX Firefox reinjects WebExtension content scripts when extension is updated / reloaded.
+    try
+      w = window
+      w = (w.wrappedJSObject or w) if $.platform is 'crx'
+      return if '<%= meta.name %> antidup' of w
+      w['<%= meta.name %> antidup'] = true
 
     if location.hostname is 'www.google.com'
       $.get 'Captcha Fixes', true, ({'Captcha Fixes': enabled}) ->
@@ -15,9 +19,13 @@ Main =
 
     # Don't run inside ad iframes.
     try
-      return if window.frameElement and window.frameElement.src is ''
+      return if window.frameElement and window.frameElement.src in ['', 'about:blank']
 
     # Detect multiple copies of 4chan X
+    return if doc and $.hasClass(doc, 'fourchan-x')
+    $.asap docSet, ->
+      $.addClass doc, 'fourchan-x', 'seaweedchan'
+      $.addClass doc, "ua-#{$.engine}" if $.engine
     $.on d, '4chanXInitFinished', ->
       if Main.expectInitFinished
         delete Main.expectInitFinished
@@ -36,14 +44,29 @@ Main =
         Conf[parent] = obj
       return
 
+    # XXX Remove document-breaking ad
+    if location.hostname in ['boards.4chan.org', 'boards.4channel.org']
+      $.global ->
+        fromCharCode0 = String.fromCharCode
+        String.fromCharCode = ->
+          if document.body
+            String.fromCharCode = fromCharCode0
+          else if document.currentScript and not document.currentScript.src
+            throw Error()
+          fromCharCode0.apply @, arguments
+      $.asap docSet, ->
+        $.onExists doc, 'iframe[srcdoc]', $.rm
+
     flatten null, Config
 
     for db in DataBoard.keys
-      Conf[db] = boards: {}
+      Conf[db] = {}
+    Conf['boardConfig'] = boards: {}
     Conf['archives'] = Redirect.archives
     Conf['selectedArchives'] = {}
     Conf['cooldowns'] = {}
     Conf['Index Sort'] = {}
+    Conf["Last Long Reply Thresholds #{i}"] = {} for i in [0...2]
 
     # XXX old key names
     Conf['Except Archives from Encryption'] = false
@@ -52,36 +75,21 @@ Main =
     Conf['Show Name and Subject'] = false
     Conf['QR Shortcut'] = true
     Conf['Bottom QR Link'] = true
+    Conf['Toggleable Thread Watcher'] = true
 
-    # Pseudo-enforce default whitelist while configuration loads
-    if $.platform is 'crx' then $.global ->
-      {whitelist} = document.currentScript.dataset
-      whitelist = whitelist.split('\n').filter (x) -> x[0] isnt "'"
-      whitelist.push "#{location.protocol}//#{location.host}"
-      oldFun = {}
-      for key in ['createElement', 'write']
-        oldFun[key] = document[key]
-        document[key] = do (key) -> (arg) ->
-          s = document.currentScript
-          if s and s.src and whitelist.indexOf(s.src.split('/')[..2].join('/')) < 0
-            throw Error()
-          oldFun[key].call document, arg
-      document.addEventListener 'csp-ready', ->
-        document[key] = oldFun[key] for key of oldFun
-      , false
-    ,
-      whitelist: Conf['jsWhitelist']
+    # Enforce JS whitelist
+    if /\.4chan(?:nel)?\.org$/.test(location.hostname) and !$$('script:not([src])', d).filter((s) -> /this\[/.test(s.textContent)).length
+      ($.getSync or $.get) {'jsWhitelist': Conf['jsWhitelist']}, ({jsWhitelist}) ->
+        $.addCSP "script-src #{jsWhitelist.replace(/^#.*$/mg, '').replace(/[\s;]+/g, ' ').trim()}"
 
     # Get saved values as items
     items = {}
     items[key] = undefined for key of Conf
     items['previousversion'] = undefined
     ($.getSync or $.get) items, (items) ->
-      # Enforce JS whitelist
-      jsWhitelist = items['jsWhitelist'] ? Conf['jsWhitelist']
-      $.addCSP "script-src #{jsWhitelist.replace(/[\s;]+/g, ' ')}"
-      $.event 'csp-ready' if $.platform is 'crx'
-
+      if !$.perProtocolSettings and /\.4chan(?:nel)?\.org$/.test(location.hostname) and (items['Redirect to HTTPS'] ? Conf['Redirect to HTTPS']) and location.protocol isnt 'https:'
+        location.replace('https://' + location.host + location.pathname + location.search + location.hash)
+        return
       $.asap docSet, ->
 
         # Don't hide the local storage warning behind a settings panel.
@@ -102,7 +110,7 @@ Main =
         for key, val of Conf
           Conf[key] = items[key] ? val
 
-        Main.initFeatures()
+        Site.init Main.initFeatures
 
   upgrade: (items) ->
     {previousversion} = items
@@ -117,55 +125,59 @@ Main =
   initFeatures: ->
     {hostname, search} = location
     pathname = location.pathname.split /\/+/
-    g.BOARD = new Board pathname[1] unless hostname is 'www.4chan.org'
+    g.BOARD = new Board pathname[1] unless hostname in ['www.4chan.org', 'www.4channel.org']
 
-    if hostname in ['boards.4chan.org', 'sys.4chan.org', 'www.4chan.org']
-      $.global ->
-        document.documentElement.classList.add 'js-enabled'
-        window.FCX = {}
-      Main.jsEnabled = $.hasClass doc, 'js-enabled'
+    $.global ->
+      document.documentElement.classList.add 'js-enabled'
+      window.FCX = {}
+    Main.jsEnabled = $.hasClass doc, 'js-enabled'
 
     switch hostname
-      when 'www.4chan.org'
+      when 'www.4chan.org', 'www.4channel.org'
         $.onExists doc, 'body', -> $.addStyle CSS.www
         Captcha.replace.init()
         return
-      when 'sys.4chan.org'
+      when 'sys.4chan.org', 'sys.4channel.org'
         if pathname[2] is 'imgboard.php'
           if /\bmode=report\b/.test search
             Report.init()
           else if (match = search.match /\bres=(\d+)/)
             $.ready ->
               if Conf['404 Redirect'] and $.id('errmsg')?.textContent is 'Error: Specified thread does not exist.'
-                Redirect.navigate 'thread',
+                Redirect.navigate 'thread', {
                   boardID: g.BOARD.ID
                   postID:  +match[1]
+                }
         else if pathname[2] is 'post'
           PostSuccessful.init()
         return
-      when 'i.4cdn.org'
-        return unless pathname[2] and not /s\.jpg$/.test(pathname[2])
-        $.asap (-> d.readyState isnt 'loading'), ->
-          if Conf['404 Redirect'] and d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
-            Redirect.navigate 'file',
-              boardID:  g.BOARD.ID
-              filename: pathname[pathname.length - 1]
-          else if video = $ 'video'
-            if Conf['Volume in New Tab']
-              Volume.setup video
-            if Conf['Loop in New Tab']
-              video.loop = true
-              video.controls = false
-              video.play()
-              ImageCommon.addControls video
-        return
+
+    if ImageHost.test hostname
+      return unless pathname[2] and not /[sm]\.jpg$/.test(pathname[2])
+      $.asap (-> d.readyState isnt 'loading'), ->
+        if Conf['404 Redirect'] and Site.is404?()
+          Redirect.navigate 'file', {
+            boardID:  g.BOARD.ID
+            filename: pathname[pathname.length - 1]
+          }
+        else if video = $ 'video'
+          if Conf['Volume in New Tab']
+            Volume.setup video
+          if Conf['Loop in New Tab']
+            video.loop = true
+            video.controls = false
+            video.play()
+            ImageCommon.addControls video
+      return
+
+    return if Site.isAuxiliaryPage?()
 
     if pathname[2] in ['thread', 'res']
       g.VIEW     = 'thread'
-      g.THREADID = +pathname[3]
-    else if pathname[2] in ['catalog', 'archive']
-      g.VIEW = pathname[2]
-    else if pathname[2].match /^\d*$/
+      g.THREADID = +pathname[3].replace('.html', '')
+    else if /^(?:catalog|archive)(?:\.html)?$/.test(pathname[2])
+      g.VIEW = pathname[2].replace('.html', '')
+    else if /^(?:index|\d*)(?:\.html)?$/.test(pathname[2])
       g.VIEW = 'index'
     else
       return
@@ -178,6 +190,7 @@ Main =
 
     # c.time 'All initializations'
     for [name, feature] in Main.features
+      continue if Site.disabledFeatures and name in Site.disabledFeatures
       # c.time "#{name} initialization"
       try
         feature.init()
@@ -197,10 +210,10 @@ Main =
 
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
-    $.addClass doc, 'fourchan-x', 'seaweedchan'
+    doc.dataset.host = location.host
+    $.addClass doc, "sw-#{Site.software}"
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
-    $.addClass doc, "ua-#{$.engine}" if $.engine
-    $.onExists doc, '.ad-cnt', (ad) -> $.onExists ad, 'img', -> $.addClass doc, 'ads-loaded'
+    $.onExists doc, '.ad-cnt, .adg-rects > .desktop', (ad) -> $.onExists ad, 'img, iframe', -> $.addClass doc, 'ads-loaded'
     $.addClass doc, 'autohiding-scrollbar' if Conf['Autohiding Scrollbar']
     $.ready ->
       if d.body.clientHeight > doc.clientHeight and (window.innerWidth is doc.clientWidth) isnt Conf['Autohiding Scrollbar']
@@ -212,7 +225,7 @@ Main =
 
     keyboard = false
     $.on d, 'mousedown', -> keyboard = false
-    $.on d, 'keydown', (e) -> keyboard = true if e.keyCode is 9 # tab
+    $.on d, 'keydown', (e) -> (keyboard = true if e.keyCode is 9) # tab
     window.addEventListener 'focus', (-> doc.classList.toggle 'keyboard-focus', keyboard), true
 
     Main.setClass()
@@ -231,68 +244,87 @@ Main =
       for styleSheet in styleSheets
         if styleSheet.href is mainStyleSheet?.href
           style = styleSheet.title.toLowerCase().replace('new', '').trim().replace /\s+/g, '-'
+          style = styleSheet.href.match(/[a-z]*(?=[^/]*$)/)[0] if style is '_special'
+          style = null unless style in ['yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'photon', 'tomorrow', 'spooky']
           break
       if style
         $.addClass doc, style
         $.rm Main.bgColorStyle
       else
         # Determine proper background color for dialogs if 4chan is using a special stylesheet.
-        div = $.el 'div',
-          className: 'reply'
-        div.style.cssText = 'position: absolute; visibility: hidden;'
+        div = Site.bgColoredEl()
+        div.style.position = 'absolute';
+        div.style.visibility = 'hidden';
         $.add d.body, div
         bgColor = window.getComputedStyle(div).backgroundColor
+        c.log(bgColor)
         $.rm div
+        rgb = bgColor.match(/[\d.]+/g)
+        # Use body background if reply background is transparent
+        unless /^rgb\(/.test(bgColor)
+          s = window.getComputedStyle(d.body)
+          bgColor = "#{s.backgroundColor} #{s.backgroundImage} #{s.backgroundRepeat} #{s.backgroundPosition}"
         Main.bgColorStyle.textContent = """
-          .dialog, .suboption-list > div:last-of-type {
-            background-color: #{bgColor};
+          .dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post {
+            background: #{bgColor};
+          }
+          .unread-mark-read {
+            background-color: rgba(#{rgb[...3].join(', ')}, #{0.5*(rgb[3] || 1)});
           }
         """
         $.after $.id('fourchanx-css'), Main.bgColorStyle
     setStyle()
     return unless mainStyleSheet
-    new MutationObserver(setStyle).observe mainStyleSheet,
+    new MutationObserver(setStyle).observe mainStyleSheet, {
       attributes: true
       attributeFilter: ['href']
+    }
 
   initReady: ->
-    # XXX Sometimes threads don't 404 but are left over as stubs containing one garbage reply post.
-    if g.VIEW is 'thread' and (d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found'] or ($('.board') and not $('.opContainer')))
-      ThreadWatcher.set404 g.BOARD.ID, g.THREADID, ->
-        if Conf['404 Redirect']
-          Redirect.navigate 'thread',
-            boardID:  g.BOARD.ID
-            threadID: g.THREADID
-            postID:   +location.hash.match /\d+/ # post number or 0
-          , "/#{g.BOARD}/"
+    if Site.is404?()
+      if g.VIEW is 'thread'
+        ThreadWatcher.set404 g.BOARD.ID, g.THREADID, ->
+          if Conf['404 Redirect']
+            Redirect.navigate 'thread',
+              boardID:  g.BOARD.ID
+              threadID: g.THREADID
+              postID:   +location.hash.match /\d+/ # post number or 0
+            , "/#{g.BOARD}/"
+
       return
 
-    return if d.title in ['4chan - Temporarily Offline', '4chan - 404 Not Found']
-
-    if g.VIEW in ['index', 'thread'] and not $('.board + *')
+    if Site.isIncomplete?()
       msg = $.el 'div',
         <%= html('The page didn&#039;t load completely.<br>Some features may not work unless you <a href="javascript:;">reload</a>.') %>
       $.on $('a', msg), 'click', -> location.reload()
       new Notice 'warning', msg
 
     # Parse HTML or skip it and start building from JSON.
-    unless Conf['JSON Index'] and g.VIEW is 'index'
+    unless Index.enabled
       Main.initThread() 
     else
       Main.expectInitFinished = true
       $.event '4chanXInitFinished'
 
   initThread: ->
-    if (board = $ '.board')
+    s = Site.selectors
+    if (board = $ s.board)
       threads = []
       posts   = []
 
-      for threadRoot in $$ '.board > .thread', board
-        thread = new Thread +threadRoot.id[1..], g.BOARD
+      for threadRoot in $$(s.thread, board)
+        boardObj = if (boardID = threadRoot.dataset.board)
+          g.boards[boardID] or new Board(boardID)
+        else
+          g.BOARD
+        thread = new Thread +threadRoot.id.match(/\d*$/)[0], boardObj
+        thread.nodes.root = threadRoot
         threads.push thread
-        for postRoot in $$('.thread > .postContainer', threadRoot) when $('.postMessage', postRoot)
+        postRoots = $$ s.postContainer, threadRoot
+        postRoots.unshift threadRoot if Site.isOPContainerThread
+        for postRoot in postRoots when $(s.comment, postRoot)
           try
-            posts.push new Post postRoot, thread, g.BOARD
+            posts.push new Post postRoot, thread, thread.board
           catch err
             # Skip posts that we failed to parse.
             unless errors
@@ -303,17 +335,7 @@ Main =
       Main.handleErrors errors if errors
 
       if g.VIEW is 'thread'
-        scriptData = Get.scriptData()
-        threads[0].postLimit = /\bbumplimit *= *1\b/.test scriptData
-        threads[0].fileLimit = /\bimagelimit *= *1\b/.test scriptData
-        threads[0].ipCount   = if m = scriptData.match /\bunique_ips *= *(\d+)\b/ then +m[1]
-
-      if g.BOARD.ID is 'f' and g.VIEW is 'thread'
-        $.ajax "//a.4cdn.org/f/thread/#{g.THREADID}.json",
-          timeout: $.MINUTE
-          onloadend: ->
-            if @response and posts[0].file
-              posts[0].file.text.dataset.md5 = posts[0].file.MD5 = @response.posts[0].md5
+        Site.parseThreadMetadata?(threads[0])
 
       Main.callbackNodes 'Thread', threads
       Main.callbackNodesDB 'Post', posts, ->
@@ -336,7 +358,7 @@ Main =
     i   = 0
     cbs = Callbacks[klass]
     fn  = ->
-      return false unless node = nodes[i]
+      return false if not (node = nodes[i])
       cbs.execute node
       ++i % 25
 
@@ -344,7 +366,7 @@ Main =
       while fn()
         continue
       unless nodes[i]
-        cb() if cb
+        (cb() if cb)
         return
       setTimeout softTask, 0 
 
@@ -367,10 +389,11 @@ Main =
     div = $.el 'div',
       <%= html('${errors.length} errors occurred.&{Main.reportLink(errors)} [<a href="javascript:;">show</a>]') %>
     $.on div.lastElementChild, 'click', ->
-      [@textContent, logs.hidden] = if @textContent is 'show'
+      [@textContent, logs.hidden] = if @textContent is 'show' then (
         ['hide', false]
-      else
+      ) else (
         ['show', true]
+      )
 
     logs = $.el 'div',
       hidden: true
@@ -413,21 +436,24 @@ Main =
     <%= html('<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>') %>
 
   isThisPageLegit: ->
-    # 404 error page or similar.
+    # not 404 error page or similar.
     unless 'thisPageIsLegit' of Main
-      Main.thisPageIsLegit = location.hostname is 'boards.4chan.org' and
-        !$('link[href*="favicon-status.ico"]', d.head) and
-        d.title not in ['4chan - Temporarily Offline', '4chan - Error', '504 Gateway Time-out']
+      Main.thisPageIsLegit = if Site.isThisPageLegit
+        Site.isThisPageLegit()
+      else
+        !/^[45]\d\d\b/.test(document.title)
     Main.thisPageIsLegit
 
   ready: (cb) ->
     $.ready ->
-      cb() if Main.isThisPageLegit()
+      (cb() if Main.isThisPageLegit())
 
   features: [
     ['Polyfill',                  Polyfill]
+    ['Board Configuration',       BoardConfig]
     ['Normalize URL',             NormalizeURL]
     ['Captcha Configuration',     Captcha.replace]
+    ['Image Host Rewriting',      ImageHost]
     ['Redirect',                  Redirect]
     ['Header',                    Header]
     ['Catalog Links',             CatalogLinks]
@@ -456,6 +482,7 @@ Main =
     ['Menu',                      Menu]
     ['Index Generator (Menu)',    Index.menu]
     ['Report Link',               ReportLink]
+    ['Copy Text Link',            CopyTextLink]
     ['Thread Hiding (Menu)',      ThreadHiding.menu]
     ['Reply Hiding (Menu)',       PostHiding.menu]
     ['Delete Link',               DeleteLink]
@@ -488,6 +515,7 @@ Main =
     ['Thread Expansion',          ExpandThread]
     ['Favicon',                   Favicon]
     ['Unread',                    Unread]
+    ['Unread Line in Index',      UnreadIndex]
     ['Quote Threading',           QuoteThreading]
     ['Thread Stats',              ThreadStats]
     ['Thread Updater',            ThreadUpdater]
@@ -503,5 +531,3 @@ Main =
     ['Build Test',                Build.Test]
     <% } %>
   ]
-
-return Main

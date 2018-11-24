@@ -21,13 +21,11 @@
   font: 13px sans-serif;
   outline: none;
   transition: color .25s, border-color .25s;
-  transition: color .25s, border-color .25s;
 }
-.field::-moz-placeholder,
-.field:hover::-moz-placeholder {
-  color: #AAA !important;
-  font-size: 13px !important;
-  opacity: 1.0 !important;
+.field::-moz-placeholder {
+  color: #AAA;
+  font-size: 13px;
+  opacity: 1;
 }
 .captch-img:hover,
 .field:hover {
@@ -74,9 +72,10 @@ body.hasDropDownNav{
 }
 
 /* 4chan style fixes */
-.opContainer, .op {
-  display: block !important;
-  overflow: visible !important;
+/* overrides 4chan CSS on div.opContainer, div.op */
+.opContainer.opContainer, .op.op {
+  display: block;
+  overflow: visible;
 }
 .reply > .file > .fileText {
   margin: 0 20px;
@@ -114,16 +113,52 @@ body > div:last-of-type {
 body > div[style*=" top: -10000px;"] {
   visibility: hidden !important;
 }
+/* Make long filenames wrap properly: https://github.com/ccd0/4chan-x/issues/1082 */
+.post > .file {
+  /* currently nonstandard but may be added: https://lists.w3.org/Archives/Public/www-style/2016Mar/0352.html, https://bugzilla.mozilla.org/show_bug.cgi?id=1296042 */
+  word-break: break-word;
+}
+:root:not(.ua-webkit):not(.ua-blink) .fileText {
+  word-wrap: break-word;
+  max-width: calc(100vw - 90px);
+}
+body.is_catalog .thread > a > img {
+  display: inline-block;
+}
 
 /* Ads */
-:root:not(.ads-loaded) .ad-cnt,
-:root:not(.ads-loaded) .ad-plea,
+.ad-cnt > *, .adg-rects > * {
+  height: auto !important;
+}
 :root:not(.ads-loaded) hr.abovePostForm,
-:root:not(.ads-loaded) .ad-plea-bottom + hr {
+:root:not(.ads-loaded) .adg-rects > hr,
+#adg-ol + hr {
   display: none;
 }
-hr + div.center:not(.ad-cnt):not(.topad):not(.middlead):not(.bottomad) {
+.adg-rects {
+  margin: 0;
+  font-size: 0;
+}
+div.center[style] {
   display: none !important;
+}
+
+/* Tinyboard / vichan conflicts */
+#menu > .hide-thread-link {
+  width: auto;
+  height: auto;
+  overflow: visible;
+  background-image: none;
+}
+#menu label.entry {
+  display: block;
+}
+#fourchanx-settings label {
+  display: inline;
+}
+.intro a[href="javascript:;"],
+#menu a {
+  margin: 0;
 }
 
 /* Anti-autoplay */
@@ -138,10 +173,9 @@ audio.controls-added {
   text-align: center;
 }
 :root.anti-autoplay .autoplay-removed {
-  display: block !important;
   visibility: visible !important;
   min-width: 640px;
-  min-height: 390px;
+  min-height: 360px;
 }
 
 /* fixed, z-index */
@@ -580,6 +614,9 @@ div[data-checked="false"] > .suboption-list {
   border-left: 1px solid;
   border-bottom: 1px solid;
 }
+#fourchanx-settings .section-main p {
+  margin: .5em 0 0;
+}
 .section-filter ul {
   padding: 0;
 }
@@ -593,8 +630,20 @@ div[data-checked="false"] > .suboption-list {
 .section-main a, .section-filter a, .section-advanced a {
   text-decoration: underline;
 }
+#sauce-doc-expand:not(:checked) ~ #sauce-doc {
+  max-height: 130px;
+  overflow: auto;
+}
+#sauce-doc > label {
+  float: right;
+  margin: 0 5px;
+}
+/* XXX for OneeChan */
+#sauce-doc-expand + .riceCheck {
+  display: none;
+}
 .section-sauce textarea {
-  height: 350px;
+  height: 430px;
 }
 .section-advanced .field[name="boardnav"] {
   width: 100%;
@@ -620,6 +669,12 @@ div[data-checked="false"] > .suboption-list {
 .section-advanced .note code {
   font-style: normal;
   font-size: 11px;
+}
+.favicon-preview > img {
+    vertical-align: middle;
+}
+.favicon-preview > img:nth-of-type(3n+1) {
+    margin-left: 4px;
 }
 .section-keybinds .field {
   font-family: monospace;
@@ -650,6 +705,9 @@ div[data-checked="false"] > .suboption-list {
 }
 #fourchanx-settings p {
   margin: 1em 0px;
+}
+#fourchanx-settings table {
+  margin: auto;
 }
 .unscroll {
   overflow: hidden;
@@ -691,8 +749,25 @@ div[data-checked="false"] > .suboption-list {
 #index-search:not([data-searching]) + #index-search-clear {
   display: none;
 }
-#index-mode, #index-sort, #index-size {
+#index-options {
   float: right;
+}
+#lastlong-options {
+  display: inline-block;
+  vertical-align: middle;
+  height: 28px;
+  margin: -14px 0;
+}
+#lastlong-options > input {
+  padding: 0;
+  border: 0 !important;
+  text-align: center;
+  background: transparent;
+  display: block;
+  font-size: 12px;
+  height: 12px;
+  width: 30px;
+  margin: 1px 0;
 }
 .summary {
   text-decoration: none;
@@ -703,34 +778,78 @@ div[data-checked="false"] > .suboption-list {
   text-align: center;
 }
 .catalog-thread {
-  display: -webkit-inline-flex;
-  display: inline-flex;
-  text-align: left;
-  -webkit-flex-direction: column;
-  flex-direction: column;
-  -webkit-align-items: center;
-  align-items: center;
-  margin: 0 2px 5px;
+  display: inline-block;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border: 1px solid transparent;
   word-wrap: break-word;
   vertical-align: top;
   position: relative;
 }
-.catalog-thread > a {
-  flex-shrink: 0;
-  -webkit-flex-shrink: 0;
-  position: relative;
+/* overrides 4chan CSS on div.thread */
+.catalog-thread.catalog-thread {
+  margin: 2px;
 }
-.catalog-small .catalog-thread {
+.catalog-small > .catalog-thread {
   width: 165px;
-  max-height: 320px;
+  height: 320px;
 }
-.catalog-large .catalog-thread {
+.catalog-large > .catalog-thread {
   width: 270px;
-  max-height: 410px;
+  height: 410px;
+}
+:root.catalog-hover-expand .catalog-thread:hover {
+  z-index: 1;
+}
+.catalog-container {
+  position: absolute;
+  top: -4px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.catalog-container:not(:hover),
+:root:not(.catalog-hover-expand) .catalog-container {
+  overflow: hidden;
+}
+.catalog-post {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  right: 0;
+  border: 1px solid transparent;
+  padding-top: 20px;
+}
+/* overrides inline CSS from Index.cb.hoverAdjust */
+:root:not(.catalog-hover-expand) .catalog-post {
+  left: 0 !important;
+  right: 0 !important;
+}
+/* overrides 4chan CSS on div.post */
+.catalog-post.catalog-post {
+  margin: -21px -1px -1px;
+  overflow: visible;
+}
+.catalog-thread.noFile > * > .catalog-post {
+  margin-top: -7px;
+  padding-top: 6px;
+}
+:root.catalog-hover-expand .catalog-container:hover > .catalog-post {
+  margin-left: -61px;
+  margin-right: -61px;
+}
+:root.catalog-hover-expand .catalog-container:hover > * > :not(.catalog-replies) {
+  padding-left: 2px;
+  padding-right: 2px;
+}
+.catalog-link {
+  display: block;
+  position: relative;
 }
 .catalog-thumb {
   border-radius: 2px;
   box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+  vertical-align: top;
 }
 .catalog-thumb.spoiler-file {
   width: 100px;
@@ -755,45 +874,141 @@ div[data-checked="false"] > .suboption-list {
   padding-left: 2px;
 }
 .catalog-stats > .menu-button {
-  text-align: center;
   font-weight: normal;
 }
 .catalog-stats > .menu-button > i::before {
   line-height: 11px;
 }
 .catalog-stats {
-  -webkit-flex-shrink: 0;
-  flex-shrink: 0;
-  cursor: help;
   font-size: 10px;
   font-weight: 700;
-  margin-top: 2px;
+  padding-top: 2px;
 }
-.catalog-thread > .subject {
-  -webkit-flex-shrink: 0;
-  flex-shrink: 0;
-  -webkit-align-self: stretch;
-  align-self: stretch;
-  font-weight: 700;
-  line-height: 1;
-  text-align: center;
+.catalog-stats > [title] {
+  cursor: help;
 }
-.catalog-thread > .comment {
-  -webkit-flex-shrink: 1;
-  flex-shrink: 1;
-  -webkit-align-self: stretch;
-  align-self: stretch;
+.catalog-post > .postMessage {
+  margin: 0;
+  padding-bottom: .3em;
+}
+.catalog-container:not(:hover) > * > .file,
+.catalog-container:not(:hover) > * > .postInfo > :not(.subject),
+.catalog-container:not(:hover) > * > .catalog-replies,
+.catalog-container:not(:hover) .extra-linebreak,
+.catalog-container:not(:hover) .abbr,
+:root:not(.catalog-hover-expand) .catalog-container > * > .file,
+:root:not(.catalog-hover-expand) .catalog-container > * > .postInfo > :not(.subject),
+:root:not(.catalog-hover-expand) .catalog-container > * > .catalog-replies,
+:root:not(.catalog-hover-expand) .catalog-container .extra-linebreak,
+:root:not(.catalog-hover-expand) .catalog-container .abbr,
+.catalog-thread > .catalog-container > :not(.catalog-post),
+.catalog-post > .file > :not(.fileText),
+.catalog-post > * > .fileText > :not(:first-child),
+.catalog-post > .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),
+.catalog-post > * > * > .posteruid,
+:root.bottom-backlinks .catalog-post > .container,
+.post:not(.catalog-post) > .catalog-link,
+.post:not(.catalog-post) > .catalog-stats,
+.post:not(.catalog-post) > .catalog-replies {
+  display: none;
+}
+.catalog-post > .file {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  min-height: 20px;
+  background-color: inherit;
+}
+.catalog-post > * > .fileText {
+  position: relative;
+  padding: 2px;
+  background-color: inherit;
+}
+.catalog-small .catalog-post > * .fileText {
+  font-size: 10px;
+}
+.catalog-post > * > .fileText:not(:hover) {
+  white-space: nowrap;
   overflow: hidden;
-  text-align: center;
+  text-overflow: ellipsis;
 }
-/* /tg/ dice rolls */
-.board_tg .catalog-thread > .comment > b {
-  font-weight: normal;
+.catalog-post > * > .fileText:hover {
+  z-index: 1;
 }
-.catalog-code {
-  background-color: #FFF;
+/* overrides 4chan CSS on div.post div.postInfo */
+.catalog-post > .postInfo.postInfo {
+  width: auto;
+}
+.catalog-post > * > .subject {
+  display: block;
+}
+.catalog-post > * > .dateTime {
   display: inline-block;
+  font-style: italic;
+}
+:root.catalog-hover-expand .catalog-container:hover > * > * > .nameBlock,
+:root.catalog-hover-expand .catalog-container:hover > * > * > .dateTime,
+:root.catalog-hover-expand .catalog-container:hover > * > .postMessage:not(:empty) {
+  padding-top: .3em;
+}
+.catalog-post .extra-linebreak {
+  content: ''; /* makes this work in Blink/WebKit */
+  display: block;
+  margin-top: .3em;
+}
+.catalog-reply {
+  text-align: left;
+  white-space: nowrap;
+  border-top: 1px solid transparent;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  -webkit-align-items: stretch;
+  align-items: stretch;
+}
+.catalog-reply > * {
+  padding: 3px;
+  overflow: hidden;
+  -webkit-flex: none;
+  flex: none;
+}
+.catalog-reply > span {
+  font-style: italic;
+  font-weight: bold;
+}
+.catalog-reply-excerpt {
+  -webkit-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+.catalog-post .prettyprinted {
   max-width: 100%;
+  box-sizing: border-box;
+}
+.catalog-post .MathJax_Display {
+  text-align: center !important;
+}
+.catalog-container:not(:hover) .exif,
+:root:not(.catalog-hover-expand) .catalog-container .exif {
+  display: none !important;
+}
+.catalog-post > * > .exif {
+  border-collapse: collapse;
+}
+:root.catalog-hover-expand .catalog-container:hover .exif[style*="display: block;"] {
+  display: inline-block !important;
+}
+.catalog-post > * > .exif,
+.catalog-post > * > .exif > tbody {
+  background-color: inherit;
+}
+.catalog-post > * > .exif,
+.catalog-post > * > .exif td {
+  min-width: 0;
+}
+.catalog-post > * > .exif td {
+  padding-top: 1px;
 }
 :root.hats-enabled .catalog-thread::after {
   content: '';
@@ -801,17 +1016,31 @@ div[data-checked="false"] > .suboption-list {
   position: absolute;
   background-size: contain;
 }
-:root.hats-enabled .catalog-small .catalog-thread::after {
-  left: -10px;
-  top: -65px;
-  width: 100px;
-  height: 100px;
+:root.hats-enabled .catalog-small > .catalog-thread::after {
+  left: -8px;
+  top: -59px;
+  width: 96px;
+  height: 96px;
 }
-:root.hats-enabled .catalog-large .catalog-thread::after {
+:root.hats-enabled:not(.werkTyme) .catalog-small > .catalog-thread:not(.noFile)::after {
+  left: calc(67px - .3px * var(--tn-w));
+}
+:root.hats-enabled .catalog-large > .catalog-thread::after {
   left: -15px;
-  top: -105px;
+  top: -98px;
   width: 160px;
   height: 160px;
+}
+:root.hats-enabled:not(.werkTyme) .catalog-large > .catalog-thread:not(.noFile)::after {
+  left: calc(110px - .5px * var(--tn-w));
+}
+
+/* Copy Text Link's textarea element */
+textarea.copy-text-element {
+  height: 0;
+  width: 0;
+  position: absolute;
+  top: -10000px;
 }
 
 /* Announcement Hiding */
@@ -830,9 +1059,18 @@ span.hide-announcement {
 }
 
 /* Unread */
-#unread-line {
+.unread-line {
   margin: 0;
   border-color: rgb(255,0,0);
+}
+.unread-mark-read {
+  float: right;
+  clear: both;
+  width: 100%;
+  text-align: right;
+}
+:not(.unread-thread) > .unread-mark-read {
+  display: none;
 }
 
 /* Thread Updater */
@@ -843,10 +1081,11 @@ span.hide-announcement {
 }
 #updater > .move {
   position: absolute;
-  left: 0;
   top: -5px;
-  width: 100%;
-  height: 5px;
+  bottom: -5px;
+  left: -5px;
+  right: -5px;
+  z-index: -1;
 }
 #updater > div:last-child {
   text-align: center;
@@ -931,9 +1170,6 @@ span.hide-announcement {
 #thread-watcher a {
   text-decoration: none;
 }
-:root:not(.toggleable-watcher) #thread-watcher .move > .close {
-  display: none;
-}
 #thread-watcher .move > .close {
   position: absolute;
   right: 0px;
@@ -973,17 +1209,20 @@ span.hide-announcement {
 }
 
 /* Quote */
-.catalog-thread > .comment > span.quote, #arc-list span.quote {
+#arc-list span.quote {
   color: #789922;
 }
-:root:not(.catalog-mode) .deadlink {
+:root.resurrect-quotes .deadlink {
   text-decoration: none !important;
+}
+.catalog-post .qmark-ct {
+  display: none;
 }
 .backlink.deadlink:not(.forwardlink),
 .quotelink.deadlink:not(.forwardlink) {
   text-decoration: underline !important;
 }
-.inlined {
+:root:not(.catalog-mode) .inlined {
   opacity: .5;
 }
 #qp input, .forwarded {
@@ -1004,10 +1243,24 @@ span.hide-announcement {
 .postNum + .container::before {
   content: " ";
 }
+:root.bottom-backlinks .container {
+  display: block;
+  clear: both;
+  margin: 0 4px;
+}
+:root.bottom-backlinks .backlink {
+  font-size: 90%;
+}
 .inline {
   border: 1px solid;
   display: table;
   margin: 2px 0;
+}
+.container ~ .inline {
+  margin-left: 20px;
+}
+:root.catalog-mode .inline {
+  display: none;
 }
 .inline .post {
   border: 0 !important;
@@ -1048,7 +1301,7 @@ span.hide-announcement {
 .expanded-image > .post > .file > .fileThumb > img[data-md5] {
   display: none;
 }
-.full-image {
+.full-image[data-full-i-d] {
   display: none;
   cursor: pointer;
 }
@@ -1121,11 +1374,17 @@ input[name="Default Volume"] {
 }
 .werkTyme-filename {
   font-weight: bold;
+  font-size: 110%;
 }
-:root.werkTyme .catalog-thread > a {
+:root.werkTyme .catalog-link {
+  box-shadow: 0 0 5px rgba(0, 0, 0, .25);
+  padding: 8px;
   text-align: center;
-  -webkit-align-self: stretch;
-  align-self: stretch;
+}
+:root.werkTyme .catalog-thumb {
+  box-shadow: none;
+  padding: 0;
+  vertical-align: middle;
 }
 .indicator {
   background: rgba(255,0,0,0.8);
@@ -1182,18 +1441,24 @@ input[name="Default Volume"] {
   display: block;
   clear: both;
 }
-.filter-highlight .catalog-thumb,
-.filter-highlight .werkTyme-filename {
+:root:not(.werkTyme) .catalog-thread.filter-highlight .catalog-thumb,
+:root.werkTyme .catalog-thread.filter-highlight:not(:hover),
+:root.werkTyme:not(.catalog-hover-expand) .catalog-thread.filter-highlight,
+:root.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-container:hover > .catalog-post {
   box-shadow: 0 0 3px 3px rgba(255, 0, 0, .5);
 }
-.catalog-thread.watched .catalog-thumb,
-.catalog-thread.watched .werkTyme-filename {
+:root:not(.werkTyme) .catalog-thread.watched .catalog-thumb,
+:root:root.werkTyme .catalog-thread.watched:not(:hover),
+:root:root.werkTyme:not(.catalog-hover-expand) .catalog-thread.watched,
+:root.werkTyme.catalog-hover-expand .catalog-thread.watched > .catalog-container:hover > .catalog-post {
   border: 2px solid rgba(255, 0, 0, .75);
 }
 
 /* Spoiler text */
 :root.reveal-spoilers s,
-:root.reveal-spoilers s > a {
+:root.reveal-spoilers .spoiler,
+:root.reveal-spoilers s > a,
+:root.reveal-spoilers .spoiler > a {
   color: white !important;
 }
 :root.reveal-spoilers .removed-spoiler::before {
@@ -1221,6 +1486,7 @@ input[name="Default Volume"] {
 }
 .hide-thread-button {
   margin-top: -1px;
+  width: 11px;
 }
 .stub ~ * {
   display: none !important;
@@ -1233,6 +1499,29 @@ input[name="Default Volume"] {
 }
 :root.reply-hide div.sideArrows {
   display: none;
+}
+:root.thread-hide .party-hat {
+  left: 19px;
+}
+
+/* Anonymize */
+:root.anonymize .name,
+:root.anonymize .post-author:not([class*=capcode]) {
+  font-size: 0;
+}
+:root.anonymize .postertrip,
+:root.anonymize .trip,
+:root.anonymize .n-pu {
+  display: none;
+}
+:root.anonymize .name::before,
+:root.anonymize .post-author:not([class*=capcode])::before {
+  content: "Anonymous";
+  font-size: 10pt;
+}
+:root.anonymize .flashListing .name::before,
+:root.anonymize .post-last > .post-author:not([class*=capcode])::before {
+  font-size: 9pt;
 }
 
 /* QR */
@@ -1317,8 +1606,8 @@ input[name="Default Volume"] {
 #qr.reply-to-thread input[data-name="sub"]:not(.force-show),
 body:not(.board_f) #qr select[name="filetag"],
 #qr.reply-to-thread select[name="filetag"],
-body:not(.board_jp) #sjis-toggle,
-body:not(.board_sci) #tex-preview-button,
+#qr:not(.has-sjis) #sjis-toggle,
+#qr:not(.has-math) #tex-preview-button,
 #qr.tex-preview .textarea > :not(#tex-preview),
 #qr:not(.tex-preview) #tex-preview {
   display: none;
@@ -1359,7 +1648,7 @@ input.field.tripped:not(:hover):not(:focus) {
   text-shadow: none !important;
 }
 #qr textarea {
-  min-width: 100%;
+  min-width: 300px;
   resize: both;
 }
 .field {
@@ -1372,23 +1661,6 @@ input.field.tripped:not(:hover):not(:focus) {
   top: 2px;
 }
 
-/* Recaptcha v1 */
-.captcha-img {
-  margin: 0px;
-  text-align: center;
-  background-image: #fff;
-  font-size: 0px;
-  min-height: 59px;
-  min-width: 302px;
-}
-.captcha-input {
-  width: 100%;
-  margin: 1px 0 0;
-}
-#qr.captcha-v1 #qr-captcha-iframe {
-  display: none;
-}
-
 /* Recaptcha v2 */
 #qr .captcha-root {
   position: relative;
@@ -1397,14 +1669,18 @@ input.field.tripped:not(:hover):not(:focus) {
   margin: auto;
   width: 304px;
 }
-/* scrollable with scroll bar hidden; prevents scroll on space press */
-:root.ua-blink #qr .captcha-container > div {
+/* XXX scrollable with scroll bar hidden; prevents scroll on space press */
+:root.ua-blink #qr .captcha-container > div,
+:root.ua-edge #qr .captcha-container > div {
   overflow: hidden;
 }
-:root.ua-blink #qr .captcha-container > div > div:first-of-type {
+:root.ua-blink #qr .captcha-container > div > div:first-of-type,
+:root.ua-edge #qr .captcha-container > div > div:first-of-type {
   overflow-y: scroll;
   overflow-x: hidden;
-  padding-right: 15px;
+  padding-right: 30px;
+  height: 99%;
+  width: 100%;
 }
 #qr .captcha-counter {
   display: block;
@@ -1418,6 +1694,7 @@ input.field.tripped:not(:hover):not(:focus) {
 }
 #qr .captcha-counter > a {
   pointer-events: auto;
+  display: inline-block; /* XXX https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/8851747/ */
 }
 #qr:not(.captcha-open) .captcha-counter > a {
   display: block;
@@ -1749,7 +2026,7 @@ a:only-of-type > .remove {
   margin: 2px;
   vertical-align: middle;
 }
-.post .menu-button,
+.postInfo > .menu-button,
 #thread-watcher .menu-button {
   width: 18px;
   height: 15px;
@@ -1758,6 +2035,7 @@ a:only-of-type > .remove {
 #menu {
   position: fixed;
   outline: none;
+  font-weight: normal;
 }
 #menu, .submenu {
   border-radius: 3px;
@@ -1843,6 +2121,9 @@ a:only-of-type > .remove {
 }
 
 /* Embedding */
+.embedder:not(.embedded) > span {
+  display: none;
+}
 #embedding {
   padding: 1px 4px 1px 4px;
   position: fixed;
@@ -2087,9 +2368,9 @@ a:only-of-type > .remove {
 :root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-count {
   right: 178px !important;
 }
-:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-buttons,
-:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-name,
-:root.gal-hide-thumbnails:.gal-fit-height:not(.gal-pdf) .gal-count {
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-buttons,
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-name,
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-count {
   right: 28px !important;
 }
 :root.gallery-open.fixed #header-bar:not(.autohide),

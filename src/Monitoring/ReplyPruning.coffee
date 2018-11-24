@@ -2,8 +2,6 @@ ReplyPruning =
   init: ->
     return unless g.VIEW is 'thread' and Conf['Reply Pruning']
 
-    @active = not (Conf['Quote Threading'] and Conf['Thread Quotes'])
-
     @container = $.frag()
 
     @summary = $.el 'span',
@@ -14,7 +12,7 @@ ReplyPruning =
       @inputs.enabled.checked = !@inputs.enabled.checked
       $.event 'change', null, @inputs.enabled
 
-    label = UI.checkbox 'Prune Replies', 'Show Last', @active
+    label = UI.checkbox 'Prune Replies', 'Show Last', Conf['Prune All Threads']
     el = $.el 'span',
       title: 'Maximum number of replies to show.'
     ,
@@ -25,6 +23,7 @@ ReplyPruning =
       enabled: label.firstElementChild
       replies: el.lastElementChild
 
+    @setEnabled.call @inputs.enabled
     $.on @inputs.enabled, 'change', @setEnabled
     $.on @inputs.replies, 'change', $.cb.value
 
@@ -57,17 +56,22 @@ ReplyPruning =
   node: ->
     ReplyPruning.thread = @
 
+    if @isSticky
+      ReplyPruning.active = ReplyPruning.inputs.enabled.checked = true
+      if QuoteThreading.input
+        # Disable Quote Threading for this thread but don't save the setting.
+        Conf['Thread Quotes'] = QuoteThreading.input.checked = false
+
     @posts.forEach (post) ->
       if post.isReply
         ReplyPruning.total++
-        ReplyPruning.totalFiles++ if post.file
+        (ReplyPruning.totalFiles++ if post.file)
 
     # If we're linked to a post that we would hide, don't hide the posts in the first place.
-    # Also don't hide posts if we open the thread by a link to the OP.
     if (
       ReplyPruning.active and
       /^#p\d+$/.test(location.hash) and
-      0 <= @posts.keys.indexOf(location.hash[2..]) < 1 + Math.max(ReplyPruning.total - +Conf["Max Replies"], 0)
+      1 <= @posts.keys.indexOf(location.hash[2..]) < 1 + Math.max(ReplyPruning.total - +Conf["Max Replies"], 0)
     )
       ReplyPruning.active = ReplyPruning.inputs.enabled.checked = false
 
@@ -103,6 +107,7 @@ ReplyPruning =
       while ReplyPruning.hidden < hidden2 and ReplyPruning.position < posts.keys.length
         post = posts[posts.keys[ReplyPruning.position++]]
         if post.isReply and not post.isFetchedQuote
+          $.add ReplyPruning.container, node while (node = ReplyPruning.summary.nextSibling) and node isnt post.nodes.root
           $.add ReplyPruning.container, post.nodes.root
           ReplyPruning.hidden++
           ReplyPruning.hiddenFiles++ if post.file
@@ -112,11 +117,12 @@ ReplyPruning =
       while ReplyPruning.hidden > hidden2 and ReplyPruning.position > 0
         post = posts[posts.keys[--ReplyPruning.position]]
         if post.isReply and not post.isFetchedQuote
+          $.prepend frag, node while (node = ReplyPruning.container.lastChild) and node isnt post.nodes.root
           $.prepend frag, post.nodes.root
           ReplyPruning.hidden--
           ReplyPruning.hiddenFiles-- if post.file
       $.after ReplyPruning.summary, frag
-      $.event 'PostsInserted'
+      $.event 'PostsInserted', null, ReplyPruning.summary.parentNode
 
     ReplyPruning.summary.textContent = if ReplyPruning.active
       Build.summaryText '+', ReplyPruning.hidden, ReplyPruning.hiddenFiles
@@ -127,5 +133,3 @@ ReplyPruning =
     # Maintain position in thread when posts are added/removed above
     if hidden1 isnt hidden2 and (boardTop = Header.getTopOf $('.board')) < 0
       window.scrollBy 0, Math.max(d.body.clientHeight - oldPos, window.scrollY + boardTop) - window.scrollY
-
-return ReplyPruning

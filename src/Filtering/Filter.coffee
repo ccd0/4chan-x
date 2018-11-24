@@ -1,17 +1,20 @@
 Filter =
   filters: {}
+  results: {}
   init: ->
     return unless g.VIEW in ['index', 'thread'] and Conf['Filter']
 
     unless Conf['Filtered Backlinks']
       $.addClass doc, 'hide-backlinks'
 
+    nsfwBoards = BoardConfig.sfwBoards(false).join(',')
+    sfwBoards  = BoardConfig.sfwBoards(true).join(',')
+
     for key of Config.filter
-      @filters[key] = []
       for line in Conf[key].split '\n'
         continue if line[0] is '#'
 
-        unless regexp = line.match /\/(.+)\/(\w*)/
+        if not (regexp = line.match /\/(.+)\/(\w*)/)
           continue
 
         # Don't mix up filter flags with the regular expression.
@@ -20,13 +23,14 @@ Filter =
         # Comma-separated list of the boards this filter applies to.
         # Defaults to global.
         boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
+        boards = boards.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards)
         boards = if boards is 'global' then null else boards.split(',')
 
         # boards to exclude from an otherwise global rule
-        excludes = if boards is null
-          filter.match(/exclude:([^;]+)/)?[1].toLowerCase().split(',') or null
-        else
-          null
+        # due to the sfw and nsfw keywords, also works on all filters
+        # replaces 'nsfw' and 'sfw' for consistency
+        excludes = filter.match(/exclude:([^;]+)/)?[1].toLowerCase() or null
+        excludes = if excludes is null then null else excludes.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards).split(',')
 
         if key in ['uniqueID', 'MD5']
           # MD5 filter will use strings instead of regular expressions.
@@ -70,11 +74,20 @@ Filter =
           top = filter.match(/top:(yes|no)/)?[1] or 'yes'
           top = top is 'yes' # Turn it into a boolean
 
-        @filters[key].push @createFilter regexp, boards, excludes, op, stub, hl, top
+        # Fields that this filter applies to (for 'general' filters)
+        if key is 'general'
+          if (types = filter.match /(?:^|;)\s*type:([^;]*)/)
+            types = types[1].split(',').filter (x) ->
+              x of Config.filter and x isnt 'general'
+          else
+            types = ['subject', 'name', 'filename', 'comment']
 
-      # Only execute filter types that contain valid filters.
-      unless @filters[key].length
-        delete @filters[key]
+        filter = @createFilter regexp, boards, excludes, op, stub, hl, top
+        if key is 'general'
+          for type in types
+            (@filters[type] or= []).push filter
+        else
+          (@filters[key] or= []).push filter
 
     return unless Object.keys(@filters).length
     Callbacks.Post.push
@@ -106,47 +119,110 @@ Filter =
         return false
       settings
 
+  test: (post, hideable=true) ->
+    return post.filterResults if post.filterResults
+    hide = false
+    stub = true
+    hl   = undefined
+    top  = false
+    if QuoteYou.isYou(post)
+      hideable = false
+    for key of Filter.filters when ((value = Filter[key] post)?)
+      # Continue if there's nothing to filter (no tripcode for example).
+      for filter in Filter.filters[key] when (result = filter value, post.boardID, post.isReply)
+        if result.hide
+          if hideable
+            hide = true
+            stub and= result.stub
+        else
+          unless hl and result.class in hl
+            (hl or= []).push result.class
+          top or= result.top
+    if hide
+      {hide, stub}
+    else
+      {hl, top}
+
   node: ->
     return if @isClone
-    for key of Filter.filters when (value = Filter[key] @)?
-      # Continue if there's nothing to filter (no tripcode for example).
-
-      for filter in Filter.filters[key] when result = filter value, @board.ID, @isReply
-        # Hide
-        if result.hide and not @isFetchedQuote
-          if @isReply
-            PostHiding.hide @, result.stub
-          else if g.VIEW is 'index'
-            ThreadHiding.hide @thread, result.stub
-          else
-            continue
-          return
-
-        # Highlight
-        $.addClass @nodes.root, result.class
-        unless @highlights and result.class in @highlights
-          (@highlights or= []).push result.class
-        if !@isReply and result.top
-          @thread.isOnTop = true
+    {hide, stub, hl, top} = Filter.test @, (!@isFetchedQuote and (@isReply or g.VIEW is 'index'))
+    if hide
+      if @isReply
+        PostHiding.hide @, stub
+      else
+        ThreadHiding.hide @thread, stub
+    else
+      if hl
+        @highlights = hl
+        $.addClass @nodes.root, hl...
+    return
 
   isHidden: (post) ->
-    for key of Filter.filters when (value = Filter[key] post)?
-      for filter in Filter.filters[key] when result = filter value, post.boardID, post.isReply
-        return true if result.hide
-    false
+    !!Filter.test(post).hide
 
-  postID:     (post) -> "#{post.ID ? post.postID}"
+  postID:     (post) -> "#{post.ID}"
   name:       (post) -> post.info.name
   uniqueID:   (post) -> post.info.uniqueID
   tripcode:   (post) -> post.info.tripcode
   capcode:    (post) -> post.info.capcode
-  subject:    (post) -> post.info.subject
+  pass:       (post) -> post.info.pass
+  subject:    (post) -> post.info.subject or (if post.isReply then undefined else '')
   comment:    (post) -> (post.info.comment ?= Build.parseComment post.info.commentHTML.innerHTML)
   flag:       (post) -> post.info.flag
   filename:   (post) -> post.file?.name
   dimensions: (post) -> post.file?.dimensions
   filesize:   (post) -> post.file?.size
   MD5:        (post) -> post.file?.MD5
+
+  addFilter: (type, re, cb) ->
+    $.get type, Conf[type], (item) ->
+      save = item[type]
+      # Add a new line before the regexp unless the text is empty.
+      save =
+        if save
+          "#{save}\n#{re}"
+        else
+          re
+      $.set type, save, cb
+
+  quickFilterMD5: ->
+    post = Get.postFromNode @
+    return unless post.file
+    Filter.addFilter 'MD5', "/#{post.file.MD5}/"
+    origin = post.origin or post
+    if origin.isReply
+      PostHiding.hide origin
+    else if g.VIEW is 'index'
+      ThreadHiding.hide origin.thread
+    # If post is still visible, give an indication that the MD5 was filtered.
+    if post.nodes.post.getBoundingClientRect().height
+      new Notice 'info', 'MD5 filtered.', 2
+
+  escape: (value) ->
+    value.replace ///
+      /
+      | \\
+      | \^
+      | \$
+      | \n
+      | \.
+      | \(
+      | \)
+      | \{
+      | \}
+      | \[
+      | \]
+      | \?
+      | \*
+      | \+
+      | \|
+      ///g, (c) ->
+        if c is '\n'
+          '\\n'
+        else if c is '\\'
+          '\\\\'
+        else
+          "\\#{c}"
 
   menu:
     init: ->
@@ -168,6 +244,7 @@ Filter =
         ['Unique ID',        'uniqueID']
         ['Tripcode',         'tripcode']
         ['Capcode',          'capcode']
+        ['Pass Date',        'pass']
         ['Subject',          'subject']
         ['Comment',          'comment']
         ['Flag',             'flag']
@@ -192,62 +269,27 @@ Filter =
         el: el
         open: (post) ->
           value = Filter[type] post
-          value? and not (g.BOARD.ID is 'f' and type is 'MD5')
+          value?
       }
 
     makeFilter: ->
       {type} = @dataset
       # Convert value -> regexp, unless type is MD5
       value = Filter[type] Filter.menu.post
-      re = if type in ['uniqueID', 'MD5'] then value else value.replace ///
-        /
-        | \\
-        | \^
-        | \$
-        | \n
-        | \.
-        | \(
-        | \)
-        | \{
-        | \}
-        | \[
-        | \]
-        | \?
-        | \*
-        | \+
-        | \|
-        ///g, (c) ->
-          if c is '\n'
-            '\\n'
-          else if c is '\\'
-            '\\\\'
-          else
-            "\\#{c}"
-
+      re = if type in ['uniqueID', 'MD5'] then value else Filter.escape(value)
       re = if type in ['uniqueID', 'MD5']
         "/#{re}/"
       else
         "/^#{re}$/"
 
-      # Add a new line before the regexp unless the text is empty.
-      $.get type, Conf[type], (item) ->
-        save = item[type]
-        save =
-          if save
-            "#{save}\n#{re}"
-          else
-            re
-        $.set type, save
-
+      Filter.addFilter type, re, ->
         # Open the settings and display & focus the relevant filter textarea.
         Settings.open 'Filter'
         section = $ '.section-container'
         select = $ 'select[name=filter]', section
         select.value = type
         Settings.selectFilter.call select
-        ta = $ 'textarea', section
-        tl = ta.textLength
-        ta.setSelectionRange tl, tl
-        ta.focus()
-
-return Filter
+        $.onExists section, 'textarea', (ta) ->
+          tl = ta.textLength
+          ta.setSelectionRange tl, tl
+          ta.focus()

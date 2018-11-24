@@ -4,10 +4,13 @@
 $ = (selector, root=d.body) ->
   root.querySelector selector
 
-$.DAY = 24 * 
-  $.HOUR = 60 * 
-    $.MINUTE = 60 * 
+$.DAY = 24 * (
+  $.HOUR = 60 * (
+    $.MINUTE = 60 * (
       $.SECOND = 1000
+    )
+  )
+)
 
 $.id = (id) ->
   d.getElementById id
@@ -42,24 +45,29 @@ $.ajax = do ->
   # With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
   # This saves a lot of bandwidth and CPU time for both the users and the servers.
   lastModified = {}
+  if window.wrappedJSObject and not XMLHttpRequest.wrappedJSObject
+    pageXHR = XPCNativeWrapper window.wrappedJSObject.XMLHttpRequest
+  else
+    pageXHR = XMLHttpRequest
 
   (url, options={}, extra={}) ->
     {type, whenModified, upCallbacks, form} = extra
+    options.responseType ?= 'json' if /\.json$/.test url
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
-    r = new XMLHttpRequest()
+    # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
+    url += "?s=#{whenModified}" if $.engine is 'blink' and whenModified
+    r = new pageXHR()
     type or= form and 'post' or 'get'
     try
       r.open type, url, true
       if whenModified
         r.setRequestHeader 'If-Modified-Since', lastModified[whenModified][url] if lastModified[whenModified]?[url]?
         $.on r, 'load', -> (lastModified[whenModified] or= {})[url] = r.getResponseHeader 'Last-Modified'
-      if /\.json$/.test url
-        options.responseType ?= 'json'
       $.extend r, options
       $.extend r.upload, upCallbacks
       # connection error or content blocker
-      $.on r, 'error', -> c.error "4chan X failed to load: #{url}" unless r.status
+      $.on r, 'error', -> (c.error "4chan X failed to load: #{url}" unless r.status)
       r.send form
     catch err
       # XXX Some content blockers in Firefox (e.g. Adblock Plus and NoScript) throw an exception instead of simulating a connection error.
@@ -80,7 +88,7 @@ do ->
       return req
     rm = -> delete reqs[url]
     try
-      return unless req = $.ajax url, options
+      return if not (req = $.ajax url, options)
     catch err
       return
     $.on req, 'load', (e) ->
@@ -250,9 +258,14 @@ do ->
       root.dispatchEvent new CustomEvent event, {bubbles: true, detail: clone detail}
 <% } %>
 
+$.modifiedClick = (e) ->
+  e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+
 $.open = 
 <% if (type === 'userscript') { %>
-  if GM_openInTab?
+  if GM?.openInTab?
+    GM.openInTab
+  else if GM_openInTab?
     GM_openInTab
   else
     (url) -> window.open url, '_blank'
@@ -349,18 +362,31 @@ $.engine = do ->
 
 $.platform = '<%= type %>';
 
-try
-  localStorage.getItem 'x'
-  $.hasStorage = true
-catch
-  $.hasStorage = false
+$.hasStorage = do ->
+  try
+    return true if localStorage[g.NAMESPACE + 'hasStorage'] is 'true'
+    localStorage[g.NAMESPACE + 'hasStorage'] = 'true'
+    return localStorage[g.NAMESPACE + 'hasStorage'] is 'true'
+  catch
+    false
 
 $.item = (key, val) ->
   item = {}
   item[key] = val
   item
 
+$.oneItemSugar = (fn) ->
+  (key, val, cb) ->
+    if typeof key is 'string'
+      fn $.item(key, val), cb
+    else
+      fn key, val
+
 $.syncing = {}
+
+$.securityCheck = (data) ->
+  if location.protocol isnt 'https:'
+    delete data['Redirect to HTTPS']
 
 <% if (type === 'crx') { %>
 # https://developer.chrome.com/extensions/storage.html
@@ -381,18 +407,33 @@ $.sync = (key, cb) ->
   $.syncing[key] = cb
 $.forceSync = -> return
 
-$.get = (key, val, cb) ->
-  if typeof cb is 'function'
-    data = $.item key, val
+$.crxWorking = ->
+  if chrome.runtime.getManifest()
+    true
   else
-    data = key
-    cb = val
+    unless $.crxWarningShown
+      msg = $.el 'div',
+        <%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>
+      $.on $('a', msg), 'click', -> location.reload()
+      new Notice 'warning', msg
+      $.crxWarningShown = true
+    false
 
+$.get = $.oneItemSugar (data, cb) ->
+  return unless $.crxWorking()
   results = {}
   get = (area) ->
-    chrome.storage[area].get Object.keys(data), (result) ->
+    keys = Object.keys data
+    # XXX slow performance in Firefox
+    if $.engine is 'gecko' and area is 'sync' and keys.length > 3
+      keys = null
+    chrome.storage[area].get keys, (result) ->
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
+      if keys is null
+        result2 = {}
+        result2[key] = val for key, val of result when key of data
+        result = result2
       for key of data
         $.oldValue[area][key] = result[key]
       results[area] = result
@@ -413,6 +454,7 @@ do ->
     unescape(encodeURIComponent(JSON.stringify(key))).length + unescape(encodeURIComponent(JSON.stringify(value))).length > chrome.storage.sync.QUOTA_BYTES_PER_ITEM
 
   $.delete = (keys) ->
+    return unless $.crxWorking()
     if typeof keys is 'string'
       keys = [keys]
     for key in keys
@@ -439,22 +481,20 @@ do ->
         items.sync[key] = val for key, val of data when not exceedsQuota(key, val)
         setSync()
       else
-        chrome.storage.local.remove (key for key of data when key not of items.local)
+        chrome.storage.local.remove (key for key of data when not (key of items.local))
       cb?()
 
   setSync = $.debounce $.SECOND, ->
     setArea 'sync'
 
-  $.set = (key, val, cb) ->
-    if typeof key is 'string'
-      data = $.item key, val
-    else
-      data = key
-      cb = val
+  $.set = $.oneItemSugar (data, cb) ->
+    return unless $.crxWorking()
+    $.securityCheck data
     $.extend items.local, data
     setArea 'local', cb
 
   $.clear = (cb) ->
+    return unless $.crxWorking()
     items.local = {}
     items.sync  = {}
     count = 2
@@ -470,120 +510,156 @@ do ->
 
 # http://wiki.greasespot.net/Main_Page
 # https://tampermonkey.net/documentation.php
-if GM_deleteValue?
-  $.getValue   = GM_getValue
-  $.listValues = -> GM_listValues() # error when called if missing
-else if $.hasStorage
-  $.getValue = (key) -> localStorage[key]
-  $.listValues = ->
-    key for key of localStorage when key[...g.NAMESPACE.length] is g.NAMESPACE
-else
-  $.getValue   = ->
-  $.listValues = -> []
 
-if GM_addValueChangeListener?
-  $.setValue    = GM_setValue
-  $.deleteValue = GM_deleteValue
-else if GM_deleteValue?
-  $.oldValue = {}
-  $.setValue = (key, val) ->
-    GM_setValue key, val
-    if key of $.syncing
-      $.oldValue[key]   = val
-      localStorage[key] = val if $.hasStorage # for `storage` events
-  $.deleteValue = (key) ->
-    GM_deleteValue key
-    if key of $.syncing
-      delete $.oldValue[key]
-      localStorage.removeItem key if $.hasStorage # for `storage` events
-  $.cantSync = true if !$.hasStorage
-else if $.hasStorage
-  $.oldValue = {}
-  $.setValue = (key, val) ->
-    $.oldValue[key]   = val if key of $.syncing
-    localStorage[key] = val
-  $.deleteValue = (key) ->
-    delete $.oldValue[key] if key of $.syncing
-    localStorage.removeItem key
-else
-  $.setValue = ->
-  $.deleteValue = ->
-  $.cantSync = $.cantSet = true
+if GM?.deleteValue? and window.BroadcastChannel and not GM_addValueChangeListener?
 
-if GM_addValueChangeListener?
+  $.syncChannel = new BroadcastChannel(g.NAMESPACE + 'sync')
+
+  $.on $.syncChannel, 'message', (e) ->
+    for key, val of e.data when (cb = $.syncing[key])
+      cb JSON.parse(JSON.stringify(val)), key
+
   $.sync = (key, cb) ->
-    $.syncing[key] = GM_addValueChangeListener g.NAMESPACE + key, (key2, oldValue, newValue, remote) ->
-      if remote
-        newValue = JSON.parse newValue unless newValue is undefined
-        cb newValue, key
-  $.forceSync = ->
-else if GM_deleteValue? or $.hasStorage
-  $.sync = (key, cb) ->
-    key = g.NAMESPACE + key
     $.syncing[key] = cb
-    $.oldValue[key] = $.getValue key
 
-  do ->
-    onChange = ({key, newValue}) ->
-      return unless cb = $.syncing[key]
-      if newValue?
-        return if newValue is $.oldValue[key]
-        $.oldValue[key] = newValue
-        cb JSON.parse(newValue), key[g.NAMESPACE.length..]
-      else
-        return unless $.oldValue[key]?
-        delete $.oldValue[key]
-        cb undefined, key[g.NAMESPACE.length..]
-    $.on window, 'storage', onChange
-
-    $.forceSync = (key) ->
-      # Storage events don't work across origins
-      # e.g. http://boards.4chan.org and https://boards.4chan.org
-      # so force a check for changes to avoid lost data.
-      key = g.NAMESPACE + key
-      onChange {key, newValue: $.getValue key}
-else
-  $.sync = ->
   $.forceSync = ->
 
-$.delete = (keys) ->
-  unless keys instanceof Array
-    keys = [keys]
-  for key in keys
-    $.deleteValue g.NAMESPACE + key
-  return
+  $.delete = (keys, cb) ->
+    unless keys instanceof Array
+      keys = [keys]
+    Promise.all(GM.deleteValue(g.NAMESPACE + key) for key in keys).then ->
+      items = {}
+      items[key] = undefined for key in keys
+      $.syncChannel.postMessage items
+      cb?()
 
-$.get = (key, val, cb) ->
-  if typeof cb is 'function'
-    items = $.item key, val
+  $.get = $.oneItemSugar (items, cb) ->
+    keys = Object.keys items
+    Promise.all(GM.getValue(g.NAMESPACE + key) for key in keys).then (values) ->
+      for val, i in values when val
+        items[keys[i]] = JSON.parse val
+      cb items
+
+  $.set = $.oneItemSugar (items, cb) ->
+    $.securityCheck items
+    Promise.all(GM.setValue(g.NAMESPACE + key, JSON.stringify(val)) for key, val of items).then ->
+      $.syncChannel.postMessage items
+      cb?()
+
+  $.clear = (cb) ->
+    GM.listValues().then (keys) ->
+      $.delete keys.map((key) -> key.replace g.NAMESPACE, ''), cb
+
+else
+
+  unless GM_deleteValue?
+    $.perProtocolSettings = true
+
+  if GM_deleteValue?
+    $.getValue   = GM_getValue
+    $.listValues = -> GM_listValues() # error when called if missing
+  else if $.hasStorage
+    $.getValue = (key) -> localStorage[key]
+    $.listValues = ->
+      key for key of localStorage when key[...g.NAMESPACE.length] is g.NAMESPACE
   else
-    items = key
-    cb = val
-  $.queueTask $.getSync, items, cb
+    $.getValue   = ->
+    $.listValues = -> []
 
-$.getSync = (items, cb) ->
-  for key of items when (val2 = $.getValue g.NAMESPACE + key)
-    items[key] = JSON.parse val2
-  cb items
-
-$.set = (keys, val, cb) ->
-  if typeof keys is 'string'
-    $.setValue(g.NAMESPACE + keys, JSON.stringify val)
+  if GM_addValueChangeListener?
+    $.setValue    = GM_setValue
+    $.deleteValue = GM_deleteValue
+  else if GM_deleteValue?
+    $.oldValue = {}
+    $.setValue = (key, val) ->
+      GM_setValue key, val
+      if key of $.syncing
+        $.oldValue[key]   = val
+        localStorage[key] = val if $.hasStorage # for `storage` events
+    $.deleteValue = (key) ->
+      GM_deleteValue key
+      if key of $.syncing
+        delete $.oldValue[key]
+        localStorage.removeItem key if $.hasStorage # for `storage` events
+    $.cantSync = true if !$.hasStorage
+  else if $.hasStorage
+    $.oldValue = {}
+    $.setValue = (key, val) ->
+      $.oldValue[key]   = val if key of $.syncing
+      localStorage[key] = val
+    $.deleteValue = (key) ->
+      delete $.oldValue[key] if key of $.syncing
+      localStorage.removeItem key
   else
-    for key, value of keys
-      $.setValue(g.NAMESPACE + key, JSON.stringify value)
-    cb = val
-  cb?()
+    $.setValue = ->
+    $.deleteValue = ->
+    $.cantSync = $.cantSet = true
 
-$.clear = (cb) ->
-  # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
-  # Also support case where GM_listValues is not defined.
-  $.delete Object.keys(Conf)
-  $.delete ['previousversion', 'AutoWatch', 'QR Size', 'captchas', 'QR.persona', 'hiddenPSA']
-  $.delete ("#{id}.position" for id in ['embedding', 'updater', 'thread-stats', 'thread-watcher', 'qr'])
-  try
-    $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''
-  cb?()
+  if GM_addValueChangeListener?
+    $.sync = (key, cb) ->
+      $.syncing[key] = GM_addValueChangeListener g.NAMESPACE + key, (key2, oldValue, newValue, remote) ->
+        if remote
+          newValue = JSON.parse newValue unless newValue is undefined
+          cb newValue, key
+    $.forceSync = ->
+  else if GM_deleteValue? or $.hasStorage
+    $.sync = (key, cb) ->
+      key = g.NAMESPACE + key
+      $.syncing[key] = cb
+      $.oldValue[key] = $.getValue key
+
+    do ->
+      onChange = ({key, newValue}) ->
+        return if not (cb = $.syncing[key])
+        if newValue?
+          return if newValue is $.oldValue[key]
+          $.oldValue[key] = newValue
+          cb JSON.parse(newValue), key[g.NAMESPACE.length..]
+        else
+          return unless $.oldValue[key]?
+          delete $.oldValue[key]
+          cb undefined, key[g.NAMESPACE.length..]
+      $.on window, 'storage', onChange
+
+      $.forceSync = (key) ->
+        # Storage events don't work across origins
+        # e.g. http://boards.4chan.org and https://boards.4chan.org
+        # so force a check for changes to avoid lost data.
+        key = g.NAMESPACE + key
+        onChange {key, newValue: $.getValue key}
+  else
+    $.sync = ->
+    $.forceSync = ->
+
+  $.delete = (keys) ->
+    unless keys instanceof Array
+      keys = [keys]
+    for key in keys
+      $.deleteValue g.NAMESPACE + key
+    return
+
+  $.get = $.oneItemSugar (items, cb) ->
+    $.queueTask $.getSync, items, cb
+
+  $.getSync = (items, cb) ->
+    for key of items when (val2 = $.getValue g.NAMESPACE + key)
+      items[key] = JSON.parse val2
+    cb items
+
+  $.set = $.oneItemSugar (items, cb) ->
+    $.securityCheck items
+    $.queueTask ->
+      for key, value of items
+        $.setValue(g.NAMESPACE + key, JSON.stringify value)
+      cb?()
+
+  $.clear = (cb) ->
+    # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
+    # Also support case where GM_listValues is not defined.
+    $.delete Object.keys(Conf)
+    $.delete ['previousversion', 'QR Size', 'QR.persona', 'hiddenPSA']
+    try
+      $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''
+    cb?()
+
 <% } %>
-
-return $

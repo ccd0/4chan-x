@@ -10,6 +10,9 @@ PostHiding =
       name: 'Reply Hiding'
       cb:   @node
 
+  isHidden: (boardID, threadID, postID) ->
+    !!(PostHiding.db and PostHiding.db.get {boardID, threadID, postID})
+
   node: ->
     return if !@isReply or @isClone or @isFetchedQuote
 
@@ -21,9 +24,14 @@ PostHiding =
         Recursive.add   PostHiding.hide, @, data.makeStub, true
 
     return unless Conf['Reply Hiding Buttons']
-    sideArrows = $('.sideArrows', @nodes.root)
-    $.replace sideArrows.firstChild, PostHiding.makeButton @, 'hide'
-    sideArrows.removeAttribute 'class'
+
+    button = PostHiding.makeButton @, 'hide'
+    if (sa = Site.selectors.sideArrows)
+      sideArrows = $ sa, @nodes.root
+      $.replace sideArrows.firstChild, button
+      sideArrows.removeAttribute 'class'
+    else
+      $.prepend @nodes.root, button
 
   menu:
     init: ->
@@ -84,7 +92,7 @@ PostHiding =
         open: (post) ->
           if !post.isReply or post.isClone or !post.isHidden
             return false
-          unless data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+          if not (data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID})
             return false
           PostHiding.menu.post = post
           thisPost.firstChild.checked = post.isHidden
@@ -104,7 +112,7 @@ PostHiding =
         open: (post) ->
           if !post.isReply or post.isClone or !post.isHidden
             return false
-          unless data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+          if not (data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID})
             return false
           PostHiding.menu.post = post
 
@@ -215,5 +223,3 @@ PostHiding =
     for quotelink in Get.allQuotelinksLinkingTo post
       $.rmClass quotelink, 'filtered'
     return
-
-return PostHiding

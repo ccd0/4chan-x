@@ -30,12 +30,18 @@
 }
 
 /* Catalog */
-:root.tomorrow .catalog-code {
-  background-color: rgba(255, 255, 255, 0.1);
+:root.tomorrow.catalog-hover-expand .catalog-container:hover > .post {
+  background-color: #282A2E;
+}
+:root.tomorrow.werkTyme .catalog-thread:not(:hover),
+:root.tomorrow.werkTyme:not(.catalog-hover-expand) .catalog-thread,
+:root.tomorrow.catalog-hover-expand .catalog-container:hover > .post,
+:root.tomorrow.catalog-hover-expand .catalog-container:hover .catalog-reply {
+  border-color: #111;
 }
 
 /* Quote */
-:root.tomorrow .catalog-thread > .comment > span.quote, :root.tomorrow #arc-list span.quote {
+:root.tomorrow #arc-list span.quote {
   color: #B5BD68;
 }
 :root.tomorrow .backlink.deadlink {
@@ -72,14 +78,19 @@
 :root.tomorrow .filter-highlight > div.sideArrows {
   color: rgb(155, 185, 210);
 }
-:root.tomorrow .filter-highlight .catalog-thumb,
-:root.tomorrow .filter-highlight .werkTyme-filename {
+:root.tomorrow .catalog-thread.filter-highlight .catalog-thumb,
+:root.tomorrow.werkTyme .catalog-thread.filter-highlight:not(:hover),
+:root.tomorrow.werkTyme:not(.catalog-hover-expand) .catalog-thread.filter-highlight,
+:root.tomorrow.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-container:hover > .catalog-post {
   box-shadow: 0 0 3px 3px rgba(64, 192, 255, .7);
 }
 :root.tomorrow .catalog-thread.watched .catalog-thumb,
-:root.tomorrow .catalog-thread.watched .werkTyme-filename {
+:root.tomorrow.werkTyme .catalog-thread.watched:not(:hover),
+:root.tomorrow.werkTyme:not(.catalog-hover-expand) .catalog-thread.watched,
+:root.tomorrow.werkTyme.catalog-hover-expand .catalog-thread.watched > .catalog-container:hover > .catalog-post {
   border: 2px solid rgb(64, 192, 255);
 }
+
 
 /* QR */
 .tomorrow #dump-list::-webkit-scrollbar-thumb {
@@ -143,12 +154,15 @@
 }
 
 /* Unread */
-:root.tomorrow #unread-line {
+:root.tomorrow .unread-line {
   border-color: rgb(197, 200, 198);
+}
+:root.tomorrow .unread-mark-read {
+  background-color: rgba(40,42,46,0.5);
 }
 
 /* Thread Watcher */
-:root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.disabled.replies-quoting-you {
+:root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.replies-quoting-you {
   color: #F00 !important;
 }
 

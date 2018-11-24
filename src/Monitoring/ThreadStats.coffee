@@ -19,7 +19,7 @@ ThreadStats =
       Header.addShortcut 'stats', sc, 200
 
     else
-      @dialog = sc = UI.dialog 'thread-stats', 'bottom: 0px; right: 0px;',
+      @dialog = sc = UI.dialog 'thread-stats',
         <%= html('<div class="move" title="${statsTitle}">&{statsHTML}</div>') %>
       $.addClass doc, 'float'
       $.ready ->
@@ -42,7 +42,7 @@ ThreadStats =
     @posts.forEach (post) ->
       postCount++
       fileCount++ if post.file
-      ThreadStats.lastPost = post.info.date if ThreadStats.pageCountEl
+      (ThreadStats.lastPost = post.info.date if ThreadStats.pageCountEl)
     ThreadStats.thread = @
     ThreadStats.fetchPage()
     ThreadStats.update postCount, fileCount, @ipCount
@@ -75,7 +75,7 @@ ThreadStats =
       $.addClass ThreadStats.pageCountEl, 'warning'
       return
     ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 2 * $.MINUTE
-    $.ajax "//a.4cdn.org/#{ThreadStats.thread.board}/threads.json", onload: ThreadStats.onThreadsLoad,
+    $.ajax "#{location.protocol}//a.4cdn.org/#{ThreadStats.thread.board}/threads.json", onload: ThreadStats.onThreadsLoad,
       whenModified: 'ThreadStats'
 
   onThreadsLoad: ->
@@ -102,5 +102,3 @@ ThreadStats =
     if g.BOARD.ID isnt 'f' and ThreadStats.lastPost > ThreadStats.lastPageUpdate and ThreadStats.pageCountEl?.textContent isnt '1'
       clearTimeout ThreadStats.timeout
       ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 5 * $.SECOND
-
-return ThreadStats

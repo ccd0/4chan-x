@@ -39,16 +39,18 @@ QuoteThreading =
   inserted: {}
 
   setEnabled: ->
-    other = ReplyPruning.inputs?.enabled
-    if @checked and other?.checked
-      other.checked = false
-      $.event 'change', null, other
+    if @checked
+      $.set 'Prune All Threads', false
+      other = ReplyPruning.inputs?.enabled
+      if other?.checked
+        other.checked = false
+        $.event 'change', null, other
     $.cb.checked.call @
 
   setThread: ->
     QuoteThreading.thread = @
     $.asap (-> !Conf['Thread Updater'] or $ '.navLinksBot > .updatelink'), ->
-      $.add navLinksBot, [$.tn(' '), QuoteThreading.threadNewLink] if (navLinksBot = $ '.navLinksBot')
+      ($.add navLinksBot, [$.tn(' '), QuoteThreading.threadNewLink] if (navLinksBot = $ '.navLinksBot'))
 
   node: ->
     return if @isFetchedQuote or @isClone or !@isReply
@@ -77,9 +79,11 @@ QuoteThreading =
     posts
 
   insert: (post) ->
-    return false unless Conf['Thread Quotes'] and
+    return false if not (
+      Conf['Thread Quotes'] and
       (parent = QuoteThreading.parent[post.fullID]) and
       !QuoteThreading.inserted[post.fullID]
+    )
 
     descendants = QuoteThreading.descendants post
     if !Unread.posts.has(parent.ID)
@@ -139,12 +143,10 @@ QuoteThreading =
           $.rmClass post.nodes.root, 'threadOP'
           $.rm post.nodes.threadContainer
           delete post.nodes.threadContainer
-      $.add thread.OP.nodes.root.parentNode, nodes
+      $.add thread.nodes.root, nodes
 
     Unread.position = Unread.order.first
     Unread.updatePosition()
     Unread.setLine true
     Unread.read()
     Unread.update()
-
-return QuoteThreading

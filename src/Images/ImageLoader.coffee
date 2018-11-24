@@ -1,6 +1,6 @@
 ImageLoader =
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
+    return unless g.VIEW in ['index', 'thread', 'archive']
     return unless Conf['Image Prefetching'] or
       Conf['Replace JPG'] or Conf['Replace PNG'] or Conf['Replace GIF'] or Conf['Replace WEBM']
 
@@ -14,7 +14,7 @@ ImageLoader =
     if Conf['Replace WEBM']
       $.on d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', @playVideos
 
-    return unless Conf['Image Prefetching']
+    return unless Conf['Image Prefetching'] and g.VIEW in ['index', 'thread']
 
     prefetch = $.el 'label',
       <%= html('<input type="checkbox" name="prefetch"> Prefetch Images') %>
@@ -57,6 +57,7 @@ ImageLoader =
     type    = if (match = url.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
     replace = Conf["Replace #{type}"] and !/spoiler/.test(thumb.src or thumb.dataset.src)
     return unless replace or Conf['prefetch']
+    return if $.hasClass doc, 'catalog-mode'
     return unless [post, post.clones...].some (clone) -> doc.contains clone.nodes.root
     file.isPrefetched = true
     if file.videoThumb
@@ -72,8 +73,6 @@ ImageLoader =
       $.on el, 'load', ->
         clone.file.thumb.src = url for clone in post.clones
         thumb.src = url
-        # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
-        thumb.removeAttribute 'data-src'
     el.src = url
 
   toggle: ->
@@ -89,5 +88,3 @@ ImageLoader =
         {thumb} = post.file
         if Header.isNodeVisible(thumb) or post.nodes.root is qpClone then thumb.play() else thumb.pause()
       return
-
-return ImageLoader

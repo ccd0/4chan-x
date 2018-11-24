@@ -15,6 +15,7 @@ Unread =
 
     @hr = $.el 'hr',
       id: 'unread-line'
+      className: 'unread-line'
     @posts = new Set()
     @postsQuotingYou = new Set()
     @order = new RandomAccessList()
@@ -76,8 +77,6 @@ Unread =
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
 
-    ReplyPruning.showIfHidden Unread.position?.data.nodes.root.id
-
     position = Unread.positionPrev()
     while position
       {root} = position.data.nodes
@@ -114,11 +113,7 @@ Unread =
   addPost: ->
     return if @isFetchedQuote or @isClone
     Unread.order.push @
-    return if @ID <= Unread.lastReadPost or @isHidden or QuoteYou.db?.get {
-      boardID:  @board.ID
-      threadID: @thread.ID
-      postID:   @ID
-    }
+    return if @ID <= Unread.lastReadPost or @isHidden or QuoteYou.isYou(@)
     Unread.posts.add @ID
     Unread.addPostQuotingYou @
     Unread.position ?= Unread.order[@ID]
@@ -132,7 +127,7 @@ Unread =
   openNotification: (post) ->
     return unless Header.areNotificationsEnabled
     notif = new Notification "#{post.info.nameBlock} replied to you",
-      body: post.info.commentDisplay
+      body: post.commentDisplay()
       icon: Favicon.logo
     notif.onclick = ->
       Header.scrollToIfNeeded post.nodes.root, true
@@ -173,19 +168,12 @@ Unread =
       count++
       Unread.posts.delete ID
       Unread.postsQuotingYou.delete ID
-
-      if QuoteYou.db?.get {
-        boardID:  data.board.ID
-        threadID: data.thread.ID
-        postID:   ID
-      }
-        QuoteYou.lastRead = root
       Unread.position = Unread.position.next
 
     return unless count
     Unread.updatePosition()
     Unread.saveLastReadPost()
-    Unread.update() if e
+    (Unread.update() if e)
 
   updatePosition: ->
     while Unread.position and !Unread.posts.has Unread.position.ID
@@ -203,7 +191,6 @@ Unread =
         Unread.lastReadPost = ID
       Unread.readCount++
     return if Unread.thread.isDead and !Unread.thread.isArchived
-    Unread.db.forceSync()
     Unread.db.set
       boardID:  Unread.thread.board.ID
       threadID: Unread.thread.ID
@@ -231,12 +218,7 @@ Unread =
         Unread.title
       d.title = "#{titleQuotingYou}#{titleCount}#{titleDead}"
 
-    $.forceSync 'Remember Last Read Post'
-    if Conf['Remember Last Read Post'] and (!Unread.thread.isDead or Unread.thread.isArchived)
-      ThreadWatcher.update Unread.thread.board.ID, Unread.thread.ID,
-        isDead: Unread.thread.isDead
-        unread: count
-        quotingYou: countQuotingYou
+    Unread.saveThreadWatcherCount()
 
     if Conf['Unread Favicon']
       {isDead} = Unread.thread
@@ -250,4 +232,10 @@ Unread =
       # `favicon.href = href` doesn't work on Firefox.
       $.add d.head, Favicon.el
 
-return Unread
+  saveThreadWatcherCount: $.debounce 2 * $.SECOND, ->
+    $.forceSync 'Remember Last Read Post'
+    if Conf['Remember Last Read Post'] and (!Unread.thread.isDead or Unread.thread.isArchived)
+      ThreadWatcher.update Unread.thread.board.ID, Unread.thread.ID,
+        isDead: Unread.thread.isDead
+        unread: Unread.posts.size
+        quotingYou: !!(if !Conf['Require OP Quote Link'] and QuoteYou.isYou(Unread.thread.OP) then Unread.posts.size else Unread.postsQuotingYou.size)

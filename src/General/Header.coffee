@@ -84,42 +84,41 @@ Header =
     $.on window, 'load popstate', Header.hashScroll
     $.on d, 'CreateNotification', @createNotification
 
-    $.asap (-> d.body), =>
+    @setBoardList()
+
+    $.onExists doc, 'body', =>
       return unless Main.isThisPageLegit()
-      # Wait for #boardNavMobile instead of #boardNavDesktop,
-      # it might be incomplete otherwise.
-      $.asap (-> $.id('boardNavMobile') or d.readyState isnt 'loading'), ->
+      $.prepend d.body, @bar
+      $.add d.body, Header.hover
+      @setBarPosition Conf['Bottom Header']
+
+    $.onExists doc, "#{Site.selectors.boardList} + *", Header.generateFullBoardList
+
+    Main.ready ->
+      if not (footer = $.id 'boardNavDesktopFoot')
+        return unless (absbot = $.id 'absbot')
         footer = $.id('boardNavDesktop').cloneNode true
         footer.id = 'boardNavDesktopFoot'
         $('#navtopright',        footer).id = 'navbotright'
         $('#settingsWindowLink', footer).id = 'settingsWindowLinkBot'
-        Header.bottomBoardList = $ '.boardList', footer
-        if a = $ "a[href*='/#{g.BOARD}/']", footer
-          a.className = 'current'
-        Main.ready ->
-          if (oldFooter = $.id 'boardNavDesktopFoot')
-            $.replace $('.boardList', oldFooter), Header.bottomBoardList
-          else if (absbot = $.id 'absbot')
-            $.before absbot, footer
-            $.globalEval 'window.cloneTopNav = function() {};'
-        Header.setBoardList()
-      $.prepend d.body, @bar
-      $.add d.body, Header.hover
-      @setBarPosition Conf['Bottom Header']
-      @
+        $.before absbot, footer
+        $.globalEval 'window.cloneTopNav = function() {};'
+      if (a = $ "a[href*='/#{g.BOARD}/']", footer)
+        a.className = 'current'
+      Header.bottomBoardList = $ '.boardList', footer
+      CatalogLinks.setLinks Header.bottomBoardList
 
-    Main.ready =>
-      if g.VIEW is 'catalog' or !Conf['Disable Native Extension']
-        cs = $.el 'a', href: 'javascript:;'
-        if g.VIEW is 'catalog'
-          cs.title = cs.textContent = 'Catalog Settings'
-          cs.className = 'fa fa-book'
-        else
-          cs.title = cs.textContent = '4chan Settings'
-          cs.className = 'native-settings'
-        $.on cs, 'click', () ->
-          $.id('settingsWindowLink').click()
-        @addShortcut 'native', cs, 810
+    if g.VIEW is 'catalog' or !Conf['Disable Native Extension']
+      cs = $.el 'a', href: 'javascript:;'
+      if g.VIEW is 'catalog'
+        cs.title = cs.textContent = 'Catalog Settings'
+        cs.className = 'fa fa-book'
+      else
+        cs.title = cs.textContent = '4chan Settings'
+        cs.className = 'native-settings'
+      $.on cs, 'click', () ->
+        $.id('settingsWindowLink').click()
+      @addShortcut 'native', cs, 810
 
     @enableDesktopNotifications()
 
@@ -155,9 +154,20 @@ Header =
     btn = $('.hide-board-list-button', boardList)
     $.on btn, 'click', Header.toggleBoardList
 
+    $.add Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
+
+    Header.setCustomNav Conf['Custom Board Navigation']
+    Header.generateBoardList Conf['boardnav']
+
+    $.sync 'Custom Board Navigation', Header.setCustomNav
+    $.sync 'boardnav', Header.generateBoardList
+
+  generateFullBoardList: ->
     nodes = []
     spacer = -> $.el 'span', className: 'spacer'
-    for node in $('#boardNavDesktop > .boardList').childNodes
+    items = $.X './/a|.//text()[not(ancestor::a)]', $(Site.selectors.boardList)
+    i = 0
+    while node = items.snapshotItem i++
       switch node.nodeName
         when '#text'
           for chr in node.nodeValue
@@ -170,29 +180,21 @@ Header =
           a = node.cloneNode true
           a.className = 'current' if a.pathname.split('/')[1] is g.BOARD.ID
           nodes.push a
-    $.add $('.boardList', boardList), nodes
-
-    $.add Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
-
-    Header.setCustomNav Conf['Custom Board Navigation']
-    Header.generateBoardList Conf['boardnav']
-
-    $.sync 'Custom Board Navigation', Header.setCustomNav
-    $.sync 'boardnav', Header.generateBoardList
+    fullBoardList = $ '.boardList', Header.boardList
+    $.add fullBoardList, nodes
+    CatalogLinks.setLinks fullBoardList
 
   generateBoardList: (boardnav) ->
     list = $ '#custom-board-list', Header.boardList
     $.rmAll list
     return unless boardnav
     boardnav = boardnav.replace /(\r\n|\n|\r)/g, ' '
-    as = $$ '#full-board-list a[title]', Header.boardList
     re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g
-    nodes = (Header.mapCustomNavigation t, as for t in boardnav.match re)
-
+    nodes = (Header.mapCustomNavigation(t) for t in boardnav.match re)
     $.add list, nodes
-    $.ready CatalogLinks.initBoardList
+    CatalogLinks.setLinks list
 
-  mapCustomNavigation: (t, as) ->
+  mapCustomNavigation: (t) ->
     if /^[^\w@]/.test t
       return $.tn t
 
@@ -224,7 +226,17 @@ Header =
       return a
 
     boardID = t.split('-')[0]
-    boardID = g.BOARD.ID if boardID is 'current'
+    if boardID is 'current'
+      if location.hostname in ['boards.4chan.org', 'boards.4channel.org']
+        boardID = g.BOARD.ID
+      else
+        a = $.el 'a',
+          href: "/#{g.BOARD.ID}/"
+          textContent: text or g.BOARD.ID
+          className: 'current'
+        if /-(catalog|archive|expired)/.test(t)
+          a = a.firstChild # Its text node.
+        return a
 
     a = do ->
       if boardID is '@'
@@ -233,20 +245,18 @@ Header =
           title: '4chan Twitter'
           textContent: '@'
 
-      for a in as when a.textContent is boardID
-        return a.cloneNode true
-
       a = $.el 'a',
-        href: "/#{boardID}/"
+        href: "//#{BoardConfig.domain(boardID)}/#{boardID}/"
         textContent: boardID
+        title: BoardConfig.title(boardID)
       a.href += g.VIEW if g.VIEW in ['catalog', 'archive']
-      a.className = 'current' if boardID is g.BOARD.ID
+      a.className = 'current' if a.hostname is location.hostname and boardID is g.BOARD.ID
       a
 
-    a.textContent = if /-title/.test(t) or /-replace/.test(t) and boardID is g.BOARD.ID
+    a.textContent = if /-title/.test(t) or /-replace/.test(t) and a.hostname is location.hostname and boardID is g.BOARD.ID
       a.title or a.textContent
     else if /-full/.test t
-      "/#{boardID}/" + (if a.title then " - #{a.title}" else '')
+      ("/#{boardID}/") + (if a.title then " - #{a.title}" else '')
     else
       text or boardID
 
@@ -260,7 +270,7 @@ Header =
 
     if Conf['JSON Index'] and indexOptions
       a.dataset.indexOptions = indexOptions
-      if a.hostname is 'boards.4chan.org' and a.pathname.split('/')[2] is ''
+      if a.hostname in ['boards.4chan.org', 'boards.4channel.org'] and a.pathname.split('/')[2] is ''
         a.href += (if a.hash then '/' else '#') + indexOptions
 
     if /-archive/.test t
@@ -270,8 +280,8 @@ Header =
         return a.firstChild # Its text node.
 
     if /-expired/.test t
-      if boardID not in ['b', 'f', 'trash']
-        a.href = "/#{boardID}/archive"
+      if boardID not in ['b', 'f', 'trash', 'bant']
+        a.href = "//#{BoardConfig.domain(boardID)}/#{boardID}/archive"
       else
         return a.firstChild # Its text node.
 
@@ -360,7 +370,7 @@ Header =
       return
     $.off window, 'scroll', Header.hideBarOnScroll
     $.rmClass Header.bar, 'scroll'
-    $.rmClass Header.bar, 'autohide' unless Conf['Header auto-hide']
+    Header.bar.classList.toggle 'autohide', Conf['Header auto-hide']
 
   toggleHideBarOnScroll: ->
     hide = @checked
@@ -544,5 +554,3 @@ Header =
       $.set 'Desktop Notifications', false
       notice.close()
     notice = new Notice 'info', el
-
-return Header

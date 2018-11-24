@@ -3,8 +3,19 @@ Index =
   changed: {}
 
   init: ->
-    return if g.BOARD.ID is 'f' or !Conf['JSON Index'] or g.VIEW isnt 'index'
+    return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
 
+    # For IndexRefresh events
+    $.one d, '4chanXInitFinished', @cb.initFinished
+    $.on  d, 'PostsInserted',      @cb.postsInserted
+
+    return unless Conf['JSON Index']
+
+    @enabled = true
+
+    Callbacks.Post.push
+      name: 'Index Page Numbers'
+      cb:   @node
     Callbacks.CatalogThread.push
       name: 'Catalog Features'
       cb:   @catalogNode
@@ -14,16 +25,18 @@ Index =
       Conf['Index Mode'] = history.state?.mode
     @currentSort = history.state?.sort
     @currentSort or=
-      if typeof Conf['Index Sort'] is 'object'
+      if typeof Conf['Index Sort'] is 'object' then (
         Conf['Index Sort'][g.BOARD.ID] or 'bump'
-      else
+      ) else (
         Conf['Index Sort']
+      )
     @currentPage = @getCurrentPage()
     @processHash()
 
     $.addClass doc, 'index-loading', "#{Conf['Index Mode'].replace /\ /g, '-'}-mode"
     $.on window, 'popstate', @cb.popstate
-    $.on d, 'scroll', Index.scroll
+    $.on d, 'scroll', @scroll
+    $.on d, 'SortIndex', @cb.resort
 
     # Header refresh button
     @button = $.el 'a',
@@ -35,37 +48,43 @@ Index =
     Header.addShortcut 'index-refresh', @button, 590
 
     # Header "Index Navigation" submenu
-    repliesEntry = el: UI.checkbox 'Show Replies',          'Show replies'
-    sortEntry    = el: UI.checkbox 'Per-Board Sort Type',   'Per-board sort type', (typeof Conf['Index Sort'] is 'object')
-    pinEntry     = el: UI.checkbox 'Pin Watched Threads',   'Pin watched threads'
-    anchorEntry  = el: UI.checkbox 'Anchor Hidden Threads', 'Anchor hidden threads'
-    refNavEntry  = el: UI.checkbox 'Refreshed Navigation',  'Refreshed navigation'
-    sortEntry.el.title   = 'Set the sorting order of each board independently.'
-    pinEntry.el.title    = 'Move watched threads to the start of the index.'
-    anchorEntry.el.title = 'Move hidden threads to the end of the index.'
-    refNavEntry.el.title = 'Refresh index when navigating through pages.'
-    for label in [repliesEntry, pinEntry, anchorEntry, refNavEntry]
-      input = label.el.firstChild
-      {name} = input
+    entries = []
+    @inputs = inputs = {}
+    for name, arr of Config.Index when arr instanceof Array
+      label = UI.checkbox name, "#{name[0]}#{name[1..].toLowerCase()}"
+      label.title = arr[1]
+      entries.push {el: label}
+      input = label.firstChild
       $.on input, 'change', $.cb.checked
-      switch name
-        when 'Show Replies'
-          $.on input, 'change', @cb.replies
-        when 'Pin Watched Threads', 'Anchor Hidden Threads'
-          $.on input, 'change', @cb.resort
-    $.on sortEntry.el.firstChild, 'change', @cb.perBoardSort
+      inputs[name] = input
+    $.on inputs['Show Replies'], 'change', @cb.replies
+    $.on inputs['Catalog Hover Expand'], 'change', @cb.hover
+    $.on inputs['Pin Watched Threads'], 'change', @cb.resort
+    $.on inputs['Anchor Hidden Threads'], 'change', @cb.resort
+
+    watchSettings = (e) ->
+      if (input = inputs[e.target.name])
+        input.checked = e.target.checked
+        $.event 'change', null, input
+    $.on d, 'OpenSettings', ->
+      $.on $.id('fourchanx-settings'), 'change', watchSettings
+
+    sortEntry = UI.checkbox 'Per-Board Sort Type', 'Per-board sort type', (typeof Conf['Index Sort'] is 'object')
+    sortEntry.title = 'Set the sorting order of each board independently.'
+    $.on sortEntry.firstChild, 'change', @cb.perBoardSort
+    entries.splice 3, 0, {el: sortEntry}
 
     Header.menu.addEntry
       el: $.el 'span',
         textContent: 'Index Navigation'
       order: 100
-      subEntries: [repliesEntry, sortEntry, pinEntry, anchorEntry, refNavEntry]
+      subEntries: entries
 
     # Navigation links at top of index
     @navLinks = $.el 'div', className: 'navLinks json-index'
     $.extend @navLinks, <%= readHTML('NavLinks.html') %>
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
-    $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID in ['b', 'trash']
+    $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID in ['b', 'trash', 'bant']
     $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
 
     # Search field
@@ -78,21 +97,37 @@ Index =
     @hideLabel = $ '#hidden-label', @navLinks
     $.on $('#hidden-toggle a', @navLinks), 'click', @cb.toggleHiddenThreads
 
-    # Drop-down menus
+    # Drop-down menus and reverse sort toggle
+    @selectRev   = $ '#index-rev',  @navLinks
     @selectMode  = $ '#index-mode', @navLinks
     @selectSort  = $ '#index-sort', @navLinks
     @selectSize  = $ '#index-size', @navLinks
+    $.on @selectRev,  'change', @cb.sort
     $.on @selectMode, 'change', @cb.mode
     $.on @selectSort, 'change', @cb.sort
     $.on @selectSize, 'change', $.cb.value
     $.on @selectSize, 'change', @cb.size
     for select in [@selectMode, @selectSize]
       select.value = Conf[select.name]
-    @selectSort.value = Index.currentSort
+    @selectRev.checked = /-rev$/.test Index.currentSort
+    @selectSort.value  = Index.currentSort.replace /-rev$/, ''
+
+    # Last Long Reply options
+    @lastLongOptions = $ '#lastlong-options', @navLinks
+    @lastLongInputs = $$ 'input', @lastLongOptions
+    @lastLongThresholds = [0, 0]
+    @lastLongOptions.hidden = (@selectSort.value isnt 'lastlong')
+    for input, i in @lastLongInputs
+      $.on input, 'change', @cb.lastLongThresholds
+      tRaw = Conf["Last Long Reply Thresholds #{i}"]
+      input.value = @lastLongThresholds[i] =
+        if typeof tRaw is 'object' then (tRaw[g.BOARD.ID] ? 100) else tRaw
 
     # Thread container
     @root = $.el 'div', className: 'board json-index'
+    $.on @root, 'click', @cb.hoverToggle
     @cb.size()
+    @cb.hover()
 
     # Page list
     @pagelist = $.el 'div', className: 'pagelist json-index'
@@ -106,17 +141,18 @@ Index =
       d.title = d.title.replace /\ -\ Page\ \d+/, ''
 
     $.onExists doc, '.board > .thread > .postContainer, .board + *', ->
-      Index.hat = $ '.board > .thread > img:first-child'
-      if Index.hat
-        if Index.nodes
-          for threadRoot in Index.nodes
-            $.prepend threadRoot, Index.hat.cloneNode false
+      Build.hat = $ '.board > .thread > img:first-child'
+      if Build.hat
+        g.BOARD.threads.forEach (thread) ->
+          if thread.nodes.root
+            $.prepend thread.nodes.root, Build.hat.cloneNode false
         $.addClass doc, 'hats-enabled'
-        $.addStyle ".catalog-thread::after {background-image: url(#{Index.hat.src});}"
+        $.addStyle ".catalog-thread::after {background-image: url(#{Build.hat.src});}"
 
       board = $ '.board'
       $.replace board, Index.root
-      $.event 'PostsInserted'
+      if Index.loaded
+        $.event 'PostsInserted', null, Index.root
       # Hacks:
       # - When removing an element from the document during page load,
       #   its ancestors will still be correctly created inside of it.
@@ -145,9 +181,8 @@ Index =
     pageNum = ++Index.pageNum
     return Index.endNotice() if pageNum > Index.pagesNum
 
-    nodes = Index.buildSinglePage pageNum
-    Index.buildReplies   nodes if Conf['Show Replies']
-    Index.buildStructure nodes
+    threadIDs = Index.threadsOnPage pageNum
+    Index.buildStructure threadIDs
     
   endNotice: do ->
     notify = false
@@ -181,20 +216,17 @@ Index =
           $.on @el, 'click', @cb
           true
 
-  catalogNode: ->
-    $.on @nodes.thumb.parentNode, 'click', Index.onClick
+  node: ->
+    return if @isReply or @isClone or not (Index.threadPosition[@ID]?)
+    @thread.setPage(Index.threadPosition[@ID] // Index.threadsNumPerPage + 1)
 
-  onClick: (e) ->
-    return if e.button isnt 0
-    thread = g.threads[@parentNode.dataset.fullID]
-    if e.shiftKey
-      Index.toggleHide thread
-    else
-      return
-    e.preventDefault()
+  catalogNode: ->
+    $.on @nodes.root, 'mousedown click', (e) =>
+      return unless e.button is 0 and e.shiftKey
+      Index.toggleHide @thread if e.type is 'click'
+      e.preventDefault() # Also on mousedown to prevent highlighting text.
 
   toggleHide: (thread) ->
-    $.rm thread.catalogView.nodes.root
     if Index.showHiddenThreads
       ThreadHiding.show thread
       return unless ThreadHiding.db.get {boardID: thread.board.ID, threadID: thread.ID}
@@ -211,6 +243,19 @@ Index =
     $.event 'change', null, Index.selectSort
 
   cb:
+    initFinished: ->
+      Index.initFinishedFired = true
+      $.queueTask -> Index.cb.postsInserted()
+
+    postsInserted: ->
+      return unless Index.initFinishedFired
+      n = 0
+      g.posts.forEach (post) ->
+        if !post.isFetchedQuote and !post.indexRefreshSeen and doc.contains(post.nodes.root)
+          post.indexRefreshSeen = true
+          n++
+      $.event 'IndexRefresh' if n
+
     toggleHiddenThreads: ->
       $('#hidden-toggle a', Index.navLinks).textContent = if Index.showHiddenThreads = !Index.showHiddenThreads
         'Hide'
@@ -224,16 +269,32 @@ Index =
       Index.pageLoad false
 
     sort: ->
-      Index.pushState {sort: @value}
+      value = if Index.selectRev.checked then Index.selectSort.value + "-rev" else Index.selectSort.value
+      Index.pushState {sort: value}
       Index.pageLoad false
 
-    resort: ->
-      Index.sort()
-      Index.buildIndex()
+    resort: (e) ->
+      Index.changed.order = true
+      Index.pageLoad false unless e?.detail?.deferred
 
     perBoardSort: ->
       Conf['Index Sort'] = if @checked then {} else ''
       Index.saveSort()
+      for i in [0...2]
+        Conf["Last Long Reply Thresholds #{i}"] = if @checked then {} else ''
+        Index.saveLastLongThresholds i
+      return
+
+    lastLongThresholds: ->
+      i = [@parentNode.children...].indexOf @
+      value = +@value
+      unless Number.isFinite(value)
+        @value = Index.lastLongThresholds[i]
+        return
+      Index.lastLongThresholds[i] = value
+      Index.saveLastLongThresholds i
+      Index.changed.order = true
+      Index.pageLoad false
 
     size: (e) ->
       if Conf['Index Mode'] isnt 'catalog'
@@ -248,9 +309,19 @@ Index =
       Index.buildIndex() if e
 
     replies: ->
-      Index.buildThreads()
-      Index.sort()
       Index.buildIndex()
+
+    hover: ->
+      doc.classList.toggle 'catalog-hover-expand', Conf['Catalog Hover Expand']
+
+    hoverToggle: (e) ->
+      if Conf['Catalog Hover Toggle'] and $.hasClass(doc, 'catalog-mode') and !$.modifiedClick(e) and !$.x('ancestor-or-self::a', e.target)
+        input = Index.inputs['Catalog Hover Expand']
+        input.checked = !input.checked
+        $.event 'change', null, input
+        if (thread = Get.threadFromNode e.target)
+          Index.cb.catalogReplies.call thread
+          Index.cb.hoverAdjust.call thread.OP.nodes
 
     popstate: (e) ->
       if e?.state
@@ -267,7 +338,7 @@ Index =
           Index.pageLoad()
 
     pageNav: (e) ->
-      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+      return if $.modifiedClick e
       switch e.target.nodeName
         when 'BUTTON'
           e.target.blur()
@@ -283,6 +354,20 @@ Index =
     refreshFront: ->
       Index.pushState {page: 1}
       Index.update()
+
+    catalogReplies: ->
+      if Conf['Show Replies'] and $.hasClass(doc, 'catalog-hover-expand') and !@catalogView.nodes.replies
+        Index.buildCatalogReplies @
+
+    hoverAdjust: ->
+      # Prevent hovered catalog threads from going offscreen.
+      return unless $.hasClass(doc, 'catalog-hover-expand')
+      rect = @post.getBoundingClientRect()
+      if (x = $.minmax 0, -rect.left, doc.clientWidth - rect.right)
+        {style} = @post
+        style.left = "#{x}px"
+        style.right = "#{-x}px"
+        $.one @root, 'mouseleave', -> style.left = style.right = null
 
   scrollToIndex: ->
     # Scroll to navlinks, or top of board if navlinks are hidden.
@@ -307,12 +392,12 @@ Index =
       'all-pages':     'all pages'
       'catalog':       'catalog'
     sort:
-      'bump-order':    'bump'
-      'last-reply':    'lastreply'
-      'last-long-reply': 'lastlong'
-      'creation-date': 'birth'
-      'reply-count':   'replycount'
-      'file-count':    'filecount'
+      'bump-order':        'bump'
+      'last-reply':        'lastreply'
+      'last-long-reply':   'lastlong'
+      'creation-date':     'birth'
+      'reply-count':       'replycount'
+      'file-count':        'filecount'
 
   processHash: ->
     # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
@@ -327,8 +412,9 @@ Index =
       else if command is 'index'
         state.mode = Conf['Previous Index Mode']
         state.page = 1
-      else if (sort = Index.hashCommands.sort[command])
+      else if (sort = Index.hashCommands.sort[command.replace(/-rev$/, '')])
         state.sort = sort
+        state.sort += '-rev' if /-rev$/.test(command)
       else if /^s=/.test command
         state.search = decodeURIComponent(command[2..]).replace(/\+/g, ' ').trim()
       else
@@ -379,23 +465,31 @@ Index =
     if hash?
       Index.changed.hash = true
 
-  saveSort: ->
-    if typeof Conf['Index Sort'] is 'object'
-      Conf['Index Sort'][g.BOARD.ID] = Index.currentSort
+  savePerBoard: (key, value) ->
+    if typeof Conf[key] is 'object'
+      Conf[key][g.BOARD.ID] = value
     else
-      Conf['Index Sort'] = Index.currentSort
-    $.set 'Index Sort', Conf['Index Sort']
+      Conf[key] = value
+    $.set key, Conf[key]
+
+  saveSort: ->
+    Index.savePerBoard 'Index Sort', Index.currentSort
+
+  saveLastLongThresholds: (i) ->
+    Index.savePerBoard "Last Long Reply Thresholds #{i}", Index.lastLongThresholds[i]
 
   pageLoad: (scroll=true) ->
     return unless Index.liveThreadData
-    {threads, search, mode, sort, page, hash} = Index.changed
-    Index.sort()          if threads or search or sort
-    Index.buildPagelist() if threads or search
+    {threads, order, search, mode, sort, page, hash} = Index.changed
+    threads or= search
+    order   or= sort
+    Index.sort()          if threads or order
+    Index.buildPagelist() if threads
     Index.setupSearch()   if search
     Index.setupMode()     if mode
     Index.setupSort()     if sort
-    Index.buildIndex()    if threads or search or mode or page or sort
-    Index.setPage()       if threads or search or mode or page
+    Index.buildIndex()    if threads or mode or page or order
+    Index.setPage()       if threads or page
     Index.scrollToIndex() if scroll and not hash
     Header.hashScroll()   if hash
     Index.changed = {}
@@ -409,11 +503,13 @@ Index =
     $('#hidden-toggle a', Index.navLinks).textContent = 'Show'
 
   setupSort: ->
-    Index.selectSort.value = Index.currentSort
+    Index.selectRev.checked = /-rev$/.test Index.currentSort
+    Index.selectSort.value  = Index.currentSort.replace /-rev$/, ''
+    Index.lastLongOptions.hidden = (Index.selectSort.value isnt 'lastlong')
 
   getPagesNum: ->
     if Index.search
-      Math.ceil Index.sortedNodes.length / Index.threadsNumPerPage
+      Math.ceil Index.sortedThreadIDs.length / Index.threadsNumPerPage
     else
       Index.pagesNum
 
@@ -460,9 +556,10 @@ Index =
     $.add strong, a
 
   updateHideLabel: ->
+    return unless Index.hideLabel
     hiddenCount = 0
-    for threadID, thread of g.BOARD.threads when thread.isHidden
-      hiddenCount++ if thread.ID in Index.liveThreadIDs
+    for threadID in Index.liveThreadIDs when Index.isHidden(threadID)
+      hiddenCount++
     unless hiddenCount
       Index.hideLabel.hidden = true
       Index.cb.toggleHiddenThreads() if Index.showHiddenThreads
@@ -494,7 +591,7 @@ Index =
       location.reload()
       return
 
-    Index.req = $.ajax "//a.4cdn.org/#{g.BOARD}/catalog.json",
+    Index.req = $.ajax "#{location.protocol}//a.4cdn.org/#{g.BOARD}/catalog.json",
       onabort:   Index.load
       onloadend: Index.load
     ,
@@ -553,9 +650,8 @@ Index =
     RelativeDates.update timeEl
 
   parse: (pages) ->
-    $.cleanCache (url) -> /^\/\/a\.4cdn\.org\//.test url
+    $.cleanCache (url) -> /^https?:\/\/a\.4cdn\.org\//.test url
     Index.parseThreadList pages
-    Index.buildThreads()
     Index.changed.threads = true
     Index.pageLoad()
 
@@ -564,31 +660,76 @@ Index =
     Index.threadsNumPerPage = pages[0]?.threads.length or 1
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
+    Index.liveThreadDict    = {}
+    Index.threadPosition    = {}
+    Index.parsedThreads     = {}
+    Index.replyData         = {}
+    for data, i in Index.liveThreadData
+      Index.liveThreadDict[data.no] = data
+      Index.threadPosition[data.no] = i
+      Index.parsedThreads[data.no] = obj = Build.parseJSON data, g.BOARD.ID
+      obj.filterResults = results = Filter.test obj
+      obj.isOnTop  = results.top
+      obj.isHidden = results.hide or ThreadHiding.isHidden(obj.boardID, obj.threadID)
+      if data.last_replies
+        for reply in data.last_replies
+          Index.replyData["#{g.BOARD}.#{reply.no}"] = reply
+    if Index.liveThreadData[0]
+      Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler
     g.BOARD.threads.forEach (thread) ->
-      thread.collect() unless thread.ID in Index.liveThreadIDs
+      (thread.collect() unless thread.ID in Index.liveThreadIDs)
+    $.event 'IndexUpdate',
+      threads: ("#{g.BOARD}.#{ID}" for ID in Index.liveThreadIDs)
     return
 
-  buildThreads: ->
-    return unless Index.liveThreadData
-    Index.nodes = []
-    threads     = []
-    posts       = []
-    for threadData, i in Index.liveThreadData
+  isHidden: (threadID) ->
+    if (thread = g.BOARD.threads[threadID]) and thread.OP and not thread.OP.isFetchedQuote
+      thread.isHidden
+    else
+      Index.parsedThreads[threadID].isHidden
+
+  isHiddenReply: (threadID, replyData) ->
+    PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) or Filter.isHidden(Build.parseJSON replyData, g.BOARD.ID)
+
+  lastPost: (threadID) ->
+    threadData = Index.liveThreadDict[threadID]
+    if threadData?.last_replies then threadData.last_replies[threadData.last_replies.length - 1].no else threadID
+
+  buildThreads: (threadIDs, isCatalog, withReplies) ->
+    threads    = []
+    newThreads = []
+    newPosts   = []
+    for ID in threadIDs
       try
-        threadRoot = Build.thread g.BOARD, threadData
-        $.prepend threadRoot, Index.hat.cloneNode false if Index.hat
-        if thread = g.BOARD.threads[threadData.no]
-          thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
-          thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
-          thread.setStatus 'Sticky', !!threadData.sticky
-          thread.setStatus 'Closed', !!threadData.closed
+        threadData = Index.liveThreadDict[ID]
+
+        if (thread = g.BOARD.threads[ID])
+          isStale = (thread.json isnt threadData) and (JSON.stringify(thread.json) isnt JSON.stringify(threadData))
+          if isStale
+            thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
+            thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
+            thread.setStatus 'Sticky', !!threadData.sticky
+            thread.setStatus 'Closed', !!threadData.closed
+          if thread.catalogView
+            $.rm thread.catalogView.nodes.replies
+            thread.catalogView.nodes.replies = null
         else
-          thread = new Thread threadData.no, g.BOARD
-          threads.push thread
-        Index.nodes.push threadRoot
-        unless thread.OP and not thread.OP.isFetchedQuote
-          posts.push new Post $('.opContainer', threadRoot), thread, g.BOARD
-        thread.setPage i // Index.threadsNumPerPage + 1
+          thread = new Thread ID, g.BOARD
+          newThreads.push thread
+        thread.json = threadData
+        threads.push thread
+
+        if ((OP = thread.OP) and not OP.isFetchedQuote)
+          OP.setCatalogOP isCatalog
+          thread.setPage(Index.threadPosition[ID] // Index.threadsNumPerPage + 1)
+        else
+          obj = Index.parsedThreads[ID]
+          OP = new Post Build.post(obj), thread, g.BOARD
+          OP.filterResults = obj.filterResults
+          newPosts.push OP
+
+        unless isCatalog and thread.nodes.root
+          Build.thread thread, threadData, withReplies
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
@@ -597,19 +738,20 @@ Index =
           error: err
     Main.handleErrors errors if errors
 
-    # Add the threads in a container to make sure all features work.
-    $.nodes Index.nodes
-    Main.callbackNodes 'Thread', threads
-    Main.callbackNodes 'Post',   posts
-    Index.updateHideLabel()
-    $.event 'IndexRefresh'
+    if withReplies
+      newPosts = newPosts.concat(Index.buildReplies threads)
 
-  buildReplies: (threadRoots) ->
+    Main.callbackNodes 'Thread', newThreads
+    Main.callbackNodes 'Post',   newPosts
+    Index.updateHideLabel()
+    $.event 'IndexRefreshInternal', {threadIDs: (t.fullID for t in threads), isCatalog}
+
+    threads
+
+  buildReplies: (threads) ->
     posts = []
-    for threadRoot in threadRoots
-      thread = Get.threadFromRoot threadRoot
-      i = Index.liveThreadIDs.indexOf thread.ID
-      continue unless lastReplies = Index.liveThreadData[i].last_replies
+    for thread in threads
+      continue if not (lastReplies = Index.liveThreadDict[thread.ID].last_replies)
       nodes = []
       for data in lastReplies
         if (post = thread.posts[data.no]) and not post.isFetchedQuote
@@ -624,26 +766,26 @@ Index =
           errors.push
             message: "Parsing of Post No.#{data.no} failed. Post will be skipped."
             error: err
-      $.add threadRoot, nodes
+      $.add thread.nodes.root, nodes
 
     Main.handleErrors errors if errors
-    Main.callbackNodes 'Post', posts
+    posts
 
-  buildCatalogViews: ->
-    threads = Index.sortedNodes
-      .map((threadRoot) -> Get.threadFromRoot threadRoot)
-      .filter (thread) -> !thread.isHidden isnt Index.showHiddenThreads
+  buildCatalogViews: (threads) ->
     catalogThreads = []
     for thread in threads when !thread.catalogView
-      catalogThreads.push new CatalogThread Build.catalogThread(thread), thread
+      {ID} = thread
+      page = Index.threadPosition[ID] // Index.threadsNumPerPage + 1
+      root = Build.catalogThread thread, Index.liveThreadDict[ID], page
+      catalogThreads.push new CatalogThread root, thread
     Main.callbackNodes 'CatalogThread', catalogThreads
-    threads.map (thread) -> thread.catalogView.nodes.root
+    return
 
-  sizeCatalogViews: (nodes) ->
+  sizeCatalogViews: (threads) ->
     # XXX When browsers support CSS3 attr(), use it instead.
     size = if Conf['Index Size'] is 'small' then 150 else 250
-    for node in nodes
-      thumb = $ '.catalog-thumb', node
+    for thread in threads
+      {thumb} = thread.catalogView.nodes
       {width, height} = thumb.dataset
       continue unless width
       ratio = size / Math.max width, height
@@ -651,10 +793,27 @@ Index =
       thumb.style.height = height * ratio + 'px'
     return
 
+  buildCatalogReplies: (thread) ->
+    {nodes} = thread.catalogView
+    return if not (lastReplies = Index.liveThreadDict[thread.ID].last_replies)
+
+    replies = []
+    for data in lastReplies
+      continue if Index.isHiddenReply thread.ID, data
+      reply = Build.catalogReply thread, data
+      RelativeDates.update $('time', reply)
+      $.on $('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover
+      replies.push reply
+
+    nodes.replies = $.el 'div', className: 'catalog-replies'
+    $.add nodes.replies, replies
+    $.add thread.OP.nodes.post, nodes.replies
+    return
+
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
     return unless liveThreadData
-    sortedThreadIDs = switch Index.currentSort
+    Index.sortedThreadIDs = switch Index.currentSort.replace(/-rev$/, '')
       when 'lastreply'
         [liveThreadData...].sort((a, b) ->
           a = num[num.length - 1] if (num = a.last_replies)
@@ -664,78 +823,105 @@ Index =
       when 'lastlong'
         lastlong = (thread) ->
           for r, i in (thread.last_replies or []) by -1
-            return r if r.com and Build.parseComment(r.com).replace(/[^a-z]/ig, '').length >= 100
-          thread
+            continue if Index.isHiddenReply thread.no, r
+            len = if r.com then Build.parseComment(r.com).replace(/[^a-z]/ig, '').length else 0
+            if len >= Index.lastLongThresholds[+!!r.ext]
+              return r
+          if thread.omitted_posts then thread.last_replies[0] else thread
+        lastlongD = {}
+        for thread in liveThreadData
+          lastlongD[thread.no] = lastlong(thread).no
         [liveThreadData...].sort((a, b) ->
-          lastlong(b).no - lastlong(a).no
+          lastlongD[b.no] - lastlongD[a.no]
         ).map (post) -> post.no
       when 'bump'       then liveThreadIDs
       when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
       when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
       when 'filecount'  then [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
-    Index.sortedNodes = sortedNodes = []
-    {nodes} = Index
-    for threadID in sortedThreadIDs
-      sortedNodes.push nodes[Index.liveThreadIDs.indexOf(threadID)]
-    if Index.search and nodes = Index.querySearch(Index.search)
-      Index.sortedNodes = nodes
+      else liveThreadIDs
+    if /-rev$/.test(Index.currentSort)
+      Index.sortedThreadIDs = [Index.sortedThreadIDs...].reverse()
+    if Index.search and (threadIDs = Index.querySearch Index.search)
+      Index.sortedThreadIDs = threadIDs
     # Sticky threads
-    Index.sortOnTop (thread) -> thread.isSticky
+    Index.sortOnTop (obj) -> obj.isSticky
     # Highlighted threads
-    Index.sortOnTop (thread) -> thread.isOnTop or Conf['Pin Watched Threads'] and ThreadWatcher.isWatched thread
+    Index.sortOnTop (obj) -> obj.isOnTop or Conf['Pin Watched Threads'] and ThreadWatcher.isWatchedRaw(obj.boardID, obj.threadID)
     # Non-hidden threads
-    Index.sortOnTop((thread) -> !thread.isHidden) if Conf['Anchor Hidden Threads']
+    Index.sortOnTop((obj) -> !Index.isHidden(obj.threadID)) if Conf['Anchor Hidden Threads']
 
   sortOnTop: (match) ->
-    topNodes    = []
-    bottomNodes = []
-    for threadRoot in Index.sortedNodes
-      (if match Get.threadFromRoot threadRoot then topNodes else bottomNodes).push threadRoot
-    Index.sortedNodes = topNodes.concat(bottomNodes)
+    topThreads    = []
+    bottomThreads = []
+    for ID in Index.sortedThreadIDs
+      (if match Index.parsedThreads[ID] then topThreads else bottomThreads).push ID
+    Index.sortedThreadIDs = topThreads.concat bottomThreads
 
   buildIndex: ->
     return unless Index.liveThreadData
     switch Conf['Index Mode']
       when 'all pages'
-        nodes = Index.sortedNodes
+        threadIDs = Index.sortedThreadIDs
       when 'catalog'
-        nodes = Index.buildCatalogViews()
-        Index.sizeCatalogViews nodes
+        threadIDs = Index.sortedThreadIDs.filter (ID) -> !Index.isHidden(ID) isnt Index.showHiddenThreads
       else
-        if Index.followedThreadID?
-          i = 0
-          i++ while Index.followedThreadID isnt Get.threadFromRoot(Index.sortedNodes[i]).ID
-          page = i // Index.threadsNumPerPage + 1
-          if page isnt Index.currentPage
-            Index.currentPage = page
-            Index.pushState {page}
-            Index.setPage()
-        nodes = Index.buildSinglePage Index.currentPage
+        threadIDs = Index.threadsOnPage Index.currentPage
     delete Index.pageNum
     $.rmAll Index.root
     $.rmAll Header.hover
     if Conf['Index Mode'] is 'catalog'
-      $.add Index.root, nodes
+      Index.buildCatalog threadIDs
     else
-      Index.buildReplies nodes if Conf['Show Replies']
-      Index.buildStructure nodes
-      if Index.followedThreadID? and (post = g.posts["#{g.BOARD}.#{Index.followedThreadID}"])
-        Header.scrollTo post.nodes.root
+      Index.buildStructure threadIDs
+    return
 
-  buildSinglePage: (pageNum) ->
+  threadsOnPage: (pageNum) ->
     nodesPerPage = Index.threadsNumPerPage
     offset = nodesPerPage * (pageNum - 1)
-    Index.sortedNodes.slice offset, offset + nodesPerPage
+    Index.sortedThreadIDs[offset ... offset + nodesPerPage]
 
-  buildStructure: (nodes) ->
-    for node in nodes
-      if thumb = $ 'img[data-src]', node
-        thumb.src = thumb.dataset.src
-        # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1021289
-        thumb.removeAttribute 'data-src'
-      $.add Index.root, [node, $.el 'hr']
-    $.event 'PostsInserted' if doc.contains Index.root
-    ThreadHiding.onIndexBuild nodes
+  buildStructure: (threadIDs) ->
+    threads = Index.buildThreads threadIDs, false, Conf['Show Replies']
+    nodes = []
+    for thread in threads
+      nodes.push thread.nodes.root, $.el('hr')
+    $.add Index.root, nodes
+    if Index.root.parentNode
+      $.event 'PostsInserted', null, Index.root
+    Index.loaded = true
+    return
+
+  buildCatalog: (threadIDs) ->
+    i = 0
+    n = threadIDs.length
+    node0 = null
+    fn = ->
+      return if node0 and !node0.parentNode # Index.root cleared
+      j = if i > 0 and Index.root.parentNode then n else i + 30
+      node0 = Index.buildCatalogPart(threadIDs[i...j])[0]
+      i = j
+      if i < n
+        $.queueTask fn
+      else
+        if Index.root.parentNode
+          $.event 'PostsInserted', null, Index.root
+        Index.loaded = true
+    fn()
+    return
+
+  buildCatalogPart: (threadIDs) ->
+    threads = Index.buildThreads threadIDs, true
+    Index.buildCatalogViews threads
+    Index.sizeCatalogViews threads
+    nodes = []
+    for thread in threads
+      thread.OP.setCatalogOP true
+      $.add thread.catalogView.nodes.root, thread.OP.nodes.root
+      nodes.push thread.catalogView.nodes.root
+      $.on thread.catalogView.nodes.root, 'mouseenter', Index.cb.catalogReplies.bind(thread)
+      $.on thread.OP.nodes.root, 'mouseenter', Index.cb.hoverAdjust.bind(thread.OP.nodes)
+    $.add Index.root, nodes
+    nodes
 
   clearSearch: ->
     Index.searchInput.value = ''
@@ -759,19 +945,18 @@ Index =
     Index.pageLoad false
 
   querySearch: (query) ->
-    return unless keywords = query.toLowerCase().match /\S+/g
-    Index.sortedNodes.filter (threadRoot) ->
-      Index.searchMatch Get.threadFromRoot(threadRoot), keywords
+    return if not (keywords = query.toLowerCase().match /\S+/g)
+    Index.sortedThreadIDs.filter (ID) ->
+      Index.searchMatch Index.parsedThreads[ID], keywords
 
-  searchMatch: (thread, keywords) ->
-    {info, file} = thread.OP
+  searchMatch: (obj, keywords) ->
+    {info, file} = obj
+    info.comment ?= Build.parseComment info.commentHTML.innerHTML
     text = []
-    for key in ['comment', 'subject', 'name', 'tripcode', 'email']
+    for key in ['comment', 'subject', 'name', 'tripcode']
       text.push info[key] if key of info
     text.push file.name if file
     text = text.join(' ').toLowerCase()
     for keyword in keywords
       return false if -1 is text.indexOf keyword
     return true
-
-return Index

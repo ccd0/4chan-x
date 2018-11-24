@@ -1,11 +1,11 @@
 Favicon =
   init: ->
-    $.asap (-> d.head and Favicon.el = $ 'link[rel="shortcut icon"]', d.head), Favicon.initAsap
+    $.asap (-> d.head and (Favicon.el = $ 'link[rel="shortcut icon"]', d.head)), Favicon.initAsap
   
   initAsap: ->
     Favicon.el.type = 'image/x-icon'
     {href}          = Favicon.el
-    Favicon.SFW     = /ws\.ico$/.test href
+    Favicon.isSFW   = /ws\.ico$/.test href
     Favicon.default = href
     Favicon.switch()
 
@@ -71,14 +71,14 @@ Favicon =
     f.update()
 
   update: ->
-    if @SFW
+    if @isSFW
       @unread  = @unreadSFW
       @unreadY = @unreadSFWY
     else
       @unread  = @unreadNSFW
       @unreadY = @unreadNSFWY
 
+  SFW:   '//s.4cdn.org/image/favicon-ws.ico'
+  NSFW:  '//s.4cdn.org/image/favicon.ico'
   dead:  'data:image/gif;base64,<%= readBase64('dead.gif') %>'
   logo:  'data:image/png;base64,<%= readBase64('/src/meta/icon128.png') %>'
-
-return Favicon

@@ -10,7 +10,7 @@
   },
   "content_scripts": [{
     "js": ["script.js"],
-    "matches": <%= JSON.stringify(meta.matches) %>,
+    "matches": <%= JSON.stringify(meta.matches_only.concat(meta.matches)) %>,
     "exclude_matches": <%= JSON.stringify(meta.exclude_matches) %>,
     "all_frames": true,
     "run_at": "document_start"
@@ -23,9 +23,14 @@
 <% if (channel !== '-noupdate') { %>  "update_url": "<%= meta.downloads %>updates<%= channel %>.xml",
   "key": "<%= meta.appid %>",
 <% } %>  "minimum_chrome_version": "<%= meta.min.chrome %>",
-  "permissions": [
-    "storage",
-    "http://*/",
-    "https://*/"
-  ]
+  "permissions": <%= JSON.stringify(meta.matches_only.concat(["storage"])) %>,
+  "optional_permissions": [
+    "*://*/"
+  ],
+  "applications": {
+    "gecko": {
+      "id": "<%= meta.appidGecko %>"<% if (channel !== '-noupdate') { %>,
+      "update_url": "<%= meta.downloads %>updates<%= channel %>.json"
+<% } %>    }
+  }
 }

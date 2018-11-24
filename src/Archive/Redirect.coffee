@@ -9,7 +9,9 @@ Redirect =
 
   init: ->
     @selectArchives()
-    @update() if Conf['archiveAutoUpdate'] and Conf['lastarchivecheck'] < Date.now() - 2 * $.DAY
+    if Conf['archiveAutoUpdate']
+      now = Date.now()
+      @update() unless now - 2 * $.DAY < Conf['lastarchivecheck'] <= now
 
   selectArchives: ->
     o =
@@ -44,13 +46,12 @@ Redirect =
       url = url.trim()
       urls.push url if url
 
+    fail = (url, action, msg) ->
+      new Notice 'warning', "Error #{action} archive data from\n#{url}\n#{msg}", 20
+
     load = (i) -> ->
-      fail = (action, msg) -> new Notice 'warning', "Error #{action} archive data from\n#{urls[i]}\n#{msg}", 20
-      return fail 'fetching', (if @status then "Error #{@statusText} (#{@status})" else 'Connection Error') unless @status is 200
-      try
-        response = JSON.parse @response
-      catch err
-        return fail 'parsing', err.message
+      return fail urls[i], 'fetching', (if @status then "Error #{@statusText} (#{@status})" else 'Connection Error') unless @status is 200
+      {response} = @
       response = [response] unless response instanceof Array
       responses[i] = response
       nloaded++
@@ -60,13 +61,14 @@ Redirect =
     if urls.length
       for url, i in urls
         if url[0] in ['[', '{']
-          load(i).call
-            status:   200
-            response: url
+          try
+            response = JSON.parse url
+          catch err
+            fail url, 'parsing', err.message
+            continue
+          load(i).call {status: 200, response}
         else
-          $.ajax url,
-            responseType: 'text'
-            onloadend: load(i)
+          CrossOrigin.json url, load(i), true
     else
       Redirect.parse [], cb
     return
@@ -124,6 +126,7 @@ Redirect =
     url
 
   file: (archive, {boardID, filename}) ->
+    filename = encodeURIComponent Build.unescape decodeURIComponent filename if boardID is 'f'
     "#{Redirect.protocol archive}#{archive.domain}/#{boardID}/full_image/#{filename}"
 
   board: (archive, {boardID}) ->
@@ -137,9 +140,13 @@ Redirect =
     else
       type
     if type is 'capcode'
-      value = {'Developer': 'dev'}[value] or value.toLowerCase()
+      # https://github.com/pleebe/FoolFuuka/blob/bf4224eed04637a4d0bd4411c2bf5f9945dfec0b/src/Model/Search.php#L363
+      value = {
+        'Developer': 'dev'
+        'Verified':  'ver'
+      }[value] or value.toLowerCase()
     else if type is 'image'
-      value = value.replace /[+/=]/g, (c) -> {'+': '-', '/': '_', '=': ''}[c]
+      value = value.replace /[+/=]/g, (c) -> ({'+': '-', '/': '_', '=': ''})[c]
     value = encodeURIComponent value
     path  = if archive.software is 'foolfuuka'
       "#{boardID}/search/#{type}/#{value}/"
@@ -148,6 +155,14 @@ Redirect =
     else
       "#{boardID}/?task=search2&search_#{type}=#{value}"
     "#{Redirect.protocol archive}#{archive.domain}/#{path}"
+
+  report: (boardID) ->
+    urls = []
+    for archive in Conf['archives']
+      {software, https, reports, boards, name, domain} = archive
+      if software is 'foolfuuka' and https and reports and boards instanceof Array and boardID in boards
+        urls.push [name, "https://#{domain}/_/api/chan/offsite_report/"]
+    urls
 
   securityCheck: (url) ->
     /^https:\/\//.test(url) or
@@ -164,5 +179,3 @@ Redirect =
       location.replace url
     else if alternative
       location.replace alternative
-
-return Redirect

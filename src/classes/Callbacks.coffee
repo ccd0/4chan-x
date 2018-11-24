@@ -11,6 +11,8 @@ class Callbacks
     @[name] = cb
 
   execute: (node, keys=@keys) ->
+    return if node.callbacksExecuted
+    node.callbacksExecuted = true
     for name in keys
       try
         @[name]?.call node
@@ -22,5 +24,3 @@ class Callbacks
           html: node.nodes?.root?.outerHTML
 
     Main.handleErrors errors if errors
-
-return Callbacks

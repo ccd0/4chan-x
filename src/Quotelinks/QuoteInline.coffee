@@ -30,10 +30,11 @@ QuoteInline =
       href: link.href
 
   toggle: (e) ->
-    return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+    return if $.modifiedClick e
 
     {boardID, threadID, postID} = Get.postDataFromLink @
     return if Conf['Inline Cross-thread Quotes Only'] and g.VIEW is 'thread' and g.posts["#{boardID}.#{postID}"]?.nodes.root.offsetParent # exists and not hidden
+    return if $.hasClass(doc, 'catalog-mode')
 
     e.preventDefault()
     quoter = Get.postFromNode @
@@ -47,7 +48,7 @@ QuoteInline =
 
   findRoot: (quotelink, isBacklink) ->
     if isBacklink
-      quotelink.parentNode.parentNode
+      $.x 'ancestor::*[parent::*[contains(@class,"post")]][1]', quotelink
     else
       $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
 
@@ -64,14 +65,16 @@ QuoteInline =
     $.addClass qroot, 'hasInline'
     new Fetcher boardID, threadID, postID, inline, quoter
 
-    return unless (post = g.posts["#{boardID}.#{postID}"]) and
+    return if not (
+      (post = g.posts["#{boardID}.#{postID}"]) and
       context.thread is post.thread
+    )
 
     # Hide forward post if it's a backlink of a post in this thread.
     # Will only unhide if there's no inlined backlinks of it anymore.
     if isBacklink and Conf['Forward Hiding']
       $.addClass post.nodes.root, 'forwarded'
-      post.forwarded++ or post.forwarded = 1
+      post.forwarded++ or (post.forwarded = 1)
 
     # Decrease the unread count if this post
     # is in the array of unread posts.
@@ -90,7 +93,7 @@ QuoteInline =
       $.rmClass qroot, 'hasInline'
 
     # Stop if it only contains text.
-    return unless el = root.firstElementChild
+    return if not (el = root.firstElementChild)
 
     # Dereference clone.
     post = g.posts["#{boardID}.#{postID}"]
@@ -110,5 +113,3 @@ QuoteInline =
       QuoteInline.rm inlined, boardID, threadID, postID, context
       $.rmClass inlined, 'inlined'
     return
-
-return QuoteInline

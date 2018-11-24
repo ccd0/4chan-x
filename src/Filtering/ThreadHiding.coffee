@@ -4,12 +4,15 @@ ThreadHiding =
     @db = new DataBoard 'hiddenThreads'
     return @catalogWatch() if g.VIEW is 'catalog'
     @catalogSet g.BOARD
+    $.on d, 'IndexRefreshInternal', @onIndexRefresh
+    if Conf['Thread Hiding Buttons']
+      $.addClass doc, 'thread-hide'
     Callbacks.Post.push
       name: 'Thread Hiding'
       cb:   @node
 
   catalogSet: (board) ->
-    return unless $.hasStorage
+    return unless $.hasStorage and Site.software is 'yotsuba'
     hiddenThreads = ThreadHiding.db.get
       boardID: board.ID
       defaultValue: {}
@@ -17,14 +20,15 @@ ThreadHiding =
     localStorage.setItem "4chan-hide-t-#{board}", JSON.stringify hiddenThreads
 
   catalogWatch: ->
-    return unless $.hasStorage
+    return unless $.hasStorage and Site.software is 'yotsuba'
     @hiddenThreads = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
     Main.ready ->
       # 4chan's catalog sets the style to "display: none;" when hiding or unhiding a thread.
-      new MutationObserver(ThreadHiding.catalogSave).observe $.id('threads'),
+      new MutationObserver(ThreadHiding.catalogSave).observe $.id('threads'), {
         attributes: true
         subtree: true
         attributeFilter: ['style']
+      }
 
   catalogSave: ->
     hiddenThreads2 = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
@@ -39,6 +43,9 @@ ThreadHiding =
         threadID: threadID
     ThreadHiding.hiddenThreads = hiddenThreads2
 
+  isHidden: (boardID, threadID) ->
+    !!(ThreadHiding.db and ThreadHiding.db.get {boardID, threadID})
+
   node: ->
     return if @isReply or @isClone or @isFetchedQuote
 
@@ -48,12 +55,11 @@ ThreadHiding =
     return unless Conf['Thread Hiding Buttons']
     $.prepend @nodes.root, ThreadHiding.makeButton(@thread, 'hide')
 
-  onIndexBuild: (nodes) ->
-    for root in nodes
-      thread = Get.threadFromRoot root
-      if thread.isHidden and thread.stub and !root.contains thread.stub
+  onIndexRefresh: ->
+    g.BOARD.threads.forEach (thread) ->
+      {root} = thread.nodes
+      if thread.isHidden and thread.stub and !root.contains(thread.stub)
         ThreadHiding.makeStub thread, root
-    return
 
   menu:
     init: ->
@@ -78,7 +84,7 @@ ThreadHiding =
             return false
           ThreadHiding.menu.thread = thread
           true
-        subEntries: [el: apply; el: makeStub]
+        subEntries: [{el: apply}, {el: makeStub}]
 
       div = $.el 'a',
         className: 'show-thread-link'
@@ -174,9 +180,10 @@ ThreadHiding =
 
   hide: (thread, makeStub=Conf['Stubs']) ->
     return if thread.isHidden
-    threadRoot = thread.OP.nodes.root.parentNode
+    threadRoot = thread.nodes.root
     thread.isHidden = true
-    Index.updateHideLabel() if Conf['JSON Index']
+    Index.updateHideLabel()
+    $.rm thread.catalogView.nodes.root if thread.catalogView and !Index.showHiddenThreads
 
     return threadRoot.hidden = true unless makeStub
 
@@ -186,8 +193,7 @@ ThreadHiding =
     if thread.stub
       $.rm thread.stub
       delete thread.stub
-    threadRoot = thread.OP.nodes.root.parentNode
+    threadRoot = thread.nodes.root
     threadRoot.hidden = thread.isHidden = false
-    Index.updateHideLabel() if Conf['JSON Index']
-
-return ThreadHiding
+    Index.updateHideLabel()
+    $.rm thread.catalogView.nodes.root if thread.catalogView and Index.showHiddenThreads

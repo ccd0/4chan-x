@@ -15,5 +15,3 @@ CustomCSS =
     unless @style
       return @addStyle()
     @style.textContent = Conf['usercss']
-
-return CustomCSS

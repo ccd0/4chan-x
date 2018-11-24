@@ -1,11 +1,11 @@
 Fourchan =
   init: ->
-    return unless g.VIEW in ['index', 'thread']
+    return unless g.VIEW in ['index', 'thread', 'archive']
 
     if g.BOARD.ID is 'g'
       $.on window, 'prettyprint:cb', (e) ->
-        return unless post = g.posts[e.detail.ID]
-        return unless pre  = $$('.prettyprint', post.nodes.comment)[e.detail.i]
+        return if not (post = g.posts[e.detail.ID])
+        return if not (pre  = $$('.prettyprint', post.nodes.comment)[e.detail.i])
         unless $.hasClass pre, 'prettyprinted'
           pre.innerHTML = e.detail.html
           $.addClass pre, 'prettyprinted'
@@ -42,9 +42,6 @@ Fourchan =
       Callbacks.Post.push
         name: 'Parse /sci/ math'
         cb:   @math
-      Callbacks.CatalogThread.push
-        name: 'Parse /sci/ math'
-        cb:   @math
 
     # Disable 4chan's ID highlighting (replaced by IDHighlight) and reported post hiding.
     Main.ready ->
@@ -73,5 +70,3 @@ Fourchan =
       $.event 'mathjax', null, @nodes.comment
     $.on d, 'PostsInserted', cb
     cb()
-
-return Fourchan

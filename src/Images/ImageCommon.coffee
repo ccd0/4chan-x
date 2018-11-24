@@ -6,6 +6,12 @@ ImageCommon =
     $.off video, 'volumechange', Volume.change
     video.muted = true
 
+  rewind: (el) ->
+    if el.nodeName is 'VIDEO'
+      el.currentTime = 0 if el.readyState >= el.HAVE_METADATA
+    else if /\.gif$/.test el.src
+      $.queueTask -> el.src = el.src
+
   pushCache: (el) ->
     ImageCommon.cache = el
     $.on el, 'error', ImageCommon.cacheError
@@ -21,30 +27,34 @@ ImageCommon =
 
   decodeError: (file, post) ->
     return false unless file.error?.code is MediaError.MEDIA_ERR_DECODE
-    unless message = $ '.warning', post.file.thumb.parentNode
+    if not (message = $ '.warning', post.file.thumb.parentNode)
       message = $.el 'div', className:   'warning'
       $.after post.file.thumb, message
     message.textContent = 'Error: Corrupt or unplayable video'
     return true
 
+  isFromArchive: (file) ->
+    !ImageHost.test(file.src.split('/')[2])
+
   error: (file, post, delay, cb) ->
     src = post.file.url.split '/'
-    URL = Redirect.to 'file',
+    URL = Redirect.to 'file', {
       boardID:  post.board.ID
       filename: src[src.length - 1]
+    }
     unless Conf['404 Redirect'] and URL and Redirect.securityCheck URL
       URL = null
 
-    return cb URL if (post.isDead or post.file.isDead) and file.src.split('/')[2] is 'i.4cdn.org'
+    return cb URL if (post.isDead or post.file.isDead) and not ImageCommon.isFromArchive file
 
     timeoutID = setTimeout (-> cb URL), delay if delay?
     return if post.isDead or post.file.isDead
     redirect = ->
-      if file.src.split('/')[2] is 'i.4cdn.org'
+      unless ImageCommon.isFromArchive file
         clearTimeout timeoutID if delay?
         cb URL
 
-    $.ajax "//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
+    $.ajax "#{location.protocol}//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
       post.kill !post.isClone if @status is 404
       return redirect() if @status isnt 200
       for postObj in @response.posts
@@ -88,5 +98,3 @@ ImageCommon =
         $.rm a
       else
         new Notice 'warning', "Could not download #{href}", 20
-
-return ImageCommon

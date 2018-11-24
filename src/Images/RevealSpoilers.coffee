@@ -1,6 +1,6 @@
 RevealSpoilers =
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Reveal Spoiler Thumbnails']
+    return unless g.VIEW in ['index', 'thread', 'archive'] and Conf['Reveal Spoiler Thumbnails']
 
     Callbacks.Post.push
       name: 'Reveal Spoiler Thumbnails'
@@ -17,5 +17,3 @@ RevealSpoilers =
       thumb.src = @file.thumbURL
     else
       thumb.dataset.src = @file.thumbURL
-
-return RevealSpoilers

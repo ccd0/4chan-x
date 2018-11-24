@@ -14,14 +14,15 @@ Recursive =
     return
 
   add: (recursive, post, args...) ->
-    obj = Recursive.recursives[post.fullID] or=
+    obj = Recursive.recursives[post.fullID] or= {
       recursives: []
       args: []
+    }
     obj.recursives.push recursive
     obj.args.push args
 
   rm: (recursive, post) ->
-    return unless obj = Recursive.recursives[post.fullID]
+    return if not (obj = Recursive.recursives[post.fullID])
     for rec, i in obj.recursives when rec is recursive
       obj.recursives.splice i, 1
       obj.args.splice i, 1
@@ -32,5 +33,3 @@ Recursive =
     g.posts.forEach (post) ->
       if fullID in post.quotes
         recursive post, args...
-
-return Recursive

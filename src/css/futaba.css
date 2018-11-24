@@ -30,6 +30,17 @@
   background-color: #F0E0D6;
 }
 
+/* Catalog */
+:root.futaba.catalog-hover-expand .catalog-container:hover > .post {
+  background-color: #F0E0D6;
+}
+:root.futaba.werkTyme .catalog-thread:not(:hover),
+:root.futaba.werkTyme:not(.catalog-hover-expand) .catalog-thread,
+:root.futaba.catalog-hover-expand .catalog-container:hover > .post,
+:root.futaba.catalog-hover-expand .catalog-container:hover .catalog-reply {
+  border-color: #D9BFB7;
+}
+
 /* Quote */
 :root.futaba .backlink.deadlink {
   color: #00E !important;
@@ -42,6 +53,11 @@
 /* Fappe and Werk Tyme */
 :root.futaba .indicator {
   color: #F0E0D6;
+}
+
+/* Anonymize */
+:root.futaba.anonymize .name::before {
+  font-size: 12pt;
 }
 
 /* QR */
@@ -71,8 +87,13 @@
   background: rgba(255, 255, 255, .33);
 }
 
+/* Unread */
+:root.futaba .unread-mark-read {
+  background-color: rgba(240,224,214,0.5);
+}
+
 /* Thread Watcher */
-:root.futaba .replies-quoting-you > a, :root.futaba #watcher-link.disabled.replies-quoting-you {
+:root.futaba .replies-quoting-you > a, :root.futaba #watcher-link.replies-quoting-you {
   color: #F00;
 }
 

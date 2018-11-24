@@ -2,7 +2,7 @@ ifdef ComSpec
   BIN := $(subst /,\,node_modules/.bin/)
   RMDIR := -rmdir /s /q
   RM := -del
-  CAT = type $(subst /,\,$1) > $(subst /,\,$2)
+  CAT = type $(subst /,\,$1) > $(subst /,\,$2) 2>NUL
   MKDIR = -mkdir $(subst /,\,$@)
   QUOTE = $(patsubst %,"%",$1)
 else
@@ -32,7 +32,7 @@ $(eval $(shell node tools/pkgvars.js))
 version = $(shell node -p "JSON.parse(require('fs').readFileSync('version.json')).version")
 
 source_directories := \
- globals config css platform classes \
+ globals config css platform classes site \
  Archive Filtering General Images Linkification \
  Menu Miscellaneous Monitoring Posting Quotelinks \
  main
@@ -87,7 +87,7 @@ crx_contents := script.js eventPage.js icon16.png icon48.png icon128.png manifes
 
 release := \
  $(foreach f, \
-  $(foreach c,. -beta.,$(name)$(c)crx updates$(c)xml $(name)$(c)user.js $(name)$(c)meta.js) \
+  $(foreach c,. -beta.,$(name)$(c)crx updates$(c)xml updates$(c)json $(name)$(c)user.js $(name)$(c)meta.js) \
   $(name)-noupdate.crx \
   $(name)-noupdate.user.js \
   $(name).zip \
@@ -115,8 +115,8 @@ node_modules/%/package.json : .events/npm
 
 else
 
-node_modules/%/package.json :
-	npm install $*
+node_modules/%/package.json : package.json
+	npm install $(call QUOTE,$*@$(version_$*))
 
 endif
 
@@ -169,7 +169,8 @@ testbuilds/crx$1 :
 	$$(MKDIR)
 
 testbuilds/crx$1/script.js : $$(call pieces,crx) | testbuilds/crx$1 .events/compile
-	$$(call CAT,$$(call QUOTE,$$(call pieces,crx)),$$@)
+	@echo Concatenating: $$@
+	@$$(call CAT,$$(call QUOTE,$$(call pieces,crx)),$$@)
 
 testbuilds/crx$1/eventPage.js : tmp/eventPage.js | testbuilds/crx$1
 	$$(CP)
@@ -183,19 +184,23 @@ testbuilds/crx$1/manifest.json : src/meta/manifest.json version.json $(template_
 testbuilds/updates$1.xml : src/meta/updates.xml version.json $(template_deps) | testbuilds/crx$1
 	$(template) $$< $$@ type=crx channel=$1
 
+testbuilds/updates$1.json : src/meta/updates.json version.json $(template_deps) | testbuilds/crx$1
+	$(template) $$< $$@ type=crx channel=$1
+
 testbuilds/$(name)$1.crx.zip : \
  $(foreach f,$(crx_contents),testbuilds/crx$1/$(f)) \
  package.json version.json tools/zip-crx.js node_modules/jszip/package.json
 	node tools/zip-crx.js $1
 
-testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.js node_modules/crx/package.json
+testbuilds/$(name)$1.crx : testbuilds/$(name)$1.crx.zip package.json tools/sign.js node_modules/node-rsa/package.json
 	node tools/sign.js $1
 
-testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.json $(template_deps) | testbuilds
+testbuilds/$(name)$1.meta.js : src/meta/metadata.js src/meta/icon48.png version.json src/Archive/archives.json $(template_deps) | testbuilds
 	$(template) $$< $$@ type=userscript channel=$1
 
 testbuilds/$(name)$1.user.js : testbuilds/$(name)$1.meta.js tmp/meta-newline.js $$(call pieces,userscript) | .events/compile
-	$$(call CAT,testbuilds/$(name)$1.meta.js tmp/meta-newline.js $$(call QUOTE,$$(call pieces,userscript)),$$@)
+	@echo Concatenating: $$@
+	@$$(call CAT,testbuilds/$(name)$1.meta.js tmp/meta-newline.js $$(call QUOTE,$$(call pieces,userscript)),$$@)
 
 endef
 
@@ -234,7 +239,7 @@ install.json :
 	node tools/install.js
 	echo -> $@
 
-.events/CHANGELOG : version.json | .events node_modules/dateformat/package.json
+.events/CHANGELOG : version.json | .events
 	node tools/updcl.js
 	echo -> $@
 
@@ -258,7 +263,7 @@ distready : dist $(wildcard dist/* dist/*/*)
 	git push web $(meta_distBranch)
 	echo -> $@
 
-.events2/push-store : .git/refs/tags/stable | .events2 distready node_modules/webstore-upload/package.json
+.events2/push-store : .git/refs/tags/stable | .events2 distready node_modules/webstore-upload/package.json node_modules/request/package.json
 	node tools/webstore.js
 	echo -> $@
 
@@ -340,7 +345,7 @@ stable : distready
 	git push . HEAD:bstable
 	git tag -af stable -m "$(meta_name) v$(version)."
 	cd dist && git merge --no-commit -s ours stable
-	cd dist && git checkout stable "builds/$(name).*" builds/updates.xml
+	cd dist && git checkout stable "builds/$(name).*" builds/updates.xml builds/updates.json
 	cd dist && git commit -am "Move $(meta_name) v$(version) to stable channel."
 
 web : index.html distready

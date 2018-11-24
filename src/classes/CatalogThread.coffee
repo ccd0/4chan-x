@@ -4,14 +4,13 @@ class CatalogThread
   constructor: (root, @thread) ->
     @ID    = @thread.ID
     @board = @thread.board
+    {post} = @thread.OP.nodes
     @nodes =
-      root: root
-      thumb:     $ '.catalog-thumb', root
-      icons:     $ '.catalog-icons', root
-      postCount: $ '.post-count',    root
-      fileCount: $ '.file-count',    root
-      pageCount: $ '.page-count',    root
-      comment:   $ '.comment',       root
+      root:      root
+      thumb:     $ '.catalog-thumb', post
+      icons:     $ '.catalog-icons', post
+      postCount: $ '.post-count',    post
+      fileCount: $ '.file-count',    post
+      pageCount: $ '.page-count',    post
+      replies:   null
     @thread.catalogView = @
-
-return CatalogThread

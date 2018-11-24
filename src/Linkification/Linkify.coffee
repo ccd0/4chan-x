@@ -1,6 +1,6 @@
 Linkify =
   init: ->
-    return if g.VIEW not in ['index', 'thread'] or not Conf['Linkify']
+    return if g.VIEW not in ['index', 'thread', 'archive'] or not Conf['Linkify']
 
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
@@ -9,25 +9,18 @@ Linkify =
       name: 'Linkify'
       cb:   @node
 
-    Callbacks.CatalogThread.push
-      name: 'Linkify'
-      cb:   @catalogNode
-
     Embedding.init()
 
   node: ->
     return Embedding.events @ if @isClone
     return unless Linkify.regString.test @info.comment
-    for link in $$ 'a[href^="http://i.4cdn.org/"], a[href^="https://i.4cdn.org/"]', @nodes.comment
+    for link in $$ 'a', @nodes.comment when ImageHost.test(link.hostname) or /\bnofollow\b/.test(link.rel)
       $.addClass link, 'linkify'
       Embedding.process link, @
     links = Linkify.process @nodes.comment
+    ImageHost.fixLinks links if ImageHost.useFaster
     Embedding.process link, @ for link in links
     return
-
-  catalogNode: ->
-    return unless Linkify.regString.test @thread.OP.info.comment
-    Linkify.process @nodes.comment
 
   process: (node) ->
     test     = /[^\s"]+/g
@@ -58,6 +51,9 @@ Linkify =
                 continue
               else
                 break
+
+            if saved.parentElement.nodeName is "A" and not Linkify.regString.test(word)
+              break
 
             endNode  = saved
             {data}   = saved
@@ -155,5 +151,3 @@ Linkify =
     range.insertNode a
 
     a
-
-return Linkify

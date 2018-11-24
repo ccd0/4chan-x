@@ -1,6 +1,24 @@
 requestID = 0
 
 chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
+  if request.responseType is 'arraybuffer'
+    # Cross-origin image fetching. Need permission.
+    chrome.permissions.contains
+      origins: ['*://*/']
+    , (result) ->
+      if result
+        ajax request, sender, sendResponse
+      else
+        chrome.permissions.request
+          origins: ['*://*/']
+        , ->
+          ajax request, sender, sendResponse
+    return true
+  else
+    # JSON fetching from non-HTTPS archive.
+    ajax request, sender, sendResponse
+
+ajax = (request, sender, sendResponse) ->
   id = requestID
   requestID++
   sendResponse id
@@ -9,15 +27,15 @@ chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
   xhr.open 'GET', request.url, true
   xhr.responseType = request.responseType
   xhr.addEventListener 'load', ->
+    {status, statusText, response} = @
     if @readyState is @DONE && xhr.status is 200
-      contentType = @getResponseHeader 'Content-Type'
-      contentDisposition = @getResponseHeader 'Content-Disposition'
-      {response} = @
       if request.responseType is 'arraybuffer'
         response = [new Uint8Array(response)...]
-      chrome.tabs.sendMessage sender.tab.id, {id, response, contentType, contentDisposition}
+        contentType = @getResponseHeader 'Content-Type'
+        contentDisposition = @getResponseHeader 'Content-Disposition'
+      chrome.tabs.sendMessage sender.tab.id, {id, status, statusText, response, contentType, contentDisposition}
     else
-      chrome.tabs.sendMessage sender.tab.id, {id, error: true}
+      chrome.tabs.sendMessage sender.tab.id, {id, status, statusText, response, error: true}
   , false
   xhr.addEventListener 'error', ->
     chrome.tabs.sendMessage sender.tab.id, {id, error: true}

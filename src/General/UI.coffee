@@ -1,11 +1,9 @@
-dialog = (id, position, properties) ->
+dialog = (id, properties) ->
   el = $.el 'div',
     className: 'dialog'
     id: id
   $.extend el, properties
-  el.style.cssText = position
-  $.get "#{id}.position", position, (item) ->
-    el.style.cssText = item["#{id}.position"]
+  el.style.cssText = Conf["#{id}.position"]
 
   move = $ '.move', el
   $.on move, 'touchstart mousedown', dragstart
@@ -68,7 +66,7 @@ class Menu
     $.on d, 'click CloseMenu', @close
     $.on d, 'scroll', @setPosition
     $.on window, 'resize', @setPosition
-    $.add button, menu
+    $.after button, menu
 
     @setPosition()
 
@@ -153,7 +151,7 @@ class Menu
         if next = @findNextEntry entry, +1
           @focus next
       when 39 # Right
-        if (submenu = $ '.submenu', entry) and next = submenu.firstElementChild
+        if (submenu = $ '.submenu', entry) and (next = submenu.firstElementChild)
           while nextPrev = @findNextEntry next, -1
             next = nextPrev
           @focus next
@@ -178,7 +176,7 @@ class Menu
     $.addClass entry, 'focused'
 
     # Submenu positioning.
-    return unless submenu = $ '.submenu', entry
+    return if not (submenu = $ '.submenu', entry)
     sRect   = submenu.getBoundingClientRect()
     eRect   = entry.getBoundingClientRect()
     cHeight = doc.clientHeight
@@ -267,7 +265,7 @@ drag = (e) ->
   left = if left < 10
     0
   else if @width - left < 10
-    null
+    ''
   else
     left / @screenWidth * 100 + '%'
 
@@ -275,19 +273,19 @@ drag = (e) ->
   top = if top < (10 + @topBorder)
     @topBorder + 'px'
   else if @height - top < (10 + @bottomBorder)
-    null
+    ''
   else
     top / @screenHeight * 100 + '%'
 
-  right = if left is null
+  right = if left is ''
     0
   else
-    null
+    ''
 
-  bottom = if top is null
+  bottom = if top is ''
     @bottomBorder + 'px'
   else
-    null
+    ''
 
   {style} = @
   style.left   = left
@@ -356,9 +354,9 @@ hover = (e) ->
   threshold = @clientWidth / 2
   threshold = Math.max threshold, @clientWidth - 400 unless @isImage
   [left, right] = if clientX <= threshold
-    [clientX + 45 + 'px', null]
+    [clientX + 45 + 'px', '']
   else
-    [null, @clientWidth - clientX + 45 + 'px']
+    ['', @clientWidth - clientX + 45 + 'px']
 
   {style} = @
   style.top   = top + 'px'
@@ -382,7 +380,7 @@ checkbox = (name, text, checked) ->
   $.add label, [input, $.tn " #{text}"]
   label
 
-return {
+UI = {
   dialog:   dialog
   Menu:     Menu
   hover:    hoverstart

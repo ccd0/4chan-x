@@ -6,7 +6,9 @@ QuoteOP =
       ExpandComment.callbacks.push @node
 
     # \u00A0 is nbsp
-    @text = '\u00A0(OP)'
+    @mark = $.el 'span',
+      textContent: '\u00A0(OP)'
+      className:   'qmark-op'
     Callbacks.Post.push
       name: 'Mark OP Quotes'
       cb:   @node
@@ -22,7 +24,7 @@ QuoteOP =
     if @isClone and @thread.fullID in quotes
       i = 0
       while quotelink = quotelinks[i++]
-        quotelink.textContent = quotelink.textContent.replace QuoteOP.text, ''
+        $.rm $('.qmark-op', quotelink)
 
     {fullID} = @context.thread
     # add (OP) to quotes quoting this context's OP.
@@ -32,7 +34,5 @@ QuoteOP =
     while quotelink = quotelinks[i++]
       {boardID, postID} = Get.postDataFromLink quotelink
       if "#{boardID}.#{postID}" is fullID
-        $.add quotelink, $.tn QuoteOP.text
+        $.add quotelink, QuoteOP.mark.cloneNode(true)
     return
-
-return QuoteOP

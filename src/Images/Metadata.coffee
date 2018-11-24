@@ -1,6 +1,6 @@
 Metadata =
   init: ->
-    return unless Conf['WEBM Metadata'] and g.VIEW in ['index', 'thread'] and g.BOARD.ID isnt 'f'
+    return unless Conf['WEBM Metadata'] and g.VIEW in ['index', 'thread']
 
     Callbacks.Post.push
       name: 'WEBM Metadata'
@@ -60,5 +60,3 @@ Metadata =
       else unless element in [0x8538067, 0x549A966] # Segment, Info
         i += size
     null
-
-return Metadata

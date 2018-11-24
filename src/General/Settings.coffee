@@ -110,10 +110,10 @@ Settings =
         cb $.el 'li',
           textContent: """
             <%= meta.name %> needs local storage to #{why}.
-            Enable it on boards.4chan.org in your browser's privacy settings (may be listed as part of "local data" or "cookies").
+            Enable it on boards.#{location.hostname.split('.')[1]}.org in your browser's privacy settings (may be listed as part of "local data" or "cookies").
           """
     ads: (cb) ->
-      $.onExists doc, '.ad-cnt', (ad) -> $.onExists ad, 'img', ->
+      $.onExists doc, '.adg-rects > .desktop', (ad) -> $.onExists ad, 'iframe', ->
         url = Redirect.to 'thread', {boardID: 'qa', threadID: 362590}
         cb $.el 'li',
           <%= html(
@@ -135,19 +135,16 @@ Settings =
 
     items  = {}
     inputs = {}
-    for key, obj of Config.main
-      fs = $.el 'fieldset',
-        <%= html('<legend>${key}</legend>') %>
-      containers = [fs]
-      for key, arr of obj
+    addCheckboxes = (root, obj) ->
+      containers = [root]
+      for key, arr of obj when arr instanceof Array
         description = arr[1]
         div = $.el 'div',
           <%= html('<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>') %>
-        div.hidden = true if $.engine isnt 'gecko' and key is 'Remember QR Size' # XXX not supported
+        div.dataset.name = key
         input = $ 'input', div
-        $.on input, 'change', ->
-          @parentNode.parentNode.dataset.checked = @checked
-          $.cb.checked.call @
+        $.on input, 'change', $.cb.checked
+        $.on input, 'change', -> @parentNode.parentNode.dataset.checked = @checked
         items[key]  = Conf[key]
         inputs[key] = input
         level = arr[2] or 0
@@ -158,7 +155,22 @@ Settings =
         else if containers.length > level+1
           containers.splice level+1, containers.length - (level+1)
         $.add containers[level], div
+
+    for keyFS, obj of Config.main
+      fs = $.el 'fieldset',
+        <%= html('<legend>${keyFS}</legend>') %>
+      addCheckboxes fs, obj
+      if keyFS is 'Posting and Captchas'
+        $.add fs, $.el 'p',
+          <%= html('For more info on captcha options and issues, see the <a href="' + meta.captchaFAQ + '" target="_blank">captcha FAQ</a>.') %>
       $.add section, fs
+    addCheckboxes $('div[data-name="JSON Index"] > .suboption-list', section), Config.Index
+
+    # Unsupported options
+    if $.engine isnt 'gecko'
+      $('div[data-name="Remember QR Size"]', section).hidden = true
+    if $.perProtocolSettings or location.protocol isnt 'https:'
+      $('div[data-name="Redirect to HTTPS"]', section).hidden = true
 
     $.get items, (items) ->
       for key, val of items
@@ -171,8 +183,15 @@ Settings =
     button = $ 'button', div
     $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
       hiddenNum = 0
+      for ID, site of hiddenThreads when ID isnt 'boards'
+        for ID, board of site.boards
+          hiddenNum += Object.keys(board).length
       for ID, board of hiddenThreads.boards
         hiddenNum += Object.keys(board).length
+      for ID, site of hiddenPosts when ID isnt 'boards'
+        for ID, board of site.boards
+          for ID, thread of board
+            hiddenNum += Object.keys(thread).length
       for ID, board of hiddenPosts.boards
         for ID, thread of board
           hiddenNum += Object.keys(thread).length
@@ -180,16 +199,18 @@ Settings =
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
       $.get 'hiddenThreads', {}, ({hiddenThreads}) ->
-        if $.hasStorage
+        if $.hasStorage and Site.software is 'yotsuba'
           for boardID of hiddenThreads.boards
             localStorage.removeItem "4chan-hide-t-#{boardID}"
-        $.delete ['hiddenThreads', 'hiddenPosts']
+        ($.delete ['hiddenThreads', 'hiddenPosts'])
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
 
   export: ->
     # Make sure to export the most recent data.
     $.get Conf, (Conf) ->
-      Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf}
+      # Don't export cached JSON data.
+      delete Conf['boardConfig']
+      (Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf})
 
   downloadExport: (data) ->
     a = $.el 'a',
@@ -204,7 +225,7 @@ Settings =
     $('input[type=file]', @parentNode).click()
 
   onImport: ->
-    return unless file = @files[0]
+    return if not (file = @files[0])
     @value = null
     output = $('.imp-exp-result')
     unless confirm 'Your current settings will be entirely overwritten, are you sure?'
@@ -316,6 +337,8 @@ Settings =
     changes = {}
     set = (key, value) ->
       data[key] = changes[key] = value
+    setD = (key, value) ->
+      set key, value unless data[key]?
     addSauces = (sauces) ->
       if data['sauces']?
         sauces = sauces.filter (s) -> data['sauces'].indexOf(s.match(/[^#;\s]+|$/)[0]) < 0
@@ -325,7 +348,20 @@ Settings =
       set 'usercss', Config['usercss'] unless data['usercss']?
       if data['usercss'].indexOf(css) < 0
         set 'usercss', css + '\n\n' + data['usercss']
+    # XXX https://github.com/greasemonkey/greasemonkey/issues/2600
+    if (corrupted = (version[0] is '"'))
+      try
+        version = JSON.parse version
     compareString = version.replace(/\d+/g, (x) -> ('0000'+x)[-5..])
+    if compareString < '00001.00013.00014.00008'
+      for key, val of data when typeof val is 'string' and typeof Conf[key] isnt 'string' and key not in ['Index Sort', 'Last Long Reply Thresholds 0', 'Last Long Reply Thresholds 1']
+        corrupted = true
+        break
+    if corrupted
+      for key, val of data when typeof val is 'string'
+        try
+          val2 = JSON.parse val
+          set key, val2
     if compareString < '00001.00011.00008.00000'
       unless data['Fixed Thread Watcher']?
         set 'Fixed Thread Watcher', data['Toggleable Thread Watcher'] ? true
@@ -393,6 +429,36 @@ Settings =
     if compareString < '00001.00012.00000.00006'
       if data['sauces']?
         set 'sauces', data['sauces'].replace(/^(#?\s*)https:\/\/(?:desustorage|cuckchan)\.org\//mg, '$1https://desuarchive.org/')
+    if compareString < '00001.00012.00001.00000'
+      if not data['Persistent Thread Watcher']? and data['Toggleable Thread Watcher']?
+        set 'Persistent Thread Watcher', not data['Toggleable Thread Watcher']
+    if compareString < '00001.00012.00003.00000'
+      for key in ['Image Hover in Catalog', 'Auto Watch', 'Auto Watch Reply']
+        setD key, false
+    if compareString < '00001.00013.00001.00002'
+      addSauces ['#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights']
+    if compareString < '00001.00013.00005.00000'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(/^(#?\s*)http:\/\/regex\.info\/exif\.cgi/mg, '$1http://exif.regex.info/exif.cgi')
+      addSauces Config['sauces'].match(/# Known filename formats:(?:\n.+)*|$/)[0].split('\n')
+    if compareString < '00001.00013.00007.00002'
+      setD 'Require OP Quote Link', true
+    if compareString < '00001.00013.00008.00000'
+      setD 'Download Link', true
+    if compareString < '00001.00013.00009.00003'
+      if data['jsWhitelist']?
+        list = data['jsWhitelist'].split('\n')
+        if 'https://cdnjs.cloudflare.com' not in list and 'https://cdn.mathjax.org' in list
+          set 'jsWhitelist', data['jsWhitelist'] + '\n\nhttps://cdnjs.cloudflare.com'
+    if compareString < '00001.00014.00000.00006'
+      if data['siteSoftware']?
+        set 'siteSoftware', data['siteSoftware'] + '\n4cdn.org yotsuba'
+    if compareString < '00001.00014.00003.00002'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(/^(#?\s*)https:\/\/whatanime\.ga\//mg, '$1https://trace.moe/')
+    if compareString < '00001.00014.00004.00004'
+      if data['siteSoftware']? and !/^4channel\.org yotsuba$/m.test(data['siteSoftware'])
+        set 'siteSoftware', data['siteSoftware'] + '\n4channel.org yotsuba'
     changes
 
   loadSettings: (data, cb) ->
@@ -426,11 +492,13 @@ Settings =
         name: name
         className: 'field'
         spellcheck: false
+      $.on ta, 'change', $.cb.value
       $.get name, Conf[name], (item) ->
         ta.value = item[name]
-      $.on ta, 'change', $.cb.value
-      $.add div, ta
+        $.add div, ta
       return
+    filterTypes = Object.keys(Config.filter).filter((x) -> x isnt 'general').map (x, i) ->
+      <%= html('?{i}{,}<wbr>${x}') %>
     $.extend div, <%= readHTML('Filter-guide.html') %>
     $('.warning', div).hidden = Conf['Filter']
 
@@ -440,6 +508,7 @@ Settings =
     ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
       ta.value = item['sauces']
+      (ta.hidden = false) # XXX prevent Firefox from adding initialization to undo queue
     $.on ta, 'change', $.cb.value
 
   advanced: (section) ->
@@ -456,7 +525,7 @@ Settings =
       $.id('lastarchivecheck').textContent = 'never'
 
     items = {}
-    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'backlink', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
+    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'timeLocale', 'backlink', 'pastedname', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
       items[name] = Conf[name]
       input = inputs[name]
       event = if name in ['archiveLists', 'archiveAutoUpdate', 'QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
@@ -467,6 +536,7 @@ Settings =
       for key, val of items
         input = inputs[key]
         input[if input.type is 'checkbox' then 'checked' else 'value'] = val
+        input.hidden = false # XXX prevent Firefox from adding initialization to undo queue
         if key of Settings
           Settings[key].call input
       return
@@ -520,10 +590,11 @@ Settings =
     for {uid, name, boards, files, software} in Conf['archives']
       continue unless software in ['fuuka', 'foolfuuka']
       for boardID in boards
-        o = archBoards[boardID] or=
+        o = archBoards[boardID] or= {
           thread: []
           post:   []
           file:   []
+        }
         archive = [uid ? name, name]
         o.thread.push archive
         o.post.push   archive if software is 'foolfuuka'
@@ -536,10 +607,11 @@ Settings =
         className: "board-#{boardID}"
       row.hidden = boardID isnt g.BOARD.ID
 
-      boardOptions.push $.el 'option',
+      boardOptions.push $.el 'option', {
         textContent: "/#{boardID}/"
         value:       "board-#{boardID}"
         selected:    boardID is g.BOARD.ID
+      }
 
       o = archBoards[boardID]
       $.add row, Settings.addArchiveCell boardID, o, item for item in ['thread', 'post', 'file']
@@ -577,13 +649,14 @@ Settings =
     i = 0
     while i < length
       archive = data[type][i++]
-      options.push $.el 'option',
+      options.push $.el 'option', {
         value: JSON.stringify archive[0]
         textContent: archive[1]
+      }
 
     $.extend td, <%= html('<select></select>') %>
     select = td.firstElementChild
-    unless select.disabled = length is 1
+    if not (select.disabled = length is 1)
       # XXX GM can't into datasets
       select.setAttribute 'data-boardid', boardID
       select.setAttribute 'data-type', type
@@ -605,14 +678,17 @@ Settings =
   time: ->
     @nextElementSibling.textContent = Time.format @value, new Date()
 
+  timeLocale: ->
+    Settings.time.call $('[name=time]', Settings.dialog)
+
   backlink: ->
-    @nextElementSibling.textContent = @value.replace /%(?:id|%)/g, (x) -> {'%id': '123456789', '%%': '%'}[x]
+    @nextElementSibling.textContent = @value.replace /%(?:id|%)/g, (x) -> ({'%id': '123456789', '%%': '%'})[x]
 
   fileInfo: ->
     data =
       isReply: true
       file:
-        url: '//i.4cdn.org/g/1334437723720.jpg'
+        url: "//#{ImageHost.host()}/g/1334437723720.jpg"
         name: 'd9bb2efc98dd0df141a94399ff5880b7.jpg'
         size: '276 KB'
         sizeInBytes: 276 * 1024
@@ -627,10 +703,11 @@ Settings =
     Favicon.switch()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
     img = @nextElementSibling.children
-    img[0].src = Favicon.default
-    img[1].src = Favicon.unreadSFW
-    img[2].src = Favicon.unreadNSFW
-    img[3].src = Favicon.unreadDead
+    f = Favicon
+    for icon, i in [f.SFW, f.unreadSFW, f.unreadSFWY, f.NSFW, f.unreadNSFW, f.unreadNSFWY, f.dead, f.unreadDead, f.unreadDeadY]
+      $.add @nextElementSibling, $.el('img') unless img[i]
+      img[i].src = icon
+    return
 
   togglecss: ->
     if $('textarea[name=usercss]', $.x 'ancestor::fieldset[1]', @).disabled = $.id('apply-css').disabled = !@checked
@@ -669,5 +746,3 @@ Settings =
     return unless (key = Keybinds.keyCode e)?
     @value = key
     $.cb.value.call @
-
-return Settings

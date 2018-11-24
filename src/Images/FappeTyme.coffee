@@ -1,6 +1,6 @@
 FappeTyme =
   init: ->
-    return unless (Conf['Fappe Tyme'] or Conf['Werk Tyme']) and g.VIEW in ['index', 'thread']
+    return unless (Conf['Fappe Tyme'] or Conf['Werk Tyme']) and g.VIEW in ['index', 'thread', 'archive']
 
     @nodes = {}
     @enabled =
@@ -59,5 +59,3 @@ FappeTyme =
   toggle: (type) ->
     @set type, !@enabled[type]
     $.cb.checked.call @nodes[type] if type is 'werk'
-
-return FappeTyme
