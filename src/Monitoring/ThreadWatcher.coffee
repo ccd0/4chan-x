@@ -262,7 +262,7 @@ ThreadWatcher =
         continue unless !quotingYou and QuoteYou.db and postObj.com
 
         quotesYou = false
-        regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
+        regexp = /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
         while match = regexp.exec postObj.com
           if QuoteYou.db.get {
             boardID:  match[1] or boardID
