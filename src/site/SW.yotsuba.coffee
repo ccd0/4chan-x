@@ -2,7 +2,7 @@ SW.yotsuba =
   isOPContainerThread: false
 
   urls:
-    thread: ({boardID, threadID}) -> "#{boardID}/thread/#{threadID}"
+    thread: ({boardID, threadID}) -> "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/thread/#{threadID}"
 
   selectors:
     board:         '.board'

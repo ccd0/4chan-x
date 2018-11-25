@@ -48,7 +48,7 @@ SW.tinyboard =
     false
 
   urls:
-    thread: ({boardID, threadID}) -> "#{boardID}/res/#{threadID}.html"
+    thread: ({boardID, threadID}) -> "#{location.origin}/#{boardID}/res/#{threadID}.html"
 
   selectors:
     board:         'form[name="postcontrols"]'
