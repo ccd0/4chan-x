@@ -37,8 +37,8 @@ CatalogLinks =
 
   node: ->
     for a in $$ 'a', @nodes.comment
-      if m = a.href.match /^https?:\/\/boards\.4chan(?:nel)?\.org\/([^\/]+)\/catalog(#s=.*)?/
-        a.href = "//boards.4chan(?:nel)?.org/#{m[1]}/#{m[2] or '#catalog'}"
+      if m = a.href.match /^https?:\/\/(boards\.4chan(?:nel)?\.org\/[^\/]+)\/catalog(#s=.*)?/
+        a.href = "//#{m[1]}/#{m[2] or '#catalog'}"
     return
 
   toggle: ->
