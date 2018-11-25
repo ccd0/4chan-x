@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.4.5
+// @version      1.14.4.6
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.4.5',
+  VERSION:   '1.14.4.6',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -7272,7 +7272,7 @@ SW = {};
       thread: function(arg) {
         var boardID, threadID;
         boardID = arg.boardID, threadID = arg.threadID;
-        return boardID + "/res/" + threadID + ".html";
+        return location.origin + "/" + boardID + "/res/" + threadID + ".html";
       }
     },
     selectors: {
@@ -7380,7 +7380,7 @@ SW = {};
       thread: function(arg) {
         var boardID, threadID;
         boardID = arg.boardID, threadID = arg.threadID;
-        return boardID + "/thread/" + threadID;
+        return location.protocol + "//" + (BoardConfig.domain(boardID)) + "/" + boardID + "/thread/" + threadID;
       }
     },
     selectors: {
@@ -16681,8 +16681,8 @@ CatalogLinks = (function() {
       ref = $$('a', this.nodes.comment);
       for (i = 0, len = ref.length; i < len; i++) {
         a = ref[i];
-        if (m = a.href.match(/^https?:\/\/boards\.4chan(?:nel)?\.org\/([^\/]+)\/catalog(#s=.*)?/)) {
-          a.href = "//boards.4chan(?:nel)?.org/" + m[1] + "/" + (m[2] || '#catalog');
+        if (m = a.href.match(/^https?:\/\/(boards\.4chan(?:nel)?\.org\/[^\/]+)\/catalog(#s=.*)?/)) {
+          a.href = "//" + m[1] + "/" + (m[2] || '#catalog');
         }
       }
     },
@@ -20080,7 +20080,7 @@ ThreadWatcher = (function() {
             continue;
           }
           quotesYou = false;
-          regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g;
+          regexp = /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g;
           while (match = regexp.exec(postObj.com)) {
             if (QuoteYou.db.get({
               boardID: match[1] || boardID,
@@ -20158,10 +20158,10 @@ ThreadWatcher = (function() {
       excerpt = data.excerpt;
       excerpt || (excerpt = "/" + boardID + "/ - No." + threadID);
       link = $.el('a', {
-        href: "/" + (Site.urls.thread({
+        href: Site.urls.thread({
           boardID: boardID,
           threadID: threadID
-        })),
+        }),
         title: excerpt,
         className: 'watcher-link'
       });
@@ -22527,7 +22527,7 @@ QR = (function() {
             extra.form.append('g-recaptcha-response', response.response);
           }
         }
-        QR.req = $.ajax("https://sys.4chan.org/" + g.BOARD + "/post", options, extra);
+        QR.req = $.ajax("https://sys." + (location.hostname.split('.')[1]) + ".org/" + g.BOARD + "/post", options, extra);
         return QR.req.progress = '...';
       };
       if (typeof captcha === 'function') {

@@ -4,6 +4,12 @@
 
 ### v1.14.4
 
+**v1.14.4.6** *(2018-11-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.6/builds/4chan-X-noupdate.crx)]
+- Use now working sys.4channel.org for posting to worksafe boards; should fix some issues with posting. #2140 #2149
+- Fix catalog/search link rewriting. #2151
+- Make URLs in thread watcher point to appropriate domain. #2143
+- Make cross-domain quotes of you light up thread watcher.
+
 **v1.14.4.5** *(2018-11-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.5/builds/4chan-X-noupdate.crx)]
 - Fix bug in previous version causing 4channel.org to be seen as separate site in thread watcher etc.
 
