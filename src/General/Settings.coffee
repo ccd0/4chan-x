@@ -459,6 +459,14 @@ Settings =
     if compareString < '00001.00014.00004.00004'
       if data['siteSoftware']? and !/^4channel\.org yotsuba$/m.test(data['siteSoftware'])
         set 'siteSoftware', data['siteSoftware'] + '\n4channel.org yotsuba'
+    if compareString < '00001.00014.00005.00000'
+      for db in DataBoard.keys
+        if data[db]?.boards
+          {boards, lastChecked} = data[db]
+          data[db]['4chan.org'] = {boards, lastChecked}
+          delete data[db].boards
+          delete data[db].lastChecked
+          set db, data[db]
     changes
 
   loadSettings: (data, cb) ->
