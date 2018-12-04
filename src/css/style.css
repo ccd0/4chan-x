@@ -125,6 +125,10 @@ body > div[style*=" top: -10000px;"] {
 body.is_catalog .thread > a > img {
   display: inline-block;
 }
+/* Links to NSFW boards */
+.nwsb {
+  display: inline;
+}
 
 /* Ads */
 .ad-cnt > *, .adg-rects > *, .bsa-cnt {
