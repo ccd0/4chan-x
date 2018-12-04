@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.4.6
+// @version      1.14.4.7
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.4.6',
+  VERSION:   '1.14.4.7',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1386,8 +1386,12 @@ body > div[style*=\" top: -10000px;\"] {\n\
 body.is_catalog .thread > a > img {\n\
   display: inline-block;\n\
 }\n\
+/* Links to NSFW boards */\n\
+.nwsb {\n\
+  display: inline;\n\
+}\n\
 /* Ads */\n\
-.ad-cnt > *, .adg-rects > * {\n\
+.ad-cnt > *, .adg-rects > *, .bsa-cnt {\n\
   height: auto !important;\n\
 }\n\
 :root:not(.ads-loaded) hr.abovePostForm,\n\

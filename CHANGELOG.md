@@ -4,6 +4,10 @@
 
 ### v1.14.4
 
+**v1.14.4.7** *(2018-12-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.7/builds/4chan-X-noupdate.crx)]
+- Display links to NSFW boards in bottom board list. #2158
+- Remove empty space from unloaded ads.
+
 **v1.14.4.6** *(2018-11-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.6/builds/4chan-X-noupdate.crx)]
 - Use now working sys.4channel.org for posting to worksafe boards; should fix some issues with posting. #2140 #2149
 - Fix catalog/search link rewriting. #2151
