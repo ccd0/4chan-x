@@ -127,7 +127,7 @@ body.is_catalog .thread > a > img {
 }
 
 /* Ads */
-.ad-cnt > *, .adg-rects > * {
+.ad-cnt > *, .adg-rects > *, .bsa-cnt {
   height: auto !important;
 }
 :root:not(.ads-loaded) hr.abovePostForm,
