@@ -5,19 +5,26 @@ Site =
       hostname = hostname.replace(/^[^.]*\.?/, '')
     hostname = '4chan.org' if hostname is '4channel.org'
     if hostname and Conf['siteProperties'][hostname].software of SW
-      @set hostname, Conf['siteProperties'][hostname]
+      @set hostname
       cb()
-    else
-      $.onExists doc, 'body', =>
-        for software of SW
-          if SW[software].detect?()
-            properties = {software}
-            @set location.hostname.replace(/^www\./, ''), properties
-            Conf['siteProperties'][@hostname] = properties
-            $.set 'siteProperties', Conf['siteProperties']
-            cb()
+    $.onExists doc, 'body', =>
+      for software of SW when (changes = SW[software].detect?())
+        changes.software = software
+        hostname = location.hostname.replace(/^www\./, '')
+        properties = (Conf['siteProperties'][hostname] or= {})
+        changed = 0
+        for key of changes when properties[key] isnt changes[key]
+          properties[key] = changes[key]
+          changed++
+        if changed
+          $.set 'siteProperties', Conf['siteProperties']
+        unless @hostname
+          @set hostname
+          cb()
         return
+      return
 
-  set: (@hostname, @properties) ->
+  set: (@hostname) ->
+    @properties = Conf['siteProperties'][@hostname]
     @software = @properties.software
     $.extend @, SW[@software]

@@ -44,7 +44,7 @@ SW.tinyboard =
 
   detect: ->
     for script in $$ 'script:not([src])', d.head
-      return true if /\bvar configRoot=".*?"/.test(script.textContent)
+      return {} if /\bvar configRoot=".*?"/.test(script.textContent)
     false
 
   urls:
