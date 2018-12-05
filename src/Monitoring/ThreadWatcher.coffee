@@ -299,6 +299,8 @@ ThreadWatcher =
     all
 
   makeLine: (siteID, boardID, threadID, data) ->
+    software = Conf['siteProperties'][siteID]?.software
+
     x = $.el 'a',
       className: 'fa fa-times'
       href: 'javascript:;'
@@ -308,11 +310,11 @@ ThreadWatcher =
     excerpt or= "/#{boardID}/ - No.#{threadID}"
 
     link = $.el 'a',
-      href: SW[Conf['siteProperties'][siteID]?.software]?.urls.thread({siteID, boardID, threadID}) or ''
+      href: SW[software]?.urls.thread({siteID, boardID, threadID}) or ''
       title: excerpt
       className: 'watcher-link'
 
-    if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] and data.unread?
+    if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] and software is 'yotsuba' and data.unread?
       count = $.el 'span',
         textContent: "(#{data.unread})"
         className: 'watcher-unread'
@@ -329,7 +331,7 @@ ThreadWatcher =
     div.dataset.siteID = siteID
     $.addClass div, 'current'     if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
     $.addClass div, 'dead-thread' if data.isDead
-    if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
+    if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] and software is 'yotsuba'
       $.addClass div, 'replies-read'        if data.unread is 0
       $.addClass div, 'replies-unread'      if data.unread
       $.addClass div, 'replies-quoting-you' if data.quotingYou
