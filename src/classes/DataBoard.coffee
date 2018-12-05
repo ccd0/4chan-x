@@ -14,6 +14,11 @@ class DataBoard
     $.on d, '4chanXInitFinished', init
 
   initData: (@data) ->
+    if @data.boards
+      {boards, lastChecked} = @data
+      @data['4chan.org'] = {boards, lastChecked}
+      delete @data.boards
+      delete @data.lastChecked
     @data[Site.hostname] or= boards: {}
 
   changes: []
