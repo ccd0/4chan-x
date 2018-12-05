@@ -150,7 +150,7 @@ ThreadWatcher =
       {db}    = ThreadWatcher
       boardID = g.BOARD.ID
       nKilled = 0
-      for threadID, data of db.data.boards[boardID] when not data?.isDead and "#{boardID}.#{threadID}" not in e.detail.threads
+      for threadID, data of db.data[Site.hostname].boards[boardID] when not data?.isDead and "#{boardID}.#{threadID}" not in e.detail.threads
         # Don't prune threads that have yet to appear in index.
         continue unless e.detail.threads.some (fullID) -> +fullID.split('.')[1] > threadID
         nKilled++
@@ -188,7 +188,7 @@ ThreadWatcher =
     {db} = ThreadWatcher
     interval = if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] then 5 * $.MINUTE else 2 * $.HOUR
     now = Date.now()
-    unless now - interval < (db.data.lastChecked or 0) <= now or d.hidden or not d.hasFocus()
+    unless now - interval < (db.data[Site.hostname].lastChecked or 0) <= now or d.hidden or not d.hasFocus()
       ThreadWatcher.fetchAllStatus()
       db.setLastChecked()
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
@@ -288,7 +288,7 @@ ThreadWatcher =
 
   getAll: ->
     all = []
-    for boardID, threads of ThreadWatcher.db.data.boards
+    for boardID, threads of ThreadWatcher.db.data[Site.hostname].boards
       if Conf['Current Board'] and boardID isnt g.BOARD.ID
         continue
       for threadID, data of threads when data and typeof data is 'object'
