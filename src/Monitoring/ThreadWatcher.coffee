@@ -308,6 +308,7 @@ ThreadWatcher =
 
     {excerpt} = data
     excerpt or= "/#{boardID}/ - No.#{threadID}"
+    excerpt = ThreadWatcher.prefixes[siteID] + excerpt
 
     link = $.el 'a',
       href: SW[software]?.urls.thread({siteID, boardID, threadID}) or ''
@@ -338,9 +339,31 @@ ThreadWatcher =
     $.add div, [x, $.tn(' '), link]
     div
 
+  setPrefixes: (threads) ->
+    prefixes = {}
+    for {siteID} in threads
+      continue if siteID of prefixes
+      len = 0
+      prefix = ''
+      conflicts = Object.keys(prefixes)
+      while conflicts.length > 0
+        len++
+        prefix = siteID[...len]
+        conflicts2 = []
+        for siteID2 in conflicts
+          if siteID2[...len] is prefix
+            conflicts2.push siteID2
+          else if prefixes[siteID2].length < len
+            prefixes[siteID2] = siteID2[...len]
+        conflicts = conflicts2
+      prefixes[siteID] = prefix
+    ThreadWatcher.prefixes = prefixes
+
   build: ->
     nodes = []
-    for {siteID, boardID, threadID, data} in ThreadWatcher.getAll()
+    threads = ThreadWatcher.getAll()
+    ThreadWatcher.setPrefixes threads
+    for {siteID, boardID, threadID, data} in threads
       # Add missing excerpt for threads added by Auto Watch
       if not data.excerpt? and siteID is Site.hostname and (thread = g.threads["#{boardID}.#{threadID}"])
         ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt thread}}
