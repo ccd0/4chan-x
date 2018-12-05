@@ -308,7 +308,7 @@ ThreadWatcher =
 
     {excerpt} = data
     excerpt or= "/#{boardID}/ - No.#{threadID}"
-    excerpt = ThreadWatcher.prefixes[siteID] + excerpt
+    excerpt = ThreadWatcher.prefixes[siteID] + excerpt if Conf['Show Site Prefix']
 
     link = $.el 'a',
       href: SW[software]?.urls.thread({siteID, boardID, threadID}) or ''
@@ -528,6 +528,6 @@ ThreadWatcher =
         $.addClass entry.el, 'disabled'
         entry.el.title += '\n[Remember Last Read Post is disabled.]'
       $.on input, 'change', $.cb.checked
-      $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Unread Count']
+      $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Unread Count', 'Show Site Prefix']
       $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Unread Count', 'Auto Update Thread Watcher']
       entry

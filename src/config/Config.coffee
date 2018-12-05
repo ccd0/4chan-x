@@ -676,6 +676,10 @@ Config =
       true
       'Show number of unread posts in watched threads.'
     ]
+    'Show Site Prefix': [
+      true
+      'When multiple sites are shown in the thread watcher, add a prefix to board names to distinguish them.'
+    ]
     'Require OP Quote Link': [
       false
       'For purposes of thread watcher highlighting, only consider posts with a quote link to the OP as replies to the OP.'
