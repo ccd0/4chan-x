@@ -149,7 +149,7 @@ class DataBoard
         threads[ID] = board[ID] if ID of board
     @data[siteID].boards[boardID] = threads
     @deleteIfEmpty {siteID, boardID}
-    $.set @key, @allData
+    $.set @key, @data
 
   onSync: (data) =>
     return unless (data.version or 0) > (@data.version or 0)
