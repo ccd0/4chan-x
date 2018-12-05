@@ -17,7 +17,7 @@ ThreadWatcher =
     @refreshButton = $ '.refresh', @dialog
     @closeButton = $('.move > .close', @dialog)
     @unreaddb = Unread.db or UnreadIndex.db or new DataBoard 'lastReadPosts'
-    @unreadEnabled = Conf['Remember Last Read Post'] and Site.software is 'yotsuba'
+    @unreadEnabled = Conf['Remember Last Read Post']
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on sc, 'click', @toggleWatcher
@@ -129,16 +129,17 @@ ThreadWatcher =
       $.event 'CloseMenu'
     pruneDeads: ->
       return if $.hasClass @, 'disabled'
-      for {boardID, threadID, data} in ThreadWatcher.getAll() when data.isDead
-        ThreadWatcher.db.delete {boardID, threadID}
+      for {siteID, boardID, threadID, data} in ThreadWatcher.getAll() when data.isDead
+        ThreadWatcher.db.delete {siteID, boardID, threadID}
       ThreadWatcher.refresh()
       $.event 'CloseMenu'
     toggle: ->
       {thread} = Get.postFromNode @
       ThreadWatcher.toggle thread
     rm: ->
+      {siteID} = @parentNode.dataset
       [boardID, threadID] = @parentNode.dataset.fullID.split '.'
-      ThreadWatcher.rm boardID, +threadID
+      ThreadWatcher.rm siteID, boardID, +threadID
     post: (e) ->
       {boardID, threadID, postID} = e.detail
       if postID is threadID
@@ -148,9 +149,10 @@ ThreadWatcher =
         ThreadWatcher.add g.threads[boardID + '.' + threadID]
     onIndexUpdate: (e) ->
       {db}    = ThreadWatcher
+      siteID  = Site.hostname
       boardID = g.BOARD.ID
       nKilled = 0
-      for threadID, data of db.data[Site.hostname].boards[boardID] when not data?.isDead and "#{boardID}.#{threadID}" not in e.detail.threads
+      for threadID, data of db.data[siteID].boards[boardID] when not data?.isDead and "#{boardID}.#{threadID}" not in e.detail.threads
         # Don't prune threads that have yet to appear in index.
         continue unless e.detail.threads.some (fullID) -> +fullID.split('.')[1] > threadID
         nKilled++
@@ -159,7 +161,7 @@ ThreadWatcher =
         else
           db.extend {boardID, threadID, val: {isDead: true}}
           if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
-            ThreadWatcher.fetchStatus {boardID, threadID, data}
+            ThreadWatcher.fetchStatus {siteID, boardID, threadID, data}
       ThreadWatcher.refresh() if nKilled
     onThreadRefresh: (e) ->
       thread = g.threads[e.detail.threadID]
@@ -212,8 +214,8 @@ ThreadWatcher =
           return
 
   fetchStatus: (thread, force) ->
-    return unless Site.software is 'yotsuba'
-    {boardID, threadID, data} = thread
+    {siteID, boardID, threadID, data} = thread
+    return unless Site.software is 'yotsuba' and siteID is Site.hostname
     return if data.isDead and not force
     if ThreadWatcher.requests.length is 0
       ThreadWatcher.status.textContent = '...'
@@ -288,14 +290,15 @@ ThreadWatcher =
 
   getAll: ->
     all = []
-    for boardID, threads of ThreadWatcher.db.data[Site.hostname].boards
-      if Conf['Current Board'] and boardID isnt g.BOARD.ID
-        continue
-      for threadID, data of threads when data and typeof data is 'object'
-        all.push {boardID, threadID, data}
+    for siteID, boards of ThreadWatcher.db.data
+      for boardID, threads of boards.boards
+        if Conf['Current Board'] and (siteID isnt Site.hostname or boardID isnt g.BOARD.ID)
+          continue
+        for threadID, data of threads when data and typeof data is 'object'
+          all.push {siteID, boardID, threadID, data}
     all
 
-  makeLine: (boardID, threadID, data) ->
+  makeLine: (siteID, boardID, threadID, data) ->
     x = $.el 'a',
       className: 'fa fa-times'
       href: 'javascript:;'
@@ -305,7 +308,7 @@ ThreadWatcher =
     excerpt or= "/#{boardID}/ - No.#{threadID}"
 
     link = $.el 'a',
-      href: Site.urls.thread({boardID, threadID})
+      href: SW[Site.swDict[siteID]].urls.thread({siteID, boardID, threadID})
       title: excerpt
       className: 'watcher-link'
 
@@ -323,6 +326,7 @@ ThreadWatcher =
     div = $.el 'div'
     fullID = "#{boardID}.#{threadID}"
     div.dataset.fullID = fullID
+    div.dataset.siteID = siteID
     $.addClass div, 'current'     if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
     $.addClass div, 'dead-thread' if data.isDead
     if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
@@ -334,11 +338,11 @@ ThreadWatcher =
 
   build: ->
     nodes = []
-    for {boardID, threadID, data} in ThreadWatcher.getAll()
+    for {siteID, boardID, threadID, data} in ThreadWatcher.getAll()
       # Add missing excerpt for threads added by Auto Watch
-      if not data.excerpt? and (thread = g.threads["#{boardID}.#{threadID}"])
+      if not data.excerpt? and siteID is Site.hostname and (thread = g.threads["#{boardID}.#{threadID}"])
         ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt thread}}
-      nodes.push ThreadWatcher.makeLine boardID, threadID, data
+      nodes.push ThreadWatcher.makeLine siteID, boardID, threadID, data
     {list} = ThreadWatcher
     $.rmAll list
     $.add list, nodes
@@ -368,6 +372,7 @@ ThreadWatcher =
     return
 
   update: (boardID, threadID, newData) ->
+    siteID = Site.hostname
     return if not (data = ThreadWatcher.db?.get {boardID, threadID})
     if newData.isDead and Conf['Auto Prune']
       ThreadWatcher.db.delete {boardID, threadID}
@@ -378,8 +383,8 @@ ThreadWatcher =
     return unless n
     return if not (data = ThreadWatcher.db.get {boardID, threadID})
     ThreadWatcher.db.extend {boardID, threadID, val: newData}
-    if line = $ "#watched-threads > [data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
-      newLine = ThreadWatcher.makeLine boardID, threadID, data
+    if line = $ "#watched-threads > [data-site-i-d='#{siteID}'][data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
+      newLine = ThreadWatcher.makeLine siteID, boardID, threadID, data
       $.replace line, newLine
       ThreadWatcher.refreshIcon()
     else
@@ -394,20 +399,22 @@ ThreadWatcher =
     ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true}, rm: ['unread', 'quotingYou']}, cb
 
   toggle: (thread) ->
+    siteID   = Site.hostname
     boardID  = thread.board.ID
     threadID = thread.ID
     if ThreadWatcher.db.get {boardID, threadID}
-      ThreadWatcher.rm boardID, threadID
+      ThreadWatcher.rm siteID, boardID, threadID
     else
       ThreadWatcher.add thread
 
   add: (thread) ->
     data     = {}
+    siteID   = Site.hostname
     boardID  = thread.board.ID
     threadID = thread.ID
     if thread.isDead
       if Conf['Auto Prune'] and ThreadWatcher.db.get {boardID, threadID}
-        ThreadWatcher.rm boardID, threadID
+        ThreadWatcher.rm siteID, boardID, threadID
         return
       data.isDead = true
     data.excerpt  = Get.threadExcerpt thread
@@ -417,10 +424,10 @@ ThreadWatcher =
     ThreadWatcher.db.set {boardID, threadID, val: data}
     ThreadWatcher.refresh()
     if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
-      ThreadWatcher.fetchStatus {boardID, threadID, data}, true
+      ThreadWatcher.fetchStatus {siteID: Site.hostname, boardID, threadID, data}, true
 
-  rm: (boardID, threadID) ->
-    ThreadWatcher.db.delete {boardID, threadID}
+  rm: (siteID, boardID, threadID) ->
+    ThreadWatcher.db.delete {siteID, boardID, threadID}
     ThreadWatcher.refresh()
 
   menu:
