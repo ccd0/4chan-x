@@ -308,7 +308,7 @@ ThreadWatcher =
     excerpt or= "/#{boardID}/ - No.#{threadID}"
 
     link = $.el 'a',
-      href: SW[Site.swDict[siteID]].urls.thread({siteID, boardID, threadID})
+      href: SW[Conf['siteProperties'][siteID]?.software]?.urls.thread({siteID, boardID, threadID}) or ''
       title: excerpt
       className: 'watcher-link'
 

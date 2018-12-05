@@ -67,6 +67,10 @@ Main =
     Conf['cooldowns'] = {}
     Conf['Index Sort'] = {}
     Conf["Last Long Reply Thresholds #{i}"] = {} for i in [0...2]
+    Conf['siteProperties'] =
+      '4chan.org':    {software: 'yotsuba'}
+      '4channel.org': {software: 'yotsuba'}
+      '4cdn.org':     {software: 'yotsuba'}
 
     # XXX old key names
     Conf['Except Archives from Encryption'] = false
@@ -76,6 +80,11 @@ Main =
     Conf['QR Shortcut'] = true
     Conf['Bottom QR Link'] = true
     Conf['Toggleable Thread Watcher'] = true
+    Conf['siteSoftware'] = """
+      4chan.org yotsuba
+      4channel.org yotsuba
+      4cdn.org yotsuba
+    """
 
     # Enforce JS whitelist
     if /\.4chan(?:nel)?\.org$/.test(location.hostname) and !$$('script:not([src])', d).filter((s) -> /this\[/.test(s.textContent)).length

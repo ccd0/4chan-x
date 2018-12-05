@@ -467,6 +467,12 @@ Settings =
           delete data[db].boards
           delete data[db].lastChecked
           set db, data[db]
+      if data['siteSoftware']? and not data['siteProperties']?
+        siteProperties = {}
+        for line in data['siteSoftware'].split('\n')
+          [hostname, software] = line.split(' ')
+          siteProperties[hostname] = {software}
+        set 'siteProperties', siteProperties
     changes
 
   loadSettings: (data, cb) ->
