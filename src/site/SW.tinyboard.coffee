@@ -44,11 +44,19 @@ SW.tinyboard =
 
   detect: ->
     for script in $$ 'script:not([src])', d.head
-      return {} if /\bvar configRoot=".*?"/.test(script.textContent)
+      if (m = script.textContent.match(/\bvar configRoot=(".*?")/))
+        properties = {}
+        try
+          root = JSON.parse m[1]
+          if root[0] is '/'
+            properties.root = location.origin + root
+          else if /^https?:/.test(root)
+            properties.root = root
+        return properties
     false
 
   urls:
-    thread: ({siteID, boardID, threadID}) -> "#{if siteID is Site.hostname then location.origin else ('http://' + siteID)}/#{boardID}/res/#{threadID}.html"
+    thread: ({siteID, boardID, threadID}) -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/res/#{threadID}.html"
 
   selectors:
     board:         'form[name="postcontrols"]'
