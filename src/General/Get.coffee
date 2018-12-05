@@ -1,7 +1,7 @@
 Get =
   threadExcerpt: (thread) ->
     {OP} = thread
-    excerpt = ("/#{thread.board}/ - ") + (
+    excerpt = ("/#{decodeURIComponent thread.board.ID}/ - ") + (
       OP.info.subject?.trim() or
       OP.commentDisplay().replace(/\n+/g, ' // ') or
       OP.file?.name or

@@ -323,6 +323,7 @@ Main =
 
       for threadRoot in $$(s.thread, board)
         boardObj = if (boardID = threadRoot.dataset.board)
+          boardID = encodeURIComponent boardID
           g.boards[boardID] or new Board(boardID)
         else
           g.BOARD
