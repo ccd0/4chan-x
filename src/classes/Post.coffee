@@ -11,12 +11,13 @@ class Post
     @boardID  = @board.ID
     @fullID   = "#{@board}.#{@ID}"
     @context  = @
+    @isReply  = (@ID isnt @threadID)
 
     root.dataset.fullID = @fullID
 
     @nodes = @parseNodes root
 
-    if not (@isReply = @ID isnt @threadID)
+    if not @isReply
       @thread.OP = @
       for key in ['isSticky', 'isClosed', 'isArchived']
         @thread[key] = if (selector = Site.selectors.icons[key]) then !!$(selector, @nodes.info) else false
@@ -69,6 +70,7 @@ class Post
     info = $ s.infoRoot, post
     nodes =
       root:       root
+      bottom:     if @isReply or !Site.isOPContainerThread then root else $(s.opBottom, root)
       post:       post
       info:       info
       comment:    $ s.comment, post

@@ -34,7 +34,7 @@ Unread =
       textContent: 'Test Post Order'
     $.on testLink, 'click', ->
       list1 = (x.ID for x in Unread.order.order())
-      list2 = (+x.id[2..] for x in $$ '.postContainer')
+      list2 = (+x.id.match(/\d*$/)[0] for x in $$ (if Site.isOPContainerThread then "#{Site.selectors.thread}, " else '') + Site.selectors.postContainer)
       pass = do ->
         return false unless list1.length is list2.length
         for i in [0...list1.length] by 1
@@ -79,12 +79,12 @@ Unread =
 
     position = Unread.positionPrev()
     while position
-      {root} = position.data.nodes
-      if !root.getBoundingClientRect().height
+      {bottom} = position.data.nodes
+      if !bottom.getBoundingClientRect().height
         # Don't try to scroll to posts with display: none
         position = position.prev
       else
-        Header.scrollToIfNeeded root, true
+        Header.scrollToIfNeeded bottom, true
         break
     return
 
@@ -130,7 +130,7 @@ Unread =
       body: post.commentDisplay()
       icon: Favicon.logo
     notif.onclick = ->
-      Header.scrollToIfNeeded post.nodes.root, true
+      Header.scrollToIfNeeded post.nodes.bottom, true
       window.focus()
     notif.onshow = ->
       setTimeout ->
@@ -162,9 +162,9 @@ Unread =
     count = 0
     while Unread.position
       {ID, data} = Unread.position
-      {root} = data.nodes
-      break unless !root.getBoundingClientRect().height or # post has been hidden
-        Header.getBottomOf(root) > -1                      # post is completely read
+      {bottom} = data.nodes
+      break unless !bottom.getBoundingClientRect().height or # post has been hidden
+        Header.getBottomOf(bottom) > -1                      # post is completely read
       count++
       Unread.posts.delete ID
       Unread.postsQuotingYou.delete ID
@@ -200,7 +200,7 @@ Unread =
     return unless Conf['Unread Line']
     if Unread.hr.hidden or d.hidden or (force is true)
       if (Unread.linePosition = Unread.positionPrev())
-        $.after Unread.linePosition.data.nodes.root, Unread.hr
+        $.after (Unread.linePosition.data.nodes.bottom), Unread.hr
       else
         $.rm Unread.hr
     Unread.hr.hidden = Unread.linePosition is Unread.order.last
@@ -220,7 +220,7 @@ Unread =
 
     Unread.saveThreadWatcherCount()
 
-    if Conf['Unread Favicon']
+    if Conf['Unread Favicon'] and Site.software is 'yotsuba'
       {isDead} = Unread.thread
       Favicon.el.href =
         if countQuotingYou

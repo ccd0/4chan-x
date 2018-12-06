@@ -1067,6 +1067,9 @@ span.hide-announcement {
   margin: 0;
   border-color: rgb(255,0,0);
 }
+.unread-line + br {
+  display: none;
+}
 .unread-mark-read {
   float: right;
   clear: both;

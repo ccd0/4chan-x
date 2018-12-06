@@ -29,7 +29,6 @@ SW.tinyboard =
     'Comment Expansion'
     'Thread Expansion'
     'Favicon'
-    'Unread'
     'Quote Threading'
     'Thread Stats'
     'Thread Updater'
@@ -64,6 +63,7 @@ SW.tinyboard =
     threadDivider: 'div[id^="thread_"] > hr:last-of-type'
     summary:       '.omitted'
     postContainer: '.reply' # postContainer is thread for OP
+    opBottom:      '.op'
     infoRoot:      '.intro'
     info:
       subject:   '.subject'
