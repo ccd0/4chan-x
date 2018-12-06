@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.4.7
+// @version      1.14.5.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.4.7',
+  VERSION:   '1.14.5.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -411,6 +411,7 @@ Config = (function() {
       'Auto Watch Reply': [true, 'Automatically watch threads you reply to.'],
       'Auto Prune': [false, 'Automatically remove dead threads.'],
       'Show Unread Count': [true, 'Show number of unread posts in watched threads.'],
+      'Show Site Prefix': [true, 'When multiple sites are shown in the thread watcher, add a prefix to board names to distinguish them.'],
       'Require OP Quote Link': [false, 'For purposes of thread watcher highlighting, only consider posts with a quote link to the OP as replies to the OP.']
     },
     filter: {
@@ -553,8 +554,7 @@ Config = (function() {
       'updater.position': 'bottom: 0px; left: 0px;',
       'thread-watcher.position': 'top: 50px; left: 0px;',
       'qr.position': 'top: 50px; right: 0px;'
-    },
-    siteSoftware: "4chan.org yotsuba\n4channel.org yotsuba\n4cdn.org yotsuba"
+    }
   };
 
   return Config;
@@ -5753,16 +5753,21 @@ DataBoard = (function() {
       $.on(d, '4chanXInitFinished', init);
     }
 
-    DataBoard.prototype.initData = function(allData) {
-      var base, name;
-      this.allData = allData;
-      if (Site.hostname === '4chan.org' && this.allData.boards) {
-        return this.data = this.allData;
-      } else {
-        return this.data = ((base = this.allData)[name = Site.hostname] || (base[name] = {
-          boards: {}
-        }));
+    DataBoard.prototype.initData = function(data1) {
+      var base, boards, lastChecked, name, ref;
+      this.data = data1;
+      if (this.data.boards) {
+        ref = this.data, boards = ref.boards, lastChecked = ref.lastChecked;
+        this.data['4chan.org'] = {
+          boards: boards,
+          lastChecked: lastChecked
+        };
+        delete this.data.boards;
+        delete this.data.lastChecked;
       }
+      return (base = this.data)[name = Site.hostname] || (base[name] = {
+        boards: {}
+      });
     };
 
     DataBoard.prototype.changes = [];
@@ -5778,7 +5783,7 @@ DataBoard = (function() {
           if (!_this.changes.length) {
             return;
           }
-          needSync = (items[_this.key].version || 0) > (_this.allData.version || 0);
+          needSync = (items[_this.key].version || 0) > (_this.data.version || 0);
           if (needSync) {
             _this.initData(items[_this.key]);
             ref = _this.changes;
@@ -5788,8 +5793,8 @@ DataBoard = (function() {
             }
           }
           _this.changes = [];
-          _this.allData.version = (_this.allData.version || 0) + 1;
-          return $.set(_this.key, _this.allData, function() {
+          _this.data.version = (_this.data.version || 0) + 1;
+          return $.set(_this.key, _this.data, function() {
             if (needSync) {
               if (typeof _this.sync === "function") {
                 _this.sync();
@@ -5807,7 +5812,7 @@ DataBoard = (function() {
       }, (function(_this) {
         return function(items) {
           var change, i, len, ref;
-          if ((items[_this.key].version || 0) > (_this.allData.version || 0)) {
+          if ((items[_this.key].version || 0) > (_this.data.version || 0)) {
             _this.initData(items[_this.key]);
             ref = _this.changes;
             for (i = 0, len = ref.length; i < len; i++) {
@@ -5824,47 +5829,51 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype["delete"] = function(arg) {
-      var boardID, postID, threadID;
-      boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID;
+      var boardID, postID, siteID, threadID;
+      siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID;
+      siteID || (siteID = Site.hostname);
       return this.save((function(_this) {
         return function() {
           var ref;
           if (postID) {
-            if (!((ref = _this.data.boards[boardID]) != null ? ref[threadID] : void 0)) {
+            if (!((ref = _this.data[siteID].boards[boardID]) != null ? ref[threadID] : void 0)) {
               return;
             }
-            delete _this.data.boards[boardID][threadID][postID];
+            delete _this.data[siteID].boards[boardID][threadID][postID];
             return _this.deleteIfEmpty({
+              siteID: siteID,
               boardID: boardID,
               threadID: threadID
             });
           } else if (threadID) {
-            if (!_this.data.boards[boardID]) {
+            if (!_this.data[siteID].boards[boardID]) {
               return;
             }
-            delete _this.data.boards[boardID][threadID];
+            delete _this.data[siteID].boards[boardID][threadID];
             return _this.deleteIfEmpty({
+              siteID: siteID,
               boardID: boardID
             });
           } else {
-            return delete _this.data.boards[boardID];
+            return delete _this.data[siteID].boards[boardID];
           }
         };
       })(this));
     };
 
     DataBoard.prototype.deleteIfEmpty = function(arg) {
-      var boardID, threadID;
-      boardID = arg.boardID, threadID = arg.threadID;
+      var boardID, siteID, threadID;
+      siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID;
       if (threadID) {
-        if (!Object.keys(this.data.boards[boardID][threadID]).length) {
-          delete this.data.boards[boardID][threadID];
+        if (!Object.keys(this.data[siteID].boards[boardID][threadID]).length) {
+          delete this.data[siteID].boards[boardID][threadID];
           return this.deleteIfEmpty({
+            siteID: siteID,
             boardID: boardID
           });
         }
-      } else if (!Object.keys(this.data.boards[boardID]).length) {
-        return delete this.data.boards[boardID];
+      } else if (!Object.keys(this.data[siteID].boards[boardID]).length) {
+        return delete this.data[siteID].boards[boardID];
       }
     };
 
@@ -5877,24 +5886,26 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype.setUnsafe = function(arg) {
-      var base, base1, base2, boardID, postID, threadID, val;
-      boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, val = arg.val;
+      var base, base1, base2, boardID, postID, siteID, threadID, val;
+      siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, val = arg.val;
+      siteID || (siteID = Site.hostname);
       if (postID !== void 0) {
-        return ((base = ((base1 = this.data.boards)[boardID] || (base1[boardID] = {})))[threadID] || (base[threadID] = {}))[postID] = val;
+        return ((base = ((base1 = this.data[siteID].boards)[boardID] || (base1[boardID] = {})))[threadID] || (base[threadID] = {}))[postID] = val;
       } else if (threadID !== void 0) {
-        return ((base2 = this.data.boards)[boardID] || (base2[boardID] = {}))[threadID] = val;
+        return ((base2 = this.data[siteID].boards)[boardID] || (base2[boardID] = {}))[threadID] = val;
       } else {
-        return this.data.boards[boardID] = val;
+        return this.data[siteID].boards[boardID] = val;
       }
     };
 
     DataBoard.prototype.extend = function(arg, cb) {
-      var boardID, postID, rm, threadID, val;
-      boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, val = arg.val, rm = arg.rm;
+      var boardID, postID, rm, siteID, threadID, val;
+      siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, val = arg.val, rm = arg.rm;
       return this.save((function(_this) {
         return function() {
           var i, key, len, oldVal, ref;
           oldVal = _this.get({
+            siteID: siteID,
             boardID: boardID,
             threadID: threadID,
             postID: postID,
@@ -5907,6 +5918,7 @@ DataBoard = (function() {
           }
           $.extend(oldVal, val);
           return _this.setUnsafe({
+            siteID: siteID,
             boardID: boardID,
             threadID: threadID,
             postID: postID,
@@ -5916,18 +5928,22 @@ DataBoard = (function() {
       })(this), cb);
     };
 
-    DataBoard.prototype.setLastChecked = function() {
+    DataBoard.prototype.setLastChecked = function(siteID) {
+      if (siteID == null) {
+        siteID = Site.hostname;
+      }
       return this.save((function(_this) {
         return function() {
-          return _this.data.lastChecked = Date.now();
+          return _this.data[siteID].lastChecked = Date.now();
         };
       })(this));
     };
 
     DataBoard.prototype.get = function(arg) {
-      var ID, board, boardID, defaultValue, i, len, postID, thread, threadID, val;
-      boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, defaultValue = arg.defaultValue;
-      if (board = this.data.boards[boardID]) {
+      var ID, board, boardID, defaultValue, i, len, postID, siteID, thread, threadID, val;
+      siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, defaultValue = arg.defaultValue;
+      siteID || (siteID = Site.hostname);
+      if (board = this.data[siteID].boards[boardID]) {
         if (threadID == null) {
           if (postID != null) {
             for (thread = i = 0, len = board.length; i < len; thread = ++i) {
@@ -5948,21 +5964,23 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype.clean = function() {
-      var boardID, now, ref, ref1, val;
+      var boardID, now, ref, ref1, siteID, val;
       if (Site.software !== 'yotsuba') {
         return;
       }
-      ref = this.data.boards;
+      siteID = Site.hostname;
+      ref = this.data[siteID].boards;
       for (boardID in ref) {
         val = ref[boardID];
         this.deleteIfEmpty({
+          siteID: siteID,
           boardID: boardID
         });
       }
       now = Date.now();
-      if (!((now - 2 * $.HOUR < (ref1 = this.data.lastChecked || 0) && ref1 <= now))) {
-        this.data.lastChecked = now;
-        for (boardID in this.data.boards) {
+      if (!((now - 2 * $.HOUR < (ref1 = this.data[siteID].lastChecked || 0) && ref1 <= now))) {
+        this.data[siteID].lastChecked = now;
+        for (boardID in this.data[siteID].boards) {
           this.ajaxClean(boardID);
         }
       }
@@ -5987,8 +6005,9 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype.ajaxCleanParse = function(boardID, response1, response2) {
-      var ID, board, i, j, k, len, len1, len2, page, ref, thread, threads;
-      if (!(board = this.data.boards[boardID])) {
+      var ID, board, i, j, k, len, len1, len2, page, ref, siteID, thread, threads;
+      siteID = Site.hostname;
+      if (!(board = this.data[siteID].boards[boardID])) {
         return;
       }
       threads = {};
@@ -6013,15 +6032,16 @@ DataBoard = (function() {
           }
         }
       }
-      this.data.boards[boardID] = threads;
+      this.data[siteID].boards[boardID] = threads;
       this.deleteIfEmpty({
+        siteID: siteID,
         boardID: boardID
       });
-      return $.set(this.key, this.allData);
+      return $.set(this.key, this.data);
     };
 
     DataBoard.prototype.onSync = function(data) {
-      if (!((data.version || 0) > (this.allData.version || 0))) {
+      if (!((data.version || 0) > (this.data.version || 0))) {
         return;
       }
       this.initData(data);
@@ -7262,21 +7282,30 @@ SW = {};
     isOPContainerThread: true,
     disabledFeatures: ['Board Configuration', 'Normalize URL', 'Captcha Configuration', 'Image Host Rewriting', 'Index Generator', 'Announcement Hiding', 'Fourchan thingies', 'Resurrect Quotes', 'Quick Reply Personas', 'Quick Reply', 'Cooldown', 'Pass Link', 'Index Generator (Menu)', 'Report Link', 'Delete Link', 'Edit Link', 'Archive Link', 'Quote Inlining', 'Quote Previewing', 'Quote Backlinks', 'File Info Formatting', 'Fappe Tyme', 'Image Expansion', 'Image Expansion (Menu)', 'Comment Expansion', 'Thread Expansion', 'Favicon', 'Unread', 'Quote Threading', 'Thread Stats', 'Thread Updater', 'Mark New IPs', 'Banner', 'Flash Features', 'Reply Pruning'],
     detect: function() {
-      var i, len, ref, script;
+      var i, len, m, properties, ref, root, script;
       ref = $$('script:not([src])', d.head);
       for (i = 0, len = ref.length; i < len; i++) {
         script = ref[i];
-        if (/\bvar configRoot=".*?"/.test(script.textContent)) {
-          return true;
+        if ((m = script.textContent.match(/\bvar configRoot=(".*?")/))) {
+          properties = {};
+          try {
+            root = JSON.parse(m[1]);
+            if (root[0] === '/') {
+              properties.root = location.origin + root;
+            } else if (/^https?:/.test(root)) {
+              properties.root = root;
+            }
+          } catch (_error) {}
+          return properties;
         }
       }
       return false;
     },
     urls: {
       thread: function(arg) {
-        var boardID, threadID;
-        boardID = arg.boardID, threadID = arg.threadID;
-        return location.origin + "/" + boardID + "/res/" + threadID + ".html";
+        var boardID, ref, siteID, threadID;
+        siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID;
+        return "" + (((ref = Conf['siteProperties'][siteID]) != null ? ref.root : void 0) || ("http://" + siteID + "/")) + boardID + "/res/" + threadID + ".html";
       }
     },
     selectors: {
@@ -7566,49 +7595,65 @@ Site = (function() {
   var Site;
 
   Site = {
-    init: function(cb) {
-      var hostname, i, len, line, ref, ref1, software, swDict;
-      swDict = {};
-      ref = Conf['siteSoftware'].split('\n');
-      for (i = 0, len = ref.length; i < len; i++) {
-        line = ref[i];
-        if (!(line[0] !== '#')) {
-          continue;
-        }
-        ref1 = line.split(' '), hostname = ref1[0], software = ref1[1];
-        if (software in SW) {
-          swDict[hostname] = software;
-        }
-      }
-      hostname = location.hostname;
-      while (hostname && !(hostname in swDict)) {
-        hostname = hostname.replace(/^[^.]*\.?/, '');
-      }
-      if (hostname === '4channel.org') {
-        hostname = '4chan.org';
-      }
-      if (hostname) {
-        this.set(hostname, swDict[hostname]);
-        return cb();
-      } else {
-        return $.onExists(doc, 'body', (function(_this) {
-          return function() {
-            var base;
-            for (software in SW) {
-              if (typeof (base = SW[software]).detect === "function" ? base.detect() : void 0) {
-                _this.set(location.hostname.replace(/^www\./, ''), software);
-                Conf['siteSoftware'] += "\n" + _this.hostname + " " + _this.software;
-                $.set('siteSoftware', Conf['siteSoftware']);
-                cb();
-              }
-            }
-          };
-        })(this));
+    defaultProperties: {
+      '4chan.org': {
+        software: 'yotsuba'
+      },
+      '4channel.org': {
+        software: 'yotsuba'
+      },
+      '4cdn.org': {
+        software: 'yotsuba'
       }
     },
-    set: function(hostname1, software1) {
+    init: function(cb) {
+      var hostname;
+      $.extend(Conf['siteProperties'], Site.defaultProperties);
+      hostname = location.hostname;
+      while (hostname && !(hostname in Conf['siteProperties'])) {
+        hostname = hostname.replace(/^[^.]*\.?/, '');
+      }
+      if (hostname && Conf['siteProperties'][hostname].software in SW) {
+        this.set(hostname);
+        cb();
+      }
+      return $.onExists(doc, 'body', (function(_this) {
+        return function() {
+          var base, base1, changed, changes, key, properties, software;
+          for (software in SW) {
+            if (!((changes = typeof (base = SW[software]).detect === "function" ? base.detect() : void 0))) {
+              continue;
+            }
+            changes.software = software;
+            hostname = location.hostname.replace(/^www\./, '');
+            properties = ((base1 = Conf['siteProperties'])[hostname] || (base1[hostname] = {}));
+            changed = 0;
+            for (key in changes) {
+              if (!(properties[key] !== changes[key])) {
+                continue;
+              }
+              properties[key] = changes[key];
+              changed++;
+            }
+            if (changed) {
+              $.set('siteProperties', Conf['siteProperties']);
+            }
+            if (!_this.hostname) {
+              _this.set(hostname);
+              cb();
+            }
+            return;
+          }
+        };
+      })(this));
+    },
+    set: function(hostname1) {
       this.hostname = hostname1;
-      this.software = software1;
+      this.properties = Conf['siteProperties'][this.hostname];
+      this.software = this.properties.software;
+      if (this.software === 'yotsuba') {
+        this.hostname = '4chan.org';
+      }
       return $.extend(this, SW[this.software]);
     }
   };
@@ -9368,7 +9413,7 @@ Get = (function() {
     threadExcerpt: function(thread) {
       var OP, excerpt, ref, ref1;
       OP = thread.OP;
-      excerpt = ("/" + thread.board + "/ - ") + (((ref = OP.info.subject) != null ? ref.trim() : void 0) || OP.commentDisplay().replace(/\n+/g, ' // ') || ((ref1 = OP.file) != null ? ref1.name : void 0) || ("No." + OP));
+      excerpt = ("/" + (decodeURIComponent(thread.board.ID)) + "/ - ") + (((ref = OP.info.subject) != null ? ref.trim() : void 0) || OP.commentDisplay().replace(/\n+/g, ' // ') || ((ref1 = OP.file) != null ? ref1.name : void 0) || ("No." + OP));
       if (excerpt.length > 73) {
         return excerpt.slice(0, 70) + "...";
       }
@@ -11950,7 +11995,7 @@ Settings = (function() {
       }
     },
     upgrade: function(data, version) {
-      var addCSS, addSauces, boardID, changes, compareString, corrupted, j, k, key, len, len1, list, name, record, ref, ref1, ref2, ref3, ref4, ref5, ref6, rice, set, setD, type, uids, val, val2, value;
+      var addCSS, addSauces, boardID, boards, changes, compareString, corrupted, db, hostname, j, k, key, l, lastChecked, len, len1, len2, len3, line, list, m, name, record, ref, ref1, ref10, ref11, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, rice, set, setD, siteProperties, software, type, uids, val, val2, value;
       changes = {};
       set = function(key, value) {
         return data[key] = changes[key] = value;
@@ -12196,6 +12241,34 @@ Settings = (function() {
       if (compareString < '00001.00014.00004.00004') {
         if ((data['siteSoftware'] != null) && !/^4channel\.org yotsuba$/m.test(data['siteSoftware'])) {
           set('siteSoftware', data['siteSoftware'] + '\n4channel.org yotsuba');
+        }
+      }
+      if (compareString < '00001.00014.00005.00000') {
+        ref7 = DataBoard.keys;
+        for (l = 0, len2 = ref7.length; l < len2; l++) {
+          db = ref7[l];
+          if ((ref8 = data[db]) != null ? ref8.boards : void 0) {
+            ref9 = data[db], boards = ref9.boards, lastChecked = ref9.lastChecked;
+            data[db]['4chan.org'] = {
+              boards: boards,
+              lastChecked: lastChecked
+            };
+            delete data[db].boards;
+            delete data[db].lastChecked;
+            set(db, data[db]);
+          }
+        }
+        if ((data['siteSoftware'] != null) && (data['siteProperties'] == null)) {
+          siteProperties = {};
+          ref10 = data['siteSoftware'].split('\n');
+          for (m = 0, len3 = ref10.length; m < len3; m++) {
+            line = ref10[m];
+            ref11 = line.split(' '), hostname = ref11[0], software = ref11[1];
+            siteProperties[hostname] = {
+              software: software
+            };
+          }
+          set('siteProperties', siteProperties);
         }
       }
       return changes;
@@ -19684,7 +19757,7 @@ ThreadWatcher = (function() {
       this.refreshButton = $('.refresh', this.dialog);
       this.closeButton = $('.move > .close', this.dialog);
       this.unreaddb = Unread.db || UnreadIndex.db || new DataBoard('lastReadPosts');
-      this.unreadEnabled = Conf['Remember Last Read Post'] && Site.software === 'yotsuba';
+      this.unreadEnabled = Conf['Remember Last Read Post'];
       $.on(d, 'QRPostSuccessful', this.cb.post);
       $.on(sc, 'click', this.toggleWatcher);
       $.on(this.refreshButton, 'click', this.buttonFetchAll);
@@ -19837,27 +19910,28 @@ ThreadWatcher = (function() {
     },
     cb: {
       openAll: function() {
-        var a, i, len, ref;
+        var a, i, len1, ref;
         if ($.hasClass(this, 'disabled')) {
           return;
         }
         ref = $$('a[title]', ThreadWatcher.list);
-        for (i = 0, len = ref.length; i < len; i++) {
+        for (i = 0, len1 = ref.length; i < len1; i++) {
           a = ref[i];
           $.open(a.href);
         }
         return $.event('CloseMenu');
       },
       pruneDeads: function() {
-        var boardID, data, i, len, ref, ref1, threadID;
+        var boardID, data, i, len1, ref, ref1, siteID, threadID;
         if ($.hasClass(this, 'disabled')) {
           return;
         }
         ref = ThreadWatcher.getAll();
-        for (i = 0, len = ref.length; i < len; i++) {
-          ref1 = ref[i], boardID = ref1.boardID, threadID = ref1.threadID, data = ref1.data;
+        for (i = 0, len1 = ref.length; i < len1; i++) {
+          ref1 = ref[i], siteID = ref1.siteID, boardID = ref1.boardID, threadID = ref1.threadID, data = ref1.data;
           if (data.isDead) {
             ThreadWatcher.db["delete"]({
+              siteID: siteID,
               boardID: boardID,
               threadID: threadID
             });
@@ -19872,9 +19946,10 @@ ThreadWatcher = (function() {
         return ThreadWatcher.toggle(thread);
       },
       rm: function() {
-        var boardID, ref, threadID;
+        var boardID, ref, siteID, threadID;
+        siteID = this.parentNode.dataset.siteID;
         ref = this.parentNode.dataset.fullID.split('.'), boardID = ref[0], threadID = ref[1];
-        return ThreadWatcher.rm(boardID, +threadID);
+        return ThreadWatcher.rm(siteID, boardID, +threadID);
       },
       post: function(e) {
         var boardID, postID, ref, threadID;
@@ -19888,11 +19963,12 @@ ThreadWatcher = (function() {
         }
       },
       onIndexUpdate: function(e) {
-        var boardID, data, db, nKilled, ref, ref1, threadID;
+        var boardID, data, db, nKilled, ref, ref1, siteID, threadID;
         db = ThreadWatcher.db;
+        siteID = Site.hostname;
         boardID = g.BOARD.ID;
         nKilled = 0;
-        ref = db.data.boards[boardID];
+        ref = db.data[siteID].boards[boardID];
         for (threadID in ref) {
           data = ref[threadID];
           if (!(!(data != null ? data.isDead : void 0) && (ref1 = boardID + "." + threadID, indexOf.call(e.detail.threads, ref1) < 0))) {
@@ -19919,6 +19995,7 @@ ThreadWatcher = (function() {
             });
             if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
               ThreadWatcher.fetchStatus({
+                siteID: siteID,
                 boardID: boardID,
                 threadID: threadID,
                 data: data
@@ -19948,9 +20025,9 @@ ThreadWatcher = (function() {
       return $.rmClass(ThreadWatcher.refreshButton, 'fa-spin');
     },
     abort: function() {
-      var i, len, ref, req;
+      var i, len1, ref, req;
       ref = ThreadWatcher.requests;
-      for (i = 0, len = ref.length; i < len; i++) {
+      for (i = 0, len1 = ref.length; i < len1; i++) {
         req = ref[i];
         if (req.readyState !== 4) {
           req.abort();
@@ -19970,7 +20047,7 @@ ThreadWatcher = (function() {
       db = ThreadWatcher.db;
       interval = ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] ? 5 * $.MINUTE : 2 * $.HOUR;
       now = Date.now();
-      if (!((now - interval < (ref = db.data.lastChecked || 0) && ref <= now) || d.hidden || !d.hasFocus())) {
+      if (!((now - interval < (ref = db.data[Site.hostname].lastChecked || 0) && ref <= now) || d.hidden || !d.hasFocus())) {
         ThreadWatcher.fetchAllStatus();
         db.setLastChecked();
       }
@@ -19984,7 +20061,7 @@ ThreadWatcher = (function() {
       }
     },
     fetchAllStatus: function() {
-      var db, dbs, i, len, n, results;
+      var db, dbs, i, len1, n, results;
       if (Site.software !== 'yotsuba') {
         return;
       }
@@ -19993,13 +20070,13 @@ ThreadWatcher = (function() {
       });
       n = 0;
       results = [];
-      for (i = 0, len = dbs.length; i < len; i++) {
+      for (i = 0, len1 = dbs.length; i < len1; i++) {
         db = dbs[i];
         results.push(db.forceSync(function() {
-          var j, len1, thread, threads;
+          var j, len2, thread, threads;
           if ((++n) === dbs.length) {
             threads = ThreadWatcher.getAll();
-            for (j = 0, len1 = threads.length; j < len1; j++) {
+            for (j = 0, len2 = threads.length; j < len2; j++) {
               thread = threads[j];
               ThreadWatcher.fetchStatus(thread);
             }
@@ -20009,11 +20086,11 @@ ThreadWatcher = (function() {
       return results;
     },
     fetchStatus: function(thread, force) {
-      var boardID, data, req, threadID;
-      if (Site.software !== 'yotsuba') {
+      var boardID, data, req, siteID, threadID;
+      siteID = thread.siteID, boardID = thread.boardID, threadID = thread.threadID, data = thread.data;
+      if (!(Site.software === 'yotsuba' && siteID === Site.hostname)) {
         return;
       }
-      boardID = thread.boardID, threadID = thread.threadID, data = thread.data;
       if (data.isDead && !force) {
         return;
       }
@@ -20032,7 +20109,7 @@ ThreadWatcher = (function() {
       return ThreadWatcher.requests.push(req);
     },
     parseStatus: function(arg) {
-      var boardID, data, i, isDead, lastReadPost, len, match, postObj, quotesYou, quotingYou, ref, ref1, ref2, regexp, threadID, unread, youOP;
+      var boardID, data, i, isDead, lastReadPost, len1, match, postObj, quotesYou, quotingYou, ref, ref1, ref2, regexp, threadID, unread, youOP;
       boardID = arg.boardID, threadID = arg.threadID, data = arg.data;
       ThreadWatcher.fetched++;
       if (ThreadWatcher.fetched === ThreadWatcher.requests.length) {
@@ -20063,7 +20140,7 @@ ThreadWatcher = (function() {
           postID: threadID
         }) : void 0);
         ref1 = this.response.posts;
-        for (i = 0, len = ref1.length; i < len; i++) {
+        for (i = 0, len1 = ref1.length; i < len1; i++) {
           postObj = ref1[i];
           if (!(postObj.no > lastReadPost)) {
             continue;
@@ -20131,29 +20208,35 @@ ThreadWatcher = (function() {
       }
     },
     getAll: function() {
-      var all, boardID, data, ref, threadID, threads;
+      var all, boardID, boards, data, ref, ref1, siteID, threadID, threads;
       all = [];
-      ref = ThreadWatcher.db.data.boards;
-      for (boardID in ref) {
-        threads = ref[boardID];
-        if (Conf['Current Board'] && boardID !== g.BOARD.ID) {
-          continue;
-        }
-        for (threadID in threads) {
-          data = threads[threadID];
-          if (data && typeof data === 'object') {
-            all.push({
-              boardID: boardID,
-              threadID: threadID,
-              data: data
-            });
+      ref = ThreadWatcher.db.data;
+      for (siteID in ref) {
+        boards = ref[siteID];
+        ref1 = boards.boards;
+        for (boardID in ref1) {
+          threads = ref1[boardID];
+          if (Conf['Current Board'] && (siteID !== Site.hostname || boardID !== g.BOARD.ID)) {
+            continue;
+          }
+          for (threadID in threads) {
+            data = threads[threadID];
+            if (data && typeof data === 'object') {
+              all.push({
+                siteID: siteID,
+                boardID: boardID,
+                threadID: threadID,
+                data: data
+              });
+            }
           }
         }
       }
       return all;
     },
-    makeLine: function(boardID, threadID, data) {
-      var count, div, excerpt, fullID, link, title, x;
+    makeLine: function(siteID, boardID, threadID, data) {
+      var count, div, excerpt, fullID, link, ref, ref1, software, title, x;
+      software = (ref = Conf['siteProperties'][siteID]) != null ? ref.software : void 0;
       x = $.el('a', {
         className: 'fa fa-times',
         href: 'javascript:;'
@@ -20161,15 +20244,19 @@ ThreadWatcher = (function() {
       $.on(x, 'click', ThreadWatcher.cb.rm);
       excerpt = data.excerpt;
       excerpt || (excerpt = "/" + boardID + "/ - No." + threadID);
+      if (Conf['Show Site Prefix']) {
+        excerpt = ThreadWatcher.prefixes[siteID] + excerpt;
+      }
       link = $.el('a', {
-        href: Site.urls.thread({
+        href: ((ref1 = SW[software]) != null ? ref1.urls.thread({
+          siteID: siteID,
           boardID: boardID,
           threadID: threadID
-        }),
+        }) : void 0) || '',
         title: excerpt,
         className: 'watcher-link'
       });
-      if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] && (data.unread != null)) {
+      if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] && software === 'yotsuba' && (data.unread != null)) {
         count = $.el('span', {
           textContent: "(" + data.unread + ")",
           className: 'watcher-unread'
@@ -20184,13 +20271,14 @@ ThreadWatcher = (function() {
       div = $.el('div');
       fullID = boardID + "." + threadID;
       div.dataset.fullID = fullID;
+      div.dataset.siteID = siteID;
       if (g.VIEW === 'thread' && fullID === (g.BOARD + "." + g.THREADID)) {
         $.addClass(div, 'current');
       }
       if (data.isDead) {
         $.addClass(div, 'dead-thread');
       }
-      if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
+      if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] && software === 'yotsuba') {
         if (data.unread === 0) {
           $.addClass(div, 'replies-read');
         }
@@ -20204,13 +20292,43 @@ ThreadWatcher = (function() {
       $.add(div, [x, $.tn(' '), link]);
       return div;
     },
+    setPrefixes: function(threads) {
+      var conflicts, conflicts2, i, j, len, len1, len2, prefix, prefixes, siteID, siteID2;
+      prefixes = {};
+      for (i = 0, len1 = threads.length; i < len1; i++) {
+        siteID = threads[i].siteID;
+        if (siteID in prefixes) {
+          continue;
+        }
+        len = 0;
+        prefix = '';
+        conflicts = Object.keys(prefixes);
+        while (conflicts.length > 0) {
+          len++;
+          prefix = siteID.slice(0, len);
+          conflicts2 = [];
+          for (j = 0, len2 = conflicts.length; j < len2; j++) {
+            siteID2 = conflicts[j];
+            if (siteID2.slice(0, len) === prefix) {
+              conflicts2.push(siteID2);
+            } else if (prefixes[siteID2].length < len) {
+              prefixes[siteID2] = siteID2.slice(0, len);
+            }
+          }
+          conflicts = conflicts2;
+        }
+        prefixes[siteID] = prefix;
+      }
+      return ThreadWatcher.prefixes = prefixes;
+    },
     build: function() {
-      var boardID, data, i, j, len, len1, list, nodes, ref, ref1, ref2, refresher, thread, threadID;
+      var boardID, data, i, j, len1, len2, list, nodes, ref, ref1, refresher, siteID, thread, threadID, threads;
       nodes = [];
-      ref = ThreadWatcher.getAll();
-      for (i = 0, len = ref.length; i < len; i++) {
-        ref1 = ref[i], boardID = ref1.boardID, threadID = ref1.threadID, data = ref1.data;
-        if ((data.excerpt == null) && (thread = g.threads[boardID + "." + threadID])) {
+      threads = ThreadWatcher.getAll();
+      ThreadWatcher.setPrefixes(threads);
+      for (i = 0, len1 = threads.length; i < len1; i++) {
+        ref = threads[i], siteID = ref.siteID, boardID = ref.boardID, threadID = ref.threadID, data = ref.data;
+        if ((data.excerpt == null) && siteID === Site.hostname && (thread = g.threads[boardID + "." + threadID])) {
           ThreadWatcher.db.extend({
             boardID: boardID,
             threadID: threadID,
@@ -20219,26 +20337,26 @@ ThreadWatcher = (function() {
             }
           });
         }
-        nodes.push(ThreadWatcher.makeLine(boardID, threadID, data));
+        nodes.push(ThreadWatcher.makeLine(siteID, boardID, threadID, data));
       }
       list = ThreadWatcher.list;
       $.rmAll(list);
       $.add(list, nodes);
       ThreadWatcher.refreshIcon();
-      ref2 = ThreadWatcher.menu.refreshers;
-      for (j = 0, len1 = ref2.length; j < len1; j++) {
-        refresher = ref2[j];
+      ref1 = ThreadWatcher.menu.refreshers;
+      for (j = 0, len2 = ref1.length; j < len2; j++) {
+        refresher = ref1[j];
         refresher();
       }
     },
     refresh: function() {
       ThreadWatcher.build();
       g.threads.forEach(function(thread) {
-        var i, isWatched, len, post, ref, toggler;
+        var i, isWatched, len1, post, ref, toggler;
         isWatched = ThreadWatcher.isWatched(thread);
         if (thread.OP) {
           ref = [thread.OP].concat(slice.call(thread.OP.clones));
-          for (i = 0, len = ref.length; i < len; i++) {
+          for (i = 0, len1 = ref.length; i < len1; i++) {
             post = ref[i];
             if ((toggler = $('.watch-thread-link', post.nodes.info))) {
               ThreadWatcher.setToggler(toggler, isWatched);
@@ -20256,15 +20374,16 @@ ThreadWatcher = (function() {
       }
     },
     refreshIcon: function() {
-      var className, i, len, ref;
+      var className, i, len1, ref;
       ref = ['replies-unread', 'replies-quoting-you'];
-      for (i = 0, len = ref.length; i < len; i++) {
+      for (i = 0, len1 = ref.length; i < len1; i++) {
         className = ref[i];
         ThreadWatcher.shortcut.classList.toggle(className, !!$("." + className, ThreadWatcher.dialog));
       }
     },
     update: function(boardID, threadID, newData) {
-      var data, key, line, n, newLine, ref, val;
+      var data, key, line, n, newLine, ref, siteID, val;
+      siteID = Site.hostname;
       if (!(data = (ref = ThreadWatcher.db) != null ? ref.get({
         boardID: boardID,
         threadID: threadID
@@ -20300,8 +20419,8 @@ ThreadWatcher = (function() {
         threadID: threadID,
         val: newData
       });
-      if (line = $("#watched-threads > [data-full-i-d='" + boardID + "." + threadID + "']", ThreadWatcher.dialog)) {
-        newLine = ThreadWatcher.makeLine(boardID, threadID, data);
+      if (line = $("#watched-threads > [data-site-i-d='" + siteID + "'][data-full-i-d='" + boardID + "." + threadID + "']", ThreadWatcher.dialog)) {
+        newLine = ThreadWatcher.makeLine(siteID, boardID, threadID, data);
         $.replace(line, newLine);
         return ThreadWatcher.refreshIcon();
       } else {
@@ -20336,21 +20455,23 @@ ThreadWatcher = (function() {
       }, cb);
     },
     toggle: function(thread) {
-      var boardID, threadID;
+      var boardID, siteID, threadID;
+      siteID = Site.hostname;
       boardID = thread.board.ID;
       threadID = thread.ID;
       if (ThreadWatcher.db.get({
         boardID: boardID,
         threadID: threadID
       })) {
-        return ThreadWatcher.rm(boardID, threadID);
+        return ThreadWatcher.rm(siteID, boardID, threadID);
       } else {
         return ThreadWatcher.add(thread);
       }
     },
     add: function(thread) {
-      var boardID, data, threadID;
+      var boardID, data, siteID, threadID;
       data = {};
+      siteID = Site.hostname;
       boardID = thread.board.ID;
       threadID = thread.ID;
       if (thread.isDead) {
@@ -20358,7 +20479,7 @@ ThreadWatcher = (function() {
           boardID: boardID,
           threadID: threadID
         })) {
-          ThreadWatcher.rm(boardID, threadID);
+          ThreadWatcher.rm(siteID, boardID, threadID);
           return;
         }
         data.isDead = true;
@@ -20375,14 +20496,16 @@ ThreadWatcher = (function() {
       ThreadWatcher.refresh();
       if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
         return ThreadWatcher.fetchStatus({
+          siteID: Site.hostname,
           boardID: boardID,
           threadID: threadID,
           data: data
         }, true);
       }
     },
-    rm: function(boardID, threadID) {
+    rm: function(siteID, boardID, threadID) {
       ThreadWatcher.db["delete"]({
+        siteID: siteID,
         boardID: boardID,
         threadID: threadID
       });
@@ -20425,7 +20548,7 @@ ThreadWatcher = (function() {
         });
       },
       addMenuEntries: function() {
-        var cb, conf, entries, entry, i, len, name, ref, ref1, refresh, subEntries;
+        var cb, conf, entries, entry, i, len1, name, ref, ref1, refresh, subEntries;
         entries = [];
         entries.push({
           cb: ThreadWatcher.cb.openAll,
@@ -20463,7 +20586,7 @@ ThreadWatcher = (function() {
             subEntries: subEntries
           }
         });
-        for (i = 0, len = entries.length; i < len; i++) {
+        for (i = 0, len1 = entries.length; i < len1; i++) {
           ref1 = entries[i], entry = ref1.entry, cb = ref1.cb, refresh = ref1.refresh;
           if (entry.el.nodeName === 'A') {
             entry.el.href = 'javascript:;';
@@ -20491,7 +20614,7 @@ ThreadWatcher = (function() {
           entry.el.title += '\n[Remember Last Read Post is disabled.]';
         }
         $.on(input, 'change', $.cb.checked);
-        if (name === 'Current Board' || name === 'Show Unread Count') {
+        if (name === 'Current Board' || name === 'Show Unread Count' || name === 'Show Site Prefix') {
           $.on(input, 'change', ThreadWatcher.refresh);
         }
         if (name === 'Show Unread Count' || name === 'Auto Update Thread Watcher') {
@@ -24966,6 +25089,7 @@ Main = (function() {
       for (i = k = 0; k < 2; i = ++k) {
         Conf["Last Long Reply Thresholds " + i] = {};
       }
+      Conf['siteProperties'] = {};
       Conf['Except Archives from Encryption'] = false;
       Conf['JSON Navigation'] = true;
       Conf['Oekaki Links'] = true;
@@ -24973,6 +25097,7 @@ Main = (function() {
       Conf['QR Shortcut'] = true;
       Conf['Bottom QR Link'] = true;
       Conf['Toggleable Thread Watcher'] = true;
+      Conf['siteSoftware'] = '';
       if (/\.4chan(?:nel)?\.org$/.test(location.hostname) && !$$('script:not([src])', d).filter(function(s) {
         return /this\[/.test(s.textContent);
       }).length) {
@@ -25272,7 +25397,7 @@ Main = (function() {
         ref = $$(s.thread, board);
         for (j = 0, len = ref.length; j < len; j++) {
           threadRoot = ref[j];
-          boardObj = (boardID = threadRoot.dataset.board) ? g.boards[boardID] || new Board(boardID) : g.BOARD;
+          boardObj = (boardID = threadRoot.dataset.board) ? (boardID = encodeURIComponent(boardID), g.boards[boardID] || new Board(boardID)) : g.BOARD;
           thread = new Thread(+threadRoot.id.match(/\d*$/)[0], boardObj);
           thread.nodes.root = threadRoot;
           threads.push(thread);
