@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.5.0
+// @version      1.14.5.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.5.0',
+  VERSION:   '1.14.5.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -7340,7 +7340,8 @@ SW = {};
       comment: '.body',
       spoiler: '.spoiler',
       quotelink: 'a[onclick^="highlightReply("]',
-      boardList: '.boardlist'
+      boardList: '.boardlist',
+      styleSheet: '#stylesheet'
     },
     xpath: {
       thread: 'div[starts-with(@id,"thread_")]',
@@ -7453,7 +7454,8 @@ SW = {};
       comment: '.postMessage',
       spoiler: 's',
       quotelink: ':not(pre) > .quotelink',
-      boardList: '#boardNavDesktop > .boardList'
+      boardList: '#boardNavDesktop > .boardList',
+      styleSheet: 'link[title=switch]'
     },
     xpath: {
       thread: 'div[contains(concat(" ",@class," ")," thread ")]',
@@ -25302,59 +25304,71 @@ Main = (function() {
       return Main.setClass();
     },
     setClass: function() {
-      var mainStyleSheet, setStyle, style, styleSheets;
-      if (g.VIEW === 'catalog') {
-        $.addClass(doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace(/_+/g, '-'));
-        return;
+      var knownStyles, mainStyleSheet, ref, setStyle, style, styleSheets;
+      knownStyles = ['yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'photon', 'tomorrow', 'spooky'];
+      if (Site.software === 'yotsuba' && g.VIEW === 'catalog') {
+        if ((mainStyleSheet = $.id('base-css'))) {
+          style = (ref = mainStyleSheet.href.match(/catalog_(\w+)/)) != null ? ref[1].replace('_new', '').replace(/_+/g, '-') : void 0;
+          if (indexOf.call(knownStyles, style) >= 0) {
+            $.addClass(doc, style);
+            return;
+          }
+        }
       }
-      style = 'yotsuba-b';
-      mainStyleSheet = $('link[title=switch]', d.head);
-      styleSheets = $$('link[rel="alternate stylesheet"]', d.head);
+      style = mainStyleSheet = styleSheets = null;
       setStyle = function() {
         var bgColor, div, j, len, rgb, s, styleSheet;
-        $.rmClass(doc, style);
-        style = null;
-        for (j = 0, len = styleSheets.length; j < len; j++) {
-          styleSheet = styleSheets[j];
-          if (styleSheet.href === (mainStyleSheet != null ? mainStyleSheet.href : void 0)) {
-            style = styleSheet.title.toLowerCase().replace('new', '').trim().replace(/\s+/g, '-');
-            if (style === '_special') {
-              style = styleSheet.href.match(/[a-z]*(?=[^\/]*$)/)[0];
+        if (Site.software === 'yotsuba') {
+          $.rmClass(doc, style);
+          style = null;
+          for (j = 0, len = styleSheets.length; j < len; j++) {
+            styleSheet = styleSheets[j];
+            if (styleSheet.href === (mainStyleSheet != null ? mainStyleSheet.href : void 0)) {
+              style = styleSheet.title.toLowerCase().replace('new', '').trim().replace(/\s+/g, '-');
+              if (style === '_special') {
+                style = styleSheet.href.match(/[a-z]*(?=[^\/]*$)/)[0];
+              }
+              if (indexOf.call(knownStyles, style) < 0) {
+                style = null;
+              }
+              break;
             }
-            if (style !== 'yotsuba' && style !== 'yotsuba-b' && style !== 'futaba' && style !== 'burichan' && style !== 'photon' && style !== 'tomorrow' && style !== 'spooky') {
-              style = null;
-            }
-            break;
+          }
+          if (style) {
+            $.addClass(doc, style);
+            $.rm(Main.bgColorStyle);
+            return;
           }
         }
-        if (style) {
-          $.addClass(doc, style);
-          return $.rm(Main.bgColorStyle);
-        } else {
-          div = Site.bgColoredEl();
-          div.style.position = 'absolute';
-          div.style.visibility = 'hidden';
-          $.add(d.body, div);
-          bgColor = window.getComputedStyle(div).backgroundColor;
-          c.log(bgColor);
-          $.rm(div);
-          rgb = bgColor.match(/[\d.]+/g);
-          if (!/^rgb\(/.test(bgColor)) {
-            s = window.getComputedStyle(d.body);
-            bgColor = s.backgroundColor + " " + s.backgroundImage + " " + s.backgroundRepeat + " " + s.backgroundPosition;
-          }
-          Main.bgColorStyle.textContent = ".dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post {\n  background: " + bgColor + ";\n}\n.unread-mark-read {\n  background-color: rgba(" + (rgb.slice(0, 3).join(', ')) + ", " + (0.5 * (rgb[3] || 1)) + ");\n}";
-          return $.after($.id('fourchanx-css'), Main.bgColorStyle);
+        div = Site.bgColoredEl();
+        div.style.position = 'absolute';
+        div.style.visibility = 'hidden';
+        $.add(d.body, div);
+        bgColor = window.getComputedStyle(div).backgroundColor;
+        $.rm(div);
+        rgb = bgColor.match(/[\d.]+/g);
+        if (!/^rgb\(/.test(bgColor)) {
+          s = window.getComputedStyle(d.body);
+          bgColor = s.backgroundColor + " " + s.backgroundImage + " " + s.backgroundRepeat + " " + s.backgroundPosition;
         }
+        Main.bgColorStyle.textContent = ".dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post {\n  background: " + bgColor + ";\n}\n.unread-mark-read {\n  background-color: rgba(" + (rgb.slice(0, 3).join(', ')) + ", " + (0.5 * (rgb[3] || 1)) + ");\n}";
+        return $.after($.id('fourchanx-css'), Main.bgColorStyle);
       };
-      setStyle();
-      if (!mainStyleSheet) {
-        return;
-      }
-      return new MutationObserver(setStyle).observe(mainStyleSheet, {
-        attributes: true,
-        attributeFilter: ['href']
+      $.onExists(d.head, Site.selectors.styleSheet, function(el) {
+        mainStyleSheet = el;
+        if (Site.software === 'yotsuba') {
+          styleSheets = $$('link[rel="alternate stylesheet"]', d.head);
+        }
+        new MutationObserver(setStyle).observe(mainStyleSheet, {
+          attributes: true,
+          attributeFilter: ['href']
+        });
+        $.on(mainStyleSheet, 'load', setStyle);
+        return setStyle();
       });
+      if (!mainStyleSheet) {
+        return setStyle();
+      }
     },
     initReady: function() {
       var msg;

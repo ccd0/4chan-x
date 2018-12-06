@@ -4,6 +4,9 @@
 
 ### v1.14.5
 
+**v1.14.5.1** *(2018-12-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.1/builds/4chan-X-noupdate.crx)]
+- Support style switcher and non-default styles on Tinyboard.
+
 **v1.14.5.0** *(2018-12-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.4.7.
 - Show threads from other sites in Thread Watcher. When threads from multiple sites are shown, a prefix is added before the board name to distinguish sites. The prefix can be disabled by unchecking `Show Site Prefix` preference in thread watcher menu. More work remains; refreshing is still only working on 4chan, and the unread count still only works for 4chan threads.
