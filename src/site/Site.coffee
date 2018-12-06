@@ -1,5 +1,11 @@
 Site =
+  defaultProperties:
+    '4chan.org':    {software: 'yotsuba'}
+    '4channel.org': {software: 'yotsuba'}
+    '4cdn.org':     {software: 'yotsuba'}
+
   init: (cb) ->
+    $.extend Conf['siteProperties'], Site.defaultProperties
     {hostname} = location
     while hostname and hostname not of Conf['siteProperties']
       hostname = hostname.replace(/^[^.]*\.?/, '')
