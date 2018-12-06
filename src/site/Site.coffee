@@ -9,7 +9,6 @@ Site =
     {hostname} = location
     while hostname and hostname not of Conf['siteProperties']
       hostname = hostname.replace(/^[^.]*\.?/, '')
-    hostname = '4chan.org' if hostname is '4channel.org'
     if hostname and Conf['siteProperties'][hostname].software of SW
       @set hostname
       cb()
@@ -33,4 +32,5 @@ Site =
   set: (@hostname) ->
     @properties = Conf['siteProperties'][@hostname]
     @software = @properties.software
+    @hostname = '4chan.org' if @software is 'yotsuba'
     $.extend @, SW[@software]
