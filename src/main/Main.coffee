@@ -233,54 +233,67 @@ Main =
     Main.setClass()
 
   setClass: ->
-    if g.VIEW is 'catalog'
-      $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
-      return
+    knownStyles = ['yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'photon', 'tomorrow', 'spooky']
 
-    style          = 'yotsuba-b'
-    mainStyleSheet = $ 'link[title=switch]', d.head
-    styleSheets    = $$ 'link[rel="alternate stylesheet"]', d.head
+    if Site.software is 'yotsuba' and g.VIEW is 'catalog'
+      if (mainStyleSheet = $.id('base-css'))
+        style = mainStyleSheet.href.match(/catalog_(\w+)/)?[1].replace('_new', '').replace(/_+/g, '-')
+        if style in knownStyles
+          $.addClass doc, style
+          return
+
+    style = mainStyleSheet = styleSheets = null
+
     setStyle = ->
-      $.rmClass doc, style
-      style = null
-      for styleSheet in styleSheets
-        if styleSheet.href is mainStyleSheet?.href
-          style = styleSheet.title.toLowerCase().replace('new', '').trim().replace /\s+/g, '-'
-          style = styleSheet.href.match(/[a-z]*(?=[^/]*$)/)[0] if style is '_special'
-          style = null unless style in ['yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'photon', 'tomorrow', 'spooky']
-          break
-      if style
-        $.addClass doc, style
-        $.rm Main.bgColorStyle
-      else
-        # Determine proper background color for dialogs if 4chan is using a special stylesheet.
-        div = Site.bgColoredEl()
-        div.style.position = 'absolute';
-        div.style.visibility = 'hidden';
-        $.add d.body, div
-        bgColor = window.getComputedStyle(div).backgroundColor
-        c.log(bgColor)
-        $.rm div
-        rgb = bgColor.match(/[\d.]+/g)
-        # Use body background if reply background is transparent
-        unless /^rgb\(/.test(bgColor)
-          s = window.getComputedStyle(d.body)
-          bgColor = "#{s.backgroundColor} #{s.backgroundImage} #{s.backgroundRepeat} #{s.backgroundPosition}"
-        Main.bgColorStyle.textContent = """
-          .dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post {
-            background: #{bgColor};
-          }
-          .unread-mark-read {
-            background-color: rgba(#{rgb[...3].join(', ')}, #{0.5*(rgb[3] || 1)});
-          }
-        """
-        $.after $.id('fourchanx-css'), Main.bgColorStyle
-    setStyle()
-    return unless mainStyleSheet
-    new MutationObserver(setStyle).observe mainStyleSheet, {
-      attributes: true
-      attributeFilter: ['href']
-    }
+      # Use preconfigured CSS for 4chan's default themes.
+      if Site.software is 'yotsuba'
+        $.rmClass doc, style
+        style = null
+        for styleSheet in styleSheets
+          if styleSheet.href is mainStyleSheet?.href
+            style = styleSheet.title.toLowerCase().replace('new', '').trim().replace /\s+/g, '-'
+            style = styleSheet.href.match(/[a-z]*(?=[^/]*$)/)[0] if style is '_special'
+            style = null unless style in knownStyles
+            break
+        if style
+          $.addClass doc, style
+          $.rm Main.bgColorStyle
+          return
+
+      # Determine proper dialog background color for other themes.
+      div = Site.bgColoredEl()
+      div.style.position = 'absolute';
+      div.style.visibility = 'hidden';
+      $.add d.body, div
+      bgColor = window.getComputedStyle(div).backgroundColor
+      $.rm div
+      rgb = bgColor.match(/[\d.]+/g)
+      # Use body background if reply background is transparent
+      unless /^rgb\(/.test(bgColor)
+        s = window.getComputedStyle(d.body)
+        bgColor = "#{s.backgroundColor} #{s.backgroundImage} #{s.backgroundRepeat} #{s.backgroundPosition}"
+      Main.bgColorStyle.textContent = """
+        .dialog, .suboption-list > div:last-of-type, :root.catalog-hover-expand .catalog-container:hover > .post {
+          background: #{bgColor};
+        }
+        .unread-mark-read {
+          background-color: rgba(#{rgb[...3].join(', ')}, #{0.5*(rgb[3] || 1)});
+        }
+      """
+      $.after $.id('fourchanx-css'), Main.bgColorStyle
+
+    $.onExists d.head, Site.selectors.styleSheet, (el) ->
+      mainStyleSheet = el
+      if Site.software is 'yotsuba'
+        styleSheets = $$ 'link[rel="alternate stylesheet"]', d.head
+      new MutationObserver(setStyle).observe mainStyleSheet, {
+        attributes: true
+        attributeFilter: ['href']
+      }
+      $.on mainStyleSheet, 'load', setStyle
+      setStyle()
+    unless mainStyleSheet
+      setStyle()
 
   initReady: ->
     if Site.is404?()

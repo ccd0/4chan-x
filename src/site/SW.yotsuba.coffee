@@ -39,6 +39,7 @@ SW.yotsuba =
     spoiler:   's'
     quotelink: ':not(pre) > .quotelink' # XXX https://github.com/4chan/4chan-JS/issues/77: 4chan currently creates quote links inside [code] tags; ignore them
     boardList: '#boardNavDesktop > .boardList'
+    styleSheet: 'link[title=switch]'
 
   xpath:
     thread:        'div[contains(concat(" ",@class," ")," thread ")]'
