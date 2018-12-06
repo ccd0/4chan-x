@@ -224,8 +224,6 @@ ThreadWatcher =
       onloadend: ->
         ThreadWatcher.parseStatus.call @, thread
       timeout: $.MINUTE
-    ,
-      whenModified: if force then false else 'ThreadWatcher'
     ThreadWatcher.requests.push req
 
   parseStatus: ({boardID, threadID, data}) ->
@@ -236,11 +234,14 @@ ThreadWatcher =
       ThreadWatcher.status.textContent = "#{Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)}%"
 
     if @status is 200 and @response
+      last = @response.posts[@response.posts.length-1].no
       isDead = !!@response.posts[0].archived
       if isDead and Conf['Auto Prune']
         ThreadWatcher.db.delete {boardID, threadID}
         ThreadWatcher.refresh()
         return
+
+      return if last is data.last and isDead is data.isDead
 
       lastReadPost = ThreadWatcher.unreaddb.get
         boardID: boardID
@@ -276,9 +277,9 @@ ThreadWatcher =
         if quotesYou and not Filter.isHidden(Build.parseJSON postObj, boardID)
           quotingYou = true
 
-      if isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou
-        ThreadWatcher.db.extend {boardID, threadID, val: {isDead, unread, quotingYou}}
-        ThreadWatcher.refresh()
+      updated = (isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou)
+      ThreadWatcher.db.extend {boardID, threadID, val: {last, isDead, unread, quotingYou}}
+      ThreadWatcher.refresh() if updated
 
     else if @status is 404
       if Conf['Auto Prune']
