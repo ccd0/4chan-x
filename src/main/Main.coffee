@@ -478,6 +478,7 @@ Main =
     ['Disable Autoplay',          AntiAutoplay]
     ['Announcement Hiding',       PSAHiding]
     ['Fourchan thingies',         Fourchan]
+    ['Tinyboard Glue',            Tinyboard]
     ['Color User IDs',            IDColor]
     ['Highlight by User ID',      IDHighlight]
     ['Count Posts by ID',         IDPostCount]
