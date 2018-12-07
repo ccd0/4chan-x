@@ -60,7 +60,7 @@ Unread =
     Unread.readCount = 0
     Unread.readCount++ for ID in @posts.keys when +ID <= Unread.lastReadPost
     $.one d, '4chanXInitFinished', Unread.ready
-    $.on  d, 'ThreadUpdate',       Unread.onUpdate
+    $.on  d, 'PostsInserted',      Unread.onUpdate
 
   ready: ->
     Unread.scroll() if Conf['Remember Last Read Post'] and Conf['Scroll to Last Read Post']
@@ -137,11 +137,11 @@ Unread =
         notif.close()
       , 7 * $.SECOND
 
-  onUpdate: (e) ->
-    if !e.detail[404]
+  onUpdate: ->
+    $.queueTask -> # ThreadUpdater may scroll immediately after inserting posts
       Unread.setLine()
       Unread.read()
-    Unread.update()
+      Unread.update()
 
   readSinglePost: (post) ->
     {ID} = post

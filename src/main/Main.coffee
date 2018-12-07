@@ -326,6 +326,9 @@ Main =
     if (board = $ s.board)
       threads = []
       posts   = []
+      errors  = []
+
+      Main.addPostsObserver = new MutationObserver Main.addPosts
 
       for threadRoot in $$(s.thread, board)
         boardObj = if (boardID = threadRoot.dataset.board)
@@ -338,17 +341,9 @@ Main =
         threads.push thread
         postRoots = $$ s.postContainer, threadRoot
         postRoots.unshift threadRoot if Site.isOPContainerThread
-        for postRoot in postRoots when $(s.comment, postRoot)
-          try
-            posts.push new Post postRoot, thread, thread.board
-          catch err
-            # Skip posts that we failed to parse.
-            unless errors
-              errors = []
-            errors.push
-              message: "Parsing of Post No.#{postRoot.id.match(/\d+/)} failed. Post will be skipped."
-              error: err
-      Main.handleErrors errors if errors
+        Main.parsePosts postRoots, thread, posts, errors
+        Main.addPostsObserver.observe threadRoot, {childList: true}
+      Main.handleErrors errors if errors.length
 
       if g.VIEW is 'thread'
         Site.parseThreadMetadata?(threads[0])
@@ -362,6 +357,33 @@ Main =
     else
       Main.expectInitFinished = true
       $.event '4chanXInitFinished'
+
+  parsePosts: (postRoots, thread, posts, errors) ->
+    for postRoot in postRoots when !postRoot.dataset.fullID and $(Site.selectors.comment, postRoot)
+      try
+        posts.push new Post postRoot, thread, thread.board
+      catch err
+        # Skip posts that we failed to parse.
+        errors.push
+          message: "Parsing of Post No.#{postRoot.id.match(/\d+/)} failed. Post will be skipped."
+          error: err
+    return
+
+  addPosts: (records) ->
+    threads = []
+    posts   = []
+    errors  = []
+    for record in records
+      thread = Get.threadFromRoot record.target
+      n = posts.length
+      Main.parsePosts record.addedNodes, thread, posts, errors
+      if posts.length > n and thread not in threads
+        threads.push thread
+    Main.handleErrors errors if errors.length
+    Main.callbackNodesDB 'Post', posts, ->
+      for thread in threads
+        $.event 'PostsInserted', null, thread.nodes.root
+      return
 
   callbackNodes: (klass, nodes) ->
     i = 0
