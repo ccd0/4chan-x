@@ -1174,6 +1174,9 @@ span.hide-announcement {
   -webkit-flex: 0 1 auto;
   flex: 0 1 auto;
 }
+.replies-quoting-you > a, #watcher-link.replies-quoting-you {
+  color: #F00;
+}
 #thread-watcher a {
   text-decoration: none;
 }

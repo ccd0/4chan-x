@@ -4,8 +4,8 @@ eventPageRequest = do ->
   chrome.runtime.onMessage.addListener (data) ->
     callbacks[data.id] data
     delete callbacks[data.id]
-  (url, responseType, cb) ->
-    chrome.runtime.sendMessage {url, responseType}, (id) ->
+  (url, responseType, cb, timeout) ->
+    chrome.runtime.sendMessage {url, responseType, timeout}, (id) ->
       callbacks[id] = cb
 
 <% } %>
@@ -85,7 +85,7 @@ CrossOrigin =
         $.queueTask -> cb.call {}
       delete callbacks[url]
 
-    (url, cb, bypassCache) ->
+    (url, cb, bypassCache, timeout) ->
       <% if (type === 'userscript') { %>
       unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
         if bypassCache
@@ -99,18 +99,20 @@ CrossOrigin =
 
       if bypassCache
         delete results[url]
-      if results[url]
-        cb.call results[url]
-        return
-      if callbacks[url]
-        callbacks[url].push cb
-        return
+      else
+        if results[url]
+          cb.call results[url]
+          return
+        if callbacks[url]
+          callbacks[url].push cb
+          return
       callbacks[url] = [cb]
 
       <% if (type === 'userscript') { %>
       (GM?.xmlHttpRequest or GM_xmlhttpRequest)
         method: "GET"
         url: url+''
+        timeout: timeout
         onload: (xhr) ->
           {status, statusText} = xhr
           try
@@ -120,6 +122,7 @@ CrossOrigin =
             failure url
         onerror: -> failure(url)
         onabort: -> failure(url)
+        ontimeout: -> failure(url)
       <% } %>
       <% if (type === 'crx') { %>
       eventPageRequest url, 'json', (result) ->
@@ -127,4 +130,5 @@ CrossOrigin =
           success url, result
         else
           failure url
+      , timeout
       <% } %>

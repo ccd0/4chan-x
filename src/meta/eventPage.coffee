@@ -26,6 +26,7 @@ ajax = (request, sender, sendResponse) ->
   xhr = new XMLHttpRequest()
   xhr.open 'GET', request.url, true
   xhr.responseType = request.responseType
+  xhr.timeout = request.timeout
   xhr.addEventListener 'load', ->
     {status, statusText, response} = @
     if @readyState is @DONE && xhr.status is 200
@@ -41,6 +42,9 @@ ajax = (request, sender, sendResponse) ->
     chrome.tabs.sendMessage sender.tab.id, {id, error: true}
   , false
   xhr.addEventListener 'abort', ->
+    chrome.tabs.sendMessage sender.tab.id, {id, error: true}
+  , false
+  xhr.addEventListener 'timeout', ->
     chrome.tabs.sendMessage sender.tab.id, {id, error: true}
   , false
   xhr.send()

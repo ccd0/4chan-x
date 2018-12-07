@@ -140,3 +140,6 @@ SW.yotsuba =
     for node in $$ '.prettyprint', bq
       $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
     return
+
+  hasCORS: (url) ->
+    url.split('/')[...3].join('/') is location.protocol + '//a.4cdn.org'

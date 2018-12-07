@@ -24,8 +24,6 @@ ThreadWatcher =
     $.on @refreshButton, 'click', @buttonFetchAll
     $.on @closeButton, 'click', @toggleWatcher
 
-    @refreshButton.hidden = true unless Site.software is 'yotsuba'
-
     @menu.addHeaderMenuEntry()
     $.onExists doc, 'body', @addDialog
 
@@ -184,13 +182,12 @@ ThreadWatcher =
     ThreadWatcher.clearRequests()
 
   fetchAuto: ->
-    return unless Site.software is 'yotsuba'
     clearTimeout ThreadWatcher.timeout
     return unless Conf['Auto Update Thread Watcher']
     {db} = ThreadWatcher
     interval = if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] then 5 * $.MINUTE else 2 * $.HOUR
     now = Date.now()
-    unless now - interval < (db.data[Site.hostname].lastChecked or 0) <= now or d.hidden or not d.hasFocus()
+    unless now - interval < (db.data.lastChecked or 0) <= now or d.hidden or not d.hasFocus()
       ThreadWatcher.fetchAllStatus()
       db.setLastChecked()
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
@@ -202,7 +199,6 @@ ThreadWatcher =
       ThreadWatcher.fetchAllStatus()
 
   fetchAllStatus: ->
-    return unless Site.software is 'yotsuba'
     dbs = [ThreadWatcher.db, ThreadWatcher.unreaddb, QuoteYou.db].filter((x) -> x)
     n = 0
     for db in dbs
@@ -215,18 +211,26 @@ ThreadWatcher =
 
   fetchStatus: (thread, force) ->
     {siteID, boardID, threadID, data} = thread
-    return unless Site.software is 'yotsuba' and siteID is Site.hostname
+    return unless Conf['siteProperties'][siteID]?.software is 'yotsuba'
     return if data.isDead and not force
     if ThreadWatcher.requests.length is 0
       ThreadWatcher.status.textContent = '...'
       $.addClass ThreadWatcher.refreshButton, 'fa-spin'
-    req = $.ajax "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
-      onloadend: ->
+    url = "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json"
+    if Site.hasCORS?(url) or url.split('/')[...3].join('/') is location.origin
+      req = $.ajax url,
+        onloadend: ->
+          ThreadWatcher.parseStatus.call @, thread
+        timeout: $.MINUTE
+    else
+      req = {abort: () -> req.aborted = true}
+      CrossOrigin.json url, ->
+        return if req.aborted
         ThreadWatcher.parseStatus.call @, thread
-      timeout: $.MINUTE
+      , true, $.MINUTE
     ThreadWatcher.requests.push req
 
-  parseStatus: ({boardID, threadID, data}) ->
+  parseStatus: ({siteID, boardID, threadID, data}) ->
     ThreadWatcher.fetched++
     if ThreadWatcher.fetched is ThreadWatcher.requests.length
       ThreadWatcher.clearRequests()
@@ -237,24 +241,20 @@ ThreadWatcher =
       last = @response.posts[@response.posts.length-1].no
       isDead = !!@response.posts[0].archived
       if isDead and Conf['Auto Prune']
-        ThreadWatcher.db.delete {boardID, threadID}
+        ThreadWatcher.db.delete {siteID, boardID, threadID}
         ThreadWatcher.refresh()
         return
 
       return if last is data.last and isDead is data.isDead
 
-      lastReadPost = ThreadWatcher.unreaddb.get
-        boardID: boardID
-        threadID: threadID
-        defaultValue: 0
-
+      lastReadPost = ThreadWatcher.unreaddb.get {siteID, boardID, threadID, defaultValue: 0}
       unread = 0
       quotingYou = false
-      youOP = !!QuoteYou.db?.get {boardID, threadID, postID: threadID}
+      youOP = !!QuoteYou.db?.get {siteID, boardID, threadID, postID: threadID}
 
       for postObj in @response.posts
         continue unless postObj.no > lastReadPost
-        continue if QuoteYou.db?.get {boardID, threadID, postID: postObj.no}
+        continue if QuoteYou.db?.get {siteID, boardID, threadID, postID: postObj.no}
 
         unread++
 
@@ -268,6 +268,7 @@ ThreadWatcher =
         regexp = /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
         while match = regexp.exec postObj.com
           if QuoteYou.db.get {
+            siteID
             boardID:  match[1] or boardID
             threadID: match[2] or threadID
             postID:   match[3] or match[2] or threadID
@@ -278,14 +279,14 @@ ThreadWatcher =
           quotingYou = true
 
       updated = (isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou)
-      ThreadWatcher.db.extend {boardID, threadID, val: {last, isDead, unread, quotingYou}}
+      ThreadWatcher.db.extend {siteID, boardID, threadID, val: {last, isDead, unread, quotingYou}}
       ThreadWatcher.refresh() if updated
 
     else if @status is 404
       if Conf['Auto Prune']
-        ThreadWatcher.db.delete {boardID, threadID}
+        ThreadWatcher.db.delete {siteID, boardID, threadID}
       else
-        ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true}, rm: ['unread', 'quotingYou']}
+        ThreadWatcher.db.extend {siteID, boardID, threadID, val: {isDead: true}, rm: ['unread', 'quotingYou']}
 
       ThreadWatcher.refresh()
 

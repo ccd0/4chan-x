@@ -90,9 +90,9 @@ class DataBoard
       @setUnsafe {siteID, boardID, threadID, postID, val: oldVal}
     , cb
 
-  setLastChecked: (siteID=Site.hostname) ->
+  setLastChecked: ->
     @save =>
-      @data[siteID].lastChecked = Date.now()
+      @data.lastChecked = Date.now()
 
   get: ({siteID, boardID, threadID, postID, defaultValue}) ->
     siteID or= Site.hostname
