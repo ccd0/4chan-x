@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.5.2
+// @version      1.14.5.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.5.2',
+  VERSION:   '1.14.5.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5843,6 +5843,9 @@ DataBoard = (function() {
       var boardID, postID, siteID, threadID;
       siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID;
       siteID || (siteID = Site.hostname);
+      if (!this.data[siteID]) {
+        return;
+      }
       return this.save((function(_this) {
         return function() {
           var ref;
@@ -5875,6 +5878,9 @@ DataBoard = (function() {
     DataBoard.prototype.deleteIfEmpty = function(arg) {
       var boardID, siteID, threadID;
       siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID;
+      if (!this.data[siteID]) {
+        return;
+      }
       if (threadID) {
         if (!Object.keys(this.data[siteID].boards[boardID][threadID]).length) {
           delete this.data[siteID].boards[boardID][threadID];
@@ -5897,13 +5903,16 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype.setUnsafe = function(arg) {
-      var base, base1, base2, boardID, postID, siteID, threadID, val;
+      var base, base1, base2, base3, boardID, postID, siteID, threadID, val;
       siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, val = arg.val;
       siteID || (siteID = Site.hostname);
+      (base = this.data)[siteID] || (base[siteID] = {
+        boards: {}
+      });
       if (postID !== void 0) {
-        return ((base = ((base1 = this.data[siteID].boards)[boardID] || (base1[boardID] = {})))[threadID] || (base[threadID] = {}))[postID] = val;
+        return ((base1 = ((base2 = this.data[siteID].boards)[boardID] || (base2[boardID] = {})))[threadID] || (base1[threadID] = {}))[postID] = val;
       } else if (threadID !== void 0) {
-        return ((base2 = this.data[siteID].boards)[boardID] || (base2[boardID] = {}))[threadID] = val;
+        return ((base3 = this.data[siteID].boards)[boardID] || (base3[boardID] = {}))[threadID] = val;
       } else {
         return this.data[siteID].boards[boardID] = val;
       }
@@ -5948,10 +5957,10 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype.get = function(arg) {
-      var ID, board, boardID, defaultValue, i, len, postID, siteID, thread, threadID, val;
+      var ID, board, boardID, defaultValue, i, len, postID, ref, siteID, thread, threadID, val;
       siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, defaultValue = arg.defaultValue;
       siteID || (siteID = Site.hostname);
-      if (board = this.data[siteID].boards[boardID]) {
+      if (board = (ref = this.data[siteID]) != null ? ref.boards[boardID] : void 0) {
         if (threadID == null) {
           if (postID != null) {
             for (thread = i = 0, len = board.length; i < len; thread = ++i) {
