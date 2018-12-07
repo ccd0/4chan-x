@@ -48,6 +48,7 @@ class DataBoard
 
   delete: ({siteID, boardID, threadID, postID}) ->
     siteID or= Site.hostname
+    return unless @data[siteID]
     @save =>
       if postID
         return unless @data[siteID].boards[boardID]?[threadID]
@@ -61,6 +62,7 @@ class DataBoard
         delete @data[siteID].boards[boardID]
 
   deleteIfEmpty: ({siteID, boardID, threadID}) ->
+    return unless @data[siteID]
     if threadID
       unless Object.keys(@data[siteID].boards[boardID][threadID]).length
         delete @data[siteID].boards[boardID][threadID]
@@ -75,6 +77,7 @@ class DataBoard
 
   setUnsafe: ({siteID, boardID, threadID, postID, val}) ->
     siteID or= Site.hostname
+    @data[siteID] or= boards: {}
     if postID isnt undefined
       ((@data[siteID].boards[boardID] or= {})[threadID] or= {})[postID] = val
     else if threadID isnt undefined
@@ -96,7 +99,7 @@ class DataBoard
 
   get: ({siteID, boardID, threadID, postID, defaultValue}) ->
     siteID or= Site.hostname
-    if board = @data[siteID].boards[boardID]
+    if board = @data[siteID]?.boards[boardID]
       unless threadID?
         if postID?
           for ID, thread in board
