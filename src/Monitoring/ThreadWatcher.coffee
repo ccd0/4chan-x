@@ -211,12 +211,14 @@ ThreadWatcher =
 
   fetchStatus: (thread, force) ->
     {siteID, boardID, threadID, data} = thread
-    return unless Conf['siteProperties'][siteID]?.software is 'yotsuba'
+    software = Conf['siteProperties'][siteID]?.software
+    url = SW[software]?.urls.threadJSON?({siteID, boardID, threadID})
+    return unless url
     return if data.isDead and not force
+    return if data.last is -1 # 404 or no JSON API
     if ThreadWatcher.requests.length is 0
       ThreadWatcher.status.textContent = '...'
       $.addClass ThreadWatcher.refreshButton, 'fa-spin'
-    url = "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json"
     if Site.hasCORS?(url) or url.split('/')[...3].join('/') is location.origin
       req = $.ajax url,
         onloadend: ->
@@ -236,6 +238,8 @@ ThreadWatcher =
       ThreadWatcher.clearRequests()
     else
       ThreadWatcher.status.textContent = "#{Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)}%"
+
+    software = Conf['siteProperties'][siteID]?.software
 
     if @status is 200 and @response
       last = @response.posts[@response.posts.length-1].no
@@ -265,7 +269,8 @@ ThreadWatcher =
         continue unless !quotingYou and QuoteYou.db and postObj.com
 
         quotesYou = false
-        regexp = /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
+        regexp = SW[software].regexp.quotelinkHTML
+        regexp.lastIndex = 0
         while match = regexp.exec postObj.com
           if QuoteYou.db.get {
             siteID
@@ -283,7 +288,9 @@ ThreadWatcher =
       ThreadWatcher.refresh() if updated
 
     else if @status is 404
-      if Conf['Auto Prune']
+      if SW[software].mayLackJSON and !data.last?
+        ThreadWatcher.db.extend {siteID, boardID, threadID, val: {last: -1}, rm: ['unread', 'quotingYou']}
+      else if Conf['Auto Prune']
         ThreadWatcher.db.delete {siteID, boardID, threadID}
       else
         ThreadWatcher.db.extend {siteID, boardID, threadID, val: {isDead: true}, rm: ['unread', 'quotingYou']}
@@ -317,7 +324,7 @@ ThreadWatcher =
       title: excerpt
       className: 'watcher-link'
 
-    if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] and software is 'yotsuba' and data.unread?
+    if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] and data.unread?
       count = $.el 'span',
         textContent: "(#{data.unread})"
         className: 'watcher-unread'
@@ -334,7 +341,7 @@ ThreadWatcher =
     div.dataset.siteID = siteID
     $.addClass div, 'current'     if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
     $.addClass div, 'dead-thread' if data.isDead
-    if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] and software is 'yotsuba'
+    if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
       $.addClass div, 'replies-read'        if data.unread is 0
       $.addClass div, 'replies-unread'      if data.unread
       $.addClass div, 'replies-quoting-you' if data.quotingYou

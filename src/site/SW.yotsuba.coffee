@@ -2,7 +2,8 @@ SW.yotsuba =
   isOPContainerThread: false
 
   urls:
-    thread: ({boardID, threadID}) -> "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/thread/#{threadID}"
+    thread:     ({boardID, threadID}) -> "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/thread/#{threadID}"
+    threadJSON: ({boardID, threadID}) -> "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json"
 
   selectors:
     board:         '.board'
@@ -58,6 +59,8 @@ SW.yotsuba =
         )?
         $
       ///
+    quotelinkHTML:
+      /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
 
   bgColoredEl: ->
     $.el 'div', className: 'reply'

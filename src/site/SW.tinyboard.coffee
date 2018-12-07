@@ -1,5 +1,6 @@
 SW.tinyboard =
   isOPContainerThread: true
+  mayLackJSON: true
 
   disabledFeatures: [
     'Board Configuration'
@@ -56,6 +57,9 @@ SW.tinyboard =
 
   urls:
     thread: ({siteID, boardID, threadID}) -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/res/#{threadID}.html"
+    threadJSON: ({siteID, boardID, threadID}) ->
+      root = Conf['siteProperties'][siteID]?.root
+      if root then "#{root}#{boardID}/res/#{threadID}.json" else ''
 
   selectors:
     board:         'form[name="postcontrols"]'
@@ -105,6 +109,8 @@ SW.tinyboard =
         (\d+)   # postID
         $
       ///
+    quotelinkHTML:
+      /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)\.html#(\d+)"/g
 
   bgColoredEl: ->
     $.el 'div', className: 'post reply'
