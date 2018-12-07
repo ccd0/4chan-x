@@ -869,6 +869,8 @@ Index =
     delete Index.pageNum
     $.rmAll Index.root
     $.rmAll Header.hover
+    if Index.loaded and Index.root.parentNode
+      $.event 'PostsRemoved', null, Index.root
     if Conf['Index Mode'] is 'catalog'
       Index.buildCatalog threadIDs
     else

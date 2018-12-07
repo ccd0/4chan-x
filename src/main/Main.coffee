@@ -370,19 +370,29 @@ Main =
     return
 
   addPosts: (records) ->
-    threads = []
-    posts   = []
-    errors  = []
+    threads   = []
+    threadsRM = []
+    posts     = []
+    errors    = []
     for record in records
       thread = Get.threadFromRoot record.target
       n = posts.length
       Main.parsePosts record.addedNodes, thread, posts, errors
       if posts.length > n and thread not in threads
         threads.push thread
+      anyRemoved = false
+      for el in record.removedNodes
+        if Get.postFromRoot(el)?.nodes.root is el and !doc.contains(el)
+          anyRemoved = true
+          break
+      if anyRemoved and thread not in threadsRM
+        threadsRM.push thread
     Main.handleErrors errors if errors.length
     Main.callbackNodesDB 'Post', posts, ->
       for thread in threads
         $.event 'PostsInserted', null, thread.nodes.root
+      for thread in threadsRM
+        $.event 'PostsRemoved', null, thread.nodes.root
       return
 
   callbackNodes: (klass, nodes) ->

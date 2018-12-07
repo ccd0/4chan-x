@@ -183,7 +183,9 @@ ThreadHiding =
     threadRoot = thread.nodes.root
     thread.isHidden = true
     Index.updateHideLabel()
-    $.rm thread.catalogView.nodes.root if thread.catalogView and !Index.showHiddenThreads
+    if thread.catalogView and !Index.showHiddenThreads
+      $.rm thread.catalogView.nodes.root
+      $.event 'PostsRemoved', null, Index.root
 
     return threadRoot.hidden = true unless makeStub
 
@@ -196,4 +198,6 @@ ThreadHiding =
     threadRoot = thread.nodes.root
     threadRoot.hidden = thread.isHidden = false
     Index.updateHideLabel()
-    $.rm thread.catalogView.nodes.root if thread.catalogView and Index.showHiddenThreads
+    if thread.catalogView and Index.showHiddenThreads
+      $.rm thread.catalogView.nodes.root
+      $.event 'PostsRemoved', null, Index.root

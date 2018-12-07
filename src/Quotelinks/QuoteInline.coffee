@@ -87,7 +87,9 @@ QuoteInline =
     root = QuoteInline.findRoot quotelink, isBacklink
     root = $.x "following-sibling::div[@data-full-i-d='#{boardID}.#{postID}'][1]", root
     qroot = $.x 'ancestor::*[contains(@class,"postContainer")][1]', root
+    {parentNode} = root
     $.rm root
+    $.event 'PostsRemoved', null, parentNode
 
     unless $ '.inline', qroot
       $.rmClass qroot, 'hasInline'

@@ -84,6 +84,8 @@ ExpandThread =
       postsCount++
       filesCount++ if 'file' of Get.postFromRoot reply
       $.rm reply
+    if Index.enabled # otherwise handled by Main.addPosts
+      $.event 'PostsRemoved', null, a.parentNode
     a.textContent = Build.summaryText '+', postsCount, filesCount
     $.rm $('.summary-bottom', threadRoot)
 
