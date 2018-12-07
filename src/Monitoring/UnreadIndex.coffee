@@ -14,7 +14,7 @@ UnreadIndex =
       cb:   @node
 
     $.on d, 'IndexRefreshInternal', @onIndexRefresh
-    $.on d, 'PostsInserted', @onPostsInserted
+    $.on d, 'PostsInserted PostsRemoved', @onPostsInserted
 
   node: ->
     UnreadIndex.lastReadPost[@fullID] = UnreadIndex.db.get(
@@ -36,7 +36,7 @@ UnreadIndex =
     return if !thread or thread.nodes.root isnt e.target
     wasVisible = !!UnreadIndex.hr[thread.fullID]?.parentNode
     UnreadIndex.update thread
-    if Conf['Scroll to Last Read Post'] and !wasVisible and !!UnreadIndex.hr[thread.fullID]?.parentNode
+    if Conf['Scroll to Last Read Post'] and e.type is 'PostsInserted' and !wasVisible and !!UnreadIndex.hr[thread.fullID]?.parentNode
       Header.scrollToIfNeeded UnreadIndex.hr[thread.fullID], true
 
   sync: ->
