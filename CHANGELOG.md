@@ -4,6 +4,11 @@
 
 ### v1.14.5
 
+**v1.14.5.2** *(2018-12-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.2/builds/4chan-X-noupdate.crx)]
+- All Thread Watcher functionality is now supported on and across Tinyboard/vichan sites, including auto-updating, the unread count, and lighting up upon replies, with the exception that threads from sites without JSON APIs will not be updated when the thread watcher is refreshed.
+- The `Unread Count`, `Unread Line`, `Scroll to Last Read Post`, and `Desktop Notifications` are now supported on Tinyboard/vichan sites.
+- Replies made AJAX on Tinyboard/vichan sites are now marked as yours.
+
 **v1.14.5.1** *(2018-12-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.1/builds/4chan-X-noupdate.crx)]
 - Support style switcher and non-default styles on Tinyboard.
 

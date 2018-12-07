@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.5.1
+// @version      1.14.5.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -183,7 +183,7 @@
 
 'use strict';
 
-var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, UnreadIndex, Volume;
+var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, Tinyboard, UI, Unread, UnreadIndex, Volume;
 
 var Conf, E, c, d, doc, docSet, g;
 
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.5.1',
+  VERSION:   '1.14.5.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -2317,6 +2317,9 @@ span.hide-announcement {\n\
   margin: 0;\n\
   border-color: rgb(255,0,0);\n\
 }\n\
+.unread-line + br {\n\
+  display: none;\n\
+}\n\
 .unread-mark-read {\n\
   float: right;\n\
   clear: both;\n\
@@ -2418,6 +2421,9 @@ span.hide-announcement {\n\
   text-overflow: ellipsis;\n\
   -webkit-flex: 0 1 auto;\n\
   flex: 0 1 auto;\n\
+}\n\
+.replies-quoting-you > a, #watcher-link.replies-quoting-you {\n\
+  color: #F00;\n\
 }\n\
 #thread-watcher a {\n\
   text-decoration: none;\n\
@@ -5472,7 +5478,7 @@ CrossOrigin = (function() {
         }
         return delete callbacks[url];
       };
-      return function(url, cb, bypassCache) {
+      return function(url, cb, bypassCache, timeout) {
         var req;
         if (!(((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) != null) || (typeof GM_xmlhttpRequest !== "undefined" && GM_xmlhttpRequest !== null))) {
           if (bypassCache) {
@@ -5493,19 +5499,21 @@ CrossOrigin = (function() {
         }
         if (bypassCache) {
           delete results[url];
-        }
-        if (results[url]) {
-          cb.call(results[url]);
-          return;
-        }
-        if (callbacks[url]) {
-          callbacks[url].push(cb);
-          return;
+        } else {
+          if (results[url]) {
+            cb.call(results[url]);
+            return;
+          }
+          if (callbacks[url]) {
+            callbacks[url].push(cb);
+            return;
+          }
         }
         callbacks[url] = [cb];
         return ((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) || GM_xmlhttpRequest)({
           method: "GET",
           url: url + '',
+          timeout: timeout,
           onload: function(xhr) {
             var response, status, statusText;
             status = xhr.status, statusText = xhr.statusText;
@@ -5524,6 +5532,9 @@ CrossOrigin = (function() {
             return failure(url);
           },
           onabort: function() {
+            return failure(url);
+          },
+          ontimeout: function() {
             return failure(url);
           }
         });
@@ -5928,13 +5939,10 @@ DataBoard = (function() {
       })(this), cb);
     };
 
-    DataBoard.prototype.setLastChecked = function(siteID) {
-      if (siteID == null) {
-        siteID = Site.hostname;
-      }
+    DataBoard.prototype.setLastChecked = function() {
       return this.save((function(_this) {
         return function() {
-          return _this.data[siteID].lastChecked = Date.now();
+          return _this.data.lastChecked = Date.now();
         };
       })(this));
     };
@@ -6504,9 +6512,10 @@ Post = (function() {
       this.boardID = this.board.ID;
       this.fullID = this.board + "." + this.ID;
       this.context = this;
+      this.isReply = this.ID !== this.threadID;
       root.dataset.fullID = this.fullID;
       this.nodes = this.parseNodes(root);
-      if (!(this.isReply = this.ID !== this.threadID)) {
+      if (!this.isReply) {
         this.thread.OP = this;
         ref = ['isSticky', 'isClosed', 'isArchived'];
         for (j = 0, len = ref.length; j < len; j++) {
@@ -6568,6 +6577,7 @@ Post = (function() {
       info = $(s.infoRoot, post);
       nodes = {
         root: root,
+        bottom: this.isReply || !Site.isOPContainerThread ? root : $(s.opBottom, root),
         post: post,
         info: info,
         comment: $(s.comment, post),
@@ -7280,7 +7290,8 @@ SW = {};
 
   SW.tinyboard = {
     isOPContainerThread: true,
-    disabledFeatures: ['Board Configuration', 'Normalize URL', 'Captcha Configuration', 'Image Host Rewriting', 'Index Generator', 'Announcement Hiding', 'Fourchan thingies', 'Resurrect Quotes', 'Quick Reply Personas', 'Quick Reply', 'Cooldown', 'Pass Link', 'Index Generator (Menu)', 'Report Link', 'Delete Link', 'Edit Link', 'Archive Link', 'Quote Inlining', 'Quote Previewing', 'Quote Backlinks', 'File Info Formatting', 'Fappe Tyme', 'Image Expansion', 'Image Expansion (Menu)', 'Comment Expansion', 'Thread Expansion', 'Favicon', 'Unread', 'Quote Threading', 'Thread Stats', 'Thread Updater', 'Mark New IPs', 'Banner', 'Flash Features', 'Reply Pruning'],
+    mayLackJSON: true,
+    disabledFeatures: ['Board Configuration', 'Normalize URL', 'Captcha Configuration', 'Image Host Rewriting', 'Index Generator', 'Announcement Hiding', 'Fourchan thingies', 'Resurrect Quotes', 'Quick Reply Personas', 'Quick Reply', 'Cooldown', 'Pass Link', 'Index Generator (Menu)', 'Report Link', 'Delete Link', 'Edit Link', 'Archive Link', 'Quote Inlining', 'Quote Previewing', 'Quote Backlinks', 'File Info Formatting', 'Fappe Tyme', 'Image Expansion', 'Image Expansion (Menu)', 'Comment Expansion', 'Thread Expansion', 'Favicon', 'Quote Threading', 'Thread Stats', 'Thread Updater', 'Mark New IPs', 'Banner', 'Flash Features', 'Reply Pruning'],
     detect: function() {
       var i, len, m, properties, ref, root, script;
       ref = $$('script:not([src])', d.head);
@@ -7306,6 +7317,16 @@ SW = {};
         var boardID, ref, siteID, threadID;
         siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID;
         return "" + (((ref = Conf['siteProperties'][siteID]) != null ? ref.root : void 0) || ("http://" + siteID + "/")) + boardID + "/res/" + threadID + ".html";
+      },
+      threadJSON: function(arg) {
+        var boardID, ref, root, siteID, threadID;
+        siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID;
+        root = (ref = Conf['siteProperties'][siteID]) != null ? ref.root : void 0;
+        if (root) {
+          return "" + root + boardID + "/res/" + threadID + ".json";
+        } else {
+          return '';
+        }
       }
     },
     selectors: {
@@ -7314,6 +7335,7 @@ SW = {};
       threadDivider: 'div[id^="thread_"] > hr:last-of-type',
       summary: '.omitted',
       postContainer: '.reply',
+      opBottom: '.op',
       infoRoot: '.intro',
       info: {
         subject: '.subject',
@@ -7348,7 +7370,8 @@ SW = {};
       postContainer: 'div[starts-with(@id,"reply_") or starts-with(@id,"thread_")]'
     },
     regexp: {
-      quotelink: /\/([^\/]+)\/res\/(\d+)\.html#(\d+)$/
+      quotelink: /\/([^\/]+)\/res\/(\d+)\.html#(\d+)$/,
+      quotelinkHTML: /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)\.html#(\d+)"/g
     },
     bgColoredEl: function() {
       return $.el('div', {
@@ -7415,6 +7438,11 @@ SW = {};
         var boardID, threadID;
         boardID = arg.boardID, threadID = arg.threadID;
         return location.protocol + "//" + (BoardConfig.domain(boardID)) + "/" + boardID + "/thread/" + threadID;
+      },
+      threadJSON: function(arg) {
+        var boardID, threadID;
+        boardID = arg.boardID, threadID = arg.threadID;
+        return location.protocol + "//a.4cdn.org/" + boardID + "/thread/" + threadID + ".json";
       }
     },
     selectors: {
@@ -7462,7 +7490,8 @@ SW = {};
       postContainer: 'div[contains(@class,"postContainer")]'
     },
     regexp: {
-      quotelink: /^https?:\/\/boards\.4chan(?:nel)?\.org\/+([^\/]+)\/+thread\/+(\d+)(?:[\/?][^#]*)?(?:#p(\d+))?$/
+      quotelink: /^https?:\/\/boards\.4chan(?:nel)?\.org\/+([^\/]+)\/+thread\/+(\d+)(?:[\/?][^#]*)?(?:#p(\d+))?$/,
+      quotelinkHTML: /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
     },
     bgColoredEl: function() {
       return $.el('div', {
@@ -7588,6 +7617,9 @@ SW = {};
         node = ref1[k];
         $.replace(node, [$.tn('[code]')].concat(slice.call(node.childNodes), [$.tn('[/code]')]));
       }
+    },
+    hasCORS: function(url) {
+      return url.split('/').slice(0, 3).join('/') === location.protocol + '//a.4cdn.org';
     }
   };
 
@@ -18874,6 +18906,47 @@ Time = (function() {
 
 }).call(this);
 
+Tinyboard = (function() {
+  var Tinyboard;
+
+  Tinyboard = {
+    init: function() {
+      if (Site.software !== 'tinyboard') {
+        return;
+      }
+      if (g.VIEW === 'thread') {
+        return Main.ready(function() {
+          return $.global(function() {
+            var boardID, ref, threadID;
+            ref = document.currentScript.dataset, boardID = ref.boardID, threadID = ref.threadID;
+            threadID = +threadID;
+            return window.$(document).on('new_post', function(e, post) {
+              var detail, event, postID;
+              postID = +post.id.match(/\d*$/)[0];
+              detail = {
+                boardID: boardID,
+                threadID: threadID,
+                postID: postID
+              };
+              event = new CustomEvent('QRPostSuccessful', {
+                bubbles: true,
+                detail: detail
+              });
+              return document.dispatchEvent(event);
+            });
+          }, {
+            boardID: g.BOARD.ID,
+            threadID: g.THREADID
+          });
+        });
+      }
+    }
+  };
+
+  return Tinyboard;
+
+}).call(this);
+
 Favicon = (function() {
   var Favicon;
 
@@ -19764,9 +19837,6 @@ ThreadWatcher = (function() {
       $.on(sc, 'click', this.toggleWatcher);
       $.on(this.refreshButton, 'click', this.buttonFetchAll);
       $.on(this.closeButton, 'click', this.toggleWatcher);
-      if (Site.software !== 'yotsuba') {
-        this.refreshButton.hidden = true;
-      }
       this.menu.addHeaderMenuEntry();
       $.onExists(doc, 'body', this.addDialog);
       switch (g.VIEW) {
@@ -20039,9 +20109,6 @@ ThreadWatcher = (function() {
     },
     fetchAuto: function() {
       var db, interval, now, ref;
-      if (Site.software !== 'yotsuba') {
-        return;
-      }
       clearTimeout(ThreadWatcher.timeout);
       if (!Conf['Auto Update Thread Watcher']) {
         return;
@@ -20049,7 +20116,7 @@ ThreadWatcher = (function() {
       db = ThreadWatcher.db;
       interval = ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] ? 5 * $.MINUTE : 2 * $.HOUR;
       now = Date.now();
-      if (!((now - interval < (ref = db.data[Site.hostname].lastChecked || 0) && ref <= now) || d.hidden || !d.hasFocus())) {
+      if (!((now - interval < (ref = db.data.lastChecked || 0) && ref <= now) || d.hidden || !d.hasFocus())) {
         ThreadWatcher.fetchAllStatus();
         db.setLastChecked();
       }
@@ -20064,9 +20131,6 @@ ThreadWatcher = (function() {
     },
     fetchAllStatus: function() {
       var db, dbs, i, len1, n, results;
-      if (Site.software !== 'yotsuba') {
-        return;
-      }
       dbs = [ThreadWatcher.db, ThreadWatcher.unreaddb, QuoteYou.db].filter(function(x) {
         return x;
       });
@@ -20088,66 +20152,96 @@ ThreadWatcher = (function() {
       return results;
     },
     fetchStatus: function(thread, force) {
-      var boardID, data, req, siteID, threadID;
+      var base, boardID, data, ref, ref1, req, siteID, software, threadID, url;
       siteID = thread.siteID, boardID = thread.boardID, threadID = thread.threadID, data = thread.data;
-      if (!(Site.software === 'yotsuba' && siteID === Site.hostname)) {
+      software = (ref = Conf['siteProperties'][siteID]) != null ? ref.software : void 0;
+      url = (ref1 = SW[software]) != null ? typeof (base = ref1.urls).threadJSON === "function" ? base.threadJSON({
+        siteID: siteID,
+        boardID: boardID,
+        threadID: threadID
+      }) : void 0 : void 0;
+      if (!url) {
         return;
       }
       if (data.isDead && !force) {
+        return;
+      }
+      if (data.last === -1) {
         return;
       }
       if (ThreadWatcher.requests.length === 0) {
         ThreadWatcher.status.textContent = '...';
         $.addClass(ThreadWatcher.refreshButton, 'fa-spin');
       }
-      req = $.ajax(location.protocol + "//a.4cdn.org/" + boardID + "/thread/" + threadID + ".json", {
-        onloadend: function() {
+      if ((typeof Site.hasCORS === "function" ? Site.hasCORS(url) : void 0) || url.split('/').slice(0, 3).join('/') === location.origin) {
+        req = $.ajax(url, {
+          onloadend: function() {
+            return ThreadWatcher.parseStatus.call(this, thread);
+          },
+          timeout: $.MINUTE
+        });
+      } else {
+        req = {
+          abort: function() {
+            return req.aborted = true;
+          }
+        };
+        CrossOrigin.json(url, function() {
+          if (req.aborted) {
+            return;
+          }
           return ThreadWatcher.parseStatus.call(this, thread);
-        },
-        timeout: $.MINUTE
-      }, {
-        whenModified: force ? false : 'ThreadWatcher'
-      });
+        }, true, $.MINUTE);
+      }
       return ThreadWatcher.requests.push(req);
     },
     parseStatus: function(arg) {
-      var boardID, data, i, isDead, lastReadPost, len1, match, postObj, quotesYou, quotingYou, ref, ref1, ref2, regexp, threadID, unread, youOP;
-      boardID = arg.boardID, threadID = arg.threadID, data = arg.data;
+      var boardID, data, i, isDead, last, lastReadPost, len1, match, postObj, quotesYou, quotingYou, ref, ref1, ref2, ref3, regexp, siteID, software, threadID, unread, updated, youOP;
+      siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID, data = arg.data;
       ThreadWatcher.fetched++;
       if (ThreadWatcher.fetched === ThreadWatcher.requests.length) {
         ThreadWatcher.clearRequests();
       } else {
         ThreadWatcher.status.textContent = (Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)) + "%";
       }
+      software = (ref = Conf['siteProperties'][siteID]) != null ? ref.software : void 0;
       if (this.status === 200 && this.response) {
+        last = this.response.posts[this.response.posts.length - 1].no;
         isDead = !!this.response.posts[0].archived;
         if (isDead && Conf['Auto Prune']) {
           ThreadWatcher.db["delete"]({
+            siteID: siteID,
             boardID: boardID,
             threadID: threadID
           });
           ThreadWatcher.refresh();
           return;
         }
+        if (last === data.last && isDead === data.isDead) {
+          return;
+        }
         lastReadPost = ThreadWatcher.unreaddb.get({
+          siteID: siteID,
           boardID: boardID,
           threadID: threadID,
           defaultValue: 0
         });
         unread = 0;
         quotingYou = false;
-        youOP = !!((ref = QuoteYou.db) != null ? ref.get({
+        youOP = !!((ref1 = QuoteYou.db) != null ? ref1.get({
+          siteID: siteID,
           boardID: boardID,
           threadID: threadID,
           postID: threadID
         }) : void 0);
-        ref1 = this.response.posts;
-        for (i = 0, len1 = ref1.length; i < len1; i++) {
-          postObj = ref1[i];
+        ref2 = this.response.posts;
+        for (i = 0, len1 = ref2.length; i < len1; i++) {
+          postObj = ref2[i];
           if (!(postObj.no > lastReadPost)) {
             continue;
           }
-          if ((ref2 = QuoteYou.db) != null ? ref2.get({
+          if ((ref3 = QuoteYou.db) != null ? ref3.get({
+            siteID: siteID,
             boardID: boardID,
             threadID: threadID,
             postID: postObj.no
@@ -20163,9 +20257,11 @@ ThreadWatcher = (function() {
             continue;
           }
           quotesYou = false;
-          regexp = /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g;
+          regexp = SW[software].regexp.quotelinkHTML;
+          regexp.lastIndex = 0;
           while (match = regexp.exec(postObj.com)) {
             if (QuoteYou.db.get({
+              siteID: siteID,
               boardID: match[1] || boardID,
               threadID: match[2] || threadID,
               postID: match[3] || match[2] || threadID
@@ -20178,26 +20274,41 @@ ThreadWatcher = (function() {
             quotingYou = true;
           }
         }
-        if (isDead !== data.isDead || unread !== data.unread || quotingYou !== data.quotingYou) {
-          ThreadWatcher.db.extend({
-            boardID: boardID,
-            threadID: threadID,
-            val: {
-              isDead: isDead,
-              unread: unread,
-              quotingYou: quotingYou
-            }
-          });
+        updated = isDead !== data.isDead || unread !== data.unread || quotingYou !== data.quotingYou;
+        ThreadWatcher.db.extend({
+          siteID: siteID,
+          boardID: boardID,
+          threadID: threadID,
+          val: {
+            last: last,
+            isDead: isDead,
+            unread: unread,
+            quotingYou: quotingYou
+          }
+        });
+        if (updated) {
           return ThreadWatcher.refresh();
         }
       } else if (this.status === 404) {
-        if (Conf['Auto Prune']) {
+        if (SW[software].mayLackJSON && (data.last == null)) {
+          ThreadWatcher.db.extend({
+            siteID: siteID,
+            boardID: boardID,
+            threadID: threadID,
+            val: {
+              last: -1
+            },
+            rm: ['unread', 'quotingYou']
+          });
+        } else if (Conf['Auto Prune']) {
           ThreadWatcher.db["delete"]({
+            siteID: siteID,
             boardID: boardID,
             threadID: threadID
           });
         } else {
           ThreadWatcher.db.extend({
+            siteID: siteID,
             boardID: boardID,
             threadID: threadID,
             val: {
@@ -20258,7 +20369,7 @@ ThreadWatcher = (function() {
         title: excerpt,
         className: 'watcher-link'
       });
-      if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] && software === 'yotsuba' && (data.unread != null)) {
+      if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] && (data.unread != null)) {
         count = $.el('span', {
           textContent: "(" + data.unread + ")",
           className: 'watcher-unread'
@@ -20280,7 +20391,7 @@ ThreadWatcher = (function() {
       if (data.isDead) {
         $.addClass(div, 'dead-thread');
       }
-      if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] && software === 'yotsuba') {
+      if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
         if (data.unread === 0) {
           $.addClass(div, 'replies-read');
         }
@@ -20701,17 +20812,17 @@ Unread = (function() {
       }
     },
     scroll: function() {
-      var hash, position, root;
+      var bottom, hash, position;
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
       position = Unread.positionPrev();
       while (position) {
-        root = position.data.nodes.root;
-        if (!root.getBoundingClientRect().height) {
+        bottom = position.data.nodes.bottom;
+        if (!bottom.getBoundingClientRect().height) {
           position = position.prev;
         } else {
-          Header.scrollToIfNeeded(root, true);
+          Header.scrollToIfNeeded(bottom, true);
           break;
         }
       }
@@ -20781,7 +20892,7 @@ Unread = (function() {
         icon: Favicon.logo
       });
       notif.onclick = function() {
-        Header.scrollToIfNeeded(post.nodes.root, true);
+        Header.scrollToIfNeeded(post.nodes.bottom, true);
         return window.focus();
       };
       return notif.onshow = function() {
@@ -20810,7 +20921,7 @@ Unread = (function() {
       return Unread.update();
     },
     read: $.debounce(100, function(e) {
-      var ID, count, data, ref, root;
+      var ID, bottom, count, data, ref;
       if (!Unread.posts.size && Unread.readCount !== Unread.thread.posts.keys.length) {
         Unread.saveLastReadPost();
       }
@@ -20820,8 +20931,8 @@ Unread = (function() {
       count = 0;
       while (Unread.position) {
         ref = Unread.position, ID = ref.ID, data = ref.data;
-        root = data.nodes.root;
-        if (!(!root.getBoundingClientRect().height || Header.getBottomOf(root) > -1)) {
+        bottom = data.nodes.bottom;
+        if (!(!bottom.getBoundingClientRect().height || Header.getBottomOf(bottom) > -1)) {
           break;
         }
         count++;
@@ -20875,7 +20986,7 @@ Unread = (function() {
       }
       if (Unread.hr.hidden || d.hidden || (force === true)) {
         if ((Unread.linePosition = Unread.positionPrev())) {
-          $.after(Unread.linePosition.data.nodes.root, Unread.hr);
+          $.after(Unread.linePosition.data.nodes.bottom, Unread.hr);
         } else {
           $.rm(Unread.hr);
         }
@@ -20893,7 +21004,7 @@ Unread = (function() {
         d.title = "" + titleQuotingYou + titleCount + titleDead;
       }
       Unread.saveThreadWatcherCount();
-      if (Conf['Unread Favicon']) {
+      if (Conf['Unread Favicon'] && Site.software === 'yotsuba') {
         isDead = Unread.thread.isDead;
         Favicon.el.href = countQuotingYou ? Favicon[isDead ? 'unreadDeadY' : 'unreadY'] : count ? Favicon[isDead ? 'unreadDead' : 'unread'] : Favicon[isDead ? 'dead' : 'default'];
         return $.add(d.head, Favicon.el);
@@ -25580,7 +25691,7 @@ Main = (function() {
         }
       });
     },
-    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Copy Text Link', CopyTextLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Unread Line in Index', UnreadIndex], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning]]
+    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Tinyboard Glue', Tinyboard], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Copy Text Link', CopyTextLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Unread Line in Index', UnreadIndex], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning]]
   };
 
   return Main;
