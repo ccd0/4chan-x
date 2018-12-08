@@ -440,6 +440,9 @@ audio.controls-added {
   left: 0;
   visibility: visible;
 }
+#notifications:empty {
+  display: none;
+}
 :root.fixed.top-header:not(.gallery-open) #header-bar #notifications,
 :root.fixed.top-header #header-bar.autohide #notifications {
   position: absolute;
