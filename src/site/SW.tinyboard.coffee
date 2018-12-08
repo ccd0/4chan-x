@@ -63,7 +63,7 @@ SW.tinyboard =
 
   selectors:
     board:         'form[name="postcontrols"]'
-    thread:        'div[id^="thread_"]'
+    thread:        'div[id^="thread_"]:not([data-cached="yes"])'
     threadDivider: 'div[id^="thread_"] > hr:last-of-type'
     summary:       '.omitted'
     postContainer: '.reply' # postContainer is thread for OP

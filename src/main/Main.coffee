@@ -328,21 +328,11 @@ Main =
       posts   = []
       errors  = []
 
-      Main.addPostsObserver = new MutationObserver Main.addPosts
+      Main.addThreadsObserver = new MutationObserver Main.addThreads
+      Main.addPostsObserver   = new MutationObserver Main.addPosts
+      Main.addThreadsObserver.observe board, {childList: true}
 
-      for threadRoot in $$(s.thread, board)
-        boardObj = if (boardID = threadRoot.dataset.board)
-          boardID = encodeURIComponent boardID
-          g.boards[boardID] or new Board(boardID)
-        else
-          g.BOARD
-        thread = new Thread +threadRoot.id.match(/\d*$/)[0], boardObj
-        thread.nodes.root = threadRoot
-        threads.push thread
-        postRoots = $$ s.postContainer, threadRoot
-        postRoots.unshift threadRoot if Site.isOPContainerThread
-        Main.parsePosts postRoots, thread, posts, errors
-        Main.addPostsObserver.observe threadRoot, {childList: true}
+      Main.parseThreads $$(s.thread, board), threads, posts, errors
       Main.handleErrors errors if errors.length
 
       if g.VIEW is 'thread'
@@ -358,6 +348,23 @@ Main =
       Main.expectInitFinished = true
       $.event '4chanXInitFinished'
 
+  parseThreads: (threadRoots, threads, posts, errors) ->
+    for threadRoot in threadRoots
+      boardObj = if (boardID = threadRoot.dataset.board)
+        boardID = encodeURIComponent boardID
+        g.boards[boardID] or new Board(boardID)
+      else
+        g.BOARD
+      threadID = +threadRoot.id.match(/\d*$/)[0]
+      return if boardObj.threads[threadID]?.nodes.root
+      thread = new Thread threadID, boardObj
+      thread.nodes.root = threadRoot
+      threads.push thread
+      postRoots = $$ Site.selectors.postContainer, threadRoot
+      postRoots.unshift threadRoot if Site.isOPContainerThread
+      Main.parsePosts postRoots, thread, posts, errors
+      Main.addPostsObserver.observe threadRoot, {childList: true}
+
   parsePosts: (postRoots, thread, posts, errors) ->
     for postRoot in postRoots when !postRoot.dataset.fullID and $(Site.selectors.comment, postRoot)
       try
@@ -368,6 +375,21 @@ Main =
           message: "Parsing of Post No.#{postRoot.id.match(/\d+/)} failed. Post will be skipped."
           error: err
     return
+
+  addThreads: (records) ->
+    threadRoots = []
+    for record in records
+      for node in record.addedNodes when node.matches(Site.selectors.thread)
+        threadRoots.push node
+    return unless threadRoots.length
+    threads = []
+    posts   = []
+    errors  = []
+    Main.parseThreads threadRoots, threads, posts, errors
+    Main.handleErrors errors if errors.length
+    Main.callbackNodes 'Thread', threads
+    Main.callbackNodesDB 'Post', posts, ->
+      $.event 'PostsInserted', null, records[0].target
 
   addPosts: (records) ->
     threads   = []

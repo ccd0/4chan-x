@@ -2,6 +2,7 @@ Polyfill =
   init: ->
     @toBlob()
     $.global @toBlob
+    Element::matches or= Element::mozMatchesSelector or Element::webkitMatchesSelector
     return
   toBlob: ->
     return if HTMLCanvasElement::toBlob
