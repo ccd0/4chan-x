@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.5.3
+// @version      1.14.5.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.5.3',
+  VERSION:   '1.14.5.4',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1695,6 +1695,9 @@ audio.controls-added {\n\
   right: 0;\n\
   left: 0;\n\
   visibility: visible;\n\
+}\n\
+#notifications:empty {\n\
+  display: none;\n\
 }\n\
 :root.fixed.top-header:not(.gallery-open) #header-bar #notifications,\n\
 :root.fixed.top-header #header-bar.autohide #notifications {\n\
@@ -7340,7 +7343,7 @@ SW = {};
     },
     selectors: {
       board: 'form[name="postcontrols"]',
-      thread: 'div[id^="thread_"]',
+      thread: 'div[id^="thread_"]:not([data-cached="yes"])',
       threadDivider: 'div[id^="thread_"] > hr:last-of-type',
       summary: '.omitted',
       postContainer: '.reply',
@@ -8998,6 +9001,7 @@ ThreadHiding = (function() {
       Index.updateHideLabel();
       if (thread.catalogView && !Index.showHiddenThreads) {
         $.rm(thread.catalogView.nodes.root);
+        $.event('PostsRemoved', null, Index.root);
       }
       if (!makeStub) {
         return threadRoot.hidden = true;
@@ -9014,7 +9018,8 @@ ThreadHiding = (function() {
       threadRoot.hidden = thread.isHidden = false;
       Index.updateHideLabel();
       if (thread.catalogView && Index.showHiddenThreads) {
-        return $.rm(thread.catalogView.nodes.root);
+        $.rm(thread.catalogView.nodes.root);
+        return $.event('PostsRemoved', null, Index.root);
       }
     }
   };
@@ -11392,6 +11397,9 @@ Index = (function() {
       delete Index.pageNum;
       $.rmAll(Index.root);
       $.rmAll(Header.hover);
+      if (Index.loaded && Index.root.parentNode) {
+        $.event('PostsRemoved', null, Index.root);
+      }
       if (Conf['Index Mode'] === 'catalog') {
         Index.buildCatalog(threadIDs);
       } else {
@@ -11530,8 +11538,10 @@ Polyfill = (function() {
 
   Polyfill = {
     init: function() {
+      var base;
       this.toBlob();
       $.global(this.toBlob);
+      (base = Element.prototype).matches || (base.matches = Element.prototype.mozMatchesSelector || Element.prototype.webkitMatchesSelector);
     },
     toBlob: function() {
       if (HTMLCanvasElement.prototype.toBlob) {
@@ -13372,7 +13382,9 @@ Gallery = (function() {
       ref2 = $$(Site.selectors.file.thumb);
       for (j = 0, len1 = ref2.length; j < len1; j++) {
         postThumb = ref2[j];
-        post = Get.postFromNode(postThumb);
+        if (!(post = Get.postFromNode(postThumb))) {
+          continue;
+        }
         if (!((ref3 = post.file) != null ? ref3.thumb : void 0)) {
           continue;
         }
@@ -17106,7 +17118,7 @@ ExpandThread = (function() {
       });
     },
     contract: function(thread, a, threadRoot) {
-      var filesCount, i, inlined, len, node, num, postsCount, replies, reply, status;
+      var filesCount, i, inlined, len, num, postsCount, replies, reply, status;
       status = ExpandThread.statuses[thread];
       delete ExpandThread.statuses[thread];
       if (status.req) {
@@ -17140,9 +17152,6 @@ ExpandThread = (function() {
       filesCount = 0;
       for (i = 0, len = replies.length; i < len; i++) {
         reply = replies[i];
-        while ((node = a.nextSibling) && node !== reply) {
-          $.rm(node);
-        }
         if (Conf['Quote Inlining']) {
           while (inlined = $('.inlined', reply)) {
             inlined.click();
@@ -17153,6 +17162,9 @@ ExpandThread = (function() {
           filesCount++;
         }
         $.rm(reply);
+      }
+      if (Index.enabled) {
+        $.event('PostsRemoved', null, a.parentNode);
       }
       a.textContent = Build.summaryText('+', postsCount, filesCount);
       return $.rm($('.summary-bottom', threadRoot));
@@ -18436,7 +18448,7 @@ RelativeDates = (function() {
       var ref;
       if (((ref = g.VIEW) === 'index' || ref === 'thread' || ref === 'archive') && Conf['Relative Post Dates'] && !Conf['Relative Date Title'] || Index.enabled) {
         this.flush();
-        $.on(d, 'visibilitychange ThreadUpdate', this.flush);
+        $.on(d, 'visibilitychange PostsInserted', this.flush);
       }
       if (Conf['Relative Post Dates']) {
         return Callbacks.Post.push({
@@ -20799,7 +20811,7 @@ Unread = (function() {
         }
       }
       $.one(d, '4chanXInitFinished', Unread.ready);
-      return $.on(d, 'ThreadUpdate', Unread.onUpdate);
+      return $.on(d, 'PostsInserted', Unread.onUpdate);
     },
     ready: function() {
       if (Conf['Remember Last Read Post'] && Conf['Scroll to Last Read Post']) {
@@ -20910,12 +20922,12 @@ Unread = (function() {
         }, 7 * $.SECOND);
       };
     },
-    onUpdate: function(e) {
-      if (!e.detail[404]) {
+    onUpdate: function() {
+      return $.queueTask(function() {
         Unread.setLine();
         Unread.read();
-      }
-      return Unread.update();
+        return Unread.update();
+      });
     },
     readSinglePost: function(post) {
       var ID;
@@ -21053,7 +21065,7 @@ UnreadIndex = (function() {
         cb: this.node
       });
       $.on(d, 'IndexRefreshInternal', this.onIndexRefresh);
-      return $.on(d, 'PostsInserted', this.onPostsInserted);
+      return $.on(d, 'PostsInserted PostsRemoved', this.onPostsInserted);
     },
     node: function() {
       UnreadIndex.lastReadPost[this.fullID] = UnreadIndex.db.get({
@@ -21089,7 +21101,7 @@ UnreadIndex = (function() {
       }
       wasVisible = !!((ref = UnreadIndex.hr[thread.fullID]) != null ? ref.parentNode : void 0);
       UnreadIndex.update(thread);
-      if (Conf['Scroll to Last Read Post'] && !wasVisible && !!((ref1 = UnreadIndex.hr[thread.fullID]) != null ? ref1.parentNode : void 0)) {
+      if (Conf['Scroll to Last Read Post'] && e.type === 'PostsInserted' && !wasVisible && !!((ref1 = UnreadIndex.hr[thread.fullID]) != null ? ref1.parentNode : void 0)) {
         return Header.scrollToIfNeeded(UnreadIndex.hr[thread.fullID], true);
       }
     },
@@ -24348,12 +24360,14 @@ QuoteInline = (function() {
       return Unread.readSinglePost(post);
     },
     rm: function(quotelink, boardID, threadID, postID, context) {
-      var el, inlined, isBacklink, post, qroot, ref, root;
+      var el, inlined, isBacklink, parentNode, post, qroot, ref, root;
       isBacklink = $.hasClass(quotelink, 'backlink');
       root = QuoteInline.findRoot(quotelink, isBacklink);
       root = $.x("following-sibling::div[@data-full-i-d='" + boardID + "." + postID + "'][1]", root);
       qroot = $.x('ancestor::*[contains(@class,"postContainer")][1]', root);
+      parentNode = root.parentNode;
       $.rm(root);
+      $.event('PostsRemoved', null, parentNode);
       if (!$('.inline', qroot)) {
         $.rmClass(qroot, 'hasInline');
       }
@@ -24502,6 +24516,7 @@ QuotePreview = (function() {
       if (!(root = this.el.firstElementChild)) {
         return;
       }
+      $.event('PostsRemoved', null, Header.hover);
       clone = Get.postFromRoot(root);
       post = clone.origin;
       post.rmClone(root.dataset.clone);
@@ -25523,41 +25538,19 @@ Main = (function() {
       }
     },
     initThread: function() {
-      var board, boardID, boardObj, err, errors, j, k, len, len1, postRoot, postRoots, posts, ref, s, thread, threadRoot, threads;
+      var board, errors, posts, s, threads;
       s = Site.selectors;
       if ((board = $(s.board))) {
         threads = [];
         posts = [];
-        ref = $$(s.thread, board);
-        for (j = 0, len = ref.length; j < len; j++) {
-          threadRoot = ref[j];
-          boardObj = (boardID = threadRoot.dataset.board) ? (boardID = encodeURIComponent(boardID), g.boards[boardID] || new Board(boardID)) : g.BOARD;
-          thread = new Thread(+threadRoot.id.match(/\d*$/)[0], boardObj);
-          thread.nodes.root = threadRoot;
-          threads.push(thread);
-          postRoots = $$(s.postContainer, threadRoot);
-          if (Site.isOPContainerThread) {
-            postRoots.unshift(threadRoot);
-          }
-          for (k = 0, len1 = postRoots.length; k < len1; k++) {
-            postRoot = postRoots[k];
-            if ($(s.comment, postRoot)) {
-              try {
-                posts.push(new Post(postRoot, thread, thread.board));
-              } catch (_error) {
-                err = _error;
-                if (!errors) {
-                  errors = [];
-                }
-                errors.push({
-                  message: "Parsing of Post No." + (postRoot.id.match(/\d+/)) + " failed. Post will be skipped.",
-                  error: err
-                });
-              }
-            }
-          }
-        }
-        if (errors) {
+        errors = [];
+        Main.addThreadsObserver = new MutationObserver(Main.addThreads);
+        Main.addPostsObserver = new MutationObserver(Main.addPosts);
+        Main.addThreadsObserver.observe(board, {
+          childList: true
+        });
+        Main.parseThreads($$(s.thread, board), threads, posts, errors);
+        if (errors.length) {
           Main.handleErrors(errors);
         }
         if (g.VIEW === 'thread') {
@@ -25567,9 +25560,9 @@ Main = (function() {
         }
         Main.callbackNodes('Thread', threads);
         return Main.callbackNodesDB('Post', posts, function() {
-          var l, len2, post;
-          for (l = 0, len2 = posts.length; l < len2; l++) {
-            post = posts[l];
+          var j, len, post;
+          for (j = 0, len = posts.length; j < len; j++) {
+            post = posts[j];
             QuoteThreading.insert(post);
           }
           Main.expectInitFinished = true;
@@ -25579,6 +25572,115 @@ Main = (function() {
         Main.expectInitFinished = true;
         return $.event('4chanXInitFinished');
       }
+    },
+    parseThreads: function(threadRoots, threads, posts, errors) {
+      var boardID, boardObj, j, len, postRoots, ref, thread, threadID, threadRoot;
+      for (j = 0, len = threadRoots.length; j < len; j++) {
+        threadRoot = threadRoots[j];
+        boardObj = (boardID = threadRoot.dataset.board) ? (boardID = encodeURIComponent(boardID), g.boards[boardID] || new Board(boardID)) : g.BOARD;
+        threadID = +threadRoot.id.match(/\d*$/)[0];
+        if ((ref = boardObj.threads[threadID]) != null ? ref.nodes.root : void 0) {
+          return;
+        }
+        thread = new Thread(threadID, boardObj);
+        thread.nodes.root = threadRoot;
+        threads.push(thread);
+        postRoots = $$(Site.selectors.postContainer, threadRoot);
+        if (Site.isOPContainerThread) {
+          postRoots.unshift(threadRoot);
+        }
+        Main.parsePosts(postRoots, thread, posts, errors);
+        Main.addPostsObserver.observe(threadRoot, {
+          childList: true
+        });
+      }
+    },
+    parsePosts: function(postRoots, thread, posts, errors) {
+      var err, j, len, postRoot;
+      for (j = 0, len = postRoots.length; j < len; j++) {
+        postRoot = postRoots[j];
+        if (!postRoot.dataset.fullID && $(Site.selectors.comment, postRoot)) {
+          try {
+            posts.push(new Post(postRoot, thread, thread.board));
+          } catch (_error) {
+            err = _error;
+            errors.push({
+              message: "Parsing of Post No." + (postRoot.id.match(/\d+/)) + " failed. Post will be skipped.",
+              error: err
+            });
+          }
+        }
+      }
+    },
+    addThreads: function(records) {
+      var errors, j, k, len, len1, node, posts, record, ref, threadRoots, threads;
+      threadRoots = [];
+      for (j = 0, len = records.length; j < len; j++) {
+        record = records[j];
+        ref = record.addedNodes;
+        for (k = 0, len1 = ref.length; k < len1; k++) {
+          node = ref[k];
+          if (node.matches(Site.selectors.thread)) {
+            threadRoots.push(node);
+          }
+        }
+      }
+      if (!threadRoots.length) {
+        return;
+      }
+      threads = [];
+      posts = [];
+      errors = [];
+      Main.parseThreads(threadRoots, threads, posts, errors);
+      if (errors.length) {
+        Main.handleErrors(errors);
+      }
+      Main.callbackNodes('Thread', threads);
+      return Main.callbackNodesDB('Post', posts, function() {
+        return $.event('PostsInserted', null, records[0].target);
+      });
+    },
+    addPosts: function(records) {
+      var anyRemoved, el, errors, j, k, len, len1, n, posts, record, ref, ref1, thread, threads, threadsRM;
+      threads = [];
+      threadsRM = [];
+      posts = [];
+      errors = [];
+      for (j = 0, len = records.length; j < len; j++) {
+        record = records[j];
+        thread = Get.threadFromRoot(record.target);
+        n = posts.length;
+        Main.parsePosts(record.addedNodes, thread, posts, errors);
+        if (posts.length > n && indexOf.call(threads, thread) < 0) {
+          threads.push(thread);
+        }
+        anyRemoved = false;
+        ref = record.removedNodes;
+        for (k = 0, len1 = ref.length; k < len1; k++) {
+          el = ref[k];
+          if (((ref1 = Get.postFromRoot(el)) != null ? ref1.nodes.root : void 0) === el && !doc.contains(el)) {
+            anyRemoved = true;
+            break;
+          }
+        }
+        if (anyRemoved && indexOf.call(threadsRM, thread) < 0) {
+          threadsRM.push(thread);
+        }
+      }
+      if (errors.length) {
+        Main.handleErrors(errors);
+      }
+      return Main.callbackNodesDB('Post', posts, function() {
+        var l, len2, len3, m;
+        for (l = 0, len2 = threads.length; l < len2; l++) {
+          thread = threads[l];
+          $.event('PostsInserted', null, thread.nodes.root);
+        }
+        for (m = 0, len3 = threadsRM.length; m < len3; m++) {
+          thread = threadsRM[m];
+          $.event('PostsRemoved', null, thread.nodes.root);
+        }
+      });
     },
     callbackNodes: function(klass, nodes) {
       var cb, i, node;

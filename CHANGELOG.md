@@ -4,6 +4,10 @@
 
 ### v1.14.5
 
+**v1.14.5.4** *(2018-12-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.4/builds/4chan-X-noupdate.crx)]
+- Tinyboard/vichan improvements: Process posts added by thread updating, thread expansion, and infinite scrolling scripts.
+- Fire a `PostsRemoved` event when posts are removed.
+
 **v1.14.5.3** *(2018-12-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.3/builds/4chan-X-noupdate.crx)]
 - Fix bugs in cross-site data access.
 
