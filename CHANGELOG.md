@@ -4,6 +4,9 @@
 
 ### v1.14.5
 
+**v1.14.5.5** *(2018-12-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.5/builds/4chan-X-noupdate.crx)]
+- Fix bug causing errors on threads in overboards from boards with unusual characters in the name.
+
 **v1.14.5.4** *(2018-12-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.4/builds/4chan-X-noupdate.crx)]
 - Tinyboard/vichan improvements: Process posts added by thread updating, thread expansion, and infinite scrolling scripts.
 - Fire a `PostsRemoved` event when posts are removed.

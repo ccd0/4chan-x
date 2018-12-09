@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.5.4
+// @version      1.14.5.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.5.4',
+  VERSION:   '1.14.5.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -9468,10 +9468,12 @@ Get = (function() {
       return excerpt;
     },
     threadFromRoot: function(root) {
+      var board;
       if (root == null) {
         return null;
       }
-      return g.threads[(root.dataset.board || g.BOARD.ID) + "." + (root.id.match(/\d*$/)[0])];
+      board = root.dataset.board;
+      return g.threads[(board ? encodeURIComponent(board) : g.BOARD.ID) + "." + (root.id.match(/\d*$/)[0])];
     },
     threadFromNode: function(node) {
       return Get.threadFromRoot($.x("ancestor-or-self::" + Site.xpath.thread, node));
