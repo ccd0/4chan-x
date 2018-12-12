@@ -234,7 +234,9 @@ Header =
           href: "/#{g.BOARD.ID}/"
           textContent: text or g.BOARD.ID
           className: 'current'
-        if /-(catalog|archive|expired)/.test(t)
+        if /-catalog/.test(t)
+          a.href += 'catalog.html'
+        else if /-(archive|expired)/.test(t)
           a = a.firstChild # Its text node.
         return a
 
