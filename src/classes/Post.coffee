@@ -175,7 +175,7 @@ class Post
 
     $.extend file,
       url:     file.link.href
-      isImage: /(jpe?g|png|gif)$/i.test file.link.href
+      isImage: /(jpe?g|png|gif|bmp)$/i.test file.link.href
       isVideo: /(webm|mp4)$/i.test file.link.href
     size  = +file.size.match(/[\d.]+/)[0]
     unit  = ['B', 'KB', 'MB', 'GB'].indexOf file.size.match(/\w+$/)[0]
