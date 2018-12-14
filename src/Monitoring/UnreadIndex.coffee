@@ -56,7 +56,7 @@ UnreadIndex =
     repliesRead = 0
     firstUnread = null
     thread.posts.forEach (post) ->
-      if post.isReply and post.nodes.root.parentNode is thread.nodes.root
+      if post.isReply and thread.nodes.root.contains(post.nodes.root)
         repliesShown++
         if post.ID <= lastReadPost
           repliesRead++

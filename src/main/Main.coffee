@@ -379,7 +379,7 @@ Main =
   addThreads: (records) ->
     threadRoots = []
     for record in records
-      for node in record.addedNodes when node.matches(Site.selectors.thread)
+      for node in record.addedNodes when node.nodeType is Node.ELEMENT_NODE and node.matches(Site.selectors.thread)
         threadRoots.push node
     return unless threadRoots.length
     threads = []
@@ -398,8 +398,12 @@ Main =
     errors    = []
     for record in records
       thread = Get.threadFromRoot record.target
+      postRoots = []
+      for node in record.addedNodes when node.nodeType is Node.ELEMENT_NODE
+        if node.matches(Site.selectors.postContainer) or (node = $(Site.selectors.postContainer, node))
+          postRoots.push node
       n = posts.length
-      Main.parsePosts record.addedNodes, thread, posts, errors
+      Main.parsePosts postRoots, thread, posts, errors
       if posts.length > n and thread not in threads
         threads.push thread
       anyRemoved = false
