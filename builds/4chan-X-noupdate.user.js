@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.5.5
+// @version      1.14.5.6
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.5.5',
+  VERSION:   '1.14.5.6',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -6714,7 +6714,7 @@ Post = (function() {
       }
       $.extend(file, {
         url: file.link.href,
-        isImage: /(jpe?g|png|gif)$/i.test(file.link.href),
+        isImage: /(jpe?g|png|gif|bmp)$/i.test(file.link.href),
         isVideo: /(webm|mp4)$/i.test(file.link.href)
       });
       size = +file.size.match(/[\d.]+/)[0];
@@ -9826,7 +9826,9 @@ Header = (function() {
             textContent: text || g.BOARD.ID,
             className: 'current'
           });
-          if (/-(catalog|archive|expired)/.test(t)) {
+          if (/-catalog/.test(t)) {
+            a.href += 'catalog.html';
+          } else if (/-(archive|expired)/.test(t)) {
             a = a.firstChild;
           }
           return a;
@@ -10381,7 +10383,8 @@ Index = (function() {
         $.rm($.id('ctrl-top'));
         topNavPos = $.id('delform').previousElementSibling;
         $.before(topNavPos, $.el('hr'));
-        return $.before(topNavPos, Index.navLinks);
+        $.before(topNavPos, Index.navLinks);
+        return RelativeDates.update($('#index-last-refresh time', Index.navLinks));
       });
       return Main.ready(function() {
         var pagelist;
@@ -21129,7 +21132,7 @@ UnreadIndex = (function() {
       repliesRead = 0;
       firstUnread = null;
       thread.posts.forEach(function(post) {
-        if (post.isReply && post.nodes.root.parentNode === thread.nodes.root) {
+        if (post.isReply && thread.nodes.root.contains(post.nodes.root)) {
           repliesShown++;
           if (post.ID <= lastReadPost) {
             return repliesRead++;
@@ -25622,7 +25625,7 @@ Main = (function() {
         ref = record.addedNodes;
         for (k = 0, len1 = ref.length; k < len1; k++) {
           node = ref[k];
-          if (node.matches(Site.selectors.thread)) {
+          if (node.nodeType === Node.ELEMENT_NODE && node.matches(Site.selectors.thread)) {
             threadRoots.push(node);
           }
         }
@@ -25643,7 +25646,7 @@ Main = (function() {
       });
     },
     addPosts: function(records) {
-      var anyRemoved, el, errors, j, k, len, len1, n, posts, record, ref, ref1, thread, threads, threadsRM;
+      var anyRemoved, el, errors, j, k, l, len, len1, len2, n, node, postRoots, posts, record, ref, ref1, ref2, thread, threads, threadsRM;
       threads = [];
       threadsRM = [];
       posts = [];
@@ -25651,16 +25654,26 @@ Main = (function() {
       for (j = 0, len = records.length; j < len; j++) {
         record = records[j];
         thread = Get.threadFromRoot(record.target);
+        postRoots = [];
+        ref = record.addedNodes;
+        for (k = 0, len1 = ref.length; k < len1; k++) {
+          node = ref[k];
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.matches(Site.selectors.postContainer) || (node = $(Site.selectors.postContainer, node))) {
+              postRoots.push(node);
+            }
+          }
+        }
         n = posts.length;
-        Main.parsePosts(record.addedNodes, thread, posts, errors);
+        Main.parsePosts(postRoots, thread, posts, errors);
         if (posts.length > n && indexOf.call(threads, thread) < 0) {
           threads.push(thread);
         }
         anyRemoved = false;
-        ref = record.removedNodes;
-        for (k = 0, len1 = ref.length; k < len1; k++) {
-          el = ref[k];
-          if (((ref1 = Get.postFromRoot(el)) != null ? ref1.nodes.root : void 0) === el && !doc.contains(el)) {
+        ref1 = record.removedNodes;
+        for (l = 0, len2 = ref1.length; l < len2; l++) {
+          el = ref1[l];
+          if (((ref2 = Get.postFromRoot(el)) != null ? ref2.nodes.root : void 0) === el && !doc.contains(el)) {
             anyRemoved = true;
             break;
           }
@@ -25673,13 +25686,13 @@ Main = (function() {
         Main.handleErrors(errors);
       }
       return Main.callbackNodesDB('Post', posts, function() {
-        var l, len2, len3, m;
-        for (l = 0, len2 = threads.length; l < len2; l++) {
-          thread = threads[l];
+        var len3, len4, m, o;
+        for (m = 0, len3 = threads.length; m < len3; m++) {
+          thread = threads[m];
           $.event('PostsInserted', null, thread.nodes.root);
         }
-        for (m = 0, len3 = threadsRM.length; m < len3; m++) {
-          thread = threadsRM[m];
+        for (o = 0, len4 = threadsRM.length; o < len4; o++) {
+          thread = threadsRM[o];
           $.event('PostsRemoved', null, thread.nodes.root);
         }
       });
