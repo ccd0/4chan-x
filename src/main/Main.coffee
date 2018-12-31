@@ -176,10 +176,10 @@ Main =
 
     if pathname[2] in ['thread', 'res']
       g.VIEW     = 'thread'
-      g.THREADID = +pathname[3].replace('.html', '')
-    else if /^(?:catalog|archive)(?:\.html)?$/.test(pathname[2])
-      g.VIEW = pathname[2].replace('.html', '')
-    else if /^(?:index|\d*)(?:\.html)?$/.test(pathname[2])
+      g.THREADID = +pathname[3].replace(/\.\w+$/, '')
+    else if /^(?:catalog|archive)(?:\.\w+)?$/.test(pathname[2])
+      g.VIEW = pathname[2].replace(/\.\w+$/, '')
+    else if /^(?:index|\d*)(?:\.\w+)?$/.test(pathname[2])
       g.VIEW = 'index'
     else
       return
