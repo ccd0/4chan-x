@@ -4,6 +4,9 @@
 
 ### v1.14.5
 
+**v1.14.5.7** *(2019-01-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.7/builds/4chan-X-noupdate.crx)]
+- Work when site uses extensions for pages other than .html
+
 **v1.14.5.6** *(2018-12-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.6/builds/4chan-X-noupdate.crx)]
 - Fix bug causing Last Index Refresh time to not update with passing time until index/catalog reloaded.
 - Treat .bmp files as images.
