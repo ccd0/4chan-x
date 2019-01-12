@@ -135,7 +135,7 @@ Keybinds =
         else
           location.href = "/#{g.BOARD}/"
       when Conf['Open front page']
-        $.open "#{location.origin}/#{g.BOARD}/"
+        $.open "#{location.origin}/#{g.BOARD}/", 1
       when Conf['Next page']
         return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
         if Conf['JSON Index']
@@ -317,7 +317,7 @@ Keybinds =
     return if g.VIEW isnt 'index'
     url = "/#{thread.board}/thread/#{thread}"
     if tab
-      $.open location.origin + url
+      $.open location.origin + url, 1
     else
       location.href = url
 
