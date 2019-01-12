@@ -63,6 +63,9 @@ Filter =
             false
           else
             Conf['Stubs']
+			
+		# Desktop notification
+		noti = /notify/.test filter
 
         # Highlight the post, or hide it.
         # If not specified, the highlight class will be filter-highlight.
@@ -82,7 +85,7 @@ Filter =
           else
             types = ['subject', 'name', 'filename', 'comment']
 
-        filter = @createFilter regexp, boards, excludes, op, stub, hl, top
+        filter = @createFilter regexp, boards, excludes, op, stub, hl, top, noti
         if key is 'general'
           for type in types
             (@filters[type] or= []).push filter
@@ -94,7 +97,7 @@ Filter =
       name: 'Filter'
       cb:   @node
 
-  createFilter: (regexp, boards, excludes, op, stub, hl, top) ->
+  createFilter: (regexp, boards, excludes, op, stub, hl, top, noti) ->
     test =
       if typeof regexp is 'string'
         # MD5 checking
@@ -107,6 +110,7 @@ Filter =
       stub:  stub
       class: hl
       top:   top
+	  noti:  noti
 
     (value, boardID, isReply) ->
       if boards and boardID not in boards
@@ -125,6 +129,7 @@ Filter =
     stub = true
     hl   = undefined
     top  = false
+	noti = false
     if QuoteYou.isYou(post)
       hideable = false
     for key of Filter.filters when ((value = Filter[key] post)?)
@@ -138,14 +143,16 @@ Filter =
           unless hl and result.class in hl
             (hl or= []).push result.class
           top or= result.top
+		if result.noti
+		  noti = true
     if hide
-      {hide, stub}
+      {hide, stub, noti}
     else
-      {hl, top}
+      {hl, top, noti}
 
   node: ->
     return if @isClone
-    {hide, stub, hl, top} = Filter.test @, (!@isFetchedQuote and (@isReply or g.VIEW is 'index'))
+    {hide, stub, hl, top, noti} = Filter.test @, (!@isFetchedQuote and (@isReply or g.VIEW is 'index'))
     if hide
       if @isReply
         PostHiding.hide @, stub
@@ -155,7 +162,20 @@ Filter =
       if hl
         @highlights = hl
         $.addClass @nodes.root, hl...
-    return
+	if noti
+	  if Header.areNotificationsEnabled
+		if not (Unread.posts is null)
+          if (@ID > Unread.lastReadPost) and not QuoteYou.isYou(@)
+            notif = new Notification "#{@info.nameBlock} triggered a notification filter",
+              body: @commentDisplay()
+              icon: Favicon.logo
+            notif.onclick = ->
+              Header.scrollToIfNeeded @nodes.bottom, true
+              window.focus()
+            notif.onshow = ->
+              setTimeout ->
+                notif.close()
+              , 7 * $.SECOND
 
   isHidden: (post) ->
     !!Filter.test(post).hide
