@@ -105,12 +105,12 @@ SW.tinyboard =
         ([^/]+) # boardID
         /res/
         (\d+)   # threadID
-        \.html#
+        \.\w+#
         (\d+)   # postID
         $
       ///
     quotelinkHTML:
-      /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)\.html#(\d+)"/g
+      /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)\.\w+#(\d+)"/g
 
   bgColoredEl: ->
     $.el 'div', className: 'post reply'
