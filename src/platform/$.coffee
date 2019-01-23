@@ -55,15 +55,20 @@ $.ajax = do ->
     options.responseType ?= 'json' if /\.json$/.test url
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
-    # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
-    url += "?s=#{whenModified}" if $.engine is 'blink' and whenModified
+    if whenModified
+      params = []
+      # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
+      params.push "s=#{whenModified}" if $.engine is 'blink'
+      params.push "t=#{Date.now()}" if Site.software is 'yotsuba'
+      url0 = url
+      url += '?' + params.join('&') if params.length
     r = new pageXHR()
     type or= form and 'post' or 'get'
     try
       r.open type, url, true
       if whenModified
-        r.setRequestHeader 'If-Modified-Since', lastModified[whenModified][url] if lastModified[whenModified]?[url]?
-        $.on r, 'load', -> (lastModified[whenModified] or= {})[url] = r.getResponseHeader 'Last-Modified'
+        r.setRequestHeader 'If-Modified-Since', lastModified[whenModified][url0] if lastModified[whenModified]?[url0]?
+        $.on r, 'load', -> (lastModified[whenModified] or= {})[url0] = r.getResponseHeader 'Last-Modified'
       $.extend r, options
       $.extend r.upload, upCallbacks
       # connection error or content blocker
