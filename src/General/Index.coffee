@@ -168,7 +168,8 @@ Index =
       topNavPos = $.id('delform').previousElementSibling
       $.before topNavPos, $.el 'hr'
       $.before topNavPos, Index.navLinks
-      RelativeDates.update $('#index-last-refresh time', Index.navLinks)
+      timeEl = $ '#index-last-refresh time', Index.navLinks
+      RelativeDates.update timeEl if timeEl.dataset.utc
 
     Main.ready ->
       if (pagelist = $ '.pagelist')
