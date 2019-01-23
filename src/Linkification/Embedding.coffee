@@ -204,7 +204,7 @@ Embedding =
 
   ordered_types: [
       key: 'audio'
-      regExp: /^[^?#]+\.(?:mp3|oga|wav|flac)(?:[?#]|$)/i
+      regExp: /^[^?#]+\.(?:mp3|m4a|oga|wav|flac)(?:[?#]|$)/i
       style: ''
       el: (a) ->
         $.el 'audio',
