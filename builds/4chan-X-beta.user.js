@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.5.7
+// @version      1.14.5.8
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.5.7',
+  VERSION:   '1.14.5.8',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -4603,7 +4603,7 @@ $ = (function() {
       pageXHR = XMLHttpRequest;
     }
     return function(url, options, extra) {
-      var err, event, form, j, len, r, ref, ref1, type, upCallbacks, whenModified;
+      var err, event, form, j, len, params, r, ref, ref1, type, upCallbacks, url0, whenModified;
       if (options == null) {
         options = {};
       }
@@ -4617,19 +4617,29 @@ $ = (function() {
         }
       }
       url = url.replace(/^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/');
-      if ($.engine === 'blink' && whenModified) {
-        url += "?s=" + whenModified;
+      if (whenModified) {
+        params = [];
+        if ($.engine === 'blink') {
+          params.push("s=" + whenModified);
+        }
+        if (Site.software === 'yotsuba') {
+          params.push("t=" + (Date.now()));
+        }
+        url0 = url;
+        if (params.length) {
+          url += '?' + params.join('&');
+        }
       }
       r = new pageXHR();
       type || (type = form && 'post' || 'get');
       try {
         r.open(type, url, true);
         if (whenModified) {
-          if (((ref = lastModified[whenModified]) != null ? ref[url] : void 0) != null) {
-            r.setRequestHeader('If-Modified-Since', lastModified[whenModified][url]);
+          if (((ref = lastModified[whenModified]) != null ? ref[url0] : void 0) != null) {
+            r.setRequestHeader('If-Modified-Since', lastModified[whenModified][url0]);
           }
           $.on(r, 'load', function() {
-            return (lastModified[whenModified] || (lastModified[whenModified] = {}))[url] = r.getResponseHeader('Last-Modified');
+            return (lastModified[whenModified] || (lastModified[whenModified] = {}))[url0] = r.getResponseHeader('Last-Modified');
           });
         }
         $.extend(r, options);
@@ -7382,8 +7392,8 @@ SW = {};
       postContainer: 'div[starts-with(@id,"reply_") or starts-with(@id,"thread_")]'
     },
     regexp: {
-      quotelink: /\/([^\/]+)\/res\/(\d+)\.html#(\d+)$/,
-      quotelinkHTML: /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)\.html#(\d+)"/g
+      quotelink: /\/([^\/]+)\/res\/(\d+)\.\w+#(\d+)$/,
+      quotelinkHTML: /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)\.\w+#(\d+)"/g
     },
     bgColoredEl: function() {
       return $.el('div', {
@@ -10356,7 +10366,7 @@ Index = (function() {
         return d.title = d.title.replace(/\ -\ Page\ \d+/, '');
       });
       $.onExists(doc, '.board > .thread > .postContainer, .board + *', function() {
-        var board, el, len3, m, ref9, topNavPos;
+        var board, el, len3, m, ref9, timeEl, topNavPos;
         Build.hat = $('.board > .thread > img:first-child');
         if (Build.hat) {
           g.BOARD.threads.forEach(function(thread) {
@@ -10384,7 +10394,10 @@ Index = (function() {
         topNavPos = $.id('delform').previousElementSibling;
         $.before(topNavPos, $.el('hr'));
         $.before(topNavPos, Index.navLinks);
-        return RelativeDates.update($('#index-last-refresh time', Index.navLinks));
+        timeEl = $('#index-last-refresh time', Index.navLinks);
+        if (timeEl.dataset.utc) {
+          return RelativeDates.update(timeEl);
+        }
       });
       return Main.ready(function() {
         var pagelist;
@@ -15481,7 +15494,7 @@ Embedding = (function() {
     ordered_types: [
       {
         key: 'audio',
-        regExp: /^[^?#]+\.(?:mp3|oga|wav)(?:[?#]|$)/i,
+        regExp: /^[^?#]+\.(?:mp3|m4a|oga|wav|flac)(?:[?#]|$)/i,
         style: '',
         el: function(a) {
           return $.el('audio', {
@@ -18943,12 +18956,18 @@ Tinyboard = (function() {
       if (g.VIEW === 'thread') {
         return Main.ready(function() {
           return $.global(function() {
-            var boardID, ref, threadID;
+            var boardID, form, ref, threadID;
             ref = document.currentScript.dataset, boardID = ref.boardID, threadID = ref.threadID;
             threadID = +threadID;
-            return window.$(document).on('new_post', function(e, post) {
-              var detail, event, postID;
-              postID = +post.id.match(/\d*$/)[0];
+            form = document.querySelector('form[name="post"]');
+            return window.$(document).ajaxComplete(function(event, request, settings) {
+              var detail, postID, ref1;
+              if (settings.url !== form.action) {
+                return;
+              }
+              if (!(postID = +((ref1 = request.responseJSON) != null ? ref1.id : void 0))) {
+                return;
+              }
               detail = {
                 boardID: boardID,
                 threadID: threadID,

@@ -4,6 +4,13 @@
 
 ### v1.14.5
 
+**v1.14.5.8** *(2019-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.8/builds/4chan-X-noupdate.crx)]
+- Restore updating faster than 30 seconds after 4chan change.
+- Fix false detection of posts added by updater on Tinyboard as own posts.
+- Support recognizing quotelinks to pages with extensions other than .html.
+- Add FLAC and M4A to embeddable audio types. #2202
+- Fix issue from v1.14.5.6 causing display of 'NaN seconds' before index is loaded.
+
 **v1.14.5.7** *(2019-01-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.7/builds/4chan-X-noupdate.crx)]
 - Work when site uses extensions for pages other than .html
 
