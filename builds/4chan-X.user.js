@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.5.8
+// @version      1.14.5.9
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.5.8',
+  VERSION:   '1.14.5.9',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -21026,12 +21026,16 @@ Unread = (function() {
       });
     }),
     setLine: function(force) {
+      var oldPosition;
       if (!Conf['Unread Line']) {
         return;
       }
       if (Unread.hr.hidden || d.hidden || (force === true)) {
+        oldPosition = Unread.linePosition;
         if ((Unread.linePosition = Unread.positionPrev())) {
-          $.after(Unread.linePosition.data.nodes.bottom, Unread.hr);
+          if (Unread.linePosition !== oldPosition) {
+            $.after(Unread.linePosition.data.nodes.bottom, Unread.hr);
+          }
         } else {
           $.rm(Unread.hr);
         }

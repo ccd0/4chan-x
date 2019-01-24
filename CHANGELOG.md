@@ -4,6 +4,9 @@
 
 ### v1.14.5
 
+**v1.14.5.9** *(2019-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.9/builds/4chan-X-noupdate.crx)]
+- Don't re-insert unread line unless it needs to move. #2214
+
 **v1.14.5.8** *(2019-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.8/builds/4chan-X-noupdate.crx)]
 - Restore updating faster than 30 seconds after 4chan change.
 - Fix false detection of posts added by updater on Tinyboard as own posts.
