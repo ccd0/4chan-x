@@ -144,7 +144,7 @@ ThreadWatcher =
         if Conf['Auto Watch']
           ThreadWatcher.addRaw boardID, threadID, {}
       else if Conf['Auto Watch Reply']
-        ThreadWatcher.add g.threads[boardID + '.' + threadID]
+        ThreadWatcher.add g.threads[boardID + '.' + threadID] or new Thread(threadID, g.boards[boardID] or new Board(boardID))
     onIndexUpdate: (e) ->
       {db}    = ThreadWatcher
       siteID  = Site.hostname
@@ -374,7 +374,7 @@ ThreadWatcher =
     ThreadWatcher.setPrefixes threads
     for {siteID, boardID, threadID, data} in threads
       # Add missing excerpt for threads added by Auto Watch
-      if not data.excerpt? and siteID is Site.hostname and (thread = g.threads["#{boardID}.#{threadID}"])
+      if not data.excerpt? and siteID is Site.hostname and (thread = g.threads["#{boardID}.#{threadID}"]) and thread.OP
         ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt thread}}
       nodes.push ThreadWatcher.makeLine siteID, boardID, threadID, data
     {list} = ThreadWatcher
@@ -451,7 +451,7 @@ ThreadWatcher =
         ThreadWatcher.rm siteID, boardID, threadID
         return
       data.isDead = true
-    data.excerpt  = Get.threadExcerpt thread
+    data.excerpt = Get.threadExcerpt thread if thread.OP
     ThreadWatcher.addRaw boardID, threadID, data
 
   addRaw: (boardID, threadID, data) ->
