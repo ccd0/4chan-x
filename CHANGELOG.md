@@ -4,6 +4,9 @@
 
 ### v1.14.5
 
+**v1.14.5.10** *(2019-01-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.10/builds/4chan-X-noupdate.crx)]
+- Fix performance issues with video hover preview in long threads. #2214
+
 **v1.14.5.9** *(2019-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.9/builds/4chan-X-noupdate.crx)]
 - Don't re-insert unread line unless it needs to move. #2214
 
