@@ -131,7 +131,7 @@ Embedding =
       el = $.el 'img',
         src: src
         id: 'ihover'
-      $.add d.body, el
+      $.add Header.hover, el
       UI.hover
         root: link
         el: el
