@@ -61,6 +61,7 @@ Unread =
     Unread.readCount++ for ID in @posts.keys when +ID <= Unread.lastReadPost
     $.one d, '4chanXInitFinished', Unread.ready
     $.on  d, 'PostsInserted',      Unread.onUpdate
+    $.on  d, 'ThreadUpdate',       (e) -> Unread.update() if e.detail[404]
 
   ready: ->
     Unread.scroll() if Conf['Remember Last Read Post'] and Conf['Scroll to Last Read Post']
