@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.5.10
+// @version      1.14.5.11
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.5.10',
+  VERSION:   '1.14.5.11',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -20076,7 +20076,7 @@ ThreadWatcher = (function() {
             return ThreadWatcher.addRaw(boardID, threadID, {});
           }
         } else if (Conf['Auto Watch Reply']) {
-          return ThreadWatcher.add(g.threads[boardID + '.' + threadID]);
+          return ThreadWatcher.add(g.threads[boardID + '.' + threadID] || new Thread(threadID, g.boards[boardID] || new Board(boardID)));
         }
       },
       onIndexUpdate: function(e) {
@@ -20486,7 +20486,7 @@ ThreadWatcher = (function() {
       ThreadWatcher.setPrefixes(threads);
       for (i = 0, len1 = threads.length; i < len1; i++) {
         ref = threads[i], siteID = ref.siteID, boardID = ref.boardID, threadID = ref.threadID, data = ref.data;
-        if ((data.excerpt == null) && siteID === Site.hostname && (thread = g.threads[boardID + "." + threadID])) {
+        if ((data.excerpt == null) && siteID === Site.hostname && (thread = g.threads[boardID + "." + threadID]) && thread.OP) {
           ThreadWatcher.db.extend({
             boardID: boardID,
             threadID: threadID,
@@ -20642,7 +20642,9 @@ ThreadWatcher = (function() {
         }
         data.isDead = true;
       }
-      data.excerpt = Get.threadExcerpt(thread);
+      if (thread.OP) {
+        data.excerpt = Get.threadExcerpt(thread);
+      }
       return ThreadWatcher.addRaw(boardID, threadID, data);
     },
     addRaw: function(boardID, threadID, data) {
@@ -20835,7 +20837,12 @@ Unread = (function() {
         }
       }
       $.one(d, '4chanXInitFinished', Unread.ready);
-      return $.on(d, 'PostsInserted', Unread.onUpdate);
+      $.on(d, 'PostsInserted', Unread.onUpdate);
+      return $.on(d, 'ThreadUpdate', function(e) {
+        if (e.detail[404]) {
+          return Unread.update();
+        }
+      });
     },
     ready: function() {
       if (Conf['Remember Last Read Post'] && Conf['Scroll to Last Read Post']) {

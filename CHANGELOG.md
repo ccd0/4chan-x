@@ -4,6 +4,10 @@
 
 ### v1.14.5
 
+**v1.14.5.11** *(2019-01-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.11/builds/4chan-X-noupdate.crx)]
+- Fix regression that broke favicon turning red on thread archival/404. #2190
+- Fix 'Auto Watch Reply' in corner cases when not all thread info is available.
+
 **v1.14.5.10** *(2019-01-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.10/builds/4chan-X-noupdate.crx)]
 - Fix performance issues with video hover preview in long threads. #2214
 
