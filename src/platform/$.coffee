@@ -648,7 +648,12 @@ else
 
   $.getSync = (items, cb) ->
     for key of items when (val2 = $.getValue g.NAMESPACE + key)
-      items[key] = JSON.parse val2
+      try
+        items[key] = JSON.parse val2
+      catch err
+        # XXX https://github.com/ccd0/4chan-x/issues/2218
+        unless /^(?:undefined)*$/.test(val2)
+          throw err
     cb items
 
   $.set = $.oneItemSugar (items, cb) ->
