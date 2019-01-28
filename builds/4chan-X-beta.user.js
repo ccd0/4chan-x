@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.5.11
+// @version      1.14.5.12
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.5.11',
+  VERSION:   '1.14.5.12',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5344,10 +5344,17 @@ $ = (function() {
       return $.queueTask($.getSync, items, cb);
     });
     $.getSync = function(items, cb) {
-      var key, val2;
+      var err, key, val2;
       for (key in items) {
         if ((val2 = $.getValue(g.NAMESPACE + key))) {
-          items[key] = JSON.parse(val2);
+          try {
+            items[key] = JSON.parse(val2);
+          } catch (_error) {
+            err = _error;
+            if (!/^(?:undefined)*$/.test(val2)) {
+              throw err;
+            }
+          }
         }
       }
       return cb(items);

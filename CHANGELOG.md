@@ -4,6 +4,9 @@
 
 ### v1.14.5
 
+**v1.14.5.12** *(2019-01-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.12/builds/4chan-X-noupdate.crx)]
+- Recover as well as possible from data corruption caused by ad filter interaction with Tampermonkey. #2218
+
 **v1.14.5.11** *(2019-01-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.11/builds/4chan-X-noupdate.crx)]
 - Fix regression that broke favicon turning red on thread archival/404. #2190
 - Fix 'Auto Watch Reply' in corner cases when not all thread info is available.
