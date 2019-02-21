@@ -63,9 +63,9 @@ Filter =
             false
           else
             Conf['Stubs']
-			
-		# Desktop notification
-		noti = /notify/.test filter
+
+        # Desktop notification
+        noti = /notify/.test filter
 
         # Highlight the post, or hide it.
         # If not specified, the highlight class will be filter-highlight.
@@ -110,7 +110,7 @@ Filter =
       stub:  stub
       class: hl
       top:   top
-	  noti:  noti
+      noti:  noti
 
     (value, boardID, isReply) ->
       if boards and boardID not in boards
@@ -129,7 +129,7 @@ Filter =
     stub = true
     hl   = undefined
     top  = false
-	noti = false
+    noti = false
     if QuoteYou.isYou(post)
       hideable = false
     for key of Filter.filters when ((value = Filter[key] post)?)
@@ -143,8 +143,8 @@ Filter =
           unless hl and result.class in hl
             (hl or= []).push result.class
           top or= result.top
-		if result.noti
-		  noti = true
+        if result.noti
+          noti = true
     if hide
       {hide, stub, noti}
     else
@@ -162,9 +162,9 @@ Filter =
       if hl
         @highlights = hl
         $.addClass @nodes.root, hl...
-	if noti
-	  if Header.areNotificationsEnabled
-		if not (Unread.posts is null)
+    if noti
+      if Header.areNotificationsEnabled
+        if not (Unread.posts is null)
           if (@ID > Unread.lastReadPost) and not QuoteYou.isYou(@)
             notif = new Notification "#{@info.nameBlock} triggered a notification filter",
               body: @commentDisplay()
