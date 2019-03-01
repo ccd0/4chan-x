@@ -274,7 +274,7 @@ ThreadWatcher =
         while match = regexp.exec postObj.com
           if QuoteYou.db.get {
             siteID
-            boardID:  match[1] or boardID
+            boardID:  if match[1] then encodeURIComponent(match[1]) else boardID
             threadID: match[2] or threadID
             postID:   match[3] or match[2] or threadID
           }
