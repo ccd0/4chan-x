@@ -236,6 +236,7 @@ ThreadUpdater =
       timeout:   $.MINUTE
     ,
       whenModified: 'ThreadUpdater'
+      bypassCache:  true
 
   updateThreadStatus: (type, status) ->
     return if not (hasChanged = ThreadUpdater.thread["is#{type}"] isnt status)

@@ -51,7 +51,7 @@ $.ajax = do ->
     pageXHR = XMLHttpRequest
 
   (url, options={}, extra={}) ->
-    {type, whenModified, upCallbacks, form} = extra
+    {type, whenModified, bypassCache, upCallbacks, form} = extra
     options.responseType ?= 'json' if /\.json$/.test url
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
@@ -59,7 +59,7 @@ $.ajax = do ->
       params = []
       # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
       params.push "s=#{whenModified}" if $.engine is 'blink'
-      params.push "t=#{Date.now()}" if Site.software is 'yotsuba'
+      params.push "t=#{Date.now()}" if Site.software is 'yotsuba' and bypassCache
       url0 = url
       url += '?' + params.join('&') if params.length
     r = new pageXHR()

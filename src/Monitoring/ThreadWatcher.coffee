@@ -224,6 +224,8 @@ ThreadWatcher =
         onloadend: ->
           ThreadWatcher.parseStatus.call @, thread
         timeout: $.MINUTE
+      ,
+        whenModified: if force then false else 'ThreadWatcher'
     else
       req = {abort: () -> req.aborted = true}
       CrossOrigin.json url, ->
