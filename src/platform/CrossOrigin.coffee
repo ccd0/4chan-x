@@ -131,3 +131,11 @@ CrossOrigin =
         else
           failure url
       <% } %>
+
+  permission: (cb) ->
+    <% if (type === 'crx') { %>
+    eventPageRequest {type: 'permission'}, -> cb()
+    <% } %>
+    <% if (type === 'userscript') { %>
+    cb()
+    <% } %>

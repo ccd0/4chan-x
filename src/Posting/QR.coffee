@@ -430,14 +430,15 @@ QR =
   handleUrl: (urlDefault) ->
     QR.open()
     QR.selected.preventAutoPost()
-    url = prompt 'Enter a URL:', urlDefault
-    return if url is null
-    QR.nodes.fileButton.focus()
-    CrossOrigin.file url, (blob) ->
-      if blob and not /^text\//.test blob.type
-        QR.handleFiles [blob]
-      else
-        QR.error "Can't load file."
+    CrossOrigin.permission ->
+      url = prompt 'Enter a URL:', urlDefault
+      return if url is null
+      QR.nodes.fileButton.focus()
+      CrossOrigin.file url, (blob) ->
+        if blob and not /^text\//.test blob.type
+          QR.handleFiles [blob]
+        else
+          QR.error "Can't load file."
 
   handleFiles: (files) ->
     if @ isnt QR # file input
