@@ -4,6 +4,11 @@
 
 ### v1.14.5
 
+**v1.14.5.13** *(2019-03-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.13/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.13/builds/4chan-X-noupdate.crx)]
+- Fix bugs related to additional permissions requests. #2230
+- Revert changes in thread watcher that caused performance decrease.
+- Fix thread watcher highlighting when quoted on boards with unusual characters in name (e.g. some lainchan boards).
+
 **v1.14.5.12** *(2019-01-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.12/builds/4chan-X-noupdate.crx)]
 - Recover as well as possible from data corruption caused by ad filter interaction with Tampermonkey. #2218
 

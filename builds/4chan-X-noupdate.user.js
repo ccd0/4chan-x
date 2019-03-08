@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.5.12
+// @version      1.14.5.13
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.5.12',
+  VERSION:   '1.14.5.13',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -4603,14 +4603,14 @@ $ = (function() {
       pageXHR = XMLHttpRequest;
     }
     return function(url, options, extra) {
-      var err, event, form, j, len, params, r, ref, ref1, type, upCallbacks, url0, whenModified;
+      var bypassCache, err, event, form, j, len, params, r, ref, ref1, type, upCallbacks, url0, whenModified;
       if (options == null) {
         options = {};
       }
       if (extra == null) {
         extra = {};
       }
-      type = extra.type, whenModified = extra.whenModified, upCallbacks = extra.upCallbacks, form = extra.form;
+      type = extra.type, whenModified = extra.whenModified, bypassCache = extra.bypassCache, upCallbacks = extra.upCallbacks, form = extra.form;
       if (/\.json$/.test(url)) {
         if (options.responseType == null) {
           options.responseType = 'json';
@@ -4622,7 +4622,7 @@ $ = (function() {
         if ($.engine === 'blink') {
           params.push("s=" + whenModified);
         }
-        if (Site.software === 'yotsuba') {
+        if (Site.software === 'yotsuba' && bypassCache) {
           params.push("t=" + (Date.now()));
         }
         url0 = url;
@@ -5559,7 +5559,10 @@ CrossOrigin = (function() {
           }
         });
       };
-    })()
+    })(),
+    permission: function(cb) {
+      return cb();
+    }
   };
 
   return CrossOrigin;
@@ -19378,7 +19381,8 @@ ThreadStats = (function() {
       return $.ajax(location.protocol + "//a.4cdn.org/" + ThreadStats.thread.board + "/threads.json", {
         onload: ThreadStats.onThreadsLoad
       }, {
-        whenModified: 'ThreadStats'
+        whenModified: 'ThreadStats',
+        bypassCache: true
       });
     },
     onThreadsLoad: function() {
@@ -19716,7 +19720,8 @@ ThreadUpdater = (function() {
         onloadend: ThreadUpdater.cb.load,
         timeout: $.MINUTE
       }, {
-        whenModified: 'ThreadUpdater'
+        whenModified: 'ThreadUpdater',
+        bypassCache: true
       });
     },
     updateThreadStatus: function(type, status) {
@@ -20231,6 +20236,8 @@ ThreadWatcher = (function() {
             return ThreadWatcher.parseStatus.call(this, thread);
           },
           timeout: $.MINUTE
+        }, {
+          whenModified: force ? false : 'ThreadWatcher'
         });
       } else {
         req = {
@@ -20314,7 +20321,7 @@ ThreadWatcher = (function() {
           while (match = regexp.exec(postObj.com)) {
             if (QuoteYou.db.get({
               siteID: siteID,
-              boardID: match[1] || boardID,
+              boardID: match[1] ? encodeURIComponent(match[1]) : boardID,
               threadID: match[2] || threadID,
               postID: match[3] || match[2] || threadID
             })) {
@@ -22464,20 +22471,22 @@ QR = (function() {
       }
     },
     handleUrl: function(urlDefault) {
-      var url;
       QR.open();
       QR.selected.preventAutoPost();
-      url = prompt('Enter a URL:', urlDefault);
-      if (url === null) {
-        return;
-      }
-      QR.nodes.fileButton.focus();
-      return CrossOrigin.file(url, function(blob) {
-        if (blob && !/^text\//.test(blob.type)) {
-          return QR.handleFiles([blob]);
-        } else {
-          return QR.error("Can't load file.");
+      return CrossOrigin.permission(function() {
+        var url;
+        url = prompt('Enter a URL:', urlDefault);
+        if (url === null) {
+          return;
         }
+        QR.nodes.fileButton.focus();
+        return CrossOrigin.file(url, function(blob) {
+          if (blob && !/^text\//.test(blob.type)) {
+            return QR.handleFiles([blob]);
+          } else {
+            return QR.error("Can't load file.");
+          }
+        });
       });
     },
     handleFiles: function(files) {
