@@ -1,11 +1,11 @@
 <% if (type === 'crx') { %>
 eventPageRequest = do ->
   callbacks = []
-  chrome.runtime.onMessage.addListener (data) ->
-    callbacks[data.id] data
-    delete callbacks[data.id]
-  (url, responseType, cb, timeout) ->
-    chrome.runtime.sendMessage {url, responseType, timeout}, (id) ->
+  chrome.runtime.onMessage.addListener (response) ->
+    callbacks[response.id] response.data
+    delete callbacks[response.id]
+  (params, cb) ->
+    chrome.runtime.sendMessage params, (id) ->
       callbacks[id] = cb
 
 <% } %>
@@ -14,7 +14,7 @@ CrossOrigin =
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
-    eventPageRequest url, 'arraybuffer', ({response, contentType, contentDisposition, error}) ->
+    eventPageRequest {type: 'ajax', url, responseType: 'arraybuffer'}, ({response, contentType, contentDisposition, error}) ->
       return cb null if error
       cb new Uint8Array(response), contentType, contentDisposition
     <% } %>
@@ -125,10 +125,9 @@ CrossOrigin =
         ontimeout: -> failure(url)
       <% } %>
       <% if (type === 'crx') { %>
-      eventPageRequest url, 'json', (result) ->
+      eventPageRequest {type: 'ajax', url, responseType: 'json', timeout}, (result) ->
         if result.status
           success url, result
         else
           failure url
-      , timeout
       <% } %>

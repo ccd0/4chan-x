@@ -1,28 +1,32 @@
 requestID = 0
 
 chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
-  if request.responseType is 'arraybuffer'
-    # Cross-origin image fetching. Need permission.
-    chrome.permissions.contains
-      origins: ['*://*/']
-    , (result) ->
-      if result
-        ajax request, sender, sendResponse
-      else
-        chrome.permissions.request
-          origins: ['*://*/']
-        , ->
-          ajax request, sender, sendResponse
-    return true
-  else
-    # JSON fetching from non-HTTPS archive.
-    ajax request, sender, sendResponse
-
-ajax = (request, sender, sendResponse) ->
   id = requestID
   requestID++
   sendResponse id
+  handlers[request.type] request, (response) ->
+    chrome.tabs.sendMessage sender.tab.id, {id, data: response}
 
+handlers =
+  ajax: (request, cb) ->
+    if request.responseType is 'arraybuffer'
+      # Cross-origin image fetching. Need permission.
+      chrome.permissions.contains
+        origins: ['*://*/']
+      , (result) ->
+        if result
+          ajax request, cb
+        else
+          chrome.permissions.request
+            origins: ['*://*/']
+          , ->
+            ajax request, cb
+      return true
+    else
+      # JSON fetching from non-HTTPS archive.
+      ajax request, cb
+
+ajax = (request, cb) ->
   xhr = new XMLHttpRequest()
   xhr.open 'GET', request.url, true
   xhr.responseType = request.responseType
@@ -34,17 +38,17 @@ ajax = (request, sender, sendResponse) ->
         response = [new Uint8Array(response)...]
         contentType = @getResponseHeader 'Content-Type'
         contentDisposition = @getResponseHeader 'Content-Disposition'
-      chrome.tabs.sendMessage sender.tab.id, {id, status, statusText, response, contentType, contentDisposition}
+      cb {status, statusText, response, contentType, contentDisposition}
     else
-      chrome.tabs.sendMessage sender.tab.id, {id, status, statusText, response, error: true}
+      cb {status, statusText, response, error: true}
   , false
   xhr.addEventListener 'error', ->
-    chrome.tabs.sendMessage sender.tab.id, {id, error: true}
+    cb {error: true}
   , false
   xhr.addEventListener 'abort', ->
-    chrome.tabs.sendMessage sender.tab.id, {id, error: true}
+    cb {error: true}
   , false
   xhr.addEventListener 'timeout', ->
-    chrome.tabs.sendMessage sender.tab.id, {id, error: true}
+    cb {error: true}
   , false
   xhr.send()
