@@ -282,7 +282,7 @@ Header =
         return a.firstChild # Its text node.
 
     if /-expired/.test t
-      if boardID not in ['b', 'f', 'trash', 'bant']
+      if BoardConfig.isArchived(boardID)
         a.href = "//#{BoardConfig.domain(boardID)}/#{boardID}/archive"
       else
         return a.firstChild # Its text node.

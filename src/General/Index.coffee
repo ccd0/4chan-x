@@ -84,7 +84,7 @@ Index =
     @navLinks = $.el 'div', className: 'navLinks json-index'
     $.extend @navLinks, <%= readHTML('NavLinks.html') %>
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
-    $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID in ['b', 'trash', 'bant']
+    $('.archlistlink', @navLinks).hidden = true unless BoardConfig.isArchived(g.BOARD.ID)
     $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
 
     # Search field
