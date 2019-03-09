@@ -60,6 +60,9 @@ SW.tinyboard =
     threadJSON: ({siteID, boardID, threadID}) ->
       root = Conf['siteProperties'][siteID]?.root
       if root then "#{root}#{boardID}/res/#{threadID}.json" else ''
+    threadsListJSON: ({siteID, boardID}) ->
+      root = Conf['siteProperties'][siteID]?.root
+      if root then "#{root}#{boardID}/threads.json" else ''
 
   selectors:
     board:         'form[name="postcontrols"]'

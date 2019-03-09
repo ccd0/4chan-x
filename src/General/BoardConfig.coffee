@@ -48,6 +48,11 @@ BoardConfig =
   domain: (board) ->
     "boards.#{if BoardConfig.isSFW(board) then '4channel' else '4chan'}.org"
 
+  isArchived: (board) ->
+    # assume archive exists if no data available to prevent cleaning of archived threads
+    data = (@boards or Conf['boardConfig'].boards)[board]
+    !data or data.is_archived
+
   noAudio: (boardID) ->
     return false unless Site.software is 'yotsuba'
     boards = @boards or Conf['boardConfig'].boards
