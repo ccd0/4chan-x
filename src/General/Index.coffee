@@ -609,7 +609,6 @@ Index =
     delete Index.notice
 
     if req.aborted
-      req.onloadend = null
       notice?.close()
       return
 
