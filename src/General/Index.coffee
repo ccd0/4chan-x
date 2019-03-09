@@ -573,6 +573,7 @@ Index =
       "#{hiddenCount} hidden threads"
 
   update: (firstTime) ->
+    Index.req?.aborted = true
     Index.req?.abort()
     Index.notice?.close()
 
@@ -594,13 +595,12 @@ Index =
       return
 
     Index.req = $.ajax "#{location.protocol}//a.4cdn.org/#{g.BOARD}/catalog.json",
-      onabort:   Index.load
       onloadend: Index.load
     ,
       whenModified: 'Index'
     $.addClass Index.button, 'fa-spin'
 
-  load: (e) ->
+  load: ->
     $.rmClass Index.button, 'fa-spin'
     {req, notice, nTimeout} = Index
     clearTimeout nTimeout if nTimeout
@@ -608,7 +608,7 @@ Index =
     delete Index.req
     delete Index.notice
 
-    if e.type is 'abort'
+    if req.aborted
       req.onloadend = null
       notice?.close()
       return
