@@ -92,12 +92,11 @@ do ->
         $.queueTask -> cb.call req, {isCached: true}
       return req
     options.onloadend = ->
-      if @status
-        for cb in @callbacks
-          do (cb) => $.queueTask => cb.call @, {isCached: false}
-        delete @callbacks
-      else
+      unless @status
         delete reqs[url]
+      for cb in @callbacks
+        do (cb) => $.queueTask => cb.call @, {isCached: false}
+      delete @callbacks
     req = $.ajax url, options
     req.callbacks = [cb]
     reqs[url] = req

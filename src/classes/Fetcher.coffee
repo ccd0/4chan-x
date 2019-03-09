@@ -61,12 +61,14 @@ class Fetcher
     {status} = req
     unless status is 200
       # The thread can die by the time we check a quote.
-      return if @archivedPost()
+      return if status and @archivedPost()
 
       $.addClass @root, 'warning'
       @root.textContent =
         if status is 404
           "Thread No.#{@threadID} 404'd."
+        else if !status
+          'Connection Error'
         else
           "Error #{req.statusText} (#{req.status})."
       return

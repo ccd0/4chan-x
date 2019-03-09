@@ -70,7 +70,7 @@ CrossOrigin =
 
   # Attempts to fetch `url` in JSON format using cross-origin privileges, if available.
   # On success, calls `cb` with a `this` containing properties `status`, `statusText`, `response` and caches result.
-  # On error/abort, calls `cb` with a `this` of `{}`.
+  # On error/abort/timeout, calls `cb` with a `this` of `{}` or in some cases an XMLHttpRequest reflecting the error.
   # If `bypassCache` is true, ignores previously cached results.
   json: do ->
     callbacks = {}
@@ -90,10 +90,7 @@ CrossOrigin =
       unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
         if bypassCache
           $.cleanCache (url2) -> url2 is url
-        if (req = $.cache url, cb)
-          $.on req, 'abort error', -> cb.call({})
-        else
-          cb.call {}
+        req = $.cache url, cb
         return
       <% } %>
 

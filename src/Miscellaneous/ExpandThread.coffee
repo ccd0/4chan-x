@@ -89,7 +89,7 @@ ExpandThread =
 
   parse: (req, thread, a) ->
     if req.status not in [200, 304]
-      a.textContent = "Error #{req.statusText} (#{req.status})"
+      a.textContent = if req.status then "Error #{req.statusText} (#{req.status})" else 'Connection Error'
       return
 
     Build.spoilerRange[thread.board] = req.response.posts[0].custom_spoiler

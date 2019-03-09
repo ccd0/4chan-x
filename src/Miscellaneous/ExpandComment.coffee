@@ -38,7 +38,7 @@ ExpandComment =
   parse: (req, a, post) ->
     {status} = req
     unless status in [200, 304]
-      a.textContent = "Error #{req.statusText} (#{status})"
+      a.textContent = if status then "Error #{req.statusText} (#{status})" else 'Connection Error'
       return
 
     posts = req.response.posts
