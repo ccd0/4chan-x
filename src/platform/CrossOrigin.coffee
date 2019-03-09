@@ -90,7 +90,7 @@ CrossOrigin =
       unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
         if bypassCache
           $.cleanCache (url2) -> url2 is url
-        if (req = $.cache url, cb, responseType: 'json')
+        if (req = $.cache url, cb)
           $.on req, 'abort error', -> cb.call({})
         else
           cb.call {}

@@ -52,7 +52,7 @@ $.ajax = do ->
 
   (url, options={}, extra={}) ->
     {type, whenModified, bypassCache, upCallbacks, form} = extra
-    options.responseType ?= 'json' if /\.json$/.test url
+    options.responseType ?= 'json'
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     if whenModified
