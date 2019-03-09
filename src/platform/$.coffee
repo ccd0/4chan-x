@@ -87,7 +87,7 @@ do ->
   $.cache = (url, cb, options) ->
     if req = reqs[url]
       if req.readyState is 4
-        $.queueTask -> cb.call req, req.evt, true
+        $.queueTask -> cb.call req, {isCached: true}
       else
         req.callbacks.push cb
       return req
@@ -96,10 +96,9 @@ do ->
       return if not (req = $.ajax url, options)
     catch err
       return
-    $.on req, 'load', (e) ->
-      @evt = e
+    $.on req, 'load', ->
       for cb in @callbacks
-        do (cb) => $.queueTask => cb.call @, e, false
+        do (cb) => $.queueTask => cb.call @, {isCached: false}
       delete @callbacks
     $.on req, 'abort error', rm
     req.callbacks = [cb]

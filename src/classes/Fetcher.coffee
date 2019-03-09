@@ -15,8 +15,9 @@ class Fetcher
 
     @root.textContent = "Loading post No.#{@postID}..."
     if @threadID
-      $.cache "#{location.protocol}//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json", (e, isCached) =>
-        @fetchedPost e.target, isCached
+      that = @
+      $.cache "#{location.protocol}//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json", ({isCached}) ->
+        that.fetchedPost @, isCached
     else
       @archivedPost()
 
@@ -80,8 +81,9 @@ class Fetcher
       if isCached
         api = "#{location.protocol}//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json"
         $.cleanCache (url) -> url is api
-        $.cache api, (e) =>
-          @fetchedPost e.target, false
+        that = @
+        $.cache api, ->
+          that.fetchedPost @, false
         return
 
       # The post can be deleted by the time we check a quote.
