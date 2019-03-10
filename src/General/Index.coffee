@@ -598,6 +598,7 @@ Index =
       onloadend: Index.load
     ,
       whenModified: 'Index'
+      bypassCache: true
     $.addClass Index.button, 'fa-spin'
 
   load: (e) ->
