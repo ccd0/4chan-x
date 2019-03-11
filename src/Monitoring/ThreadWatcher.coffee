@@ -228,10 +228,11 @@ ThreadWatcher =
         whenModified: if force then false else 'ThreadWatcher'
     else
       req = {abort: () -> req.aborted = true}
-      CrossOrigin.json url, ->
-        return if req.aborted
-        ThreadWatcher.parseStatus.call @, thread
-      , true, $.MINUTE
+      CrossOrigin.ajax url,
+        onloadend: ->
+          return if req.aborted
+          ThreadWatcher.parseStatus.call @, thread
+        timeout: $.MINUTE
     ThreadWatcher.requests.push req
 
   parseStatus: ({siteID, boardID, threadID, data}) ->

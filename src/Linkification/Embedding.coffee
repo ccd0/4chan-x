@@ -111,7 +111,7 @@ Embedding =
       if service.queue.length >= service.batchSize
         Embedding.flushTitles service
     else
-      CrossOrigin.json service.api(uid), (-> Embedding.cb.title @, data)
+      CrossOrigin.cache service.api(uid), (-> Embedding.cb.title @, data)
 
   flushTitles: (service) ->
     {queue} = service
@@ -120,7 +120,7 @@ Embedding =
     cb = ->
       Embedding.cb.title @, data for data in queue
       return
-    CrossOrigin.json service.api(data.uid for data in queue), cb
+    CrossOrigin.cache service.api(data.uid for data in queue), cb
 
   preview: (data) ->
     {key, uid, link} = data
@@ -275,7 +275,7 @@ Embedding =
           el = $.el 'pre',
             hidden: true
             id: "gist-embed-#{counter++}"
-          CrossOrigin.json "https://api.github.com/gists/#{a.dataset.uid}", ->
+          CrossOrigin.cache "https://api.github.com/gists/#{a.dataset.uid}", ->
             el.textContent = Object.values(@response.files)[0].content
             el.className = 'prettyprint'
             $.global ->

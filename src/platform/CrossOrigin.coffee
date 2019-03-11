@@ -69,65 +69,50 @@ CrossOrigin =
       cb blob
 
   # Attempts to fetch `url` in JSON format using cross-origin privileges, if available.
-  # On success, calls `cb` with a `this` containing properties `status`, `statusText`, `response` and caches result.
-  # On error/abort/timeout, calls `cb` with a `this` of `{}` or in some cases an XMLHttpRequest reflecting the error.
-  # If `bypassCache` is true, ignores previously cached results.
-  json: do ->
-    callbacks = {}
-    results = {}
-    success = (url, result) ->
-      for cb in callbacks[url]
-        $.queueTask -> cb.call result
-      delete callbacks[url]
-      results[url] = result
-    failure = (url) ->
-      for cb in callbacks[url]
-        $.queueTask -> cb.call {}
-      delete callbacks[url]
+  # Interface is a subset of that of $.ajax.
+  # Returns an object with `status`, `statusText`, `response` properties, all initially set falsy.
+  # On success, populates the properties.
+  # Both on success or error/abort/timeout, calls `options.onloadend` with the returned object as `this`.
+  ajax: (url, options={}) ->
+    {onloadend, timeout} = options
 
-    (url, cb, bypassCache, timeout) ->
-      <% if (type === 'userscript') { %>
-      unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
-        if bypassCache
-          $.cleanCache (url2) -> url2 is url
-        req = $.cache url, cb
-        return
-      <% } %>
+    <% if (type === 'userscript') { %>
+    unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
+      return $.ajax url, options
+    <% } %>
 
-      if bypassCache
-        delete results[url]
-      else
-        if results[url]
-          cb.call results[url]
-          return
-        if callbacks[url]
-          callbacks[url].push cb
-          return
-      callbacks[url] = [cb]
+    req =
+      status: 0
+      statusText: ''
+      response: null
 
-      <% if (type === 'userscript') { %>
-      (GM?.xmlHttpRequest or GM_xmlhttpRequest)
-        method: "GET"
-        url: url+''
-        timeout: timeout
-        onload: (xhr) ->
-          {status, statusText} = xhr
-          try
-            response = JSON.parse(xhr.responseText)
-            success url, {status, statusText, response}
-          catch
-            failure url
-        onerror: -> failure(url)
-        onabort: -> failure(url)
-        ontimeout: -> failure(url)
-      <% } %>
-      <% if (type === 'crx') { %>
-      eventPageRequest {type: 'ajax', url, responseType: 'json', timeout}, (result) ->
-        if result.status
-          success url, result
-        else
-          failure url
-      <% } %>
+    <% if (type === 'userscript') { %>
+    (GM?.xmlHttpRequest or GM_xmlhttpRequest)
+      method: "GET"
+      url: url+''
+      timeout: timeout
+      onload: (xhr) ->
+        try
+          response = JSON.parse(xhr.responseText)
+          $.extend req, {response, status: xhr.status, statusText: xhr.statusText}
+        onloadend.call(req)
+      onerror:   -> onloadend.call(req)
+      onabort:   -> onloadend.call(req)
+      ontimeout: -> onloadend.call(req)
+    <% } %>
+
+    <% if (type === 'crx') { %>
+    eventPageRequest {type: 'ajax', url, responseType: 'json', timeout}, (result) ->
+      if result.status
+        $.extend req, result
+      onloadend.call(req)
+    <% } %>
+
+    req
+
+  cache: (url, cb, options={}, extra={}) ->
+    extra.ajax = CrossOrigin.ajax
+    $.cache url, cb, options, extra
 
   permission: (cb) ->
     <% if (type === 'crx') { %>

@@ -111,7 +111,7 @@ class Fetcher
     encryptionOK = /^https:\/\//.test(url) or location.protocol is 'http:'
     if encryptionOK or Conf['Exempt Archives from Encryption']
       that = @
-      CrossOrigin.json url, ->
+      CrossOrigin.cache url, ->
         if !encryptionOK and @response?.media
           {media} = @response
           for key of media when /_link$/.test key

@@ -84,7 +84,7 @@ $.ajax = do ->
 
 do ->
   reqs = {}
-  $.cache = (url, cb, options={}) ->
+  $.cache = (url, cb, options={}, extra={}) ->
     if (req = reqs[url])
       if req.callbacks
         req.callbacks.push cb
@@ -97,7 +97,7 @@ do ->
       for cb in @callbacks
         do (cb) => $.queueTask => cb.call @, {isCached: false}
       delete @callbacks
-    req = $.ajax url, options
+    req = (extra.ajax or $.ajax) url, options
     req.callbacks = [cb]
     reqs[url] = req
   $.cleanCache = (testf) ->
