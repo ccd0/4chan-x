@@ -178,8 +178,8 @@ ThreadWatcher =
 
   abort: ->
     for req in ThreadWatcher.requests when req.readyState isnt 4 # DONE
-      req.abort()
-    ThreadWatcher.clearRequests()
+      req.abort?()
+    return
 
   fetchAuto: ->
     clearTimeout ThreadWatcher.timeout
@@ -227,10 +227,8 @@ ThreadWatcher =
       ,
         whenModified: if force then false else 'ThreadWatcher'
     else
-      req = {abort: () -> req.aborted = true}
-      CrossOrigin.ajax url,
+      req = CrossOrigin.ajax url,
         onloadend: ->
-          return if req.aborted
           ThreadWatcher.parseStatus.call @, thread
         timeout: $.MINUTE
     ThreadWatcher.requests.push req
