@@ -219,18 +219,13 @@ ThreadWatcher =
     if ThreadWatcher.requests.length is 0
       ThreadWatcher.status.textContent = '...'
       $.addClass ThreadWatcher.refreshButton, 'fa-spin'
-    if Site.hasCORS?(url) or url.split('/')[...3].join('/') is location.origin
-      req = $.ajax url,
-        onloadend: ->
-          ThreadWatcher.parseStatus.call @, thread
-        timeout: $.MINUTE
-      ,
-        whenModified: if force then false else 'ThreadWatcher'
-    else
-      req = CrossOrigin.ajax url,
-        onloadend: ->
-          ThreadWatcher.parseStatus.call @, thread
-        timeout: $.MINUTE
+    ajax = if (siteID is Site.hostname) then $.ajax else CrossOrigin.ajax
+    req = ajax url,
+      onloadend: ->
+        ThreadWatcher.parseStatus.call @, thread
+      timeout: $.MINUTE
+    ,
+      whenModified: if force then false else 'ThreadWatcher'
     ThreadWatcher.requests.push req
 
   parseStatus: ({siteID, boardID, threadID, data}) ->
