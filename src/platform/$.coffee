@@ -84,20 +84,21 @@ $.ajax = do ->
 
 do ->
   reqs = {}
-  $.cache = (url, cb, options={}, extra={}) ->
+  $.cache = (url, cb, options={}) ->
+    {ajax} = options
     if (req = reqs[url])
       if req.callbacks
         req.callbacks.push cb
       else
         $.queueTask -> cb.call req, {isCached: true}
       return req
-    options.onloadend = ->
+    onloadend = ->
       unless @status
         delete reqs[url]
       for cb in @callbacks
         do (cb) => $.queueTask => cb.call @, {isCached: false}
       delete @callbacks
-    req = (extra.ajax or $.ajax) url, options
+    req = (ajax or $.ajax) url, {onloadend}
     req.callbacks = [cb]
     reqs[url] = req
   $.cleanCache = (testf) ->

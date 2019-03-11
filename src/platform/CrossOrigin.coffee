@@ -110,9 +110,9 @@ CrossOrigin =
 
     req
 
-  cache: (url, cb, options={}, extra={}) ->
-    extra.ajax = CrossOrigin.ajax
-    $.cache url, cb, options, extra
+  cache: (url, cb) ->
+    $.cache url, cb,
+      ajax: CrossOrigin.ajax
 
   permission: (cb) ->
     <% if (type === 'crx') { %>
