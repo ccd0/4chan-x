@@ -48,7 +48,7 @@ ImageHover =
         @currentTime = el.currentTime if @nodeName is 'VIDEO'
     [width, height] = (+x for x in file.dimensions.split 'x')
     {left, right} = @getBoundingClientRect()
-    maxWidth = Math.max left, doc.clientWidth - right
+    maxWidth = doc.clientWidth
     maxHeight = doc.clientHeight - UI.hover.padding
     scale = Math.min 1, maxWidth / width, maxHeight / height
     el.style.maxWidth  = "#{scale * width}px"
@@ -59,6 +59,7 @@ ImageHover =
       latestEvent: e
       endEvents: 'mouseout click'
       height: scale * height
+      width: scale * width
       noRemove: true
       cb: ->
         $.off el, 'error', error

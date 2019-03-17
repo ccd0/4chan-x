@@ -1344,6 +1344,9 @@ span.hide-announcement {
 .fileThumb > .warning {
   clear: both;
 }
+#ihover {
+  pointer-events: none;
+}
 /* WEBM Metadata */
 .webm-title > a::before {
   content: "title";
