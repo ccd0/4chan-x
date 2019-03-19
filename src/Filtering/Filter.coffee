@@ -22,17 +22,26 @@ Filter =
 
         # Comma-separated list of the boards this filter applies to.
         # Defaults to global.
-        boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
-        boards = boards.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards)
-        boards = if boards is 'global' then null else boards.split(',')
+        boardsRaw = filter.match(/boards:([^;]+)/)?[1].toLowerCase()
+        if boardsRaw
+          boards = {}
+          for board in boardsRaw.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards).split(',')
+            boards[board] = true
+        else
+          boards = false
 
         # boards to exclude from an otherwise global rule
         # due to the sfw and nsfw keywords, also works on all filters
         # replaces 'nsfw' and 'sfw' for consistency
-        excludes = filter.match(/exclude:([^;]+)/)?[1].toLowerCase() or null
-        excludes = if excludes is null then null else excludes.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards).split(',')
+        excludesRaw = filter.match(/exclude:([^;]+)/)?[1].toLowerCase()
+        if excludesRaw
+          excludes = {}
+          for board in excludesRaw.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards).split(',')
+            excludes[board] = true
+        else
+          excludes = false
 
-        if key in ['uniqueID', 'MD5']
+        if (isstring = (key in ['uniqueID', 'MD5']))
           # MD5 filter will use strings instead of regular expressions.
           regexp = regexp[1]
         else
@@ -67,11 +76,10 @@ Filter =
         # Desktop notification
         noti = /notify/.test filter
 
-        # Highlight the post, or hide it.
+        # Highlight the post.
         # If not specified, the highlight class will be filter-highlight.
-        # Defaults to post hiding.
-        if hl = /highlight/.test filter
-          hl  = filter.match(/highlight:([\w-]+)/)?[1] or 'filter-highlight'
+        if (hl = /highlight/.test filter)
+          hl = filter.match(/highlight:([\w-]+)/)?[1] or 'filter-highlight'
           # Put highlighted OP's thread on top of the board page or not.
           # Defaults to on top.
           top = filter.match(/top:(yes|no)/)?[1] or 'yes'
@@ -85,7 +93,10 @@ Filter =
           else
             types = ['subject', 'name', 'filename', 'comment']
 
-        filter = @createFilter regexp, boards, excludes, op, stub, hl, top, noti
+        # Hide the post (default case).
+        hide = !(hl or noti)
+
+        filter = {isstring, regexp, boards, excludes, op, hide, stub, hl, top, noti}
         if key is 'general'
           for type in types
             (@filters[type] or= []).push filter
@@ -96,32 +107,6 @@ Filter =
     Callbacks.Post.push
       name: 'Filter'
       cb:   @node
-
-  createFilter: (regexp, boards, excludes, op, stub, hl, top, noti) ->
-    test =
-      if typeof regexp is 'string'
-        # MD5 checking
-        (value) -> regexp is value
-      else
-        (value) -> regexp.test value
-
-    settings =
-      hide:  !(hl or noti)
-      stub:  stub
-      class: hl
-      top:   top
-      noti:  noti
-
-    (value, boardID, isReply) ->
-      if boards and boardID not in boards
-        return false
-      if excludes and boardID in excludes
-        return false
-      if isReply and op is 'only' or !isReply and op is 'no'
-        return false
-      unless test value
-        return false
-      settings
 
   test: (post, hideable=true) ->
     return post.filterResults if post.filterResults
@@ -134,16 +119,22 @@ Filter =
       hideable = false
     for key of Filter.filters when ((value = Filter[key] post)?)
       # Continue if there's nothing to filter (no tripcode for example).
-      for filter in Filter.filters[key] when (result = filter value, post.boardID, post.isReply)
-        if result.hide
+      for filter in Filter.filters[key]
+        continue if (
+          (filter.boards   and !filter.boards[post.boardID])   or
+          (filter.excludes and filter.excludes[post.boardID])  or
+          filter.op is (if post.isReply then 'only' else 'no') or
+          (if filter.isstring then (filter.regexp isnt value) else !filter.regexp.test(value))
+        )
+        if filter.hide
           if hideable
             hide = true
-            stub and= result.stub
+            stub and= filter.stub
         else
-          unless hl and result.class in hl
-            (hl or= []).push result.class
-          top or= result.top
-          if result.noti
+          unless hl and filter.hl in hl
+            (hl or= []).push filter.hl
+          top or= filter.top
+          if filter.noti
             noti = true
     if hide
       {hide, stub}
