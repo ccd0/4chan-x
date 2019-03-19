@@ -125,9 +125,9 @@ Unread =
       Unread.openNotification post
       return
 
-  openNotification: (post) ->
+  openNotification: (post, predicate=' replied to you') ->
     return unless Header.areNotificationsEnabled
-    notif = new Notification "#{post.info.nameBlock} replied to you",
+    notif = new Notification "#{post.info.nameBlock}#{predicate}",
       body: post.commentDisplay()
       icon: Favicon.logo
     notif.onclick = ->
