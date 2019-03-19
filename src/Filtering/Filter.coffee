@@ -106,7 +106,7 @@ Filter =
         (value) -> regexp.test value
 
     settings =
-      hide:  !hl
+      hide:  !(hl or noti)
       stub:  stub
       class: hl
       top:   top
@@ -143,10 +143,10 @@ Filter =
           unless hl and result.class in hl
             (hl or= []).push result.class
           top or= result.top
-        if result.noti
-          noti = true
+          if result.noti
+            noti = true
     if hide
-      {hide, stub, noti}
+      {hide, stub}
     else
       {hl, top, noti}
 
