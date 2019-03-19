@@ -162,20 +162,8 @@ Filter =
       if hl
         @highlights = hl
         $.addClass @nodes.root, hl...
-    if noti
-      if Header.areNotificationsEnabled
-        if not (Unread.posts is null)
-          if (@ID > Unread.lastReadPost) and not QuoteYou.isYou(@)
-            notif = new Notification "#{@info.nameBlock} triggered a notification filter",
-              body: @commentDisplay()
-              icon: Favicon.logo
-            notif.onclick = ->
-              Header.scrollToIfNeeded @nodes.bottom, true
-              window.focus()
-            notif.onshow = ->
-              setTimeout ->
-                notif.close()
-              , 7 * $.SECOND
+    if noti and Unread.posts and (@ID > Unread.lastReadPost) and not QuoteYou.isYou(@)
+      Unread.openNotification @, ' triggered a notification filter'
 
   isHidden: (post) ->
     !!Filter.test(post).hide
