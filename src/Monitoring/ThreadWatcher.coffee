@@ -175,27 +175,34 @@ ThreadWatcher =
       ThreadWatcher.status.textContent = '...'
       $.addClass ThreadWatcher.refreshButton, 'fa-spin'
     ajax = if (siteID is Site.hostname) then $.ajax else CrossOrigin.ajax
+    onloadend = ->
+      return if @finished
+      @finished = true
+      ThreadWatcher.fetched++
+      if ThreadWatcher.fetched is ThreadWatcher.requests.length
+        ThreadWatcher.clearRequests()
+      else
+        ThreadWatcher.status.textContent = "#{Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)}%"
+      cb.apply @, args
     req = ajax url,
-      onloadend: ->
-        @finished = true
-        ThreadWatcher.fetched++
-        if ThreadWatcher.fetched is ThreadWatcher.requests.length
-          ThreadWatcher.requests = []
-          ThreadWatcher.fetched = 0
-          ThreadWatcher.status.textContent = ''
-          $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
-        else
-          ThreadWatcher.status.textContent = "#{Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)}%"
-        cb.apply @, args
+      onloadend: onloadend
       timeout: $.MINUTE
     ,
       whenModified: if force then false else 'ThreadWatcher'
     ThreadWatcher.requests.push req
 
+  clearRequests: ->
+    ThreadWatcher.requests = []
+    ThreadWatcher.fetched = 0
+    ThreadWatcher.status.textContent = ''
+    $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
+
   abort: ->
     for req in ThreadWatcher.requests when !req.finished
-      req.abort?()
-    return
+      req.finished = true
+      try
+        req.abort?()
+    ThreadWatcher.clearRequests()
 
   fetchAuto: ->
     clearTimeout ThreadWatcher.timeout
