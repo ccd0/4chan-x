@@ -177,6 +177,7 @@ ThreadWatcher =
     ajax = if (siteID is Site.hostname) then $.ajax else CrossOrigin.ajax
     req = ajax url,
       onloadend: ->
+        @finished = true
         ThreadWatcher.fetched++
         if ThreadWatcher.fetched is ThreadWatcher.requests.length
           ThreadWatcher.requests = []
@@ -192,7 +193,7 @@ ThreadWatcher =
     ThreadWatcher.requests.push req
 
   abort: ->
-    for req in ThreadWatcher.requests when req.readyState isnt 4 # DONE
+    for req in ThreadWatcher.requests when !req.finished
       req.abort?()
     return
 

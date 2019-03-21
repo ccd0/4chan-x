@@ -87,7 +87,7 @@ CrossOrigin =
       response: null
 
     <% if (type === 'userscript') { %>
-    (GM?.xmlHttpRequest or GM_xmlhttpRequest)
+    gmReq = (GM?.xmlHttpRequest or GM_xmlhttpRequest)
       method: "GET"
       url: url+''
       timeout: timeout
@@ -99,6 +99,7 @@ CrossOrigin =
       onerror:   -> onloadend.call(req)
       onabort:   -> onloadend.call(req)
       ontimeout: -> onloadend.call(req)
+    req.abort = gmReq.abort
     <% } %>
 
     <% if (type === 'crx') { %>
