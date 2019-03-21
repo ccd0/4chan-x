@@ -170,11 +170,26 @@ ThreadWatcher =
   requests: []
   fetched:  0
 
-  clearRequests: ->
-    ThreadWatcher.requests = []
-    ThreadWatcher.fetched = 0
-    ThreadWatcher.status.textContent = ''
-    $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
+  fetch: (url, {siteID, force}, args, cb) ->
+    if ThreadWatcher.requests.length is 0
+      ThreadWatcher.status.textContent = '...'
+      $.addClass ThreadWatcher.refreshButton, 'fa-spin'
+    ajax = if (siteID is Site.hostname) then $.ajax else CrossOrigin.ajax
+    req = ajax url,
+      onloadend: ->
+        ThreadWatcher.fetched++
+        if ThreadWatcher.fetched is ThreadWatcher.requests.length
+          ThreadWatcher.requests = []
+          ThreadWatcher.fetched = 0
+          ThreadWatcher.status.textContent = ''
+          $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
+        else
+          ThreadWatcher.status.textContent = "#{Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)}%"
+        cb.apply @, args
+      timeout: $.MINUTE
+    ,
+      whenModified: if force then false else 'ThreadWatcher'
+    ThreadWatcher.requests.push req
 
   abort: ->
     for req in ThreadWatcher.requests when req.readyState isnt 4 # DONE
@@ -204,10 +219,33 @@ ThreadWatcher =
     for db in dbs
       db.forceSync ->
         if (++n) is dbs.length
-          threads = ThreadWatcher.getAll()
-          for thread in threads
-            ThreadWatcher.fetchStatus thread
+          boards = ThreadWatcher.getAll(true)
+          for board in boards
+            ThreadWatcher.fetchBoard board
           return
+
+  fetchBoard: (board) ->
+    return unless board.some (thread) -> !thread.data.isDead
+    {siteID, boardID} = board[0]
+    software = Conf['siteProperties'][siteID]?.software
+    url = SW[software]?.urls.threadsListJSON?({siteID, boardID})
+    return unless url
+    ThreadWatcher.fetch url, {siteID}, [board], ThreadWatcher.parseBoard
+
+  parseBoard: (board) ->
+    return unless @status is 200
+    modified = {}
+    try
+      for page in @response
+        for item in page.threads
+          modified[item.no] = item.last_modified
+    for thread in board
+      {siteID, boardID, threadID} = thread
+      if modified[threadID]
+        continue if thread.data.modified is modified[threadID]
+        ThreadWatcher.db.extend {siteID, boardID, threadID, val: {modified: modified[threadID]}}
+      ThreadWatcher.fetchStatus thread
+    return
 
   fetchStatus: (thread, force) ->
     {siteID, boardID, threadID, data} = thread
@@ -216,25 +254,9 @@ ThreadWatcher =
     return unless url
     return if data.isDead and not force
     return if data.last is -1 # 404 or no JSON API
-    if ThreadWatcher.requests.length is 0
-      ThreadWatcher.status.textContent = '...'
-      $.addClass ThreadWatcher.refreshButton, 'fa-spin'
-    ajax = if (siteID is Site.hostname) then $.ajax else CrossOrigin.ajax
-    req = ajax url,
-      onloadend: ->
-        ThreadWatcher.parseStatus.call @, thread
-      timeout: $.MINUTE
-    ,
-      whenModified: if force then false else 'ThreadWatcher'
-    ThreadWatcher.requests.push req
+    ThreadWatcher.fetch url, {siteID, force}, [thread], ThreadWatcher.parseStatus
 
   parseStatus: ({siteID, boardID, threadID, data}) ->
-    ThreadWatcher.fetched++
-    if ThreadWatcher.fetched is ThreadWatcher.requests.length
-      ThreadWatcher.clearRequests()
-    else
-      ThreadWatcher.status.textContent = "#{Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)}%"
-
     software = Conf['siteProperties'][siteID]?.software
 
     if @status is 200 and @response
@@ -293,14 +315,16 @@ ThreadWatcher =
 
       ThreadWatcher.refresh()
 
-  getAll: ->
+  getAll: (groupByBoard) ->
     all = []
     for siteID, boards of ThreadWatcher.db.data
       for boardID, threads of boards.boards
         if Conf['Current Board'] and (siteID isnt Site.hostname or boardID isnt g.BOARD.ID)
           continue
+        if groupByBoard
+          all.push (cont = [])
         for threadID, data of threads when data and typeof data is 'object'
-          all.push {siteID, boardID, threadID, data}
+          (if groupByBoard then cont else all).push {siteID, boardID, threadID, data}
     all
 
   makeLine: (siteID, boardID, threadID, data) ->
