@@ -14,7 +14,7 @@ Filter =
       for line in Conf[key].split '\n'
         continue if line[0] is '#'
 
-        if not (regexp = line.match /\/(.+)\/(\w*)/)
+        if not (regexp = line.match /\/(.*)\/(\w*)/)
           continue
 
         # Don't mix up filter flags with the regular expression.
@@ -161,7 +161,7 @@ Filter =
 
   postID:     (post) -> "#{post.ID}"
   name:       (post) -> post.info.name
-  uniqueID:   (post) -> post.info.uniqueID
+  uniqueID:   (post) -> post.info.uniqueID or ''
   tripcode:   (post) -> post.info.tripcode
   capcode:    (post) -> post.info.capcode
   pass:       (post) -> post.info.pass
