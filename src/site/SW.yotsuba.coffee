@@ -6,6 +6,7 @@ SW.yotsuba =
     threadJSON: ({boardID, threadID}) -> "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json"
     threadsListJSON: ({boardID})      -> "#{location.protocol}//a.4cdn.org/#{boardID}/threads.json"
     archiveListJSON: ({boardID})      -> if BoardConfig.isArchived(boardID) then "#{location.protocol}//a.4cdn.org/#{boardID}/archive.json" else ''
+    catalogJSON:     ({boardID})      -> "#{location.protocol}//a.4cdn.org/#{boardID}/catalog.json"
 
   selectors:
     board:         '.board'
