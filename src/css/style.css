@@ -1298,7 +1298,6 @@ span.hide-announcement {
   border: none;
   margin: 0;
   padding: 2px 2px 5px;
-  max-width: 50px;
 }
 #qp img {
   max-height: 80vh;
