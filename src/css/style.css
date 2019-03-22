@@ -129,6 +129,10 @@ body.is_catalog .thread > a > img {
 .nwsb {
   display: inline;
 }
+.fileText {
+  max-width: auto;
+  white-space: normal;
+}
 
 /* Ads */
 .ad-cnt > *, .adg-rects > *, .bsa-cnt {
