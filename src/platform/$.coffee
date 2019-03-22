@@ -74,6 +74,7 @@ $.ajax = do ->
       # connection error or content blocker
       $.on r, 'error', -> (c.warn "4chan X failed to load: #{url}" unless r.status)
       <% if (type === 'crx') { %>
+      # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
       $.on r, 'load', ->
         return unless r.readyState is 4 and r.status is 200 and r.statusText is '' and r.response is null and !$.ajaxWarningShown
         new Notice 'warning', "Error loading #{url}; try going to chrome://flags/#network-service and disabling the network service flag."
