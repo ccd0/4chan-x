@@ -59,9 +59,13 @@ Filter =
             ], 60
             continue
 
-        # Filter OPs along with their threads, replies only, or both.
-        # Defaults to both.
-        op = filter.match(/[^t]op:(yes|no|only)/)?[1] or 'yes'
+        # Filter OPs along with their threads or replies only.
+        op = filter.match(/[^t]op:(no|only)/)?[1] or ''
+        mask = {'no': 1, 'only': 2}[op] or 0
+
+        # Filter only posts with/without files.
+        file = filter.match(/file:(no|only)/)?[1] or ''
+        mask = mask | ({'no': 4, 'only': 8}[file] or 0)
 
         # Overrule the `Show Stubs` setting.
         # Defaults to stub showing.
@@ -96,7 +100,7 @@ Filter =
         # Hide the post (default case).
         hide = !(hl or noti)
 
-        filter = {isstring, regexp, boards, excludes, op, hide, stub, hl, top, noti}
+        filter = {isstring, regexp, boards, excludes, mask, hide, stub, hl, top, noti}
         if key is 'general'
           for type in types
             (@filters[type] or= []).push filter
@@ -117,13 +121,15 @@ Filter =
     noti = false
     if QuoteYou.isYou(post)
       hideable = false
+    mask = (if post.isReply then 2 else 1)
+    mask = (mask | (if post.file then 4 else 8))
     for key of Filter.filters when ((value = Filter[key] post)?)
       # Continue if there's nothing to filter (no tripcode for example).
       for filter in Filter.filters[key]
         continue if (
           (filter.boards   and !filter.boards[post.boardID])   or
           (filter.excludes and filter.excludes[post.boardID])  or
-          filter.op is (if post.isReply then 'only' else 'no') or
+          (filter.mask & mask) or
           (if filter.isstring then (filter.regexp isnt value) else !filter.regexp.test(value))
         )
         if filter.hide
