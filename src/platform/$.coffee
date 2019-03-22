@@ -73,6 +73,12 @@ $.ajax = do ->
       $.extend r.upload, upCallbacks
       # connection error or content blocker
       $.on r, 'error', -> (c.warn "4chan X failed to load: #{url}" unless r.status)
+      <% if (type === 'crx') { %>
+      $.on r, 'load', ->
+        return unless r.readyState is 4 and r.status is 200 and r.statusText is '' and r.response is null and !$.ajaxWarningShown
+        new Notice 'warning', "Error loading #{url}; try going to chrome://flags/#network-service and disabling the network service flag."
+        $.ajaxWarningShown = true
+      <% } %>
       r.send form
     catch err
       # XXX Some content blockers in Firefox (e.g. Adblock Plus and NoScript) throw an exception instead of simulating a connection error.

@@ -4,6 +4,10 @@
 
 ### v1.14.5
 
+**v1.14.5.14** *(2019-03-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.14/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.14/builds/4chan-X-noupdate.crx)]
+- Add message alerting Chrome extension users to disable chrome://flags/#network-service
+- Minor bugfix in catalog/index loading.
+
 **v1.14.5.13** *(2019-03-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.13/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.13/builds/4chan-X-noupdate.crx)]
 - Fix bugs related to additional permissions requests. #2230
 - Revert changes in thread watcher that caused performance decrease.
