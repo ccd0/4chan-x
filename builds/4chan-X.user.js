@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.5.13
+// @version      1.14.5.14
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.5.13',
+  VERSION:   '1.14.5.14',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -10996,7 +10996,8 @@ Index = (function() {
         onabort: Index.load,
         onloadend: Index.load
       }, {
-        whenModified: 'Index'
+        whenModified: 'Index',
+        bypassCache: true
       });
       return $.addClass(Index.button, 'fa-spin');
     },
