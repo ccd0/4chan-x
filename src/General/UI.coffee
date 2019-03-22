@@ -356,7 +356,7 @@ hover = (e) ->
   threshold = @clientWidth / 2
   threshold = Math.max threshold, @clientWidth - 400 unless @isImage
   marginX = (if clientX <= threshold then clientX else @clientWidth - clientX) + 45
-  marginX = Math.min(marginX, @clientWidth - width) if @isImage
+  marginX = Math.min(marginX, @clientWidth - width)
   marginX += 'px'
   [left, right] = if clientX <= threshold then [marginX, ''] else ['', marginX]
 

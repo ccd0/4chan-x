@@ -1286,6 +1286,9 @@ span.hide-announcement {
   margin: 0 !important;
   padding: 1px 2px !important;
 }
+#qp {
+  pointer-events: none;
+}
 #qp > .opContainer::after {
   content: '';
   clear: both;
@@ -1295,6 +1298,7 @@ span.hide-announcement {
   border: none;
   margin: 0;
   padding: 2px 2px 5px;
+  max-width: 50px;
 }
 #qp img {
   max-height: 80vh;
