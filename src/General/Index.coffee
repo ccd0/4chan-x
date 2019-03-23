@@ -594,11 +594,11 @@ Index =
       location.reload()
       return
 
-    Index.req = $.ajax "#{location.protocol}//a.4cdn.org/#{g.BOARD}/catalog.json",
-      onloadend: Index.load
-    ,
-      whenModified: 'Index'
-      bypassCache: true
+    Index.req = $.whenModified(
+      Site.urls.catalogJSON({boardID: g.BOARD.ID}),
+      'Index',
+      Index.load
+    )
     $.addClass Index.button, 'fa-spin'
 
   load: ->

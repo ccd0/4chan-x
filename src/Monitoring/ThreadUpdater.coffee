@@ -231,12 +231,12 @@ ThreadUpdater =
     clearTimeout ThreadUpdater.timeoutID
     ThreadUpdater.set 'timer', '...', 'loading'
     ThreadUpdater.req?.abort()
-    ThreadUpdater.req = $.ajax "#{location.protocol}//a.4cdn.org/#{ThreadUpdater.thread.board}/thread/#{ThreadUpdater.thread}.json",
-      onloadend: ThreadUpdater.cb.load
-      timeout:   $.MINUTE
-    ,
-      whenModified: 'ThreadUpdater'
-      bypassCache:  true
+    ThreadUpdater.req = $.whenModified(
+      Site.urls.threadJSON({boardID: ThreadUpdater.thread.board.ID, threadID: ThreadUpdater.thread.ID}),
+      'ThreadUpdater',
+      ThreadUpdater.cb.load,
+      {timeout: $.MINUTE}
+    )
 
   updateThreadStatus: (type, status) ->
     return if not (hasChanged = ThreadUpdater.thread["is#{type}"] isnt status)

@@ -41,34 +41,22 @@ $.extend = (object, properties) ->
   return
 
 $.ajax = do ->
-  # Status Code 304: Not modified
-  # With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
-  # This saves a lot of bandwidth and CPU time for both the users and the servers.
-  lastModified = {}
   if window.wrappedJSObject and not XMLHttpRequest.wrappedJSObject
     pageXHR = XPCNativeWrapper window.wrappedJSObject.XMLHttpRequest
   else
     pageXHR = XMLHttpRequest
 
   (url, options={}, extra={}) ->
-    {type, whenModified, bypassCache, upCallbacks, form} = extra
+    {type, upCallbacks, form, headers} = extra
     options.responseType ?= 'json'
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
-    if whenModified
-      params = []
-      # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
-      params.push "s=#{whenModified}" if $.engine is 'blink'
-      params.push "t=#{Date.now()}" if Site.software is 'yotsuba' and bypassCache
-      url0 = url
-      url += '?' + params.join('&') if params.length
     r = new pageXHR()
     type or= form and 'post' or 'get'
     try
       r.open type, url, true
-      if whenModified
-        r.setRequestHeader 'If-Modified-Since', lastModified[whenModified][url0] if lastModified[whenModified]?[url0]?
-        $.on r, 'load', -> (lastModified[whenModified] or= {})[url0] = r.getResponseHeader 'Last-Modified'
+      for key, value of (headers or {})
+        r.setRequestHeader key, value
       $.extend r, options
       $.extend r.upload, upCallbacks
       # connection error or content blocker
@@ -88,6 +76,29 @@ $.ajax = do ->
         r["on#{event}"] = options["on#{event}"]
         $.queueTask $.event, event, null, r
     r
+
+# Status Code 304: Not modified
+# With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
+# This saves a lot of bandwidth and CPU time for both the users and the servers.
+$.lastModified = {}
+$.whenModified = (url, bucket, cb, options={}) ->
+  {timeout} = options
+  params = []
+  # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
+  params.push "s=#{bucket}" if $.engine is 'blink'
+  params.push "t=#{Date.now()}" if Site.software is 'yotsuba'
+  url0 = url
+  url += '?' + params.join('&') if params.length
+  headers = {}
+  if (t = $.lastModified[bucket]?[url0])?
+    headers['If-Modified-Since'] = t
+  r = $.ajax url, {
+    onloadend: ->
+      ($.lastModified[bucket] or= {})[url0] = @getResponseHeader('Last-Modified')
+      cb.call @
+    timeout
+  }, {headers}
+  r
 
 do ->
   reqs = {}

@@ -174,7 +174,6 @@ ThreadWatcher =
     if ThreadWatcher.requests.length is 0
       ThreadWatcher.status.textContent = '...'
       $.addClass ThreadWatcher.refreshButton, 'fa-spin'
-    ajax = if (siteID is Site.hostname) then $.ajax else CrossOrigin.ajax
     onloadend = ->
       return if @finished
       @finished = true
@@ -184,11 +183,19 @@ ThreadWatcher =
       else
         ThreadWatcher.status.textContent = "#{Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)}%"
       cb.apply @, args
-    req = ajax url,
-      onloadend: onloadend
-      timeout: $.MINUTE
-    ,
-      whenModified: if force then false else 'ThreadWatcher'
+    if siteID is Site.hostname
+      if force
+        delete $.lastModified.ThreadWatcher?[url]
+      req = $.whenModified(
+        url,
+        'ThreadWatcher',
+        onloadend,
+        {timeout: $.MINUTE}
+      )
+    else
+      req = CrossOrigin.ajax url,
+        onloadend: onloadend
+        timeout: $.MINUTE
     ThreadWatcher.requests.push req
 
   clearRequests: ->
