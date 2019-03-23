@@ -1286,9 +1286,6 @@ span.hide-announcement {
   margin: 0 !important;
   padding: 1px 2px !important;
 }
-#qp {
-  pointer-events: none;
-}
 #qp > .opContainer::after {
   content: '';
   clear: both;
