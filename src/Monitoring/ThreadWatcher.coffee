@@ -212,7 +212,6 @@ ThreadWatcher =
     now = Date.now()
     unless now - interval < (db.data.lastChecked or 0) <= now or d.hidden or not d.hasFocus()
       ThreadWatcher.fetchAllStatus()
-      db.setLastChecked()
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
 
   buttonFetchAll: ->
@@ -224,33 +223,43 @@ ThreadWatcher =
   fetchAllStatus: ->
     dbs = [ThreadWatcher.db, ThreadWatcher.unreaddb, QuoteYou.db].filter((x) -> x)
     n = 0
-    for db in dbs
-      db.forceSync ->
+    for dbi in dbs
+      dbi.forceSync ->
         if (++n) is dbs.length
+          # XXX On vichan boards, last_modified field of threads.json does not account for sage posts.
+          # Occasionally check replies field of catalog.json to find these posts.
+          {db} = ThreadWatcher
+          now = Date.now()
+          deep = !(now - 2 * $.HOUR < (db.data.lastChecked2 or 0) <= now)
           boards = ThreadWatcher.getAll(true)
           for board in boards
-            ThreadWatcher.fetchBoard board
-          return
+            ThreadWatcher.fetchBoard board, deep
+          db.setLastChecked()
+          db.setLastChecked('lastChecked2') if deep
 
-  fetchBoard: (board) ->
+  fetchBoard: (board, deep) ->
     return unless board.some (thread) -> !thread.data.isDead
     {siteID, boardID} = board[0]
     software = Conf['siteProperties'][siteID]?.software
-    url = SW[software]?.urls.threadsListJSON?({siteID, boardID})
+    urlF = if deep and software is 'tinyboard' then 'catalogJSON' else 'threadsListJSON'
+    url = SW[software]?.urls[urlF]?({siteID, boardID})
     return unless url
     ThreadWatcher.fetch url, {siteID}, [board], ThreadWatcher.parseBoard
 
   parseBoard: (board) ->
     return unless @status is 200
     modified = {}
+    replies  = {}
     try
       for page in @response
         for item in page.threads
           modified[item.no] = item.last_modified
+          replies[item.no] = item.replies
     for thread in board
-      {siteID, boardID, threadID} = thread
+      {siteID, boardID, threadID, data} = thread
       if modified[threadID]
-        continue if thread.data.modified is modified[threadID]
+        if modified[threadID] is data.modified and (!replies[threadID]? or replies[threadID] is data.replies)
+          continue
         ThreadWatcher.db.extend {siteID, boardID, threadID, val: {modified: modified[threadID]}}
       ThreadWatcher.fetchStatus thread
     return
@@ -269,6 +278,7 @@ ThreadWatcher =
 
     if @status is 200 and @response
       last = @response.posts[@response.posts.length-1].no
+      replies = @response.posts.length-1
       isDead = !!@response.posts[0].archived
       if isDead and Conf['Auto Prune']
         ThreadWatcher.db.delete {siteID, boardID, threadID}
@@ -310,7 +320,7 @@ ThreadWatcher =
           quotingYou = true
 
       updated = (isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou)
-      ThreadWatcher.db.extend {siteID, boardID, threadID, val: {last, isDead, unread, quotingYou}}
+      ThreadWatcher.db.extend {siteID, boardID, threadID, val: {last, replies, isDead, unread, quotingYou}}
       ThreadWatcher.refresh() if updated
 
     else if @status is 404
