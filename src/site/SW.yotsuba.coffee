@@ -98,7 +98,7 @@ SW.yotsuba =
 
     if g.BOARD.ID is 'f' and thread.OP.file
       {file} = thread.OP
-      $.ajax "#{location.protocol}//a.4cdn.org/f/thread/#{thread}.json",
+      $.ajax Site.urls.threadJSON({boardID: 'f', threadID: thread.ID}),
         timeout: $.MINUTE
         onloadend: ->
           if @response

@@ -138,7 +138,7 @@ ThreadUpdater =
             ThreadUpdater.setInterval()
         when 404
           # XXX workaround for 4chan sending false 404s
-          $.ajax "#{location.protocol}//a.4cdn.org/#{ThreadUpdater.thread.board}/catalog.json", onloadend: ->
+          $.ajax Site.urls.catalogJSON({boardID: ThreadUpdater.thread.board.ID}), onloadend: ->
             if @status is 200
               confirmed = true
               for page in @response

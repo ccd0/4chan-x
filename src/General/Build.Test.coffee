@@ -65,7 +65,7 @@ Build.Test =
 
   testOne: (post) ->
     Build.Test.postsRemaining++
-    $.cache "#{location.protocol}//a.4cdn.org/#{post.board.ID}/thread/#{post.thread.ID}.json", ->
+    $.cache Site.urls.threadJSON({boardID: post.boardID, threadID: post.threadID}), ->
       return unless @response
       {posts} = @response
       Build.spoilerRange[post.board.ID] = posts[0].custom_spoiler
