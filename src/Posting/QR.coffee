@@ -711,6 +711,7 @@ QR =
       form: $.formData formData
     if Conf['Show Upload Progress']
       options.onprogress = (e) ->
+        return if @ isnt QR.req?.upload # aborted
         if e.loaded < e.total
           # Uploading...
           QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
