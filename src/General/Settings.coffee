@@ -206,11 +206,13 @@ Settings =
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
 
   export: ->
-    # Make sure to export the most recent data.
-    $.get Conf, (Conf) ->
+    # Make sure to export the most recent data, but don't overwrite existing `Conf` object.
+    Conf2 = {}
+    $.extend Conf2, Conf
+    $.get Conf2, (Conf2) ->
       # Don't export cached JSON data.
-      delete Conf['boardConfig']
-      (Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf})
+      delete Conf2['boardConfig']
+      (Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf: Conf2})
 
   downloadExport: (data) ->
     a = $.el 'a',
