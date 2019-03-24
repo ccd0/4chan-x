@@ -68,45 +68,73 @@ CrossOrigin =
       blob.name = name
       cb blob
 
+  Request: class Request
+    status: 0
+    statusText: ''
+    response: null
+    responseHeaderString: null
+    getResponseHeader: (headerName) ->
+      if !@responseHeaders? and @responseHeaderString?
+        @responseHeaders = {}
+        for header in @responseHeaderString.split('\r\n')
+          if (i = header.indexOf(':')) >= 0
+            key = header[...i].trim().toLowerCase()
+            val = header[i+1..].trim()
+            @responseHeaders[key] = val
+      (@responseHeaders or {})[headerName.toLowerCase()] ? null
+
   # Attempts to fetch `url` in JSON format using cross-origin privileges, if available.
   # Interface is a subset of that of $.ajax.
-  # Returns an object with `status`, `statusText`, `response` properties, all initially set falsy.
-  # On success, populates the properties.
-  # Both on success or error/abort/timeout, calls `options.onloadend` with the returned object as `this`.
-  ajax: (url, options={}) ->
+  # Options:
+  #   `options.onloadend` - called with the returned object as `this` on success or error/abort/timeout.
+  #   `options.timeout` - time limit for request
+  #   `extra.headers` - request headers
+  # Returned object properties:
+  #   `status` - HTTP status (0 if connection not successful)
+  #   `statusText` - HTTP status text
+  #   `response` - decoded response body
+  #   `abort` - if present, can be called to abort the request
+  #   `getResponseHeader` - function for reading response headers
+  ajax: (url, options={}, extra={}) ->
     {onloadend, timeout} = options
+    {headers} = extra
 
     <% if (type === 'userscript') { %>
     unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
       return $.ajax url, options
     <% } %>
 
-    req =
-      status: 0
-      statusText: ''
-      response: null
+    req = new CrossOrigin.Request()
+    req.onloadend = onloadend
 
     <% if (type === 'userscript') { %>
-    gmReq = (GM?.xmlHttpRequest or GM_xmlhttpRequest)
-      method: "GET"
-      url: url+''
-      timeout: timeout
+    gmReq = (GM?.xmlHttpRequest or GM_xmlhttpRequest) {
+      method: 'GET'
+      url
+      headers
+      timeout
       onload: (xhr) ->
         try
-          response = JSON.parse(xhr.responseText)
-          $.extend req, {response, status: xhr.status, statusText: xhr.statusText}
-        onloadend.call(req)
-      onerror:   -> onloadend.call(req)
-      onabort:   -> onloadend.call(req)
-      ontimeout: -> onloadend.call(req)
+          response = if xhr.responseText then JSON.parse(xhr.responseText) else null
+          $.extend req, {
+            response
+            status: xhr.status
+            statusText: xhr.statusText
+            responseHeaderString: xhr.responseHeaders
+          }
+        req.onloadend()
+      onerror:   -> req.onloadend()
+      onabort:   -> req.onloadend()
+      ontimeout: -> req.onloadend()
+    }
     req.abort = gmReq.abort
     <% } %>
 
     <% if (type === 'crx') { %>
-    eventPageRequest {type: 'ajax', url, responseType: 'json', timeout}, (result) ->
+    eventPageRequest {type: 'ajax', url, responseType: 'json', headers, timeout}, (result) ->
       if result.status
         $.extend req, result
-      onloadend.call(req)
+      req.onloadend()
     <% } %>
 
     req
