@@ -204,8 +204,7 @@ ThreadWatcher =
   abort: ->
     for req in ThreadWatcher.requests when !req.finished
       req.finished = true
-      try
-        req.abort?()
+      req.abort()
     ThreadWatcher.clearRequests()
 
   initLastModified: ->

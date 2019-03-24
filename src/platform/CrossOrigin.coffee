@@ -82,6 +82,7 @@ CrossOrigin =
             val = header[i+1..].trim()
             @responseHeaders[key] = val
       (@responseHeaders or {})[headerName.toLowerCase()] ? null
+    abort: ->
 
   # Attempts to fetch `url` in JSON format using cross-origin privileges, if available.
   # Interface is a subset of that of $.ajax.
@@ -93,7 +94,7 @@ CrossOrigin =
   #   `status` - HTTP status (0 if connection not successful)
   #   `statusText` - HTTP status text
   #   `response` - decoded response body
-  #   `abort` - if present, can be called to abort the request
+  #   `abort` - function for aborting the request (silently fails on some platforms)
   #   `getResponseHeader` - function for reading response headers
   ajax: (url, options={}, extra={}) ->
     {onloadend, timeout} = options
@@ -127,7 +128,10 @@ CrossOrigin =
       onabort:   -> req.onloadend()
       ontimeout: -> req.onloadend()
     }
-    req.abort = gmReq.abort
+    if typeof gmReq.abort is 'function'
+      req.abort = ->
+        try
+          gmReq.abort()
     <% } %>
 
     <% if (type === 'crx') { %>
