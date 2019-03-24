@@ -18,7 +18,9 @@ ExpandThread =
   disconnect: (refresh) ->
     return if g.VIEW is 'thread' or !Conf['Thread Expansion']
     for threadID, status of ExpandThread.statuses
-      status.req?.abort()
+      if (oldReq = status.req)
+        delete status.req
+        oldReq.abort()
       delete ExpandThread.statuses[threadID]
 
     $.off d, 'IndexRefreshInternal', @onIndexRefresh unless refresh
@@ -53,14 +55,16 @@ ExpandThread =
     ExpandThread.statuses[thread] = status = {}
     a.textContent = Build.summaryText '...', a.textContent.match(/\d+/g)...
     status.req = $.cache "#{location.protocol}//a.4cdn.org/#{thread.board}/thread/#{thread}.json", ->
+      return if @ isnt status.req # aborted
       delete status.req
       ExpandThread.parse @, thread, a
 
   contract: (thread, a, threadRoot) ->
     status = ExpandThread.statuses[thread]
     delete ExpandThread.statuses[thread]
-    if status.req
-      status.req.abort()
+    if (oldReq = status.req)
+      delete status.req
+      oldReq.abort()
       a.textContent = Build.summaryText '+', a.textContent.match(/\d+/g)... if a
       return
 
