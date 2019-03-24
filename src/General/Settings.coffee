@@ -215,9 +215,11 @@ Settings =
       (Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf: Conf2})
 
   downloadExport: (data) ->
+    blob = new Blob [JSON.stringify(data, null, 2)], {type: 'application/json'}
+    url = URL.createObjectURL blob
     a = $.el 'a',
       download: "<%= meta.name %> v#{g.VERSION}-#{data.date}.json"
-      href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
+      href: url
     p = $ '.imp-exp-result', Settings.dialog
     $.rmAll p
     $.add p, a
