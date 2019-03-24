@@ -707,18 +707,7 @@ QR =
     options =
       responseType: 'document'
       withCredentials: true
-      onload: QR.response
-      onerror: ->
-        # On connection error, the post most likely didn't go through.
-        # If the post did go through, it should be stopped by the duplicate reply cooldown.
-        delete QR.req
-        Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
-        delete QR.currentCaptcha
-        post.unlock()
-        QR.cooldown.auto = true
-        QR.cooldown.addDelay post, 2
-        QR.status()
-        QR.error QR.connectionError()
+      onloadend: QR.response
     extra =
       form: $.formData formData
     if Conf['Show Upload Progress']
@@ -764,20 +753,19 @@ QR =
     QR.status()
 
   response: ->
-    {req} = QR
+    return if @aborted
     delete QR.req
 
     post = QR.posts[0]
     post.unlock()
 
-    resDoc  = req.response
-    if (err = resDoc.getElementById 'errmsg') # error!
+    if (err = @response?.getElementById 'errmsg') # error!
       $('a', err)?.target = '_blank' # duplicate image link
-    else if (connErr = resDoc.title isnt 'Post successful!')
+    else if (connErr = (!@response or @response.title isnt 'Post successful!'))
       err = QR.connectionError()
       Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
-    else if req.status isnt 200
-      err = "Error #{req.statusText} (#{req.status})"
+    else if @status isnt 200
+      err = "Error #{@statusText} (#{@status})"
 
     delete QR.currentCaptcha
 
@@ -809,7 +797,7 @@ QR =
       QR.error err
       return
 
-    h1 = $ 'h1', resDoc
+    h1 = $ 'h1', @response
 
     [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
     postID   = +postID
@@ -884,7 +872,8 @@ QR =
     check()
 
   abort: ->
-    if QR.req and !QR.req.isUploadFinished
+    if QR.req and !QR.req.isUploadFinished and QR.req.abort
+      QR.req.aborted = true
       QR.req.abort()
       delete QR.req
       Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
