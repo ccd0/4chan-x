@@ -1,5 +1,5 @@
 class DataBoard
-  @keys = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads', 'customTitles']
+  @keys = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads', 'watcherLastModified', 'customTitles']
 
   constructor: (@key, sync, dontClean) ->
     @initData Conf[@key]
@@ -87,7 +87,7 @@ class DataBoard
 
   extend: ({siteID, boardID, threadID, postID, val, rm}, cb) ->
     @save =>
-      oldVal = @get {siteID, boardID, threadID, postID, val: {}}
+      oldVal = @get {siteID, boardID, threadID, postID, defaultValue: {}}
       delete oldVal[key] for key in rm or []
       $.extend oldVal, val
       @setUnsafe {siteID, boardID, threadID, postID, val: oldVal}

@@ -10,8 +10,8 @@ ThreadWatcher =
       className: 'fa fa-eye'
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
+    @dbLM   = new DataBoard 'watcherLastModified', null, true
     @dialog = UI.dialog 'thread-watcher', <%= readHTML('ThreadWatcher.html') %>
-
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
     @refreshButton = $ '.refresh', @dialog
@@ -41,6 +41,7 @@ ThreadWatcher =
 
     Header.addShortcut 'watcher', sc, 510
 
+    ThreadWatcher.initLastModified()
     ThreadWatcher.fetchAuto()
     $.on window, 'visibilitychange focus', -> $.queueTask ThreadWatcher.fetchAuto
 
@@ -207,6 +208,17 @@ ThreadWatcher =
         req.abort?()
     ThreadWatcher.clearRequests()
 
+  initLastModified: ->
+    lm = ($.lastModified['ThreadWatcher'] or= {})
+    for siteID, boards of ThreadWatcher.dbLM.data
+      for boardID, data of boards.boards
+        if ThreadWatcher.db.get {siteID, boardID}
+          for url, date of data
+            lm[url] = date
+        else
+          ThreadWatcher.dbLM.delete {siteID, boardID}
+    return
+
   fetchAuto: ->
     clearTimeout ThreadWatcher.timeout
     return unless Conf['Auto Update Thread Watcher']
@@ -247,10 +259,13 @@ ThreadWatcher =
     urlF = if deep and software is 'tinyboard' then 'catalogJSON' else 'threadsListJSON'
     url = SW[software]?.urls[urlF]?({siteID, boardID})
     return unless url
-    ThreadWatcher.fetch url, {siteID}, [board], ThreadWatcher.parseBoard
+    ThreadWatcher.fetch url, {siteID}, [board, url], ThreadWatcher.parseBoard
 
-  parseBoard: (board) ->
+  parseBoard: (board, url) ->
     return unless @status is 200
+    {siteID, boardID} = board[0]
+    lmDate = @getResponseHeader('Last-Modified')
+    ThreadWatcher.dbLM.extend {siteID, boardID, val: $.item(url, lmDate)}
     modified = {}
     replies  = {}
     try
@@ -259,7 +274,7 @@ ThreadWatcher =
           modified[item.no] = item.last_modified
           replies[item.no] = item.replies
     for thread in board
-      {siteID, boardID, threadID, data} = thread
+      {threadID, data} = thread
       if modified[threadID]
         if modified[threadID] is data.modified and (!replies[threadID]? or replies[threadID] is data.replies)
           continue
