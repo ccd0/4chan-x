@@ -183,19 +183,15 @@ ThreadWatcher =
       else
         ThreadWatcher.status.textContent = "#{Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)}%"
       cb.apply @, args
-    if siteID is Site.hostname
-      if force
-        delete $.lastModified.ThreadWatcher?[url]
-      req = $.whenModified(
-        url,
-        'ThreadWatcher',
-        onloadend,
-        {timeout: $.MINUTE}
-      )
-    else
-      req = CrossOrigin.ajax url,
-        onloadend: onloadend
-        timeout: $.MINUTE
+    ajax = if siteID is Site.hostname then $.ajax else CrossOrigin.ajax
+    if force
+      delete $.lastModified.ThreadWatcher?[url]
+    req = $.whenModified(
+      url,
+      'ThreadWatcher',
+      onloadend,
+      {timeout: $.MINUTE, ajax}
+    )
     ThreadWatcher.requests.push req
 
   clearRequests: ->

@@ -82,7 +82,7 @@ $.ajax = do ->
 # This saves a lot of bandwidth and CPU time for both the users and the servers.
 $.lastModified = {}
 $.whenModified = (url, bucket, cb, options={}) ->
-  {timeout} = options
+  {timeout, ajax} = options
   params = []
   # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
   params.push "s=#{bucket}" if $.engine is 'blink'
@@ -92,7 +92,7 @@ $.whenModified = (url, bucket, cb, options={}) ->
   headers = {}
   if (t = $.lastModified[bucket]?[url0])?
     headers['If-Modified-Since'] = t
-  r = $.ajax url, {
+  r = (ajax or $.ajax) url, {
     onloadend: ->
       ($.lastModified[bucket] or= {})[url0] = @getResponseHeader('Last-Modified')
       cb.call @
