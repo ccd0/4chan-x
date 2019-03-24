@@ -419,16 +419,16 @@ $.sync = (key, cb) ->
 $.forceSync = -> return
 
 $.crxWorking = ->
-  if chrome.runtime.getManifest()
-    true
-  else
-    unless $.crxWarningShown
-      msg = $.el 'div',
-        <%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>
-      $.on $('a', msg), 'click', -> location.reload()
-      new Notice 'warning', msg
-      $.crxWarningShown = true
-    false
+  try
+    if chrome.runtime.getManifest()
+      return true
+  unless $.crxWarningShown
+    msg = $.el 'div',
+      <%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>
+    $.on $('a', msg), 'click', -> location.reload()
+    new Notice 'warning', msg
+    $.crxWarningShown = true
+  false
 
 $.get = $.oneItemSugar (data, cb) ->
   return unless $.crxWorking()
