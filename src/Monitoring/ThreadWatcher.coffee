@@ -202,6 +202,7 @@ ThreadWatcher =
     $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
 
   abort: ->
+    delete ThreadWatcher.syncing
     for req in ThreadWatcher.requests when !req.finished
       req.finished = true
       req.abort()
@@ -229,17 +230,22 @@ ThreadWatcher =
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
 
   buttonFetchAll: ->
-    if ThreadWatcher.requests.length
+    if ThreadWatcher.syncing or ThreadWatcher.requests.length
       ThreadWatcher.abort()
     else
       ThreadWatcher.fetchAllStatus()
 
   fetchAllStatus: ->
+    ThreadWatcher.status.textContent = '...'
+    $.addClass ThreadWatcher.refreshButton, 'fa-spin'
+    ThreadWatcher.syncing = true
     dbs = [ThreadWatcher.db, ThreadWatcher.unreaddb, QuoteYou.db].filter((x) -> x)
     n = 0
     for dbi in dbs
       dbi.forceSync ->
         if (++n) is dbs.length
+          return if !ThreadWatcher.syncing # aborted
+          delete ThreadWatcher.syncing
           # XXX On vichan boards, last_modified field of threads.json does not account for sage posts.
           # Occasionally check replies field of catalog.json to find these posts.
           {db} = ThreadWatcher
@@ -250,6 +256,8 @@ ThreadWatcher =
             ThreadWatcher.fetchBoard board, deep
           db.setLastChecked()
           db.setLastChecked('lastChecked2') if deep
+          if ThreadWatcher.fetched is ThreadWatcher.requests.length
+            ThreadWatcher.clearRequests()
 
   fetchBoard: (board, deep) ->
     return unless board.some (thread) -> !thread.data.isDead
