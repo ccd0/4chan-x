@@ -54,7 +54,7 @@ ImageCommon =
         clearTimeout timeoutID if delay?
         cb URL
 
-    $.ajax "#{location.protocol}//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
+    $.ajax Site.urls.threadJSON({boardID: post.boardID, threadID: post.threadID}), onloadend: ->
       post.kill !post.isClone if @status is 404
       return redirect() if @status isnt 200
       for postObj in @response.posts
