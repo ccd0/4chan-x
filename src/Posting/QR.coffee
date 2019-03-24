@@ -708,10 +708,9 @@ QR =
       responseType: 'document'
       withCredentials: true
       onloadend: QR.response
-    extra =
       form: $.formData formData
     if Conf['Show Upload Progress']
-      extra.onprogress = (e) ->
+      options.onprogress = (e) ->
         if e.loaded < e.total
           # Uploading...
           QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
@@ -725,11 +724,11 @@ QR =
       if response?
         QR.currentCaptcha = response
         if response.challenge?
-          extra.form.append 'recaptcha_challenge_field', response.challenge
-          extra.form.append 'recaptcha_response_field', response.response
+          options.form.append 'recaptcha_challenge_field', response.challenge
+          options.form.append 'recaptcha_response_field', response.response
         else
-          extra.form.append 'g-recaptcha-response', response.response
-      QR.req = $.ajax "https://sys.#{location.hostname.split('.')[1]}.org/#{g.BOARD}/post", options, extra
+          options.form.append 'g-recaptcha-response', response.response
+      QR.req = $.ajax "https://sys.#{location.hostname.split('.')[1]}.org/#{g.BOARD}/post", options
       QR.req.progress = '...'
 
     if typeof captcha is 'function'
@@ -867,7 +866,6 @@ QR =
             cb()
           else
             setTimeout check, attempts * $.SECOND
-      ,
         type: 'HEAD'
     check()
 

@@ -83,7 +83,6 @@ DeleteLink =
       responseType: 'document'
       withCredentials: true
       onloadend: -> DeleteLink.load link, post, fileOnly, @response
-    ,
       form: $.formData form
 
   load: (link, post, fileOnly, resDoc) ->

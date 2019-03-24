@@ -46,9 +46,9 @@ $.ajax = do ->
   else
     pageXHR = XMLHttpRequest
 
-  (url, options={}, extra={}) ->
-    {type, onprogress, form, headers} = extra
-    options.responseType ?= 'json'
+  (url, options={}) ->
+    {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options
+    responseType ?= 'json'
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     r = new pageXHR()
@@ -57,7 +57,7 @@ $.ajax = do ->
       r.open type, url, true
       for key, value of (headers or {})
         r.setRequestHeader key, value
-      $.extend r, options
+      $.extend r, {onloadend, timeout, responseType, withCredentials}
       $.extend r.upload, {onprogress}
       # connection error or content blocker
       $.on r, 'error', -> (c.warn "4chan X failed to load: #{url}" unless r.status)
@@ -72,9 +72,9 @@ $.ajax = do ->
     catch err
       # XXX Some content blockers in Firefox (e.g. Adblock Plus and NoScript) throw an exception instead of simulating a connection error.
       throw err unless err.result is 0x805e0006
-      for event in ['error', 'loadend']
-        r["on#{event}"] = options["on#{event}"]
-        $.queueTask $.event, event, null, r
+      r.onloadend = onloadend
+      $.queueTask $.event, 'error',   null, r
+      $.queueTask $.event, 'loadend', null, r
     r
 
 # Status Code 304: Not modified

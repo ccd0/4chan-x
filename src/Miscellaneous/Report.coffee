@@ -76,13 +76,13 @@ Report =
     results = []
     for [name, url] in urls
       do (name, url) ->
-        $.ajax url,
+        $.ajax url, {
           onloadend: ->
             results.push [name, @response or {error: ''}]
             if results.length is urls.length
               cb results
-        ,
-          {form}
+          form
+        }
     return
 
   archiveResults: (results) ->
