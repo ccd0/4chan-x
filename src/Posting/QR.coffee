@@ -866,6 +866,7 @@ QR =
             cb()
           else
             setTimeout check, attempts * $.SECOND
+        responseType: 'text'
         type: 'HEAD'
     check()
 
