@@ -128,10 +128,10 @@ ThreadUpdater =
       $.cb.value.call @ if e
 
     load: ->
-      {req} = ThreadUpdater
-      switch req.status
+      return if @ isnt ThreadUpdater.req # aborted
+      switch @status
         when 200
-          ThreadUpdater.parse req
+          ThreadUpdater.parse @
           if ThreadUpdater.thread.isArchived
             ThreadUpdater.kill()
           else
@@ -151,9 +151,9 @@ ThreadUpdater =
             if confirmed
               ThreadUpdater.kill()
             else
-              ThreadUpdater.error req
+              ThreadUpdater.error @
         else
-          ThreadUpdater.error req
+          ThreadUpdater.error @
 
   kill: ->
     ThreadUpdater.thread.kill()
@@ -230,7 +230,9 @@ ThreadUpdater =
   update: ->
     clearTimeout ThreadUpdater.timeoutID
     ThreadUpdater.set 'timer', '...', 'loading'
-    ThreadUpdater.req?.abort()
+    if (oldReq = ThreadUpdater.req)
+      delete ThreadUpdater.req
+      oldReq.abort()
     ThreadUpdater.req = $.whenModified(
       Site.urls.threadJSON({boardID: ThreadUpdater.thread.board.ID, threadID: ThreadUpdater.thread.ID}),
       'ThreadUpdater',
