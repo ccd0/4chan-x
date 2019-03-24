@@ -83,6 +83,7 @@ CrossOrigin =
             @responseHeaders[key] = val
       (@responseHeaders or {})[headerName.toLowerCase()] ? null
     abort: ->
+    onloadend: ->
 
   # Attempts to fetch `url` in JSON format using cross-origin privileges, if available.
   # Interface is a subset of that of $.ajax.
