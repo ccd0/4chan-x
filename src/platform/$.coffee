@@ -97,7 +97,8 @@ $.whenModified = (url, bucket, cb, options={}) ->
       ($.lastModified[bucket] or= {})[url0] = @getResponseHeader('Last-Modified')
       cb.call @
     timeout
-  }, {headers}
+    headers
+  }
   r
 
 do ->

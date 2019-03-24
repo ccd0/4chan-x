@@ -87,18 +87,17 @@ CrossOrigin =
   # Attempts to fetch `url` in JSON format using cross-origin privileges, if available.
   # Interface is a subset of that of $.ajax.
   # Options:
-  #   `options.onloadend` - called with the returned object as `this` on success or error/abort/timeout.
-  #   `options.timeout` - time limit for request
-  #   `extra.headers` - request headers
+  #   `onloadend` - called with the returned object as `this` on success or error/abort/timeout.
+  #   `timeout` - time limit for request
+  #   `headers` - request headers
   # Returned object properties:
   #   `status` - HTTP status (0 if connection not successful)
   #   `statusText` - HTTP status text
   #   `response` - decoded response body
   #   `abort` - function for aborting the request (silently fails on some platforms)
   #   `getResponseHeader` - function for reading response headers
-  ajax: (url, options={}, extra={}) ->
-    {onloadend, timeout} = options
-    {headers} = extra
+  ajax: (url, options={}) ->
+    {onloadend, timeout, headers} = options
 
     <% if (type === 'userscript') { %>
     unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
