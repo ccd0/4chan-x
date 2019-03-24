@@ -722,16 +722,15 @@ QR =
     extra =
       form: $.formData formData
     if Conf['Show Upload Progress']
-      extra.upCallbacks =
-        onload: ->
+      extra.onprogress = (e) ->
+        if e.loaded < e.total
+          # Uploading...
+          QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
+        else
           # Upload done, waiting for server response.
           QR.req.isUploadFinished = true
           QR.req.progress = '...'
-          QR.status()
-        onprogress: (e) ->
-          # Uploading...
-          QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
-          QR.status()
+        QR.status()
 
     cb = (response) ->
       if response?

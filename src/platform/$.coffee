@@ -47,7 +47,7 @@ $.ajax = do ->
     pageXHR = XMLHttpRequest
 
   (url, options={}, extra={}) ->
-    {type, upCallbacks, form, headers} = extra
+    {type, onprogress, form, headers} = extra
     options.responseType ?= 'json'
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
@@ -58,7 +58,7 @@ $.ajax = do ->
       for key, value of (headers or {})
         r.setRequestHeader key, value
       $.extend r, options
-      $.extend r.upload, upCallbacks
+      $.extend r.upload, {onprogress}
       # connection error or content blocker
       $.on r, 'error', -> (c.warn "4chan X failed to load: #{url}" unless r.status)
       <% if (type === 'crx') { %>
