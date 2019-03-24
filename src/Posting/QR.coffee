@@ -752,7 +752,7 @@ QR =
     QR.status()
 
   response: ->
-    return if @aborted
+    return if @ isnt QR.req # aborted
     delete QR.req
 
     post = QR.posts[0]
@@ -871,10 +871,9 @@ QR =
     check()
 
   abort: ->
-    if QR.req and !QR.req.isUploadFinished and QR.req.abort
-      QR.req.aborted = true
-      QR.req.abort()
+    if (oldReq = QR.req) and !QR.req.isUploadFinished
       delete QR.req
+      oldReq.abort()
       Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
       delete QR.currentCaptcha
       QR.posts[0].unlock()
