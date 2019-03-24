@@ -309,6 +309,7 @@ dragend = ->
   $.set "#{@id}.position", @style.cssText
 
 hoverstart = ({root, el, latestEvent, endEvents, height, width, cb, noRemove}) ->
+  rect = root.getBoundingClientRect()
   o = {
     root
     el
@@ -322,6 +323,8 @@ hoverstart = ({root, el, latestEvent, endEvents, height, width, cb, noRemove}) -
     height
     width
     noRemove
+    clientX: (rect.left + rect.right) / 2
+    clientY: (rect.top + rect.bottom) / 2
   }
   o.hover    = hover.bind    o
   o.hoverend = hoverend.bind o
@@ -346,7 +349,7 @@ hover = (e) ->
   @latestEvent = e
   height = (@height or @el.offsetHeight) + hoverstart.padding
   width  = (@width  or @el.offsetWidth)
-  {clientX, clientY} = e
+  {clientX, clientY} = if Conf['Follow Cursor'] then e else @
 
   top = if @isImage
     Math.max 0, clientY * (@clientHeight - height) / @clientHeight

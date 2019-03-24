@@ -19,6 +19,10 @@ Config =
         'Show a notice at the top of the page when the index is refreshed.'
         1
       ]
+      'Follow Cursor': [
+        true
+        'Image Hover and Quote Preview move with the mouse cursor.'
+      ]
       'Open Threads in New Tab': [
         false
         'Make links to threads in the index / <%= meta.name %> catalog open in a new tab.'
