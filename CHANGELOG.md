@@ -2,6 +2,23 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.6
+
+**v1.14.6.0** *(2019-03-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.5.14.
+- (ebinBuddha) Added desktop notification for filters (`notify` option).
+- Make it possible to filter posts without ID (use `//`). #1578
+- Add `file` option to filter only posts with/without files.
+- Improvements in Thread Watcher efficiency, particularly when using it with multiple sites.
+- Allow image hover previews to use full width of screen even in cases where it covers the thumbnail.
+- Make movement of image hover / quote preview with mouse optional; option is `Follow Cursor`. #471, #2245
+- Fix image/video hover in case where dimensions are not available. #2197
+- Implement pruning of data for dead threads on vichan sites with JSON API. #2171
+- Override 4chan CSS causing sauce links to get cut off. #2193
+- Change export URL from data: to blob: so larger settings files can be exported. #2255
+- Unbreak warning in Chrome extension to reload the page after an update.
+- Various minor bugfixes.
+
 ### v1.14.5
 
 **v1.14.5.14** *(2019-03-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.14/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.14/builds/4chan-X-noupdate.crx)]
