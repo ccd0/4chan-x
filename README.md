@@ -15,7 +15,7 @@ https://github.com/KevinParnell/OneeChan.
 ## Install
 
 ### Firefox
-Install [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/), [Violentmonkey](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/) or [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
+Install [Violentmonkey](https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/), [Tampermonkey](https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/), or [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/) (issues since v4: [#2526](https://github.com/greasemonkey/greasemonkey/issues/2526), [#2576](https://github.com/greasemonkey/greasemonkey/issues/2574)), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
 
 Ports of Greasemonkey are available for [SeaMonkey](https://sourceforge.net/projects/gmport/) and [Pale Moon](https://github.com/janekptacijarabaci/greasemonkey/releases/latest).
 
