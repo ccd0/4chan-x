@@ -128,7 +128,7 @@ CrossOrigin =
       onabort:   -> req.onloadend()
       ontimeout: -> req.onloadend()
     }
-    if typeof gmReq.abort is 'function'
+    if gmReq and typeof gmReq.abort is 'function'
       req.abort = ->
         try
           gmReq.abort()
