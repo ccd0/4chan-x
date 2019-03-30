@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.6.0
+// @version      1.14.6.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.6.0',
+  VERSION:   '1.14.6.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5575,7 +5575,7 @@ CrossOrigin = (function() {
           return req.onloadend();
         }
       });
-      if (typeof gmReq.abort === 'function') {
+      if (gmReq && typeof gmReq.abort === 'function') {
         req.abort = function() {
           try {
             return gmReq.abort();

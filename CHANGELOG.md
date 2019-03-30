@@ -4,6 +4,9 @@
 
 ### v1.14.6
 
+**v1.14.6.1** *(2019-03-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.1/builds/4chan-X-noupdate.crx)]
+- Fix errors in certain userscript managers introduced in v1.14.6.0. #2256
+
 **v1.14.6.0** *(2019-03-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.5.14.
 - (ebinBuddha) Added desktop notification for filters (`notify` option).
