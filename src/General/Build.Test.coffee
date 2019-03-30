@@ -91,8 +91,8 @@ Build.Test =
             c.log y.outerHTML
 
           for key of Config.filter when not key is 'General' and not (key is 'MD5' and post.board.ID is 'f')
-            val1 = Filter[key] obj
-            val2 = Filter[key] post2
+            val1 = Filter.value key, obj
+            val2 = Filter.value key, post2
             if val1 isnt val2
               fail = true
               c.log "#{post.fullID} has filter bug in #{key}"

@@ -123,7 +123,7 @@ Filter =
       hideable = false
     mask = (if post.isReply then 2 else 1)
     mask = (mask | (if post.file then 4 else 8))
-    for key of Filter.filters when ((value = Filter[key] post)?)
+    for key of Filter.filters when ((value = Filter.value key, post)?)
       # Continue if there's nothing to filter (no tripcode for example).
       for filter in Filter.filters[key]
         continue if (
@@ -165,19 +165,23 @@ Filter =
   isHidden: (post) ->
     !!Filter.test(post).hide
 
-  postID:     (post) -> "#{post.ID}"
-  name:       (post) -> post.info.name
-  uniqueID:   (post) -> post.info.uniqueID or ''
-  tripcode:   (post) -> post.info.tripcode
-  capcode:    (post) -> post.info.capcode
-  pass:       (post) -> post.info.pass
-  subject:    (post) -> post.info.subject or (if post.isReply then undefined else '')
-  comment:    (post) -> (post.info.comment ?= Build.parseComment post.info.commentHTML.innerHTML)
-  flag:       (post) -> post.info.flag
-  filename:   (post) -> post.file?.name
-  dimensions: (post) -> post.file?.dimensions
-  filesize:   (post) -> post.file?.size
-  MD5:        (post) -> post.file?.MD5
+  valueF:
+    postID:     (post) -> "#{post.ID}"
+    name:       (post) -> post.info.name
+    uniqueID:   (post) -> post.info.uniqueID or ''
+    tripcode:   (post) -> post.info.tripcode
+    capcode:    (post) -> post.info.capcode
+    pass:       (post) -> post.info.pass
+    subject:    (post) -> post.info.subject or (if post.isReply then undefined else '')
+    comment:    (post) -> (post.info.comment ?= Build.parseComment post.info.commentHTML.innerHTML)
+    flag:       (post) -> post.info.flag
+    filename:   (post) -> post.file?.name
+    dimensions: (post) -> post.file?.dimensions
+    filesize:   (post) -> post.file?.size
+    MD5:        (post) -> post.file?.MD5
+
+  value: (key, post) ->
+    Filter.valueF[key](post)
 
   addFilter: (type, re, cb) ->
     $.get type, Conf[type], (item) ->
@@ -273,14 +277,14 @@ Filter =
       return {
         el: el
         open: (post) ->
-          value = Filter[type] post
+          value = Filter.value type, post
           value?
       }
 
     makeFilter: ->
       {type} = @dataset
       # Convert value -> regexp, unless type is MD5
-      value = Filter[type] Filter.menu.post
+      value = Filter.value type, Filter.menu.post
       re = if type in ['uniqueID', 'MD5'] then value else Filter.escape(value)
       re = if type in ['uniqueID', 'MD5']
         "/#{re}/"
