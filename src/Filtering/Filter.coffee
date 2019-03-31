@@ -92,8 +92,7 @@ Filter =
         # Fields that this filter applies to (for 'general' filters)
         if key is 'general'
           if (types = filter.match /(?:^|;)\s*type:([^;]*)/)
-            types = types[1].split(',').filter (x) ->
-              x of Config.filter and x isnt 'general'
+            types = types[1].split(',')
           else
             types = ['subject', 'name', 'filename', 'comment']
 
@@ -181,7 +180,10 @@ Filter =
     MD5:        (post) -> post.file?.MD5
 
   value: (key, post) ->
-    Filter.valueF[key](post)
+    if key of Filter.valueF
+      Filter.valueF[key](post)
+    else
+      key.split('+').map((k) -> Filter.valueF[k]?(post) or '').join('\n')
 
   addFilter: (type, re, cb) ->
     $.get type, Conf[type], (item) ->

@@ -41,7 +41,9 @@
   <li>
     Filters in the "General" section apply to multiple fields, by default <code>subject,name,filename,comment</code>.<br>
     The fields can be specified with the <code>type</code> option, separated by commas.<br>
-    For example: <code>type:@{filterTypes};</code>.
+    For example: <code>type:@{filterTypes};</code>.<br>
+    Types can also be combined with a <code>+</code> sign; this indicates the filter applies to the given fields joined by newlines.<br>
+    For example: <code>type:filename+filesize+dimensions;</code>.<br>
   </li>
 </ul>
 <p>
