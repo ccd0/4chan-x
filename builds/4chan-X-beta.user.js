@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.6.1
+// @version      1.14.6.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.6.1',
+  VERSION:   '1.14.6.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -8119,7 +8119,7 @@ Filter = (function() {
     filters: {},
     results: {},
     init: function() {
-      var base, base1, board, boards, boardsRaw, err, excludes, excludesRaw, file, filter, hide, hl, i, isstring, j, k, key, l, len, len1, len2, len3, line, mask, noti, nsfwBoards, op, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, regexp, sfwBoards, stub, top, type, types;
+      var base, base1, board, boards, boardsRaw, err, excludes, excludesRaw, file, filter, hide, hl, i, isstring, j, key, l, len, len1, len2, len3, line, m, mask, noti, nsfwBoards, op, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, regexp, sfwBoards, stub, top, type, types;
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Filter'])) {
         return;
       }
@@ -8154,8 +8154,8 @@ Filter = (function() {
           if (excludesRaw) {
             excludes = {};
             ref5 = excludesRaw.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards).split(',');
-            for (k = 0, len2 = ref5.length; k < len2; k++) {
-              board = ref5[k];
+            for (l = 0, len2 = ref5.length; l < len2; l++) {
+              board = ref5[l];
               excludes[board] = true;
             }
           } else {
@@ -8201,9 +8201,7 @@ Filter = (function() {
           }
           if (key === 'general') {
             if ((types = filter.match(/(?:^|;)\s*type:([^;]*)/))) {
-              types = types[1].split(',').filter(function(x) {
-                return x in Config.filter && x !== 'general';
-              });
+              types = types[1].split(',');
             } else {
               types = ['subject', 'name', 'filename', 'comment'];
             }
@@ -8222,8 +8220,8 @@ Filter = (function() {
             noti: noti
           };
           if (key === 'general') {
-            for (l = 0, len3 = types.length; l < len3; l++) {
-              type = types[l];
+            for (m = 0, len3 = types.length; m < len3; m++) {
+              type = types[m];
               ((base = this.filters)[type] || (base[type] = [])).push(filter);
             }
           } else {
@@ -8258,7 +8256,7 @@ Filter = (function() {
       mask = (post.isReply ? 2 : 1);
       mask = mask | (post.file ? 4 : 8);
       for (key in Filter.filters) {
-        if (((value = Filter[key](post)) != null)) {
+        if (((value = Filter.value(key, post)) != null)) {
           ref = Filter.filters[key];
           for (i = 0, len = ref.length; i < len; i++) {
             filter = ref[i];
@@ -8320,49 +8318,61 @@ Filter = (function() {
     isHidden: function(post) {
       return !!Filter.test(post).hide;
     },
-    postID: function(post) {
-      return "" + post.ID;
+    valueF: {
+      postID: function(post) {
+        return "" + post.ID;
+      },
+      name: function(post) {
+        return post.info.name;
+      },
+      uniqueID: function(post) {
+        return post.info.uniqueID || '';
+      },
+      tripcode: function(post) {
+        return post.info.tripcode;
+      },
+      capcode: function(post) {
+        return post.info.capcode;
+      },
+      pass: function(post) {
+        return post.info.pass;
+      },
+      subject: function(post) {
+        return post.info.subject || (post.isReply ? void 0 : '');
+      },
+      comment: function(post) {
+        var base;
+        return (base = post.info).comment != null ? base.comment : base.comment = Build.parseComment(post.info.commentHTML.innerHTML);
+      },
+      flag: function(post) {
+        return post.info.flag;
+      },
+      filename: function(post) {
+        var ref;
+        return (ref = post.file) != null ? ref.name : void 0;
+      },
+      dimensions: function(post) {
+        var ref;
+        return (ref = post.file) != null ? ref.dimensions : void 0;
+      },
+      filesize: function(post) {
+        var ref;
+        return (ref = post.file) != null ? ref.size : void 0;
+      },
+      MD5: function(post) {
+        var ref;
+        return (ref = post.file) != null ? ref.MD5 : void 0;
+      }
     },
-    name: function(post) {
-      return post.info.name;
-    },
-    uniqueID: function(post) {
-      return post.info.uniqueID || '';
-    },
-    tripcode: function(post) {
-      return post.info.tripcode;
-    },
-    capcode: function(post) {
-      return post.info.capcode;
-    },
-    pass: function(post) {
-      return post.info.pass;
-    },
-    subject: function(post) {
-      return post.info.subject || (post.isReply ? void 0 : '');
-    },
-    comment: function(post) {
-      var base;
-      return (base = post.info).comment != null ? base.comment : base.comment = Build.parseComment(post.info.commentHTML.innerHTML);
-    },
-    flag: function(post) {
-      return post.info.flag;
-    },
-    filename: function(post) {
-      var ref;
-      return (ref = post.file) != null ? ref.name : void 0;
-    },
-    dimensions: function(post) {
-      var ref;
-      return (ref = post.file) != null ? ref.dimensions : void 0;
-    },
-    filesize: function(post) {
-      var ref;
-      return (ref = post.file) != null ? ref.size : void 0;
-    },
-    MD5: function(post) {
-      var ref;
-      return (ref = post.file) != null ? ref.MD5 : void 0;
+    value: function(key, post) {
+      if (key in Filter.valueF) {
+        return Filter.valueF[key](post);
+      } else {
+        return key.split('+').map(function(k) {
+          var base;
+          return (typeof (base = Filter.valueF)[k] === "function" ? base[k](post) : void 0) || '';
+        }).join('\n');
+      }
     },
     addFilter: function(type, re, cb) {
       return $.get(type, Conf[type], function(item) {
@@ -8437,7 +8447,7 @@ Filter = (function() {
           el: el,
           open: function(post) {
             var value;
-            value = Filter[type](post);
+            value = Filter.value(type, post);
             return value != null;
           }
         };
@@ -8445,7 +8455,7 @@ Filter = (function() {
       makeFilter: function() {
         var re, type, value;
         type = this.dataset.type;
-        value = Filter[type](Filter.menu.post);
+        value = Filter.value(type, Filter.menu.post);
         re = type === 'uniqueID' || type === 'MD5' ? value : Filter.escape(value);
         re = type === 'uniqueID' || type === 'MD5' ? "/" + re + "/" : "/^" + re + "$/";
         return Filter.addFilter(type, re, function() {
@@ -12525,7 +12535,7 @@ Settings = (function() {
         };
       });
       $.extend(div, {
-        innerHTML: "<div class=\"warning\"><code>Filter</code> is disabled.</div><p>Use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\" target=\"_blank\">regular expressions</a>, one per line.<br>Lines starting with a <code>#</code> will be ignored.<br>For example, <code>/weeaboo/i</code> will filter posts containing the string \`<code>weeaboo</code>\`, case-insensitive.<br>MD5 and Unique ID filtering use exact string matching, not regular expressions.</p><ul>You can use these settings with each regular expression, separate them with semicolons:<li>Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>For example: <code>boards:a,jp;</code>.<br></li><li>In case of a global rule or one that uses <code>sfw</code>/<code>nsfw</code>, select boards to be excluded from the filter.<br>For example: <code>exclude:vg,v;</code>.</li><li>Filter OPs only along with their threads (\`only\`) or replies only (\`no\`).<br>For example: <code>op:only;</code> or <code>op:no;</code>.</li><li>Filter only posts with files (\`only\`) or only posts without files (\`no\`).<br>For example: <code>file:only;</code> or <code>file:no;</code>.</li><li>Overrule the \`Show Stubs\` setting if specified: create a stub (\`yes\`) or not (\`no\`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code>.</li><li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li><li>Highlighted OPs will have their threads put on top of the board index by default.<br>For example: <code>top:yes;</code> or <code>top:no;</code>.</li><li>Show a desktop notification instead of hiding.<br>For example: <code>notify;</code>.</li><li>Filters in the \"General\" section apply to multiple fields, by default <code>subject,name,filename,comment</code>.<br>The fields can be specified with the <code>type</code> option, separated by commas.<br>For example: <code>type:" + E.cat(filterTypes) + ";</code>.</li></ul><p>Note: If you&#039;re using the native catalog rather than 4chan X&#039;s catalog, 4chan X&#039;s filters do not apply there.<br>The native catalog has its own separate filter list.</p>"
+        innerHTML: "<div class=\"warning\"><code>Filter</code> is disabled.</div><p>Use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\" target=\"_blank\">regular expressions</a>, one per line.<br>Lines starting with a <code>#</code> will be ignored.<br>For example, <code>/weeaboo/i</code> will filter posts containing the string \`<code>weeaboo</code>\`, case-insensitive.<br>MD5 and Unique ID filtering use exact string matching, not regular expressions.</p><ul>You can use these settings with each regular expression, separate them with semicolons:<li>Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>For example: <code>boards:a,jp;</code>.<br></li><li>In case of a global rule or one that uses <code>sfw</code>/<code>nsfw</code>, select boards to be excluded from the filter.<br>For example: <code>exclude:vg,v;</code>.</li><li>Filter OPs only along with their threads (\`only\`) or replies only (\`no\`).<br>For example: <code>op:only;</code> or <code>op:no;</code>.</li><li>Filter only posts with files (\`only\`) or only posts without files (\`no\`).<br>For example: <code>file:only;</code> or <code>file:no;</code>.</li><li>Overrule the \`Show Stubs\` setting if specified: create a stub (\`yes\`) or not (\`no\`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code>.</li><li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li><li>Highlighted OPs will have their threads put on top of the board index by default.<br>For example: <code>top:yes;</code> or <code>top:no;</code>.</li><li>Show a desktop notification instead of hiding.<br>For example: <code>notify;</code>.</li><li>Filters in the \"General\" section apply to multiple fields, by default <code>subject,name,filename,comment</code>.<br>The fields can be specified with the <code>type</code> option, separated by commas.<br>For example: <code>type:" + E.cat(filterTypes) + ";</code>.<br>Types can also be combined with a <code>+</code> sign; this indicates the filter applies to the given fields joined by newlines.<br>For example: <code>type:filename+filesize+dimensions;</code>.<br></li></ul><p>Note: If you&#039;re using the native catalog rather than 4chan X&#039;s catalog, 4chan X&#039;s filters do not apply there.<br>The native catalog has its own separate filter list.</p>"
       });
       return $('.warning', div).hidden = Conf['Filter'];
     },
@@ -16295,7 +16305,7 @@ ArchiveLink = (function() {
       } : function(post) {
         var typeParam, value;
         typeParam = type === 'country' && post.info.flagCodeTroll ? 'tag' : type;
-        value = type === 'country' ? post.info.flagCode || post.info.flagCodeTroll : Filter[type](post);
+        value = type === 'country' ? post.info.flagCode || post.info.flagCodeTroll : Filter.value(type, post);
         if (!value) {
           return false;
         }
