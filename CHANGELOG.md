@@ -27,6 +27,11 @@
 
 ### v1.14.5
 
+**v1.14.5.15** *(2019-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.15/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.15/builds/4chan-X-noupdate.crx)]
+- Show info relating to April 2019 event. #2266
+- Override 4chan CSS causing sauce links to get cut off. #2193
+- Unbreak warning in Chrome extension to reload the page after an update.
+
 **v1.14.5.14** *(2019-03-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.14/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.14/builds/4chan-X-noupdate.crx)]
 - Add message alerting Chrome extension users to disable chrome://flags/#network-service
 - Minor bugfix in catalog/index loading.

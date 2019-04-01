@@ -5,9 +5,9 @@
     ?{email}{<a href="mailto:${encodeURIComponent(email).replace(/%40/g, "@")}" class="useremail">}
       <span class="name?{capcode}{ capcode}">${name}</span>
       ?{tripcode}{ <span class="postertrip">${tripcode}</span>}
+      ?{o.xa19s}{<span class="like-score">${o.xa19s}</span>}
       ?{pass}{ <span title="Pass user since ${pass}" class="n-pu"></span>}
       ?{capcode}{ <strong class="capcode hand id_${capcodeLC}" title="Highlight posts by ${capcodePlural}">## ${capcode}</strong>}
-      ?{!capcode && typeof o.xa18 !== "undefined"}{ <strong class="capcode hand n-atb n-atb-${o.xa18} id_at${o.xa18}"></strong>}
     ?{email}{</a>}
     ?{boardID === "f" && !o.isReply || capcodeDescription}{}{ }
     ?{capcodeDescription}{ <img src="${staticPath}${capcodeLC}icon${gifIcon}" alt="${capcode} Icon" title="This user is ${capcodeDescription}." class="identityIcon retina">}
@@ -19,6 +19,7 @@
   <span class="postNum?{!(boardID === "f" && !o.isReply)}{ desktop}">
     <a href="${postLink}" title="Link to this post">No.</a>
     <a href="${quoteLink}" title="Reply to this post">${ID}</a>
+    ?{o.isReply}{<a data-cmd="like-post" href="#" class="like-btn">Like!?{o.xa19l}{ ×${o.xa19l}}</a>}
     ?{o.isSticky}{ <img src="${staticPath}sticky${gifIcon}" alt="Sticky" title="Sticky"?{boardID === "f"}{ style="height: 18px; width: 18px;"}{ class="stickyIcon retina"}>}
     ?{o.isClosed && !o.isArchived}{ <img src="${staticPath}closed${gifIcon}" alt="Closed" title="Closed"?{boardID === "f"}{ style="height: 18px; width: 18px;"}{ class="closedIcon retina"}>}
     ?{o.isArchived}{ <img src="${staticPath}archived${gifIcon}" alt="Archived" title="Archived" class="archivedIcon retina">}

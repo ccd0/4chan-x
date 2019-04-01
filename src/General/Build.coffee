@@ -44,7 +44,6 @@ Build =
       isArchived: !!data.archived
       # file status
       fileDeleted: !!data.filedeleted
-      xa18:     data.xa18
     o.info =
       subject:  Build.unescape data.sub
       email:    Build.unescape data.email
@@ -80,6 +79,9 @@ Build =
         tag:       data.tag
         hasDownscale: !!data.m_img
       o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
+    # Temporary JSON properties for events such as April 1 / Halloween
+    for key of data when key[0] is 'x'
+      o[key] = data[key]
     o
 
   parseComment: (html) ->
