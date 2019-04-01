@@ -4,6 +4,9 @@
 
 ### v1.14.6
 
+**v1.14.6.3** *(2019-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.3/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.5.15: Show info relating to April 2019 event. #2266
+
 **v1.14.6.2** *(2019-03-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.2/builds/4chan-X-noupdate.crx)]
 - Support filters that apply to multiple post fields joined by newline characters.
 
