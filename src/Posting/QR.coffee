@@ -846,7 +846,12 @@ QR =
 
     QR.cleanNotifications()
     if Conf['Posting Success Notifications']
-      QR.notifications.push new Notice 'success', h1.textContent, 5
+      {textContent} = h1
+      timeout = 5
+      if (xa19 = resDoc.firstChild.textContent.match(/xa19:(.*):xa19/))
+        textContent += " (score/perks: #{xa19[1]})"
+        timeout = 20
+      QR.notifications.push new Notice 'success', textContent, timeout
 
     QR.cooldown.add threadID, postID
 
