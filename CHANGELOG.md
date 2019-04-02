@@ -30,6 +30,10 @@
 
 ### v1.14.5
 
+**v1.14.5.16** *(2019-04-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.16/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.16/builds/4chan-X-noupdate.crx)]
+- Remove score/perks message. Fix Posting Success Notifications.
+- Remove like buttons. Continue to show like counts and scores where given in API.
+
 **v1.14.5.15** *(2019-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.15/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.15/builds/4chan-X-noupdate.crx)]
 - Show info relating to April 2019 event. #2266
 - Override 4chan CSS causing sauce links to get cut off. #2193
