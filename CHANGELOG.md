@@ -4,6 +4,11 @@
 
 ### v1.14.6
 
+**v1.14.6.4** *(2019-04-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.4/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.5.16: Remove score/perks message. Fix Posting Success Notifications.
+- Merge v1.14.5.16: Remove like buttons. Continue to show like counts and scores where given in API.
+- Bugfix: Account for posts added by thread expansion when marking read from index.
+
 **v1.14.6.3** *(2019-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.3/builds/4chan-X-noupdate.crx)]
 - Merge v1.14.5.15: Show info relating to April 2019 event. #2266
 
