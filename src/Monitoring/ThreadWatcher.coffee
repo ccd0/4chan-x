@@ -468,18 +468,16 @@ ThreadWatcher =
       ThreadWatcher.shortcut.classList.toggle className, !!$(".#{className}", ThreadWatcher.dialog)
     return
 
-  update: (boardID, threadID, newData) ->
-    siteID = Site.hostname
-    return if not (data = ThreadWatcher.db?.get {boardID, threadID})
+  update: (siteID, boardID, threadID, newData) ->
+    return if not (data = ThreadWatcher.db?.get {siteID, boardID, threadID})
     if newData.isDead and Conf['Auto Prune']
-      ThreadWatcher.db.delete {boardID, threadID}
+      ThreadWatcher.db.delete {siteID, boardID, threadID}
       ThreadWatcher.refresh()
       return
     n = 0
     n++ for key, val of newData when data[key] isnt val
     return unless n
-    return if not (data = ThreadWatcher.db.get {boardID, threadID})
-    ThreadWatcher.db.extend {boardID, threadID, val: newData}
+    ThreadWatcher.db.extend {siteID, boardID, threadID, val: newData}
     if line = $ "#watched-threads > [data-site-i-d='#{siteID}'][data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
       newLine = ThreadWatcher.makeLine siteID, boardID, threadID, data
       $.replace line, newLine

@@ -238,7 +238,7 @@ Unread =
   saveThreadWatcherCount: $.debounce 2 * $.SECOND, ->
     $.forceSync 'Remember Last Read Post'
     if Conf['Remember Last Read Post'] and (!Unread.thread.isDead or Unread.thread.isArchived)
-      ThreadWatcher.update Unread.thread.board.ID, Unread.thread.ID,
+      ThreadWatcher.update Site.hostname, Unread.thread.board.ID, Unread.thread.ID,
         isDead: Unread.thread.isDead
         unread: Unread.posts.size
         quotingYou: !!(if !Conf['Require OP Quote Link'] and QuoteYou.isYou(Unread.thread.OP) then Unread.posts.size else Unread.postsQuotingYou.size)
