@@ -306,8 +306,7 @@ ThreadWatcher =
       replies = @response.posts.length-1
       isDead = !!@response.posts[0].archived
       if isDead and Conf['Auto Prune']
-        ThreadWatcher.db.delete {siteID, boardID, threadID}
-        ThreadWatcher.refresh()
+        ThreadWatcher.rm siteID, boardID, threadID
         return
 
       return if last is data.last and isDead is data.isDead
@@ -459,17 +458,19 @@ ThreadWatcher =
       ThreadWatcher.shortcut.classList.toggle className, !!$(".#{className}", ThreadWatcher.dialog)
     return
 
+  getLine: (siteID, boardID, threadID) ->
+    $ "#watched-threads > [data-site-i-d='#{siteID}'][data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
+
   update: (siteID, boardID, threadID, newData) ->
     return if not (data = ThreadWatcher.db?.get {siteID, boardID, threadID})
     if newData.isDead and Conf['Auto Prune']
-      ThreadWatcher.db.delete {siteID, boardID, threadID}
-      ThreadWatcher.refresh()
+      ThreadWatcher.rm siteID, boardID, threadID
       return
     n = 0
     n++ for key, val of newData when data[key] isnt val
     return unless n
     ThreadWatcher.db.extend {siteID, boardID, threadID, val: newData}
-    if line = $ "#watched-threads > [data-site-i-d='#{siteID}'][data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
+    if (line = ThreadWatcher.getLine siteID, boardID, threadID)
       newLine = ThreadWatcher.makeLine siteID, boardID, threadID, data
       $.replace line, newLine
       ThreadWatcher.refreshIcon()
@@ -514,7 +515,7 @@ ThreadWatcher =
 
   rm: (siteID, boardID, threadID) ->
     ThreadWatcher.db.delete {siteID, boardID, threadID}
-    ThreadWatcher.refresh()
+    $.rm ThreadWatcher.getLine(siteID, boardID, threadID)
 
   menu:
     init: ->
