@@ -632,7 +632,7 @@ Config =
       false
       'Advance to next post when contracting an expanded image.'
     ]
-  
+
   gallery:
     'Hide Thumbnails': [
       false
@@ -958,6 +958,10 @@ Config =
     'Toggle thread watcher': [
       't'
       'Toggle visibility of thread watcher.'
+    ]
+    'Toggle threading': [
+      'Shift+t'
+      'Toggle threading.'
     ]
     'Mark thread read': [
       'Ctrl+0'
