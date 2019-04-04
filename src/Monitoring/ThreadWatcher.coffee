@@ -445,9 +445,6 @@ ThreadWatcher =
     $.add list, nodes
 
     ThreadWatcher.refreshIcon()
-    for refresher in ThreadWatcher.menu.refreshers
-      refresher()
-    return
 
   refresh: ->
     ThreadWatcher.build()
@@ -526,7 +523,6 @@ ThreadWatcher =
     ThreadWatcher.refresh()
 
   menu:
-    refreshers: []
     init: ->
       return if !Conf['Thread Watcher']
       menu = @menu = new UI.Menu 'thread watcher'
@@ -541,15 +537,16 @@ ThreadWatcher =
       Header.menu.addEntry
         el: entryEl
         order: 60
+        open: ->
+          [addClass, rmClass, text] = if !!ThreadWatcher.db.get {boardID: g.BOARD.ID, threadID: g.THREADID}
+            ['unwatch-thread', 'watch-thread', 'Unwatch thread']
+          else
+            ['watch-thread', 'unwatch-thread', 'Watch thread']
+          $.addClass entryEl, addClass
+          $.rmClass  entryEl, rmClass
+          entryEl.textContent = text
+          true
       $.on entryEl, 'click', -> ThreadWatcher.toggle g.threads["#{g.BOARD}.#{g.THREADID}"]
-      @refreshers.push ->
-        [addClass, rmClass, text] = if $ '.current', ThreadWatcher.list
-          ['unwatch-thread', 'watch-thread', 'Unwatch thread']
-        else
-          ['watch-thread', 'unwatch-thread', 'Watch thread']
-        $.addClass entryEl, addClass
-        $.rmClass  entryEl, rmClass
-        entryEl.textContent = text
 
     addMenuEntries: ->
       entries = []
@@ -560,7 +557,9 @@ ThreadWatcher =
         entry:
           el: $.el 'a',
             textContent: 'Open all threads'
-        refresh: -> (if ThreadWatcher.list.firstElementChild then $.rmClass else $.addClass) @el, 'disabled'
+        open: ->
+          @el.classList.toggle 'disabled', !ThreadWatcher.list.firstElementChild
+          true
 
       # `Prune dead threads` entry
       entries.push
@@ -568,7 +567,9 @@ ThreadWatcher =
         entry:
           el: $.el 'a',
             textContent: 'Prune dead threads'
-        refresh: -> (if $('.dead-thread', ThreadWatcher.list) then $.rmClass else $.addClass) @el, 'disabled'
+        open: ->
+          @el.classList.toggle 'disabled', !$('.dead-thread', ThreadWatcher.list)
+          true
 
       # `Settings` entries:
       subEntries = []
@@ -580,10 +581,10 @@ ThreadWatcher =
             textContent: 'Settings'
           subEntries: subEntries
 
-      for {entry, cb, refresh} in entries
+      for {entry, cb, open} in entries
         entry.el.href = 'javascript:;' if entry.el.nodeName is 'A'
         $.on entry.el, 'click', cb if cb
-        @refreshers.push refresh.bind entry if refresh
+        entry.open = open.bind(entry) if open
         @menu.addEntry entry
       return
 
