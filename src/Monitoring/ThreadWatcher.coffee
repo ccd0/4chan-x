@@ -154,13 +154,14 @@ ThreadWatcher =
       for threadID, data of db.data[siteID].boards[boardID] when not data?.isDead and "#{boardID}.#{threadID}" not in e.detail.threads
         # Don't prune threads that have yet to appear in index.
         continue unless e.detail.threads.some (fullID) -> +fullID.split('.')[1] > threadID
-        nKilled++
         if Conf['Auto Prune'] or not (data and typeof data is 'object') # corrupt data
           db.delete {boardID, threadID}
+          nKilled++
+        else if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
+          ThreadWatcher.fetchStatus {siteID, boardID, threadID, data}
         else
           db.extend {boardID, threadID, val: {isDead: true}}
-          if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
-            ThreadWatcher.fetchStatus {siteID, boardID, threadID, data}
+          nKilled++
       ThreadWatcher.refresh() if nKilled
     onThreadRefresh: (e) ->
       thread = g.threads[e.detail.threadID]
