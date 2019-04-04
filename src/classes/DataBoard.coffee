@@ -85,11 +85,14 @@ class DataBoard
     else
       @data[siteID].boards[boardID] = val
 
-  extend: ({siteID, boardID, threadID, postID, val, rm}, cb) ->
+  extend: ({siteID, boardID, threadID, postID, val}, cb) ->
     @save =>
       oldVal = @get {siteID, boardID, threadID, postID, defaultValue: {}}
-      delete oldVal[key] for key in rm or []
-      $.extend oldVal, val
+      for key, subVal of val
+        if subVal is undefined
+          delete oldVal[key]
+        else
+          oldVal[key] = subVal
       @setUnsafe {siteID, boardID, threadID, postID, val: oldVal}
     , cb
 

@@ -350,11 +350,11 @@ ThreadWatcher =
 
     else if @status is 404
       if SW[software].mayLackJSON and !data.last?
-        ThreadWatcher.db.extend {siteID, boardID, threadID, val: {last: -1}, rm: ['unread', 'quotingYou']}
+        ThreadWatcher.db.extend {siteID, boardID, threadID, val: {last: -1, unread: undefined, quotingYou: undefined}}
       else if Conf['Auto Prune']
         ThreadWatcher.db.delete {siteID, boardID, threadID}
       else
-        ThreadWatcher.db.extend {siteID, boardID, threadID, val: {isDead: true}, rm: ['unread', 'quotingYou']}
+        ThreadWatcher.db.extend {siteID, boardID, threadID, val: {isDead: true, unread: undefined, quotingYou: undefined}}
 
       ThreadWatcher.refresh()
 
@@ -493,7 +493,7 @@ ThreadWatcher =
       ThreadWatcher.db.delete {boardID, threadID}
       return cb()
     return cb() if data.isDead and not (data.unread? or data.quotingYou?)
-    ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true}, rm: ['unread', 'quotingYou']}, cb
+    ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true, unread: undefined, quotingYou: undefined}}, cb
 
   toggle: (thread) ->
     siteID   = Site.hostname
