@@ -93,16 +93,16 @@ ThreadWatcher =
         href: 'javascript:;'
         className: 'watch-thread-link'
       $.before $('input', @nodes.info), toggler
+    siteID = Site.hostname
     boardID = @board.ID
     threadID = @thread.ID
-    data = ThreadWatcher.db.get {boardID, threadID}
+    data = ThreadWatcher.db.get {siteID, boardID, threadID}
     ThreadWatcher.setToggler toggler, !!data
     $.on toggler, 'click', ThreadWatcher.cb.toggle
     # Add missing excerpt for threads added by Auto Watch
     if data and not data.excerpt?
       $.queueTask =>
-        ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt @thread}}
-        ThreadWatcher.refresh()
+        ThreadWatcher.update siteID, boardID, threadID, val: {excerpt: Get.threadExcerpt @thread}
 
   catalogNode: ->
     $.addClass @nodes.root, 'watched' if ThreadWatcher.isWatched @thread
@@ -344,19 +344,13 @@ ThreadWatcher =
         if quotesYou and not Filter.isHidden(Build.parseJSON postObj, boardID)
           quotingYou = true
 
-      updated = (isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou)
-      ThreadWatcher.db.extend {siteID, boardID, threadID, val: {last, replies, isDead, unread, quotingYou}}
-      ThreadWatcher.refresh() if updated
+      ThreadWatcher.update siteID, boardID, threadID, {last, replies, isDead, unread, quotingYou}
 
     else if @status is 404
       if SW[software].mayLackJSON and !data.last?
-        ThreadWatcher.db.extend {siteID, boardID, threadID, val: {last: -1, unread: undefined, quotingYou: undefined}}
-      else if Conf['Auto Prune']
-        ThreadWatcher.db.delete {siteID, boardID, threadID}
+        ThreadWatcher.update siteID, boardID, threadID, {last: -1, unread: undefined, quotingYou: undefined}
       else
-        ThreadWatcher.db.extend {siteID, boardID, threadID, val: {isDead: true, unread: undefined, quotingYou: undefined}}
-
-      ThreadWatcher.refresh()
+        ThreadWatcher.update siteID, boardID, threadID, {isDead: true, unread: undefined, quotingYou: undefined}
 
   getAll: (groupByBoard) ->
     all = []
