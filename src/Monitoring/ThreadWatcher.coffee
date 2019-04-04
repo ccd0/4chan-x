@@ -571,24 +571,19 @@ ThreadWatcher =
           @el.classList.toggle 'disabled', !$('.dead-thread', ThreadWatcher.list)
           true
 
-      # `Settings` entries:
-      subEntries = []
-      for name, conf of Config.threadWatcher
-        subEntries.push @createSubEntry name, conf[1]
-      entries.push
-        entry:
-          el: $.el 'span',
-            textContent: 'Settings'
-          subEntries: subEntries
-
       for {entry, cb, open} in entries
         entry.el.href = 'javascript:;' if entry.el.nodeName is 'A'
         $.on entry.el, 'click', cb if cb
         entry.open = open.bind(entry) if open
         @menu.addEntry entry
+
+      # Settings checkbox entries:
+      for name, conf of Config.threadWatcher
+        @addCheckbox name, conf[1]
+
       return
 
-    createSubEntry: (name, desc) ->
+    addCheckbox: (name, desc) ->
       entry =
         type: 'thread watcher'
         el: UI.checkbox name, name.replace(' Thread Watcher', '')
@@ -601,4 +596,4 @@ ThreadWatcher =
       $.on input, 'change', $.cb.checked
       $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Unread Count', 'Show Site Prefix']
       $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Unread Count', 'Auto Update Thread Watcher']
-      entry
+      @menu.addEntry entry
