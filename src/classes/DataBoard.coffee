@@ -89,7 +89,7 @@ class DataBoard
     @save =>
       oldVal = @get {siteID, boardID, threadID, postID, defaultValue: {}}
       for key, subVal of val
-        if subVal is undefined
+        if typeof subVal is 'undefined'
           delete oldVal[key]
         else
           oldVal[key] = subVal
