@@ -553,28 +553,27 @@ ThreadWatcher =
 
       # `Open all` entry
       entries.push
+        text: 'Open all threads'
         cb: ThreadWatcher.cb.openAll
-        entry:
-          el: $.el 'a',
-            textContent: 'Open all threads'
         open: ->
           @el.classList.toggle 'disabled', !ThreadWatcher.list.firstElementChild
           true
 
       # `Prune dead threads` entry
       entries.push
+        text: 'Prune dead threads'
         cb: ThreadWatcher.cb.pruneDeads
-        entry:
-          el: $.el 'a',
-            textContent: 'Prune dead threads'
         open: ->
           @el.classList.toggle 'disabled', !$('.dead-thread', ThreadWatcher.list)
           true
 
-      for {entry, cb, open} in entries
-        entry.el.href = 'javascript:;' if entry.el.nodeName is 'A'
-        $.on entry.el, 'click', cb if cb
-        entry.open = open.bind(entry) if open
+      for {text, cb, open} in entries
+        entry =
+          el: $.el 'a',
+            textContent: text
+            href: 'javascript:;'
+        $.on entry.el, 'click', cb
+        entry.open = open.bind(entry)
         @menu.addEntry entry
 
       # Settings checkbox entries:
