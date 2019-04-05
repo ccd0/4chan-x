@@ -254,14 +254,15 @@ ThreadWatcher =
           deep = !(now - 2 * $.HOUR < (db.data.lastChecked2 or 0) <= now)
           boards = ThreadWatcher.getAll(true)
           for board in boards
-            ThreadWatcher.fetchBoard board, false, deep
+            ThreadWatcher.fetchBoard board, deep
           db.setLastChecked()
           db.setLastChecked('lastChecked2') if deep
           if ThreadWatcher.fetched is ThreadWatcher.requests.length
             ThreadWatcher.clearRequests()
 
-  fetchBoard: (board, force, deep) ->
+  fetchBoard: (board, deep) ->
     return unless board.some (thread) -> !thread.data.isDead
+    force = Conf['Show Page'] and board.some((thread) -> !thread.data.page? and !thread.data.isDead and thread.data.last isnt -1)
     {siteID, boardID} = board[0]
     software = Conf['siteProperties'][siteID]?.software
     urlF = if deep and software is 'tinyboard' then 'catalogJSON' else 'threadsListJSON'
@@ -550,7 +551,7 @@ ThreadWatcher =
     ThreadWatcher.refresh()
     thread = {siteID: Site.hostname, boardID, threadID, data}
     if Conf['Show Page'] and !data.isDead
-      ThreadWatcher.fetchBoard [thread], true
+      ThreadWatcher.fetchBoard [thread]
     else if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
       ThreadWatcher.fetchStatus thread, true
 
