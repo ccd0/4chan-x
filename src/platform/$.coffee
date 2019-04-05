@@ -86,7 +86,7 @@ $.whenModified = (url, bucket, cb, options={}) ->
   params = []
   # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
   params.push "s=#{bucket}" if $.engine is 'blink'
-  params.push "t=#{Date.now()}" if Site.software is 'yotsuba'
+  params.push "t=#{Date.now()}" if url.split('/')[2] is 'a.4cdn.org'
   url0 = url
   url += '?' + params.join('&') if params.length
   headers = {}

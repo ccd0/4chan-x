@@ -4,6 +4,9 @@
 
 ### v1.14.6
 
+**v1.14.6.5** *(2019-04-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.5/builds/4chan-X-noupdate.crx)]
+- Fix Thread Watcher bug that in certain circumstances caused the last check of an archived thread for new replies to be skipped.
+
 **v1.14.6.4** *(2019-04-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.4/builds/4chan-X-noupdate.crx)]
 - Merge v1.14.5.16: Remove score/perks message. Fix Posting Success Notifications.
 - Merge v1.14.5.16: Remove like buttons. Continue to show like counts and scores where given in API.
