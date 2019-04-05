@@ -4,6 +4,11 @@
 
 ### v1.14.6
 
+**v1.14.6.6** *(2019-04-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.6/builds/4chan-X-noupdate.crx)]
+- Sauce: Update DeviantArt filename format. #2237
+- Sauce: Replace unmatched regex groups with empty string, not 'undefined'
+- Whether to add parameter to avoid cache should be based on site being queried, not site currenly on.
+
 **v1.14.6.5** *(2019-04-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.5/builds/4chan-X-noupdate.crx)]
 - Fix Thread Watcher bug that in certain circumstances caused the last check of an archived thread for new replies to be skipped.
 
