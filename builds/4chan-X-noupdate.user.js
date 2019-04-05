@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.6.4
+// @version      1.14.6.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.6.4',
+  VERSION:   '1.14.6.5',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -20260,11 +20260,18 @@ ThreadWatcher = (function() {
           })) {
             continue;
           }
-          nKilled++;
           if (Conf['Auto Prune'] || !(data && typeof data === 'object')) {
             db["delete"]({
               boardID: boardID,
               threadID: threadID
+            });
+            nKilled++;
+          } else if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
+            ThreadWatcher.fetchStatus({
+              siteID: siteID,
+              boardID: boardID,
+              threadID: threadID,
+              data: data
             });
           } else {
             db.extend({
@@ -20274,14 +20281,7 @@ ThreadWatcher = (function() {
                 isDead: true
               }
             });
-            if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
-              ThreadWatcher.fetchStatus({
-                siteID: siteID,
-                boardID: boardID,
-                threadID: threadID,
-                data: data
-              });
-            }
+            nKilled++;
           }
         }
         if (nKilled) {
