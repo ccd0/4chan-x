@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.6.6
+// @version      1.14.6.7
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.6.6',
+  VERSION:   '1.14.6.7',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
