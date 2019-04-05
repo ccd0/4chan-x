@@ -676,6 +676,10 @@ Config =
       false
       'Automatically remove dead threads.'
     ]
+    'Show Page': [
+      true
+      'Show what page watched threads are on.'
+    ]
     'Show Unread Count': [
       true
       'Show number of unread posts in watched threads.'

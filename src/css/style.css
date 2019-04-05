@@ -1168,10 +1168,12 @@ span.hide-announcement {
   -webkit-flex-direction: row;
   flex-direction: row;
 }
+#watched-threads .watcher-page,
 #watched-threads .watcher-unread {
   -webkit-flex: 0 0 auto;
   flex: 0 0 auto;
 }
+#watched-threads .watcher-page::after,
 #watched-threads .watcher-unread::after {
   content: "\00a0";
 }
@@ -1181,7 +1183,7 @@ span.hide-announcement {
   -webkit-flex: 0 1 auto;
   flex: 0 1 auto;
 }
-.replies-quoting-you > a, #watcher-link.replies-quoting-you {
+.replies-quoting-you > a, #watcher-link.replies-quoting-you, .last-page > a > .watcher-page {
   color: #F00;
 }
 #thread-watcher a {

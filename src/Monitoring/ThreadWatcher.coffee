@@ -160,7 +160,7 @@ ThreadWatcher =
         else if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
           ThreadWatcher.fetchStatus {siteID, boardID, threadID, data}
         else
-          db.extend {boardID, threadID, val: {isDead: true}}
+          db.extend {boardID, threadID, val: {isDead: true, page: undefined, lastPage: undefined, unread: undefined, quotingYou: undefined}}
           nKilled++
       ThreadWatcher.refresh() if nKilled
     onThreadRefresh: (e) ->
@@ -224,7 +224,7 @@ ThreadWatcher =
     clearTimeout ThreadWatcher.timeout
     return unless Conf['Auto Update Thread Watcher']
     {db} = ThreadWatcher
-    interval = if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] then 5 * $.MINUTE else 2 * $.HOUR
+    interval = if Conf['Show Page'] or (ThreadWatcher.unreadEnabled and Conf['Show Unread Count']) then 5 * $.MINUTE else 2 * $.HOUR
     now = Date.now()
     unless now - interval < (db.data.lastChecked or 0) <= now or d.hidden or not d.hasFocus()
       ThreadWatcher.fetchAllStatus()
@@ -254,40 +254,65 @@ ThreadWatcher =
           deep = !(now - 2 * $.HOUR < (db.data.lastChecked2 or 0) <= now)
           boards = ThreadWatcher.getAll(true)
           for board in boards
-            ThreadWatcher.fetchBoard board, deep
+            ThreadWatcher.fetchBoard board, false, deep
           db.setLastChecked()
           db.setLastChecked('lastChecked2') if deep
           if ThreadWatcher.fetched is ThreadWatcher.requests.length
             ThreadWatcher.clearRequests()
 
-  fetchBoard: (board, deep) ->
+  fetchBoard: (board, force, deep) ->
     return unless board.some (thread) -> !thread.data.isDead
     {siteID, boardID} = board[0]
     software = Conf['siteProperties'][siteID]?.software
     urlF = if deep and software is 'tinyboard' then 'catalogJSON' else 'threadsListJSON'
     url = SW[software]?.urls[urlF]?({siteID, boardID})
     return unless url
-    ThreadWatcher.fetch url, {siteID}, [board, url], ThreadWatcher.parseBoard
+    ThreadWatcher.fetch url, {siteID, force}, [board, url], ThreadWatcher.parseBoard
 
   parseBoard: (board, url) ->
     return unless @status is 200
     {siteID, boardID} = board[0]
+    software = Conf['siteProperties'][siteID]?.software
     lmDate = @getResponseHeader('Last-Modified')
     ThreadWatcher.dbLM.extend {siteID, boardID, val: $.item(url, lmDate)}
-    modified = {}
-    replies  = {}
+    threads = {}
+    pageLength = 0
+    nThreads = 0
+    oldest = null
     try
-      for page in @response
+      pageLength = @response[0]?.threads.length or 0
+      for page, i in @response
         for item in page.threads
-          modified[item.no] = item.last_modified
-          replies[item.no] = item.replies
+          threads[item.no] =
+            page: i + 1
+            index: nThreads
+            modified: item.last_modified
+            replies: item.replies
+          nThreads++
+          if !oldest? or item.no < oldest
+            oldest = item.no
+    catch
+      for thread in board
+        ThreadWatcher.fetchStatus thread
     for thread in board
       {threadID, data} = thread
-      if modified[threadID]
-        if modified[threadID] is data.modified and (!replies[threadID]? or replies[threadID] is data.replies)
-          continue
-        ThreadWatcher.db.extend {siteID, boardID, threadID, val: {modified: modified[threadID]}}
-      ThreadWatcher.fetchStatus thread
+      if threads[threadID]
+        {page, index, modified, replies} = threads[threadID]
+        if Conf['Show Page']
+          lastPage = if SW[software]?.isPrunedByAge?({siteID, boardID})
+            threadID is oldest
+          else
+            index >= nThreads - pageLength
+          ThreadWatcher.update siteID, boardID, threadID, {page, lastPage}
+        if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
+          if modified isnt data.modified or (replies? and replies isnt data.replies)
+            ThreadWatcher.db.extend {siteID, boardID, threadID, val: {modified}}
+            ThreadWatcher.fetchStatus thread
+      else
+        if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
+          ThreadWatcher.fetchStatus thread
+        else
+          ThreadWatcher.update siteID, boardID, threadID, {isDead: true}
     return
 
   fetchStatus: (thread, force) ->
@@ -348,9 +373,9 @@ ThreadWatcher =
 
     else if @status is 404
       if SW[software].mayLackJSON and !data.last?
-        ThreadWatcher.update siteID, boardID, threadID, {last: -1, unread: undefined, quotingYou: undefined}
+        ThreadWatcher.update siteID, boardID, threadID, {last: -1}
       else
-        ThreadWatcher.update siteID, boardID, threadID, {isDead: true, unread: undefined, quotingYou: undefined}
+        ThreadWatcher.update siteID, boardID, threadID, {isDead: true}
 
   getAll: (groupByBoard) ->
     all = []
@@ -381,6 +406,12 @@ ThreadWatcher =
       title: excerpt
       className: 'watcher-link'
 
+    if Conf['Show Page'] and data.page?
+      page = $.el 'span',
+        textContent: "[#{data.page}]"
+        className: 'watcher-page'
+      $.add link, page
+
     if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] and data.unread?
       count = $.el 'span',
         textContent: "(#{data.unread})"
@@ -398,6 +429,9 @@ ThreadWatcher =
     div.dataset.siteID = siteID
     $.addClass div, 'current'     if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
     $.addClass div, 'dead-thread' if data.isDead
+    if Conf['Show Page']
+      $.addClass div, 'last-page'  if data.lastPage
+      div.dataset.page = data.page if data.page?
     if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
       $.addClass div, 'replies-read'        if data.unread is 0
       $.addClass div, 'replies-unread'      if data.unread
@@ -467,6 +501,9 @@ ThreadWatcher =
     if newData.isDead and Conf['Auto Prune']
       ThreadWatcher.rm siteID, boardID, threadID
       return
+    if newData.isDead or newData.last is -1
+      for key in ['page', 'lastPage', 'unread', 'quotingyou'] when key not of newData
+        newData[key] = undefined
     n = 0
     n++ for key, val of newData when data[key] isnt val
     return unless n
@@ -483,8 +520,8 @@ ThreadWatcher =
     if Conf['Auto Prune']
       ThreadWatcher.db.delete {boardID, threadID}
       return cb()
-    return cb() if data.isDead and not (data.unread? or data.quotingYou?)
-    ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true, unread: undefined, quotingYou: undefined}}, cb
+    return cb() if data.isDead and not (data.page? or data.lastPage? or data.unread? or data.quotingYou?)
+    ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true, page: undefined, lastPage: undefined, unread: undefined, quotingYou: undefined}}, cb
 
   toggle: (thread) ->
     siteID   = Site.hostname
@@ -511,8 +548,11 @@ ThreadWatcher =
   addRaw: (boardID, threadID, data) ->
     ThreadWatcher.db.set {boardID, threadID, val: data}
     ThreadWatcher.refresh()
-    if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
-      ThreadWatcher.fetchStatus {siteID: Site.hostname, boardID, threadID, data}, true
+    thread = {siteID: Site.hostname, boardID, threadID, data}
+    if Conf['Show Page'] and !data.isDead
+      ThreadWatcher.fetchBoard [thread], true
+    else if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
+      ThreadWatcher.fetchStatus thread, true
 
   rm: (siteID, boardID, threadID) ->
     ThreadWatcher.db.delete {siteID, boardID, threadID}
@@ -589,6 +629,6 @@ ThreadWatcher =
         $.addClass entry.el, 'disabled'
         entry.el.title += '\n[Remember Last Read Post is disabled.]'
       $.on input, 'change', $.cb.checked
-      $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Unread Count', 'Show Site Prefix']
-      $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Unread Count', 'Auto Update Thread Watcher']
+      $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Page', 'Show Unread Count', 'Show Site Prefix']
+      $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Page', 'Show Unread Count', 'Auto Update Thread Watcher']
       @menu.addEntry entry

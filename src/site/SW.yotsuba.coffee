@@ -8,6 +8,8 @@ SW.yotsuba =
     archiveListJSON: ({boardID})      -> if BoardConfig.isArchived(boardID) then "#{location.protocol}//a.4cdn.org/#{boardID}/archive.json" else ''
     catalogJSON:     ({boardID})      -> "#{location.protocol}//a.4cdn.org/#{boardID}/catalog.json"
 
+  isPrunedByAge: ({boardID}) -> boardID is 'f'
+
   selectors:
     board:         '.board'
     thread:        '.thread'

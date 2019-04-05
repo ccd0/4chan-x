@@ -157,7 +157,7 @@
 }
 
 /* Thread Watcher */
-:root.spooky .replies-quoting-you > a, :root.spooky #watcher-link.replies-quoting-you {
+:root.spooky .replies-quoting-you > a, :root.spooky #watcher-link.replies-quoting-you, :root.spooky .last-page > a > .watcher-page {
   color: #F00 !important;
 }
 

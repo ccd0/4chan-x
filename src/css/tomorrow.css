@@ -162,7 +162,7 @@
 }
 
 /* Thread Watcher */
-:root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.replies-quoting-you {
+:root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.replies-quoting-you, :root.tomorrow .last-page > a > .watcher-page {
   color: #F00 !important;
 }
 
