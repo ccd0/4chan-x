@@ -57,7 +57,7 @@ Sauce =
       parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi|\$\d+)/g, (orig, parameter) ->
         if parameter[0] is '$'
           return orig unless matches
-          type = matches[parameter[1..]]
+          type = matches[parameter[1..]] or ''
         else
           type = Sauce.formatters[parameter] post, ext
           if not type?
