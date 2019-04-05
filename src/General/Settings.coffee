@@ -477,6 +477,12 @@ Settings =
           [hostname, software] = line.split(' ')
           siteProperties[hostname] = {software}
         set 'siteProperties', siteProperties
+    if compareString < '00001.00014.00006.00006'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(
+          /\/\/%\$1\.deviantart\.com\/gallery\/#\/d%\$2;regexp:\/\^\\w\+_by_\(\\w\+\)-d\(\[\\da-z\]\+\)\//g,
+          '//www.deviantart.com/gallery/#/d%$1%$2;regexp:/^\\w+_by_\\w+[_-]d([\\da-z]{6})\\b|^d([\\da-z]{6})-[\\da-z]{8}-/'
+        )
     changes
 
   loadSettings: (data, cb) ->
