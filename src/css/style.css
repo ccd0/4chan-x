@@ -1172,16 +1172,16 @@ span.hide-announcement {
 #watched-threads .watcher-unread {
   -webkit-flex: 0 0 auto;
   flex: 0 0 auto;
-}
-#watched-threads .watcher-page::after,
-#watched-threads .watcher-unread::after {
-  content: "\00a0";
+  margin-right: 2px;
 }
 #watched-threads .watcher-title {
   overflow: hidden;
   text-overflow: ellipsis;
   -webkit-flex: 0 1 auto;
   flex: 0 1 auto;
+}
+#watched-threads .watcher-title:not(:first-child) {
+  margin-left: 2px;
 }
 .replies-quoting-you > a, #watcher-link.replies-quoting-you, .last-page > a > .watcher-page {
   color: #F00;
