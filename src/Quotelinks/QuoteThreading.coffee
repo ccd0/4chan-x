@@ -42,7 +42,6 @@ QuoteThreading =
     @setThreadingState !Conf['Thread Quotes']
 
   setThreadingState: (enabled) ->
-    Conf['Thread Quotes'] = enabled
     @input.checked = enabled
     @setEnabled.call @input
     @rethread.call @input
