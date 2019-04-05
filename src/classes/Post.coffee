@@ -28,6 +28,7 @@ class Post
     @info =
       subject:   @nodes.subject?.textContent or undefined
       name:      @nodes.name?.textContent
+      email:     if @nodes.email then decodeURIComponent(@nodes.email.href.replace(/^mailto:/, ''))
       tripcode:  @nodes.tripcode?.textContent
       uniqueID:  @nodes.uniqueID?.textContent
       capcode:   @nodes.capcode?.textContent.replace '## ', ''

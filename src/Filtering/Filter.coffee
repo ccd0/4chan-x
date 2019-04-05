@@ -171,6 +171,7 @@ Filter =
     tripcode:   (post) -> post.info.tripcode
     capcode:    (post) -> post.info.capcode
     pass:       (post) -> post.info.pass
+    email:      (post) -> post.info.email
     subject:    (post) -> post.info.subject or (if post.isReply then undefined else '')
     comment:    (post) -> (post.info.comment ?= Build.parseComment post.info.commentHTML.innerHTML)
     flag:       (post) -> post.info.flag
@@ -256,6 +257,7 @@ Filter =
         ['Tripcode',         'tripcode']
         ['Capcode',          'capcode']
         ['Pass Date',        'pass']
+        ['Email',            'email']
         ['Subject',          'subject']
         ['Comment',          'comment']
         ['Flag',             'flag']

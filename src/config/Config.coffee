@@ -728,6 +728,8 @@ Config =
       #/./
     """
 
+    email: ''
+
     subject: """
       # Filter Generals on /v/:
       #/general/i;boards:v;op:only
