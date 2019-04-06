@@ -98,6 +98,7 @@ Filter =
   parseBoards: (boardsRaw) ->
     return false unless boardsRaw
     boardsRaw = boardsRaw.toLowerCase()
+    return boards if (boards = Filter.parseBoardsMemo[boardsRaw])
     boards = {}
     siteFilter = ''
     for boardID in boardsRaw.split(',')
@@ -110,7 +111,10 @@ Filter =
             boards["#{siteID}/#{boardID2}"] = true
         else
           boards["#{siteID}/#{boardID}"] = true
+    Filter.parseBoardsMemo[boardsRaw] = boards
     boards
+
+  parseBoardsMemo: {}
 
   test: (post, hideable=true) ->
     return post.filterResults if post.filterResults
