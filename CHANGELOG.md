@@ -4,6 +4,9 @@
 
 ### v1.14.6
 
+**v1.14.6.8** *(2019-04-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.8/builds/4chan-X-noupdate.crx)]
+- Update list of boards on https://catalog.neet.tv/.
+
 **v1.14.6.7** *(2019-04-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.7/builds/4chan-X-noupdate.crx)]
 - Update .crx files to CRX3. This should fix the errors when attempting to install them on newer versions of Chromium.
 
