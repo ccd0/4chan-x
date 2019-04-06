@@ -151,3 +151,6 @@ SW.yotsuba =
 
   hasCORS: (url) ->
     url.split('/')[...3].join('/') is location.protocol + '//a.4cdn.org'
+
+  sfwBoards: (sfw) ->
+    BoardConfig.sfwBoards(sfw)

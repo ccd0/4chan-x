@@ -9,9 +9,14 @@
   <li>
     Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>
     For example: <code>boards:a,jp;</code>.<br>
+    To specify boards on a particular site, put the beginning of the domain and a slash character before the list.<br>
+    Any initial <code>www.</code> should not be included, and all 4chan domains are considered <code>4chan.org</code>.<br>
+    For example: <code>boards:4:a,jp,sama:a,z;</code>.<br>
+    An asterisk can be used to specify all boards on a site.<br>
+    For example: <code>boards:4:*;</code>.<br>
   </li>
   <li>
-    In case of a global rule or one that uses <code>sfw</code>/<code>nsfw</code>, select boards to be excluded from the filter.<br>
+    Select boards to be excluded from the filter. The syntax is the same as for the <code>boards:</code> option above.<br>
     For example: <code>exclude:vg,v;</code>.
   </li>
   <li>

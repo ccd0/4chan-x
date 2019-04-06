@@ -7,9 +7,6 @@ Filter =
     unless Conf['Filtered Backlinks']
       $.addClass doc, 'hide-backlinks'
 
-    nsfwBoards = BoardConfig.sfwBoards(false).join(',')
-    sfwBoards  = BoardConfig.sfwBoards(true).join(',')
-
     for key of Config.filter
       for line in Conf[key].split '\n'
         continue if line[0] is '#'
@@ -20,26 +17,11 @@ Filter =
         # Don't mix up filter flags with the regular expression.
         filter = line.replace regexp[0], ''
 
-        # Comma-separated list of the boards this filter applies to.
-        # Defaults to global.
-        boardsRaw = filter.match(/boards:([^;]+)/)?[1].toLowerCase()
-        if boardsRaw
-          boards = {}
-          for board in boardsRaw.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards).split(',')
-            boards[board] = true
-        else
-          boards = false
+        # List of the boards this filter applies to.
+        boards = @parseBoards filter.match(/boards:([^;]+)/)?[1]
 
-        # boards to exclude from an otherwise global rule
-        # due to the sfw and nsfw keywords, also works on all filters
-        # replaces 'nsfw' and 'sfw' for consistency
-        excludesRaw = filter.match(/exclude:([^;]+)/)?[1].toLowerCase()
-        if excludesRaw
-          excludes = {}
-          for board in excludesRaw.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards).split(',')
-            excludes[board] = true
-        else
-          excludes = false
+        # Boards to exclude from an otherwise global rule.
+        excludes = @parseBoards filter.match(/exclude:([^;]+)/)?[1]
 
         if (isstring = (key in ['uniqueID', 'MD5']))
           # MD5 filter will use strings instead of regular expressions.
@@ -111,6 +93,25 @@ Filter =
       name: 'Filter'
       cb:   @node
 
+  # Parse comma-separated list of boards.
+  # Sites can be specified by a beginning part of the site domain followed by a colon.
+  parseBoards: (boardsRaw) ->
+    return false unless boardsRaw
+    boardsRaw = boardsRaw.toLowerCase()
+    boards = {}
+    siteFilter = ''
+    for boardID in boardsRaw.split(',')
+      if ':' in boardID
+        [siteFilter, boardID] = boardID.split(':')[-2..]
+      for siteID, siteProperties of Conf['siteProperties']
+        continue if siteProperties.canonical or siteID[...siteFilter.length] isnt siteFilter
+        if boardID in ['nsfw', 'sfw']
+          for boardID2 of SW[siteProperties.software]?.sfwBoards?(boardID is 'sfw') or []
+            boards["#{siteID}/#{boardID2}"] = true
+        else
+          boards["#{siteID}/#{boardID}"] = true
+    boards
+
   test: (post, hideable=true) ->
     return post.filterResults if post.filterResults
     hide = false
@@ -122,12 +123,14 @@ Filter =
       hideable = false
     mask = (if post.isReply then 2 else 1)
     mask = (mask | (if post.file then 4 else 8))
+    board = "#{post.siteID}/#{post.boardID}"
+    site = "#{post.siteID}/*"
     for key of Filter.filters when ((value = Filter.value key, post)?)
       # Continue if there's nothing to filter (no tripcode for example).
       for filter in Filter.filters[key]
         continue if (
-          (filter.boards   and !filter.boards[post.boardID])   or
-          (filter.excludes and filter.excludes[post.boardID])  or
+          (filter.boards   and !(filter.boards[board]   or filter.boards[site]  )) or
+          (filter.excludes and  (filter.excludes[board] or filter.excludes[site])) or
           (filter.mask & mask) or
           (if filter.isstring then (filter.regexp isnt value) else !filter.regexp.test(value))
         )

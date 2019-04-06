@@ -9,6 +9,7 @@ class Post
     @ID       = +root.id.match(/\d*$/)[0]
     @threadID = @thread.ID
     @boardID  = @board.ID
+    @siteID   = Site.hostname
     @fullID   = "#{@board}.#{@ID}"
     @context  = @
     @isReply  = (@ID isnt @threadID)

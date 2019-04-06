@@ -31,12 +31,13 @@ Build =
     else
       "/#{boardID}/thread/#{threadID}#p#{postID}"
 
-  parseJSON: (data, boardID) ->
+  parseJSON: (data, boardID, siteID) ->
     o =
       # id
       ID:       data.no
       threadID: data.resto or data.no
       boardID:  boardID
+      siteID:   siteID or Site.hostname
       isReply:  !!data.resto
       # thread status
       isSticky: !!data.sticky

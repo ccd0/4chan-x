@@ -1,17 +1,19 @@
 Site =
   defaultProperties:
     '4chan.org':    {software: 'yotsuba'}
-    '4channel.org': {software: 'yotsuba'}
-    '4cdn.org':     {software: 'yotsuba'}
+    '4channel.org': {canonical: '4chan.org'}
+    '4cdn.org':     {canonical: '4chan.org'}
 
   init: (cb) ->
     $.extend Conf['siteProperties'], Site.defaultProperties
     {hostname} = location
     while hostname and hostname not of Conf['siteProperties']
       hostname = hostname.replace(/^[^.]*\.?/, '')
-    if hostname and Conf['siteProperties'][hostname].software of SW
-      @set hostname
-      cb()
+    if hostname
+      hostname = canonical if (canonical = Conf['siteProperties'][hostname].canonical)
+      if Conf['siteProperties'][hostname].software of SW
+        @set hostname
+        cb()
     $.onExists doc, 'body', =>
       for software of SW when (changes = SW[software].detect?())
         changes.software = software
@@ -32,5 +34,4 @@ Site =
   set: (@hostname) ->
     @properties = Conf['siteProperties'][@hostname]
     @software = @properties.software
-    @hostname = '4chan.org' if @software is 'yotsuba'
     $.extend @, SW[@software]
