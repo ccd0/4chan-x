@@ -316,8 +316,8 @@ ThreadWatcher =
           ThreadWatcher.update siteID, boardID, threadID, {isDead: true}
     return
 
-  fetchStatus: (thread, force) ->
-    {siteID, boardID, threadID, data} = thread
+  fetchStatus: (thread) ->
+    {siteID, boardID, threadID, data, force} = thread
     software = Conf['siteProperties'][siteID]?.software
     url = SW[software]?.urls.threadJSON?({siteID, boardID, threadID})
     return unless url
@@ -546,11 +546,11 @@ ThreadWatcher =
   addRaw: (boardID, threadID, data) ->
     ThreadWatcher.db.set {boardID, threadID, val: data}
     ThreadWatcher.refresh()
-    thread = {siteID: Site.hostname, boardID, threadID, data}
+    thread = {siteID: Site.hostname, boardID, threadID, data, force: true}
     if Conf['Show Page'] and !data.isDead
       ThreadWatcher.fetchBoard [thread]
     else if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
-      ThreadWatcher.fetchStatus thread, true
+      ThreadWatcher.fetchStatus thread
 
   rm: (siteID, boardID, threadID) ->
     ThreadWatcher.db.delete {siteID, boardID, threadID}
