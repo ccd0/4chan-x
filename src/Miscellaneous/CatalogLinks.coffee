@@ -75,7 +75,7 @@ CatalogLinks =
     return
 
   catalog: (board=g.BOARD.ID) ->
-    if Conf['External Catalog'] and board in ['3', 'a', 'adv', 'an', 'asp', 'biz', 'c', 'cgl', 'ck', 'cm', 'co', 'diy', 'f', 'fa', 'fit', 'g', 'gd', 'int', 'jp', 'k', 'lgbt', 'lit', 'm', 'mlp', 'mu', 'n', 'o', 'out', 'p', 'po', 'pol', 's4s', 'sci', 'sp', 'tg', 'toy', 'trv', 'tv', 'v', 'vg', 'vp', 'vr', 'w', 'wg', 'wsg', 'x']
+    if Conf['External Catalog'] and board in ['3', 'a', 'adv', 'an', 'asp', 'biz', 'c', 'cgl', 'ck', 'cm', 'co', 'diy', 'f', 'fa', 'fit', 'g', 'gd', 'his', 'i', 'int', 'jp', 'k', 'lgbt', 'lit', 'm', 'mlp', 'mu', 'n', 'news', 'o', 'out', 'p', 'po', 'pol', 's4s', 'sci', 'sp', 'tg', 'toy', 'trv', 'tv', 'v', 'vg', 'vip', 'vp', 'vr', 'w', 'wg', 'wsg', 'wsr', 'x']
       "//catalog.neet.tv/#{board}/"
     else if Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
       if location.hostname in ['boards.4chan.org', 'boards.4channel.org'] and g.BOARD.ID is board and g.VIEW is 'index' then '#catalog' else "//#{BoardConfig.domain(board)}/#{board}/#catalog"
