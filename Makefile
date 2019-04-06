@@ -24,7 +24,7 @@ coffee := $(BIN)coffee -c --no-header
 template := node tools/template.js
 template_deps := package.json tools/template.js
 
-# read name meta_name meta_distBranch meta_uploadPath
+# read name meta_name meta_distBranch
 $(eval $(shell node tools/pkgvars.js))
 
 # must be read in when needed to prevent out-of-date version
@@ -252,7 +252,7 @@ distready : dist $(wildcard dist/* dist/*/*)
 
 .SECONDARY :
 
-.PHONY: default all distready script crx release jshint install push captchas $(npgoals)
+.PHONY: default all distready script crx release jshint install push $(npgoals)
 
 script : $(script)
 
@@ -266,10 +266,6 @@ install : .events/install
 
 push : .events2/push-git .events2/push-web .events2/push-store
 
-captchas : redirect.html $(template_deps)
-	$(template) redirect.html captchas.html url="$(url)"
-	scp captchas.html $(meta_uploadPath)
-
 clean :
 	$(RMDIR) tmp tmp-crx testbuilds .events
 	$(RM) .tests_enabled
@@ -278,7 +274,7 @@ cleanrel : clean
 	$(RMDIR) builds
 
 cleanweb :
-	$(RM) test.html captchas.html
+	$(RM) test.html
 
 cleanfull : clean cleanweb
 	$(RMDIR) .events2 dist node_modules
