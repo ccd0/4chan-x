@@ -91,7 +91,6 @@
     "lodash.template": "^4.4.0",
     "markdown-it": "^8.4.2",
     "markdown-it-anchor": "^4.0.0",
-    "node-rsa": "^0.4.2",
     "request": "^2.88.0",
     "webstore-upload": "0.0.7"
   },
