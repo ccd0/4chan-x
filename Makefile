@@ -271,7 +271,7 @@ captchas : redirect.html $(template_deps)
 	scp captchas.html $(meta_uploadPath)
 
 clean :
-	$(RMDIR) tmp testbuilds .events
+	$(RMDIR) tmp tmp-crx testbuilds .events
 	$(RM) .tests_enabled
 
 cleanrel : clean
