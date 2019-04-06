@@ -84,15 +84,15 @@
   },
   "devDependencies": {
     "coffee-script": "=1.9.3",
-    "esprima": "^4.0.0",
+    "esprima": "^4.0.1",
     "font-awesome": "=4.6.3",
-    "jshint": "^2.9.5",
-    "jszip": "^3.1.4",
+    "jshint": "^2.10.2",
+    "jszip": "^3.2.1",
     "lodash.template": "^4.4.0",
-    "markdown-it": "^8.4.0",
+    "markdown-it": "^8.4.2",
     "markdown-it-anchor": "^4.0.0",
     "node-rsa": "^0.4.2",
-    "request": "^2.83.0",
+    "request": "^2.88.0",
     "webstore-upload": "0.0.7"
   },
   "repository": {
