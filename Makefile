@@ -15,17 +15,16 @@ else
 endif
 CP = $(call CAT,$<,$@)
 
-npgoals := clean cleanrel cleanweb cleanfull withtests wrapped archives $(foreach i,1 2 3 4,bump$(i)) tag tagcommit beta stable web update updatehard
+npgoals := clean cleanrel cleanweb cleanfull withtests archives $(foreach i,1 2 3 4,bump$(i)) tag tagcommit beta stable web update updatehard
 ifneq "$(filter $(npgoals),$(MAKECMDGOALS))" ""
 .NOTPARALLEL :
 endif
 
 coffee := $(BIN)coffee -c --no-header
-coffee_deps := node_modules/coffee-script/package.json
 template := node tools/template.js
-template_deps := package.json tools/template.js node_modules/lodash.template/package.json node_modules/esprima/package.json
+template_deps := package.json tools/template.js
 
-# read name meta_name meta_distBranch meta_uploadPath
+# read name meta_name meta_distBranch
 $(eval $(shell node tools/pkgvars.js))
 
 # must be read in when needed to prevent out-of-date version
@@ -55,7 +54,7 @@ uses_tests_enabled := \
 imports_src/globals/globals.js := \
  version.json
 imports_src/css/CSS.js := \
- node_modules/font-awesome/package.json
+ node_modules/font-awesome/fonts/fontawesome-webfont.woff
 imports_src/Monitoring/Favicon.coffee := \
  src/meta/icon128.png
 
@@ -104,22 +103,6 @@ all : default release
 .events .events2 tmp testbuilds builds :
 	$(MKDIR)
 
-ifneq "$(wildcard npm-shrinkwrap.json)" ""
-
-.events/npm : npm-shrinkwrap.json | .events
-	npm install
-	echo -> $@
-
-node_modules/%/package.json : .events/npm
-	$(if $(wildcard $@),,npm install && echo -> $<)
-
-else
-
-node_modules/%/package.json : package.json
-	npm install $(call QUOTE,$*@$(version_$*))
-
-endif
-
 .tests_enabled :
 	echo false> .tests_enabled
 
@@ -137,7 +120,7 @@ endef
 
 $(foreach s,$(sources),$(eval $(call check_source,$(subst $$,$$$$,$(s)))))
 
-.events/compile : $(updates) $(template_deps) $(coffee_deps) tools/chain.js
+.events/compile : $(updates) $(template_deps) tools/chain.js
 	node tools/chain.js $(call QUOTE, \
 	  $(subst .events/,tmp/, \
 	   $(if $(filter-out $(updates),$?), \
@@ -154,7 +137,7 @@ $(dests) : .events/compile
 	 && echo -> $< \
 	)
 
-tmp/eventPage.js : src/meta/eventPage.coffee $(coffee_deps) | tmp
+tmp/eventPage.js : src/meta/eventPage.coffee | tmp
 	$(coffee) -o tmp src/meta/eventPage.coffee
 
 tmp/LICENSE : LICENSE tools/newlinefix.js | tmp
@@ -189,7 +172,7 @@ testbuilds/updates$1.json : src/meta/updates.json version.json $(template_deps) 
 
 testbuilds/$(name)$1.crx.zip : \
  $(foreach f,$(crx_contents),testbuilds/crx$1/$(f)) \
- package.json version.json tools/zip-crx.js node_modules/jszip/package.json
+ package.json version.json tools/zip-crx.js
 	node tools/zip-crx.js $1
 
 testbuilds/$(name)$1.crx : $(foreach f,$(crx_contents),testbuilds/crx$1/$(f)) version.json tools/sign.sh | tmp
@@ -214,7 +197,7 @@ testbuilds/$(name).zip : testbuilds/$(name)-noupdate.crx.zip
 builds/% : testbuilds/% | builds
 	$(CP)
 
-test.html : README.md template.jst tools/markdown.js node_modules/markdown-it/package.json node_modules/markdown-it-anchor/package.json node_modules/lodash.template/package.json
+test.html : README.md template.jst tools/markdown.js
 	node tools/markdown.js
 
 index.html : test.html
@@ -223,7 +206,7 @@ index.html : test.html
 tmp/.jshintrc : src/meta/jshint.json tmp/declaration.js src/globals/globals.js $(template_deps) | tmp
 	$(template) $< $@
 
-.events/jshint : $(dests) tmp/.jshintrc node_modules/jshint/package.json
+.events/jshint : $(dests) tmp/.jshintrc
 	$(BIN)jshint $(call QUOTE, \
 	 $(if $(filter-out $(dests),$?), \
 	  $(dests), \
@@ -263,13 +246,13 @@ distready : dist $(wildcard dist/* dist/*/*)
 	git push web $(meta_distBranch)
 	echo -> $@
 
-.events2/push-store : .git/refs/tags/stable | .events2 distready node_modules/webstore-upload/package.json node_modules/request/package.json
+.events2/push-store : .git/refs/tags/stable | .events2 distready
 	node tools/webstore.js
 	echo -> $@
 
 .SECONDARY :
 
-.PHONY: default all distready script crx release jshint install push captchas $(npgoals)
+.PHONY: default all distready script crx release jshint install push $(npgoals)
 
 script : $(script)
 
@@ -283,33 +266,24 @@ install : .events/install
 
 push : .events2/push-git .events2/push-web .events2/push-store
 
-captchas : redirect.html $(template_deps)
-	$(template) redirect.html captchas.html url="$(url)"
-	scp captchas.html $(meta_uploadPath)
-
 clean :
-	$(RMDIR) tmp testbuilds .events
+	$(RMDIR) tmp tmp-crx testbuilds .events
 	$(RM) .tests_enabled
 
 cleanrel : clean
 	$(RMDIR) builds
 
 cleanweb :
-	$(RM) test.html captchas.html
+	$(RM) test.html
 
 cleanfull : clean cleanweb
 	$(RMDIR) .events2 dist node_modules
-	$(RM) npm-shrinkwrap.json
 	git worktree prune
 
 withtests :
 	echo true> .tests_enabled
 	-$(MAKE)
 	echo false> .tests_enabled
-
-wrapped : src/meta/npm-shrinkwrap.json
-	$(call CAT,$<,npm-shrinkwrap.json)
-	npm install
 
 archives :
 	git fetch -n archives
@@ -326,7 +300,6 @@ $(foreach i,1 2 3 4,bump$(i)) :
 tag :
 	git add builds
 	$(MAKE) cleanrel
-	$(MAKE) wrapped
 	$(MAKE) all
 	git diff --quiet -- builds
 	$(MAKE) tagcommit
@@ -355,15 +328,11 @@ web : index.html distready
 	cd dist && git commit -am "Update web page."
 
 update :
-	$(RM) npm-shrinkwrap.json
+	$(RM) package-lock.json
 	npm install --save-dev $(shell node tools/unpinned.js)
 	npm install
-	npm shrinkwrap --dev
-	$(call CAT,npm-shrinkwrap.json,src/meta/npm-shrinkwrap.json)
 
 updatehard :
-	$(RM) npm-shrinkwrap.json
+	$(RM) package-lock.json
 	npm install --save-dev $(shell node tools/unpinned.js latest)
 	npm install
-	npm shrinkwrap --dev
-	$(call CAT,npm-shrinkwrap.json,src/meta/npm-shrinkwrap.json)

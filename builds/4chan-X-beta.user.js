@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.6.7
+// @version      1.14.6.8
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.6.7',
+  VERSION:   '1.14.6.8',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -17026,7 +17026,7 @@ CatalogLinks = (function() {
       if (board == null) {
         board = g.BOARD.ID;
       }
-      if (Conf['External Catalog'] && (board === 'a' || board === 'c' || board === 'g' || board === 'biz' || board === 'k' || board === 'm' || board === 'o' || board === 'p' || board === 'v' || board === 'vg' || board === 'vr' || board === 'w' || board === 'wg' || board === 'cm' || board === '3' || board === 'adv' || board === 'an' || board === 'asp' || board === 'cgl' || board === 'ck' || board === 'co' || board === 'diy' || board === 'fa' || board === 'fit' || board === 'gd' || board === 'int' || board === 'jp' || board === 'lit' || board === 'mlp' || board === 'mu' || board === 'n' || board === 'out' || board === 'po' || board === 'sci' || board === 'sp' || board === 'tg' || board === 'toy' || board === 'trv' || board === 'tv' || board === 'vp' || board === 'wsg' || board === 'x' || board === 'f' || board === 'pol' || board === 's4s' || board === 'lgbt')) {
+      if (Conf['External Catalog'] && (board === '3' || board === 'a' || board === 'adv' || board === 'an' || board === 'asp' || board === 'biz' || board === 'c' || board === 'cgl' || board === 'ck' || board === 'cm' || board === 'co' || board === 'diy' || board === 'f' || board === 'fa' || board === 'fit' || board === 'g' || board === 'gd' || board === 'his' || board === 'i' || board === 'int' || board === 'jp' || board === 'k' || board === 'lgbt' || board === 'lit' || board === 'm' || board === 'mlp' || board === 'mu' || board === 'n' || board === 'news' || board === 'o' || board === 'out' || board === 'p' || board === 'po' || board === 'pol' || board === 's4s' || board === 'sci' || board === 'sp' || board === 'tg' || board === 'toy' || board === 'trv' || board === 'tv' || board === 'v' || board === 'vg' || board === 'vip' || board === 'vp' || board === 'vr' || board === 'w' || board === 'wg' || board === 'wsg' || board === 'wsr' || board === 'x')) {
         return "//catalog.neet.tv/" + board + "/";
       } else if (Conf['JSON Index'] && Conf['Use 4chan X Catalog']) {
         if (((ref = location.hostname) === 'boards.4chan.org' || ref === 'boards.4channel.org') && g.BOARD.ID === board && g.VIEW === 'index') {
