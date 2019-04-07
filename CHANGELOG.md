@@ -2,6 +2,18 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.7
+
+**v1.14.7.0** *(2019-04-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.6.8.
+- (Teasday) Hotkey to toggle quote threading, `Shift+t` by default.
+- Show what pages watched threads are on. Can be disabled by unchecking `Show Page` in the thread watcher menu. #1030
+- Move Thread Watcher settings out of submenu.
+- Restore filtering on the email field. #2171
+- Support specifying the sites that filters apply to. #2171
+- Make per-board filtering work on boards with unusual characters in the name (e.g. certain lainchan boards).
+- Board names in filters are now case-sensitive.
+
 ### v1.14.6
 
 **v1.14.6.8** *(2019-04-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.8/builds/4chan-X-noupdate.crx)]

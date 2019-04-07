@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.6.8
+// @version      1.14.7.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.6.8',
+  VERSION:   '1.14.7.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -411,6 +411,7 @@ Config = (function() {
       'Auto Watch': [true, 'Automatically watch threads you start.'],
       'Auto Watch Reply': [true, 'Automatically watch threads you reply to.'],
       'Auto Prune': [false, 'Automatically remove dead threads.'],
+      'Show Page': [true, 'Show what page watched threads are on.'],
       'Show Unread Count': [true, 'Show number of unread posts in watched threads.'],
       'Show Site Prefix': [true, 'When multiple sites are shown in the thread watcher, add a prefix to board names to distinguish them.'],
       'Require OP Quote Link': [false, 'For purposes of thread watcher highlighting, only consider posts with a quote link to the OP as replies to the OP.']
@@ -423,6 +424,7 @@ Config = (function() {
       tripcode: "# Filter any tripfag\n#/^!/",
       capcode: "# Set a custom class for mods:\n#/Mod$/;highlight:mod;op:yes\n# Set a custom class for admins:\n#/Admin$/;highlight:admin;op:yes",
       pass: "# Filter anyone using since4pass:\n#/./",
+      email: '',
       subject: "# Filter Generals on /v/:\n#/general/i;boards:v;op:only",
       comment: "# Filter Stallman copypasta on /g/:\n#/what you\'re refer+ing to as linux/i;boards:g\n# Filter posts with 20 or more quote links:\n#/(?:>>\\d(?:(?!>>\\d)[^])*){20}/\n# Filter posts like T H I S / H / I / S:\n#/^>?\\s?\\w\\s?(\\w)\\s?(\\w)\\s?(\\w).*$[\\s>]+\\1[\\s>]+\\2[\\s>]+\\3/im",
       flag: '',
@@ -498,6 +500,7 @@ Config = (function() {
       'Update': ['r', 'Update the thread / refresh the index.'],
       'Update thread watcher': ['Shift+r', 'Manually refresh thread watcher.'],
       'Toggle thread watcher': ['t', 'Toggle visibility of thread watcher.'],
+      'Toggle threading': ['Shift+t', 'Toggle threading.'],
       'Mark thread read': ['Ctrl+0', 'Mark thread read from index (requires "Unread Line in Index").'],
       'Expand image': ['Shift+e', 'Expand selected image.'],
       'Expand images': ['e', 'Expand all images.'],
@@ -2417,12 +2420,11 @@ span.hide-announcement {\n\
   -webkit-flex-direction: row;\n\
   flex-direction: row;\n\
 }\n\
+#watched-threads .watcher-page,\n\
 #watched-threads .watcher-unread {\n\
   -webkit-flex: 0 0 auto;\n\
   flex: 0 0 auto;\n\
-}\n\
-#watched-threads .watcher-unread::after {\n\
-  content: \"\\00a0\";\n\
+  margin-right: 2px;\n\
 }\n\
 #watched-threads .watcher-title {\n\
   overflow: hidden;\n\
@@ -2430,7 +2432,10 @@ span.hide-announcement {\n\
   -webkit-flex: 0 1 auto;\n\
   flex: 0 1 auto;\n\
 }\n\
-.replies-quoting-you > a, #watcher-link.replies-quoting-you {\n\
+#watched-threads .watcher-title:not(:first-child) {\n\
+  margin-left: 2px;\n\
+}\n\
+.replies-quoting-you > a, #watcher-link.replies-quoting-you, .last-page > a > .watcher-page {\n\
   color: #F00;\n\
 }\n\
 #thread-watcher a {\n\
@@ -3711,7 +3716,7 @@ a:only-of-type > .remove {\n\
   background-color: rgba(240,224,214,0.5);\n\
 }\n\
 /* Thread Watcher */\n\
-:root.yotsuba .replies-quoting-you > a, :root.yotsuba #watcher-link.replies-quoting-you {\n\
+:root.yotsuba .replies-quoting-you > a, :root.yotsuba #watcher-link.replies-quoting-you, :root.yotsuba .last-page > a > .watcher-page {\n\
   color: #F00;\n\
 }\n\
 /* Watcher Favicon */\n\
@@ -3893,7 +3898,7 @@ a:only-of-type > .remove {\n\
   background-color: rgba(240,224,214,0.5);\n\
 }\n\
 /* Thread Watcher */\n\
-:root.futaba .replies-quoting-you > a, :root.futaba #watcher-link.replies-quoting-you {\n\
+:root.futaba .replies-quoting-you > a, :root.futaba #watcher-link.replies-quoting-you, :root.futaba .last-page > a > .watcher-page {\n\
   color: #F00;\n\
 }\n\
 /* Watcher Favicon */\n\
@@ -3986,7 +3991,7 @@ a:only-of-type > .remove {\n\
   background-color: rgba(214,218,240,0.5);\n\
 }\n\
 /* Thread Watcher */\n\
-:root.burichan .replies-quoting-you > a, :root.burichan #watcher-link.replies-quoting-you {\n\
+:root.burichan .replies-quoting-you > a, :root.burichan #watcher-link.replies-quoting-you, :root.burichan .last-page > a > .watcher-page {\n\
   color: #F00;\n\
 }\n\
 /* Watcher Favicon */\n\
@@ -4147,7 +4152,7 @@ a:only-of-type > .remove {\n\
   background-color: rgba(40,42,46,0.5);\n\
 }\n\
 /* Thread Watcher */\n\
-:root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.replies-quoting-you {\n\
+:root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.replies-quoting-you, :root.tomorrow .last-page > a > .watcher-page {\n\
   color: #F00 !important;\n\
 }\n\
 /* Watcher Favicon */\n\
@@ -4239,7 +4244,7 @@ a:only-of-type > .remove {\n\
   background-color: rgba(221,221,221,0.5);\n\
 }\n\
 /* Thread Watcher */\n\
-:root.photon .replies-quoting-you > a, :root.photon #watcher-link.replies-quoting-you {\n\
+:root.photon .replies-quoting-you > a, :root.photon #watcher-link.replies-quoting-you, :root.photon .last-page > a > .watcher-page {\n\
   color: #00F !important;\n\
 }\n\
 /* Watcher Favicon */\n\
@@ -4394,7 +4399,7 @@ a:only-of-type > .remove {\n\
   background-color: rgba(23,21,38,0.5);\n\
 }\n\
 /* Thread Watcher */\n\
-:root.spooky .replies-quoting-you > a, :root.spooky #watcher-link.replies-quoting-you {\n\
+:root.spooky .replies-quoting-you > a, :root.spooky #watcher-link.replies-quoting-you, :root.spooky .last-page > a > .watcher-page {\n\
   color: #F00 !important;\n\
 }\n\
 /* Watcher Favicon */\n\
@@ -5971,11 +5976,11 @@ DataBoard = (function() {
     };
 
     DataBoard.prototype.extend = function(arg, cb) {
-      var boardID, postID, rm, siteID, threadID, val;
-      siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, val = arg.val, rm = arg.rm;
+      var boardID, postID, siteID, threadID, val;
+      siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, val = arg.val;
       return this.save((function(_this) {
         return function() {
-          var i, key, len, oldVal, ref;
+          var key, oldVal, subVal;
           oldVal = _this.get({
             siteID: siteID,
             boardID: boardID,
@@ -5983,12 +5988,14 @@ DataBoard = (function() {
             postID: postID,
             defaultValue: {}
           });
-          ref = rm || [];
-          for (i = 0, len = ref.length; i < len; i++) {
-            key = ref[i];
-            delete oldVal[key];
+          for (key in val) {
+            subVal = val[key];
+            if (typeof subVal === 'undefined') {
+              delete oldVal[key];
+            } else {
+              oldVal[key] = subVal;
+            }
           }
-          $.extend(oldVal, val);
           return _this.setUnsafe({
             siteID: siteID,
             boardID: boardID,
@@ -6592,6 +6599,7 @@ Post = (function() {
       this.ID = +root.id.match(/\d*$/)[0];
       this.threadID = this.thread.ID;
       this.boardID = this.board.ID;
+      this.siteID = Site.hostname;
       this.fullID = this.board + "." + this.ID;
       this.context = this;
       this.isReply = this.ID !== this.threadID;
@@ -6612,6 +6620,7 @@ Post = (function() {
       this.info = {
         subject: ((ref1 = this.nodes.subject) != null ? ref1.textContent : void 0) || void 0,
         name: (ref2 = this.nodes.name) != null ? ref2.textContent : void 0,
+        email: this.nodes.email ? decodeURIComponent(this.nodes.email.href.replace(/^mailto:/, '')) : void 0,
         tripcode: (ref3 = this.nodes.tripcode) != null ? ref3.textContent : void 0,
         uniqueID: (ref4 = this.nodes.uniqueID) != null ? ref4.textContent : void 0,
         capcode: (ref5 = this.nodes.capcode) != null ? ref5.textContent.replace('## ', '') : void 0,
@@ -7566,6 +7575,11 @@ SW = {};
         return location.protocol + "//a.4cdn.org/" + boardID + "/catalog.json";
       }
     },
+    isPrunedByAge: function(arg) {
+      var boardID;
+      boardID = arg.boardID;
+      return boardID === 'f';
+    },
     selectors: {
       board: '.board',
       thread: '.thread',
@@ -7744,6 +7758,9 @@ SW = {};
     },
     hasCORS: function(url) {
       return url.split('/').slice(0, 3).join('/') === location.protocol + '//a.4cdn.org';
+    },
+    sfwBoards: function(sfw) {
+      return BoardConfig.sfwBoards(sfw);
     }
   };
 
@@ -7758,22 +7775,27 @@ Site = (function() {
         software: 'yotsuba'
       },
       '4channel.org': {
-        software: 'yotsuba'
+        canonical: '4chan.org'
       },
       '4cdn.org': {
-        software: 'yotsuba'
+        canonical: '4chan.org'
       }
     },
     init: function(cb) {
-      var hostname;
+      var canonical, hostname;
       $.extend(Conf['siteProperties'], Site.defaultProperties);
       hostname = location.hostname;
       while (hostname && !(hostname in Conf['siteProperties'])) {
         hostname = hostname.replace(/^[^.]*\.?/, '');
       }
-      if (hostname && Conf['siteProperties'][hostname].software in SW) {
-        this.set(hostname);
-        cb();
+      if (hostname) {
+        if ((canonical = Conf['siteProperties'][hostname].canonical)) {
+          hostname = canonical;
+        }
+        if (Conf['siteProperties'][hostname].software in SW) {
+          this.set(hostname);
+          cb();
+        }
       }
       return $.onExists(doc, 'body', (function(_this) {
         return function() {
@@ -7809,9 +7831,6 @@ Site = (function() {
       this.hostname = hostname1;
       this.properties = Conf['siteProperties'][this.hostname];
       this.software = this.properties.software;
-      if (this.software === 'yotsuba') {
-        this.hostname = '4chan.org';
-      }
       return $.extend(this, SW[this.software]);
     }
   };
@@ -8119,15 +8138,13 @@ Filter = (function() {
     filters: {},
     results: {},
     init: function() {
-      var base, base1, board, boards, boardsRaw, err, excludes, excludesRaw, file, filter, hide, hl, i, isstring, j, key, l, len, len1, len2, len3, line, m, mask, noti, nsfwBoards, op, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, regexp, sfwBoards, stub, top, type, types;
+      var base, base1, boards, err, excludes, file, filter, hide, hl, i, isstring, j, key, len, len1, line, mask, noti, op, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, regexp, stub, top, type, types;
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Filter'])) {
         return;
       }
       if (!Conf['Filtered Backlinks']) {
         $.addClass(doc, 'hide-backlinks');
       }
-      nsfwBoards = BoardConfig.sfwBoards(false).join(',');
-      sfwBoards = BoardConfig.sfwBoards(true).join(',');
       for (key in Config.filter) {
         ref1 = Conf[key].split('\n');
         for (i = 0, len = ref1.length; i < len; i++) {
@@ -8139,28 +8156,8 @@ Filter = (function() {
             continue;
           }
           filter = line.replace(regexp[0], '');
-          boardsRaw = (ref2 = filter.match(/boards:([^;]+)/)) != null ? ref2[1].toLowerCase() : void 0;
-          if (boardsRaw) {
-            boards = {};
-            ref3 = boardsRaw.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards).split(',');
-            for (j = 0, len1 = ref3.length; j < len1; j++) {
-              board = ref3[j];
-              boards[board] = true;
-            }
-          } else {
-            boards = false;
-          }
-          excludesRaw = (ref4 = filter.match(/exclude:([^;]+)/)) != null ? ref4[1].toLowerCase() : void 0;
-          if (excludesRaw) {
-            excludes = {};
-            ref5 = excludesRaw.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards).split(',');
-            for (l = 0, len2 = ref5.length; l < len2; l++) {
-              board = ref5[l];
-              excludes[board] = true;
-            }
-          } else {
-            excludes = false;
-          }
+          boards = this.parseBoards((ref2 = filter.match(/(?:^|;)\s*boards:([^;]+)/)) != null ? ref2[1] : void 0);
+          excludes = this.parseBoards((ref3 = filter.match(/(?:^|;)\s*exclude:([^;]+)/)) != null ? ref3[1] : void 0);
           if ((isstring = (key === 'uniqueID' || key === 'MD5'))) {
             regexp = regexp[1];
           } else {
@@ -8172,19 +8169,19 @@ Filter = (function() {
               continue;
             }
           }
-          op = ((ref6 = filter.match(/[^t]op:(no|only)/)) != null ? ref6[1] : void 0) || '';
+          op = ((ref4 = filter.match(/(?:^|;)\s*op:(no|only)/)) != null ? ref4[1] : void 0) || '';
           mask = {
             'no': 1,
             'only': 2
           }[op] || 0;
-          file = ((ref7 = filter.match(/file:(no|only)/)) != null ? ref7[1] : void 0) || '';
+          file = ((ref5 = filter.match(/(?:^|;)\s*file:(no|only)/)) != null ? ref5[1] : void 0) || '';
           mask = mask | ({
             'no': 4,
             'only': 8
           }[file] || 0);
           stub = (function() {
-            var ref8;
-            switch ((ref8 = filter.match(/stub:(yes|no)/)) != null ? ref8[1] : void 0) {
+            var ref6;
+            switch ((ref6 = filter.match(/(?:^|;)\s*stub:(yes|no)/)) != null ? ref6[1] : void 0) {
               case 'yes':
                 return true;
               case 'no':
@@ -8193,10 +8190,10 @@ Filter = (function() {
                 return Conf['Stubs'];
             }
           })();
-          noti = /notify/.test(filter);
-          if ((hl = /highlight/.test(filter))) {
-            hl = ((ref8 = filter.match(/highlight:([\w-]+)/)) != null ? ref8[1] : void 0) || 'filter-highlight';
-            top = ((ref9 = filter.match(/top:(yes|no)/)) != null ? ref9[1] : void 0) || 'yes';
+          noti = /(?:^|;)\s*notify/.test(filter);
+          if ((hl = /(?:^|;)\s*highlight/.test(filter))) {
+            hl = ((ref6 = filter.match(/(?:^|;)\s*highlight:([\w-]+)/)) != null ? ref6[1] : void 0) || 'filter-highlight';
+            top = ((ref7 = filter.match(/(?:^|;)\s*top:(yes|no)/)) != null ? ref7[1] : void 0) || 'yes';
             top = top === 'yes';
           }
           if (key === 'general') {
@@ -8220,8 +8217,8 @@ Filter = (function() {
             noti: noti
           };
           if (key === 'general') {
-            for (m = 0, len3 = types.length; m < len3; m++) {
-              type = types[m];
+            for (j = 0, len1 = types.length; j < len1; j++) {
+              type = types[j];
               ((base = this.filters)[type] || (base[type] = [])).push(filter);
             }
           } else {
@@ -8237,8 +8234,45 @@ Filter = (function() {
         cb: this.node
       });
     },
+    parseBoards: function(boardsRaw) {
+      var boardID, boardID2, boards, i, j, len, len1, ref, ref1, ref2, ref3, ref4, siteFilter, siteID, siteProperties;
+      if (!boardsRaw) {
+        return false;
+      }
+      if ((boards = Filter.parseBoardsMemo[boardsRaw])) {
+        return boards;
+      }
+      boards = {};
+      siteFilter = '';
+      ref = boardsRaw.split(',');
+      for (i = 0, len = ref.length; i < len; i++) {
+        boardID = ref[i];
+        if (indexOf.call(boardID, ':') >= 0) {
+          ref1 = boardID.split(':').slice(-2), siteFilter = ref1[0], boardID = ref1[1];
+        }
+        ref2 = Conf['siteProperties'];
+        for (siteID in ref2) {
+          siteProperties = ref2[siteID];
+          if (siteProperties.canonical || siteID.slice(0, siteFilter.length) !== siteFilter) {
+            continue;
+          }
+          if (boardID === 'nsfw' || boardID === 'sfw') {
+            ref4 = ((ref3 = SW[siteProperties.software]) != null ? typeof ref3.sfwBoards === "function" ? ref3.sfwBoards(boardID === 'sfw') : void 0 : void 0) || [];
+            for (j = 0, len1 = ref4.length; j < len1; j++) {
+              boardID2 = ref4[j];
+              boards[siteID + "/" + boardID2] = true;
+            }
+          } else {
+            boards[siteID + "/" + (encodeURIComponent(boardID))] = true;
+          }
+        }
+      }
+      Filter.parseBoardsMemo[boardsRaw] = boards;
+      return boards;
+    },
+    parseBoardsMemo: {},
     test: function(post, hideable) {
-      var filter, hide, hl, i, key, len, mask, noti, ref, ref1, stub, top, value;
+      var board, filter, hide, hl, i, key, len, mask, noti, ref, ref1, site, stub, top, value;
       if (hideable == null) {
         hideable = true;
       }
@@ -8255,12 +8289,14 @@ Filter = (function() {
       }
       mask = (post.isReply ? 2 : 1);
       mask = mask | (post.file ? 4 : 8);
+      board = post.siteID + "/" + post.boardID;
+      site = post.siteID + "/*";
       for (key in Filter.filters) {
         if (((value = Filter.value(key, post)) != null)) {
           ref = Filter.filters[key];
           for (i = 0, len = ref.length; i < len; i++) {
             filter = ref[i];
-            if ((filter.boards && !filter.boards[post.boardID]) || (filter.excludes && filter.excludes[post.boardID]) || (filter.mask & mask) || (filter.isstring ? filter.regexp !== value : !filter.regexp.test(value))) {
+            if ((filter.boards && !(filter.boards[board] || filter.boards[site])) || (filter.excludes && (filter.excludes[board] || filter.excludes[site])) || (filter.mask & mask) || (filter.isstring ? filter.regexp !== value : !filter.regexp.test(value))) {
               continue;
             }
             if (filter.hide) {
@@ -8336,6 +8372,9 @@ Filter = (function() {
       },
       pass: function(post) {
         return post.info.pass;
+      },
+      email: function(post) {
+        return post.info.email;
       },
       subject: function(post) {
         return post.info.subject || (post.isReply ? void 0 : '');
@@ -8428,7 +8467,7 @@ Filter = (function() {
           },
           subEntries: []
         };
-        ref1 = [['Name', 'name'], ['Unique ID', 'uniqueID'], ['Tripcode', 'tripcode'], ['Capcode', 'capcode'], ['Pass Date', 'pass'], ['Subject', 'subject'], ['Comment', 'comment'], ['Flag', 'flag'], ['Filename', 'filename'], ['Image dimensions', 'dimensions'], ['Filesize', 'filesize'], ['Image MD5', 'MD5']];
+        ref1 = [['Name', 'name'], ['Unique ID', 'uniqueID'], ['Tripcode', 'tripcode'], ['Capcode', 'capcode'], ['Pass Date', 'pass'], ['Email', 'email'], ['Subject', 'subject'], ['Comment', 'comment'], ['Flag', 'flag'], ['Filename', 'filename'], ['Image dimensions', 'dimensions'], ['Filesize', 'filesize'], ['Image MD5', 'MD5']];
         for (i = 0, len = ref1.length; i < len; i++) {
           type = ref1[i];
           entry.subEntries.push(Filter.menu.createSubEntry(type[0], type[1]));
@@ -9335,12 +9374,13 @@ Build = (function() {
         return "/" + boardID + "/thread/" + threadID + "#p" + postID;
       }
     },
-    parseJSON: function(data, boardID) {
+    parseJSON: function(data, boardID, siteID) {
       var key, o;
       o = {
         ID: data.no,
         threadID: data.resto || data.no,
         boardID: boardID,
+        siteID: siteID || Site.hostname,
         isReply: !!data.resto,
         isSticky: !!data.sticky,
         isClosed: !!data.closed,
@@ -12513,7 +12553,7 @@ Settings = (function() {
     filter: function(section) {
       var select;
       $.extend(section, {
-        innerHTML: "<select name=\"filter\"><option value=\"guide\">Guide</option><option value=\"general\">General</option><option value=\"postID\">Post number</option><option value=\"name\">Name</option><option value=\"uniqueID\">Unique ID</option><option value=\"tripcode\">Tripcode</option><option value=\"capcode\">Capcode</option><option value=\"pass\">Pass Date</option><option value=\"subject\">Subject</option><option value=\"comment\">Comment</option><option value=\"flag\">Flag</option><option value=\"filename\">Filename</option><option value=\"dimensions\">Image dimensions</option><option value=\"filesize\">Filesize</option><option value=\"MD5\">Image MD5</option></select><div></div>"
+        innerHTML: "<select name=\"filter\"><option value=\"guide\">Guide</option><option value=\"general\">General</option><option value=\"postID\">Post number</option><option value=\"name\">Name</option><option value=\"uniqueID\">Unique ID</option><option value=\"tripcode\">Tripcode</option><option value=\"capcode\">Capcode</option><option value=\"pass\">Pass Date</option><option value=\"email\">Email</option><option value=\"subject\">Subject</option><option value=\"comment\">Comment</option><option value=\"flag\">Flag</option><option value=\"filename\">Filename</option><option value=\"dimensions\">Image dimensions</option><option value=\"filesize\">Filesize</option><option value=\"MD5\">Image MD5</option></select><div></div>"
       });
       select = $('select', section);
       $.on(select, 'change', Settings.selectFilter);
@@ -12544,7 +12584,7 @@ Settings = (function() {
         };
       });
       $.extend(div, {
-        innerHTML: "<div class=\"warning\"><code>Filter</code> is disabled.</div><p>Use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\" target=\"_blank\">regular expressions</a>, one per line.<br>Lines starting with a <code>#</code> will be ignored.<br>For example, <code>/weeaboo/i</code> will filter posts containing the string \`<code>weeaboo</code>\`, case-insensitive.<br>MD5 and Unique ID filtering use exact string matching, not regular expressions.</p><ul>You can use these settings with each regular expression, separate them with semicolons:<li>Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>For example: <code>boards:a,jp;</code>.<br></li><li>In case of a global rule or one that uses <code>sfw</code>/<code>nsfw</code>, select boards to be excluded from the filter.<br>For example: <code>exclude:vg,v;</code>.</li><li>Filter OPs only along with their threads (\`only\`) or replies only (\`no\`).<br>For example: <code>op:only;</code> or <code>op:no;</code>.</li><li>Filter only posts with files (\`only\`) or only posts without files (\`no\`).<br>For example: <code>file:only;</code> or <code>file:no;</code>.</li><li>Overrule the \`Show Stubs\` setting if specified: create a stub (\`yes\`) or not (\`no\`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code>.</li><li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li><li>Highlighted OPs will have their threads put on top of the board index by default.<br>For example: <code>top:yes;</code> or <code>top:no;</code>.</li><li>Show a desktop notification instead of hiding.<br>For example: <code>notify;</code>.</li><li>Filters in the \"General\" section apply to multiple fields, by default <code>subject,name,filename,comment</code>.<br>The fields can be specified with the <code>type</code> option, separated by commas.<br>For example: <code>type:" + E.cat(filterTypes) + ";</code>.<br>Types can also be combined with a <code>+</code> sign; this indicates the filter applies to the given fields joined by newlines.<br>For example: <code>type:filename+filesize+dimensions;</code>.<br></li></ul><p>Note: If you&#039;re using the native catalog rather than 4chan X&#039;s catalog, 4chan X&#039;s filters do not apply there.<br>The native catalog has its own separate filter list.</p>"
+        innerHTML: "<div class=\"warning\"><code>Filter</code> is disabled.</div><p>Use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\" target=\"_blank\">regular expressions</a>, one per line.<br>Lines starting with a <code>#</code> will be ignored.<br>For example, <code>/weeaboo/i</code> will filter posts containing the string \`<code>weeaboo</code>\`, case-insensitive.<br>MD5 and Unique ID filtering use exact string matching, not regular expressions.</p><ul>You can use these settings with each regular expression, separate them with semicolons:<li>Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>For example: <code>boards:a,jp;</code>.<br>To specify boards on a particular site, put the beginning of the domain and a slash character before the list.<br>Any initial <code>www.</code> should not be included, and all 4chan domains are considered <code>4chan.org</code>.<br>For example: <code>boards:4:a,jp,sama:a,z;</code>.<br>An asterisk can be used to specify all boards on a site.<br>For example: <code>boards:4:*;</code>.<br></li><li>Select boards to be excluded from the filter. The syntax is the same as for the <code>boards:</code> option above.<br>For example: <code>exclude:vg,v;</code>.</li><li>Filter OPs only along with their threads (\`only\`) or replies only (\`no\`).<br>For example: <code>op:only;</code> or <code>op:no;</code>.</li><li>Filter only posts with files (\`only\`) or only posts without files (\`no\`).<br>For example: <code>file:only;</code> or <code>file:no;</code>.</li><li>Overrule the \`Show Stubs\` setting if specified: create a stub (\`yes\`) or not (\`no\`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code>.</li><li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li><li>Highlighted OPs will have their threads put on top of the board index by default.<br>For example: <code>top:yes;</code> or <code>top:no;</code>.</li><li>Show a desktop notification instead of hiding.<br>For example: <code>notify;</code>.</li><li>Filters in the \"General\" section apply to multiple fields, by default <code>subject,name,filename,comment</code>.<br>The fields can be specified with the <code>type</code> option, separated by commas.<br>For example: <code>type:" + E.cat(filterTypes) + ";</code>.<br>Types can also be combined with a <code>+</code> sign; this indicates the filter applies to the given fields joined by newlines.<br>For example: <code>type:filename+filesize+dimensions;</code>.<br></li></ul><p>Note: If you&#039;re using the native catalog rather than 4chan X&#039;s catalog, 4chan X&#039;s filters do not apply there.<br>The native catalog has its own separate filter list.</p>"
       });
       return $('.warning', div).hidden = Conf['Filter'];
     },
@@ -18038,6 +18078,12 @@ Keybinds = (function() {
           }
           ThreadWatcher.toggleWatcher();
           break;
+        case Conf['Toggle threading']:
+          if (!QuoteThreading.ready) {
+            return;
+          }
+          QuoteThreading.toggleThreading();
+          break;
         case Conf['Mark thread read']:
           if (!(g.VIEW === 'index' && thread && UnreadIndex.enabled)) {
             return;
@@ -20131,7 +20177,7 @@ ThreadWatcher = (function() {
       return toggler.title = (isWatched ? 'Unwatch' : 'Watch') + " Thread";
     },
     node: function() {
-      var boardID, data, threadID, toggler;
+      var boardID, data, siteID, threadID, toggler;
       if (this.isReply) {
         return;
       }
@@ -20144,9 +20190,11 @@ ThreadWatcher = (function() {
         });
         $.before($('input', this.nodes.info), toggler);
       }
+      siteID = Site.hostname;
       boardID = this.board.ID;
       threadID = this.thread.ID;
       data = ThreadWatcher.db.get({
+        siteID: siteID,
         boardID: boardID,
         threadID: threadID
       });
@@ -20155,14 +20203,11 @@ ThreadWatcher = (function() {
       if (data && (data.excerpt == null)) {
         return $.queueTask((function(_this) {
           return function() {
-            ThreadWatcher.db.extend({
-              boardID: boardID,
-              threadID: threadID,
+            return ThreadWatcher.update(siteID, boardID, threadID, {
               val: {
                 excerpt: Get.threadExcerpt(_this.thread)
               }
             });
-            return ThreadWatcher.refresh();
           };
         })(this));
       }
@@ -20196,25 +20241,25 @@ ThreadWatcher = (function() {
     },
     cb: {
       openAll: function() {
-        var a, i, len1, ref;
+        var a, j, len1, ref;
         if ($.hasClass(this, 'disabled')) {
           return;
         }
         ref = $$('a[title]', ThreadWatcher.list);
-        for (i = 0, len1 = ref.length; i < len1; i++) {
-          a = ref[i];
+        for (j = 0, len1 = ref.length; j < len1; j++) {
+          a = ref[j];
           $.open(a.href);
         }
         return $.event('CloseMenu');
       },
       pruneDeads: function() {
-        var boardID, data, i, len1, ref, ref1, siteID, threadID;
+        var boardID, data, j, len1, ref, ref1, siteID, threadID;
         if ($.hasClass(this, 'disabled')) {
           return;
         }
         ref = ThreadWatcher.getAll();
-        for (i = 0, len1 = ref.length; i < len1; i++) {
-          ref1 = ref[i], siteID = ref1.siteID, boardID = ref1.boardID, threadID = ref1.threadID, data = ref1.data;
+        for (j = 0, len1 = ref.length; j < len1; j++) {
+          ref1 = ref[j], siteID = ref1.siteID, boardID = ref1.boardID, threadID = ref1.threadID, data = ref1.data;
           if (data.isDead) {
             ThreadWatcher.db["delete"]({
               siteID: siteID,
@@ -20283,7 +20328,11 @@ ThreadWatcher = (function() {
               boardID: boardID,
               threadID: threadID,
               val: {
-                isDead: true
+                isDead: true,
+                page: void 0,
+                lastPage: void 0,
+                unread: void 0,
+                quotingYou: void 0
               }
             });
             nKilled++;
@@ -20343,11 +20392,11 @@ ThreadWatcher = (function() {
       return $.rmClass(ThreadWatcher.refreshButton, 'fa-spin');
     },
     abort: function() {
-      var i, len1, ref, req;
+      var j, len1, ref, req;
       delete ThreadWatcher.syncing;
       ref = ThreadWatcher.requests;
-      for (i = 0, len1 = ref.length; i < len1; i++) {
-        req = ref[i];
+      for (j = 0, len1 = ref.length; j < len1; j++) {
+        req = ref[j];
         if (!(!req.finished)) {
           continue;
         }
@@ -20389,7 +20438,7 @@ ThreadWatcher = (function() {
         return;
       }
       db = ThreadWatcher.db;
-      interval = ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] ? 5 * $.MINUTE : 2 * $.HOUR;
+      interval = Conf['Show Page'] || (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) ? 5 * $.MINUTE : 2 * $.HOUR;
       now = Date.now();
       if (!((now - interval < (ref = db.data.lastChecked || 0) && ref <= now) || d.hidden || !d.hasFocus())) {
         ThreadWatcher.fetchAllStatus();
@@ -20404,7 +20453,7 @@ ThreadWatcher = (function() {
       }
     },
     fetchAllStatus: function() {
-      var dbi, dbs, i, len1, n, results;
+      var dbi, dbs, j, len1, n, results;
       ThreadWatcher.status.textContent = '...';
       $.addClass(ThreadWatcher.refreshButton, 'fa-spin');
       ThreadWatcher.syncing = true;
@@ -20413,10 +20462,10 @@ ThreadWatcher = (function() {
       });
       n = 0;
       results = [];
-      for (i = 0, len1 = dbs.length; i < len1; i++) {
-        dbi = dbs[i];
+      for (j = 0, len1 = dbs.length; j < len1; j++) {
+        dbi = dbs[j];
         results.push(dbi.forceSync(function() {
-          var board, boards, db, deep, j, len2, now, ref;
+          var board, boards, db, deep, k, len2, now, ref;
           if ((++n) === dbs.length) {
             if (!ThreadWatcher.syncing) {
               return;
@@ -20426,8 +20475,8 @@ ThreadWatcher = (function() {
             now = Date.now();
             deep = !((now - 2 * $.HOUR < (ref = db.data.lastChecked2 || 0) && ref <= now));
             boards = ThreadWatcher.getAll(true);
-            for (j = 0, len2 = boards.length; j < len2; j++) {
-              board = boards[j];
+            for (k = 0, len2 = boards.length; k < len2; k++) {
+              board = boards[k];
               ThreadWatcher.fetchBoard(board, deep);
             }
             db.setLastChecked();
@@ -20443,12 +20492,15 @@ ThreadWatcher = (function() {
       return results;
     },
     fetchBoard: function(board, deep) {
-      var base, boardID, ref, ref1, ref2, siteID, software, url, urlF;
+      var base, boardID, force, ref, ref1, ref2, siteID, software, url, urlF;
       if (!board.some(function(thread) {
         return !thread.data.isDead;
       })) {
         return;
       }
+      force = Conf['Show Page'] && board.some(function(thread) {
+        return (thread.data.page == null) && !thread.data.isDead && thread.data.last !== -1;
+      });
       ref = board[0], siteID = ref.siteID, boardID = ref.boardID;
       software = (ref1 = Conf['siteProperties'][siteID]) != null ? ref1.software : void 0;
       urlF = deep && software === 'tinyboard' ? 'catalogJSON' : 'threadsListJSON';
@@ -20460,57 +20512,95 @@ ThreadWatcher = (function() {
         return;
       }
       return ThreadWatcher.fetch(url, {
-        siteID: siteID
+        siteID: siteID,
+        force: force
       }, [board, url], ThreadWatcher.parseBoard);
     },
     parseBoard: function(board, url) {
-      var boardID, data, i, item, j, k, len1, len2, len3, lmDate, modified, page, ref, ref1, ref2, replies, siteID, thread, threadID;
+      var boardID, data, i, index, item, j, k, l, lastPage, len1, len2, len3, len4, lmDate, m, modified, nThreads, oldest, page, pageLength, ref, ref1, ref2, ref3, ref4, ref5, ref6, replies, siteID, software, thread, threadID, threads;
       if (this.status !== 200) {
         return;
       }
       ref = board[0], siteID = ref.siteID, boardID = ref.boardID;
+      software = (ref1 = Conf['siteProperties'][siteID]) != null ? ref1.software : void 0;
       lmDate = this.getResponseHeader('Last-Modified');
       ThreadWatcher.dbLM.extend({
         siteID: siteID,
         boardID: boardID,
         val: $.item(url, lmDate)
       });
-      modified = {};
-      replies = {};
+      threads = {};
+      pageLength = 0;
+      nThreads = 0;
+      oldest = null;
       try {
-        ref1 = this.response;
-        for (i = 0, len1 = ref1.length; i < len1; i++) {
-          page = ref1[i];
-          ref2 = page.threads;
-          for (j = 0, len2 = ref2.length; j < len2; j++) {
-            item = ref2[j];
-            modified[item.no] = item.last_modified;
-            replies[item.no] = item.replies;
-          }
-        }
-      } catch (_error) {}
-      for (k = 0, len3 = board.length; k < len3; k++) {
-        thread = board[k];
-        threadID = thread.threadID, data = thread.data;
-        if (modified[threadID]) {
-          if (modified[threadID] === data.modified && ((replies[threadID] == null) || replies[threadID] === data.replies)) {
-            continue;
-          }
-          ThreadWatcher.db.extend({
-            siteID: siteID,
-            boardID: boardID,
-            threadID: threadID,
-            val: {
-              modified: modified[threadID]
+        pageLength = ((ref2 = this.response[0]) != null ? ref2.threads.length : void 0) || 0;
+        ref3 = this.response;
+        for (i = j = 0, len1 = ref3.length; j < len1; i = ++j) {
+          page = ref3[i];
+          ref4 = page.threads;
+          for (k = 0, len2 = ref4.length; k < len2; k++) {
+            item = ref4[k];
+            threads[item.no] = {
+              page: i + 1,
+              index: nThreads,
+              modified: item.last_modified,
+              replies: item.replies
+            };
+            nThreads++;
+            if ((oldest == null) || item.no < oldest) {
+              oldest = item.no;
             }
-          });
+          }
         }
-        ThreadWatcher.fetchStatus(thread);
+      } catch (_error) {
+        for (l = 0, len3 = board.length; l < len3; l++) {
+          thread = board[l];
+          ThreadWatcher.fetchStatus(thread);
+        }
+      }
+      for (m = 0, len4 = board.length; m < len4; m++) {
+        thread = board[m];
+        threadID = thread.threadID, data = thread.data;
+        if (threads[threadID]) {
+          ref5 = threads[threadID], page = ref5.page, index = ref5.index, modified = ref5.modified, replies = ref5.replies;
+          if (Conf['Show Page']) {
+            lastPage = ((ref6 = SW[software]) != null ? typeof ref6.isPrunedByAge === "function" ? ref6.isPrunedByAge({
+              siteID: siteID,
+              boardID: boardID
+            }) : void 0 : void 0) ? threadID === oldest : index >= nThreads - pageLength;
+            ThreadWatcher.update(siteID, boardID, threadID, {
+              page: page,
+              lastPage: lastPage
+            });
+          }
+          if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
+            if (modified !== data.modified || ((replies != null) && replies !== data.replies)) {
+              ThreadWatcher.db.extend({
+                siteID: siteID,
+                boardID: boardID,
+                threadID: threadID,
+                val: {
+                  modified: modified
+                }
+              });
+              ThreadWatcher.fetchStatus(thread);
+            }
+          }
+        } else {
+          if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
+            ThreadWatcher.fetchStatus(thread);
+          } else {
+            ThreadWatcher.update(siteID, boardID, threadID, {
+              isDead: true
+            });
+          }
+        }
       }
     },
-    fetchStatus: function(thread, force) {
-      var base, boardID, data, ref, ref1, siteID, software, threadID, url;
-      siteID = thread.siteID, boardID = thread.boardID, threadID = thread.threadID, data = thread.data;
+    fetchStatus: function(thread) {
+      var base, boardID, data, force, ref, ref1, siteID, software, threadID, url;
+      siteID = thread.siteID, boardID = thread.boardID, threadID = thread.threadID, data = thread.data, force = thread.force;
       software = (ref = Conf['siteProperties'][siteID]) != null ? ref.software : void 0;
       url = (ref1 = SW[software]) != null ? typeof (base = ref1.urls).threadJSON === "function" ? base.threadJSON({
         siteID: siteID,
@@ -20532,7 +20622,7 @@ ThreadWatcher = (function() {
       }, [thread], ThreadWatcher.parseStatus);
     },
     parseStatus: function(arg) {
-      var boardID, data, i, isDead, last, lastReadPost, len1, match, postObj, quotesYou, quotingYou, ref, ref1, ref2, ref3, regexp, replies, siteID, software, threadID, unread, updated, youOP;
+      var boardID, data, isDead, j, last, lastReadPost, len1, match, postObj, quotesYou, quotingYou, ref, ref1, ref2, ref3, regexp, replies, siteID, software, threadID, unread, youOP;
       siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID, data = arg.data;
       software = (ref = Conf['siteProperties'][siteID]) != null ? ref.software : void 0;
       if (this.status === 200 && this.response) {
@@ -20540,12 +20630,7 @@ ThreadWatcher = (function() {
         replies = this.response.posts.length - 1;
         isDead = !!this.response.posts[0].archived;
         if (isDead && Conf['Auto Prune']) {
-          ThreadWatcher.db["delete"]({
-            siteID: siteID,
-            boardID: boardID,
-            threadID: threadID
-          });
-          ThreadWatcher.refresh();
+          ThreadWatcher.rm(siteID, boardID, threadID);
           return;
         }
         if (last === data.last && isDead === data.isDead) {
@@ -20566,8 +20651,8 @@ ThreadWatcher = (function() {
           postID: threadID
         }) : void 0);
         ref2 = this.response.posts;
-        for (i = 0, len1 = ref2.length; i < len1; i++) {
-          postObj = ref2[i];
+        for (j = 0, len1 = ref2.length; j < len1; j++) {
+          postObj = ref2[j];
           if (!(postObj.no > lastReadPost)) {
             continue;
           }
@@ -20580,7 +20665,7 @@ ThreadWatcher = (function() {
             continue;
           }
           unread++;
-          if (!quotingYou && !Conf['Require OP Quote Link'] && youOP && !Filter.isHidden(Build.parseJSON(postObj, boardID))) {
+          if (!quotingYou && !Conf['Require OP Quote Link'] && youOP && !Filter.isHidden(Build.parseJSON(postObj, boardID, siteID))) {
             quotingYou = true;
             continue;
           }
@@ -20601,55 +20686,27 @@ ThreadWatcher = (function() {
               break;
             }
           }
-          if (quotesYou && !Filter.isHidden(Build.parseJSON(postObj, boardID))) {
+          if (quotesYou && !Filter.isHidden(Build.parseJSON(postObj, boardID, siteID))) {
             quotingYou = true;
           }
         }
-        updated = isDead !== data.isDead || unread !== data.unread || quotingYou !== data.quotingYou;
-        ThreadWatcher.db.extend({
-          siteID: siteID,
-          boardID: boardID,
-          threadID: threadID,
-          val: {
-            last: last,
-            replies: replies,
-            isDead: isDead,
-            unread: unread,
-            quotingYou: quotingYou
-          }
+        return ThreadWatcher.update(siteID, boardID, threadID, {
+          last: last,
+          replies: replies,
+          isDead: isDead,
+          unread: unread,
+          quotingYou: quotingYou
         });
-        if (updated) {
-          return ThreadWatcher.refresh();
-        }
       } else if (this.status === 404) {
         if (SW[software].mayLackJSON && (data.last == null)) {
-          ThreadWatcher.db.extend({
-            siteID: siteID,
-            boardID: boardID,
-            threadID: threadID,
-            val: {
-              last: -1
-            },
-            rm: ['unread', 'quotingYou']
-          });
-        } else if (Conf['Auto Prune']) {
-          ThreadWatcher.db["delete"]({
-            siteID: siteID,
-            boardID: boardID,
-            threadID: threadID
+          return ThreadWatcher.update(siteID, boardID, threadID, {
+            last: -1
           });
         } else {
-          ThreadWatcher.db.extend({
-            siteID: siteID,
-            boardID: boardID,
-            threadID: threadID,
-            val: {
-              isDead: true
-            },
-            rm: ['unread', 'quotingYou']
+          return ThreadWatcher.update(siteID, boardID, threadID, {
+            isDead: true
           });
         }
-        return ThreadWatcher.refresh();
       }
     },
     getAll: function(groupByBoard) {
@@ -20683,7 +20740,7 @@ ThreadWatcher = (function() {
       return all;
     },
     makeLine: function(siteID, boardID, threadID, data) {
-      var count, div, excerpt, fullID, link, ref, ref1, software, title, x;
+      var count, div, excerpt, fullID, link, page, ref, ref1, software, title, x;
       software = (ref = Conf['siteProperties'][siteID]) != null ? ref.software : void 0;
       x = $.el('a', {
         className: 'fa fa-times',
@@ -20704,6 +20761,13 @@ ThreadWatcher = (function() {
         title: excerpt,
         className: 'watcher-link'
       });
+      if (Conf['Show Page'] && (data.page != null)) {
+        page = $.el('span', {
+          textContent: "[" + data.page + "]",
+          className: 'watcher-page'
+        });
+        $.add(link, page);
+      }
       if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count'] && (data.unread != null)) {
         count = $.el('span', {
           textContent: "(" + data.unread + ")",
@@ -20726,6 +20790,14 @@ ThreadWatcher = (function() {
       if (data.isDead) {
         $.addClass(div, 'dead-thread');
       }
+      if (Conf['Show Page']) {
+        if (data.lastPage) {
+          $.addClass(div, 'last-page');
+        }
+        if (data.page != null) {
+          div.dataset.page = data.page;
+        }
+      }
       if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
         if (data.unread === 0) {
           $.addClass(div, 'replies-read');
@@ -20741,10 +20813,10 @@ ThreadWatcher = (function() {
       return div;
     },
     setPrefixes: function(threads) {
-      var conflicts, conflicts2, i, j, len, len1, len2, prefix, prefixes, siteID, siteID2;
+      var conflicts, conflicts2, j, k, len, len1, len2, prefix, prefixes, siteID, siteID2;
       prefixes = {};
-      for (i = 0, len1 = threads.length; i < len1; i++) {
-        siteID = threads[i].siteID;
+      for (j = 0, len1 = threads.length; j < len1; j++) {
+        siteID = threads[j].siteID;
         if (siteID in prefixes) {
           continue;
         }
@@ -20755,8 +20827,8 @@ ThreadWatcher = (function() {
           len++;
           prefix = siteID.slice(0, len);
           conflicts2 = [];
-          for (j = 0, len2 = conflicts.length; j < len2; j++) {
-            siteID2 = conflicts[j];
+          for (k = 0, len2 = conflicts.length; k < len2; k++) {
+            siteID2 = conflicts[k];
             if (siteID2.slice(0, len) === prefix) {
               conflicts2.push(siteID2);
             } else if (prefixes[siteID2].length < len) {
@@ -20770,12 +20842,12 @@ ThreadWatcher = (function() {
       return ThreadWatcher.prefixes = prefixes;
     },
     build: function() {
-      var boardID, data, i, j, len1, len2, list, nodes, ref, ref1, refresher, siteID, thread, threadID, threads;
+      var boardID, data, j, len1, list, nodes, ref, siteID, thread, threadID, threads;
       nodes = [];
       threads = ThreadWatcher.getAll();
       ThreadWatcher.setPrefixes(threads);
-      for (i = 0, len1 = threads.length; i < len1; i++) {
-        ref = threads[i], siteID = ref.siteID, boardID = ref.boardID, threadID = ref.threadID, data = ref.data;
+      for (j = 0, len1 = threads.length; j < len1; j++) {
+        ref = threads[j], siteID = ref.siteID, boardID = ref.boardID, threadID = ref.threadID, data = ref.data;
         if ((data.excerpt == null) && siteID === Site.hostname && (thread = g.threads[boardID + "." + threadID]) && thread.OP) {
           ThreadWatcher.db.extend({
             boardID: boardID,
@@ -20790,22 +20862,17 @@ ThreadWatcher = (function() {
       list = ThreadWatcher.list;
       $.rmAll(list);
       $.add(list, nodes);
-      ThreadWatcher.refreshIcon();
-      ref1 = ThreadWatcher.menu.refreshers;
-      for (j = 0, len2 = ref1.length; j < len2; j++) {
-        refresher = ref1[j];
-        refresher();
-      }
+      return ThreadWatcher.refreshIcon();
     },
     refresh: function() {
       ThreadWatcher.build();
       g.threads.forEach(function(thread) {
-        var i, isWatched, len1, post, ref, toggler;
+        var isWatched, j, len1, post, ref, toggler;
         isWatched = ThreadWatcher.isWatched(thread);
         if (thread.OP) {
           ref = [thread.OP].concat(slice.call(thread.OP.clones));
-          for (i = 0, len1 = ref.length; i < len1; i++) {
-            post = ref[i];
+          for (j = 0, len1 = ref.length; j < len1; j++) {
+            post = ref[j];
             if ((toggler = $('.watch-thread-link', post.nodes.info))) {
               ThreadWatcher.setToggler(toggler, isWatched);
             }
@@ -20822,29 +20889,34 @@ ThreadWatcher = (function() {
       }
     },
     refreshIcon: function() {
-      var className, i, len1, ref;
+      var className, j, len1, ref;
       ref = ['replies-unread', 'replies-quoting-you'];
-      for (i = 0, len1 = ref.length; i < len1; i++) {
-        className = ref[i];
+      for (j = 0, len1 = ref.length; j < len1; j++) {
+        className = ref[j];
         ThreadWatcher.shortcut.classList.toggle(className, !!$("." + className, ThreadWatcher.dialog));
       }
     },
-    update: function(boardID, threadID, newData) {
-      var data, key, line, n, newLine, ref, siteID, val;
-      siteID = Site.hostname;
+    update: function(siteID, boardID, threadID, newData) {
+      var data, j, key, len1, line, n, newLine, ref, ref1, val;
       if (!(data = (ref = ThreadWatcher.db) != null ? ref.get({
+        siteID: siteID,
         boardID: boardID,
         threadID: threadID
       }) : void 0)) {
         return;
       }
       if (newData.isDead && Conf['Auto Prune']) {
-        ThreadWatcher.db["delete"]({
-          boardID: boardID,
-          threadID: threadID
-        });
-        ThreadWatcher.refresh();
+        ThreadWatcher.rm(siteID, boardID, threadID);
         return;
+      }
+      if (newData.isDead || newData.last === -1) {
+        ref1 = ['page', 'lastPage', 'unread', 'quotingyou'];
+        for (j = 0, len1 = ref1.length; j < len1; j++) {
+          key = ref1[j];
+          if (!(key in newData)) {
+            newData[key] = void 0;
+          }
+        }
       }
       n = 0;
       for (key in newData) {
@@ -20856,18 +20928,13 @@ ThreadWatcher = (function() {
       if (!n) {
         return;
       }
-      if (!(data = ThreadWatcher.db.get({
-        boardID: boardID,
-        threadID: threadID
-      }))) {
-        return;
-      }
       ThreadWatcher.db.extend({
+        siteID: siteID,
         boardID: boardID,
         threadID: threadID,
         val: newData
       });
-      if (line = $("#watched-threads > [data-site-i-d='" + siteID + "'][data-full-i-d='" + boardID + "." + threadID + "']", ThreadWatcher.dialog)) {
+      if ((line = $("#watched-threads > [data-site-i-d='" + siteID + "'][data-full-i-d='" + boardID + "." + threadID + "']", ThreadWatcher.dialog))) {
         newLine = ThreadWatcher.makeLine(siteID, boardID, threadID, data);
         $.replace(line, newLine);
         return ThreadWatcher.refreshIcon();
@@ -20890,16 +20957,19 @@ ThreadWatcher = (function() {
         });
         return cb();
       }
-      if (data.isDead && !((data.unread != null) || (data.quotingYou != null))) {
+      if (data.isDead && !((data.page != null) || (data.lastPage != null) || (data.unread != null) || (data.quotingYou != null))) {
         return cb();
       }
       return ThreadWatcher.db.extend({
         boardID: boardID,
         threadID: threadID,
         val: {
-          isDead: true
-        },
-        rm: ['unread', 'quotingYou']
+          isDead: true,
+          page: void 0,
+          lastPage: void 0,
+          unread: void 0,
+          quotingYou: void 0
+        }
       }, cb);
     },
     toggle: function(thread) {
@@ -20938,19 +21008,24 @@ ThreadWatcher = (function() {
       return ThreadWatcher.addRaw(boardID, threadID, data);
     },
     addRaw: function(boardID, threadID, data) {
+      var thread;
       ThreadWatcher.db.set({
         boardID: boardID,
         threadID: threadID,
         val: data
       });
       ThreadWatcher.refresh();
-      if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
-        return ThreadWatcher.fetchStatus({
-          siteID: Site.hostname,
-          boardID: boardID,
-          threadID: threadID,
-          data: data
-        }, true);
+      thread = {
+        siteID: Site.hostname,
+        boardID: boardID,
+        threadID: threadID,
+        data: data,
+        force: true
+      };
+      if (Conf['Show Page'] && !data.isDead) {
+        return ThreadWatcher.fetchBoard([thread]);
+      } else if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
+        return ThreadWatcher.fetchStatus(thread);
       }
     },
     rm: function(siteID, boardID, threadID) {
@@ -20962,7 +21037,6 @@ ThreadWatcher = (function() {
       return ThreadWatcher.refresh();
     },
     menu: {
-      refreshers: [],
       init: function() {
         var menu;
         if (!Conf['Thread Watcher']) {
@@ -20984,73 +21058,61 @@ ThreadWatcher = (function() {
         });
         Header.menu.addEntry({
           el: entryEl,
-          order: 60
+          order: 60,
+          open: function() {
+            var addClass, ref, rmClass, text;
+            ref = !!ThreadWatcher.db.get({
+              boardID: g.BOARD.ID,
+              threadID: g.THREADID
+            }) ? ['unwatch-thread', 'watch-thread', 'Unwatch thread'] : ['watch-thread', 'unwatch-thread', 'Watch thread'], addClass = ref[0], rmClass = ref[1], text = ref[2];
+            $.addClass(entryEl, addClass);
+            $.rmClass(entryEl, rmClass);
+            entryEl.textContent = text;
+            return true;
+          }
         });
-        $.on(entryEl, 'click', function() {
+        return $.on(entryEl, 'click', function() {
           return ThreadWatcher.toggle(g.threads[g.BOARD + "." + g.THREADID]);
-        });
-        return this.refreshers.push(function() {
-          var addClass, ref, rmClass, text;
-          ref = $('.current', ThreadWatcher.list) ? ['unwatch-thread', 'watch-thread', 'Unwatch thread'] : ['watch-thread', 'unwatch-thread', 'Watch thread'], addClass = ref[0], rmClass = ref[1], text = ref[2];
-          $.addClass(entryEl, addClass);
-          $.rmClass(entryEl, rmClass);
-          return entryEl.textContent = text;
         });
       },
       addMenuEntries: function() {
-        var cb, conf, entries, entry, i, len1, name, ref, ref1, refresh, subEntries;
+        var cb, conf, entries, entry, j, len1, name, open, ref, ref1, text;
         entries = [];
         entries.push({
+          text: 'Open all threads',
           cb: ThreadWatcher.cb.openAll,
-          entry: {
-            el: $.el('a', {
-              textContent: 'Open all threads'
-            })
-          },
-          refresh: function() {
-            return (ThreadWatcher.list.firstElementChild ? $.rmClass : $.addClass)(this.el, 'disabled');
+          open: function() {
+            this.el.classList.toggle('disabled', !ThreadWatcher.list.firstElementChild);
+            return true;
           }
         });
         entries.push({
+          text: 'Prune dead threads',
           cb: ThreadWatcher.cb.pruneDeads,
-          entry: {
+          open: function() {
+            this.el.classList.toggle('disabled', !$('.dead-thread', ThreadWatcher.list));
+            return true;
+          }
+        });
+        for (j = 0, len1 = entries.length; j < len1; j++) {
+          ref = entries[j], text = ref.text, cb = ref.cb, open = ref.open;
+          entry = {
             el: $.el('a', {
-              textContent: 'Prune dead threads'
+              textContent: text,
+              href: 'javascript:;'
             })
-          },
-          refresh: function() {
-            return ($('.dead-thread', ThreadWatcher.list) ? $.rmClass : $.addClass)(this.el, 'disabled');
-          }
-        });
-        subEntries = [];
-        ref = Config.threadWatcher;
-        for (name in ref) {
-          conf = ref[name];
-          subEntries.push(this.createSubEntry(name, conf[1]));
-        }
-        entries.push({
-          entry: {
-            el: $.el('span', {
-              textContent: 'Settings'
-            }),
-            subEntries: subEntries
-          }
-        });
-        for (i = 0, len1 = entries.length; i < len1; i++) {
-          ref1 = entries[i], entry = ref1.entry, cb = ref1.cb, refresh = ref1.refresh;
-          if (entry.el.nodeName === 'A') {
-            entry.el.href = 'javascript:;';
-          }
-          if (cb) {
-            $.on(entry.el, 'click', cb);
-          }
-          if (refresh) {
-            this.refreshers.push(refresh.bind(entry));
-          }
+          };
+          $.on(entry.el, 'click', cb);
+          entry.open = open.bind(entry);
           this.menu.addEntry(entry);
         }
+        ref1 = Config.threadWatcher;
+        for (name in ref1) {
+          conf = ref1[name];
+          this.addCheckbox(name, conf[1]);
+        }
       },
-      createSubEntry: function(name, desc) {
+      addCheckbox: function(name, desc) {
         var entry, input;
         entry = {
           type: 'thread watcher',
@@ -21064,13 +21126,13 @@ ThreadWatcher = (function() {
           entry.el.title += '\n[Remember Last Read Post is disabled.]';
         }
         $.on(input, 'change', $.cb.checked);
-        if (name === 'Current Board' || name === 'Show Unread Count' || name === 'Show Site Prefix') {
+        if (name === 'Current Board' || name === 'Show Page' || name === 'Show Unread Count' || name === 'Show Site Prefix') {
           $.on(input, 'change', ThreadWatcher.refresh);
         }
-        if (name === 'Show Unread Count' || name === 'Auto Update Thread Watcher') {
+        if (name === 'Show Page' || name === 'Show Unread Count' || name === 'Auto Update Thread Watcher') {
           $.on(input, 'change', ThreadWatcher.fetchAuto);
         }
-        return entry;
+        return this.menu.addEntry(entry);
       }
     }
   };
@@ -21362,7 +21424,7 @@ Unread = (function() {
     saveThreadWatcherCount: $.debounce(2 * $.SECOND, function() {
       $.forceSync('Remember Last Read Post');
       if (Conf['Remember Last Read Post'] && (!Unread.thread.isDead || Unread.thread.isArchived)) {
-        return ThreadWatcher.update(Unread.thread.board.ID, Unread.thread.ID, {
+        return ThreadWatcher.update(Site.hostname, Unread.thread.board.ID, Unread.thread.ID, {
           isDead: Unread.thread.isDead,
           unread: Unread.posts.size,
           quotingYou: !!(!Conf['Require OP Quote Link'] && QuoteYou.isYou(Unread.thread.OP) ? Unread.posts.size : Unread.postsQuotingYou.size)
@@ -21509,7 +21571,7 @@ UnreadIndex = (function() {
       });
       $.rm(UnreadIndex.hr[thread.fullID]);
       thread.nodes.root.classList.remove('unread-thread');
-      return ThreadWatcher.update(thread.board.ID, thread.ID, {
+      return ThreadWatcher.update(Site.hostname, thread.board.ID, thread.ID, {
         unread: 0,
         quotingYou: false
       });
@@ -24934,6 +24996,14 @@ QuoteThreading =
     parent: {},
     children: {},
     inserted: {},
+    toggleThreading: function() {
+      return this.setThreadingState(!Conf['Thread Quotes']);
+    },
+    setThreadingState: function(enabled) {
+      this.input.checked = enabled;
+      this.setEnabled.call(this.input);
+      return this.rethread.call(this.input);
+    },
     setEnabled: function() {
       var other, ref;
       if (this.checked) {
