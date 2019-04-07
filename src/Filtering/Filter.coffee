@@ -97,7 +97,6 @@ Filter =
   # Sites can be specified by a beginning part of the site domain followed by a colon.
   parseBoards: (boardsRaw) ->
     return false unless boardsRaw
-    boardsRaw = boardsRaw.toLowerCase()
     return boards if (boards = Filter.parseBoardsMemo[boardsRaw])
     boards = {}
     siteFilter = ''
