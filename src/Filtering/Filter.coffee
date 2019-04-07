@@ -18,10 +18,10 @@ Filter =
         filter = line.replace regexp[0], ''
 
         # List of the boards this filter applies to.
-        boards = @parseBoards filter.match(/boards:([^;]+)/)?[1]
+        boards = @parseBoards filter.match(/(?:^|;)\s*boards:([^;]+)/)?[1]
 
         # Boards to exclude from an otherwise global rule.
-        excludes = @parseBoards filter.match(/exclude:([^;]+)/)?[1]
+        excludes = @parseBoards filter.match(/(?:^|;)\s*exclude:([^;]+)/)?[1]
 
         if (isstring = (key in ['uniqueID', 'MD5']))
           # MD5 filter will use strings instead of regular expressions.
@@ -42,16 +42,16 @@ Filter =
             continue
 
         # Filter OPs along with their threads or replies only.
-        op = filter.match(/[^t]op:(no|only)/)?[1] or ''
+        op = filter.match(/(?:^|;)\s*op:(no|only)/)?[1] or ''
         mask = {'no': 1, 'only': 2}[op] or 0
 
         # Filter only posts with/without files.
-        file = filter.match(/file:(no|only)/)?[1] or ''
+        file = filter.match(/(?:^|;)\s*file:(no|only)/)?[1] or ''
         mask = mask | ({'no': 4, 'only': 8}[file] or 0)
 
         # Overrule the `Show Stubs` setting.
         # Defaults to stub showing.
-        stub = switch filter.match(/stub:(yes|no)/)?[1]
+        stub = switch filter.match(/(?:^|;)\s*stub:(yes|no)/)?[1]
           when 'yes'
             true
           when 'no'
@@ -60,15 +60,15 @@ Filter =
             Conf['Stubs']
 
         # Desktop notification
-        noti = /notify/.test filter
+        noti = /(?:^|;)\s*notify/.test filter
 
         # Highlight the post.
         # If not specified, the highlight class will be filter-highlight.
-        if (hl = /highlight/.test filter)
-          hl = filter.match(/highlight:([\w-]+)/)?[1] or 'filter-highlight'
+        if (hl = /(?:^|;)\s*highlight/.test filter)
+          hl = filter.match(/(?:^|;)\s*highlight:([\w-]+)/)?[1] or 'filter-highlight'
           # Put highlighted OP's thread on top of the board page or not.
           # Defaults to on top.
-          top = filter.match(/top:(yes|no)/)?[1] or 'yes'
+          top = filter.match(/(?:^|;)\s*top:(yes|no)/)?[1] or 'yes'
           top = top is 'yes' # Turn it into a boolean
 
         # Fields that this filter applies to (for 'general' filters)
