@@ -107,7 +107,7 @@ Filter =
       for siteID, siteProperties of Conf['siteProperties']
         continue if siteProperties.canonical or siteID[...siteFilter.length] isnt siteFilter
         if boardID in ['nsfw', 'sfw']
-          for boardID2 of SW[siteProperties.software]?.sfwBoards?(boardID is 'sfw') or []
+          for boardID2 in SW[siteProperties.software]?.sfwBoards?(boardID is 'sfw') or []
             boards["#{siteID}/#{boardID2}"] = true
         else
           boards["#{siteID}/#{boardID}"] = true
