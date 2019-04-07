@@ -109,7 +109,7 @@ Filter =
           for boardID2 in SW[siteProperties.software]?.sfwBoards?(boardID is 'sfw') or []
             boards["#{siteID}/#{boardID2}"] = true
         else
-          boards["#{siteID}/#{boardID}"] = true
+          boards["#{siteID}/#{encodeURIComponent boardID}"] = true
     Filter.parseBoardsMemo[boardsRaw] = boards
     boards
 
