@@ -9,7 +9,6 @@ SW.tinyboard =
     'Image Host Rewriting'
     'Index Generator'
     'Announcement Hiding'
-    'Fourchan thingies'
     'Resurrect Quotes'
     'Quick Reply Personas'
     'Quick Reply'
