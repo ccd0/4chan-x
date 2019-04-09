@@ -4,6 +4,11 @@
 
 ### v1.14.7
 
+**v1.14.7.1** *(2019-04-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.1/builds/4chan-X-noupdate.crx)]
+- Tolerate broken HTML better.
+- Fix 4chan/4channel not being correct in certain links.
+- Use boards.json to determine whether to activate [code] and [math] tag related functions. #525
+
 **v1.14.7.0** *(2019-04-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.6.8.
 - (Teasday) Hotkey to toggle quote threading, `Shift+t` by default.
