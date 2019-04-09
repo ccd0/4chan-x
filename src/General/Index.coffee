@@ -592,7 +592,7 @@ Index =
       return
 
     Index.req = $.whenModified(
-      Site.urls.catalogJSON({boardID: g.BOARD.ID}),
+      g.SITE.urls.catalogJSON({boardID: g.BOARD.ID}),
       'Index',
       Index.load
     )

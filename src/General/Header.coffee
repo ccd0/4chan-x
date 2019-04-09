@@ -92,7 +92,7 @@ Header =
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
 
-    $.onExists doc, "#{Site.selectors.boardList} + *", Header.generateFullBoardList
+    $.onExists doc, "#{g.SITE.selectors.boardList} + *", Header.generateFullBoardList
 
     Main.ready ->
       if not (footer = $.id 'boardNavDesktopFoot')
@@ -165,7 +165,7 @@ Header =
   generateFullBoardList: ->
     nodes = []
     spacer = -> $.el 'span', className: 'spacer'
-    items = $.X './/a|.//text()[not(ancestor::a)]', $(Site.selectors.boardList)
+    items = $.X './/a|.//text()[not(ancestor::a)]', $(g.SITE.selectors.boardList)
     i = 0
     while node = items.snapshotItem i++
       switch node.nodeName

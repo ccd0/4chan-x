@@ -64,7 +64,7 @@ UnreadIndex =
           firstUnread = post
 
     hr = UnreadIndex.hr[thread.fullID]
-    if firstUnread and (repliesRead or (lastReadPost is thread.OP.ID and (!$(Site.selectors.summary, thread.nodes.root) or thread.ID of ExpandThread.statuses)))
+    if firstUnread and (repliesRead or (lastReadPost is thread.OP.ID and (!$(g.SITE.selectors.summary, thread.nodes.root) or thread.ID of ExpandThread.statuses)))
       if !hr
         hr = UnreadIndex.hr[thread.fullID] = $.el 'hr',
           className: 'unread-line'
@@ -87,7 +87,7 @@ UnreadIndex =
         href: 'javascript:;'
         textContent: 'Mark Read'
       $.on link, 'click', UnreadIndex.markRead
-    if (divider = $ Site.selectors.threadDivider, thread.nodes.root) # divider inside thread as in Tinyboard
+    if (divider = $ g.SITE.selectors.threadDivider, thread.nodes.root) # divider inside thread as in Tinyboard
       $.before divider, link
     else
       $.add thread.nodes.root, link
@@ -105,6 +105,6 @@ UnreadIndex =
       val:      lastPost
     $.rm UnreadIndex.hr[thread.fullID]
     thread.nodes.root.classList.remove 'unread-thread'
-    ThreadWatcher.update Site.hostname, thread.board.ID, thread.ID,
+    ThreadWatcher.update g.SITE.ID, thread.board.ID, thread.ID,
       unread: 0
       quotingYou: false

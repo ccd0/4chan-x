@@ -100,7 +100,7 @@ SW.yotsuba =
 
     if g.BOARD.ID is 'f' and thread.OP.file
       {file} = thread.OP
-      $.ajax Site.urls.threadJSON({boardID: 'f', threadID: thread.ID}),
+      $.ajax @urls.threadJSON({boardID: 'f', threadID: thread.ID}),
         timeout: $.MINUTE
         onloadend: ->
           if @response

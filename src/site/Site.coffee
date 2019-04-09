@@ -25,13 +25,17 @@ Site =
           changed++
         if changed
           $.set 'siteProperties', Conf['siteProperties']
-        unless @hostname
+        unless g.SITE
           @set hostname
           cb()
         return
       return
 
-  set: (@hostname) ->
-    @properties = Conf['siteProperties'][@hostname]
-    @software = @properties.software
-    $.extend @, SW[@software]
+  set: (hostname) ->
+    for ID, properties of Conf['siteProperties']
+      continue if properties.canonical
+      software = properties.software
+      continue unless software and SW[software]
+      g.sites[ID] = site = Object.create SW[software]
+      $.extend site, {ID, properties, software}
+    g.SITE = g.sites[hostname]

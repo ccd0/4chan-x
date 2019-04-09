@@ -54,7 +54,7 @@ BoardConfig =
     !data or data.is_archived
 
   noAudio: (boardID) ->
-    return false unless Site.software is 'yotsuba'
+    return false unless g.SITE.software is 'yotsuba'
     boards = @boards or Conf['boardConfig'].boards
     boards and boards[boardID] and !boards[boardID].webm_audio
 

@@ -54,7 +54,7 @@ ExpandThread =
   expand: (thread, a) ->
     ExpandThread.statuses[thread] = status = {}
     a.textContent = Build.summaryText '...', a.textContent.match(/\d+/g)...
-    status.req = $.cache Site.urls.threadJSON({boardID: thread.board.ID, threadID: thread.ID}), ->
+    status.req = $.cache g.SITE.urls.threadJSON({boardID: thread.board.ID, threadID: thread.ID}), ->
       return if @ isnt status.req # aborted
       delete status.req
       ExpandThread.parse @, thread, a

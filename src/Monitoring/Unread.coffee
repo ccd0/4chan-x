@@ -34,7 +34,7 @@ Unread =
       textContent: 'Test Post Order'
     $.on testLink, 'click', ->
       list1 = (x.ID for x in Unread.order.order())
-      list2 = (+x.id.match(/\d*$/)[0] for x in $$ (if Site.isOPContainerThread then "#{Site.selectors.thread}, " else '') + Site.selectors.postContainer)
+      list2 = (+x.id.match(/\d*$/)[0] for x in $$ (if g.SITE.isOPContainerThread then "#{g.SITE.selectors.thread}, " else '') + g.SITE.selectors.postContainer)
       pass = do ->
         return false unless list1.length is list2.length
         for i in [0...list1.length] by 1
@@ -223,7 +223,7 @@ Unread =
 
     Unread.saveThreadWatcherCount()
 
-    if Conf['Unread Favicon'] and Site.software is 'yotsuba'
+    if Conf['Unread Favicon'] and g.SITE.software is 'yotsuba'
       {isDead} = Unread.thread
       Favicon.el.href =
         if countQuotingYou
@@ -238,7 +238,7 @@ Unread =
   saveThreadWatcherCount: $.debounce 2 * $.SECOND, ->
     $.forceSync 'Remember Last Read Post'
     if Conf['Remember Last Read Post'] and (!Unread.thread.isDead or Unread.thread.isArchived)
-      ThreadWatcher.update Site.hostname, Unread.thread.board.ID, Unread.thread.ID,
+      ThreadWatcher.update g.SITE.ID, Unread.thread.board.ID, Unread.thread.ID,
         isDead: Unread.thread.isDead
         unread: Unread.posts.size
         quotingYou: !!(if !Conf['Require OP Quote Link'] and QuoteYou.isYou(Unread.thread.OP) then Unread.posts.size else Unread.postsQuotingYou.size)

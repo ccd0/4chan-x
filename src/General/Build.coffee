@@ -42,7 +42,7 @@ Build =
       ID:       data.no
       threadID: data.resto or data.no
       boardID:  boardID
-      siteID:   siteID or Site.hostname
+      siteID:   siteID or g.SITE.ID
       isReply:  !!data.resto
       # thread status
       isSticky: !!data.sticky

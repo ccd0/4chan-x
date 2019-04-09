@@ -317,7 +317,7 @@ QR =
         $.replace node, $.tn '\n'
       for node in $$ 'br', frag
         $.replace node, $.tn '\n>' unless node is frag.lastChild
-      Site.insertTags?(frag)
+      g.SITE.insertTags?(frag)
       for node in $$ '.linkify[data-original]', frag
         $.replace node, $.tn node.dataset.original
       for node in $$ '.embedder', frag

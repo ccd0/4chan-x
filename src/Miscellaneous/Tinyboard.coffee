@@ -1,6 +1,6 @@
 Tinyboard =
   init: ->
-    return unless Site.software is 'tinyboard'
+    return unless g.SITE.software is 'tinyboard'
     if g.VIEW is 'thread'
       Main.ready ->
         $.global ->

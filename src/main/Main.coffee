@@ -157,7 +157,7 @@ Main =
     if ImageHost.test hostname
       return unless pathname[2] and not /[sm]\.jpg$/.test(pathname[2])
       $.asap (-> d.readyState isnt 'loading'), ->
-        if Conf['404 Redirect'] and Site.is404?()
+        if Conf['404 Redirect'] and g.SITE.is404?()
           Redirect.navigate 'file', {
             boardID:  g.BOARD.ID
             filename: pathname[pathname.length - 1]
@@ -172,7 +172,7 @@ Main =
             ImageCommon.addControls video
       return
 
-    return if Site.isAuxiliaryPage?()
+    return if g.SITE.isAuxiliaryPage?()
 
     if pathname[2] in ['thread', 'res']
       g.VIEW     = 'thread'
@@ -192,7 +192,7 @@ Main =
 
     # c.time 'All initializations'
     for [name, feature] in Main.features
-      continue if Site.disabledFeatures and name in Site.disabledFeatures
+      continue if g.SITE.disabledFeatures and name in g.SITE.disabledFeatures
       # c.time "#{name} initialization"
       try
         feature.init()
@@ -213,7 +213,7 @@ Main =
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
     doc.dataset.host = location.host
-    $.addClass doc, "sw-#{Site.software}"
+    $.addClass doc, "sw-#{g.SITE.software}"
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW
     $.onExists doc, '.ad-cnt, .adg-rects > .desktop', (ad) -> $.onExists ad, 'img, iframe', -> $.addClass doc, 'ads-loaded'
     $.addClass doc, 'autohiding-scrollbar' if Conf['Autohiding Scrollbar']
@@ -235,7 +235,7 @@ Main =
   setClass: ->
     knownStyles = ['yotsuba', 'yotsuba-b', 'futaba', 'burichan', 'photon', 'tomorrow', 'spooky']
 
-    if Site.software is 'yotsuba' and g.VIEW is 'catalog'
+    if g.SITE.software is 'yotsuba' and g.VIEW is 'catalog'
       if (mainStyleSheet = $.id('base-css'))
         style = mainStyleSheet.href.match(/catalog_(\w+)/)?[1].replace('_new', '').replace(/_+/g, '-')
         if style in knownStyles
@@ -246,7 +246,7 @@ Main =
 
     setStyle = ->
       # Use preconfigured CSS for 4chan's default themes.
-      if Site.software is 'yotsuba'
+      if g.SITE.software is 'yotsuba'
         $.rmClass doc, style
         style = null
         for styleSheet in styleSheets
@@ -261,7 +261,7 @@ Main =
           return
 
       # Determine proper dialog background color for other themes.
-      div = Site.bgColoredEl()
+      div = g.SITE.bgColoredEl()
       div.style.position = 'absolute';
       div.style.visibility = 'hidden';
       $.add d.body, div
@@ -282,9 +282,9 @@ Main =
       """
       $.after $.id('fourchanx-css'), Main.bgColorStyle
 
-    $.onExists d.head, Site.selectors.styleSheet, (el) ->
+    $.onExists d.head, g.SITE.selectors.styleSheet, (el) ->
       mainStyleSheet = el
-      if Site.software is 'yotsuba'
+      if g.SITE.software is 'yotsuba'
         styleSheets = $$ 'link[rel="alternate stylesheet"]', d.head
       new MutationObserver(setStyle).observe mainStyleSheet, {
         attributes: true
@@ -296,7 +296,7 @@ Main =
       setStyle()
 
   initReady: ->
-    if Site.is404?()
+    if g.SITE.is404?()
       if g.VIEW is 'thread'
         ThreadWatcher.set404 g.BOARD.ID, g.THREADID, ->
           if Conf['404 Redirect']
@@ -308,7 +308,7 @@ Main =
 
       return
 
-    if Site.isIncomplete?()
+    if g.SITE.isIncomplete?()
       msg = $.el 'div',
         <%= html('The page didn&#039;t load completely.<br>Some features may not work unless you <a href="javascript:;">reload</a>.') %>
       $.on $('a', msg), 'click', -> location.reload()
@@ -322,7 +322,7 @@ Main =
       $.event '4chanXInitFinished'
 
   initThread: ->
-    s = Site.selectors
+    s = g.SITE.selectors
     if (board = $ s.board)
       threads = []
       posts   = []
@@ -336,7 +336,7 @@ Main =
       Main.handleErrors errors if errors.length
 
       if g.VIEW is 'thread'
-        Site.parseThreadMetadata?(threads[0])
+        g.SITE.parseThreadMetadata?(threads[0])
 
       Main.callbackNodes 'Thread', threads
       Main.callbackNodesDB 'Post', posts, ->
@@ -360,13 +360,13 @@ Main =
       thread = new Thread threadID, boardObj
       thread.nodes.root = threadRoot
       threads.push thread
-      postRoots = $$ Site.selectors.postContainer, threadRoot
-      postRoots.unshift threadRoot if Site.isOPContainerThread
+      postRoots = $$ g.SITE.selectors.postContainer, threadRoot
+      postRoots.unshift threadRoot if g.SITE.isOPContainerThread
       Main.parsePosts postRoots, thread, posts, errors
       Main.addPostsObserver.observe threadRoot, {childList: true}
 
   parsePosts: (postRoots, thread, posts, errors) ->
-    for postRoot in postRoots when !postRoot.dataset.fullID and $(Site.selectors.comment, postRoot)
+    for postRoot in postRoots when !postRoot.dataset.fullID and $(g.SITE.selectors.comment, postRoot)
       try
         posts.push new Post postRoot, thread, thread.board
       catch err
@@ -379,7 +379,7 @@ Main =
   addThreads: (records) ->
     threadRoots = []
     for record in records
-      for node in record.addedNodes when node.nodeType is Node.ELEMENT_NODE and node.matches(Site.selectors.thread)
+      for node in record.addedNodes when node.nodeType is Node.ELEMENT_NODE and node.matches(g.SITE.selectors.thread)
         threadRoots.push node
     return unless threadRoots.length
     threads = []
@@ -400,7 +400,7 @@ Main =
       thread = Get.threadFromRoot record.target
       postRoots = []
       for node in record.addedNodes when node.nodeType is Node.ELEMENT_NODE
-        if node.matches(Site.selectors.postContainer) or (node = $(Site.selectors.postContainer, node))
+        if node.matches(g.SITE.selectors.postContainer) or (node = $(g.SITE.selectors.postContainer, node))
           postRoots.push node
       n = posts.length
       Main.parsePosts postRoots, thread, posts, errors
@@ -512,8 +512,8 @@ Main =
   isThisPageLegit: ->
     # not 404 error page or similar.
     unless 'thisPageIsLegit' of Main
-      Main.thisPageIsLegit = if Site.isThisPageLegit
-        Site.isThisPageLegit()
+      Main.thisPageIsLegit = if g.SITE.isThisPageLegit
+        g.SITE.isThisPageLegit()
       else
         !/^[45]\d\d\b/.test(document.title)
     Main.thisPageIsLegit

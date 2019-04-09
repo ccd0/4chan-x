@@ -82,7 +82,7 @@ Gallery =
 
     $.on window, 'resize', Gallery.cb.setHeight
 
-    for postThumb in $$ Site.selectors.file.thumb
+    for postThumb in $$ g.SITE.selectors.file.thumb
       continue unless (post = Get.postFromNode postThumb)
       continue unless post.file?.thumb
       Gallery.generateThumb post

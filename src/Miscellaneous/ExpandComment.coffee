@@ -23,7 +23,7 @@ ExpandComment =
       return
     return if not (a = $ '.abbr > a', post.nodes.comment)
     a.textContent = "Post No.#{post} Loading..."
-    $.cache Site.urls.threadJSON({boardID: post.boardID, threadID: post.threadID}), -> ExpandComment.parse @, a, post
+    $.cache g.SITE.urls.threadJSON({boardID: post.boardID, threadID: post.threadID}), -> ExpandComment.parse @, a, post
 
   contract: (post) ->
     return unless post.nodes.shortComment
