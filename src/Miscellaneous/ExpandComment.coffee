@@ -40,7 +40,7 @@ ExpandComment =
 
     posts = req.response.posts
     if spoilerRange = posts[0].custom_spoiler
-      Build.spoilerRange[g.BOARD] = spoilerRange
+      g.SITE.Build.spoilerRange[g.BOARD] = spoilerRange
 
     for postObj in posts
       break if postObj.no is post.ID

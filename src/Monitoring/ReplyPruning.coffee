@@ -125,9 +125,9 @@ ReplyPruning =
       $.event 'PostsInserted', null, ReplyPruning.summary.parentNode
 
     ReplyPruning.summary.textContent = if ReplyPruning.active
-      Build.summaryText '+', ReplyPruning.hidden, ReplyPruning.hiddenFiles
+      g.SITE.Build.summaryText '+', ReplyPruning.hidden, ReplyPruning.hiddenFiles
     else
-      Build.summaryText '-', ReplyPruning.total, ReplyPruning.totalFiles
+      g.SITE.Build.summaryText '-', ReplyPruning.total, ReplyPruning.totalFiles
     ReplyPruning.summary.hidden = (ReplyPruning.total <= +Conf["Max Replies"])
 
     # Maintain position in thread when posts are added/removed above

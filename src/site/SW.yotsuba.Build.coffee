@@ -256,3 +256,5 @@ Build =
     link = Build.postURL thread.board.ID, thread.ID, data.no
     $.el 'div', {className: 'catalog-reply'},
       <%= readHTML('CatalogReply.html') %>
+
+SW.yotsuba.Build = Build

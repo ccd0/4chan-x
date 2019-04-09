@@ -7,7 +7,7 @@ class Fetcher
     # 4chan X catalog data
     if (post = Index.replyData?["#{@boardID}.#{@postID}"]) and (thread = g.threads["#{@boardID}.#{@threadID}"])
       board  = g.boards[@boardID]
-      post = new Post Build.postFromObject(post, @boardID), thread, board
+      post = new Post g.SITE.Build.postFromObject(post, @boardID), thread, board
       post.isFetchedQuote = true
       Main.callbackNodes 'Post', [post]
       @insert post
@@ -74,7 +74,7 @@ class Fetcher
       return
 
     {posts} = req.response
-    Build.spoilerRange[@boardID] = posts[0].custom_spoiler
+    g.SITE.Build.spoilerRange[@boardID] = posts[0].custom_spoiler
     for post in posts
       break if post.no is @postID # we found it!
 
@@ -99,7 +99,7 @@ class Fetcher
       new Board @boardID
     thread = g.threads["#{@boardID}.#{@threadID}"] or
       new Thread @threadID, board
-    post = new Post Build.postFromObject(post, @boardID), thread, board
+    post = new Post g.SITE.Build.postFromObject(post, @boardID), thread, board
     post.isFetchedQuote = true
     Main.callbackNodes 'Post', [post]
     @insert post
@@ -214,7 +214,7 @@ class Fetcher
       new Board @boardID
     thread = g.threads["#{@boardID}.#{@threadID}"] or
       new Thread @threadID, board
-    post = new Post Build.post(o), thread, board
+    post = new Post g.SITE.Build.post(o), thread, board
     post.kill()
     post.file.thumbURL = o.file.thumbURL if post.file
     post.isFetchedQuote = true

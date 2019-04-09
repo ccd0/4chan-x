@@ -117,6 +117,15 @@ SW.tinyboard =
     quotelinkHTML:
       /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)\.\w+#(\d+)"/g
 
+  Build:
+    parseJSON: ->
+      SW.yotsuba.Build.parseJSON.apply SW.yotsuba.Build, arguments
+    parseComment: (html) ->
+      html = html
+        .replace(/<br\b[^<]*>/gi, '\n')
+        .replace(/<[^>]*>/g, '')
+      $.unescape html
+
   bgColoredEl: ->
     $.el 'div', className: 'post reply'
 

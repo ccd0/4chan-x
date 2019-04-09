@@ -141,13 +141,13 @@ Index =
       d.title = d.title.replace /\ -\ Page\ \d+/, ''
 
     $.onExists doc, '.board > .thread > .postContainer, .board + *', ->
-      Build.hat = $ '.board > .thread > img:first-child'
-      if Build.hat
+      g.SITE.Build.hat = $ '.board > .thread > img:first-child'
+      if g.SITE.Build.hat
         g.BOARD.threads.forEach (thread) ->
           if thread.nodes.root
-            $.prepend thread.nodes.root, Build.hat.cloneNode false
+            $.prepend thread.nodes.root, g.SITE.Build.hat.cloneNode false
         $.addClass doc, 'hats-enabled'
-        $.addStyle ".catalog-thread::after {background-image: url(#{Build.hat.src});}"
+        $.addStyle ".catalog-thread::after {background-image: url(#{g.SITE.Build.hat.src});}"
 
       board = $ '.board'
       $.replace board, Index.root
@@ -663,7 +663,7 @@ Index =
     for data, i in Index.liveThreadData
       Index.liveThreadDict[data.no] = data
       Index.threadPosition[data.no] = i
-      Index.parsedThreads[data.no] = obj = Build.parseJSON data, g.BOARD.ID
+      Index.parsedThreads[data.no] = obj = g.SITE.Build.parseJSON data, g.BOARD.ID
       obj.filterResults = results = Filter.test obj
       obj.isOnTop  = results.top
       obj.isHidden = results.hide or ThreadHiding.isHidden(obj.boardID, obj.threadID)
@@ -671,7 +671,7 @@ Index =
         for reply in data.last_replies
           Index.replyData["#{g.BOARD}.#{reply.no}"] = reply
     if Index.liveThreadData[0]
-      Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler
+      g.SITE.Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler
     g.BOARD.threads.forEach (thread) ->
       (thread.collect() unless thread.ID in Index.liveThreadIDs)
     $.event 'IndexUpdate',
@@ -685,7 +685,7 @@ Index =
       Index.parsedThreads[threadID].isHidden
 
   isHiddenReply: (threadID, replyData) ->
-    PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) or Filter.isHidden(Build.parseJSON replyData, g.BOARD.ID)
+    PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) or Filter.isHidden(g.SITE.Build.parseJSON replyData, g.BOARD.ID)
 
   lastPost: (threadID) ->
     threadData = Index.liveThreadDict[threadID]
@@ -720,12 +720,12 @@ Index =
           thread.setPage(Index.threadPosition[ID] // Index.threadsNumPerPage + 1)
         else
           obj = Index.parsedThreads[ID]
-          OP = new Post Build.post(obj), thread, g.BOARD
+          OP = new Post g.SITE.Build.post(obj), thread, g.BOARD
           OP.filterResults = obj.filterResults
           newPosts.push OP
 
         unless isCatalog and thread.nodes.root
-          Build.thread thread, threadData, withReplies
+          g.SITE.Build.thread thread, threadData, withReplies
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
@@ -753,7 +753,7 @@ Index =
         if (post = thread.posts[data.no]) and not post.isFetchedQuote
           nodes.push post.nodes.root
           continue
-        nodes.push node = Build.postFromObject data, thread.board.ID
+        nodes.push node = g.SITE.Build.postFromObject data, thread.board.ID
         try
           posts.push new Post node, thread, thread.board
         catch err
@@ -772,7 +772,7 @@ Index =
     for thread in threads when !thread.catalogView
       {ID} = thread
       page = Index.threadPosition[ID] // Index.threadsNumPerPage + 1
-      root = Build.catalogThread thread, Index.liveThreadDict[ID], page
+      root = g.SITE.Build.catalogThread thread, Index.liveThreadDict[ID], page
       catalogThreads.push new CatalogThread root, thread
     Main.callbackNodes 'CatalogThread', catalogThreads
     return
@@ -796,7 +796,7 @@ Index =
     replies = []
     for data in lastReplies
       continue if Index.isHiddenReply thread.ID, data
-      reply = Build.catalogReply thread, data
+      reply = g.SITE.Build.catalogReply thread, data
       RelativeDates.update $('time', reply)
       $.on $('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover
       replies.push reply
@@ -820,7 +820,7 @@ Index =
         lastlong = (thread) ->
           for r, i in (thread.last_replies or []) by -1
             continue if Index.isHiddenReply thread.no, r
-            len = if r.com then Build.parseComment(r.com).replace(/[^a-z]/ig, '').length else 0
+            len = if r.com then g.SITE.Build.parseComment(r.com).replace(/[^a-z]/ig, '').length else 0
             if len >= Index.lastLongThresholds[+!!r.ext]
               return r
           if thread.omitted_posts then thread.last_replies[0] else thread
@@ -949,7 +949,7 @@ Index =
 
   searchMatch: (obj, keywords) ->
     {info, file} = obj
-    info.comment ?= Build.parseComment info.commentHTML.innerHTML
+    info.comment ?= g.SITE.Build.parseComment info.commentHTML.innerHTML
     text = []
     for key in ['comment', 'subject', 'name', 'tripcode']
       text.push info[key] if key of info

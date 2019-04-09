@@ -59,13 +59,13 @@ Quotify =
         # Don't (Dead) when quotifying in an archived post,
         # and we know the post still exists.
         a = $.el 'a',
-          href:        Build.postURL boardID, post.thread.ID, postID
+          href:        g.SITE.Build.postURL boardID, post.thread.ID, postID
           className:   'quotelink'
           textContent: quote
       else
         # Replace the .deadlink span if we can redirect.
         a = $.el 'a',
-          href:        Build.postURL boardID, post.thread.ID, postID
+          href:        g.SITE.Build.postURL boardID, post.thread.ID, postID
           className:   'quotelink deadlink'
           textContent: quote
         $.add a, Post.deadMark.cloneNode(true)

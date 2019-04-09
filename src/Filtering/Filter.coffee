@@ -178,7 +178,7 @@ Filter =
     pass:       (post) -> post.info.pass
     email:      (post) -> post.info.email
     subject:    (post) -> post.info.subject or (if post.isReply then undefined else '')
-    comment:    (post) -> (post.info.comment ?= Build.parseComment post.info.commentHTML.innerHTML)
+    comment:    (post) -> (post.info.comment ?= g.sites[post.siteID]?.Build?.parseComment?(post.info.commentHTML.innerHTML))
     flag:       (post) -> post.info.flag
     filename:   (post) -> post.file?.name
     dimensions: (post) -> post.file?.dimensions

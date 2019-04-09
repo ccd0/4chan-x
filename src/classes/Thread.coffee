@@ -58,7 +58,7 @@ class Thread
       $.rm $ ".#{typeLC}Icon", @catalogView.nodes.icons if @catalogView
       return
     icon = $.el 'img',
-      src: "#{Build.staticPath}#{typeLC}#{Build.gifIcon}"
+      src: "#{g.SITE.Build.staticPath}#{typeLC}#{g.SITE.Build.gifIcon}"
       alt:   type
       title: type
       className: "#{typeLC}Icon retina"
