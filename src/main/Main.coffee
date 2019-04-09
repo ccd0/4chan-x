@@ -603,6 +603,6 @@ Main =
     ['Flash Features',            Flash]
     ['Reply Pruning',             ReplyPruning]
     <% if (readJSON('/.tests_enabled')) { %>
-    ['Build Test',                Build.Test]
+    ['Build Test',                Test]
     <% } %>
   ]
