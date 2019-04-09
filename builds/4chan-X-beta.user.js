@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.7.0
+// @version      1.14.7.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.7.0',
+  VERSION:   '1.14.7.1',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5671,12 +5671,12 @@ Callbacks = (function() {
       return this[name] = cb;
     };
 
-    Callbacks.prototype.execute = function(node, keys) {
+    Callbacks.prototype.execute = function(node, keys, force) {
       var err, errors, i, len, name, ref, ref1, ref2;
       if (keys == null) {
         keys = this.keys;
       }
-      if (node.callbacksExecuted) {
+      if (node.callbacksExecuted && !force) {
         return;
       }
       node.callbacksExecuted = true;
@@ -7382,7 +7382,7 @@ SW = {};
   SW.tinyboard = {
     isOPContainerThread: true,
     mayLackJSON: true,
-    disabledFeatures: ['Board Configuration', 'Normalize URL', 'Captcha Configuration', 'Image Host Rewriting', 'Index Generator', 'Announcement Hiding', 'Fourchan thingies', 'Resurrect Quotes', 'Quick Reply Personas', 'Quick Reply', 'Cooldown', 'Pass Link', 'Index Generator (Menu)', 'Report Link', 'Delete Link', 'Edit Link', 'Archive Link', 'Quote Inlining', 'Quote Previewing', 'Quote Backlinks', 'File Info Formatting', 'Fappe Tyme', 'Image Expansion', 'Image Expansion (Menu)', 'Comment Expansion', 'Thread Expansion', 'Favicon', 'Quote Threading', 'Thread Stats', 'Thread Updater', 'Mark New IPs', 'Banner', 'Flash Features', 'Reply Pruning'],
+    disabledFeatures: ['Board Configuration', 'Normalize URL', 'Captcha Configuration', 'Image Host Rewriting', 'Index Generator', 'Announcement Hiding', 'Resurrect Quotes', 'Quick Reply Personas', 'Quick Reply', 'Cooldown', 'Pass Link', 'Index Generator (Menu)', 'Report Link', 'Delete Link', 'Edit Link', 'Archive Link', 'Quote Inlining', 'Quote Previewing', 'Quote Backlinks', 'File Info Formatting', 'Fappe Tyme', 'Image Expansion', 'Image Expansion (Menu)', 'Comment Expansion', 'Thread Expansion', 'Favicon', 'Quote Threading', 'Thread Stats', 'Thread Updater', 'Mark New IPs', 'Banner', 'Flash Features', 'Reply Pruning'],
     detect: function() {
       var i, len, m, properties, ref, root, script;
       ref = $$('script:not([src])', d.head);
@@ -9367,12 +9367,17 @@ Build = (function() {
     sameThread: function(boardID, threadID) {
       return g.VIEW === 'thread' && g.BOARD.ID === boardID && g.THREADID === +threadID;
     },
-    postURL: function(boardID, threadID, postID) {
-      if (Build.sameThread(boardID, threadID)) {
-        return "#p" + postID;
+    threadURL: function(boardID, threadID) {
+      if (boardID !== g.BOARD.ID) {
+        return "//" + (BoardConfig.domain(boardID)) + "/" + boardID + "/thread/" + threadID;
+      } else if (g.VIEW !== 'thread' || +threadID !== g.THREADID) {
+        return "/" + boardID + "/thread/" + threadID;
       } else {
-        return "/" + boardID + "/thread/" + threadID + "#p" + postID;
+        return '';
       }
+    },
+    postURL: function(boardID, threadID, postID) {
+      return (Build.threadURL(boardID, threadID)) + "#p" + postID;
     },
     parseJSON: function(data, boardID, siteID) {
       var key, o;
@@ -9456,7 +9461,7 @@ Build = (function() {
       return Build.post(o);
     },
     post: function(o) {
-      var ID, boardID, capcode, capcodeDescription, capcodeLC, capcodeLong, capcodePlural, commentHTML, container, dateText, dateUTC, email, file, fileBlock, fileThumb, fileURL, flag, flagCode, flagCodeTroll, gifIcon, href, i, len, match, name, pass, postClass, postInfo, postLink, protocol, quote, quoteLink, ref, ref1, shortFilename, staticPath, subject, threadID, tripcode, uniqueID, wholePost;
+      var ID, boardID, capcode, capcodeDescription, capcodeLC, capcodeLong, capcodePlural, commentHTML, container, dateText, dateUTC, email, file, fileBlock, fileThumb, fileURL, flag, flagCode, flagCodeTroll, gifIcon, href, i, len, match, name, pass, postClass, postInfo, postLink, protocol, quote, quoteLink, ref, ref1, shortFilename, staticPath, subject, threadID, tripcode, uniqueID, url, wholePost;
       ID = o.ID, threadID = o.threadID, boardID = o.boardID, file = o.file;
       ref = o.info, subject = ref.subject, email = ref.email, name = ref.name, tripcode = ref.tripcode, capcode = ref.capcode, pass = ref.pass, uniqueID = ref.uniqueID, flagCode = ref.flagCode, flagCodeTroll = ref.flagCodeTroll, flag = ref.flag, dateUTC = ref.dateUTC, dateText = ref.dateText, commentHTML = ref.commentHTML;
       staticPath = Build.staticPath, gifIcon = Build.gifIcon;
@@ -9479,8 +9484,9 @@ Build = (function() {
           capcodeDescription = "a 4chan " + capcodeLong;
         }
       }
-      postLink = Build.postURL(boardID, threadID, ID);
-      quoteLink = Build.sameThread(boardID, threadID) ? "javascript:quote('" + (+ID) + "');" : "/" + boardID + "/thread/" + threadID + "#q" + ID;
+      url = Build.threadURL(boardID, threadID);
+      postLink = url + "#p" + ID;
+      quoteLink = Build.sameThread(boardID, threadID) ? "javascript:quote('" + (+ID) + "');" : url + "#q" + ID;
       postInfo = {
         innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((o.xa19s) ? " <span class=\"like-score\">" + E(o.xa19s) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcodeDescription) ? "" : " ") + ((capcodeDescription) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + ((flagCodeTroll) ? " <img src=\"" + E(staticPath) + "country/troll/" + E(flagCodeTroll.toLowerCase()) + ".gif\" alt=\"" + E(flagCodeTroll) + "\" title=\"" + E(flag) + "\" class=\"countryFlag\">" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.xa19l && o.isReply) ? " <a data-cmd=\"like-post\" href=\"#\" class=\"like-btn\">Like! ×" + E(o.xa19l) + "</a>" : "") + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"stickyIcon retina\"") + ">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"closedIcon retina\"") + ">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
       };
@@ -9510,12 +9516,14 @@ Build = (function() {
       for (i = 0, len = ref1.length; i < len; i++) {
         quote = ref1[i];
         href = quote.getAttribute('href');
-        if ((href[0] === '#') && !(Build.sameThread(boardID, threadID))) {
-          quote.href = ("/" + boardID + "/thread/" + threadID) + href;
-        } else if ((match = href.match(/^\/([^\/]+)\/thread\/(\d+)/)) && (Build.sameThread(match[1], match[2]))) {
-          quote.href = href.match(/(#[^#]*)?$/)[0] || '#';
-        } else if (/^\d+(#|$)/.test(href) && !(g.VIEW === 'thread' && g.BOARD.ID === boardID)) {
-          quote.href = "/" + boardID + "/thread/" + href;
+        if (href[0] === '#') {
+          if (!Build.sameThread(boardID, threadID)) {
+            quote.href = Build.threadURL(boardID, threadID) + href;
+          }
+        } else {
+          if ((match = quote.href.match(SW.yotsuba.regexp.quotelink)) && (Build.sameThread(match[1], match[2]))) {
+            quote.href = href.match(/(#[^#]*)?$/)[0] || '#';
+          }
         }
       }
       return container;
@@ -17138,12 +17146,6 @@ ExpandComment = (function() {
       if (g.VIEW !== 'index' || !Conf['Comment Expansion'] || Conf['JSON Index']) {
         return;
       }
-      if (g.BOARD.ID === 'g') {
-        this.callbacks.push(Fourchan.code);
-      }
-      if (g.BOARD.ID === 'sci') {
-        this.callbacks.push(Fourchan.math);
-      }
       return Callbacks.Post.push({
         name: 'Comment Expansion',
         cb: this.node
@@ -17646,10 +17648,14 @@ Fourchan = (function() {
   Fourchan = {
     init: function() {
       var ref;
-      if ((ref = g.VIEW) !== 'index' && ref !== 'thread' && ref !== 'archive') {
+      if (!(Site.software === 'yotsuba' && ((ref = g.VIEW) === 'index' || ref === 'thread' || ref === 'archive'))) {
         return;
       }
-      if (g.BOARD.ID === 'g') {
+      BoardConfig.ready(this.initBoard);
+      return Main.ready(this.initReady);
+    },
+    initBoard: function() {
+      if (g.BOARD.config.code_tags) {
         $.on(window, 'prettyprint:cb', function(e) {
           var post, pre;
           if (!(post = g.posts[e.detail.ID])) {
@@ -17665,11 +17671,15 @@ Fourchan = (function() {
         });
         $.globalEval('window.addEventListener(\'prettyprint\', function(e) {\n  window.dispatchEvent(new CustomEvent(\'prettyprint:cb\', {\n    detail: {\n      ID:   e.detail.ID,\n      i:    e.detail.i,\n      html: prettyPrintOne(e.detail.html)\n    }\n  }));\n}, false);');
         Callbacks.Post.push({
-          name: 'Parse /g/ code',
-          cb: this.code
+          name: 'Parse [code] tags',
+          cb: Fourchan.code
         });
+        g.posts.forEach(function(post) {
+          return Callbacks.Post.execute(post, ['Parse [code] tags'], true);
+        });
+        ExpandComment.callbacks.push(Fourchan.code);
       }
-      if (g.BOARD.ID === 'sci') {
+      if (g.BOARD.config.math_tags) {
         $.global(function() {
           return window.addEventListener('mathjax', function(e) {
             if (window.MathJax) {
@@ -17688,20 +17698,24 @@ Fourchan = (function() {
           }, false);
         });
         Callbacks.Post.push({
-          name: 'Parse /sci/ math',
-          cb: this.math
+          name: 'Parse [math] tags',
+          cb: Fourchan.math
         });
+        g.posts.forEach(function(post) {
+          return Callbacks.Post.execute(post, ['Parse [math] tags'], true);
+        });
+        return ExpandComment.callbacks.push(Fourchan.math);
       }
-      return Main.ready(function() {
-        return $.global(function() {
-          var j, len, node, ref1;
-          window.clickable_ids = false;
-          ref1 = document.querySelectorAll('.posteruid, .capcode');
-          for (j = 0, len = ref1.length; j < len; j++) {
-            node = ref1[j];
-            node.removeEventListener('click', window.idClick, false);
-          }
-        });
+    },
+    initReady: function() {
+      return $.global(function() {
+        var j, len, node, ref;
+        window.clickable_ids = false;
+        ref = document.querySelectorAll('.posteruid, .capcode');
+        for (j = 0, len = ref.length; j < len; j++) {
+          node = ref[j];
+          node.removeEventListener('click', window.idClick, false);
+        }
       });
     },
     code: function() {
@@ -25519,9 +25533,6 @@ Main = (function() {
   Main = {
     init: function() {
       var db, flatten, i, items, j, k, key, len, ref, ref1, ref2, w;
-      if (d.body && !$('title', d.head)) {
-        return;
-      }
       try {
         w = window;
         if ($.platform === 'crx') {
