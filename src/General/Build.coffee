@@ -3,11 +3,6 @@ Build =
   gifIcon: if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
   spoilerRange: {}
 
-  unescape: (text) ->
-    return text unless text?
-    text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt|#44);/g, (c) ->
-      (({'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','})[c])
-
   shortFilename: (filename) ->
     ext = filename.match(/\.?[^\.]*$/)[0]
     if filename.length - ext.length > 30
@@ -51,15 +46,15 @@ Build =
       # file status
       fileDeleted: !!data.filedeleted
     o.info =
-      subject:  Build.unescape data.sub
-      email:    Build.unescape data.email
-      name:     Build.unescape(data.name) or ''
+      subject:  $.unescape data.sub
+      email:    $.unescape data.email
+      name:     $.unescape(data.name) or ''
       tripcode: data.trip
       pass:     if data.since4pass? then "#{data.since4pass}" else undefined
       uniqueID: data.id
       flagCode: data.country
       flagCodeTroll: data.troll_country
-      flag:     Build.unescape data.country_name
+      flag:     $.unescape data.country_name
       dateUTC:  data.time
       dateText: data.now
       commentHTML: {innerHTML: data.com or ''}
@@ -69,7 +64,7 @@ Build =
       delete o.info.uniqueID
     if data.ext
       o.file =
-        name:      (Build.unescape data.filename) + data.ext
+        name:      ($.unescape data.filename) + data.ext
         url: if boardID is 'f'
           "#{location.protocol}//#{ImageHost.flashHost()}/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
         else
@@ -95,7 +90,7 @@ Build =
       .replace(/<br\b[^<]*>/gi, '\n')
       .replace(/\n\n<span\b[^<]* class="abbr"[^]*$/i, '') # EXIF data (/p/)
       .replace(/<[^>]*>/g, '')
-    Build.unescape html
+    $.unescape html
 
   parseCommentDisplay: (html) ->
     # Hide spoilers.
@@ -252,9 +247,9 @@ Build =
     if data.com
       excerpt = Build.parseCommentDisplay(data.com).replace(/>>\d+/g, '').trim().replace(/\n+/g, ' // ')
     if data.ext
-      excerpt or= "#{Build.unescape data.filename}#{data.ext}"
+      excerpt or= "#{$.unescape data.filename}#{data.ext}"
     if data.com
-      excerpt or= Build.unescape data.com.replace(/<br\b[^<]*>/gi, ' // ')
+      excerpt or= $.unescape data.com.replace(/<br\b[^<]*>/gi, ' // ')
     excerpt or= '\xA0'
     excerpt = "#{excerpt[...70]}..." if excerpt.length > 73
 

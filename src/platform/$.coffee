@@ -375,6 +375,11 @@ $.minmax = (value, min, max) ->
 $.hasAudio = (video) ->
   video.mozHasAudio or !!video.webkitAudioDecodedByteCount
 
+$.unescape = (text) ->
+  return text unless text?
+  text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt|#44);/g, (c) ->
+    (({'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','})[c])
+
 $.engine = do ->
   return 'edge'   if /Edge\//.test navigator.userAgent
   return 'blink'  if /Chrome\//.test navigator.userAgent

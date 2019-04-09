@@ -127,7 +127,7 @@ Redirect =
     url
 
   file: (archive, {boardID, filename}) ->
-    filename = encodeURIComponent Build.unescape decodeURIComponent filename if boardID is 'f'
+    filename = encodeURIComponent $.unescape decodeURIComponent filename if boardID is 'f'
     "#{Redirect.protocol archive}#{archive.domain}/#{boardID}/full_image/#{filename}"
 
   board: (archive, {boardID}) ->
