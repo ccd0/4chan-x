@@ -103,10 +103,9 @@ Filter =
     for boardID in boardsRaw.split(',')
       if ':' in boardID
         [siteFilter, boardID] = boardID.split(':')[-2..]
-      for siteID, siteProperties of Conf['siteProperties']
-        continue if siteProperties.canonical or siteID[...siteFilter.length] isnt siteFilter
+      for siteID, site of g.sites when siteID[...siteFilter.length] is siteFilter
         if boardID in ['nsfw', 'sfw']
-          for boardID2 in SW[siteProperties.software]?.sfwBoards?(boardID is 'sfw') or []
+          for boardID2 in site.sfwBoards?(boardID is 'sfw') or []
             boards["#{siteID}/#{boardID2}"] = true
         else
           boards["#{siteID}/#{encodeURIComponent boardID}"] = true
