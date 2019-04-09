@@ -25,11 +25,16 @@ Build =
   sameThread: (boardID, threadID) ->
     g.VIEW is 'thread' and g.BOARD.ID is boardID and g.THREADID is +threadID
 
-  postURL: (boardID, threadID, postID) ->
-    if Build.sameThread boardID, threadID
-      "#p#{postID}"
+  threadURL: (boardID, threadID) ->
+    if boardID isnt g.BOARD.ID
+      "//#{BoardConfig.domain(boardID)}/#{boardID}/thread/#{threadID}"
+    else if g.VIEW isnt 'thread' or +threadID isnt g.THREADID
+      "/#{boardID}/thread/#{threadID}"
     else
-      "/#{boardID}/thread/#{threadID}#p#{postID}"
+      ''
+
+  postURL: (boardID, threadID, postID) ->
+    "#{Build.threadURL(boardID, threadID)}#p#{postID}"
 
   parseJSON: (data, boardID, siteID) ->
     o =
@@ -127,11 +132,12 @@ Build =
         capcodePlural = "#{capcodeLong}s"
         capcodeDescription = "a 4chan #{capcodeLong}"
 
-    postLink = Build.postURL boardID, threadID, ID
+    url = Build.threadURL boardID, threadID
+    postLink = "#{url}#p#{ID}"
     quoteLink = if Build.sameThread boardID, threadID
       "javascript:quote('#{+ID}');"
     else
-      "/#{boardID}/thread/#{threadID}#q#{ID}"
+      "#{url}#q#{ID}"
 
     postInfo = <%= readHTML('PostInfo.html') %>
 
@@ -159,12 +165,12 @@ Build =
     # Fix quotelinks
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
-      if (href[0] is '#') and !(Build.sameThread boardID, threadID)
-        quote.href = ("/#{boardID}/thread/#{threadID}") + href
-      else if (match = href.match /^\/([^\/]+)\/thread\/(\d+)/) and (Build.sameThread match[1], match[2])
-        quote.href = href.match(/(#[^#]*)?$/)[0] or '#'
-      else if /^\d+(#|$)/.test(href) and not (g.VIEW is 'thread' and g.BOARD.ID is boardID) # used on /f/
-        quote.href = "/#{boardID}/thread/#{href}"
+      if (href[0] is '#')
+        if !Build.sameThread(boardID, threadID)
+          quote.href = Build.threadURL(boardID, threadID) + href
+      else
+        if (match = quote.href.match SW.yotsuba.regexp.quotelink) and (Build.sameThread match[1], match[2])
+          quote.href = href.match(/(#[^#]*)?$/)[0] or '#'
 
     container
 
