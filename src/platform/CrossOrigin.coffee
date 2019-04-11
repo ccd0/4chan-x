@@ -11,45 +11,6 @@ eventPageRequest = do ->
 <% } %>
 CrossOrigin =
   binary: (url, cb, headers={}) ->
-    <% if (type === 'crx') { %>
-    CrossOrigin.binary2 url, cb, headers
-    <% } %>
-    <% if (type === 'userscript') { %>
-    CrossOrigin.test ->
-      CrossOrigin.binary2 url, cb, headers
-    <% } %>
-
-  <% if (type === 'userscript') { %>
-  # Test whether responseType 'arraybuffer' is supported
-  # If not, use overrideMimeType workaround (less efficient)
-  test: (cb) ->
-    return cb() if CrossOrigin.workaround?
-    CrossOrigin.workaround = true
-    try
-      if GM?.xmlHttpRequest
-        CrossOrigin.workaround = false
-        return cb()
-      GM_xmlhttpRequest {
-        method: 'GET'
-        url: 'data:,0'
-        responseType: 'arraybuffer'
-        onload: (xhr) ->
-          try
-            CrossOrigin.workaround = !(
-              !!xhr and
-              xhr.response instanceof ArrayBuffer and
-              (a = new Uint8Array(xhr.response)).length is 1 and
-              a[0] is 0x30
-            )
-          finally
-            cb()
-        onerror: cb
-      }
-    catch
-      cb()
-  <% } %>
-
-  binary2: (url, cb, headers) ->
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
@@ -58,7 +19,10 @@ CrossOrigin =
       cb response, responseHeaderString
     <% } %>
     <% if (type === 'userscript') { %>
-    {workaround} = CrossOrigin
+    # Use workaround for binary data in Greasemonkey versions < 3.2, in Pale Moon for all GM versions, and in JS Blocker (Safari).
+    workaround = $.engine is 'gecko' and GM_info? and /^[0-2]\.|^3\.[01](?!\d)/.test(GM_info.version)
+    workaround or= /PaleMoon\//.test(navigator.userAgent)
+    workaround or= GM_info?.script?.includeJSB?
     options =
       method: "GET"
       url: url
