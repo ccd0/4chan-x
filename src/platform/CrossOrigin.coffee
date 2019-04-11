@@ -19,34 +19,27 @@ CrossOrigin =
       cb response, responseHeaderString
     <% } %>
     <% if (type === 'userscript') { %>
-    # Use workaround for binary data in Greasemonkey versions < 3.2, in Pale Moon for all GM versions, and in JS Blocker (Safari).
-    workaround = $.engine is 'gecko' and GM_info? and /^[0-2]\.|^3\.[01](?!\d)/.test(GM_info.version)
-    workaround or= /PaleMoon\//.test(navigator.userAgent)
-    workaround or= GM_info?.script?.includeJSB?
-    options =
+    (GM?.xmlHttpRequest or GM_xmlhttpRequest)
       method: "GET"
       url: url
       headers: headers
+      responseType: 'arraybuffer'
+      overrideMimeType: 'text/plain; charset=x-user-defined'
       onload: (xhr) ->
-        if workaround
+        if xhr.response instanceof ArrayBuffer
+          data = new Uint8Array xhr.response
+        else
           r = xhr.responseText
           data = new Uint8Array r.length
           i = 0
           while i < r.length
             data[i] = r.charCodeAt i
             i++
-        else
-          data = new Uint8Array xhr.response
         cb data, xhr.responseHeaders
       onerror: ->
         cb null
       onabort: ->
         cb null
-    if workaround
-      options.overrideMimeType = 'text/plain; charset=x-user-defined'
-    else
-      options.responseType = 'arraybuffer'
-    (GM?.xmlHttpRequest or GM_xmlhttpRequest) options
     <% } %>
 
   file: (url, cb) ->
@@ -61,8 +54,8 @@ CrossOrigin =
         contentType?.match(/\bname\s*=\s*"((\\"|[^"])+)"/i)?[1]
       if match
         name = match.replace /\\"/g, '"'
-      if GM_info?.script?.includeJSB?
-        # Content type comes back as 'text/plain; charset=x-user-defined'; guess from filename instead.
+      if /^text\/plain;\s*charset=x-user-defined$/i.test(mime)
+        # In JS Blocker (Safari) content type comes back as 'text/plain; charset=x-user-defined'; guess from filename instead.
         mime = QR.typeFromExtension[name.match(/[^.]*$/)[0].toLowerCase()] or 'application/octet-stream'
       blob = new Blob([data], {type: mime})
       blob.name = name
