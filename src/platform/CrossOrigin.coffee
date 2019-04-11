@@ -14,7 +14,7 @@ CrossOrigin =
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
-    eventPageRequest {type: 'ajax', url, responseType: 'arraybuffer'}, ({response, responseHeaderString}) ->
+    eventPageRequest {type: 'ajax', url, headers, responseType: 'arraybuffer'}, ({response, responseHeaderString}) ->
       response = new Uint8Array(response) if response
       cb response, responseHeaderString
     <% } %>
