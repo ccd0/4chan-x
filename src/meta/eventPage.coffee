@@ -30,14 +30,9 @@ handlers =
     xhr.addEventListener 'load', ->
       {status, statusText, response} = @
       responseHeaderString = @getAllResponseHeaders()
-      if @readyState is @DONE && xhr.status is 200
-        if request.responseType is 'arraybuffer'
-          response = [new Uint8Array(response)...]
-          contentType = @getResponseHeader 'Content-Type'
-          contentDisposition = @getResponseHeader 'Content-Disposition'
-        cb {status, statusText, response, responseHeaderString, contentType, contentDisposition}
-      else
-        cb {status, statusText, response, responseHeaderString, error: true}
+      if response and request.responseType is 'arraybuffer'
+        response = [new Uint8Array(response)...]
+      cb {status, statusText, response, responseHeaderString}
     , false
     xhr.addEventListener 'error', ->
       cb {error: true}

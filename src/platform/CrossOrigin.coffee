@@ -14,9 +14,9 @@ CrossOrigin =
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
-    eventPageRequest {type: 'ajax', url, responseType: 'arraybuffer'}, ({response, contentType, contentDisposition, error}) ->
-      return cb null if error
-      cb new Uint8Array(response), contentType, contentDisposition
+    eventPageRequest {type: 'ajax', url, responseType: 'arraybuffer'}, ({response, responseHeaderString}) ->
+      response = new Uint8Array(response) if response
+      cb response, responseHeaderString
     <% } %>
     <% if (type === 'userscript') { %>
     # Use workaround for binary data in Greasemonkey versions < 3.2, in Pale Moon for all GM versions, and in JS Blocker (Safari).
@@ -37,9 +37,7 @@ CrossOrigin =
             i++
         else
           data = new Uint8Array xhr.response
-        contentType        = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)?[1]
-        contentDisposition = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)?[1]
-        cb data, contentType, contentDisposition
+        cb data, xhr.responseHeaders
       onerror: ->
         cb null
       onabort: ->
@@ -52,9 +50,11 @@ CrossOrigin =
     <% } %>
 
   file: (url, cb) ->
-    CrossOrigin.binary url, (data, contentType, contentDisposition) ->
+    CrossOrigin.binary url, (data, headers) ->
       return cb null unless data?
       name = url.match(/([^\/]+)\/*$/)?[1]
+      contentType        = headers.match(/Content-Type:\s*(.*)/i)?[1]
+      contentDisposition = headers.match(/Content-Disposition:\s*(.*)/i)?[1]
       mime = contentType?.match(/[^;]*/)[0] or 'application/octet-stream'
       match =
         contentDisposition?.match(/\bfilename\s*=\s*"((\\"|[^"])+)"/i)?[1] or
