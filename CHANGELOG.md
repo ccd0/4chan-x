@@ -4,6 +4,12 @@
 
 ### v1.14.7
 
+**v1.14.7.2** *(2019-04-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.2/builds/4chan-X-noupdate.crx)]
+- Fix dragging left to contract WebMs in Firefox. #1547
+- Remove query string from filename in Post from URL feature.
+- Speed up Post from URL on some platforms.
+- Fix issue making WebM title fetching needlessly slow on Chrome extension.
+
 **v1.14.7.1** *(2019-04-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.1/builds/4chan-X-noupdate.crx)]
 - Tolerate broken HTML better.
 - Fix 4chan/4channel not being correct in certain links.

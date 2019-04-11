@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.7.1
+// @version      1.14.7.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.7.1',
+  VERSION:   '1.14.7.2',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -5441,21 +5441,21 @@ CrossOrigin = (function() {
 
   CrossOrigin = {
     binary: function(url, cb, headers) {
-      var options, ref, workaround;
       if (headers == null) {
         headers = {};
       }
       url = url.replace(/^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/');
-      workaround = $.engine === 'gecko' && (typeof GM_info !== "undefined" && GM_info !== null) && /^[0-2]\.|^3\.[01](?!\d)/.test(GM_info.version);
-      workaround || (workaround = /PaleMoon\//.test(navigator.userAgent));
-      workaround || (workaround = (typeof GM_info !== "undefined" && GM_info !== null ? (ref = GM_info.script) != null ? ref.includeJSB : void 0 : void 0) != null);
-      options = {
+      return ((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) || GM_xmlhttpRequest)({
         method: "GET",
         url: url,
         headers: headers,
+        responseType: 'arraybuffer',
+        overrideMimeType: 'text/plain; charset=x-user-defined',
         onload: function(xhr) {
-          var contentDisposition, contentType, data, i, r, ref1, ref2;
-          if (workaround) {
+          var data, i, r;
+          if (xhr.response instanceof ArrayBuffer) {
+            data = new Uint8Array(xhr.response);
+          } else {
             r = xhr.responseText;
             data = new Uint8Array(r.length);
             i = 0;
@@ -5463,12 +5463,8 @@ CrossOrigin = (function() {
               data[i] = r.charCodeAt(i);
               i++;
             }
-          } else {
-            data = new Uint8Array(xhr.response);
           }
-          contentType = (ref1 = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)) != null ? ref1[1] : void 0;
-          contentDisposition = (ref2 = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)) != null ? ref2[1] : void 0;
-          return cb(data, contentType, contentDisposition);
+          return cb(data, xhr.responseHeaders);
         },
         onerror: function() {
           return cb(null);
@@ -5476,27 +5472,23 @@ CrossOrigin = (function() {
         onabort: function() {
           return cb(null);
         }
-      };
-      if (workaround) {
-        options.overrideMimeType = 'text/plain; charset=x-user-defined';
-      } else {
-        options.responseType = 'arraybuffer';
-      }
-      return ((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) || GM_xmlhttpRequest)(options);
+      });
     },
     file: function(url, cb) {
-      return CrossOrigin.binary(url, function(data, contentType, contentDisposition) {
-        var blob, match, mime, name, ref, ref1, ref2, ref3;
+      return CrossOrigin.binary(url, function(data, headers) {
+        var blob, contentDisposition, contentType, match, mime, name, ref, ref1, ref2, ref3, ref4;
         if (data == null) {
           return cb(null);
         }
-        name = (ref = url.match(/([^\/]+)\/*$/)) != null ? ref[1] : void 0;
+        name = (ref = url.match(/([^\/?#]+)\/*(?:$|[?#])/)) != null ? ref[1] : void 0;
+        contentType = (ref1 = headers.match(/Content-Type:\s*(.*)/i)) != null ? ref1[1] : void 0;
+        contentDisposition = (ref2 = headers.match(/Content-Disposition:\s*(.*)/i)) != null ? ref2[1] : void 0;
         mime = (contentType != null ? contentType.match(/[^;]*/)[0] : void 0) || 'application/octet-stream';
-        match = (contentDisposition != null ? (ref1 = contentDisposition.match(/\bfilename\s*=\s*"((\\"|[^"])+)"/i)) != null ? ref1[1] : void 0 : void 0) || (contentType != null ? (ref2 = contentType.match(/\bname\s*=\s*"((\\"|[^"])+)"/i)) != null ? ref2[1] : void 0 : void 0);
+        match = (contentDisposition != null ? (ref3 = contentDisposition.match(/\bfilename\s*=\s*"((\\"|[^"])+)"/i)) != null ? ref3[1] : void 0 : void 0) || (contentType != null ? (ref4 = contentType.match(/\bname\s*=\s*"((\\"|[^"])+)"/i)) != null ? ref4[1] : void 0 : void 0);
         if (match) {
           name = match.replace(/\\"/g, '"');
         }
-        if ((typeof GM_info !== "undefined" && GM_info !== null ? (ref3 = GM_info.script) != null ? ref3.includeJSB : void 0 : void 0) != null) {
+        if (/^text\/plain;\s*charset=x-user-defined$/i.test(mime)) {
           mime = QR.typeFromExtension[name.match(/[^.]*$/)[0].toLowerCase()] || 'application/octet-stream';
         }
         blob = new Blob([data], {
@@ -14465,7 +14457,7 @@ ImageExpand = (function() {
           }
         },
         mouseout: function(e) {
-          if (mousedown && e.clientX <= this.getBoundingClientRect().left) {
+          if (((e.buttons & 1) || mousedown) && e.clientX <= this.getBoundingClientRect().left) {
             return ImageExpand.toggle(Get.postFromNode(this));
           }
         }
