@@ -88,7 +88,7 @@ CrossOrigin =
   file: (url, cb) ->
     CrossOrigin.binary url, (data, headers) ->
       return cb null unless data?
-      name = url.match(/([^\/]+)\/*$/)?[1]
+      name = url.match(/([^\/?#]+)\/*(?:$|[?#])/)?[1]
       contentType        = headers.match(/Content-Type:\s*(.*)/i)?[1]
       contentDisposition = headers.match(/Content-Disposition:\s*(.*)/i)?[1]
       mime = contentType?.match(/[^;]*/)[0] or 'application/octet-stream'
