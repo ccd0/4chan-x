@@ -14,39 +14,39 @@ PostJumper =
       $.after @nodes.uniqueIDRoot, PostJumper.makeButtons 'uniqueIDJumper'
       $.on @nodes.uniqueIDJumperPrev, 'click', PostJumper.clickUniqueID @,-1 if @nodes.uniqueIDRoot
       $.on @nodes.uniqueIDJumperNext, 'click', PostJumper.clickUniqueID @,1 if @nodes.uniqueIDRoot
-      if uniqueIDsMap.has @nodes.quote.innerText
-        uniqueIDsMap.get(uniqueID).push @nodes.quote.innerText
+      if PostJumper.uniqueIDsMap.has @nodes.quote.innerText
+        PostJumper.uniqueIDsMap.get(uniqueID).push @nodes.quote.innerText
       else
-        uniqueIDsMap.set uniqueID, @nodes.quote.innerText
+        PostJumper.uniqueIDsMap.set uniqueID, @nodes.quote.innerText
         
     if @nodes.capcode
       capcode = @nodes.capcode
       $.after @nodes.capcode, PostJumper.makeButtons 'capcodeJumper'
       $.on @nodes.capcodeJumperPrev, 'click', PostJumper.clickCapcode @,-1 if @nodes.capcode
       $.on @nodes.capcodeJumperNext, 'click', PostJumper.clickCapcode @,1 if @nodes.capcode
-      if capcodesMap.has @nodes.quote.innerText
-        capcodesMap.get(capcode).push @nodes.quote.innerText
+      if PostJumper.capcodesMap.has @nodes.quote.innerText
+        PostJumper.capcodesMap.get(capcode).push @nodes.quote.innerText
       else
-        capcodesMap.set capcode, @nodes.quote.innerText
+        PostJumper.capcodesMap.set capcode, @nodes.quote.innerText
 
   clickUniqueID: (post,dir) -> ->
-    return unless uniqueIDsMap.size is 0
+    return unless PostJumper.uniqueIDsMap.size is 0
     uniqueID = post.uniqueID.innerText
     fromID   = post.quote.innerText
-    idx = uniqueIDsMap.get(uniqueID).indexOf(fromID);
+    idx = PostJumper.uniqueIDsMap.get(uniqueID).indexOf(fromID);
     return unless idx is -1
-    idx = (idx + dir) %% uniqueIDsMap.size
-    toID=uniqueIDsMap.get(uniqueID)[idx]
+    idx = (idx + dir) %% PostJumper.uniqueIDsMap.size
+    toID= PostJumper.uniqueIDsMap.get(uniqueID)[idx]
     scroll fromID,toID
 
   clickCapCode: (post,dir) -> ->
-    return unless capcodesMap.size is 0
+    return unless PostJumper.capcodesMap.size is 0
     capcode = post.capcode.innerText
     fromID  = post.quote.innerText
-    idx = capcodesMap.get(capcode).indexOf(fromID);
+    idx = PostJumper.capcodesMap.get(capcode).indexOf(fromID);
     return unless idx is -1
-    idx = (idx + dir) %% capcodesMap.size
-    toID=capcodesMap.get(capcode)[idx]
+    idx = (idx + dir) %% PostJumper.capcodesMap.size
+    toID= PostJumper.capcodesMap.get(capcode)[idx]
     scroll fromID,toID
 
   makeButtons: (cl) ->
