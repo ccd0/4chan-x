@@ -5,29 +5,29 @@ PostJumper =
     return unless g.VIEW in ['index', 'thread']
 
     Callbacks.Post.push
-      name: 'Jump to previous/next post'
+      name: 'Post Jumper'
       cb:   @node
 
   node: ->
     if @nodes.uniqueIDRoot
       uniqueID = @nodes.uniqueID
-      $.after @nodes.uniqueIDRoot, PostJumper.makeButtons 'uniqueIDJumper'
-      $.on @nodes.uniqueIDJumperPrev, 'click', PostJumper.clickUniqueID @,-1 if @nodes.uniqueIDRoot
-      $.on @nodes.uniqueIDJumperNext, 'click', PostJumper.clickUniqueID @,1 if @nodes.uniqueIDRoot
-      if PostJumper.uniqueIDsMap.has @nodes.quote.innerText
-        PostJumper.uniqueIDsMap.get(uniqueID).push @nodes.quote.innerText
-      else
-        PostJumper.uniqueIDsMap.set uniqueID, @nodes.quote.innerText
+      IDButtons = PostJumper.makeButtons 'uniqueIDJumper'
+      $.after @nodes.uniqueIDRoot, IDButtons
+      $.on IDButtons.firstChild, 'click', PostJumper.clickUniqueID @,-1 if @nodes.uniqueIDRoot
+      $.on IDButtons.lastChild, 'click', PostJumper.clickUniqueID @,1 if @nodes.uniqueIDRoot
+      if not PostJumper.uniqueIDsMap.has @nodes.quote.innerText
+        PostJumper.uniqueIDsMap.set uniqueID, []
+      PostJumper.uniqueIDsMap.get(uniqueID).push @nodes.quote.innerText        
         
     if @nodes.capcode
       capcode = @nodes.capcode
-      $.after @nodes.capcode, PostJumper.makeButtons 'capcodeJumper'
-      $.on @nodes.capcodeJumperPrev, 'click', PostJumper.clickCapcode @,-1 if @nodes.capcode
-      $.on @nodes.capcodeJumperNext, 'click', PostJumper.clickCapcode @,1 if @nodes.capcode
-      if PostJumper.capcodesMap.has @nodes.quote.innerText
-        PostJumper.capcodesMap.get(capcode).push @nodes.quote.innerText
-      else
-        PostJumper.capcodesMap.set capcode, @nodes.quote.innerText
+      capcodeButtons = PostJumper.makeButtons 'capcodeJumper'
+      $.after @nodes.capcode, capcodeButtons
+      $.on capcodeButtons.firstChild, 'click', PostJumper.clickCapcode @,-1 if @nodes.capcode
+      $.on capcodeButtons.lastChild, 'click', PostJumper.clickCapcode @,1 if @nodes.capcode
+      if not PostJumper.capcodesMap.has @nodes.quote.innerText
+        PostJumper.capcodesMap.set capcode, []
+      PostJumper.capcodesMap.get(capcode).push @nodes.quote.innerText
 
   clickUniqueID: (post,dir) -> ->
     return unless PostJumper.uniqueIDsMap.size is 0
