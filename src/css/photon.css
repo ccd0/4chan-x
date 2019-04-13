@@ -91,7 +91,7 @@
 }
 
 /* Thread Watcher */
-:root.photon .replies-quoting-you > a, :root.photon #watcher-link.replies-quoting-you {
+:root.photon .replies-quoting-you > a, :root.photon #watcher-link.replies-quoting-you, :root.photon .last-page > a > .watcher-page {
   color: #00F !important;
 }
 

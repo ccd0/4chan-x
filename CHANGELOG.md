@@ -2,7 +2,88 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.7
+
+**v1.14.7.2** *(2019-04-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.2/builds/4chan-X-noupdate.crx)]
+- Fix dragging left to contract WebMs in Firefox. #1547
+- Remove query string from filename in Post from URL feature.
+- Speed up Post from URL on some platforms.
+- Fix issue making WebM title fetching needlessly slow on Chrome extension.
+
+**v1.14.7.1** *(2019-04-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.1/builds/4chan-X-noupdate.crx)]
+- Tolerate broken HTML better.
+- Fix 4chan/4channel not being correct in certain links.
+- Use boards.json to determine whether to activate [code] and [math] tag related functions. #525
+
+**v1.14.7.0** *(2019-04-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.6.8.
+- (Teasday) Hotkey to toggle quote threading, `Shift+t` by default.
+- Show what pages watched threads are on. Can be disabled by unchecking `Show Page` in the thread watcher menu. #1030
+- Move Thread Watcher settings out of submenu.
+- Restore filtering on the email field. #2171
+- Support specifying the sites that filters apply to. #2171
+- Make per-board filtering work on boards with unusual characters in the name (e.g. certain lainchan boards).
+- Board names in filters are now case-sensitive.
+
+### v1.14.6
+
+**v1.14.6.8** *(2019-04-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.8/builds/4chan-X-noupdate.crx)]
+- Update list of boards on https://catalog.neet.tv/.
+
+**v1.14.6.7** *(2019-04-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.7/builds/4chan-X-noupdate.crx)]
+- Update .crx files to CRX3. This should fix the errors when attempting to install them on newer versions of Chromium.
+
+**v1.14.6.6** *(2019-04-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.6/builds/4chan-X-noupdate.crx)]
+- Sauce: Update DeviantArt filename format. #2237
+- Sauce: Replace unmatched regex groups with empty string, not 'undefined'
+- Whether to add parameter to avoid cache should be based on site being queried, not site currenly on.
+
+**v1.14.6.5** *(2019-04-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.5/builds/4chan-X-noupdate.crx)]
+- Fix Thread Watcher bug that in certain circumstances caused the last check of an archived thread for new replies to be skipped.
+
+**v1.14.6.4** *(2019-04-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.4/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.5.16: Remove score/perks message. Fix Posting Success Notifications.
+- Merge v1.14.5.16: Remove like buttons. Continue to show like counts and scores where given in API.
+- Bugfix: Account for posts added by thread expansion when marking read from index.
+
+**v1.14.6.3** *(2019-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.3/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.5.15: Show info relating to April 2019 event. #2266
+
+**v1.14.6.2** *(2019-03-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.2/builds/4chan-X-noupdate.crx)]
+- Support filters that apply to multiple post fields joined by newline characters.
+
+**v1.14.6.1** *(2019-03-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.1/builds/4chan-X-noupdate.crx)]
+- Fix errors in certain userscript managers introduced in v1.14.6.0. #2256
+
+**v1.14.6.0** *(2019-03-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.5.14.
+- (ebinBuddha) Added desktop notification for filters (`notify` option).
+- Make it possible to filter posts without ID (use `//`). #1578
+- Add `file` option to filter only posts with/without files.
+- Improvements in Thread Watcher efficiency, particularly when using it with multiple sites.
+- Allow image hover previews to use full width of screen even in cases where it covers the thumbnail.
+- Make movement of image hover / quote preview with mouse optional; option is `Follow Cursor`. #471, #2245
+- Fix image/video hover in case where dimensions are not available. #2197
+- Implement pruning of data for dead threads on vichan sites with JSON API. #2171
+- Override 4chan CSS causing sauce links to get cut off. #2193
+- Change export URL from data: to blob: so larger settings files can be exported. #2255
+- Unbreak warning in Chrome extension to reload the page after an update.
+- Various minor bugfixes.
+
 ### v1.14.5
+
+**v1.14.5.16** *(2019-04-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.16/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.16/builds/4chan-X-noupdate.crx)]
+- Remove score/perks message. Fix Posting Success Notifications.
+- Remove like buttons. Continue to show like counts and scores where given in API.
+
+**v1.14.5.15** *(2019-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.15/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.15/builds/4chan-X-noupdate.crx)]
+- Show info relating to April 2019 event. #2266
+- Override 4chan CSS causing sauce links to get cut off. #2193
+- Unbreak warning in Chrome extension to reload the page after an update.
+
+**v1.14.5.14** *(2019-03-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.14/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.14/builds/4chan-X-noupdate.crx)]
+- Add message alerting Chrome extension users to disable chrome://flags/#network-service
+- Minor bugfix in catalog/index loading.
 
 **v1.14.5.13** *(2019-03-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.13/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.13/builds/4chan-X-noupdate.crx)]
 - Fix bugs related to additional permissions requests. #2230

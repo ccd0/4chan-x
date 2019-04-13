@@ -68,7 +68,8 @@ Redirect =
             continue
           load(i).call {status: 200, response}
         else
-          CrossOrigin.json url, load(i), true
+          CrossOrigin.ajax url,
+            onloadend: load(i)
     else
       Redirect.parse [], cb
     return

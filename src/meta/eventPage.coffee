@@ -25,16 +25,14 @@ handlers =
     xhr.open 'GET', request.url, true
     xhr.responseType = request.responseType
     xhr.timeout = request.timeout
+    for key, value of (request.headers or {})
+      xhr.setRequestHeader key, value
     xhr.addEventListener 'load', ->
       {status, statusText, response} = @
-      if @readyState is @DONE && xhr.status is 200
-        if request.responseType is 'arraybuffer'
-          response = [new Uint8Array(response)...]
-          contentType = @getResponseHeader 'Content-Type'
-          contentDisposition = @getResponseHeader 'Content-Disposition'
-        cb {status, statusText, response, contentType, contentDisposition}
-      else
-        cb {status, statusText, response, error: true}
+      responseHeaderString = @getAllResponseHeaders()
+      if response and request.responseType is 'arraybuffer'
+        response = [new Uint8Array(response)...]
+      cb {status, statusText, response, responseHeaderString}
     , false
     xhr.addEventListener 'error', ->
       cb {error: true}

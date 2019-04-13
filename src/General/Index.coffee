@@ -84,7 +84,7 @@ Index =
     @navLinks = $.el 'div', className: 'navLinks json-index'
     $.extend @navLinks, <%= readHTML('NavLinks.html') %>
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
-    $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID in ['b', 'trash', 'bant']
+    $('.archlistlink', @navLinks).hidden = true unless BoardConfig.isArchived(g.BOARD.ID)
     $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
 
     # Search field
@@ -573,48 +573,43 @@ Index =
       "#{hiddenCount} hidden threads"
 
   update: (firstTime) ->
-    Index.req?.abort()
-    Index.notice?.close()
+    if (oldReq = Index.req)
+      delete Index.req
+      oldReq.abort()
 
-    if Conf['Index Refresh Notifications'] and d.readyState isnt 'loading'
+    if Conf['Index Refresh Notifications']
       # Optional notification for manual refreshes
-      Index.notice = new Notice 'info', 'Refreshing index...'
+      Index.notice or= new Notice 'info', 'Refreshing index...'
     else
       # Also display notice if Index Refresh is taking too long
-      now = Date.now()
-      $.ready ->
-        Index.nTimeout = setTimeout (->
-          if Index.req and !Index.notice
-            Index.notice = new Notice 'info', 'Refreshing index...'
-        ), 3 * $.SECOND - (Date.now() - now)
+      Index.nTimeout or= setTimeout ->
+        Index.notice or= new Notice 'info', 'Refreshing index...'
+      , 3 * $.SECOND
 
     # Hard refresh in case of incomplete page load.
     if not firstTime and d.readyState isnt 'loading' and not $('.board + *')
       location.reload()
       return
 
-    Index.req = $.ajax "#{location.protocol}//a.4cdn.org/#{g.BOARD}/catalog.json",
-      onabort:   Index.load
-      onloadend: Index.load
-    ,
-      whenModified: 'Index'
+    Index.req = $.whenModified(
+      Site.urls.catalogJSON({boardID: g.BOARD.ID}),
+      'Index',
+      Index.load
+    )
     $.addClass Index.button, 'fa-spin'
 
-  load: (e) ->
+  load: ->
+    return if @ isnt Index.req # aborted
+
     $.rmClass Index.button, 'fa-spin'
-    {req, notice, nTimeout} = Index
+    {notice, nTimeout} = Index
     clearTimeout nTimeout if nTimeout
     delete Index.nTimeout
     delete Index.req
     delete Index.notice
 
-    if e.type is 'abort'
-      req.onloadend = null
-      notice?.close()
-      return
-
-    if req.status not in [200, 304]
-      err = "Index refresh failed. #{if req.status then "Error #{req.statusText} (#{req.status})" else 'Connection Error'}"
+    if @status not in [200, 304]
+      err = "Index refresh failed. #{if @status then "Error #{@statusText} (#{@status})" else 'Connection Error'}"
       if notice
         notice.setType 'warning'
         notice.el.lastElementChild.textContent = err
@@ -624,13 +619,12 @@ Index =
       return
 
     try
-      if req.status is 200
-        Index.parse req.response
-      else if req.status is 304
+      if @status is 200
+        Index.parse @response
+      else if @status is 304
         Index.pageLoad()
     catch err
       c.error "Index failure: #{err.message}", err.stack
-      # network error or non-JSON content for example.
       if notice
         notice.setType 'error'
         notice.el.lastElementChild.textContent = 'Index refresh failed.'
@@ -648,7 +642,7 @@ Index =
         notice.close()
 
     timeEl = $ '#index-last-refresh time', Index.navLinks
-    timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
+    timeEl.dataset.utc = Date.parse @getResponseHeader 'Last-Modified'
     RelativeDates.update timeEl
 
   parse: (pages) ->

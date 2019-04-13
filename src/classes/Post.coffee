@@ -9,6 +9,7 @@ class Post
     @ID       = +root.id.match(/\d*$/)[0]
     @threadID = @thread.ID
     @boardID  = @board.ID
+    @siteID   = Site.hostname
     @fullID   = "#{@board}.#{@ID}"
     @context  = @
     @isReply  = (@ID isnt @threadID)
@@ -28,6 +29,7 @@ class Post
     @info =
       subject:   @nodes.subject?.textContent or undefined
       name:      @nodes.name?.textContent
+      email:     if @nodes.email then decodeURIComponent(@nodes.email.href.replace(/^mailto:/, ''))
       tripcode:  @nodes.tripcode?.textContent
       uniqueID:  @nodes.uniqueID?.textContent
       capcode:   @nodes.capcode?.textContent.replace '## ', ''

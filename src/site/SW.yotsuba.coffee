@@ -4,6 +4,11 @@ SW.yotsuba =
   urls:
     thread:     ({boardID, threadID}) -> "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/thread/#{threadID}"
     threadJSON: ({boardID, threadID}) -> "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json"
+    threadsListJSON: ({boardID})      -> "#{location.protocol}//a.4cdn.org/#{boardID}/threads.json"
+    archiveListJSON: ({boardID})      -> if BoardConfig.isArchived(boardID) then "#{location.protocol}//a.4cdn.org/#{boardID}/archive.json" else ''
+    catalogJSON:     ({boardID})      -> "#{location.protocol}//a.4cdn.org/#{boardID}/catalog.json"
+
+  isPrunedByAge: ({boardID}) -> boardID is 'f'
 
   selectors:
     board:         '.board'
@@ -101,7 +106,7 @@ SW.yotsuba =
 
     if g.BOARD.ID is 'f' and thread.OP.file
       {file} = thread.OP
-      $.ajax "#{location.protocol}//a.4cdn.org/f/thread/#{thread}.json",
+      $.ajax Site.urls.threadJSON({boardID: 'f', threadID: thread.ID}),
         timeout: $.MINUTE
         onloadend: ->
           if @response
@@ -152,3 +157,6 @@ SW.yotsuba =
 
   hasCORS: (url) ->
     url.split('/')[...3].join('/') is location.protocol + '//a.4cdn.org'
+
+  sfwBoards: (sfw) ->
+    BoardConfig.sfwBoards(sfw)

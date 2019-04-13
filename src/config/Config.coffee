@@ -19,6 +19,10 @@ Config =
         'Show a notice at the top of the page when the index is refreshed.'
         1
       ]
+      'Follow Cursor': [
+        true
+        'Image Hover and Quote Preview move with the mouse cursor.'
+      ]
       'Open Threads in New Tab': [
         false
         'Make links to threads in the index / <%= meta.name %> catalog open in a new tab.'
@@ -628,7 +632,7 @@ Config =
       false
       'Advance to next post when contracting an expanded image.'
     ]
-  
+
   gallery:
     'Hide Thumbnails': [
       false
@@ -671,6 +675,10 @@ Config =
     'Auto Prune': [
       false
       'Automatically remove dead threads.'
+    ]
+    'Show Page': [
+      true
+      'Show what page watched threads are on.'
     ]
     'Show Unread Count': [
       true
@@ -720,6 +728,8 @@ Config =
       #/./
     """
 
+    email: ''
+
     subject: """
       # Filter Generals on /v/:
       #/general/i;boards:v;op:only
@@ -748,7 +758,7 @@ Config =
   sauces: """
     # Known filename formats:
     http://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/
-    //%$1.deviantart.com/gallery/#/d%$2;regexp:/^\\w+_by_(\\w+)-d([\\da-z]+)/
+    //www.deviantart.com/gallery/#/d%$1%$2;regexp:/^\\w+_by_\\w+[_-]d([\\da-z]{6})\\b|^d([\\da-z]{6})-[\\da-z]{8}-/
     //imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/
     http://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/
     https://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/
@@ -954,6 +964,10 @@ Config =
     'Toggle thread watcher': [
       't'
       'Toggle visibility of thread watcher.'
+    ]
+    'Toggle threading': [
+      'Shift+t'
+      'Toggle threading.'
     ]
     'Mark thread read': [
       'Ctrl+0'

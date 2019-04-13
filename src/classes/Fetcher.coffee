@@ -15,8 +15,9 @@ class Fetcher
 
     @root.textContent = "Loading post No.#{@postID}..."
     if @threadID
-      $.cache "#{location.protocol}//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json", (e, isCached) =>
-        @fetchedPost e.target, isCached
+      that = @
+      $.cache Site.urls.threadJSON({boardID: @boardID, threadID: @threadID}), ({isCached}) ->
+        that.fetchedPost @, isCached
     else
       @archivedPost()
 
@@ -60,12 +61,14 @@ class Fetcher
     {status} = req
     unless status is 200
       # The thread can die by the time we check a quote.
-      return if @archivedPost()
+      return if status and @archivedPost()
 
       $.addClass @root, 'warning'
       @root.textContent =
         if status is 404
           "Thread No.#{@threadID} 404'd."
+        else if !status
+          'Connection Error'
         else
           "Error #{req.statusText} (#{req.status})."
       return
@@ -78,10 +81,11 @@ class Fetcher
     if post.no isnt @postID
       # Cached requests can be stale and must be rechecked.
       if isCached
-        api = "#{location.protocol}//a.4cdn.org/#{@boardID}/thread/#{@threadID}.json"
+        api = Site.urls.threadJSON({boardID: @boardID, threadID: @threadID})
         $.cleanCache (url) -> url is api
-        $.cache api, (e) =>
-          @fetchedPost e.target, false
+        that = @
+        $.cache api, ->
+          that.fetchedPost @, false
         return
 
       # The post can be deleted by the time we check a quote.
@@ -107,7 +111,7 @@ class Fetcher
     encryptionOK = /^https:\/\//.test(url) or location.protocol is 'http:'
     if encryptionOK or Conf['Exempt Archives from Encryption']
       that = @
-      CrossOrigin.json url, ->
+      CrossOrigin.cache url, ->
         if !encryptionOK and @response?.media
           {media} = @response
           for key of media when /_link$/.test key

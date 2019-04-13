@@ -41,67 +41,83 @@ $.extend = (object, properties) ->
   return
 
 $.ajax = do ->
-  # Status Code 304: Not modified
-  # With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
-  # This saves a lot of bandwidth and CPU time for both the users and the servers.
-  lastModified = {}
   if window.wrappedJSObject and not XMLHttpRequest.wrappedJSObject
     pageXHR = XPCNativeWrapper window.wrappedJSObject.XMLHttpRequest
   else
     pageXHR = XMLHttpRequest
 
-  (url, options={}, extra={}) ->
-    {type, whenModified, bypassCache, upCallbacks, form} = extra
-    options.responseType ?= 'json' if /\.json$/.test url
+  (url, options={}) ->
+    {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options
+    responseType ?= 'json'
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
-    if whenModified
-      params = []
-      # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
-      params.push "s=#{whenModified}" if $.engine is 'blink'
-      params.push "t=#{Date.now()}" if Site.software is 'yotsuba' and bypassCache
-      url0 = url
-      url += '?' + params.join('&') if params.length
     r = new pageXHR()
     type or= form and 'post' or 'get'
     try
       r.open type, url, true
-      if whenModified
-        r.setRequestHeader 'If-Modified-Since', lastModified[whenModified][url0] if lastModified[whenModified]?[url0]?
-        $.on r, 'load', -> (lastModified[whenModified] or= {})[url0] = r.getResponseHeader 'Last-Modified'
-      $.extend r, options
-      $.extend r.upload, upCallbacks
+      for key, value of (headers or {})
+        r.setRequestHeader key, value
+      $.extend r, {onloadend, timeout, responseType, withCredentials}
+      $.extend r.upload, {onprogress}
       # connection error or content blocker
-      $.on r, 'error', -> (c.error "4chan X failed to load: #{url}" unless r.status)
+      $.on r, 'error', -> (c.warn "4chan X failed to load: #{url}" unless r.status)
+      <% if (type === 'crx') { %>
+      # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
+      $.on r, 'load', ->
+        return unless r.readyState is 4 and r.status is 200 and r.statusText is '' and r.response is null and !$.ajaxWarningShown
+        new Notice 'warning', "Error loading #{url}; try going to chrome://flags/#network-service and disabling the network service flag."
+        $.ajaxWarningShown = true
+      <% } %>
       r.send form
     catch err
       # XXX Some content blockers in Firefox (e.g. Adblock Plus and NoScript) throw an exception instead of simulating a connection error.
       throw err unless err.result is 0x805e0006
-      for event in ['error', 'loadend']
-        r["on#{event}"] = options["on#{event}"]
-        $.queueTask $.event, event, null, r
+      r.onloadend = onloadend
+      $.queueTask $.event, 'error',   null, r
+      $.queueTask $.event, 'loadend', null, r
     r
+
+# Status Code 304: Not modified
+# With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
+# This saves a lot of bandwidth and CPU time for both the users and the servers.
+$.lastModified = {}
+$.whenModified = (url, bucket, cb, options={}) ->
+  {timeout, ajax} = options
+  params = []
+  # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
+  params.push "s=#{bucket}" if $.engine is 'blink'
+  params.push "t=#{Date.now()}" if url.split('/')[2] is 'a.4cdn.org'
+  url0 = url
+  url += '?' + params.join('&') if params.length
+  headers = {}
+  if (t = $.lastModified[bucket]?[url0])?
+    headers['If-Modified-Since'] = t
+  r = (ajax or $.ajax) url, {
+    onloadend: ->
+      ($.lastModified[bucket] or= {})[url0] = @getResponseHeader('Last-Modified')
+      cb.call @
+    timeout
+    headers
+  }
+  r
 
 do ->
   reqs = {}
-  $.cache = (url, cb, options) ->
-    if req = reqs[url]
-      if req.readyState is 4
-        $.queueTask -> cb.call req, req.evt, true
-      else
+  $.cache = (url, cb, options={}) ->
+    {ajax} = options
+    if (req = reqs[url])
+      if req.callbacks
         req.callbacks.push cb
+      else
+        $.queueTask -> cb.call req, {isCached: true}
       return req
-    rm = -> delete reqs[url]
-    try
-      return if not (req = $.ajax url, options)
-    catch err
-      return
-    $.on req, 'load', (e) ->
-      @evt = e
+    onloadend = ->
+      unless @status
+        delete reqs[url]
       for cb in @callbacks
-        do (cb) => $.queueTask => cb.call @, e, false
+        do (cb) => $.queueTask => cb.call @, {isCached: false}
       delete @callbacks
-    $.on req, 'abort error', rm
+    req = (ajax or $.ajax) url, {onloadend}
     req.callbacks = [cb]
     reqs[url] = req
   $.cleanCache = (testf) ->
@@ -413,16 +429,16 @@ $.sync = (key, cb) ->
 $.forceSync = -> return
 
 $.crxWorking = ->
-  if chrome.runtime.getManifest()
-    true
-  else
-    unless $.crxWarningShown
-      msg = $.el 'div',
-        <%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>
-      $.on $('a', msg), 'click', -> location.reload()
-      new Notice 'warning', msg
-      $.crxWarningShown = true
-    false
+  try
+    if chrome.runtime.getManifest()
+      return true
+  unless $.crxWarningShown
+    msg = $.el 'div',
+      <%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>
+    $.on $('a', msg), 'click', -> location.reload()
+    new Notice 'warning', msg
+    $.crxWarningShown = true
+  false
 
 $.get = $.oneItemSugar (data, cb) ->
   return unless $.crxWorking()

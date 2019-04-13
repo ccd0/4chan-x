@@ -75,9 +75,11 @@ ThreadStats =
       $.addClass ThreadStats.pageCountEl, 'warning'
       return
     ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 2 * $.MINUTE
-    $.ajax "#{location.protocol}//a.4cdn.org/#{ThreadStats.thread.board}/threads.json", onload: ThreadStats.onThreadsLoad,
-      whenModified: 'ThreadStats'
-      bypassCache:  true
+    $.whenModified(
+      Site.urls.threadsListJSON({boardID: ThreadStats.thread.board}),
+      'ThreadStats',
+      ThreadStats.onThreadsLoad
+    )
 
   onThreadsLoad: ->
     if @status is 200

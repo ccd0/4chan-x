@@ -308,7 +308,8 @@ dragend = ->
     $.off d, 'mouseup',   @up
   $.set "#{@id}.position", @style.cssText
 
-hoverstart = ({root, el, latestEvent, endEvents, height, cb, noRemove}) ->
+hoverstart = ({root, el, latestEvent, endEvents, height, width, cb, noRemove}) ->
+  rect = root.getBoundingClientRect()
   o = {
     root
     el
@@ -320,7 +321,10 @@ hoverstart = ({root, el, latestEvent, endEvents, height, cb, noRemove}) ->
     clientHeight: doc.clientHeight
     clientWidth:  doc.clientWidth
     height
+    width
     noRemove
+    clientX: (rect.left + rect.right) / 2
+    clientY: (rect.top + rect.bottom) / 2
   }
   o.hover    = hover.bind    o
   o.hoverend = hoverend.bind o
@@ -344,7 +348,8 @@ hoverstart.padding = 25
 hover = (e) ->
   @latestEvent = e
   height = (@height or @el.offsetHeight) + hoverstart.padding
-  {clientX, clientY} = e
+  width  = (@width  or @el.offsetWidth)
+  {clientX, clientY} = if Conf['Follow Cursor'] then e else @
 
   top = if @isImage
     Math.max 0, clientY * (@clientHeight - height) / @clientHeight
@@ -353,10 +358,10 @@ hover = (e) ->
 
   threshold = @clientWidth / 2
   threshold = Math.max threshold, @clientWidth - 400 unless @isImage
-  [left, right] = if clientX <= threshold
-    [clientX + 45 + 'px', '']
-  else
-    ['', @clientWidth - clientX + 45 + 'px']
+  marginX = (if clientX <= threshold then clientX else @clientWidth - clientX) + 45
+  marginX = Math.min(marginX, @clientWidth - width) if @isImage
+  marginX += 'px'
+  [left, right] = if clientX <= threshold then [marginX, ''] else ['', marginX]
 
   {style} = @
   style.top   = top + 'px'

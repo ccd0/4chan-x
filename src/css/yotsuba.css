@@ -88,7 +88,7 @@
 }
 
 /* Thread Watcher */
-:root.yotsuba .replies-quoting-you > a, :root.yotsuba #watcher-link.replies-quoting-you {
+:root.yotsuba .replies-quoting-you > a, :root.yotsuba #watcher-link.replies-quoting-you, :root.yotsuba .last-page > a > .watcher-page {
   color: #F00;
 }
 

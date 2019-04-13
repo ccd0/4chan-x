@@ -3,20 +3,29 @@
   Use <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions" target="_blank">regular expressions</a>, one per line.<br>
   Lines starting with a <code>#</code> will be ignored.<br>
   For example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>
-  MD5 filtering uses exact string matching, not regular expressions.
+  MD5 and Unique ID filtering use exact string matching, not regular expressions.
 </p>
 <ul>You can use these settings with each regular expression, separate them with semicolons:
   <li>
     Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>
     For example: <code>boards:a,jp;</code>.<br>
+    To specify boards on a particular site, put the beginning of the domain and a slash character before the list.<br>
+    Any initial <code>www.</code> should not be included, and all 4chan domains are considered <code>4chan.org</code>.<br>
+    For example: <code>boards:4:a,jp,sama:a,z;</code>.<br>
+    An asterisk can be used to specify all boards on a site.<br>
+    For example: <code>boards:4:*;</code>.<br>
   </li>
   <li>
-    In case of a global rule or one that uses <code>sfw</code>/<code>nsfw</code>, select boards to be excluded from the filter.<br>
+    Select boards to be excluded from the filter. The syntax is the same as for the <code>boards:</code> option above.<br>
     For example: <code>exclude:vg,v;</code>.
   </li>
   <li>
-    Filter OPs only along with their threads (`only`), replies only (`no`), or both (`yes`, this is default).<br>
-    For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.
+    Filter OPs only along with their threads (`only`) or replies only (`no`).<br>
+    For example: <code>op:only;</code> or <code>op:no;</code>.
+  </li>
+  <li>
+    Filter only posts with files (`only`) or only posts without files (`no`).<br>
+    For example: <code>file:only;</code> or <code>file:no;</code>.
   </li>
   <li>
     Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>
@@ -31,9 +40,15 @@
     For example: <code>top:yes;</code> or <code>top:no;</code>.
   </li>
   <li>
+    Show a desktop notification instead of hiding.<br>
+    For example: <code>notify;</code>.
+  </li>
+  <li>
     Filters in the "General" section apply to multiple fields, by default <code>subject,name,filename,comment</code>.<br>
     The fields can be specified with the <code>type</code> option, separated by commas.<br>
-    For example: <code>type:@{filterTypes};</code>.
+    For example: <code>type:@{filterTypes};</code>.<br>
+    Types can also be combined with a <code>+</code> sign; this indicates the filter applies to the given fields joined by newlines.<br>
+    For example: <code>type:filename+filesize+dimensions;</code>.<br>
   </li>
 </ul>
 <p>

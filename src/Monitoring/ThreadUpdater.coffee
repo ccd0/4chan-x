@@ -128,17 +128,17 @@ ThreadUpdater =
       $.cb.value.call @ if e
 
     load: ->
-      {req} = ThreadUpdater
-      switch req.status
+      return if @ isnt ThreadUpdater.req # aborted
+      switch @status
         when 200
-          ThreadUpdater.parse req
+          ThreadUpdater.parse @
           if ThreadUpdater.thread.isArchived
             ThreadUpdater.kill()
           else
             ThreadUpdater.setInterval()
         when 404
           # XXX workaround for 4chan sending false 404s
-          $.ajax "#{location.protocol}//a.4cdn.org/#{ThreadUpdater.thread.board}/catalog.json", onloadend: ->
+          $.ajax Site.urls.catalogJSON({boardID: ThreadUpdater.thread.board.ID}), onloadend: ->
             if @status is 200
               confirmed = true
               for page in @response
@@ -151,9 +151,9 @@ ThreadUpdater =
             if confirmed
               ThreadUpdater.kill()
             else
-              ThreadUpdater.error req
+              ThreadUpdater.error @
         else
-          ThreadUpdater.error req
+          ThreadUpdater.error @
 
   kill: ->
     ThreadUpdater.thread.kill()
@@ -230,13 +230,15 @@ ThreadUpdater =
   update: ->
     clearTimeout ThreadUpdater.timeoutID
     ThreadUpdater.set 'timer', '...', 'loading'
-    ThreadUpdater.req?.abort()
-    ThreadUpdater.req = $.ajax "#{location.protocol}//a.4cdn.org/#{ThreadUpdater.thread.board}/thread/#{ThreadUpdater.thread}.json",
-      onloadend: ThreadUpdater.cb.load
-      timeout:   $.MINUTE
-    ,
-      whenModified: 'ThreadUpdater'
-      bypassCache:  true
+    if (oldReq = ThreadUpdater.req)
+      delete ThreadUpdater.req
+      oldReq.abort()
+    ThreadUpdater.req = $.whenModified(
+      Site.urls.threadJSON({boardID: ThreadUpdater.thread.board.ID, threadID: ThreadUpdater.thread.ID}),
+      'ThreadUpdater',
+      ThreadUpdater.cb.load,
+      {timeout: $.MINUTE}
+    )
 
   updateThreadStatus: (type, status) ->
     return if not (hasChanged = ThreadUpdater.thread["is#{type}"] isnt status)

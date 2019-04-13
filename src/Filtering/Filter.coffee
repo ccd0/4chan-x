@@ -7,32 +7,23 @@ Filter =
     unless Conf['Filtered Backlinks']
       $.addClass doc, 'hide-backlinks'
 
-    nsfwBoards = BoardConfig.sfwBoards(false).join(',')
-    sfwBoards  = BoardConfig.sfwBoards(true).join(',')
-
     for key of Config.filter
       for line in Conf[key].split '\n'
         continue if line[0] is '#'
 
-        if not (regexp = line.match /\/(.+)\/(\w*)/)
+        if not (regexp = line.match /\/(.*)\/(\w*)/)
           continue
 
         # Don't mix up filter flags with the regular expression.
         filter = line.replace regexp[0], ''
 
-        # Comma-separated list of the boards this filter applies to.
-        # Defaults to global.
-        boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
-        boards = boards.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards)
-        boards = if boards is 'global' then null else boards.split(',')
+        # List of the boards this filter applies to.
+        boards = @parseBoards filter.match(/(?:^|;)\s*boards:([^;]+)/)?[1]
 
-        # boards to exclude from an otherwise global rule
-        # due to the sfw and nsfw keywords, also works on all filters
-        # replaces 'nsfw' and 'sfw' for consistency
-        excludes = filter.match(/exclude:([^;]+)/)?[1].toLowerCase() or null
-        excludes = if excludes is null then null else excludes.replace('nsfw', nsfwBoards).replace('sfw', sfwBoards).split(',')
+        # Boards to exclude from an otherwise global rule.
+        excludes = @parseBoards filter.match(/(?:^|;)\s*exclude:([^;]+)/)?[1]
 
-        if key in ['uniqueID', 'MD5']
+        if (isstring = (key in ['uniqueID', 'MD5']))
           # MD5 filter will use strings instead of regular expressions.
           regexp = regexp[1]
         else
@@ -50,13 +41,17 @@ Filter =
             ], 60
             continue
 
-        # Filter OPs along with their threads, replies only, or both.
-        # Defaults to both.
-        op = filter.match(/[^t]op:(yes|no|only)/)?[1] or 'yes'
+        # Filter OPs along with their threads or replies only.
+        op = filter.match(/(?:^|;)\s*op:(no|only)/)?[1] or ''
+        mask = {'no': 1, 'only': 2}[op] or 0
+
+        # Filter only posts with/without files.
+        file = filter.match(/(?:^|;)\s*file:(no|only)/)?[1] or ''
+        mask = mask | ({'no': 4, 'only': 8}[file] or 0)
 
         # Overrule the `Show Stubs` setting.
         # Defaults to stub showing.
-        stub = switch filter.match(/stub:(yes|no)/)?[1]
+        stub = switch filter.match(/(?:^|;)\s*stub:(yes|no)/)?[1]
           when 'yes'
             true
           when 'no'
@@ -64,25 +59,29 @@ Filter =
           else
             Conf['Stubs']
 
-        # Highlight the post, or hide it.
+        # Desktop notification
+        noti = /(?:^|;)\s*notify/.test filter
+
+        # Highlight the post.
         # If not specified, the highlight class will be filter-highlight.
-        # Defaults to post hiding.
-        if hl = /highlight/.test filter
-          hl  = filter.match(/highlight:([\w-]+)/)?[1] or 'filter-highlight'
+        if (hl = /(?:^|;)\s*highlight/.test filter)
+          hl = filter.match(/(?:^|;)\s*highlight:([\w-]+)/)?[1] or 'filter-highlight'
           # Put highlighted OP's thread on top of the board page or not.
           # Defaults to on top.
-          top = filter.match(/top:(yes|no)/)?[1] or 'yes'
+          top = filter.match(/(?:^|;)\s*top:(yes|no)/)?[1] or 'yes'
           top = top is 'yes' # Turn it into a boolean
 
         # Fields that this filter applies to (for 'general' filters)
         if key is 'general'
           if (types = filter.match /(?:^|;)\s*type:([^;]*)/)
-            types = types[1].split(',').filter (x) ->
-              x of Config.filter and x isnt 'general'
+            types = types[1].split(',')
           else
             types = ['subject', 'name', 'filename', 'comment']
 
-        filter = @createFilter regexp, boards, excludes, op, stub, hl, top
+        # Hide the post (default case).
+        hide = !(hl or noti)
+
+        filter = {isstring, regexp, boards, excludes, mask, hide, stub, hl, top, noti}
         if key is 'general'
           for type in types
             (@filters[type] or= []).push filter
@@ -94,30 +93,27 @@ Filter =
       name: 'Filter'
       cb:   @node
 
-  createFilter: (regexp, boards, excludes, op, stub, hl, top) ->
-    test =
-      if typeof regexp is 'string'
-        # MD5 checking
-        (value) -> regexp is value
-      else
-        (value) -> regexp.test value
+  # Parse comma-separated list of boards.
+  # Sites can be specified by a beginning part of the site domain followed by a colon.
+  parseBoards: (boardsRaw) ->
+    return false unless boardsRaw
+    return boards if (boards = Filter.parseBoardsMemo[boardsRaw])
+    boards = {}
+    siteFilter = ''
+    for boardID in boardsRaw.split(',')
+      if ':' in boardID
+        [siteFilter, boardID] = boardID.split(':')[-2..]
+      for siteID, siteProperties of Conf['siteProperties']
+        continue if siteProperties.canonical or siteID[...siteFilter.length] isnt siteFilter
+        if boardID in ['nsfw', 'sfw']
+          for boardID2 in SW[siteProperties.software]?.sfwBoards?(boardID is 'sfw') or []
+            boards["#{siteID}/#{boardID2}"] = true
+        else
+          boards["#{siteID}/#{encodeURIComponent boardID}"] = true
+    Filter.parseBoardsMemo[boardsRaw] = boards
+    boards
 
-    settings =
-      hide:  !hl
-      stub:  stub
-      class: hl
-      top:   top
-
-    (value, boardID, isReply) ->
-      if boards and boardID not in boards
-        return false
-      if excludes and boardID in excludes
-        return false
-      if isReply and op is 'only' or !isReply and op is 'no'
-        return false
-      unless test value
-        return false
-      settings
+  parseBoardsMemo: {}
 
   test: (post, hideable=true) ->
     return post.filterResults if post.filterResults
@@ -125,27 +121,40 @@ Filter =
     stub = true
     hl   = undefined
     top  = false
+    noti = false
     if QuoteYou.isYou(post)
       hideable = false
-    for key of Filter.filters when ((value = Filter[key] post)?)
+    mask = (if post.isReply then 2 else 1)
+    mask = (mask | (if post.file then 4 else 8))
+    board = "#{post.siteID}/#{post.boardID}"
+    site = "#{post.siteID}/*"
+    for key of Filter.filters when ((value = Filter.value key, post)?)
       # Continue if there's nothing to filter (no tripcode for example).
-      for filter in Filter.filters[key] when (result = filter value, post.boardID, post.isReply)
-        if result.hide
+      for filter in Filter.filters[key]
+        continue if (
+          (filter.boards   and !(filter.boards[board]   or filter.boards[site]  )) or
+          (filter.excludes and  (filter.excludes[board] or filter.excludes[site])) or
+          (filter.mask & mask) or
+          (if filter.isstring then (filter.regexp isnt value) else !filter.regexp.test(value))
+        )
+        if filter.hide
           if hideable
             hide = true
-            stub and= result.stub
+            stub and= filter.stub
         else
-          unless hl and result.class in hl
-            (hl or= []).push result.class
-          top or= result.top
+          unless hl and filter.hl in hl
+            (hl or= []).push filter.hl
+          top or= filter.top
+          if filter.noti
+            noti = true
     if hide
       {hide, stub}
     else
-      {hl, top}
+      {hl, top, noti}
 
   node: ->
     return if @isClone
-    {hide, stub, hl, top} = Filter.test @, (!@isFetchedQuote and (@isReply or g.VIEW is 'index'))
+    {hide, stub, hl, top, noti} = Filter.test @, (!@isFetchedQuote and (@isReply or g.VIEW is 'index'))
     if hide
       if @isReply
         PostHiding.hide @, stub
@@ -155,24 +164,33 @@ Filter =
       if hl
         @highlights = hl
         $.addClass @nodes.root, hl...
-    return
+    if noti and Unread.posts and (@ID > Unread.lastReadPost) and not QuoteYou.isYou(@)
+      Unread.openNotification @, ' triggered a notification filter'
 
   isHidden: (post) ->
     !!Filter.test(post).hide
 
-  postID:     (post) -> "#{post.ID}"
-  name:       (post) -> post.info.name
-  uniqueID:   (post) -> post.info.uniqueID
-  tripcode:   (post) -> post.info.tripcode
-  capcode:    (post) -> post.info.capcode
-  pass:       (post) -> post.info.pass
-  subject:    (post) -> post.info.subject or (if post.isReply then undefined else '')
-  comment:    (post) -> (post.info.comment ?= Build.parseComment post.info.commentHTML.innerHTML)
-  flag:       (post) -> post.info.flag
-  filename:   (post) -> post.file?.name
-  dimensions: (post) -> post.file?.dimensions
-  filesize:   (post) -> post.file?.size
-  MD5:        (post) -> post.file?.MD5
+  valueF:
+    postID:     (post) -> "#{post.ID}"
+    name:       (post) -> post.info.name
+    uniqueID:   (post) -> post.info.uniqueID or ''
+    tripcode:   (post) -> post.info.tripcode
+    capcode:    (post) -> post.info.capcode
+    pass:       (post) -> post.info.pass
+    email:      (post) -> post.info.email
+    subject:    (post) -> post.info.subject or (if post.isReply then undefined else '')
+    comment:    (post) -> (post.info.comment ?= Build.parseComment post.info.commentHTML.innerHTML)
+    flag:       (post) -> post.info.flag
+    filename:   (post) -> post.file?.name
+    dimensions: (post) -> post.file?.dimensions
+    filesize:   (post) -> post.file?.size
+    MD5:        (post) -> post.file?.MD5
+
+  value: (key, post) ->
+    if key of Filter.valueF
+      Filter.valueF[key](post)
+    else
+      key.split('+').map((k) -> Filter.valueF[k]?(post) or '').join('\n')
 
   addFilter: (type, re, cb) ->
     $.get type, Conf[type], (item) ->
@@ -245,6 +263,7 @@ Filter =
         ['Tripcode',         'tripcode']
         ['Capcode',          'capcode']
         ['Pass Date',        'pass']
+        ['Email',            'email']
         ['Subject',          'subject']
         ['Comment',          'comment']
         ['Flag',             'flag']
@@ -268,14 +287,14 @@ Filter =
       return {
         el: el
         open: (post) ->
-          value = Filter[type] post
+          value = Filter.value type, post
           value?
       }
 
     makeFilter: ->
       {type} = @dataset
       # Convert value -> regexp, unless type is MD5
-      value = Filter[type] Filter.menu.post
+      value = Filter.value type, Filter.menu.post
       re = if type in ['uniqueID', 'MD5'] then value else Filter.escape(value)
       re = if type in ['uniqueID', 'MD5']
         "/#{re}/"

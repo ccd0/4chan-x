@@ -109,6 +109,9 @@ Keybinds =
       when Conf['Toggle thread watcher']
         return unless ThreadWatcher.enabled
         ThreadWatcher.toggleWatcher()
+      when Conf['Toggle threading']
+        return unless QuoteThreading.ready
+        QuoteThreading.toggleThreading()
       when Conf['Mark thread read']
         return unless g.VIEW is 'index' and thread and UnreadIndex.enabled
         UnreadIndex.markRead.call threadRoot

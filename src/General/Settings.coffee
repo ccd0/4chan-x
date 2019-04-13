@@ -206,16 +206,20 @@ Settings =
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
 
   export: ->
-    # Make sure to export the most recent data.
-    $.get Conf, (Conf) ->
+    # Make sure to export the most recent data, but don't overwrite existing `Conf` object.
+    Conf2 = {}
+    $.extend Conf2, Conf
+    $.get Conf2, (Conf2) ->
       # Don't export cached JSON data.
-      delete Conf['boardConfig']
-      (Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf})
+      delete Conf2['boardConfig']
+      (Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf: Conf2})
 
   downloadExport: (data) ->
+    blob = new Blob [JSON.stringify(data, null, 2)], {type: 'application/json'}
+    url = URL.createObjectURL blob
     a = $.el 'a',
       download: "<%= meta.name %> v#{g.VERSION}-#{data.date}.json"
-      href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
+      href: url
     p = $ '.imp-exp-result', Settings.dialog
     $.rmAll p
     $.add p, a
@@ -473,6 +477,12 @@ Settings =
           [hostname, software] = line.split(' ')
           siteProperties[hostname] = {software}
         set 'siteProperties', siteProperties
+    if compareString < '00001.00014.00006.00006'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(
+          /\/\/%\$1\.deviantart\.com\/gallery\/#\/d%\$2;regexp:\/\^\\w\+_by_\(\\w\+\)-d\(\[\\da-z\]\+\)\//g,
+          '//www.deviantart.com/gallery/#/d%$1%$2;regexp:/^\\w+_by_\\w+[_-]d([\\da-z]{6})\\b|^d([\\da-z]{6})-[\\da-z]{8}-/'
+        )
     changes
 
   loadSettings: (data, cb) ->

@@ -10,8 +10,8 @@ class Callbacks
     @keys.push name unless @[name]
     @[name] = cb
 
-  execute: (node, keys=@keys) ->
-    return if node.callbacksExecuted
+  execute: (node, keys=@keys, force) ->
+    return if node.callbacksExecuted and !force
     node.callbacksExecuted = true
     for name in keys
       try

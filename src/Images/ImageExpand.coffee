@@ -250,7 +250,7 @@ ImageExpand =
     mouseover:     -> mousedown = false
     mousedown: (e) -> mousedown = true  if e.button is 0
     mouseup:   (e) -> mousedown = false if e.button is 0
-    mouseout:  (e) -> ImageExpand.toggle(Get.postFromNode @) if mousedown and e.clientX <= @getBoundingClientRect().left
+    mouseout:  (e) -> ImageExpand.toggle(Get.postFromNode @) if ((e.buttons & 1) or mousedown) and e.clientX <= @getBoundingClientRect().left
 
   setupVideoCB: (post) ->
     for eventName, cb of ImageExpand.videoCB

@@ -46,19 +46,22 @@ ImageHover =
       if Conf['Autoplay']
         el.play()
         @currentTime = el.currentTime if @nodeName is 'VIDEO'
-    [width, height] = (+x for x in file.dimensions.split 'x')
-    {left, right} = @getBoundingClientRect()
-    maxWidth = Math.max left, doc.clientWidth - right
-    maxHeight = doc.clientHeight - UI.hover.padding
-    scale = Math.min 1, maxWidth / width, maxHeight / height
-    el.style.maxWidth  = "#{scale * width}px"
-    el.style.maxHeight = "#{scale * height}px"
+    if file.dimensions
+      [width, height] = (+x for x in file.dimensions.split 'x')
+      maxWidth = doc.clientWidth
+      maxHeight = doc.clientHeight - UI.hover.padding
+      scale = Math.min 1, maxWidth / width, maxHeight / height
+      width *= scale
+      height *= scale
+      el.style.maxWidth  = "#{width}px"
+      el.style.maxHeight = "#{height}px"
     UI.hover
       root: @
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      height: scale * height
+      height: height
+      width: width
       noRemove: true
       cb: ->
         $.off el, 'error', error

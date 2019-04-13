@@ -93,7 +93,7 @@
 }
 
 /* Thread Watcher */
-:root.burichan .replies-quoting-you > a, :root.burichan #watcher-link.replies-quoting-you {
+:root.burichan .replies-quoting-you > a, :root.burichan #watcher-link.replies-quoting-you, :root.burichan .last-page > a > .watcher-page {
   color: #F00;
 }
 

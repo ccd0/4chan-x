@@ -1,5 +1,5 @@
 class DataBoard
-  @keys = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads', 'customTitles']
+  @keys = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads', 'watcherLastModified', 'customTitles']
 
   constructor: (@key, sync, dontClean) ->
     @initData Conf[@key]
@@ -85,17 +85,20 @@ class DataBoard
     else
       @data[siteID].boards[boardID] = val
 
-  extend: ({siteID, boardID, threadID, postID, val, rm}, cb) ->
+  extend: ({siteID, boardID, threadID, postID, val}, cb) ->
     @save =>
-      oldVal = @get {siteID, boardID, threadID, postID, val: {}}
-      delete oldVal[key] for key in rm or []
-      $.extend oldVal, val
+      oldVal = @get {siteID, boardID, threadID, postID, defaultValue: {}}
+      for key, subVal of val
+        if typeof subVal is 'undefined'
+          delete oldVal[key]
+        else
+          oldVal[key] = subVal
       @setUnsafe {siteID, boardID, threadID, postID, val: oldVal}
     , cb
 
-  setLastChecked: ->
+  setLastChecked: (key='lastChecked') ->
     @save =>
-      @data.lastChecked = Date.now()
+      @data[key] = Date.now()
 
   get: ({siteID, boardID, threadID, postID, defaultValue}) ->
     siteID or= Site.hostname
@@ -116,13 +119,9 @@ class DataBoard
     val or defaultValue
 
   clean: ->
-    # XXX not yet multisite ready
-    return unless Site.software is 'yotsuba'
     siteID = Site.hostname
-
     for boardID, val of @data[siteID].boards
       @deleteIfEmpty {siteID, boardID}
-
     now = Date.now()
     unless now - 2 * $.HOUR < (@data[siteID].lastChecked or 0) <= now
       @data[siteID].lastChecked = now
@@ -131,12 +130,18 @@ class DataBoard
     return
 
   ajaxClean: (boardID) ->
-    $.cache "#{location.protocol}//a.4cdn.org/#{boardID}/threads.json", (e1) =>
-      return unless e1.target.status is 200
-      response1 = e1.target.response
-      $.cache "#{location.protocol}//a.4cdn.org/#{boardID}/archive.json", (e2) =>
-        return unless e2.target.status is 200 or boardID in ['b', 'f', 'trash', 'bant']
-        @ajaxCleanParse boardID, response1, e2.target.response
+    that = @
+    siteID = Site.hostname
+    threadsList = Site.urls.threadsListJSON?({siteID, boardID})
+    return unless threadsList
+    $.cache threadsList, ->
+      return unless @status is 200
+      archiveList = Site.urls.archiveListJSON?({siteID, boardID})
+      return that.ajaxCleanParse(boardID, @response) unless archiveList
+      response1 = @response
+      $.cache archiveList, ->
+        return unless @status is 200
+        that.ajaxCleanParse(boardID, response1, @response)
 
   ajaxCleanParse: (boardID, response1, response2) ->
     siteID = Site.hostname

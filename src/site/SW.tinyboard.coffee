@@ -9,7 +9,6 @@ SW.tinyboard =
     'Image Host Rewriting'
     'Index Generator'
     'Announcement Hiding'
-    'Fourchan thingies'
     'Resurrect Quotes'
     'Quick Reply Personas'
     'Quick Reply'
@@ -60,6 +59,12 @@ SW.tinyboard =
     threadJSON: ({siteID, boardID, threadID}) ->
       root = Conf['siteProperties'][siteID]?.root
       if root then "#{root}#{boardID}/res/#{threadID}.json" else ''
+    threadsListJSON: ({siteID, boardID}) ->
+      root = Conf['siteProperties'][siteID]?.root
+      if root then "#{root}#{boardID}/threads.json" else ''
+    catalogJSON: ({siteID, boardID}) ->
+      root = Conf['siteProperties'][siteID]?.root
+      if root then "#{root}#{boardID}/catalog.json" else ''
 
   selectors:
     board:         'form[name="postcontrols"]'

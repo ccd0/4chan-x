@@ -129,6 +129,10 @@ body.is_catalog .thread > a > img {
 .nwsb {
   display: inline;
 }
+.fileText {
+  max-width: auto;
+  white-space: normal;
+}
 
 /* Ads */
 .ad-cnt > *, .adg-rects > *, .bsa-cnt {
@@ -1164,12 +1168,11 @@ span.hide-announcement {
   -webkit-flex-direction: row;
   flex-direction: row;
 }
+#watched-threads .watcher-page,
 #watched-threads .watcher-unread {
   -webkit-flex: 0 0 auto;
   flex: 0 0 auto;
-}
-#watched-threads .watcher-unread::after {
-  content: "\00a0";
+  margin-right: 2px;
 }
 #watched-threads .watcher-title {
   overflow: hidden;
@@ -1177,7 +1180,10 @@ span.hide-announcement {
   -webkit-flex: 0 1 auto;
   flex: 0 1 auto;
 }
-.replies-quoting-you > a, #watcher-link.replies-quoting-you {
+#watched-threads .watcher-title:not(:first-child) {
+  margin-left: 2px;
+}
+.replies-quoting-you > a, #watcher-link.replies-quoting-you, .last-page > a > .watcher-page {
   color: #F00;
 }
 #thread-watcher a {
@@ -1343,6 +1349,13 @@ span.hide-announcement {
 }
 .fileThumb > .warning {
   clear: both;
+}
+#ihover {
+  pointer-events: none;
+  /* XXX https://code.google.com/p/chromium/issues/detail?id=168840, https://bugs.webkit.org/show_bug.cgi?id=94158 */
+  max-height: 95vh;
+  max-height: calc(100vh - 25px);
+  max-width: 100vw;
 }
 /* WEBM Metadata */
 .webm-title > a::before {

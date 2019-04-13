@@ -18,7 +18,9 @@ ExpandThread =
   disconnect: (refresh) ->
     return if g.VIEW is 'thread' or !Conf['Thread Expansion']
     for threadID, status of ExpandThread.statuses
-      status.req?.abort()
+      if (oldReq = status.req)
+        delete status.req
+        oldReq.abort()
       delete ExpandThread.statuses[threadID]
 
     $.off d, 'IndexRefreshInternal', @onIndexRefresh unless refresh
@@ -52,15 +54,17 @@ ExpandThread =
   expand: (thread, a) ->
     ExpandThread.statuses[thread] = status = {}
     a.textContent = Build.summaryText '...', a.textContent.match(/\d+/g)...
-    status.req = $.cache "#{location.protocol}//a.4cdn.org/#{thread.board}/thread/#{thread}.json", ->
+    status.req = $.cache Site.urls.threadJSON({boardID: thread.board.ID, threadID: thread.ID}), ->
+      return if @ isnt status.req # aborted
       delete status.req
       ExpandThread.parse @, thread, a
 
   contract: (thread, a, threadRoot) ->
     status = ExpandThread.statuses[thread]
     delete ExpandThread.statuses[thread]
-    if status.req
-      status.req.abort()
+    if (oldReq = status.req)
+      delete status.req
+      oldReq.abort()
       a.textContent = Build.summaryText '+', a.textContent.match(/\d+/g)... if a
       return
 
@@ -89,7 +93,7 @@ ExpandThread =
 
   parse: (req, thread, a) ->
     if req.status not in [200, 304]
-      a.textContent = "Error #{req.statusText} (#{req.status})"
+      a.textContent = if req.status then "Error #{req.statusText} (#{req.status})" else 'Connection Error'
       return
 
     Build.spoilerRange[thread.board] = req.response.posts[0].custom_spoiler

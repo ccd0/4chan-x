@@ -2,9 +2,6 @@ ExpandComment =
   init: ->
     return if g.VIEW isnt 'index' or !Conf['Comment Expansion'] or Conf['JSON Index']
 
-    @callbacks.push Fourchan.code if g.BOARD.ID is 'g'
-    @callbacks.push Fourchan.math if g.BOARD.ID is 'sci'
-
     Callbacks.Post.push
       name: 'Comment Expansion'
       cb:   @node
@@ -26,7 +23,7 @@ ExpandComment =
       return
     return if not (a = $ '.abbr > a', post.nodes.comment)
     a.textContent = "Post No.#{post} Loading..."
-    $.cache "#{location.protocol}//a.4cdn.org#{a.pathname.split(/\/+/).splice(0,4).join('/')}.json", -> ExpandComment.parse @, a, post
+    $.cache Site.urls.threadJSON({boardID: post.boardID, threadID: post.threadID}), -> ExpandComment.parse @, a, post
 
   contract: (post) ->
     return unless post.nodes.shortComment
@@ -38,7 +35,7 @@ ExpandComment =
   parse: (req, a, post) ->
     {status} = req
     unless status in [200, 304]
-      a.textContent = "Error #{req.statusText} (#{status})"
+      a.textContent = if status then "Error #{req.statusText} (#{status})" else 'Connection Error'
       return
 
     posts = req.response.posts
