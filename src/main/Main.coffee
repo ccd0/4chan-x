@@ -553,6 +553,7 @@ Main =
     ['Quick Reply Personas',      QR.persona]
     ['Quick Reply',               QR]
     ['Cooldown',                  QR.cooldown]
+    ['Post Jumper',               PostJumper]
     ['Pass Link',                 PassLink]
     ['Menu',                      Menu]
     ['Index Generator (Menu)',    Index.menu]
