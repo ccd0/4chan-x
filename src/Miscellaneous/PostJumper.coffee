@@ -11,7 +11,7 @@ PostJumper =
   node: ->
     if @nodes.uniqueIDRoot
       uniqueID = @nodes.uniqueID
-      $.after @nodes.uniqueIDRoot, makeButtons 'uniqueIDJumper'
+      $.after @nodes.uniqueIDRoot, PostJumper.makeButtons 'uniqueIDJumper'
       $.on @nodes.uniqueIDJumperPrev, 'click', PostJumper.clickUniqueID @,-1 if @nodes.uniqueIDRoot
       $.on @nodes.uniqueIDJumperNext, 'click', PostJumper.clickUniqueID @,1 if @nodes.uniqueIDRoot
       if uniqueIDsMap.has @nodes.quote.innerText
@@ -21,7 +21,7 @@ PostJumper =
         
     if @nodes.capcode
       capcode = @nodes.capcode
-      $.after @nodes.capcode, makeButtons 'capcodeJumper'
+      $.after @nodes.capcode, PostJumper.makeButtons 'capcodeJumper'
       $.on @nodes.capcodeJumperPrev, 'click', PostJumper.clickCapcode @,-1 if @nodes.capcode
       $.on @nodes.capcodeJumperNext, 'click', PostJumper.clickCapcode @,1 if @nodes.capcode
       if capcodesMap.has @nodes.quote.innerText
