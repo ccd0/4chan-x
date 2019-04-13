@@ -39,9 +39,9 @@ PostJumper =
     toID= PostJumper.uniqueIDsMap.get(uniqueID)[idx]
     PostJumper.scroll fromID,toID
 
-  clickCapCode: (post,dir) -> ->
+  clickCapcode: (post,dir) -> ->
     return if PostJumper.capcodesMap.size is 0
-    capcode = post.info.capcode
+    capcode = "## " + post.info.capcode
     fromID  = post.ID.toString()
     idx = PostJumper.capcodesMap.get(capcode).indexOf(fromID);
     return if idx is -1
