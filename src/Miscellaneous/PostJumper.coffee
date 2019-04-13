@@ -32,7 +32,7 @@ PostJumper =
   clickUniqueID: (post,dir) -> ->
     return if PostJumper.uniqueIDsMap.size is 0
     uniqueID = post.info.uniqueID
-    fromID   = post.ID.toString
+    fromID   = post.ID.toString()
     idx = PostJumper.uniqueIDsMap.get(uniqueID).indexOf(fromID);
     return if idx is -1
     idx = (idx + dir) %% PostJumper.uniqueIDsMap.get(uniqueID).length
@@ -42,7 +42,7 @@ PostJumper =
   clickCapCode: (post,dir) -> ->
     return if PostJumper.capcodesMap.size is 0
     capcode = post.info.capcode
-    fromID  = post.ID.toString
+    fromID  = post.ID.toString()
     idx = PostJumper.capcodesMap.get(capcode).indexOf(fromID);
     return if idx is -1
     idx = (idx + dir) %% PostJumper.capcodesMap.get(capcode).length
