@@ -70,84 +70,86 @@ body.hasDropDownNav{
   border-radius: 3px;
   padding: 0px 2px;
 }
-
-/* 4chan style fixes */
-/* overrides 4chan CSS on div.opContainer, div.op */
-.opContainer.opContainer, .op.op {
-  display: block;
-  overflow: visible;
-}
-.reply > .file > .fileText {
-  margin: 0 20px;
-}
-.hashlink::before {
-  content: ' ';
-  visibility: hidden;
-}
-.inline + .hashlink,
 [hidden] {
   display: none !important;
 }
-.fileText a {
+
+/* 4chan style fixes */
+/* overrides 4chan CSS on div.opContainer, div.op */
+:root.sw-yotsuba .opContainer, :root.sw-yotsuba .op {
+  display: block;
+  overflow: visible;
+}
+:root.sw-yotsuba .reply > .file > .fileText {
+  margin: 0 20px;
+}
+:root.sw-yotsuba .hashlink::before {
+  content: ' ';
+  visibility: hidden;
+}
+:root.sw-yotsuba .inline + .hashlink {
+  display: none !important;
+}
+:root.sw-yotsuba .fileText a {
   unicode-bidi: -moz-isolate;
   unicode-bidi: -webkit-isolate;
 }
-#g-recaptcha {
+:root.sw-yotsuba #g-recaptcha {
   min-height: 78px;
   height: auto;
 }
-:root:not(.js-enabled) #postForm {
+:root.sw-yotsuba:not(.js-enabled) #postForm {
   display: table;
 }
-#captchaContainerAlt td:nth-child(2) {
+:root.sw-yotsuba #captchaContainerAlt td:nth-child(2) {
   display: table-cell !important;
 }
-canvas#tegaki-canvas {
+:root.sw-yotsuba canvas#tegaki-canvas {
   background: none;
 }
 /* Disable obnoxious captcha fade-in. */
-body > div:last-of-type {
+:root.sw-yotsuba > body > div:last-of-type {
   transition: none !important;
 }
 /* Fix captcha scrolling to top of page. */
-body > div[style*=" top: -10000px;"] {
+:root.sw-yotsuba > body > div[style*=" top: -10000px;"] {
   visibility: hidden !important;
 }
 /* Make long filenames wrap properly: https://github.com/ccd0/4chan-x/issues/1082 */
-.post > .file {
+:root.sw-yotsuba .post > .file {
   /* currently nonstandard but may be added: https://lists.w3.org/Archives/Public/www-style/2016Mar/0352.html, https://bugzilla.mozilla.org/show_bug.cgi?id=1296042 */
   word-break: break-word;
 }
-:root:not(.ua-webkit):not(.ua-blink) .fileText {
+:root.sw-yotsuba:not(.ua-webkit):not(.ua-blink) .fileText {
   word-wrap: break-word;
   max-width: calc(100vw - 90px);
 }
-body.is_catalog .thread > a > img {
+:root.sw-yotsuba > body.is_catalog .thread > a > img {
   display: inline-block;
 }
 /* Links to NSFW boards */
-.nwsb {
+:root.sw-yotsuba .nwsb {
   display: inline;
 }
-.fileText {
+:root.sw-yotsuba .fileText {
   max-width: auto;
   white-space: normal;
 }
 
 /* Ads */
-.ad-cnt > *, .adg-rects > *, .bsa-cnt {
+:root.sw-yotsuba .ad-cnt > *, :root.sw-yotsuba .adg-rects > *, :root.sw-yotsuba .bsa-cnt {
   height: auto !important;
 }
-:root:not(.ads-loaded) hr.abovePostForm,
-:root:not(.ads-loaded) .adg-rects > hr,
-#adg-ol + hr {
+:root.sw-yotsuba:not(.ads-loaded) hr.abovePostForm,
+:root.sw-yotsuba:not(.ads-loaded) .adg-rects > hr,
+:root.sw-yotsuba #adg-ol + hr {
   display: none;
 }
-.adg-rects {
+:root.sw-yotsuba .adg-rects {
   margin: 0;
   font-size: 0;
 }
-div.center[style] {
+:root.sw-yotsuba div.center[style] {
   display: none !important;
 }
 
