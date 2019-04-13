@@ -92,6 +92,14 @@ Config =
         false
         'Add buttons to navigate to top / bottom of thread.'
       ]
+      'Unique ID Navigation': [
+        false
+        'Add buttons to navigate to posts having the same unique ID.'
+      ]
+      'Capcode Navigation': [
+        false
+        'Add buttons to navigate to posts having the same capcode.'
+      ]
       'Custom Board Titles': [
         true
         'Allow editing of the board title and subtitle by ctrl/\u2318+clicking them.'

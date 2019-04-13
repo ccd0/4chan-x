@@ -9,7 +9,7 @@ PostJumper =
       cb:   @node
 
   node: ->
-    if @nodes.uniqueIDRoot
+    if @nodes.uniqueIDRoot and Conf['Unique ID Navigation']
       uniqueID = @nodes.uniqueID.innerText
       IDButtons = PostJumper.makeButtons 'uniqueIDJumper'
       $.after @nodes.uniqueIDRoot, IDButtons
@@ -19,7 +19,7 @@ PostJumper =
         PostJumper.uniqueIDsMap.set uniqueID, []
       PostJumper.uniqueIDsMap.get(uniqueID).push @nodes.quote.innerText        
         
-    if @nodes.capcode
+    if @nodes.capcode and Conf['Capcode Navigation']
       capcode = @nodes.capcode.innerText
       capcodeButtons = PostJumper.makeButtons 'capcodeJumper'
       $.after @nodes.capcode, capcodeButtons
