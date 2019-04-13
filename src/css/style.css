@@ -917,6 +917,8 @@ div[data-checked="false"] > .suboption-list {
 .catalog-post > * > .fileText > :not(:first-child),
 .catalog-post > .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),
 .catalog-post > * > * > .posteruid,
+.catalog-post > * > * > .uniqueIDJumper,
+.catalog-post > * > * > .capcodeJumper,
 :root.bottom-backlinks .catalog-post > .container,
 .post:not(.catalog-post) > .catalog-link,
 .post:not(.catalog-post) > .catalog-stats,
@@ -2402,4 +2404,10 @@ a:only-of-type > .remove {
 :root.gallery-open.fixed #header-bar:not(.autohide),
 :root.gallery-open.fixed #header-bar:not(.autohide) #shortcuts .fa::before {
   visibility: hidden;
+}
+.capcodeJumper > .prev,
+.capcodeJumper > .next,
+.uniqueIDJumper > .prev,
+.uniqueIDJumper > .next {
+  font-size: 120%;
 }
