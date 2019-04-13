@@ -13,8 +13,8 @@ PostJumper =
       uniqueID = @nodes.uniqueID.innerText
       IDButtons = PostJumper.makeButtons 'uniqueIDJumper'
       $.after @nodes.uniqueIDRoot, IDButtons
-      $.on IDButtons.firstChild, 'click', PostJumper.clickUniqueID @,-1 if @nodes.uniqueIDRoot
-      $.on IDButtons.lastChild, 'click', PostJumper.clickUniqueID @,1 if @nodes.uniqueIDRoot
+      $.on IDButtons.firstChild, 'click', PostJumper.clickUniqueID @,-1
+      $.on IDButtons.lastChild, 'click', PostJumper.clickUniqueID @,1
       if not PostJumper.uniqueIDsMap.has uniqueID
         PostJumper.uniqueIDsMap.set uniqueID, []
       PostJumper.uniqueIDsMap.get(uniqueID).push @nodes.quote.innerText        
@@ -23,8 +23,8 @@ PostJumper =
       capcode = @nodes.capcode.innerText
       capcodeButtons = PostJumper.makeButtons 'capcodeJumper'
       $.after @nodes.capcode, capcodeButtons
-      $.on capcodeButtons.firstChild, 'click', PostJumper.clickCapcode @,-1 if @nodes.capcode
-      $.on capcodeButtons.lastChild, 'click', PostJumper.clickCapcode @,1 if @nodes.capcode
+      $.on capcodeButtons.firstChild, 'click', PostJumper.clickCapcode @,-1
+      $.on capcodeButtons.lastChild, 'click', PostJumper.clickCapcode @,1
       if not PostJumper.capcodesMap.has capcode
         PostJumper.capcodesMap.set capcode, []
       PostJumper.capcodesMap.get(capcode).push @nodes.quote.innerText
@@ -60,7 +60,7 @@ PostJumper =
     span
 
   scroll: (fromID,toID) ->
-    prevPos = $.id(fromID).getBoundingClientRect().top
-    destPos = $.id(toID).getBoundingClientRect().top
+    prevPos = $.id("pc"+fromID).getBoundingClientRect().top
+    destPos = $.id("pc"+toID).getBoundingClientRect().top
     window.scrollBy 0, destPos-prevPos
     
