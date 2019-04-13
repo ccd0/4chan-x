@@ -1,7 +1,7 @@
 PostJumper = 
   init: ->
-    @capcodesMap  = new Map
-    @uniqueIDsMap = new Map
+    @capcodesMap  = new Map()
+    @uniqueIDsMap = new Map()
     return unless g.VIEW in ['index', 'thread']
 
     Callbacks.Post.push
@@ -11,7 +11,7 @@ PostJumper =
   node: ->
     if @nodes.uniqueIDRoot
       uniqueID = @nodes.uniqueID
-      $.after @nodes.uniqueIDRoot, makeButtons
+      $.after @nodes.uniqueIDRoot, makeButtons 'uniqueIDJumper'
       $.on @nodes.uniqueIDJumperPrev, 'click', PostJumper.clickUniqueID @,-1 if @nodes.uniqueIDRoot
       $.on @nodes.uniqueIDJumperNext, 'click', PostJumper.clickUniqueID @,1 if @nodes.uniqueIDRoot
       if uniqueIDsMap.has @nodes.quote.innerText
@@ -21,7 +21,7 @@ PostJumper =
         
     if @nodes.capcode
       capcode = @nodes.capcode
-      $.after @nodes.capcode, makeButtons
+      $.after @nodes.capcode, makeButtons 'capcodeJumper'
       $.on @nodes.capcodeJumperPrev, 'click', PostJumper.clickCapcode @,-1 if @nodes.capcode
       $.on @nodes.capcodeJumperNext, 'click', PostJumper.clickCapcode @,1 if @nodes.capcode
       if capcodesMap.has @nodes.quote.innerText
@@ -42,14 +42,14 @@ PostJumper =
   clickCapCode: (post,dir) -> ->
     return unless capcodesMap.size is 0
     capcode = post.capcode.innerText
-    fromID      = post.quote.innerText
+    fromID  = post.quote.innerText
     idx = capcodesMap.get(capcode).indexOf(fromID);
     return unless idx is -1
     idx = (idx + dir) %% capcodesMap.size
     toID=capcodesMap.get(capcode)[idx]
     scroll fromID,toID
 
-  makeButtons: ->
+  makeButtons: (cl) ->
     charPrev = '\u{23EB}'
     charNext = '\u{23EC}'
     classPrev = 'prev'
