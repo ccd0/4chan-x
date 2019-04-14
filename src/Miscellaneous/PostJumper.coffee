@@ -1,7 +1,7 @@
 PostJumper = 
   init: ->
-    @capcodesMap  = new Map()
-    @uniqueIDsMap = new Map()
+    @capcodeMap  = new Map()
+    @uniqueIDMap = new Map()
     return unless g.VIEW in ['index', 'thread']
 
     Callbacks.Post.push
@@ -10,43 +10,29 @@ PostJumper =
 
   node: ->
     if @nodes.uniqueIDRoot and Conf['Unique ID Navigation'] and not @nodes.uniqueIDJumperRoot
-      uniqueID = @nodes.uniqueID.innerText
-      IDButtons = PostJumper.makeButtons 'uniqueIDJumper'
-      $.after @nodes.uniqueIDRoot, IDButtons
-      $.on IDButtons.firstChild, 'click', PostJumper.clickUniqueID @,-1
-      $.on IDButtons.lastChild, 'click', PostJumper.clickUniqueID @,1
-      if not PostJumper.uniqueIDsMap.has uniqueID
-        PostJumper.uniqueIDsMap.set uniqueID, []
-      PostJumper.uniqueIDsMap.get(uniqueID).push @nodes.quote.innerText        
-        
+      PostJumper.addButtons @,'uniqueID'
+
     if @nodes.capcode and Conf['Capcode Navigation'] and not @nodes.capcodeJumperRoot
-      capcode = @nodes.capcode.innerText
-      capcodeButtons = PostJumper.makeButtons 'capcodeJumper'
-      $.after @nodes.capcode, capcodeButtons
-      $.on capcodeButtons.firstChild, 'click', PostJumper.clickCapcode @,-1
-      $.on capcodeButtons.lastChild, 'click', PostJumper.clickCapcode @,1
-      if not PostJumper.capcodesMap.has capcode
-        PostJumper.capcodesMap.set capcode, []
-      PostJumper.capcodesMap.get(capcode).push @nodes.quote.innerText
+      PostJumper.addButtons @,'capcode'
 
-  clickUniqueID: (post,dir) -> ->
-    return if PostJumper.uniqueIDsMap.size is 0
-    uniqueID = post.info.uniqueID
-    fromID   = post.ID.toString()
-    idx = PostJumper.uniqueIDsMap.get(uniqueID).indexOf(fromID);
-    return if idx is -1
-    idx = (idx + dir) %% PostJumper.uniqueIDsMap.get(uniqueID).length
-    toID= PostJumper.uniqueIDsMap.get(uniqueID)[idx]
-    PostJumper.scroll fromID,toID
+  addButtons: (post,type) ->
+    value = post.nodes[type].innerText
+    buttons = PostJumper.makeButtons type+'Jumper'
+    $.after post.nodes[type+(if type is 'capcode' then '' else 'Root')], buttons
+    $.on buttons.firstChild, 'click', PostJumper.buttonClick post,type,-1
+    $.on buttons.lastChild, 'click', PostJumper.buttonClick post,type,1
+    if not PostJumper[type+'Map'].has value
+      PostJumper[type+'Map'].set value, []
+    PostJumper[type+'Map'].get(value).push post.nodes.quote.innerText  
 
-  clickCapcode: (post,dir) -> ->
-    return if PostJumper.capcodesMap.size is 0
-    capcode = "## " + post.info.capcode
-    fromID  = post.ID.toString()
-    idx = PostJumper.capcodesMap.get(capcode).indexOf(fromID);
+  buttonClick: (post,type,dir) -> ->
+    return if PostJumper[type+'Map'].size is 0
+    value = (if type is 'capcode' then '## ' else '') + post.info[type]
+    fromID = post.ID.toString()
+    idx = PostJumper[type+'Map'].get(value).indexOf(fromID);
     return if idx is -1
-    idx = (idx + dir) %% PostJumper.capcodesMap.get(capcode).length
-    toID= PostJumper.capcodesMap.get(capcode)[idx]
+    idx = (idx + dir) %% PostJumper[type+'Map'].get(value).length
+    toID= PostJumper[type+'Map'].get(value)[idx]
     PostJumper.scroll fromID,toID
 
   makeButtons: (cl) ->
