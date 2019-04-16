@@ -50,8 +50,8 @@ PostJumper =
     span
 
   scroll: (fromID,toID) ->
-    prevPos = g.posts[fromID].nodes.root.getBoundingClientRect().top
-    destPos = g.posts[toID].nodes.root.getBoundingClientRect().top
+    prevPos = g.posts[fromID].nodes.nameBlock.getBoundingClientRect().top
+    destPos = g.posts[toID].nodes.nameBlock.getBoundingClientRect().top
     window.scrollBy 0, destPos-prevPos
 
   indexOfPair: (array,key) ->
