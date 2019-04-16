@@ -2405,9 +2405,9 @@ a:only-of-type > .remove {
 :root.gallery-open.fixed #header-bar:not(.autohide) #shortcuts .fa::before {
   visibility: hidden;
 }
-.capcodeJumper > .prev,
-.capcodeJumper > .next,
-.uniqueIDJumper > .prev,
-.uniqueIDJumper > .next {
+
+/* PostJumper */
+.postJumper > .prev,
+.postJumper > .next {
   font-size: 120%;
 }

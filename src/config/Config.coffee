@@ -92,13 +92,9 @@ Config =
         false
         'Add buttons to navigate to top / bottom of thread.'
       ]
-      'Unique ID Navigation': [
+      'Unique ID and capcode Navigation': [
         false
-        'Add buttons to navigate to posts having the same unique ID.'
-      ]
-      'Capcode Navigation': [
-        false
-        'Add buttons to navigate to posts having the same capcode.'
+        'Add buttons to navigate to posts having the same unique ID or capcode.'
       ]
       'Custom Board Titles': [
         true
