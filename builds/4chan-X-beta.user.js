@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.7.2
+// @version      1.14.7.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.7.2',
+  VERSION:   '1.14.7.3',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -1336,82 +1336,84 @@ body.hasDropDownNav{\n\
   border-radius: 3px;\n\
   padding: 0px 2px;\n\
 }\n\
-/* 4chan style fixes */\n\
-/* overrides 4chan CSS on div.opContainer, div.op */\n\
-.opContainer.opContainer, .op.op {\n\
-  display: block;\n\
-  overflow: visible;\n\
-}\n\
-.reply > .file > .fileText {\n\
-  margin: 0 20px;\n\
-}\n\
-.hashlink::before {\n\
-  content: ' ';\n\
-  visibility: hidden;\n\
-}\n\
-.inline + .hashlink,\n\
 [hidden] {\n\
   display: none !important;\n\
 }\n\
-.fileText a {\n\
+/* 4chan style fixes */\n\
+/* overrides 4chan CSS on div.opContainer, div.op */\n\
+:root.sw-yotsuba .opContainer, :root.sw-yotsuba .op {\n\
+  display: block;\n\
+  overflow: visible;\n\
+}\n\
+:root.sw-yotsuba .reply > .file > .fileText {\n\
+  margin: 0 20px;\n\
+}\n\
+:root.sw-yotsuba .hashlink::before {\n\
+  content: ' ';\n\
+  visibility: hidden;\n\
+}\n\
+:root.sw-yotsuba .inline + .hashlink {\n\
+  display: none !important;\n\
+}\n\
+:root.sw-yotsuba .fileText a {\n\
   unicode-bidi: -moz-isolate;\n\
   unicode-bidi: -webkit-isolate;\n\
 }\n\
-#g-recaptcha {\n\
+:root.sw-yotsuba #g-recaptcha {\n\
   min-height: 78px;\n\
   height: auto;\n\
 }\n\
-:root:not(.js-enabled) #postForm {\n\
+:root.sw-yotsuba:not(.js-enabled) #postForm {\n\
   display: table;\n\
 }\n\
-#captchaContainerAlt td:nth-child(2) {\n\
+:root.sw-yotsuba #captchaContainerAlt td:nth-child(2) {\n\
   display: table-cell !important;\n\
 }\n\
-canvas#tegaki-canvas {\n\
+:root.sw-yotsuba canvas#tegaki-canvas {\n\
   background: none;\n\
 }\n\
 /* Disable obnoxious captcha fade-in. */\n\
-body > div:last-of-type {\n\
+:root.sw-yotsuba > body > div:last-of-type {\n\
   transition: none !important;\n\
 }\n\
 /* Fix captcha scrolling to top of page. */\n\
-body > div[style*=\" top: -10000px;\"] {\n\
+:root.sw-yotsuba > body > div[style*=\" top: -10000px;\"] {\n\
   visibility: hidden !important;\n\
 }\n\
 /* Make long filenames wrap properly: https://github.com/ccd0/4chan-x/issues/1082 */\n\
-.post > .file {\n\
+:root.sw-yotsuba .post > .file {\n\
   /* currently nonstandard but may be added: https://lists.w3.org/Archives/Public/www-style/2016Mar/0352.html, https://bugzilla.mozilla.org/show_bug.cgi?id=1296042 */\n\
   word-break: break-word;\n\
 }\n\
-:root:not(.ua-webkit):not(.ua-blink) .fileText {\n\
+:root.sw-yotsuba:not(.ua-webkit):not(.ua-blink) .fileText {\n\
   word-wrap: break-word;\n\
   max-width: calc(100vw - 90px);\n\
 }\n\
-body.is_catalog .thread > a > img {\n\
+:root.sw-yotsuba > body.is_catalog .thread > a > img {\n\
   display: inline-block;\n\
 }\n\
 /* Links to NSFW boards */\n\
-.nwsb {\n\
+:root.sw-yotsuba .nwsb {\n\
   display: inline;\n\
 }\n\
-.fileText {\n\
+:root.sw-yotsuba .fileText {\n\
   max-width: auto;\n\
   white-space: normal;\n\
 }\n\
 /* Ads */\n\
-.ad-cnt > *, .adg-rects > *, .bsa-cnt {\n\
+:root.sw-yotsuba .ad-cnt > *, :root.sw-yotsuba .adg-rects > *, :root.sw-yotsuba .bsa-cnt {\n\
   height: auto !important;\n\
 }\n\
-:root:not(.ads-loaded) hr.abovePostForm,\n\
-:root:not(.ads-loaded) .adg-rects > hr,\n\
-#adg-ol + hr {\n\
+:root.sw-yotsuba:not(.ads-loaded) hr.abovePostForm,\n\
+:root.sw-yotsuba:not(.ads-loaded) .adg-rects > hr,\n\
+:root.sw-yotsuba #adg-ol + hr {\n\
   display: none;\n\
 }\n\
-.adg-rects {\n\
+:root.sw-yotsuba .adg-rects {\n\
   margin: 0;\n\
   font-size: 0;\n\
 }\n\
-div.center[style] {\n\
+:root.sw-yotsuba div.center[style] {\n\
   display: none !important;\n\
 }\n\
 /* Tinyboard / vichan conflicts */\n\
@@ -25605,6 +25607,18 @@ Main = (function() {
         db = ref2[j];
         Conf[db] = {};
       }
+      Conf['customTitles'] = {
+        '4chan.org': {
+          boards: {
+            'qa': {
+              'boardTitle': {
+                orig: '/qa/ - Question & Answer',
+                title: '/qa/ - 2D / Random'
+              }
+            }
+          }
+        }
+      };
       Conf['boardConfig'] = {
         boards: {}
       };
