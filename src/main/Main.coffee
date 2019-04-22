@@ -58,6 +58,7 @@ Main =
 
     for db in DataBoard.keys
       Conf[db] = {}
+    Conf['customTitles'] = {'4chan.org': {boards: {'qa': {'boardTitle': {orig: '/qa/ - Question & Answer', title: '/qa/ - 2D / Random'}}}}}
     Conf['boardConfig'] = boards: {}
     Conf['archives'] = Redirect.archives
     Conf['selectedArchives'] = {}
