@@ -19,6 +19,19 @@ CrossOrigin =
       cb response, responseHeaderString
     <% } %>
     <% if (type === 'userscript') { %>
+    fallback = ->
+      $.ajax url, {
+        headers
+        responseType: 'arraybuffer'
+        onloadend: ->
+          if @status and @response
+            cb new Uint8Array(@response), @getAllResponseHeaders()
+          else
+            cb null
+      }
+    unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
+      fallback()
+      return
     gmOptions =
       method: "GET"
       url: url
@@ -43,7 +56,7 @@ CrossOrigin =
     try
       (GM?.xmlHttpRequest or GM_xmlhttpRequest) gmOptions
     catch
-      $.queueTask cb, null
+      fallback()
     <% } %>
 
   file: (url, cb) ->
