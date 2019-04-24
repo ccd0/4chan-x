@@ -568,9 +568,11 @@ if GM?.deleteValue? and window.BroadcastChannel and not GM_addValueChangeListene
       cb?()
 
   $.clear = (cb) ->
-    GM.listValues().then (keys) ->
+    GM.listValues().then((keys) ->
       $.delete keys.map((key) -> key.replace g.NAMESPACE, ''), cb
-
+    ).catch( ->
+      $.delete Object.keys(Conf).concat(['previousversion', 'QR Size', 'QR.persona', 'hiddenPSA']), cb
+    )
 else
 
   unless GM_deleteValue?
