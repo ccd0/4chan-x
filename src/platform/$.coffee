@@ -50,7 +50,7 @@ $.ajax = do ->
     {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options
     responseType ?= 'json'
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
-    url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
+    url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
     r = new pageXHR()
     type or= form and 'post' or 'get'
     try
