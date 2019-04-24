@@ -19,7 +19,7 @@ CrossOrigin =
       cb response, responseHeaderString
     <% } %>
     <% if (type === 'userscript') { %>
-    (GM?.xmlHttpRequest or GM_xmlhttpRequest)
+    gmOptions =
       method: "GET"
       url: url
       headers: headers
@@ -40,6 +40,10 @@ CrossOrigin =
         cb null
       onabort: ->
         cb null
+    try
+      (GM?.xmlHttpRequest or GM_xmlhttpRequest) gmOptions
+    catch
+      $.queueTask cb, null
     <% } %>
 
   file: (url, cb) ->
@@ -102,7 +106,7 @@ CrossOrigin =
     req.onloadend = onloadend
 
     <% if (type === 'userscript') { %>
-    gmReq = (GM?.xmlHttpRequest or GM_xmlhttpRequest) {
+    gmOptions = {
       method: 'GET'
       url
       headers
@@ -121,6 +125,11 @@ CrossOrigin =
       onabort:   -> req.onloadend()
       ontimeout: -> req.onloadend()
     }
+    try
+      gmReq = (GM?.xmlHttpRequest or GM_xmlhttpRequest) gmOptions
+    catch
+      return $.ajax url, options
+
     if gmReq and typeof gmReq.abort is 'function'
       req.abort = ->
         try
