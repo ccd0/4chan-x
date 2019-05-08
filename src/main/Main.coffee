@@ -354,7 +354,7 @@ Main =
       else
         g.BOARD
       threadID = +threadRoot.id.match(/\d*$/)[0]
-      return if boardObj.threads[threadID]?.nodes.root
+      return if !threadID or boardObj.threads[threadID]?.nodes.root
       thread = new Thread threadID, boardObj
       thread.nodes.root = threadRoot
       threads.push thread
