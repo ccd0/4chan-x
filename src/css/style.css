@@ -190,7 +190,6 @@ audio.controls-added {
 
 /* fixed, z-index */
 #overlay,
-#fourchanx-settings,
 #qp, #ihover,
 #navlinks, .fixed #header-bar,
 :root.float #updater,
@@ -198,11 +197,8 @@ audio.controls-added {
 #qr {
   position: fixed;
 }
-#fourchanx-settings {
-  z-index: 999;
-}
 #overlay {
-  z-index: 900;
+  z-index: 999;
 }
 #qp, #ihover {
   z-index: 60;
@@ -513,6 +509,8 @@ audio.controls-added {
 }
 #overlay {
   background-color: rgba(0, 0, 0, .5);
+  display: -webkit-flex;
+  display: flex;
   top: 0;
   left: 0;
   height: 100%;
@@ -528,11 +526,10 @@ audio.controls-added {
   max-width: 100%;
   margin: auto;
   padding: 3px;
-  top: 50%;
-  left: 50%;
-  -moz-transform: translate(-50%, -50%);
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
 }
 #fourchanx-settings > nav {
   padding: 2px 2px 0;
