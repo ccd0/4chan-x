@@ -4,7 +4,7 @@ Settings =
     link = $.el 'a',
       className:   'settings-link fa fa-wrench'
       textContent: 'Settings'
-      title: '<%= meta.name %> Settings'
+      title:        '<%= meta.name %> Settings'
       href:        'javascript:;'
     $.on link, 'click', Settings.open
 
@@ -41,13 +41,9 @@ Settings =
     return if Settings.overlay
     $.event 'CloseMenu'
 
-    Settings.dialog = dialog = $.el 'div',
-      id:        'fourchanx-settings'
-      className: 'dialog'
-    $.extend dialog, <%= readHTML('Settings.html') %>
-
-    Settings.overlay = overlay = $.el 'div',
-      id: 'overlay'
+    Settings.dialog = overlay = $.el 'div',
+      id:        'overlay'
+      innerHTML: <%= readHTML('Settings.html') %>
 
     $.on $('.export', dialog), 'click',  Settings.export
     $.on $('.import', dialog), 'click',  Settings.import
@@ -64,14 +60,16 @@ Settings =
       links.push link, $.tn ' | '
       sectionToOpen = link if section.title is openSection
     links.pop()
-    $.add $('.sections-list', dialog), links
+    $.add $('.sections-list', overlay), links
     (if sectionToOpen then sectionToOpen else links[0]).click() unless openSection is 'none'
 
-    $.on $('.close', dialog), 'click', Settings.close
+    $.on $('.close', overlay), 'click', Settings.close
     $.on overlay, 'click', Settings.close
     $.on window, 'beforeunload', Settings.close
+    $.on overlay.firstElementChild, 'click', (e) -> e.stopPropagation()
 
-    $.add d.body, [overlay, dialog]
+    $.addClass d.body, 'unscroll'
+    $.add d.body, overlay
 
     $.event 'OpenSettings', null, dialog
 
@@ -79,9 +77,8 @@ Settings =
     return unless Settings.dialog
     # Unfocus current field to trigger change event.
     d.activeElement?.blur()
-    $.rm Settings.overlay
+    $.rmClass d.body, 'unscroll'
     $.rm Settings.dialog
-    delete Settings.overlay
     delete Settings.dialog
 
   sections: []
