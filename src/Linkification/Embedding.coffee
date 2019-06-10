@@ -384,14 +384,9 @@ Embedding =
     ,
       key: 'Streamable'
       regExp: /^\w+:\/\/(?:www\.)?streamable\.com\/([\w\d]+)/
-      el: (a) -> 
-        api = "https://api.streamable.com/oembed?url=https://streamable.com/#{a.dataset.uid}"
-        el = $.el 'iframe',
+      el: (a) ->
+        $.el 'iframe',
           src: "https://streamable.com/o/#{a.dataset.uid}"
-          width: api.width
-          height: api.height
-        el.setAttribute "allowfullscreen", "true"
-        el
       title:
         api: (uid) -> "https://api.streamable.com/oembed?url=https://streamable.com/#{uid}"
         text: (_) -> _.title
