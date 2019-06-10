@@ -382,6 +382,20 @@ Embedding =
         $.el 'iframe',
           src: "https://www.strawpoll.me/embed_1/#{a.dataset.uid}"
     ,
+      key: 'Streamable'
+      regExp: /^\w+:\/\/(?:www\.)?streamable\.com\/([\w\d]+)/
+      el: (a) -> 
+        api = "https://api.streamable.com/oembed?url=https://streamable.com/#{a.dataset.uid}"
+        el = $.el 'iframe',
+          src: "https://streamable.com/o/#{a.dataset.uid}"
+          width: api.width
+          height: api.height
+        el.setAttribute "allowfullscreen", "true"
+        el
+      title:
+        api: (uid) -> "https://api.streamable.com/oembed?url=https://streamable.com/#{uid}"
+        text: (_) -> _.title
+    ,
       key: 'TwitchTV'
       regExp: /^\w+:\/\/(?:www\.|secure\.)?twitch\.tv\/(\w[^#\&\?]*)/
       el: (a) ->
