@@ -4,6 +4,10 @@
 
 ### v1.14.7
 
+**v1.14.7.4** *(2019-05-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.4/builds/4chan-X-noupdate.crx)]
+- Fix conflict with thread-stats element on some vichan boards.
+- Update ad blocker workaround for 4channel domain.
+
 **v1.14.7.3** *(2019-04-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.3/builds/4chan-X-noupdate.crx)]
 - Change default title on /qa/ to something more accurate. Users can, as always, edit it to whatever they want.
 - Minor CSS fixes.
