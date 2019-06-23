@@ -1146,6 +1146,7 @@ Config =
   'Max Replies': 1000
 
   'Autohiding Scrollbar': false
+  'Chromium CORB Bug': false
 
   position:
     'embedding.position':      'top: 50px; right: 0px;'

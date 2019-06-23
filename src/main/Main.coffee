@@ -132,6 +132,9 @@ Main =
       window.FCX = {}
     Main.jsEnabled = $.hasClass doc, 'js-enabled'
 
+    # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
+    $.ajaxPageInit?()
+
     switch hostname
       when 'www.4chan.org', 'www.4channel.org'
         $.onExists doc, 'body', -> $.addStyle CSS.www

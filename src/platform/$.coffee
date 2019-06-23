@@ -47,12 +47,17 @@ $.ajax = do ->
     pageXHR = XMLHttpRequest
 
   (url, options={}) ->
-    {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options
-    responseType ?= 'json'
+    options.responseType ?= 'json'
+    options.type or= options.form and 'post' or 'get'
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
+    <% if (type === 'crx') { %>
+    # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
+    if Conf['Chromium CORB Bug'] and Site.software is 'yotsuba' and !options.testCORB
+      return $.ajaxPage url, options
+    <% } %>
+    {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options
     r = new pageXHR()
-    type or= form and 'post' or 'get'
     try
       r.open type, url, true
       for key, value of (headers or {})
@@ -64,9 +69,8 @@ $.ajax = do ->
       <% if (type === 'crx') { %>
       # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
       $.on r, 'load', ->
-        return unless r.readyState is 4 and r.status is 200 and r.statusText is '' and r.response is null and !$.ajaxWarningShown
-        new Notice 'warning', "Error loading #{url}; try going to chrome://flags/#network-service and disabling the network service flag."
-        $.ajaxWarningShown = true
+        if !Conf['Chromium CORB Bug'] and r.readyState is 4 and r.status is 200 and r.statusText is '' and r.response is null
+          $.set 'Chromium CORB Bug', (Conf['Chromium CORB Bug'] = Date.now())
       <% } %>
       r.send form
     catch err
@@ -76,6 +80,87 @@ $.ajax = do ->
       $.queueTask $.event, 'error',   null, r
       $.queueTask $.event, 'loadend', null, r
     r
+
+<% if (type === 'crx') { %>
+# XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
+do ->
+  requestID = 0
+  requests = {}
+
+  $.ajaxPageInit = ->
+    if Conf['Chromium CORB Bug'] and Site.software is 'yotsuba'
+      unless 0 <= Date.now() - Conf['Chromium CORB Bug'] < 2 * $.DAY
+        $.ajax "#{location.protocol}//a.4cdn.org/boards.json",
+          testCORB: true
+          onloadend: ->
+            if @response
+              $.set 'Chromium CORB Bug', (Conf['Chromium CORB Bug'] = false)
+
+    $.global ->
+      window.FCX.requests = {}
+
+      document.addEventListener '4chanXAjax', (e) ->
+        {url, timeout, responseType, withCredentials, type, onprogress, form, headers, id} = e.detail
+        window.FCX.requests[id] = r = new XMLHttpRequest()
+        r.open type, url, true
+        for key, value of (headers or {})
+          r.setRequestHeader key, value
+        r.responseType = if responseType is 'document' then 'text' else responseType
+        r.timeout = timeout
+        r.withCredentials = withCredentials
+        if onprogress
+          r.upload.onprogress = (e) ->
+            {loaded, total} = e
+            detail = {loaded, total, id}
+            document.dispatchEvent new CustomEvent '4chanXAjaxProgress', {bubbles: true, detail}
+        r.onloadend = ->
+          delete window.FCX.requests[id]
+          {status, statusText, response} = @
+          responseHeaderString = @getAllResponseHeaders()
+          detail = {status, statusText, response, responseHeaderString, id}
+          document.dispatchEvent new CustomEvent '4chanXAjaxLoadend', {bubbles: true, detail}
+        # connection error or content blocker
+        r.onerror = ->
+          console.warn "4chan X failed to load: #{url}" unless r.status
+        if form
+          fd = new FormData()
+          for entry in form
+            fd.append(entry[0], entry[1])
+        else
+          fd = null
+        r.send fd
+      , false
+
+      document.addEventListener '4chanXAjaxAbort', (e) ->
+        return unless (r = window.FCX.requests[e.detail.id])
+        r.abort()
+      , false
+
+    $.on d, '4chanXAjaxProgress', (e) ->
+      return unless (req = requests[e.detail.id])
+      req.upload.onprogress.call req.upload, e.detail
+
+    $.on d, '4chanXAjaxLoadend', (e) ->
+      return unless (req = requests[e.detail.id])
+      delete requests[e.detail.id]
+      if e.detail.status
+        $.extend req, e.detail
+        if req.responseType is 'document'
+          req.response = new DOMParser().parseFromString(e.detail.response, 'text/html')
+      req.onloadend()
+
+  $.ajaxPage = (url, options={}) ->
+    {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options
+    id = requestID++
+    requests[id] = req = new CrossOrigin.Request()
+    $.extend req, {responseType, onloadend}
+    req.upload = {onprogress}
+    req.abort = ->
+      $.event '4chanXAjaxAbort', {id}
+    form = Array.from(form.entries()) if form
+    $.event '4chanXAjax', {url, timeout, responseType, withCredentials, type, onprogress: !!onprogress, form, headers, id}
+    req
+<% } %>
 
 # Status Code 304: Not modified
 # With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
