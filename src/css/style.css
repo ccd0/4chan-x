@@ -2405,3 +2405,14 @@ a:only-of-type > .remove {
 :root.gallery-open.fixed #header-bar:not(.autohide) #shortcuts .fa::before {
   visibility: hidden;
 }
+
+/* Mod Contact Links */
+.contact-links {
+  margin-left: 2px;
+}
+.move-note > a {
+  text-decoration: underline;
+}
+.invisible {
+  font-size: 0;
+}
