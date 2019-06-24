@@ -391,7 +391,7 @@ Embedding =
           src: "https://www.strawpoll.me/embed_1/#{a.dataset.uid}"
     ,
       key: 'Streamable'
-      regExp: /^\w+:\/\/(?:www\.)?streamable\.com\/([\w\d]+)/
+      regExp: /^\w+:\/\/(?:www\.)?streamable\.com\/(\w+)/
       el: (a) ->
         el = $.el 'iframe',
           src: "https://streamable.com/o/#{a.dataset.uid}"
