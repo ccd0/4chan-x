@@ -235,6 +235,15 @@ Embedding =
             el.hidden = false
         el
     ,
+      key: 'PeerTube'
+      regExp: /^(\w+:\/\/[^\/]+\/videos\/watch\/\w{8}-\w{4}-\w{4}-\w{4}-\w{12})(.*)/
+      el: (a) ->
+        options = if (start = a.dataset.options.match /[?&](start=\w+)/) then "?#{start[1]}" else ''
+        el = $.el 'iframe',
+          src: a.dataset.uid.replace('/videos/watch/', '/videos/embed/') + options
+        el.setAttribute "allowfullscreen", "true"
+        el
+    ,
       key: 'BitChute'
       regExp:  /^\w+:\/\/(?:www\.)?bitchute\.com\/video\/([\w\-]+)/
       el: (a) ->
