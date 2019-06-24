@@ -235,6 +235,14 @@ Embedding =
             el.hidden = false
         el
     ,
+      key: 'BitChute'
+      regExp:  /^\w+:\/\/(?:www\.)?bitchute\.com\/video\/([\w\-]+)/
+      el: (a) ->
+        el = $.el 'iframe',
+          src: "https://www.bitchute.com/embed/#{a.dataset.uid}/"
+        el.setAttribute "allowfullscreen", "true"
+        el
+    ,
       key: 'Clyp'
       regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w{8})/
       style: 'border: 0; width: 640px; height: 160px;'
