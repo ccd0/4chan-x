@@ -918,6 +918,7 @@ div[data-checked="false"] > .suboption-list {
 .catalog-post > .file > :not(.fileText),
 .catalog-post > * > .fileText > :not(:first-child),
 .catalog-post > .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),
+.catalog-post > .postInfo > .nameBlock > .contact-links,
 .catalog-post > * > * > .posteruid,
 :root.bottom-backlinks .catalog-post > .container,
 .post:not(.catalog-post) > .catalog-link,
