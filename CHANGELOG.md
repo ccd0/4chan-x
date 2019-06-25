@@ -2,6 +2,18 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.8
+
+**v1.14.8.0** *(2019-06-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.8.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.8.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.7.4.
+- Work around issues with blocked AJAX requests in Chrome extension. #2228
+- Update Yandex image search URL. #2330
+- Add contact links to mod and other capcode posts.
+- (wlerin) Add Streamable embedding.
+- Add BitChute embedding. #2038
+- Add PeerTube embedding.
+- Handle failures of Greasemonkey API better.
+
 ### v1.14.7
 
 **v1.14.7.4** *(2019-05-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.4/builds/4chan-X-noupdate.crx)]

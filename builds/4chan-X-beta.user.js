@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.7.4
+// @version      1.14.8.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -183,7 +183,7 @@
 
 'use strict';
 
-var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, Tinyboard, UI, Unread, UnreadIndex, Volume;
+var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, Build, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, ModContact, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, Tinyboard, UI, Unread, UnreadIndex, Volume;
 
 var Conf, E, c, d, doc, docSet, g;
 
@@ -198,7 +198,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.7.4',
+  VERSION:   '1.14.8.0',
   NAMESPACE: '4chan X.',
   boards:    {}
 };
@@ -433,7 +433,7 @@ Config = (function() {
       filesize: '',
       MD5: ''
     },
-    sauces: "# Known filename formats:\nhttp://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/\n//www.deviantart.com/gallery/#/d%$1%$2;regexp:/^\\w+_by_\\w+[_-]d([\\da-z]{6})\\b|^d([\\da-z]{6})-[\\da-z]{8}-/\n//imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/\nhttp://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/\nhttps://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/\n\n# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\nhttps://www.yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//tineye.com/search?url=%IMG\n#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://trace.moe/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desuarchive.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://exif.regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
+    sauces: "# Known filename formats:\nhttp://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/\n//www.deviantart.com/gallery/#/d%$1%$2;regexp:/^\\w+_by_\\w+[_-]d([\\da-z]{6})\\b|^d([\\da-z]{6})-[\\da-z]{8}-/\n//imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/\nhttp://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/\nhttps://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/\n\n# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\nhttps://yandex.com/images/search?rpt=imageview&img_url=%IMG\n#//tineye.com/search?url=%IMG\n#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://trace.moe/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desuarchive.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://exif.regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
     FappeT: {
       werk: false
     },
@@ -552,6 +552,7 @@ Config = (function() {
     'Thread Quotes': false,
     'Max Replies': 1000,
     'Autohiding Scrollbar': false,
+    'Chromium CORB Bug': false,
     position: {
       'embedding.position': 'top: 50px; right: 0px;',
       'thread-stats.position': 'bottom: 0px; right: 0px;',
@@ -2175,6 +2176,7 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 .catalog-post > .file > :not(.fileText),\n\
 .catalog-post > * > .fileText > :not(:first-child),\n\
 .catalog-post > .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),\n\
+.catalog-post > .postInfo > .nameBlock > .contact-links,\n\
 .catalog-post > * > * > .posteruid,\n\
 :root.bottom-backlinks .catalog-post > .container,\n\
 .post:not(.catalog-post) > .catalog-link,\n\
@@ -3637,6 +3639,16 @@ a:only-of-type > .remove {\n\
 :root.gallery-open.fixed #header-bar:not(.autohide) #shortcuts .fa::before {\n\
   visibility: hidden;\n\
 }\n\
+/* Mod Contact Links */\n\
+.contact-links {\n\
+  margin-left: 2px;\n\
+}\n\
+.move-note > a {\n\
+  text-decoration: underline;\n\
+}\n\
+.invisible {\n\
+  font-size: 0;\n\
+}\n\
 /* General */\n\
 :root.yotsuba .dialog {\n\
   background-color: #F0E0D6;\n\
@@ -4415,6 +4427,11 @@ a:only-of-type > .remove {\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAitJREFUOE9jYCAWKJWwavr0KyXWb/FIbDtUFFyzJx6nVofE2Xo5nXsj0rqPNSR0nVkR2Hjmgmfd+U9Otdf+m5Vf/6+SfeU/R9ChVVgNYDRtlfJuuPA/rPfe/4QpD/6nznj0P27Kw/9unff/69Xf+69c/+C/SO7N/0z+OAxgMmmRCe++/r9i3ev/KWvf/vdY8PK/bt/9/wrNV3/IN5y/IVt1YqNg4pGTTP4HsbuA2bhZ2qvpyn+xjIObxAp3VwqlrgngLFyryVy5nhPmZJHANS2cwYexG8BmVC/pWn3hP4NZlzWuQDJI3dIiFnUUuwEsQAOcq87jNcC7fHeLUtJxHF4AGmBWeAavAWH1+1rUUk7giAWjOknllON4DXAs2NEiG4/DBQxAF/CFHfrPYI4jDFSLuJVjNrUJhB/B7gIGo1pJRt99GAZYJK7wLJ1z7Xzl4vu/7aqv/GRBj0bjqAX2qb0nJ7mXH17C4HcUxQA+hymWtSue/C5a9up/9Ozn/7Vr7v1nRY7GqMb91T3b3v6vWvPmf/S0p/9ZQk+DDLCBRSOz06Jqk+o7/21nvfqvsebDf7kZL/5zBaxphkezd+OFn7HzXvz3Wvjmv9a8N//5Ek//ZTBpVYUrMG2X5wjcdl68+uI/wa5Lr3hSNjczGFeywOVZ/bbcVGp//F9izfv/Ql03f3P4LC/HSEQquYwMFnUCDJ7dzBhyjGZNQpye89M5gpfnMvtNUyE2h4PUAQBovvT7lyNljwAAAABJRU5ErkJggg==') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
+.linkify.bitchute::before {\n\
+  content: \"\";\n\
+  background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAadQTFRFAAAAwzw8xDs7cY6O0iws0ysrtF9f0Sws1CwsyzU1zTIy1igoyzQ01icnY7i4t0hI0S4u0ysr1Soq1ikp1ikp1Soq0ysr0S4uu0VFzjEx1Csr1ygo2Ccn2Ccn1ygo1CoqzjExzjAw1Skp2Ccn2Ccn1ikp0TAwxzY21Soq1SoqyzQ00iws1ygo1ygo0yws1Soq1Skp1igo1igo1igo1igo1igo1igo1Coq1Soq0C0t1ygo1ygo0S4unV5e1Csr1ygo1ygo1CsruUdHxzg41Skp1ygo1CsryTU10C4u1igo1ycn1ygo0i0txjo60S0t1ikp1ygo1ikp1Cws1Coq1Coq0yws0S0tyzQ00iws1Soq0ysr0i0txDs72Ccn2CUl2CYm2CQk3EFB2S8v2zw82jY24FZW3D0931FR3EBA3UND8LS04FVV7qys4V9f4WBg+erq766u9t7e7qqq2Ckp54KC9+Pj6pSU+Ojo5XNz9NHR6YqK8bu765ub5G5u9M3N6ImJ88vL5XV165eX3UVF6pWV3UhI2Soq2jU12Coq2jQ02Cgo2Sws////FaxLuAAAAF10Uk5TAAAAAAAAAAAAAAAAAAAAASJnoLy9oWolAhBz1vr72XgTGKf8/a4cCpuiDVvz9mS6xOvy9vzg6aGsPOToRAFv9fh2Awm07XgIMd765UEDOsfemVhhY00nBommbCkEI8horgAAAL5JREFUKBUFwbFKA0EUQNF7387sMq4EmzRpLSSdIBYKFv6Af2prnSYkRT4gWFgkCBJQ0EIFdcZzBCeqqh4qdk7VW2ChPusw02sAYKU7z7wEAAA2piQKFbrWSHazc1J0XWs5pdxPDykcVX+7Y9UxUsSo+s7PibqPFBRV/C5qi4i/UkrJrc7L47Bt4ZWnUaMCAE9GSrtKBQD2fR+bnAEAeOn7dUTOwApe35bDsPz0zsniQlV98IN0tJ3f6P0XAMA/kxou7OXCdnoAAAAASUVORK5CYII=') center left no-repeat!important;\n\
+  padding-left: 18px;\n\
+}\n\
 .linkify.clyp::before {\n\
   content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAwUExURTSY22ey5E2l4KbS75rM7Y3F64C/6f///8zl9nS45r/f9PL5/UGe3bPY8Vqr4v///wNjrzUAAAABYktHRA8YugDZAAAAB3RJTUUH4AINEi85AIH95AAAAE9JREFUCNdjYMAGGBWgDGYHCM2a3hkAZmi0dzSBaKaO9o5moCqmLiCjYzNQyw4QowIodQzI6E0AKcpo72gE6+Jyb1kAMehUA9RktgdYbQYAjGIVNGGXBJkAAAAASUVORK5CYII=') center left no-repeat!important;\n\
@@ -4455,9 +4472,19 @@ a:only-of-type > .remove {\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAB1FBMVEUAAAAAAAAAAABWYWwAAABbY3BbYm5dZnFdZXJeZnMEBAQHCAhYYGpdZnFdZnBgaHIlJyomKCooKi09QkdESU5eZGtdYmhdYmleY2lrcXdqb3Rqb3Rqb3SSmJ+SlJeWmJutr7GtrrCWm6ChpKhbW1tmZmZvb290dHR3d3d4eHh5eXl6enp8fHx+gIJ/f3+CgoKDg4OEhISFhYWHh4eKioqKjI2Li4uMjIyOjo6Pj4+QkJCRkZGSkpKUlJSVl5mWlpaYmZqZm52ampqbm5ucnJydnZ2enp6fn5+hoaGioqKkpKSkpaalpaWmp6mmp6qnqauoqKioqquoqq2qqqqrrK2srKysra6srrCsrrGurq6vr6+wsLCxsbGysrKztLa0tLS1t7m2tra3t7e4uLi5ubm6urq7u7u8vLy9vb2+vr7AwMDAwsTBwcHExcfFxcXFxsnGxsbHx8fIyMjJycnMzMzNzc3Ozs7O0NLPz8/Q0NDR0dHR09XT09PV1dXV1dbV1tfV19rW1tbX19fX19jY2tzZ2dnZ2tva2tra3N3a3N7c3Nze3t7f39/f4OHg4ODi4uLl5+jm5ubs7Ozs7e3u7u7v7+/v8PDw8PDx8fHy8vLz8/P29vYSoLMZAAAAJHRSTlMABAUGCwsNHCAiLzMzMzZEYGJwgIuOnJycnqmqq9bc3+/w8fkZ0N/uAAAA/klEQVQoU2NgYGDl5YMDdgYGBmZZ3964CYFtIR3e9Q7K/AwMHI55KfaFmcHWMy3K3MwlGRg4wz0zdYpcorRbNbL0LaWAAp3ts2umV8wo6MupTauQBgqUG03VL7W3sfZSb1erAgm02M+yzYrVCXUy6zapAQlUx/dEdyX3J3ZHVUYVywAF8o2rDNN1Go2jzGLMokAC2QbuSc42mXmaOXop9iAtCXrJ5qXWjT59Abl2ESJAAX/tSIMMiyrrqQ3T6uS5gQK6kSqpqkUermGTexQFmYACflqR+hlWZSamzQpCLEDPsSmVVDT1TJw0JUhOAMRnYOARFRMTE5cQF+ZiBPIAII5B3EVG0b4AAAAASUVORK5CYII=') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
+.linkify.peertube::before {\n\
+  content: \"\";\n\
+  background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABIFBMVEUhHyAAAABzPBnxaA3CWBEnJSYbGRptbW16enpzc3PTayWhb04hHyAhHyAhHyAhHyAhHyAhHyAhHyAhHyAhHyAhHyAhHyAhHyAhHyAhHyApIh+0UhMfHiBWMhvsZg7zaQ0hHyAhHyAXHCHzaQ3xaA3xaA3xaA3xaA0hHyAhHyDxaA3xaA3xaA3xaA3xaA3xaA0oJickIiMdGxwUEhPxaA3xaA3xaA1sbGxwcHB3d3eFhYXxaA3xaA3xaA1zc3Nzc3Nzc3Nzc3Nzc3PxaA3xaA3xaA1zc3Nzc3NtdHjxaA3xaA1yc3STcFnvaA/yaAxzc3N4c2/FbDFzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3MhHyDxaA1zc3MAAAAfljyVAAAAXHRSTlMAAAAAAAAAAAAAAAAZkjMBHOLXYArj8p0u2VsJ1XaGL/OhKyXc1WEN2gwk2/SjKgEYiS4B/tYFGosqAdleAxzj12ML9Z8s850rJWbYeYMs1F8Koiri1V0MGZY0AYbIBFIAAAABYktHRAH/Ai3eAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH4wYXFBUVX81QWQAAAKxJREFUGNNVz9UWgkAQANDBtdbu7lZsxe7ubpH//wxBPKDzNvdMAmi0Oj0QQgAYjCazBX7BStvsDqHoAzTtdLklf+Dx+vwICRAIhsKRaCyOvpAwJ6Up8pXOZHOIAFm+UCzJEQuvMhWrIFBUa/WGkodmq40Ad7q9/kDFwnA05lpYYCbT2ZykFvxQDhhmuVpvcvxaHra7vfp72KflcMSYEOB0vlyx+By+3R9PMSfe+P0enM1454kAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTktMDYtMjRUMDM6MjE6MjEtMDc6MDDse6MAAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE5LTA2LTI0VDAzOjIxOjIxLTA3OjAwnSYbvAAAAABJRU5ErkJggg==') center left no-repeat!important;\n\
+  padding-left: 18px;\n\
+}\n\
 .linkify.soundcloud::before {\n\
   content: \"\";\n\
   background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABsklEQVQ4y5WTy2pUQRCGv2rbzDjJeAlIBmOyipGIIJqFEBDElwh4yULGeRFXPoEIBl/AvQ/gC2RnxCAoxijiwks852S6+3dxzslcHJCpTXVX11/Xv0097gLPgVNMJxnQNfX4zsqleWbnpoMf/oa9d988MM9MC/rp+E0a+A0dsVobMNMCOO8B6McRoABJI+A6gJmN3D2A8jgEBCEkSEMBrcrsDAzDWWn3AjgKFaDMmgRqniGFgsaDp1jrLOngDf1XT1D+A1dFc4MKAkkiCVKjjVu7g9+4Rzx4i1u6hjXbuMWr0O5QPNvCu7IaCZwEKQukLGDrm5x8uI0tr6MkiGlkiv7yLfzN+6S5i6QsIMABkEfcxhbWWYMkVAOjxvYAjc3HNHrbKI9VBQBFwF25XQKSBjqIf1YBuAurEMrczgDygD6/x2LCpFLXLUyQ+PoldphhBhYfIX09XU1+Flaukz7uYqs3SHs7cG4BmTsmkBUF9mmXEwa28BNLPaQPLepuNcbGSWQquQC2/Kdcox1FUGkcB0ykck1nA2+wTzMs8stGnP4rbWGw74EuS/GFQWfK7/wF6P4F7fzIAYkdmdEAAAAASUVORK5CYII=') center left no-repeat!important;\n\
+  padding-left: 18px;\n\
+}\n\
+.linkify.streamable::before {\n\
+  content: \"\";\n\
+  background: transparent url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAABXFBMVEUPkPoNj/qExv0PkPoPkPoPkPoPkPoPkPoPkPoPkPoPkPoPkPoPkPoPkPoPkPoPkPoPkPoNj/oPkPoNj/oNj/qExv0PkPpruvwPkPornfoVk/opnPpnufwPkPqExv0Nj/oPkPoNj/oPkPoPkPoPkPoPkPoPkPoPkPoPkPoPkPoPkPoPkPoPkPoPkPoOj/opnPsVk/oMjvoOkPoTkfo6pPsblfo3ovva7v7////v9/5Sr/whmPry+f5htvze8P7W7P5itvyl1v0imPu84P3o9P50v/zN6P73+/8lmvs8pfs+pfsKjvr9/v9EqfsNj/oom/v8/v9nufxAp/tJq/sQkPrb7v6t2f0IjPoclvr6/f9luPwUkvrp9f7h8f5ruvy/4f4kmftpuvwxoPum1v32+/8jmfpMrPvu9/7z+f9UsPs7pPv8/f/4/P9oufwalfpDqPsMj/ounvtVsPsnm/qzfQQ9AAAALXRSTlMAAAAggMzw0IYkBPb4iAamsgZ+jPwogpDO1vTYlPoulL4KivyUCiqO1PL01i67tUAWAAAAAWJLR0Q4oAel1gAAAAd0SU1FB+MGFxMuDXVcMbIAAADdSURBVBjTY2AAAmYWVjY2dg5OBgZGJiCXi4VbFwx4ePlAAlz8unAgIAgUENJFAsJMDMw8unp6+gaGRsYmpoa6IqIMYrp6ZuYWllbW5hY2toZ64gwSurp29g6OTs4urm7uHrqSDGy6nhZeet5WPr5+/gGBelJAgSCLYL+Q0LBw3YjIKKAAu250TGxcvE1CYlJySqquNAOHrl9aukVGZla2RU6uoZ4MA6esrl9evnWBYWFRMdBaOQYGXmSHyQNdyieA4CsogjzHpyQL4SqrqIJ9y8Cgpq6hqaWtogPyPgDmvSxRxBWM9AAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0wNi0yNFQwMjo0NjoxMy0wNzowMCKUvXUAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDYtMjRUMDI6NDY6MTMtMDc6MDBTyQXJAAAAAElFTkSuQmCC') center left no-repeat!important;\n\
   padding-left: 18px;\n\
 }\n\
 .linkify.twitchtv::before {\n\
@@ -4625,13 +4652,13 @@ $ = (function() {
       if (options == null) {
         options = {};
       }
-      onloadend = options.onloadend, timeout = options.timeout, responseType = options.responseType, withCredentials = options.withCredentials, type = options.type, onprogress = options.onprogress, form = options.form, headers = options.headers;
-      if (responseType == null) {
-        responseType = 'json';
+      if (options.responseType == null) {
+        options.responseType = 'json';
       }
+      options.type || (options.type = options.form && 'post' || 'get');
       url = url.replace(/^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/');
+      onloadend = options.onloadend, timeout = options.timeout, responseType = options.responseType, withCredentials = options.withCredentials, type = options.type, onprogress = options.onprogress, form = options.form, headers = options.headers;
       r = new pageXHR();
-      type || (type = form && 'post' || 'get');
       try {
         r.open(type, url, true);
         ref = headers || {};
@@ -5238,6 +5265,8 @@ $ = (function() {
         return $["delete"](keys.map(function(key) {
           return key.replace(g.NAMESPACE, '');
         }), cb);
+      })["catch"](function() {
+        return $["delete"](Object.keys(Conf).concat(['previousversion', 'QR Size', 'QR.persona', 'hiddenPSA']), cb);
       });
     };
   } else {
@@ -5443,11 +5472,29 @@ CrossOrigin = (function() {
 
   CrossOrigin = {
     binary: function(url, cb, headers) {
+      var fallback, gmOptions;
       if (headers == null) {
         headers = {};
       }
       url = url.replace(/^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/');
-      return ((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) || GM_xmlhttpRequest)({
+      fallback = function() {
+        return $.ajax(url, {
+          headers: headers,
+          responseType: 'arraybuffer',
+          onloadend: function() {
+            if (this.status && this.response) {
+              return cb(new Uint8Array(this.response), this.getAllResponseHeaders());
+            } else {
+              return cb(null);
+            }
+          }
+        });
+      };
+      if (!(((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) != null) || (typeof GM_xmlhttpRequest !== "undefined" && GM_xmlhttpRequest !== null))) {
+        fallback();
+        return;
+      }
+      gmOptions = {
         method: "GET",
         url: url,
         headers: headers,
@@ -5474,7 +5521,12 @@ CrossOrigin = (function() {
         onabort: function() {
           return cb(null);
         }
-      });
+      };
+      try {
+        return ((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) || GM_xmlhttpRequest)(gmOptions);
+      } catch (_error) {
+        return fallback();
+      }
     },
     file: function(url, cb) {
       return CrossOrigin.binary(url, function(data, headers) {
@@ -5536,7 +5588,7 @@ CrossOrigin = (function() {
 
     })(),
     ajax: function(url, options) {
-      var gmReq, headers, onloadend, req, timeout;
+      var gmOptions, gmReq, headers, onloadend, req, timeout;
       if (options == null) {
         options = {};
       }
@@ -5546,7 +5598,7 @@ CrossOrigin = (function() {
       }
       req = new CrossOrigin.Request();
       req.onloadend = onloadend;
-      gmReq = ((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) || GM_xmlhttpRequest)({
+      gmOptions = {
         method: 'GET',
         url: url,
         headers: headers,
@@ -5573,7 +5625,12 @@ CrossOrigin = (function() {
         ontimeout: function() {
           return req.onloadend();
         }
-      });
+      };
+      try {
+        gmReq = ((typeof GM !== "undefined" && GM !== null ? GM.xmlHttpRequest : void 0) || GM_xmlhttpRequest)(gmOptions);
+      } catch (_error) {
+        return $.ajax(url, options);
+      }
       if (gmReq && typeof gmReq.abort === 'function') {
         req.abort = function() {
           try {
@@ -12526,6 +12583,11 @@ Settings = (function() {
           set('sauces', data['sauces'].replace(/\/\/%\$1\.deviantart\.com\/gallery\/#\/d%\$2;regexp:\/\^\\w\+_by_\(\\w\+\)-d\(\[\\da-z\]\+\)\//g, '//www.deviantart.com/gallery/#/d%$1%$2;regexp:/^\\w+_by_\\w+[_-]d([\\da-z]{6})\\b|^d([\\da-z]{6})-[\\da-z]{8}-/'));
         }
       }
+      if (compareString < '00001.00014.00008.00000') {
+        if (data['sauces'] != null) {
+          set('sauces', data['sauces'].replace(/https:\/\/www\.yandex\.com\/images\/search/g, 'https://yandex.com/images/search'));
+        }
+      }
       return changes;
     },
     loadSettings: function(data, cb) {
@@ -15736,6 +15798,29 @@ Embedding = (function() {
           return el;
         }
       }, {
+        key: 'PeerTube',
+        regExp: /^(\w+:\/\/[^\/]+\/videos\/watch\/\w{8}-\w{4}-\w{4}-\w{4}-\w{12})(.*)/,
+        el: function(a) {
+          var el, options, start;
+          options = (start = a.dataset.options.match(/[?&](start=\w+)/)) ? "?" + start[1] : '';
+          el = $.el('iframe', {
+            src: a.dataset.uid.replace('/videos/watch/', '/videos/embed/') + options
+          });
+          el.setAttribute("allowfullscreen", "true");
+          return el;
+        }
+      }, {
+        key: 'BitChute',
+        regExp: /^\w+:\/\/(?:www\.)?bitchute\.com\/video\/([\w\-]+)/,
+        el: function(a) {
+          var el;
+          el = $.el('iframe', {
+            src: "https://www.bitchute.com/embed/" + a.dataset.uid + "/"
+          });
+          el.setAttribute("allowfullscreen", "true");
+          return el;
+        }
+      }, {
         key: 'Clyp',
         regExp: /^\w+:\/\/(?:www\.)?clyp\.it\/(\w{8})/,
         style: 'border: 0; width: 640px; height: 160px;',
@@ -15986,6 +16071,25 @@ Embedding = (function() {
           return $.el('iframe', {
             src: "https://www.strawpoll.me/embed_1/" + a.dataset.uid
           });
+        }
+      }, {
+        key: 'Streamable',
+        regExp: /^\w+:\/\/(?:www\.)?streamable\.com\/(\w+)/,
+        el: function(a) {
+          var el;
+          el = $.el('iframe', {
+            src: "https://streamable.com/o/" + a.dataset.uid
+          });
+          el.setAttribute("allowfullscreen", "true");
+          return el;
+        },
+        title: {
+          api: function(uid) {
+            return "https://api.streamable.com/oembed?url=https://streamable.com/" + uid;
+          },
+          text: function(_) {
+            return _.title;
+          }
         }
       }, {
         key: 'TwitchTV',
@@ -18453,6 +18557,74 @@ Keybinds = (function() {
   };
 
   return Keybinds;
+
+}).call(this);
+
+ModContact = (function() {
+  var ModContact;
+
+  ModContact = {
+    init: function() {
+      var ref;
+      if (!(Site.software === 'yotsuba' && ((ref = g.VIEW) === 'index' || ref === 'thread'))) {
+        return;
+      }
+      return Callbacks.Post.push({
+        name: 'Mod Contact Links',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var links, moveNote, moved;
+      if (this.isClone || !ModContact.specific[this.info.capcode]) {
+        return;
+      }
+      links = $.el('span', {
+        className: 'contact-links brackets-wrap'
+      });
+      $.extend(links, ModContact.template(this.info.capcode));
+      $.after(this.nodes.capcode, links);
+      if ((moved = this.info.comment.match(/This thread was moved to >>>\/(\w+)\//)) && ModContact.moveNote[moved[1]]) {
+        moveNote = $.el('div', {
+          className: 'move-note'
+        });
+        $.extend(moveNote, ModContact.moveNote[moved[1]]);
+        return $.add(this.nodes.post, moveNote);
+      }
+    },
+    template: function(capcode) {
+      return {
+        innerHTML: "<a href=\"https://www.4chan.org/feedback\" target=\"_blank\">feedback</a>" + (ModContact.specific[capcode]()).innerHTML
+      };
+    },
+    specific: {
+      Mod: function() {
+        return {
+          innerHTML: " <a href=\"https://www.4chan-x.net/4chan-irc.html\" target=\"_blank\">IRC</a>"
+        };
+      },
+      Manager: function() {
+        return ModContact.specific.Mod();
+      },
+      Developer: function() {
+        return {
+          innerHTML: " <a href=\"https://github.com/4chan\" target=\"_blank\">github</a>"
+        };
+      },
+      Admin: function() {
+        return {
+          innerHTML: " <a href=\"https://twitter.com/hiroyuki_ni\" target=\"_blank\">twitter</a>"
+        };
+      }
+    },
+    moveNote: {
+      qa: {
+        innerHTML: "Moving a thread to /qa/ does not imply mods will read it. If you wish to contact mods, use <a href=\"https://www.4chan.org/feedback\" target=\"_blank\">feedback</a><span class=\"invisible\"> (https://www.4chan.org/feedback)</span> or <a href=\"https://www.4chan-x.net/4chan-irc.html\" target=\"_blank\">IRC</a><span class=\"invisible\"> (https://www.4chan-x.net/4chan-irc.html)</span>."
+      }
+    }
+  };
+
+  return ModContact;
 
 }).call(this);
 
@@ -25707,6 +25879,9 @@ Main = (function() {
         return window.FCX = {};
       });
       Main.jsEnabled = $.hasClass(doc, 'js-enabled');
+      if (typeof $.ajaxPageInit === "function") {
+        $.ajaxPageInit();
+      }
       switch (hostname) {
         case 'www.4chan.org':
         case 'www.4channel.org':
@@ -26215,7 +26390,7 @@ Main = (function() {
         }
       });
     },
-    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Tinyboard Glue', Tinyboard], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Copy Text Link', CopyTextLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Unread Line in Index', UnreadIndex], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning]]
+    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Tinyboard Glue', Tinyboard], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Copy Text Link', CopyTextLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Unread Line in Index', UnreadIndex], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning], ['Mod Contact Links', ModContact]]
   };
 
   return Main;
