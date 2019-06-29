@@ -943,6 +943,13 @@ Index =
     Index.pageLoad false
 
   querySearch: (query) ->
+    if (match = query.match /^([\w+]+):\/(.*)\/(\w*)$/)
+      try
+        regexp = RegExp match[2], match[3]
+      catch
+        return []
+      return Index.sortedThreadIDs.filter (ID) ->
+        regexp.test(Filter.value(match[1], Index.parsedThreads[ID]) or '')
     return if not (keywords = query.toLowerCase().match /\S+/g)
     Index.sortedThreadIDs.filter (ID) ->
       Index.searchMatch Index.parsedThreads[ID], keywords
