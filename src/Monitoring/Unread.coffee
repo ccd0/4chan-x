@@ -62,6 +62,14 @@ Unread =
     $.one d, '4chanXInitFinished', Unread.ready
     $.on  d, 'PostsInserted',      Unread.onUpdate
     $.on  d, 'ThreadUpdate',       (e) -> Unread.update() if e.detail[404]
+    resetLink = $.el 'a',
+      href: 'javascript:;'
+      className: 'unread-reset'
+      textContent: 'Mark all unread'
+    $.on resetLink, 'click', Unread.reset
+    Header.menu.addEntry
+      el: resetLink
+      order: 70
 
   ready: ->
     Unread.scroll() if Conf['Remember Last Read Post'] and Conf['Scroll to Last Read Post']
@@ -88,6 +96,28 @@ Unread =
         Header.scrollToIfNeeded bottom, true
         break
     return
+
+  reset: ->
+    return unless Unread.lastReadPost?
+
+    Unread.posts = new Set()
+    Unread.postsQuotingYou = new Set()
+    Unread.order = new RandomAccessList()
+    Unread.position = null
+    Unread.lastReadPost = 0
+    Unread.readCount = 0
+    Unread.thread.posts.forEach (post) -> Unread.addPost.call post
+
+    $.forceSync 'Remember Last Read Post'
+    if Conf['Remember Last Read Post'] and (!Unread.thread.isDead or Unread.thread.isArchived)
+      Unread.db.set
+        boardID:  Unread.thread.board.ID
+        threadID: Unread.thread.ID
+        val:      0
+
+    Unread.updatePosition()
+    Unread.setLine()
+    Unread.update()
 
   sync: ->
     return unless Unread.lastReadPost?
