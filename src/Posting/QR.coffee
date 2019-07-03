@@ -673,7 +673,7 @@ QR =
       err or= 'Original comment required.'
 
     if QR.captcha.isEnabled and !(/\b_ct=/.test(d.cookie) and threadID) and !err
-      captcha = QR.captcha.getOne(!!threadID)
+      captcha = QR.captcha.getOne(!!threadID) or Captcha.cache.request(!!threadID)
       unless captcha
         err = 'No valid captcha.'
         QR.captcha.setup(!QR.cooldown.auto or d.activeElement is QR.nodes.status)
@@ -736,9 +736,14 @@ QR =
       # Wait for captcha to be verified before submitting post.
       QR.req =
         progress: '...'
-        abort: -> cb = null
+        abort: ->
+          Captcha.cache.abort()
+          cb = null
       captcha (response) ->
-        if response
+        if Captcha.cache.haveCookie()
+          cb?()
+          Captcha.cache.save response if response
+        else if response
           cb? response
         else
           delete QR.req

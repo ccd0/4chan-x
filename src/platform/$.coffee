@@ -340,7 +340,7 @@ $.event = (event, detail, root=d) ->
   if detail? and typeof cloneInto is 'function'
     detail = cloneInto detail, d.defaultView
   <% } %>
-  root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
+  root.dispatchEvent new CustomEvent event, {bubbles: true, cancelable: true, detail}
 
 <% if (type === 'userscript') { %>
 # XXX Make $.event work in Pale Moon with GM 3.x (no cloneInto function).
@@ -361,7 +361,7 @@ do ->
       else
         obj
     $.event = (event, detail, root=d) ->
-      root.dispatchEvent new CustomEvent event, {bubbles: true, detail: clone detail}
+      root.dispatchEvent new CustomEvent event, {bubbles: true, cancelable: true, detail: clone detail}
 <% } %>
 
 $.modifiedClick = (e) ->
