@@ -95,11 +95,12 @@ CrossOrigin =
     abort: ->
     onloadend: ->
 
-  # Attempts to fetch `url` in JSON format using cross-origin privileges, if available.
+  # Attempts to fetch `url` using cross-origin privileges, if available.
   # Interface is a subset of that of $.ajax.
   # Options:
   #   `onloadend` - called with the returned object as `this` on success or error/abort/timeout.
   #   `timeout` - time limit for request
+  #   `responseType` - expected response type, 'json' by default; 'json' and 'text' supported
   #   `headers` - request headers
   # Returned object properties:
   #   `status` - HTTP status (0 if connection not successful)
@@ -108,7 +109,8 @@ CrossOrigin =
   #   `abort` - function for aborting the request (silently fails on some platforms)
   #   `getResponseHeader` - function for reading response headers
   ajax: (url, options={}) ->
-    {onloadend, timeout, headers} = options
+    {onloadend, timeout, responseType, headers} = options
+    responseType ?= 'json'
 
     <% if (type === 'userscript') { %>
     unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
@@ -126,7 +128,11 @@ CrossOrigin =
       timeout
       onload: (xhr) ->
         try
-          response = if xhr.responseText then JSON.parse(xhr.responseText) else null
+          response = switch responseType
+            when 'json'
+              if xhr.responseText then JSON.parse(xhr.responseText) else null
+            else
+              xhr.responseText
           $.extend req, {
             response
             status: xhr.status
@@ -150,7 +156,7 @@ CrossOrigin =
     <% } %>
 
     <% if (type === 'crx') { %>
-    eventPageRequest {type: 'ajax', url, responseType: 'json', headers, timeout}, (result) ->
+    eventPageRequest {type: 'ajax', url, responseType, headers, timeout}, (result) ->
       if result.status
         $.extend req, result
       req.onloadend()
