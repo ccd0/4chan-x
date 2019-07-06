@@ -21,15 +21,19 @@ PostJumper =
   addButtons: (post,type) ->
     value = post.nodes[type].innerText
     buttons = PostJumper.buttons.cloneNode(true)
+    buttons.dataset.type = type
     $.after post.nodes[type+(if type is 'capcode' then '' else 'Root')], buttons
-    $.on buttons.firstChild, 'click', PostJumper.buttonClick post,type,-1
-    $.on buttons.lastChild, 'click', PostJumper.buttonClick post,type,1
+    $.on buttons.firstChild, 'click', PostJumper.buttonClick
+    $.on buttons.lastChild, 'click', PostJumper.buttonClick
     if value not of PostJumper.maps[type]
       PostJumper.maps[type][value] = []
     PostJumper.maps[type][value].push {key: post.ID, val: post.fullID}
     PostJumper.maps[type][value].sort (first,second) -> first.key-second.key
 
-  buttonClick: (post,type,dir) -> ->
+  buttonClick: ->
+    post = Get.postFromNode @
+    {type} = @parentNode.dataset
+    dir = if $.hasClass(@, 'prev') then -1 else 1
     value = (if type is 'capcode' then '## ' else '') + post.info[type]
     fromID = post.ID
     idx = PostJumper.indexOfPair PostJumper.maps[type][value],fromID
