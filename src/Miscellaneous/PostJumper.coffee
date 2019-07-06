@@ -40,8 +40,8 @@ PostJumper =
     PostJumper.scroll fromID,toID
 
   makeButtons: ->
-    charPrev = '\u{23EB}'
-    charNext = '\u{23EC}'
+    charPrev = '\u23EB'
+    charNext = '\u23EC'
     classPrev = 'prev'
     classNext = 'next'
     span = $.el 'span',
