@@ -1,7 +1,7 @@
 PostJumper = 
   init: ->
-    @capcode  = new Map()
-    @uniqueID = new Map()
+    @capcode  = Object.create(null)
+    @uniqueID = Object.create(null)
     return unless g.VIEW in ['index', 'thread']
 
     Callbacks.Post.push
@@ -23,20 +23,19 @@ PostJumper =
     $.after post.nodes[type+(if type is 'capcode' then '' else 'Root')], buttons
     $.on buttons.firstChild, 'click', PostJumper.buttonClick post,type,-1
     $.on buttons.lastChild, 'click', PostJumper.buttonClick post,type,1
-    if not PostJumper[type].has value
-      PostJumper[type].set value, []
-    PostJumper[type].get(value).push {key: post.ID, val: post.fullID}
-    PostJumper[type].get(value).sort (first,second) -> first.key-second.key
+    if value not of PostJumper[type]
+      PostJumper[type][value] = []
+    PostJumper[type][value].push {key: post.ID, val: post.fullID}
+    PostJumper[type][value].sort (first,second) -> first.key-second.key
 
   buttonClick: (post,type,dir) -> ->
-    return if PostJumper[type].size is 0
     value = (if type is 'capcode' then '## ' else '') + post.info[type]
     fromID = post.ID
-    idx = PostJumper.indexOfPair PostJumper[type].get(value),fromID
-    fromID = PostJumper[type].get(value)[idx].val
+    idx = PostJumper.indexOfPair PostJumper[type][value],fromID
+    fromID = PostJumper[type][value][idx].val
     return if idx is -1
-    idx = (idx + dir) %% PostJumper[type].get(value).length
-    toID= PostJumper[type].get(value)[idx].val
+    idx = (idx + dir) %% PostJumper[type][value].length
+    toID= PostJumper[type][value][idx].val
     PostJumper.scroll fromID,toID
 
   makeButtons: ->
