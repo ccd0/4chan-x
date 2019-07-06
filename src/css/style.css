@@ -920,6 +920,8 @@ div[data-checked="false"] > .suboption-list {
 .catalog-post > .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),
 .catalog-post > .postInfo > .nameBlock > .contact-links,
 .catalog-post > * > * > .posteruid,
+.catalog-post > * > * > .uniqueIDJumper,
+.catalog-post > * > * > .capcodeJumper,
 :root.bottom-backlinks .catalog-post > .container,
 .post:not(.catalog-post) > .catalog-link,
 .post:not(.catalog-post) > .catalog-stats,
@@ -2416,4 +2418,10 @@ a:only-of-type > .remove {
 }
 .invisible {
   font-size: 0;
+}
+
+/* PostJumper */
+.postJumper > .prev,
+.postJumper > .next {
+  font-size: 120%;
 }
