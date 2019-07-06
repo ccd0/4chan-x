@@ -92,7 +92,7 @@ Config =
         false
         'Add buttons to navigate to top / bottom of thread.'
       ]
-      'Unique ID and capcode Navigation': [
+      'Unique ID and Capcode Navigation': [
         false
         'Add buttons to navigate to posts having the same unique ID or capcode.'
       ]

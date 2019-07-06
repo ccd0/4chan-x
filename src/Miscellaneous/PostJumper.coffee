@@ -9,7 +9,7 @@ PostJumper =
       cb:   @node
 
   node: ->
-    return unless Conf['Unique ID and capcode Navigation']
+    return unless Conf['Unique ID and Capcode Navigation']
 
     if @nodes.uniqueIDRoot and not @isClone
       PostJumper.addButtons @,'uniqueID'
