@@ -555,7 +555,7 @@ Settings =
       $.id('lastarchivecheck').textContent = 'never'
 
     items = {}
-    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'timeLocale', 'backlink', 'pastedname', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
+    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'captchaServiceDomain', 'boardnav', 'time', 'timeLocale', 'backlink', 'pastedname', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
       items[name] = Conf[name]
       input = inputs[name]
       event = if name in ['archiveLists', 'archiveAutoUpdate', 'QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
@@ -570,6 +570,11 @@ Settings =
         if key of Settings
           Settings[key].call input
       return
+
+    $.on inputs['captchaServiceKey'], 'input', Settings.captchaServiceKey
+    $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) ->
+      Conf['captchaServiceKey'] = captchaServiceKey
+      Settings.captchaServiceDomainList()
 
     interval  = inputs['Interval']
     customCSS = inputs['Custom CSS']
@@ -701,6 +706,31 @@ Settings =
       $.set 'selectedArchives', selectedArchives
       Conf['selectedArchives'] = selectedArchives
       Redirect.selectArchives()
+
+  captchaServiceDomain: ->
+    $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) =>
+      keyInput = $('[name=captchaServiceKey]')
+      keyInput.value = captchaServiceKey[@value.trim()] or ''
+      keyInput.disabled = !@value.trim()
+
+  captchaServiceKey: ->
+    domain = Conf['captchaServiceDomain']
+    value = @value.trim()
+    Conf['captchaServiceKey'][domain] = value
+    $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) ->
+      captchaServiceKey[domain] = value
+      delete captchaServiceKey[domain] unless value or (domain of Config['captchaServiceKey'][0])
+      Conf['captchaServiceKey'] = captchaServiceKey
+      $.set 'captchaServiceKey', captchaServiceKey
+      Settings.captchaServiceDomainList()
+
+  captchaServiceDomainList: ->
+    list = $.id 'list-captchaServiceDomain'
+    $.rmAll list
+    for domain of Conf['captchaServiceKey']
+      $.add list, $.el 'option',
+        textContent: domain
+    return
 
   boardnav: ->
     Header.generateBoardList @value

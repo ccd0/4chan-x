@@ -551,6 +551,7 @@ Main =
     ['Reply Hiding Buttons',      PostHiding]
     ['Recursive',                 Recursive]
     ['Strike-through Quotes',     QuoteStrikeThrough]
+    ['Captcha Solving Service',   Captcha.service]
     ['Quick Reply Personas',      QR.persona]
     ['Quick Reply',               QR]
     ['Cooldown',                  QR.cooldown]

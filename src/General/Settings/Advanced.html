@@ -26,6 +26,20 @@
 </fieldset>
 
 <fieldset>
+  <legend>Captcha Solving Service</legend>
+  <div>
+    Supported services include 
+    <%= meta.captchaServiceLinks.map(function(x) {return '<a href="' + x[1] + '" target="_blank">' + x[0] + '</a>'}).join(', ') %>, 
+    and any other service implementing the 2captcha API.<br>
+    Leave blank to disable.
+  <div>
+    Domain: <input name="captchaServiceDomain" class="field" spellcheck="false" list="list-captchaServiceDomain"> 
+    API Key: <input name="captchaServiceKey" class="field" spellcheck="false">
+    <datalist id="list-captchaServiceDomain"></datalist>
+  </div>
+</fieldset>
+
+<fieldset>
   <legend>Custom Board Navigation</legend>
   <div><textarea hidden name="boardnav" class="field" spellcheck="false"></textarea></div>
   <span class="note">New lines will be converted into spaces.</span><br><br>
