@@ -1,16 +1,15 @@
 PostJumper = 
   init: ->
+    return unless Conf['Unique ID and Capcode Navigation'] and g.VIEW in ['index', 'thread']
+
     @capcode  = Object.create(null)
     @uniqueID = Object.create(null)
-    return unless g.VIEW in ['index', 'thread']
 
     Callbacks.Post.push
       name: 'Post Jumper'
       cb:   @node
 
   node: ->
-    return unless Conf['Unique ID and Capcode Navigation']
-
     if @nodes.uniqueIDRoot and not @isClone
       PostJumper.addButtons @,'uniqueID'
 
