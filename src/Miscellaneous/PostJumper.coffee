@@ -4,6 +4,7 @@ PostJumper =
 
     @capcode  = Object.create(null)
     @uniqueID = Object.create(null)
+    @buttons  = @makeButtons()
 
     Callbacks.Post.push
       name: 'Post Jumper'
@@ -18,7 +19,7 @@ PostJumper =
 
   addButtons: (post,type) ->
     value = post.nodes[type].innerText
-    buttons = PostJumper.makeButtons type+'Jumper'
+    buttons = PostJumper.buttons.cloneNode(true)
     $.after post.nodes[type+(if type is 'capcode' then '' else 'Root')], buttons
     $.on buttons.firstChild, 'click', PostJumper.buttonClick post,type,-1
     $.on buttons.lastChild, 'click', PostJumper.buttonClick post,type,1
