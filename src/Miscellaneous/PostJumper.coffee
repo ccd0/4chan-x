@@ -12,10 +12,15 @@ PostJumper =
       cb:   @node
 
   node: ->
-    if @nodes.uniqueIDRoot and not @isClone
+    if @isClone
+      for buttons in $$ '.postJumper', @nodes.info
+        PostJumper.addListeners buttons
+      return
+
+    if @nodes.uniqueIDRoot
       PostJumper.addButtons @,'uniqueID'
 
-    if @nodes.capcode and not @isClone
+    if @nodes.capcode
       PostJumper.addButtons @,'capcode'
 
   addButtons: (post,type) ->
@@ -23,12 +28,15 @@ PostJumper =
     buttons = PostJumper.buttons.cloneNode(true)
     buttons.dataset.type = type
     $.after post.nodes[type+(if type is 'capcode' then '' else 'Root')], buttons
-    $.on buttons.firstChild, 'click', PostJumper.buttonClick
-    $.on buttons.lastChild, 'click', PostJumper.buttonClick
+    PostJumper.addListeners buttons
     if value not of PostJumper.maps[type]
       PostJumper.maps[type][value] = []
     PostJumper.maps[type][value].push {key: post.ID, val: post.fullID}
     PostJumper.maps[type][value].sort (first,second) -> first.key-second.key
+
+  addListeners: (buttons) ->
+    $.on buttons.firstChild, 'click', PostJumper.buttonClick
+    $.on buttons.lastChild, 'click', PostJumper.buttonClick
 
   buttonClick: ->
     post = Get.postFromNode @
@@ -37,11 +45,10 @@ PostJumper =
     value = (if type is 'capcode' then '## ' else '') + post.info[type]
     fromID = post.ID
     idx = PostJumper.indexOfPair PostJumper.maps[type][value],fromID
-    fromID = PostJumper.maps[type][value][idx].val
     return if idx is -1
     idx = (idx + dir) %% PostJumper.maps[type][value].length
     toID= PostJumper.maps[type][value][idx].val
-    PostJumper.scroll fromID,toID
+    PostJumper.scroll post, g.posts[toID]
 
   makeButtons: ->
     charPrev = '\u23EB'
@@ -53,9 +60,9 @@ PostJumper =
     $.extend span, <%= html('<a href="javascript:void(0);" class="${classPrev}">${charPrev}</a><a href="javascript:void(0);" class="${classNext}">${charNext}</a>') %>
     span
 
-  scroll: (fromID,toID) ->
-    prevPos = g.posts[fromID].nodes.nameBlock.getBoundingClientRect().top
-    destPos = g.posts[toID].nodes.nameBlock.getBoundingClientRect().top
+  scroll: (fromPost, toPost) ->
+    prevPos = fromPost.nodes.nameBlock.getBoundingClientRect().top
+    destPos = toPost.nodes.nameBlock.getBoundingClientRect().top
     window.scrollBy 0, destPos-prevPos
 
   indexOfPair: (array,key) ->
