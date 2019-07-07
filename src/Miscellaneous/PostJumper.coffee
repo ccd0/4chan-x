@@ -21,7 +21,7 @@ PostJumper =
       PostJumper.addButtons @,'capcode'
 
   addButtons: (post,type) ->
-    value = post.nodes[type].innerText
+    value = post.info[type]
     buttons = PostJumper.buttons.cloneNode(true)
     $.extend buttons.dataset, {type, value}
     $.after post.nodes[type+(if type is 'capcode' then '' else 'Root')], buttons
