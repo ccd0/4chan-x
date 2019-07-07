@@ -1,6 +1,5 @@
 Captcha.service =
   init: ->
-    Conf['captchaServiceDomain'] = ''
     $.on d, 'LoadCaptcha',              @loadCaptcha.bind(@)
     $.on d, 'AbortCaptcha SaveCaptcha', @abortCaptcha.bind(@)
     $.on d, 'RequestCaptcha',           @requestCaptcha.bind(@)
