@@ -49,11 +49,11 @@ ThreadHiding =
   node: ->
     return if @isReply or @isClone or @isFetchedQuote
 
+    if Conf['Thread Hiding Buttons']
+      $.prepend @nodes.root, ThreadHiding.makeButton(@thread, 'hide')
+
     if data = ThreadHiding.db.get {boardID: @board.ID, threadID: @ID}
       ThreadHiding.hide @thread, data.makeStub
-
-    return unless Conf['Thread Hiding Buttons']
-    $.prepend @nodes.root, ThreadHiding.makeButton(@thread, 'hide')
 
   onIndexRefresh: ->
     g.BOARD.threads.forEach (thread) ->
@@ -143,9 +143,10 @@ ThreadHiding =
     a.dataset.fullID = thread.fullID
     $.on a, 'click', ThreadHiding.toggle
     a
+
   makeStub: (thread, root) ->
-    numReplies  = $$('.thread > .replyContainer', root).length
-    numReplies += +summary.textContent.match /\d+/ if summary = $ '.summary', root
+    numReplies  = $$(Site.selectors.postContainer + Site.selectors.relative.replyPost, root).length
+    numReplies += +summary.textContent.match /\d+/ if summary = $ Site.selectors.summary, root
 
     a = ThreadHiding.makeButton thread, 'show'
     $.add a, $.tn " #{thread.OP.info.nameBlock} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
@@ -156,6 +157,10 @@ ThreadHiding =
     else
       $.add thread.stub, a
     $.prepend root, thread.stub
+
+    # Prevent hiding of thread divider on sites that put it inside the thread
+    if (threadDivider = $ Site.selectors.threadDivider, root)
+      $.addClass threadDivider, 'threadDivider'
 
   saveHiddenState: (thread, makeStub) ->
     if thread.isHidden

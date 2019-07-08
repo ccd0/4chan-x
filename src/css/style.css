@@ -1517,7 +1517,7 @@ input[name="Default Volume"] {
   margin-top: -1px;
   width: 11px;
 }
-.stub ~ * {
+.stub ~ :not(.threadDivider) {
   display: none !important;
 }
 .stub input {
