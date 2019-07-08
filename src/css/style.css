@@ -1448,26 +1448,26 @@ input[name="Default Volume"] {
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .8);
 }
-:root.highlight-you .quotesYou.opContainer,
-:root.highlight-you .quotesYou > .reply {
+:root.highlight-you .quotesYou$site$relative$opContainer,
+:root.highlight-you .quotesYou$site$relative$replyPost {
   border-left: 3px solid rgba(221, 0, 0, .8);
 }
-:root.highlight-own .yourPost.opContainer,
-:root.highlight-own .yourPost > .reply {
+:root.highlight-own .yourPost$site$relative$opContainer,
+:root.highlight-own .yourPost$site$relative$replyPost {
   border-left: 3px dashed rgba(221, 0, 0, .8);
 }
-.filter-highlight.opContainer,
-.filter-highlight > .reply {
+.filter-highlight$site$relative$opContainer,
+.filter-highlight$site$relative$replyPost {
   box-shadow: inset 5px 0 rgba(221, 0, 0, .5);
 }
-:root.highlight-own .yourPost > div.sideArrows,
-:root.highlight-you .quotesYou > div.sideArrows,
-.filter-highlight > div.sideArrows {
+:root.highlight-own .yourPost > $site$sideArrows,
+:root.highlight-you .quotesYou > $site$sideArrows,
+.filter-highlight > $site$sideArrows {
   color: rgba(221, 0, 0, .8);
 }
-:root.highlight-own .yourPost.opContainer::after,
-:root.highlight-you .quotesYou.opContainer::after,
-.filter-highlight.opContainer::after {
+:root.highlight-own .yourPost$site$relative$opContainer::after,
+:root.highlight-you .quotesYou$site$relative$opContainer::after,
+.filter-highlight$site$relative$opContainer::after {
   content: "";
   display: block;
   clear: both;

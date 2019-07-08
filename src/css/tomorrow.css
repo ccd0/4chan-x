@@ -63,21 +63,21 @@
 :root.tomorrow .qphl {
   outline: 2px solid rgba(145, 182, 214, .8);
 }
-:root.tomorrow.highlight-you .quotesYou.opContainer,
-:root.tomorrow.highlight-you .quotesYou > .reply {
+:root.tomorrow.highlight-you .quotesYou$site$relative$opContainer,
+:root.tomorrow.highlight-you .quotesYou$site$relative$replyPost {
   border-left: 3px solid rgba(145, 182, 214, .8);
 }
-:root.tomorrow.highlight-own .yourPost.opContainer,
-:root.tomorrow.highlight-own .yourPost > .reply {
+:root.tomorrow.highlight-own .yourPost$site$relative$opContainer,
+:root.tomorrow.highlight-own .yourPost$site$relative$replyPost {
   border-left: 3px dashed rgba(145, 182, 214, .8);
 }
-:root.tomorrow .opContainer.filter-highlight,
-:root.tomorrow .filter-highlight > .reply {
+:root.tomorrow .filter-highlight$site$relative$opContainer,
+:root.tomorrow .filter-highlight$site$relative$replyPost {
   box-shadow: inset 5px 0 rgba(145, 182, 214, .5);
 }
-:root.tomorrow.highlight-own .yourPost > div.sideArrows,
-:root.tomorrow.highlight-you .quotesYou > div.sideArrows,
-:root.tomorrow .filter-highlight > div.sideArrows {
+:root.tomorrow.highlight-own .yourPost > $site$sideArrows,
+:root.tomorrow.highlight-you .quotesYou > $site$sideArrows,
+:root.tomorrow .filter-highlight > $site$sideArrows {
   color: rgb(155, 185, 210);
 }
 :root.tomorrow .catalog-thread.filter-highlight .catalog-thumb,

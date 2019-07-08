@@ -67,21 +67,21 @@
 :root.spooky .qphl {
   outline: 2px solid rgba(145, 182, 214, .8);
 }
-:root.spooky.highlight-you .quotesYou.opContainer,
-:root.spooky.highlight-you .quotesYou > .reply {
+:root.spooky.highlight-you .quotesYou$site$relative$opContainer,
+:root.spooky.highlight-you .quotesYou$site$relative$replyPost {
   border-left: 3px solid rgba(145, 182, 214, .8);
 }
-:root.spooky.highlight-own .yourPost.opContainer,
-:root.spooky.highlight-own .yourPost > .reply {
+:root.spooky.highlight-own .yourPost$site$relative$opContainer,
+:root.spooky.highlight-own .yourPost$site$relative$replyPost {
   border-left: 3px dashed rgba(145, 182, 214, .8);
 }
-:root.spooky .opContainer.filter-highlight,
-:root.spooky .filter-highlight > .reply {
+:root.spooky .filter-highlight$site$relative$opContainer,
+:root.spooky .filter-highlight$site$relative$replyPost {
   box-shadow: inset 5px 0 rgba(145, 182, 214, .5);
 }
-:root.spooky.highlight-own .yourPost > div.sideArrows,
-:root.spooky.highlight-you .quotesYou > div.sideArrows,
-:root.spooky .filter-highlight > div.sideArrows {
+:root.spooky.highlight-own .yourPost > $site$sideArrows,
+:root.spooky.highlight-you .quotesYou > $site$sideArrows,
+:root.spooky .filter-highlight > $site$sideArrows {
   color: rgb(155, 185, 210);
 }
 

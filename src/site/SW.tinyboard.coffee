@@ -93,6 +93,9 @@ SW.tinyboard =
       text:  '.fileinfo'
       link:  '.fileinfo > a'
       thumb: 'a > .post-image'
+    relative:
+      opContainer:   ' > .op'
+      replyPost:     '.reply'
     comment:   '.body'
     spoiler:   '.spoiler'
     quotelink: 'a[onclick^="highlightReply("]'
