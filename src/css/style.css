@@ -1523,13 +1523,13 @@ input[name="Default Volume"] {
 .stub input {
   display: inline-block;
 }
-.thread[hidden] + hr {
+$site$thread[hidden] + hr {
   display: none;
 }
-:root.reply-hide div.sideArrows {
+:root.reply-hide $site$sideArrows {
   display: none;
 }
-:root.thread-hide .party-hat {
+:root.sw-yotsuba.thread-hide .party-hat {
   left: 19px;
 }
 
