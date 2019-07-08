@@ -83,13 +83,6 @@ body.hasDropDownNav{
 :root.sw-yotsuba .reply > .file > .fileText {
   margin: 0 20px;
 }
-:root.sw-yotsuba .hashlink::before {
-  content: ' ';
-  visibility: hidden;
-}
-:root.sw-yotsuba .inline + .hashlink {
-  display: none !important;
-}
 :root.sw-yotsuba #arc-list span.quote {
   color: #789922;
 }
@@ -1236,6 +1229,13 @@ span.hide-announcement {
 }
 
 /* Quote */
+.hashlink::before {
+  content: ' ';
+  visibility: hidden;
+}
+.inline + .hashlink {
+  display: none !important;
+}
 :root.resurrect-quotes .deadlink {
   text-decoration: none !important;
 }
