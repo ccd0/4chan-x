@@ -8,6 +8,11 @@
   border-color: #98E;
 }
 
+/* 4chan style fixes */
+:root.spooky.sw-yotsuba #arc-list span.quote {
+  color: #634C2C;
+}
+
 /* Header */
 :root.spooky #header-bar.dialog {
   background-color: rgba(23,21,38,0.98);
@@ -45,9 +50,6 @@
 }
 
 /* Quote */
-:root.spooky #arc-list span.quote {
-  color: #634C2C;
-}
 :root.spooky .backlink.deadlink {
   color: #FE9600 !important;
 }

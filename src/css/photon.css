@@ -8,6 +8,11 @@
   border-color: #EA8;
 }
 
+/* 4chan style fixes */
+:root.photon.sw-yotsuba #arc-list tr:nth-of-type(odd) span.quote {
+  color: #C0E17A;
+}
+
 /* Header */
 :root.photon #header-bar.dialog {
   background-color: rgba(221,221,221,0.98);
@@ -42,9 +47,6 @@
 }
 
 /* Quote */
-:root.photon #arc-list tr:nth-of-type(odd) span.quote {
-  color: #C0E17A;
-}
 :root.photon .backlink.deadlink {
   color: #F60 !important;
 }

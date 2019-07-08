@@ -4,6 +4,11 @@
   border-color: #111;
 }
 
+/* 4chan style fixes */
+:root.tomorrow.sw-yotsuba #arc-list span.quote {
+  color: #B5BD68;
+}
+
 /* Header */
 :root.tomorrow #header-bar.dialog {
   background-color: rgba(40,42,46,0.9);
@@ -41,9 +46,6 @@
 }
 
 /* Quote */
-:root.tomorrow #arc-list span.quote {
-  color: #B5BD68;
-}
 :root.tomorrow .backlink.deadlink {
   color: #81A2BE !important;
 }
