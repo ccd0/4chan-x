@@ -1486,10 +1486,8 @@ input[name="Default Volume"] {
 }
 
 /* Spoiler text */
-:root.reveal-spoilers s,
-:root.reveal-spoilers .spoiler,
-:root.reveal-spoilers s > a,
-:root.reveal-spoilers .spoiler > a {
+:root.reveal-spoilers $site$spoiler,
+:root.reveal-spoilers $site$spoiler > a {
   color: white !important;
 }
 :root.reveal-spoilers .removed-spoiler::before {
