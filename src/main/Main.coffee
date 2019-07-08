@@ -223,7 +223,7 @@ Main =
         Conf['Autohiding Scrollbar'] = !Conf['Autohiding Scrollbar']
         $.set 'Autohiding Scrollbar', Conf['Autohiding Scrollbar']
         $.toggleClass doc, 'autohiding-scrollbar'
-    $.addStyle CSS.boards, 'fourchanx-css'
+    $.addStyle CSS.sub(CSS.boards), 'fourchanx-css'
     Main.bgColorStyle = $.el 'style', id: 'fourchanx-bgcolor-css'
 
     keyboard = false

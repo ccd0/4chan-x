@@ -16,6 +16,22 @@ report:
 <%= multiline(read('report.css')) %>,
 
 www:
-<%= multiline(read('www.css')) %>
+<%= multiline(read('www.css')) %>,
+
+sub: function(css) {
+  var variables = {
+    site: Site.selectors
+  };
+  return css.replace(/\$[\w\$]+/g, function(name) {
+    var words = name.slice(1).split('$');
+    var sel = variables;
+    for (var i = 0; i < words.length; i++) {
+      if (typeof sel !== 'object') return name;
+      sel = sel[words[i]];
+    }
+    if (typeof sel !== 'string') return name;
+    return sel;
+  });
+}
 
 };
