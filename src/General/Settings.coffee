@@ -492,6 +492,7 @@ Settings =
     if compareString < '00001.00014.00009.00000'
       if data['sauces']?
         set 'sauces', data['sauces'].replace(/^(#?\s*)(?:http:)?\/\/(www\.pixiv\.net|www\.deviantart\.com|imgur\.com|flickr\.com)\//mg, '$1https://$2/')
+        set 'sauces', data['sauces'].replace(/https:\/\/yandex\.com\/images\/search\?rpt=imageview&img_url=%IMG/g, 'https://yandex.com/images/search?rpt=imageview&url=%IMG')
     changes
 
   loadSettings: (data, cb) ->
