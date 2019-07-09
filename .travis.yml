@@ -1,2 +1,4 @@
-script: npm install && make
 dist: xenial
+language: generic
+install: npm install
+script: make
