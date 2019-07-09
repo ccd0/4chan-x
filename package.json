@@ -88,12 +88,12 @@
     "esprima": "^4.0.1",
     "font-awesome": "=4.6.3",
     "jshint": "^2.10.2",
-    "jszip": "^3.2.1",
+    "jszip": "^3.2.2",
     "lodash.template": "^4.4.0",
-    "markdown-it": "^8.4.2",
-    "markdown-it-anchor": "^4.0.0",
+    "markdown-it": "^9.0.0",
+    "markdown-it-anchor": "^5.2.4",
     "request": "^2.88.0",
-    "webstore-upload": "0.0.7"
+    "webstore-upload": "0.0.8"
   },
   "repository": {
     "type": "git",
