@@ -294,6 +294,8 @@ Main =
       $.on mainStyleSheet, 'load', setStyle
       setStyle()
     unless mainStyleSheet
+      for styleSheet in $$ 'link[rel="stylesheet"]', d.head
+        $.on styleSheet, 'load', setStyle
       setStyle()
 
   initReady: ->
