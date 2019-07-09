@@ -108,7 +108,7 @@ Header =
       Header.bottomBoardList = $ '.boardList', footer
       CatalogLinks.setLinks Header.bottomBoardList
 
-    if g.VIEW is 'catalog' or !Conf['Disable Native Extension']
+    if Site.software is 'yotsuba' and (g.VIEW is 'catalog' or !Conf['Disable Native Extension'])
       cs = $.el 'a', href: 'javascript:;'
       if g.VIEW is 'catalog'
         cs.title = cs.textContent = 'Catalog Settings'
