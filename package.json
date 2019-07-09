@@ -21,7 +21,16 @@
     "chromeStoreID": "ohnjgmpcibpbafdlkimncjhflgedgpam",
     "recaptchaKey": "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc",
     "youtubeAPIKey": "AIzaSyB5_zaen_-46Uhz1xGR-lz1YoUMHqCD6CE",
-    "captchaServiceLinks": [["captcha.guru", "https://captcha.guru/en/regen/?ref=104127"], ["2captcha", "https://2captcha.com?from=7935487"]],
+    "captchaServiceLinks": [
+      [
+        "captcha.guru",
+        "https://captcha.guru/en/regen/?ref=104127"
+      ],
+      [
+        "2captcha",
+        "https://2captcha.com?from=7935487"
+      ]
+    ],
     "distBranch": "gh-pages",
     "includes_only": [
       "*://boards.4chan.org/*",
@@ -84,7 +93,7 @@
     }
   },
   "devDependencies": {
-    "coffee-script": "=1.9.3",
+    "coffeescript": "=1.12.7",
     "esprima": "^4.0.1",
     "font-awesome": "=4.6.3",
     "jshint": "^2.10.2",
