@@ -56,7 +56,7 @@
 }
 
 /* Anonymize */
-:root.futaba.anonymize .name::before {
+:root.futaba.anonymize $site$info$name::before {
   font-size: 12pt;
 }
 

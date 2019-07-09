@@ -1534,22 +1534,21 @@ $site$thread[hidden] + hr {
 }
 
 /* Anonymize */
-:root.anonymize .name,
-:root.anonymize .post-author:not([class*=capcode]) {
+:root.anonymize $site$info$name,
+:root.sw-yotsuba.anonymize .post-author:not([class*=capcode]) {
   font-size: 0;
 }
-:root.anonymize .postertrip,
-:root.anonymize .trip,
-:root.anonymize .n-pu {
+:root.anonymize $site$info$tripcode,
+:root.sw-yotsuba.anonymize .n-pu {
   display: none;
 }
-:root.anonymize .name::before,
-:root.anonymize .post-author:not([class*=capcode])::before {
+:root.anonymize $site$info$name::before,
+:root.sw-yotsuba.anonymize .post-author:not([class*=capcode])::before {
   content: "Anonymous";
   font-size: 10pt;
 }
-:root.anonymize .flashListing .name::before,
-:root.anonymize .post-last > .post-author:not([class*=capcode])::before {
+:root.sw-yotsuba.anonymize .flashListing .name::before,
+:root.sw-yotsuba.anonymize .post-last > .post-author:not([class*=capcode])::before {
   font-size: 9pt;
 }
 
