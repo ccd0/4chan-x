@@ -57,7 +57,7 @@ a[href="javascript:;"] {
 #boardNavDesktop, #boardNavMobile {
   display: none !important;
 }
-:root.hide-bottom-board-list #boardNavDesktopFoot {
+:root.hide-bottom-board-list $site$boardListBottom {
   display: none;
 }
 body.hasDropDownNav{
@@ -366,7 +366,7 @@ audio.controls-added {
 #toggleMsgBtn {
   display: none !important;
 }
-.current {
+#board-list .current {
   font-weight: bold;
 }
 @media (min-width: 1300px) {

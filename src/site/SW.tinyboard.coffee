@@ -100,6 +100,7 @@ SW.tinyboard =
     spoiler:   '.spoiler'
     quotelink: 'a[onclick^="highlightReply("]'
     boardList: '.boardlist'
+    boardListBottom: '.boardlist.bottom'
     styleSheet: '#stylesheet'
 
   xpath:

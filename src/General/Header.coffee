@@ -95,7 +95,7 @@ Header =
     $.onExists doc, "#{Site.selectors.boardList} + *", Header.generateFullBoardList
 
     Main.ready ->
-      if not (footer = $.id 'boardNavDesktopFoot')
+      if Site.software is 'yotsuba' and not (footer = $.id 'boardNavDesktopFoot')
         return unless (absbot = $.id 'absbot')
         footer = $.id('boardNavDesktop').cloneNode true
         footer.id = 'boardNavDesktopFoot'
@@ -103,10 +103,10 @@ Header =
         $('#settingsWindowLink', footer).id = 'settingsWindowLinkBot'
         $.before absbot, footer
         $.globalEval 'window.cloneTopNav = function() {};'
-      if (a = $ "a[href*='/#{g.BOARD}/']", footer)
-        a.className = 'current'
-      Header.bottomBoardList = $ '.boardList', footer
-      CatalogLinks.setLinks Header.bottomBoardList
+      if (Header.bottomBoardList = $ Site.selectors.boardListBottom)
+        for a in $$ 'a', Header.bottomBoardList
+          a.className = 'current' if a.hostname is location.hostname and a.pathname.split('/')[1] is g.BOARD.ID
+        CatalogLinks.setLinks Header.bottomBoardList
 
     if Site.software is 'yotsuba' and (g.VIEW is 'catalog' or !Conf['Disable Native Extension'])
       cs = $.el 'a', href: 'javascript:;'
