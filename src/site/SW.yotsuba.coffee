@@ -158,3 +158,10 @@ SW.yotsuba =
 
   sfwBoards: (sfw) ->
     BoardConfig.sfwBoards(sfw)
+
+  uidColor: (uid) ->
+    msg = 0
+    i = 0
+    while i < 8
+      msg = (msg << 5) - msg + uid.charCodeAt i++
+    (msg >> 8) & 0xFFFFFF
