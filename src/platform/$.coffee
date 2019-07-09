@@ -460,6 +460,9 @@ $.minmax = (value, min, max) ->
 $.hasAudio = (video) ->
   video.mozHasAudio or !!video.webkitAudioDecodedByteCount
 
+$.luma = (rgb) ->
+  rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114
+
 $.engine = do ->
   return 'edge'   if /Edge\//.test navigator.userAgent
   return 'blink'  if /Chrome\//.test navigator.userAgent

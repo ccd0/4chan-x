@@ -33,7 +33,7 @@ IDColor =
     ]
 
     # Weight color luminance values, assign a font color that should be readable. 
-    rgb.push if (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125
+    rgb.push if $.luma(rgb) > 125
       '#000'
     else
       '#fff'
