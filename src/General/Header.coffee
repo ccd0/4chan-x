@@ -178,7 +178,7 @@ Header =
             nodes.push spacer() if chr is '['
         when 'A'
           a = node.cloneNode true
-          a.className = 'current' if a.pathname.split('/')[1] is g.BOARD.ID
+          a.className = 'current' if a.hostname is location.hostname and a.pathname.split('/')[1] is g.BOARD.ID
           nodes.push a
     fullBoardList = $ '.boardList', Header.boardList
     $.add fullBoardList, nodes
