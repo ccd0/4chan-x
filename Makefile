@@ -133,7 +133,7 @@ $(foreach s,$(sources),$(eval $(call check_source,$(subst $$,$$$$,$(s)))))
 
 $(dests) : .events/compile
 	$(if $(wildcard $@),, \
-	 node tools/chain.js $(filter-out $(wildcard $(dests)),$(dests)) \
+	 node tools/chain.js $(call QUOTE, $(filter-out $(wildcard $(dests)),$(dests))) \
 	 && echo -> $< \
 	)
 
