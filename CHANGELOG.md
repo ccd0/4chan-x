@@ -2,6 +2,22 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.9
+
+**v1.14.9.0** *(2019-07-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.8.0.
+- (ebinBuddha) Implement `Unique ID and Capcode Navigation` feature to rapidly navigate all posts from an ID/capcode.
+- (koma-cute) Update Sauce links for HTTPS support changes.
+- Support captcha solving services.
+- Implement new APIs: `LoadCaptcha`, `RequestCaptcha`, and `AbortCaptcha`.
+- Add link to header menu to mark all posts in a thread as unread. #1299
+- Support searching index for threads by regular expressions on a given field using syntax field:/regexp/
+- Fix bugs in highlighting of own posts / posts quoting you / filter-highlighted posts on Tinyboard/vichan sites. #2169
+- Fix ID colors on Tinyboard/vichan sites. #2355
+- Fix thread stubs on Tinyboard/vichan sites.
+- Update Yandex image search URL again. #2349
+- Various bugfixes, especially for Tinyboard/vichan sites.
+
 ### v1.14.8
 
 **v1.14.8.0** *(2019-06-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.8.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.8.0/builds/4chan-X-noupdate.crx)]
