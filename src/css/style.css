@@ -54,7 +54,7 @@ a[href="javascript:;"] {
 .warning {
   color: red;
 }
-#boardNavDesktop, #boardNavMobile {
+:root.sw-yotsuba #boardNavDesktop, :root.sw-yotsuba #boardNavMobile {
   display: none !important;
 }
 :root.hide-bottom-board-list $site$boardListBottom {
