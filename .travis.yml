@@ -1,1 +1,2 @@
 script: npm install && make
+dist: xenial
