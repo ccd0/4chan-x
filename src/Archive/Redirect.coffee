@@ -127,7 +127,11 @@ Redirect =
     url
 
   file: (archive, {boardID, filename}) ->
-    filename = encodeURIComponent $.unescape decodeURIComponent filename if boardID is 'f'
+    return '' unless filename
+    if boardID is 'f'
+      filename = encodeURIComponent $.unescape decodeURIComponent filename
+    else
+      return '' if /[sm]\.jpg$/.test(filename)
     "#{Redirect.protocol archive}#{archive.domain}/#{boardID}/full_image/#{filename}"
 
   board: (archive, {boardID}) ->

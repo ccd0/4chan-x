@@ -157,7 +157,6 @@ Main =
         return
 
     if ImageHost.test hostname
-      return unless pathname[2] and not /[sm]\.jpg$/.test(pathname[2])
       $.asap (-> d.readyState isnt 'loading'), ->
         if Conf['404 Redirect'] and g.SITE.is404?()
           Redirect.navigate 'file', {
