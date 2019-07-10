@@ -463,6 +463,11 @@ $.hasAudio = (video) ->
 $.luma = (rgb) ->
   rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114
 
+$.unescape = (text) ->
+  return text unless text?
+  text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt|#44);/g, (c) ->
+    (({'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','})[c])
+
 $.engine = do ->
   return 'edge'   if /Edge\//.test navigator.userAgent
   return 'blink'  if /Chrome\//.test navigator.userAgent

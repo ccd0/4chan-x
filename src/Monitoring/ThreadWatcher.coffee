@@ -264,16 +264,16 @@ ThreadWatcher =
     return unless board.some (thread) -> !thread.data.isDead
     force = Conf['Show Page'] and board.some((thread) -> !thread.data.page? and !thread.data.isDead and thread.data.last isnt -1)
     {siteID, boardID} = board[0]
-    software = Conf['siteProperties'][siteID]?.software
-    urlF = if deep and software is 'tinyboard' then 'catalogJSON' else 'threadsListJSON'
-    url = SW[software]?.urls[urlF]?({siteID, boardID})
+    site = g.sites[siteID]
+    return unless site
+    urlF = if deep and site.software is 'tinyboard' then 'catalogJSON' else 'threadsListJSON'
+    url = site.urls[urlF]?({siteID, boardID})
     return unless url
     ThreadWatcher.fetch url, {siteID, force}, [board, url], ThreadWatcher.parseBoard
 
   parseBoard: (board, url) ->
     return unless @status is 200
     {siteID, boardID} = board[0]
-    software = Conf['siteProperties'][siteID]?.software
     lmDate = @getResponseHeader('Last-Modified')
     ThreadWatcher.dbLM.extend {siteID, boardID, val: $.item(url, lmDate)}
     threads = {}
@@ -300,7 +300,7 @@ ThreadWatcher =
       if threads[threadID]
         {page, index, modified, replies} = threads[threadID]
         if Conf['Show Page']
-          lastPage = if SW[software]?.isPrunedByAge?({siteID, boardID})
+          lastPage = if g.sites[siteID].isPrunedByAge?({siteID, boardID})
             threadID is oldest
           else
             index >= nThreads - pageLength
@@ -318,16 +318,13 @@ ThreadWatcher =
 
   fetchStatus: (thread) ->
     {siteID, boardID, threadID, data, force} = thread
-    software = Conf['siteProperties'][siteID]?.software
-    url = SW[software]?.urls.threadJSON?({siteID, boardID, threadID})
+    url = g.sites[siteID]?.urls.threadJSON?({siteID, boardID, threadID})
     return unless url
     return if data.isDead and not force
     return if data.last is -1 # 404 or no JSON API
     ThreadWatcher.fetch url, {siteID, force}, [thread], ThreadWatcher.parseStatus
 
   parseStatus: ({siteID, boardID, threadID, data, newData}) ->
-    software = Conf['siteProperties'][siteID]?.software
-
     if @status is 200 and @response
       last = @response.posts[@response.posts.length-1].no
       replies = @response.posts.length-1
@@ -356,7 +353,7 @@ ThreadWatcher =
         continue unless !quotingYou and QuoteYou.db and postObj.com
 
         quotesYou = false
-        regexp = SW[software].regexp.quotelinkHTML
+        regexp = g.sites[siteID].regexp.quotelinkHTML
         regexp.lastIndex = 0
         while match = regexp.exec postObj.com
           if QuoteYou.db.get {
@@ -375,7 +372,7 @@ ThreadWatcher =
       ThreadWatcher.update siteID, boardID, threadID, newData
 
     else if @status is 404
-      if SW[software].mayLackJSON and !data.last?
+      if g.sites[siteID].mayLackJSON and !data.last?
         ThreadWatcher.update siteID, boardID, threadID, {last: -1}
       else
         ThreadWatcher.update siteID, boardID, threadID, {isDead: true}
@@ -393,8 +390,6 @@ ThreadWatcher =
     all
 
   makeLine: (siteID, boardID, threadID, data) ->
-    software = Conf['siteProperties'][siteID]?.software
-
     x = $.el 'a',
       className: 'fa fa-times'
       href: 'javascript:;'
@@ -405,7 +400,7 @@ ThreadWatcher =
     excerpt = ThreadWatcher.prefixes[siteID] + excerpt if Conf['Show Site Prefix']
 
     link = $.el 'a',
-      href: SW[software]?.urls.thread({siteID, boardID, threadID}) or ''
+      href: g.sites[siteID]?.urls.thread({siteID, boardID, threadID}) or ''
       title: excerpt
       className: 'watcher-link'
 
