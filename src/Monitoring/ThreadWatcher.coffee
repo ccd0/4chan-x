@@ -307,7 +307,7 @@ ThreadWatcher =
           ThreadWatcher.update siteID, boardID, threadID, {page, lastPage}
         if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
           if modified isnt data.modified or (replies? and replies isnt data.replies)
-            ThreadWatcher.db.extend {siteID, boardID, threadID, val: {modified}}
+            (thread.newData or= {}).modified = modified
             ThreadWatcher.fetchStatus thread
       else
         if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
@@ -325,7 +325,7 @@ ThreadWatcher =
     return if data.last is -1 # 404 or no JSON API
     ThreadWatcher.fetch url, {siteID, force}, [thread], ThreadWatcher.parseStatus
 
-  parseStatus: ({siteID, boardID, threadID, data}) ->
+  parseStatus: ({siteID, boardID, threadID, data, newData}) ->
     software = Conf['siteProperties'][siteID]?.software
 
     if @status is 200 and @response
@@ -370,7 +370,9 @@ ThreadWatcher =
         if quotesYou and not Filter.isHidden(Build.parseJSON postObj, boardID, siteID)
           quotingYou = true
 
-      ThreadWatcher.update siteID, boardID, threadID, {last, replies, isDead, unread, quotingYou}
+      newData or= {}
+      $.extend newData, {last, replies, isDead, unread, quotingYou}
+      ThreadWatcher.update siteID, boardID, threadID, newData
 
     else if @status is 404
       if SW[software].mayLackJSON and !data.last?
