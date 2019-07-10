@@ -16,6 +16,7 @@ Linkify =
     return unless Linkify.regString.test @info.comment
     for link in $$ 'a', @nodes.comment when ImageHost.test(link.hostname) or /\bnofollow\b/.test(link.rel)
       $.addClass link, 'linkify'
+      ImageHost.fixLinks [link] if ImageHost.useFaster
       Embedding.process link, @
     links = Linkify.process @nodes.comment
     ImageHost.fixLinks links if ImageHost.useFaster

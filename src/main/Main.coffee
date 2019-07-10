@@ -76,6 +76,7 @@ Main =
     Conf['Bottom QR Link'] = true
     Conf['Toggleable Thread Watcher'] = true
     Conf['siteSoftware'] = ''
+    Conf['Use Faster Image Host'] = 'true'
 
     # Enforce JS whitelist
     if /\.4chan(?:nel)?\.org$/.test(location.hostname) and !$$('script:not([src])', d).filter((s) -> /this\[/.test(s.textContent)).length

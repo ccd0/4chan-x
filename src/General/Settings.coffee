@@ -493,6 +493,9 @@ Settings =
       if data['sauces']?
         set 'sauces', data['sauces'].replace(/^(#?\s*)(?:http:)?\/\/(www\.pixiv\.net|www\.deviantart\.com|imgur\.com|flickr\.com)\//mg, '$1https://$2/')
         set 'sauces', data['sauces'].replace(/https:\/\/yandex\.com\/images\/search\?rpt=imageview&img_url=%IMG/g, 'https://yandex.com/images/search?rpt=imageview&url=%IMG')
+    if compareString < '00001.00014.00009.00001'
+      if data['Use Faster Image Host']? and not data['fourchanImageHost']?
+        set 'fourchanImageHost', (if data['Use Faster Image Host'] then 'i.4cdn.org' else '')
     changes
 
   loadSettings: (data, cb) ->
@@ -559,7 +562,7 @@ Settings =
       $.id('lastarchivecheck').textContent = 'never'
 
     items = {}
-    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'captchaServiceDomain', 'boardnav', 'time', 'timeLocale', 'backlink', 'pastedname', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
+    for name in ['archiveLists', 'archiveAutoUpdate', 'fourchanImageHost', 'captchaLanguage', 'captchaServiceDomain', 'boardnav', 'time', 'timeLocale', 'backlink', 'pastedname', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
       items[name] = Conf[name]
       input = inputs[name]
       event = if name in ['archiveLists', 'archiveAutoUpdate', 'QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
@@ -574,6 +577,10 @@ Settings =
         if key of Settings
           Settings[key].call input
       return
+
+    listImageHost = $.id 'list-fourchanImageHost'
+    for textContent in ImageHost.suggestions
+      $.add listImageHost, $.el 'option', {textContent}
 
     $.on inputs['captchaServiceKey'], 'input', Settings.captchaServiceKey
     $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) ->

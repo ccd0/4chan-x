@@ -304,10 +304,6 @@ Config =
         true
         'Apply <%= meta.name %> mute and volume settings to videos opened in their own tabs.'
       ]
-      'Use Faster Image Host': [
-        true
-        'Change is*.4chan.org links to point to the faster i.4cdn.org host.'
-      ]
 
     'Menu':
       'Menu': [
@@ -1164,3 +1160,5 @@ Config =
     'https://api.captcha.guru': ''
     'https://2captcha.com':     ''
   }]
+
+  fourchanImageHost: 'i.4cdn.org'

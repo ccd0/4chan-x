@@ -6,7 +6,6 @@ SW.tinyboard =
     'Board Configuration'
     'Normalize URL'
     'Captcha Configuration'
-    'Image Host Rewriting'
     'Index Generator'
     'Announcement Hiding'
     'Resurrect Quotes'
