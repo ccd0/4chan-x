@@ -68,12 +68,12 @@ Test =
     $.cache g.SITE.urls.threadJSON({boardID: post.boardID, threadID: post.threadID}), ->
       return unless @response
       {posts} = @response
-      Build.spoilerRange[post.board.ID] = posts[0].custom_spoiler
+      g.SITE.Build.spoilerRange[post.board.ID] = posts[0].custom_spoiler
       for postData in posts
         if postData.no is post.ID
           t1 = new Date().getTime()
-          obj = Build.parseJSON postData, post.board.ID
-          root = Build.post obj
+          obj = g.SITE.Build.parseJSON postData, post.board.ID
+          root = g.SITE.Build.post obj
           t2 = new Date().getTime()
           Test.time += t2 - t1
           post2 = new Post root, post.thread, post.board, 'forBuildTest'

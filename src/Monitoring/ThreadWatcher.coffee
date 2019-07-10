@@ -325,6 +325,7 @@ ThreadWatcher =
     ThreadWatcher.fetch url, {siteID, force}, [thread], ThreadWatcher.parseStatus
 
   parseStatus: ({siteID, boardID, threadID, data, newData}) ->
+    site = g.sites[siteID]
     if @status is 200 and @response
       last = @response.posts[@response.posts.length-1].no
       replies = @response.posts.length-1
@@ -346,14 +347,14 @@ ThreadWatcher =
 
         unread++
 
-        if !quotingYou and !Conf['Require OP Quote Link'] and youOP and not Filter.isHidden(Build.parseJSON postObj, boardID, siteID)
+        if !quotingYou and !Conf['Require OP Quote Link'] and youOP and not Filter.isHidden(site.Build.parseJSON postObj, boardID, siteID)
           quotingYou = true
           continue
 
         continue unless !quotingYou and QuoteYou.db and postObj.com
 
         quotesYou = false
-        regexp = g.sites[siteID].regexp.quotelinkHTML
+        regexp = site.regexp.quotelinkHTML
         regexp.lastIndex = 0
         while match = regexp.exec postObj.com
           if QuoteYou.db.get {
@@ -364,7 +365,7 @@ ThreadWatcher =
           }
             quotesYou = true
             break
-        if quotesYou and not Filter.isHidden(Build.parseJSON postObj, boardID, siteID)
+        if quotesYou and not Filter.isHidden(site.Build.parseJSON postObj, boardID, siteID)
           quotingYou = true
 
       newData or= {}
@@ -372,7 +373,7 @@ ThreadWatcher =
       ThreadWatcher.update siteID, boardID, threadID, newData
 
     else if @status is 404
-      if g.sites[siteID].mayLackJSON and !data.last?
+      if site.mayLackJSON and !data.last?
         ThreadWatcher.update siteID, boardID, threadID, {last: -1}
       else
         ThreadWatcher.update siteID, boardID, threadID, {isDead: true}

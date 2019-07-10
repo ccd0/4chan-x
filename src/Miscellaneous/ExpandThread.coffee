@@ -11,7 +11,7 @@ ExpandThread =
 
   setButton: (thread) ->
     return if not (thread.nodes.root and (a = $ '.summary', thread.nodes.root))
-    a.textContent = Build.summaryText '+', a.textContent.match(/\d+/g)...
+    a.textContent = g.SITE.Build.summaryText '+', a.textContent.match(/\d+/g)...
     a.style.cursor = 'pointer'
     $.on a, 'click', ExpandThread.cbToggle
   
@@ -53,7 +53,7 @@ ExpandThread =
 
   expand: (thread, a) ->
     ExpandThread.statuses[thread] = status = {}
-    a.textContent = Build.summaryText '...', a.textContent.match(/\d+/g)...
+    a.textContent = g.SITE.Build.summaryText '...', a.textContent.match(/\d+/g)...
     status.req = $.cache g.SITE.urls.threadJSON({boardID: thread.board.ID, threadID: thread.ID}), ->
       return if @ isnt status.req # aborted
       delete status.req
@@ -65,7 +65,7 @@ ExpandThread =
     if (oldReq = status.req)
       delete status.req
       oldReq.abort()
-      a.textContent = Build.summaryText '+', a.textContent.match(/\d+/g)... if a
+      a.textContent = g.SITE.Build.summaryText '+', a.textContent.match(/\d+/g)... if a
       return
 
     replies = $$ '.thread > .replyContainer', threadRoot
@@ -88,7 +88,7 @@ ExpandThread =
       $.rm reply
     if Index.enabled # otherwise handled by Main.addPosts
       $.event 'PostsRemoved', null, a.parentNode
-    a.textContent = Build.summaryText '+', postsCount, filesCount
+    a.textContent = g.SITE.Build.summaryText '+', postsCount, filesCount
     $.rm $('.summary-bottom', threadRoot)
 
   parse: (req, thread, a) ->
@@ -96,7 +96,7 @@ ExpandThread =
       a.textContent = if req.status then "Error #{req.statusText} (#{req.status})" else 'Connection Error'
       return
 
-    Build.spoilerRange[thread.board] = req.response.posts[0].custom_spoiler
+    g.SITE.Build.spoilerRange[thread.board] = req.response.posts[0].custom_spoiler
 
     posts      = []
     postsRoot  = []
@@ -108,7 +108,7 @@ ExpandThread =
         {root} = post.nodes
         postsRoot.push root
         continue
-      root = Build.postFromObject postData, thread.board.ID
+      root = g.SITE.Build.postFromObject postData, thread.board.ID
       post = new Post root, thread, thread.board
       filesCount++ if 'file' of post
       posts.push post
@@ -118,7 +118,7 @@ ExpandThread =
     $.event 'PostsInserted', null, a.parentNode
 
     postsCount    = postsRoot.length
-    a.textContent = Build.summaryText '-', postsCount, filesCount
+    a.textContent = g.SITE.Build.summaryText '-', postsCount, filesCount
 
     if root
       a2 = a.cloneNode true

@@ -29,7 +29,7 @@ QuoteBacklink =
     return if @isClone or !@quotes.length or @isRebuilt
     markYours = Conf['Mark Quotes of You'] and QuoteYou.isYou(@)
     a = $.el 'a',
-      href: Build.postURL @board.ID, @thread.ID, @ID
+      href: g.SITE.Build.postURL @board.ID, @thread.ID, @ID
       className: if @isHidden then 'filtered backlink' else 'backlink'
       textContent: Conf['backlink'].replace(/%(?:id|%)/g, (x) => ({'%id': @ID, '%%': '%'})[x])
     $.add a, QuoteYou.mark.cloneNode(true) if markYours

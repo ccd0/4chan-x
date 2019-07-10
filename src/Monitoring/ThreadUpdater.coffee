@@ -267,7 +267,7 @@ ThreadUpdater =
     return if postObjects[postObjects.length-1].no < lastPost and
       new Date(req.getResponseHeader('Last-Modified')) - thread.posts[lastPost].info.date < 30 * $.SECOND
 
-    Build.spoilerRange[board] = OP.custom_spoiler
+    g.SITE.Build.spoilerRange[board] = OP.custom_spoiler
     thread.setStatus 'Archived', !!OP.archived
     ThreadUpdater.updateThreadStatus 'Sticky', !!OP.sticky
     ThreadUpdater.updateThreadStatus 'Closed', !!OP.closed
@@ -295,7 +295,7 @@ ThreadUpdater =
         continue
 
       newPosts.push "#{board}.#{ID}"
-      node = Build.postFromObject postObject, board.ID
+      node = g.SITE.Build.postFromObject postObject, board.ID
       posts.push new Post node, thread, board
       # Fetching your own posts after posting
       delete ThreadUpdater.postID if ThreadUpdater.postID is ID
