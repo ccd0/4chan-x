@@ -1,5 +1,5 @@
 <% if (readJSON('/.tests_enabled')) { %>
-Build.Test =
+Test =
   init: ->
     return if !Conf['Menu'] or g.VIEW not in ['index', 'thread']
 
@@ -60,11 +60,11 @@ Build.Test =
       x2 = x.childNodes[i]
       y2 = y.childNodes[i]
       return [x2, y2] unless x2 and y2
-      return Build.Test.firstDiff(x2, y2) unless x2.isEqualNode y2
+      return Test.firstDiff(x2, y2) unless x2.isEqualNode y2
       i++
 
   testOne: (post) ->
-    Build.Test.postsRemaining++
+    Test.postsRemaining++
     $.cache Site.urls.threadJSON({boardID: post.boardID, threadID: post.threadID}), ->
       return unless @response
       {posts} = @response
@@ -75,7 +75,7 @@ Build.Test =
           obj = Build.parseJSON postData, post.board.ID
           root = Build.post obj
           t2 = new Date().getTime()
-          Build.Test.time += t2 - t1
+          Test.time += t2 - t1
           post2 = new Post root, post.thread, post.board, 'forBuildTest'
           fail = false
 
@@ -84,7 +84,7 @@ Build.Test =
           unless x.isEqualNode y
             fail = true
             c.log "#{post.fullID} differs"
-            [x2, y2] = Build.Test.firstDiff x, y
+            [x2, y2] = Test.firstDiff x, y
             c.log x2
             c.log y2
             c.log x.outerHTML
@@ -100,18 +100,18 @@ Build.Test =
               c.log val2
 
           if fail
-            Build.Test.postsFailed++
+            Test.postsFailed++
           else
             c.log "#{post.fullID} correct"
-          Build.Test.postsRemaining--
-          Build.Test.report() if Build.Test.postsRemaining is 0
+          Test.postsRemaining--
+          Test.report() if Test.postsRemaining is 0
       return
 
   testAll: ->
     g.posts.forEach (post) ->
       unless post.isClone or post.isFetchedQuote
         if not ((abbr = $ '.abbr', post.nodes.comment) and /Comment too long\./.test(abbr.textContent))
-          Build.Test.testOne post
+          Test.testOne post
     return
 
   postsRemaining: 0
@@ -119,18 +119,18 @@ Build.Test =
   time: 0
 
   report: ->
-    if Build.Test.postsFailed
-      new Notice 'warning', "#{Build.Test.postsFailed} post(s) differ (#{Build.Test.time} ms)", 30
+    if Test.postsFailed
+      new Notice 'warning', "#{Test.postsFailed} post(s) differ (#{Test.time} ms)", 30
     else
-      new Notice 'success', "All correct (#{Build.Test.time} ms)", 5
-    Build.Test.postsFailed = Build.Test.time = 0
+      new Notice 'success', "All correct (#{Test.time} ms)", 5
+    Test.postsFailed = Test.time = 0
 
   cb:
     testOne: ->
-      Build.Test.testOne g.posts[@dataset.fullID]
+      Test.testOne g.posts[@dataset.fullID]
       Menu.menu.close()
 
     testAll: ->
-      Build.Test.testAll()
+      Test.testAll()
       Header.menu.close()
 <% } %>

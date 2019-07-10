@@ -3,7 +3,7 @@ class Post
 
   constructor: (root, @thread, @board) ->
     <% if (readJSON('/.tests_enabled')) { %>
-    @normalizedOriginal = Build.Test.normalize root
+    @normalizedOriginal = Test.normalize root
     <% } %>
 
     @ID       = +root.id.match(/\d*$/)[0]

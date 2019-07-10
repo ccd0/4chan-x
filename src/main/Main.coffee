@@ -616,6 +616,6 @@ Main =
     ['Reply Pruning',             ReplyPruning]
     ['Mod Contact Links',         ModContact]
     <% if (readJSON('/.tests_enabled')) { %>
-    ['Build Test',                Build.Test]
+    ['Build Test',                Test]
     <% } %>
   ]
