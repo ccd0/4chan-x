@@ -2,3 +2,6 @@ dist: xenial
 language: generic
 install: npm install
 script: make
+branches:
+  only:
+    - master
