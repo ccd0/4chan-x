@@ -92,10 +92,10 @@ Header =
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
 
-    $.onExists doc, "#{Site.selectors.boardList} + *", Header.generateFullBoardList
+    $.onExists doc, "#{g.SITE.selectors.boardList} + *", Header.generateFullBoardList
 
     Main.ready ->
-      if Site.software is 'yotsuba' and not (footer = $.id 'boardNavDesktopFoot')
+      if g.SITE.software is 'yotsuba' and not (footer = $.id 'boardNavDesktopFoot')
         return unless (absbot = $.id 'absbot')
         footer = $.id('boardNavDesktop').cloneNode true
         footer.id = 'boardNavDesktopFoot'
@@ -103,12 +103,12 @@ Header =
         $('#settingsWindowLink', footer).id = 'settingsWindowLinkBot'
         $.before absbot, footer
         $.globalEval 'window.cloneTopNav = function() {};'
-      if (Header.bottomBoardList = $ Site.selectors.boardListBottom)
+      if (Header.bottomBoardList = $ g.SITE.selectors.boardListBottom)
         for a in $$ 'a', Header.bottomBoardList
           a.className = 'current' if a.hostname is location.hostname and a.pathname.split('/')[1] is g.BOARD.ID
         CatalogLinks.setLinks Header.bottomBoardList
 
-    if Site.software is 'yotsuba' and (g.VIEW is 'catalog' or !Conf['Disable Native Extension'])
+    if g.SITE.software is 'yotsuba' and (g.VIEW is 'catalog' or !Conf['Disable Native Extension'])
       cs = $.el 'a', href: 'javascript:;'
       if g.VIEW is 'catalog'
         cs.title = cs.textContent = 'Catalog Settings'
@@ -165,7 +165,7 @@ Header =
   generateFullBoardList: ->
     nodes = []
     spacer = -> $.el 'span', className: 'spacer'
-    items = $.X './/a|.//text()[not(ancestor::a)]', $(Site.selectors.boardList)
+    items = $.X './/a|.//text()[not(ancestor::a)]', $(g.SITE.selectors.boardList)
     i = 0
     while node = items.snapshotItem i++
       switch node.nodeName

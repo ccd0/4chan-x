@@ -23,7 +23,7 @@ IDColor =
   compute: (uid) ->
     # Convert chars to integers, bitshift and math to create a larger integer
     # Create a nice string of binary
-    hash = if Site.uidColor then Site.uidColor(uid) else parseInt(uid, 16)
+    hash = if g.SITE.uidColor then g.SITE.uidColor(uid) else parseInt(uid, 16)
 
     # Convert binary string to numerical values with bitshift and '&' truncation.
     rgb = [

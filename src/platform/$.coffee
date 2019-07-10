@@ -53,7 +53,7 @@ $.ajax = do ->
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
     # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
-    if Conf['Chromium CORB Bug'] and Site.software is 'yotsuba' and !options.testCORB
+    if Conf['Chromium CORB Bug'] and g.SITE.software is 'yotsuba' and !options.testCORB
       return $.ajaxPage url, options
     <% } %>
     {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options
@@ -88,7 +88,7 @@ do ->
   requests = {}
 
   $.ajaxPageInit = ->
-    if Conf['Chromium CORB Bug'] and Site.software is 'yotsuba'
+    if Conf['Chromium CORB Bug'] and g.SITE.software is 'yotsuba'
       unless 0 <= Date.now() - Conf['Chromium CORB Bug'] < 2 * $.DAY
         $.ajax "#{location.protocol}//a.4cdn.org/boards.json",
           testCORB: true

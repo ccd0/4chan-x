@@ -13,20 +13,20 @@ Get =
     {board} = root.dataset
     g.threads["#{if board then encodeURIComponent(board) else g.BOARD.ID}.#{root.id.match(/\d*$/)[0]}"]
   threadFromNode: (node) ->
-    Get.threadFromRoot $.x "ancestor-or-self::#{Site.xpath.thread}", node
+    Get.threadFromRoot $.x "ancestor-or-self::#{g.SITE.xpath.thread}", node
   postFromRoot: (root) ->
     return null unless root?
     post  = g.posts[root.dataset.fullID]
     index = root.dataset.clone
     if index then post.clones[index] else post
   postFromNode: (root) ->
-    Get.postFromRoot $.x "ancestor-or-self::#{Site.xpath.postContainer}[1]", root
+    Get.postFromRoot $.x "ancestor-or-self::#{g.SITE.xpath.postContainer}[1]", root
   postDataFromLink: (link) ->
     if link.dataset.postID # resurrected quote
       {boardID, threadID, postID} = link.dataset
       threadID or= 0
     else
-      match = link.href.match Site.regexp.quotelink
+      match = link.href.match g.SITE.regexp.quotelink
       [boardID, threadID, postID] = match[1..]
       postID or= threadID
     return {

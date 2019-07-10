@@ -44,7 +44,7 @@ Post.Clone = class extends Post
       @file = {}
       for key, val of @origin.file
         @file[key] = val
-      for key, selector of Site.selectors.file
+      for key, selector of g.SITE.selectors.file
         @file[key] = $ selector, @nodes.root
       @file.thumbLink = @file.thumb?.parentNode
       @file.fullImage = $ '.full-image', @file.thumbLink if @file.thumbLink

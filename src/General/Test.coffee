@@ -65,7 +65,7 @@ Test =
 
   testOne: (post) ->
     Test.postsRemaining++
-    $.cache Site.urls.threadJSON({boardID: post.boardID, threadID: post.threadID}), ->
+    $.cache g.SITE.urls.threadJSON({boardID: post.boardID, threadID: post.threadID}), ->
       return unless @response
       {posts} = @response
       Build.spoilerRange[post.board.ID] = posts[0].custom_spoiler

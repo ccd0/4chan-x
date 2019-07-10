@@ -93,7 +93,7 @@ ThreadWatcher =
         href: 'javascript:;'
         className: 'watch-thread-link'
       $.before $('input', @nodes.info), toggler
-    siteID = Site.hostname
+    siteID = g.SITE.ID
     boardID = @board.ID
     threadID = @thread.ID
     data = ThreadWatcher.db.get {siteID, boardID, threadID}
@@ -148,7 +148,7 @@ ThreadWatcher =
         ThreadWatcher.add g.threads[boardID + '.' + threadID] or new Thread(threadID, g.boards[boardID] or new Board(boardID))
     onIndexUpdate: (e) ->
       {db}    = ThreadWatcher
-      siteID  = Site.hostname
+      siteID  = g.SITE.ID
       boardID = g.BOARD.ID
       nKilled = 0
       for threadID, data of db.data[siteID].boards[boardID] when not data?.isDead and "#{boardID}.#{threadID}" not in e.detail.threads
@@ -185,7 +185,7 @@ ThreadWatcher =
       else
         ThreadWatcher.status.textContent = "#{Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)}%"
       cb.apply @, args
-    ajax = if siteID is Site.hostname then $.ajax else CrossOrigin.ajax
+    ajax = if siteID is g.SITE.ID then $.ajax else CrossOrigin.ajax
     if force
       delete $.lastModified.ThreadWatcher?[url]
     req = $.whenModified(
@@ -384,7 +384,7 @@ ThreadWatcher =
     all = []
     for siteID, boards of ThreadWatcher.db.data
       for boardID, threads of boards.boards
-        if Conf['Current Board'] and (siteID isnt Site.hostname or boardID isnt g.BOARD.ID)
+        if Conf['Current Board'] and (siteID isnt g.SITE.ID or boardID isnt g.BOARD.ID)
           continue
         if groupByBoard
           all.push (cont = [])
@@ -468,7 +468,7 @@ ThreadWatcher =
     ThreadWatcher.setPrefixes threads
     for {siteID, boardID, threadID, data} in threads
       # Add missing excerpt for threads added by Auto Watch
-      if not data.excerpt? and siteID is Site.hostname and (thread = g.threads["#{boardID}.#{threadID}"]) and thread.OP
+      if not data.excerpt? and siteID is g.SITE.ID and (thread = g.threads["#{boardID}.#{threadID}"]) and thread.OP
         ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt thread}}
       nodes.push ThreadWatcher.makeLine siteID, boardID, threadID, data
     {list} = ThreadWatcher
@@ -524,7 +524,7 @@ ThreadWatcher =
     ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true, page: undefined, lastPage: undefined, unread: undefined, quotingYou: undefined}}, cb
 
   toggle: (thread) ->
-    siteID   = Site.hostname
+    siteID   = g.SITE.ID
     boardID  = thread.board.ID
     threadID = thread.ID
     if ThreadWatcher.db.get {boardID, threadID}
@@ -534,7 +534,7 @@ ThreadWatcher =
 
   add: (thread) ->
     data     = {}
-    siteID   = Site.hostname
+    siteID   = g.SITE.ID
     boardID  = thread.board.ID
     threadID = thread.ID
     if thread.isDead
@@ -548,7 +548,7 @@ ThreadWatcher =
   addRaw: (boardID, threadID, data) ->
     ThreadWatcher.db.set {boardID, threadID, val: data}
     ThreadWatcher.refresh()
-    thread = {siteID: Site.hostname, boardID, threadID, data, force: true}
+    thread = {siteID: g.SITE.ID, boardID, threadID, data, force: true}
     if Conf['Show Page'] and !data.isDead
       ThreadWatcher.fetchBoard [thread]
     else if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']

@@ -23,7 +23,7 @@ ImageHover =
     return unless doc.contains @
     {file} = post
     {isVideo} = file
-    return if file.isExpanding or file.isExpanded or Site.isThumbExpanded?(file)
+    return if file.isExpanding or file.isExpanded or g.SITE.isThumbExpanded?(file)
     error = ImageHover.error post
     if ImageCommon.cache?.dataset.fullID is post.fullID
       el = ImageCommon.popCache()

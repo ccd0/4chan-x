@@ -1,6 +1,6 @@
 ModContact =
   init: ->
-    return unless Site.software is 'yotsuba' and g.VIEW in ['index', 'thread']
+    return unless g.SITE.software is 'yotsuba' and g.VIEW in ['index', 'thread']
     Callbacks.Post.push
       name: 'Mod Contact Links'
       cb:   @node

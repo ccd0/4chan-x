@@ -20,7 +20,7 @@ www:
 
 sub: function(css) {
   var variables = {
-    site: Site.selectors
+    site: g.SITE.selectors
   };
   return css.replace(/\$[\w\$]+/g, function(name) {
     var words = name.slice(1).split('$');

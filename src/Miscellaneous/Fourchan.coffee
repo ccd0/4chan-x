@@ -1,6 +1,6 @@
 Fourchan =
   init: ->
-    return unless Site.software is 'yotsuba' and g.VIEW in ['index', 'thread', 'archive']
+    return unless g.SITE.software is 'yotsuba' and g.VIEW in ['index', 'thread', 'archive']
     BoardConfig.ready @initBoard
     Main.ready @initReady
 

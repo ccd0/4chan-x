@@ -12,7 +12,7 @@ ThreadHiding =
       cb:   @node
 
   catalogSet: (board) ->
-    return unless $.hasStorage and Site.software is 'yotsuba'
+    return unless $.hasStorage and g.SITE.software is 'yotsuba'
     hiddenThreads = ThreadHiding.db.get
       boardID: board.ID
       defaultValue: {}
@@ -20,7 +20,7 @@ ThreadHiding =
     localStorage.setItem "4chan-hide-t-#{board}", JSON.stringify hiddenThreads
 
   catalogWatch: ->
-    return unless $.hasStorage and Site.software is 'yotsuba'
+    return unless $.hasStorage and g.SITE.software is 'yotsuba'
     @hiddenThreads = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
     Main.ready ->
       # 4chan's catalog sets the style to "display: none;" when hiding or unhiding a thread.
@@ -145,8 +145,8 @@ ThreadHiding =
     a
 
   makeStub: (thread, root) ->
-    numReplies  = $$(Site.selectors.postContainer + Site.selectors.relative.replyPost, root).length
-    numReplies += +summary.textContent.match /\d+/ if summary = $ Site.selectors.summary, root
+    numReplies  = $$(g.SITE.selectors.postContainer + g.SITE.selectors.relative.replyPost, root).length
+    numReplies += +summary.textContent.match /\d+/ if summary = $ g.SITE.selectors.summary, root
 
     a = ThreadHiding.makeButton thread, 'show'
     $.add a, $.tn " #{thread.OP.info.nameBlock} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
@@ -159,7 +159,7 @@ ThreadHiding =
     $.prepend root, thread.stub
 
     # Prevent hiding of thread divider on sites that put it inside the thread
-    if (threadDivider = $ Site.selectors.threadDivider, root)
+    if (threadDivider = $ g.SITE.selectors.threadDivider, root)
       $.addClass threadDivider, 'threadDivider'
 
   saveHiddenState: (thread, makeStub) ->

@@ -76,7 +76,7 @@ ThreadStats =
       return
     ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 2 * $.MINUTE
     $.whenModified(
-      Site.urls.threadsListJSON({boardID: ThreadStats.thread.board}),
+      g.SITE.urls.threadsListJSON({boardID: ThreadStats.thread.board}),
       'ThreadStats',
       ThreadStats.onThreadsLoad
     )

@@ -19,7 +19,7 @@ class DataBoard
       @data['4chan.org'] = {boards, lastChecked}
       delete @data.boards
       delete @data.lastChecked
-    @data[Site.hostname] or= boards: {}
+    @data[g.SITE.ID] or= boards: {}
 
   changes: []
 
@@ -47,7 +47,7 @@ class DataBoard
       cb?()
 
   delete: ({siteID, boardID, threadID, postID}) ->
-    siteID or= Site.hostname
+    siteID or= g.SITE.ID
     return unless @data[siteID]
     @save =>
       if postID
@@ -76,7 +76,7 @@ class DataBoard
     , cb
 
   setUnsafe: ({siteID, boardID, threadID, postID, val}) ->
-    siteID or= Site.hostname
+    siteID or= g.SITE.ID
     @data[siteID] or= boards: {}
     if postID isnt undefined
       ((@data[siteID].boards[boardID] or= {})[threadID] or= {})[postID] = val
@@ -101,7 +101,7 @@ class DataBoard
       @data[key] = Date.now()
 
   get: ({siteID, boardID, threadID, postID, defaultValue}) ->
-    siteID or= Site.hostname
+    siteID or= g.SITE.ID
     if board = @data[siteID]?.boards[boardID]
       unless threadID?
         if postID?
@@ -119,7 +119,7 @@ class DataBoard
     val or defaultValue
 
   clean: ->
-    siteID = Site.hostname
+    siteID = g.SITE.ID
     for boardID, val of @data[siteID].boards
       @deleteIfEmpty {siteID, boardID}
     now = Date.now()
@@ -131,12 +131,12 @@ class DataBoard
 
   ajaxClean: (boardID) ->
     that = @
-    siteID = Site.hostname
-    threadsList = Site.urls.threadsListJSON?({siteID, boardID})
+    siteID = g.SITE.ID
+    threadsList = g.SITE.urls.threadsListJSON?({siteID, boardID})
     return unless threadsList
     $.cache threadsList, ->
       return unless @status is 200
-      archiveList = Site.urls.archiveListJSON?({siteID, boardID})
+      archiveList = g.SITE.urls.archiveListJSON?({siteID, boardID})
       return that.ajaxCleanParse(boardID, @response) unless archiveList
       response1 = @response
       $.cache archiveList, ->
@@ -144,7 +144,7 @@ class DataBoard
         that.ajaxCleanParse(boardID, response1, @response)
 
   ajaxCleanParse: (boardID, response1, response2) ->
-    siteID = Site.hostname
+    siteID = g.SITE.ID
     return if not (board = @data[siteID].boards[boardID])
     threads = {}
     if response1

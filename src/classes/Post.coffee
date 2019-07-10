@@ -9,7 +9,7 @@ class Post
     @ID       = +root.id.match(/\d*$/)[0]
     @threadID = @thread.ID
     @boardID  = @board.ID
-    @siteID   = Site.hostname
+    @siteID   = g.SITE.ID
     @fullID   = "#{@board}.#{@ID}"
     @context  = @
     @isReply  = (@ID isnt @threadID)
@@ -21,7 +21,7 @@ class Post
     if not @isReply
       @thread.OP = @
       for key in ['isSticky', 'isClosed', 'isArchived']
-        @thread[key] = if (selector = Site.selectors.icons[key]) then !!$(selector, @nodes.info) else false
+        @thread[key] = if (selector = g.SITE.selectors.icons[key]) then !!$(selector, @nodes.info) else false
       if @thread.isArchived
         @thread.isClosed = true
         @thread.kill()
@@ -67,12 +67,12 @@ class Post
     g.posts.push   @fullID, @
 
   parseNodes: (root) ->
-    s = Site.selectors
+    s = g.SITE.selectors
     post = $(s.post, root) or root
     info = $ s.infoRoot, post
     nodes =
       root:       root
-      bottom:     if @isReply or !Site.isOPContainerThread then root else $(s.opBottom, root)
+      bottom:     if @isReply or !g.SITE.isOPContainerThread then root else $(s.opBottom, root)
       post:       post
       info:       info
       comment:    $ s.comment, post
@@ -81,7 +81,7 @@ class Post
       embedlinks:   []
     for key, selector of s.info
       nodes[key] = $ selector, info
-    Site.parseNodes?(@, nodes)
+    g.SITE.parseNodes?(@, nodes)
     nodes.uniqueIDRoot or= nodes.uniqueID
 
     # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
@@ -106,7 +106,7 @@ class Post
     #   'Comment too long'...
     #   EXIF data. (/p/)
     @nodes.commentClean = bq = @nodes.comment.cloneNode true
-    Site.cleanComment?(bq)
+    g.SITE.cleanComment?(bq)
     @info.comment = @nodesToText bq
 
   commentDisplay: ->
@@ -119,13 +119,13 @@ class Post
     #   Trailing spaces.
     bq = @nodes.commentClean.cloneNode true
     @cleanSpoilers bq unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
-    Site.cleanCommentDisplay?(bq)
+    g.SITE.cleanCommentDisplay?(bq)
     @nodesToText(bq).trim().replace(/\s+$/gm, '')
 
   commentOrig: ->
     # Get the comment's text for reposting purposes.
     bq = @nodes.commentClean.cloneNode true
-    Site.insertTags?(bq)
+    g.SITE.insertTags?(bq)
     @nodesToText bq
 
   nodesToText: (bq) ->
@@ -137,14 +137,14 @@ class Post
     text
 
   cleanSpoilers: (bq) ->
-    spoilers = $$ Site.selectors.spoiler, bq
+    spoilers = $$ g.SITE.selectors.spoiler, bq
     for node in spoilers
       $.replace node, $.tn '[spoiler]'
     return
 
   parseQuotes: ->
     @quotes = []
-    for quotelink in $$ Site.selectors.quotelink, @nodes.comment
+    for quotelink in $$ g.SITE.selectors.quotelink, @nodes.comment
       @parseQuote quotelink
     return
 
@@ -155,7 +155,7 @@ class Post
     #  - catalog links. (>>>/b/catalog or >>>/b/search)
     #  - rules links. (>>>/a/rules)
     #  - text-board quotelinks. (>>>/img/1234)
-    match = quotelink.href.match Site.regexp.quotelink
+    match = quotelink.href.match g.SITE.regexp.quotelink
     return unless match or (@isClone and quotelink.dataset.postID) # normal or resurrected quote
 
     @nodes.quotelinks.push quotelink
@@ -168,12 +168,12 @@ class Post
 
   parseFile: ->
     file = {}
-    for key, selector of Site.selectors.file
+    for key, selector of g.SITE.selectors.file
       file[key] = $ selector, @nodes.root
     file.thumbLink = file.thumb?.parentNode
 
     return if not (file.text and file.link)
-    return if not Site.parseFile @, file
+    return if not g.SITE.parseFile @, file
 
     $.extend file,
       url:     file.link.href
