@@ -91,6 +91,9 @@ SW.yotsuba =
   isAuxiliaryPage: ->
     location.hostname not in ['boards.4chan.org', 'boards.4channel.org']
 
+  isFileURL: ->
+    ImageHost.test(location.hostname)
+
   scriptData: ->
     for script in $$ 'script:not([src])', d.head
       return script.textContent if /\bcooldowns *=/.test script.textContent

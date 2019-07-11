@@ -156,9 +156,9 @@ Main =
           PostSuccessful.init()
         return
 
-    if ImageHost.test hostname
+    if g.SITE.isFileURL()
       $.asap (-> d.readyState isnt 'loading'), ->
-        if Conf['404 Redirect'] and g.SITE.is404?()
+        if g.SITE.software is 'yotsuba' and Conf['404 Redirect'] and g.SITE.is404?()
           Redirect.navigate 'file', {
             boardID:  g.BOARD.ID
             filename: pathname[pathname.length - 1]
