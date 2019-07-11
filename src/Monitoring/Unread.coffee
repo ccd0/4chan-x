@@ -233,7 +233,9 @@ Unread =
       oldPosition = Unread.linePosition
       if (Unread.linePosition = Unread.positionPrev())
         if Unread.linePosition isnt oldPosition
-          $.after Unread.linePosition.data.nodes.bottom, Unread.hr
+          node = Unread.linePosition.data.nodes.bottom
+          node = node.nextSibling if node.nextSibling?.tagName is 'BR'
+          $.after node, Unread.hr
       else
         $.rm Unread.hr
     Unread.hr.hidden = Unread.linePosition is Unread.order.last
