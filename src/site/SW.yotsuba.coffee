@@ -52,6 +52,8 @@ SW.yotsuba =
     boardList: '#boardNavDesktop > .boardList'
     boardListBottom: '#boardNavDesktopFoot > .boardList'
     styleSheet: 'link[title=switch]'
+    psa:       '#globalMessage'
+    psaTop:    '#globalToggle'
 
   xpath:
     thread:        'div[contains(concat(" ",@class," ")," thread ")]'

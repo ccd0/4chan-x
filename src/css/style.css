@@ -1056,18 +1056,12 @@ textarea.copy-text-element {
 }
 
 /* Announcement Hiding */
-:root.hide-announcement #globalMessage {
+:root.hide-announcement $site$psa {
   display: none;
 }
-span.hide-announcement {
-  font-size: 11px;
-  position: relative;
-  bottom: 5px;
-}
-.globalMessage, h2, h3 {
-  color: inherit !important;
-  font-size: 13px;
-  font-weight: 100;
+.hide-announcement-button {
+  opacity: 0.4;
+  float: left;
 }
 
 /* Unread */

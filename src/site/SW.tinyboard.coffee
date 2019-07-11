@@ -4,7 +4,6 @@ SW.tinyboard =
 
   disabledFeatures: [
     'Index Generator'
-    'Announcement Hiding'
     'Resurrect Quotes'
     'Quick Reply Personas'
     'Quick Reply'
@@ -96,6 +95,7 @@ SW.tinyboard =
     boardList: '.boardlist'
     boardListBottom: '.boardlist.bottom'
     styleSheet: '#stylesheet'
+    psa:       '.blotter'
 
   xpath:
     thread:        'div[starts-with(@id,"thread_")]'

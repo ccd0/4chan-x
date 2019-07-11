@@ -1162,3 +1162,5 @@ Config =
   }]
 
   fourchanImageHost: 'i.4cdn.org'
+
+  hiddenPSAList: [{}]

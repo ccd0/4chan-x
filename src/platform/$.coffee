@@ -664,7 +664,7 @@ if GM?.deleteValue? and window.BroadcastChannel and not GM_addValueChangeListene
     GM.listValues().then((keys) ->
       $.delete keys.map((key) -> key.replace g.NAMESPACE, ''), cb
     ).catch( ->
-      $.delete Object.keys(Conf).concat(['previousversion', 'QR Size', 'QR.persona', 'hiddenPSA']), cb
+      $.delete Object.keys(Conf).concat(['previousversion', 'QR Size', 'QR.persona']), cb
     )
 else
 
@@ -778,7 +778,7 @@ else
     # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
     # Also support case where GM_listValues is not defined.
     $.delete Object.keys(Conf)
-    $.delete ['previousversion', 'QR Size', 'QR.persona', 'hiddenPSA']
+    $.delete ['previousversion', 'QR Size', 'QR.persona']
     try
       $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''
     cb?()
