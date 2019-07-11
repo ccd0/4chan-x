@@ -46,7 +46,7 @@ class DataBoard
         @sync?()
       cb?()
 
-  delete: ({siteID, boardID, threadID, postID}) ->
+  delete: ({siteID, boardID, threadID, postID}, cb) ->
     siteID or= g.SITE.ID
     return unless @data[siteID]
     @save =>
@@ -60,6 +60,7 @@ class DataBoard
         @deleteIfEmpty {siteID, boardID}
       else
         delete @data[siteID].boards[boardID]
+    , cb
 
   deleteIfEmpty: ({siteID, boardID, threadID}) ->
     return unless @data[siteID]

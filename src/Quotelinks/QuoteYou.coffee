@@ -5,10 +5,11 @@ QuoteYou =
     @db = new DataBoard 'yourPosts'
     $.sync 'Remember Your Posts', (enabled) -> Conf['Remember Your Posts'] = enabled
     $.on d, 'QRPostSuccessful', (e) ->
+      cb = PostRedirect.delay()
       $.get 'Remember Your Posts', Conf['Remember Your Posts'], (items) ->
         return unless items['Remember Your Posts']
         {boardID, threadID, postID} = e.detail
-        (QuoteYou.db.set {boardID, threadID, postID, val: true})
+        QuoteYou.db.set {boardID, threadID, postID, val: true}, cb
 
     return unless g.VIEW in ['index', 'thread', 'archive']
 

@@ -536,6 +536,7 @@ Main =
     ['Polyfill',                  Polyfill]
     ['Board Configuration',       BoardConfig]
     ['Normalize URL',             NormalizeURL]
+    ['Delay Redirect on Post',    PostRedirect]
     ['Captcha Configuration',     Captcha.replace]
     ['Image Host Rewriting',      ImageHost]
     ['Redirect',                  Redirect]

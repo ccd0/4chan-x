@@ -141,11 +141,12 @@ ThreadWatcher =
       ThreadWatcher.rm siteID, boardID, +threadID
     post: (e) ->
       {boardID, threadID, postID} = e.detail
+      cb = PostRedirect.delay()
       if postID is threadID
         if Conf['Auto Watch']
-          ThreadWatcher.addRaw boardID, threadID, {}
+          ThreadWatcher.addRaw boardID, threadID, {}, cb
       else if Conf['Auto Watch Reply']
-        ThreadWatcher.add g.threads[boardID + '.' + threadID] or new Thread(threadID, g.boards[boardID] or new Board(boardID))
+        ThreadWatcher.add (g.threads[boardID + '.' + threadID] or new Thread(threadID, g.boards[boardID] or new Board(boardID))), cb
     onIndexUpdate: (e) ->
       {db}    = ThreadWatcher
       siteID  = g.SITE.ID
@@ -528,21 +529,21 @@ ThreadWatcher =
     else
       ThreadWatcher.add thread
 
-  add: (thread) ->
+  add: (thread, cb) ->
     data     = {}
     siteID   = g.SITE.ID
     boardID  = thread.board.ID
     threadID = thread.ID
     if thread.isDead
       if Conf['Auto Prune'] and ThreadWatcher.db.get {boardID, threadID}
-        ThreadWatcher.rm siteID, boardID, threadID
+        ThreadWatcher.rm siteID, boardID, threadID, cb
         return
       data.isDead = true
     data.excerpt = Get.threadExcerpt thread if thread.OP
-    ThreadWatcher.addRaw boardID, threadID, data
+    ThreadWatcher.addRaw boardID, threadID, data, cb
 
-  addRaw: (boardID, threadID, data) ->
-    ThreadWatcher.db.set {boardID, threadID, val: data}
+  addRaw: (boardID, threadID, data, cb) ->
+    ThreadWatcher.db.set {boardID, threadID, val: data}, cb
     ThreadWatcher.refresh()
     thread = {siteID: g.SITE.ID, boardID, threadID, data, force: true}
     if Conf['Show Page'] and !data.isDead
@@ -550,8 +551,8 @@ ThreadWatcher =
     else if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
       ThreadWatcher.fetchStatus thread
 
-  rm: (siteID, boardID, threadID) ->
-    ThreadWatcher.db.delete {siteID, boardID, threadID}
+  rm: (siteID, boardID, threadID, cb) ->
+    ThreadWatcher.db.delete {siteID, boardID, threadID}, cb
     ThreadWatcher.refresh()
 
   menu:
