@@ -168,3 +168,6 @@ SW.yotsuba =
     while i < 8
       msg = (msg << 5) - msg + uid.charCodeAt i++
     (msg >> 8) & 0xFFFFFF
+
+  isLinkified: (link) ->
+    ImageHost.test(link.hostname)
