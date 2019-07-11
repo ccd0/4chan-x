@@ -1,6 +1,6 @@
 MarkNewIPs =
   init: ->
-    return if g.VIEW isnt 'thread' or !Conf['Mark New IPs']
+    return unless g.SITE.software is 'yotsuba' and g.VIEW is 'thread' and Conf['Mark New IPs']
     Callbacks.Thread.push
       name: 'Mark New IPs'
       cb:   @node

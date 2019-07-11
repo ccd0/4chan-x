@@ -2,6 +2,7 @@ BoardConfig =
   cbs: []
 
   init: ->
+    return unless g.SITE.software is 'yotsuba'
     now = Date.now()
     unless now - 2 * $.HOUR < (Conf['boardConfig'].lastChecked or 0) <= now and Conf['boardConfig'].troll_flags
       $.ajax "#{location.protocol}//a.4cdn.org/boards.json",

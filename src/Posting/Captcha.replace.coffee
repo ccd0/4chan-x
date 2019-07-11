@@ -1,6 +1,6 @@
 Captcha.replace =
   init: ->
-    return unless d.cookie.indexOf('pass_enabled=1') < 0
+    return unless g.SITE.software is 'yotsuba' and d.cookie.indexOf('pass_enabled=1') < 0
 
     if Conf['Force Noscript Captcha'] and Main.jsEnabled
       $.ready Captcha.replace.noscript

@@ -1,6 +1,6 @@
 ArchiveLink =
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Archive Link']
+    return unless g.SITE.software is 'yotsuba' and g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Archive Link']
 
     div = $.el 'div',
       textContent: 'Archive'
