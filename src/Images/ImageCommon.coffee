@@ -34,27 +34,30 @@ ImageCommon =
     return true
 
   isFromArchive: (file) ->
-    !ImageHost.test(file.src.split('/')[2])
+    g.SITE.software is 'yotsuba' and !ImageHost.test(file.src.split('/')[2])
 
   error: (file, post, delay, cb) ->
     src = post.file.url.split '/'
-    URL = Redirect.to 'file', {
-      boardID:  post.board.ID
-      filename: src[src.length - 1]
-    }
-    unless Conf['404 Redirect'] and URL and Redirect.securityCheck URL
-      URL = null
+    url = null
+    if g.SITE.software is 'yotsuba' and Conf['404 Redirect']
+      url = Redirect.to 'file', {
+        boardID:  post.board.ID
+        filename: src[src.length - 1]
+      }
+    url = null unless url and Redirect.securityCheck(url)
 
-    return cb URL if (post.isDead or post.file.isDead) and not ImageCommon.isFromArchive file
+    return cb url if (post.isDead or post.file.isDead) and not ImageCommon.isFromArchive(file)
 
-    timeoutID = setTimeout (-> cb URL), delay if delay?
+    timeoutID = setTimeout (-> cb url), delay if delay?
     return if post.isDead or post.file.isDead
     redirect = ->
       unless ImageCommon.isFromArchive file
         clearTimeout timeoutID if delay?
-        cb URL
+        cb url
 
-    $.ajax g.SITE.urls.threadJSON({boardID: post.boardID, threadID: post.threadID}), onloadend: ->
+    threadJSON = g.SITE.urls.threadJSON?(post)
+    return unless threadJSON
+    $.ajax threadJSON, onloadend: ->
       post.kill !post.isClone if @status is 404
       return redirect() if @status isnt 200
       for postObj in @response.posts
@@ -66,7 +69,7 @@ ImageCommon =
         post.kill true
         redirect()
       else
-        URL = post.file.url
+        url = post.file.url
 
   # Add controls, but not until the mouse is moved over the video.
   addControls: (video) ->
