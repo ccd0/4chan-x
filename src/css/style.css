@@ -1394,11 +1394,11 @@ input[name="Default Volume"] {
   margin: 0px;
 }
 /* Fappe and Werk Tyme */
-:root.fappeTyme .thread > .noFile,
-:root.fappeTyme .threadContainer > .noFile {
+:root.fappeTyme $site$relative$replyOriginal.noFile,
+:root.fappeTyme $site$relative$replyOriginal.noFile + br {
   display: none;
 }
-:root.werkTyme .postContainer:not(.noFile) .fileThumb,
+:root.werkTyme $site$file$thumbLink,
 :root.werkTyme .catalog-thumb:not(.deleted-file):not(.no-file),
 :root:not(.werkTyme) .werkTyme-filename {
   display: none;
