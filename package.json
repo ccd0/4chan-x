@@ -98,7 +98,7 @@
     "font-awesome": "=4.7.0",
     "jshint": "^2.10.2",
     "jszip": "^3.2.2",
-    "lodash.template": "^4.4.0",
+    "lodash.template": "^4.5.0",
     "markdown-it": "^9.0.0",
     "markdown-it-anchor": "^5.2.4",
     "request": "^2.88.0",
