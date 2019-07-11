@@ -3,7 +3,6 @@ SW.tinyboard =
   mayLackJSON: true
 
   disabledFeatures: [
-    'Normalize URL'
     'Index Generator'
     'Announcement Hiding'
     'Resurrect Quotes'
