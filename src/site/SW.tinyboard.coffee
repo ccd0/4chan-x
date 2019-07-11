@@ -93,7 +93,7 @@ SW.tinyboard =
       link:  '.fileinfo > a'
       thumb: 'a > .post-image'
     relative:
-      opContainer:   ' > .op'
+      opHighlight:   ' > .op'
       replyPost:     '.reply'
     comment:   '.body'
     spoiler:   '.spoiler'

@@ -67,15 +67,15 @@
 :root.spooky .qphl {
   outline: 2px solid rgba(145, 182, 214, .8);
 }
-:root.spooky.highlight-you .quotesYou$site$relative$opContainer,
+:root.spooky.highlight-you .quotesYou$site$relative$opHighlight,
 :root.spooky.highlight-you .quotesYou$site$relative$replyPost {
   border-left: 3px solid rgba(145, 182, 214, .8);
 }
-:root.spooky.highlight-own .yourPost$site$relative$opContainer,
+:root.spooky.highlight-own .yourPost$site$relative$opHighlight,
 :root.spooky.highlight-own .yourPost$site$relative$replyPost {
   border-left: 3px dashed rgba(145, 182, 214, .8);
 }
-:root.spooky .filter-highlight$site$relative$opContainer,
+:root.spooky .filter-highlight$site$relative$opHighlight,
 :root.spooky .filter-highlight$site$relative$replyPost {
   box-shadow: inset 5px 0 rgba(145, 182, 214, .5);
 }

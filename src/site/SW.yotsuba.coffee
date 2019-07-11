@@ -42,7 +42,7 @@ SW.yotsuba =
       link:  '.fileText > a'
       thumb: 'a.fileThumb > [data-md5]'
     relative:
-      opContainer:   '.opContainer'
+      opHighlight:   '.opContainer'
       replyPost:     ' > .reply'
     comment:   '.postMessage'
     spoiler:   's'

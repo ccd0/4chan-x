@@ -1448,15 +1448,15 @@ input[name="Default Volume"] {
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .8);
 }
-:root.highlight-you .quotesYou$site$relative$opContainer,
+:root.highlight-you .quotesYou$site$relative$opHighlight,
 :root.highlight-you .quotesYou$site$relative$replyPost {
   border-left: 3px solid rgba(221, 0, 0, .8);
 }
-:root.highlight-own .yourPost$site$relative$opContainer,
+:root.highlight-own .yourPost$site$relative$opHighlight,
 :root.highlight-own .yourPost$site$relative$replyPost {
   border-left: 3px dashed rgba(221, 0, 0, .8);
 }
-.filter-highlight$site$relative$opContainer,
+.filter-highlight$site$relative$opHighlight,
 .filter-highlight$site$relative$replyPost {
   box-shadow: inset 5px 0 rgba(221, 0, 0, .5);
 }
@@ -1465,9 +1465,9 @@ input[name="Default Volume"] {
 .filter-highlight > $site$sideArrows {
   color: rgba(221, 0, 0, .8);
 }
-:root.highlight-own .yourPost$site$relative$opContainer::after,
-:root.highlight-you .quotesYou$site$relative$opContainer::after,
-.filter-highlight$site$relative$opContainer::after {
+:root.highlight-own .yourPost$site$relative$opHighlight::after,
+:root.highlight-you .quotesYou$site$relative$opHighlight::after,
+.filter-highlight$site$relative$opHighlight::after {
   content: "";
   display: block;
   clear: both;
