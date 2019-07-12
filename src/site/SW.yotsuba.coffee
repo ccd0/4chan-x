@@ -41,7 +41,7 @@ SW.yotsuba =
       text:  '.file > :first-child'
       link:  '.fileText > a'
       thumb: 'a.fileThumb > [data-md5]'
-      thumbLink: 'a.fileThumb'
+    thumbLink: 'a.fileThumb'
     relative:
       opHighlight:   '.opContainer'
       replyPost:     ' > .reply'

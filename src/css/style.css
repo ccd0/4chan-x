@@ -1392,7 +1392,8 @@ input[name="Default Volume"] {
 :root.fappeTyme $site$relative$replyOriginal.noFile + br {
   display: none;
 }
-:root.werkTyme $site$file$thumbLink,
+:root.werkTyme $site$thumbLink,
+:root.werkTyme $site$file$thumb,
 :root.werkTyme .catalog-thumb:not(.deleted-file):not(.no-file),
 :root:not(.werkTyme) .werkTyme-filename {
   display: none;
