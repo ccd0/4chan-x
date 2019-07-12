@@ -76,7 +76,7 @@ Test =
           root = g.SITE.Build.post obj
           t2 = new Date().getTime()
           Test.time += t2 - t1
-          post2 = new Post root, post.thread, post.board, 'forBuildTest'
+          post2 = new Post root, post.thread, post.board, {forBuildTest: true}
           fail = false
 
           x = post.normalizedOriginal
