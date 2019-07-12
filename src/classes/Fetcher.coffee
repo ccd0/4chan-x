@@ -7,8 +7,7 @@ class Fetcher
     # 4chan X catalog data
     if (post = Index.replyData?["#{@boardID}.#{@postID}"]) and (thread = g.threads["#{@boardID}.#{@threadID}"])
       board  = g.boards[@boardID]
-      post = new Post g.SITE.Build.postFromObject(post, @boardID), thread, board
-      post.isFetchedQuote = true
+      post = new Post g.SITE.Build.postFromObject(post, @boardID), thread, board, {isFetchedQuote: true}
       Main.callbackNodes 'Post', [post]
       @insert post
       return
@@ -99,8 +98,7 @@ class Fetcher
       new Board @boardID
     thread = g.threads["#{@boardID}.#{@threadID}"] or
       new Thread @threadID, board
-    post = new Post g.SITE.Build.postFromObject(post, @boardID), thread, board
-    post.isFetchedQuote = true
+    post = new Post g.SITE.Build.postFromObject(post, @boardID), thread, board, {isFetchedQuote: true}
     Main.callbackNodes 'Post', [post]
     @insert post
 
@@ -214,10 +212,9 @@ class Fetcher
       new Board @boardID
     thread = g.threads["#{@boardID}.#{@threadID}"] or
       new Thread @threadID, board
-    post = new Post g.SITE.Build.post(o), thread, board
+    post = new Post g.SITE.Build.post(o), thread, board, {isFetchedQuote: true}
     post.kill()
     post.file.thumbURL = o.file.thumbURL if post.file
-    post.isFetchedQuote = true
     Main.callbackNodes 'Post', [post]
     @insert post
 
