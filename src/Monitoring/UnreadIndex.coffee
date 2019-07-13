@@ -75,7 +75,7 @@ UnreadIndex =
     hasUnread = if repliesShown
       firstUnread or !repliesRead
     else if Index.enabled
-      Index.lastPost(thread.ID) > lastReadPost
+      thread.lastPost > lastReadPost
     else
       thread.OP.ID > lastReadPost
     thread.nodes.root.classList.toggle 'unread-thread', hasUnread
@@ -94,15 +94,11 @@ UnreadIndex =
 
   markRead: ->
     thread = Get.threadFromNode @
-    lastPost = if Index.enabled then Index.lastPost(thread.ID) else 0
-    thread.posts.forEach (post) ->
-      if post.ID > lastPost and !post.isFetchedQuote
-        lastPost = post.ID
-    UnreadIndex.lastReadPost[thread.fullID] = lastPost
+    UnreadIndex.lastReadPost[thread.fullID] = thread.lastPost
     UnreadIndex.db.set
       boardID:  thread.board.ID
       threadID: thread.ID
-      val:      lastPost
+      val:      thread.lastPost
     $.rm UnreadIndex.hr[thread.fullID]
     thread.nodes.root.classList.remove 'unread-thread'
     ThreadWatcher.update g.SITE.ID, thread.board.ID, thread.ID,

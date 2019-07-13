@@ -11,6 +11,7 @@ class Thread
     @isArchived = false
     @postLimit  = false
     @fileLimit  = false
+    @lastPost   = 0
     @ipCount    = undefined
     @json       = null
 

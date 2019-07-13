@@ -63,6 +63,7 @@ class Post
       @clones = g.posts[@fullID].clones
       clone.origin = @ for clone in @clones
 
+    @thread.lastPost = @ID if !@isFetchedQuote and @ID > @thread.lastPost
     @board.posts.push  @ID, @
     @thread.posts.push @ID, @
     g.posts.push   @fullID, @

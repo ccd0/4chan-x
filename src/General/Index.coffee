@@ -687,10 +687,6 @@ Index =
   isHiddenReply: (threadID, replyData) ->
     PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) or Filter.isHidden(g.SITE.Build.parseJSON replyData, g.BOARD.ID)
 
-  lastPost: (threadID) ->
-    threadData = Index.liveThreadDict[threadID]
-    if threadData?.last_replies then threadData.last_replies[threadData.last_replies.length - 1].no else threadID
-
   buildThreads: (threadIDs, isCatalog, withReplies) ->
     threads    = []
     newThreads = []
@@ -712,6 +708,8 @@ Index =
         else
           thread = new Thread ID, g.BOARD
           newThreads.push thread
+        lastPost = if threadData.last_replies then threadData.last_replies[threadData.last_replies.length - 1].no else ID
+        thread.lastPost = lastPost if lastPost > thread.lastPost
         thread.json = threadData
         threads.push thread
 
