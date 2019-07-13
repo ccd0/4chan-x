@@ -228,7 +228,7 @@ ThreadWatcher =
     interval = if Conf['Show Page'] or (ThreadWatcher.unreadEnabled and Conf['Show Unread Count']) then 5 * $.MINUTE else 2 * $.HOUR
     now = Date.now()
     unless now - interval < (db.data.lastChecked or 0) <= now or d.hidden or not d.hasFocus()
-      ThreadWatcher.fetchAllStatus()
+      ThreadWatcher.fetchAllStatus interval
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
 
   buttonFetchAll: ->
@@ -237,7 +237,7 @@ ThreadWatcher =
     else
       ThreadWatcher.fetchAllStatus()
 
-  fetchAllStatus: ->
+  fetchAllStatus: (interval=0) ->
     ThreadWatcher.status.textContent = '...'
     $.addClass ThreadWatcher.refreshButton, 'fa-spin'
     ThreadWatcher.syncing = true
@@ -246,6 +246,7 @@ ThreadWatcher =
     for dbi in dbs
       dbi.forceSync ->
         if (++n) is dbs.length
+          return if 0 <= Date.now() - (ThreadWatcher.db.data.lastChecked or 0) < interval # checked in another tab
           return if !ThreadWatcher.syncing # aborted
           delete ThreadWatcher.syncing
           # XXX On vichan boards, last_modified field of threads.json does not account for sage posts.
