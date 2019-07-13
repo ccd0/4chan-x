@@ -2,6 +2,9 @@ class Thread
   toString: -> @ID
 
   constructor: (@ID, @board) ->
+    @threadID   = @ID
+    @boardID    = @board.ID
+    @siteID     = g.SITE.ID
     @fullID     = "#{@board}.#{@ID}"
     @posts      = new SimpleDict()
     @isDead     = false
