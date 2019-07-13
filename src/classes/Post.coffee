@@ -8,6 +8,7 @@ class Post
 
     $.extend @, flags
     @ID       = +root.id.match(/\d*$/)[0]
+    @postID   = @ID
     @threadID = @thread.ID
     @boardID  = @board.ID
     @siteID   = g.SITE.ID

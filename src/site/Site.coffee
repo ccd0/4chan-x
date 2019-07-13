@@ -37,5 +37,5 @@ Site =
       software = properties.software
       continue unless software and SW[software]
       g.sites[ID] = site = Object.create SW[software]
-      $.extend site, {ID, properties, software}
+      $.extend site, {ID, siteID: ID, properties, software}
     g.SITE = g.sites[hostname]
