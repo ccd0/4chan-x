@@ -267,7 +267,7 @@ ThreadWatcher =
     {siteID, boardID} = board[0]
     site = g.sites[siteID]
     return unless site
-    urlF = if deep and site.software is 'tinyboard' then 'catalogJSON' else 'threadsListJSON'
+    urlF = if deep and site.threadModTimeIgnoresSage then 'catalogJSON' else 'threadsListJSON'
     url = site.urls[urlF]?({siteID, boardID})
     return unless url
     ThreadWatcher.fetch url, {siteID, force}, [board, url], ThreadWatcher.parseBoard
