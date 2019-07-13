@@ -85,6 +85,15 @@ Build =
       o[key] = data[key]
     o
 
+  threadStatsFromJSON: (data) ->
+    n = data.last_replies?.length
+    stats =
+      lastPost:   if n then data.last_replies[n - 1].no else data.no
+      posts:      data.replies + 1
+      opFiles:    +!!data.ext
+      replyFiles: data.images
+    stats
+
   parseComment: (html) ->
     html = html
       .replace(/<br\b[^<]*>/gi, '\n')

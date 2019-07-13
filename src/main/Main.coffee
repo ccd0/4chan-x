@@ -373,6 +373,9 @@ Main =
       postRoots = $$ g.SITE.selectors.postContainer, threadRoot
       postRoots.unshift threadRoot if g.SITE.isOPContainerThread
       Main.parsePosts postRoots, thread, posts, errors
+      if g.SITE.selectors.summary and (omitted = $(g.SITE.selectors.summary, threadRoot)?.textContent.match(/\d+/g))
+        thread.stats.posts      += +(omitted[0] or 0)
+        thread.stats.replyFiles += +(omitted[1] or 0)
       Main.addPostsObserver.observe threadRoot, {childList: true}
 
   parsePosts: (postRoots, thread, posts, errors) ->

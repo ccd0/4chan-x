@@ -63,6 +63,11 @@ class Post
       @clones = g.posts[@fullID].clones
       clone.origin = @ for clone in @clones
 
+    if !@isFetchedQuote and @ID > @thread.stats.lastPost
+      @thread.stats.lastPost = @ID
+      @thread.stats.posts++
+      @thread.stats[if @isReply then 'replyFiles' else 'opFiles'] += @files.length
+
     @board.posts.push  @ID, @
     @thread.posts.push @ID, @
     g.posts.push   @fullID, @

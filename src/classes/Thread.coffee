@@ -20,6 +20,12 @@ class Thread
     @nodes =
       root: null
 
+    @stats =
+      lastPost:   0
+      posts:      0
+      opFiles:    0
+      replyFiles: 0
+
     @board.threads.push @ID, @
     g.threads.push  @fullID, @
 

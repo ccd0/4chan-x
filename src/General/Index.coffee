@@ -702,8 +702,10 @@ Index =
         if (thread = g.BOARD.threads[ID])
           isStale = (thread.json isnt threadData) and (JSON.stringify(thread.json) isnt JSON.stringify(threadData))
           if isStale
-            thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
-            thread.setCount 'file', threadData.images  + !!threadData.ext, threadData.imagelimit
+            {stats} = thread
+            $.extend stats, g.SITE.Build.threadStatsFromJSON(threadData)
+            thread.setCount 'post', stats.posts,                      threadData.bumplimit
+            thread.setCount 'file', stats.opFiles + stats.replyFiles, threadData.imagelimit
             thread.setStatus 'Sticky', !!threadData.sticky
             thread.setStatus 'Closed', !!threadData.closed
           if thread.catalogView
@@ -711,6 +713,7 @@ Index =
             thread.catalogView.nodes.replies = null
         else
           thread = new Thread ID, g.BOARD
+          $.extend thread.stats, g.SITE.Build.threadStatsFromJSON(threadData)
           newThreads.push thread
         thread.json = threadData
         threads.push thread
