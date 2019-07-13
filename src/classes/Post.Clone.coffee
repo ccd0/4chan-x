@@ -38,19 +38,24 @@ Post.Clone = class extends Post
     @parseQuotes()
     @quotes = [@origin.quotes...]
 
-    if @origin.file
+    @files = []
+    fileRoots = @fileRoots() if @origin.files.length
+    for originFile in @origin.files
       # Copy values, point to relevant elements.
-      # See comments in Post's constructor.
-      @file = {}
-      for key, val of @origin.file
-        @file[key] = val
+      file = {}
+      for key, val of originFile
+        file[key] = val
+      fileRoot = fileRoots[file.index]
       for key, selector of g.SITE.selectors.file
-        @file[key] = $ selector, @nodes.root
-      @file.thumbLink = @file.thumb?.parentNode
-      @file.fullImage = $ '.full-image', @file.thumbLink if @file.thumbLink
-      @file.videoControls = $ '.video-controls', @file.text
+        file[key] = $ selector, fileRoot
+      file.thumbLink = file.thumb?.parentNode
+      file.fullImage = $ '.full-image', file.thumbLink if file.thumbLink
+      file.videoControls = $ '.video-controls', file.text
+      file.thumb.muted = true if file.videoThumb
+      @files.push file
 
-      @file.thumb.muted = true if @file.videoThumb
+    if @files.length
+      @file = @files[0]
 
       # Contract thumbnails in quote preview
       ImageExpand.contract @ if @file.thumb and contractThumb

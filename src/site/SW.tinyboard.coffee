@@ -85,6 +85,7 @@ SW.tinyboard =
       link:  '.fileinfo > a'
       thumb: 'a > .post-image'
     thumbLink: '.file > a'
+    multifile: '.files > .file'
     relative:
       opHighlight:   ' > .op'
       replyPost:     '.reply'

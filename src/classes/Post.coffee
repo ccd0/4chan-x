@@ -49,7 +49,7 @@ class Post
 
     @parseComment()
     @parseQuotes()
-    @parseFile()
+    @parseFiles()
 
     @isDead   = false
     @isHidden = false
@@ -167,10 +167,26 @@ class Post
     fullID = "#{match[1]}.#{match[3]}"
     @quotes.push fullID unless fullID in @quotes
 
-  parseFile: ->
+  parseFiles: ->
+    @files = []
+    fileRoots = @fileRoots()
+    for fileRoot, index in fileRoots
+      if (file = @parseFile fileRoot)
+        file.index = index
+        @files.push file
+    if @files.length
+      @file = @files[0]
+
+  fileRoots: ->
+    if g.SITE.selectors.multifile
+      roots = $$(g.SITE.selectors.multifile, @nodes.root)
+      return roots if roots.length
+    [@nodes.root]
+
+  parseFile: (fileRoot) ->
     file = {}
     for key, selector of g.SITE.selectors.file
-      file[key] = $ selector, @nodes.root
+      file[key] = $ selector, fileRoot
     file.thumbLink = file.thumb?.parentNode
 
     return if not (file.text and file.link)
@@ -185,7 +201,7 @@ class Post
     size *= 1024 while unit-- > 0
     file.sizeInBytes = size
 
-    @file = file
+    file
 
   @deadMark =
     # \u00A0 is nbsp
