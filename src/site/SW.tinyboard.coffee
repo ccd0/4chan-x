@@ -1,6 +1,7 @@
 SW.tinyboard =
   isOPContainerThread: true
   mayLackJSON: true
+  threadModTimeIgnoresSage: true
 
   disabledFeatures: [
     'Index Generator'
