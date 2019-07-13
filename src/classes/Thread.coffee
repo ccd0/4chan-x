@@ -11,7 +11,6 @@ class Thread
     @isArchived = false
     @postLimit  = false
     @fileLimit  = false
-    @ipCount    = undefined
     @json       = null
 
     @OP = null
@@ -26,6 +25,7 @@ class Thread
       deleted:    0
       opFiles:    0
       replyFiles: 0
+      IPs:        undefined
 
     @board.threads.push @ID, @
     g.threads.push  @fullID, @

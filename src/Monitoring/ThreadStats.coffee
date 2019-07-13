@@ -45,7 +45,7 @@ ThreadStats =
       (ThreadStats.lastPost = post.info.date if ThreadStats.pageCountEl)
     ThreadStats.thread = @
     ThreadStats.fetchPage()
-    ThreadStats.update postCount, fileCount, @ipCount
+    ThreadStats.update postCount, fileCount, @stats.IPs
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
 
   onUpdate: (e) ->

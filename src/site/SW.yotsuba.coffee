@@ -107,7 +107,7 @@ SW.yotsuba =
     scriptData = @scriptData()
     thread.postLimit = /\bbumplimit *= *1\b/.test scriptData
     thread.fileLimit = /\bimagelimit *= *1\b/.test scriptData
-    thread.ipCount   = if (m = scriptData.match /\bunique_ips *= *(\d+)\b/) then +m[1]
+    thread.stats.IPs = if (m = scriptData.match /\bunique_ips *= *(\d+)\b/) then +m[1]
 
     if g.BOARD.ID is 'f' and thread.OP.file
       {file} = thread.OP

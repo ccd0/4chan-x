@@ -6,7 +6,7 @@ MarkNewIPs =
       cb:   @node
 
   node: ->
-    MarkNewIPs.ipCount = @ipCount
+    MarkNewIPs.ipCount = @stats.IPs
     MarkNewIPs.postCount = @posts.keys.length
     $.on d, 'ThreadUpdate', MarkNewIPs.onUpdate
 
