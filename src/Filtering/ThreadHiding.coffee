@@ -145,9 +145,7 @@ ThreadHiding =
     a
 
   makeStub: (thread, root) ->
-    numReplies  = $$(g.SITE.selectors.postContainer + g.SITE.selectors.relative.replyPost, root).length
-    numReplies += +summary.textContent.match /\d+/ if summary = $ g.SITE.selectors.summary, root
-
+    numReplies = thread.stats.posts + thread.stats.deleted - 1
     a = ThreadHiding.makeButton thread, 'show'
     $.add a, $.tn " #{thread.OP.info.nameBlock} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
     thread.stub = $.el 'div',
