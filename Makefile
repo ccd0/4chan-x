@@ -49,6 +49,7 @@ uses_tests_enabled := \
  src/General/Test.coffee \
  src/Linkification/Linkify.coffee \
  src/Miscellaneous/Keybinds.coffee \
+ src/Monitoring/ThreadUpdater.coffee \
  src/Monitoring/Unread.coffee \
  src/main/Main.coffee
 

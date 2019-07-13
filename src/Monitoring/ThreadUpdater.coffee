@@ -354,7 +354,7 @@ ThreadUpdater =
       ipCountEl.previousSibling.textContent = ipCountEl.previousSibling.textContent.replace(/\b(?:is|are)\b/, if OP.unique_ips is 1 then 'is' else 'are')
       ipCountEl.nextSibling.textContent = ipCountEl.nextSibling.textContent.replace(/\bposters?\b/, if OP.unique_ips is 1 then 'poster' else 'posters')
 
-    $.event 'ThreadUpdate',
+    detail =
       404: false
       threadID: thread.fullID
       newPosts: newPosts
@@ -363,3 +363,14 @@ ThreadUpdater =
       postCount: OP.replies + 1
       fileCount: OP.images + !!OP.fsize
       ipCount: OP.unique_ips
+
+    <% if (readJSON('/.tests_enabled')) { %>
+    tests = [
+      ['Post count', detail.postCount, thread.stats.posts]
+      ['File count', detail.fileCount, thread.stats.opFiles + thread.stats.replyFiles]
+    ]
+    for test in tests when test[1] isnt test[2]
+      new Notice 'warning', "#{test[0]}: #{test[1]} vs #{test[2]}.", 30
+    <% } %>
+
+    $.event 'ThreadUpdate', detail
