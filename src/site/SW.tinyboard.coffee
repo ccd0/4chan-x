@@ -23,7 +23,6 @@ SW.tinyboard =
     'Thread Expansion'
     'Favicon'
     'Quote Threading'
-    'Thread Stats'
     'Thread Updater'
     'Banner'
     'Flash Features'

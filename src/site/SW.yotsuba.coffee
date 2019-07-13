@@ -1,5 +1,6 @@
 SW.yotsuba =
   isOPContainerThread: false
+  hasIPCount: true
 
   urls:
     thread:     ({boardID, threadID}) -> "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/thread/#{threadID}"
