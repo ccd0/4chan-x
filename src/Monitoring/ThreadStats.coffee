@@ -2,6 +2,9 @@ ThreadStats =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Stats']
 
+    if Conf['Page Count in Stats']
+      @[if g.SITE.isPrunedByAge?(g.BOARD) then 'showPurgePos' else 'showPage'] = true
+
     statsHTML = <%= html(
       '<span id="post-count">?</span> / <span id="file-count">?</span>' +
       '?{Conf["IP Count in Stats"]}{ / <span id="ip-count">?</span>}' +
@@ -9,7 +12,7 @@ ThreadStats =
     ) %>
     statsTitle = 'Posts / Files'
     statsTitle += ' / IPs'  if Conf['IP Count in Stats']
-    statsTitle += (if g.BOARD.ID is 'f' then ' / Purge Position' else ' / Page') if Conf['Page Count in Stats']
+    statsTitle += (if @showPurgePos then ' / Purge Position' else ' / Page') if Conf['Page Count in Stats']
 
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
@@ -37,35 +40,30 @@ ThreadStats =
       cb:   @node
 
   node: ->
-    postCount = 0
-    fileCount = 0
-    @posts.forEach (post) ->
-      postCount++
-      fileCount++ if post.file
-      (ThreadStats.lastPost = post.info.date if ThreadStats.pageCountEl)
     ThreadStats.thread = @
+    ThreadStats.lastPost = @stats.lastPost
+    ThreadStats.update()
     ThreadStats.fetchPage()
-    ThreadStats.update postCount, fileCount, @stats.IPs
-    $.on d, 'ThreadUpdate', ThreadStats.onUpdate
+    $.on d, 'PostsInserted ThreadUpdate', ->
+      $.queueTask ThreadStats.onUpdate unless ThreadStats.queued
+      ThreadStats.queued = true
 
-  onUpdate: (e) ->
-    return if e.detail[404]
-    {postCount, fileCount, ipCount, newPosts} = e.detail
-    ThreadStats.update postCount, fileCount, ipCount
-    return unless ThreadStats.pageCountEl
-    if newPosts.length
-      ThreadStats.lastPost = g.posts[newPosts[newPosts.length - 1]].info.date
-    if g.BOARD.ID isnt 'f' and ThreadStats.pageCountEl?.textContent isnt '1'
-      ThreadStats.fetchPage()
+  onUpdate: ->
+    delete ThreadStats.queued
+    ThreadStats.update()
+    if ThreadStats.showPage and ThreadStats.thread.stats.lastPost > ThreadStats.lastPost
+      ThreadStats.lastPost = ThreadStats.thread.stats.lastPost
+      if ThreadStats.pageCountEl.textContent isnt '1'
+        ThreadStats.fetchPage()
 
-  update: (postCount, fileCount, ipCount) ->
+  update: ->
     {thread, postCountEl, fileCountEl, ipCountEl} = ThreadStats
-    postCountEl.textContent = postCount
-    fileCountEl.textContent = fileCount
-    if ipCount? and ipCountEl
-      ipCountEl.textContent = ipCount
-    (if thread.postLimit and !thread.isSticky then $.addClass else $.rmClass) postCountEl, 'warning'
-    (if thread.fileLimit and !thread.isSticky then $.addClass else $.rmClass) fileCountEl, 'warning'
+    {stats} = thread
+    postCountEl.textContent = stats.posts
+    fileCountEl.textContent = stats.opFiles + stats.replyFiles
+    ipCountEl.textContent   = stats.IPs ? '?'
+    postCountEl.classList.toggle 'warning', (thread.postLimit and !thread.isSticky)
+    fileCountEl.classList.toggle 'warning', (thread.fileLimit and !thread.isSticky)
 
   fetchPage: ->
     return unless ThreadStats.pageCountEl
@@ -84,7 +82,7 @@ ThreadStats =
   onThreadsLoad: ->
     if @status is 200
       for page in @response
-        if g.BOARD.ID is 'f'
+        if ThreadStats.showPurgePos
           purgePos = 1
           for thread in page.threads
             if thread.no < ThreadStats.thread.ID
@@ -102,6 +100,12 @@ ThreadStats =
 
   retry: ->
     # If thread data is stale (modification date given < time of last post), try again.
-    if g.BOARD.ID isnt 'f' and ThreadStats.lastPost > ThreadStats.lastPageUpdate and ThreadStats.pageCountEl?.textContent isnt '1'
-      clearTimeout ThreadStats.timeout
-      ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 5 * $.SECOND
+    # Skip this on vichan sites due to sage posts not updating modification time in threads.json.
+    return unless (
+      ThreadStats.showPage and
+      ThreadStats.pageCountEl.textContent isnt '1' and
+      !g.SITE.threadModTimeIgnoresSage and
+      ThreadStats.thread.posts[ThreadStats.thread.stats.lastPost].info.date > ThreadStats.lastPageUpdate
+    )
+    clearTimeout ThreadStats.timeout
+    ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 5 * $.SECOND
