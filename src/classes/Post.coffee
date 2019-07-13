@@ -235,6 +235,13 @@ class Post
     for clone in @clones
       clone.kill file
 
+    if file
+      @thread.stats[if @isReply then 'replyFiles' else 'opFiles']--
+    else if @isReply
+      @thread.stats.posts--
+      @thread.stats.deleted++
+      @thread.stats.replyFiles -= @files.length
+
     return if file
     # Get quotelinks/backlinks to this post
     # and paint them (Dead).

@@ -90,6 +90,7 @@ Build =
     stats =
       lastPost:   if n then data.last_replies[n - 1].no else data.no
       posts:      data.replies + 1
+      deleted:    0
       opFiles:    +!!data.ext
       replyFiles: data.images
     stats

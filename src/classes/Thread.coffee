@@ -23,6 +23,7 @@ class Thread
     @stats =
       lastPost:   0
       posts:      0
+      deleted:    0
       opFiles:    0
       replyFiles: 0
 
