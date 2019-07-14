@@ -264,7 +264,12 @@ ThreadWatcher =
 
   fetchBoard: (board, deep) ->
     return unless board.some (thread) -> !thread.data.isDead
-    force = Conf['Show Page'] and board.some((thread) -> !thread.data.page? and !thread.data.isDead and thread.data.last isnt -1)
+    force = false
+    for thread in board
+      {data} = thread
+      if !data.isDead and data.last isnt -1
+        force = true if Conf['Show Page'] and !data.page?
+        force = thread.force = true if !data.modified?
     {siteID, boardID} = board[0]
     site = g.sites[siteID]
     return unless site
@@ -497,6 +502,8 @@ ThreadWatcher =
     if newData.isDead or newData.last is -1
       for key in ['page', 'lastPage', 'unread', 'quotingyou'] when key not of newData
         newData[key] = undefined
+    if newData.last? and newData.last < data.last
+      newData.modified = undefined
     n = 0
     n++ for key, val of newData when data[key] isnt val
     return unless n
