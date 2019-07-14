@@ -339,23 +339,20 @@ ThreadWatcher =
       return if last is data.last and isDead is data.isDead
 
       lastReadPost = ThreadWatcher.unreaddb.get {siteID, boardID, threadID, defaultValue: 0}
-      unread = 0
-      quotingYou = false
+      unread = data.unread or 0
+      quotingYou = data.quotingYou or false
       youOP = !!QuoteYou.db?.get {siteID, boardID, threadID, postID: threadID}
 
       for postObj in @response.posts
-        continue unless postObj.no > lastReadPost
+        continue unless postObj.no > (data.last or 0) and postObj.no > lastReadPost
         continue if QuoteYou.db?.get {siteID, boardID, threadID, postID: postObj.no}
+        continue if Filter.isHidden(site.Build.parseJSON postObj, boardID, siteID)
 
         unread++
-
-        if !quotingYou and !Conf['Require OP Quote Link'] and youOP and not Filter.isHidden(site.Build.parseJSON postObj, boardID, siteID)
-          quotingYou = true
-          continue
+        quotingYou = true if !Conf['Require OP Quote Link'] and youOP
 
         continue unless !quotingYou and QuoteYou.db and postObj.com
 
-        quotesYou = false
         regexp = site.regexp.quotelinkHTML
         regexp.lastIndex = 0
         while match = regexp.exec postObj.com
@@ -365,10 +362,8 @@ ThreadWatcher =
             threadID: match[2] or threadID
             postID:   match[3] or match[2] or threadID
           }
-            quotesYou = true
+            quotingYou = true
             break
-        if quotesYou and not Filter.isHidden(site.Build.parseJSON postObj, boardID, siteID)
-          quotingYou = true
 
       newData or= {}
       $.extend newData, {last, replies, isDead, unread, quotingYou}

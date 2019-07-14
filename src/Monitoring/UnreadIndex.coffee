@@ -102,5 +102,6 @@ UnreadIndex =
     $.rm UnreadIndex.hr[thread.fullID]
     thread.nodes.root.classList.remove 'unread-thread'
     ThreadWatcher.update g.SITE.ID, thread.board.ID, thread.ID,
+      last: thread.lastPost
       unread: 0
       quotingYou: false
