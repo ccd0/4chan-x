@@ -24,12 +24,12 @@ ImageHover =
     {isVideo} = file
     return if file.isExpanding or file.isExpanded or g.SITE.isThumbExpanded?(file)
     error = ImageHover.error post, file
-    if ImageCommon.cache?.dataset.fullID is post.fullID
+    if ImageCommon.cache?.dataset.fileID is "#{post.fullID}.#{file.index}"
       el = ImageCommon.popCache()
       $.on el, 'error', error
     else
       el = $.el (if isVideo then 'video' else 'img')
-      el.dataset.fullID = post.fullID
+      el.dataset.fileID = "#{post.fullID}.#{file.index}"
       $.on el, 'error', error
       el.src = file.url
 

@@ -168,14 +168,14 @@ ImageExpand =
 
     if file.fullImage
       el = file.fullImage
-    else if ImageCommon.cache?.dataset.fullID is post.fullID
+    else if ImageCommon.cache?.dataset.fileID is "#{post.fullID}.#{file.index}"
       el = file.fullImage = ImageCommon.popCache()
       $.on el, 'error', ImageExpand.error
       ImageCommon.rewind el if Conf['Restart when Opened'] and el.id isnt 'ihover'
       el.removeAttribute 'id'
     else
       el = file.fullImage = $.el (if isVideo then 'video' else 'img')
-      el.dataset.fullID = post.fullID
+      el.dataset.fileID = "#{post.fullID}.#{file.index}"
       $.on el, 'error', ImageExpand.error
       el.src = src or file.url
 
