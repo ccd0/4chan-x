@@ -42,7 +42,7 @@ FappeTyme =
       cb:   @catalogNode
 
   node: ->
-    @nodes.root.classList.toggle 'noFile', !@file
+    @nodes.root.classList.toggle 'noFile', !@files.length
 
   catalogNode: ->
     {file} = @thread.OP
