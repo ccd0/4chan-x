@@ -101,20 +101,27 @@ ThreadStats =
 
   onThreadsLoad: ->
     if @status is 200
-      for page, pageNum in @response
-        if ThreadStats.showPurgePos
-          purgePos = 1
+      if ThreadStats.showPurgePos
+        purgePos = 1
+        for page in @response
           for thread in page.threads
             if thread.no < ThreadStats.thread.ID
               purgePos++
-          ThreadStats.pageCountEl.textContent = purgePos
-        else
-          for thread in page.threads when thread.no is ThreadStats.thread.ID
-            ThreadStats.pageCountEl.textContent = pageNum + 1
-            ThreadStats.pageCountEl.classList.toggle 'warning', (pageNum is @response.length - 1)
-            ThreadStats.lastPageUpdate = new Date(thread.last_modified * $.SECOND)
-            ThreadStats.retry()
-            return
+        ThreadStats.pageCountEl.textContent = purgePos
+        ThreadStats.pageCountEl.classList.toggle 'warning', (purgePos is 1)
+      else
+        i = nThreads = 0
+        for page in @response
+          nThreads += page.threads.length
+        for page, pageNum in @response
+          for thread in page.threads
+            if thread.no is ThreadStats.thread.ID
+              ThreadStats.pageCountEl.textContent = pageNum + 1
+              ThreadStats.pageCountEl.classList.toggle 'warning', (i >= nThreads - @response[0].threads.length)
+              ThreadStats.lastPageUpdate = new Date(thread.last_modified * $.SECOND)
+              ThreadStats.retry()
+              return
+            i++
     else if @status is 304
       ThreadStats.retry()
 
