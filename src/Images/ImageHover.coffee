@@ -11,17 +11,16 @@ ImageHover =
         cb:   @catalogNode
 
   node: ->
-    return unless @file and (@file.isImage or @file.isVideo) and @file.thumb
-    $.on @file.thumb, 'mouseover', ImageHover.mouseover @
+    for file in @files when (file.isImage or file.isVideo) and file.thumb
+      $.on file.thumb, 'mouseover', ImageHover.mouseover(@, file)
 
   catalogNode: ->
-    {file} = @thread.OP
+    file = @thread.OP.files[0]
     return unless file and (file.isImage or file.isVideo)
-    $.on @nodes.thumb, 'mouseover', ImageHover.mouseover @thread.OP
+    $.on @nodes.thumb, 'mouseover', ImageHover.mouseover(@thread.OP, file)
 
-  mouseover: (post) -> (e) ->
+  mouseover: (post, file) -> (e) ->
     return unless doc.contains @
-    {file} = post
     {isVideo} = file
     return if file.isExpanding or file.isExpanded or g.SITE.isThumbExpanded?(file)
     error = ImageHover.error post
