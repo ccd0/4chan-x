@@ -25,11 +25,11 @@ ImageCommon =
   cacheError: ->
     delete ImageCommon.cache if ImageCommon.cache is @
 
-  decodeError: (file, post) ->
+  decodeError: (file, fileObj) ->
     return false unless file.error?.code is MediaError.MEDIA_ERR_DECODE
-    if not (message = $ '.warning', post.file.thumb.parentNode)
+    if not (message = $ '.warning', fileObj.thumb.parentNode)
       message = $.el 'div', className:   'warning'
-      $.after post.file.thumb, message
+      $.after fileObj.thumb, message
     message.textContent = 'Error: Corrupt or unplayable video'
     return true
 

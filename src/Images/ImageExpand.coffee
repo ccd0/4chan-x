@@ -267,7 +267,7 @@ ImageExpand =
     #  - after the image started loading.
     # Don't try to re-expand if it was already contracted.
     return unless post.file.isExpanding or post.file.isExpanded
-    if ImageCommon.decodeError @, post
+    if ImageCommon.decodeError @, post.file
       return ImageExpand.contract post
     # Don't autoretry images from the archive.
     if ImageCommon.isFromArchive @

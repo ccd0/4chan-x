@@ -23,7 +23,7 @@ ImageHover =
     return unless doc.contains @
     {isVideo} = file
     return if file.isExpanding or file.isExpanded or g.SITE.isThumbExpanded?(file)
-    error = ImageHover.error post
+    error = ImageHover.error post, file
     if ImageCommon.cache?.dataset.fullID is post.fullID
       el = ImageCommon.popCache()
       $.on el, 'error', error
@@ -69,8 +69,8 @@ ImageHover =
         $.rm el
         el.removeAttribute 'style'
 
-  error: (post) -> ->
-    return if ImageCommon.decodeError @, post
+  error: (post, file) -> ->
+    return if ImageCommon.decodeError @, file
     ImageCommon.error @, post, 3 * $.SECOND, (URL) =>
       if URL
         @src = URL + if @src is URL then '?' + Date.now() else ''
