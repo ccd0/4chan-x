@@ -145,13 +145,13 @@ Unread =
     return if @isFetchedQuote or @isClone
     Unread.order.push @
     return if @ID <= Unread.lastReadPost or @isHidden or QuoteYou.isYou(@)
-    Unread.posts.add @ID
+    Unread.posts.add (Unread.posts.last = @ID)
     Unread.addPostQuotingYou @
     Unread.position ?= Unread.order[@ID]
 
   addPostQuotingYou: (post) ->
     for quotelink in post.nodes.quotelinks when QuoteYou.db?.get Get.postDataFromLink quotelink
-      Unread.postsQuotingYou.add post.ID
+      Unread.postsQuotingYou.add (Unread.postsQuotingYou.last = post.ID)
       Unread.openNotification post
       return
 
@@ -270,8 +270,18 @@ Unread =
   saveThreadWatcherCount: $.debounce 2 * $.SECOND, ->
     $.forceSync 'Remember Last Read Post'
     if Conf['Remember Last Read Post'] and (!Unread.thread.isDead or Unread.thread.isArchived)
+      quotingYou = if !Conf['Require OP Quote Link'] and QuoteYou.isYou(Unread.thread.OP) then Unread.posts else Unread.postsQuotingYou
+      if !quotingYou.size
+        quotingYou.last = 0
+      else if !quotingYou.has(quotingYou.last)
+        quotingYou.last = 0
+        posts = Unread.thread.posts.keys
+        for i in [posts.length - 1 .. 0] by -1
+          if quotingYou.has(+posts[i])
+            quotingYou.last = posts[i]
+            break
       ThreadWatcher.update g.SITE.ID, Unread.thread.board.ID, Unread.thread.ID,
         last: Unread.thread.lastPost
         isDead: Unread.thread.isDead
         unread: Unread.posts.size
-        quotingYou: !!(if !Conf['Require OP Quote Link'] and QuoteYou.isYou(Unread.thread.OP) then Unread.posts.size else Unread.postsQuotingYou.size)
+        quotingYou: (quotingYou.last or 0)

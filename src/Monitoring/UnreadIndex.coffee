@@ -104,4 +104,4 @@ UnreadIndex =
     ThreadWatcher.update g.SITE.ID, thread.board.ID, thread.ID,
       last: thread.lastPost
       unread: 0
-      quotingYou: false
+      quotingYou: 0

@@ -132,6 +132,10 @@ ThreadWatcher =
         ThreadWatcher.db.delete {siteID, boardID, threadID}
       ThreadWatcher.refresh()
       $.event 'CloseMenu'
+    dismiss: ->
+      for {siteID, boardID, threadID, data} in ThreadWatcher.getAll() when data.quotingYou
+        ThreadWatcher.update siteID, boardID, threadID, {dismiss: data.quotingYou or 0}
+      $.event 'CloseMenu'
     toggle: ->
       {thread} = Get.postFromNode @
       ThreadWatcher.toggle thread
@@ -345,7 +349,7 @@ ThreadWatcher =
 
       lastReadPost = ThreadWatcher.unreaddb.get {siteID, boardID, threadID, defaultValue: 0}
       unread = data.unread or 0
-      quotingYou = data.quotingYou or false
+      quotingYou = data.quotingYou or 0
       youOP = !!QuoteYou.db?.get {siteID, boardID, threadID, postID: threadID}
 
       for postObj in @response.posts
@@ -354,9 +358,9 @@ ThreadWatcher =
         continue if Filter.isHidden(site.Build.parseJSON postObj, boardID, siteID)
 
         unread++
-        quotingYou = true if !Conf['Require OP Quote Link'] and youOP
+        quotingYou = postObj.no if !Conf['Require OP Quote Link'] and youOP
 
-        continue unless !quotingYou and QuoteYou.db and postObj.com
+        continue unless QuoteYou.db and postObj.com
 
         regexp = site.regexp.quotelinkHTML
         regexp.lastIndex = 0
@@ -367,7 +371,7 @@ ThreadWatcher =
             threadID: match[2] or threadID
             postID:   match[3] or match[2] or threadID
           }
-            quotingYou = true
+            quotingYou = postObj.no
             break
 
       newData or= {}
@@ -436,7 +440,7 @@ ThreadWatcher =
     if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
       $.addClass div, 'replies-read'        if data.unread is 0
       $.addClass div, 'replies-unread'      if data.unread
-      $.addClass div, 'replies-quoting-you' if data.quotingYou
+      $.addClass div, 'replies-quoting-you' if (data.quotingYou or 0) > (data.dismiss or 0)
     $.add div, [x, $.tn(' '), link]
     div
 
@@ -546,7 +550,11 @@ ThreadWatcher =
     ThreadWatcher.addRaw boardID, threadID, data, cb
 
   addRaw: (boardID, threadID, data, cb) ->
-    ThreadWatcher.db.set {boardID, threadID, val: data}, cb
+    oldData = ThreadWatcher.db.get {boardID, threadID, defaultValue: {}}
+    delete oldData.last
+    delete oldData.modified
+    $.extend oldData, data
+    ThreadWatcher.db.set {boardID, threadID, val: oldData}, cb
     ThreadWatcher.refresh()
     thread = {siteID: g.SITE.ID, boardID, threadID, data, force: true}
     if Conf['Show Page'] and !data.isDead
@@ -603,11 +611,21 @@ ThreadWatcher =
           @el.classList.toggle 'disabled', !$('.dead-thread', ThreadWatcher.list)
           true
 
-      for {text, cb, open} in entries
+      # `Dismiss posts quoting you` entry
+      entries.push
+        text: 'Dismiss posts quoting you'
+        title: 'Unhighlight the thread watcher icon and threads until there are new replies quoting you.'
+        cb: ThreadWatcher.cb.dismiss
+        open: ->
+          @el.classList.toggle 'disabled', !$.hasClass(ThreadWatcher.shortcut, 'replies-quoting-you')
+          true
+
+      for {text, title, cb, open} in entries
         entry =
           el: $.el 'a',
             textContent: text
             href: 'javascript:;'
+        entry.el.title = title if title
         $.on entry.el, 'click', cb
         entry.open = open.bind(entry)
         @menu.addEntry entry
