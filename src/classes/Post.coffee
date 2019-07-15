@@ -172,9 +172,11 @@ class Post
   parseFiles: ->
     @files = []
     fileRoots = @fileRoots()
-    for fileRoot, index in fileRoots
+    index = 0
+    for fileRoot, docIndex in fileRoots
       if (file = @parseFile fileRoot)
-        file.index = index
+        file.index = (index++)
+        file.docIndex = docIndex
         @files.push file
     if @files.length
       @file = @files[0]

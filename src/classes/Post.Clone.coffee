@@ -45,7 +45,7 @@ Post.Clone = class extends Post
       file = {}
       for key, val of originFile
         file[key] = val
-      fileRoot = fileRoots[file.index]
+      fileRoot = fileRoots[file.docIndex]
       for key, selector of g.SITE.selectors.file
         file[key] = $ selector, fileRoot
       file.thumbLink = file.thumb?.parentNode
