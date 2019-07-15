@@ -250,19 +250,19 @@ ThreadWatcher =
     for dbi in dbs
       dbi.forceSync ->
         if (++n) is dbs.length
-          return if 0 <= Date.now() - (ThreadWatcher.db.data.lastChecked or 0) < interval # checked in another tab
           return if !ThreadWatcher.syncing # aborted
           delete ThreadWatcher.syncing
-          # XXX On vichan boards, last_modified field of threads.json does not account for sage posts.
-          # Occasionally check replies field of catalog.json to find these posts.
-          {db} = ThreadWatcher
-          now = Date.now()
-          deep = !(now - 2 * $.HOUR < (db.data.lastChecked2 or 0) <= now)
-          boards = ThreadWatcher.getAll(true)
-          for board in boards
-            ThreadWatcher.fetchBoard board, deep
-          db.setLastChecked()
-          db.setLastChecked('lastChecked2') if deep
+          unless 0 <= Date.now() - (ThreadWatcher.db.data.lastChecked or 0) < interval # not checked in another tab
+            # XXX On vichan boards, last_modified field of threads.json does not account for sage posts.
+            # Occasionally check replies field of catalog.json to find these posts.
+            {db} = ThreadWatcher
+            now = Date.now()
+            deep = !(now - 2 * $.HOUR < (db.data.lastChecked2 or 0) <= now)
+            boards = ThreadWatcher.getAll(true)
+            for board in boards
+              ThreadWatcher.fetchBoard board, deep
+            db.setLastChecked()
+            db.setLastChecked('lastChecked2') if deep
           if ThreadWatcher.fetched is ThreadWatcher.requests.length
             ThreadWatcher.clearRequests()
 
