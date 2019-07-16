@@ -16,6 +16,7 @@ SW.yotsuba =
 
   isPrunedByAge: ({boardID}) -> boardID is 'f'
   areMD5sDeferred: ({boardID}) -> boardID is 'f'
+  noAudio: ({boardID}) -> BoardConfig.noAudio(boardID)
 
   selectors:
     board:         '.board'
