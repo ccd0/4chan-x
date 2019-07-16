@@ -4,7 +4,7 @@ Settings =
     link = $.el 'a',
       className:   'settings-link fa fa-wrench'
       textContent: 'Settings'
-      title: '<%= meta.name %> Settings'
+      title:       '<%= meta.name %> Settings'
       href:        'javascript:;'
     $.on link, 'click', Settings.open
 
@@ -38,16 +38,13 @@ Settings =
           Object.defineProperty window, 'Config', {value: {disableAll: true}}
 
   open: (openSection) ->
-    return if Settings.overlay
+    return if Settings.dialog
     $.event 'CloseMenu'
 
     Settings.dialog = dialog = $.el 'div',
-      id:        'fourchanx-settings'
-      className: 'dialog'
-    $.extend dialog, <%= readHTML('Settings.html') %>
-
-    Settings.overlay = overlay = $.el 'div',
-      id: 'overlay'
+      id:        'overlay'
+    ,
+      <%= readHTML('Settings.html') %>
 
     $.on $('.export', dialog), 'click',  Settings.export
     $.on $('.import', dialog), 'click',  Settings.import
@@ -68,10 +65,12 @@ Settings =
     (if sectionToOpen then sectionToOpen else links[0]).click() unless openSection is 'none'
 
     $.on $('.close', dialog), 'click', Settings.close
-    $.on overlay, 'click', Settings.close
     $.on window, 'beforeunload', Settings.close
+    $.on dialog, 'click', Settings.close
+    $.on dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
 
-    $.add d.body, [overlay, dialog]
+    $.addClass d.body, 'unscroll'
+    $.add d.body, dialog
 
     $.event 'OpenSettings', null, dialog
 
@@ -79,9 +78,8 @@ Settings =
     return unless Settings.dialog
     # Unfocus current field to trigger change event.
     d.activeElement?.blur()
-    $.rm Settings.overlay
+    $.rmClass d.body, 'unscroll'
     $.rm Settings.dialog
-    delete Settings.overlay
     delete Settings.dialog
 
   sections: []
@@ -388,7 +386,7 @@ Settings =
     if compareString < '00001.00011.00017.00006'
       if data['sauces']?
         set 'sauces', data['sauces'].replace(/^(#?\s*)http:\/\/iqdb\.org\//mg, '$1//iqdb.org/')
-    if compareString < '00001.00011.00019.00003' and not Settings.overlay
+    if compareString < '00001.00011.00019.00003' and not Settings.dialog
       $.queueTask -> Settings.warnings.ads (item) -> new Notice 'warning', [item.childNodes...]
     if compareString < '00001.00011.00020.00003'
       for key, value of {'Inline Cross-thread Quotes Only': false, 'Pass Link': true}
