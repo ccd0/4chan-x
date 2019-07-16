@@ -250,6 +250,7 @@ class Post
     strong = $ 'strong.warning', @nodes.info
     # no false-positive files
     if @files.some((file) -> file.isDead)
+      $.addClass @nodes.root, 'deleted-file'
       strong.textContent = '[File deleted]'
     else
       $.rm strong
