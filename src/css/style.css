@@ -547,6 +547,7 @@ audio.controls-added {
 .section-container {
   -webkit-flex: 1;
   flex: 1;
+  position: relative;
   overflow: auto;
   padding-top: 8px;
   padding-right: 5px;
