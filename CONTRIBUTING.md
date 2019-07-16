@@ -18,7 +18,7 @@ If you're reporting a bug, the more detail you can give, the better. If I can't 
 
 ### Get started
 
-- Install [git](https://git-scm.com/), [node.js](https://nodejs.org/), [npm](https://www.npmjs.com/) (usually distributed with node), and GNU Make (on Windows, the [MinGW](http://www.mingw.org/) port will work).
+- Install [git](https://git-scm.com/), [node.js](https://nodejs.org/), [npm](https://www.npmjs.com/) (usually distributed with node), and GNU Make (on Windows, the [MinGW](http://www.mingw.org/) port will work, and the [GnuWin](http://gnuwin32.sourceforge.net/) port has been reported to work as well).
 - Clone 4chan X: `git clone https://github.com/ccd0/4chan-x.git`<br>(If this is taking too long, you can add `--depth 100` to fetch only recent history.)
 - Open the directory: `cd 4chan-x`
 - Fetch needed dependencies with: `npm install`
