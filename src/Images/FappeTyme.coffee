@@ -45,7 +45,7 @@ FappeTyme =
     @nodes.root.classList.toggle 'noFile', !@files.length
 
   catalogNode: ->
-    {file} = @thread.OP
+    file = @thread.OP.files[0]
     return if !file
     filename = $.el 'div',
       textContent: file.name
