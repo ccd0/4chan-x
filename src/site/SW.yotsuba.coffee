@@ -15,6 +15,7 @@ SW.yotsuba =
       "#{location.protocol}//#{ImageHost.thumbHost()}/#{boardID}/#{filename}"
 
   isPrunedByAge: ({boardID}) -> boardID is 'f'
+  areMD5sDeferred: ({boardID}) -> boardID is 'f'
 
   selectors:
     board:         '.board'
