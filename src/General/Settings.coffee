@@ -4,7 +4,7 @@ Settings =
     link = $.el 'a',
       className:   'settings-link fa fa-wrench'
       textContent: 'Settings'
-      title:        '<%= meta.name %> Settings'
+      title:       '<%= meta.name %> Settings'
       href:        'javascript:;'
     $.on link, 'click', Settings.open
 
@@ -38,12 +38,13 @@ Settings =
           Object.defineProperty window, 'Config', {value: {disableAll: true}}
 
   open: (openSection) ->
-    return if Settings.overlay
+    return if Settings.dialog
     $.event 'CloseMenu'
 
-    Settings.dialog = overlay = $.el 'div',
+    Settings.dialog = dialog = $.el 'div',
       id:        'overlay'
-      innerHTML: <%= readHTML('Settings.html') %>
+    ,
+      <%= readHTML('Settings.html') %>
 
     $.on $('.export', dialog), 'click',  Settings.export
     $.on $('.import', dialog), 'click',  Settings.import
@@ -60,16 +61,16 @@ Settings =
       links.push link, $.tn ' | '
       sectionToOpen = link if section.title is openSection
     links.pop()
-    $.add $('.sections-list', overlay), links
+    $.add $('.sections-list', dialog), links
     (if sectionToOpen then sectionToOpen else links[0]).click() unless openSection is 'none'
 
-    $.on $('.close', overlay), 'click', Settings.close
-    $.on overlay, 'click', Settings.close
+    $.on $('.close', dialog), 'click', Settings.close
     $.on window, 'beforeunload', Settings.close
-    $.on overlay.firstElementChild, 'click', (e) -> e.stopPropagation()
+    $.on dialog, 'click', Settings.close
+    $.on dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
 
     $.addClass d.body, 'unscroll'
-    $.add d.body, overlay
+    $.add d.body, dialog
 
     $.event 'OpenSettings', null, dialog
 
@@ -196,7 +197,7 @@ Settings =
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
       $.get 'hiddenThreads', {}, ({hiddenThreads}) ->
-        if $.hasStorage and Site.software is 'yotsuba'
+        if $.hasStorage and g.SITE.software is 'yotsuba'
           for boardID of hiddenThreads.boards
             localStorage.removeItem "4chan-hide-t-#{boardID}"
         ($.delete ['hiddenThreads', 'hiddenPosts'])
@@ -385,7 +386,7 @@ Settings =
     if compareString < '00001.00011.00017.00006'
       if data['sauces']?
         set 'sauces', data['sauces'].replace(/^(#?\s*)http:\/\/iqdb\.org\//mg, '$1//iqdb.org/')
-    if compareString < '00001.00011.00019.00003' and not Settings.overlay
+    if compareString < '00001.00011.00019.00003' and not Settings.dialog
       $.queueTask -> Settings.warnings.ads (item) -> new Notice 'warning', [item.childNodes...]
     if compareString < '00001.00011.00020.00003'
       for key, value of {'Inline Cross-thread Quotes Only': false, 'Pass Link': true}
@@ -480,6 +481,19 @@ Settings =
           /\/\/%\$1\.deviantart\.com\/gallery\/#\/d%\$2;regexp:\/\^\\w\+_by_\(\\w\+\)-d\(\[\\da-z\]\+\)\//g,
           '//www.deviantart.com/gallery/#/d%$1%$2;regexp:/^\\w+_by_\\w+[_-]d([\\da-z]{6})\\b|^d([\\da-z]{6})-[\\da-z]{8}-/'
         )
+    if compareString < '00001.00014.00008.00000'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(
+          /https:\/\/www\.yandex\.com\/images\/search/g,
+          'https://yandex.com/images/search'
+        )
+    if compareString < '00001.00014.00009.00000'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(/^(#?\s*)(?:http:)?\/\/(www\.pixiv\.net|www\.deviantart\.com|imgur\.com|flickr\.com)\//mg, '$1https://$2/')
+        set 'sauces', data['sauces'].replace(/https:\/\/yandex\.com\/images\/search\?rpt=imageview&img_url=%IMG/g, 'https://yandex.com/images/search?rpt=imageview&url=%IMG')
+    if compareString < '00001.00014.00009.00001'
+      if data['Use Faster Image Host']? and not data['fourchanImageHost']?
+        set 'fourchanImageHost', (if data['Use Faster Image Host'] then 'i.4cdn.org' else '')
     changes
 
   loadSettings: (data, cb) ->
@@ -546,7 +560,7 @@ Settings =
       $.id('lastarchivecheck').textContent = 'never'
 
     items = {}
-    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'timeLocale', 'backlink', 'pastedname', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
+    for name in ['archiveLists', 'archiveAutoUpdate', 'fourchanImageHost', 'captchaLanguage', 'captchaServiceDomain', 'boardnav', 'time', 'timeLocale', 'backlink', 'pastedname', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
       items[name] = Conf[name]
       input = inputs[name]
       event = if name in ['archiveLists', 'archiveAutoUpdate', 'QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
@@ -561,6 +575,15 @@ Settings =
         if key of Settings
           Settings[key].call input
       return
+
+    listImageHost = $.id 'list-fourchanImageHost'
+    for textContent in ImageHost.suggestions
+      $.add listImageHost, $.el 'option', {textContent}
+
+    $.on inputs['captchaServiceKey'], 'input', Settings.captchaServiceKey
+    $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) ->
+      Conf['captchaServiceKey'] = captchaServiceKey
+      Settings.captchaServiceDomainList()
 
     interval  = inputs['Interval']
     customCSS = inputs['Custom CSS']
@@ -692,6 +715,31 @@ Settings =
       $.set 'selectedArchives', selectedArchives
       Conf['selectedArchives'] = selectedArchives
       Redirect.selectArchives()
+
+  captchaServiceDomain: ->
+    $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) =>
+      keyInput = $('[name=captchaServiceKey]')
+      keyInput.value = captchaServiceKey[@value.trim()] or ''
+      keyInput.disabled = !@value.trim()
+
+  captchaServiceKey: ->
+    domain = Conf['captchaServiceDomain']
+    value = @value.trim()
+    Conf['captchaServiceKey'][domain] = value
+    $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) ->
+      captchaServiceKey[domain] = value
+      delete captchaServiceKey[domain] unless value or (domain of Config['captchaServiceKey'][0])
+      Conf['captchaServiceKey'] = captchaServiceKey
+      $.set 'captchaServiceKey', captchaServiceKey
+      Settings.captchaServiceDomainList()
+
+  captchaServiceDomainList: ->
+    list = $.id 'list-captchaServiceDomain'
+    $.rmAll list
+    for domain of Conf['captchaServiceKey']
+      $.add list, $.el 'option',
+        textContent: domain
+    return
 
   boardnav: ->
     Header.generateBoardList @value
