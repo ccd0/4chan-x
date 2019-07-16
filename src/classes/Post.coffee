@@ -213,10 +213,10 @@ class Post
       textContent: '\u00A0(Dead)'
       className:   'qmark-dead'
 
-  kill: (file) ->
+  kill: (file, index=0) ->
     if file
-      return if @isDead or @file.isDead
-      @file.isDead = true
+      return if @isDead or @files[index].isDead
+      @files[index].isDead = true
       $.addClass @nodes.root, 'deleted-file'
     else
       return if @isDead
@@ -232,7 +232,7 @@ class Post
 
     return if @isClone
     for clone in @clones
-      clone.kill file
+      clone.kill file, index
 
     return if file
     # Get quotelinks/backlinks to this post
@@ -249,7 +249,7 @@ class Post
     $.rmClass @nodes.root, 'deleted-post'
     strong = $ 'strong.warning', @nodes.info
     # no false-positive files
-    if @file and @file.isDead
+    if @files.some((file) -> file.isDead)
       strong.textContent = '[File deleted]'
     else
       $.rm strong
