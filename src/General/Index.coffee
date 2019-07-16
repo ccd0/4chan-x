@@ -807,17 +807,14 @@ Index =
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
     return unless liveThreadData
-    Index.sortedThreadIDs = switch Index.currentSort.replace(/-rev$/, '')
-      when 'lastreply'
-        [liveThreadData...].sort((a, b) ->
-          a = num[num.length - 1] if (num = a.last_replies)
-          b = num[num.length - 1] if (num = b.last_replies)
-          b.no - a.no
-        ).map (post) -> post.no
-      when 'lastlong'
+    sortType = Index.currentSort.replace(/-rev$/, '')
+    Index.sortedThreadIDs = switch sortType
+      when 'lastreply', 'lastlong'
         lastlong = (thread) ->
           for r, i in (thread.last_replies or []) by -1
             continue if Index.isHiddenReply thread.no, r
+            if sortType is 'lastreply'
+              return r
             len = if r.com then g.SITE.Build.parseComment(r.com).replace(/[^a-z]/ig, '').length else 0
             if len >= Index.lastLongThresholds[+!!r.ext]
               return r
