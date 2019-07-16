@@ -93,6 +93,7 @@
     }
   },
   "devDependencies": {
+    "chrome-webstore-upload": "^0.2.2",
     "coffeescript": "=1.12.7",
     "esprima": "^4.0.1",
     "font-awesome": "=4.7.0",
@@ -101,8 +102,7 @@
     "lodash.template": "^4.5.0",
     "markdown-it": "^9.0.0",
     "markdown-it-anchor": "^5.2.4",
-    "request": "^2.88.0",
-    "webstore-upload": "0.0.8"
+    "request": "^2.88.0"
   },
   "repository": {
     "type": "git",
@@ -121,5 +121,6 @@
   "readmeFilename": "README.md",
   "engines": {
     "node": ">=0.10"
-  }
+  },
+  "dependencies": {}
 }
