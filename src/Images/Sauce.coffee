@@ -26,6 +26,8 @@ Sauce =
         m = part.match /^(\w*):?(.*)$/
         parts[m[1]] = m[2]
     parts['text'] or= parts['url'].match(/(\w+)\.\w+\//)?[1] or '?'
+    if 'boards' of parts
+      parts['boards'] = Filter.parseBoards parts['boards']
     if 'regexp' of parts
       try
         if (regexp = parts['regexp'].match /^\/(.*)\/(\w*)$/)
@@ -48,8 +50,8 @@ Sauce =
     parts = {}
     $.extend parts, link
 
-    return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
-    return null unless !parts['types']  or ext           in parts['types'].split  ','
+    return null unless !parts['boards'] or parts['boards']["#{post.siteID}/#{post.boardID}"] or parts['boards']["#{post.siteID}/*"]
+    return null unless !parts['types']  or ext in parts['types'].split(',')
     return null unless !parts['regexp'] or (matches = file.name.match parts['regexp'])
 
     missing = []
