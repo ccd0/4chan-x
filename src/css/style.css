@@ -525,15 +525,16 @@ audio.controls-added {
   width: 900px;
   max-width: 100%;
   margin: auto;
-  padding: 3px;
+  padding: 5px;
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: column;
   flex-direction: column;
 }
 #fourchanx-settings > nav {
-  padding: 2px 2px 0;
-  height: 15px;
+  padding: 2px 2px 8px;
+  display: -webkit-flex;
+  display: flex;
 }
 #fourchanx-settings > nav a {
   text-decoration: underline;
@@ -544,20 +545,15 @@ audio.controls-added {
   margin: 0;
 }
 .section-container {
+  -webkit-flex: 1;
+  flex: 1;
   overflow: auto;
-  position: absolute;
-  top: 2.1em;
-  right: 5px;
-  bottom: 5px;
-  left: 5px;
+  padding-top: 8px;
   padding-right: 5px;
 }
 .sections-list {
-  padding: 0 3px;
-  float: left;
-}
-.credits {
-  float: right;
+  -webkit-flex: 1;
+  flex: 1;
 }
 .export, .import, .reset {
   cursor: pointer;
