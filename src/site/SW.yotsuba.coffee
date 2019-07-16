@@ -8,6 +8,11 @@ SW.yotsuba =
     threadsListJSON: ({boardID})      -> "#{location.protocol}//a.4cdn.org/#{boardID}/threads.json"
     archiveListJSON: ({boardID})      -> if BoardConfig.isArchived(boardID) then "#{location.protocol}//a.4cdn.org/#{boardID}/archive.json" else ''
     catalogJSON:     ({boardID})      -> "#{location.protocol}//a.4cdn.org/#{boardID}/catalog.json"
+    file: ({boardID}, filename) ->
+      hostname = if boardID is 'f' then ImageHost.flashHost() else ImageHost.host()
+      "#{location.protocol}//#{hostname}/#{boardID}/#{filename}"
+    thumb: ({boardID}, filename) ->
+      "#{location.protocol}//#{ImageHost.thumbHost()}/#{boardID}/#{filename}"
 
   isPrunedByAge: ({boardID}) -> boardID is 'f'
 

@@ -355,7 +355,7 @@ ThreadWatcher =
       for postObj in @response.posts
         continue unless postObj.no > (data.last or 0) and postObj.no > lastReadPost
         continue if QuoteYou.db?.get {siteID, boardID, threadID, postID: postObj.no}
-        continue if Filter.isHidden(site.Build.parseJSON postObj, boardID, siteID)
+        continue if Filter.isHidden(site.Build.parseJSON postObj, {siteID, boardID})
 
         unread++
         quotingYou = postObj.no if !Conf['Require OP Quote Link'] and youOP

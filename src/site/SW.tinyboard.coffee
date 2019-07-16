@@ -56,6 +56,10 @@ SW.tinyboard =
     catalogJSON: ({siteID, boardID}) ->
       root = Conf['siteProperties'][siteID]?.root
       if root then "#{root}#{boardID}/catalog.json" else ''
+    file: ({siteID, boardID}, filename) ->
+      "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/#{filename}"
+    thumb: (board, filename) ->
+      SW.tinyboard.urls.file board, filename
 
   selectors:
     board:         'form[name="postcontrols"]'
@@ -117,8 +121,25 @@ SW.tinyboard =
       /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)\.\w+#(\d+)"/g
 
   Build:
-    parseJSON: ->
-      SW.yotsuba.Build.parseJSON.apply SW.yotsuba.Build, arguments
+    parseJSON: (data, board) ->
+      o = SW.yotsuba.Build.parseJSON(data, board)
+      if data.ext is 'deleted'
+        delete o.file
+        $.extend o,
+          files: []
+          fileDeleted: true
+          filesDeleted: [0]
+      if data.extra_files
+        for extra_file, i in data.extra_files
+          if extra_file.ext is 'deleted'
+            o.filesDeleted.push i
+          else
+            file = SW.yotsuba.Build.parseJSONFile(data, board)
+            o.files.push file
+        if o.files.length
+          o.file = o.files[0]
+      o
+
     parseComment: (html) ->
       html = html
         .replace(/<br\b[^<]*>/gi, '\n')

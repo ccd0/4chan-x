@@ -663,7 +663,7 @@ Index =
     for data, i in Index.liveThreadData
       Index.liveThreadDict[data.no] = data
       Index.threadPosition[data.no] = i
-      Index.parsedThreads[data.no] = obj = g.SITE.Build.parseJSON data, g.BOARD.ID
+      Index.parsedThreads[data.no] = obj = g.SITE.Build.parseJSON data, g.BOARD
       obj.filterResults = results = Filter.test obj
       obj.isOnTop  = results.top
       obj.isHidden = results.hide or ThreadHiding.isHidden(obj.boardID, obj.threadID)
@@ -685,7 +685,7 @@ Index =
       Index.parsedThreads[threadID].isHidden
 
   isHiddenReply: (threadID, replyData) ->
-    PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) or Filter.isHidden(g.SITE.Build.parseJSON replyData, g.BOARD.ID)
+    PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) or Filter.isHidden(g.SITE.Build.parseJSON replyData, g.BOARD)
 
   buildThreads: (threadIDs, isCatalog, withReplies) ->
     threads    = []

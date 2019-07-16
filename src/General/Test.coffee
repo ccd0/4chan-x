@@ -72,7 +72,7 @@ Test =
       for postData in posts
         if postData.no is post.ID
           t1 = new Date().getTime()
-          obj = g.SITE.Build.parseJSON postData, post.board.ID
+          obj = g.SITE.Build.parseJSON postData, post.board
           root = g.SITE.Build.post obj
           t2 = new Date().getTime()
           Test.time += t2 - t1

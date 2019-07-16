@@ -31,13 +31,14 @@ Build =
   postURL: (boardID, threadID, postID) ->
     "#{Build.threadURL(boardID, threadID)}#p#{postID}"
 
-  parseJSON: (data, boardID, siteID) ->
+  parseJSON: (data, {siteID, boardID}) ->
     o =
       # id
       ID:       data.no
+      postID:   data.no
       threadID: data.resto or data.no
       boardID:  boardID
-      siteID:   siteID or g.SITE.ID
+      siteID:   siteID
       isReply:  !!data.resto
       # thread status
       isSticky: !!data.sticky
@@ -45,6 +46,7 @@ Build =
       isArchived: !!data.archived
       # file status
       fileDeleted: !!data.filedeleted
+      filesDeleted: if data.filedeleted then [0] else []
     o.info =
       subject:  $.unescape data.sub
       email:    $.unescape data.email
@@ -62,27 +64,35 @@ Build =
       o.info.capcode = data.capcode.replace(/_highlight$/, '').replace(/_/g, ' ').replace(/\b\w/g, (c) -> c.toUpperCase())
       o.capcodeHighlight = /_highlight$/.test data.capcode
       delete o.info.uniqueID
+    o.files = []
     if data.ext
-      o.file =
-        name:      ($.unescape data.filename) + data.ext
-        url: if boardID is 'f'
-          "#{location.protocol}//#{ImageHost.flashHost()}/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
-        else
-          "#{location.protocol}//#{ImageHost.host()}/#{boardID}/#{data.tim}#{data.ext}"
-        height:    data.h
-        width:     data.w
-        MD5:       data.md5
-        size:      $.bytesToString data.fsize
-        thumbURL:  "#{location.protocol}//#{ImageHost.thumbHost()}/#{boardID}/#{data.tim}s.jpg"
-        theight:   data.tn_h
-        twidth:    data.tn_w
-        isSpoiler: !!data.spoiler
-        tag:       data.tag
-        hasDownscale: !!data.m_img
-      o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
+      o.file = SW.yotsuba.Build.parseJSONFile(data, {siteID, boardID})
+      o.files.push o.file
     # Temporary JSON properties for events such as April 1 / Halloween
     for key of data when key[0] is 'x'
       o[key] = data[key]
+    o
+
+  parseJSONFile: (data, {siteID, boardID}) ->
+    site = g.sites[siteID]
+    filename = if site.software is 'yotsuba' and boardID is 'f'
+      "#{encodeURIComponent data.filename}#{data.ext}"
+    else
+      "#{data.tim}#{data.ext}"
+    o =
+      name:      ($.unescape data.filename) + data.ext
+      url:       site.urls.file({siteID, boardID}, filename)
+      height:    data.h
+      width:     data.w
+      MD5:       data.md5
+      size:      $.bytesToString data.fsize
+      thumbURL:  site.urls.thumb({siteID, boardID}, "#{data.tim}s.jpg")
+      theight:   data.tn_h
+      twidth:    data.tn_w
+      isSpoiler: !!data.spoiler
+      tag:       data.tag
+      hasDownscale: !!data.m_img
+    o.dimensions = "#{o.width}x#{o.height}" if data.h? and !/\.pdf$/.test(o.url)
     o
 
   parseComment: (html) ->
@@ -104,7 +114,7 @@ Build =
     Build.parseComment(html).trim().replace(/\s+$/gm, '')
 
   postFromObject: (data, boardID) ->
-    o = Build.parseJSON data, boardID
+    o = Build.parseJSON data, {boardID, siteID: g.SITE.ID}
     Build.post o
 
   post: (o) ->
