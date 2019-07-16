@@ -19,13 +19,13 @@ Gallery =
       cb:   @node
 
   node: ->
-    return unless @file?.thumb
-    if Gallery.nodes
-      Gallery.generateThumb @
-      Gallery.nodes.total.textContent = Gallery.images.length
+    for file in @files when file.thumb
+      if Gallery.nodes
+        Gallery.generateThumb @, file
+        Gallery.nodes.total.textContent = Gallery.images.length
 
-    unless Conf['Image Expansion']
-      $.on @file.thumbLink, 'click', Gallery.cb.image
+      unless Conf['Image Expansion']
+        $.on file.thumbLink, 'click', Gallery.cb.image
 
   build: (image) ->
     {cb} = Gallery
@@ -38,7 +38,7 @@ Gallery =
 
     Gallery.images  = []
     nodes = Gallery.nodes = {}
-    Gallery.fullIDs = {}
+    Gallery.fileIDs = {}
     Gallery.slideshow = false
 
     nodes.el = dialog = $.el 'div',
@@ -84,13 +84,13 @@ Gallery =
 
     for postThumb in $$ g.SITE.selectors.file.thumb
       continue unless (post = Get.postFromNode postThumb)
-      continue unless post.file?.thumb
-      Gallery.generateThumb post
-      # If no image to open is given, pick image we have scrolled to.
-      if !image and Gallery.fullIDs[post.fullID]
-        candidate = post.file.thumbLink
-        if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
-          image = candidate
+      for file in post.files when file.thumb
+        Gallery.generateThumb post, file
+        # If no image to open is given, pick image we have scrolled to.
+        if !image and Gallery.fileIDs["#{post.fullID}.#{file.index}"]
+          candidate = file.thumbLink
+          if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
+            image = candidate
     $.addClass doc, 'gallery-open'
 
     $.add d.body, dialog
@@ -105,23 +105,24 @@ Gallery =
     doc.style.overflow = 'hidden'
     nodes.total.textContent = Gallery.images.length
 
-  generateThumb: (post) ->
+  generateThumb: (post, file) ->
     return if post.isClone or post.isHidden
-    return unless post.file and post.file.thumb and (post.file.isImage or post.file.isVideo or Conf['PDF in Gallery'])
-    return if Gallery.fullIDs[post.fullID]
+    return unless file and file.thumb and (file.isImage or file.isVideo or Conf['PDF in Gallery'])
+    return if Gallery.fileIDs["#{post.fullID}.#{file.index}"]
 
-    Gallery.fullIDs[post.fullID] = true
+    Gallery.fileIDs["#{post.fullID}.#{file.index}"] = true
 
     thumb = $.el 'a',
       className: 'gal-thumb'
-      href:      post.file.url
+      href:      file.url
       target:    '_blank'
-      title:     post.file.name
+      title:     file.name
 
     thumb.dataset.id   = Gallery.images.length
     thumb.dataset.post = post.fullID
+    thumb.dataset.file = file.index
 
-    thumbImg = post.file.thumb.cloneNode false
+    thumbImg = file.thumb.cloneNode false
     thumbImg.style.cssText = ''
     $.add thumb, thumbImg
 
@@ -196,7 +197,7 @@ Gallery =
       return new Notice 'error', 'Corrupt or unplayable video', 30
     return if ImageCommon.isFromArchive @
     post = g.posts[@dataset.post]
-    file = post.file
+    file = post.files[@dataset.file]
     ImageCommon.error @, post, file, null, (url) =>
       return unless url
       Gallery.images[@dataset.id].href = url
@@ -311,7 +312,7 @@ Gallery =
         d.mozCancelFullScreen?()
         d.webkitExitFullscreen?()
       delete Gallery.nodes
-      delete Gallery.fullIDs
+      delete Gallery.fileIDs
       doc.style.overflow = ''
 
       $.off d, 'keydown', Gallery.cb.keybinds
