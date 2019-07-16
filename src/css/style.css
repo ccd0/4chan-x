@@ -546,6 +546,7 @@ audio.controls-added {
   position: relative;
   overflow: auto;
   padding-right: 5px;
+  overscroll-behavior: contain;
 }
 .sections-list {
   -webkit-flex: 1;
@@ -710,9 +711,6 @@ div[data-checked="false"] > .suboption-list {
 }
 #fourchanx-settings table {
   margin: auto;
-}
-.unscroll {
-  overflow: hidden;
 }
 
 /* Index */

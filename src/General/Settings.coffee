@@ -69,7 +69,6 @@ Settings =
     $.on dialog, 'click', Settings.close
     $.on dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
 
-    $.addClass d.body, 'unscroll'
     $.add d.body, dialog
 
     $.event 'OpenSettings', null, dialog
@@ -78,7 +77,6 @@ Settings =
     return unless Settings.dialog
     # Unfocus current field to trigger change event.
     d.activeElement?.blur()
-    $.rmClass d.body, 'unscroll'
     $.rm Settings.dialog
     delete Settings.dialog
 
