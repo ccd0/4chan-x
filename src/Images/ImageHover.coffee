@@ -71,7 +71,7 @@ ImageHover =
 
   error: (post, file) -> ->
     return if ImageCommon.decodeError @, file
-    ImageCommon.error @, post, 3 * $.SECOND, (URL) =>
+    ImageCommon.error @, post, file, 3 * $.SECOND, (URL) =>
       if URL
         @src = URL + if @src is URL then '?' + Date.now() else ''
       else

@@ -272,7 +272,7 @@ ImageExpand =
     # Don't autoretry images from the archive.
     if ImageCommon.isFromArchive @
       return ImageExpand.contract post
-    ImageCommon.error @, post, 10 * $.SECOND, (URL) ->
+    ImageCommon.error @, post, post.file, 10 * $.SECOND, (URL) ->
       if post.file.isExpanding or post.file.isExpanded
         ImageExpand.contract post
         (ImageExpand.expand post, URL if URL)

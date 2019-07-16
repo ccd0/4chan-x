@@ -195,7 +195,9 @@ Gallery =
     if @error?.code is MediaError.MEDIA_ERR_DECODE
       return new Notice 'error', 'Corrupt or unplayable video', 30
     return if ImageCommon.isFromArchive @
-    ImageCommon.error @, g.posts[@dataset.post], null, (url) =>
+    post = g.posts[@dataset.post]
+    file = post.file
+    ImageCommon.error @, post, file, null, (url) =>
       return unless url
       Gallery.images[@dataset.id].href = url
       (@src = url if Gallery.nodes.current is @)

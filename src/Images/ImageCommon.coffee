@@ -36,8 +36,8 @@ ImageCommon =
   isFromArchive: (file) ->
     g.SITE.software is 'yotsuba' and !ImageHost.test(file.src.split('/')[2])
 
-  error: (file, post, delay, cb) ->
-    src = post.file.url.split '/'
+  error: (file, post, fileObj, delay, cb) ->
+    src = fileObj.url.split '/'
     url = null
     if g.SITE.software is 'yotsuba' and Conf['404 Redirect']
       url = Redirect.to 'file', {
@@ -46,10 +46,10 @@ ImageCommon =
       }
     url = null unless url and Redirect.securityCheck(url)
 
-    return cb url if (post.isDead or post.file.isDead) and not ImageCommon.isFromArchive(file)
+    return cb url if (post.isDead or fileObj.isDead) and not ImageCommon.isFromArchive(file)
 
     timeoutID = setTimeout (-> cb url), delay if delay?
-    return if post.isDead or post.file.isDead
+    return if post.isDead or fileObj.isDead
     redirect = ->
       unless ImageCommon.isFromArchive file
         clearTimeout timeoutID if delay?
@@ -65,11 +65,11 @@ ImageCommon =
       if postObj.no isnt post.ID
         post.kill()
         redirect()
-      else if postObj.filedeleted
+      else if fileObj.docIndex in g.SITE.Build.parseJSON(postObj, post.board).filesDeleted
         post.kill true
         redirect()
       else
-        url = post.file.url
+        url = fileObj.url
 
   # Add controls, but not until the mouse is moved over the video.
   addControls: (video) ->
