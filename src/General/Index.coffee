@@ -553,9 +553,9 @@ Index =
     else
       strong = $.el 'strong'
 
-    a = pagesRoot.children[pageNum - 1]
-    $.before a, strong
-    $.add strong, a
+    if (a = pagesRoot.children[pageNum - 1])
+      $.before a, strong
+      $.add strong, a
 
   updateHideLabel: ->
     return unless Index.hideLabel
