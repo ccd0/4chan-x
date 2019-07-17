@@ -250,6 +250,10 @@ Gallery =
           Gallery.cb.pause
         when Conf['Slideshow']
           Gallery.cb.toggleSlideshow
+        when Conf['Rotate image anticlockwise']
+          Gallery.cb.rotateLeft
+        when Conf['Rotate image clockwise']
+          Gallery.cb.rotateRight
 
       return unless cb
       e.stopPropagation()
@@ -301,6 +305,20 @@ Gallery =
       current.loop = true if current.nodeName is 'VIDEO'
       $.rmClass Gallery.nodes.buttons, 'gal-playing'
       Gallery.slideshow = false
+
+    rotateLeft: ->
+      {current, frame} = Gallery.nodes
+      {style, dataRotate} = current
+      dataRotate = 0 if (!dataRotate || dataRotate <= -360)
+      style.transform = 'rotate(' + (dataRotate - 90) + 'deg)'
+      current.dataRotate = dataRotate - 90
+
+    rotateRight: ->
+      {current, frame} = Gallery.nodes
+      {style, dataRotate} = current
+      dataRotate = 0 if (!dataRotate || dataRotate >= 360)
+      style.transform = 'rotate(' + (dataRotate + 90) + 'deg)'
+      current.dataRotate = dataRotate + 90
 
     close: ->
       $.off Gallery.nodes.current, 'error', Gallery.error
