@@ -355,24 +355,28 @@ ThreadWatcher =
       for postObj in @response.posts
         continue unless postObj.no > (data.last or 0) and postObj.no > lastReadPost
         continue if QuoteYou.db?.get {siteID, boardID, threadID, postID: postObj.no}
-        continue if Filter.isHidden(site.Build.parseJSON postObj, {siteID, boardID})
+
+        quotesYou = false
+        if !Conf['Require OP Quote Link'] and youOP
+          quotesYou = true
+        else if QuoteYou.db and postObj.com
+          regexp = site.regexp.quotelinkHTML
+          regexp.lastIndex = 0
+          while (match = regexp.exec postObj.com)
+            if QuoteYou.db.get {
+              siteID
+              boardID:  if match[1] then encodeURIComponent(match[1]) else boardID
+              threadID: match[2] or threadID
+              postID:   match[3] or match[2] or threadID
+            }
+              quotesYou = true
+              break
+
+        if !unread or (!quotingYou and quotesYou)
+          continue if Filter.isHidden(site.Build.parseJSON postObj, {siteID, boardID})
 
         unread++
-        quotingYou = postObj.no if !Conf['Require OP Quote Link'] and youOP
-
-        continue unless QuoteYou.db and postObj.com
-
-        regexp = site.regexp.quotelinkHTML
-        regexp.lastIndex = 0
-        while match = regexp.exec postObj.com
-          if QuoteYou.db.get {
-            siteID
-            boardID:  if match[1] then encodeURIComponent(match[1]) else boardID
-            threadID: match[2] or threadID
-            postID:   match[3] or match[2] or threadID
-          }
-            quotingYou = postObj.no
-            break
+        quotingYou = postObj.no if quotesYou
 
       newData or= {}
       $.extend newData, {last, replies, isDead, unread, quotingYou}
