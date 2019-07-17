@@ -2,6 +2,21 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.10
+
+**v1.14.10.0** *(2019-07-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.9.1.
+- 4chan X features such as Image Hover, Sauce, Gallery, etc. now work on multiple files per post on vichan sites. #2171
+- Make Thread Stats work on Tinyboard/vichan sites. #2171
+- Fix bug in highlighting of page number in Thread Stats when a sticky causes an 11th page. #753
+- Change `Last Reply` index/catalog sort mode to sort by last reply that's neither hidden or filtered.
+- Support the same options for the `boards:` option in Sauce that we do for Filter.
+- Add `Dismiss posts quoting you` item to Thread Watcher menu to unhighlight the icon and threads until there are new replies quoting you.
+- Prevent Thread Watcher from showing unread posts in a thread if all unread posts are hidden/filtered.
+- Fix excessive Thread Watcher checking on switching tabs when cookies are disabled.
+- (saxamaphone69) HTML/CSS improvements for settings dialog.
+- Other minor bugfixes.
+
 ### v1.14.9
 
 **v1.14.9.1** *(2019-07-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.1/builds/4chan-X-noupdate.crx)]
