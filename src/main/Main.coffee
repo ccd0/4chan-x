@@ -525,7 +525,7 @@ Main =
       Main.thisPageIsLegit = if g.SITE.isThisPageLegit
         g.SITE.isThisPageLegit()
       else
-        !/^[45]\d\d\b/.test(document.title)
+        !/^[45]\d\d\b/.test(document.title) and !/\.json$/.test(location.pathname)
     Main.thisPageIsLegit
 
   ready: (cb) ->
