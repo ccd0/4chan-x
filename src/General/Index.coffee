@@ -944,7 +944,7 @@ Index =
       catch
         return []
       return Index.sortedThreadIDs.filter (ID) ->
-        regexp.test(Filter.value(match[1], Index.parsedThreads[ID]) or '')
+        regexp.test(Filter.values(match[1], Index.parsedThreads[ID]).join('\n'))
     return if not (keywords = query.toLowerCase().match /\S+/g)
     Index.sortedThreadIDs.filter (ID) ->
       Index.searchMatch Index.parsedThreads[ID], keywords

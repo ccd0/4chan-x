@@ -127,25 +127,25 @@ Filter =
     mask = (mask | (if post.file then 4 else 8))
     board = "#{post.siteID}/#{post.boardID}"
     site = "#{post.siteID}/*"
-    for key of Filter.filters when ((value = Filter.value key, post)?)
-      # Continue if there's nothing to filter (no tripcode for example).
-      for filter in Filter.filters[key]
-        continue if (
-          (filter.boards   and !(filter.boards[board]   or filter.boards[site]  )) or
-          (filter.excludes and  (filter.excludes[board] or filter.excludes[site])) or
-          (filter.mask & mask) or
-          (if filter.isstring then (filter.regexp isnt value) else !filter.regexp.test(value))
-        )
-        if filter.hide
-          if hideable
-            hide = true
-            stub and= filter.stub
-        else
-          unless hl and filter.hl in hl
-            (hl or= []).push filter.hl
-          top or= filter.top
-          if filter.noti
-            noti = true
+    for key of Filter.filters
+      for value in Filter.values(key, post)
+        for filter in Filter.filters[key]
+          continue if (
+            (filter.boards   and !(filter.boards[board]   or filter.boards[site]  )) or
+            (filter.excludes and  (filter.excludes[board] or filter.excludes[site])) or
+            (filter.mask & mask) or
+            (if filter.isstring then (filter.regexp isnt value) else !filter.regexp.test(value))
+          )
+          if filter.hide
+            if hideable
+              hide = true
+              stub and= filter.stub
+          else
+            unless hl and filter.hl in hl
+              (hl or= []).push filter.hl
+            top or= filter.top
+            if filter.noti
+              noti = true
     if hide
       {hide, stub}
     else
@@ -170,26 +170,31 @@ Filter =
     !!Filter.test(post).hide
 
   valueF:
-    postID:     (post) -> "#{post.ID}"
-    name:       (post) -> post.info.name
-    uniqueID:   (post) -> post.info.uniqueID or ''
-    tripcode:   (post) -> post.info.tripcode
-    capcode:    (post) -> post.info.capcode
-    pass:       (post) -> post.info.pass
-    email:      (post) -> post.info.email
-    subject:    (post) -> post.info.subject or (if post.isReply then undefined else '')
-    comment:    (post) -> (post.info.comment ?= g.sites[post.siteID]?.Build?.parseComment?(post.info.commentHTML.innerHTML))
-    flag:       (post) -> post.info.flag
-    filename:   (post) -> post.file?.name
-    dimensions: (post) -> post.file?.dimensions
-    filesize:   (post) -> post.file?.size
-    MD5:        (post) -> post.file?.MD5
+    postID:     (post) -> ["#{post.ID}"]
+    name:       (post) -> [post.info.name]
+    uniqueID:   (post) -> [post.info.uniqueID or '']
+    tripcode:   (post) -> [post.info.tripcode]
+    capcode:    (post) -> [post.info.capcode]
+    pass:       (post) -> [post.info.pass]
+    email:      (post) -> [post.info.email]
+    subject:    (post) -> [post.info.subject or (if post.isReply then undefined else '')]
+    comment:    (post) -> [(post.info.comment ?= g.sites[post.siteID]?.Build?.parseComment?(post.info.commentHTML.innerHTML))]
+    flag:       (post) -> [post.info.flag]
+    filename:   (post) -> post.files.map((f) -> f.name)
+    dimensions: (post) -> post.files.map((f) -> f.dimensions)
+    filesize:   (post) -> post.files.map((f) -> f.size)
+    MD5:        (post) -> post.files.map((f) -> f.MD5)
 
-  value: (key, post) ->
+  values: (key, post) ->
     if key of Filter.valueF
-      Filter.valueF[key](post)
+      Filter.valueF[key](post).filter((v) -> v?)
     else
-      key.split('+').map((k) -> Filter.valueF[k]?(post) or '').join('\n')
+      [key.split('+').map((k) ->
+        if (f=Filter.valueF[k])
+          f(post).map((v) -> v or '').join('\n')
+        else
+          ''
+      ).join('\n')]
 
   addFilter: (type, re, cb) ->
     $.get type, Conf[type], (item) ->
@@ -286,21 +291,22 @@ Filter =
       return {
         el: el
         open: (post) ->
-          value = Filter.value type, post
-          value?
+          Filter.values(type, post).length
       }
 
     makeFilter: ->
       {type} = @dataset
       # Convert value -> regexp, unless type is MD5
-      value = Filter.value type, Filter.menu.post
-      re = if type in ['uniqueID', 'MD5'] then value else Filter.escape(value)
-      re = if type in ['uniqueID', 'MD5']
-        "/#{re}/"
-      else
-        "/^#{re}$/"
+      values = Filter.values type, Filter.menu.post
+      res = values.map((value) ->
+        re = if type in ['uniqueID', 'MD5'] then value else Filter.escape(value)
+        if type in ['uniqueID', 'MD5']
+          "/#{re}/"
+        else
+          "/^#{re}$/"
+      ).join('\n')
 
-      Filter.addFilter type, re, ->
+      Filter.addFilter type, res, ->
         # Open the settings and display & focus the relevant filter textarea.
         Settings.open 'Filter'
         section = $ '.section-container'

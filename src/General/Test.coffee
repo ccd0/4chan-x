@@ -91,9 +91,9 @@ Test =
             c.log y.outerHTML
 
           for key of Config.filter when not key is 'General' and not (key is 'MD5' and post.board.ID is 'f')
-            val1 = Filter.value key, obj
-            val2 = Filter.value key, post2
-            if val1 isnt val2
+            val1 = Filter.values key, obj
+            val2 = Filter.values key, post2
+            unless val1.length is val2.length and val1.every((x, i) -> x is val2[i])
               fail = true
               c.log "#{post.fullID} has filter bug in #{key}"
               c.log val1

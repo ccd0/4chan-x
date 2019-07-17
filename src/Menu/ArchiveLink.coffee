@@ -45,7 +45,7 @@ ArchiveLink =
         value = if type is 'country'
           post.info.flagCode or post.info.flagCodeTroll
         else
-          Filter.value type, post
+          Filter.values(type, post)[0]
         # We want to parse the exact same stuff as the filter does already.
         return false unless value
         el.href = Redirect.to 'search',
