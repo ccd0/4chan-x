@@ -94,9 +94,14 @@ SW.tinyboard =
       opHighlight:   ' > .op'
       replyPost:     '.reply'
       replyOriginal: 'div[id^="reply_"]:not(.hidden)'
+      catalogHighlight: ' > .thread'
     comment:   '.body'
     spoiler:   '.spoiler'
     quotelink: 'a[onclick^="highlightReply("]'
+    catalog:
+      board:  '#Grid'
+      thread: '.mix'
+      thumb:  '.thread-image'
     boardList: '.boardlist'
     boardListBottom: '.boardlist.bottom'
     styleSheet: '#stylesheet'
@@ -186,3 +191,6 @@ SW.tinyboard =
 
   isLinkified: (link) ->
     /\bnofollow\b/.test(link.rel)
+
+  catalogPin: (threadRoot) ->
+    threadRoot.dataset.sticky = 'true'

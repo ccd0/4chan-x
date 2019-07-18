@@ -492,6 +492,9 @@ Settings =
     if compareString < '00001.00014.00009.00001'
       if data['Use Faster Image Host']? and not data['fourchanImageHost']?
         set 'fourchanImageHost', (if data['Use Faster Image Host'] then 'i.4cdn.org' else '')
+    if compareString < '00001.00014.00010.00001'
+      unless data['Filter in Native Catalog']?
+        set 'Filter in Native Catalog', false
     changes
 
   loadSettings: (data, cb) ->

@@ -325,7 +325,9 @@ Main =
       new Notice 'warning', msg
 
     # Parse HTML or skip it and start building from JSON.
-    unless Index.enabled
+    if g.VIEW is 'catalog'
+      Main.initCatalog()
+    else if !Index.enabled
       Main.initThread() 
     else
       Main.expectInitFinished = true
@@ -430,6 +432,49 @@ Main =
       for thread in threadsRM
         $.event 'PostsRemoved', null, thread.nodes.root
       return
+
+  initCatalog: ->
+    s = g.SITE.selectors.catalog
+    if s and (board = $ s.board)
+      threads = []
+      errors  = []
+
+      Main.addCatalogThreadsObserver = new MutationObserver Main.addCatalogThreads
+      Main.addCatalogThreadsObserver.observe board, {childList: true}
+
+      Main.parseCatalogThreads $$(s.thread, board), threads, errors
+      Main.handleErrors errors if errors.length
+
+      Main.callbackNodes 'CatalogThreadNative', threads
+
+    Main.expectInitFinished = true
+    $.event '4chanXInitFinished'
+
+  parseCatalogThreads: (threadRoots, threads, errors) ->
+    for threadRoot in threadRoots
+      try
+        thread = new CatalogThreadNative threadRoot
+        if thread.thread.catalogViewNative?.nodes.root isnt threadRoot
+          thread.thread.catalogViewNative = thread
+          threads.push thread
+      catch err
+        # Skip threads that we failed to parse.
+        errors.push
+          message: "Parsing of Catalog Thread No.#{(threadRoot.dataset.id or threadRoot.id).match(/\d+/)} failed. Thread will be skipped."
+          error: err
+    return
+
+  addCatalogThreads: (records) ->
+    threadRoots = []
+    for record in records
+      for node in record.addedNodes when node.nodeType is Node.ELEMENT_NODE and node.matches(g.SITE.selectors.catalog.thread)
+        threadRoots.push node
+    return unless threadRoots.length
+    threads = []
+    errors  = []
+    Main.parseCatalogThreads threadRoots, threads, errors
+    Main.handleErrors errors if errors.length
+    Main.callbackNodes 'CatalogThreadNative', threads
 
   callbackNodes: (klass, nodes) ->
     i = 0

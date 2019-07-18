@@ -54,9 +54,14 @@ SW.yotsuba =
       opHighlight:   '.opContainer'
       replyPost:     ' > .reply'
       replyOriginal: '.replyContainer:not([data-clone])'
+      catalogHighlight: ''
     comment:   '.postMessage'
     spoiler:   's'
     quotelink: ':not(pre) > .quotelink' # XXX https://github.com/4chan/4chan-JS/issues/77: 4chan currently creates quote links inside [code] tags; ignore them
+    catalog:
+      board:  '#threads'
+      thread: '.thread'
+      thumb:  '.thumb'
     boardList: '#boardNavDesktop > .boardList'
     boardListBottom: '#boardNavDesktopFoot > .boardList'
     styleSheet: 'link[title=switch]'

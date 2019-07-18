@@ -187,6 +187,11 @@ Config =
         'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'
         1
       ]
+      'Filter in Native Catalog': [
+        true
+        'Apply 4chan X filters in native catalog.'
+        1
+      ]
       'Recursive Hiding': [
         true
         'Hide replies of hidden posts, recursively.'

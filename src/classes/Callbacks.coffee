@@ -2,6 +2,7 @@ class Callbacks
   @Post          = new Callbacks 'Post'
   @Thread        = new Callbacks 'Thread'
   @CatalogThread = new Callbacks 'Catalog Thread'
+  @CatalogThreadNative = new Callbacks 'Catalog Thread'
 
   constructor: (@type) ->
     @keys = []

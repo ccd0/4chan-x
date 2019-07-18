@@ -2,7 +2,8 @@ Filter =
   filters: {}
   results: {}
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Filter']
+    return unless g.VIEW in ['index', 'thread', 'catalog'] and Conf['Filter']
+    return if g.VIEW is 'catalog' and not Conf['Filter in Native Catalog']
 
     unless Conf['Filtered Backlinks']
       $.addClass doc, 'hide-backlinks'
@@ -89,9 +90,12 @@ Filter =
           (@filters[key] or= []).push filter
 
     return unless Object.keys(@filters).length
-    Callbacks.Post.push
-      name: 'Filter'
-      cb:   @node
+    if g.VIEW is 'catalog'
+      Filter.catalog()
+    else
+      Callbacks.Post.push
+        name: 'Filter'
+        cb:   @node
 
   # Parse comma-separated list of boards.
   # Sites can be specified by a beginning part of the site domain followed by a colon.
@@ -165,6 +169,41 @@ Filter =
         $.addClass @nodes.root, hl...
     if noti and Unread.posts and (@ID > Unread.lastReadPost) and not QuoteYou.isYou(@)
       Unread.openNotification @, ' triggered a notification filter'
+
+  catalog: ->
+    return unless (url = g.SITE.urls.catalogJSON?(g.BOARD))
+    Filter.catalogData = {}
+    $.ajax url,
+      onloadend: Filter.catalogParse
+    Callbacks.CatalogThreadNative.push
+      name: 'Filter'
+      cb:   @catalogNode
+
+  catalogParse: ->
+    if @status not in [200, 404]
+      new Notice 'warning', "Failed to fetch catalog JSON data. #{if @status then "Error #{@statusText} (#{@status})" else 'Connection Error'}", 1
+      return
+    for page in @response
+      for item in page.threads
+        Filter.catalogData[item.no] = item
+    g.BOARD.threads.forEach (thread) ->
+      if thread.catalogViewNative
+        Filter.catalogNode.call thread.catalogViewNative
+    return
+
+  catalogNode: ->
+    return unless @boardID is g.BOARD.ID and Filter.catalogData[@ID]
+    return if QuoteYou.db?.get {siteID: g.SITE.ID, boardID: @boardID, threadID: @ID, postID: @ID}
+    {hide, hl, top} = Filter.test(g.SITE.Build.parseJSON Filter.catalogData[@ID], @)
+    if hide
+      @nodes.root.hidden = true
+    else
+      if hl
+        @highlights = hl
+        $.addClass @nodes.root, hl...
+      if top
+        $.prepend @nodes.root.parentNode, @nodes.root
+        g.SITE.catalogPin? @nodes.root
 
   isHidden: (post) ->
     !!Filter.test(post).hide
