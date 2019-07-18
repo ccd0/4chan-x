@@ -306,19 +306,37 @@ Gallery =
       $.rmClass Gallery.nodes.buttons, 'gal-playing'
       Gallery.slideshow = false
 
-    rotateLeft: ->
+    rotateLeft: $.debounce 100, ->
       {current, frame} = Gallery.nodes
       {style, dataRotate} = current
       dataRotate = 0 if (!dataRotate || dataRotate <= -360)
       style.transform = 'rotate(' + (dataRotate - 90) + 'deg)'
       current.dataRotate = dataRotate - 90
+      if (current.dataRotate == 90 || current.dataRotate == 270)
+        dim = g.posts[current.dataset.post]?.file.dimensions
+        [width, height] = dim.split 'x'
+        if (parseInt(width) > parseInt(height))
+          style.width = Math.min(doc.clientHeight - 25 / (width / height)) + 'px'
+        else
+          style.width = ''
+      else
+        style.width = ''
 
-    rotateRight: ->
+    rotateRight: $.debounce 100, ->
       {current, frame} = Gallery.nodes
       {style, dataRotate} = current
       dataRotate = 0 if (!dataRotate || dataRotate >= 360)
       style.transform = 'rotate(' + (dataRotate + 90) + 'deg)'
       current.dataRotate = dataRotate + 90
+      if (current.dataRotate == 90 || current.dataRotate == 270)
+        dim = g.posts[current.dataset.post]?.file.dimensions
+        [width, height] = dim.split 'x'
+        if (parseInt(width) > parseInt(height))
+          style.width = Math.min(doc.clientHeight - 25 / (width / height)) + 'px'
+        else
+          style.width = ''
+      else
+        style.width = ''
 
     close: ->
       $.off Gallery.nodes.current, 'error', Gallery.error
