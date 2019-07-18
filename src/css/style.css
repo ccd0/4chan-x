@@ -362,7 +362,8 @@ audio.controls-added {
 #toggleMsgBtn {
   display: none !important;
 }
-.current {
+.current,
+:root.sw-yotsuba div#boardNavDesktopFoot a.current {
   font-weight: bold;
 }
 @media (min-width: 1300px) {
