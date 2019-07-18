@@ -362,7 +362,7 @@ audio.controls-added {
 #toggleMsgBtn {
   display: none !important;
 }
-#board-list .current {
+.current {
   font-weight: bold;
 }
 @media (min-width: 1300px) {
