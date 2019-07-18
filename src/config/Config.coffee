@@ -1011,6 +1011,14 @@ Config =
       'Ctrl+Right'
       'Toggle the gallery slideshow mode.'
     ]
+    'Rotate image clockwise': [
+      'Shift+Right'
+      'Rotate image clockwise in gallery.'
+    ]
+    'Rotate image anticlockwise': [
+      'Shift+Left'
+      'Rotate image anticlockwise in gallery.'
+    ]
     'fappeTyme': [
       'f'
       'Toggle Fappe Tyme.'

@@ -250,6 +250,10 @@ Gallery =
           Gallery.cb.pause
         when Conf['Slideshow']
           Gallery.cb.toggleSlideshow
+        when Conf['Rotate image anticlockwise']
+          Gallery.cb.rotateLeft
+        when Conf['Rotate image clockwise']
+          Gallery.cb.rotateRight
 
       return unless cb
       e.stopPropagation()
@@ -301,6 +305,38 @@ Gallery =
       current.loop = true if current.nodeName is 'VIDEO'
       $.rmClass Gallery.nodes.buttons, 'gal-playing'
       Gallery.slideshow = false
+
+    rotateLeft: $.debounce 100, ->
+      {current, frame} = Gallery.nodes
+      {style, dataRotate} = current
+      dataRotate = 0 if (!dataRotate || dataRotate <= -360)
+      style.transform = 'rotate(' + (dataRotate - 90) + 'deg)'
+      current.dataRotate = dataRotate - 90
+      if (current.dataRotate == 90 || current.dataRotate == 270)
+        dim = g.posts[current.dataset.post]?.file.dimensions
+        [width, height] = dim.split 'x'
+        if (parseInt(width) > parseInt(height))
+          style.width = Math.min(doc.clientHeight - 25 / (width / height)) + 'px'
+        else
+          style.width = ''
+      else
+        style.width = ''
+
+    rotateRight: $.debounce 100, ->
+      {current, frame} = Gallery.nodes
+      {style, dataRotate} = current
+      dataRotate = 0 if (!dataRotate || dataRotate >= 360)
+      style.transform = 'rotate(' + (dataRotate + 90) + 'deg)'
+      current.dataRotate = dataRotate + 90
+      if (current.dataRotate == 90 || current.dataRotate == 270)
+        dim = g.posts[current.dataset.post]?.file.dimensions
+        [width, height] = dim.split 'x'
+        if (parseInt(width) > parseInt(height))
+          style.width = Math.min(doc.clientHeight - 25 / (width / height)) + 'px'
+        else
+          style.width = ''
+      else
+        style.width = ''
 
     close: ->
       $.off Gallery.nodes.current, 'error', Gallery.error
