@@ -1,4 +1,5 @@
 {
+  "esversion": 6,
   "undef":   true,
   "unused":  true,
   "eqnull":  true,
@@ -13,6 +14,7 @@
   "-W084": true,
   "-W083": true,
   "-W093": true,
+  "-W032": true,
   "globals": {
     "MediaError":   false,
     "Set":          false,

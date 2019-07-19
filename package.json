@@ -94,7 +94,7 @@
   },
   "devDependencies": {
     "chrome-webstore-upload": "^0.2.2",
-    "coffeescript": "=1.12.7",
+    "coffeescript": "=2.4.1",
     "esprima": "^4.0.1",
     "font-awesome": "=4.7.0",
     "jshint": "^2.10.2",
