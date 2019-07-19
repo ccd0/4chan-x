@@ -166,6 +166,9 @@ body.hasDropDownNav{
 #menu a {
   margin: 0;
 }
+.gal-buttons.gal-buttons a {
+  font-size: inherit;
+}
 
 /* Anti-autoplay */
 audio.controls-added {
