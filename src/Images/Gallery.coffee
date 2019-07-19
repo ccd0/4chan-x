@@ -306,37 +306,15 @@ Gallery =
       $.rmClass Gallery.nodes.buttons, 'gal-playing'
       Gallery.slideshow = false
 
-    rotateLeft: $.debounce 100, ->
-      {current, frame} = Gallery.nodes
-      {style, dataRotate} = current
-      dataRotate = 0 if (!dataRotate || dataRotate <= -360)
-      style.transform = 'rotate(' + (dataRotate - 90) + 'deg)'
-      current.dataRotate = dataRotate - 90
-      if (current.dataRotate == 90 || current.dataRotate == 270)
-        dim = g.posts[current.dataset.post]?.file.dimensions
-        [width, height] = dim.split 'x'
-        if (parseInt(width) > parseInt(height))
-          style.width = Math.min(doc.clientHeight - 25 / (width / height)) + 'px'
-        else
-          style.width = ''
-      else
-        style.width = ''
+    rotateLeft:  -> Gallery.cb.rotate 270
+    rotateRight: -> Gallery.cb.rotate  90
 
-    rotateRight: $.debounce 100, ->
-      {current, frame} = Gallery.nodes
-      {style, dataRotate} = current
-      dataRotate = 0 if (!dataRotate || dataRotate >= 360)
-      style.transform = 'rotate(' + (dataRotate + 90) + 'deg)'
-      current.dataRotate = dataRotate + 90
-      if (current.dataRotate == 90 || current.dataRotate == 270)
-        dim = g.posts[current.dataset.post]?.file.dimensions
-        [width, height] = dim.split 'x'
-        if (parseInt(width) > parseInt(height))
-          style.width = Math.min(doc.clientHeight - 25 / (width / height)) + 'px'
-        else
-          style.width = ''
-      else
-        style.width = ''
+    rotate: $.debounce 100, (delta) ->
+      {current} = Gallery.nodes
+      return if current.nodeName is 'IFRAME'
+      current.dataRotate = ((current.dataRotate or 0) + delta) % 360
+      current.style.transform = "rotate(#{current.dataRotate}deg)"
+      Gallery.cb.setHeight()
 
     close: ->
       $.off Gallery.nodes.current, 'error', Gallery.error
@@ -362,13 +340,26 @@ Gallery =
     setHeight: $.debounce 100, ->
       {current, frame} = Gallery.nodes
       {style} = current
+
       if Conf['Stretch to Fit'] and (dim = g.posts[current.dataset.post]?.file.dimensions)
         [width, height] = dim.split 'x'
-        minHeight = Math.min(doc.clientHeight - 25, height / width * frame.clientWidth)
+        containerWidth = frame.clientWidth
+        containerHeight = doc.clientHeight - 25
+        if (current.dataRotate or 0) % 180 is 90
+          [containerWidth, containerHeight] = [containerHeight, containerWidth]
+        minHeight = Math.min(containerHeight, height / width * containerWidth)
         style.minHeight = minHeight + 'px'
         style.minWidth = (width / height * minHeight) + 'px'
       else
         style.minHeight = style.minWidth = ''
+
+      if (current.dataRotate or 0) % 180 is 90
+        style.maxWidth  = if Conf['Fit Height'] then "#{doc.clientHeight - 25}px" else 'none'
+        style.maxHeight = if Conf['Fit Width']  then "#{frame.clientWidth}px"     else 'none'
+        margin = (current.clientWidth - current.clientHeight)/2
+        style.margin = "#{margin}px #{-margin}px"
+      else
+        style.maxWidth = style.maxHeight = style.margin = ''
 
     setDelay: -> Gallery.delay = +@value
 
