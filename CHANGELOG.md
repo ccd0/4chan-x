@@ -4,6 +4,12 @@
 
 ### v1.14.10
 
+**v1.14.10.1** *(2019-07-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.9.2: Fix regression causing thread watcher to stop highlighting active thread.
+- Add option `Filter in Native Catalog` to apply 4chan X filters on native catalog. Also works on vichan sites. Enabled by default for new installs only. #2351
+- (droM4X) Add keybinds to rotate images in Gallery.
+- Other minor bugfixes.
+
 **v1.14.10.0** *(2019-07-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.9.1.
 - 4chan X features such as Image Hover, Sauce, Gallery, etc. now work on multiple files per post on vichan sites. #2171

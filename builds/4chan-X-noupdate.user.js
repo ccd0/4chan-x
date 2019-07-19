@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.10.0
+// @version      1.14.10.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -184,7 +184,7 @@
 
 'use strict';
 
-var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, ModContact, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostJumper, PostRedirect, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Test, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, Tinyboard, UI, Unread, UnreadIndex, Volume;
+var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, CatalogThreadNative, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, ModContact, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostJumper, PostRedirect, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Test, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, Tinyboard, UI, Unread, UnreadIndex, Volume;
 
 var Conf, E, c, d, doc, docSet, g;
 
@@ -199,7 +199,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.10.0',
+  VERSION:   '1.14.10.1',
   NAMESPACE: '4chan X.',
   sites:     {},
   boards:    {}
@@ -286,6 +286,7 @@ Config = (function() {
         'Anonymize': [false, 'Make everyone Anonymous.'],
         'Filter': [true, 'Self-moderation placebo.'],
         'Filtered Backlinks': [false, 'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.', 1],
+        'Filter in Native Catalog': [true, 'Apply 4chan X filters in native catalog.', 1],
         'Recursive Hiding': [true, 'Hide replies of hidden posts, recursively.'],
         'Thread Hiding Buttons': [true, 'Add buttons to hide entire threads.'],
         'Reply Hiding Buttons': [true, 'Add buttons to hide single replies.'],
@@ -512,6 +513,8 @@ Config = (function() {
       'Advance Gallery': ['Enter', 'Go to next image or, if Autoplay is off, play video.'],
       'Pause': ['p', 'Pause/play videos in the gallery.'],
       'Slideshow': ['Ctrl+Right', 'Toggle the gallery slideshow mode.'],
+      'Rotate image clockwise': ['Shift+Right', 'Rotate image clockwise in gallery.'],
+      'Rotate image anticlockwise': ['Shift+Left', 'Rotate image anticlockwise in gallery.'],
       'fappeTyme': ['f', 'Toggle Fappe Tyme.'],
       'werkTyme': ['Shift+w', 'Toggle Werk Tyme.'],
       'Front page': ['1', 'Jump to front page.'],
@@ -1482,6 +1485,9 @@ body.hasDropDownNav{\n\
 #menu a {\n\
   margin: 0;\n\
 }\n\
+.gal-buttons.gal-buttons a {\n\
+  font-size: inherit;\n\
+}\n\
 /* Anti-autoplay */\n\
 audio.controls-added {\n\
   display: block;\n\
@@ -1675,7 +1681,8 @@ audio.controls-added {\n\
 #toggleMsgBtn {\n\
   display: none !important;\n\
 }\n\
-#board-list .current {\n\
+.current,\n\
+:root.sw-yotsuba div#boardNavDesktopFoot a.current {\n\
   font-weight: bold;\n\
 }\n\
 @media (min-width: 1300px) {\n\
@@ -2759,7 +2766,8 @@ input[name=\"Default Volume\"] {\n\
 :root:not(.werkTyme) .catalog-thread.filter-highlight .catalog-thumb,\n\
 :root.werkTyme .catalog-thread.filter-highlight:not(:hover),\n\
 :root.werkTyme:not(.catalog-hover-expand) .catalog-thread.filter-highlight,\n\
-:root.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-container:hover > .catalog-post {\n\
+:root.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-container:hover > .catalog-post,\n\
+:root.catalog $site$catalog$thread.filter-highlight$site$relative$catalogHighlight {\n\
   box-shadow: 0 0 3px 3px rgba(255, 0, 0, .5);\n\
 }\n\
 :root:not(.werkTyme) .catalog-thread.watched .catalog-thumb,\n\
@@ -3559,6 +3567,8 @@ a:only-of-type > .remove {\n\
   overflow-x: scroll !important;\n\
 }\n\
 .gal-image a {\n\
+  display: -webkit-flex;\n\
+  display: flex;\n\
   margin: auto;\n\
   line-height: 0;\n\
   max-width: 100%;\n\
@@ -5808,6 +5818,8 @@ Callbacks = (function() {
 
     Callbacks.CatalogThread = new Callbacks('Catalog Thread');
 
+    Callbacks.CatalogThreadNative = new Callbacks('Catalog Thread');
+
     function Callbacks(type) {
       this.type = type;
       this.keys = [];
@@ -5893,6 +5905,34 @@ CatalogThread = (function() {
   })();
 
   return CatalogThread;
+
+}).call(this);
+
+CatalogThreadNative = (function() {
+  var CatalogThreadNative;
+
+  CatalogThreadNative = (function() {
+    CatalogThreadNative.prototype.toString = function() {
+      return this.ID;
+    };
+
+    function CatalogThreadNative(root) {
+      this.nodes = {
+        root: root,
+        thumb: $(g.SITE.selectors.catalog.thumb, root)
+      };
+      this.siteID = g.SITE.ID;
+      this.boardID = this.nodes.thumb.parentNode.pathname.split(/\/+/)[1];
+      this.board = g.boards[this.boardID] || new Board(this.boardID);
+      this.ID = this.threadID = +(root.dataset.id || root.id).match(/\d*$/)[0];
+      this.thread = this.board.threads[this.ID] || new Thread(this.ID, this.board);
+    }
+
+    return CatalogThreadNative;
+
+  })();
+
+  return CatalogThreadNative;
 
 }).call(this);
 
@@ -7695,11 +7735,17 @@ SW = {};
       relative: {
         opHighlight: ' > .op',
         replyPost: '.reply',
-        replyOriginal: 'div[id^="reply_"]:not(.hidden)'
+        replyOriginal: 'div[id^="reply_"]:not(.hidden)',
+        catalogHighlight: ' > .thread'
       },
       comment: '.body',
       spoiler: '.spoiler',
       quotelink: 'a[onclick^="highlightReply("]',
+      catalog: {
+        board: '#Grid',
+        thread: '.mix',
+        thumb: '.thread-image'
+      },
       boardList: '.boardlist',
       boardListBottom: '.boardlist.bottom',
       styleSheet: '#stylesheet',
@@ -7803,6 +7849,9 @@ SW = {};
     },
     isLinkified: function(link) {
       return /\bnofollow\b/.test(link.rel);
+    },
+    catalogPin: function(threadRoot) {
+      return threadRoot.dataset.sticky = 'true';
     }
   };
 
@@ -7909,11 +7958,17 @@ SW = {};
       relative: {
         opHighlight: '.opContainer',
         replyPost: ' > .reply',
-        replyOriginal: '.replyContainer:not([data-clone])'
+        replyOriginal: '.replyContainer:not([data-clone])',
+        catalogHighlight: ''
       },
       comment: '.postMessage',
       spoiler: 's',
       quotelink: ':not(pre) > .quotelink',
+      catalog: {
+        board: '#threads',
+        thread: '.thread',
+        thumb: '.thumb'
+      },
       boardList: '#boardNavDesktop > .boardList',
       boardListBottom: '#boardNavDesktopFoot > .boardList',
       styleSheet: 'link[title=switch]',
@@ -8813,7 +8868,10 @@ Filter = (function() {
     results: {},
     init: function() {
       var base, base1, boards, err, excludes, file, filter, hide, hl, i, isstring, j, key, len, len1, line, mask, noti, op, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, regexp, stub, top, type, types;
-      if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Filter'])) {
+      if (!(((ref = g.VIEW) === 'index' || ref === 'thread' || ref === 'catalog') && Conf['Filter'])) {
+        return;
+      }
+      if (g.VIEW === 'catalog' && !Conf['Filter in Native Catalog']) {
         return;
       }
       if (!Conf['Filtered Backlinks']) {
@@ -8903,10 +8961,14 @@ Filter = (function() {
       if (!Object.keys(this.filters).length) {
         return;
       }
-      return Callbacks.Post.push({
-        name: 'Filter',
-        cb: this.node
-      });
+      if (g.VIEW === 'catalog') {
+        return Filter.catalog();
+      } else {
+        return Callbacks.Post.push({
+          name: 'Filter',
+          cb: this.node
+        });
+      }
     },
     parseBoards: function(boardsRaw) {
       var boardID, boardID2, boards, i, j, len, len1, ref, ref1, ref2, ref3, site, siteFilter, siteID;
@@ -9024,6 +9086,68 @@ Filter = (function() {
       }
       if (noti && Unread.posts && (this.ID > Unread.lastReadPost) && !QuoteYou.isYou(this)) {
         return Unread.openNotification(this, ' triggered a notification filter');
+      }
+    },
+    catalog: function() {
+      var base, url;
+      if (!(url = typeof (base = g.SITE.urls).catalogJSON === "function" ? base.catalogJSON(g.BOARD) : void 0)) {
+        return;
+      }
+      Filter.catalogData = {};
+      $.ajax(url, {
+        onloadend: Filter.catalogParse
+      });
+      return Callbacks.CatalogThreadNative.push({
+        name: 'Filter',
+        cb: this.catalogNode
+      });
+    },
+    catalogParse: function() {
+      var i, item, j, len, len1, page, ref, ref1, ref2;
+      if ((ref = this.status) !== 200 && ref !== 404) {
+        new Notice('warning', "Failed to fetch catalog JSON data. " + (this.status ? "Error " + this.statusText + " (" + this.status + ")" : 'Connection Error'), 1);
+        return;
+      }
+      ref1 = this.response;
+      for (i = 0, len = ref1.length; i < len; i++) {
+        page = ref1[i];
+        ref2 = page.threads;
+        for (j = 0, len1 = ref2.length; j < len1; j++) {
+          item = ref2[j];
+          Filter.catalogData[item.no] = item;
+        }
+      }
+      g.BOARD.threads.forEach(function(thread) {
+        if (thread.catalogViewNative) {
+          return Filter.catalogNode.call(thread.catalogViewNative);
+        }
+      });
+    },
+    catalogNode: function() {
+      var base, hide, hl, ref, ref1, top;
+      if (!(this.boardID === g.BOARD.ID && Filter.catalogData[this.ID])) {
+        return;
+      }
+      if ((ref = QuoteYou.db) != null ? ref.get({
+        siteID: g.SITE.ID,
+        boardID: this.boardID,
+        threadID: this.ID,
+        postID: this.ID
+      }) : void 0) {
+        return;
+      }
+      ref1 = Filter.test(g.SITE.Build.parseJSON(Filter.catalogData[this.ID], this)), hide = ref1.hide, hl = ref1.hl, top = ref1.top;
+      if (hide) {
+        return this.nodes.root.hidden = true;
+      } else {
+        if (hl) {
+          this.highlights = hl;
+          $.addClass.apply($, [this.nodes.root].concat(slice.call(hl)));
+        }
+        if (top) {
+          $.prepend(this.nodes.root.parentNode, this.nodes.root);
+          return typeof (base = g.SITE).catalogPin === "function" ? base.catalogPin(this.nodes.root) : void 0;
+        }
       }
     },
     isHidden: function(post) {
@@ -12915,6 +13039,11 @@ Settings = (function() {
           set('fourchanImageHost', (data['Use Faster Image Host'] ? 'i.4cdn.org' : ''));
         }
       }
+      if (compareString < '00001.00014.00010.00001') {
+        if (data['Filter in Native Catalog'] == null) {
+          set('Filter in Native Catalog', false);
+        }
+      }
       return changes;
     },
     loadSettings: function(data, cb) {
@@ -12975,7 +13104,7 @@ Settings = (function() {
         };
       });
       $.extend(div, {
-        innerHTML: "<div class=\"warning\"><code>Filter</code> is disabled.</div><p>Use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\" target=\"_blank\">regular expressions</a>, one per line.<br>Lines starting with a <code>#</code> will be ignored.<br>For example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>MD5 and Unique ID filtering use exact string matching, not regular expressions.</p><ul>You can use these settings with each regular expression, separate them with semicolons:<li>Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>For example: <code>boards:a,jp;</code>.<br>To specify boards on a particular site, put the beginning of the domain and a slash character before the list.<br>Any initial <code>www.</code> should not be included, and all 4chan domains are considered <code>4chan.org</code>.<br>For example: <code>boards:4:a,jp,sama:a,z;</code>.<br>An asterisk can be used to specify all boards on a site.<br>For example: <code>boards:4:*;</code>.<br></li><li>Select boards to be excluded from the filter. The syntax is the same as for the <code>boards:</code> option above.<br>For example: <code>exclude:vg,v;</code>.</li><li>Filter OPs only along with their threads (`only`) or replies only (`no`).<br>For example: <code>op:only;</code> or <code>op:no;</code>.</li><li>Filter only posts with files (`only`) or only posts without files (`no`).<br>For example: <code>file:only;</code> or <code>file:no;</code>.</li><li>Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code>.</li><li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li><li>Highlighted OPs will have their threads put on top of the board index by default.<br>For example: <code>top:yes;</code> or <code>top:no;</code>.</li><li>Show a desktop notification instead of hiding.<br>For example: <code>notify;</code>.</li><li>Filters in the \"General\" section apply to multiple fields, by default <code>subject,name,filename,comment</code>.<br>The fields can be specified with the <code>type</code> option, separated by commas.<br>For example: <code>type:" + E.cat(filterTypes) + ";</code>.<br>Types can also be combined with a <code>+</code> sign; this indicates the filter applies to the given fields joined by newlines.<br>For example: <code>type:filename+filesize+dimensions;</code>.<br></li></ul><p>Note: If you&#039;re using the native catalog rather than 4chan X&#039;s catalog, 4chan X&#039;s filters do not apply there.<br>The native catalog has its own separate filter list.</p>"
+        innerHTML: "<div class=\"warning\"><code>Filter</code> is disabled.</div><p>Use <a href=\"https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions\" target=\"_blank\">regular expressions</a>, one per line.<br>Lines starting with a <code>#</code> will be ignored.<br>For example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>MD5 and Unique ID filtering use exact string matching, not regular expressions.</p><ul>You can use these settings with each regular expression, separate them with semicolons:<li>Per boards, separate them with commas. It is global if not specified. Use <code>sfw</code> and <code>nsfw</code> to reference all worksafe or not-worksafe boards.<br>For example: <code>boards:a,jp;</code>.<br>To specify boards on a particular site, put the beginning of the domain and a slash character before the list.<br>Any initial <code>www.</code> should not be included, and all 4chan domains are considered <code>4chan.org</code>.<br>For example: <code>boards:4:a,jp,sama:a,z;</code>.<br>An asterisk can be used to specify all boards on a site.<br>For example: <code>boards:4:*;</code>.<br></li><li>Select boards to be excluded from the filter. The syntax is the same as for the <code>boards:</code> option above.<br>For example: <code>exclude:vg,v;</code>.</li><li>Filter OPs only along with their threads (`only`) or replies only (`no`).<br>For example: <code>op:only;</code> or <code>op:no;</code>.</li><li>Filter only posts with files (`only`) or only posts without files (`no`).<br>For example: <code>file:only;</code> or <code>file:no;</code>.</li><li>Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>For example: <code>stub:yes;</code> or <code>stub:no;</code>.</li><li>Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.</li><li>Highlighted OPs will have their threads put on top of the board index by default.<br>For example: <code>top:yes;</code> or <code>top:no;</code>.</li><li>Show a desktop notification instead of hiding.<br>For example: <code>notify;</code>.</li><li>Filters in the \"General\" section apply to multiple fields, by default <code>subject,name,filename,comment</code>.<br>The fields can be specified with the <code>type</code> option, separated by commas.<br>For example: <code>type:" + E.cat(filterTypes) + ";</code>.<br>Types can also be combined with a <code>+</code> sign; this indicates the filter applies to the given fields joined by newlines.<br>For example: <code>type:filename+filesize+dimensions;</code>.<br></li></ul>"
       });
       return $('.warning', div).hidden = Conf['Filter'];
     },
@@ -14253,6 +14382,10 @@ Gallery = (function() {
               return Gallery.cb.pause;
             case Conf['Slideshow']:
               return Gallery.cb.toggleSlideshow;
+            case Conf['Rotate image anticlockwise']:
+              return Gallery.cb.rotateLeft;
+            case Conf['Rotate image clockwise']:
+              return Gallery.cb.rotateRight;
           }
         })();
         if (!cb) {
@@ -14332,6 +14465,22 @@ Gallery = (function() {
         $.rmClass(Gallery.nodes.buttons, 'gal-playing');
         return Gallery.slideshow = false;
       },
+      rotateLeft: function() {
+        return Gallery.cb.rotate(270);
+      },
+      rotateRight: function() {
+        return Gallery.cb.rotate(90);
+      },
+      rotate: $.debounce(100, function(delta) {
+        var current;
+        current = Gallery.nodes.current;
+        if (current.nodeName === 'IFRAME') {
+          return;
+        }
+        current.dataRotate = ((current.dataRotate || 0) + delta) % 360;
+        current.style.transform = "rotate(" + current.dataRotate + "deg)";
+        return Gallery.cb.setHeight();
+      }),
       close: function() {
         $.off(Gallery.nodes.current, 'error', Gallery.error);
         ImageCommon.pause(Gallery.nodes.current);
@@ -14360,16 +14509,29 @@ Gallery = (function() {
         return (this.checked ? $.addClass : $.rmClass)(doc, "gal-" + (this.name.toLowerCase().replace(/\s+/g, '-')));
       },
       setHeight: $.debounce(100, function() {
-        var current, dim, frame, height, minHeight, ref, ref1, ref2, style, width;
+        var containerHeight, containerWidth, current, dim, frame, height, margin, minHeight, ref, ref1, ref2, ref3, style, width;
         ref = Gallery.nodes, current = ref.current, frame = ref.frame;
         style = current.style;
         if (Conf['Stretch to Fit'] && (dim = (ref1 = g.posts[current.dataset.post]) != null ? ref1.file.dimensions : void 0)) {
           ref2 = dim.split('x'), width = ref2[0], height = ref2[1];
-          minHeight = Math.min(doc.clientHeight - 25, height / width * frame.clientWidth);
+          containerWidth = frame.clientWidth;
+          containerHeight = doc.clientHeight - 25;
+          if ((current.dataRotate || 0) % 180 === 90) {
+            ref3 = [containerHeight, containerWidth], containerWidth = ref3[0], containerHeight = ref3[1];
+          }
+          minHeight = Math.min(containerHeight, height / width * containerWidth);
           style.minHeight = minHeight + 'px';
-          return style.minWidth = (width / height * minHeight) + 'px';
+          style.minWidth = (width / height * minHeight) + 'px';
         } else {
-          return style.minHeight = style.minWidth = '';
+          style.minHeight = style.minWidth = '';
+        }
+        if ((current.dataRotate || 0) % 180 === 90) {
+          style.maxWidth = Conf['Fit Height'] ? (doc.clientHeight - 25) + "px" : 'none';
+          style.maxHeight = Conf['Fit Width'] ? frame.clientWidth + "px" : 'none';
+          margin = (current.clientWidth - current.clientHeight) / 2;
+          return style.margin = margin + "px " + (-margin) + "px";
+        } else {
+          return style.maxWidth = style.maxHeight = style.margin = '';
         }
       }),
       setDelay: function() {
@@ -27043,7 +27205,9 @@ Main = (function() {
         });
         new Notice('warning', msg);
       }
-      if (!Index.enabled) {
+      if (g.VIEW === 'catalog') {
+        return Main.initCatalog();
+      } else if (!Index.enabled) {
         return Main.initThread();
       } else {
         Main.expectInitFinished = true;
@@ -27204,6 +27368,68 @@ Main = (function() {
           $.event('PostsRemoved', null, thread.nodes.root);
         }
       });
+    },
+    initCatalog: function() {
+      var board, errors, s, threads;
+      s = g.SITE.selectors.catalog;
+      if (s && (board = $(s.board))) {
+        threads = [];
+        errors = [];
+        Main.addCatalogThreadsObserver = new MutationObserver(Main.addCatalogThreads);
+        Main.addCatalogThreadsObserver.observe(board, {
+          childList: true
+        });
+        Main.parseCatalogThreads($$(s.thread, board), threads, errors);
+        if (errors.length) {
+          Main.handleErrors(errors);
+        }
+        Main.callbackNodes('CatalogThreadNative', threads);
+      }
+      Main.expectInitFinished = true;
+      return $.event('4chanXInitFinished');
+    },
+    parseCatalogThreads: function(threadRoots, threads, errors) {
+      var err, j, len, ref, thread, threadRoot;
+      for (j = 0, len = threadRoots.length; j < len; j++) {
+        threadRoot = threadRoots[j];
+        try {
+          thread = new CatalogThreadNative(threadRoot);
+          if (((ref = thread.thread.catalogViewNative) != null ? ref.nodes.root : void 0) !== threadRoot) {
+            thread.thread.catalogViewNative = thread;
+            threads.push(thread);
+          }
+        } catch (error1) {
+          err = error1;
+          errors.push({
+            message: "Parsing of Catalog Thread No." + ((threadRoot.dataset.id || threadRoot.id).match(/\d+/)) + " failed. Thread will be skipped.",
+            error: err
+          });
+        }
+      }
+    },
+    addCatalogThreads: function(records) {
+      var errors, j, k, len, len1, node, record, ref, threadRoots, threads;
+      threadRoots = [];
+      for (j = 0, len = records.length; j < len; j++) {
+        record = records[j];
+        ref = record.addedNodes;
+        for (k = 0, len1 = ref.length; k < len1; k++) {
+          node = ref[k];
+          if (node.nodeType === Node.ELEMENT_NODE && node.matches(g.SITE.selectors.catalog.thread)) {
+            threadRoots.push(node);
+          }
+        }
+      }
+      if (!threadRoots.length) {
+        return;
+      }
+      threads = [];
+      errors = [];
+      Main.parseCatalogThreads(threadRoots, threads, errors);
+      if (errors.length) {
+        Main.handleErrors(errors);
+      }
+      return Main.callbackNodes('CatalogThreadNative', threads);
     },
     callbackNodes: function(klass, nodes) {
       var cb, i, node;
