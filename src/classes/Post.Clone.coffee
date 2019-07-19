@@ -2,7 +2,7 @@ Post.Clone = class extends Post
   isClone: true
 
   constructor: (@origin, @context, contractThumb) ->
-    for key in ['ID', 'threadID', 'boardID', 'siteID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply']
+    for key in ['ID', 'postID', 'threadID', 'boardID', 'siteID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply']
       # Copy or point to the origin's key value.
       @[key] = @origin[key]
 
