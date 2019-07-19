@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.9.1
+// @version      1.14.9.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -199,7 +199,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.9.1',
+  VERSION:   '1.14.9.2',
   NAMESPACE: '4chan X.',
   sites:     {},
   boards:    {}
@@ -1679,7 +1679,7 @@ audio.controls-added {\n\
 #toggleMsgBtn {\n\
   display: none !important;\n\
 }\n\
-#board-list .current {\n\
+.current {\n\
   font-weight: bold;\n\
 }\n\
 @media (min-width: 1300px) {\n\
