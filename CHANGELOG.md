@@ -19,6 +19,9 @@
 
 ### v1.14.9
 
+**v1.14.9.2** *(2019-07-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.2/builds/4chan-X-noupdate.crx)]
+- Fix regression causing thread watcher to stop highlighting active thread.
+
 **v1.14.9.1** *(2019-07-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.1/builds/4chan-X-noupdate.crx)]
 - "Change `Use Faster Image Host` setting to `Override 4chan Image Host` in Advanced menu, which can be set to whichever image host you want to use. #2046
 - Change announcement hiding link to FontAwesome minus button and make it work on Tinyboard/vichan sites. #2171
