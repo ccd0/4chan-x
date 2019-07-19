@@ -1,7 +1,12 @@
 Post.Clone = class extends Post
   isClone: true
 
-  constructor: (@origin, @context, contractThumb) ->
+  constructor: ->
+    that = Object.create(Post.Clone.prototype)
+    that.construct arguments...
+    return that
+
+  construct: (@origin, @context, contractThumb) ->
     for key in ['ID', 'postID', 'threadID', 'boardID', 'siteID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply']
       # Copy or point to the origin's key value.
       @[key] = @origin[key]
