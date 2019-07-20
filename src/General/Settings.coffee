@@ -561,10 +561,13 @@ Settings =
       $.id('lastarchivecheck').textContent = 'never'
 
     items = {}
-    for name in ['archiveLists', 'archiveAutoUpdate', 'fourchanImageHost', 'captchaLanguage', 'captchaServiceDomain', 'boardnav', 'time', 'timeLocale', 'backlink', 'pastedname', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
+    for name, input of inputs when name not in ['captchaServiceKey', 'Interval', 'Custom CSS']
       items[name] = Conf[name]
-      input = inputs[name]
-      event = if name in ['archiveLists', 'archiveAutoUpdate', 'QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
+      event = if (
+        input.nodeName is 'SELECT' or
+        input.type in ['checkbox', 'radio'] or
+        (input.nodeName is 'TEXTAREA' and name not of Settings)
+      ) then 'change' else 'input'
       $.on input, event, $.cb[if input.type is 'checkbox' then 'checked' else 'value']
       $.on input, event, Settings[name] if name of Settings
 
