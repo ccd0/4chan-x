@@ -3,13 +3,13 @@ Index =
   changed: {}
 
   init: ->
-    return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
+    return unless g.VIEW is 'index'
 
     # For IndexRefresh events
     $.one d, '4chanXInitFinished', @cb.initFinished
     $.on  d, 'PostsInserted',      @cb.postsInserted
 
-    return unless Conf['JSON Index']
+    return unless Conf['JSON Index'] and g.SITE.software is 'yotsuba' and g.BOARD.ID isnt 'f'
 
     @enabled = true
 

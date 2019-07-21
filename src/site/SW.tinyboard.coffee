@@ -4,7 +4,6 @@ SW.tinyboard =
   threadModTimeIgnoresSage: true
 
   disabledFeatures: [
-    'Index Generator'
     'Resurrect Quotes'
     'Quick Reply Personas'
     'Quick Reply'
