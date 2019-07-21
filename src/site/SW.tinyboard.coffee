@@ -154,8 +154,8 @@ SW.tinyboard =
   bgColoredEl: ->
     $.el 'div', className: 'post reply'
 
-  isFileURL: ->
-    /\/src\/[^\/]+/.test(location.pathname)
+  isFileURL: (url) ->
+    /\/src\/[^\/]+/.test(url.pathname)
 
   parseNodes: (post, nodes) ->
     # Add vichan's span.poster_id around the ID if not already present.

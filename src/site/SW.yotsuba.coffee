@@ -106,11 +106,36 @@ SW.yotsuba =
   isIncomplete: ->
     return g.VIEW in ['index', 'thread'] and not $('.board + *')
 
-  isAuxiliaryPage: ->
-    location.hostname not in ['boards.4chan.org', 'boards.4channel.org']
+  isBoardlessPage: (url) ->
+    url.hostname in ['www.4chan.org', 'www.4channel.org']
 
-  isFileURL: ->
-    ImageHost.test(location.hostname)
+  isAuxiliaryPage: (url) ->
+    url.hostname not in ['boards.4chan.org', 'boards.4channel.org']
+
+  isFileURL: (url) ->
+    ImageHost.test(url.hostname)
+
+  initAuxiliary: ->
+    switch location.hostname
+      when 'www.4chan.org', 'www.4channel.org'
+        $.onExists doc, 'body', -> $.addStyle CSS.www
+        Captcha.replace.init()
+        return
+      when 'sys.4chan.org', 'sys.4channel.org'
+        pathname = location.pathname.split /\/+/
+        if pathname[2] is 'imgboard.php'
+          if /\bmode=report\b/.test location.search
+            Report.init()
+          else if (match = location.search.match /\bres=(\d+)/)
+            $.ready ->
+              if Conf['404 Redirect'] and $.id('errmsg')?.textContent is 'Error: Specified thread does not exist.'
+                Redirect.navigate 'thread', {
+                  boardID: g.BOARD.ID
+                  postID:  +match[1]
+                }
+        else if pathname[2] is 'post'
+          PostSuccessful.init()
+        return
 
   scriptData: ->
     for script in $$ 'script:not([src])', d.head
