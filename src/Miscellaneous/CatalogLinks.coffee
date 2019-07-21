@@ -14,10 +14,11 @@ CatalogLinks =
               link.href = CatalogLinks.index()
             when "/#{g.BOARD}/catalog"
               link.href = CatalogLinks.catalog()
-          if g.VIEW is 'catalog' and Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
+          if g.VIEW is 'catalog' and (catalogURL = CatalogLinks.catalog()) isnt g.SITE.urls.catalog?(g.BOARD)
             catalogLink = link.parentNode.cloneNode true
-            catalogLink.firstElementChild.textContent = '<%= meta.name %> Catalog'
-            catalogLink.firstElementChild.href = CatalogLinks.catalog()
+            link2 = catalogLink.firstElementChild
+            link2.href = catalogURL
+            link2.textContent = if link2.hostname is location.hostname then '<%= meta.name %> Catalog' else 'External Catalog'
             $.after link.parentNode, [$.tn(' '), catalogLink]
         return
 
@@ -101,7 +102,7 @@ CatalogLinks =
     else if Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
       if location.hostname in ['boards.4chan.org', 'boards.4channel.org'] and g.BOARD.ID is board and g.VIEW is 'index' then '#catalog' else "//#{BoardConfig.domain(board)}/#{board}/#catalog"
     else
-      "//#{BoardConfig.domain(board)}/#{board}/catalog"
+      g.sites[siteID].urls.catalog?({siteID, boardID: board})
 
   index: (board=g.BOARD.ID) ->
     if Conf['JSON Index'] and board isnt 'f'
