@@ -1,4 +1,5 @@
 CatalogLinks =
+
   init: ->
     if g.SITE.software is 'yotsuba' and (Conf['External Catalog'] or Conf['JSON Index']) and !(Conf['JSON Index'] and g.VIEW is 'index')
       selector = switch g.VIEW
@@ -58,13 +59,15 @@ CatalogLinks =
     return unless (CatalogLinks.enabled ? Conf['Catalog Links']) and list
 
     for a in $$('a:not([data-only])', list)
-      continue if (
-        a.hostname not in ['boards.4chan.org', 'boards.4channel.org', 'catalog.neet.tv'] or
-        !(board = a.pathname.split('/')[1]) or
-        board in ['f', 'status', '4chan'] or
-        a.pathname.split('/')[2] is 'archive' or
-        $.hasClass a, 'external'
-      )
+      unless (board = a.dataset.board)
+        continue if (
+          a.hostname not in ['boards.4chan.org', 'boards.4channel.org'] or
+          !(board = a.pathname.split('/')[1]) or
+          board in ['f', 'status', '4chan'] or
+          a.pathname.split('/')[2] is 'archive' or
+          $.hasClass a, 'external'
+        )
+        a.dataset.board = board
 
       # Href is easier than pathname because then we don't have
       # conditions where External Catalog has been disabled between switches.
@@ -74,9 +77,27 @@ CatalogLinks =
         a.href += (if a.hash then '/' else '#') + a.dataset.indexOptions
     return
 
+  externalParse: ->
+    CatalogLinks.externalList = {}
+    for line in Conf['externalCatalogURLs'].split '\n'
+      continue if line[0] is '#'
+      url = line.split(';')[0]
+      boards   = Filter.parseBoards(line.match(/;boards:([^;]+)/)?[1] or '*')
+      excludes = Filter.parseBoards(line.match(/;exclude:([^;]+)/)?[1]) or {}
+      for board of boards
+        unless excludes[board] or excludes[board.split('/')[0] + '/*']
+          CatalogLinks.externalList[board] = url
+    return
+
+  external: ({siteID, boardID}) ->
+    CatalogLinks.externalParse() unless CatalogLinks.externalList
+    external = (CatalogLinks.externalList["#{siteID}/#{boardID}"] or CatalogLinks.externalList["#{siteID}/*"])
+    if external then external.replace(/%board/g, boardID) else undefined
+
   catalog: (board=g.BOARD.ID) ->
-    if Conf['External Catalog'] and board in ['3', 'a', 'adv', 'an', 'asp', 'biz', 'c', 'cgl', 'ck', 'cm', 'co', 'diy', 'f', 'fa', 'fit', 'g', 'gd', 'his', 'i', 'int', 'jp', 'k', 'lgbt', 'lit', 'm', 'mlp', 'mu', 'n', 'news', 'o', 'out', 'p', 'po', 'pol', 's4s', 'sci', 'sp', 'tg', 'toy', 'trv', 'tv', 'v', 'vg', 'vip', 'vp', 'vr', 'w', 'wg', 'wsg', 'wsr', 'x']
-      "//catalog.neet.tv/#{board}/"
+    siteID = '4chan.org'
+    if Conf['External Catalog'] and (external = CatalogLinks.external({siteID, boardID: board}))
+      external
     else if Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
       if location.hostname in ['boards.4chan.org', 'boards.4channel.org'] and g.BOARD.ID is board and g.VIEW is 'index' then '#catalog' else "//#{BoardConfig.domain(board)}/#{board}/#catalog"
     else

@@ -20,6 +20,16 @@
 </fieldset>
 
 <fieldset>
+  <legend>External Catalog</legend>
+  <div class="warning" data-feature="External Catalog"><code>External Catalog</code> is disabled.</div>
+  <div>
+    URLs of external catalog sites, where <code>%board</code> is to be replaced by the board name.<br>
+    Each URL should be followed by <code>;boards:</code> and optionally <code>;exclude:</code> and a list of supported/excluded boards in the format explained in the Filter guide.
+  </div>
+  <textarea hidden name="externalCatalogURLs" class="field" spellcheck="false"></textarea>
+</fieldset>
+
+<fieldset>
   <legend>Override 4chan Image Host</legend>
   <div>Change 4chan image links to this domain. Leave blank for no change.</div>
   <div><input name="fourchanImageHost" class="field" spellcheck="false" list="list-fourchanImageHost"></div>

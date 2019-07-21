@@ -658,7 +658,8 @@ div[data-checked="false"] > .suboption-list {
 .section-advanced textarea {
   height: 150px;
 }
-.section-advanced textarea[name="archiveLists"] {
+.section-advanced textarea[name="archiveLists"],
+.section-advanced textarea[name="externalCatalogURLs"] {
   height: 75px;
 }
 .section-advanced .archive-cell {
