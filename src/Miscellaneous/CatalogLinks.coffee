@@ -108,8 +108,10 @@ CatalogLinks =
       external
     else if Index.enabledOn(board) and Conf['Use <%= meta.name %> Catalog']
       CatalogLinks.jsonIndex board, '#catalog'
+    else if (nativeCatalog = Get.url 'catalog', board)
+      nativeCatalog
     else
-      Get.url 'catalog', board
+      CatalogLinks.external board
 
   index: (board=g.BOARD) ->
     if Index.enabledOn(board)
