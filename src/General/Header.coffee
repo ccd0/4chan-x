@@ -266,9 +266,10 @@ Header =
       text or boardID
 
     if m = t.match /-(index|catalog)/
-      unless boardID is 'f' and m[1] is 'catalog'
+      urlIC = CatalogLinks[m[1]] {siteID: '4chan.org', boardID}
+      if urlIC
         a.dataset.only = m[1]
-        a.href = CatalogLinks[m[1]] {siteID: '4chan.org', boardID}
+        a.href = urlIC
         $.addClass a, 'catalog' if m[1] is 'catalog'
       else
         return a.firstChild # Its text node.
