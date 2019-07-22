@@ -234,7 +234,10 @@ Header =
           href: "/#{g.BOARD.ID}/"
           textContent: text or g.BOARD.ID
           className: 'current'
-        if /-catalog/.test(t)
+        if /-index/.test(t)
+          a.dataset.only = 'index'
+        else if /-catalog/.test(t)
+          a.dataset.only = 'catalog'
           a.href += 'catalog.html'
         else if /-(archive|expired)/.test(t)
           a = a.firstChild # Its text node.
@@ -265,7 +268,7 @@ Header =
     if m = t.match /-(index|catalog)/
       unless boardID is 'f' and m[1] is 'catalog'
         a.dataset.only = m[1]
-        a.href = CatalogLinks[m[1]] boardID
+        a.href = CatalogLinks[m[1]] {siteID: '4chan.org', boardID}
         $.addClass a, 'catalog' if m[1] is 'catalog'
       else
         return a.firstChild # Its text node.

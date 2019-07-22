@@ -1,4 +1,6 @@
 Get =
+  url: (type, IDs, args...) ->
+    g.sites[IDs.siteID]?.urls[type] IDs, args...
   threadExcerpt: (thread) ->
     {OP} = thread
     excerpt = ("/#{decodeURIComponent thread.board.ID}/ - ") + (

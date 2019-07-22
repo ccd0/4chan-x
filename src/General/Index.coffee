@@ -2,6 +2,9 @@ Index =
   showHiddenThreads: false
   changed: {}
 
+  enabledOn: ({siteID, boardID}) ->
+    Conf['JSON Index'] and g.sites[siteID].software is 'yotsuba' and boardID isnt 'f'
+
   init: ->
     return unless g.VIEW is 'index'
 
@@ -9,7 +12,7 @@ Index =
     $.one d, '4chanXInitFinished', @cb.initFinished
     $.on  d, 'PostsInserted',      @cb.postsInserted
 
-    return unless Conf['JSON Index'] and g.SITE.software is 'yotsuba' and g.BOARD.ID isnt 'f'
+    return unless @enabledOn g.BOARD
 
     @enabled = true
 
