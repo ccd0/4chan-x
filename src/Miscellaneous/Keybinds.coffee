@@ -21,11 +21,7 @@ Keybinds =
     {target} = e
     if target.nodeName in ['INPUT', 'TEXTAREA']
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test(key) and not /^Alt\+(\d|Up|Down|Left|Right)$/.test(key)
-    unless (
-      g.VIEW not in ['index', 'thread'] or
-      g.VIEW is 'index' and Conf['JSON Index'] and Conf['Index Mode'] is 'catalog' or
-      g.VIEW is 'index' and g.BOARD.ID is 'f'
-    )
+    if g.VIEW in ['index', 'thread']
       threadRoot = Nav.getThread()
       if op = $ '.op', threadRoot
         thread = Get.postFromNode(op).thread

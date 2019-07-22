@@ -39,22 +39,23 @@ Nav =
       Nav.scroll +1
 
   getThread: ->
-    return $ '.board' if $.hasClass doc, 'catalog-mode'
-    for threadRoot in $$ '.thread'
+    return if $.hasClass doc, 'catalog-mode'
+    for threadRoot in $$ g.SITE.selectors.thread
       thread = Get.threadFromRoot threadRoot
       continue if thread.isHidden and !thread.stub
       if Header.getTopOf(threadRoot) >= -threadRoot.getBoundingClientRect().height # not scrolled past
         return threadRoot
-    return $ '.board'
+    return
 
   scroll: (delta) ->
     d.activeElement?.blur()
     thread = Nav.getThread()
+    return unless thread
     axis = if delta is +1
       'following'
     else
       'preceding'
-    if next = $.x "#{axis}-sibling::div[contains(@class,'thread') and not(@hidden)][1]", thread
+    if next = $.x "#{axis}-sibling::#{g.SITE.xpath.thread}[not(@hidden)][1]", thread
       # Unless we're not at the beginning of the current thread,
       # and thus wanting to move to beginning,
       # or we're above the first thread and don't want to skip it.
