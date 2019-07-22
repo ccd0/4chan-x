@@ -23,8 +23,7 @@ Keybinds =
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test(key) and not /^Alt\+(\d|Up|Down|Left|Right)$/.test(key)
     if g.VIEW in ['index', 'thread']
       threadRoot = Nav.getThread()
-      if op = $ '.op', threadRoot
-        thread = Get.postFromNode(op).thread
+      thread = Get.threadFromRoot threadRoot
     switch key
       # QR & Options
       when Conf['Toggle board list']
