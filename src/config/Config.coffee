@@ -1181,3 +1181,5 @@ Config =
   fourchanImageHost: 'i.4cdn.org'
 
   hiddenPSAList: [{}]
+
+  knownBanners: '<%= readJSON('banners.json').join(',') %>'

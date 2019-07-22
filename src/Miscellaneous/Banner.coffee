@@ -1,6 +1,4 @@
 Banner =
-  banners: `<%= JSON.stringify(readJSON('banners.json')) %>`
-
   init: ->
     if Conf['Custom Board Titles']
       @db = new DataBoard 'customTitles', null, true
@@ -44,7 +42,7 @@ Banner =
   cb:
     toggle: ->
       unless Banner.choices?.length
-        Banner.choices = Banner.banners.slice()
+        Banner.choices = Conf['knownBanners'].split(',').slice()
       i = Math.floor(Banner.choices.length * Math.random())
       banner = Banner.choices.splice i, 1
       $('img', @parentNode).src = "//s.4cdn.org/image/title/#{banner}"

@@ -659,7 +659,8 @@ div[data-checked="false"] > .suboption-list {
   height: 150px;
 }
 .section-advanced textarea[name="archiveLists"],
-.section-advanced textarea[name="externalCatalogURLs"] {
+.section-advanced textarea[name="externalCatalogURLs"],
+.section-advanced textarea[name="knownBanners"] {
   height: 75px;
 }
 .section-advanced .archive-cell {
