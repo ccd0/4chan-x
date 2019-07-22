@@ -628,7 +628,7 @@ QR =
       $.rm nodes.flag
       delete nodes.flag
 
-    if g.BOARD.ID is 'pol'
+    if g.BOARD.config.troll_flags
       flag = QR.flags()
       flag.dataset.name    = 'flag'
       flag.dataset.default = '0'
