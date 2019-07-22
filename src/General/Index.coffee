@@ -200,7 +200,7 @@ Index =
 
   menu:
     init: ->
-      return if g.VIEW isnt 'index' or !Conf['JSON Index'] or !Conf['Menu'] or !Conf['Thread Hiding Link'] or g.BOARD.ID is 'f'
+      return unless g.VIEW is 'index' and Conf['Menu'] and Conf['Thread Hiding Link'] and Index.enabledOn(g.BOARD)
 
       Menu.menu.addEntry
         el: $.el 'a',

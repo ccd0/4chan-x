@@ -8,7 +8,6 @@ SW.tinyboard =
     'Quick Reply Personas'
     'Quick Reply'
     'Cooldown'
-    'Index Generator (Menu)'
     'Report Link'
     'Delete Link'
     'Edit Link'
