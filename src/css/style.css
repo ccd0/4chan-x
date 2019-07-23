@@ -1314,7 +1314,7 @@ textarea.copy-text-element {
 .expanded-image > .post > .file > .fileThumb > img[data-md5] {
   display: none;
 }
-.full-image[data-full-i-d] {
+.full-image[data-file-i-d] {
   display: none;
   cursor: pointer;
 }
