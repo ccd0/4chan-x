@@ -246,19 +246,64 @@ Filter =
           re
       $.set type, save, cb
 
+  removeFilters: (type, res, cb) ->
+    $.get type, Conf[type], (item) ->
+      save = item[type]
+      res = res.map(Filter.escape).join('|')
+      save = save.replace RegExp("(?:$\n|^)(?:#{res})$", 'mg'), ''
+      $.set type, save, cb
+
+  showFilters: (type) ->
+    # Open the settings and display & focus the relevant filter textarea.
+    Settings.open 'Filter'
+    section = $ '.section-container'
+    select = $ 'select[name=filter]', section
+    select.value = type
+    Settings.selectFilter.call select
+    $.onExists section, 'textarea', (ta) ->
+      tl = ta.textLength
+      ta.setSelectionRange tl, tl
+      ta.focus()
+
   quickFilterMD5: ->
     post = Get.postFromNode @
     files = post.files.filter((f) -> f.MD5)
     return unless files.length
-    Filter.addFilter 'MD5', files.map((f) -> "/#{f.MD5}/").join('\n')
+    filter = files.map((f) -> "/#{f.MD5}/").join('\n')
+    Filter.addFilter 'MD5', filter
     origin = post.origin or post
     if origin.isReply
       PostHiding.hide origin
     else if g.VIEW is 'index'
       ThreadHiding.hide origin.thread
-    # If post is still visible, give an indication that the MD5 was filtered.
-    if post.nodes.post.getBoundingClientRect().height
-      new Notice 'info', 'MD5 filtered.', 2
+    {notice} = Filter.quickFilterMD5
+    if notice
+      notice.filters.push filter
+      notice.posts.push origin
+      $('span', notice.el).textContent = "#{notice.filters.length} MD5s filtered."
+    else
+      msg = $.el 'div',
+        <%= html('<span>MD5 filtered.</span> [<a href="javascript:;">show</a>] [<a href="javascript:;">undo</a>]') %>
+      notice = Filter.quickFilterMD5.notice = new Notice 'info', msg, undefined, ->
+        delete Filter.quickFilterMD5.notice
+      notice.filters = [filter]
+      notice.posts = [origin]
+      links = $$ 'a', msg
+      $.on links[0], 'click', Filter.quickFilterCB.show.bind(notice)
+      $.on links[1], 'click', Filter.quickFilterCB.undo.bind(notice)
+
+  quickFilterCB:
+    show: ->
+      Filter.showFilters 'MD5'
+      @close()
+    undo: ->
+      Filter.removeFilters 'MD5', @filters
+      for post in @posts
+        if post.isReply
+          PostHiding.show post
+        else if g.VIEW is 'index'
+          ThreadHiding.show post.thread
+      @close()
 
   escape: (value) ->
     value.replace ///
@@ -347,13 +392,4 @@ Filter =
       ).join('\n')
 
       Filter.addFilter type, res, ->
-        # Open the settings and display & focus the relevant filter textarea.
-        Settings.open 'Filter'
-        section = $ '.section-container'
-        select = $ 'select[name=filter]', section
-        select.value = type
-        Settings.selectFilter.call select
-        $.onExists section, 'textarea', (ta) ->
-          tl = ta.textLength
-          ta.setSelectionRange tl, tl
-          ta.focus()
+        Filter.showFilters type
