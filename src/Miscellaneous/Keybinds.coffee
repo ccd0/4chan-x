@@ -315,9 +315,9 @@ Keybinds =
 
   open: (thread, tab) ->
     return if g.VIEW isnt 'index'
-    url = "/#{thread.board}/thread/#{thread}"
+    url = Get.url 'thread', thread
     if tab
-      $.open location.origin + url
+      $.open url
     else
       location.href = url
 
