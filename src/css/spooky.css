@@ -67,16 +67,16 @@
 :root.spooky .qphl {
   outline: 2px solid rgba(145, 182, 214, .8);
 }
-:root.spooky.highlight-you .quotesYou$site$relative$opHighlight,
-:root.spooky.highlight-you .quotesYou$site$relative$replyHighlight {
+:root.spooky.highlight-you .quotesYou$site$highlightable$op,
+:root.spooky.highlight-you .quotesYou$site$highlightable$reply {
   border-left: 3px solid rgba(145, 182, 214, .8);
 }
-:root.spooky.highlight-own .yourPost$site$relative$opHighlight,
-:root.spooky.highlight-own .yourPost$site$relative$replyHighlight {
+:root.spooky.highlight-own .yourPost$site$highlightable$op,
+:root.spooky.highlight-own .yourPost$site$highlightable$reply {
   border-left: 3px dashed rgba(145, 182, 214, .8);
 }
-:root.spooky .filter-highlight$site$relative$opHighlight,
-:root.spooky .filter-highlight$site$relative$replyHighlight {
+:root.spooky .filter-highlight$site$highlightable$op,
+:root.spooky .filter-highlight$site$highlightable$reply {
   box-shadow: inset 5px 0 rgba(145, 182, 214, .5);
 }
 :root.spooky.highlight-own .yourPost > $site$sideArrows,

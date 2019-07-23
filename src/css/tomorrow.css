@@ -63,16 +63,16 @@
 :root.tomorrow .qphl {
   outline: 2px solid rgba(145, 182, 214, .8);
 }
-:root.tomorrow.highlight-you .quotesYou$site$relative$opHighlight,
-:root.tomorrow.highlight-you .quotesYou$site$relative$replyHighlight {
+:root.tomorrow.highlight-you .quotesYou$site$highlightable$op,
+:root.tomorrow.highlight-you .quotesYou$site$highlightable$reply {
   border-left: 3px solid rgba(145, 182, 214, .8);
 }
-:root.tomorrow.highlight-own .yourPost$site$relative$opHighlight,
-:root.tomorrow.highlight-own .yourPost$site$relative$replyHighlight {
+:root.tomorrow.highlight-own .yourPost$site$highlightable$op,
+:root.tomorrow.highlight-own .yourPost$site$highlightable$reply {
   border-left: 3px dashed rgba(145, 182, 214, .8);
 }
-:root.tomorrow .filter-highlight$site$relative$opHighlight,
-:root.tomorrow .filter-highlight$site$relative$replyHighlight {
+:root.tomorrow .filter-highlight$site$highlightable$op,
+:root.tomorrow .filter-highlight$site$highlightable$reply {
   box-shadow: inset 5px 0 rgba(145, 182, 214, .5);
 }
 :root.tomorrow.highlight-own .yourPost > $site$sideArrows,

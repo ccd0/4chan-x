@@ -1440,16 +1440,16 @@ input[name="Default Volume"] {
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .8);
 }
-:root.highlight-you .quotesYou$site$relative$opHighlight,
-:root.highlight-you .quotesYou$site$relative$replyHighlight {
+:root.highlight-you .quotesYou$site$highlightable$op,
+:root.highlight-you .quotesYou$site$highlightable$reply {
   border-left: 3px solid rgba(221, 0, 0, .8);
 }
-:root.highlight-own .yourPost$site$relative$opHighlight,
-:root.highlight-own .yourPost$site$relative$replyHighlight {
+:root.highlight-own .yourPost$site$highlightable$op,
+:root.highlight-own .yourPost$site$highlightable$reply {
   border-left: 3px dashed rgba(221, 0, 0, .8);
 }
-.filter-highlight$site$relative$opHighlight,
-.filter-highlight$site$relative$replyHighlight {
+.filter-highlight$site$highlightable$op,
+.filter-highlight$site$highlightable$reply {
   box-shadow: inset 5px 0 rgba(221, 0, 0, .5);
 }
 :root.highlight-own .yourPost > $site$sideArrows,
@@ -1457,9 +1457,9 @@ input[name="Default Volume"] {
 .filter-highlight > $site$sideArrows {
   color: rgba(221, 0, 0, .8);
 }
-:root.highlight-own .yourPost$site$relative$opHighlight::after,
-:root.highlight-you .quotesYou$site$relative$opHighlight::after,
-.filter-highlight$site$relative$opHighlight::after {
+:root.highlight-own .yourPost$site$highlightable$op::after,
+:root.highlight-you .quotesYou$site$highlightable$op::after,
+.filter-highlight$site$highlightable$op::after {
   content: "";
   display: block;
   clear: both;
@@ -1468,7 +1468,7 @@ input[name="Default Volume"] {
 :root.werkTyme .catalog-thread.filter-highlight:not(:hover),
 :root.werkTyme:not(.catalog-hover-expand) .catalog-thread.filter-highlight,
 :root.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-container:hover > .catalog-post,
-:root.catalog $site$catalog$thread.filter-highlight$site$relative$catalogHighlight {
+:root.catalog $site$catalog$thread.filter-highlight$site$highlightable$catalog {
   box-shadow: 0 0 3px 3px rgba(255, 0, 0, .5);
 }
 :root:not(.werkTyme) .catalog-thread.watched .catalog-thumb,

@@ -54,10 +54,10 @@ SW.yotsuba =
       link:  '.fileText > a'
       thumb: 'a.fileThumb > [data-md5]'
     thumbLink: 'a.fileThumb'
-    relative:
-      opHighlight:    '.opContainer'
-      replyHighlight: ' > .reply'
-      catalogHighlight: ''
+    highlightable:
+      op:      '.opContainer'
+      reply:   ' > .reply'
+      catalog: ''
     comment:   '.postMessage'
     spoiler:   's'
     quotelink: ':not(pre) > .quotelink' # XXX https://github.com/4chan/4chan-JS/issues/77: 4chan currently creates quote links inside [code] tags; ignore them

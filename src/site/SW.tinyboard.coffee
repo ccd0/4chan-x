@@ -91,10 +91,10 @@ SW.tinyboard =
       thumb: 'a > .post-image'
     thumbLink: '.file > a'
     multifile: '.files > .file'
-    relative:
-      opHighlight:    ' > .op'
-      replyHighlight: '.reply'
-      catalogHighlight: ' > .thread'
+    highlightable:
+      op:      ' > .op'
+      reply:   '.reply'
+      catalog: ' > .thread'
     comment:   '.body'
     spoiler:   '.spoiler'
     quotelink: 'a[onclick^="highlightReply("]'
