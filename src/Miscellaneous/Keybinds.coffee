@@ -170,8 +170,8 @@ Keybinds =
         return unless Index.enabledOn(g.BOARD)
         location.href = if g.VIEW is 'index' then '#all-pages' else "/#{g.BOARD}/#all-pages"
       when Conf['Open catalog']
-        return if g.BOARD.ID is 'f'
-        location.href = CatalogLinks.catalog()
+        return unless (catalog = CatalogLinks.catalog())
+        location.href = catalog
       when Conf['Cycle sort type']
         return unless Index.enabled
         Index.cycleSortType()
