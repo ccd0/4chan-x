@@ -4,6 +4,11 @@
 
 ### v1.14.10
 
+**v1.14.10.2** *(2019-07-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.2/builds/4chan-X-noupdate.crx)]
+- Limit number of autoretries on posting error to reduce likelihood of "excessive server request" bans. #1302
+- Fix bug from v1.14.10.0 causing full image and thumbnail to briefly appear simultaneously while contracting images and causing unwanted scrolling.
+- Fix bug causing issues in inlined quotes such as "You" in post menu being unchecked and posts sometimes being wrongly marked as deleted.
+
 **v1.14.10.1** *(2019-07-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.1/builds/4chan-X-noupdate.crx)]
 - Merge v1.14.9.2: Fix regression causing thread watcher to stop highlighting active thread.
 - Add option `Filter in Native Catalog` to apply 4chan X filters on native catalog. Also works on vichan sites. Enabled by default for new installs only. #2351
