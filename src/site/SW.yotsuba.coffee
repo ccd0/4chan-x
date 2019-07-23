@@ -16,8 +16,9 @@ SW.yotsuba =
     thumb: ({boardID}, filename) ->
       "#{location.protocol}//#{ImageHost.thumbHost()}/#{boardID}/#{filename}"
 
-  isPrunedByAge: ({boardID}) -> boardID is 'f'
+  isPrunedByAge:   ({boardID}) -> boardID is 'f'
   areMD5sDeferred: ({boardID}) -> boardID is 'f'
+  isOnePage:       ({boardID}) -> boardID is 'f'
   noAudio: ({boardID}) -> BoardConfig.noAudio(boardID)
 
   selectors:
@@ -69,6 +70,10 @@ SW.yotsuba =
     styleSheet: 'link[title=switch]'
     psa:       '#globalMessage'
     psaTop:    '#globalToggle'
+    searchBox: '#search-box'
+    nav:
+      prev: '.prev > form > [type=submit]'
+      next: '.next > form > [type=submit]'
 
   xpath:
     thread:        'div[contains(concat(" ",@class," ")," thread ")]'

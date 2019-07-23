@@ -91,7 +91,7 @@ Keybinds =
             return unless ThreadUpdater.enabled
             ThreadUpdater.update()
           when 'index'
-            return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
+            return unless Index.enabled
             Index.update()
           else
             return
@@ -129,47 +129,51 @@ Keybinds =
         FappeTyme.toggle 'werk'
       # Board Navigation
       when Conf['Front page']
-        if Conf['JSON Index'] and g.VIEW is 'index' and g.BOARD.ID isnt 'f'
+        if Index.enabled
           Index.userPageNav 1
         else
           location.href = "/#{g.BOARD}/"
       when Conf['Open front page']
         $.open "#{location.origin}/#{g.BOARD}/"
       when Conf['Next page']
-        return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
-        if Conf['JSON Index']
+        return unless g.VIEW is 'index' and !g.SITE.isOnePage?(g.BOARD)
+        if Index.enabled
           return unless Conf['Index Mode'] in ['paged', 'infinite']
           $('.next button', Index.pagelist).click()
         else
-          if form = $ '.next form'
-            location.href = form.action
+          $(g.SITE.selectors.nav.next)?.click()
       when Conf['Previous page']
-        return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
-        if Conf['JSON Index']
+        return unless g.VIEW is 'index' and !g.SITE.isOnePage?(g.BOARD)
+        if Index.enabled
           return unless Conf['Index Mode'] in ['paged', 'infinite']
           $('.prev button', Index.pagelist).click()
         else
-          if form = $ '.prev form'
-            location.href = form.action
+          $(g.SITE.selectors.nav.prev)?.click()
       when Conf['Search form']
-        return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
-        searchInput = if Conf['JSON Index'] then Index.searchInput else $.id('search-box')
+        return unless g.VIEW is 'index'
+        searchInput = if Index.enabled
+          Index.searchInput
+        else if g.SITE.selectors.searchBox
+          $ g.SITE.selectors.searchBox
+        else
+          undefined
+        return unless searchInput
         Header.scrollToIfNeeded searchInput
         searchInput.focus()
       when Conf['Paged mode']
-        return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
+        return unless Index.enabledOn(g.BOARD)
         location.href = if g.VIEW is 'index' then '#paged' else "/#{g.BOARD}/#paged"
       when Conf['Infinite scrolling mode']
-        return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
+        return unless Index.enabledOn(g.BOARD)
         location.href = if g.VIEW is 'index' then '#infinite' else "/#{g.BOARD}/#infinite"
       when Conf['All pages mode']
-        return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
+        return unless Index.enabledOn(g.BOARD)
         location.href = if g.VIEW is 'index' then '#all-pages' else "/#{g.BOARD}/#all-pages"
       when Conf['Open catalog']
         return if g.BOARD.ID is 'f'
         location.href = CatalogLinks.catalog()
       when Conf['Cycle sort type']
-        return unless Conf['JSON Index'] and g.VIEW is 'index' and g.BOARD.ID isnt 'f'
+        return unless Index.enabled
         Index.cycleSortType()
       # Thread Navigation
       when Conf['Next thread']

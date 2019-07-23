@@ -106,6 +106,9 @@ SW.tinyboard =
     boardListBottom: '.boardlist.bottom'
     styleSheet: '#stylesheet'
     psa:       '.blotter'
+    nav:
+      prev: '.pages > form > [value=Previous]'
+      next: '.pages > form > [value=Next]'
 
   xpath:
     thread:        'div[starts-with(@id,"thread_")]'
