@@ -775,19 +775,24 @@ QR =
     delete QR.currentCaptcha
 
     if err
+      QR.errorCount = (QR.errorCount or 0) + 1
       if /captcha|verification/i.test(err.textContent) or connErr
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent
           err = 'You mistyped the CAPTCHA, or the CAPTCHA malfunctioned.'
         else if /expired/i.test err.textContent
           err = 'This CAPTCHA is no longer valid because it has expired.'
-        # Something must've gone terribly wrong if you get captcha errors without captchas.
-        # Don't auto-post indefinitely in that case.
-        QR.cooldown.auto = QR.captcha.isEnabled or connErr
-        # Too many frequent mistyped captchas will auto-ban you!
-        # On connection error, the post most likely didn't go through.
-        # If the post did go through, it should be stopped by the duplicate reply cooldown.
-        QR.cooldown.addDelay post, 2
+        if QR.errorCount >= 5
+          # Too many posting errors can ban you. Stop autoposting after 5 errors.
+          QR.cooldown.auto = false
+        else
+          # Something must've gone terribly wrong if you get captcha errors without captchas.
+          # Don't auto-post indefinitely in that case.
+          QR.cooldown.auto = QR.captcha.isEnabled or connErr
+          # Too many frequent mistyped captchas will auto-ban you!
+          # On connection error, the post most likely didn't go through.
+          # If the post did go through, it should be stopped by the duplicate reply cooldown.
+          QR.cooldown.addDelay post, 2
       else if err.textContent and (m = err.textContent.match /(?:(\d+)\s+minutes?\s+)?(\d+)\s+second/i) and !/duplicate|hour/i.test(err.textContent)
         QR.cooldown.auto = !/have\s+been\s+muted/i.test(err.textContent)
         seconds = 60 * (+(m[1]||0)) + (+m[2])
@@ -801,6 +806,8 @@ QR =
       QR.status()
       QR.error err
       return
+
+    delete QR.errorCount
 
     h1 = $ 'h1', @response
 
