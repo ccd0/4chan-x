@@ -12,6 +12,12 @@
 :root.spooky #arc-list span.quote {
   color: #634C2C;
 }
+:root.spooky.highlight-you .quotesYou$site$highlightable$reply {
+  border-left: 3px solid rgba(145, 182, 214, .8) !important;
+}
+:root.spooky.highlight-own .yourPost$site$highlightable$reply {
+  border-left: 3px dashed rgba(145, 182, 214, .8) !important;
+}
 
 /* Header */
 :root.spooky #header-bar.dialog {

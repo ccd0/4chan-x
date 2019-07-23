@@ -8,6 +8,12 @@
 :root.tomorrow #arc-list span.quote {
   color: #B5BD68;
 }
+:root.tomorrow.highlight-you .quotesYou$site$highlightable$reply {
+  border-left: 3px solid rgba(145, 182, 214, .8) !important;
+}
+:root.tomorrow.highlight-own .yourPost$site$highlightable$reply {
+  border-left: 3px dashed rgba(145, 182, 214, .8) !important;
+}
 
 /* Header */
 :root.tomorrow #header-bar.dialog {

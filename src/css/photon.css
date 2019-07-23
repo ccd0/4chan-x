@@ -12,6 +12,12 @@
 :root.photon #arc-list tr:nth-of-type(odd) span.quote {
   color: #C0E17A;
 }
+:root.photon.highlight-you .quotesYou$site$highlightable$reply {
+  border-left: 3px solid rgba(221, 0, 0, .8) !important;
+}
+:root.photon.highlight-own .yourPost$site$highlightable$reply {
+  border-left: 3px dashed rgba(221, 0, 0, .8) !important;
+}
 
 /* Header */
 :root.photon #header-bar.dialog {

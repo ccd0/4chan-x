@@ -8,6 +8,14 @@
   border-color: #98E;
 }
 
+/* 4chan style fixes */
+:root.yotsuba-b.highlight-you .quotesYou$site$highlightable$reply {
+  border-left: 3px solid rgba(221, 0, 0, .8) !important;
+}
+:root.yotsuba-b.highlight-own .yourPost$site$highlightable$reply {
+  border-left: 3px dashed rgba(221, 0, 0, .8) !important;
+}
+
 /* Header */
 :root.yotsuba-b #header-bar.dialog {
   background-color: rgba(214,218,240,0.98);
