@@ -5,7 +5,7 @@
 }
 
 /* 4chan style fixes */
-:root.tomorrow.sw-yotsuba #arc-list span.quote {
+:root.tomorrow #arc-list span.quote {
   color: #B5BD68;
 }
 

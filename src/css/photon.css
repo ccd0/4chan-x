@@ -9,7 +9,7 @@
 }
 
 /* 4chan style fixes */
-:root.photon.sw-yotsuba #arc-list tr:nth-of-type(odd) span.quote {
+:root.photon #arc-list tr:nth-of-type(odd) span.quote {
   color: #C0E17A;
 }
 

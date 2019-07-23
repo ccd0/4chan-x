@@ -9,7 +9,7 @@
 }
 
 /* 4chan style fixes */
-:root.spooky.sw-yotsuba #arc-list span.quote {
+:root.spooky #arc-list span.quote {
   color: #634C2C;
 }
 
