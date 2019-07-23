@@ -64,15 +64,15 @@
   outline: 2px solid rgba(145, 182, 214, .8);
 }
 :root.tomorrow.highlight-you .quotesYou$site$relative$opHighlight,
-:root.tomorrow.highlight-you .quotesYou$site$relative$replyPost {
+:root.tomorrow.highlight-you .quotesYou$site$relative$replyHighlight {
   border-left: 3px solid rgba(145, 182, 214, .8);
 }
 :root.tomorrow.highlight-own .yourPost$site$relative$opHighlight,
-:root.tomorrow.highlight-own .yourPost$site$relative$replyPost {
+:root.tomorrow.highlight-own .yourPost$site$relative$replyHighlight {
   border-left: 3px dashed rgba(145, 182, 214, .8);
 }
 :root.tomorrow .filter-highlight$site$relative$opHighlight,
-:root.tomorrow .filter-highlight$site$relative$replyPost {
+:root.tomorrow .filter-highlight$site$relative$replyHighlight {
   box-shadow: inset 5px 0 rgba(145, 182, 214, .5);
 }
 :root.tomorrow.highlight-own .yourPost > $site$sideArrows,

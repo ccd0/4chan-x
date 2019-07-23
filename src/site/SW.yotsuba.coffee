@@ -54,9 +54,9 @@ SW.yotsuba =
       thumb: 'a.fileThumb > [data-md5]'
     thumbLink: 'a.fileThumb'
     relative:
-      opHighlight:   '.opContainer'
-      replyPost:     ' > .reply'
-      replyOriginal: '.replyContainer:not([data-clone])'
+      opHighlight:    '.opContainer'
+      replyHighlight: ' > .reply'
+      replyOriginal:  '.replyContainer:not([data-clone])'
       catalogHighlight: ''
     comment:   '.postMessage'
     spoiler:   's'

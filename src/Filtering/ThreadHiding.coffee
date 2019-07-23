@@ -145,7 +145,7 @@ ThreadHiding =
     a
 
   makeStub: (thread, root) ->
-    numReplies  = $$(g.SITE.selectors.postContainer + g.SITE.selectors.relative.replyPost, root).length
+    numReplies  = $$(g.SITE.selectors.postContainer + g.SITE.selectors.relative.replyHighlight, root).length
     numReplies += +summary.textContent.match /\d+/ if summary = $ g.SITE.selectors.summary, root
 
     a = ThreadHiding.makeButton thread, 'show'

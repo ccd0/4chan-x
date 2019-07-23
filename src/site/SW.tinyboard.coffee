@@ -91,9 +91,9 @@ SW.tinyboard =
     thumbLink: '.file > a'
     multifile: '.files > .file'
     relative:
-      opHighlight:   ' > .op'
-      replyPost:     '.reply'
-      replyOriginal: 'div[id^="reply_"]:not(.hidden)'
+      opHighlight:    ' > .op'
+      replyHighlight: '.reply'
+      replyOriginal:  'div[id^="reply_"]:not(.hidden)'
       catalogHighlight: ' > .thread'
     comment:   '.body'
     spoiler:   '.spoiler'

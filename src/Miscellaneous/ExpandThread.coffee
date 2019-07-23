@@ -58,7 +58,7 @@ ExpandThread =
       return if @ isnt status.req # aborted
       delete status.req
       ExpandThread.parse @, thread, a
-    status.numReplies = $$(g.SITE.selectors.postContainer + g.SITE.selectors.relative.replyPost, thread.nodes.root).length
+    status.numReplies = $$(g.SITE.selectors.postContainer + g.SITE.selectors.relative.replyHighlight, thread.nodes.root).length
 
   contract: (thread, a, threadRoot) ->
     status = ExpandThread.statuses[thread]

@@ -1441,15 +1441,15 @@ input[name="Default Volume"] {
   outline: 2px solid rgba(216, 94, 49, .8);
 }
 :root.highlight-you .quotesYou$site$relative$opHighlight,
-:root.highlight-you .quotesYou$site$relative$replyPost {
+:root.highlight-you .quotesYou$site$relative$replyHighlight {
   border-left: 3px solid rgba(221, 0, 0, .8);
 }
 :root.highlight-own .yourPost$site$relative$opHighlight,
-:root.highlight-own .yourPost$site$relative$replyPost {
+:root.highlight-own .yourPost$site$relative$replyHighlight {
   border-left: 3px dashed rgba(221, 0, 0, .8);
 }
 .filter-highlight$site$relative$opHighlight,
-.filter-highlight$site$relative$replyPost {
+.filter-highlight$site$relative$replyHighlight {
   box-shadow: inset 5px 0 rgba(221, 0, 0, .5);
 }
 :root.highlight-own .yourPost > $site$sideArrows,
