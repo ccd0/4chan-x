@@ -39,6 +39,7 @@ Nav =
       Nav.scroll +1
 
   getThread: ->
+    return g.threads["#{g.BOARD}.#{g.THREADID}"].nodes.root if g.VIEW is 'thread'
     return if $.hasClass doc, 'catalog-mode'
     for threadRoot in $$ g.SITE.selectors.thread
       thread = Get.threadFromRoot threadRoot
