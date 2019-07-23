@@ -27,6 +27,7 @@ SW.yotsuba =
     threadDivider: '.board > hr'
     summary:       '.summary'
     postContainer: '.postContainer'
+    replyOriginal: '.replyContainer:not([data-clone])'
     sideArrows:    'div.sideArrows'
     post:          '.post'
     infoRoot:      '.postInfo'
@@ -56,7 +57,6 @@ SW.yotsuba =
     relative:
       opHighlight:    '.opContainer'
       replyHighlight: ' > .reply'
-      replyOriginal:  '.replyContainer:not([data-clone])'
       catalogHighlight: ''
     comment:   '.postMessage'
     spoiler:   's'

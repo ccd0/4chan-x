@@ -68,6 +68,7 @@ SW.tinyboard =
     summary:       '.omitted'
     postContainer: 'div[id^="reply_"]:not(.hidden)' # postContainer is thread for OP
     opBottom:      '.op'
+    replyOriginal: 'div[id^="reply_"]:not(.hidden)'
     infoRoot:      '.intro'
     info:
       subject:   '.subject'
@@ -93,7 +94,6 @@ SW.tinyboard =
     relative:
       opHighlight:    ' > .op'
       replyHighlight: '.reply'
-      replyOriginal:  'div[id^="reply_"]:not(.hidden)'
       catalogHighlight: ' > .thread'
     comment:   '.body'
     spoiler:   '.spoiler'

@@ -1385,8 +1385,8 @@ input[name="Default Volume"] {
   margin: 0px;
 }
 /* Fappe and Werk Tyme */
-:root.fappeTyme $site$relative$replyOriginal.noFile,
-:root.fappeTyme $site$relative$replyOriginal.noFile + br {
+:root.fappeTyme $site$replyOriginal.noFile,
+:root.fappeTyme $site$replyOriginal.noFile + br {
   display: none;
 }
 :root.werkTyme $site$thumbLink,
