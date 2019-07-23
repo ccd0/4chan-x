@@ -88,7 +88,7 @@ Keybinds =
       when Conf['Update']
         switch g.VIEW
           when 'thread'
-            return unless Conf['Thread Updater']
+            return unless ThreadUpdater.enabled
             ThreadUpdater.update()
           when 'index'
             return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'

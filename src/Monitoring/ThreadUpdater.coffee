@@ -1,6 +1,7 @@
 ThreadUpdater =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
+    @enabled = true
 
     # Chromium won't play audio created in an inactive tab until the tab has been focused, so set it up now.
     # XXX Sometimes the loading stalls in Firefox, esp. when opening in private browsing window followed by normal window.
