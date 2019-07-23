@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.10.1
+// @version      1.14.10.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -199,7 +199,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.10.1',
+  VERSION:   '1.14.10.2',
   NAMESPACE: '4chan X.',
   sites:     {},
   boards:    {}
@@ -2617,7 +2617,7 @@ textarea.copy-text-element {\n\
 .expanded-image > .post > .file > .fileThumb > img[data-md5] {\n\
   display: none;\n\
 }\n\
-.full-image[data-full-i-d] {\n\
+.full-image[data-file-i-d] {\n\
   display: none;\n\
   cursor: pointer;\n\
 }\n\
@@ -7172,7 +7172,7 @@ Post = (function() {
       var base, file, fileRoot, fileRoots, i, inline, inlined, j, k, key, l, len, len1, len2, len3, len4, m, node, nodes, originFile, ref, ref1, ref2, ref3, ref4, ref5, ref6, root, selector, val;
       this.origin = origin;
       this.context = context;
-      ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
+      ref = ['ID', 'postID', 'threadID', 'boardID', 'siteID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
       for (i = 0, len = ref.length; i < len; i++) {
         key = ref[i];
         this[key] = this.origin[key];
@@ -24479,14 +24479,19 @@ QR = (function() {
       }
       delete QR.currentCaptcha;
       if (err) {
+        QR.errorCount = (QR.errorCount || 0) + 1;
         if (/captcha|verification/i.test(err.textContent) || connErr) {
           if (/mistyped/i.test(err.textContent)) {
             err = 'You mistyped the CAPTCHA, or the CAPTCHA malfunctioned.';
           } else if (/expired/i.test(err.textContent)) {
             err = 'This CAPTCHA is no longer valid because it has expired.';
           }
-          QR.cooldown.auto = QR.captcha.isEnabled || connErr;
-          QR.cooldown.addDelay(post, 2);
+          if (QR.errorCount >= 5) {
+            QR.cooldown.auto = false;
+          } else {
+            QR.cooldown.auto = QR.captcha.isEnabled || connErr;
+            QR.cooldown.addDelay(post, 2);
+          }
         } else if (err.textContent && (m = err.textContent.match(/(?:(\d+)\s+minutes?\s+)?(\d+)\s+second/i)) && !/duplicate|hour/i.test(err.textContent)) {
           QR.cooldown.auto = !/have\s+been\s+muted/i.test(err.textContent);
           seconds = 60 * (+(m[1] || 0)) + (+m[2]);
@@ -24503,6 +24508,7 @@ QR = (function() {
         QR.error(err);
         return;
       }
+      delete QR.errorCount;
       h1 = $('h1', this.response);
       ref3 = h1.nextSibling.textContent.match(/thread:(\d+),no:(\d+)/), _ = ref3[0], threadID = ref3[1], postID = ref3[2];
       postID = +postID;
