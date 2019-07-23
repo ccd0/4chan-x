@@ -110,9 +110,13 @@ SW.tinyboard =
       prev: '.pages > form > [value=Previous]'
       next: '.pages > form > [value=Next]'
 
+  classes:
+    highlight: 'highlighted'
+
   xpath:
-    thread:        'div[starts-with(@id,"thread_")]'
-    postContainer: 'div[starts-with(@id,"reply_") or starts-with(@id,"thread_")]'
+    thread:         'div[starts-with(@id,"thread_")]'
+    postContainer:  'div[starts-with(@id,"reply_") or starts-with(@id,"thread_")]'
+    replyContainer: 'div[starts-with(@id,"reply_")]'
 
   regexp:
     quotelink:

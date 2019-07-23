@@ -269,7 +269,11 @@ Keybinds =
     key
 
   post: (thread) ->
-    $('.post.highlight', thread) or $('.op', thread)
+    s = g.SITE.selectors
+    (
+      $("#{s.postContainer}#{s.highlightable.reply}.#{g.SITE.classes.highlight}", thread) or
+      $("#{if g.SITE.isOPContainerThread then s.thread else s.postContainer}#{s.highlightable.op}", thread)
+    )
 
   qr: (thread) ->
     QR.open()
@@ -318,33 +322,35 @@ Keybinds =
       location.href = url
 
   hl: (delta, thread) ->
-    postEl = $ '.reply.highlight', thread
+    replySelector = "#{g.SITE.selectors.postContainer}#{g.SITE.selectors.highlightable.reply}"
+    {highlight} = g.SITE.classes
+
+    postEl = $ "#{replySelector}.#{highlight}", thread
 
     unless delta
-      $.rmClass postEl, 'highlight' if postEl
+      $.rmClass postEl, highlight if postEl
       return
 
     if postEl
       {height} = postEl.getBoundingClientRect()
       if Header.getTopOf(postEl) >= -height and Header.getBottomOf(postEl) >= -height # We're at least partially visible
-        root = postEl.parentNode
+        {root} = Get.postFromNode(postEl).nodes
         axis = if delta is +1
           'following'
         else
           'preceding'
-        return if not (next = $.x "#{axis}-sibling::div[contains(@class,'replyContainer') and not(@hidden) and not(child::div[@class='stub'])][1]/child::div[contains(@class,'reply')]", root)
+        return unless (next = $.x "#{axis}-sibling::#{g.SITE.xpath.replyContainer}[not(@hidden) and not(child::div[@class='stub'])][1]", root)
+        next = $ replySelector, next unless next.matches(replySelector)
         Header.scrollToIfNeeded next, delta is +1
-        @focus next
-        $.rmClass postEl, 'highlight'
+        $.addClass next, highlight
+        $.rmClass postEl, highlight
         return
-      $.rmClass postEl, 'highlight'
+      $.rmClass postEl, highlight
 
-    replies = $$ '.reply', thread
+    replies = $$ replySelector, thread
     replies.reverse() if delta is -1
     for reply in replies
       if delta is +1 and Header.getTopOf(reply) > 0 or delta is -1 and Header.getBottomOf(reply) > 0
-        @focus reply
+        $.addClass reply, highlight
         return
-
-  focus: (post) ->
-    $.addClass post, 'highlight'
+    return

@@ -75,9 +75,13 @@ SW.yotsuba =
       prev: '.prev > form > [type=submit]'
       next: '.next > form > [type=submit]'
 
+  classes:
+    highlight: 'highlight'
+
   xpath:
-    thread:        'div[contains(concat(" ",@class," ")," thread ")]'
-    postContainer: 'div[contains(@class,"postContainer")]'
+    thread:         'div[contains(concat(" ",@class," ")," thread ")]'
+    postContainer:  'div[contains(@class,"postContainer")]'
+    replyContainer: 'div[contains(@class,"replyContainer")]'
 
   regexp:
     quotelink:
