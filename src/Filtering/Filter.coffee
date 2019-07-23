@@ -248,8 +248,9 @@ Filter =
 
   quickFilterMD5: ->
     post = Get.postFromNode @
-    return unless post.file
-    Filter.addFilter 'MD5', "/#{post.file.MD5}/"
+    files = post.files.filter((f) -> f.MD5)
+    return unless files.length
+    Filter.addFilter 'MD5', files.map((f) -> "/#{f.MD5}/").join('\n')
     origin = post.origin or post
     if origin.isReply
       PostHiding.hide origin
