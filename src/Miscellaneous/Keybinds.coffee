@@ -113,10 +113,11 @@ Keybinds =
       # Images
       when Conf['Expand image']
         return unless ImageExpand.enabled and threadRoot
-        Keybinds.img threadRoot
+        post = Get.postFromNode Keybinds.post threadRoot
+        ImageExpand.toggle post if post.file
       when Conf['Expand images']
-        return unless ImageExpand.enabled and threadRoot
-        Keybinds.img threadRoot, true
+        return unless ImageExpand.enabled
+        ImageExpand.cb.toggleAll()
       when Conf['Open Gallery']
         return unless Gallery.enabled
         Gallery.cb.toggle()
@@ -303,13 +304,6 @@ Keybinds =
     QR.nodes.email.value = if isSage
       ""
     else "sage"
-
-  img: (thread, all) ->
-    if all
-      ImageExpand.cb.toggleAll()
-    else
-      post = Get.postFromNode Keybinds.post thread
-      ImageExpand.toggle post if post.file
 
   open: (thread, tab) ->
     return if g.VIEW isnt 'index'
