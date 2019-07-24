@@ -2281,6 +2281,8 @@ a:only-of-type > .remove {
 .gal-image a {
   display: -webkit-flex;
   display: flex;
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
   margin: auto;
   line-height: 0;
   max-width: 100%;
@@ -2288,6 +2290,11 @@ a:only-of-type > .remove {
 :root.gal-pdf .gal-image a {
   width: 100%;
   height: 100%;
+}
+.gal-image img,
+.gal-image video {
+  -webkit-flex: none;
+  flex: none;
 }
 .gal-fit-width .gal-image img,
 .gal-fit-width .gal-image video {
