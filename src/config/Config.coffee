@@ -825,6 +825,10 @@ Config =
     lastarchivecheck:  0
     archiveAutoUpdate: true
 
+  externalCatalogURLs: """
+    //catalog.neet.tv/%board/;boards:4chan.org:3,a,adv,an,asp,biz,c,cgl,ck,cm,co,diy,f,fa,fit,g,gd,his,i,int,jp,k,lgbt,lit,m,mlp,mu,n,news,o,out,p,po,pol,s4s,sci,sp,tg,toy,trv,tv,v,vg,vip,vp,vr,w,wg,wsg,wsr,x
+  """
+
   boardnav: """
     [ toggle-all ]
     a-replace
@@ -1177,3 +1181,5 @@ Config =
   fourchanImageHost: 'i.4cdn.org'
 
   hiddenPSAList: [{}]
+
+  knownBanners: '<%= readJSON('banners.json').join(',') %>'

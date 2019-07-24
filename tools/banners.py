@@ -15,5 +15,5 @@ for ext in ['jpg', 'png', 'gif']:
     print(banner, status)
     if status == 200:
       banners.append(banner)
-with open('src/Miscellaneous/Banner/banners.json', 'w') as f:
+with open('src/config/banners.json', 'w') as f:
   f.write(json.dumps(banners))

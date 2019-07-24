@@ -4,12 +4,10 @@ SW.tinyboard =
   threadModTimeIgnoresSage: true
 
   disabledFeatures: [
-    'Index Generator'
     'Resurrect Quotes'
     'Quick Reply Personas'
     'Quick Reply'
     'Cooldown'
-    'Index Generator (Menu)'
     'Report Link'
     'Delete Link'
     'Edit Link'
@@ -47,6 +45,9 @@ SW.tinyboard =
 
   urls:
     thread: ({siteID, boardID, threadID}) -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/res/#{threadID}.html"
+    post:    ({postID})                   -> "##{postID}"
+    index:   ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/"
+    catalog: ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/catalog.html"
     threadJSON: ({siteID, boardID, threadID}) ->
       root = Conf['siteProperties'][siteID]?.root
       if root then "#{root}#{boardID}/res/#{threadID}.json" else ''
@@ -68,6 +69,7 @@ SW.tinyboard =
     summary:       '.omitted'
     postContainer: 'div[id^="reply_"]:not(.hidden)' # postContainer is thread for OP
     opBottom:      '.op'
+    replyOriginal: 'div[id^="reply_"]:not(.hidden)'
     infoRoot:      '.intro'
     info:
       subject:   '.subject'
@@ -90,11 +92,10 @@ SW.tinyboard =
       thumb: 'a > .post-image'
     thumbLink: '.file > a'
     multifile: '.files > .file'
-    relative:
-      opHighlight:   ' > .op'
-      replyPost:     '.reply'
-      replyOriginal: 'div[id^="reply_"]:not(.hidden)'
-      catalogHighlight: ' > .thread'
+    highlightable:
+      op:      ' > .op'
+      reply:   '.reply'
+      catalog: ' > .thread'
     comment:   '.body'
     spoiler:   '.spoiler'
     quotelink: 'a[onclick^="highlightReply("]'
@@ -106,10 +107,17 @@ SW.tinyboard =
     boardListBottom: '.boardlist.bottom'
     styleSheet: '#stylesheet'
     psa:       '.blotter'
+    nav:
+      prev: '.pages > form > [value=Previous]'
+      next: '.pages > form > [value=Next]'
+
+  classes:
+    highlight: 'highlighted'
 
   xpath:
-    thread:        'div[starts-with(@id,"thread_")]'
-    postContainer: 'div[starts-with(@id,"reply_") or starts-with(@id,"thread_")]'
+    thread:         'div[starts-with(@id,"thread_")]'
+    postContainer:  'div[starts-with(@id,"reply_") or starts-with(@id,"thread_")]'
+    replyContainer: 'div[starts-with(@id,"reply_")]'
 
   regexp:
     quotelink:
@@ -154,8 +162,8 @@ SW.tinyboard =
   bgColoredEl: ->
     $.el 'div', className: 'post reply'
 
-  isFileURL: ->
-    /\/src\/[^\/]+/.test(location.pathname)
+  isFileURL: (url) ->
+    /\/src\/[^\/]+/.test(url.pathname)
 
   parseNodes: (post, nodes) ->
     # Add vichan's span.poster_id around the ID if not already present.

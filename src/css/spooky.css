@@ -9,8 +9,14 @@
 }
 
 /* 4chan style fixes */
-:root.spooky.sw-yotsuba #arc-list span.quote {
+:root.spooky #arc-list span.quote {
   color: #634C2C;
+}
+:root.spooky.highlight-you .quotesYou$site$highlightable$reply {
+  border-left: 3px solid rgba(145, 182, 214, .8) !important;
+}
+:root.spooky.highlight-own .yourPost$site$highlightable$reply {
+  border-left: 3px dashed rgba(145, 182, 214, .8) !important;
 }
 
 /* Header */
@@ -67,16 +73,16 @@
 :root.spooky .qphl {
   outline: 2px solid rgba(145, 182, 214, .8);
 }
-:root.spooky.highlight-you .quotesYou$site$relative$opHighlight,
-:root.spooky.highlight-you .quotesYou$site$relative$replyPost {
+:root.spooky.highlight-you .quotesYou$site$highlightable$op,
+:root.spooky.highlight-you .quotesYou$site$highlightable$reply {
   border-left: 3px solid rgba(145, 182, 214, .8);
 }
-:root.spooky.highlight-own .yourPost$site$relative$opHighlight,
-:root.spooky.highlight-own .yourPost$site$relative$replyPost {
+:root.spooky.highlight-own .yourPost$site$highlightable$op,
+:root.spooky.highlight-own .yourPost$site$highlightable$reply {
   border-left: 3px dashed rgba(145, 182, 214, .8);
 }
-:root.spooky .filter-highlight$site$relative$opHighlight,
-:root.spooky .filter-highlight$site$relative$replyPost {
+:root.spooky .filter-highlight$site$highlightable$op,
+:root.spooky .filter-highlight$site$highlightable$reply {
   box-shadow: inset 5px 0 rgba(145, 182, 214, .5);
 }
 :root.spooky.highlight-own .yourPost > $site$sideArrows,

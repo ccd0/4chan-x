@@ -2,14 +2,17 @@ Index =
   showHiddenThreads: false
   changed: {}
 
+  enabledOn: ({siteID, boardID}) ->
+    Conf['JSON Index'] and g.sites[siteID].software is 'yotsuba' and boardID isnt 'f'
+
   init: ->
-    return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
+    return unless g.VIEW is 'index'
 
     # For IndexRefresh events
     $.one d, '4chanXInitFinished', @cb.initFinished
     $.on  d, 'PostsInserted',      @cb.postsInserted
 
-    return unless Conf['JSON Index']
+    return unless @enabledOn g.BOARD
 
     @enabled = true
 
@@ -197,7 +200,7 @@ Index =
 
   menu:
     init: ->
-      return if g.VIEW isnt 'index' or !Conf['JSON Index'] or !Conf['Menu'] or !Conf['Thread Hiding Link'] or g.BOARD.ID is 'f'
+      return unless g.VIEW is 'index' and Conf['Menu'] and Conf['Thread Hiding Link'] and Index.enabledOn(g.BOARD)
 
       Menu.menu.addEntry
         el: $.el 'a',

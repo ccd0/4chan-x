@@ -123,11 +123,30 @@ Main =
           <%= html(meta.name + ' has been updated to <a href="' + meta.changelog + '" target="_blank">version ${g.VERSION}</a>.') %>
         new Notice 'info', el, 15
 
-  initFeatures: ->
-    {hostname, search} = location
-    pathname = location.pathname.split /\/+/
-    g.BOARD = new Board pathname[1] unless hostname in ['www.4chan.org', 'www.4channel.org']
+  parseURL: (site=g.SITE, url=location) ->
+    r = {}
 
+    return r if !site
+    r.siteID = site.ID
+
+    return r if site.isBoardlessPage?(url)
+    pathname = url.pathname.split /\/+/
+    r.boardID = pathname[1]
+
+    if site.isFileURL(url)
+      r.VIEW = 'file'
+    else if site.isAuxiliaryPage?(url)
+      # pass
+    else if pathname[2] in ['thread', 'res']
+      r.VIEW = 'thread'
+      r.threadID = r.THREADID = +pathname[3].replace(/\.\w+$/, '')
+    else if /^(?:catalog|archive)(?:\.\w+)?$/.test(pathname[2])
+      r.VIEW = pathname[2].replace(/\.\w+$/, '')
+    else if /^(?:index|\d*)(?:\.\w+)?$/.test(pathname[2])
+      r.VIEW = 'index'
+    r
+
+  initFeatures: ->
     $.global ->
       document.documentElement.classList.add 'js-enabled'
       window.FCX = {}
@@ -136,29 +155,17 @@ Main =
     # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
     $.ajaxPageInit?()
 
-    switch hostname
-      when 'www.4chan.org', 'www.4channel.org'
-        $.onExists doc, 'body', -> $.addStyle CSS.www
-        Captcha.replace.init()
-        return
-      when 'sys.4chan.org', 'sys.4channel.org'
-        if pathname[2] is 'imgboard.php'
-          if /\bmode=report\b/.test search
-            Report.init()
-          else if (match = search.match /\bres=(\d+)/)
-            $.ready ->
-              if Conf['404 Redirect'] and $.id('errmsg')?.textContent is 'Error: Specified thread does not exist.'
-                Redirect.navigate 'thread', {
-                  boardID: g.BOARD.ID
-                  postID:  +match[1]
-                }
-        else if pathname[2] is 'post'
-          PostSuccessful.init()
-        return
+    $.extend g, Main.parseURL()
+    g.BOARD = new Board g.boardID if g.boardID
 
-    if g.SITE.isFileURL()
+    if !g.VIEW
+      g.SITE.initAuxiliary?()
+      return
+
+    if g.VIEW is 'file'
       $.asap (-> d.readyState isnt 'loading'), ->
         if g.SITE.software is 'yotsuba' and Conf['404 Redirect'] and g.SITE.is404?()
+          pathname = location.pathname.split /\/+/
           Redirect.navigate 'file', {
             boardID:  g.BOARD.ID
             filename: pathname[pathname.length - 1]
@@ -171,18 +178,6 @@ Main =
             video.controls = false
             video.play()
             ImageCommon.addControls video
-      return
-
-    return if g.SITE.isAuxiliaryPage?()
-
-    if pathname[2] in ['thread', 'res']
-      g.VIEW     = 'thread'
-      g.THREADID = +pathname[3].replace(/\.\w+$/, '')
-    else if /^(?:catalog|archive)(?:\.\w+)?$/.test(pathname[2])
-      g.VIEW = pathname[2].replace(/\.\w+$/, '')
-    else if /^(?:index|\d*)(?:\.\w+)?$/.test(pathname[2])
-      g.VIEW = 'index'
-    else
       return
 
     g.threads = new SimpleDict()

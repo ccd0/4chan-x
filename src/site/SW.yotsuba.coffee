@@ -4,6 +4,9 @@ SW.yotsuba =
 
   urls:
     thread:     ({boardID, threadID}) -> "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/thread/#{threadID}"
+    post:       ({postID})            -> "#p#{postID}"
+    index:      ({boardID})           -> "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/"
+    catalog:    ({boardID})           -> if boardID is 'f' then undefined else "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/catalog"
     threadJSON: ({boardID, threadID}) -> "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json"
     threadsListJSON: ({boardID})      -> "#{location.protocol}//a.4cdn.org/#{boardID}/threads.json"
     archiveListJSON: ({boardID})      -> if BoardConfig.isArchived(boardID) then "#{location.protocol}//a.4cdn.org/#{boardID}/archive.json" else ''
@@ -14,8 +17,9 @@ SW.yotsuba =
     thumb: ({boardID}, filename) ->
       "#{location.protocol}//#{ImageHost.thumbHost()}/#{boardID}/#{filename}"
 
-  isPrunedByAge: ({boardID}) -> boardID is 'f'
+  isPrunedByAge:   ({boardID}) -> boardID is 'f'
   areMD5sDeferred: ({boardID}) -> boardID is 'f'
+  isOnePage:       ({boardID}) -> boardID is 'f'
   noAudio: ({boardID}) -> BoardConfig.noAudio(boardID)
 
   selectors:
@@ -24,6 +28,7 @@ SW.yotsuba =
     threadDivider: '.board > hr'
     summary:       '.summary'
     postContainer: '.postContainer'
+    replyOriginal: '.replyContainer:not([data-clone])'
     sideArrows:    'div.sideArrows'
     post:          '.post'
     infoRoot:      '.postInfo'
@@ -50,11 +55,10 @@ SW.yotsuba =
       link:  '.fileText > a'
       thumb: 'a.fileThumb > [data-md5]'
     thumbLink: 'a.fileThumb'
-    relative:
-      opHighlight:   '.opContainer'
-      replyPost:     ' > .reply'
-      replyOriginal: '.replyContainer:not([data-clone])'
-      catalogHighlight: ''
+    highlightable:
+      op:      '.opContainer'
+      reply:   ' > .reply'
+      catalog: ''
     comment:   '.postMessage'
     spoiler:   's'
     quotelink: ':not(pre) > .quotelink' # XXX https://github.com/4chan/4chan-JS/issues/77: 4chan currently creates quote links inside [code] tags; ignore them
@@ -67,10 +71,18 @@ SW.yotsuba =
     styleSheet: 'link[title=switch]'
     psa:       '#globalMessage'
     psaTop:    '#globalToggle'
+    searchBox: '#search-box'
+    nav:
+      prev: '.prev > form > [type=submit]'
+      next: '.next > form > [type=submit]'
+
+  classes:
+    highlight: 'highlight'
 
   xpath:
-    thread:        'div[contains(concat(" ",@class," ")," thread ")]'
-    postContainer: 'div[contains(@class,"postContainer")]'
+    thread:         'div[contains(concat(" ",@class," ")," thread ")]'
+    postContainer:  'div[contains(@class,"postContainer")]'
+    replyContainer: 'div[contains(@class,"replyContainer")]'
 
   regexp:
     quotelink:
@@ -105,11 +117,36 @@ SW.yotsuba =
   isIncomplete: ->
     return g.VIEW in ['index', 'thread'] and not $('.board + *')
 
-  isAuxiliaryPage: ->
-    location.hostname not in ['boards.4chan.org', 'boards.4channel.org']
+  isBoardlessPage: (url) ->
+    url.hostname in ['www.4chan.org', 'www.4channel.org']
 
-  isFileURL: ->
-    ImageHost.test(location.hostname)
+  isAuxiliaryPage: (url) ->
+    url.hostname not in ['boards.4chan.org', 'boards.4channel.org']
+
+  isFileURL: (url) ->
+    ImageHost.test(url.hostname)
+
+  initAuxiliary: ->
+    switch location.hostname
+      when 'www.4chan.org', 'www.4channel.org'
+        $.onExists doc, 'body', -> $.addStyle CSS.www
+        Captcha.replace.init()
+        return
+      when 'sys.4chan.org', 'sys.4channel.org'
+        pathname = location.pathname.split /\/+/
+        if pathname[2] is 'imgboard.php'
+          if /\bmode=report\b/.test location.search
+            Report.init()
+          else if (match = location.search.match /\bres=(\d+)/)
+            $.ready ->
+              if Conf['404 Redirect'] and $.id('errmsg')?.textContent is 'Error: Specified thread does not exist.'
+                Redirect.navigate 'thread', {
+                  boardID: g.BOARD.ID
+                  postID:  +match[1]
+                }
+        else if pathname[2] is 'post'
+          PostSuccessful.init()
+        return
 
   scriptData: ->
     for script in $$ 'script:not([src])', d.head

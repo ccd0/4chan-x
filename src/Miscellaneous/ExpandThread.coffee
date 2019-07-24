@@ -58,6 +58,7 @@ ExpandThread =
       return if @ isnt status.req # aborted
       delete status.req
       ExpandThread.parse @, thread, a
+    status.numReplies = $$(g.SITE.selectors.replyOriginal, thread.nodes.root).length
 
   contract: (thread, a, threadRoot) ->
     status = ExpandThread.statuses[thread]
@@ -69,15 +70,7 @@ ExpandThread =
       return
 
     replies = $$ '.thread > .replyContainer', threadRoot
-    if !Conf['JSON Index'] or Conf['Show Replies']
-      num = if thread.isSticky
-        1
-      else switch g.BOARD.ID
-        # XXX boards config
-        when 'b', 'vg', 'bant' then 3
-        when 't' then 1
-        else 5
-      replies = replies[...-num]
+    replies = replies[...(-status.numReplies)] if status.numReplies
     postsCount = 0
     filesCount = 0
     for reply in replies

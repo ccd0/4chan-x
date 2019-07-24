@@ -6,14 +6,10 @@ Site =
 
   init: (cb) ->
     $.extend Conf['siteProperties'], Site.defaultProperties
-    {hostname} = location
-    while hostname and hostname not of Conf['siteProperties']
-      hostname = hostname.replace(/^[^.]*\.?/, '')
-    if hostname
-      hostname = canonical if (canonical = Conf['siteProperties'][hostname].canonical)
-      if Conf['siteProperties'][hostname].software of SW
-        @set hostname
-        cb()
+    hostname = Site.resolve()
+    if hostname and Conf['siteProperties'][hostname].software of SW
+      @set hostname
+      cb()
     $.onExists doc, 'body', =>
       for software of SW when (changes = SW[software].detect?())
         changes.software = software
@@ -30,6 +26,18 @@ Site =
           cb()
         return
       return
+
+  resolve: (url=location) ->
+    {hostname} = url
+    while hostname and hostname not of Conf['siteProperties']
+      hostname = hostname.replace(/^[^.]*\.?/, '')
+    if hostname
+      hostname = canonical if (canonical = Conf['siteProperties'][hostname].canonical)
+    hostname
+
+  parseURL: (url) ->
+    siteID = Site.resolve url
+    Main.parseURL g.sites[siteID], url
 
   set: (hostname) ->
     for ID, properties of Conf['siteProperties']
