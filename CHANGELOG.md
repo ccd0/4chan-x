@@ -4,6 +4,9 @@
 
 ### v1.14.10
 
+**v1.14.10.3** *(2019-07-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.3/builds/4chan-X-noupdate.crx)]
+- Fix bugs in gallery when rotating images with Fit Height enabled.
+
 **v1.14.10.2** *(2019-07-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.2/builds/4chan-X-noupdate.crx)]
 - Limit number of autoretries on posting error to reduce likelihood of "excessive server request" bans. #1302
 - Fix bug from v1.14.10.0 causing full image and thumbnail to briefly appear simultaneously while contracting images and causing unwanted scrolling.
