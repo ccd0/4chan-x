@@ -4,6 +4,7 @@ SW.yotsuba =
 
   urls:
     thread:     ({boardID, threadID}) -> "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/thread/#{threadID}"
+    post:       ({postID})            -> "#p#{postID}"
     index:      ({boardID})           -> "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/"
     catalog:    ({boardID})           -> if boardID is 'f' then undefined else "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/catalog"
     threadJSON: ({boardID, threadID}) -> "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json"

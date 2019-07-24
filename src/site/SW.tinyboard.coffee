@@ -45,6 +45,7 @@ SW.tinyboard =
 
   urls:
     thread: ({siteID, boardID, threadID}) -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/res/#{threadID}.html"
+    post:    ({postID})                   -> "##{postID}"
     index:   ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/"
     catalog: ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/catalog.html"
     threadJSON: ({siteID, boardID, threadID}) ->
