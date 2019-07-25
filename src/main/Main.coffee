@@ -556,7 +556,7 @@ Main =
     addDetails data.error.stack.replace(data.error.toString(), '').trim() if data.error.stack
     addDetails '\n`' + data.html + '`' if data.html
     details = details.replace /file:\/{3}.+\//g, '' # Remove local file paths
-    url = "<%= meta.newIssue.replace('%title', '#{encodeURIComponent title}').replace('%details', '#{encodeURIComponent details}') %>"
+    url = '<%= meta.newIssue %>'.replace('%title', encodeURIComponent title).replace('%details', encodeURIComponent details)
     <%= html('<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>') %>
 
   isThisPageLegit: ->
