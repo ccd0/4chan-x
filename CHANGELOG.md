@@ -2,6 +2,21 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.11
+
+**v1.14.11.0** *(2019-07-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.10.3.
+- Make applicable keybinds work on Tinyboard/vichan. #2171
+- Make Index Navigation buttons work on Tinyboard/vichan. #2171
+- Make Catalog Links toggle work for links to Tinyboard/vichan sites in header. #2171
+- Display notification when MD5s are quick filtered with link to undo. #2221
+- Remove as many hardcoded board names as possible. #525
+- Make list of boards with external catalog user-editable. #570, #525
+- Use external catalog (catalog.neet.tv) on /f/ for catalog keybind and header links.
+- Link from native catalog to external catalog now reads 'External Catalog'.
+- Make list of banners configurable.
+- Fix highlighting of left margin (of posts by/quoting you) when whole post is highlighted (by opening link to post or using keybinds). #585
+
 ### v1.14.10
 
 **v1.14.10.3** *(2019-07-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.3/builds/4chan-X-noupdate.crx)]
