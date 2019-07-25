@@ -168,7 +168,7 @@ tools.html = function(template) {
   if (stream.text) {
     throw new Error(`Unexpected characters in template (${stream.text}): ${template}`);
   }
-  return `(innerHTML: \`${output}\`)`;
+  return `\`{innerHTML: ${output}}\``;
 };
 
 tools.assert = function(statement) {
