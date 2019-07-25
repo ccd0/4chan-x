@@ -87,8 +87,8 @@
       "GM.xmlHttpRequest"
     ],
     "min": {
-      "chrome": "33",
-      "firefox": "26",
+      "chrome": "49",
+      "firefox": "45",
       "greasemonkey": "1.14"
     }
   },
