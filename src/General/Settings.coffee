@@ -44,7 +44,7 @@ Settings =
     Settings.dialog = dialog = $.el 'div',
       id:        'overlay'
     ,
-      <%= readHTML('Settings.html') %>
+      `<%= readHTML('Settings.html') %>`
 
     $.on $('.export', dialog), 'click',  Settings.export
     $.on $('.import', dialog), 'click',  Settings.import
@@ -112,16 +112,16 @@ Settings =
       $.onExists doc, '.adg-rects > .desktop', (ad) -> $.onExists ad, 'iframe', ->
         url = Redirect.to 'thread', {boardID: 'qa', threadID: 362590}
         cb $.el 'li',
-          <%= html(
+          `<%= html(
             'To protect yourself from <a href="${url}" target="_blank">malicious ads</a>,' +
             ' you should <a href="https://github.com/gorhill/uBlock#ublock-origin" target="_blank">block ads</a> on 4chan.'
-          ) %>
+          ) %>`
 
   main: (section) ->
     warnings = $.el 'fieldset',
       hidden: true
     ,
-      <%= html('<legend>Warnings</legend><ul></ul>') %>
+      `<%= html('<legend>Warnings</legend><ul></ul>') %>`
     addWarning = (item) ->
       $.add $('ul', warnings), item
       warnings.hidden = false
@@ -136,7 +136,7 @@ Settings =
       for key, arr of obj when arr instanceof Array
         description = arr[1]
         div = $.el 'div',
-          <%= html('<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>') %>
+          `<%= html('<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>') %>`
         div.dataset.name = key
         input = $ 'input', div
         $.on input, 'change', $.cb.checked
@@ -154,11 +154,11 @@ Settings =
 
     for keyFS, obj of Config.main
       fs = $.el 'fieldset',
-        <%= html('<legend>${keyFS}</legend>') %>
+        `<%= html('<legend>${keyFS}</legend>') %>`
       addCheckboxes fs, obj
       if keyFS is 'Posting and Captchas'
         $.add fs, $.el 'p',
-          <%= html('For more info on captcha options and issues, see the <a href="' + meta.captchaFAQ + '" target="_blank">captcha FAQ</a>.') %>
+          `<%= html('For more info on captcha options and issues, see the <a href="' + meta.captchaFAQ + '" target="_blank">captcha FAQ</a>.') %>`
       $.add section, fs
     addCheckboxes $('div[data-name="JSON Index"] > .suboption-list', section), Config.Index
 
@@ -175,7 +175,7 @@ Settings =
       return
 
     div = $.el 'div',
-      <%= html('<button></button><span class="description">: Clear manually-hidden threads and posts on all boards. Reload the page to apply.') %>
+      `<%= html('<button></button><span class="description">: Clear manually-hidden threads and posts on all boards. Reload the page to apply.') %>`
     button = $ 'button', div
     $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
       hiddenNum = 0
@@ -515,7 +515,7 @@ Settings =
           window.location.reload()
 
   filter: (section) ->
-    $.extend section, <%= readHTML('Filter-select.html') %>
+    $.extend section, `<%= readHTML('Filter-select.html') %>`
     select = $ 'select', section
     $.on select, 'change', Settings.selectFilter
     Settings.selectFilter.call select
@@ -534,12 +534,12 @@ Settings =
         $.add div, ta
       return
     filterTypes = Object.keys(Config.filter).filter((x) -> x isnt 'general').map (x, i) ->
-      <%= html('?{i}{,}<wbr>${x}') %>
-    $.extend div, <%= readHTML('Filter-guide.html') %>
+      `<%= html('?{i}{,}<wbr>${x}') %>`
+    $.extend div, `<%= readHTML('Filter-guide.html') %>`
     $('.warning', div).hidden = Conf['Filter']
 
   sauce: (section) ->
-    $.extend section, <%= readHTML('Sauce.html') %>
+    $.extend section, `<%= readHTML('Sauce.html') %>`
     $('.warning', section).hidden = Conf['Sauce']
     ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
@@ -548,7 +548,7 @@ Settings =
     $.on ta, 'change', $.cb.value
 
   advanced: (section) ->
-    $.extend section, <%= readHTML('Advanced.html') %>
+    $.extend section, `<%= readHTML('Advanced.html') %>`
     warning.hidden = Conf[warning.dataset.feature] for warning in $$ '.warning', section
 
     inputs = {}
@@ -702,7 +702,7 @@ Settings =
         textContent: archive[1]
       }
 
-    $.extend td, <%= html('<select></select>') %>
+    $.extend td, `<%= html('<select></select>') %>`
     select = td.firstElementChild
     if not (select.disabled = length is 1)
       # XXX GM can't into datasets
@@ -790,7 +790,7 @@ Settings =
     $.cb.checked.call @
 
   keybinds: (section) ->
-    $.extend section, <%= readHTML('Keybinds.html') %>
+    $.extend section, `<%= readHTML('Keybinds.html') %>`
     $('.warning', section).hidden = Conf['Keybinds']
 
     tbody  = $ 'tbody', section
@@ -798,7 +798,7 @@ Settings =
     inputs = {}
     for key, arr of Config.hotkeys
       tr = $.el 'tr',
-        <%= html('<td>${arr[1]}</td><td><input class="field"></td>') %>
+        `<%= html('<td>${arr[1]}</td><td><input class="field"></td>') %>`
       input = $ 'input', tr
       input.name = key
       input.spellcheck = false

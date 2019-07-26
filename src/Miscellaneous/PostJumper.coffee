@@ -56,7 +56,7 @@ PostJumper =
     classNext = 'next'
     span = $.el 'span',
       className: 'postJumper'
-    $.extend span, <%= html('<a href="javascript:;" class="${classPrev}">${charPrev}</a><a href="javascript:;" class="${classNext}">${charNext}</a>') %>
+    $.extend span, `<%= html('<a href="javascript:;" class="${classPrev}">${charPrev}</a><a href="javascript:;" class="${classNext}">${charNext}</a>') %>`
     span
 
   scroll: (fromJumper, toJumper) ->

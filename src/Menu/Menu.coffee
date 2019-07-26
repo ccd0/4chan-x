@@ -6,7 +6,7 @@ Menu =
       className: 'menu-button'
       href:      'javascript:;'
 
-    $.extend @button, <%= html('<i class="fa fa-angle-down"></i>') %>
+    $.extend @button, `<%= html('<i class="fa fa-angle-down"></i>') %>`
 
     @menu = new UI.Menu 'post'
     Callbacks.Post.push

@@ -6,7 +6,7 @@ Embedding =
 
     if Conf['Embedding'] and g.VIEW isnt 'archive'
       @dialog = UI.dialog 'embedding',
-        <%= readHTML('Embed.html') %>
+        `<%= readHTML('Embed.html') %>`
       @media = $ '#media-embed', @dialog
       $.one d, '4chanXInitFinished', @ready
       $.on  d, 'IndexRefreshInternal', ->
@@ -62,7 +62,7 @@ Embedding =
       className:   'embedder'
       href:        'javascript:;'
     ,
-      <%= html('(<span>un</span>embed)') %>
+      `<%= html('(<span>un</span>embed)') %>`
 
     embed.dataset[name] = value for name, value of {key, uid, options, href}
 
@@ -216,7 +216,7 @@ Embedding =
       regExp: /^[^?#]+\.(?:gif|png|jpg|jpeg|bmp)(?::\w+)?(?:[?#]|$)/i
       style: ''
       el: (a) ->
-        $.el 'div', <%= html('<a target="_blank" href="${a.dataset.href}"><img src="${a.dataset.href}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
+        $.el 'div', `<%= html('<a target="_blank" href="${a.dataset.href}"><img src="${a.dataset.href}" style="max-width: 80vw; max-height: 80vh;"></a>') %>`
     ,
       key: 'video'
       regExp: /^[^?#]+\.(?:og[gv]|webm|mp4)(?:[?#]|$)/i

@@ -9,11 +9,11 @@ ThreadStats =
     if Conf['Page Count in Stats']
       @[if g.SITE.isPrunedByAge?(g.BOARD) then 'showPurgePos' else 'showPage'] = true
 
-    statsHTML = <%= html(
+    statsHTML = `<%= html(
       '<span id="post-count">?</span> / <span id="file-count">?</span>' +
       '?{Conf["IP Count in Stats"] && g.SITE.hasIPCount}{ / <span id="ip-count">?</span>}' +
       '?{Conf["Page Count in Stats"]}{ / <span id="page-count">?</span>}'
-    ) %>
+    ) %>`
     statsTitle = 'Posts / Files'
     statsTitle += ' / IPs'  if Conf['IP Count in Stats'] and g.SITE.hasIPCount
     statsTitle += (if @showPurgePos then ' / Purge Position' else ' / Page') if Conf['Page Count in Stats']
@@ -27,7 +27,7 @@ ThreadStats =
 
     else
       @dialog = sc = UI.dialog 'thread-stats',
-        <%= html('<div class="move" title="${statsTitle}">&{statsHTML}</div>') %>
+        `<%= html('<div class="move" title="${statsTitle}">&{statsHTML}</div>') %>`
       $.addClass doc, 'float'
       $.ready ->
         $.add d.body, sc

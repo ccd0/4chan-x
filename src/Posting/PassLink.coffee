@@ -8,7 +8,7 @@ PassLink =
 
     passLink = $.el 'span',
       className: 'brackets-wrap pass-link-container'
-    $.extend passLink, <%= html('<a href="javascript:;">4chan Pass</a>') %>
+    $.extend passLink, `<%= html('<a href="javascript:;">4chan Pass</a>') %>`
     $.on passLink.firstElementChild, 'click', ->
       window.open "//sys.#{location.hostname.split('.')[1]}.org/auth",
         Date.now()
