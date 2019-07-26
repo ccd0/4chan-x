@@ -103,7 +103,8 @@ Header =
         $('#navtopright',        footer).id = 'navbotright'
         $('#settingsWindowLink', footer).id = 'settingsWindowLinkBot'
         $.before absbot, footer
-        $.globalEval 'window.cloneTopNav = function() {};'
+        $.global ->
+          window.cloneTopNav = ->
       if (Header.bottomBoardList = $ g.SITE.selectors.boardListBottom)
         for a in $$ 'a', Header.bottomBoardList
           a.className = 'current' if a.hostname is location.hostname and a.pathname.split('/')[1] is g.BOARD.ID
