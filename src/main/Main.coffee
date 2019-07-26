@@ -382,6 +382,7 @@ Main =
         errors.push
           message: "Parsing of Post No.#{postRoot.id.match(/\d+/)} failed. Post will be skipped."
           error: err
+          html: postRoot.outerHTML
     return
 
   addThreads: (records) ->
@@ -458,6 +459,7 @@ Main =
         errors.push
           message: "Parsing of Catalog Thread No.#{(threadRoot.dataset.id or threadRoot.id).match(/\d+/)} failed. Thread will be skipped."
           error: err
+          html: threadRoot.outerHTML
     return
 
   addCatalogThreads: (records) ->
