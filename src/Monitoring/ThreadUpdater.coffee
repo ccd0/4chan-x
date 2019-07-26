@@ -91,7 +91,7 @@ ThreadUpdater =
   http://freesound.org/people/pierrecartoons1979/sounds/90112/
   cc-by-nc-3.0
   ###
-  beep: 'data:audio/wav;base64,<%= readBase64('beep.wav') %>'
+  beep: 'data:audio/wav;base64,<%= readBase64("beep.wav") %>'
 
   playBeep: ->
     {audio} = ThreadUpdater

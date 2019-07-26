@@ -1,11 +1,11 @@
 Redirect =
   archives:
-    `<%=
+    ```<%=
       JSON.stringify(readJSON('archives.json'), null, 2)
         .replace(/\n {2,}(?!{)/g, ' ')
         .replace(/\n/g, '\n    ')
         .replace(/`/g, '\\`')
-    %>`
+    %>```
 
   init: ->
     @selectArchives()

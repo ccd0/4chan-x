@@ -367,8 +367,8 @@ do ->
 $.modifiedClick = (e) ->
   e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
 
-$.open = 
 <% if (type === 'userscript') { %>
+$.open =
   if GM?.openInTab?
     GM.openInTab
   else if GM_openInTab?
@@ -376,6 +376,7 @@ $.open =
   else
     (url) -> window.open url, '_blank'
 <% } else { %>
+$.open =
   (url) -> window.open url, '_blank'
 <% } %>
 

@@ -1182,4 +1182,4 @@ Config =
 
   hiddenPSAList: [{}]
 
-  knownBanners: '<%= readJSON('banners.json').join(',') %>'
+  knownBanners: '<%= readJSON("banners.json").join(",") %>'
