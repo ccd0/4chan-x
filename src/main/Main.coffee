@@ -560,9 +560,11 @@ Main =
       [Please describe the steps needed to reproduce this error.]
 
       Script: <%= meta.name %> <%= meta.fork %> v#{g.VERSION} #{$.platform}
-      User agent: #{navigator.userAgent}
       URL: #{location.href}
+      User agent: #{navigator.userAgent}
     """
+    if $.platform is 'userscript' and (info = if GM? then GM.info else (if GM_info? then GM_info))
+      addDetails "Userscript manager: #{info.scriptHandler} #{info.version}"
     addDetails '\n' + data.error
     addDetails data.error.stack.replace(data.error.toString(), '').trim() if data.error.stack
     addDetails '\n`' + data.html + '`' if data.html
