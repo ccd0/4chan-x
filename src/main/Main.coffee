@@ -554,7 +554,7 @@ Main =
     title += " (+#{errors.length - 1} other errors)" if errors.length > 1
     details = ''
     addDetails = (text) ->
-      unless encodeURIComponent(title + details + text + '\n').length > <%= meta.newIssueMaxLength - meta.newIssue.replace(/%(title|details)/, '').length %>
+      unless encodeURIComponent(title + details + text + '\n').length > `<%= meta.newIssueMaxLength - meta.newIssue.replace(/%(title|details)/, '').length %>`
         details += text + '\n'
     addDetails """
       [Please describe the steps needed to reproduce this error.]
