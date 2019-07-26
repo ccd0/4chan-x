@@ -45,11 +45,8 @@ sources := $(foreach d,$(source_directories),$(call sort_directory,$(d)))
 
 uses_tests_enabled := \
  src/classes/Post.coffee \
- src/site/SW.tinyboard.coffee \
  src/General/Test.coffee \
  src/Linkification/Linkify.coffee \
- src/Miscellaneous/Keybinds.coffee \
- src/Monitoring/Unread.coffee \
  src/main/Main.coffee
 
 imports_src/globals/globals.js := \

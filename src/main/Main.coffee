@@ -671,7 +671,8 @@ Main =
     ['Flash Features',            Flash]
     ['Reply Pruning',             ReplyPruning]
     ['Mod Contact Links',         ModContact]
-    <% if (readJSON('/.tests_enabled')) { %>
-    ['Build Test',                Test]
-    <% } %>
   ]
+
+<% if (readJSON('/.tests_enabled')) { %>
+Main.features.push ['Build Test', Test]
+<% } %>
