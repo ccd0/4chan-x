@@ -225,3 +225,7 @@ SW.yotsuba =
 
   isLinkified: (link) ->
     ImageHost.test(link.hostname)
+
+  testNativeExtension: ->
+    $.global ->
+      @enabled = 'true' if window.Parser.postMenuIcon
