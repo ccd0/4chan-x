@@ -171,10 +171,6 @@ tools.html = function(template) {
   return `\`{innerHTML: ${output}}\``;
 };
 
-tools.assert = function(statement) {
-  return `throw new Error 'Assertion failed: ' + \`${constExpression(statement)}\` unless ${statement}`;
-};
-
 function includesDir(templateName) {
   var dir = path.dirname(templateName);
   var subdir = path.basename(templateName).replace(/\.[^.]+$/, '');
