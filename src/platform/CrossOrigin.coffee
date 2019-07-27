@@ -11,15 +11,17 @@ eventPageRequest = do ->
       callbacks[id] = cb
 <% } %>
 
+<% if (type === 'crx') { %>
 CrossOrigin.binary = (url, cb, headers={}) ->
   # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
   url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
-  <% if (type === 'crx') { %>
   eventPageRequest {type: 'ajax', url, headers, responseType: 'arraybuffer'}, ({response, responseHeaderString}) ->
     response = new Uint8Array(response) if response
     cb response, responseHeaderString
-  <% } %>
-  <% if (type === 'userscript') { %>
+<% } else if (type === 'userscript') { %>
+CrossOrigin.binary = (url, cb, headers={}) ->
+  # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
+  url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
   fallback = ->
     $.ajax url, {
       headers
@@ -58,7 +60,7 @@ CrossOrigin.binary = (url, cb, headers={}) ->
     (GM?.xmlHttpRequest or GM_xmlhttpRequest) gmOptions
   catch
     fallback()
-  <% } %>
+<% } %>
 
 CrossOrigin.file = (url, cb) ->
   CrossOrigin.binary url, (data, headers) ->
@@ -109,19 +111,31 @@ CrossOrigin.Request = class Request
 #   `response` - decoded response body
 #   `abort` - function for aborting the request (silently fails on some platforms)
 #   `getResponseHeader` - function for reading response headers
+<% if (type === 'crx') { %>
 CrossOrigin.ajax = (url, options={}) ->
   {onloadend, timeout, responseType, headers} = options
   responseType ?= 'json'
 
-  <% if (type === 'userscript') { %>
+  req = new CrossOrigin.Request()
+  req.onloadend = onloadend
+
+  eventPageRequest {type: 'ajax', url, responseType, headers, timeout}, (result) ->
+    if result.status
+      $.extend req, result
+    req.onloadend()
+
+  req
+<% } else if (type === 'userscript') { %>
+CrossOrigin.ajax = (url, options={}) ->
+  {onloadend, timeout, responseType, headers} = options
+  responseType ?= 'json'
+
   unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
     return $.ajax url, options
-  <% } %>
 
   req = new CrossOrigin.Request()
   req.onloadend = onloadend
 
-  <% if (type === 'userscript') { %>
   gmOptions = {
     method: 'GET'
     url
@@ -154,25 +168,18 @@ CrossOrigin.ajax = (url, options={}) ->
     req.abort = ->
       try
         gmReq.abort()
-  <% } %>
-
-  <% if (type === 'crx') { %>
-  eventPageRequest {type: 'ajax', url, responseType, headers, timeout}, (result) ->
-    if result.status
-      $.extend req, result
-    req.onloadend()
-  <% } %>
 
   req
+<% } %>
 
 CrossOrigin.cache = (url, cb) ->
   $.cache url, cb,
     ajax: CrossOrigin.ajax
 
+<% if (type === 'crx') { %>
 CrossOrigin.permission = (cb) ->
-  <% if (type === 'crx') { %>
   eventPageRequest {type: 'permission'}, -> cb()
-  <% } %>
-  <% if (type === 'userscript') { %>
+<% } else if (type === 'userscript') { %>
+CrossOrigin.permission = (cb) ->
   cb()
-  <% } %>
+<% } %>
