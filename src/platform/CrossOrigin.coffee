@@ -1,7 +1,7 @@
 CrossOrigin = {}
 
 <% if (type === 'crx') { %>
-eventPageRequest = do ->
+CrossOrigin.eventPageRequest = do ->
   callbacks = []
   chrome.runtime.onMessage.addListener (response) ->
     callbacks[response.id] response.data
@@ -15,7 +15,7 @@ eventPageRequest = do ->
 CrossOrigin.binary = (url, cb, headers={}) ->
   # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
   url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
-  eventPageRequest {type: 'ajax', url, headers, responseType: 'arraybuffer'}, ({response, responseHeaderString}) ->
+  CrossOrigin.eventPageRequest {type: 'ajax', url, headers, responseType: 'arraybuffer'}, ({response, responseHeaderString}) ->
     response = new Uint8Array(response) if response
     cb response, responseHeaderString
 <% } else if (type === 'userscript') { %>
@@ -119,7 +119,7 @@ CrossOrigin.ajax = (url, options={}) ->
   req = new CrossOrigin.Request()
   req.onloadend = onloadend
 
-  eventPageRequest {type: 'ajax', url, responseType, headers, timeout}, (result) ->
+  CrossOrigin.eventPageRequest {type: 'ajax', url, responseType, headers, timeout}, (result) ->
     if result.status
       $.extend req, result
     req.onloadend()
@@ -178,7 +178,7 @@ CrossOrigin.cache = (url, cb) ->
 
 <% if (type === 'crx') { %>
 CrossOrigin.permission = (cb) ->
-  eventPageRequest {type: 'permission'}, -> cb()
+  CrossOrigin.eventPageRequest {type: 'permission'}, -> cb()
 <% } else if (type === 'userscript') { %>
 CrossOrigin.permission = (cb) ->
   cb()

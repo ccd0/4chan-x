@@ -536,7 +536,7 @@ $.crxWorking = ->
 
 $.get = $.oneItemSugar (data, cb) ->
   return unless $.crxWorking()
-  results = {}
+  resultfrom = {}
   get = (area) ->
     keys = Object.keys data
     # XXX slow performance in Firefox
@@ -551,10 +551,10 @@ $.get = $.oneItemSugar (data, cb) ->
         result = result2
       for key of data
         $.oldValue[area][key] = result[key]
-      results[area] = result
-      if results.local and results.sync
-        $.extend data, results.sync
-        $.extend data, results.local
+      resultfrom[area] = result
+      if resultfrom.local and resultfrom.sync
+        $.extend data, resultfrom.sync
+        $.extend data, resultfrom.local
         cb data
   get 'local'
   get 'sync'
@@ -651,8 +651,8 @@ if GM?.deleteValue? and window.BroadcastChannel and not GM_addValueChangeListene
   $.get = $.oneItemSugar (items, cb) ->
     keys = Object.keys items
     Promise.all(GM.getValue(g.NAMESPACE + key) for key in keys).then (values) ->
-      for val, i in values when val
-        items[keys[i]] = JSON.parse val
+      for val, ii in values when val
+        items[keys[ii]] = JSON.parse val
       cb items
 
   $.set = $.oneItemSugar (items, cb) ->
