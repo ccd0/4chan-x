@@ -14,7 +14,7 @@ UnreadIndex =
       cb:   @node
 
     $.on d, 'IndexRefreshInternal', @onIndexRefresh
-    $.on d, 'PostsInserted', @onPostsInserted
+    $.on d, 'PostsInserted PostsRemoved', @onPostsInserted
 
   node: ->
     UnreadIndex.lastReadPost[@fullID] = UnreadIndex.db.get(
@@ -36,7 +36,7 @@ UnreadIndex =
     return if !thread or thread.nodes.root isnt e.target
     wasVisible = !!UnreadIndex.hr[thread.fullID]?.parentNode
     UnreadIndex.update thread
-    if Conf['Scroll to Last Read Post'] and !wasVisible and !!UnreadIndex.hr[thread.fullID]?.parentNode
+    if Conf['Scroll to Last Read Post'] and e.type is 'PostsInserted' and !wasVisible and !!UnreadIndex.hr[thread.fullID]?.parentNode
       Header.scrollToIfNeeded UnreadIndex.hr[thread.fullID], true
 
   sync: ->
@@ -56,7 +56,7 @@ UnreadIndex =
     repliesRead = 0
     firstUnread = null
     thread.posts.forEach (post) ->
-      if post.isReply and post.nodes.root.parentNode is thread.nodes.root
+      if post.isReply and thread.nodes.root.contains(post.nodes.root)
         repliesShown++
         if post.ID <= lastReadPost
           repliesRead++
@@ -64,7 +64,7 @@ UnreadIndex =
           firstUnread = post
 
     hr = UnreadIndex.hr[thread.fullID]
-    if firstUnread and (repliesRead or (lastReadPost is thread.OP.ID and (!$(Site.selectors.summary, thread.nodes.root) or thread.ID of ExpandThread.statuses)))
+    if firstUnread and (repliesRead or (lastReadPost is thread.OP.ID and (!$(g.SITE.selectors.summary, thread.nodes.root) or thread.ID of ExpandThread.statuses)))
       if !hr
         hr = UnreadIndex.hr[thread.fullID] = $.el 'hr',
           className: 'unread-line'
@@ -75,7 +75,7 @@ UnreadIndex =
     hasUnread = if repliesShown
       firstUnread or !repliesRead
     else if Index.enabled
-      Index.lastPost(thread.ID) > lastReadPost
+      thread.lastPost > lastReadPost
     else
       thread.OP.ID > lastReadPost
     thread.nodes.root.classList.toggle 'unread-thread', hasUnread
@@ -87,27 +87,21 @@ UnreadIndex =
         href: 'javascript:;'
         textContent: 'Mark Read'
       $.on link, 'click', UnreadIndex.markRead
-    if (divider = $ Site.selectors.threadDivider, thread.nodes.root) # divider inside thread as in Tinyboard
+    if (divider = $ g.SITE.selectors.threadDivider, thread.nodes.root) # divider inside thread as in Tinyboard
       $.before divider, link
     else
       $.add thread.nodes.root, link
 
   markRead: ->
     thread = Get.threadFromNode @
-    if Index.enabled
-      lastPost = Index.lastPost(thread.ID)
-    else
-      lastPost = 0
-      thread.posts.forEach (post) ->
-        if post.ID > lastPost and !post.isFetchedQuote
-          lastPost = post.ID
-    UnreadIndex.lastReadPost[thread.fullID] = lastPost
+    UnreadIndex.lastReadPost[thread.fullID] = thread.lastPost
     UnreadIndex.db.set
       boardID:  thread.board.ID
       threadID: thread.ID
-      val:      lastPost
+      val:      thread.lastPost
     $.rm UnreadIndex.hr[thread.fullID]
     thread.nodes.root.classList.remove 'unread-thread'
-    ThreadWatcher.update thread.board.ID, thread.ID,
+    ThreadWatcher.update g.SITE.ID, thread.board.ID, thread.ID,
+      last: thread.lastPost
       unread: 0
-      quotingYou: false
+      quotingYou: 0

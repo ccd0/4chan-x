@@ -168,14 +168,14 @@ ImageExpand =
 
     if file.fullImage
       el = file.fullImage
-    else if ImageCommon.cache?.dataset.fullID is post.fullID
+    else if ImageCommon.cache?.dataset.fileID is "#{post.fullID}.#{file.index}"
       el = file.fullImage = ImageCommon.popCache()
       $.on el, 'error', ImageExpand.error
       ImageCommon.rewind el if Conf['Restart when Opened'] and el.id isnt 'ihover'
       el.removeAttribute 'id'
     else
       el = file.fullImage = $.el (if isVideo then 'video' else 'img')
-      el.dataset.fullID = post.fullID
+      el.dataset.fileID = "#{post.fullID}.#{file.index}"
       $.on el, 'error', ImageExpand.error
       el.src = src or file.url
 
@@ -250,7 +250,7 @@ ImageExpand =
     mouseover:     -> mousedown = false
     mousedown: (e) -> mousedown = true  if e.button is 0
     mouseup:   (e) -> mousedown = false if e.button is 0
-    mouseout:  (e) -> ImageExpand.toggle(Get.postFromNode @) if mousedown and e.clientX <= @getBoundingClientRect().left
+    mouseout:  (e) -> ImageExpand.toggle(Get.postFromNode @) if ((e.buttons & 1) or mousedown) and e.clientX <= @getBoundingClientRect().left
 
   setupVideoCB: (post) ->
     for eventName, cb of ImageExpand.videoCB
@@ -267,12 +267,12 @@ ImageExpand =
     #  - after the image started loading.
     # Don't try to re-expand if it was already contracted.
     return unless post.file.isExpanding or post.file.isExpanded
-    if ImageCommon.decodeError @, post
+    if ImageCommon.decodeError @, post.file
       return ImageExpand.contract post
     # Don't autoretry images from the archive.
     if ImageCommon.isFromArchive @
       return ImageExpand.contract post
-    ImageCommon.error @, post, 10 * $.SECOND, (URL) ->
+    ImageCommon.error @, post, post.file, 10 * $.SECOND, (URL) ->
       if post.file.isExpanding or post.file.isExpanded
         ImageExpand.contract post
         (ImageExpand.expand post, URL if URL)

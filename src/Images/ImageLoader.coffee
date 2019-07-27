@@ -9,7 +9,7 @@ ImageLoader =
       cb:   @node
 
     $.on d, 'PostsInserted', ->
-      g.posts.forEach ImageLoader.prefetch
+      g.posts.forEach ImageLoader.prefetchAll
 
     if Conf['Replace WEBM']
       $.on d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', @playVideos
@@ -27,12 +27,13 @@ ImageLoader =
       order: 98
 
   node: ->
-    return if @isClone or !@file
-    ImageLoader.replaceVideo @ if Conf['Replace WEBM'] and @file.isVideo
-    ImageLoader.prefetch @
+    return if @isClone
+    for file in @files
+      ImageLoader.replaceVideo @, file if Conf['Replace WEBM'] and file.isVideo
+      ImageLoader.prefetch @, file
+    return
 
-  replaceVideo: (post) ->
-    {file} = post
+  replaceVideo: (post, file) ->
     {thumb} = file
     video = $.el 'video',
       preload:     'none'
@@ -49,9 +50,7 @@ ImageLoader =
     file.thumb      = video
     file.videoThumb = true
 
-  prefetch: (post) ->
-    {file} = post
-    return unless file
+  prefetch: (post, file) ->
     {isImage, isVideo, thumb, url} = file
     return if file.isPrefetched or !(isImage or isVideo) or post.isHidden or post.thread.isHidden
     type    = if (match = url.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
@@ -75,16 +74,22 @@ ImageLoader =
         thumb.src = url
     el.src = url
 
+  prefetchAll: (post) ->
+    for file in post.files
+      ImageLoader.prefetch post, file
+    return
+
   toggle: ->
     if Conf['prefetch'] = @checked
-      g.posts.forEach ImageLoader.prefetch
+      g.posts.forEach ImageLoader.prefetchAll
     return
 
   playVideos: ->
     # Special case: Quote previews are off screen when inserted into document, but quickly moved on screen.
     qpClone = $.id('qp')?.firstElementChild
     g.posts.forEach (post) ->
-      for post in [post, post.clones...] when post.file?.videoThumb
-        {thumb} = post.file
-        if Header.isNodeVisible(thumb) or post.nodes.root is qpClone then thumb.play() else thumb.pause()
+      for post in [post, post.clones...]
+        for file in post.files when file.videoThumb
+          {thumb} = file
+          if Header.isNodeVisible(thumb) or post.nodes.root is qpClone then thumb.play() else thumb.pause()
       return

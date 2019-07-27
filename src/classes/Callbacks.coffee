@@ -2,6 +2,7 @@ class Callbacks
   @Post          = new Callbacks 'Post'
   @Thread        = new Callbacks 'Thread'
   @CatalogThread = new Callbacks 'Catalog Thread'
+  @CatalogThreadNative = new Callbacks 'Catalog Thread'
 
   constructor: (@type) ->
     @keys = []
@@ -10,8 +11,8 @@ class Callbacks
     @keys.push name unless @[name]
     @[name] = cb
 
-  execute: (node, keys=@keys) ->
-    return if node.callbacksExecuted
+  execute: (node, keys=@keys, force=false) ->
+    return if node.callbacksExecuted and !force
     node.callbacksExecuted = true
     for name in keys
       try

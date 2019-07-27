@@ -68,7 +68,8 @@ Redirect =
             continue
           load(i).call {status: 200, response}
         else
-          CrossOrigin.json url, load(i), true
+          CrossOrigin.ajax url,
+            onloadend: load(i)
     else
       Redirect.parse [], cb
     return
@@ -126,7 +127,11 @@ Redirect =
     url
 
   file: (archive, {boardID, filename}) ->
-    filename = encodeURIComponent Build.unescape decodeURIComponent filename if boardID is 'f'
+    return '' unless filename
+    if boardID is 'f'
+      filename = encodeURIComponent $.unescape decodeURIComponent filename
+    else
+      return '' if /[sm]\.jpg$/.test(filename)
     "#{Redirect.protocol archive}#{archive.domain}/#{boardID}/full_image/#{filename}"
 
   board: (archive, {boardID}) ->

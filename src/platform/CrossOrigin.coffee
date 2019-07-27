@@ -1,130 +1,177 @@
 <% if (type === 'crx') { %>
 eventPageRequest = do ->
   callbacks = []
-  chrome.runtime.onMessage.addListener (data) ->
-    callbacks[data.id] data
-    delete callbacks[data.id]
-  (url, responseType, cb) ->
-    chrome.runtime.sendMessage {url, responseType}, (id) ->
+  chrome.runtime.onMessage.addListener (response) ->
+    callbacks[response.id] response.data
+    delete callbacks[response.id]
+  (params, cb) ->
+    chrome.runtime.sendMessage params, (id) ->
       callbacks[id] = cb
 
 <% } %>
 CrossOrigin =
   binary: (url, cb, headers={}) ->
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
-    url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
+    url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
-    eventPageRequest url, 'arraybuffer', ({response, contentType, contentDisposition, error}) ->
-      return cb null if error
-      cb new Uint8Array(response), contentType, contentDisposition
+    eventPageRequest {type: 'ajax', url, headers, responseType: 'arraybuffer'}, ({response, responseHeaderString}) ->
+      response = new Uint8Array(response) if response
+      cb response, responseHeaderString
     <% } %>
     <% if (type === 'userscript') { %>
-    # Use workaround for binary data in Greasemonkey versions < 3.2, in Pale Moon for all GM versions, and in JS Blocker (Safari).
-    workaround = $.engine is 'gecko' and GM_info? and /^[0-2]\.|^3\.[01](?!\d)/.test(GM_info.version)
-    workaround or= /PaleMoon\//.test(navigator.userAgent)
-    workaround or= GM_info?.script?.includeJSB?
-    options =
+    fallback = ->
+      $.ajax url, {
+        headers
+        responseType: 'arraybuffer'
+        onloadend: ->
+          if @status and @response
+            cb new Uint8Array(@response), @getAllResponseHeaders()
+          else
+            cb null
+      }
+    unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
+      fallback()
+      return
+    gmOptions =
       method: "GET"
       url: url
       headers: headers
+      responseType: 'arraybuffer'
+      overrideMimeType: 'text/plain; charset=x-user-defined'
       onload: (xhr) ->
-        if workaround
+        if xhr.response instanceof ArrayBuffer
+          data = new Uint8Array xhr.response
+        else
           r = xhr.responseText
           data = new Uint8Array r.length
           i = 0
           while i < r.length
             data[i] = r.charCodeAt i
             i++
-        else
-          data = new Uint8Array xhr.response
-        contentType        = xhr.responseHeaders.match(/Content-Type:\s*(.*)/i)?[1]
-        contentDisposition = xhr.responseHeaders.match(/Content-Disposition:\s*(.*)/i)?[1]
-        cb data, contentType, contentDisposition
+        cb data, xhr.responseHeaders
       onerror: ->
         cb null
       onabort: ->
         cb null
-    if workaround
-      options.overrideMimeType = 'text/plain; charset=x-user-defined'
-    else
-      options.responseType = 'arraybuffer'
-    (GM?.xmlHttpRequest or GM_xmlhttpRequest) options
+    try
+      (GM?.xmlHttpRequest or GM_xmlhttpRequest) gmOptions
+    catch
+      fallback()
     <% } %>
 
   file: (url, cb) ->
-    CrossOrigin.binary url, (data, contentType, contentDisposition) ->
+    CrossOrigin.binary url, (data, headers) ->
       return cb null unless data?
-      name = url.match(/([^\/]+)\/*$/)?[1]
+      name = url.match(/([^\/?#]+)\/*(?:$|[?#])/)?[1]
+      contentType        = headers.match(/Content-Type:\s*(.*)/i)?[1]
+      contentDisposition = headers.match(/Content-Disposition:\s*(.*)/i)?[1]
       mime = contentType?.match(/[^;]*/)[0] or 'application/octet-stream'
       match =
         contentDisposition?.match(/\bfilename\s*=\s*"((\\"|[^"])+)"/i)?[1] or
         contentType?.match(/\bname\s*=\s*"((\\"|[^"])+)"/i)?[1]
       if match
         name = match.replace /\\"/g, '"'
-      if GM_info?.script?.includeJSB?
-        # Content type comes back as 'text/plain; charset=x-user-defined'; guess from filename instead.
+      if /^text\/plain;\s*charset=x-user-defined$/i.test(mime)
+        # In JS Blocker (Safari) content type comes back as 'text/plain; charset=x-user-defined'; guess from filename instead.
         mime = QR.typeFromExtension[name.match(/[^.]*$/)[0].toLowerCase()] or 'application/octet-stream'
       blob = new Blob([data], {type: mime})
       blob.name = name
       cb blob
 
-  # Attempts to fetch `url` in JSON format using cross-origin privileges, if available.
-  # On success, calls `cb` with a `this` containing properties `status`, `statusText`, `response` and caches result.
-  # On error/abort, calls `cb` with a `this` of `{}`.
-  # If `bypassCache` is true, ignores previously cached results.
-  json: do ->
-    callbacks = {}
-    results = {}
-    success = (url, result) ->
-      for cb in callbacks[url]
-        $.queueTask -> cb.call result
-      delete callbacks[url]
-      results[url] = result
-    failure = (url) ->
-      for cb in callbacks[url]
-        $.queueTask -> cb.call {}
-      delete callbacks[url]
+  Request: class Request
+    status: 0
+    statusText: ''
+    response: null
+    responseHeaderString: null
+    getResponseHeader: (headerName) ->
+      if !@responseHeaders? and @responseHeaderString?
+        @responseHeaders = {}
+        for header in @responseHeaderString.split('\r\n')
+          if (i = header.indexOf(':')) >= 0
+            key = header[...i].trim().toLowerCase()
+            val = header[i+1..].trim()
+            @responseHeaders[key] = val
+      (@responseHeaders or {})[headerName.toLowerCase()] ? null
+    abort: ->
+    onloadend: ->
 
-    (url, cb, bypassCache) ->
-      <% if (type === 'userscript') { %>
-      unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
-        if bypassCache
-          $.cleanCache (url2) -> url2 is url
-        if (req = $.cache url, cb, responseType: 'json')
-          $.on req, 'abort error', -> cb.call({})
-        else
-          cb.call {}
-        return
-      <% } %>
+  # Attempts to fetch `url` using cross-origin privileges, if available.
+  # Interface is a subset of that of $.ajax.
+  # Options:
+  #   `onloadend` - called with the returned object as `this` on success or error/abort/timeout.
+  #   `timeout` - time limit for request
+  #   `responseType` - expected response type, 'json' by default; 'json' and 'text' supported
+  #   `headers` - request headers
+  # Returned object properties:
+  #   `status` - HTTP status (0 if connection not successful)
+  #   `statusText` - HTTP status text
+  #   `response` - decoded response body
+  #   `abort` - function for aborting the request (silently fails on some platforms)
+  #   `getResponseHeader` - function for reading response headers
+  ajax: (url, options={}) ->
+    {onloadend, timeout, responseType, headers} = options
+    responseType ?= 'json'
 
-      if bypassCache
-        delete results[url]
-      if results[url]
-        cb.call results[url]
-        return
-      if callbacks[url]
-        callbacks[url].push cb
-        return
-      callbacks[url] = [cb]
+    <% if (type === 'userscript') { %>
+    unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
+      return $.ajax url, options
+    <% } %>
 
-      <% if (type === 'userscript') { %>
-      (GM?.xmlHttpRequest or GM_xmlhttpRequest)
-        method: "GET"
-        url: url+''
-        onload: (xhr) ->
-          {status, statusText} = xhr
-          try
-            response = JSON.parse(xhr.responseText)
-            success url, {status, statusText, response}
-          catch
-            failure url
-        onerror: -> failure(url)
-        onabort: -> failure(url)
-      <% } %>
-      <% if (type === 'crx') { %>
-      eventPageRequest url, 'json', (result) ->
-        if result.status
-          success url, result
-        else
-          failure url
-      <% } %>
+    req = new CrossOrigin.Request()
+    req.onloadend = onloadend
+
+    <% if (type === 'userscript') { %>
+    gmOptions = {
+      method: 'GET'
+      url
+      headers
+      timeout
+      onload: (xhr) ->
+        try
+          response = switch responseType
+            when 'json'
+              if xhr.responseText then JSON.parse(xhr.responseText) else null
+            else
+              xhr.responseText
+          $.extend req, {
+            response
+            status: xhr.status
+            statusText: xhr.statusText
+            responseHeaderString: xhr.responseHeaders
+          }
+        req.onloadend()
+      onerror:   -> req.onloadend()
+      onabort:   -> req.onloadend()
+      ontimeout: -> req.onloadend()
+    }
+    try
+      gmReq = (GM?.xmlHttpRequest or GM_xmlhttpRequest) gmOptions
+    catch
+      return $.ajax url, options
+
+    if gmReq and typeof gmReq.abort is 'function'
+      req.abort = ->
+        try
+          gmReq.abort()
+    <% } %>
+
+    <% if (type === 'crx') { %>
+    eventPageRequest {type: 'ajax', url, responseType, headers, timeout}, (result) ->
+      if result.status
+        $.extend req, result
+      req.onloadend()
+    <% } %>
+
+    req
+
+  cache: (url, cb) ->
+    $.cache url, cb,
+      ajax: CrossOrigin.ajax
+
+  permission: (cb) ->
+    <% if (type === 'crx') { %>
+    eventPageRequest {type: 'permission'}, -> cb()
+    <% } %>
+    <% if (type === 'userscript') { %>
+    cb()
+    <% } %>

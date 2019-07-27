@@ -26,6 +26,8 @@ Sauce =
         m = part.match /^(\w*):?(.*)$/
         parts[m[1]] = m[2]
     parts['text'] or= parts['url'].match(/(\w+)\.\w+\//)?[1] or '?'
+    if 'boards' of parts
+      parts['boards'] = Filter.parseBoards parts['boards']
     if 'regexp' of parts
       try
         if (regexp = parts['regexp'].match /^\/(.*)\/(\w*)$/)
@@ -43,23 +45,23 @@ Sauce =
         return null
     parts
 
-  createSauceLink: (link, post) ->
-    ext = post.file.url.match(/[^.]*$/)[0]
+  createSauceLink: (link, post, file) ->
+    ext = file.url.match(/[^.]*$/)[0]
     parts = {}
     $.extend parts, link
 
-    return null unless !parts['boards'] or post.board.ID in parts['boards'].split ','
-    return null unless !parts['types']  or ext           in parts['types'].split  ','
-    return null unless !parts['regexp'] or (matches = post.file.name.match parts['regexp'])
+    return null unless !parts['boards'] or parts['boards']["#{post.siteID}/#{post.boardID}"] or parts['boards']["#{post.siteID}/*"]
+    return null unless !parts['types']  or ext in parts['types'].split(',')
+    return null unless !parts['regexp'] or (matches = file.name.match parts['regexp'])
 
     missing = []
     for key in ['url', 'text']
       parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi|\$\d+)/g, (orig, parameter) ->
         if parameter[0] is '$'
           return orig unless matches
-          type = matches[parameter[1..]]
+          type = matches[parameter[1..]] or ''
         else
-          type = Sauce.formatters[parameter] post, ext
+          type = Sauce.formatters[parameter] post, file, ext
           if not type?
             missing.push parameter
             return ''
@@ -69,7 +71,7 @@ Sauce =
           type = encodeURIComponent type
         type
 
-    if post.board.ID is 'f' and missing.length and !missing.filter((x) -> !/^.?MD5$/.test(x)).length
+    if g.SITE.areMD5sDeferred?(post.board) and missing.length and !missing.filter((x) -> !/^.?MD5$/.test(x)).length
       a = Sauce.link.cloneNode false
       a.dataset.skip = '1'
       return a
@@ -83,32 +85,36 @@ Sauce =
     a
 
   node: ->
-    return if @isClone or !@file
+    return if @isClone
+    for file in @files
+      Sauce.file @, file
+    return
 
+  file: (post, file) ->
     nodes = []
     skipped = []
     for link in Sauce.links
-      if (node = Sauce.createSauceLink link, @)
+      if (node = Sauce.createSauceLink link, post, file)
         nodes.push $.tn(' '), node
         skipped.push [link, node] if node.dataset.skip
-    $.add @file.text, nodes
+    $.add file.text, nodes
 
     if skipped.length
-      observer = new MutationObserver =>
-        if @file.text.dataset.md5
-          for [link, node] in skipped when (node2 = Sauce.createSauceLink link, @)
+      observer = new MutationObserver ->
+        if file.text.dataset.md5
+          for [link, node] in skipped when (node2 = Sauce.createSauceLink link, post, file)
             $.replace node, node2
           observer.disconnect()
-      observer.observe @file.text, {attributes: true}
+      observer.observe file.text, {attributes: true}
 
   formatters:
-    TURL:  (post) -> post.file.thumbURL
-    URL:   (post) -> post.file.url
-    IMG:   (post, ext) -> if ext in ['gif', 'jpg', 'png'] then post.file.url else post.file.thumbURL
-    MD5:   (post) -> post.file.MD5
-    sMD5:  (post) -> post.file.MD5?.replace /[+/=]/g, (c) -> ({'+': '-', '/': '_', '=': ''})[c]
-    hMD5:  (post) -> if post.file.MD5 then ("0#{c.charCodeAt(0).toString(16)}"[-2..] for c in atob post.file.MD5).join('')
+    TURL:  (post, file) -> file.thumbURL
+    URL:   (post, file) -> file.url
+    IMG:   (post, file, ext) -> if ext in ['gif', 'jpg', 'png'] then file.url else file.thumbURL
+    MD5:   (post, file) -> file.MD5
+    sMD5:  (post, file) -> file.MD5?.replace /[+/=]/g, (c) -> ({'+': '-', '/': '_', '=': ''})[c]
+    hMD5:  (post, file) -> if file.MD5 then ("0#{c.charCodeAt(0).toString(16)}"[-2..] for c in atob file.MD5).join('')
     board: (post) -> post.board.ID
-    name:  (post) -> post.file.name
+    name:  (post, file) -> file.name
     '%':   -> '%'
     semi:  -> ';'

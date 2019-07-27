@@ -1,5 +1,5 @@
 <% if (readJSON('/.tests_enabled')) { %>
-Build.Test =
+Test =
   init: ->
     return if !Conf['Menu'] or g.VIEW not in ['index', 'thread']
 
@@ -60,22 +60,23 @@ Build.Test =
       x2 = x.childNodes[i]
       y2 = y.childNodes[i]
       return [x2, y2] unless x2 and y2
-      return Build.Test.firstDiff(x2, y2) unless x2.isEqualNode y2
+      return Test.firstDiff(x2, y2) unless x2.isEqualNode y2
       i++
 
   testOne: (post) ->
-    Build.Test.postsRemaining++
-    $.cache "#{location.protocol}//a.4cdn.org/#{post.board.ID}/thread/#{post.thread.ID}.json", ->
+    Test.postsRemaining++
+    $.cache g.SITE.urls.threadJSON({boardID: post.boardID, threadID: post.threadID}), ->
+      return unless @response
       {posts} = @response
-      Build.spoilerRange[post.board.ID] = posts[0].custom_spoiler
+      g.SITE.Build.spoilerRange[post.board.ID] = posts[0].custom_spoiler
       for postData in posts
         if postData.no is post.ID
           t1 = new Date().getTime()
-          obj = Build.parseJSON postData, post.board.ID
-          root = Build.post obj
+          obj = g.SITE.Build.parseJSON postData, post.board
+          root = g.SITE.Build.post obj
           t2 = new Date().getTime()
-          Build.Test.time += t2 - t1
-          post2 = new Post root, post.thread, post.board, 'forBuildTest'
+          Test.time += t2 - t1
+          post2 = new Post root, post.thread, post.board, {forBuildTest: true}
           fail = false
 
           x = post.normalizedOriginal
@@ -83,34 +84,34 @@ Build.Test =
           unless x.isEqualNode y
             fail = true
             c.log "#{post.fullID} differs"
-            [x2, y2] = Build.Test.firstDiff x, y
+            [x2, y2] = Test.firstDiff x, y
             c.log x2
             c.log y2
             c.log x.outerHTML
             c.log y.outerHTML
 
           for key of Config.filter when not key is 'General' and not (key is 'MD5' and post.board.ID is 'f')
-            val1 = Filter[key] obj
-            val2 = Filter[key] post2
-            if val1 isnt val2
+            val1 = Filter.values key, obj
+            val2 = Filter.values key, post2
+            unless val1.length is val2.length and val1.every((x, i) -> x is val2[i])
               fail = true
               c.log "#{post.fullID} has filter bug in #{key}"
               c.log val1
               c.log val2
 
           if fail
-            Build.Test.postsFailed++
+            Test.postsFailed++
           else
             c.log "#{post.fullID} correct"
-          Build.Test.postsRemaining--
-          Build.Test.report() if Build.Test.postsRemaining is 0
+          Test.postsRemaining--
+          Test.report() if Test.postsRemaining is 0
       return
 
   testAll: ->
     g.posts.forEach (post) ->
       unless post.isClone or post.isFetchedQuote
         if not ((abbr = $ '.abbr', post.nodes.comment) and /Comment too long\./.test(abbr.textContent))
-          Build.Test.testOne post
+          Test.testOne post
     return
 
   postsRemaining: 0
@@ -118,18 +119,18 @@ Build.Test =
   time: 0
 
   report: ->
-    if Build.Test.postsFailed
-      new Notice 'warning', "#{Build.Test.postsFailed} post(s) differ (#{Build.Test.time} ms)", 30
+    if Test.postsFailed
+      new Notice 'warning', "#{Test.postsFailed} post(s) differ (#{Test.time} ms)", 30
     else
-      new Notice 'success', "All correct (#{Build.Test.time} ms)", 5
-    Build.Test.postsFailed = Build.Test.time = 0
+      new Notice 'success', "All correct (#{Test.time} ms)", 5
+    Test.postsFailed = Test.time = 0
 
   cb:
     testOne: ->
-      Build.Test.testOne g.posts[@dataset.fullID]
+      Test.testOne g.posts[@dataset.fullID]
       Menu.menu.close()
 
     testAll: ->
-      Build.Test.testAll()
+      Test.testAll()
       Header.menu.close()
 <% } %>

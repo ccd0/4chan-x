@@ -1,6 +1,6 @@
 PassLink =
   init: ->
-    return unless Conf['Pass Link']
+    return unless g.SITE.software is 'yotsuba' and Conf['Pass Link']
     Main.ready @ready
 
   ready: ->

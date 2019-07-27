@@ -2,7 +2,248 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.11
+
+**v1.14.11.0** *(2019-07-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.10.3.
+- Make applicable keybinds work on Tinyboard/vichan. #2171
+- Make Index Navigation buttons work on Tinyboard/vichan. #2171
+- Make Catalog Links toggle work for links to Tinyboard/vichan sites in header. #2171
+- Display notification when MD5s are quick filtered with link to undo. #2221
+- Remove as many hardcoded board names as possible. #525
+- Make list of boards with external catalog user-editable. #570, #525
+- Use external catalog (catalog.neet.tv) on /f/ for catalog keybind and header links.
+- Link from native catalog to external catalog now reads 'External Catalog'.
+- Make list of banners configurable.
+- Fix highlighting of left margin (of posts by/quoting you) when whole post is highlighted (by opening link to post or using keybinds). #585
+
+### v1.14.10
+
+**v1.14.10.3** *(2019-07-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.3/builds/4chan-X-noupdate.crx)]
+- Fix bugs in gallery when rotating images with Fit Height enabled.
+
+**v1.14.10.2** *(2019-07-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.2/builds/4chan-X-noupdate.crx)]
+- Limit number of autoretries on posting error to reduce likelihood of "excessive server request" bans. #1302
+- Fix bug from v1.14.10.0 causing full image and thumbnail to briefly appear simultaneously while contracting images and causing unwanted scrolling.
+- Fix bug causing issues in inlined quotes such as "You" in post menu being unchecked and posts sometimes being wrongly marked as deleted.
+
+**v1.14.10.1** *(2019-07-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.9.2: Fix regression causing thread watcher to stop highlighting active thread.
+- Add option `Filter in Native Catalog` to apply 4chan X filters on native catalog. Also works on vichan sites. Enabled by default for new installs only. #2351
+- (droM4X) Add keybinds to rotate images in Gallery.
+- Other minor bugfixes.
+
+**v1.14.10.0** *(2019-07-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.10.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.9.1.
+- 4chan X features such as Image Hover, Sauce, Gallery, etc. now work on multiple files per post on vichan sites. #2171
+- Make Thread Stats work on Tinyboard/vichan sites. #2171
+- Fix bug in highlighting of page number in Thread Stats when a sticky causes an 11th page. #753
+- Change `Last Reply` index/catalog sort mode to sort by last reply that's neither hidden or filtered.
+- Support the same options for the `boards:` option in Sauce that we do for Filter.
+- Add `Dismiss posts quoting you` item to Thread Watcher menu to unhighlight the icon and threads until there are new replies quoting you.
+- Prevent Thread Watcher from showing unread posts in a thread if all unread posts are hidden/filtered.
+- Fix excessive Thread Watcher checking on switching tabs when cookies are disabled.
+- (saxamaphone69) HTML/CSS improvements for settings dialog.
+- Other minor bugfixes.
+
+### v1.14.9
+
+**v1.14.9.2** *(2019-07-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.2/builds/4chan-X-noupdate.crx)]
+- Fix regression causing thread watcher to stop highlighting active thread.
+
+**v1.14.9.1** *(2019-07-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.1/builds/4chan-X-noupdate.crx)]
+- "Change `Use Faster Image Host` setting to `Override 4chan Image Host` in Advanced menu, which can be set to whichever image host you want to use. #2046
+- Change announcement hiding link to FontAwesome minus button and make it work on Tinyboard/vichan sites. #2171
+- Fix Tinyboard/vichan post form redirecting before your posts can be recorded as yours. #2171
+- Fix posts made by you appearing to the side of the last post on Tinyboard/vichan. #2217
+- Make `Fappe Tyme`, `Werk Tyme`, `Volume in New Tab`, `Loop in New Tab`, and `Normalize URL` work on Tinyboard/vichan. #2171
+- Other small bugfixes.
+
+**v1.14.9.0** *(2019-07-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.9.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.8.0.
+- (ebinBuddha) Implement `Unique ID and Capcode Navigation` feature to rapidly navigate all posts from an ID/capcode.
+- (koma-cute) Update Sauce links for HTTPS support changes.
+- Support captcha solving services.
+- Implement new APIs: `LoadCaptcha`, `RequestCaptcha`, and `AbortCaptcha`.
+- Add link to header menu to mark all posts in a thread as unread. #1299
+- Support searching index for threads by regular expressions on a given field using syntax field:/regexp/
+- Fix bugs in highlighting of own posts / posts quoting you / filter-highlighted posts on Tinyboard/vichan sites. #2169
+- Fix ID colors on Tinyboard/vichan sites. #2355
+- Fix thread stubs on Tinyboard/vichan sites.
+- Update Yandex image search URL again. #2349
+- Various bugfixes, especially for Tinyboard/vichan sites.
+
+### v1.14.8
+
+**v1.14.8.0** *(2019-06-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.8.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.8.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.7.4.
+- Work around issues with blocked AJAX requests in Chrome extension. #2228
+- Update Yandex image search URL. #2330
+- Add contact links to mod and other capcode posts.
+- (wlerin) Add Streamable embedding.
+- Add BitChute embedding. #2038
+- Add PeerTube embedding.
+- Handle failures of Greasemonkey API better.
+
+### v1.14.7
+
+**v1.14.7.4** *(2019-05-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.4/builds/4chan-X-noupdate.crx)]
+- Fix conflict with thread-stats element on some vichan boards.
+- Update ad blocker workaround for 4channel domain.
+
+**v1.14.7.3** *(2019-04-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.3/builds/4chan-X-noupdate.crx)]
+- Change default title on /qa/ to something more accurate. Users can, as always, edit it to whatever they want.
+- Minor CSS fixes.
+
+**v1.14.7.2** *(2019-04-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.2/builds/4chan-X-noupdate.crx)]
+- Fix dragging left to contract WebMs in Firefox. #1547
+- Remove query string from filename in Post from URL feature.
+- Speed up Post from URL on some platforms.
+- Fix issue making WebM title fetching needlessly slow on Chrome extension.
+
+**v1.14.7.1** *(2019-04-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.1/builds/4chan-X-noupdate.crx)]
+- Tolerate broken HTML better.
+- Fix 4chan/4channel not being correct in certain links.
+- Use boards.json to determine whether to activate [code] and [math] tag related functions. #525
+
+**v1.14.7.0** *(2019-04-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.7.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.6.8.
+- (Teasday) Hotkey to toggle quote threading, `Shift+t` by default.
+- Show what pages watched threads are on. Can be disabled by unchecking `Show Page` in the thread watcher menu. #1030
+- Move Thread Watcher settings out of submenu.
+- Restore filtering on the email field. #2171
+- Support specifying the sites that filters apply to. #2171
+- Make per-board filtering work on boards with unusual characters in the name (e.g. certain lainchan boards).
+- Board names in filters are now case-sensitive.
+
+### v1.14.6
+
+**v1.14.6.8** *(2019-04-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.8/builds/4chan-X-noupdate.crx)]
+- Update list of boards on https://catalog.neet.tv/.
+
+**v1.14.6.7** *(2019-04-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.7/builds/4chan-X-noupdate.crx)]
+- Update .crx files to CRX3. This should fix the errors when attempting to install them on newer versions of Chromium.
+
+**v1.14.6.6** *(2019-04-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.6/builds/4chan-X-noupdate.crx)]
+- Sauce: Update DeviantArt filename format. #2237
+- Sauce: Replace unmatched regex groups with empty string, not 'undefined'
+- Whether to add parameter to avoid cache should be based on site being queried, not site currenly on.
+
+**v1.14.6.5** *(2019-04-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.5/builds/4chan-X-noupdate.crx)]
+- Fix Thread Watcher bug that in certain circumstances caused the last check of an archived thread for new replies to be skipped.
+
+**v1.14.6.4** *(2019-04-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.4/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.5.16: Remove score/perks message. Fix Posting Success Notifications.
+- Merge v1.14.5.16: Remove like buttons. Continue to show like counts and scores where given in API.
+- Bugfix: Account for posts added by thread expansion when marking read from index.
+
+**v1.14.6.3** *(2019-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.3/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.5.15: Show info relating to April 2019 event. #2266
+
+**v1.14.6.2** *(2019-03-31)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.2/builds/4chan-X-noupdate.crx)]
+- Support filters that apply to multiple post fields joined by newline characters.
+
+**v1.14.6.1** *(2019-03-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.1/builds/4chan-X-noupdate.crx)]
+- Fix errors in certain userscript managers introduced in v1.14.6.0. #2256
+
+**v1.14.6.0** *(2019-03-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.6.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.5.14.
+- (ebinBuddha) Added desktop notification for filters (`notify` option).
+- Make it possible to filter posts without ID (use `//`). #1578
+- Add `file` option to filter only posts with/without files.
+- Improvements in Thread Watcher efficiency, particularly when using it with multiple sites.
+- Allow image hover previews to use full width of screen even in cases where it covers the thumbnail.
+- Make movement of image hover / quote preview with mouse optional; option is `Follow Cursor`. #471, #2245
+- Fix image/video hover in case where dimensions are not available. #2197
+- Implement pruning of data for dead threads on vichan sites with JSON API. #2171
+- Override 4chan CSS causing sauce links to get cut off. #2193
+- Change export URL from data: to blob: so larger settings files can be exported. #2255
+- Unbreak warning in Chrome extension to reload the page after an update.
+- Various minor bugfixes.
+
+### v1.14.5
+
+**v1.14.5.16** *(2019-04-02)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.16/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.16/builds/4chan-X-noupdate.crx)]
+- Remove score/perks message. Fix Posting Success Notifications.
+- Remove like buttons. Continue to show like counts and scores where given in API.
+
+**v1.14.5.15** *(2019-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.15/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.15/builds/4chan-X-noupdate.crx)]
+- Show info relating to April 2019 event. #2266
+- Override 4chan CSS causing sauce links to get cut off. #2193
+- Unbreak warning in Chrome extension to reload the page after an update.
+
+**v1.14.5.14** *(2019-03-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.14/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.14/builds/4chan-X-noupdate.crx)]
+- Add message alerting Chrome extension users to disable chrome://flags/#network-service
+- Minor bugfix in catalog/index loading.
+
+**v1.14.5.13** *(2019-03-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.13/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.13/builds/4chan-X-noupdate.crx)]
+- Fix bugs related to additional permissions requests. #2230
+- Revert changes in thread watcher that caused performance decrease.
+- Fix thread watcher highlighting when quoted on boards with unusual characters in name (e.g. some lainchan boards).
+
+**v1.14.5.12** *(2019-01-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.12/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.12/builds/4chan-X-noupdate.crx)]
+- Recover as well as possible from data corruption caused by ad filter interaction with Tampermonkey. #2218
+
+**v1.14.5.11** *(2019-01-26)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.11/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.11/builds/4chan-X-noupdate.crx)]
+- Fix regression that broke favicon turning red on thread archival/404. #2190
+- Fix 'Auto Watch Reply' in corner cases when not all thread info is available.
+
+**v1.14.5.10** *(2019-01-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.10/builds/4chan-X-noupdate.crx)]
+- Fix performance issues with video hover preview in long threads. #2214
+
+**v1.14.5.9** *(2019-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.9/builds/4chan-X-noupdate.crx)]
+- Don't re-insert unread line unless it needs to move. #2214
+
+**v1.14.5.8** *(2019-01-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.8/builds/4chan-X-noupdate.crx)]
+- Restore updating faster than 30 seconds after 4chan change.
+- Fix false detection of posts added by updater on Tinyboard as own posts.
+- Support recognizing quotelinks to pages with extensions other than .html.
+- Add FLAC and M4A to embeddable audio types. #2202
+- Fix issue from v1.14.5.6 causing display of 'NaN seconds' before index is loaded.
+
+**v1.14.5.7** *(2019-01-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.7/builds/4chan-X-noupdate.crx)]
+- Work when site uses extensions for pages other than .html
+
+**v1.14.5.6** *(2018-12-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.6/builds/4chan-X-noupdate.crx)]
+- Fix bug causing Last Index Refresh time to not update with passing time until index/catalog reloaded.
+- Treat .bmp files as images.
+- Support current-catalog link in custom board list on Tinyboard/vichan.
+- Quick fix for issues on lainchan due to not accounting for post container.
+
+**v1.14.5.5** *(2018-12-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.5/builds/4chan-X-noupdate.crx)]
+- Fix bug causing errors on threads in overboards from boards with unusual characters in the name.
+
+**v1.14.5.4** *(2018-12-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.4/builds/4chan-X-noupdate.crx)]
+- Tinyboard/vichan improvements: Process posts added by thread updating, thread expansion, and infinite scrolling scripts.
+- Fire a `PostsRemoved` event when posts are removed.
+
+**v1.14.5.3** *(2018-12-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.3/builds/4chan-X-noupdate.crx)]
+- Fix bugs in cross-site data access.
+
+**v1.14.5.2** *(2018-12-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.2/builds/4chan-X-noupdate.crx)]
+- All Thread Watcher functionality is now supported on and across Tinyboard/vichan sites, including auto-updating, the unread count, and lighting up upon replies, with the exception that threads from sites without JSON APIs will not be updated when the thread watcher is refreshed.
+- The `Unread Count`, `Unread Line`, `Scroll to Last Read Post`, and `Desktop Notifications` are now supported on Tinyboard/vichan sites.
+- Replies made AJAX on Tinyboard/vichan sites are now marked as yours.
+
+**v1.14.5.1** *(2018-12-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.1/builds/4chan-X-noupdate.crx)]
+- Support style switcher and non-default styles on Tinyboard.
+
+**v1.14.5.0** *(2018-12-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.5.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.4.7.
+- Show threads from other sites in Thread Watcher. When threads from multiple sites are shown, a prefix is added before the board name to distinguish sites. The prefix can be disabled by unchecking `Show Site Prefix` preference in thread watcher menu. More work remains; refreshing is still only working on 4chan, and the unread count still only works for 4chan threads.
+- Fix bug affecting boards with names containing characters escaped in URLs.
+
 ### v1.14.4
+
+**v1.14.4.7** *(2018-12-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.7/builds/4chan-X-noupdate.crx)]
+- Display links to NSFW boards in bottom board list. #2158
+- Remove empty space from unloaded ads.
+
+**v1.14.4.6** *(2018-11-25)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.6/builds/4chan-X-noupdate.crx)]
+- Use now working sys.4channel.org for posting to worksafe boards; should fix some issues with posting. #2140 #2149
+- Fix catalog/search link rewriting. #2151
+- Make URLs in thread watcher point to appropriate domain. #2143
+- Make cross-domain quotes of you light up thread watcher.
 
 **v1.14.4.5** *(2018-11-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.4.5/builds/4chan-X-noupdate.crx)]
 - Fix bug in previous version causing 4channel.org to be seen as separate site in thread watcher etc.

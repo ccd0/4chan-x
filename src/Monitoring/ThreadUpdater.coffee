@@ -1,6 +1,7 @@
 ThreadUpdater =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
+    @enabled = true
 
     # Chromium won't play audio created in an inactive tab until the tab has been focused, so set it up now.
     # XXX Sometimes the loading stalls in Firefox, esp. when opening in private browsing window followed by normal window.
@@ -128,17 +129,17 @@ ThreadUpdater =
       $.cb.value.call @ if e
 
     load: ->
-      {req} = ThreadUpdater
-      switch req.status
+      return if @ isnt ThreadUpdater.req # aborted
+      switch @status
         when 200
-          ThreadUpdater.parse req
+          ThreadUpdater.parse @
           if ThreadUpdater.thread.isArchived
             ThreadUpdater.kill()
           else
             ThreadUpdater.setInterval()
         when 404
           # XXX workaround for 4chan sending false 404s
-          $.ajax "#{location.protocol}//a.4cdn.org/#{ThreadUpdater.thread.board}/catalog.json", onloadend: ->
+          $.ajax g.SITE.urls.catalogJSON({boardID: ThreadUpdater.thread.board.ID}), onloadend: ->
             if @status is 200
               confirmed = true
               for page in @response
@@ -151,9 +152,9 @@ ThreadUpdater =
             if confirmed
               ThreadUpdater.kill()
             else
-              ThreadUpdater.error req
+              ThreadUpdater.error @
         else
-          ThreadUpdater.error req
+          ThreadUpdater.error @
 
   kill: ->
     ThreadUpdater.thread.kill()
@@ -230,12 +231,15 @@ ThreadUpdater =
   update: ->
     clearTimeout ThreadUpdater.timeoutID
     ThreadUpdater.set 'timer', '...', 'loading'
-    ThreadUpdater.req?.abort()
-    ThreadUpdater.req = $.ajax "#{location.protocol}//a.4cdn.org/#{ThreadUpdater.thread.board}/thread/#{ThreadUpdater.thread}.json",
-      onloadend: ThreadUpdater.cb.load
-      timeout:   $.MINUTE
-    ,
-      whenModified: 'ThreadUpdater'
+    if (oldReq = ThreadUpdater.req)
+      delete ThreadUpdater.req
+      oldReq.abort()
+    ThreadUpdater.req = $.whenModified(
+      g.SITE.urls.threadJSON({boardID: ThreadUpdater.thread.board.ID, threadID: ThreadUpdater.thread.ID}),
+      'ThreadUpdater',
+      ThreadUpdater.cb.load,
+      {timeout: $.MINUTE}
+    )
 
   updateThreadStatus: (type, status) ->
     return if not (hasChanged = ThreadUpdater.thread["is#{type}"] isnt status)
@@ -264,7 +268,7 @@ ThreadUpdater =
     return if postObjects[postObjects.length-1].no < lastPost and
       new Date(req.getResponseHeader('Last-Modified')) - thread.posts[lastPost].info.date < 30 * $.SECOND
 
-    Build.spoilerRange[board] = OP.custom_spoiler
+    g.SITE.Build.spoilerRange[board] = OP.custom_spoiler
     thread.setStatus 'Archived', !!OP.archived
     ThreadUpdater.updateThreadStatus 'Sticky', !!OP.sticky
     ThreadUpdater.updateThreadStatus 'Closed', !!OP.closed
@@ -292,7 +296,7 @@ ThreadUpdater =
         continue
 
       newPosts.push "#{board}.#{ID}"
-      node = Build.postFromObject postObject, board.ID
+      node = g.SITE.Build.postFromObject postObject, board.ID
       posts.push new Post node, thread, board
       # Fetching your own posts after posting
       delete ThreadUpdater.postID if ThreadUpdater.postID is ID

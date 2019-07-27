@@ -38,6 +38,14 @@ QuoteThreading =
   children: {}
   inserted: {}
 
+  toggleThreading: ->
+    @setThreadingState !Conf['Thread Quotes']
+
+  setThreadingState: (enabled) ->
+    @input.checked = enabled
+    @setEnabled.call @input
+    @rethread.call @input
+
   setEnabled: ->
     if @checked
       $.set 'Prune All Threads', false

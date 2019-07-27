@@ -34,7 +34,7 @@ Unread =
       textContent: 'Test Post Order'
     $.on testLink, 'click', ->
       list1 = (x.ID for x in Unread.order.order())
-      list2 = (+x.id[2..] for x in $$ '.postContainer')
+      list2 = (+x.id.match(/\d*$/)[0] for x in $$ (if g.SITE.isOPContainerThread then "#{g.SITE.selectors.thread}, " else '') + g.SITE.selectors.postContainer)
       pass = do ->
         return false unless list1.length is list2.length
         for i in [0...list1.length] by 1
@@ -60,7 +60,16 @@ Unread =
     Unread.readCount = 0
     Unread.readCount++ for ID in @posts.keys when +ID <= Unread.lastReadPost
     $.one d, '4chanXInitFinished', Unread.ready
-    $.on  d, 'ThreadUpdate',       Unread.onUpdate
+    $.on  d, 'PostsInserted',      Unread.onUpdate
+    $.on  d, 'ThreadUpdate',       (e) -> Unread.update() if e.detail[404]
+    resetLink = $.el 'a',
+      href: 'javascript:;'
+      className: 'unread-reset'
+      textContent: 'Mark all unread'
+    $.on resetLink, 'click', Unread.reset
+    Header.menu.addEntry
+      el: resetLink
+      order: 70
 
   ready: ->
     Unread.scroll() if Conf['Remember Last Read Post'] and Conf['Scroll to Last Read Post']
@@ -79,14 +88,36 @@ Unread =
 
     position = Unread.positionPrev()
     while position
-      {root} = position.data.nodes
-      if !root.getBoundingClientRect().height
+      {bottom} = position.data.nodes
+      if !bottom.getBoundingClientRect().height
         # Don't try to scroll to posts with display: none
         position = position.prev
       else
-        Header.scrollToIfNeeded root, true
+        Header.scrollToIfNeeded bottom, true
         break
     return
+
+  reset: ->
+    return unless Unread.lastReadPost?
+
+    Unread.posts = new Set()
+    Unread.postsQuotingYou = new Set()
+    Unread.order = new RandomAccessList()
+    Unread.position = null
+    Unread.lastReadPost = 0
+    Unread.readCount = 0
+    Unread.thread.posts.forEach (post) -> Unread.addPost.call post
+
+    $.forceSync 'Remember Last Read Post'
+    if Conf['Remember Last Read Post'] and (!Unread.thread.isDead or Unread.thread.isArchived)
+      Unread.db.set
+        boardID:  Unread.thread.board.ID
+        threadID: Unread.thread.ID
+        val:      0
+
+    Unread.updatePosition()
+    Unread.setLine()
+    Unread.update()
 
   sync: ->
     return unless Unread.lastReadPost?
@@ -114,34 +145,34 @@ Unread =
     return if @isFetchedQuote or @isClone
     Unread.order.push @
     return if @ID <= Unread.lastReadPost or @isHidden or QuoteYou.isYou(@)
-    Unread.posts.add @ID
+    Unread.posts.add (Unread.posts.last = @ID)
     Unread.addPostQuotingYou @
     Unread.position ?= Unread.order[@ID]
 
   addPostQuotingYou: (post) ->
     for quotelink in post.nodes.quotelinks when QuoteYou.db?.get Get.postDataFromLink quotelink
-      Unread.postsQuotingYou.add post.ID
+      Unread.postsQuotingYou.add (Unread.postsQuotingYou.last = post.ID)
       Unread.openNotification post
       return
 
-  openNotification: (post) ->
+  openNotification: (post, predicate=' replied to you') ->
     return unless Header.areNotificationsEnabled
-    notif = new Notification "#{post.info.nameBlock} replied to you",
+    notif = new Notification "#{post.info.nameBlock}#{predicate}",
       body: post.commentDisplay()
       icon: Favicon.logo
     notif.onclick = ->
-      Header.scrollToIfNeeded post.nodes.root, true
+      Header.scrollToIfNeeded post.nodes.bottom, true
       window.focus()
     notif.onshow = ->
       setTimeout ->
         notif.close()
       , 7 * $.SECOND
 
-  onUpdate: (e) ->
-    if !e.detail[404]
+  onUpdate: ->
+    $.queueTask -> # ThreadUpdater may scroll immediately after inserting posts
       Unread.setLine()
       Unread.read()
-    Unread.update()
+      Unread.update()
 
   readSinglePost: (post) ->
     {ID} = post
@@ -162,9 +193,9 @@ Unread =
     count = 0
     while Unread.position
       {ID, data} = Unread.position
-      {root} = data.nodes
-      break unless !root.getBoundingClientRect().height or # post has been hidden
-        Header.getBottomOf(root) > -1                      # post is completely read
+      {bottom} = data.nodes
+      break unless !bottom.getBoundingClientRect().height or # post has been hidden
+        Header.getBottomOf(bottom) > -1                      # post is completely read
       count++
       Unread.posts.delete ID
       Unread.postsQuotingYou.delete ID
@@ -199,8 +230,12 @@ Unread =
   setLine: (force) ->
     return unless Conf['Unread Line']
     if Unread.hr.hidden or d.hidden or (force is true)
+      oldPosition = Unread.linePosition
       if (Unread.linePosition = Unread.positionPrev())
-        $.after Unread.linePosition.data.nodes.root, Unread.hr
+        if Unread.linePosition isnt oldPosition
+          node = Unread.linePosition.data.nodes.bottom
+          node = node.nextSibling if node.nextSibling?.tagName is 'BR'
+          $.after node, Unread.hr
       else
         $.rm Unread.hr
     Unread.hr.hidden = Unread.linePosition is Unread.order.last
@@ -220,7 +255,7 @@ Unread =
 
     Unread.saveThreadWatcherCount()
 
-    if Conf['Unread Favicon']
+    if Conf['Unread Favicon'] and g.SITE.software is 'yotsuba'
       {isDead} = Unread.thread
       Favicon.el.href =
         if countQuotingYou
@@ -235,7 +270,18 @@ Unread =
   saveThreadWatcherCount: $.debounce 2 * $.SECOND, ->
     $.forceSync 'Remember Last Read Post'
     if Conf['Remember Last Read Post'] and (!Unread.thread.isDead or Unread.thread.isArchived)
-      ThreadWatcher.update Unread.thread.board.ID, Unread.thread.ID,
+      quotingYou = if !Conf['Require OP Quote Link'] and QuoteYou.isYou(Unread.thread.OP) then Unread.posts else Unread.postsQuotingYou
+      if !quotingYou.size
+        quotingYou.last = 0
+      else if !quotingYou.has(quotingYou.last)
+        quotingYou.last = 0
+        posts = Unread.thread.posts.keys
+        for i in [posts.length - 1 .. 0] by -1
+          if quotingYou.has(+posts[i])
+            quotingYou.last = posts[i]
+            break
+      ThreadWatcher.update g.SITE.ID, Unread.thread.board.ID, Unread.thread.ID,
+        last: Unread.thread.lastPost
         isDead: Unread.thread.isDead
         unread: Unread.posts.size
-        quotingYou: !!(if !Conf['Require OP Quote Link'] and QuoteYou.isYou(Unread.thread.OP) then Unread.posts.size else Unread.postsQuotingYou.size)
+        quotingYou: (quotingYou.last or 0)

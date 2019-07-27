@@ -21,14 +21,9 @@ Keybinds =
     {target} = e
     if target.nodeName in ['INPUT', 'TEXTAREA']
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test(key) and not /^Alt\+(\d|Up|Down|Left|Right)$/.test(key)
-    unless (
-      g.VIEW not in ['index', 'thread'] or
-      g.VIEW is 'index' and Conf['JSON Index'] and Conf['Index Mode'] is 'catalog' or
-      g.VIEW is 'index' and g.BOARD.ID is 'f'
-    )
+    if g.VIEW in ['index', 'thread']
       threadRoot = Nav.getThread()
-      if op = $ '.op', threadRoot
-        thread = Get.postFromNode(op).thread
+      thread = Get.threadFromRoot threadRoot
     switch key
       # QR & Options
       when Conf['Toggle board list']
@@ -93,10 +88,10 @@ Keybinds =
       when Conf['Update']
         switch g.VIEW
           when 'thread'
-            return unless Conf['Thread Updater']
+            return unless ThreadUpdater.enabled
             ThreadUpdater.update()
           when 'index'
-            return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
+            return unless Index.enabled
             Index.update()
           else
             return
@@ -109,16 +104,20 @@ Keybinds =
       when Conf['Toggle thread watcher']
         return unless ThreadWatcher.enabled
         ThreadWatcher.toggleWatcher()
+      when Conf['Toggle threading']
+        return unless QuoteThreading.ready
+        QuoteThreading.toggleThreading()
       when Conf['Mark thread read']
         return unless g.VIEW is 'index' and thread and UnreadIndex.enabled
         UnreadIndex.markRead.call threadRoot
       # Images
       when Conf['Expand image']
         return unless ImageExpand.enabled and threadRoot
-        Keybinds.img threadRoot
+        post = Get.postFromNode Keybinds.post threadRoot
+        ImageExpand.toggle post if post.file
       when Conf['Expand images']
-        return unless ImageExpand.enabled and threadRoot
-        Keybinds.img threadRoot, true
+        return unless ImageExpand.enabled
+        ImageExpand.cb.toggleAll()
       when Conf['Open Gallery']
         return unless Gallery.enabled
         Gallery.cb.toggle()
@@ -130,47 +129,51 @@ Keybinds =
         FappeTyme.toggle 'werk'
       # Board Navigation
       when Conf['Front page']
-        if Conf['JSON Index'] and g.VIEW is 'index' and g.BOARD.ID isnt 'f'
+        if Index.enabled
           Index.userPageNav 1
         else
           location.href = "/#{g.BOARD}/"
       when Conf['Open front page']
         $.open "#{location.origin}/#{g.BOARD}/"
       when Conf['Next page']
-        return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
-        if Conf['JSON Index']
+        return unless g.VIEW is 'index' and !g.SITE.isOnePage?(g.BOARD)
+        if Index.enabled
           return unless Conf['Index Mode'] in ['paged', 'infinite']
           $('.next button', Index.pagelist).click()
         else
-          if form = $ '.next form'
-            location.href = form.action
+          $(g.SITE.selectors.nav.next)?.click()
       when Conf['Previous page']
-        return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
-        if Conf['JSON Index']
+        return unless g.VIEW is 'index' and !g.SITE.isOnePage?(g.BOARD)
+        if Index.enabled
           return unless Conf['Index Mode'] in ['paged', 'infinite']
           $('.prev button', Index.pagelist).click()
         else
-          if form = $ '.prev form'
-            location.href = form.action
+          $(g.SITE.selectors.nav.prev)?.click()
       when Conf['Search form']
-        return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
-        searchInput = if Conf['JSON Index'] then Index.searchInput else $.id('search-box')
+        return unless g.VIEW is 'index'
+        searchInput = if Index.enabled
+          Index.searchInput
+        else if g.SITE.selectors.searchBox
+          $ g.SITE.selectors.searchBox
+        else
+          undefined
+        return unless searchInput
         Header.scrollToIfNeeded searchInput
         searchInput.focus()
       when Conf['Paged mode']
-        return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
+        return unless Index.enabledOn(g.BOARD)
         location.href = if g.VIEW is 'index' then '#paged' else "/#{g.BOARD}/#paged"
       when Conf['Infinite scrolling mode']
-        return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
+        return unless Index.enabledOn(g.BOARD)
         location.href = if g.VIEW is 'index' then '#infinite' else "/#{g.BOARD}/#infinite"
       when Conf['All pages mode']
-        return unless Conf['JSON Index'] and g.BOARD.ID isnt 'f'
+        return unless Index.enabledOn(g.BOARD)
         location.href = if g.VIEW is 'index' then '#all-pages' else "/#{g.BOARD}/#all-pages"
       when Conf['Open catalog']
-        return if g.BOARD.ID is 'f'
-        location.href = CatalogLinks.catalog()
+        return unless (catalog = CatalogLinks.catalog())
+        location.href = catalog
       when Conf['Cycle sort type']
-        return unless Conf['JSON Index'] and g.VIEW is 'index' and g.BOARD.ID isnt 'f'
+        return unless Index.enabled
         Index.cycleSortType()
       # Thread Navigation
       when Conf['Next thread']
@@ -218,7 +221,7 @@ Keybinds =
       <% if (readJSON('/.tests_enabled')) { %>
       when 'v'
         return unless threadRoot
-        Build.Test.testAll()
+        Test.testAll()
       <% } %>
       else
         return
@@ -266,7 +269,11 @@ Keybinds =
     key
 
   post: (thread) ->
-    $('.post.highlight', thread) or $('.op', thread)
+    s = g.SITE.selectors
+    (
+      $("#{s.postContainer}#{s.highlightable.reply}.#{g.SITE.classes.highlight}", thread) or
+      $("#{if g.SITE.isOPContainerThread then s.thread else s.postContainer}#{s.highlightable.op}", thread)
+    )
 
   qr: (thread) ->
     QR.open()
@@ -306,49 +313,44 @@ Keybinds =
       ""
     else "sage"
 
-  img: (thread, all) ->
-    if all
-      ImageExpand.cb.toggleAll()
-    else
-      post = Get.postFromNode Keybinds.post thread
-      ImageExpand.toggle post if post.file
-
   open: (thread, tab) ->
     return if g.VIEW isnt 'index'
-    url = "/#{thread.board}/thread/#{thread}"
+    url = Get.url 'thread', thread
     if tab
-      $.open location.origin + url
+      $.open url
     else
       location.href = url
 
   hl: (delta, thread) ->
-    postEl = $ '.reply.highlight', thread
+    replySelector = "#{g.SITE.selectors.postContainer}#{g.SITE.selectors.highlightable.reply}"
+    {highlight} = g.SITE.classes
+
+    postEl = $ "#{replySelector}.#{highlight}", thread
 
     unless delta
-      $.rmClass postEl, 'highlight' if postEl
+      $.rmClass postEl, highlight if postEl
       return
 
     if postEl
       {height} = postEl.getBoundingClientRect()
       if Header.getTopOf(postEl) >= -height and Header.getBottomOf(postEl) >= -height # We're at least partially visible
-        root = postEl.parentNode
+        {root} = Get.postFromNode(postEl).nodes
         axis = if delta is +1
           'following'
         else
           'preceding'
-        return if not (next = $.x "#{axis}-sibling::div[contains(@class,'replyContainer') and not(@hidden) and not(child::div[@class='stub'])][1]/child::div[contains(@class,'reply')]", root)
+        return unless (next = $.x "#{axis}-sibling::#{g.SITE.xpath.replyContainer}[not(@hidden) and not(child::div[@class='stub'])][1]", root)
+        next = $ replySelector, next unless next.matches(replySelector)
         Header.scrollToIfNeeded next, delta is +1
-        @focus next
-        $.rmClass postEl, 'highlight'
+        $.addClass next, highlight
+        $.rmClass postEl, highlight
         return
-      $.rmClass postEl, 'highlight'
+      $.rmClass postEl, highlight
 
-    replies = $$ '.reply', thread
+    replies = $$ replySelector, thread
     replies.reverse() if delta is -1
     for reply in replies
       if delta is +1 and Header.getTopOf(reply) > 0 or delta is -1 and Header.getBottomOf(reply) > 0
-        @focus reply
+        $.addClass reply, highlight
         return
-
-  focus: (post) ->
-    $.addClass post, 'highlight'
+    return

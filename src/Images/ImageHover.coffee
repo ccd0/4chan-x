@@ -11,26 +11,25 @@ ImageHover =
         cb:   @catalogNode
 
   node: ->
-    return unless @file and (@file.isImage or @file.isVideo) and @file.thumb
-    $.on @file.thumb, 'mouseover', ImageHover.mouseover @
+    for file in @files when (file.isImage or file.isVideo) and file.thumb
+      $.on file.thumb, 'mouseover', ImageHover.mouseover(@, file)
 
   catalogNode: ->
-    {file} = @thread.OP
+    file = @thread.OP.files[0]
     return unless file and (file.isImage or file.isVideo)
-    $.on @nodes.thumb, 'mouseover', ImageHover.mouseover @thread.OP
+    $.on @nodes.thumb, 'mouseover', ImageHover.mouseover(@thread.OP, file)
 
-  mouseover: (post) -> (e) ->
+  mouseover: (post, file) -> (e) ->
     return unless doc.contains @
-    {file} = post
     {isVideo} = file
-    return if file.isExpanding or file.isExpanded or Site.isThumbExpanded?(file)
-    error = ImageHover.error post
-    if ImageCommon.cache?.dataset.fullID is post.fullID
+    return if file.isExpanding or file.isExpanded or g.SITE.isThumbExpanded?(file)
+    error = ImageHover.error post, file
+    if ImageCommon.cache?.dataset.fileID is "#{post.fullID}.#{file.index}"
       el = ImageCommon.popCache()
       $.on el, 'error', error
     else
       el = $.el (if isVideo then 'video' else 'img')
-      el.dataset.fullID = post.fullID
+      el.dataset.fileID = "#{post.fullID}.#{file.index}"
       $.on el, 'error', error
       el.src = file.url
 
@@ -46,19 +45,22 @@ ImageHover =
       if Conf['Autoplay']
         el.play()
         @currentTime = el.currentTime if @nodeName is 'VIDEO'
-    [width, height] = (+x for x in file.dimensions.split 'x')
-    {left, right} = @getBoundingClientRect()
-    maxWidth = Math.max left, doc.clientWidth - right
-    maxHeight = doc.clientHeight - UI.hover.padding
-    scale = Math.min 1, maxWidth / width, maxHeight / height
-    el.style.maxWidth  = "#{scale * width}px"
-    el.style.maxHeight = "#{scale * height}px"
+    if file.dimensions
+      [width, height] = (+x for x in file.dimensions.split 'x')
+      maxWidth = doc.clientWidth
+      maxHeight = doc.clientHeight - UI.hover.padding
+      scale = Math.min 1, maxWidth / width, maxHeight / height
+      width *= scale
+      height *= scale
+      el.style.maxWidth  = "#{width}px"
+      el.style.maxHeight = "#{height}px"
     UI.hover
       root: @
       el: el
       latestEvent: e
       endEvents: 'mouseout click'
-      height: scale * height
+      height: height
+      width: width
       noRemove: true
       cb: ->
         $.off el, 'error', error
@@ -67,9 +69,9 @@ ImageHover =
         $.rm el
         el.removeAttribute 'style'
 
-  error: (post) -> ->
-    return if ImageCommon.decodeError @, post
-    ImageCommon.error @, post, 3 * $.SECOND, (URL) =>
+  error: (post, file) -> ->
+    return if ImageCommon.decodeError @, file
+    ImageCommon.error @, post, file, 3 * $.SECOND, (URL) =>
       if URL
         @src = URL + if @src is URL then '?' + Date.now() else ''
       else

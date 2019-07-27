@@ -317,7 +317,7 @@ QR =
         $.replace node, $.tn '\n'
       for node in $$ 'br', frag
         $.replace node, $.tn '\n>' unless node is frag.lastChild
-      Site.insertTags?(frag)
+      g.SITE.insertTags?(frag)
       for node in $$ '.linkify[data-original]', frag
         $.replace node, $.tn node.dataset.original
       for node in $$ '.embedder', frag
@@ -430,14 +430,15 @@ QR =
   handleUrl: (urlDefault) ->
     QR.open()
     QR.selected.preventAutoPost()
-    url = prompt 'Enter a URL:', urlDefault
-    return if url is null
-    QR.nodes.fileButton.focus()
-    CrossOrigin.file url, (blob) ->
-      if blob and not /^text\//.test blob.type
-        QR.handleFiles [blob]
-      else
-        QR.error "Can't load file."
+    CrossOrigin.permission ->
+      url = prompt 'Enter a URL:', urlDefault
+      return if url is null
+      QR.nodes.fileButton.focus()
+      CrossOrigin.file url, (blob) ->
+        if blob and not /^text\//.test blob.type
+          QR.handleFiles [blob]
+        else
+          QR.error "Can't load file."
 
   handleFiles: (files) ->
     if @ isnt QR # file input
@@ -627,7 +628,7 @@ QR =
       $.rm nodes.flag
       delete nodes.flag
 
-    if g.BOARD.ID is 'pol'
+    if g.BOARD.config.troll_flags
       flag = QR.flags()
       flag.dataset.name    = 'flag'
       flag.dataset.default = '0'
@@ -672,7 +673,7 @@ QR =
       err or= 'Original comment required.'
 
     if QR.captcha.isEnabled and !(/\b_ct=/.test(d.cookie) and threadID) and !err
-      captcha = QR.captcha.getOne(!!threadID)
+      captcha = QR.captcha.getOne(!!threadID) or Captcha.cache.request(!!threadID)
       unless captcha
         err = 'No valid captcha.'
         QR.captcha.setup(!QR.cooldown.auto or d.activeElement is QR.nodes.status)
@@ -706,50 +707,43 @@ QR =
     options =
       responseType: 'document'
       withCredentials: true
-      onload: QR.response
-      onerror: ->
-        # On connection error, the post most likely didn't go through.
-        # If the post did go through, it should be stopped by the duplicate reply cooldown.
-        delete QR.req
-        Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
-        delete QR.currentCaptcha
-        post.unlock()
-        QR.cooldown.auto = true
-        QR.cooldown.addDelay post, 2
-        QR.status()
-        QR.error QR.connectionError()
-    extra =
+      onloadend: QR.response
       form: $.formData formData
     if Conf['Show Upload Progress']
-      extra.upCallbacks =
-        onload: ->
+      options.onprogress = (e) ->
+        return if @ isnt QR.req?.upload # aborted
+        if e.loaded < e.total
+          # Uploading...
+          QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
+        else
           # Upload done, waiting for server response.
           QR.req.isUploadFinished = true
           QR.req.progress = '...'
-          QR.status()
-        onprogress: (e) ->
-          # Uploading...
-          QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
-          QR.status()
+        QR.status()
 
     cb = (response) ->
       if response?
         QR.currentCaptcha = response
         if response.challenge?
-          extra.form.append 'recaptcha_challenge_field', response.challenge
-          extra.form.append 'recaptcha_response_field', response.response
+          options.form.append 'recaptcha_challenge_field', response.challenge
+          options.form.append 'recaptcha_response_field', response.response
         else
-          extra.form.append 'g-recaptcha-response', response.response
-      QR.req = $.ajax "https://sys.4chan.org/#{g.BOARD}/post", options, extra
+          options.form.append 'g-recaptcha-response', response.response
+      QR.req = $.ajax "https://sys.#{location.hostname.split('.')[1]}.org/#{g.BOARD}/post", options
       QR.req.progress = '...'
 
     if typeof captcha is 'function'
       # Wait for captcha to be verified before submitting post.
       QR.req =
         progress: '...'
-        abort: -> cb = null
+        abort: ->
+          Captcha.cache.abort()
+          cb = null
       captcha (response) ->
-        if response
+        if Captcha.cache.haveCookie()
+          cb?()
+          Captcha.cache.save response if response
+        else if response
           cb? response
         else
           delete QR.req
@@ -764,37 +758,41 @@ QR =
     QR.status()
 
   response: ->
-    {req} = QR
+    return if @ isnt QR.req # aborted
     delete QR.req
 
     post = QR.posts[0]
     post.unlock()
 
-    resDoc  = req.response
-    if (err = resDoc.getElementById 'errmsg') # error!
+    if (err = @response?.getElementById 'errmsg') # error!
       $('a', err)?.target = '_blank' # duplicate image link
-    else if (connErr = resDoc.title isnt 'Post successful!')
+    else if (connErr = (!@response or @response.title isnt 'Post successful!'))
       err = QR.connectionError()
       Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
-    else if req.status isnt 200
-      err = "Error #{req.statusText} (#{req.status})"
+    else if @status isnt 200
+      err = "Error #{@statusText} (#{@status})"
 
     delete QR.currentCaptcha
 
     if err
+      QR.errorCount = (QR.errorCount or 0) + 1
       if /captcha|verification/i.test(err.textContent) or connErr
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent
           err = 'You mistyped the CAPTCHA, or the CAPTCHA malfunctioned.'
         else if /expired/i.test err.textContent
           err = 'This CAPTCHA is no longer valid because it has expired.'
-        # Something must've gone terribly wrong if you get captcha errors without captchas.
-        # Don't auto-post indefinitely in that case.
-        QR.cooldown.auto = QR.captcha.isEnabled or connErr
-        # Too many frequent mistyped captchas will auto-ban you!
-        # On connection error, the post most likely didn't go through.
-        # If the post did go through, it should be stopped by the duplicate reply cooldown.
-        QR.cooldown.addDelay post, 2
+        if QR.errorCount >= 5
+          # Too many posting errors can ban you. Stop autoposting after 5 errors.
+          QR.cooldown.auto = false
+        else
+          # Something must've gone terribly wrong if you get captcha errors without captchas.
+          # Don't auto-post indefinitely in that case.
+          QR.cooldown.auto = QR.captcha.isEnabled or connErr
+          # Too many frequent mistyped captchas will auto-ban you!
+          # On connection error, the post most likely didn't go through.
+          # If the post did go through, it should be stopped by the duplicate reply cooldown.
+          QR.cooldown.addDelay post, 2
       else if err.textContent and (m = err.textContent.match /(?:(\d+)\s+minutes?\s+)?(\d+)\s+second/i) and !/duplicate|hour/i.test(err.textContent)
         QR.cooldown.auto = !/have\s+been\s+muted/i.test(err.textContent)
         seconds = 60 * (+(m[1]||0)) + (+m[2])
@@ -809,7 +807,9 @@ QR =
       QR.error err
       return
 
-    h1 = $ 'h1', resDoc
+    delete QR.errorCount
+
+    h1 = $ 'h1', @response
 
     [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
     postID   = +postID
@@ -879,14 +879,14 @@ QR =
             cb()
           else
             setTimeout check, attempts * $.SECOND
-      ,
+        responseType: 'text'
         type: 'HEAD'
     check()
 
   abort: ->
-    if QR.req and !QR.req.isUploadFinished
-      QR.req.abort()
+    if (oldReq = QR.req) and !QR.req.isUploadFinished
       delete QR.req
+      oldReq.abort()
       Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
       delete QR.currentCaptcha
       QR.posts[0].unlock()

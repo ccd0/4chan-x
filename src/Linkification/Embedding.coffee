@@ -111,7 +111,7 @@ Embedding =
       if service.queue.length >= service.batchSize
         Embedding.flushTitles service
     else
-      CrossOrigin.json service.api(uid), (-> Embedding.cb.title @, data)
+      CrossOrigin.cache service.api(uid), (-> Embedding.cb.title @, data)
 
   flushTitles: (service) ->
     {queue} = service
@@ -120,7 +120,7 @@ Embedding =
     cb = ->
       Embedding.cb.title @, data for data in queue
       return
-    CrossOrigin.json service.api(data.uid for data in queue), cb
+    CrossOrigin.cache service.api(data.uid for data in queue), cb
 
   preview: (data) ->
     {key, uid, link} = data
@@ -131,7 +131,7 @@ Embedding =
       el = $.el 'img',
         src: src
         id: 'ihover'
-      $.add d.body, el
+      $.add Header.hover, el
       UI.hover
         root: link
         el: el
@@ -204,7 +204,7 @@ Embedding =
 
   ordered_types: [
       key: 'audio'
-      regExp: /^[^?#]+\.(?:mp3|oga|wav)(?:[?#]|$)/i
+      regExp: /^[^?#]+\.(?:mp3|m4a|oga|wav|flac)(?:[?#]|$)/i
       style: ''
       el: (a) ->
         $.el 'audio',
@@ -233,6 +233,23 @@ Embedding =
             $.replace el, Embedding.types.audio.el(a)
           else
             el.hidden = false
+        el
+    ,
+      key: 'PeerTube'
+      regExp: /^(\w+:\/\/[^\/]+\/videos\/watch\/\w{8}-\w{4}-\w{4}-\w{4}-\w{12})(.*)/
+      el: (a) ->
+        options = if (start = a.dataset.options.match /[?&](start=\w+)/) then "?#{start[1]}" else ''
+        el = $.el 'iframe',
+          src: a.dataset.uid.replace('/videos/watch/', '/videos/embed/') + options
+        el.setAttribute "allowfullscreen", "true"
+        el
+    ,
+      key: 'BitChute'
+      regExp:  /^\w+:\/\/(?:www\.)?bitchute\.com\/video\/([\w\-]+)/
+      el: (a) ->
+        el = $.el 'iframe',
+          src: "https://www.bitchute.com/embed/#{a.dataset.uid}/"
+        el.setAttribute "allowfullscreen", "true"
         el
     ,
       key: 'Clyp'
@@ -275,7 +292,7 @@ Embedding =
           el = $.el 'pre',
             hidden: true
             id: "gist-embed-#{counter++}"
-          CrossOrigin.json "https://api.github.com/gists/#{a.dataset.uid}", ->
+          CrossOrigin.cache "https://api.github.com/gists/#{a.dataset.uid}", ->
             el.textContent = Object.values(@response.files)[0].content
             el.className = 'prettyprint'
             $.global ->
@@ -381,6 +398,17 @@ Embedding =
       el: (a) ->
         $.el 'iframe',
           src: "https://www.strawpoll.me/embed_1/#{a.dataset.uid}"
+    ,
+      key: 'Streamable'
+      regExp: /^\w+:\/\/(?:www\.)?streamable\.com\/(\w+)/
+      el: (a) ->
+        el = $.el 'iframe',
+          src: "https://streamable.com/o/#{a.dataset.uid}"
+        el.setAttribute "allowfullscreen", "true"
+        el
+      title:
+        api: (uid) -> "https://api.streamable.com/oembed?url=https://streamable.com/#{uid}"
+        text: (_) -> _.title
     ,
       key: 'TwitchTV'
       regExp: /^\w+:\/\/(?:www\.|secure\.)?twitch\.tv\/(\w[^#\&\?]*)/

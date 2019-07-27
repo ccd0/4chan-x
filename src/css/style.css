@@ -54,10 +54,10 @@ a[href="javascript:;"] {
 .warning {
   color: red;
 }
-#boardNavDesktop, #boardNavMobile {
+:root.sw-yotsuba #boardNavDesktop, :root.sw-yotsuba #boardNavMobile {
   display: none !important;
 }
-:root.hide-bottom-board-list #boardNavDesktopFoot {
+:root.hide-bottom-board-list $site$boardListBottom {
   display: none;
 }
 body.hasDropDownNav{
@@ -70,76 +70,82 @@ body.hasDropDownNav{
   border-radius: 3px;
   padding: 0px 2px;
 }
-
-/* 4chan style fixes */
-/* overrides 4chan CSS on div.opContainer, div.op */
-.opContainer.opContainer, .op.op {
-  display: block;
-  overflow: visible;
-}
-.reply > .file > .fileText {
-  margin: 0 20px;
-}
-.hashlink::before {
-  content: ' ';
-  visibility: hidden;
-}
-.inline + .hashlink,
 [hidden] {
   display: none !important;
 }
-.fileText a {
+
+/* 4chan style fixes */
+/* overrides 4chan CSS on div.opContainer, div.op */
+:root.sw-yotsuba .opContainer, :root.sw-yotsuba .op {
+  display: block;
+  overflow: visible;
+}
+:root.sw-yotsuba .reply > .file > .fileText {
+  margin: 0 20px;
+}
+:root.sw-yotsuba #arc-list span.quote {
+  color: #789922;
+}
+:root.sw-yotsuba .fileText a {
   unicode-bidi: -moz-isolate;
   unicode-bidi: -webkit-isolate;
 }
-#g-recaptcha {
+:root.sw-yotsuba #g-recaptcha {
   min-height: 78px;
   height: auto;
 }
-:root:not(.js-enabled) #postForm {
+:root.sw-yotsuba:not(.js-enabled) #postForm {
   display: table;
 }
-#captchaContainerAlt td:nth-child(2) {
+:root.sw-yotsuba #captchaContainerAlt td:nth-child(2) {
   display: table-cell !important;
 }
-canvas#tegaki-canvas {
+:root.sw-yotsuba canvas#tegaki-canvas {
   background: none;
 }
 /* Disable obnoxious captcha fade-in. */
-body > div:last-of-type {
+:root.sw-yotsuba > body > div:last-of-type {
   transition: none !important;
 }
 /* Fix captcha scrolling to top of page. */
-body > div[style*=" top: -10000px;"] {
+:root.sw-yotsuba > body > div[style*=" top: -10000px;"] {
   visibility: hidden !important;
 }
 /* Make long filenames wrap properly: https://github.com/ccd0/4chan-x/issues/1082 */
-.post > .file {
+:root.sw-yotsuba .post > .file {
   /* currently nonstandard but may be added: https://lists.w3.org/Archives/Public/www-style/2016Mar/0352.html, https://bugzilla.mozilla.org/show_bug.cgi?id=1296042 */
   word-break: break-word;
 }
-:root:not(.ua-webkit):not(.ua-blink) .fileText {
+:root.sw-yotsuba:not(.ua-webkit):not(.ua-blink) .fileText {
   word-wrap: break-word;
   max-width: calc(100vw - 90px);
 }
-body.is_catalog .thread > a > img {
+:root.sw-yotsuba > body.is_catalog .thread > a > img {
   display: inline-block;
+}
+/* Links to NSFW boards */
+:root.sw-yotsuba .nwsb {
+  display: inline;
+}
+:root.sw-yotsuba .fileText {
+  max-width: auto;
+  white-space: normal;
 }
 
 /* Ads */
-.ad-cnt > *, .adg-rects > * {
+:root.sw-yotsuba .ad-cnt > *, :root.sw-yotsuba .adg-rects > *, :root.sw-yotsuba .bsa-cnt {
   height: auto !important;
 }
-:root:not(.ads-loaded) hr.abovePostForm,
-:root:not(.ads-loaded) .adg-rects > hr,
-#adg-ol + hr {
+:root.sw-yotsuba:not(.ads-loaded) hr.abovePostForm,
+:root.sw-yotsuba:not(.ads-loaded) .adg-rects > hr,
+:root.sw-yotsuba #adg-ol + hr {
   display: none;
 }
-.adg-rects {
+:root.sw-yotsuba .adg-rects {
   margin: 0;
   font-size: 0;
 }
-div.center[style] {
+:root.sw-yotsuba div.center[style] {
   display: none !important;
 }
 
@@ -159,6 +165,9 @@ div.center[style] {
 .intro a[href="javascript:;"],
 #menu a {
   margin: 0;
+}
+.gal-buttons.gal-buttons a {
+  font-size: inherit;
 }
 
 /* Anti-autoplay */
@@ -180,7 +189,6 @@ audio.controls-added {
 
 /* fixed, z-index */
 #overlay,
-#fourchanx-settings,
 #qp, #ihover,
 #navlinks, .fixed #header-bar,
 :root.float #updater,
@@ -188,11 +196,8 @@ audio.controls-added {
 #qr {
   position: fixed;
 }
-#fourchanx-settings {
-  z-index: 999;
-}
 #overlay {
-  z-index: 900;
+  z-index: 999;
 }
 #qp, #ihover {
   z-index: 60;
@@ -360,7 +365,8 @@ audio.controls-added {
 #toggleMsgBtn {
   display: none !important;
 }
-.current {
+.current,
+:root.sw-yotsuba div#boardNavDesktopFoot a.current {
   font-weight: bold;
 }
 @media (min-width: 1300px) {
@@ -436,6 +442,9 @@ audio.controls-added {
   left: 0;
   visibility: visible;
 }
+#notifications:empty {
+  display: none;
+}
 :root.fixed.top-header:not(.gallery-open) #header-bar #notifications,
 :root.fixed.top-header #header-bar.autohide #notifications {
   position: absolute;
@@ -500,6 +509,8 @@ audio.controls-added {
 }
 #overlay {
   background-color: rgba(0, 0, 0, .5);
+  display: -webkit-flex;
+  display: flex;
   top: 0;
   left: 0;
   height: 100%;
@@ -514,16 +525,16 @@ audio.controls-added {
   width: 900px;
   max-width: 100%;
   margin: auto;
-  padding: 3px;
-  top: 50%;
-  left: 50%;
-  -moz-transform: translate(-50%, -50%);
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
+  padding: 5px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
 }
 #fourchanx-settings > nav {
-  padding: 2px 2px 0;
-  height: 15px;
+  padding: 2px 2px 8px;
+  display: -webkit-flex;
+  display: flex;
 }
 #fourchanx-settings > nav a {
   text-decoration: underline;
@@ -534,20 +545,16 @@ audio.controls-added {
   margin: 0;
 }
 .section-container {
+  -webkit-flex: 1;
+  flex: 1;
+  position: relative;
   overflow: auto;
-  position: absolute;
-  top: 2.1em;
-  right: 5px;
-  bottom: 5px;
-  left: 5px;
   padding-right: 5px;
+  overscroll-behavior: contain;
 }
 .sections-list {
-  padding: 0 3px;
-  float: left;
-}
-.credits {
-  float: right;
+  -webkit-flex: 1;
+  flex: 1;
 }
 .export, .import, .reset {
   cursor: pointer;
@@ -651,7 +658,9 @@ div[data-checked="false"] > .suboption-list {
 .section-advanced textarea {
   height: 150px;
 }
-.section-advanced textarea[name="archiveLists"] {
+.section-advanced textarea[name="archiveLists"],
+.section-advanced textarea[name="externalCatalogURLs"],
+.section-advanced textarea[name="knownBanners"] {
   height: 75px;
 }
 .section-advanced .archive-cell {
@@ -708,9 +717,6 @@ div[data-checked="false"] > .suboption-list {
 }
 #fourchanx-settings table {
   margin: auto;
-}
-.unscroll {
-  overflow: hidden;
 }
 
 /* Index */
@@ -905,7 +911,10 @@ div[data-checked="false"] > .suboption-list {
 .catalog-post > .file > :not(.fileText),
 .catalog-post > * > .fileText > :not(:first-child),
 .catalog-post > .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),
+.catalog-post > .postInfo > .nameBlock > .contact-links,
 .catalog-post > * > * > .posteruid,
+.catalog-post > * > * > .uniqueIDJumper,
+.catalog-post > * > * > .capcodeJumper,
 :root.bottom-backlinks .catalog-post > .container,
 .post:not(.catalog-post) > .catalog-link,
 .post:not(.catalog-post) > .catalog-stats,
@@ -1044,24 +1053,21 @@ textarea.copy-text-element {
 }
 
 /* Announcement Hiding */
-:root.hide-announcement #globalMessage {
+:root.hide-announcement $site$psa {
   display: none;
 }
-span.hide-announcement {
-  font-size: 11px;
-  position: relative;
-  bottom: 5px;
-}
-.globalMessage, h2, h3 {
-  color: inherit !important;
-  font-size: 13px;
-  font-weight: 100;
+.hide-announcement-button {
+  opacity: 0.4;
+  float: left;
 }
 
 /* Unread */
 .unread-line {
   margin: 0;
   border-color: rgb(255,0,0);
+}
+.unread-line + br {
+  display: none;
 }
 .unread-mark-read {
   float: right;
@@ -1154,18 +1160,23 @@ span.hide-announcement {
   -webkit-flex-direction: row;
   flex-direction: row;
 }
+#watched-threads .watcher-page,
 #watched-threads .watcher-unread {
   -webkit-flex: 0 0 auto;
   flex: 0 0 auto;
-}
-#watched-threads .watcher-unread::after {
-  content: "\00a0";
+  margin-right: 2px;
 }
 #watched-threads .watcher-title {
   overflow: hidden;
   text-overflow: ellipsis;
   -webkit-flex: 0 1 auto;
   flex: 0 1 auto;
+}
+#watched-threads .watcher-title:not(:first-child) {
+  margin-left: 2px;
+}
+.replies-quoting-you > a, #watcher-link.replies-quoting-you, .last-page > a > .watcher-page {
+  color: #F00;
 }
 #thread-watcher a {
   text-decoration: none;
@@ -1209,8 +1220,12 @@ span.hide-announcement {
 }
 
 /* Quote */
-#arc-list span.quote {
-  color: #789922;
+.hashlink::before {
+  content: ' ';
+  visibility: hidden;
+}
+.inline + .hashlink {
+  display: none !important;
 }
 :root.resurrect-quotes .deadlink {
   text-decoration: none !important;
@@ -1301,7 +1316,7 @@ span.hide-announcement {
 .expanded-image > .post > .file > .fileThumb > img[data-md5] {
   display: none;
 }
-.full-image[data-full-i-d] {
+.full-image[data-file-i-d] {
   display: none;
   cursor: pointer;
 }
@@ -1330,6 +1345,13 @@ span.hide-announcement {
 }
 .fileThumb > .warning {
   clear: both;
+}
+#ihover {
+  pointer-events: none;
+  /* XXX https://code.google.com/p/chromium/issues/detail?id=168840, https://bugs.webkit.org/show_bug.cgi?id=94158 */
+  max-height: 95vh;
+  max-height: calc(100vh - 25px);
+  max-width: 100vw;
 }
 /* WEBM Metadata */
 .webm-title > a::before {
@@ -1363,11 +1385,12 @@ input[name="Default Volume"] {
   margin: 0px;
 }
 /* Fappe and Werk Tyme */
-:root.fappeTyme .thread > .noFile,
-:root.fappeTyme .threadContainer > .noFile {
+:root.fappeTyme $site$replyOriginal.noFile,
+:root.fappeTyme $site$replyOriginal.noFile + br {
   display: none;
 }
-:root.werkTyme .postContainer:not(.noFile) .fileThumb,
+:root.werkTyme $site$thumbLink,
+:root.werkTyme $site$file$thumb,
 :root.werkTyme .catalog-thumb:not(.deleted-file):not(.no-file),
 :root:not(.werkTyme) .werkTyme-filename {
   display: none;
@@ -1417,26 +1440,26 @@ input[name="Default Volume"] {
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .8);
 }
-:root.highlight-you .quotesYou.opContainer,
-:root.highlight-you .quotesYou > .reply {
+:root.highlight-you .quotesYou$site$highlightable$op,
+:root.highlight-you .quotesYou$site$highlightable$reply {
   border-left: 3px solid rgba(221, 0, 0, .8);
 }
-:root.highlight-own .yourPost.opContainer,
-:root.highlight-own .yourPost > .reply {
+:root.highlight-own .yourPost$site$highlightable$op,
+:root.highlight-own .yourPost$site$highlightable$reply {
   border-left: 3px dashed rgba(221, 0, 0, .8);
 }
-.filter-highlight.opContainer,
-.filter-highlight > .reply {
+.filter-highlight$site$highlightable$op,
+.filter-highlight$site$highlightable$reply {
   box-shadow: inset 5px 0 rgba(221, 0, 0, .5);
 }
-:root.highlight-own .yourPost > div.sideArrows,
-:root.highlight-you .quotesYou > div.sideArrows,
-.filter-highlight > div.sideArrows {
+:root.highlight-own .yourPost > $site$sideArrows,
+:root.highlight-you .quotesYou > $site$sideArrows,
+.filter-highlight > $site$sideArrows {
   color: rgba(221, 0, 0, .8);
 }
-:root.highlight-own .yourPost.opContainer::after,
-:root.highlight-you .quotesYou.opContainer::after,
-.filter-highlight.opContainer::after {
+:root.highlight-own .yourPost$site$highlightable$op::after,
+:root.highlight-you .quotesYou$site$highlightable$op::after,
+.filter-highlight$site$highlightable$op::after {
   content: "";
   display: block;
   clear: both;
@@ -1444,7 +1467,8 @@ input[name="Default Volume"] {
 :root:not(.werkTyme) .catalog-thread.filter-highlight .catalog-thumb,
 :root.werkTyme .catalog-thread.filter-highlight:not(:hover),
 :root.werkTyme:not(.catalog-hover-expand) .catalog-thread.filter-highlight,
-:root.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-container:hover > .catalog-post {
+:root.werkTyme.catalog-hover-expand .catalog-thread.filter-highlight > .catalog-container:hover > .catalog-post,
+:root.catalog $site$catalog$thread.filter-highlight$site$highlightable$catalog {
   box-shadow: 0 0 3px 3px rgba(255, 0, 0, .5);
 }
 :root:not(.werkTyme) .catalog-thread.watched .catalog-thumb,
@@ -1455,10 +1479,8 @@ input[name="Default Volume"] {
 }
 
 /* Spoiler text */
-:root.reveal-spoilers s,
-:root.reveal-spoilers .spoiler,
-:root.reveal-spoilers s > a,
-:root.reveal-spoilers .spoiler > a {
+:root.reveal-spoilers $site$spoiler,
+:root.reveal-spoilers $site$spoiler > a {
   color: white !important;
 }
 :root.reveal-spoilers .removed-spoiler::before {
@@ -1488,39 +1510,38 @@ input[name="Default Volume"] {
   margin-top: -1px;
   width: 11px;
 }
-.stub ~ * {
+.stub ~ :not(.threadDivider) {
   display: none !important;
 }
 .stub input {
   display: inline-block;
 }
-.thread[hidden] + hr {
+$site$thread[hidden] + hr {
   display: none;
 }
-:root.reply-hide div.sideArrows {
+:root.reply-hide $site$sideArrows {
   display: none;
 }
-:root.thread-hide .party-hat {
+:root.sw-yotsuba.thread-hide .party-hat {
   left: 19px;
 }
 
 /* Anonymize */
-:root.anonymize .name,
-:root.anonymize .post-author:not([class*=capcode]) {
+:root.anonymize $site$info$name,
+:root.sw-yotsuba.anonymize .post-author:not([class*=capcode]) {
   font-size: 0;
 }
-:root.anonymize .postertrip,
-:root.anonymize .trip,
-:root.anonymize .n-pu {
+:root.anonymize $site$info$tripcode,
+:root.sw-yotsuba.anonymize .n-pu {
   display: none;
 }
-:root.anonymize .name::before,
-:root.anonymize .post-author:not([class*=capcode])::before {
+:root.anonymize $site$info$name::before,
+:root.sw-yotsuba.anonymize .post-author:not([class*=capcode])::before {
   content: "Anonymous";
   font-size: 10pt;
 }
-:root.anonymize .flashListing .name::before,
-:root.anonymize .post-last > .post-author:not([class*=capcode])::before {
+:root.sw-yotsuba.anonymize .flashListing .name::before,
+:root.sw-yotsuba.anonymize .post-last > .post-author:not([class*=capcode])::before {
   font-size: 9pt;
 }
 
@@ -2260,6 +2281,10 @@ a:only-of-type > .remove {
   overflow-x: scroll !important;
 }
 .gal-image a {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
   margin: auto;
   line-height: 0;
   max-width: 100%;
@@ -2267,6 +2292,11 @@ a:only-of-type > .remove {
 :root.gal-pdf .gal-image a {
   width: 100%;
   height: 100%;
+}
+.gal-image img,
+.gal-image video {
+  -webkit-flex: none;
+  flex: none;
 }
 .gal-fit-width .gal-image img,
 .gal-fit-width .gal-image video {
@@ -2376,4 +2406,21 @@ a:only-of-type > .remove {
 :root.gallery-open.fixed #header-bar:not(.autohide),
 :root.gallery-open.fixed #header-bar:not(.autohide) #shortcuts .fa::before {
   visibility: hidden;
+}
+
+/* Mod Contact Links */
+.contact-links {
+  margin-left: 2px;
+}
+.move-note > a {
+  text-decoration: underline;
+}
+.invisible {
+  font-size: 0;
+}
+
+/* PostJumper */
+.postJumper > .prev,
+.postJumper > .next {
+  font-size: 120%;
 }

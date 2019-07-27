@@ -1,25 +1,29 @@
 class Post
   toString: -> @ID
 
-  constructor: (root, @thread, @board) ->
+  constructor: (root, @thread, @board, flags={}) ->
     <% if (readJSON('/.tests_enabled')) { %>
-    @normalizedOriginal = Build.Test.normalize root
+    @normalizedOriginal = Test.normalize root
     <% } %>
 
+    $.extend @, flags
     @ID       = +root.id.match(/\d*$/)[0]
+    @postID   = @ID
     @threadID = @thread.ID
     @boardID  = @board.ID
+    @siteID   = g.SITE.ID
     @fullID   = "#{@board}.#{@ID}"
     @context  = @
+    @isReply  = (@ID isnt @threadID)
 
     root.dataset.fullID = @fullID
 
     @nodes = @parseNodes root
 
-    if not (@isReply = @ID isnt @threadID)
+    if not @isReply
       @thread.OP = @
       for key in ['isSticky', 'isClosed', 'isArchived']
-        @thread[key] = if (selector = Site.selectors.icons[key]) then !!$(selector, @nodes.info) else false
+        @thread[key] = if (selector = g.SITE.selectors.icons[key]) then !!$(selector, @nodes.info) else false
       if @thread.isArchived
         @thread.isClosed = true
         @thread.kill()
@@ -27,6 +31,7 @@ class Post
     @info =
       subject:   @nodes.subject?.textContent or undefined
       name:      @nodes.name?.textContent
+      email:     if @nodes.email then decodeURIComponent(@nodes.email.href.replace(/^mailto:/, ''))
       tripcode:  @nodes.tripcode?.textContent
       uniqueID:  @nodes.uniqueID?.textContent
       capcode:   @nodes.capcode?.textContent.replace '## ', ''
@@ -45,30 +50,32 @@ class Post
 
     @parseComment()
     @parseQuotes()
-    @parseFile()
+    @parseFiles()
 
     @isDead   = false
     @isHidden = false
 
     @clones = []
     <% if (readJSON('/.tests_enabled')) { %>
-    return if arguments[3] is 'forBuildTest'
+    return if @forBuildTest
     <% } %>
     if g.posts[@fullID]
       @isRebuilt = true
       @clones = g.posts[@fullID].clones
       clone.origin = @ for clone in @clones
 
+    @thread.lastPost = @ID if !@isFetchedQuote and @ID > @thread.lastPost
     @board.posts.push  @ID, @
     @thread.posts.push @ID, @
     g.posts.push   @fullID, @
 
   parseNodes: (root) ->
-    s = Site.selectors
+    s = g.SITE.selectors
     post = $(s.post, root) or root
     info = $ s.infoRoot, post
     nodes =
       root:       root
+      bottom:     if @isReply or !g.SITE.isOPContainerThread then root else $(s.opBottom, root)
       post:       post
       info:       info
       comment:    $ s.comment, post
@@ -77,7 +84,7 @@ class Post
       embedlinks:   []
     for key, selector of s.info
       nodes[key] = $ selector, info
-    Site.parseNodes?(@, nodes)
+    g.SITE.parseNodes?(@, nodes)
     nodes.uniqueIDRoot or= nodes.uniqueID
 
     # XXX Edge invalidates HTMLCollections when an ancestor node is inserted into another node.
@@ -102,7 +109,7 @@ class Post
     #   'Comment too long'...
     #   EXIF data. (/p/)
     @nodes.commentClean = bq = @nodes.comment.cloneNode true
-    Site.cleanComment?(bq)
+    g.SITE.cleanComment?(bq)
     @info.comment = @nodesToText bq
 
   commentDisplay: ->
@@ -115,13 +122,13 @@ class Post
     #   Trailing spaces.
     bq = @nodes.commentClean.cloneNode true
     @cleanSpoilers bq unless Conf['Remove Spoilers'] or Conf['Reveal Spoilers']
-    Site.cleanCommentDisplay?(bq)
+    g.SITE.cleanCommentDisplay?(bq)
     @nodesToText(bq).trim().replace(/\s+$/gm, '')
 
   commentOrig: ->
     # Get the comment's text for reposting purposes.
     bq = @nodes.commentClean.cloneNode true
-    Site.insertTags?(bq)
+    g.SITE.insertTags?(bq)
     @nodesToText bq
 
   nodesToText: (bq) ->
@@ -133,14 +140,14 @@ class Post
     text
 
   cleanSpoilers: (bq) ->
-    spoilers = $$ Site.selectors.spoiler, bq
+    spoilers = $$ g.SITE.selectors.spoiler, bq
     for node in spoilers
       $.replace node, $.tn '[spoiler]'
     return
 
   parseQuotes: ->
     @quotes = []
-    for quotelink in $$ Site.selectors.quotelink, @nodes.comment
+    for quotelink in $$ g.SITE.selectors.quotelink, @nodes.comment
       @parseQuote quotelink
     return
 
@@ -151,7 +158,7 @@ class Post
     #  - catalog links. (>>>/b/catalog or >>>/b/search)
     #  - rules links. (>>>/a/rules)
     #  - text-board quotelinks. (>>>/img/1234)
-    match = quotelink.href.match Site.regexp.quotelink
+    match = quotelink.href.match g.SITE.regexp.quotelink
     return unless match or (@isClone and quotelink.dataset.postID) # normal or resurrected quote
 
     @nodes.quotelinks.push quotelink
@@ -162,25 +169,43 @@ class Post
     fullID = "#{match[1]}.#{match[3]}"
     @quotes.push fullID unless fullID in @quotes
 
-  parseFile: ->
+  parseFiles: ->
+    @files = []
+    fileRoots = @fileRoots()
+    index = 0
+    for fileRoot, docIndex in fileRoots
+      if (file = @parseFile fileRoot)
+        file.index = (index++)
+        file.docIndex = docIndex
+        @files.push file
+    if @files.length
+      @file = @files[0]
+
+  fileRoots: ->
+    if g.SITE.selectors.multifile
+      roots = $$(g.SITE.selectors.multifile, @nodes.root)
+      return roots if roots.length
+    [@nodes.root]
+
+  parseFile: (fileRoot) ->
     file = {}
-    for key, selector of Site.selectors.file
-      file[key] = $ selector, @nodes.root
+    for key, selector of g.SITE.selectors.file
+      file[key] = $ selector, fileRoot
     file.thumbLink = file.thumb?.parentNode
 
     return if not (file.text and file.link)
-    return if not Site.parseFile @, file
+    return if not g.SITE.parseFile @, file
 
     $.extend file,
       url:     file.link.href
-      isImage: /(jpe?g|png|gif)$/i.test file.link.href
+      isImage: /(jpe?g|png|gif|bmp)$/i.test file.link.href
       isVideo: /(webm|mp4)$/i.test file.link.href
     size  = +file.size.match(/[\d.]+/)[0]
     unit  = ['B', 'KB', 'MB', 'GB'].indexOf file.size.match(/\w+$/)[0]
     size *= 1024 while unit-- > 0
     file.sizeInBytes = size
 
-    @file = file
+    file
 
   @deadMark =
     # \u00A0 is nbsp
@@ -188,10 +213,10 @@ class Post
       textContent: '\u00A0(Dead)'
       className:   'qmark-dead'
 
-  kill: (file) ->
+  kill: (file, index=0) ->
     if file
-      return if @isDead or @file.isDead
-      @file.isDead = true
+      return if @isDead or @files[index].isDead
+      @files[index].isDead = true
       $.addClass @nodes.root, 'deleted-file'
     else
       return if @isDead
@@ -207,7 +232,7 @@ class Post
 
     return if @isClone
     for clone in @clones
-      clone.kill file
+      clone.kill file, index
 
     return if file
     # Get quotelinks/backlinks to this post
@@ -224,7 +249,8 @@ class Post
     $.rmClass @nodes.root, 'deleted-post'
     strong = $ 'strong.warning', @nodes.info
     # no false-positive files
-    if @file and @file.isDead
+    if @files.some((file) -> file.isDead)
+      $.addClass @nodes.root, 'deleted-file'
       strong.textContent = '[File deleted]'
     else
       $.rm strong

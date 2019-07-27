@@ -19,13 +19,13 @@ Gallery =
       cb:   @node
 
   node: ->
-    return unless @file?.thumb
-    if Gallery.nodes
-      Gallery.generateThumb @
-      Gallery.nodes.total.textContent = Gallery.images.length
+    for file in @files when file.thumb
+      if Gallery.nodes
+        Gallery.generateThumb @, file
+        Gallery.nodes.total.textContent = Gallery.images.length
 
-    unless Conf['Image Expansion']
-      $.on @file.thumbLink, 'click', Gallery.cb.image
+      unless Conf['Image Expansion']
+        $.on file.thumbLink, 'click', Gallery.cb.image
 
   build: (image) ->
     {cb} = Gallery
@@ -38,7 +38,7 @@ Gallery =
 
     Gallery.images  = []
     nodes = Gallery.nodes = {}
-    Gallery.fullIDs = {}
+    Gallery.fileIDs = {}
     Gallery.slideshow = false
 
     nodes.el = dialog = $.el 'div',
@@ -82,15 +82,15 @@ Gallery =
 
     $.on window, 'resize', Gallery.cb.setHeight
 
-    for postThumb in $$ Site.selectors.file.thumb
-      post = Get.postFromNode postThumb
-      continue unless post.file?.thumb
-      Gallery.generateThumb post
-      # If no image to open is given, pick image we have scrolled to.
-      if !image and Gallery.fullIDs[post.fullID]
-        candidate = post.file.thumbLink
-        if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
-          image = candidate
+    for postThumb in $$ g.SITE.selectors.file.thumb
+      continue unless (post = Get.postFromNode postThumb)
+      for file in post.files when file.thumb
+        Gallery.generateThumb post, file
+        # If no image to open is given, pick image we have scrolled to.
+        if !image and Gallery.fileIDs["#{post.fullID}.#{file.index}"]
+          candidate = file.thumbLink
+          if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
+            image = candidate
     $.addClass doc, 'gallery-open'
 
     $.add d.body, dialog
@@ -105,23 +105,24 @@ Gallery =
     doc.style.overflow = 'hidden'
     nodes.total.textContent = Gallery.images.length
 
-  generateThumb: (post) ->
+  generateThumb: (post, file) ->
     return if post.isClone or post.isHidden
-    return unless post.file and post.file.thumb and (post.file.isImage or post.file.isVideo or Conf['PDF in Gallery'])
-    return if Gallery.fullIDs[post.fullID]
+    return unless file and file.thumb and (file.isImage or file.isVideo or Conf['PDF in Gallery'])
+    return if Gallery.fileIDs["#{post.fullID}.#{file.index}"]
 
-    Gallery.fullIDs[post.fullID] = true
+    Gallery.fileIDs["#{post.fullID}.#{file.index}"] = true
 
     thumb = $.el 'a',
       className: 'gal-thumb'
-      href:      post.file.url
+      href:      file.url
       target:    '_blank'
-      title:     post.file.name
+      title:     file.name
 
     thumb.dataset.id   = Gallery.images.length
     thumb.dataset.post = post.fullID
+    thumb.dataset.file = file.index
 
-    thumbImg = post.file.thumb.cloneNode false
+    thumbImg = file.thumb.cloneNode false
     thumbImg.style.cssText = ''
     $.add thumb, thumbImg
 
@@ -195,7 +196,9 @@ Gallery =
     if @error?.code is MediaError.MEDIA_ERR_DECODE
       return new Notice 'error', 'Corrupt or unplayable video', 30
     return if ImageCommon.isFromArchive @
-    ImageCommon.error @, g.posts[@dataset.post], null, (url) =>
+    post = g.posts[@dataset.post]
+    file = post.files[@dataset.file]
+    ImageCommon.error @, post, file, null, (url) =>
       return unless url
       Gallery.images[@dataset.id].href = url
       (@src = url if Gallery.nodes.current is @)
@@ -247,6 +250,10 @@ Gallery =
           Gallery.cb.pause
         when Conf['Slideshow']
           Gallery.cb.toggleSlideshow
+        when Conf['Rotate image anticlockwise']
+          Gallery.cb.rotateLeft
+        when Conf['Rotate image clockwise']
+          Gallery.cb.rotateRight
 
       return unless cb
       e.stopPropagation()
@@ -299,6 +306,16 @@ Gallery =
       $.rmClass Gallery.nodes.buttons, 'gal-playing'
       Gallery.slideshow = false
 
+    rotateLeft:  -> Gallery.cb.rotate 270
+    rotateRight: -> Gallery.cb.rotate  90
+
+    rotate: $.debounce 100, (delta) ->
+      {current} = Gallery.nodes
+      return if current.nodeName is 'IFRAME'
+      current.dataRotate = ((current.dataRotate or 0) + delta) % 360
+      current.style.transform = "rotate(#{current.dataRotate}deg)"
+      Gallery.cb.setHeight()
+
     close: ->
       $.off Gallery.nodes.current, 'error', Gallery.error
       ImageCommon.pause Gallery.nodes.current
@@ -309,7 +326,7 @@ Gallery =
         d.mozCancelFullScreen?()
         d.webkitExitFullscreen?()
       delete Gallery.nodes
-      delete Gallery.fullIDs
+      delete Gallery.fileIDs
       doc.style.overflow = ''
 
       $.off d, 'keydown', Gallery.cb.keybinds
@@ -323,13 +340,26 @@ Gallery =
     setHeight: $.debounce 100, ->
       {current, frame} = Gallery.nodes
       {style} = current
+
       if Conf['Stretch to Fit'] and (dim = g.posts[current.dataset.post]?.file.dimensions)
         [width, height] = dim.split 'x'
-        minHeight = Math.min(doc.clientHeight - 25, height / width * frame.clientWidth)
+        containerWidth = frame.clientWidth
+        containerHeight = doc.clientHeight - 25
+        if (current.dataRotate or 0) % 180 is 90
+          [containerWidth, containerHeight] = [containerHeight, containerWidth]
+        minHeight = Math.min(containerHeight, height / width * containerWidth)
         style.minHeight = minHeight + 'px'
         style.minWidth = (width / height * minHeight) + 'px'
       else
         style.minHeight = style.minWidth = ''
+
+      if (current.dataRotate or 0) % 180 is 90
+        style.maxWidth  = if Conf['Fit Height'] then "#{doc.clientHeight - 25}px" else 'none'
+        style.maxHeight = if Conf['Fit Width']  then "#{frame.clientWidth}px"     else 'none'
+        margin = (current.clientWidth - current.clientHeight)/2
+        style.margin = "#{margin}px #{-margin}px"
+      else
+        style.maxWidth = style.maxHeight = style.margin = ''
 
     setDelay: -> Gallery.delay = +@value
 

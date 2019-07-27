@@ -1,25 +1,49 @@
 Site =
-  init: (cb) ->
-    swDict = {}
-    for line in Conf['siteSoftware'].split('\n') when line[0] isnt '#'
-      [hostname, software] = line.split(' ')
-      swDict[hostname] = software if software of SW
-    {hostname} = location
-    while hostname and hostname not of swDict
-      hostname = hostname.replace(/^[^.]*\.?/, '')
-    hostname = '4chan.org' if hostname is '4channel.org'
-    if hostname
-      @set hostname, swDict[hostname]
-      cb()
-    else
-      $.onExists doc, 'body', =>
-        for software of SW
-          if SW[software].detect?()
-            @set location.hostname.replace(/^www\./, ''), software
-            Conf['siteSoftware'] += "\n#{@hostname} #{@software}"
-            $.set 'siteSoftware', Conf['siteSoftware']
-            cb()
-        return
+  defaultProperties:
+    '4chan.org':    {software: 'yotsuba'}
+    '4channel.org': {canonical: '4chan.org'}
+    '4cdn.org':     {canonical: '4chan.org'}
 
-  set: (@hostname, @software) ->
-    $.extend @, SW[@software]
+  init: (cb) ->
+    $.extend Conf['siteProperties'], Site.defaultProperties
+    hostname = Site.resolve()
+    if hostname and Conf['siteProperties'][hostname].software of SW
+      @set hostname
+      cb()
+    $.onExists doc, 'body', =>
+      for software of SW when (changes = SW[software].detect?())
+        changes.software = software
+        hostname = location.hostname.replace(/^www\./, '')
+        properties = (Conf['siteProperties'][hostname] or= {})
+        changed = 0
+        for key of changes when properties[key] isnt changes[key]
+          properties[key] = changes[key]
+          changed++
+        if changed
+          $.set 'siteProperties', Conf['siteProperties']
+        unless g.SITE
+          @set hostname
+          cb()
+        return
+      return
+
+  resolve: (url=location) ->
+    {hostname} = url
+    while hostname and hostname not of Conf['siteProperties']
+      hostname = hostname.replace(/^[^.]*\.?/, '')
+    if hostname
+      hostname = canonical if (canonical = Conf['siteProperties'][hostname].canonical)
+    hostname
+
+  parseURL: (url) ->
+    siteID = Site.resolve url
+    Main.parseURL g.sites[siteID], url
+
+  set: (hostname) ->
+    for ID, properties of Conf['siteProperties']
+      continue if properties.canonical
+      software = properties.software
+      continue unless software and SW[software]
+      g.sites[ID] = site = Object.create SW[software]
+      $.extend site, {ID, siteID: ID, properties, software}
+    g.SITE = g.sites[hostname]

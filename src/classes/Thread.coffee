@@ -2,6 +2,9 @@ class Thread
   toString: -> @ID
 
   constructor: (@ID, @board) ->
+    @threadID   = @ID
+    @boardID    = @board.ID
+    @siteID     = g.SITE.ID
     @fullID     = "#{@board}.#{@ID}"
     @posts      = new SimpleDict()
     @isDead     = false
@@ -11,6 +14,7 @@ class Thread
     @isArchived = false
     @postLimit  = false
     @fileLimit  = false
+    @lastPost   = 0
     @ipCount    = undefined
     @json       = null
 
@@ -58,7 +62,7 @@ class Thread
       $.rm $ ".#{typeLC}Icon", @catalogView.nodes.icons if @catalogView
       return
     icon = $.el 'img',
-      src: "#{Build.staticPath}#{typeLC}#{Build.gifIcon}"
+      src: "#{g.SITE.Build.staticPath}#{typeLC}#{g.SITE.Build.gifIcon}"
       alt:   type
       title: type
       className: "#{typeLC}Icon retina"

@@ -1,39 +1,27 @@
 SW.tinyboard =
   isOPContainerThread: true
+  mayLackJSON: true
+  threadModTimeIgnoresSage: true
 
   disabledFeatures: [
-    'Board Configuration'
-    'Normalize URL'
-    'Captcha Configuration'
-    'Image Host Rewriting'
-    'Index Generator'
-    'Announcement Hiding'
-    'Fourchan thingies'
     'Resurrect Quotes'
     'Quick Reply Personas'
     'Quick Reply'
     'Cooldown'
-    'Pass Link'
-    'Index Generator (Menu)'
     'Report Link'
     'Delete Link'
     'Edit Link'
-    'Archive Link'
     'Quote Inlining'
     'Quote Previewing'
     'Quote Backlinks'
     'File Info Formatting'
-    'Fappe Tyme'
     'Image Expansion'
     'Image Expansion (Menu)'
     'Comment Expansion'
     'Thread Expansion'
     'Favicon'
-    'Unread'
     'Quote Threading'
-    'Thread Stats'
     'Thread Updater'
-    'Mark New IPs'
     'Banner'
     'Flash Features'
     'Reply Pruning'
@@ -44,18 +32,44 @@ SW.tinyboard =
 
   detect: ->
     for script in $$ 'script:not([src])', d.head
-      return true if /\bvar configRoot=".*?"/.test(script.textContent)
+      if (m = script.textContent.match(/\bvar configRoot=(".*?")/))
+        properties = {}
+        try
+          root = JSON.parse m[1]
+          if root[0] is '/'
+            properties.root = location.origin + root
+          else if /^https?:/.test(root)
+            properties.root = root
+        return properties
     false
 
   urls:
-    thread: ({boardID, threadID}) -> "#{boardID}/res/#{threadID}.html"
+    thread: ({siteID, boardID, threadID}) -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/res/#{threadID}.html"
+    post:    ({postID})                   -> "##{postID}"
+    index:   ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/"
+    catalog: ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/catalog.html"
+    threadJSON: ({siteID, boardID, threadID}) ->
+      root = Conf['siteProperties'][siteID]?.root
+      if root then "#{root}#{boardID}/res/#{threadID}.json" else ''
+    threadsListJSON: ({siteID, boardID}) ->
+      root = Conf['siteProperties'][siteID]?.root
+      if root then "#{root}#{boardID}/threads.json" else ''
+    catalogJSON: ({siteID, boardID}) ->
+      root = Conf['siteProperties'][siteID]?.root
+      if root then "#{root}#{boardID}/catalog.json" else ''
+    file: ({siteID, boardID}, filename) ->
+      "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/#{filename}"
+    thumb: (board, filename) ->
+      SW.tinyboard.urls.file board, filename
 
   selectors:
     board:         'form[name="postcontrols"]'
-    thread:        'div[id^="thread_"]'
+    thread:        'input[name="board"] ~ div[id^="thread_"]'
     threadDivider: 'div[id^="thread_"] > hr:last-of-type'
     summary:       '.omitted'
-    postContainer: '.reply' # postContainer is thread for OP
+    postContainer: 'div[id^="reply_"]:not(.hidden)' # postContainer is thread for OP
+    opBottom:      '.op'
+    replyOriginal: 'div[id^="reply_"]:not(.hidden)'
     infoRoot:      '.intro'
     info:
       subject:   '.subject'
@@ -76,14 +90,34 @@ SW.tinyboard =
       text:  '.fileinfo'
       link:  '.fileinfo > a'
       thumb: 'a > .post-image'
+    thumbLink: '.file > a'
+    multifile: '.files > .file'
+    highlightable:
+      op:      ' > .op'
+      reply:   '.reply'
+      catalog: ' > .thread'
     comment:   '.body'
     spoiler:   '.spoiler'
     quotelink: 'a[onclick^="highlightReply("]'
+    catalog:
+      board:  '#Grid'
+      thread: '.mix'
+      thumb:  '.thread-image'
     boardList: '.boardlist'
+    boardListBottom: '.boardlist.bottom'
+    styleSheet: '#stylesheet'
+    psa:       '.blotter'
+    nav:
+      prev: '.pages > form > [value=Previous]'
+      next: '.pages > form > [value=Next]'
+
+  classes:
+    highlight: 'highlighted'
 
   xpath:
-    thread:        'div[starts-with(@id,"thread_")]'
-    postContainer: 'div[starts-with(@id,"reply_") or starts-with(@id,"thread_")]'
+    thread:         'div[starts-with(@id,"thread_")]'
+    postContainer:  'div[starts-with(@id,"reply_") or starts-with(@id,"thread_")]'
+    replyContainer: 'div[starts-with(@id,"reply_")]'
 
   regexp:
     quotelink:
@@ -92,13 +126,44 @@ SW.tinyboard =
         ([^/]+) # boardID
         /res/
         (\d+)   # threadID
-        \.html#
+        \.\w+#
         (\d+)   # postID
         $
       ///
+    quotelinkHTML:
+      /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)\.\w+#(\d+)"/g
+
+  Build:
+    parseJSON: (data, board) ->
+      o = SW.yotsuba.Build.parseJSON(data, board)
+      if data.ext is 'deleted'
+        delete o.file
+        $.extend o,
+          files: []
+          fileDeleted: true
+          filesDeleted: [0]
+      if data.extra_files
+        for extra_file, i in data.extra_files
+          if extra_file.ext is 'deleted'
+            o.filesDeleted.push i
+          else
+            file = SW.yotsuba.Build.parseJSONFile(data, board)
+            o.files.push file
+        if o.files.length
+          o.file = o.files[0]
+      o
+
+    parseComment: (html) ->
+      html = html
+        .replace(/<br\b[^<]*>/gi, '\n')
+        .replace(/<[^>]*>/g, '')
+      $.unescape html
 
   bgColoredEl: ->
     $.el 'div', className: 'post reply'
+
+  isFileURL: (url) ->
+    /\/src\/[^\/]+/.test(url.pathname)
 
   parseNodes: (post, nodes) ->
     # Add vichan's span.poster_id around the ID if not already present.
@@ -114,7 +179,7 @@ SW.tinyboard =
 
   parseFile: (post, file) ->
     {text, link, thumb} = file
-    return false if $.x("ancestor::#{Site.xpath.postContainer}[1]", text) isnt post.nodes.root # file belongs to a reply
+    return false if $.x("ancestor::#{@xpath.postContainer}[1]", text) isnt post.nodes.root # file belongs to a reply
     return false if not (infoNode = if '(' in link.nextSibling?.textContent then link.nextSibling else link.nextElementSibling)
     return false if not (info = infoNode.textContent.match /\((Spoiler Image, )?([\d.]+ [KMG]?B).*\)/)
     nameNode = $ '.postfilename', text
@@ -131,3 +196,9 @@ SW.tinyboard =
   isThumbExpanded: (file) ->
     # Detect old Tinyboard image expansion that changes src attribute on thumbnail.
     $.hasClass file.thumb.parentNode, 'expanded'
+
+  isLinkified: (link) ->
+    /\bnofollow\b/.test(link.rel)
+
+  catalogPin: (threadRoot) ->
+    threadRoot.dataset.sticky = 'true'

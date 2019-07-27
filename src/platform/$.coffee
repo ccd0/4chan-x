@@ -41,62 +41,168 @@ $.extend = (object, properties) ->
   return
 
 $.ajax = do ->
-  # Status Code 304: Not modified
-  # With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
-  # This saves a lot of bandwidth and CPU time for both the users and the servers.
-  lastModified = {}
   if window.wrappedJSObject and not XMLHttpRequest.wrappedJSObject
     pageXHR = XPCNativeWrapper window.wrappedJSObject.XMLHttpRequest
   else
     pageXHR = XMLHttpRequest
 
-  (url, options={}, extra={}) ->
-    {type, whenModified, upCallbacks, form} = extra
-    options.responseType ?= 'json' if /\.json$/.test url
+  (url, options={}) ->
+    options.responseType ?= 'json'
+    options.type or= options.form and 'post' or 'get'
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
-    url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?4c(?:ha|d)n\.org)\/adv\//, '$1//adv/'
-    # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
-    url += "?s=#{whenModified}" if $.engine is 'blink' and whenModified
+    url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
+    <% if (type === 'crx') { %>
+    # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
+    if Conf['Chromium CORB Bug'] and g.SITE.software is 'yotsuba' and !options.testCORB
+      return $.ajaxPage url, options
+    <% } %>
+    {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options
     r = new pageXHR()
-    type or= form and 'post' or 'get'
     try
       r.open type, url, true
-      if whenModified
-        r.setRequestHeader 'If-Modified-Since', lastModified[whenModified][url] if lastModified[whenModified]?[url]?
-        $.on r, 'load', -> (lastModified[whenModified] or= {})[url] = r.getResponseHeader 'Last-Modified'
-      $.extend r, options
-      $.extend r.upload, upCallbacks
+      for key, value of (headers or {})
+        r.setRequestHeader key, value
+      $.extend r, {onloadend, timeout, responseType, withCredentials}
+      $.extend r.upload, {onprogress}
       # connection error or content blocker
-      $.on r, 'error', -> (c.error "4chan X failed to load: #{url}" unless r.status)
+      $.on r, 'error', -> (c.warn "4chan X failed to load: #{url}" unless r.status)
+      <% if (type === 'crx') { %>
+      # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
+      $.on r, 'load', ->
+        if !Conf['Chromium CORB Bug'] and r.readyState is 4 and r.status is 200 and r.statusText is '' and r.response is null
+          $.set 'Chromium CORB Bug', (Conf['Chromium CORB Bug'] = Date.now())
+      <% } %>
       r.send form
     catch err
       # XXX Some content blockers in Firefox (e.g. Adblock Plus and NoScript) throw an exception instead of simulating a connection error.
       throw err unless err.result is 0x805e0006
-      for event in ['error', 'loadend']
-        r["on#{event}"] = options["on#{event}"]
-        $.queueTask $.event, event, null, r
+      r.onloadend = onloadend
+      $.queueTask $.event, 'error',   null, r
+      $.queueTask $.event, 'loadend', null, r
     r
+
+<% if (type === 'crx') { %>
+# XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
+do ->
+  requestID = 0
+  requests = {}
+
+  $.ajaxPageInit = ->
+    if Conf['Chromium CORB Bug'] and g.SITE.software is 'yotsuba'
+      unless 0 <= Date.now() - Conf['Chromium CORB Bug'] < 2 * $.DAY
+        $.ajax "#{location.protocol}//a.4cdn.org/boards.json",
+          testCORB: true
+          onloadend: ->
+            if @response
+              $.set 'Chromium CORB Bug', (Conf['Chromium CORB Bug'] = false)
+
+    $.global ->
+      window.FCX.requests = {}
+
+      document.addEventListener '4chanXAjax', (e) ->
+        {url, timeout, responseType, withCredentials, type, onprogress, form, headers, id} = e.detail
+        window.FCX.requests[id] = r = new XMLHttpRequest()
+        r.open type, url, true
+        for key, value of (headers or {})
+          r.setRequestHeader key, value
+        r.responseType = if responseType is 'document' then 'text' else responseType
+        r.timeout = timeout
+        r.withCredentials = withCredentials
+        if onprogress
+          r.upload.onprogress = (e) ->
+            {loaded, total} = e
+            detail = {loaded, total, id}
+            document.dispatchEvent new CustomEvent '4chanXAjaxProgress', {bubbles: true, detail}
+        r.onloadend = ->
+          delete window.FCX.requests[id]
+          {status, statusText, response} = @
+          responseHeaderString = @getAllResponseHeaders()
+          detail = {status, statusText, response, responseHeaderString, id}
+          document.dispatchEvent new CustomEvent '4chanXAjaxLoadend', {bubbles: true, detail}
+        # connection error or content blocker
+        r.onerror = ->
+          console.warn "4chan X failed to load: #{url}" unless r.status
+        if form
+          fd = new FormData()
+          for entry in form
+            fd.append(entry[0], entry[1])
+        else
+          fd = null
+        r.send fd
+      , false
+
+      document.addEventListener '4chanXAjaxAbort', (e) ->
+        return unless (r = window.FCX.requests[e.detail.id])
+        r.abort()
+      , false
+
+    $.on d, '4chanXAjaxProgress', (e) ->
+      return unless (req = requests[e.detail.id])
+      req.upload.onprogress.call req.upload, e.detail
+
+    $.on d, '4chanXAjaxLoadend', (e) ->
+      return unless (req = requests[e.detail.id])
+      delete requests[e.detail.id]
+      if e.detail.status
+        $.extend req, e.detail
+        if req.responseType is 'document'
+          req.response = new DOMParser().parseFromString(e.detail.response, 'text/html')
+      req.onloadend()
+
+  $.ajaxPage = (url, options={}) ->
+    {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options
+    id = requestID++
+    requests[id] = req = new CrossOrigin.Request()
+    $.extend req, {responseType, onloadend}
+    req.upload = {onprogress}
+    req.abort = ->
+      $.event '4chanXAjaxAbort', {id}
+    form = Array.from(form.entries()) if form
+    $.event '4chanXAjax', {url, timeout, responseType, withCredentials, type, onprogress: !!onprogress, form, headers, id}
+    req
+<% } %>
+
+# Status Code 304: Not modified
+# With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
+# This saves a lot of bandwidth and CPU time for both the users and the servers.
+$.lastModified = {}
+$.whenModified = (url, bucket, cb, options={}) ->
+  {timeout, ajax} = options
+  params = []
+  # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
+  params.push "s=#{bucket}" if $.engine is 'blink'
+  params.push "t=#{Date.now()}" if url.split('/')[2] is 'a.4cdn.org'
+  url0 = url
+  url += '?' + params.join('&') if params.length
+  headers = {}
+  if (t = $.lastModified[bucket]?[url0])?
+    headers['If-Modified-Since'] = t
+  r = (ajax or $.ajax) url, {
+    onloadend: ->
+      ($.lastModified[bucket] or= {})[url0] = @getResponseHeader('Last-Modified')
+      cb.call @
+    timeout
+    headers
+  }
+  r
 
 do ->
   reqs = {}
-  $.cache = (url, cb, options) ->
-    if req = reqs[url]
-      if req.readyState is 4
-        $.queueTask -> cb.call req, req.evt, true
-      else
+  $.cache = (url, cb, options={}) ->
+    {ajax} = options
+    if (req = reqs[url])
+      if req.callbacks
         req.callbacks.push cb
+      else
+        $.queueTask -> cb.call req, {isCached: true}
       return req
-    rm = -> delete reqs[url]
-    try
-      return if not (req = $.ajax url, options)
-    catch err
-      return
-    $.on req, 'load', (e) ->
-      @evt = e
+    onloadend = ->
+      unless @status
+        delete reqs[url]
       for cb in @callbacks
-        do (cb) => $.queueTask => cb.call @, e, false
+        do (cb) => $.queueTask => cb.call @, {isCached: false}
       delete @callbacks
-    $.on req, 'abort error', rm
+    req = (ajax or $.ajax) url, {onloadend}
     req.callbacks = [cb]
     reqs[url] = req
   $.cleanCache = (testf) ->
@@ -234,7 +340,7 @@ $.event = (event, detail, root=d) ->
   if detail? and typeof cloneInto is 'function'
     detail = cloneInto detail, d.defaultView
   <% } %>
-  root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
+  root.dispatchEvent new CustomEvent event, {bubbles: true, cancelable: true, detail}
 
 <% if (type === 'userscript') { %>
 # XXX Make $.event work in Pale Moon with GM 3.x (no cloneInto function).
@@ -255,7 +361,7 @@ do ->
       else
         obj
     $.event = (event, detail, root=d) ->
-      root.dispatchEvent new CustomEvent event, {bubbles: true, detail: clone detail}
+      root.dispatchEvent new CustomEvent event, {bubbles: true, cancelable: true, detail: clone detail}
 <% } %>
 
 $.modifiedClick = (e) ->
@@ -354,6 +460,14 @@ $.minmax = (value, min, max) ->
 $.hasAudio = (video) ->
   video.mozHasAudio or !!video.webkitAudioDecodedByteCount
 
+$.luma = (rgb) ->
+  rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114
+
+$.unescape = (text) ->
+  return text unless text?
+  text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt|#44);/g, (c) ->
+    (({'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','})[c])
+
 $.engine = do ->
   return 'edge'   if /Edge\//.test navigator.userAgent
   return 'blink'  if /Chrome\//.test navigator.userAgent
@@ -408,16 +522,16 @@ $.sync = (key, cb) ->
 $.forceSync = -> return
 
 $.crxWorking = ->
-  if chrome.runtime.getManifest()
-    true
-  else
-    unless $.crxWarningShown
-      msg = $.el 'div',
-        <%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>
-      $.on $('a', msg), 'click', -> location.reload()
-      new Notice 'warning', msg
-      $.crxWarningShown = true
-    false
+  try
+    if chrome.runtime.getManifest()
+      return true
+  unless $.crxWarningShown
+    msg = $.el 'div',
+      <%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>
+    $.on $('a', msg), 'click', -> location.reload()
+    new Notice 'warning', msg
+    $.crxWarningShown = true
+  false
 
 $.get = $.oneItemSugar (data, cb) ->
   return unless $.crxWorking()
@@ -547,9 +661,11 @@ if GM?.deleteValue? and window.BroadcastChannel and not GM_addValueChangeListene
       cb?()
 
   $.clear = (cb) ->
-    GM.listValues().then (keys) ->
+    GM.listValues().then((keys) ->
       $.delete keys.map((key) -> key.replace g.NAMESPACE, ''), cb
-
+    ).catch( ->
+      $.delete Object.keys(Conf).concat(['previousversion', 'QR Size', 'QR.persona']), cb
+    )
 else
 
   unless GM_deleteValue?
@@ -643,7 +759,12 @@ else
 
   $.getSync = (items, cb) ->
     for key of items when (val2 = $.getValue g.NAMESPACE + key)
-      items[key] = JSON.parse val2
+      try
+        items[key] = JSON.parse val2
+      catch err
+        # XXX https://github.com/ccd0/4chan-x/issues/2218
+        unless /^(?:undefined)*$/.test(val2)
+          throw err
     cb items
 
   $.set = $.oneItemSugar (items, cb) ->
@@ -657,7 +778,7 @@ else
     # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
     # Also support case where GM_listValues is not defined.
     $.delete Object.keys(Conf)
-    $.delete ['previousversion', 'QR Size', 'QR.persona', 'hiddenPSA']
+    $.delete ['previousversion', 'QR Size', 'QR.persona']
     try
       $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''
     cb?()

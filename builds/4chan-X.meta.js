@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.4.5
+// @version      1.14.11.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -77,6 +77,7 @@
 // @connect      api.dailymotion.com
 // @connect      api.github.com
 // @connect      soundcloud.com
+// @connect      api.streamable.com
 // @connect      vimeo.com
 // @connect      www.googleapis.com
 // @connect      *

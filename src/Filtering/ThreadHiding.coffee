@@ -12,7 +12,7 @@ ThreadHiding =
       cb:   @node
 
   catalogSet: (board) ->
-    return unless $.hasStorage and Site.software is 'yotsuba'
+    return unless $.hasStorage and g.SITE.software is 'yotsuba'
     hiddenThreads = ThreadHiding.db.get
       boardID: board.ID
       defaultValue: {}
@@ -20,7 +20,7 @@ ThreadHiding =
     localStorage.setItem "4chan-hide-t-#{board}", JSON.stringify hiddenThreads
 
   catalogWatch: ->
-    return unless $.hasStorage and Site.software is 'yotsuba'
+    return unless $.hasStorage and g.SITE.software is 'yotsuba'
     @hiddenThreads = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
     Main.ready ->
       # 4chan's catalog sets the style to "display: none;" when hiding or unhiding a thread.
@@ -49,11 +49,11 @@ ThreadHiding =
   node: ->
     return if @isReply or @isClone or @isFetchedQuote
 
+    if Conf['Thread Hiding Buttons']
+      $.prepend @nodes.root, ThreadHiding.makeButton(@thread, 'hide')
+
     if data = ThreadHiding.db.get {boardID: @board.ID, threadID: @ID}
       ThreadHiding.hide @thread, data.makeStub
-
-    return unless Conf['Thread Hiding Buttons']
-    $.prepend @nodes.root, ThreadHiding.makeButton(@thread, 'hide')
 
   onIndexRefresh: ->
     g.BOARD.threads.forEach (thread) ->
@@ -143,9 +143,10 @@ ThreadHiding =
     a.dataset.fullID = thread.fullID
     $.on a, 'click', ThreadHiding.toggle
     a
+
   makeStub: (thread, root) ->
-    numReplies  = $$('.thread > .replyContainer', root).length
-    numReplies += +summary.textContent.match /\d+/ if summary = $ '.summary', root
+    numReplies  = $$(g.SITE.selectors.replyOriginal, root).length
+    numReplies += +summary.textContent.match /\d+/ if summary = $ g.SITE.selectors.summary, root
 
     a = ThreadHiding.makeButton thread, 'show'
     $.add a, $.tn " #{thread.OP.info.nameBlock} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
@@ -156,6 +157,10 @@ ThreadHiding =
     else
       $.add thread.stub, a
     $.prepend root, thread.stub
+
+    # Prevent hiding of thread divider on sites that put it inside the thread
+    if (threadDivider = $ g.SITE.selectors.threadDivider, root)
+      $.addClass threadDivider, 'threadDivider'
 
   saveHiddenState: (thread, makeStub) ->
     if thread.isHidden
@@ -183,7 +188,9 @@ ThreadHiding =
     threadRoot = thread.nodes.root
     thread.isHidden = true
     Index.updateHideLabel()
-    $.rm thread.catalogView.nodes.root if thread.catalogView and !Index.showHiddenThreads
+    if thread.catalogView and !Index.showHiddenThreads
+      $.rm thread.catalogView.nodes.root
+      $.event 'PostsRemoved', null, Index.root
 
     return threadRoot.hidden = true unless makeStub
 
@@ -196,4 +203,6 @@ ThreadHiding =
     threadRoot = thread.nodes.root
     threadRoot.hidden = thread.isHidden = false
     Index.updateHideLabel()
-    $.rm thread.catalogView.nodes.root if thread.catalogView and Index.showHiddenThreads
+    if thread.catalogView and Index.showHiddenThreads
+      $.rm thread.catalogView.nodes.root
+      $.event 'PostsRemoved', null, Index.root

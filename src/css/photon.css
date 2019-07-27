@@ -8,6 +8,17 @@
   border-color: #EA8;
 }
 
+/* 4chan style fixes */
+:root.photon #arc-list tr:nth-of-type(odd) span.quote {
+  color: #C0E17A;
+}
+:root.photon.highlight-you .quotesYou$site$highlightable$reply {
+  border-left: 3px solid rgba(221, 0, 0, .8) !important;
+}
+:root.photon.highlight-own .yourPost$site$highlightable$reply {
+  border-left: 3px dashed rgba(221, 0, 0, .8) !important;
+}
+
 /* Header */
 :root.photon #header-bar.dialog {
   background-color: rgba(221,221,221,0.98);
@@ -42,9 +53,6 @@
 }
 
 /* Quote */
-:root.photon #arc-list tr:nth-of-type(odd) span.quote {
-  color: #C0E17A;
-}
 :root.photon .backlink.deadlink {
   color: #F60 !important;
 }
@@ -91,7 +99,7 @@
 }
 
 /* Thread Watcher */
-:root.photon .replies-quoting-you > a, :root.photon #watcher-link.replies-quoting-you {
+:root.photon .replies-quoting-you > a, :root.photon #watcher-link.replies-quoting-you, :root.photon .last-page > a > .watcher-page {
   color: #00F !important;
 }
 

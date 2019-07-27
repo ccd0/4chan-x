@@ -13,6 +13,7 @@ docSet = function() {
 g = {
   VERSION:   '<%= readJSON('/version.json').version %>',
   NAMESPACE: '<%= meta.name %>.',
+  sites:     {},
   boards:    {}
 };
 

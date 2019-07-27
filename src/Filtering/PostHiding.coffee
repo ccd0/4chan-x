@@ -26,7 +26,7 @@ PostHiding =
     return unless Conf['Reply Hiding Buttons']
 
     button = PostHiding.makeButton @, 'hide'
-    if (sa = Site.selectors.sideArrows)
+    if (sa = g.SITE.selectors.sideArrows)
       sideArrows = $ sa, @nodes.root
       $.replace sideArrows.firstChild, button
       sideArrows.removeAttribute 'class'

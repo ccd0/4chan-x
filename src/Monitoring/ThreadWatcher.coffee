@@ -10,21 +10,19 @@ ThreadWatcher =
       className: 'fa fa-eye'
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
+    @dbLM   = new DataBoard 'watcherLastModified', null, true
     @dialog = UI.dialog 'thread-watcher', <%= readHTML('ThreadWatcher.html') %>
-
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
     @refreshButton = $ '.refresh', @dialog
     @closeButton = $('.move > .close', @dialog)
     @unreaddb = Unread.db or UnreadIndex.db or new DataBoard 'lastReadPosts'
-    @unreadEnabled = Conf['Remember Last Read Post'] and Site.software is 'yotsuba'
+    @unreadEnabled = Conf['Remember Last Read Post']
 
     $.on d, 'QRPostSuccessful',   @cb.post
     $.on sc, 'click', @toggleWatcher
     $.on @refreshButton, 'click', @buttonFetchAll
     $.on @closeButton, 'click', @toggleWatcher
-
-    @refreshButton.hidden = true unless Site.software is 'yotsuba'
 
     @menu.addHeaderMenuEntry()
     $.onExists doc, 'body', @addDialog
@@ -43,6 +41,7 @@ ThreadWatcher =
 
     Header.addShortcut 'watcher', sc, 510
 
+    ThreadWatcher.initLastModified()
     ThreadWatcher.fetchAuto()
     $.on window, 'visibilitychange focus', -> $.queueTask ThreadWatcher.fetchAuto
 
@@ -94,16 +93,16 @@ ThreadWatcher =
         href: 'javascript:;'
         className: 'watch-thread-link'
       $.before $('input', @nodes.info), toggler
+    siteID = g.SITE.ID
     boardID = @board.ID
     threadID = @thread.ID
-    data = ThreadWatcher.db.get {boardID, threadID}
+    data = ThreadWatcher.db.get {siteID, boardID, threadID}
     ThreadWatcher.setToggler toggler, !!data
     $.on toggler, 'click', ThreadWatcher.cb.toggle
     # Add missing excerpt for threads added by Auto Watch
     if data and not data.excerpt?
       $.queueTask =>
-        ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt @thread}}
-        ThreadWatcher.refresh()
+        ThreadWatcher.update siteID, boardID, threadID, val: {excerpt: Get.threadExcerpt @thread}
 
   catalogNode: ->
     $.addClass @nodes.root, 'watched' if ThreadWatcher.isWatched @thread
@@ -129,37 +128,45 @@ ThreadWatcher =
       $.event 'CloseMenu'
     pruneDeads: ->
       return if $.hasClass @, 'disabled'
-      for {boardID, threadID, data} in ThreadWatcher.getAll() when data.isDead
-        ThreadWatcher.db.delete {boardID, threadID}
+      for {siteID, boardID, threadID, data} in ThreadWatcher.getAll() when data.isDead
+        ThreadWatcher.db.delete {siteID, boardID, threadID}
       ThreadWatcher.refresh()
+      $.event 'CloseMenu'
+    dismiss: ->
+      for {siteID, boardID, threadID, data} in ThreadWatcher.getAll() when data.quotingYou
+        ThreadWatcher.update siteID, boardID, threadID, {dismiss: data.quotingYou or 0}
       $.event 'CloseMenu'
     toggle: ->
       {thread} = Get.postFromNode @
       ThreadWatcher.toggle thread
     rm: ->
+      {siteID} = @parentNode.dataset
       [boardID, threadID] = @parentNode.dataset.fullID.split '.'
-      ThreadWatcher.rm boardID, +threadID
+      ThreadWatcher.rm siteID, boardID, +threadID
     post: (e) ->
       {boardID, threadID, postID} = e.detail
+      cb = PostRedirect.delay()
       if postID is threadID
         if Conf['Auto Watch']
-          ThreadWatcher.addRaw boardID, threadID, {}
+          ThreadWatcher.addRaw boardID, threadID, {}, cb
       else if Conf['Auto Watch Reply']
-        ThreadWatcher.add g.threads[boardID + '.' + threadID]
+        ThreadWatcher.add (g.threads[boardID + '.' + threadID] or new Thread(threadID, g.boards[boardID] or new Board(boardID))), cb
     onIndexUpdate: (e) ->
       {db}    = ThreadWatcher
+      siteID  = g.SITE.ID
       boardID = g.BOARD.ID
       nKilled = 0
-      for threadID, data of db.data.boards[boardID] when not data?.isDead and "#{boardID}.#{threadID}" not in e.detail.threads
+      for threadID, data of db.data[siteID].boards[boardID] when not data?.isDead and "#{boardID}.#{threadID}" not in e.detail.threads
         # Don't prune threads that have yet to appear in index.
         continue unless e.detail.threads.some (fullID) -> +fullID.split('.')[1] > threadID
-        nKilled++
         if Conf['Auto Prune'] or not (data and typeof data is 'object') # corrupt data
           db.delete {boardID, threadID}
+          nKilled++
+        else if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
+          ThreadWatcher.fetchStatus {siteID, boardID, threadID, data}
         else
-          db.extend {boardID, threadID, val: {isDead: true}}
-          if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
-            ThreadWatcher.fetchStatus {boardID, threadID, data}
+          db.extend {boardID, threadID, val: {isDead: true, page: undefined, lastPage: undefined, unread: undefined, quotingYou: undefined}}
+          nKilled++
       ThreadWatcher.refresh() if nKilled
     onThreadRefresh: (e) ->
       thread = g.threads[e.detail.threadID]
@@ -170,6 +177,30 @@ ThreadWatcher =
   requests: []
   fetched:  0
 
+  fetch: (url, {siteID, force}, args, cb) ->
+    if ThreadWatcher.requests.length is 0
+      ThreadWatcher.status.textContent = '...'
+      $.addClass ThreadWatcher.refreshButton, 'fa-spin'
+    onloadend = ->
+      return if @finished
+      @finished = true
+      ThreadWatcher.fetched++
+      if ThreadWatcher.fetched is ThreadWatcher.requests.length
+        ThreadWatcher.clearRequests()
+      else
+        ThreadWatcher.status.textContent = "#{Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)}%"
+      cb.apply @, args
+    ajax = if siteID is g.SITE.ID then $.ajax else CrossOrigin.ajax
+    if force
+      delete $.lastModified.ThreadWatcher?[url]
+    req = $.whenModified(
+      url,
+      'ThreadWatcher',
+      onloadend,
+      {timeout: $.MINUTE, ajax}
+    )
+    ThreadWatcher.requests.push req
+
   clearRequests: ->
     ThreadWatcher.requests = []
     ThreadWatcher.fetched = 0
@@ -177,125 +208,199 @@ ThreadWatcher =
     $.rmClass ThreadWatcher.refreshButton, 'fa-spin'
 
   abort: ->
-    for req in ThreadWatcher.requests when req.readyState isnt 4 # DONE
+    delete ThreadWatcher.syncing
+    for req in ThreadWatcher.requests when !req.finished
+      req.finished = true
       req.abort()
     ThreadWatcher.clearRequests()
 
+  initLastModified: ->
+    lm = ($.lastModified['ThreadWatcher'] or= {})
+    for siteID, boards of ThreadWatcher.dbLM.data
+      for boardID, data of boards.boards
+        if ThreadWatcher.db.get {siteID, boardID}
+          for url, date of data
+            lm[url] = date
+        else
+          ThreadWatcher.dbLM.delete {siteID, boardID}
+    return
+
   fetchAuto: ->
-    return unless Site.software is 'yotsuba'
     clearTimeout ThreadWatcher.timeout
     return unless Conf['Auto Update Thread Watcher']
     {db} = ThreadWatcher
-    interval = if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] then 5 * $.MINUTE else 2 * $.HOUR
+    interval = if Conf['Show Page'] or (ThreadWatcher.unreadEnabled and Conf['Show Unread Count']) then 5 * $.MINUTE else 2 * $.HOUR
     now = Date.now()
     unless now - interval < (db.data.lastChecked or 0) <= now or d.hidden or not d.hasFocus()
-      ThreadWatcher.fetchAllStatus()
-      db.setLastChecked()
+      ThreadWatcher.fetchAllStatus interval
     ThreadWatcher.timeout = setTimeout ThreadWatcher.fetchAuto, interval
 
   buttonFetchAll: ->
-    if ThreadWatcher.requests.length
+    if ThreadWatcher.syncing or ThreadWatcher.requests.length
       ThreadWatcher.abort()
     else
       ThreadWatcher.fetchAllStatus()
 
-  fetchAllStatus: ->
-    return unless Site.software is 'yotsuba'
+  fetchAllStatus: (interval=0) ->
+    ThreadWatcher.status.textContent = '...'
+    $.addClass ThreadWatcher.refreshButton, 'fa-spin'
+    ThreadWatcher.syncing = true
     dbs = [ThreadWatcher.db, ThreadWatcher.unreaddb, QuoteYou.db].filter((x) -> x)
     n = 0
-    for db in dbs
-      db.forceSync ->
+    for dbi in dbs
+      dbi.forceSync ->
         if (++n) is dbs.length
-          threads = ThreadWatcher.getAll()
-          for thread in threads
+          return if !ThreadWatcher.syncing # aborted
+          delete ThreadWatcher.syncing
+          unless 0 <= Date.now() - (ThreadWatcher.db.data.lastChecked or 0) < interval # not checked in another tab
+            # XXX On vichan boards, last_modified field of threads.json does not account for sage posts.
+            # Occasionally check replies field of catalog.json to find these posts.
+            {db} = ThreadWatcher
+            now = Date.now()
+            deep = !(now - 2 * $.HOUR < (db.data.lastChecked2 or 0) <= now)
+            boards = ThreadWatcher.getAll(true)
+            for board in boards
+              ThreadWatcher.fetchBoard board, deep
+            db.setLastChecked()
+            db.setLastChecked('lastChecked2') if deep
+          if ThreadWatcher.fetched is ThreadWatcher.requests.length
+            ThreadWatcher.clearRequests()
+
+  fetchBoard: (board, deep) ->
+    return unless board.some (thread) -> !thread.data.isDead
+    force = false
+    for thread in board
+      {data} = thread
+      if !data.isDead and data.last isnt -1
+        force = true if Conf['Show Page'] and !data.page?
+        force = thread.force = true if !data.modified?
+    {siteID, boardID} = board[0]
+    site = g.sites[siteID]
+    return unless site
+    urlF = if deep and site.threadModTimeIgnoresSage then 'catalogJSON' else 'threadsListJSON'
+    url = site.urls[urlF]?({siteID, boardID})
+    return unless url
+    ThreadWatcher.fetch url, {siteID, force}, [board, url], ThreadWatcher.parseBoard
+
+  parseBoard: (board, url) ->
+    return unless @status is 200
+    {siteID, boardID} = board[0]
+    lmDate = @getResponseHeader('Last-Modified')
+    ThreadWatcher.dbLM.extend {siteID, boardID, val: $.item(url, lmDate)}
+    threads = {}
+    pageLength = 0
+    nThreads = 0
+    oldest = null
+    try
+      pageLength = @response[0]?.threads.length or 0
+      for page, i in @response
+        for item in page.threads
+          threads[item.no] =
+            page: i + 1
+            index: nThreads
+            modified: item.last_modified
+            replies: item.replies
+          nThreads++
+          if !oldest? or item.no < oldest
+            oldest = item.no
+    catch
+      for thread in board
+        ThreadWatcher.fetchStatus thread
+    for thread in board
+      {threadID, data} = thread
+      if threads[threadID]
+        {page, index, modified, replies} = threads[threadID]
+        if Conf['Show Page']
+          lastPage = if g.sites[siteID].isPrunedByAge?({siteID, boardID})
+            threadID is oldest
+          else
+            index >= nThreads - pageLength
+          ThreadWatcher.update siteID, boardID, threadID, {page, lastPage}
+        if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
+          if modified isnt data.modified or (replies? and replies isnt data.replies)
+            (thread.newData or= {}).modified = modified
             ThreadWatcher.fetchStatus thread
-          return
+      else
+        if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
+          ThreadWatcher.fetchStatus thread
+        else
+          ThreadWatcher.update siteID, boardID, threadID, {isDead: true}
+    return
 
-  fetchStatus: (thread, force) ->
-    return unless Site.software is 'yotsuba'
-    {boardID, threadID, data} = thread
+  fetchStatus: (thread) ->
+    {siteID, boardID, threadID, data, force} = thread
+    url = g.sites[siteID]?.urls.threadJSON?({siteID, boardID, threadID})
+    return unless url
     return if data.isDead and not force
-    if ThreadWatcher.requests.length is 0
-      ThreadWatcher.status.textContent = '...'
-      $.addClass ThreadWatcher.refreshButton, 'fa-spin'
-    req = $.ajax "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json",
-      onloadend: ->
-        ThreadWatcher.parseStatus.call @, thread
-      timeout: $.MINUTE
-    ,
-      whenModified: if force then false else 'ThreadWatcher'
-    ThreadWatcher.requests.push req
+    return if data.last is -1 # 404 or no JSON API
+    ThreadWatcher.fetch url, {siteID, force}, [thread], ThreadWatcher.parseStatus
 
-  parseStatus: ({boardID, threadID, data}) ->
-    ThreadWatcher.fetched++
-    if ThreadWatcher.fetched is ThreadWatcher.requests.length
-      ThreadWatcher.clearRequests()
-    else
-      ThreadWatcher.status.textContent = "#{Math.round(ThreadWatcher.fetched / ThreadWatcher.requests.length * 100)}%"
-
+  parseStatus: ({siteID, boardID, threadID, data, newData}) ->
+    site = g.sites[siteID]
     if @status is 200 and @response
+      last = @response.posts[@response.posts.length-1].no
+      replies = @response.posts.length-1
       isDead = !!@response.posts[0].archived
       if isDead and Conf['Auto Prune']
-        ThreadWatcher.db.delete {boardID, threadID}
-        ThreadWatcher.refresh()
+        ThreadWatcher.rm siteID, boardID, threadID
         return
 
-      lastReadPost = ThreadWatcher.unreaddb.get
-        boardID: boardID
-        threadID: threadID
-        defaultValue: 0
+      return if last is data.last and isDead is data.isDead
 
-      unread = 0
-      quotingYou = false
-      youOP = !!QuoteYou.db?.get {boardID, threadID, postID: threadID}
+      lastReadPost = ThreadWatcher.unreaddb.get {siteID, boardID, threadID, defaultValue: 0}
+      unread = data.unread or 0
+      quotingYou = data.quotingYou or 0
+      youOP = !!QuoteYou.db?.get {siteID, boardID, threadID, postID: threadID}
 
       for postObj in @response.posts
-        continue unless postObj.no > lastReadPost
-        continue if QuoteYou.db?.get {boardID, threadID, postID: postObj.no}
-
-        unread++
-
-        if !quotingYou and !Conf['Require OP Quote Link'] and youOP and not Filter.isHidden(Build.parseJSON postObj, boardID)
-          quotingYou = true
-          continue
-
-        continue unless !quotingYou and QuoteYou.db and postObj.com
+        continue unless postObj.no > (data.last or 0) and postObj.no > lastReadPost
+        continue if QuoteYou.db?.get {siteID, boardID, threadID, postID: postObj.no}
 
         quotesYou = false
-        regexp = /<a [^>]*\bhref="(?:\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
-        while match = regexp.exec postObj.com
-          if QuoteYou.db.get {
-            boardID:  match[1] or boardID
-            threadID: match[2] or threadID
-            postID:   match[3] or match[2] or threadID
-          }
-            quotesYou = true
-            break
-        if quotesYou and not Filter.isHidden(Build.parseJSON postObj, boardID)
-          quotingYou = true
+        if !Conf['Require OP Quote Link'] and youOP
+          quotesYou = true
+        else if QuoteYou.db and postObj.com
+          regexp = site.regexp.quotelinkHTML
+          regexp.lastIndex = 0
+          while (match = regexp.exec postObj.com)
+            if QuoteYou.db.get {
+              siteID
+              boardID:  if match[1] then encodeURIComponent(match[1]) else boardID
+              threadID: match[2] or threadID
+              postID:   match[3] or match[2] or threadID
+            }
+              quotesYou = true
+              break
 
-      if isDead isnt data.isDead or unread isnt data.unread or quotingYou isnt data.quotingYou
-        ThreadWatcher.db.extend {boardID, threadID, val: {isDead, unread, quotingYou}}
-        ThreadWatcher.refresh()
+        if !unread or (!quotingYou and quotesYou)
+          continue if Filter.isHidden(site.Build.parseJSON postObj, {siteID, boardID})
+
+        unread++
+        quotingYou = postObj.no if quotesYou
+
+      newData or= {}
+      $.extend newData, {last, replies, isDead, unread, quotingYou}
+      ThreadWatcher.update siteID, boardID, threadID, newData
 
     else if @status is 404
-      if Conf['Auto Prune']
-        ThreadWatcher.db.delete {boardID, threadID}
+      if site.mayLackJSON and !data.last?
+        ThreadWatcher.update siteID, boardID, threadID, {last: -1}
       else
-        ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true}, rm: ['unread', 'quotingYou']}
+        ThreadWatcher.update siteID, boardID, threadID, {isDead: true}
 
-      ThreadWatcher.refresh()
-
-  getAll: ->
+  getAll: (groupByBoard) ->
     all = []
-    for boardID, threads of ThreadWatcher.db.data.boards
-      if Conf['Current Board'] and boardID isnt g.BOARD.ID
-        continue
-      for threadID, data of threads when data and typeof data is 'object'
-        all.push {boardID, threadID, data}
+    for siteID, boards of ThreadWatcher.db.data
+      for boardID, threads of boards.boards
+        if Conf['Current Board'] and (siteID isnt g.SITE.ID or boardID isnt g.BOARD.ID)
+          continue
+        if groupByBoard
+          all.push (cont = [])
+        for threadID, data of threads when data and typeof data is 'object'
+          (if groupByBoard then cont else all).push {siteID, boardID, threadID, data}
     all
 
-  makeLine: (boardID, threadID, data) ->
+  makeLine: (siteID, boardID, threadID, data) ->
     x = $.el 'a',
       className: 'fa fa-times'
       href: 'javascript:;'
@@ -303,11 +408,18 @@ ThreadWatcher =
 
     {excerpt} = data
     excerpt or= "/#{boardID}/ - No.#{threadID}"
+    excerpt = ThreadWatcher.prefixes[siteID] + excerpt if Conf['Show Site Prefix']
 
     link = $.el 'a',
-      href: "/#{Site.urls.thread({boardID, threadID})}"
+      href: g.sites[siteID]?.urls.thread({siteID, boardID, threadID}) or ''
       title: excerpt
       className: 'watcher-link'
+
+    if Conf['Show Page'] and data.page?
+      page = $.el 'span',
+        textContent: "[#{data.page}]"
+        className: 'watcher-page'
+      $.add link, page
 
     if ThreadWatcher.unreadEnabled and Conf['Show Unread Count'] and data.unread?
       count = $.el 'span',
@@ -323,30 +435,53 @@ ThreadWatcher =
     div = $.el 'div'
     fullID = "#{boardID}.#{threadID}"
     div.dataset.fullID = fullID
+    div.dataset.siteID = siteID
     $.addClass div, 'current'     if g.VIEW is 'thread' and fullID is "#{g.BOARD}.#{g.THREADID}"
     $.addClass div, 'dead-thread' if data.isDead
+    if Conf['Show Page']
+      $.addClass div, 'last-page'  if data.lastPage
+      div.dataset.page = data.page if data.page?
     if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
       $.addClass div, 'replies-read'        if data.unread is 0
       $.addClass div, 'replies-unread'      if data.unread
-      $.addClass div, 'replies-quoting-you' if data.quotingYou
+      $.addClass div, 'replies-quoting-you' if (data.quotingYou or 0) > (data.dismiss or 0)
     $.add div, [x, $.tn(' '), link]
     div
 
+  setPrefixes: (threads) ->
+    prefixes = {}
+    for {siteID} in threads
+      continue if siteID of prefixes
+      len = 0
+      prefix = ''
+      conflicts = Object.keys(prefixes)
+      while conflicts.length > 0
+        len++
+        prefix = siteID[...len]
+        conflicts2 = []
+        for siteID2 in conflicts
+          if siteID2[...len] is prefix
+            conflicts2.push siteID2
+          else if prefixes[siteID2].length < len
+            prefixes[siteID2] = siteID2[...len]
+        conflicts = conflicts2
+      prefixes[siteID] = prefix
+    ThreadWatcher.prefixes = prefixes
+
   build: ->
     nodes = []
-    for {boardID, threadID, data} in ThreadWatcher.getAll()
+    threads = ThreadWatcher.getAll()
+    ThreadWatcher.setPrefixes threads
+    for {siteID, boardID, threadID, data} in threads
       # Add missing excerpt for threads added by Auto Watch
-      if not data.excerpt? and (thread = g.threads["#{boardID}.#{threadID}"])
+      if not data.excerpt? and siteID is g.SITE.ID and (thread = g.threads["#{boardID}.#{threadID}"]) and thread.OP
         ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt thread}}
-      nodes.push ThreadWatcher.makeLine boardID, threadID, data
+      nodes.push ThreadWatcher.makeLine siteID, boardID, threadID, data
     {list} = ThreadWatcher
     $.rmAll list
     $.add list, nodes
 
     ThreadWatcher.refreshIcon()
-    for refresher in ThreadWatcher.menu.refreshers
-      refresher()
-    return
 
   refresh: ->
     ThreadWatcher.build()
@@ -367,19 +502,22 @@ ThreadWatcher =
       ThreadWatcher.shortcut.classList.toggle className, !!$(".#{className}", ThreadWatcher.dialog)
     return
 
-  update: (boardID, threadID, newData) ->
-    return if not (data = ThreadWatcher.db?.get {boardID, threadID})
+  update: (siteID, boardID, threadID, newData) ->
+    return if not (data = ThreadWatcher.db?.get {siteID, boardID, threadID})
     if newData.isDead and Conf['Auto Prune']
-      ThreadWatcher.db.delete {boardID, threadID}
-      ThreadWatcher.refresh()
+      ThreadWatcher.rm siteID, boardID, threadID
       return
+    if newData.isDead or newData.last is -1
+      for key in ['page', 'lastPage', 'unread', 'quotingyou'] when key not of newData
+        newData[key] = undefined
+    if newData.last? and newData.last < data.last
+      newData.modified = undefined
     n = 0
     n++ for key, val of newData when data[key] isnt val
     return unless n
-    return if not (data = ThreadWatcher.db.get {boardID, threadID})
-    ThreadWatcher.db.extend {boardID, threadID, val: newData}
-    if line = $ "#watched-threads > [data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog
-      newLine = ThreadWatcher.makeLine boardID, threadID, data
+    ThreadWatcher.db.extend {siteID, boardID, threadID, val: newData}
+    if (line = $ "#watched-threads > [data-site-i-d='#{siteID}'][data-full-i-d='#{boardID}.#{threadID}']", ThreadWatcher.dialog)
+      newLine = ThreadWatcher.makeLine siteID, boardID, threadID, data
       $.replace line, newLine
       ThreadWatcher.refreshIcon()
     else
@@ -390,41 +528,49 @@ ThreadWatcher =
     if Conf['Auto Prune']
       ThreadWatcher.db.delete {boardID, threadID}
       return cb()
-    return cb() if data.isDead and not (data.unread? or data.quotingYou?)
-    ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true}, rm: ['unread', 'quotingYou']}, cb
+    return cb() if data.isDead and not (data.page? or data.lastPage? or data.unread? or data.quotingYou?)
+    ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true, page: undefined, lastPage: undefined, unread: undefined, quotingYou: undefined}}, cb
 
   toggle: (thread) ->
+    siteID   = g.SITE.ID
     boardID  = thread.board.ID
     threadID = thread.ID
     if ThreadWatcher.db.get {boardID, threadID}
-      ThreadWatcher.rm boardID, threadID
+      ThreadWatcher.rm siteID, boardID, threadID
     else
       ThreadWatcher.add thread
 
-  add: (thread) ->
+  add: (thread, cb) ->
     data     = {}
+    siteID   = g.SITE.ID
     boardID  = thread.board.ID
     threadID = thread.ID
     if thread.isDead
       if Conf['Auto Prune'] and ThreadWatcher.db.get {boardID, threadID}
-        ThreadWatcher.rm boardID, threadID
+        ThreadWatcher.rm siteID, boardID, threadID, cb
         return
       data.isDead = true
-    data.excerpt  = Get.threadExcerpt thread
-    ThreadWatcher.addRaw boardID, threadID, data
+    data.excerpt = Get.threadExcerpt thread if thread.OP
+    ThreadWatcher.addRaw boardID, threadID, data, cb
 
-  addRaw: (boardID, threadID, data) ->
-    ThreadWatcher.db.set {boardID, threadID, val: data}
+  addRaw: (boardID, threadID, data, cb) ->
+    oldData = ThreadWatcher.db.get {boardID, threadID, defaultValue: {}}
+    delete oldData.last
+    delete oldData.modified
+    $.extend oldData, data
+    ThreadWatcher.db.set {boardID, threadID, val: oldData}, cb
     ThreadWatcher.refresh()
-    if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
-      ThreadWatcher.fetchStatus {boardID, threadID, data}, true
+    thread = {siteID: g.SITE.ID, boardID, threadID, data, force: true}
+    if Conf['Show Page'] and !data.isDead
+      ThreadWatcher.fetchBoard [thread]
+    else if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
+      ThreadWatcher.fetchStatus thread
 
-  rm: (boardID, threadID) ->
-    ThreadWatcher.db.delete {boardID, threadID}
+  rm: (siteID, boardID, threadID, cb) ->
+    ThreadWatcher.db.delete {siteID, boardID, threadID}, cb
     ThreadWatcher.refresh()
 
   menu:
-    refreshers: []
     init: ->
       return if !Conf['Thread Watcher']
       menu = @menu = new UI.Menu 'thread watcher'
@@ -439,53 +585,62 @@ ThreadWatcher =
       Header.menu.addEntry
         el: entryEl
         order: 60
+        open: ->
+          [addClass, rmClass, text] = if !!ThreadWatcher.db.get {boardID: g.BOARD.ID, threadID: g.THREADID}
+            ['unwatch-thread', 'watch-thread', 'Unwatch thread']
+          else
+            ['watch-thread', 'unwatch-thread', 'Watch thread']
+          $.addClass entryEl, addClass
+          $.rmClass  entryEl, rmClass
+          entryEl.textContent = text
+          true
       $.on entryEl, 'click', -> ThreadWatcher.toggle g.threads["#{g.BOARD}.#{g.THREADID}"]
-      @refreshers.push ->
-        [addClass, rmClass, text] = if $ '.current', ThreadWatcher.list
-          ['unwatch-thread', 'watch-thread', 'Unwatch thread']
-        else
-          ['watch-thread', 'unwatch-thread', 'Watch thread']
-        $.addClass entryEl, addClass
-        $.rmClass  entryEl, rmClass
-        entryEl.textContent = text
 
     addMenuEntries: ->
       entries = []
 
       # `Open all` entry
       entries.push
+        text: 'Open all threads'
         cb: ThreadWatcher.cb.openAll
-        entry:
-          el: $.el 'a',
-            textContent: 'Open all threads'
-        refresh: -> (if ThreadWatcher.list.firstElementChild then $.rmClass else $.addClass) @el, 'disabled'
+        open: ->
+          @el.classList.toggle 'disabled', !ThreadWatcher.list.firstElementChild
+          true
 
       # `Prune dead threads` entry
       entries.push
+        text: 'Prune dead threads'
         cb: ThreadWatcher.cb.pruneDeads
-        entry:
-          el: $.el 'a',
-            textContent: 'Prune dead threads'
-        refresh: -> (if $('.dead-thread', ThreadWatcher.list) then $.rmClass else $.addClass) @el, 'disabled'
+        open: ->
+          @el.classList.toggle 'disabled', !$('.dead-thread', ThreadWatcher.list)
+          true
 
-      # `Settings` entries:
-      subEntries = []
-      for name, conf of Config.threadWatcher
-        subEntries.push @createSubEntry name, conf[1]
+      # `Dismiss posts quoting you` entry
       entries.push
-        entry:
-          el: $.el 'span',
-            textContent: 'Settings'
-          subEntries: subEntries
+        text: 'Dismiss posts quoting you'
+        title: 'Unhighlight the thread watcher icon and threads until there are new replies quoting you.'
+        cb: ThreadWatcher.cb.dismiss
+        open: ->
+          @el.classList.toggle 'disabled', !$.hasClass(ThreadWatcher.shortcut, 'replies-quoting-you')
+          true
 
-      for {entry, cb, refresh} in entries
-        entry.el.href = 'javascript:;' if entry.el.nodeName is 'A'
-        $.on entry.el, 'click', cb if cb
-        @refreshers.push refresh.bind entry if refresh
+      for {text, title, cb, open} in entries
+        entry =
+          el: $.el 'a',
+            textContent: text
+            href: 'javascript:;'
+        entry.el.title = title if title
+        $.on entry.el, 'click', cb
+        entry.open = open.bind(entry)
         @menu.addEntry entry
+
+      # Settings checkbox entries:
+      for name, conf of Config.threadWatcher
+        @addCheckbox name, conf[1]
+
       return
 
-    createSubEntry: (name, desc) ->
+    addCheckbox: (name, desc) ->
       entry =
         type: 'thread watcher'
         el: UI.checkbox name, name.replace(' Thread Watcher', '')
@@ -496,6 +651,6 @@ ThreadWatcher =
         $.addClass entry.el, 'disabled'
         entry.el.title += '\n[Remember Last Read Post is disabled.]'
       $.on input, 'change', $.cb.checked
-      $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Unread Count']
-      $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Unread Count', 'Auto Update Thread Watcher']
-      entry
+      $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Page', 'Show Unread Count', 'Show Site Prefix']
+      $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Page', 'Show Unread Count', 'Auto Update Thread Watcher']
+      @menu.addEntry entry

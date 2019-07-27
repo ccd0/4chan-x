@@ -2,14 +2,17 @@ Index =
   showHiddenThreads: false
   changed: {}
 
+  enabledOn: ({siteID, boardID}) ->
+    Conf['JSON Index'] and g.sites[siteID].software is 'yotsuba' and boardID isnt 'f'
+
   init: ->
-    return unless g.VIEW is 'index' and g.BOARD.ID isnt 'f'
+    return unless g.VIEW is 'index'
 
     # For IndexRefresh events
     $.one d, '4chanXInitFinished', @cb.initFinished
     $.on  d, 'PostsInserted',      @cb.postsInserted
 
-    return unless Conf['JSON Index']
+    return unless @enabledOn g.BOARD
 
     @enabled = true
 
@@ -84,7 +87,7 @@ Index =
     @navLinks = $.el 'div', className: 'navLinks json-index'
     $.extend @navLinks, <%= readHTML('NavLinks.html') %>
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
-    $('.archlistlink', @navLinks).hidden = true if g.BOARD.ID in ['b', 'trash', 'bant']
+    $('.archlistlink', @navLinks).hidden = true unless BoardConfig.isArchived(g.BOARD.ID)
     $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
 
     # Search field
@@ -141,13 +144,13 @@ Index =
       d.title = d.title.replace /\ -\ Page\ \d+/, ''
 
     $.onExists doc, '.board > .thread > .postContainer, .board + *', ->
-      Build.hat = $ '.board > .thread > img:first-child'
-      if Build.hat
+      g.SITE.Build.hat = $ '.board > .thread > img:first-child'
+      if g.SITE.Build.hat
         g.BOARD.threads.forEach (thread) ->
           if thread.nodes.root
-            $.prepend thread.nodes.root, Build.hat.cloneNode false
+            $.prepend thread.nodes.root, g.SITE.Build.hat.cloneNode false
         $.addClass doc, 'hats-enabled'
-        $.addStyle ".catalog-thread::after {background-image: url(#{Build.hat.src});}"
+        $.addStyle ".catalog-thread::after {background-image: url(#{g.SITE.Build.hat.src});}"
 
       board = $ '.board'
       $.replace board, Index.root
@@ -168,6 +171,8 @@ Index =
       topNavPos = $.id('delform').previousElementSibling
       $.before topNavPos, $.el 'hr'
       $.before topNavPos, Index.navLinks
+      timeEl = $ '#index-last-refresh time', Index.navLinks
+      RelativeDates.update timeEl if timeEl.dataset.utc
 
     Main.ready ->
       if (pagelist = $ '.pagelist')
@@ -195,7 +200,7 @@ Index =
 
   menu:
     init: ->
-      return if g.VIEW isnt 'index' or !Conf['JSON Index'] or !Conf['Menu'] or !Conf['Thread Hiding Link'] or g.BOARD.ID is 'f'
+      return unless g.VIEW is 'index' and Conf['Menu'] and Conf['Thread Hiding Link'] and Index.enabledOn(g.BOARD)
 
       Menu.menu.addEntry
         el: $.el 'a',
@@ -551,9 +556,9 @@ Index =
     else
       strong = $.el 'strong'
 
-    a = pagesRoot.children[pageNum - 1]
-    $.before a, strong
-    $.add strong, a
+    if (a = pagesRoot.children[pageNum - 1])
+      $.before a, strong
+      $.add strong, a
 
   updateHideLabel: ->
     return unless Index.hideLabel
@@ -571,48 +576,43 @@ Index =
       "#{hiddenCount} hidden threads"
 
   update: (firstTime) ->
-    Index.req?.abort()
-    Index.notice?.close()
+    if (oldReq = Index.req)
+      delete Index.req
+      oldReq.abort()
 
-    if Conf['Index Refresh Notifications'] and d.readyState isnt 'loading'
+    if Conf['Index Refresh Notifications']
       # Optional notification for manual refreshes
-      Index.notice = new Notice 'info', 'Refreshing index...'
+      Index.notice or= new Notice 'info', 'Refreshing index...'
     else
       # Also display notice if Index Refresh is taking too long
-      now = Date.now()
-      $.ready ->
-        Index.nTimeout = setTimeout (->
-          if Index.req and !Index.notice
-            Index.notice = new Notice 'info', 'Refreshing index...'
-        ), 3 * $.SECOND - (Date.now() - now)
+      Index.nTimeout or= setTimeout ->
+        Index.notice or= new Notice 'info', 'Refreshing index...'
+      , 3 * $.SECOND
 
     # Hard refresh in case of incomplete page load.
     if not firstTime and d.readyState isnt 'loading' and not $('.board + *')
       location.reload()
       return
 
-    Index.req = $.ajax "#{location.protocol}//a.4cdn.org/#{g.BOARD}/catalog.json",
-      onabort:   Index.load
-      onloadend: Index.load
-    ,
-      whenModified: 'Index'
+    Index.req = $.whenModified(
+      g.SITE.urls.catalogJSON({boardID: g.BOARD.ID}),
+      'Index',
+      Index.load
+    )
     $.addClass Index.button, 'fa-spin'
 
-  load: (e) ->
+  load: ->
+    return if @ isnt Index.req # aborted
+
     $.rmClass Index.button, 'fa-spin'
-    {req, notice, nTimeout} = Index
+    {notice, nTimeout} = Index
     clearTimeout nTimeout if nTimeout
     delete Index.nTimeout
     delete Index.req
     delete Index.notice
 
-    if e.type is 'abort'
-      req.onloadend = null
-      notice?.close()
-      return
-
-    if req.status not in [200, 304]
-      err = "Index refresh failed. #{if req.status then "Error #{req.statusText} (#{req.status})" else 'Connection Error'}"
+    if @status not in [200, 304]
+      err = "Index refresh failed. #{if @status then "Error #{@statusText} (#{@status})" else 'Connection Error'}"
       if notice
         notice.setType 'warning'
         notice.el.lastElementChild.textContent = err
@@ -622,13 +622,12 @@ Index =
       return
 
     try
-      if req.status is 200
-        Index.parse req.response
-      else if req.status is 304
+      if @status is 200
+        Index.parse @response
+      else if @status is 304
         Index.pageLoad()
     catch err
       c.error "Index failure: #{err.message}", err.stack
-      # network error or non-JSON content for example.
       if notice
         notice.setType 'error'
         notice.el.lastElementChild.textContent = 'Index refresh failed.'
@@ -646,7 +645,7 @@ Index =
         notice.close()
 
     timeEl = $ '#index-last-refresh time', Index.navLinks
-    timeEl.dataset.utc = Date.parse req.getResponseHeader 'Last-Modified'
+    timeEl.dataset.utc = Date.parse @getResponseHeader 'Last-Modified'
     RelativeDates.update timeEl
 
   parse: (pages) ->
@@ -667,7 +666,7 @@ Index =
     for data, i in Index.liveThreadData
       Index.liveThreadDict[data.no] = data
       Index.threadPosition[data.no] = i
-      Index.parsedThreads[data.no] = obj = Build.parseJSON data, g.BOARD.ID
+      Index.parsedThreads[data.no] = obj = g.SITE.Build.parseJSON data, g.BOARD
       obj.filterResults = results = Filter.test obj
       obj.isOnTop  = results.top
       obj.isHidden = results.hide or ThreadHiding.isHidden(obj.boardID, obj.threadID)
@@ -675,7 +674,7 @@ Index =
         for reply in data.last_replies
           Index.replyData["#{g.BOARD}.#{reply.no}"] = reply
     if Index.liveThreadData[0]
-      Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler
+      g.SITE.Build.spoilerRange[g.BOARD.ID] = Index.liveThreadData[0].custom_spoiler
     g.BOARD.threads.forEach (thread) ->
       (thread.collect() unless thread.ID in Index.liveThreadIDs)
     $.event 'IndexUpdate',
@@ -689,11 +688,7 @@ Index =
       Index.parsedThreads[threadID].isHidden
 
   isHiddenReply: (threadID, replyData) ->
-    PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) or Filter.isHidden(Build.parseJSON replyData, g.BOARD.ID)
-
-  lastPost: (threadID) ->
-    threadData = Index.liveThreadDict[threadID]
-    if threadData?.last_replies then threadData.last_replies[threadData.last_replies.length - 1].no else threadID
+    PostHiding.isHidden(g.BOARD.ID, threadID, replyData.no) or Filter.isHidden(g.SITE.Build.parseJSON replyData, g.BOARD)
 
   buildThreads: (threadIDs, isCatalog, withReplies) ->
     threads    = []
@@ -716,6 +711,8 @@ Index =
         else
           thread = new Thread ID, g.BOARD
           newThreads.push thread
+        lastPost = if threadData.last_replies then threadData.last_replies[threadData.last_replies.length - 1].no else ID
+        thread.lastPost = lastPost if lastPost > thread.lastPost
         thread.json = threadData
         threads.push thread
 
@@ -724,12 +721,12 @@ Index =
           thread.setPage(Index.threadPosition[ID] // Index.threadsNumPerPage + 1)
         else
           obj = Index.parsedThreads[ID]
-          OP = new Post Build.post(obj), thread, g.BOARD
+          OP = new Post g.SITE.Build.post(obj), thread, g.BOARD
           OP.filterResults = obj.filterResults
           newPosts.push OP
 
         unless isCatalog and thread.nodes.root
-          Build.thread thread, threadData, withReplies
+          g.SITE.Build.thread thread, threadData, withReplies
       catch err
         # Skip posts that we failed to parse.
         errors = [] unless errors
@@ -757,7 +754,7 @@ Index =
         if (post = thread.posts[data.no]) and not post.isFetchedQuote
           nodes.push post.nodes.root
           continue
-        nodes.push node = Build.postFromObject data, thread.board.ID
+        nodes.push node = g.SITE.Build.postFromObject data, thread.board.ID
         try
           posts.push new Post node, thread, thread.board
         catch err
@@ -776,7 +773,7 @@ Index =
     for thread in threads when !thread.catalogView
       {ID} = thread
       page = Index.threadPosition[ID] // Index.threadsNumPerPage + 1
-      root = Build.catalogThread thread, Index.liveThreadDict[ID], page
+      root = g.SITE.Build.catalogThread thread, Index.liveThreadDict[ID], page
       catalogThreads.push new CatalogThread root, thread
     Main.callbackNodes 'CatalogThread', catalogThreads
     return
@@ -800,7 +797,7 @@ Index =
     replies = []
     for data in lastReplies
       continue if Index.isHiddenReply thread.ID, data
-      reply = Build.catalogReply thread, data
+      reply = g.SITE.Build.catalogReply thread, data
       RelativeDates.update $('time', reply)
       $.on $('.catalog-reply-preview', reply), 'mouseover', QuotePreview.mouseover
       replies.push reply
@@ -813,18 +810,15 @@ Index =
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
     return unless liveThreadData
-    Index.sortedThreadIDs = switch Index.currentSort.replace(/-rev$/, '')
-      when 'lastreply'
-        [liveThreadData...].sort((a, b) ->
-          a = num[num.length - 1] if (num = a.last_replies)
-          b = num[num.length - 1] if (num = b.last_replies)
-          b.no - a.no
-        ).map (post) -> post.no
-      when 'lastlong'
+    sortType = Index.currentSort.replace(/-rev$/, '')
+    Index.sortedThreadIDs = switch sortType
+      when 'lastreply', 'lastlong'
         lastlong = (thread) ->
           for r, i in (thread.last_replies or []) by -1
             continue if Index.isHiddenReply thread.no, r
-            len = if r.com then Build.parseComment(r.com).replace(/[^a-z]/ig, '').length else 0
+            if sortType is 'lastreply'
+              return r
+            len = if r.com then g.SITE.Build.parseComment(r.com).replace(/[^a-z]/ig, '').length else 0
             if len >= Index.lastLongThresholds[+!!r.ext]
               return r
           if thread.omitted_posts then thread.last_replies[0] else thread
@@ -869,6 +863,8 @@ Index =
     delete Index.pageNum
     $.rmAll Index.root
     $.rmAll Header.hover
+    if Index.loaded and Index.root.parentNode
+      $.event 'PostsRemoved', null, Index.root
     if Conf['Index Mode'] is 'catalog'
       Index.buildCatalog threadIDs
     else
@@ -945,13 +941,20 @@ Index =
     Index.pageLoad false
 
   querySearch: (query) ->
+    if (match = query.match /^([\w+]+):\/(.*)\/(\w*)$/)
+      try
+        regexp = RegExp match[2], match[3]
+      catch
+        return []
+      return Index.sortedThreadIDs.filter (ID) ->
+        regexp.test(Filter.values(match[1], Index.parsedThreads[ID]).join('\n'))
     return if not (keywords = query.toLowerCase().match /\S+/g)
     Index.sortedThreadIDs.filter (ID) ->
       Index.searchMatch Index.parsedThreads[ID], keywords
 
   searchMatch: (obj, keywords) ->
     {info, file} = obj
-    info.comment ?= Build.parseComment info.commentHTML.innerHTML
+    info.comment ?= g.SITE.Build.parseComment info.commentHTML.innerHTML
     text = []
     for key in ['comment', 'subject', 'name', 'tripcode']
       text.push info[key] if key of info

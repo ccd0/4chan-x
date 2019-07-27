@@ -18,9 +18,10 @@ If you're reporting a bug, the more detail you can give, the better. If I can't 
 
 ### Get started
 
-- Install [git](https://git-scm.com/), [node.js](https://nodejs.org/), and [npm](https://www.npmjs.com/) (usually distributed with node), and GNU Make (on Windows, the [MinGW](http://www.mingw.org/) port will work).
+- Install [git](https://git-scm.com/), [node.js](https://nodejs.org/), [npm](https://www.npmjs.com/) (usually distributed with node), and GNU Make (on Windows, the [MinGW](http://www.mingw.org/) port will work, and the [GnuWin](http://gnuwin32.sourceforge.net/) port has been reported to work as well).
 - Clone 4chan X: `git clone https://github.com/ccd0/4chan-x.git`<br>(If this is taking too long, you can add `--depth 100` to fetch only recent history.)
 - Open the directory: `cd 4chan-x`
+- Fetch needed dependencies with: `npm install`
 
 ### Build
 
@@ -30,7 +31,8 @@ If you're reporting a bug, the more detail you can give, the better. If I can't 
 
 - 4chan X is mostly written in [CoffeeScript](http://coffeescript.org/). If you're already familiar with Javascript, it doesn't take long to pick up.
 - Edit the sources in the src/ directory (not the compiled scripts in builds/).
-- Compile the script with: `make` (this should fetch needed dependencies automatically; if not, do an `npm install` first)
+- Fetch needed dependencies with: `npm install`
+- Compile the script with: `make`
 - Install the compiled script (found in the testbuilds/ directory), and test your changes.
 - Make sure you have set your name and email as you want them, as they will be published in your commit message:<br>`git config user.name yourname`<br>`git config user.email youremail`
 - Commit your changes: `git commit -a`

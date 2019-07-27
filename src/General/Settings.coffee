@@ -4,7 +4,7 @@ Settings =
     link = $.el 'a',
       className:   'settings-link fa fa-wrench'
       textContent: 'Settings'
-      title: '<%= meta.name %> Settings'
+      title:       '<%= meta.name %> Settings'
       href:        'javascript:;'
     $.on link, 'click', Settings.open
 
@@ -38,16 +38,13 @@ Settings =
           Object.defineProperty window, 'Config', {value: {disableAll: true}}
 
   open: (openSection) ->
-    return if Settings.overlay
+    return if Settings.dialog
     $.event 'CloseMenu'
 
     Settings.dialog = dialog = $.el 'div',
-      id:        'fourchanx-settings'
-      className: 'dialog'
-    $.extend dialog, <%= readHTML('Settings.html') %>
-
-    Settings.overlay = overlay = $.el 'div',
-      id: 'overlay'
+      id:        'overlay'
+    ,
+      <%= readHTML('Settings.html') %>
 
     $.on $('.export', dialog), 'click',  Settings.export
     $.on $('.import', dialog), 'click',  Settings.import
@@ -68,10 +65,11 @@ Settings =
     (if sectionToOpen then sectionToOpen else links[0]).click() unless openSection is 'none'
 
     $.on $('.close', dialog), 'click', Settings.close
-    $.on overlay, 'click', Settings.close
     $.on window, 'beforeunload', Settings.close
+    $.on dialog, 'click', Settings.close
+    $.on dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
 
-    $.add d.body, [overlay, dialog]
+    $.add d.body, dialog
 
     $.event 'OpenSettings', null, dialog
 
@@ -79,9 +77,7 @@ Settings =
     return unless Settings.dialog
     # Unfocus current field to trigger change event.
     d.activeElement?.blur()
-    $.rm Settings.overlay
     $.rm Settings.dialog
-    delete Settings.overlay
     delete Settings.dialog
 
   sections: []
@@ -199,23 +195,27 @@ Settings =
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
       $.get 'hiddenThreads', {}, ({hiddenThreads}) ->
-        if $.hasStorage and Site.software is 'yotsuba'
+        if $.hasStorage and g.SITE.software is 'yotsuba'
           for boardID of hiddenThreads.boards
             localStorage.removeItem "4chan-hide-t-#{boardID}"
         ($.delete ['hiddenThreads', 'hiddenPosts'])
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
 
   export: ->
-    # Make sure to export the most recent data.
-    $.get Conf, (Conf) ->
+    # Make sure to export the most recent data, but don't overwrite existing `Conf` object.
+    Conf2 = {}
+    $.extend Conf2, Conf
+    $.get Conf2, (Conf2) ->
       # Don't export cached JSON data.
-      delete Conf['boardConfig']
-      (Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf})
+      delete Conf2['boardConfig']
+      (Settings.downloadExport {version: g.VERSION, date: Date.now(), Conf: Conf2})
 
   downloadExport: (data) ->
+    blob = new Blob [JSON.stringify(data, null, 2)], {type: 'application/json'}
+    url = URL.createObjectURL blob
     a = $.el 'a',
       download: "<%= meta.name %> v#{g.VERSION}-#{data.date}.json"
-      href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
+      href: url
     p = $ '.imp-exp-result', Settings.dialog
     $.rmAll p
     $.add p, a
@@ -384,7 +384,7 @@ Settings =
     if compareString < '00001.00011.00017.00006'
       if data['sauces']?
         set 'sauces', data['sauces'].replace(/^(#?\s*)http:\/\/iqdb\.org\//mg, '$1//iqdb.org/')
-    if compareString < '00001.00011.00019.00003' and not Settings.overlay
+    if compareString < '00001.00011.00019.00003' and not Settings.dialog
       $.queueTask -> Settings.warnings.ads (item) -> new Notice 'warning', [item.childNodes...]
     if compareString < '00001.00011.00020.00003'
       for key, value of {'Inline Cross-thread Quotes Only': false, 'Pass Link': true}
@@ -459,6 +459,42 @@ Settings =
     if compareString < '00001.00014.00004.00004'
       if data['siteSoftware']? and !/^4channel\.org yotsuba$/m.test(data['siteSoftware'])
         set 'siteSoftware', data['siteSoftware'] + '\n4channel.org yotsuba'
+    if compareString < '00001.00014.00005.00000'
+      for db in DataBoard.keys
+        if data[db]?.boards
+          {boards, lastChecked} = data[db]
+          data[db]['4chan.org'] = {boards, lastChecked}
+          delete data[db].boards
+          delete data[db].lastChecked
+          set db, data[db]
+      if data['siteSoftware']? and not data['siteProperties']?
+        siteProperties = {}
+        for line in data['siteSoftware'].split('\n')
+          [hostname, software] = line.split(' ')
+          siteProperties[hostname] = {software}
+        set 'siteProperties', siteProperties
+    if compareString < '00001.00014.00006.00006'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(
+          /\/\/%\$1\.deviantart\.com\/gallery\/#\/d%\$2;regexp:\/\^\\w\+_by_\(\\w\+\)-d\(\[\\da-z\]\+\)\//g,
+          '//www.deviantart.com/gallery/#/d%$1%$2;regexp:/^\\w+_by_\\w+[_-]d([\\da-z]{6})\\b|^d([\\da-z]{6})-[\\da-z]{8}-/'
+        )
+    if compareString < '00001.00014.00008.00000'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(
+          /https:\/\/www\.yandex\.com\/images\/search/g,
+          'https://yandex.com/images/search'
+        )
+    if compareString < '00001.00014.00009.00000'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(/^(#?\s*)(?:http:)?\/\/(www\.pixiv\.net|www\.deviantart\.com|imgur\.com|flickr\.com)\//mg, '$1https://$2/')
+        set 'sauces', data['sauces'].replace(/https:\/\/yandex\.com\/images\/search\?rpt=imageview&img_url=%IMG/g, 'https://yandex.com/images/search?rpt=imageview&url=%IMG')
+    if compareString < '00001.00014.00009.00001'
+      if data['Use Faster Image Host']? and not data['fourchanImageHost']?
+        set 'fourchanImageHost', (if data['Use Faster Image Host'] then 'i.4cdn.org' else '')
+    if compareString < '00001.00014.00010.00001'
+      unless data['Filter in Native Catalog']?
+        set 'Filter in Native Catalog', false
     changes
 
   loadSettings: (data, cb) ->
@@ -525,10 +561,13 @@ Settings =
       $.id('lastarchivecheck').textContent = 'never'
 
     items = {}
-    for name in ['archiveLists', 'archiveAutoUpdate', 'captchaLanguage', 'boardnav', 'time', 'timeLocale', 'backlink', 'pastedname', 'fileInfo', 'QR.personas', 'favicon', 'usercss', 'customCooldown', 'jsWhitelist']
+    for name, input of inputs when name not in ['captchaServiceKey', 'Interval', 'Custom CSS']
       items[name] = Conf[name]
-      input = inputs[name]
-      event = if name in ['archiveLists', 'archiveAutoUpdate', 'QR.personas', 'favicon', 'usercss'] then 'change' else 'input'
+      event = if (
+        input.nodeName is 'SELECT' or
+        input.type in ['checkbox', 'radio'] or
+        (input.nodeName is 'TEXTAREA' and name not of Settings)
+      ) then 'change' else 'input'
       $.on input, event, $.cb[if input.type is 'checkbox' then 'checked' else 'value']
       $.on input, event, Settings[name] if name of Settings
 
@@ -540,6 +579,15 @@ Settings =
         if key of Settings
           Settings[key].call input
       return
+
+    listImageHost = $.id 'list-fourchanImageHost'
+    for textContent in ImageHost.suggestions
+      $.add listImageHost, $.el 'option', {textContent}
+
+    $.on inputs['captchaServiceKey'], 'input', Settings.captchaServiceKey
+    $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) ->
+      Conf['captchaServiceKey'] = captchaServiceKey
+      Settings.captchaServiceDomainList()
 
     interval  = inputs['Interval']
     customCSS = inputs['Custom CSS']
@@ -671,6 +719,31 @@ Settings =
       $.set 'selectedArchives', selectedArchives
       Conf['selectedArchives'] = selectedArchives
       Redirect.selectArchives()
+
+  captchaServiceDomain: ->
+    $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) =>
+      keyInput = $('[name=captchaServiceKey]')
+      keyInput.value = captchaServiceKey[@value.trim()] or ''
+      keyInput.disabled = !@value.trim()
+
+  captchaServiceKey: ->
+    domain = Conf['captchaServiceDomain']
+    value = @value.trim()
+    Conf['captchaServiceKey'][domain] = value
+    $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) ->
+      captchaServiceKey[domain] = value
+      delete captchaServiceKey[domain] unless value or (domain of Config['captchaServiceKey'][0])
+      Conf['captchaServiceKey'] = captchaServiceKey
+      $.set 'captchaServiceKey', captchaServiceKey
+      Settings.captchaServiceDomainList()
+
+  captchaServiceDomainList: ->
+    list = $.id 'list-captchaServiceDomain'
+    $.rmAll list
+    for domain of Conf['captchaServiceKey']
+      $.add list, $.el 'option',
+        textContent: domain
+    return
 
   boardnav: ->
     Header.generateBoardList @value

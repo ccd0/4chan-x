@@ -1,5 +1,5 @@
 var fs = require('fs');
-var md = require('markdown-it')({linkify: true}).use(require('markdown-it-anchor'));
+var md = require('markdown-it')({linkify: true}).use(require('markdown-it-anchor'), {slugify: s => String(s).trim().toLowerCase().replace(/\W+/g, '-')});
 var template = require('lodash.template');
 
 var readme = fs.readFileSync('README.md', 'utf8');

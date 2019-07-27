@@ -7,21 +7,24 @@ Metadata =
       cb:   @node
 
   node: ->
-    return unless @file and /webm$/i.test @file.url
-    if @isClone
-      el = $ '.webm-title', @file.text
-    else
-      el = $.el 'span',
-        className: 'webm-title'
-      $.extend el,
-        <%= html('<a href="javascript:;"></a>') %>
-      $.add @file.text, [$.tn(' '), el]
-    $.one el.lastElementChild, 'mouseover focus', Metadata.load if el.children.length is 1
+    for file, i in @files when /webm$/i.test file.url
+      if @isClone
+        el = $ '.webm-title', file.text
+      else
+        el = $.el 'span',
+          className: 'webm-title'
+        el.dataset.index = i
+        $.extend el,
+          <%= html('<a href="javascript:;"></a>') %>
+        $.add file.text, [$.tn(' '), el]
+      $.one el.lastElementChild, 'mouseover focus', Metadata.load if el.children.length is 1
+    return
 
   load: ->
     $.rmClass @parentNode, 'error'
     $.addClass @parentNode, 'loading'
-    CrossOrigin.binary Get.postFromNode(@).file.url, (data) =>
+    {index} = @parentNode.dataset
+    CrossOrigin.binary Get.postFromNode(@).files[index].url, (data) =>
       $.rmClass @parentNode, 'loading'
       if data?
         title = Metadata.parse data

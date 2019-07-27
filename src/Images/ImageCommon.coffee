@@ -25,36 +25,39 @@ ImageCommon =
   cacheError: ->
     delete ImageCommon.cache if ImageCommon.cache is @
 
-  decodeError: (file, post) ->
+  decodeError: (file, fileObj) ->
     return false unless file.error?.code is MediaError.MEDIA_ERR_DECODE
-    if not (message = $ '.warning', post.file.thumb.parentNode)
+    if not (message = $ '.warning', fileObj.thumb.parentNode)
       message = $.el 'div', className:   'warning'
-      $.after post.file.thumb, message
+      $.after fileObj.thumb, message
     message.textContent = 'Error: Corrupt or unplayable video'
     return true
 
   isFromArchive: (file) ->
-    !ImageHost.test(file.src.split('/')[2])
+    g.SITE.software is 'yotsuba' and !ImageHost.test(file.src.split('/')[2])
 
-  error: (file, post, delay, cb) ->
-    src = post.file.url.split '/'
-    URL = Redirect.to 'file', {
-      boardID:  post.board.ID
-      filename: src[src.length - 1]
-    }
-    unless Conf['404 Redirect'] and URL and Redirect.securityCheck URL
-      URL = null
+  error: (file, post, fileObj, delay, cb) ->
+    src = fileObj.url.split '/'
+    url = null
+    if g.SITE.software is 'yotsuba' and Conf['404 Redirect']
+      url = Redirect.to 'file', {
+        boardID:  post.board.ID
+        filename: src[src.length - 1]
+      }
+    url = null unless url and Redirect.securityCheck(url)
 
-    return cb URL if (post.isDead or post.file.isDead) and not ImageCommon.isFromArchive file
+    return cb url if (post.isDead or fileObj.isDead) and not ImageCommon.isFromArchive(file)
 
-    timeoutID = setTimeout (-> cb URL), delay if delay?
-    return if post.isDead or post.file.isDead
+    timeoutID = setTimeout (-> cb url), delay if delay?
+    return if post.isDead or fileObj.isDead
     redirect = ->
       unless ImageCommon.isFromArchive file
         clearTimeout timeoutID if delay?
-        cb URL
+        cb url
 
-    $.ajax "#{location.protocol}//a.4cdn.org/#{post.board}/thread/#{post.thread}.json", onload: ->
+    threadJSON = g.SITE.urls.threadJSON?(post)
+    return unless threadJSON
+    $.ajax threadJSON, onloadend: ->
       post.kill !post.isClone if @status is 404
       return redirect() if @status isnt 200
       for postObj in @response.posts
@@ -62,11 +65,11 @@ ImageCommon =
       if postObj.no isnt post.ID
         post.kill()
         redirect()
-      else if postObj.filedeleted
+      else if fileObj.docIndex in g.SITE.Build.parseJSON(postObj, post.board).filesDeleted
         post.kill true
         redirect()
       else
-        URL = post.file.url
+        url = fileObj.url
 
   # Add controls, but not until the mouse is moved over the video.
   addControls: (video) ->

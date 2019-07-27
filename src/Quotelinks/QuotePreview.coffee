@@ -52,6 +52,8 @@ QuotePreview =
     # Stop if it only contains text.
     return if not (root = @el.firstElementChild)
 
+    $.event 'PostsRemoved', null, Header.hover
+
     clone = Get.postFromRoot root
     post  = clone.origin
     post.rmClone root.dataset.clone

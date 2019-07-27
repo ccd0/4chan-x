@@ -19,6 +19,10 @@ Config =
         'Show a notice at the top of the page when the index is refreshed.'
         1
       ]
+      'Follow Cursor': [
+        true
+        'Image Hover and Quote Preview move with the mouse cursor.'
+      ]
       'Open Threads in New Tab': [
         false
         'Make links to threads in the index / <%= meta.name %> catalog open in a new tab.'
@@ -87,6 +91,10 @@ Config =
       'Reply Navigation': [
         false
         'Add buttons to navigate to top / bottom of thread.'
+      ]
+      'Unique ID and Capcode Navigation': [
+        false
+        'Add buttons to navigate to posts having the same unique ID or capcode.'
       ]
       'Custom Board Titles': [
         true
@@ -179,6 +187,11 @@ Config =
         'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'
         1
       ]
+      'Filter in Native Catalog': [
+        true
+        'Apply 4chan X filters in native catalog.'
+        1
+      ]
       'Recursive Hiding': [
         true
         'Hide replies of hidden posts, recursively.'
@@ -249,7 +262,7 @@ Config =
       ]
       'Replace WEBM': [
         false
-        'Replace webm thumbnails with the actual webm video. Probably will degrade browser performance ;)'
+        'Replace webm and mp4 thumbnails with the actual video. Probably will degrade browser performance ;)'
       ]
       'Image Prefetching': [
         false
@@ -295,10 +308,6 @@ Config =
       'Volume in New Tab': [
         true
         'Apply <%= meta.name %> mute and volume settings to videos opened in their own tabs.'
-      ]
-      'Use Faster Image Host': [
-        true
-        'Change is*.4chan.org links to point to the faster i.4cdn.org host.'
       ]
 
     'Menu':
@@ -628,7 +637,7 @@ Config =
       false
       'Advance to next post when contracting an expanded image.'
     ]
-  
+
   gallery:
     'Hide Thumbnails': [
       false
@@ -672,9 +681,17 @@ Config =
       false
       'Automatically remove dead threads.'
     ]
+    'Show Page': [
+      true
+      'Show what page watched threads are on.'
+    ]
     'Show Unread Count': [
       true
       'Show number of unread posts in watched threads.'
+    ]
+    'Show Site Prefix': [
+      true
+      'When multiple sites are shown in the thread watcher, add a prefix to board names to distinguish them.'
     ]
     'Require OP Quote Link': [
       false
@@ -716,6 +733,8 @@ Config =
       #/./
     """
 
+    email: ''
+
     subject: """
       # Filter Generals on /v/:
       #/general/i;boards:v;op:only
@@ -743,15 +762,15 @@ Config =
 
   sauces: """
     # Known filename formats:
-    http://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/
-    //%$1.deviantart.com/gallery/#/d%$2;regexp:/^\\w+_by_(\\w+)-d([\\da-z]+)/
-    //imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/
-    http://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/
+    https://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/
+    https://www.deviantart.com/gallery/#/d%$1%$2;regexp:/^\\w+_by_\\w+[_-]d([\\da-z]{6})\\b|^d([\\da-z]{6})-[\\da-z]{8}-/
+    https://imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/
+    https://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/
     https://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/
 
     # Reverse image search:
     https://www.google.com/searchbyimage?image_url=%IMG&safe=off
-    https://www.yandex.com/images/search?rpt=imageview&img_url=%IMG
+    https://yandex.com/images/search?rpt=imageview&url=%IMG
     #//tineye.com/search?url=%IMG
     #//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights
 
@@ -805,6 +824,10 @@ Config =
     archiveLists:      'https://mayhemydg.github.io/archives.json/archives.json'
     lastarchivecheck:  0
     archiveAutoUpdate: true
+
+  externalCatalogURLs: """
+    //catalog.neet.tv/%board/;boards:4chan.org:3,a,adv,an,asp,biz,c,cgl,ck,cm,co,diy,f,fa,fit,g,gd,his,i,int,jp,k,lgbt,lit,m,mlp,mu,n,news,o,out,p,po,pol,s4s,sci,sp,tg,toy,trv,tv,v,vg,vip,vp,vr,w,wg,wsg,wsr,x
+  """
 
   boardnav: """
     [ toggle-all ]
@@ -951,6 +974,10 @@ Config =
       't'
       'Toggle visibility of thread watcher.'
     ]
+    'Toggle threading': [
+      'Shift+t'
+      'Toggle threading.'
+    ]
     'Mark thread read': [
       'Ctrl+0'
       'Mark thread read from index (requires "Unread Line in Index").'
@@ -987,6 +1014,14 @@ Config =
     'Slideshow': [
       'Ctrl+Right'
       'Toggle the gallery slideshow mode.'
+    ]
+    'Rotate image clockwise': [
+      'Shift+Right'
+      'Rotate image clockwise in gallery.'
+    ]
+    'Rotate image anticlockwise': [
+      'Shift+Left'
+      'Rotate image anticlockwise in gallery.'
     ]
     'fappeTyme': [
       'f'
@@ -1128,6 +1163,7 @@ Config =
   'Max Replies': 1000
 
   'Autohiding Scrollbar': false
+  'Chromium CORB Bug': false
 
   position:
     'embedding.position':      'top: 50px; right: 0px;'
@@ -1136,8 +1172,14 @@ Config =
     'thread-watcher.position': 'top: 50px; left: 0px;'
     'qr.position':             'top: 50px; right: 0px;'
 
-  siteSoftware: """
-    4chan.org yotsuba
-    4channel.org yotsuba
-    4cdn.org yotsuba
-  """
+  captchaServiceDomain: ''
+  captchaServiceKey: [{
+    'https://api.captcha.guru': ''
+    'https://2captcha.com':     ''
+  }]
+
+  fourchanImageHost: 'i.4cdn.org'
+
+  hiddenPSAList: [{}]
+
+  knownBanners: '<%= readJSON('banners.json').join(',') %>'

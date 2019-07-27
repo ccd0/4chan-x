@@ -21,8 +21,17 @@
     "chromeStoreID": "ohnjgmpcibpbafdlkimncjhflgedgpam",
     "recaptchaKey": "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc",
     "youtubeAPIKey": "AIzaSyB5_zaen_-46Uhz1xGR-lz1YoUMHqCD6CE",
+    "captchaServiceLinks": [
+      [
+        "captcha.guru",
+        "https://captcha.guru/en/regen/?ref=104127"
+      ],
+      [
+        "2captcha",
+        "https://2captcha.com?from=7935487"
+      ]
+    ],
     "distBranch": "gh-pages",
-    "uploadPath": "www.4chan-x.net:/var/www/html/",
     "includes_only": [
       "*://boards.4chan.org/*",
       "*://sys.4chan.org/*",
@@ -84,17 +93,16 @@
     }
   },
   "devDependencies": {
-    "coffee-script": "=1.9.3",
-    "esprima": "^4.0.0",
-    "font-awesome": "=4.6.3",
-    "jshint": "^2.9.5",
-    "jszip": "^3.1.4",
-    "lodash.template": "^4.4.0",
-    "markdown-it": "^8.4.0",
-    "markdown-it-anchor": "^4.0.0",
-    "node-rsa": "^0.4.2",
-    "request": "^2.83.0",
-    "webstore-upload": "0.0.7"
+    "chrome-webstore-upload": "^0.2.2",
+    "coffeescript": "=1.12.7",
+    "esprima": "^4.0.1",
+    "font-awesome": "=4.7.0",
+    "jshint": "^2.10.2",
+    "jszip": "^3.2.2",
+    "lodash.template": "^4.5.0",
+    "markdown-it": "^9.0.0",
+    "markdown-it-anchor": "^5.2.4",
+    "request": "^2.88.0"
   },
   "repository": {
     "type": "git",
@@ -113,5 +121,6 @@
   "readmeFilename": "README.md",
   "engines": {
     "node": ">=0.10"
-  }
+  },
+  "dependencies": {}
 }

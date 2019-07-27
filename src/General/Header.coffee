@@ -92,10 +92,10 @@ Header =
       $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
 
-    $.onExists doc, "#{Site.selectors.boardList} + *", Header.generateFullBoardList
+    $.onExists doc, "#{g.SITE.selectors.boardList} + *", Header.generateFullBoardList
 
     Main.ready ->
-      if not (footer = $.id 'boardNavDesktopFoot')
+      if g.SITE.software is 'yotsuba' and not (footer = $.id 'boardNavDesktopFoot')
         return unless (absbot = $.id 'absbot')
         footer = $.id('boardNavDesktop').cloneNode true
         footer.id = 'boardNavDesktopFoot'
@@ -103,12 +103,12 @@ Header =
         $('#settingsWindowLink', footer).id = 'settingsWindowLinkBot'
         $.before absbot, footer
         $.globalEval 'window.cloneTopNav = function() {};'
-      if (a = $ "a[href*='/#{g.BOARD}/']", footer)
-        a.className = 'current'
-      Header.bottomBoardList = $ '.boardList', footer
-      CatalogLinks.setLinks Header.bottomBoardList
+      if (Header.bottomBoardList = $ g.SITE.selectors.boardListBottom)
+        for a in $$ 'a', Header.bottomBoardList
+          a.className = 'current' if a.hostname is location.hostname and a.pathname.split('/')[1] is g.BOARD.ID
+        CatalogLinks.setLinks Header.bottomBoardList
 
-    if g.VIEW is 'catalog' or !Conf['Disable Native Extension']
+    if g.SITE.software is 'yotsuba' and (g.VIEW is 'catalog' or !Conf['Disable Native Extension'])
       cs = $.el 'a', href: 'javascript:;'
       if g.VIEW is 'catalog'
         cs.title = cs.textContent = 'Catalog Settings'
@@ -165,7 +165,7 @@ Header =
   generateFullBoardList: ->
     nodes = []
     spacer = -> $.el 'span', className: 'spacer'
-    items = $.X './/a|.//text()[not(ancestor::a)]', $(Site.selectors.boardList)
+    items = $.X './/a|.//text()[not(ancestor::a)]', $(g.SITE.selectors.boardList)
     i = 0
     while node = items.snapshotItem i++
       switch node.nodeName
@@ -178,7 +178,7 @@ Header =
             nodes.push spacer() if chr is '['
         when 'A'
           a = node.cloneNode true
-          a.className = 'current' if a.pathname.split('/')[1] is g.BOARD.ID
+          a.className = 'current' if a.hostname is location.hostname and a.pathname.split('/')[1] is g.BOARD.ID
           nodes.push a
     fullBoardList = $ '.boardList', Header.boardList
     $.add fullBoardList, nodes
@@ -234,7 +234,12 @@ Header =
           href: "/#{g.BOARD.ID}/"
           textContent: text or g.BOARD.ID
           className: 'current'
-        if /-(catalog|archive|expired)/.test(t)
+        if /-index/.test(t)
+          a.dataset.only = 'index'
+        else if /-catalog/.test(t)
+          a.dataset.only = 'catalog'
+          a.href += 'catalog.html'
+        else if /-(archive|expired)/.test(t)
           a = a.firstChild # Its text node.
         return a
 
@@ -261,9 +266,10 @@ Header =
       text or boardID
 
     if m = t.match /-(index|catalog)/
-      unless boardID is 'f' and m[1] is 'catalog'
+      urlIC = CatalogLinks[m[1]] {siteID: '4chan.org', boardID}
+      if urlIC
         a.dataset.only = m[1]
-        a.href = CatalogLinks[m[1]] boardID
+        a.href = urlIC
         $.addClass a, 'catalog' if m[1] is 'catalog'
       else
         return a.firstChild # Its text node.
@@ -280,7 +286,7 @@ Header =
         return a.firstChild # Its text node.
 
     if /-expired/.test t
-      if boardID not in ['b', 'f', 'trash', 'bant']
+      if BoardConfig.isArchived(boardID)
         a.href = "//#{BoardConfig.domain(boardID)}/#{boardID}/archive"
       else
         return a.firstChild # Its text node.

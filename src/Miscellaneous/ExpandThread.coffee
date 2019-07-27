@@ -11,14 +11,16 @@ ExpandThread =
 
   setButton: (thread) ->
     return if not (thread.nodes.root and (a = $ '.summary', thread.nodes.root))
-    a.textContent = Build.summaryText '+', a.textContent.match(/\d+/g)...
+    a.textContent = g.SITE.Build.summaryText '+', a.textContent.match(/\d+/g)...
     a.style.cursor = 'pointer'
     $.on a, 'click', ExpandThread.cbToggle
   
   disconnect: (refresh) ->
     return if g.VIEW is 'thread' or !Conf['Thread Expansion']
     for threadID, status of ExpandThread.statuses
-      status.req?.abort()
+      if (oldReq = status.req)
+        delete status.req
+        oldReq.abort()
       delete ExpandThread.statuses[threadID]
 
     $.off d, 'IndexRefreshInternal', @onIndexRefresh unless refresh
@@ -51,48 +53,43 @@ ExpandThread =
 
   expand: (thread, a) ->
     ExpandThread.statuses[thread] = status = {}
-    a.textContent = Build.summaryText '...', a.textContent.match(/\d+/g)...
-    status.req = $.cache "#{location.protocol}//a.4cdn.org/#{thread.board}/thread/#{thread}.json", ->
+    a.textContent = g.SITE.Build.summaryText '...', a.textContent.match(/\d+/g)...
+    status.req = $.cache g.SITE.urls.threadJSON({boardID: thread.board.ID, threadID: thread.ID}), ->
+      return if @ isnt status.req # aborted
       delete status.req
       ExpandThread.parse @, thread, a
+    status.numReplies = $$(g.SITE.selectors.replyOriginal, thread.nodes.root).length
 
   contract: (thread, a, threadRoot) ->
     status = ExpandThread.statuses[thread]
     delete ExpandThread.statuses[thread]
-    if status.req
-      status.req.abort()
-      a.textContent = Build.summaryText '+', a.textContent.match(/\d+/g)... if a
+    if (oldReq = status.req)
+      delete status.req
+      oldReq.abort()
+      a.textContent = g.SITE.Build.summaryText '+', a.textContent.match(/\d+/g)... if a
       return
 
     replies = $$ '.thread > .replyContainer', threadRoot
-    if !Conf['JSON Index'] or Conf['Show Replies']
-      num = if thread.isSticky
-        1
-      else switch g.BOARD.ID
-        # XXX boards config
-        when 'b', 'vg', 'bant' then 3
-        when 't' then 1
-        else 5
-      replies = replies[...-num]
+    replies = replies[...(-status.numReplies)] if status.numReplies
     postsCount = 0
     filesCount = 0
     for reply in replies
-      # rm elements above post such as unread line
-      $.rm node while (node = a.nextSibling) and node isnt reply
       # rm clones
       inlined.click() while inlined = $ '.inlined', reply if Conf['Quote Inlining']
       postsCount++
       filesCount++ if 'file' of Get.postFromRoot reply
       $.rm reply
-    a.textContent = Build.summaryText '+', postsCount, filesCount
+    if Index.enabled # otherwise handled by Main.addPosts
+      $.event 'PostsRemoved', null, a.parentNode
+    a.textContent = g.SITE.Build.summaryText '+', postsCount, filesCount
     $.rm $('.summary-bottom', threadRoot)
 
   parse: (req, thread, a) ->
     if req.status not in [200, 304]
-      a.textContent = "Error #{req.statusText} (#{req.status})"
+      a.textContent = if req.status then "Error #{req.statusText} (#{req.status})" else 'Connection Error'
       return
 
-    Build.spoilerRange[thread.board] = req.response.posts[0].custom_spoiler
+    g.SITE.Build.spoilerRange[thread.board] = req.response.posts[0].custom_spoiler
 
     posts      = []
     postsRoot  = []
@@ -104,7 +101,7 @@ ExpandThread =
         {root} = post.nodes
         postsRoot.push root
         continue
-      root = Build.postFromObject postData, thread.board.ID
+      root = g.SITE.Build.postFromObject postData, thread.board.ID
       post = new Post root, thread, thread.board
       filesCount++ if 'file' of post
       posts.push post
@@ -114,7 +111,7 @@ ExpandThread =
     $.event 'PostsInserted', null, a.parentNode
 
     postsCount    = postsRoot.length
-    a.textContent = Build.summaryText '-', postsCount, filesCount
+    a.textContent = g.SITE.Build.summaryText '-', postsCount, filesCount
 
     if root
       a2 = a.cloneNode true

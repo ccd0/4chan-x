@@ -8,6 +8,14 @@
   border-color: #EA8;
 }
 
+/* 4chan style fixes */
+:root.yotsuba.highlight-you .quotesYou$site$highlightable$reply {
+  border-left: 3px solid rgba(221, 0, 0, .8) !important;
+}
+:root.yotsuba.highlight-own .yourPost$site$highlightable$reply {
+  border-left: 3px dashed rgba(221, 0, 0, .8) !important;
+}
+
 /* Header */
 :root.yotsuba #header-bar.dialog {
   background-color: rgba(240,224,214,0.98);
@@ -88,7 +96,7 @@
 }
 
 /* Thread Watcher */
-:root.yotsuba .replies-quoting-you > a, :root.yotsuba #watcher-link.replies-quoting-you {
+:root.yotsuba .replies-quoting-you > a, :root.yotsuba #watcher-link.replies-quoting-you, :root.yotsuba .last-page > a > .watcher-page {
   color: #F00;
 }
 

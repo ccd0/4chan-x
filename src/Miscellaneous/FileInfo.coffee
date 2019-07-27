@@ -45,7 +45,7 @@ FileInfo =
     L: -> <%= html('<a href="${this.file.url}" target="_blank">&{FileInfo.formatters.N.call(this)}</a>') %>
     n: ->
       fullname  = @file.name
-      shortname = Build.shortFilename @file.name, @isReply
+      shortname = g.SITE.Build.shortFilename @file.name, @isReply
       if fullname is shortname
         <%= html('${fullname}') %>
       else

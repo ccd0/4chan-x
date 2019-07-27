@@ -2,6 +2,7 @@ BoardConfig =
   cbs: []
 
   init: ->
+    return unless g.SITE.software is 'yotsuba'
     now = Date.now()
     unless now - 2 * $.HOUR < (Conf['boardConfig'].lastChecked or 0) <= now and Conf['boardConfig'].troll_flags
       $.ajax "#{location.protocol}//a.4cdn.org/boards.json",
@@ -48,8 +49,13 @@ BoardConfig =
   domain: (board) ->
     "boards.#{if BoardConfig.isSFW(board) then '4channel' else '4chan'}.org"
 
+  isArchived: (board) ->
+    # assume archive exists if no data available to prevent cleaning of archived threads
+    data = (@boards or Conf['boardConfig'].boards)[board]
+    !data or data.is_archived
+
   noAudio: (boardID) ->
-    return false unless Site.software is 'yotsuba'
+    return false unless g.SITE.software is 'yotsuba'
     boards = @boards or Conf['boardConfig'].boards
     boards and boards[boardID] and !boards[boardID].webm_audio
 

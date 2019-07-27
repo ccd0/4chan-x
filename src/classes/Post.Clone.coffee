@@ -1,8 +1,13 @@
 Post.Clone = class extends Post
   isClone: true
 
-  constructor: (@origin, @context, contractThumb) ->
-    for key in ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply']
+  constructor: ->
+    that = Object.create(Post.Clone.prototype)
+    that.construct arguments...
+    return that
+
+  construct: (@origin, @context, contractThumb) ->
+    for key in ['ID', 'postID', 'threadID', 'boardID', 'siteID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply']
       # Copy or point to the origin's key value.
       @[key] = @origin[key]
 
@@ -38,19 +43,24 @@ Post.Clone = class extends Post
     @parseQuotes()
     @quotes = [@origin.quotes...]
 
-    if @origin.file
+    @files = []
+    fileRoots = @fileRoots() if @origin.files.length
+    for originFile in @origin.files
       # Copy values, point to relevant elements.
-      # See comments in Post's constructor.
-      @file = {}
-      for key, val of @origin.file
-        @file[key] = val
-      for key, selector of Site.selectors.file
-        @file[key] = $ selector, @nodes.root
-      @file.thumbLink = @file.thumb?.parentNode
-      @file.fullImage = $ '.full-image', @file.thumbLink if @file.thumbLink
-      @file.videoControls = $ '.video-controls', @file.text
+      file = {}
+      for key, val of originFile
+        file[key] = val
+      fileRoot = fileRoots[file.docIndex]
+      for key, selector of g.SITE.selectors.file
+        file[key] = $ selector, fileRoot
+      file.thumbLink = file.thumb?.parentNode
+      file.fullImage = $ '.full-image', file.thumbLink if file.thumbLink
+      file.videoControls = $ '.video-controls', file.text
+      file.thumb.muted = true if file.videoThumb
+      @files.push file
 
-      @file.thumb.muted = true if @file.videoThumb
+    if @files.length
+      @file = @files[0]
 
       # Contract thumbnails in quote preview
       ImageExpand.contract @ if @file.thumb and contractThumb

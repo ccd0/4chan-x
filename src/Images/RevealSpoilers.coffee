@@ -7,13 +7,15 @@ RevealSpoilers =
       cb:   @node
 
   node: ->
-    return unless not @isClone and @file and @file.thumb and @file.isSpoiler
-    {thumb} = @file
-    # Remove old width and height.
-    thumb.removeAttribute 'style'
-    # Enforce thumbnail size if thumbnail is replaced.
-    thumb.style.maxHeight = thumb.style.maxWidth = if @isReply then '125px' else '250px'
-    if thumb.src
-      thumb.src = @file.thumbURL
-    else
-      thumb.dataset.src = @file.thumbURL
+    return if @isClone
+    for file in @files when file.thumb and file.isSpoiler
+      {thumb} = file
+      # Remove old width and height.
+      thumb.removeAttribute 'style'
+      # Enforce thumbnail size if thumbnail is replaced.
+      thumb.style.maxHeight = thumb.style.maxWidth = if @isReply then '125px' else '250px'
+      if thumb.src
+        thumb.src = file.thumbURL
+      else
+        thumb.dataset.src = file.thumbURL
+    return

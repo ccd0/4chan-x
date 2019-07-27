@@ -8,6 +8,17 @@
   border-color: #98E;
 }
 
+/* 4chan style fixes */
+:root.spooky #arc-list span.quote {
+  color: #634C2C;
+}
+:root.spooky.highlight-you .quotesYou$site$highlightable$reply {
+  border-left: 3px solid rgba(145, 182, 214, .8) !important;
+}
+:root.spooky.highlight-own .yourPost$site$highlightable$reply {
+  border-left: 3px dashed rgba(145, 182, 214, .8) !important;
+}
+
 /* Header */
 :root.spooky #header-bar.dialog {
   background-color: rgba(23,21,38,0.98);
@@ -45,9 +56,6 @@
 }
 
 /* Quote */
-:root.spooky #arc-list span.quote {
-  color: #634C2C;
-}
 :root.spooky .backlink.deadlink {
   color: #FE9600 !important;
 }
@@ -65,21 +73,21 @@
 :root.spooky .qphl {
   outline: 2px solid rgba(145, 182, 214, .8);
 }
-:root.spooky.highlight-you .quotesYou.opContainer,
-:root.spooky.highlight-you .quotesYou > .reply {
+:root.spooky.highlight-you .quotesYou$site$highlightable$op,
+:root.spooky.highlight-you .quotesYou$site$highlightable$reply {
   border-left: 3px solid rgba(145, 182, 214, .8);
 }
-:root.spooky.highlight-own .yourPost.opContainer,
-:root.spooky.highlight-own .yourPost > .reply {
+:root.spooky.highlight-own .yourPost$site$highlightable$op,
+:root.spooky.highlight-own .yourPost$site$highlightable$reply {
   border-left: 3px dashed rgba(145, 182, 214, .8);
 }
-:root.spooky .opContainer.filter-highlight,
-:root.spooky .filter-highlight > .reply {
+:root.spooky .filter-highlight$site$highlightable$op,
+:root.spooky .filter-highlight$site$highlightable$reply {
   box-shadow: inset 5px 0 rgba(145, 182, 214, .5);
 }
-:root.spooky.highlight-own .yourPost > div.sideArrows,
-:root.spooky.highlight-you .quotesYou > div.sideArrows,
-:root.spooky .filter-highlight > div.sideArrows {
+:root.spooky.highlight-own .yourPost > $site$sideArrows,
+:root.spooky.highlight-you .quotesYou > $site$sideArrows,
+:root.spooky .filter-highlight > $site$sideArrows {
   color: rgb(155, 185, 210);
 }
 
@@ -157,7 +165,7 @@
 }
 
 /* Thread Watcher */
-:root.spooky .replies-quoting-you > a, :root.spooky #watcher-link.replies-quoting-you {
+:root.spooky .replies-quoting-you > a, :root.spooky #watcher-link.replies-quoting-you, :root.spooky .last-page > a > .watcher-page {
   color: #F00 !important;
 }
 

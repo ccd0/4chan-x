@@ -5,10 +5,11 @@ QuoteYou =
     @db = new DataBoard 'yourPosts'
     $.sync 'Remember Your Posts', (enabled) -> Conf['Remember Your Posts'] = enabled
     $.on d, 'QRPostSuccessful', (e) ->
+      cb = PostRedirect.delay()
       $.get 'Remember Your Posts', Conf['Remember Your Posts'], (items) ->
         return unless items['Remember Your Posts']
         {boardID, threadID, postID} = e.detail
-        (QuoteYou.db.set {boardID, threadID, postID, val: true})
+        QuoteYou.db.set {boardID, threadID, postID, val: true}, cb
 
     return unless g.VIEW in ['index', 'thread', 'archive']
 
@@ -91,7 +92,8 @@ QuoteYou =
 
   cb:
     seek: (type) ->
-      $.rmClass highlight, 'highlight' if highlight = $ '.highlight'
+      {highlight} = g.SITE.classes
+      $.rmClass highlighted, highlight if (highlighted = $ ".#{highlight}")
 
       unless QuoteYou.lastRead and doc.contains(QuoteYou.lastRead) and $.hasClass(QuoteYou.lastRead, 'quotesYou')
         if not (post = QuoteYou.lastRead = $ '.quotesYou')
@@ -110,12 +112,16 @@ QuoteYou =
       QuoteYou.cb.scroll posts[if type is 'following' then 0 else posts.length - 1]
 
     scroll: (root) ->
-      post = $ '.post', root
-      if !post.getBoundingClientRect().height
+      post = Get.postFromRoot root
+      if !post.nodes.post.getBoundingClientRect().height
         return false
       else
         QuoteYou.lastRead = root
-        location.href = "##{post.id}"
-        Header.scrollTo post
-        $.addClass post, 'highlight'
+        location.href = Get.url('post', post)
+        Header.scrollTo post.nodes.post
+        if post.isReply
+          sel = "#{g.SITE.selectors.postContainer}#{g.SITE.selectors.highlightable.reply}"
+          node = post.nodes.root
+          node = $ sel, node unless node.matches(sel)
+          $.addClass node, g.SITE.classes.highlight
         return true

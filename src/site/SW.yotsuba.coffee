@@ -1,8 +1,26 @@
 SW.yotsuba =
   isOPContainerThread: false
+  hasIPCount: true
 
   urls:
-    thread: ({boardID, threadID}) -> "#{boardID}/thread/#{threadID}"
+    thread:     ({boardID, threadID}) -> "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/thread/#{threadID}"
+    post:       ({postID})            -> "#p#{postID}"
+    index:      ({boardID})           -> "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/"
+    catalog:    ({boardID})           -> if boardID is 'f' then undefined else "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/catalog"
+    threadJSON: ({boardID, threadID}) -> "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json"
+    threadsListJSON: ({boardID})      -> "#{location.protocol}//a.4cdn.org/#{boardID}/threads.json"
+    archiveListJSON: ({boardID})      -> if BoardConfig.isArchived(boardID) then "#{location.protocol}//a.4cdn.org/#{boardID}/archive.json" else ''
+    catalogJSON:     ({boardID})      -> "#{location.protocol}//a.4cdn.org/#{boardID}/catalog.json"
+    file: ({boardID}, filename) ->
+      hostname = if boardID is 'f' then ImageHost.flashHost() else ImageHost.host()
+      "#{location.protocol}//#{hostname}/#{boardID}/#{filename}"
+    thumb: ({boardID}, filename) ->
+      "#{location.protocol}//#{ImageHost.thumbHost()}/#{boardID}/#{filename}"
+
+  isPrunedByAge:   ({boardID}) -> boardID is 'f'
+  areMD5sDeferred: ({boardID}) -> boardID is 'f'
+  isOnePage:       ({boardID}) -> boardID is 'f'
+  noAudio: ({boardID}) -> BoardConfig.noAudio(boardID)
 
   selectors:
     board:         '.board'
@@ -10,7 +28,8 @@ SW.yotsuba =
     threadDivider: '.board > hr'
     summary:       '.summary'
     postContainer: '.postContainer'
-    sideArrows:    '.sideArrows'
+    replyOriginal: '.replyContainer:not([data-clone])'
+    sideArrows:    'div.sideArrows'
     post:          '.post'
     infoRoot:      '.postInfo'
     info:
@@ -35,14 +54,35 @@ SW.yotsuba =
       text:  '.file > :first-child'
       link:  '.fileText > a'
       thumb: 'a.fileThumb > [data-md5]'
+    thumbLink: 'a.fileThumb'
+    highlightable:
+      op:      '.opContainer'
+      reply:   ' > .reply'
+      catalog: ''
     comment:   '.postMessage'
     spoiler:   's'
     quotelink: ':not(pre) > .quotelink' # XXX https://github.com/4chan/4chan-JS/issues/77: 4chan currently creates quote links inside [code] tags; ignore them
+    catalog:
+      board:  '#threads'
+      thread: '.thread'
+      thumb:  '.thumb'
     boardList: '#boardNavDesktop > .boardList'
+    boardListBottom: '#boardNavDesktopFoot > .boardList'
+    styleSheet: 'link[title=switch]'
+    psa:       '#globalMessage'
+    psaTop:    '#globalToggle'
+    searchBox: '#search-box'
+    nav:
+      prev: '.prev > form > [type=submit]'
+      next: '.next > form > [type=submit]'
+
+  classes:
+    highlight: 'highlight'
 
   xpath:
-    thread:        'div[contains(concat(" ",@class," ")," thread ")]'
-    postContainer: 'div[contains(@class,"postContainer")]'
+    thread:         'div[contains(concat(" ",@class," ")," thread ")]'
+    postContainer:  'div[contains(@class,"postContainer")]'
+    replyContainer: 'div[contains(@class,"replyContainer")]'
 
   regexp:
     quotelink:
@@ -57,6 +97,8 @@ SW.yotsuba =
         )?
         $
       ///
+    quotelinkHTML:
+      /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
 
   bgColoredEl: ->
     $.el 'div', className: 'reply'
@@ -75,8 +117,36 @@ SW.yotsuba =
   isIncomplete: ->
     return g.VIEW in ['index', 'thread'] and not $('.board + *')
 
-  isAuxiliaryPage: ->
-    location.hostname not in ['boards.4chan.org', 'boards.4channel.org']
+  isBoardlessPage: (url) ->
+    url.hostname in ['www.4chan.org', 'www.4channel.org']
+
+  isAuxiliaryPage: (url) ->
+    url.hostname not in ['boards.4chan.org', 'boards.4channel.org']
+
+  isFileURL: (url) ->
+    ImageHost.test(url.hostname)
+
+  initAuxiliary: ->
+    switch location.hostname
+      when 'www.4chan.org', 'www.4channel.org'
+        $.onExists doc, 'body', -> $.addStyle CSS.www
+        Captcha.replace.init()
+        return
+      when 'sys.4chan.org', 'sys.4channel.org'
+        pathname = location.pathname.split /\/+/
+        if pathname[2] is 'imgboard.php'
+          if /\bmode=report\b/.test location.search
+            Report.init()
+          else if (match = location.search.match /\bres=(\d+)/)
+            $.ready ->
+              if Conf['404 Redirect'] and $.id('errmsg')?.textContent is 'Error: Specified thread does not exist.'
+                Redirect.navigate 'thread', {
+                  boardID: g.BOARD.ID
+                  postID:  +match[1]
+                }
+        else if pathname[2] is 'post'
+          PostSuccessful.init()
+        return
 
   scriptData: ->
     for script in $$ 'script:not([src])', d.head
@@ -91,7 +161,7 @@ SW.yotsuba =
 
     if g.BOARD.ID is 'f' and thread.OP.file
       {file} = thread.OP
-      $.ajax "#{location.protocol}//a.4cdn.org/f/thread/#{thread}.json",
+      $.ajax @urls.threadJSON({boardID: 'f', threadID: thread.ID}),
         timeout: $.MINUTE
         onloadend: ->
           if @response
@@ -139,3 +209,19 @@ SW.yotsuba =
     for node in $$ '.prettyprint', bq
       $.replace node, [$.tn('[code]'), node.childNodes..., $.tn '[/code]']
     return
+
+  hasCORS: (url) ->
+    url.split('/')[...3].join('/') is location.protocol + '//a.4cdn.org'
+
+  sfwBoards: (sfw) ->
+    BoardConfig.sfwBoards(sfw)
+
+  uidColor: (uid) ->
+    msg = 0
+    i = 0
+    while i < 8
+      msg = (msg << 5) - msg + uid.charCodeAt i++
+    (msg >> 8) & 0xFFFFFF
+
+  isLinkified: (link) ->
+    ImageHost.test(link.hostname)

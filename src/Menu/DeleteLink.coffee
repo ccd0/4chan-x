@@ -82,12 +82,15 @@ DeleteLink =
     $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"),
       responseType: 'document'
       withCredentials: true
-      onload:  -> DeleteLink.load  link, post, fileOnly, @response
-      onerror: -> DeleteLink.error link, post
-    ,
+      onloadend: -> DeleteLink.load link, post, fileOnly, @response
       form: $.formData form
 
   load: (link, post, fileOnly, resDoc) ->
+    unless resDoc
+      new Notice 'warning', 'Connection error, please retry.', 20
+      $.on link, 'click', DeleteLink.toggle if post.fullID is DeleteLink.post.fullID
+      return
+
     link.textContent = DeleteLink.linkText fileOnly
     if resDoc.title is '4chan - Banned' # Ban/warn check
       el = $.el 'span', <%= html('You can&#039;t delete posts because you are <a href="//www.4chan.org/banned" target="_blank">banned</a>.') %>
@@ -105,10 +108,6 @@ DeleteLink =
         # We're 100% sure.
         (post.origin or post).kill fileOnly
       link.textContent = 'Deleted' if post.fullID is DeleteLink.post.fullID
-
-  error: (link, post) ->
-    new Notice 'warning', 'Connection error, please retry.', 20
-    $.on link, 'click', DeleteLink.toggle if post.fullID is DeleteLink.post.fullID
 
   cooldown:
     seconds: {}

@@ -1,6 +1,6 @@
 CatalogLinks =
   init: ->
-    if Site.software is 'yotsuba' and (Conf['External Catalog'] or Conf['JSON Index']) and !(Conf['JSON Index'] and g.VIEW is 'index')
+    if g.SITE.software is 'yotsuba' and (Conf['External Catalog'] or Conf['JSON Index']) and !(Conf['JSON Index'] and g.VIEW is 'index')
       selector = switch g.VIEW
         when 'thread', 'archive' then '.navLinks.desktop > a'
         when 'catalog'           then '.navLinks > :first-child > a'
@@ -13,14 +13,15 @@ CatalogLinks =
               link.href = CatalogLinks.index()
             when "/#{g.BOARD}/catalog"
               link.href = CatalogLinks.catalog()
-          if g.VIEW is 'catalog' and Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
+          if g.VIEW is 'catalog' and (catalogURL = CatalogLinks.catalog()) isnt g.SITE.urls.catalog?(g.BOARD)
             catalogLink = link.parentNode.cloneNode true
-            catalogLink.firstElementChild.textContent = '<%= meta.name %> Catalog'
-            catalogLink.firstElementChild.href = CatalogLinks.catalog()
+            link2 = catalogLink.firstElementChild
+            link2.href = catalogURL
+            link2.textContent = if link2.hostname is location.hostname then '<%= meta.name %> Catalog' else 'External Catalog'
             $.after link.parentNode, [$.tn(' '), catalogLink]
         return
 
-    if Site.software is 'yotsuba' and Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
+    if g.SITE.software is 'yotsuba' and Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
       Callbacks.Post.push
         name: 'Catalog Link Rewrite'
         cb:   @node
@@ -37,8 +38,8 @@ CatalogLinks =
 
   node: ->
     for a in $$ 'a', @nodes.comment
-      if m = a.href.match /^https?:\/\/boards\.4chan(?:nel)?\.org\/([^\/]+)\/catalog(#s=.*)?/
-        a.href = "//boards.4chan(?:nel)?.org/#{m[1]}/#{m[2] or '#catalog'}"
+      if m = a.href.match /^https?:\/\/(boards\.4chan(?:nel)?\.org\/[^\/]+)\/catalog(#s=.*)?/
+        a.href = "//#{m[1]}/#{m[2] or '#catalog'}"
     return
 
   toggle: ->
@@ -57,33 +58,63 @@ CatalogLinks =
   setLinks: (list) ->
     return unless (CatalogLinks.enabled ? Conf['Catalog Links']) and list
 
+    # do not transform links unless they differ from the expected value at most by this tail
+    tail = /(?:index)?(?:\.\w+)?$/
+
     for a in $$('a:not([data-only])', list)
-      continue if (
-        a.hostname not in ['boards.4chan.org', 'boards.4channel.org', 'catalog.neet.tv'] or
-        !(board = a.pathname.split('/')[1]) or
-        board in ['f', 'status', '4chan'] or
-        a.pathname.split('/')[2] is 'archive' or
-        $.hasClass a, 'external'
-      )
+      {siteID, boardID} = a.dataset
+      unless siteID and boardID
+        {siteID, boardID, VIEW} = Site.parseURL a
+        continue unless (
+          siteID and boardID and
+          VIEW in ['index', 'catalog'] and
+          (a.dataset.indexOptions or a.href.replace(tail, '') is Get.url(VIEW, {siteID, boardID}).replace(tail, ''))
+        )
+        $.extend a.dataset, {siteID, boardID}
 
-      # Href is easier than pathname because then we don't have
-      # conditions where External Catalog has been disabled between switches.
-      a.href = if Conf['Header catalog links'] then CatalogLinks.catalog(board) else "//#{BoardConfig.domain(board)}/#{board}/"
-
-      if a.dataset.indexOptions and a.hostname in ['boards.4chan.org', 'boards.4channel.org'] and a.pathname.split('/')[2] is ''
-        a.href += (if a.hash then '/' else '#') + a.dataset.indexOptions
+      board = {siteID, boardID}
+      url = if Conf['Header catalog links'] then CatalogLinks.catalog(board) else Get.url('index', board)
+      if url
+        a.href = url
+        if a.dataset.indexOptions and url.split('#')[0] is Get.url('index', board)
+          a.href += (if a.hash then '/' else '#') + a.dataset.indexOptions
     return
 
-  catalog: (board=g.BOARD.ID) ->
-    if Conf['External Catalog'] and board in ['a', 'c', 'g', 'biz', 'k', 'm', 'o', 'p', 'v', 'vg', 'vr', 'w', 'wg', 'cm', '3', 'adv', 'an', 'asp', 'cgl', 'ck', 'co', 'diy', 'fa', 'fit', 'gd', 'int', 'jp', 'lit', 'mlp', 'mu', 'n', 'out', 'po', 'sci', 'sp', 'tg', 'toy', 'trv', 'tv', 'vp', 'wsg', 'x', 'f', 'pol', 's4s', 'lgbt']
-      "//catalog.neet.tv/#{board}/"
-    else if Conf['JSON Index'] and Conf['Use <%= meta.name %> Catalog']
-      if location.hostname in ['boards.4chan.org', 'boards.4channel.org'] and g.BOARD.ID is board and g.VIEW is 'index' then '#catalog' else "//#{BoardConfig.domain(board)}/#{board}/#catalog"
-    else
-      "//#{BoardConfig.domain(board)}/#{board}/catalog"
+  externalParse: ->
+    CatalogLinks.externalList = {}
+    for line in Conf['externalCatalogURLs'].split '\n'
+      continue if line[0] is '#'
+      url = line.split(';')[0]
+      boards   = Filter.parseBoards(line.match(/;boards:([^;]+)/)?[1] or '*')
+      excludes = Filter.parseBoards(line.match(/;exclude:([^;]+)/)?[1]) or {}
+      for board of boards
+        unless excludes[board] or excludes[board.split('/')[0] + '/*']
+          CatalogLinks.externalList[board] = url
+    return
 
-  index: (board=g.BOARD.ID) ->
-    if Conf['JSON Index'] and board isnt 'f'
-      if location.hostname in ['boards.4chan.org', 'boards.4channel.org'] and g.BOARD.ID is board and g.VIEW is 'index' then '#index' else "//#{BoardConfig.domain(board)}/#{board}/#index"
+  external: ({siteID, boardID}) ->
+    CatalogLinks.externalParse() unless CatalogLinks.externalList
+    external = (CatalogLinks.externalList["#{siteID}/#{boardID}"] or CatalogLinks.externalList["#{siteID}/*"])
+    if external then external.replace(/%board/g, boardID) else undefined
+
+  jsonIndex: (board, hash) ->
+    if g.SITE.ID is board.siteID and g.BOARD.ID is board.boardID and g.VIEW is 'index'
+      hash
     else
-      "//#{BoardConfig.domain(board)}/#{board}/"
+      Get.url('index', board) + hash
+
+  catalog: (board=g.BOARD) ->
+    if Conf['External Catalog'] and (external = CatalogLinks.external board)
+      external
+    else if Index.enabledOn(board) and Conf['Use <%= meta.name %> Catalog']
+      CatalogLinks.jsonIndex board, '#catalog'
+    else if (nativeCatalog = Get.url 'catalog', board)
+      nativeCatalog
+    else
+      CatalogLinks.external board
+
+  index: (board=g.BOARD) ->
+    if Index.enabledOn(board)
+      CatalogLinks.jsonIndex board, '#index'
+    else
+      Get.url 'index', board

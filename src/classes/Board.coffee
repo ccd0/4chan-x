@@ -2,6 +2,8 @@ class Board
   toString: -> @ID
 
   constructor: (@ID) ->
+    @boardID = @ID
+    @siteID  = g.SITE.ID
     @threads = new SimpleDict()
     @posts   = new SimpleDict()
     @config  = BoardConfig.boards?[@ID] or {}

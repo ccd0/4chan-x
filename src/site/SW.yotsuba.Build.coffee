@@ -3,11 +3,6 @@ Build =
   gifIcon: if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
   spoilerRange: {}
 
-  unescape: (text) ->
-    return text unless text?
-    text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt|#44);/g, (c) ->
-      (({'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','})[c])
-
   shortFilename: (filename) ->
     ext = filename.match(/\.?[^\.]*$/)[0]
     if filename.length - ext.length > 30
@@ -25,18 +20,25 @@ Build =
   sameThread: (boardID, threadID) ->
     g.VIEW is 'thread' and g.BOARD.ID is boardID and g.THREADID is +threadID
 
-  postURL: (boardID, threadID, postID) ->
-    if Build.sameThread boardID, threadID
-      "#p#{postID}"
+  threadURL: (boardID, threadID) ->
+    if boardID isnt g.BOARD.ID
+      "//#{BoardConfig.domain(boardID)}/#{boardID}/thread/#{threadID}"
+    else if g.VIEW isnt 'thread' or +threadID isnt g.THREADID
+      "/#{boardID}/thread/#{threadID}"
     else
-      "/#{boardID}/thread/#{threadID}#p#{postID}"
+      ''
 
-  parseJSON: (data, boardID) ->
+  postURL: (boardID, threadID, postID) ->
+    "#{Build.threadURL(boardID, threadID)}#p#{postID}"
+
+  parseJSON: (data, {siteID, boardID}) ->
     o =
       # id
       ID:       data.no
+      postID:   data.no
       threadID: data.resto or data.no
       boardID:  boardID
+      siteID:   siteID
       isReply:  !!data.resto
       # thread status
       isSticky: !!data.sticky
@@ -44,17 +46,17 @@ Build =
       isArchived: !!data.archived
       # file status
       fileDeleted: !!data.filedeleted
-      xa18:     data.xa18
+      filesDeleted: if data.filedeleted then [0] else []
     o.info =
-      subject:  Build.unescape data.sub
-      email:    Build.unescape data.email
-      name:     Build.unescape(data.name) or ''
+      subject:  $.unescape data.sub
+      email:    $.unescape data.email
+      name:     $.unescape(data.name) or ''
       tripcode: data.trip
       pass:     if data.since4pass? then "#{data.since4pass}" else undefined
       uniqueID: data.id
       flagCode: data.country
       flagCodeTroll: data.troll_country
-      flag:     Build.unescape data.country_name
+      flag:     $.unescape data.country_name
       dateUTC:  data.time
       dateText: data.now
       commentHTML: {innerHTML: data.com or ''}
@@ -62,24 +64,35 @@ Build =
       o.info.capcode = data.capcode.replace(/_highlight$/, '').replace(/_/g, ' ').replace(/\b\w/g, (c) -> c.toUpperCase())
       o.capcodeHighlight = /_highlight$/.test data.capcode
       delete o.info.uniqueID
+    o.files = []
     if data.ext
-      o.file =
-        name:      (Build.unescape data.filename) + data.ext
-        url: if boardID is 'f'
-          "#{location.protocol}//#{ImageHost.flashHost()}/#{boardID}/#{encodeURIComponent data.filename}#{data.ext}"
-        else
-          "#{location.protocol}//#{ImageHost.host()}/#{boardID}/#{data.tim}#{data.ext}"
-        height:    data.h
-        width:     data.w
-        MD5:       data.md5
-        size:      $.bytesToString data.fsize
-        thumbURL:  "#{location.protocol}//#{ImageHost.thumbHost()}/#{boardID}/#{data.tim}s.jpg"
-        theight:   data.tn_h
-        twidth:    data.tn_w
-        isSpoiler: !!data.spoiler
-        tag:       data.tag
-        hasDownscale: !!data.m_img
-      o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
+      o.file = SW.yotsuba.Build.parseJSONFile(data, {siteID, boardID})
+      o.files.push o.file
+    # Temporary JSON properties for events such as April 1 / Halloween
+    for key of data when key[0] is 'x'
+      o[key] = data[key]
+    o
+
+  parseJSONFile: (data, {siteID, boardID}) ->
+    site = g.sites[siteID]
+    filename = if site.software is 'yotsuba' and boardID is 'f'
+      "#{encodeURIComponent data.filename}#{data.ext}"
+    else
+      "#{data.tim}#{data.ext}"
+    o =
+      name:      ($.unescape data.filename) + data.ext
+      url:       site.urls.file({siteID, boardID}, filename)
+      height:    data.h
+      width:     data.w
+      MD5:       data.md5
+      size:      $.bytesToString data.fsize
+      thumbURL:  site.urls.thumb({siteID, boardID}, "#{data.tim}s.jpg")
+      theight:   data.tn_h
+      twidth:    data.tn_w
+      isSpoiler: !!data.spoiler
+      tag:       data.tag
+      hasDownscale: !!data.m_img
+    o.dimensions = "#{o.width}x#{o.height}" if data.h? and !/\.pdf$/.test(o.url)
     o
 
   parseComment: (html) ->
@@ -87,7 +100,7 @@ Build =
       .replace(/<br\b[^<]*>/gi, '\n')
       .replace(/\n\n<span\b[^<]* class="abbr"[^]*$/i, '') # EXIF data (/p/)
       .replace(/<[^>]*>/g, '')
-    Build.unescape html
+    $.unescape html
 
   parseCommentDisplay: (html) ->
     # Hide spoilers.
@@ -101,7 +114,7 @@ Build =
     Build.parseComment(html).trim().replace(/\s+$/gm, '')
 
   postFromObject: (data, boardID) ->
-    o = Build.parseJSON data, boardID
+    o = Build.parseJSON data, {boardID, siteID: g.SITE.ID}
     Build.post o
 
   post: (o) ->
@@ -124,11 +137,12 @@ Build =
         capcodePlural = "#{capcodeLong}s"
         capcodeDescription = "a 4chan #{capcodeLong}"
 
-    postLink = Build.postURL boardID, threadID, ID
+    url = Build.threadURL boardID, threadID
+    postLink = "#{url}#p#{ID}"
     quoteLink = if Build.sameThread boardID, threadID
       "javascript:quote('#{+ID}');"
     else
-      "/#{boardID}/thread/#{threadID}#q#{ID}"
+      "#{url}#q#{ID}"
 
     postInfo = <%= readHTML('PostInfo.html') %>
 
@@ -156,12 +170,12 @@ Build =
     # Fix quotelinks
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
-      if (href[0] is '#') and !(Build.sameThread boardID, threadID)
-        quote.href = ("/#{boardID}/thread/#{threadID}") + href
-      else if (match = href.match /^\/([^\/]+)\/thread\/(\d+)/) and (Build.sameThread match[1], match[2])
-        quote.href = href.match(/(#[^#]*)?$/)[0] or '#'
-      else if /^\d+(#|$)/.test(href) and not (g.VIEW is 'thread' and g.BOARD.ID is boardID) # used on /f/
-        quote.href = "/#{boardID}/thread/#{href}"
+      if (href[0] is '#')
+        if !Build.sameThread(boardID, threadID)
+          quote.href = Build.threadURL(boardID, threadID) + href
+      else
+        if (match = quote.href.match SW.yotsuba.regexp.quotelink) and (Build.sameThread match[1], match[2])
+          quote.href = href.match(/(#[^#]*)?$/)[0] or '#'
 
     container
 
@@ -243,12 +257,14 @@ Build =
     if data.com
       excerpt = Build.parseCommentDisplay(data.com).replace(/>>\d+/g, '').trim().replace(/\n+/g, ' // ')
     if data.ext
-      excerpt or= "#{Build.unescape data.filename}#{data.ext}"
+      excerpt or= "#{$.unescape data.filename}#{data.ext}"
     if data.com
-      excerpt or= Build.unescape data.com.replace(/<br\b[^<]*>/gi, ' // ')
+      excerpt or= $.unescape data.com.replace(/<br\b[^<]*>/gi, ' // ')
     excerpt or= '\xA0'
     excerpt = "#{excerpt[...70]}..." if excerpt.length > 73
 
     link = Build.postURL thread.board.ID, thread.ID, data.no
     $.el 'div', {className: 'catalog-reply'},
       <%= readHTML('CatalogReply.html') %>
+
+SW.yotsuba.Build = Build

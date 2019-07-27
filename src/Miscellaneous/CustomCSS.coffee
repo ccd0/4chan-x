@@ -4,7 +4,7 @@ CustomCSS =
     @addStyle()
 
   addStyle: ->
-    @style = $.addStyle Conf['usercss'], 'custom-css', '#fourchanx-css'
+    @style = $.addStyle CSS.sub(Conf['usercss']), 'custom-css', '#fourchanx-css'
 
   rmStyle: ->
     if @style
@@ -14,4 +14,4 @@ CustomCSS =
   update: ->
     unless @style
       return @addStyle()
-    @style.textContent = Conf['usercss']
+    @style.textContent = CSS.sub Conf['usercss']

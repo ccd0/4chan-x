@@ -4,6 +4,17 @@
   border-color: #111;
 }
 
+/* 4chan style fixes */
+:root.tomorrow #arc-list span.quote {
+  color: #B5BD68;
+}
+:root.tomorrow.highlight-you .quotesYou$site$highlightable$reply {
+  border-left: 3px solid rgba(145, 182, 214, .8) !important;
+}
+:root.tomorrow.highlight-own .yourPost$site$highlightable$reply {
+  border-left: 3px dashed rgba(145, 182, 214, .8) !important;
+}
+
 /* Header */
 :root.tomorrow #header-bar.dialog {
   background-color: rgba(40,42,46,0.9);
@@ -41,9 +52,6 @@
 }
 
 /* Quote */
-:root.tomorrow #arc-list span.quote {
-  color: #B5BD68;
-}
 :root.tomorrow .backlink.deadlink {
   color: #81A2BE !important;
 }
@@ -61,21 +69,21 @@
 :root.tomorrow .qphl {
   outline: 2px solid rgba(145, 182, 214, .8);
 }
-:root.tomorrow.highlight-you .quotesYou.opContainer,
-:root.tomorrow.highlight-you .quotesYou > .reply {
+:root.tomorrow.highlight-you .quotesYou$site$highlightable$op,
+:root.tomorrow.highlight-you .quotesYou$site$highlightable$reply {
   border-left: 3px solid rgba(145, 182, 214, .8);
 }
-:root.tomorrow.highlight-own .yourPost.opContainer,
-:root.tomorrow.highlight-own .yourPost > .reply {
+:root.tomorrow.highlight-own .yourPost$site$highlightable$op,
+:root.tomorrow.highlight-own .yourPost$site$highlightable$reply {
   border-left: 3px dashed rgba(145, 182, 214, .8);
 }
-:root.tomorrow .opContainer.filter-highlight,
-:root.tomorrow .filter-highlight > .reply {
+:root.tomorrow .filter-highlight$site$highlightable$op,
+:root.tomorrow .filter-highlight$site$highlightable$reply {
   box-shadow: inset 5px 0 rgba(145, 182, 214, .5);
 }
-:root.tomorrow.highlight-own .yourPost > div.sideArrows,
-:root.tomorrow.highlight-you .quotesYou > div.sideArrows,
-:root.tomorrow .filter-highlight > div.sideArrows {
+:root.tomorrow.highlight-own .yourPost > $site$sideArrows,
+:root.tomorrow.highlight-you .quotesYou > $site$sideArrows,
+:root.tomorrow .filter-highlight > $site$sideArrows {
   color: rgb(155, 185, 210);
 }
 :root.tomorrow .catalog-thread.filter-highlight .catalog-thumb,
@@ -162,7 +170,7 @@
 }
 
 /* Thread Watcher */
-:root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.replies-quoting-you {
+:root.tomorrow .replies-quoting-you > a, :root.tomorrow #watcher-link.replies-quoting-you, :root.tomorrow .last-page > a > .watcher-page {
   color: #F00 !important;
 }
 

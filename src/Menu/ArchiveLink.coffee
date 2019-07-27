@@ -1,6 +1,6 @@
 ArchiveLink =
   init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Archive Link']
+    return unless g.SITE.software is 'yotsuba' and g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Archive Link']
 
     div = $.el 'div',
       textContent: 'Archive'
@@ -45,7 +45,7 @@ ArchiveLink =
         value = if type is 'country'
           post.info.flagCode or post.info.flagCodeTroll
         else
-          Filter[type] post
+          Filter.values(type, post)[0]
         # We want to parse the exact same stuff as the filter does already.
         return false unless value
         el.href = Redirect.to 'search',

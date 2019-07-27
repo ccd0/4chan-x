@@ -23,27 +23,20 @@ IDColor =
   compute: (uid) ->
     # Convert chars to integers, bitshift and math to create a larger integer
     # Create a nice string of binary
-    hash = IDColor.hash uid
+    hash = if g.SITE.uidColor then g.SITE.uidColor(uid) else parseInt(uid, 16)
 
     # Convert binary string to numerical values with bitshift and '&' truncation.
     rgb = [
-      (hash >> 24) & 0xFF
       (hash >> 16) & 0xFF
       (hash >> 8)  & 0xFF
+      hash & 0xFF
     ]
 
     # Weight color luminance values, assign a font color that should be readable. 
-    rgb.push if (rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114) > 125
+    rgb.push if $.luma(rgb) > 125
       '#000'
     else
       '#fff'
 
     # Cache.
     @ids[uid] = rgb
-
-  hash: (uid) ->
-    msg = 0
-    i = 0
-    while i < 8
-      msg = (msg << 5) - msg + uid.charCodeAt i++
-    msg

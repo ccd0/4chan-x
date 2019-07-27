@@ -7,7 +7,7 @@ RelativeDates =
       Index.enabled
     )
       @flush()
-      $.on d, 'visibilitychange ThreadUpdate', @flush
+      $.on d, 'visibilitychange PostsInserted', @flush
 
     if Conf['Relative Post Dates']
       Callbacks.Post.push
