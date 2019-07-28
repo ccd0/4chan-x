@@ -106,7 +106,7 @@ class DataBoard
     if board = @data[siteID]?.boards[boardID]
       unless threadID?
         if postID?
-          for ID, thread in board
+          for ID, thread of board
             if postID of thread
               val = thread[postID]
               break
