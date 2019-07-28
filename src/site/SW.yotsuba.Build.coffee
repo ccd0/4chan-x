@@ -149,10 +149,8 @@ Build =
     ### File Info ###
 
     if file
-      protocol = /^https?:(?=\/\/i\.4cdn\.org\/)/
-      fileURL = file.url.replace protocol, ''
       shortFilename = Build.shortFilename file.name
-      fileThumb = if file.isSpoiler then Build.spoilerThumb(boardID) else file.thumbURL.replace(protocol, '')
+      fileThumb = if file.isSpoiler then Build.spoilerThumb(boardID) else file.thumbURL
 
     fileBlock = `<%= readHTML('File.html') %>`
 
