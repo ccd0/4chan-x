@@ -106,7 +106,6 @@ Captcha.fixes =
       @addTooltips16 @images
 
   addLabels: ->
-    imageSelect = $ '.fbc-payload-imageselect'
     labels = for checkbox, i in @images
       checkbox.id = "checkbox-#{i}"
       label = $.el 'label',

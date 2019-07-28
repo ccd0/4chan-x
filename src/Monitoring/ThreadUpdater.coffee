@@ -155,6 +155,7 @@ ThreadUpdater =
               ThreadUpdater.error @
         else
           ThreadUpdater.error @
+      return
 
   kill: ->
     ThreadUpdater.thread.kill()

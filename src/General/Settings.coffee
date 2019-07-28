@@ -323,7 +323,7 @@ Settings =
             '%board'
           else
             c
-      for key, val of Config.hotkeys when key of data.Conf
+      for key of Config.hotkeys when key of data.Conf
         data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, (s) -> "#{s[0].toUpperCase()}#{s[1..]}").replace /(^|.+\+)[A-Z]$/g, (s) ->
           "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
       if data.WatchedThreads

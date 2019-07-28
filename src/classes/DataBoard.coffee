@@ -121,7 +121,7 @@ class DataBoard
 
   clean: ->
     siteID = g.SITE.ID
-    for boardID, val of @data[siteID].boards
+    for boardID of @data[siteID].boards
       @deleteIfEmpty {siteID, boardID}
     now = Date.now()
     unless now - 2 * $.HOUR < (@data[siteID].lastChecked or 0) <= now

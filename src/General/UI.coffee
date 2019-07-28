@@ -81,8 +81,6 @@ class Menu
   setPosition: =>
     mRect   = @menu.getBoundingClientRect()
     bRect   = lastToggledButton.getBoundingClientRect()
-    bTop    = window.scrollY + bRect.top
-    bLeft   = window.scrollX + bRect.left
     cHeight = doc.clientHeight
     cWidth  = doc.clientWidth
     [top, bottom] = if bRect.top + bRect.height + mRect.height < cHeight

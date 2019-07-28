@@ -103,7 +103,7 @@ Embedding =
     style.pointerEvents = 'none'
 
   title: (data) ->
-    {key, uid, options, link, post} = data
+    {key, uid, link} = data
     return if not (service = Embedding.types[key].title)
     $.addClass link, key.toLowerCase()
     if service.batchSize
@@ -179,7 +179,7 @@ Embedding =
     title: (req, data) ->
       return unless req.status
 
-      {key, uid, options, link, post} = data
+      {key, uid, link, post} = data
       {status} = req
       service = Embedding.types[key].title
 

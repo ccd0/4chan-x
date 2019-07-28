@@ -143,11 +143,11 @@ CrossOrigin.ajax = (url, options={}) ->
     timeout
     onload: (xhr) ->
       try
-        response = switch responseType
+        switch responseType
           when 'json'
-            if xhr.responseText then JSON.parse(xhr.responseText) else null
+            response = if xhr.responseText then JSON.parse(xhr.responseText) else null
           else
-            xhr.responseText
+            response = xhr.responseText
         $.extend req, {
           response
           status: xhr.status
