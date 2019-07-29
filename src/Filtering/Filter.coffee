@@ -49,6 +49,12 @@ Filter =
         # Filter only posts with/without files.
         file = filter.match(/(?:^|;)\s*file:(no|only)/)?[1] or ''
         mask = mask | ({'no': 4, 'only': 8}[file] or 0)
+        
+        # Filter posts shorter than a given length
+        minlen = filter.match(/(?:^|;)\s*min:(\d+)/)?[1] or 0
+        
+        # Filter posts longer than a given length
+        maxlen = filter.match(/(?:^|;)\s*max:(\d+)/)?[1] or Number.MAX_SAFE_INTEGER
 
         # Overrule the `Show Stubs` setting.
         # Defaults to stub showing.
@@ -82,7 +88,7 @@ Filter =
         # Hide the post (default case).
         hide = !(hl or noti)
 
-        filter = {isstring, regexp, boards, excludes, mask, hide, stub, hl, top, noti}
+        filter = {isstring, regexp, boards, excludes, mask, hide, stub, hl, top, noti, minlen, maxlen}
         if key is 'general'
           for type in types
             (@filters[type] or= []).push filter
@@ -138,7 +144,9 @@ Filter =
             (filter.boards   and !(filter.boards[board]   or filter.boards[site]  )) or
             (filter.excludes and  (filter.excludes[board] or filter.excludes[site])) or
             (filter.mask & mask) or
-            (if filter.isstring then (filter.regexp isnt value) else !filter.regexp.test(value))
+            (if filter.isstring then (filter.regexp isnt value) else !filter.regexp.test(value)) or
+            (filter.minlen <= post.commentDisplay.length) or
+            (filter.maxlen >= post.commentDisplay.length)
           )
           if filter.hide
             if hideable
