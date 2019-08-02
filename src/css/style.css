@@ -702,6 +702,7 @@ div[data-checked="false"] > .suboption-list {
   font-family: monospace;
   min-width: 100%;
   max-width: 100%;
+  resize: vertical;
 }
 #fourchanx-settings code {
   color: #000;
