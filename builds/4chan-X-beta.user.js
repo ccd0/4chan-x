@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.11.0
+// @version      1.14.11.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -188,7 +188,7 @@ var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, CSS
 
 var Conf, E, c, d, doc, docSet, g;
 
-Conf = {};
+Conf = Object.create(null);
 c    = console;
 d    = document;
 doc  = d.documentElement;
@@ -199,10 +199,10 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.11.0',
+  VERSION:   '1.14.11.1',
   NAMESPACE: '4chan X.',
-  sites:     {},
-  boards:    {}
+  sites:     Object.create(null),
+  boards:    Object.create(null)
 };
 
 E = (function() {
@@ -4687,7 +4687,7 @@ sub: function(css) {
     var sel = variables;
     for (var i = 0; i < words.length; i++) {
       if (typeof sel !== 'object') return ':not(*)';
-      sel = sel[words[i]];
+      sel = $.getOwn(sel, words[i]);
     }
     if (typeof sel !== 'string') return ':not(*)';
     return sel;
@@ -4754,6 +4754,46 @@ $ = (function() {
     }
   };
 
+  $.dict = function() {
+    return Object.create(null);
+  };
+
+  $.dict.clone = function(obj) {
+    var arr, i, j, key, map, ref, val;
+    if (typeof obj !== 'object' || obj === null) {
+      return obj;
+    } else if (obj instanceof Array) {
+      arr = [];
+      for (i = j = 0, ref = obj.length; j < ref; i = j += 1) {
+        arr.push($.dict.clone(obj[i]));
+      }
+      return arr;
+    } else {
+      map = Object.create(null);
+      for (key in obj) {
+        val = obj[key];
+        map[key] = $.dict.clone(val);
+      }
+      return map;
+    }
+  };
+
+  $.dict.json = function(str) {
+    return $.dict.clone(JSON.parse(str));
+  };
+
+  $.hasOwn = function(obj, key) {
+    return Object.prototype.hasOwnProperty.call(obj, key);
+  };
+
+  $.getOwn = function(obj, key) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      return obj[key];
+    } else {
+      return void 0;
+    }
+  };
+
   $.ajax = (function() {
     var pageXHR;
     if (window.wrappedJSObject && !XMLHttpRequest.wrappedJSObject) {
@@ -4808,7 +4848,7 @@ $ = (function() {
     };
   })();
 
-  $.lastModified = {};
+  $.lastModified = $.dict();
 
   $.whenModified = function(url, bucket, cb, options) {
     var ajax, headers, params, r, ref, t, timeout, url0;
@@ -4827,14 +4867,14 @@ $ = (function() {
     if (params.length) {
       url += '?' + params.join('&');
     }
-    headers = {};
+    headers = $.dict();
     if ((t = (ref = $.lastModified[bucket]) != null ? ref[url0] : void 0) != null) {
       headers['If-Modified-Since'] = t;
     }
     r = (ajax || $.ajax)(url, {
       onloadend: function() {
         var base;
-        ((base = $.lastModified)[bucket] || (base[bucket] = {}))[url0] = this.getResponseHeader('Last-Modified');
+        ((base = $.lastModified)[bucket] || (base[bucket] = $.dict()))[url0] = this.getResponseHeader('Last-Modified');
         return cb.call(this);
       },
       timeout: timeout,
@@ -4845,7 +4885,7 @@ $ = (function() {
 
   (function() {
     var reqs;
-    reqs = {};
+    reqs = $.dict();
     $.cache = function(url, cb, options) {
       var ajax, onloadend, req;
       if (options == null) {
@@ -4903,12 +4943,16 @@ $ = (function() {
 
   $.cb = {
     checked: function() {
-      $.set(this.name, this.checked);
-      return Conf[this.name] = this.checked;
+      if ($.hasOwn(Conf, this.name)) {
+        $.set(this.name, this.checked);
+        return Conf[this.name] = this.checked;
+      }
     },
     value: function() {
-      $.set(this.name, this.value.trim());
-      return Conf[this.name] = this.value;
+      if ($.hasOwn(Conf, this.name)) {
+        $.set(this.name, this.value.trim());
+        return Conf[this.name] = this.value;
+      }
     }
   };
 
@@ -5281,11 +5325,11 @@ $ = (function() {
 
   $.hasStorage = (function() {
     try {
-      if (localStorage[g.NAMESPACE + 'hasStorage'] === 'true') {
+      if (localStorage.getItem(g.NAMESPACE + 'hasStorage') === 'true') {
         return true;
       }
-      localStorage[g.NAMESPACE + 'hasStorage'] = 'true';
-      return localStorage[g.NAMESPACE + 'hasStorage'] === 'true';
+      localStorage.setItem(g.NAMESPACE + 'hasStorage', 'true');
+      return localStorage.getItem(g.NAMESPACE + 'hasStorage') === 'true';
     } catch (error) {
       return false;
     }
@@ -5293,7 +5337,7 @@ $ = (function() {
 
   $.item = function(key, val) {
     var item;
-    item = {};
+    item = $.dict();
     item[key] = val;
     return item;
   };
@@ -5308,7 +5352,7 @@ $ = (function() {
     };
   };
 
-  $.syncing = {};
+  $.syncing = $.dict();
 
   $.securityCheck = function(data) {
     if (location.protocol !== 'https:') {
@@ -5325,7 +5369,7 @@ $ = (function() {
       for (key in ref) {
         val = ref[key];
         if ((cb = $.syncing[key])) {
-          results.push(cb(JSON.parse(JSON.stringify(val)), key));
+          results.push(cb($.dict.json(JSON.stringify(val)), key));
         }
       }
       return results;
@@ -5349,7 +5393,7 @@ $ = (function() {
         return results;
       })()).then(function() {
         var items, j, key, len;
-        items = {};
+        items = $.dict();
         for (j = 0, len = keys.length; j < len; j++) {
           key = keys[j];
           items[key] = void 0;
@@ -5374,7 +5418,7 @@ $ = (function() {
         for (i = j = 0, len = values.length; j < len; i = ++j) {
           val = values[i];
           if (val) {
-            items[keys[i]] = JSON.parse(val);
+            items[keys[i]] = $.dict.json(val);
           }
         }
         return cb(items);
@@ -5416,7 +5460,7 @@ $ = (function() {
       };
     } else if ($.hasStorage) {
       $.getValue = function(key) {
-        return localStorage[key];
+        return localStorage.getItem(key);
       };
       $.listValues = function() {
         var key, results;
@@ -5438,13 +5482,13 @@ $ = (function() {
       $.setValue = GM_setValue;
       $.deleteValue = GM_deleteValue;
     } else if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
-      $.oldValue = {};
+      $.oldValue = $.dict();
       $.setValue = function(key, val) {
         GM_setValue(key, val);
         if (key in $.syncing) {
           $.oldValue[key] = val;
           if ($.hasStorage) {
-            return localStorage[key] = val;
+            return localStorage.setItem(key, val);
           }
         }
       };
@@ -5461,12 +5505,12 @@ $ = (function() {
         $.cantSync = true;
       }
     } else if ($.hasStorage) {
-      $.oldValue = {};
+      $.oldValue = $.dict();
       $.setValue = function(key, val) {
         if (key in $.syncing) {
           $.oldValue[key] = val;
         }
-        return localStorage[key] = val;
+        return localStorage.setItem(key, val);
       };
       $.deleteValue = function(key) {
         if (key in $.syncing) {
@@ -5484,7 +5528,7 @@ $ = (function() {
         return $.syncing[key] = GM_addValueChangeListener(g.NAMESPACE + key, function(key2, oldValue, newValue, remote) {
           if (remote) {
             if (newValue !== void 0) {
-              newValue = JSON.parse(newValue);
+              newValue = $.dict.json(newValue);
             }
             return cb(newValue, key);
           }
@@ -5510,7 +5554,7 @@ $ = (function() {
               return;
             }
             $.oldValue[key] = newValue;
-            return cb(JSON.parse(newValue), key.slice(g.NAMESPACE.length));
+            return cb($.dict.json(newValue), key.slice(g.NAMESPACE.length));
           } else {
             if ($.oldValue[key] == null) {
               return;
@@ -5550,7 +5594,7 @@ $ = (function() {
       for (key in items) {
         if ((val2 = $.getValue(g.NAMESPACE + key))) {
           try {
-            items[key] = JSON.parse(val2);
+            items[key] = $.dict.json(val2);
           } catch (error) {
             err = error;
             if (!/^(?:undefined)*$/.test(val2)) {
@@ -5610,7 +5654,7 @@ CrossOrigin = (function() {
     binary: function(url, cb, headers) {
       var fallback, gmOptions;
       if (headers == null) {
-        headers = {};
+        headers = $.dict();
       }
       url = url.replace(/^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/');
       fallback = function() {
@@ -5679,7 +5723,7 @@ CrossOrigin = (function() {
           name = match.replace(/\\"/g, '"');
         }
         if (/^text\/plain;\s*charset=x-user-defined$/i.test(mime)) {
-          mime = QR.typeFromExtension[name.match(/[^.]*$/)[0].toLowerCase()] || 'application/octet-stream';
+          mime = $.getOwn(QR.typeFromExtension, name.match(/[^.]*$/)[0].toLowerCase()) || 'application/octet-stream';
         }
         blob = new Blob([data], {
           type: mime
@@ -5700,9 +5744,9 @@ CrossOrigin = (function() {
       Request.prototype.responseHeaderString = null;
 
       Request.prototype.getResponseHeader = function(headerName) {
-        var header, i, j, key, len, ref, ref1, val;
+        var header, i, j, key, len, ref, ref1, ref2, val;
         if ((this.responseHeaders == null) && (this.responseHeaderString != null)) {
-          this.responseHeaders = {};
+          this.responseHeaders = $.dict();
           ref = this.responseHeaderString.split('\r\n');
           for (j = 0, len = ref.length; j < len; j++) {
             header = ref[j];
@@ -5713,7 +5757,7 @@ CrossOrigin = (function() {
             }
           }
         }
-        return (ref1 = (this.responseHeaders || {})[headerName.toLowerCase()]) != null ? ref1 : null;
+        return (ref1 = (ref2 = this.responseHeaders) != null ? ref2[headerName.toLowerCase()] : void 0) != null ? ref1 : null;
       };
 
       Request.prototype.abort = function() {};
@@ -5971,7 +6015,7 @@ CatalogThreadNative = (function() {
       this.boardID = this.nodes.thumb.parentNode.pathname.split(/\/+/)[1];
       this.board = g.boards[this.boardID] || new Board(this.boardID);
       this.ID = this.threadID = +(root.dataset.id || root.id).match(/\d*$/)[0];
-      this.thread = this.board.threads[this.ID] || new Thread(this.ID, this.board);
+      this.thread = this.board.threads.get(this.ID) || new Thread(this.ID, this.board);
     }
 
     return CatalogThreadNative;
@@ -6009,15 +6053,15 @@ Connection = (function() {
     };
 
     Connection.prototype.onMessage = function(e) {
-      var base, data, type, value;
+      var data, type, value;
       if (!(e.source === this.targetWindow() && e.origin === this.origin && typeof e.data === 'string' && e.data.slice(0, g.NAMESPACE.length) === g.NAMESPACE)) {
         return;
       }
       data = JSON.parse(e.data.slice(g.NAMESPACE.length));
       for (type in data) {
         value = data[type];
-        if (typeof (base = this.cb)[type] === "function") {
-          base[type](value);
+        if ($.hasOwn(this.cb, type)) {
+          this.cb[type](value);
         }
       }
     };
@@ -6071,7 +6115,7 @@ DataBoard = (function() {
         delete this.data.lastChecked;
       }
       return (base = this.data)[name = g.SITE.ID] || (base[name] = {
-        boards: {}
+        boards: $.dict()
       });
     };
 
@@ -6081,7 +6125,7 @@ DataBoard = (function() {
       change();
       this.changes.push(change);
       return $.get(this.key, {
-        boards: {}
+        boards: $.dict()
       }, (function(_this) {
         return function(items) {
           var i, len, needSync, ref;
@@ -6113,7 +6157,7 @@ DataBoard = (function() {
 
     DataBoard.prototype.forceSync = function(cb) {
       return $.get(this.key, {
-        boards: {}
+        boards: $.dict()
       }, (function(_this) {
         return function(items) {
           var change, i, len, ref;
@@ -6201,12 +6245,12 @@ DataBoard = (function() {
       siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID, postID = arg.postID, val = arg.val;
       siteID || (siteID = g.SITE.ID);
       (base = this.data)[siteID] || (base[siteID] = {
-        boards: {}
+        boards: $.dict()
       });
       if (postID !== void 0) {
-        return ((base1 = ((base2 = this.data[siteID].boards)[boardID] || (base2[boardID] = {})))[threadID] || (base1[threadID] = {}))[postID] = val;
+        return ((base1 = ((base2 = this.data[siteID].boards)[boardID] || (base2[boardID] = $.dict())))[threadID] || (base1[threadID] = $.dict()))[postID] = val;
       } else if (threadID !== void 0) {
-        return ((base3 = this.data[siteID].boards)[boardID] || (base3[boardID] = {}))[threadID] = val;
+        return ((base3 = this.data[siteID].boards)[boardID] || (base3[boardID] = $.dict()))[threadID] = val;
       } else {
         return this.data[siteID].boards[boardID] = val;
       }
@@ -6223,7 +6267,7 @@ DataBoard = (function() {
             boardID: boardID,
             threadID: threadID,
             postID: postID,
-            defaultValue: {}
+            defaultValue: $.dict()
           });
           for (key in val) {
             subVal = val[key];
@@ -6338,7 +6382,7 @@ DataBoard = (function() {
       if (!(board = this.data[siteID].boards[boardID])) {
         return;
       }
-      threads = {};
+      threads = $.dict();
       if (response1) {
         for (i = 0, len = response1.length; i < len; i++) {
           page = response1[i];
@@ -6396,11 +6440,11 @@ Fetcher = (function() {
       this.postID = postID1;
       this.root = root;
       this.quoter = quoter;
-      if (post = g.posts[this.boardID + "." + this.postID]) {
+      if (post = g.posts.get(this.boardID + "." + this.postID)) {
         this.insert(post);
         return;
       }
-      if ((post = (ref = Index.replyData) != null ? ref[this.boardID + "." + this.postID] : void 0) && (thread = g.threads[this.boardID + "." + this.threadID])) {
+      if ((post = (ref = Index.replyData) != null ? ref[this.boardID + "." + this.postID] : void 0) && (thread = g.threads.get(this.boardID + "." + this.threadID))) {
         board = g.boards[this.boardID];
         post = new Post(g.SITE.Build.postFromObject(post, this.boardID), thread, board, {
           isFetchedQuote: true
@@ -6459,7 +6503,7 @@ Fetcher = (function() {
 
     Fetcher.prototype.fetchedPost = function(req, isCached) {
       var api, board, k, len, post, posts, status, that, thread;
-      if (post = g.posts[this.boardID + "." + this.postID]) {
+      if (post = g.posts.get(this.boardID + "." + this.postID)) {
         this.insert(post);
         return;
       }
@@ -6503,7 +6547,7 @@ Fetcher = (function() {
         return;
       }
       board = g.boards[this.boardID] || new Board(this.boardID);
-      thread = g.threads[this.boardID + "." + this.threadID] || new Thread(this.threadID, board);
+      thread = g.threads.get(this.boardID + "." + this.threadID) || new Thread(this.threadID, board);
       post = new Post(g.SITE.Build.postFromObject(post, this.boardID), thread, board, {
         isFetchedQuote: true
       });
@@ -6532,7 +6576,7 @@ Fetcher = (function() {
             media = this.response.media;
             for (key in media) {
               if (/_link$/.test(key)) {
-                if (!((ref1 = media[key]) != null ? ref1.match(/^http:\/\//) : void 0)) {
+                if (!((ref1 = $.getOwn(media, key)) != null ? ref1.match(/^http:\/\//) : void 0)) {
                   delete media[key];
                 }
               }
@@ -6547,7 +6591,7 @@ Fetcher = (function() {
 
     Fetcher.prototype.parseArchivedPost = function(data, url, archive) {
       var board, comment, greentext, i, j, media_link, o, post, ref, tag, text, text2, thread, thumb_link;
-      if (post = g.posts[this.boardID + "." + this.postID]) {
+      if (post = g.posts.get(this.boardID + "." + this.postID)) {
         this.insert(post);
         return;
       }
@@ -6675,8 +6719,9 @@ Fetcher = (function() {
           o.file.tag = JSON.parse(data.media.exif).Tag;
         }
       }
+      o.extra = $.dict();
       board = g.boards[this.boardID] || new Board(this.boardID);
-      thread = g.threads[this.boardID + "." + this.threadID] || new Thread(this.threadID, board);
+      thread = g.threads.get(this.boardID + "." + this.threadID) || new Thread(this.threadID, board);
       post = new Post(g.SITE.Build.post(o), thread, board, {
         isFetchedQuote: true
       });
@@ -6892,9 +6937,9 @@ Post = (function() {
       this.isDead = false;
       this.isHidden = false;
       this.clones = [];
-      if (g.posts[this.fullID]) {
+      if (g.posts.get(this.fullID)) {
         this.isRebuilt = true;
-        this.clones = g.posts[this.fullID].clones;
+        this.clones = g.posts.get(this.fullID).clones;
         ref14 = this.clones;
         for (k = 0, len1 = ref14.length; k < len1; k++) {
           clone = ref14[k];
@@ -7463,7 +7508,7 @@ ShimSet = (function() {
 
   ShimSet = (function() {
     function ShimSet() {
-      this.elements = {};
+      this.elements = $.dict();
       this.size = 0;
     }
 
@@ -7534,6 +7579,14 @@ SimpleDict = (function() {
       }
     };
 
+    SimpleDict.prototype.get = function(key) {
+      if (key === 'keys') {
+        return void 0;
+      } else {
+        return $.getOwn(this, key);
+      }
+    };
+
     return SimpleDict;
 
   })();
@@ -7551,8 +7604,8 @@ Thread = (function() {
     };
 
     function Thread(ID, board) {
-      this.ID = ID;
       this.board = board;
+      this.ID = +ID;
       this.threadID = this.ID;
       this.boardID = this.board.ID;
       this.siteID = g.SITE.ID;
@@ -7694,7 +7747,7 @@ SW = {};
       for (j = 0, len = ref.length; j < len; j++) {
         script = ref[j];
         if ((m = script.textContent.match(/\bvar configRoot=(".*?")/))) {
-          properties = {};
+          properties = $.dict();
           try {
             root = JSON.parse(m[1]);
             if (root[0] === '/') {
@@ -8288,7 +8341,7 @@ SW = {};
   Build = {
     staticPath: '//s.4cdn.org/image/',
     gifIcon: window.devicePixelRatio >= 2 ? '@2x.gif' : '.gif',
-    spoilerRange: {},
+    spoilerRange: $.dict(),
     shortFilename: function(filename) {
       var ext;
       ext = filename.match(/\.?[^\.]*$/)[0];
@@ -8368,9 +8421,10 @@ SW = {};
         });
         o.files.push(o.file);
       }
+      o.extra = $.dict();
       for (key in data) {
         if (key[0] === 'x') {
-          o[key] = data[key];
+          o.extra[key] = data[key];
         }
       }
       return o;
@@ -8443,10 +8497,10 @@ SW = {};
           capcodePlural = 'Verified Users';
           capcodeDescription = '';
         } else {
-          capcodeLong = {
+          capcodeLong = $.getOwn({
             'Admin': 'Administrator',
             'Mod': 'Moderator'
-          }[capcode] || capcode;
+          }, capcode) || capcode;
           capcodePlural = capcodeLong + "s";
           capcodeDescription = "a 4chan " + capcodeLong;
         }
@@ -8455,7 +8509,7 @@ SW = {};
       postLink = url + "#p" + ID;
       quoteLink = Build.sameThread(boardID, threadID) ? "javascript:quote('" + (+ID) + "');" : url + "#q" + ID;
       postInfo = {
-        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((o.xa19s) ? " <span class=\"like-score\">" + E(o.xa19s) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcodeDescription) ? "" : " ") + ((capcodeDescription) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + ((flagCodeTroll) ? " <img src=\"" + E(staticPath) + "country/troll/" + E(flagCodeTroll.toLowerCase()) + ".gif\" alt=\"" + E(flagCodeTroll) + "\" title=\"" + E(flag) + "\" class=\"countryFlag\">" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.xa19l && o.isReply) ? " <a data-cmd=\"like-post\" href=\"#\" class=\"like-btn\">Like! ×" + E(o.xa19l) + "</a>" : "") + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"stickyIcon retina\"") + ">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"closedIcon retina\"") + ">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
+        innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((o.extra.xa19s) ? " <span class=\"like-score\">" + E(o.extra.xa19s) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcodeDescription) ? "" : " ") + ((capcodeDescription) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + ((flagCodeTroll) ? " <img src=\"" + E(staticPath) + "country/troll/" + E(flagCodeTroll.toLowerCase()) + ".gif\" alt=\"" + E(flagCodeTroll) + "\" title=\"" + E(flag) + "\" class=\"countryFlag\">" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.extra.xa19l && o.isReply) ? " <a data-cmd=\"like-post\" href=\"#\" class=\"like-btn\">Like! ×" + E(o.extra.xa19l) + "</a>" : "") + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"stickyIcon retina\"") + ">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"closedIcon retina\"") + ">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"
       };
 
       /* File Info */
@@ -8636,7 +8690,7 @@ Site = (function() {
       var hostname;
       $.extend(Conf['siteProperties'], Site.defaultProperties);
       hostname = Site.resolve();
-      if (hostname && Conf['siteProperties'][hostname].software in SW) {
+      if (hostname && $.hasOwn(SW, Conf['siteProperties'][hostname].software)) {
         this.set(hostname);
         cb();
       }
@@ -8649,7 +8703,7 @@ Site = (function() {
             }
             changes.software = software;
             hostname = location.hostname.replace(/^www\./, '');
-            properties = ((base1 = Conf['siteProperties'])[hostname] || (base1[hostname] = {}));
+            properties = ((base1 = Conf['siteProperties'])[hostname] || (base1[hostname] = $.dict()));
             changed = 0;
             for (key in changes) {
               if (!(properties[key] !== changes[key])) {
@@ -8676,7 +8730,7 @@ Site = (function() {
         url = location;
       }
       hostname = url.hostname;
-      while (hostname && !(hostname in Conf['siteProperties'])) {
+      while (hostname && !$.hasOwn(Conf['siteProperties'], hostname)) {
         hostname = hostname.replace(/^[^.]*\.?/, '');
       }
       if (hostname) {
@@ -8700,7 +8754,7 @@ Site = (function() {
           continue;
         }
         software = properties.software;
-        if (!(software && SW[software])) {
+        if (!(software && $.hasOwn(SW, software))) {
           continue;
         }
         g.sites[ID] = site = Object.create(SW[software]);
@@ -8750,11 +8804,11 @@ Redirect = (function() {
     selectArchives: function() {
       var archive, archives, boardID, boards, data, files, id, j, k, key, l, len, len1, len2, name, o, record, ref, ref1, ref2, software, type, uid;
       o = {
-        thread: {},
-        post: {},
-        file: {}
+        thread: $.dict(),
+        post: $.dict(),
+        file: $.dict()
       };
-      archives = {};
+      archives = $.dict();
       ref = Conf['archives'];
       for (j = 0, len = ref.length; j < len; j++) {
         data = ref[j];
@@ -8788,7 +8842,7 @@ Redirect = (function() {
         record = ref2[boardID];
         for (type in record) {
           id = record[type];
-          if (!((archive = archives[JSON.stringify(id)]))) {
+          if (!((archive = archives[JSON.stringify(id)]) && $.hasOwn(o, type))) {
             continue;
           }
           boards = type === 'file' ? archive.files : archive.boards;
@@ -8863,7 +8917,7 @@ Redirect = (function() {
     parse: function(responses, cb) {
       var archiveUIDs, archives, data, items, j, k, len, len1, ref, response, uid;
       archives = [];
-      archiveUIDs = {};
+      archiveUIDs = $.dict();
       for (j = 0, len = responses.length; j < len; j++) {
         response = responses[j];
         for (k = 0, len1 = response.length; k < len1; k++) {
@@ -8872,7 +8926,7 @@ Redirect = (function() {
           if (uid in archiveUIDs) {
             $.extend(archiveUIDs[uid], data);
           } else {
-            archiveUIDs[uid] = data;
+            archiveUIDs[uid] = $.dict.clone(data);
             archives.push(data);
           }
         }
@@ -8897,7 +8951,7 @@ Redirect = (function() {
     protocol: function(archive) {
       var protocol;
       protocol = location.protocol;
-      if (!archive[protocol.slice(0, -1)]) {
+      if (!$.getOwn(archive, protocol.slice(0, -1))) {
         protocol = protocol === 'https:' ? 'http:' : 'https:';
       }
       return protocol + "//";
@@ -8949,10 +9003,10 @@ Redirect = (function() {
       boardID = arg.boardID, type = arg.type, value = arg.value;
       type = type === 'name' ? 'username' : type === 'MD5' ? 'image' : type;
       if (type === 'capcode') {
-        value = {
+        value = $.getOwn({
           'Developer': 'dev',
           'Verified': 'ver'
-        }[value] || value.toLowerCase();
+        }, value) || value.toLowerCase();
       } else if (type === 'image') {
         value = value.replace(/[+\/=]/g, function(c) {
           return {
@@ -9022,8 +9076,8 @@ Filter = (function() {
     slice = [].slice;
 
   Filter = {
-    filters: {},
-    results: {},
+    filters: $.dict(),
+    results: $.dict(),
     init: function() {
       var base, base1, boards, err, excludes, file, filter, hide, hl, i, isstring, j, key, len, len1, line, mask, noti, op, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, regexp, stub, top, type, types;
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread' || ref === 'catalog') && Conf['Filter'])) {
@@ -9060,15 +9114,15 @@ Filter = (function() {
             }
           }
           op = ((ref4 = filter.match(/(?:^|;)\s*op:(no|only)/)) != null ? ref4[1] : void 0) || '';
-          mask = {
+          mask = $.getOwn({
             'no': 1,
             'only': 2
-          }[op] || 0;
+          }, op) || 0;
           file = ((ref5 = filter.match(/(?:^|;)\s*file:(no|only)/)) != null ? ref5[1] : void 0) || '';
-          mask = mask | ({
+          mask = mask | ($.getOwn({
             'no': 4,
             'only': 8
-          }[file] || 0);
+          }, file) || 0);
           stub = (function() {
             var ref6;
             switch ((ref6 = filter.match(/(?:^|;)\s*stub:(yes|no)/)) != null ? ref6[1] : void 0) {
@@ -9136,7 +9190,7 @@ Filter = (function() {
       if ((boards = Filter.parseBoardsMemo[boardsRaw])) {
         return boards;
       }
-      boards = {};
+      boards = $.dict();
       siteFilter = '';
       ref = boardsRaw.split(',');
       for (i = 0, len = ref.length; i < len; i++) {
@@ -9163,7 +9217,7 @@ Filter = (function() {
       Filter.parseBoardsMemo[boardsRaw] = boards;
       return boards;
     },
-    parseBoardsMemo: {},
+    parseBoardsMemo: $.dict(),
     test: function(post, hideable) {
       var board, filter, hide, hl, i, j, key, len, len1, mask, noti, ref, ref1, ref2, site, stub, top, value;
       if (hideable == null) {
@@ -9251,7 +9305,7 @@ Filter = (function() {
       if (!(url = typeof (base = g.SITE.urls).catalogJSON === "function" ? base.catalogJSON(g.BOARD) : void 0)) {
         return;
       }
-      Filter.catalogData = {};
+      Filter.catalogData = $.dict();
       $.ajax(url, {
         onloadend: Filter.catalogParse
       });
@@ -9365,7 +9419,7 @@ Filter = (function() {
       }
     },
     values: function(key, post) {
-      if (key in Filter.valueF) {
+      if ($.hasOwn(Filter.valueF, key)) {
         return Filter.valueF[key](post).filter(function(v) {
           return v != null;
         });
@@ -9373,7 +9427,7 @@ Filter = (function() {
         return [
           key.split('+').map(function(k) {
             var f;
-            if ((f = Filter.valueF[k])) {
+            if ((f = $.getOwn(Filter.valueF, k))) {
               return f(post).map(function(v) {
                 return v || '';
               }).join('\n');
@@ -9385,6 +9439,9 @@ Filter = (function() {
       }
     },
     addFilter: function(type, re, cb) {
+      if (!$.hasOwn(Config.filter, type)) {
+        return;
+      }
       return $.get(type, Conf[type], function(item) {
         var save;
         save = item[type];
@@ -9871,7 +9928,7 @@ Recursive = (function() {
     indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Recursive = {
-    recursives: {},
+    recursives: $.dict(),
     init: function() {
       var ref;
       if ((ref = g.VIEW) !== 'index' && ref !== 'thread') {
@@ -9970,7 +10027,7 @@ ThreadHiding = (function() {
       }
       hiddenThreads = ThreadHiding.db.get({
         boardID: board.ID,
-        defaultValue: {}
+        defaultValue: $.dict()
       });
       for (threadID in hiddenThreads) {
         hiddenThreads[threadID] = true;
@@ -9994,7 +10051,7 @@ ThreadHiding = (function() {
       var hiddenThreads2, threadID;
       hiddenThreads2 = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
       for (threadID in hiddenThreads2) {
-        if (!(threadID in ThreadHiding.hiddenThreads)) {
+        if (!$.hasOwn(ThreadHiding.hiddenThreads, threadID)) {
           ThreadHiding.db.set({
             boardID: g.BOARD.ID,
             threadID: threadID,
@@ -10005,7 +10062,7 @@ ThreadHiding = (function() {
         }
       }
       for (threadID in ThreadHiding.hiddenThreads) {
-        if (!(threadID in hiddenThreads2)) {
+        if (!$.hasOwn(hiddenThreads2, threadID)) {
           ThreadHiding.db["delete"]({
             boardID: g.BOARD.ID,
             threadID: threadID
@@ -10194,7 +10251,7 @@ ThreadHiding = (function() {
     },
     toggle: function(thread) {
       if (!(thread instanceof Thread)) {
-        thread = g.threads[this.dataset.fullID];
+        thread = g.threads.get(this.dataset.fullID);
       }
       if (thread.isHidden) {
         ThreadHiding.show(thread);
@@ -10266,7 +10323,7 @@ BoardConfig = (function() {
     load: function() {
       var board, boards, err, i, len, ref, ref1, troll_flags;
       if (this.status === 200 && this.response && this.response.boards) {
-        boards = {};
+        boards = $.dict();
         ref = this.response.boards;
         for (i = 0, len = ref.length; i < len; i++) {
           board = ref[i];
@@ -10384,7 +10441,7 @@ Get = (function() {
         return null;
       }
       board = root.dataset.board;
-      return g.threads[(board ? encodeURIComponent(board) : g.BOARD.ID) + "." + (root.id.match(/\d*$/)[0])];
+      return g.threads.get((board ? encodeURIComponent(board) : g.BOARD.ID) + "." + (root.id.match(/\d*$/)[0]));
     },
     threadFromNode: function(node) {
       return Get.threadFromRoot($.x("ancestor-or-self::" + g.SITE.xpath.thread, node));
@@ -10394,10 +10451,10 @@ Get = (function() {
       if (root == null) {
         return null;
       }
-      post = g.posts[root.dataset.fullID];
+      post = g.posts.get(root.dataset.fullID);
       index = root.dataset.clone;
       if (index) {
-        return post.clones[index];
+        return post.clones[+index];
       } else {
         return post;
       }
@@ -10444,7 +10501,7 @@ Get = (function() {
         ref = post.quotes;
         for (i = 0, len = ref.length; i < len; i++) {
           quote = ref[i];
-          if (qPost = posts[quote]) {
+          if (qPost = posts.get(quote)) {
             handleQuotes(qPost, 'backlinks');
           }
         }
@@ -11179,7 +11236,7 @@ Index = (function() {
       });
       Header.addShortcut('index-refresh', this.button, 590);
       entries = [];
-      this.inputs = inputs = {};
+      this.inputs = inputs = $.dict();
       ref4 = Config.Index;
       for (name in ref4) {
         arr = ref4[name];
@@ -11200,7 +11257,7 @@ Index = (function() {
       $.on(inputs['Pin Watched Threads'], 'change', this.cb.resort);
       $.on(inputs['Anchor Hidden Threads'], 'change', this.cb.resort);
       watchSettings = function(e) {
-        if ((input = inputs[e.target.name])) {
+        if ((input = $.getOwn(inputs, e.target.name))) {
           input.checked = e.target.checked;
           return $.event('change', null, input);
         }
@@ -11486,10 +11543,10 @@ Index = (function() {
       },
       perBoardSort: function() {
         var i, k;
-        Conf['Index Sort'] = this.checked ? {} : '';
+        Conf['Index Sort'] = this.checked ? $.dict() : '';
         Index.saveSort();
         for (i = k = 0; k < 2; i = ++k) {
-          Conf["Last Long Reply Thresholds " + i] = this.checked ? {} : '';
+          Conf["Last Long Reply Thresholds " + i] = this.checked ? $.dict() : '';
           Index.saveLastLongThresholds(i);
         }
       },
@@ -11653,12 +11710,12 @@ Index = (function() {
       leftover = [];
       for (k = 0, len1 = commands.length; k < len1; k++) {
         command = commands[k];
-        if ((mode = Index.hashCommands.mode[command])) {
+        if ((mode = $.getOwn(Index.hashCommands.mode, command))) {
           state.mode = mode;
         } else if (command === 'index') {
           state.mode = Conf['Previous Index Mode'];
           state.page = 1;
-        } else if ((sort = Index.hashCommands.sort[command.replace(/-rev$/, '')])) {
+        } else if ((sort = $.getOwn(Index.hashCommands.sort, command.replace(/-rev$/, '')))) {
           state.sort = sort;
           if (/-rev$/.test(command)) {
             state.sort += '-rev';
@@ -11972,10 +12029,10 @@ Index = (function() {
       Index.liveThreadIDs = Index.liveThreadData.map(function(data) {
         return data.no;
       });
-      Index.liveThreadDict = {};
-      Index.threadPosition = {};
-      Index.parsedThreads = {};
-      Index.replyData = {};
+      Index.liveThreadDict = $.dict();
+      Index.threadPosition = $.dict();
+      Index.parsedThreads = $.dict();
+      Index.replyData = $.dict();
       ref1 = Index.liveThreadData;
       for (i = k = 0, len1 = ref1.length; k < len1; i = ++k) {
         data = ref1[i];
@@ -12017,7 +12074,7 @@ Index = (function() {
     },
     isHidden: function(threadID) {
       var thread;
-      if ((thread = g.BOARD.threads[threadID]) && thread.OP && !thread.OP.isFetchedQuote) {
+      if ((thread = g.BOARD.threads.get(threadID)) && thread.OP && !thread.OP.isFetchedQuote) {
         return thread.isHidden;
       } else {
         return Index.parsedThreads[threadID].isHidden;
@@ -12035,7 +12092,7 @@ Index = (function() {
         ID = threadIDs[k];
         try {
           threadData = Index.liveThreadDict[ID];
-          if ((thread = g.BOARD.threads[ID])) {
+          if ((thread = g.BOARD.threads.get(ID))) {
             isStale = (thread.json !== threadData) && (JSON.stringify(thread.json) !== JSON.stringify(threadData));
             if (isStale) {
               thread.setCount('post', threadData.replies + 1, threadData.bumplimit);
@@ -12114,7 +12171,7 @@ Index = (function() {
         nodes = [];
         for (l = 0, len2 = lastReplies.length; l < len2; l++) {
           data = lastReplies[l];
-          if ((post = thread.posts[data.no]) && !post.isFetchedQuote) {
+          if ((post = thread.posts.get(data.no)) && !post.isFetchedQuote) {
             nodes.push(post.nodes.root);
             continue;
           }
@@ -12226,7 +12283,7 @@ Index = (function() {
                 return thread;
               }
             };
-            lastlongD = {};
+            lastlongD = $.dict();
             for (k = 0, len1 = liveThreadData.length; k < len1; k++) {
               thread = liveThreadData[k];
               lastlongD[thread.no] = lastlong(thread).no;
@@ -12666,8 +12723,8 @@ Settings = (function() {
         warning(addWarning);
       }
       $.add(section, warnings);
-      items = {};
-      inputs = {};
+      items = $.dict();
+      inputs = $.dict();
       addCheckboxes = function(root, obj) {
         var arr, container, containers, description, div, input, level, results;
         containers = [root];
@@ -12737,8 +12794,8 @@ Settings = (function() {
       });
       button = $('button', div);
       $.get({
-        hiddenThreads: {},
-        hiddenPosts: {}
+        hiddenThreads: $.dict(),
+        hiddenPosts: $.dict()
       }, function(arg) {
         var ID, board, hiddenNum, hiddenPosts, hiddenThreads, ref2, ref3, ref4, ref5, site, thread;
         hiddenThreads = arg.hiddenThreads, hiddenPosts = arg.hiddenPosts;
@@ -12783,10 +12840,13 @@ Settings = (function() {
       });
       $.on(button, 'click', function() {
         this.textContent = 'Hidden: 0';
-        return $.get('hiddenThreads', {}, function(arg) {
-          var boardID, hiddenThreads;
+        return $.get('hiddenThreads', $.dict(), function(arg) {
+          var boardID, hiddenThreads, ref2;
           hiddenThreads = arg.hiddenThreads;
           if ($.hasStorage && g.SITE.software === 'yotsuba') {
+            for (boardID in (ref2 = hiddenThreads['4chan.org']) != null ? ref2.boards : void 0) {
+              localStorage.removeItem("4chan-hide-t-" + boardID);
+            }
             for (boardID in hiddenThreads.boards) {
               localStorage.removeItem("4chan-hide-t-" + boardID);
             }
@@ -12798,7 +12858,7 @@ Settings = (function() {
     },
     "export": function() {
       var Conf2;
-      Conf2 = {};
+      Conf2 = $.dict();
       $.extend(Conf2, Conf);
       return $.get(Conf2, function(Conf2) {
         delete Conf2['boardConfig'];
@@ -12842,7 +12902,7 @@ Settings = (function() {
       reader.onload = function(e) {
         var err;
         try {
-          return Settings.loadSettings(JSON.parse(e.target.result), function(err) {
+          return Settings.loadSettings($.dict.json(e.target.result), function(err) {
             if (err) {
               return output.textContent = 'Import failed due to an error.';
             } else if (confirm('Import successful. Reload now?')) {
@@ -12954,14 +13014,14 @@ Settings = (function() {
         }
         if (data.WatchedThreads) {
           data.Conf['watchedThreads'] = {
-            boards: {}
+            boards: $.dict()
           };
           ref1 = data.WatchedThreads;
           for (boardID in ref1) {
             threads = ref1[boardID];
             for (threadID in threads) {
               threadData = threads[threadID];
-              ((base = data.Conf['watchedThreads'].boards)[boardID] || (base[boardID] = {}))[threadID] = {
+              ((base = data.Conf['watchedThreads'].boards)[boardID] || (base[boardID] = $.dict()))[threadID] = {
                 excerpt: threadData.textContent
               };
             }
@@ -12972,7 +13032,7 @@ Settings = (function() {
     },
     upgrade: function(data, version) {
       var addCSS, addSauces, boardID, boards, changes, compareString, corrupted, db, hostname, j, k, key, l, lastChecked, len, len1, len2, len3, line, list, m, name, record, ref, ref1, ref10, ref11, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, rice, set, setD, siteProperties, software, type, uids, val, val2, value;
-      changes = {};
+      changes = $.dict();
       set = function(key, value) {
         return data[key] = changes[key] = value;
       };
@@ -13056,7 +13116,7 @@ Settings = (function() {
             record = ref2[boardID];
             for (type in record) {
               name = record[type];
-              if (name in uids) {
+              if ($.hasOwn(uids, name)) {
                 record[type] = uids[name];
               }
             }
@@ -13235,7 +13295,7 @@ Settings = (function() {
           }
         }
         if ((data['siteSoftware'] != null) && (data['siteProperties'] == null)) {
-          siteProperties = {};
+          siteProperties = $.dict();
           ref10 = data['siteSoftware'].split('\n');
           for (m = 0, len3 = ref10.length; m < len3; m++) {
             line = ref10[m];
@@ -13312,6 +13372,9 @@ Settings = (function() {
       var div, filterTypes, name, ta;
       div = this.nextElementSibling;
       if ((name = this.value) !== 'guide') {
+        if (!$.hasOwn(Config.filter, name)) {
+          return;
+        }
         $.rmAll(div);
         ta = $.el('textarea', {
           name: name,
@@ -13360,7 +13423,7 @@ Settings = (function() {
         warning = ref[j];
         warning.hidden = Conf[warning.dataset.feature];
       }
-      inputs = {};
+      inputs = $.dict();
       ref1 = $$('[name]', section);
       for (k = 0, len1 = ref1.length; k < len1; k++) {
         input = ref1[k];
@@ -13371,7 +13434,7 @@ Settings = (function() {
         Conf['lastarchivecheck'] = 0;
         return $.id('lastarchivecheck').textContent = 'never';
       });
-      items = {};
+      items = $.dict();
       for (name in inputs) {
         input = inputs[name];
         if (!(name !== 'captchaServiceKey' && name !== 'Interval' && name !== 'Custom CSS')) {
@@ -13423,7 +13486,7 @@ Settings = (function() {
       $.on(applyCSS, 'click', function() {
         return CustomCSS.update();
       });
-      itemsArchive = {};
+      itemsArchive = $.dict();
       ref4 = ['archives', 'selectedArchives', 'lastarchivecheck'];
       for (m = 0, len3 = ref4.length; m < len3; m++) {
         name = ref4[m];
@@ -13455,7 +13518,7 @@ Settings = (function() {
       tbody = $('tbody', section);
       $.rmAll(boardSelect);
       $.rmAll(tbody);
-      archBoards = {};
+      archBoards = $.dict();
       ref = Conf['archives'];
       for (j = 0, len = ref.length; j < len; j++) {
         ref1 = ref[j], uid = ref1.uid, name = ref1.name, boards = ref1.boards, files = ref1.files, software = ref1.software;
@@ -13561,7 +13624,7 @@ Settings = (function() {
         return function(arg) {
           var name1, selectedArchives;
           selectedArchives = arg.selectedArchives;
-          (selectedArchives[name1 = _this.dataset.boardid] || (selectedArchives[name1] = {}))[_this.dataset.type] = JSON.parse(_this.value);
+          (selectedArchives[name1 = _this.dataset.boardid] || (selectedArchives[name1] = $.dict()))[_this.dataset.type] = JSON.parse(_this.value);
           $.set('selectedArchives', selectedArchives);
           Conf['selectedArchives'] = selectedArchives;
           return Redirect.selectArchives();
@@ -13588,7 +13651,7 @@ Settings = (function() {
         var captchaServiceKey;
         captchaServiceKey = arg.captchaServiceKey;
         captchaServiceKey[domain] = value;
-        if (!(value || (domain in Config['captchaServiceKey'][0]))) {
+        if (!(value || $.hasOwn(Config['captchaServiceKey'][0], domain))) {
           delete captchaServiceKey[domain];
         }
         Conf['captchaServiceKey'] = captchaServiceKey;
@@ -13673,8 +13736,8 @@ Settings = (function() {
       });
       $('.warning', section).hidden = Conf['Keybinds'];
       tbody = $('tbody', section);
-      items = {};
-      inputs = {};
+      items = $.dict();
+      inputs = $.dict();
       ref = Config.hotkeys;
       for (key in ref) {
         arr = ref[key];
@@ -14247,7 +14310,7 @@ FappeTyme = (function() {
         });
         $.on(indicator, 'click', function() {
           var check;
-          check = FappeTyme.nodes[this.parentNode.id.replace('shortcut-', '')];
+          check = $.getOwn(FappeTyme.nodes, this.parentNode.id.replace('shortcut-', ''));
           check.checked = !check.checked;
           return $.event('change', null, check);
         });
@@ -14356,7 +14419,7 @@ Gallery = (function() {
       }
       Gallery.images = [];
       nodes = Gallery.nodes = {};
-      Gallery.fileIDs = {};
+      Gallery.fileIDs = $.dict();
       Gallery.slideshow = false;
       nodes.el = dialog = $.el('div', {
         id: 'a-gallery'
@@ -14471,11 +14534,11 @@ Gallery = (function() {
     load: function(thumb, errorCB) {
       var elType, ext, file;
       ext = thumb.href.match(/\w*$/);
-      elType = {
+      elType = $.getOwn({
         'webm': 'video',
         'mp4': 'video',
         'pdf': 'iframe'
-      }[ext] || 'img';
+      }, ext) || 'img';
       file = $.el(elType);
       $.extend(file.dataset, thumb.dataset);
       $.on(file, 'error', errorCB);
@@ -14525,7 +14588,7 @@ Gallery = (function() {
       } else {
         Gallery.cb.stop();
       }
-      if (Conf['Scroll to Post'] && (post = g.posts[file.dataset.post])) {
+      if (Conf['Scroll to Post'] && (post = g.posts.get(file.dataset.post))) {
         Header.scrollTo(post.nodes.root);
       }
       if (isNaN(oldID) || newID === (oldID + 1) % Gallery.images.length) {
@@ -14540,14 +14603,14 @@ Gallery = (function() {
       if (ImageCommon.isFromArchive(this)) {
         return;
       }
-      post = g.posts[this.dataset.post];
-      file = post.files[this.dataset.file];
+      post = g.posts.get(this.dataset.post);
+      file = post.files[+this.dataset.file];
       return ImageCommon.error(this, post, file, null, (function(_this) {
         return function(url) {
           if (!url) {
             return;
           }
-          Gallery.images[_this.dataset.id].href = url;
+          Gallery.images[+_this.dataset.id].href = url;
           if (Gallery.nodes.current === _this) {
             return _this.src = url;
           }
@@ -14742,7 +14805,7 @@ Gallery = (function() {
         var containerHeight, containerWidth, current, dim, frame, height, margin, minHeight, ref, ref1, ref2, ref3, style, width;
         ref = Gallery.nodes, current = ref.current, frame = ref.frame;
         style = current.style;
-        if (Conf['Stretch to Fit'] && (dim = (ref1 = g.posts[current.dataset.post]) != null ? ref1.file.dimensions : void 0)) {
+        if (Conf['Stretch to Fit'] && (dim = (ref1 = g.posts.get(current.dataset.post)) != null ? ref1.file.dimensions : void 0)) {
           ref2 = dim.split('x'), width = ref2[0], height = ref2[1];
           containerWidth = frame.clientWidth;
           containerHeight = doc.clientHeight - 25;
@@ -15812,7 +15875,7 @@ Metadata = (function() {
       $.rmClass(this.parentNode, 'error');
       $.addClass(this.parentNode, 'loading');
       index = this.parentNode.dataset.index;
-      return CrossOrigin.binary(Get.postFromNode(this).files[index].url, (function(_this) {
+      return CrossOrigin.binary(Get.postFromNode(this).files[+index].url, (function(_this) {
         return function(data) {
           var output, title;
           $.rmClass(_this.parentNode, 'loading');
@@ -15953,7 +16016,7 @@ Sauce = (function() {
       if (!(link = link.trim())) {
         return null;
       }
-      parts = {};
+      parts = $.dict();
       ref = link.split(/;(?=(?:text|boards|types|regexp|sandbox):?)/);
       for (i = j = 0, len = ref.length; j < len; i = ++j) {
         part = ref[i];
@@ -15986,7 +16049,7 @@ Sauce = (function() {
     createSauceLink: function(link, post, file) {
       var a, base, ext, j, key, len, matches, missing, parts, ref;
       ext = file.url.match(/[^.]*$/)[0];
-      parts = {};
+      parts = $.dict();
       $.extend(parts, link);
       if (!(!parts['boards'] || parts['boards'][post.siteID + "/" + post.boardID] || parts['boards'][post.siteID + "/*"])) {
         return null;
@@ -16291,7 +16354,7 @@ Embedding = (function() {
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread' || ref === 'archive') && Conf['Linkify'] && (Conf['Embedding'] || Conf['Link Title'] || Conf['Cover Preview']))) {
         return;
       }
-      this.types = {};
+      this.types = $.dict();
       ref1 = this.ordered_types;
       for (j = 0, len = ref1.length; j < len; j++) {
         type = ref1[j];
@@ -17382,7 +17445,7 @@ DeleteLink = (function() {
   var DeleteLink;
 
   DeleteLink = {
-    auto: [{}, {}],
+    auto: [$.dict(), $.dict()],
     init: function() {
       var div, fileEl, fileEntry, postEl, postEntry, ref;
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Menu'] && Conf['Delete Link'])) {
@@ -17483,7 +17546,7 @@ DeleteLink = (function() {
         onlyimgdel: fileOnly,
         pwd: QR.persona.getPassword()
       };
-      form[post.ID] = 'delete';
+      form[+post.ID] = 'delete';
       return $.ajax($.id('delform').action.replace("/" + g.BOARD + "/", "/" + post.board + "/"), {
         responseType: 'document',
         withCredentials: true,
@@ -17531,7 +17594,7 @@ DeleteLink = (function() {
       }
     },
     cooldown: {
-      seconds: {},
+      seconds: $.dict(),
       start: function(post, seconds) {
         if (DeleteLink.cooldown.seconds[post.fullID] != null) {
           return;
@@ -17887,7 +17950,7 @@ Banner = (function() {
         }
       }
     },
-    original: {},
+    original: $.dict(),
     custom: function(child) {
       var className, data, event, j, len, ref;
       className = child.className;
@@ -18040,7 +18103,7 @@ CatalogLinks = (function() {
     },
     externalParse: function() {
       var board, boards, excludes, i, len, line, ref, ref1, ref2, url;
-      CatalogLinks.externalList = {};
+      CatalogLinks.externalList = $.dict();
       ref = Conf['externalCatalogURLs'].split('\n');
       for (i = 0, len = ref.length; i < len; i++) {
         line = ref[i];
@@ -18049,7 +18112,7 @@ CatalogLinks = (function() {
         }
         url = line.split(';')[0];
         boards = Filter.parseBoards(((ref1 = line.match(/;boards:([^;]+)/)) != null ? ref1[1] : void 0) || '*');
-        excludes = Filter.parseBoards((ref2 = line.match(/;exclude:([^;]+)/)) != null ? ref2[1] : void 0) || {};
+        excludes = Filter.parseBoards((ref2 = line.match(/;exclude:([^;]+)/)) != null ? ref2[1] : void 0) || $.dict();
         for (board in boards) {
           if (!(excludes[board] || excludes[board.split('/')[0] + '/*'])) {
             CatalogLinks.externalList[board] = url;
@@ -18250,7 +18313,7 @@ ExpandThread = (function() {
     slice = [].slice;
 
   ExpandThread = {
-    statuses: {},
+    statuses: $.dict(),
     init: function() {
       if (!(g.VIEW === 'index' && Conf['Thread Expansion'])) {
         return;
@@ -18398,7 +18461,7 @@ ExpandThread = (function() {
         if (postData.no === thread.ID) {
           continue;
         }
-        if ((post = thread.posts[postData.no]) && !post.isFetchedQuote) {
+        if ((post = thread.posts.get(postData.no)) && !post.isFetchedQuote) {
           if ('file' in post) {
             filesCount++;
           }
@@ -18479,7 +18542,7 @@ FileInfo = (function() {
       var a, i, j, len, len1, output, ref, ref1;
       output = [];
       formatString.replace(/%(.)|[^%]+/g, function(s, c) {
-        output.push(c in FileInfo.formatters ? FileInfo.formatters[c].call(post) : {
+        output.push($.hasOwn(FileInfo.formatters, c) ? FileInfo.formatters[c].call(post) : {
           innerHTML: E(s)
         });
         return '';
@@ -18644,10 +18707,10 @@ Fourchan = (function() {
       if (g.BOARD.config.code_tags) {
         $.on(window, 'prettyprint:cb', function(e) {
           var post, pre;
-          if (!(post = g.posts[e.detail.ID])) {
+          if (!(post = g.posts.get(e.detail.ID))) {
             return;
           }
-          if (!(pre = $$('.prettyprint', post.nodes.comment)[e.detail.i])) {
+          if (!(pre = $$('.prettyprint', post.nodes.comment)[+e.detail.i])) {
             return;
           }
           if (!$.hasClass(pre, 'prettyprinted')) {
@@ -18764,9 +18827,8 @@ IDColor = (function() {
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Color User IDs'])) {
         return;
       }
-      this.ids = {
-        Heaven: [0, 0, 0, '#fff']
-      };
+      this.ids = $.dict();
+      this.ids['Heaven'] = [0, 0, 0, '#fff'];
       return Callbacks.Post.push({
         name: 'Color User IDs',
         cb: this.node
@@ -19452,7 +19514,7 @@ ModContact = (function() {
     },
     node: function() {
       var links, moveNote, moved;
-      if (this.isClone || !ModContact.specific[this.info.capcode]) {
+      if (this.isClone || !$.hasOwn(ModContact.specific, this.info.capcode)) {
         return;
       }
       links = $.el('span', {
@@ -19460,7 +19522,7 @@ ModContact = (function() {
       });
       $.extend(links, ModContact.template(this.info.capcode));
       $.after(this.nodes.capcode, links);
-      if ((moved = this.info.comment.match(/This thread was moved to >>>\/(\w+)\//)) && ModContact.moveNote[moved[1]]) {
+      if ((moved = this.info.comment.match(/This thread was moved to >>>\/(\w+)\//)) && $.hasOwn(ModContact.moveNote, moved[1])) {
         moveNote = $.el('div', {
           className: 'move-note'
         });
@@ -19561,7 +19623,7 @@ Nav = (function() {
     getThread: function() {
       var i, len, ref, thread, threadRoot;
       if (g.VIEW === 'thread') {
-        return g.threads[g.BOARD + "." + g.THREADID].nodes.root;
+        return g.threads.get(g.BOARD + "." + g.THREADID).nodes.root;
       }
       if ($.hasClass(doc, 'catalog-mode')) {
         return;
@@ -19953,7 +20015,7 @@ RelativeDates = (function() {
       if (indexOf.call(RelativeDates.stale, data) >= 0) {
         return;
       }
-      if (data instanceof Post && !g.posts[data.fullID]) {
+      if (data instanceof Post && !g.posts.get(data.fullID)) {
         return;
       }
       if (data instanceof Element && !doc.contains(data)) {
@@ -20218,7 +20280,7 @@ Time = (function() {
     },
     format: function(formatString, date) {
       return formatString.replace(/%(.)/g, function(s, c) {
-        if (c in Time.formatters) {
+        if ($.hasOwn(Time.formatters, c)) {
           return Time.formatters[c].call(date);
         } else {
           return s;
@@ -20412,7 +20474,8 @@ Favicon = (function() {
         '4chanJS': ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAD/AABnZ2f///8nFk05AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAAAAAD/AABmZmYA/wBD99DBAAAAAXRSTlMAQObYZgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAE9JREFUCNdljcsRACEIQ5MOiNKAdGAJ9N/Uiu7nsMzABHgB4B8ygFoZA2hhVWavhhGeURPJU9q45+17hGbfGxa82Ndex3hEM44SJGD2/b4AzDgGlHbl388AAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAAul8NnZ2f////82iC9AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAAAAAAul8NnZ2f/AAD7B+mqAAAAAXRSTlMAQObYZgAAAAlwSFlzAAALEgAACxIB0t1+/AAAAE9JREFUCNdljcsRACEIQ5MOiNKAdGAJ9N/Uiu7nsMzABHgB4B8ygFoZA2hhVWavhhGeURPJU9q45+17hGbfGxa82Ndex3hEM44SJGD2/b4AzDgGlHbl388AAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAElBMVEUBAAAAAABmzDNlyjJnZ2f///+6o7dfAAAAAXRSTlMAQObYZgAAAERJREFUeF6NjkEKADEIA51o///lJZfQxUsHITogWi8AvwZJuxmYa25xDooBLEwOWFTYAsYVhdorLZt9Ng9xCUTCUCQ2H3F4ANrZ2WNiAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAAAAABmzDNmZmb/AAC8/wCMAAAAAXRSTlMAQObYZgAAAAlwSFlzAAAOxAAADsQBlSsOGwAAAE9JREFUCNdljcsRACEIQ5MOiNKAdGAJ9N/Uiu7nsMzABHgB4B8ygFoZA2hhVWavhhGeURPJU9q45+17hGbfGxa82Ndex3hEM44SJGD2/b4AzDgGlHbl388AAAAASUVORK5CYII='],
         Original: ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX/////AAD///8AAABBZmS3AAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAhElEQVR42q1RwQnAMAjMu5M4guAKXa4j5dUROo5tipSDcrFChUONd0di2m/hEGVOHDyIPufgwAFASDkpoSzmBrkJ2UMyR9LsJ3rvrqo3Rt1YMIMhhNnOxLMnoMFBxHyJAr2IOBFzA8U+6pLBdmEJTA0aMVjpDd6Loks0s5HZNwYx8tfZCZ0kll7ORffZAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX///8ul8P///8AAACaqgkzAAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAALVBMVEUAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OzvBwcH///8uS/CdAAAAA3RSTlMAx9dmesIgAAAAV0lEQVR42m2NWw6AIBAD1eILZO5/XI0UAgm7H9tOsu0yGWAQSOoFijHOxOANGqm/LczpOaXs4gISrPZ+gc2+hO5w2xdwgOjBFUIF+sEJrhUl9JFr+badFwR+BfqlmGUJAAAAAElFTkSuQmCC', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAgMAAABinRfyAAAADFBMVEX///9mzDP///8AAACT0n1lAAAAAXRSTlMAQObYZgAAAExJREFUeF4tyrENgDAMAMFXKuQswQLBG3mOlBnFS1gwDfIYLpEivvjq2MlqjmYvYg5jWEzCwtDSQlwcXKCVLrpFbvLvvSf9uZJ2HusDtJAY7Tkn1oYAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAALVBMVEUAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztmzDPBwcH///+rsf3XAAAAA3RSTlMAx9dmesIgAAAAV0lEQVR42m2NWw6AIBAD1eIDhbn/cTVSCCTsfmw7ybbLZIBBIKkXKKU0E4M3aKT+tjCn5xiziwuIsNr7BTb7ErrDZV/AAaIHdwgV6AcnuFaU0Eeu5dt2XiUyBjCQ2bIrAAAAAElFTkSuQmCC'],
         'Metro': ['iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAC/AABrZQDiAAAAAXRSTlMAQObYZgAAABJJREFUCB1jZGBgrMNAQEEc4gCSfAX5bRw/NQAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAJFBMVEUAAAAAAAAAAAC/AAD///8dAAApAABsAAAHAAA4AACQAAAsAABMCpCvAAAAA3RSTlMAPse+s4iwAAAAMklEQVQI12NggAFmY2MDECaNAQZCilAzVJyg5oS4GqAxUtygjIp2KGOKJ5SxepcB3BUAcdYRqxAtgFoAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAAA1/GhpCidAAAAAXRSTlMAQObYZgAAABJJREFUCB1jZGBgrMNAQEEc4gCSfAX5bRw/NQAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAJFBMVEUAAAAAAAAAAAAA1/H///8AISUALzQAeokACAkAQEcAorYAMTcE9WFNAAAAA3RSTlMAPse+s4iwAAAAMklEQVQI12NggAFmY2MDECaNAQZCilAzVJyg5oS4GqAxUtygjIp2KGOKJ5SxepcB3BUAcdYRqxAtgFoAAAAASUVORK5CYII=', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAABV/wErM5hwAAAAAXRSTlMAQObYZgAAABJJREFUCB1jZGBgrMNAQEEc4gCSfAX5bRw/NQAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAJFBMVEUAAAAAAAAAAABV/wH///8NKAASOAAwkQADCgAZTABAwQATOwC5e3VGAAAAA3RSTlMAPse+s4iwAAAAMklEQVQI12NggAFmY2MDECaNAQZCilAzVJyg5oS4GqAxUtygjIp2KGOKJ5SxepcB3BUAcdYRqxAtgFoAAAAASUVORK5CYII=']
-      }[Conf['favicon']];
+      };
+      items = $.getOwn(items, Conf['favicon']);
       f = Favicon;
       t = 'data:image/png;base64,';
       i = 0;
@@ -20470,13 +20533,13 @@ MarkNewIPs = (function() {
           i = MarkNewIPs.ipCount;
           for (j = 0, len = newPosts.length; j < len; j++) {
             fullID = newPosts[j];
-            MarkNewIPs.markNew(g.posts[fullID], ++i);
+            MarkNewIPs.markNew(g.posts.get(fullID), ++i);
           }
           break;
         case -deletedPosts.length:
           for (k = 0, len1 = newPosts.length; k < len1; k++) {
             fullID = newPosts[k];
-            MarkNewIPs.markOld(g.posts[fullID]);
+            MarkNewIPs.markOld(g.posts.get(fullID));
           }
       }
       MarkNewIPs.ipCount = ipCount;
@@ -20603,7 +20666,7 @@ ReplyPruning = (function() {
       for (i = 0, len = ref.length; i < len; i++) {
         fullID = ref[i];
         ReplyPruning.total++;
-        if (g.posts[fullID].file) {
+        if (g.posts.get(fullID).file) {
           ReplyPruning.totalFiles++;
         }
       }
@@ -20616,7 +20679,7 @@ ReplyPruning = (function() {
       posts = ReplyPruning.thread.posts;
       if (ReplyPruning.hidden < hidden2) {
         while (ReplyPruning.hidden < hidden2 && ReplyPruning.position < posts.keys.length) {
-          post = posts[posts.keys[ReplyPruning.position++]];
+          post = posts.get(posts.keys[ReplyPruning.position++]);
           if (post.isReply && !post.isFetchedQuote) {
             while ((node = ReplyPruning.summary.nextSibling) && node !== post.nodes.root) {
               $.add(ReplyPruning.container, node);
@@ -20631,7 +20694,7 @@ ReplyPruning = (function() {
       } else if (ReplyPruning.hidden > hidden2) {
         frag = $.frag();
         while (ReplyPruning.hidden > hidden2 && ReplyPruning.position > 0) {
-          post = posts[posts.keys[--ReplyPruning.position]];
+          post = posts.get(posts.keys[--ReplyPruning.position]);
           if (post.isReply && !post.isFetchedQuote) {
             while ((node = ReplyPruning.container.lastChild) && node !== post.nodes.root) {
               $.prepend(frag, node);
@@ -20726,7 +20789,7 @@ ThreadStats = (function() {
       posts = ThreadStats.thread.posts;
       n = posts.keys.length;
       for (i = j = ref = ThreadStats.postIndex, ref1 = n; j < ref1; i = j += 1) {
-        post = posts[posts.keys[i]];
+        post = posts.get(posts.keys[i]);
         if (!post.isFetchedQuote) {
           ThreadStats.postCount++;
           ThreadStats.fileCount += post.files.length;
@@ -20831,7 +20894,7 @@ ThreadStats = (function() {
       }
     },
     retry: function() {
-      if (!(ThreadStats.showPage && ThreadStats.pageCountEl.textContent !== '1' && !g.SITE.threadModTimeIgnoresSage && ThreadStats.thread.posts[ThreadStats.thread.lastPost].info.date > ThreadStats.lastPageUpdate)) {
+      if (!(ThreadStats.showPage && ThreadStats.pageCountEl.textContent !== '1' && !g.SITE.threadModTimeIgnoresSage && ThreadStats.thread.posts.get(ThreadStats.thread.lastPost).info.date > ThreadStats.lastPageUpdate)) {
         return;
       }
       clearTimeout(ThreadStats.timeout);
@@ -21157,7 +21220,7 @@ ThreadUpdater = (function() {
       thread = ThreadUpdater.thread;
       board = thread.board;
       ref = ThreadUpdater.postIDs, lastPost = ref[ref.length - 1];
-      if (postObjects[postObjects.length - 1].no < lastPost && new Date(req.getResponseHeader('Last-Modified')) - thread.posts[lastPost].info.date < 30 * $.SECOND) {
+      if (postObjects[postObjects.length - 1].no < lastPost && new Date(req.getResponseHeader('Last-Modified')) - thread.posts.get(lastPost).info.date < 30 * $.SECOND) {
         return;
       }
       g.SITE.Build.spoilerRange[board] = OP.custom_spoiler;
@@ -21183,7 +21246,7 @@ ThreadUpdater = (function() {
         if (ID <= lastPost) {
           continue;
         }
-        if ((post = thread.posts[ID]) && !post.isFetchedQuote) {
+        if ((post = thread.posts.get(ID)) && !post.isFetchedQuote) {
           post.resurrect();
           continue;
         }
@@ -21201,7 +21264,7 @@ ThreadUpdater = (function() {
         if (!(indexOf.call(index, ID) < 0)) {
           continue;
         }
-        thread.posts[ID].kill();
+        thread.posts.get(ID).kill();
         deletedPosts.push(board + "." + ID);
       }
       ThreadUpdater.postIDs = index;
@@ -21212,7 +21275,7 @@ ThreadUpdater = (function() {
         if (!(!(indexOf.call(files, ID) >= 0 || (ref3 = board + "." + ID, indexOf.call(deletedPosts, ref3) >= 0)))) {
           continue;
         }
-        thread.posts[ID].kill(true);
+        thread.posts.get(ID).kill(true);
         deletedFiles.push(board + "." + ID);
       }
       ThreadUpdater.fileIDs = files;
@@ -21517,7 +21580,7 @@ ThreadWatcher = (function() {
             return ThreadWatcher.addRaw(boardID, threadID, {}, cb);
           }
         } else if (Conf['Auto Watch Reply']) {
-          return ThreadWatcher.add(g.threads[boardID + '.' + threadID] || new Thread(threadID, g.boards[boardID] || new Board(boardID)), cb);
+          return ThreadWatcher.add(g.threads.get(boardID + '.' + threadID) || new Thread(threadID, g.boards[boardID] || new Board(boardID)), cb);
         }
       },
       onIndexUpdate: function(e) {
@@ -21571,7 +21634,7 @@ ThreadWatcher = (function() {
       },
       onThreadRefresh: function(e) {
         var thread;
-        thread = g.threads[e.detail.threadID];
+        thread = g.threads.get(e.detail.threadID);
         if (!(e.detail[404] && ThreadWatcher.isWatched(thread))) {
           return;
         }
@@ -21634,7 +21697,7 @@ ThreadWatcher = (function() {
     },
     initLastModified: function() {
       var base, boardID, boards, data, date, lm, ref, ref1, siteID, url;
-      lm = ((base = $.lastModified)['ThreadWatcher'] || (base['ThreadWatcher'] = {}));
+      lm = ((base = $.lastModified)['ThreadWatcher'] || (base['ThreadWatcher'] = $.dict()));
       ref = ThreadWatcher.dbLM.data;
       for (siteID in ref) {
         boards = ref[siteID];
@@ -21773,7 +21836,7 @@ ThreadWatcher = (function() {
         boardID: boardID,
         val: $.item(url, lmDate)
       });
-      threads = {};
+      threads = $.dict();
       pageLength = 0;
       nThreads = 0;
       oldest = null;
@@ -22056,7 +22119,7 @@ ThreadWatcher = (function() {
     },
     setPrefixes: function(threads) {
       var conflicts, conflicts2, j, k, len, len1, len2, prefix, prefixes, siteID, siteID2;
-      prefixes = {};
+      prefixes = $.dict();
       for (j = 0, len1 = threads.length; j < len1; j++) {
         siteID = threads[j].siteID;
         if (siteID in prefixes) {
@@ -22090,7 +22153,7 @@ ThreadWatcher = (function() {
       ThreadWatcher.setPrefixes(threads);
       for (j = 0, len1 = threads.length; j < len1; j++) {
         ref = threads[j], siteID = ref.siteID, boardID = ref.boardID, threadID = ref.threadID, data = ref.data;
-        if ((data.excerpt == null) && siteID === g.SITE.ID && (thread = g.threads[boardID + "." + threadID]) && thread.OP) {
+        if ((data.excerpt == null) && siteID === g.SITE.ID && (thread = g.threads.get(boardID + "." + threadID)) && thread.OP) {
           ThreadWatcher.db.extend({
             boardID: boardID,
             threadID: threadID,
@@ -22257,7 +22320,7 @@ ThreadWatcher = (function() {
       oldData = ThreadWatcher.db.get({
         boardID: boardID,
         threadID: threadID,
-        defaultValue: {}
+        defaultValue: $.dict()
       });
       delete oldData.last;
       delete oldData.modified;
@@ -22325,7 +22388,7 @@ ThreadWatcher = (function() {
           }
         });
         return $.on(entryEl, 'click', function() {
-          return ThreadWatcher.toggle(g.threads[g.BOARD + "." + g.THREADID]);
+          return ThreadWatcher.toggle(g.threads.get(g.BOARD + "." + g.THREADID));
         });
       },
       addMenuEntries: function() {
@@ -22548,7 +22611,7 @@ Unread = (function() {
       postIDs = Unread.thread.posts.keys;
       for (i = j = ref = Unread.readCount, ref1 = postIDs.length; j < ref1; i = j += 1) {
         ID = +postIDs[i];
-        if (!Unread.thread.posts[ID].isFetchedQuote) {
+        if (!Unread.thread.posts.get(ID).isFetchedQuote) {
           if (ID > Unread.lastReadPost) {
             break;
           }
@@ -22670,7 +22733,7 @@ Unread = (function() {
       postIDs = Unread.thread.posts.keys;
       for (i = j = ref = Unread.readCount, ref1 = postIDs.length; j < ref1; i = j += 1) {
         ID = +postIDs[i];
-        if (!Unread.thread.posts[ID].isFetchedQuote) {
+        if (!Unread.thread.posts.get(ID).isFetchedQuote) {
           if (Unread.posts.has(ID)) {
             break;
           }
@@ -22760,9 +22823,9 @@ UnreadIndex = (function() {
   var UnreadIndex;
 
   UnreadIndex = {
-    lastReadPost: {},
-    hr: {},
-    markReadLink: {},
+    lastReadPost: $.dict(),
+    hr: $.dict(),
+    markReadLink: $.dict(),
     init: function() {
       if (!(g.VIEW === 'index' && Conf['Remember Last Read Post'] && Conf['Unread Line in Index'])) {
         return;
@@ -22794,7 +22857,7 @@ UnreadIndex = (function() {
       results = [];
       for (i = 0, len = ref.length; i < len; i++) {
         threadID = ref[i];
-        thread = g.threads[threadID];
+        thread = g.threads.get(threadID);
         results.push(UnreadIndex.update(thread));
       }
       return results;
@@ -22922,14 +22985,10 @@ Captcha = {};
     haveCookie: function() {
       return /\b_ct=/.test(d.cookie) && QR.posts[0].thread !== 'new';
     },
-    getOne: function(isReply) {
-      var captcha, i;
+    getOne: function() {
+      var captcha;
       this.clear();
-      i = this.captchas.findIndex(function(x) {
-        return isReply || (x.challenge == null);
-      });
-      if (i >= 0) {
-        captcha = this.captchas.splice(i, 1)[0];
+      if ((captcha = this.captchas.shift())) {
         this.count();
         return captcha;
       } else {
@@ -23186,12 +23245,12 @@ Captcha = {};
       } else if (n !== 9 && (i = this.imageKeys16.indexOf(key)) >= 0 && i % 4 < w && (img = this.images[n - (4 - Math.floor(i / 4)) * w + (i % 4)])) {
         img.click();
         verify.focus();
-      } else if (dx = {
+      } else if (dx = $.getOwn({
         'Up': n,
         'Down': w,
         'Left': last,
         'Right': 1
-      }[key]) {
+      }, key)) {
         x = (x + dx) % (n + w);
         if ((n < x && x < last)) {
           x = dx === last ? n : last;
@@ -23310,7 +23369,6 @@ Captcha = {};
       }
     },
     requestCaptcha: function(e) {
-      var key, url;
       if (!this.isEnabled()) {
         return;
       }
@@ -23327,6 +23385,10 @@ Captcha = {};
       this.pending = true;
       this.aborted = false;
       e.preventDefault();
+      return CrossOrigin.permission(this.requestCaptcha2.bind(this), this.noCaptcha.bind(this, 'Permission denied'), [Conf['captchaServiceDomain'] + "/*"]);
+    },
+    requestCaptcha2: function() {
+      var key, url;
       key = Conf['captchaServiceKey'][Conf['captchaServiceDomain']];
       if (!(key && /\S/.test(key))) {
         return this.noCaptcha('API key not set');
@@ -23384,7 +23446,7 @@ Captcha = {};
       if (this.aborted) {
         return;
       }
-      error = this.req.status === 200 ? this.req.response : this.req.status ? this.req.statusText + " (" + this.req.status + ")" : 'Connection Error';
+      error || (error = this.req.status === 200 ? this.req.response : this.req.status ? this.req.statusText + " (" + this.req.status + ")" : 'Connection Error');
       error = "Failed to retrieve captcha: " + error;
       return $.event('NoCaptcha', {
         error: error
@@ -23927,7 +23989,7 @@ QR = (function() {
         return;
       }
       thread = QR.posts[0].thread;
-      if (thread !== 'new' && g.threads[g.BOARD + "." + thread].isDead) {
+      if (thread !== 'new' && g.threads.get(g.BOARD + "." + thread).isDead) {
         return QR.abort();
       } else {
         return QR.status();
@@ -24114,7 +24176,7 @@ QR = (function() {
         return;
       }
       thread = QR.posts[0].thread;
-      if (thread !== 'new' && g.threads[g.BOARD + "." + thread].isDead) {
+      if (thread !== 'new' && g.threads.get(g.BOARD + "." + thread).isDead) {
         value = 'Dead';
         disabled = true;
         QR.cooldown.auto = false;
@@ -24303,7 +24365,7 @@ QR = (function() {
         blob = new Blob([file], {
           type: type
         });
-        blob.name = Conf['pastedname'] + "." + (QR.extensionFromType[type] || 'jpg');
+        blob.name = Conf['pastedname'] + "." + ($.getOwn(QR.extensionFromType, type) || 'jpg');
         QR.open();
         QR.handleFiles([blob]);
         $.addClass(QR.nodes.el, 'dump');
@@ -24612,7 +24674,7 @@ QR = (function() {
       post = QR.posts[0];
       post.forceSave();
       threadID = post.thread;
-      thread = g.BOARD.threads[threadID];
+      thread = g.BOARD.threads.get(threadID);
       if (g.BOARD.ID === 'f' && threadID === 'new') {
         filetag = QR.nodes.flashTag.value;
       }
@@ -24623,7 +24685,7 @@ QR = (function() {
         } else if (!(!!g.BOARD.config.text_only || post.file)) {
           err = 'No file selected.';
         }
-      } else if (g.BOARD.threads[threadID].isClosed) {
+      } else if (g.BOARD.threads.get(threadID).isClosed) {
         err = 'You can\'t reply to this thread anymore.';
       } else if (!(post.com || post.file)) {
         err = 'No comment or file.';
@@ -24889,7 +24951,7 @@ QR = (function() {
         return;
       }
       this.data = Conf['cooldowns'];
-      this.changes = {};
+      this.changes = $.dict();
       return $.sync('cooldowns', this.sync);
     },
     setup: function() {
@@ -24916,7 +24978,7 @@ QR = (function() {
       return QR.cooldown.count();
     },
     sync: function(data) {
-      QR.cooldown.data = data || {};
+      QR.cooldown.data = data || $.dict();
       return QR.cooldown.start();
     },
     add: function(threadID, postID) {
@@ -24967,7 +25029,7 @@ QR = (function() {
       if (!QR.cooldown.data) {
         return;
       }
-      cooldowns = ((base = QR.cooldown.data)[name = post.board.ID] || (base[name] = {}));
+      cooldowns = ((base = QR.cooldown.data)[name = post.board.ID] || (base[name] = $.dict()));
       for (id in cooldowns) {
         cooldown = cooldowns[id];
         if ((cooldown.delay == null) && cooldown.threadID === post.thread.ID && cooldown.postID === post.ID) {
@@ -24981,7 +25043,7 @@ QR = (function() {
       if (!(QR.cooldown.data && Conf['Cooldown'])) {
         return 0;
       }
-      cooldowns = QR.cooldown.data[post.board.ID] || {};
+      cooldowns = QR.cooldown.data[post.board.ID] || $.dict();
       for (start in cooldowns) {
         cooldown = cooldowns[start];
         if ((cooldown.delay == null) && cooldown.threadID === post.thread.ID && cooldown.postID === post.ID) {
@@ -25005,7 +25067,7 @@ QR = (function() {
     },
     mergeChange: function(data, scope, id, value) {
       if (value) {
-        return (data[scope] || (data[scope] = {}))[id] = value;
+        return (data[scope] || (data[scope] = $.dict()))[id] = value;
       } else if (scope in data) {
         delete data[scope][id];
         if (Object.keys(data[scope]).length === 0) {
@@ -25016,7 +25078,7 @@ QR = (function() {
     set: function(scope, id, value) {
       var base;
       QR.cooldown.mergeChange(QR.cooldown.data, scope, id, value);
-      return ((base = QR.cooldown.changes)[scope] || (base[scope] = {}))[id] = value;
+      return ((base = QR.cooldown.changes)[scope] || (base[scope] = $.dict()))[id] = value;
     },
     save: function() {
       var changes;
@@ -25024,7 +25086,7 @@ QR = (function() {
       if (!Object.keys(changes).length) {
         return;
       }
-      return $.get('cooldowns', {}, function(arg) {
+      return $.get('cooldowns', $.dict(), function(arg) {
         var cooldowns, id, ref, scope, value;
         cooldowns = arg.cooldowns;
         for (scope in QR.cooldown.changes) {
@@ -25036,7 +25098,7 @@ QR = (function() {
           QR.cooldown.data = cooldowns;
         }
         return $.set('cooldowns', cooldowns, function() {
-          return QR.cooldown.changes = {};
+          return QR.cooldown.changes = $.dict();
         });
       });
     },
@@ -25054,7 +25116,7 @@ QR = (function() {
         ref1 = [g.BOARD.ID, 'global'];
         for (i = 0, len = ref1.length; i < len; i++) {
           scope = ref1[i];
-          cooldowns = ((base = QR.cooldown.data)[scope] || (base[scope] = {}));
+          cooldowns = ((base = QR.cooldown.data)[scope] || (base[scope] = $.dict()));
           for (start in cooldowns) {
             cooldown = cooldowns[start];
             start = +start;
@@ -25606,6 +25668,9 @@ QR = (function() {
         return;
       }
       name = input.dataset.name;
+      if (name !== 'thread' && name !== 'name' && name !== 'email' && name !== 'sub' && name !== 'com' && name !== 'filename' && name !== 'flag') {
+        return;
+      }
       prev = this[name];
       this[name] = input.value || input.dataset["default"] || null;
       switch (name) {
@@ -25927,7 +25992,7 @@ QR = (function() {
     _Class.prototype.saveFilename = function() {
       this.file.newName = (this.filename || '').replace(/[\/\\]/g, '-');
       if (!QR.validExtension.test(this.filename)) {
-        return this.file.newName += "." + (QR.extensionFromType[this.file.type] || 'jpg');
+        return this.file.newName += "." + ($.getOwn(QR.extensionFromType, this.file.type) || 'jpg');
       }
     };
 
@@ -26031,7 +26096,7 @@ QuoteBacklink = (function() {
   var QuoteBacklink;
 
   QuoteBacklink = {
-    containers: {},
+    containers: $.dict(),
     init: function() {
       var ref;
       if (((ref = g.VIEW) !== 'index' && ref !== 'thread') || !Conf['Quote Backlinks']) {
@@ -26074,7 +26139,7 @@ QuoteBacklink = (function() {
       for (i = 0, len = ref.length; i < len; i++) {
         quote = ref[i];
         containers = [QuoteBacklink.getContainer(quote)];
-        if ((post = g.posts[quote]) && post.nodes.backlinkContainer) {
+        if ((post = g.posts.get(quote)) && post.nodes.backlinkContainer) {
           ref1 = post.clones;
           for (j = 0, len1 = ref1.length; j < len1; j++) {
             clone = ref1[j];
@@ -26230,7 +26295,7 @@ QuoteInline = (function() {
         return;
       }
       ref = Get.postDataFromLink(this), boardID = ref.boardID, threadID = ref.threadID, postID = ref.postID;
-      if (Conf['Inline Cross-thread Quotes Only'] && g.VIEW === 'thread' && ((ref1 = g.posts[boardID + "." + postID]) != null ? ref1.nodes.root.offsetParent : void 0)) {
+      if (Conf['Inline Cross-thread Quotes Only'] && g.VIEW === 'thread' && ((ref1 = g.posts.get(boardID + "." + postID)) != null ? ref1.nodes.root.offsetParent : void 0)) {
         return;
       }
       if ($.hasClass(doc, 'catalog-mode')) {
@@ -26268,7 +26333,7 @@ QuoteInline = (function() {
       qroot = $.x('ancestor::*[contains(@class,"postContainer")][1]', root);
       $.addClass(qroot, 'hasInline');
       new Fetcher(boardID, threadID, postID, inline, quoter);
-      if (!((post = g.posts[boardID + "." + postID]) && context.thread === post.thread)) {
+      if (!((post = g.posts.get(boardID + "." + postID)) && context.thread === post.thread)) {
         return;
       }
       if (isBacklink && Conf['Forward Hiding']) {
@@ -26295,9 +26360,9 @@ QuoteInline = (function() {
       if (!(el = root.firstElementChild)) {
         return;
       }
-      post = g.posts[boardID + "." + postID];
+      post = g.posts.get(boardID + "." + postID);
       post.rmClone(el.dataset.clone);
-      if (Conf['Forward Hiding'] && isBacklink && context.thread === g.threads[boardID + "." + threadID] && !--post.forwarded) {
+      if (Conf['Forward Hiding'] && isBacklink && context.thread === g.threads.get(boardID + "." + threadID) && !--post.forwarded) {
         delete post.forwarded;
         $.rmClass(post.nodes.root, 'forwarded');
       }
@@ -26423,7 +26488,7 @@ QuotePreview = (function() {
         endEvents: 'mouseout click',
         cb: QuotePreview.mouseout
       });
-      if (Conf['Quote Highlighting'] && (origin = g.posts[boardID + "." + postID])) {
+      if (Conf['Quote Highlighting'] && (origin = g.posts.get(boardID + "." + postID))) {
         posts = [origin].concat(origin.clones);
         posts.pop();
         for (i = 0, len = posts.length; i < len; i++) {
@@ -26479,7 +26544,7 @@ QuoteStrikeThrough = (function() {
       for (i = 0, len = ref.length; i < len; i++) {
         quotelink = ref[i];
         ref1 = Get.postDataFromLink(quotelink), boardID = ref1.boardID, postID = ref1.postID;
-        if ((ref2 = g.posts[boardID + "." + postID]) != null ? ref2.isHidden : void 0) {
+        if ((ref2 = g.posts.get(boardID + "." + postID)) != null ? ref2.isHidden : void 0) {
           $.addClass(quotelink, 'filtered');
         }
       }
@@ -26536,9 +26601,9 @@ QuoteThreading =
         cb: this.node
       });
     },
-    parent: {},
-    children: {},
-    inserted: {},
+    parent: $.dict(),
+    children: $.dict(),
+    inserted: $.dict(),
     toggleThreading: function() {
       return this.setThreadingState(!Conf['Thread Quotes']);
     },
@@ -26580,7 +26645,7 @@ QuoteThreading =
       ref = this.quotes;
       for (j = 0, len = ref.length; j < len; j++) {
         quote = ref[j];
-        if (parent = g.posts[quote]) {
+        if (parent = g.posts.get(quote)) {
           if (!parent.isFetchedQuote && parent.isReply && parent.ID < this.ID) {
             parents.add(parent.ID);
             if (!lastParent || parent.ID > lastParent.ID) {
@@ -26688,7 +26753,7 @@ QuoteThreading =
       } else {
         nodes = [];
         Unread.order = new RandomAccessList();
-        QuoteThreading.inserted = {};
+        QuoteThreading.inserted = $.dict();
         posts.forEach(function(post) {
           if (post.isFetchedQuote) {
             return;
@@ -26990,7 +27055,7 @@ Quotify = (function() {
       }
       boardID = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : this.board.ID;
       quoteID = boardID + "." + postID;
-      if (post = g.posts[quoteID]) {
+      if (post = g.posts.get(quoteID)) {
         if (!post.isDead) {
           a = $.el('a', {
             href: g.SITE.Build.postURL(boardID, post.thread.ID, postID),
@@ -27119,7 +27184,7 @@ Main = (function() {
       flatten = function(parent, obj) {
         var key, val;
         if (obj instanceof Array) {
-          Conf[parent] = obj[0];
+          Conf[parent] = $.dict.clone(obj[0]);
         } else if (typeof obj === 'object') {
           for (key in obj) {
             val = obj[key];
@@ -27150,9 +27215,9 @@ Main = (function() {
       ref2 = DataBoard.keys;
       for (j = 0, len = ref2.length; j < len; j++) {
         db = ref2[j];
-        Conf[db] = {};
+        Conf[db] = $.dict();
       }
-      Conf['customTitles'] = {
+      Conf['customTitles'] = $.dict.clone({
         '4chan.org': {
           boards: {
             'qa': {
@@ -27163,18 +27228,18 @@ Main = (function() {
             }
           }
         }
-      };
+      });
       Conf['boardConfig'] = {
-        boards: {}
+        boards: $.dict()
       };
       Conf['archives'] = Redirect.archives;
-      Conf['selectedArchives'] = {};
-      Conf['cooldowns'] = {};
-      Conf['Index Sort'] = {};
+      Conf['selectedArchives'] = $.dict();
+      Conf['cooldowns'] = $.dict();
+      Conf['Index Sort'] = $.dict();
       for (i = k = 0; k < 2; i = ++k) {
-        Conf["Last Long Reply Thresholds " + i] = {};
+        Conf["Last Long Reply Thresholds " + i] = $.dict();
       }
-      Conf['siteProperties'] = {};
+      Conf['siteProperties'] = $.dict();
       Conf['Except Archives from Encryption'] = false;
       Conf['JSON Navigation'] = true;
       Conf['Oekaki Links'] = true;
@@ -27195,7 +27260,7 @@ Main = (function() {
           return $.addCSP("script-src " + (jsWhitelist.replace(/^#.*$/mg, '').replace(/[\s;]+/g, ' ').trim()));
         });
       }
-      items = {};
+      items = $.dict();
       for (key in Conf) {
         items[key] = void 0;
       }
@@ -27535,7 +27600,7 @@ Main = (function() {
         threadRoot = threadRoots[j];
         boardObj = (boardID = threadRoot.dataset.board) ? (boardID = encodeURIComponent(boardID), g.boards[boardID] || new Board(boardID)) : g.BOARD;
         threadID = +threadRoot.id.match(/\d*$/)[0];
-        if (!threadID || ((ref = boardObj.threads[threadID]) != null ? ref.nodes.root : void 0)) {
+        if (!threadID || ((ref = boardObj.threads.get(threadID)) != null ? ref.nodes.root : void 0)) {
           return;
         }
         thread = new Thread(threadID, boardObj);
