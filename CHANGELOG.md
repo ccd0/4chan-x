@@ -4,6 +4,11 @@
 
 ### v1.14.11
 
+**v1.14.11.1** *(2019-08-03)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.1/builds/4chan-X-noupdate.crx)]
+- Security improvements.
+- Fix 2captcha on Chrome extension. #2375
+- Minor bugfixes.
+
 **v1.14.11.0** *(2019-07-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.10.3.
 - Make applicable keybinds work on Tinyboard/vichan. #2171
