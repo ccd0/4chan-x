@@ -24,7 +24,7 @@ Metadata =
     $.rmClass @parentNode, 'error'
     $.addClass @parentNode, 'loading'
     {index} = @parentNode.dataset
-    CrossOrigin.binary Get.postFromNode(@).files[index].url, (data) =>
+    CrossOrigin.binary Get.postFromNode(@).files[+index].url, (data) =>
       $.rmClass @parentNode, 'loading'
       if data?
         title = Metadata.parse data

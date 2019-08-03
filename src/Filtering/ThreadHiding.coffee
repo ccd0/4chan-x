@@ -15,7 +15,7 @@ ThreadHiding =
     return unless $.hasStorage and g.SITE.software is 'yotsuba'
     hiddenThreads = ThreadHiding.db.get
       boardID: board.ID
-      defaultValue: {}
+      defaultValue: $.dict()
     hiddenThreads[threadID] = true for threadID of hiddenThreads
     localStorage.setItem "4chan-hide-t-#{board}", JSON.stringify hiddenThreads
 
@@ -32,12 +32,12 @@ ThreadHiding =
 
   catalogSave: ->
     hiddenThreads2 = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
-    for threadID of hiddenThreads2 when !(threadID of ThreadHiding.hiddenThreads)
+    for threadID of hiddenThreads2 when !$.hasOwn(ThreadHiding.hiddenThreads, threadID)
       ThreadHiding.db.set
         boardID:  g.BOARD.ID
         threadID: threadID
         val:      {makeStub: Conf['Stubs']}
-    for threadID of ThreadHiding.hiddenThreads when !(threadID of hiddenThreads2)
+    for threadID of ThreadHiding.hiddenThreads when !$.hasOwn(hiddenThreads2, threadID)
       ThreadHiding.db.delete
         boardID:  g.BOARD.ID
         threadID: threadID
@@ -176,7 +176,7 @@ ThreadHiding =
 
   toggle: (thread) ->
     unless thread instanceof Thread
-      thread = g.threads[@dataset.fullID]
+      thread = g.threads.get(@dataset.fullID)
     if thread.isHidden
       ThreadHiding.show thread
     else

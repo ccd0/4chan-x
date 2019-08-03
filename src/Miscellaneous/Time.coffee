@@ -13,7 +13,7 @@ Time =
 
   format: (formatString, date) ->
     formatString.replace /%(.)/g, (s, c) ->
-      if c of Time.formatters
+      if $.hasOwn(Time.formatters, c)
         Time.formatters[c].call(date)
       else
         s

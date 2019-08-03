@@ -1,6 +1,6 @@
 Filter =
-  filters: {}
-  results: {}
+  filters: $.dict()
+  results: $.dict()
   init: ->
     return unless g.VIEW in ['index', 'thread', 'catalog'] and Conf['Filter']
     return if g.VIEW is 'catalog' and not Conf['Filter in Native Catalog']
@@ -44,11 +44,11 @@ Filter =
 
         # Filter OPs along with their threads or replies only.
         op = filter.match(/(?:^|;)\s*op:(no|only)/)?[1] or ''
-        mask = {'no': 1, 'only': 2}[op] or 0
+        mask = $.getOwn({'no': 1, 'only': 2}, op) or 0
 
         # Filter only posts with/without files.
         file = filter.match(/(?:^|;)\s*file:(no|only)/)?[1] or ''
-        mask = mask | ({'no': 4, 'only': 8}[file] or 0)
+        mask = mask | ($.getOwn({'no': 4, 'only': 8}, file) or 0)
 
         # Overrule the `Show Stubs` setting.
         # Defaults to stub showing.
@@ -102,7 +102,7 @@ Filter =
   parseBoards: (boardsRaw) ->
     return false unless boardsRaw
     return boards if (boards = Filter.parseBoardsMemo[boardsRaw])
-    boards = {}
+    boards = $.dict()
     siteFilter = ''
     for boardID in boardsRaw.split(',')
       if ':' in boardID
@@ -116,7 +116,7 @@ Filter =
     Filter.parseBoardsMemo[boardsRaw] = boards
     boards
 
-  parseBoardsMemo: {}
+  parseBoardsMemo: $.dict()
 
   test: (post, hideable=true) ->
     return post.filterResults if post.filterResults
@@ -172,7 +172,7 @@ Filter =
 
   catalog: ->
     return unless (url = g.SITE.urls.catalogJSON?(g.BOARD))
-    Filter.catalogData = {}
+    Filter.catalogData = $.dict()
     $.ajax url,
       onloadend: Filter.catalogParse
     Callbacks.CatalogThreadNative.push
@@ -225,17 +225,18 @@ Filter =
     MD5:        (post) -> post.files.map((f) -> f.MD5)
 
   values: (key, post) ->
-    if key of Filter.valueF
+    if $.hasOwn(Filter.valueF, key)
       Filter.valueF[key](post).filter((v) -> v?)
     else
       [key.split('+').map((k) ->
-        if (f=Filter.valueF[k])
+        if (f = $.getOwn(Filter.valueF, k))
           f(post).map((v) -> v or '').join('\n')
         else
           ''
       ).join('\n')]
 
   addFilter: (type, re, cb) ->
+    return unless $.hasOwn(Config.filter, type)
     $.get type, Conf[type], (item) ->
       save = item[type]
       # Add a new line before the regexp unless the text is empty.

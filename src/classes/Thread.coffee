@@ -1,7 +1,8 @@
 class Thread
   toString: -> @ID
 
-  constructor: (@ID, @board) ->
+  constructor: (ID, @board) ->
+    @ID         = +ID
     @threadID   = @ID
     @boardID    = @board.ID
     @siteID     = g.SITE.ID

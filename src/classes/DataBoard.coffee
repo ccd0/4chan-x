@@ -19,14 +19,14 @@ class DataBoard
       @data['4chan.org'] = {boards, lastChecked}
       delete @data.boards
       delete @data.lastChecked
-    @data[g.SITE.ID] or= boards: {}
+    @data[g.SITE.ID] or= boards: $.dict()
 
   changes: []
 
   save: (change, cb) ->
     change()
     @changes.push change
-    $.get @key, {boards: {}}, (items) =>
+    $.get @key, {boards: $.dict()}, (items) =>
       return unless @changes.length
       needSync = ((items[@key].version or 0) > (@data.version or 0))
       if needSync
@@ -39,7 +39,7 @@ class DataBoard
         cb?()
 
   forceSync: (cb) ->
-    $.get @key, {boards: {}}, (items) =>
+    $.get @key, {boards: $.dict()}, (items) =>
       if (items[@key].version or 0) > (@data.version or 0)
         @initData items[@key]
         change() for change in @changes
@@ -78,17 +78,17 @@ class DataBoard
 
   setUnsafe: ({siteID, boardID, threadID, postID, val}) ->
     siteID or= g.SITE.ID
-    @data[siteID] or= boards: {}
+    @data[siteID] or= boards: $.dict()
     if postID isnt undefined
-      ((@data[siteID].boards[boardID] or= {})[threadID] or= {})[postID] = val
+      ((@data[siteID].boards[boardID] or= $.dict())[threadID] or= $.dict())[postID] = val
     else if threadID isnt undefined
-      (@data[siteID].boards[boardID] or= {})[threadID] = val
+      (@data[siteID].boards[boardID] or= $.dict())[threadID] = val
     else
       @data[siteID].boards[boardID] = val
 
   extend: ({siteID, boardID, threadID, postID, val}, cb) ->
     @save =>
-      oldVal = @get {siteID, boardID, threadID, postID, defaultValue: {}}
+      oldVal = @get {siteID, boardID, threadID, postID, defaultValue: $.dict()}
       for key, subVal of val
         if typeof subVal is 'undefined'
           delete oldVal[key]
@@ -147,7 +147,7 @@ class DataBoard
   ajaxCleanParse: (boardID, response1, response2) ->
     siteID = g.SITE.ID
     return if not (board = @data[siteID].boards[boardID])
-    threads = {}
+    threads = $.dict()
     if response1
       for page in response1
         for thread in page.threads

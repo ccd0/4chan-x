@@ -27,7 +27,7 @@ sub: function(css) {
     var sel = variables;
     for (var i = 0; i < words.length; i++) {
       if (typeof sel !== 'object') return ':not(*)';
-      sel = sel[words[i]];
+      sel = $.getOwn(sel, words[i]);
     }
     if (typeof sel !== 'string') return ':not(*)';
     return sel;

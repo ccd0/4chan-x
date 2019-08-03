@@ -54,7 +54,7 @@ Quotify =
       @board.ID
     quoteID = "#{boardID}.#{postID}"
 
-    if post = g.posts[quoteID]
+    if post = g.posts.get(quoteID)
       unless post.isDead
         # Don't (Dead) when quotifying in an archived post,
         # and we know the post still exists.

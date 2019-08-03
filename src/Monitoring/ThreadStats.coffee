@@ -55,7 +55,7 @@ ThreadStats =
     {posts} = ThreadStats.thread
     n = posts.keys.length
     for i in [ThreadStats.postIndex...n] by 1
-      post = posts[posts.keys[i]]
+      post = posts.get(posts.keys[i])
       unless post.isFetchedQuote
         ThreadStats.postCount++
         ThreadStats.fileCount += post.files.length
@@ -132,7 +132,7 @@ ThreadStats =
       ThreadStats.showPage and
       ThreadStats.pageCountEl.textContent isnt '1' and
       !g.SITE.threadModTimeIgnoresSage and
-      ThreadStats.thread.posts[ThreadStats.thread.lastPost].info.date > ThreadStats.lastPageUpdate
+      ThreadStats.thread.posts.get(ThreadStats.thread.lastPost).info.date > ThreadStats.lastPageUpdate
     )
     clearTimeout ThreadStats.timeout
     ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 5 * $.SECOND

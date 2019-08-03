@@ -13,14 +13,14 @@ Get =
   threadFromRoot: (root) ->
     return null unless root?
     {board} = root.dataset
-    g.threads["#{if board then encodeURIComponent(board) else g.BOARD.ID}.#{root.id.match(/\d*$/)[0]}"]
+    g.threads.get("#{if board then encodeURIComponent(board) else g.BOARD.ID}.#{root.id.match(/\d*$/)[0]}")
   threadFromNode: (node) ->
     Get.threadFromRoot $.x "ancestor-or-self::#{g.SITE.xpath.thread}", node
   postFromRoot: (root) ->
     return null unless root?
-    post  = g.posts[root.dataset.fullID]
+    post  = g.posts.get(root.dataset.fullID)
     index = root.dataset.clone
-    if index then post.clones[index] else post
+    if index then post.clones[+index] else post
   postFromNode: (root) ->
     Get.postFromRoot $.x "ancestor-or-self::#{g.SITE.xpath.postContainer}[1]", root
   postDataFromLink: (link) ->
@@ -59,7 +59,7 @@ Get =
     #   and their clones,
     #   get all of their backlinks.
     if Conf['Quote Backlinks']
-      handleQuotes qPost, 'backlinks' for quote in post.quotes when qPost = posts[quote]
+      handleQuotes qPost, 'backlinks' for quote in post.quotes when qPost = posts.get(quote)
 
     # Third:
     #   Filter out irrelevant quotelinks.

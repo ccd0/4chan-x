@@ -10,7 +10,7 @@ eventPageRequest = do ->
 
 <% } %>
 CrossOrigin =
-  binary: (url, cb, headers={}) ->
+  binary: (url, cb, headers=$.dict()) ->
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
@@ -73,7 +73,7 @@ CrossOrigin =
         name = match.replace /\\"/g, '"'
       if /^text\/plain;\s*charset=x-user-defined$/i.test(mime)
         # In JS Blocker (Safari) content type comes back as 'text/plain; charset=x-user-defined'; guess from filename instead.
-        mime = QR.typeFromExtension[name.match(/[^.]*$/)[0].toLowerCase()] or 'application/octet-stream'
+        mime = $.getOwn(QR.typeFromExtension, name.match(/[^.]*$/)[0].toLowerCase()) or 'application/octet-stream'
       blob = new Blob([data], {type: mime})
       blob.name = name
       cb blob
@@ -85,13 +85,13 @@ CrossOrigin =
     responseHeaderString: null
     getResponseHeader: (headerName) ->
       if !@responseHeaders? and @responseHeaderString?
-        @responseHeaders = {}
+        @responseHeaders = $.dict()
         for header in @responseHeaderString.split('\r\n')
           if (i = header.indexOf(':')) >= 0
             key = header[...i].trim().toLowerCase()
             val = header[i+1..].trim()
             @responseHeaders[key] = val
-      (@responseHeaders or {})[headerName.toLowerCase()] ? null
+      @responseHeaders?[headerName.toLowerCase()] ? null
     abort: ->
     onloadend: ->
 

@@ -33,7 +33,7 @@ Main =
     # Flatten default values from Config into Conf
     flatten = (parent, obj) ->
       if obj instanceof Array
-        Conf[parent] = obj[0]
+        Conf[parent] = $.dict.clone(obj[0])
       else if typeof obj is 'object'
         for key, val of obj
           flatten key, val
@@ -57,15 +57,15 @@ Main =
     flatten null, Config
 
     for db in DataBoard.keys
-      Conf[db] = {}
-    Conf['customTitles'] = {'4chan.org': {boards: {'qa': {'boardTitle': {orig: '/qa/ - Question & Answer', title: '/qa/ - 2D / Random'}}}}}
-    Conf['boardConfig'] = boards: {}
+      Conf[db] = $.dict()
+    Conf['customTitles'] = $.dict.clone {'4chan.org': {boards: {'qa': {'boardTitle': {orig: '/qa/ - Question & Answer', title: '/qa/ - 2D / Random'}}}}}
+    Conf['boardConfig'] = boards: $.dict()
     Conf['archives'] = Redirect.archives
-    Conf['selectedArchives'] = {}
-    Conf['cooldowns'] = {}
-    Conf['Index Sort'] = {}
-    Conf["Last Long Reply Thresholds #{i}"] = {} for i in [0...2]
-    Conf['siteProperties'] = {}
+    Conf['selectedArchives'] = $.dict()
+    Conf['cooldowns'] = $.dict()
+    Conf['Index Sort'] = $.dict()
+    Conf["Last Long Reply Thresholds #{i}"] = $.dict() for i in [0...2]
+    Conf['siteProperties'] = $.dict()
 
     # XXX old key names
     Conf['Except Archives from Encryption'] = false
@@ -84,7 +84,7 @@ Main =
         $.addCSP "script-src #{jsWhitelist.replace(/^#.*$/mg, '').replace(/[\s;]+/g, ' ').trim()}"
 
     # Get saved values as items
-    items = {}
+    items = $.dict()
     items[key] = undefined for key of Conf
     items['previousversion'] = undefined
     ($.getSync or $.get) items, (items) ->
@@ -363,7 +363,7 @@ Main =
       else
         g.BOARD
       threadID = +threadRoot.id.match(/\d*$/)[0]
-      return if !threadID or boardObj.threads[threadID]?.nodes.root
+      return if !threadID or boardObj.threads.get(threadID)?.nodes.root
       thread = new Thread threadID, boardObj
       thread.nodes.root = threadRoot
       threads.push thread

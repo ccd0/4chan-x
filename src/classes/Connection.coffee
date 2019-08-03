@@ -17,6 +17,6 @@ class Connection
       typeof e.data is 'string' and
       e.data[...g.NAMESPACE.length] is g.NAMESPACE
     data = JSON.parse e.data[g.NAMESPACE.length..]
-    for type, value of data
-      @cb[type]? value
+    for type, value of data when $.hasOwn(@cb, type)
+      @cb[type] value
     return

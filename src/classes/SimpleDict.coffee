@@ -16,3 +16,9 @@ class SimpleDict
   forEach: (fn) -> 
     fn @[key] for key in [@keys...]
     return
+
+  get: (key) ->
+    if key is 'keys'
+      undefined
+    else
+      $.getOwn(@, key)

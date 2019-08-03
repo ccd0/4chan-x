@@ -18,7 +18,7 @@ Sauce =
 
   parseLink: (link) ->
     return null if not (link = link.trim())
-    parts = {}
+    parts = $.dict()
     for part, i in link.split /;(?=(?:text|boards|types|regexp|sandbox):?)/
       if i is 0
         parts['url'] = part
@@ -47,7 +47,7 @@ Sauce =
 
   createSauceLink: (link, post, file) ->
     ext = file.url.match(/[^.]*$/)[0]
-    parts = {}
+    parts = $.dict()
     $.extend parts, link
 
     return null unless !parts['boards'] or parts['boards']["#{post.siteID}/#{post.boardID}"] or parts['boards']["#{post.siteID}/*"]

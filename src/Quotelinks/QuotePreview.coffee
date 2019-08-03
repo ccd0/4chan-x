@@ -40,7 +40,7 @@ QuotePreview =
       endEvents: 'mouseout click'
       cb: QuotePreview.mouseout
 
-    if Conf['Quote Highlighting'] and (origin = g.posts["#{boardID}.#{postID}"])
+    if Conf['Quote Highlighting'] and (origin = g.posts.get("#{boardID}.#{postID}"))
       posts = [origin].concat origin.clones
       # Remove the clone that's in the qp from the array.
       posts.pop()

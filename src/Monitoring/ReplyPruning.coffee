@@ -88,7 +88,7 @@ ReplyPruning =
     return if e.detail[404]
     for fullID in e.detail.newPosts
       ReplyPruning.total++
-      ReplyPruning.totalFiles++ if g.posts[fullID].file
+      ReplyPruning.totalFiles++ if g.posts.get(fullID).file
     return
 
   update: ->
@@ -105,7 +105,7 @@ ReplyPruning =
 
     if ReplyPruning.hidden < hidden2
       while ReplyPruning.hidden < hidden2 and ReplyPruning.position < posts.keys.length
-        post = posts[posts.keys[ReplyPruning.position++]]
+        post = posts.get(posts.keys[ReplyPruning.position++])
         if post.isReply and not post.isFetchedQuote
           $.add ReplyPruning.container, node while (node = ReplyPruning.summary.nextSibling) and node isnt post.nodes.root
           $.add ReplyPruning.container, post.nodes.root
@@ -115,7 +115,7 @@ ReplyPruning =
     else if ReplyPruning.hidden > hidden2
       frag = $.frag()
       while ReplyPruning.hidden > hidden2 and ReplyPruning.position > 0
-        post = posts[posts.keys[--ReplyPruning.position]]
+        post = posts.get(posts.keys[--ReplyPruning.position])
         if post.isReply and not post.isFetchedQuote
           $.prepend frag, node while (node = ReplyPruning.container.lastChild) and node isnt post.nodes.root
           $.prepend frag, post.nodes.root

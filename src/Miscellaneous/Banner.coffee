@@ -75,7 +75,7 @@ Banner =
           boardID:  g.BOARD.ID
           threadID: @className
 
-  original: {}
+  original: $.dict()
 
   custom: (child) ->
     {className} = child

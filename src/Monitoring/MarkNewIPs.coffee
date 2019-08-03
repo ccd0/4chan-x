@@ -18,10 +18,10 @@ MarkNewIPs =
       when postCount - MarkNewIPs.postCount + deletedPosts.length
         i = MarkNewIPs.ipCount
         for fullID in newPosts
-          MarkNewIPs.markNew g.posts[fullID], ++i
+          MarkNewIPs.markNew g.posts.get(fullID), ++i
       when -deletedPosts.length
         for fullID in newPosts
-          MarkNewIPs.markOld g.posts[fullID]
+          MarkNewIPs.markOld g.posts.get(fullID)
     MarkNewIPs.ipCount = ipCount
     MarkNewIPs.postCount = postCount
 

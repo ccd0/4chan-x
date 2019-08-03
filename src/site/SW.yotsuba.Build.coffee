@@ -1,7 +1,7 @@
 Build =
   staticPath: '//s.4cdn.org/image/'
   gifIcon: if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
-  spoilerRange: {}
+  spoilerRange: $.dict()
 
   shortFilename: (filename) ->
     ext = filename.match(/\.?[^\.]*$/)[0]
@@ -69,8 +69,9 @@ Build =
       o.file = SW.yotsuba.Build.parseJSONFile(data, {siteID, boardID})
       o.files.push o.file
     # Temporary JSON properties for events such as April 1 / Halloween
+    o.extra = $.dict()
     for key of data when key[0] is 'x'
-      o[key] = data[key]
+      o.extra[key] = data[key]
     o
 
   parseJSONFile: (data, {siteID, boardID}) ->
@@ -133,7 +134,7 @@ Build =
         capcodePlural      = 'Verified Users'
         capcodeDescription = ''
       else
-        capcodeLong   = {'Admin': 'Administrator', 'Mod': 'Moderator'}[capcode] or capcode
+        capcodeLong   = $.getOwn({'Admin': 'Administrator', 'Mod': 'Moderator'}, capcode) or capcode
         capcodePlural = "#{capcodeLong}s"
         capcodeDescription = "a 4chan #{capcodeLong}"
 

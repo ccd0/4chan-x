@@ -150,7 +150,7 @@ ThreadWatcher =
         if Conf['Auto Watch']
           ThreadWatcher.addRaw boardID, threadID, {}, cb
       else if Conf['Auto Watch Reply']
-        ThreadWatcher.add (g.threads[boardID + '.' + threadID] or new Thread(threadID, g.boards[boardID] or new Board(boardID))), cb
+        ThreadWatcher.add (g.threads.get(boardID + '.' + threadID) or new Thread(threadID, g.boards[boardID] or new Board(boardID))), cb
     onIndexUpdate: (e) ->
       {db}    = ThreadWatcher
       siteID  = g.SITE.ID
@@ -169,7 +169,7 @@ ThreadWatcher =
           nKilled++
       ThreadWatcher.refresh() if nKilled
     onThreadRefresh: (e) ->
-      thread = g.threads[e.detail.threadID]
+      thread = g.threads.get(e.detail.threadID)
       return unless e.detail[404] and ThreadWatcher.isWatched thread
       # Update dead status.
       ThreadWatcher.add thread
@@ -215,7 +215,7 @@ ThreadWatcher =
     ThreadWatcher.clearRequests()
 
   initLastModified: ->
-    lm = ($.lastModified['ThreadWatcher'] or= {})
+    lm = ($.lastModified['ThreadWatcher'] or= $.dict())
     for siteID, boards of ThreadWatcher.dbLM.data
       for boardID, data of boards.boards
         if ThreadWatcher.db.get {siteID, boardID}
@@ -287,7 +287,7 @@ ThreadWatcher =
     {siteID, boardID} = board[0]
     lmDate = @getResponseHeader('Last-Modified')
     ThreadWatcher.dbLM.extend {siteID, boardID, val: $.item(url, lmDate)}
-    threads = {}
+    threads = $.dict()
     pageLength = 0
     nThreads = 0
     oldest = null
@@ -449,7 +449,7 @@ ThreadWatcher =
     div
 
   setPrefixes: (threads) ->
-    prefixes = {}
+    prefixes = $.dict()
     for {siteID} in threads
       continue if siteID of prefixes
       len = 0
@@ -474,7 +474,7 @@ ThreadWatcher =
     ThreadWatcher.setPrefixes threads
     for {siteID, boardID, threadID, data} in threads
       # Add missing excerpt for threads added by Auto Watch
-      if not data.excerpt? and siteID is g.SITE.ID and (thread = g.threads["#{boardID}.#{threadID}"]) and thread.OP
+      if not data.excerpt? and siteID is g.SITE.ID and (thread = g.threads.get("#{boardID}.#{threadID}")) and thread.OP
         ThreadWatcher.db.extend {boardID, threadID, val: {excerpt: Get.threadExcerpt thread}}
       nodes.push ThreadWatcher.makeLine siteID, boardID, threadID, data
     {list} = ThreadWatcher
@@ -554,7 +554,7 @@ ThreadWatcher =
     ThreadWatcher.addRaw boardID, threadID, data, cb
 
   addRaw: (boardID, threadID, data, cb) ->
-    oldData = ThreadWatcher.db.get {boardID, threadID, defaultValue: {}}
+    oldData = ThreadWatcher.db.get {boardID, threadID, defaultValue: $.dict()}
     delete oldData.last
     delete oldData.modified
     $.extend oldData, data
@@ -594,7 +594,7 @@ ThreadWatcher =
           $.rmClass  entryEl, rmClass
           entryEl.textContent = text
           true
-      $.on entryEl, 'click', -> ThreadWatcher.toggle g.threads["#{g.BOARD}.#{g.THREADID}"]
+      $.on entryEl, 'click', -> ThreadWatcher.toggle g.threads.get("#{g.BOARD}.#{g.THREADID}")
 
     addMenuEntries: ->
       entries = []

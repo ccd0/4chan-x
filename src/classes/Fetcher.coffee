@@ -1,11 +1,11 @@
 class Fetcher
   constructor: (@boardID, @threadID, @postID, @root, @quoter) ->
-    if post = g.posts["#{@boardID}.#{@postID}"]
+    if post = g.posts.get("#{@boardID}.#{@postID}")
       @insert post
       return
 
     # 4chan X catalog data
-    if (post = Index.replyData?["#{@boardID}.#{@postID}"]) and (thread = g.threads["#{@boardID}.#{@threadID}"])
+    if (post = Index.replyData?["#{@boardID}.#{@postID}"]) and (thread = g.threads.get("#{@boardID}.#{@threadID}"))
       board  = g.boards[@boardID]
       post = new Post g.SITE.Build.postFromObject(post, @boardID), thread, board, {isFetchedQuote: true}
       Main.callbackNodes 'Post', [post]
@@ -53,7 +53,7 @@ class Fetcher
   fetchedPost: (req, isCached) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
-    if post = g.posts["#{@boardID}.#{@postID}"]
+    if post = g.posts.get("#{@boardID}.#{@postID}")
       @insert post
       return
 
@@ -96,7 +96,7 @@ class Fetcher
 
     board = g.boards[@boardID] or
       new Board @boardID
-    thread = g.threads["#{@boardID}.#{@threadID}"] or
+    thread = g.threads.get("#{@boardID}.#{@threadID}") or
       new Thread @threadID, board
     post = new Post g.SITE.Build.postFromObject(post, @boardID), thread, board, {isFetchedQuote: true}
     Main.callbackNodes 'Post', [post]
@@ -115,7 +115,7 @@ class Fetcher
           for key of media when /_link$/.test key
             # Image/thumbnail URLs loaded over HTTP can be modified in transit.
             # Require them to be from an HTTP host so that no referrer is sent to them from an HTTPS page.
-            delete media[key] unless media[key]?.match /^http:\/\//
+            delete media[key] unless $.getOwn(media, key)?.match /^http:\/\//
         that.parseArchivedPost @response, url, archive
       return true
     return false
@@ -123,7 +123,7 @@ class Fetcher
   parseArchivedPost: (data, url, archive) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
-    if post = g.posts["#{@boardID}.#{@postID}"]
+    if post = g.posts.get("#{@boardID}.#{@postID}")
       @insert post
       return
 
@@ -210,7 +210,7 @@ class Fetcher
 
     board = g.boards[@boardID] or
       new Board @boardID
-    thread = g.threads["#{@boardID}.#{@threadID}"] or
+    thread = g.threads.get("#{@boardID}.#{@threadID}") or
       new Thread @threadID, board
     post = new Post g.SITE.Build.post(o), thread, board, {isFetchedQuote: true}
     post.kill()

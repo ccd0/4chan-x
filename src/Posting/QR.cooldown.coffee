@@ -7,7 +7,7 @@ QR.cooldown =
   init: ->
     return unless Conf['Quick Reply']
     @data = Conf['cooldowns']
-    @changes = {}
+    @changes = $.dict()
     $.sync 'cooldowns', @sync
 
   # Called from QR
@@ -35,7 +35,7 @@ QR.cooldown =
     QR.cooldown.count()
 
   sync: (data) ->
-    QR.cooldown.data = data or {}
+    QR.cooldown.data = data or $.dict()
     QR.cooldown.start()
 
   add: (threadID, postID) ->
@@ -63,7 +63,7 @@ QR.cooldown =
 
   delete: (post) ->
     return unless QR.cooldown.data
-    cooldowns = (QR.cooldown.data[post.board.ID] or= {})
+    cooldowns = (QR.cooldown.data[post.board.ID] or= $.dict())
     for id, cooldown of cooldowns
       if !cooldown.delay? and cooldown.threadID is post.thread.ID and cooldown.postID is post.ID
         QR.cooldown.set post.board.ID, id, null
@@ -71,7 +71,7 @@ QR.cooldown =
 
   secondsDeletion: (post) ->
     return 0 unless QR.cooldown.data and Conf['Cooldown']
-    cooldowns = QR.cooldown.data[post.board.ID] or {}
+    cooldowns = QR.cooldown.data[post.board.ID] or $.dict()
     for start, cooldown of cooldowns
       if !cooldown.delay? and cooldown.threadID is post.thread.ID and cooldown.postID is post.ID
         seconds = QR.cooldown.delays.deletion - (Date.now() - start) // $.SECOND
@@ -87,25 +87,25 @@ QR.cooldown =
 
   mergeChange: (data, scope, id, value) ->
     if value
-      (data[scope] or= {})[id] = value
+      (data[scope] or= $.dict())[id] = value
     else if scope of data
       delete data[scope][id]
       delete data[scope] if Object.keys(data[scope]).length is 0
 
   set: (scope, id, value) ->
     QR.cooldown.mergeChange QR.cooldown.data, scope, id, value
-    (QR.cooldown.changes[scope] or= {})[id] = value
+    (QR.cooldown.changes[scope] or= $.dict())[id] = value
 
   save: ->
     {changes} = QR.cooldown
     return unless Object.keys(changes).length
-    $.get 'cooldowns', {}, ({cooldowns}) ->
+    $.get 'cooldowns', $.dict(), ({cooldowns}) ->
       for scope of QR.cooldown.changes
         for id, value of QR.cooldown.changes[scope]
           QR.cooldown.mergeChange cooldowns, scope, id, value
         QR.cooldown.data = cooldowns
       $.set 'cooldowns', cooldowns, ->
-        QR.cooldown.changes = {}
+        QR.cooldown.changes = $.dict()
 
   update: ->
     return unless QR.cooldown.isCounting
@@ -117,7 +117,7 @@ QR.cooldown =
     seconds = 0
 
     if Conf['Cooldown'] then for scope in [g.BOARD.ID, 'global']
-      cooldowns = (QR.cooldown.data[scope] or= {})
+      cooldowns = (QR.cooldown.data[scope] or= $.dict())
 
       for start, cooldown of cooldowns
         start = +start

@@ -129,8 +129,8 @@ Settings =
       warning addWarning
     $.add section, warnings
 
-    items  = {}
-    inputs = {}
+    items  = $.dict()
+    inputs = $.dict()
     addCheckboxes = (root, obj) ->
       containers = [root]
       for key, arr of obj when arr instanceof Array
@@ -177,7 +177,7 @@ Settings =
     div = $.el 'div',
       <%= html('<button></button><span class="description">: Clear manually-hidden threads and posts on all boards. Reload the page to apply.') %>
     button = $ 'button', div
-    $.get {hiddenThreads: {}, hiddenPosts: {}}, ({hiddenThreads, hiddenPosts}) ->
+    $.get {hiddenThreads: $.dict(), hiddenPosts: $.dict()}, ({hiddenThreads, hiddenPosts}) ->
       hiddenNum = 0
       for ID, site of hiddenThreads when ID isnt 'boards'
         for ID, board of site.boards
@@ -194,7 +194,7 @@ Settings =
       button.textContent = "Hidden: #{hiddenNum}"
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
-      $.get 'hiddenThreads', {}, ({hiddenThreads}) ->
+      $.get 'hiddenThreads', $.dict(), ({hiddenThreads}) ->
         if $.hasStorage and g.SITE.software is 'yotsuba'
           for boardID of hiddenThreads.boards
             localStorage.removeItem "4chan-hide-t-#{boardID}"
@@ -203,7 +203,7 @@ Settings =
 
   export: ->
     # Make sure to export the most recent data, but don't overwrite existing `Conf` object.
-    Conf2 = {}
+    Conf2 = $.dict()
     $.extend Conf2, Conf
     $.get Conf2, (Conf2) ->
       # Don't export cached JSON data.
@@ -235,7 +235,7 @@ Settings =
     reader = new FileReader()
     reader.onload = (e) ->
       try
-        Settings.loadSettings JSON.parse(e.target.result), (err) ->
+        Settings.loadSettings $.dict.json(e.target.result), (err) ->
           if err
             output.textContent = 'Import failed due to an error.'
           else if confirm 'Import successful. Reload now?'
@@ -327,14 +327,14 @@ Settings =
         data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, (s) -> "#{s[0].toUpperCase()}#{s[1..]}").replace /(^|.+\+)[A-Z]$/g, (s) ->
           "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
       if data.WatchedThreads
-        data.Conf['watchedThreads'] = boards: {}
+        data.Conf['watchedThreads'] = boards: $.dict()
         for boardID, threads of data.WatchedThreads
           for threadID, threadData of threads
-            (data.Conf['watchedThreads'].boards[boardID] or= {})[threadID] = excerpt: threadData.textContent
+            (data.Conf['watchedThreads'].boards[boardID] or= $.dict())[threadID] = excerpt: threadData.textContent
       data
 
   upgrade: (data, version) ->
-    changes = {}
+    changes = $.dict()
     set = (key, value) ->
       data[key] = changes[key] = value
     setD = (key, value) ->
@@ -371,7 +371,7 @@ Settings =
       if data['selectedArchives']?
         uids = {"Moe":0,"4plebs Archive":3,"Nyafuu Archive":4,"Love is Over":5,"Rebecca Black Tech":8,"warosu":10,"fgts":15,"not4plebs":22,"DesuStorage":23,"fireden.net":24,"disabled":null}
         for boardID, record of data['selectedArchives']
-          for type, name of record when name of uids
+          for type, name of record when $.hasOwn(uids, name)
             record[type] = uids[name]
         set 'selectedArchives', data['selectedArchives']
     if compareString < '00001.00011.00016.00000'
@@ -468,7 +468,7 @@ Settings =
           delete data[db].lastChecked
           set db, data[db]
       if data['siteSoftware']? and not data['siteProperties']?
-        siteProperties = {}
+        siteProperties = $.dict()
         for line in data['siteSoftware'].split('\n')
           [hostname, software] = line.split(' ')
           siteProperties[hostname] = {software}
@@ -523,6 +523,7 @@ Settings =
   selectFilter: ->
     div = @nextElementSibling
     if (name = @value) isnt 'guide'
+      return unless $.hasOwn(Config.filter, name)
       $.rmAll div
       ta = $.el 'textarea',
         name: name
@@ -551,7 +552,7 @@ Settings =
     $.extend section, <%= readHTML('Advanced.html') %>
     warning.hidden = Conf[warning.dataset.feature] for warning in $$ '.warning', section
 
-    inputs = {}
+    inputs = $.dict()
     for input in $$ '[name]', section
       inputs[input.name] = input
 
@@ -560,7 +561,7 @@ Settings =
       Conf['lastarchivecheck'] = 0
       $.id('lastarchivecheck').textContent = 'never'
 
-    items = {}
+    items = $.dict()
     for name, input of inputs when name not in ['captchaServiceKey', 'Interval', 'Custom CSS']
       items[name] = Conf[name]
       event = if (
@@ -602,7 +603,7 @@ Settings =
     $.on customCSS, 'change', Settings.togglecss
     $.on applyCSS,  'click',  -> CustomCSS.update()
 
-    itemsArchive = {}
+    itemsArchive = $.dict()
     itemsArchive[name] = Conf[name] for name in ['archives', 'selectedArchives', 'lastarchivecheck']
     $.get itemsArchive, (itemsArchive) ->
       $.extend Conf, itemsArchive
@@ -634,7 +635,7 @@ Settings =
     $.rmAll boardSelect
     $.rmAll tbody
 
-    archBoards = {}
+    archBoards = $.dict()
     for {uid, name, boards, files, software} in Conf['archives']
       continue unless software in ['fuuka', 'foolfuuka']
       for boardID in boards
@@ -715,7 +716,7 @@ Settings =
 
   saveSelectedArchive: ->
     $.get 'selectedArchives', Conf['selectedArchives'], ({selectedArchives}) =>
-      (selectedArchives[@dataset.boardid] or= {})[@dataset.type] = JSON.parse @value
+      (selectedArchives[@dataset.boardid] or= $.dict())[@dataset.type] = JSON.parse @value
       $.set 'selectedArchives', selectedArchives
       Conf['selectedArchives'] = selectedArchives
       Redirect.selectArchives()
@@ -732,7 +733,7 @@ Settings =
     Conf['captchaServiceKey'][domain] = value
     $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) ->
       captchaServiceKey[domain] = value
-      delete captchaServiceKey[domain] unless value or (domain of Config['captchaServiceKey'][0])
+      delete captchaServiceKey[domain] unless value or $.hasOwn(Config['captchaServiceKey'][0], domain)
       Conf['captchaServiceKey'] = captchaServiceKey
       $.set 'captchaServiceKey', captchaServiceKey
       Settings.captchaServiceDomainList()
@@ -794,8 +795,8 @@ Settings =
     $('.warning', section).hidden = Conf['Keybinds']
 
     tbody  = $ 'tbody', section
-    items  = {}
-    inputs = {}
+    items  = $.dict()
+    inputs = $.dict()
     for key, arr of Config.hotkeys
       tr = $.el 'tr',
         <%= html('<td>${arr[1]}</td><td><input class="field"></td>') %>

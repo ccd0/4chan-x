@@ -6,11 +6,11 @@ ModContact =
       cb:   @node
 
   node: ->
-    return if @isClone or !ModContact.specific[@info.capcode]
+    return if @isClone or !$.hasOwn(ModContact.specific, @info.capcode)
     links = $.el 'span', className: 'contact-links brackets-wrap'
     $.extend links, ModContact.template(@info.capcode)
     $.after @nodes.capcode, links
-    if (moved = @info.comment.match /This thread was moved to >>>\/(\w+)\//) and ModContact.moveNote[moved[1]]
+    if (moved = @info.comment.match /This thread was moved to >>>\/(\w+)\//) and $.hasOwn(ModContact.moveNote, moved[1])
       moveNote = $.el 'div', className: 'move-note'
       $.extend moveNote, ModContact.moveNote[moved[1]]
       $.add @nodes.post, moveNote

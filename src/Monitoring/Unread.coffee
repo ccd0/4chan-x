@@ -131,7 +131,7 @@ Unread =
     postIDs = Unread.thread.posts.keys
     for i in [Unread.readCount...postIDs.length] by 1
       ID = +postIDs[i]
-      unless Unread.thread.posts[ID].isFetchedQuote
+      unless Unread.thread.posts.get(ID).isFetchedQuote
         break if ID > Unread.lastReadPost
         Unread.posts.delete ID
         Unread.postsQuotingYou.delete ID
@@ -217,7 +217,7 @@ Unread =
     postIDs = Unread.thread.posts.keys
     for i in [Unread.readCount...postIDs.length] by 1
       ID = +postIDs[i]
-      unless Unread.thread.posts[ID].isFetchedQuote
+      unless Unread.thread.posts.get(ID).isFetchedQuote
         break if Unread.posts.has ID
         Unread.lastReadPost = ID
       Unread.readCount++

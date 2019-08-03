@@ -1,6 +1,6 @@
 class ShimSet
   constructor: ->
-    @elements = {}
+    @elements = $.dict()
     @size = 0
   has: (value) ->
     value of @elements

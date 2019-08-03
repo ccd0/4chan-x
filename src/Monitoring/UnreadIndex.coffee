@@ -1,7 +1,7 @@
 UnreadIndex =
-  lastReadPost: {}
-  hr: {}
-  markReadLink: {}
+  lastReadPost: $.dict()
+  hr:           $.dict()
+  markReadLink: $.dict()
 
   init: ->
     return unless g.VIEW is 'index' and Conf['Remember Last Read Post'] and Conf['Unread Line in Index']
@@ -27,7 +27,7 @@ UnreadIndex =
   onIndexRefresh: (e) ->
     return if e.detail.isCatalog
     for threadID in e.detail.threadIDs
-      thread = g.threads[threadID]
+      thread = g.threads.get(threadID)
       UnreadIndex.update thread
 
   onPostsInserted: (e) ->

@@ -154,7 +154,7 @@ Captcha.fixes =
     else if n isnt 9 and (i = @imageKeys16.indexOf key) >= 0 and i % 4 < w and (img = @images[n - (4 - i//4)*w + (i % 4)])
       img.click()
       verify.focus()
-    else if dx = {'Up': n, 'Down': w, 'Left': last, 'Right': 1}[key]
+    else if dx = $.getOwn({'Up': n, 'Down': w, 'Left': last, 'Right': 1}, key)
       x = (x + dx) % (n + w)
       if n < x < last
         x = if dx is last then n else last

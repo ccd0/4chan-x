@@ -1,5 +1,5 @@
 Recursive =
-  recursives: {}
+  recursives: $.dict()
   init: ->
     return unless g.VIEW in ['index', 'thread']
     Callbacks.Post.push

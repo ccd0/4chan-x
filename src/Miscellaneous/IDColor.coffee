@@ -1,9 +1,8 @@
 IDColor =
   init: ->
     return unless g.VIEW in ['index', 'thread'] and Conf['Color User IDs']
-    @ids = {
-      Heaven: [0, 0, 0, '#fff']
-    }
+    @ids = $.dict()
+    @ids['Heaven'] = [0, 0, 0, '#fff']
 
     Callbacks.Post.push
       name: 'Color User IDs'

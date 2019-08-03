@@ -59,9 +59,9 @@ class Post
     <% if (readJSON('/.tests_enabled')) { %>
     return if @forBuildTest
     <% } %>
-    if g.posts[@fullID]
+    if g.posts.get(@fullID)
       @isRebuilt = true
-      @clones = g.posts[@fullID].clones
+      @clones = g.posts.get(@fullID).clones
       clone.origin = @ for clone in @clones
 
     @thread.lastPost = @ID if !@isFetchedQuote and @ID > @thread.lastPost

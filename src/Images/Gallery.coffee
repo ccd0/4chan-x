@@ -38,7 +38,7 @@ Gallery =
 
     Gallery.images  = []
     nodes = Gallery.nodes = {}
-    Gallery.fileIDs = {}
+    Gallery.fileIDs = $.dict()
     Gallery.slideshow = false
 
     nodes.el = dialog = $.el 'div',
@@ -133,7 +133,7 @@ Gallery =
 
   load: (thumb, errorCB) ->
     ext = thumb.href.match /\w*$/
-    elType = {'webm': 'video', 'mp4': 'video', 'pdf': 'iframe'}[ext] or 'img'
+    elType = $.getOwn({'webm': 'video', 'mp4': 'video', 'pdf': 'iframe'}, ext) or 'img'
     file = $.el elType
     $.extend file.dataset, thumb.dataset
     $.on file, 'error', errorCB
@@ -185,7 +185,7 @@ Gallery =
       Gallery.cb.stop()
 
     # Scroll to post
-    if Conf['Scroll to Post'] and (post = g.posts[file.dataset.post])
+    if Conf['Scroll to Post'] and (post = g.posts.get(file.dataset.post))
       Header.scrollTo post.nodes.root
 
     # Preload next image
@@ -196,11 +196,11 @@ Gallery =
     if @error?.code is MediaError.MEDIA_ERR_DECODE
       return new Notice 'error', 'Corrupt or unplayable video', 30
     return if ImageCommon.isFromArchive @
-    post = g.posts[@dataset.post]
-    file = post.files[@dataset.file]
+    post = g.posts.get(@dataset.post)
+    file = post.files[+@dataset.file]
     ImageCommon.error @, post, file, null, (url) =>
       return unless url
-      Gallery.images[@dataset.id].href = url
+      Gallery.images[+@dataset.id].href = url
       (@src = url if Gallery.nodes.current is @)
 
   cacheError: ->
@@ -341,7 +341,7 @@ Gallery =
       {current, frame} = Gallery.nodes
       {style} = current
 
-      if Conf['Stretch to Fit'] and (dim = g.posts[current.dataset.post]?.file.dimensions)
+      if Conf['Stretch to Fit'] and (dim = g.posts.get(current.dataset.post)?.file.dimensions)
         [width, height] = dim.split 'x'
         containerWidth = frame.clientWidth
         containerHeight = doc.clientHeight - 25

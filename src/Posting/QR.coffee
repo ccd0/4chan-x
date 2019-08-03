@@ -112,7 +112,7 @@ QR =
   statusCheck: ->
     return unless QR.nodes
     {thread} = QR.posts[0]
-    if thread isnt 'new' and g.threads["#{g.BOARD}.#{thread}"].isDead
+    if thread isnt 'new' and g.threads.get("#{g.BOARD}.#{thread}").isDead
       QR.abort()
     else
       QR.status()
@@ -258,7 +258,7 @@ QR =
   status: ->
     return unless QR.nodes
     {thread} = QR.posts[0]
-    if thread isnt 'new' and g.threads["#{g.BOARD}.#{thread}"].isDead
+    if thread isnt 'new' and g.threads.get("#{g.BOARD}.#{thread}").isDead
       value    = 'Dead'
       disabled = true
       QR.cooldown.auto = false
@@ -402,7 +402,7 @@ QR =
     if file
       {type} = file
       blob = new Blob [file], {type}
-      blob.name = "#{Conf['pastedname']}.#{QR.extensionFromType[type] or 'jpg'}"
+      blob.name = "#{Conf['pastedname']}.#{$.getOwn(QR.extensionFromType, type) or 'jpg'}"
       QR.open()
       QR.handleFiles [blob]
       $.addClass QR.nodes.el, 'dump'
@@ -651,7 +651,7 @@ QR =
     post = QR.posts[0]
     post.forceSave()
     threadID = post.thread
-    thread = g.BOARD.threads[threadID]
+    thread = g.BOARD.threads.get(threadID)
     if g.BOARD.ID is 'f' and threadID is 'new'
       filetag = QR.nodes.flashTag.value
 
@@ -662,7 +662,7 @@ QR =
         err = 'New threads require a subject.'
       else unless !!g.BOARD.config.text_only or post.file
         err = 'No file selected.'
-    else if g.BOARD.threads[threadID].isClosed
+    else if g.BOARD.threads.get(threadID).isClosed
       err = 'You can\'t reply to this thread anymore.'
     else unless post.com or post.file
       err = 'No comment or file.'

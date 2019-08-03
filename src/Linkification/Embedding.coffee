@@ -1,7 +1,7 @@
 Embedding =
   init: ->
     return unless g.VIEW in ['index', 'thread', 'archive'] and Conf['Linkify'] and (Conf['Embedding'] or Conf['Link Title'] or Conf['Cover Preview'])
-    @types = {}
+    @types = $.dict()
     @types[type.key] = type for type in @ordered_types
 
     if Conf['Embedding'] and g.VIEW isnt 'archive'

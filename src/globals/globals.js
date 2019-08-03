@@ -1,6 +1,6 @@
 var Conf, E, c, d, doc, docSet, g;
 
-Conf = {};
+Conf = Object.create(null);
 c    = console;
 d    = document;
 doc  = d.documentElement;
@@ -13,8 +13,8 @@ docSet = function() {
 g = {
   VERSION:   '<%= readJSON('/version.json').version %>',
   NAMESPACE: '<%= meta.name %>.',
-  sites:     {},
-  boards:    {}
+  sites:     Object.create(null),
+  boards:    Object.create(null)
 };
 
 E = (function() {

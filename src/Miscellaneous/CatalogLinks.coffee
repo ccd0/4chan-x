@@ -81,12 +81,12 @@ CatalogLinks =
     return
 
   externalParse: ->
-    CatalogLinks.externalList = {}
+    CatalogLinks.externalList = $.dict()
     for line in Conf['externalCatalogURLs'].split '\n'
       continue if line[0] is '#'
       url = line.split(';')[0]
       boards   = Filter.parseBoards(line.match(/;boards:([^;]+)/)?[1] or '*')
-      excludes = Filter.parseBoards(line.match(/;exclude:([^;]+)/)?[1]) or {}
+      excludes = Filter.parseBoards(line.match(/;exclude:([^;]+)/)?[1]) or $.dict()
       for board of boards
         unless excludes[board] or excludes[board.split('/')[0] + '/*']
           CatalogLinks.externalList[board] = url

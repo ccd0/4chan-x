@@ -266,7 +266,7 @@ ThreadUpdater =
 
     # XXX Reject updates that falsely delete the last post.
     return if postObjects[postObjects.length-1].no < lastPost and
-      new Date(req.getResponseHeader('Last-Modified')) - thread.posts[lastPost].info.date < 30 * $.SECOND
+      new Date(req.getResponseHeader('Last-Modified')) - thread.posts.get(lastPost).info.date < 30 * $.SECOND
 
     g.SITE.Build.spoilerRange[board] = OP.custom_spoiler
     thread.setStatus 'Archived', !!OP.archived
@@ -291,7 +291,7 @@ ThreadUpdater =
       continue if ID <= lastPost
 
       # XXX Resurrect wrongly deleted posts.
-      if (post = thread.posts[ID]) and not post.isFetchedQuote
+      if (post = thread.posts.get(ID)) and not post.isFetchedQuote
         post.resurrect()
         continue
 
@@ -304,14 +304,14 @@ ThreadUpdater =
     # Check for deleted posts.
     deletedPosts = []
     for ID in ThreadUpdater.postIDs when ID not in index
-      thread.posts[ID].kill()
+      thread.posts.get(ID).kill()
       deletedPosts.push "#{board}.#{ID}"
     ThreadUpdater.postIDs = index
 
     # Check for deleted files.
     deletedFiles = []
     for ID in ThreadUpdater.fileIDs when not (ID in files or "#{board}.#{ID}" in deletedPosts)
-      thread.posts[ID].kill true
+      thread.posts.get(ID).kill true
       deletedFiles.push "#{board}.#{ID}"
     ThreadUpdater.fileIDs = files
 

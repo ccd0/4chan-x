@@ -13,7 +13,7 @@ BoardConfig =
 
   load: ->
     if @status is 200 and @response and @response.boards
-      boards = {}
+      boards = $.dict()
       for board in @response.boards
         boards[board.board] = board
       {troll_flags} = @response

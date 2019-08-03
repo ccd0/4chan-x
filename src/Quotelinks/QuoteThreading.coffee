@@ -34,9 +34,9 @@ QuoteThreading =
       name: 'Quote Threading'
       cb:   @node
 
-  parent:   {}
-  children: {}
-  inserted: {}
+  parent:   $.dict()
+  children: $.dict()
+  inserted: $.dict()
 
   toggleThreading: ->
     @setThreadingState !Conf['Thread Quotes']
@@ -65,7 +65,7 @@ QuoteThreading =
 
     parents = new Set()
     lastParent = null
-    for quote in @quotes when parent = g.posts[quote]
+    for quote in @quotes when parent = g.posts.get(quote)
       if not parent.isFetchedQuote and parent.isReply and parent.ID < @ID
         parents.add parent.ID
         lastParent = parent if not lastParent or parent.ID > lastParent.ID
@@ -141,7 +141,7 @@ QuoteThreading =
     else
       nodes = []
       Unread.order = new RandomAccessList()
-      QuoteThreading.inserted = {}
+      QuoteThreading.inserted = $.dict()
       posts.forEach (post) ->
         return if post.isFetchedQuote
         Unread.order.push post

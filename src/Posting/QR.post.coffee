@@ -122,6 +122,7 @@ QR.post = class
       @spoiler = input.checked
       return
     {name}  = input.dataset
+    return unless name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag']
     prev    = @[name]
     @[name] = input.value or input.dataset.default or null
     switch name
@@ -340,7 +341,7 @@ QR.post = class
     @file.newName = (@filename or '').replace /[/\\]/g, '-'
     unless QR.validExtension.test @filename
       # 4chan will truncate the filename if it has no extension.
-      @file.newName += ".#{QR.extensionFromType[@file.type] or 'jpg'}"
+      @file.newName += ".#{$.getOwn(QR.extensionFromType, @file.type) or 'jpg'}"
 
   updateFilename: ->
     long = "#{@filename} (#{@filesize})"

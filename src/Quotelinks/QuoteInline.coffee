@@ -33,7 +33,7 @@ QuoteInline =
     return if $.modifiedClick e
 
     {boardID, threadID, postID} = Get.postDataFromLink @
-    return if Conf['Inline Cross-thread Quotes Only'] and g.VIEW is 'thread' and g.posts["#{boardID}.#{postID}"]?.nodes.root.offsetParent # exists and not hidden
+    return if Conf['Inline Cross-thread Quotes Only'] and g.VIEW is 'thread' and g.posts.get("#{boardID}.#{postID}")?.nodes.root.offsetParent # exists and not hidden
     return if $.hasClass(doc, 'catalog-mode')
 
     e.preventDefault()
@@ -66,7 +66,7 @@ QuoteInline =
     new Fetcher boardID, threadID, postID, inline, quoter
 
     return if not (
-      (post = g.posts["#{boardID}.#{postID}"]) and
+      (post = g.posts.get("#{boardID}.#{postID}")) and
       context.thread is post.thread
     )
 
@@ -98,13 +98,13 @@ QuoteInline =
     return if not (el = root.firstElementChild)
 
     # Dereference clone.
-    post = g.posts["#{boardID}.#{postID}"]
+    post = g.posts.get("#{boardID}.#{postID}")
     post.rmClone el.dataset.clone
 
     # Decrease forward count and unhide.
     if Conf['Forward Hiding'] and
       isBacklink and
-      context.thread is g.threads["#{boardID}.#{threadID}"] and
+      context.thread is g.threads.get("#{boardID}.#{threadID}") and
       not --post.forwarded
         delete post.forwarded
         $.rmClass post.nodes.root, 'forwarded'

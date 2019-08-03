@@ -33,7 +33,7 @@ SW.tinyboard =
   detect: ->
     for script in $$ 'script:not([src])', d.head
       if (m = script.textContent.match(/\bvar configRoot=(".*?")/))
-        properties = {}
+        properties = $.dict()
         try
           root = JSON.parse m[1]
           if root[0] is '/'

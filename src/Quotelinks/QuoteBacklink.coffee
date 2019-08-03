@@ -10,7 +10,7 @@ QuoteBacklink =
   # Second callback adds relevant containers into posts.
   # This is is so that fetched posts can get their backlinks,
   # and that as much backlinks are appended in the background as possible.
-  containers: {}
+  containers: $.dict()
   init: ->
     return if g.VIEW not in ['index', 'thread'] or !Conf['Quote Backlinks']
 
@@ -35,7 +35,7 @@ QuoteBacklink =
     $.add a, QuoteYou.mark.cloneNode(true) if markYours
     for quote in @quotes
       containers = [QuoteBacklink.getContainer quote]
-      if (post = g.posts[quote]) and post.nodes.backlinkContainer
+      if (post = g.posts.get(quote)) and post.nodes.backlinkContainer
         # Don't add OP clones when OP Backlinks is disabled,
         # as the clones won't have the backlink containers.
         for clone in post.clones

@@ -59,7 +59,8 @@ Favicon =
         '<%= readBase64('Metro.unreadNSFW.png') %>'
         '<%= readBase64('Metro.unreadNSFWY.png') %>'
       ]
-    }[Conf['favicon']]
+    }
+    items = $.getOwn(items, Conf['favicon'])
 
     f = Favicon
     t = 'data:image/png;base64,'

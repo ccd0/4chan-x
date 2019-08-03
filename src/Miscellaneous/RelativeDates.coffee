@@ -126,6 +126,6 @@ RelativeDates =
 
   markStale: (data) ->
     return if data in RelativeDates.stale # We can call RelativeDates.update() multiple times.
-    return if data instanceof Post and !g.posts[data.fullID] # collected post.
+    return if data instanceof Post and !g.posts.get(data.fullID) # collected post.
     return if data instanceof Element and !doc.contains(data) # removed catalog reply.
     RelativeDates.stale.push data

@@ -40,6 +40,32 @@ $.extend = (object, properties) ->
     object[key] = val
   return
 
+$.dict = ->
+  Object.create(null)
+
+$.dict.clone = (obj) ->
+  if typeof obj isnt 'object' or obj is null
+    obj
+  else if obj instanceof Array
+    arr = []
+    for i in [0...obj.length] by 1
+      arr.push $.dict.clone(obj[i])
+    arr
+  else
+    map = Object.create(null)
+    for key, val of obj
+      map[key] = $.dict.clone(val)
+    map
+
+$.dict.json = (str) ->
+  $.dict.clone(JSON.parse(str))
+
+$.hasOwn = (obj, key) ->
+  Object::hasOwnProperty.call(obj, key)
+
+$.getOwn = (obj, key) ->
+  if Object::hasOwnProperty.call(obj, key) then obj[key] else undefined
+
 $.ajax = do ->
   if window.wrappedJSObject and not XMLHttpRequest.wrappedJSObject
     pageXHR = XPCNativeWrapper window.wrappedJSObject.XMLHttpRequest
@@ -85,7 +111,7 @@ $.ajax = do ->
 # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
 do ->
   requestID = 0
-  requests = {}
+  requests = $.dict()
 
   $.ajaxPageInit = ->
     if Conf['Chromium CORB Bug'] and g.SITE.software is 'yotsuba'
@@ -97,7 +123,7 @@ do ->
               $.set 'Chromium CORB Bug', (Conf['Chromium CORB Bug'] = false)
 
     $.global ->
-      window.FCX.requests = {}
+      window.FCX.requests = Object.create(null)
 
       document.addEventListener '4chanXAjax', (e) ->
         {url, timeout, responseType, withCredentials, type, onprogress, form, headers, id} = e.detail
@@ -144,7 +170,8 @@ do ->
       return unless (req = requests[e.detail.id])
       delete requests[e.detail.id]
       if e.detail.status
-        $.extend req, e.detail
+        for key in ['status', 'statusText', 'response', 'responseHeaderString']
+          req[key] = e.detail[key]
         if req.responseType is 'document'
           req.response = new DOMParser().parseFromString(e.detail.response, 'text/html')
       req.onloadend()
@@ -165,7 +192,7 @@ do ->
 # Status Code 304: Not modified
 # With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
 # This saves a lot of bandwidth and CPU time for both the users and the servers.
-$.lastModified = {}
+$.lastModified = $.dict()
 $.whenModified = (url, bucket, cb, options={}) ->
   {timeout, ajax} = options
   params = []
@@ -174,12 +201,12 @@ $.whenModified = (url, bucket, cb, options={}) ->
   params.push "t=#{Date.now()}" if url.split('/')[2] is 'a.4cdn.org'
   url0 = url
   url += '?' + params.join('&') if params.length
-  headers = {}
+  headers = $.dict()
   if (t = $.lastModified[bucket]?[url0])?
     headers['If-Modified-Since'] = t
   r = (ajax or $.ajax) url, {
     onloadend: ->
-      ($.lastModified[bucket] or= {})[url0] = @getResponseHeader('Last-Modified')
+      ($.lastModified[bucket] or= $.dict())[url0] = @getResponseHeader('Last-Modified')
       cb.call @
     timeout
     headers
@@ -187,7 +214,7 @@ $.whenModified = (url, bucket, cb, options={}) ->
   r
 
 do ->
-  reqs = {}
+  reqs = $.dict()
   $.cache = (url, cb, options={}) ->
     {ajax} = options
     if (req = reqs[url])
@@ -212,11 +239,13 @@ do ->
 
 $.cb =
   checked: ->
-    $.set @name, @checked
-    Conf[@name] = @checked
+    if $.hasOwn(Conf, @name)
+      $.set @name, @checked
+      Conf[@name] = @checked
   value: ->
-    $.set @name, @value.trim()
-    Conf[@name] = @value
+    if $.hasOwn(Conf, @name)
+      $.set @name, @value.trim()
+      Conf[@name] = @value
 
 $.asap = (test, cb) ->
   if test()
@@ -478,14 +507,14 @@ $.platform = '<%= type %>';
 
 $.hasStorage = do ->
   try
-    return true if localStorage[g.NAMESPACE + 'hasStorage'] is 'true'
-    localStorage[g.NAMESPACE + 'hasStorage'] = 'true'
-    return localStorage[g.NAMESPACE + 'hasStorage'] is 'true'
+    return true if localStorage.getItem(g.NAMESPACE + 'hasStorage') is 'true'
+    localStorage.setItem(g.NAMESPACE + 'hasStorage', 'true')
+    return localStorage.getItem(g.NAMESPACE + 'hasStorage') is 'true'
   catch
     false
 
 $.item = (key, val) ->
-  item = {}
+  item = $.dict()
   item[key] = val
   item
 
@@ -496,7 +525,7 @@ $.oneItemSugar = (fn) ->
     else
       fn key, val
 
-$.syncing = {}
+$.syncing = $.dict()
 
 $.securityCheck = (data) ->
   if location.protocol isnt 'https:'
@@ -505,13 +534,13 @@ $.securityCheck = (data) ->
 <% if (type === 'crx') { %>
 # https://developer.chrome.com/extensions/storage.html
 $.oldValue =
-  local: {}
-  sync:  {}
+  local: $.dict()
+  sync:  $.dict()
 
 chrome.storage.onChanged.addListener (changes, area) ->
   for key of changes
     oldValue = $.oldValue.local[key] ? $.oldValue.sync[key]
-    $.oldValue[area][key] = changes[key].newValue
+    $.oldValue[area][key] = $.dict.clone(changes[key].newValue)
     newValue = $.oldValue.local[key] ? $.oldValue.sync[key]
     cb = $.syncing[key]
     if cb and JSON.stringify(newValue) isnt JSON.stringify(oldValue)
@@ -542,11 +571,12 @@ $.get = $.oneItemSugar (data, cb) ->
     if $.engine is 'gecko' and area is 'sync' and keys.length > 3
       keys = null
     chrome.storage[area].get keys, (result) ->
+      result = $.dict.clone(result)
       if chrome.runtime.lastError
         c.error chrome.runtime.lastError.message
       if keys is null
-        result2 = {}
-        result2[key] = val for key, val of result when key of data
+        result2 = $.dict()
+        result2[key] = val for key, val of result when $.hasOwn(data, key)
         result = result2
       for key of data
         $.oldValue[area][key] = result[key]
@@ -560,8 +590,8 @@ $.get = $.oneItemSugar (data, cb) ->
 
 do ->
   items =
-    local: {}
-    sync:  {}
+    local: $.dict()
+    sync:  $.dict()
 
   exceedsQuota = (key, value) ->
     # bytes in UTF-8
@@ -579,7 +609,7 @@ do ->
 
   timeout = {}
   setArea = (area, cb) ->
-    data = {}
+    data = $.dict()
     $.extend data, items[area]
     return if !Object.keys(data).length or timeout[area] > Date.now()
     chrome.storage[area].set data, ->
@@ -609,8 +639,8 @@ do ->
 
   $.clear = (cb) ->
     return unless $.crxWorking()
-    items.local = {}
-    items.sync  = {}
+    items.local = $.dict()
+    items.sync  = $.dict()
     count = 2
     err   = null
     done  = ->
@@ -631,7 +661,7 @@ if GM?.deleteValue? and window.BroadcastChannel and not GM_addValueChangeListene
 
   $.on $.syncChannel, 'message', (e) ->
     for key, val of e.data when (cb = $.syncing[key])
-      cb JSON.parse(JSON.stringify(val)), key
+      cb $.dict.json(JSON.stringify(val)), key
 
   $.sync = (key, cb) ->
     $.syncing[key] = cb
@@ -642,7 +672,7 @@ if GM?.deleteValue? and window.BroadcastChannel and not GM_addValueChangeListene
     unless keys instanceof Array
       keys = [keys]
     Promise.all(GM.deleteValue(g.NAMESPACE + key) for key in keys).then ->
-      items = {}
+      items = $.dict()
       items[key] = undefined for key in keys
       $.syncChannel.postMessage items
       cb?()
@@ -651,7 +681,7 @@ if GM?.deleteValue? and window.BroadcastChannel and not GM_addValueChangeListene
     keys = Object.keys items
     Promise.all(GM.getValue(g.NAMESPACE + key) for key in keys).then (values) ->
       for val, i in values when val
-        items[keys[i]] = JSON.parse val
+        items[keys[i]] = $.dict.json val
       cb items
 
   $.set = $.oneItemSugar (items, cb) ->
@@ -675,7 +705,7 @@ else
     $.getValue   = GM_getValue
     $.listValues = -> GM_listValues() # error when called if missing
   else if $.hasStorage
-    $.getValue = (key) -> localStorage[key]
+    $.getValue = (key) -> localStorage.getItem(key)
     $.listValues = ->
       key for key of localStorage when key[...g.NAMESPACE.length] is g.NAMESPACE
   else
@@ -686,12 +716,12 @@ else
     $.setValue    = GM_setValue
     $.deleteValue = GM_deleteValue
   else if GM_deleteValue?
-    $.oldValue = {}
+    $.oldValue = $.dict()
     $.setValue = (key, val) ->
       GM_setValue key, val
       if key of $.syncing
         $.oldValue[key]   = val
-        localStorage[key] = val if $.hasStorage # for `storage` events
+        localStorage.setItem(key, val) if $.hasStorage # for `storage` events
     $.deleteValue = (key) ->
       GM_deleteValue key
       if key of $.syncing
@@ -699,10 +729,10 @@ else
         localStorage.removeItem key if $.hasStorage # for `storage` events
     $.cantSync = true if !$.hasStorage
   else if $.hasStorage
-    $.oldValue = {}
+    $.oldValue = $.dict()
     $.setValue = (key, val) ->
       $.oldValue[key]   = val if key of $.syncing
-      localStorage[key] = val
+      localStorage.setItem(key, val)
     $.deleteValue = (key) ->
       delete $.oldValue[key] if key of $.syncing
       localStorage.removeItem key
@@ -715,7 +745,7 @@ else
     $.sync = (key, cb) ->
       $.syncing[key] = GM_addValueChangeListener g.NAMESPACE + key, (key2, oldValue, newValue, remote) ->
         if remote
-          newValue = JSON.parse newValue unless newValue is undefined
+          newValue = $.dict.json newValue unless newValue is undefined
           cb newValue, key
     $.forceSync = ->
   else if GM_deleteValue? or $.hasStorage
@@ -730,7 +760,7 @@ else
         if newValue?
           return if newValue is $.oldValue[key]
           $.oldValue[key] = newValue
-          cb JSON.parse(newValue), key[g.NAMESPACE.length..]
+          cb $.dict.json(newValue), key[g.NAMESPACE.length..]
         else
           return unless $.oldValue[key]?
           delete $.oldValue[key]
@@ -760,7 +790,7 @@ else
   $.getSync = (items, cb) ->
     for key of items when (val2 = $.getValue g.NAMESPACE + key)
       try
-        items[key] = JSON.parse val2
+        items[key] = $.dict.json val2
       catch err
         # XXX https://github.com/ccd0/4chan-x/issues/2218
         unless /^(?:undefined)*$/.test(val2)

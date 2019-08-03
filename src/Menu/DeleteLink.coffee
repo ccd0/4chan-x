@@ -1,5 +1,5 @@
 DeleteLink =
-  auto: [{}, {}]
+  auto: [$.dict(), $.dict()]
 
   init: ->
     return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Delete Link']
@@ -77,7 +77,7 @@ DeleteLink =
       mode: 'usrdel'
       onlyimgdel: fileOnly
       pwd: QR.persona.getPassword()
-    form[post.ID] = 'delete'
+    form[+post.ID] = 'delete'
 
     $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"),
       responseType: 'document'
@@ -110,7 +110,7 @@ DeleteLink =
       link.textContent = 'Deleted' if post.fullID is DeleteLink.post.fullID
 
   cooldown:
-    seconds: {}
+    seconds: $.dict()
 
     start: (post, seconds) ->
       # Already counting.

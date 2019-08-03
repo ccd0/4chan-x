@@ -127,7 +127,7 @@ Test =
 
   cb:
     testOne: ->
-      Test.testOne g.posts[@dataset.fullID]
+      Test.testOne g.posts.get(@dataset.fullID)
       Menu.menu.close()
 
     testAll: ->

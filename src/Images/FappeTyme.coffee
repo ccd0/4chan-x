@@ -25,7 +25,7 @@ FappeTyme =
         textContent: type[0]
         title: "#{type} Tyme active"
       $.on indicator, 'click', ->
-        check = FappeTyme.nodes[@parentNode.id.replace('shortcut-', '')]
+        check = $.getOwn(FappeTyme.nodes, @parentNode.id.replace('shortcut-', ''))
         check.checked = !check.checked
         $.event 'change', null, check
       Header.addShortcut lc, indicator, 410

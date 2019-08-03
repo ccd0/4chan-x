@@ -7,8 +7,8 @@ Fourchan =
   initBoard: ->
     if g.BOARD.config.code_tags
       $.on window, 'prettyprint:cb', (e) ->
-        return if not (post = g.posts[e.detail.ID])
-        return if not (pre  = $$('.prettyprint', post.nodes.comment)[e.detail.i])
+        return if not (post = g.posts.get(e.detail.ID))
+        return if not (pre  = $$('.prettyprint', post.nodes.comment)[+e.detail.i])
         unless $.hasClass pre, 'prettyprinted'
           pre.innerHTML = e.detail.html
           $.addClass pre, 'prettyprinted'

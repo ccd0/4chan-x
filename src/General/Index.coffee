@@ -52,7 +52,7 @@ Index =
 
     # Header "Index Navigation" submenu
     entries = []
-    @inputs = inputs = {}
+    @inputs = inputs = $.dict()
     for name, arr of Config.Index when arr instanceof Array
       label = UI.checkbox name, "#{name[0]}#{name[1..].toLowerCase()}"
       label.title = arr[1]
@@ -66,7 +66,7 @@ Index =
     $.on inputs['Anchor Hidden Threads'], 'change', @cb.resort
 
     watchSettings = (e) ->
-      if (input = inputs[e.target.name])
+      if (input = $.getOwn(inputs, e.target.name))
         input.checked = e.target.checked
         $.event 'change', null, input
     $.on d, 'OpenSettings', ->
@@ -283,10 +283,10 @@ Index =
       Index.pageLoad false unless e?.detail?.deferred
 
     perBoardSort: ->
-      Conf['Index Sort'] = if @checked then {} else ''
+      Conf['Index Sort'] = if @checked then $.dict() else ''
       Index.saveSort()
       for i in [0...2]
-        Conf["Last Long Reply Thresholds #{i}"] = if @checked then {} else ''
+        Conf["Last Long Reply Thresholds #{i}"] = if @checked then $.dict() else ''
         Index.saveLastLongThresholds i
       return
 
@@ -412,12 +412,12 @@ Index =
     commands = hash[1..].split '/'
     leftover = []
     for command in commands
-      if (mode = Index.hashCommands.mode[command])
+      if (mode = $.getOwn(Index.hashCommands.mode, command))
         state.mode = mode
       else if command is 'index'
         state.mode = Conf['Previous Index Mode']
         state.page = 1
-      else if (sort = Index.hashCommands.sort[command.replace(/-rev$/, '')])
+      else if (sort = $.getOwn(Index.hashCommands.sort, command.replace(/-rev$/, '')))
         state.sort = sort
         state.sort += '-rev' if /-rev$/.test(command)
       else if /^s=/.test command
@@ -659,10 +659,10 @@ Index =
     Index.threadsNumPerPage = pages[0]?.threads.length or 1
     Index.liveThreadData    = pages.reduce ((arr, next) -> arr.concat next.threads), []
     Index.liveThreadIDs     = Index.liveThreadData.map (data) -> data.no
-    Index.liveThreadDict    = {}
-    Index.threadPosition    = {}
-    Index.parsedThreads     = {}
-    Index.replyData         = {}
+    Index.liveThreadDict    = $.dict()
+    Index.threadPosition    = $.dict()
+    Index.parsedThreads     = $.dict()
+    Index.replyData         = $.dict()
     for data, i in Index.liveThreadData
       Index.liveThreadDict[data.no] = data
       Index.threadPosition[data.no] = i
@@ -682,7 +682,7 @@ Index =
     return
 
   isHidden: (threadID) ->
-    if (thread = g.BOARD.threads[threadID]) and thread.OP and not thread.OP.isFetchedQuote
+    if (thread = g.BOARD.threads.get(threadID)) and thread.OP and not thread.OP.isFetchedQuote
       thread.isHidden
     else
       Index.parsedThreads[threadID].isHidden
@@ -698,7 +698,7 @@ Index =
       try
         threadData = Index.liveThreadDict[ID]
 
-        if (thread = g.BOARD.threads[ID])
+        if (thread = g.BOARD.threads.get(ID))
           isStale = (thread.json isnt threadData) and (JSON.stringify(thread.json) isnt JSON.stringify(threadData))
           if isStale
             thread.setCount 'post', threadData.replies + 1,                threadData.bumplimit
@@ -751,7 +751,7 @@ Index =
       continue if not (lastReplies = Index.liveThreadDict[thread.ID].last_replies)
       nodes = []
       for data in lastReplies
-        if (post = thread.posts[data.no]) and not post.isFetchedQuote
+        if (post = thread.posts.get(data.no)) and not post.isFetchedQuote
           nodes.push post.nodes.root
           continue
         nodes.push node = g.SITE.Build.postFromObject data, thread.board.ID
@@ -822,7 +822,7 @@ Index =
             if len >= Index.lastLongThresholds[+!!r.ext]
               return r
           if thread.omitted_posts then thread.last_replies[0] else thread
-        lastlongD = {}
+        lastlongD = $.dict()
         for thread in liveThreadData
           lastlongD[thread.no] = lastlong(thread).no
         [liveThreadData...].sort((a, b) ->

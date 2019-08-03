@@ -15,11 +15,11 @@ Redirect =
 
   selectArchives: ->
     o =
-      thread: {}
-      post:   {}
-      file:   {}
+      thread: $.dict()
+      post:   $.dict()
+      file:   $.dict()
 
-    archives = {}
+    archives = $.dict()
     for data in Conf['archives']
       for key in ['boards', 'files']
         data[key] = [] unless data[key] instanceof Array
@@ -32,7 +32,7 @@ Redirect =
         o.file[boardID]   = data unless boardID of o.file   or boardID  not in files
 
     for boardID, record of Conf['selectedArchives']
-      for type, id of record when (archive = archives[JSON.stringify id])
+      for type, id of record when (archive = archives[JSON.stringify id]) and $.hasOwn(o, type)
         boards = if type is 'file' then archive.files else archive.boards
         o[type][boardID] = archive if boardID in boards
 
@@ -76,14 +76,14 @@ Redirect =
 
   parse: (responses, cb) ->
     archives = []
-    archiveUIDs = {}
+    archiveUIDs = $.dict()
     for response in responses
       for data in response
         uid = JSON.stringify(data.uid ? data.name)
         if uid of archiveUIDs
           $.extend archiveUIDs[uid], data
         else
-          archiveUIDs[uid] = data
+          archiveUIDs[uid] = $.dict.clone data
           archives.push data
     items = {archives, lastarchivecheck: Date.now()}
     $.set items
@@ -98,7 +98,7 @@ Redirect =
 
   protocol: (archive) ->
     protocol = location.protocol
-    unless archive[protocol[0...-1]]
+    unless $.getOwn(archive, protocol[0...-1])
       protocol = if protocol is 'https:' then 'http:' else 'https:'
     "#{protocol}//"
 
@@ -146,10 +146,10 @@ Redirect =
       type
     if type is 'capcode'
       # https://github.com/pleebe/FoolFuuka/blob/bf4224eed04637a4d0bd4411c2bf5f9945dfec0b/src/Model/Search.php#L363
-      value = {
+      value = $.getOwn({
         'Developer': 'dev'
         'Verified':  'ver'
-      }[value] or value.toLowerCase()
+      }, value) or value.toLowerCase()
     else if type is 'image'
       value = value.replace /[+/=]/g, (c) -> ({'+': '-', '/': '_', '=': ''})[c]
     value = encodeURIComponent value

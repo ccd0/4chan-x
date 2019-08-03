@@ -1,5 +1,5 @@
 ExpandThread =
-  statuses: {}
+  statuses: $.dict()
   init: ->
     return if not (g.VIEW is 'index' and Conf['Thread Expansion'])
     if Conf['JSON Index']
@@ -96,7 +96,7 @@ ExpandThread =
     filesCount = 0
     for postData in req.response.posts
       continue if postData.no is thread.ID
-      if (post = thread.posts[postData.no]) and not post.isFetchedQuote
+      if (post = thread.posts.get(postData.no)) and not post.isFetchedQuote
         filesCount++ if 'file' of post
         {root} = post.nodes
         postsRoot.push root

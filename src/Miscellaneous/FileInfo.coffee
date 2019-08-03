@@ -26,7 +26,7 @@ FileInfo =
   format: (formatString, post, outputNode) ->
     output = []
     formatString.replace /%(.)|[^%]+/g, (s, c) ->
-      output.push if c of FileInfo.formatters
+      output.push if $.hasOwn(FileInfo.formatters, c)
         FileInfo.formatters[c].call post
       else
         <%= html('${s}') %>
