@@ -207,6 +207,7 @@ class Fetcher
         isSpoiler: data.media.spoiler is '1'
       o.file.dimensions = "#{o.file.width}x#{o.file.height}" unless /\.pdf$/.test o.file.url
       o.file.tag = JSON.parse(data.media.exif).Tag if @boardID is 'f' and data.media.exif
+    o.extra = $.dict()
 
     board = g.boards[@boardID] or
       new Board @boardID
