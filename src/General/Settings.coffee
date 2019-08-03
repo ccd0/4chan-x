@@ -196,6 +196,8 @@ Settings =
       @textContent = 'Hidden: 0'
       $.get 'hiddenThreads', $.dict(), ({hiddenThreads}) ->
         if $.hasStorage and g.SITE.software is 'yotsuba'
+          for boardID of hiddenThreads['4chan.org']?.boards
+            localStorage.removeItem "4chan-hide-t-#{boardID}"
           for boardID of hiddenThreads.boards
             localStorage.removeItem "4chan-hide-t-#{boardID}"
         ($.delete ['hiddenThreads', 'hiddenPosts'])
