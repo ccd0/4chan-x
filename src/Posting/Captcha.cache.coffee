@@ -22,11 +22,9 @@ Captcha.cache =
   haveCookie: ->
     /\b_ct=/.test(d.cookie) and QR.posts[0].thread isnt 'new'
 
-  getOne: (isReply) ->
+  getOne: ->
     @clear()
-    i = @captchas.findIndex((x) -> isReply or !x.challenge?)
-    if i >= 0
-      captcha = @captchas.splice(i, 1)[0]
+    if (captcha = @captchas.shift())
       @count()
       captcha
     else
