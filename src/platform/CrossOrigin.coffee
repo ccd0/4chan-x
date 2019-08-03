@@ -168,10 +168,15 @@ CrossOrigin =
     $.cache url, cb,
       ajax: CrossOrigin.ajax
 
+  <% if (type === 'crx') { %>
+  permission: (cb, cbFail, origins) ->
+    eventPageRequest {type: 'permission', origins}, (result) ->
+      if result
+        cb()
+      else
+        cbFail()
+  <% } %>
+  <% if (type === 'userscript') { %>
   permission: (cb) ->
-    <% if (type === 'crx') { %>
-    eventPageRequest {type: 'permission'}, -> cb()
-    <% } %>
-    <% if (type === 'userscript') { %>
     cb()
-    <% } %>
+  <% } %>

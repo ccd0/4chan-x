@@ -24,6 +24,9 @@ Captcha.service =
     @pending = true
     @aborted = false
     e.preventDefault()
+    CrossOrigin.permission @requestCaptcha2.bind(@), @noCaptcha.bind(@, 'Permission denied'), ["#{Conf['captchaServiceDomain']}/*"]
+
+  requestCaptcha2: ->
     key = Conf['captchaServiceKey'][Conf['captchaServiceDomain']]
     return @noCaptcha 'API key not set' unless key and /\S/.test(key)
     url = "#{Conf['captchaServiceDomain']}/in.php?key=#{encodeURIComponent key}&method=userrecaptcha&googlekey=<%= meta.recaptchaKey %>&pageurl=https://boards.4channel.org/v/"
@@ -60,7 +63,7 @@ Captcha.service =
   noCaptcha: (error) ->
     @pending = false
     return if @aborted
-    error = if @req.status is 200
+    error or= if @req.status is 200
       @req.response
     else if @req.status
       "#{@req.statusText} (#{@req.status})"

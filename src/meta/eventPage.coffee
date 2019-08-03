@@ -9,16 +9,16 @@ chrome.runtime.onMessage.addListener (request, sender, sendResponse) ->
 
 handlers =
   permission: (request, cb) ->
-    chrome.permissions.contains
-      origins: ['*://*/']
-    , (result) ->
+    origins = request.origins or ['*://*/']
+    chrome.permissions.contains {origins}, (result) ->
       if result
-        cb()
+        cb result
       else
-        chrome.permissions.request
-          origins: ['*://*/']
-        , ->
-          cb()
+        chrome.permissions.request {origins}, (result) ->
+          if chrome.runtime.lastError
+            cb false
+          else
+            cb result
 
   ajax: (request, cb) ->
     xhr = new XMLHttpRequest()
