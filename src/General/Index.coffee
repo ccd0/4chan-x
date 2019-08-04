@@ -721,7 +721,8 @@ Index =
           thread.setPage(Index.threadPosition[ID] // Index.threadsNumPerPage + 1)
         else
           obj = Index.parsedThreads[ID]
-          OP = new Post g.SITE.Build.post(obj), thread, g.BOARD
+          opRoot = g.SITE.Build.post(obj)
+          OP = new Post opRoot, thread, g.BOARD
           OP.filterResults = obj.filterResults
           newPosts.push OP
 
@@ -733,6 +734,7 @@ Index =
         errors.push
           message: "Parsing of Thread No.#{thread} failed. Thread will be skipped."
           error: err
+          html: opRoot?.outerHTML
     Main.handleErrors errors if errors
 
     if withReplies
@@ -763,6 +765,7 @@ Index =
           errors.push
             message: "Parsing of Post No.#{data.no} failed. Post will be skipped."
             error: err
+            html: node?.outerHTML
       $.add thread.nodes.root, nodes
 
     Main.handleErrors errors if errors
