@@ -29,27 +29,6 @@ Unread =
       name: 'Unread'
       cb:   @addPost
 
-    <% if (readJSON('/.tests_enabled')) { %>
-    testLink = $.el 'a',
-      textContent: 'Test Post Order'
-    $.on testLink, 'click', ->
-      list1 = (x.ID for x in Unread.order.order())
-      list2 = (+x.id.match(/\d*$/)[0] for x in $$ (if g.SITE.isOPContainerThread then "#{g.SITE.selectors.thread}, " else '') + g.SITE.selectors.postContainer)
-      pass = do ->
-        return false unless list1.length is list2.length
-        for i in [0...list1.length] by 1
-          return false if list1[i] isnt list2[i]
-        true
-      if pass
-        new Notice 'success', "Orders same (#{list1.length} posts)", 5
-      else
-        new Notice 'warning', 'Orders differ.', 30
-        c.log list1
-        c.log list2
-    Header.menu.addEntry
-      el: testLink
-    <% } %>
-
   node: ->
     Unread.thread = @
     Unread.title  = d.title

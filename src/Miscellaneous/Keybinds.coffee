@@ -218,11 +218,6 @@ Keybinds =
       when Conf['Next Post Quoting You']
         return unless threadRoot and QuoteYou.db
         QuoteYou.cb.seek 'following'
-      <% if (readJSON('/.tests_enabled')) { %>
-      when 'v'
-        return unless threadRoot
-        Test.testAll()
-      <% } %>
       else
         return
     e.preventDefault()

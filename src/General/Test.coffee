@@ -1,22 +1,32 @@
 <% if (readJSON('/.tests_enabled')) { %>
 Test =
   init: ->
-    return if !Conf['Menu'] or g.VIEW not in ['index', 'thread']
+    return unless g.SITE.software is 'yotsuba' and g.VIEW in ['index', 'thread']
 
-    a = $.el 'a',
-      textContent: 'Test HTML building'
-    $.on a, 'click', @cb.testOne
-    Menu.menu.addEntry
-      el: a
-      open: (post) ->
-        a.dataset.fullID = post.fullID
-        true
+    if Conf['Menu']
+      a = $.el 'a',
+        textContent: 'Test HTML building'
+      $.on a, 'click', @cb.testOne
+      Menu.menu.addEntry
+        el: a
+        open: (post) ->
+          a.dataset.fullID = post.fullID
+          true
 
     a2 = $.el 'a',
       textContent: 'Test HTML building'
     $.on a2, 'click', @cb.testAll
     Header.menu.addEntry
       el: a2
+
+    if Unread.posts
+      testOrderLink = $.el 'a',
+        textContent: 'Test Post Order'
+      $.on testOrderLink, 'click', @cb.testOrder
+      Header.menu.addEntry
+        el: testOrderLink
+
+    $.on d, 'keydown', @cb.keydown
 
   assert: (condition) ->
     unless condition()
@@ -137,4 +147,26 @@ Test =
     testAll: ->
       Test.testAll()
       Header.menu.close()
+
+    testOrder: ->
+      list1 = (x.ID for x in Unread.order.order())
+      list2 = (+x.id.match(/\d*$/)[0] for x in $$ (if g.SITE.isOPContainerThread then "#{g.SITE.selectors.thread}, " else '') + g.SITE.selectors.postContainer)
+      pass = do ->
+        return false unless list1.length is list2.length
+        for i in [0...list1.length] by 1
+          return false if list1[i] isnt list2[i]
+        true
+      if pass
+        new Notice 'success', "Orders same (#{list1.length} posts)", 5
+      else
+        new Notice 'warning', 'Orders differ.', 30
+        c.log list1
+        c.log list2
+
+    keydown: (e) ->
+      return unless Keybinds.keyCode(e) is 'v'
+      return if e.target.nodeName in ['INPUT', 'TEXTAREA']
+      Test.testAll()
+      e.preventDefault()
+      e.stopPropagation()
 <% } %>
