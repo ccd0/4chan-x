@@ -21,7 +21,7 @@ Settings =
     $.on d, 'AddSettingsSection',   Settings.addSection
     $.on d, 'OpenSettings', (e) -> Settings.open e.detail
 
-    if Conf['Disable Native Extension']
+    if g.SITE.software is 'yotsuba' and Conf['Disable Native Extension']
       if $.hasStorage
         # Run in page context to handle case where 4chan X has localStorage access but not the page.
         # (e.g. Pale Moon 26.2.2, GM 3.8, cookies disabled for 4chan only)

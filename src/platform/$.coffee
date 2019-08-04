@@ -445,19 +445,19 @@ $.queueTask = do ->
       taskQueue.push arguments
       setTimeout execTask, 0
 
-$.globalEval = (code, data) ->
-  script = $.el 'script',
-    textContent: code
-  $.extend script.dataset, data if data
-  $.add (d.head or doc), script
-  $.rm script
-
 $.global = (fn, data) ->
   if doc
-    $.globalEval "(#{fn})();", data
+    script = $.el 'script',
+      textContent: "(#{fn}).call(document.currentScript.dataset);"
+    $.extend script.dataset, data if data
+    $.add (d.head or doc), script
+    $.rm script
+    script.dataset
   else
     # XXX dwb
-    fn()
+    try
+      fn.call(data)
+    data
 
 $.bytesToString = (size) ->
   unit = 0 # Bytes

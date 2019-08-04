@@ -1,5 +1,12 @@
 Header =
   init: ->
+    $.onExists doc, 'body', =>
+      return unless Main.isThisPageLegit()
+      $.add @bar, [@noticesRoot, @toggle]
+      $.prepend d.body, @bar
+      $.add d.body, Header.hover
+      @setBarPosition Conf['Bottom Header']
+
     @menu = new UI.Menu 'header'
 
     menuButton = $.el 'span',
@@ -86,12 +93,6 @@ Header =
 
     @setBoardList()
 
-    $.onExists doc, 'body', =>
-      return unless Main.isThisPageLegit()
-      $.prepend d.body, @bar
-      $.add d.body, Header.hover
-      @setBarPosition Conf['Bottom Header']
-
     $.onExists doc, "#{g.SITE.selectors.boardList} + *", Header.generateFullBoardList
 
     Main.ready ->
@@ -102,7 +103,8 @@ Header =
         $('#navtopright',        footer).id = 'navbotright'
         $('#settingsWindowLink', footer).id = 'settingsWindowLinkBot'
         $.before absbot, footer
-        $.globalEval 'window.cloneTopNav = function() {};'
+        $.global ->
+          window.cloneTopNav = ->
       if (Header.bottomBoardList = $ g.SITE.selectors.boardListBottom)
         for a in $$ 'a', Header.bottomBoardList
           a.className = 'current' if a.hostname is location.hostname and a.pathname.split('/')[1] is g.BOARD.ID
@@ -154,7 +156,7 @@ Header =
     btn = $('.hide-board-list-button', boardList)
     $.on btn, 'click', Header.toggleBoardList
 
-    $.add Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
+    $.prepend Header.bar, [Header.boardList, Header.shortcuts]
 
     Header.setCustomNav Conf['Custom Board Navigation']
     Header.generateBoardList Conf['boardnav']
@@ -392,7 +394,7 @@ Header =
     Header.previousOffset = offsetY
 
   setBarPosition: (bottom) ->
-    Header.barPositionToggler.checked = bottom
+    Header.barPositionToggler?.checked = bottom
     $.event 'CloseMenu'
     args = if bottom then [
       'bottom-header'

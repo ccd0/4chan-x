@@ -99,6 +99,7 @@ Main =
 
         # Fresh install
         else if !items.previousversion?
+          Main.isFirstRun = true
           Main.ready ->
             $.set 'previousversion', g.VERSION
             Settings.open()
@@ -502,6 +503,16 @@ Main =
       new Notice 'error', 'Error: Multiple copies of 4chan X are enabled.'
       $.addClass doc, 'tainted'
 
+    # Detect conflicts with native extension
+    if g.SITE.testNativeExtension and not $.hasClass(doc, 'tainted')
+      {enabled} = g.SITE.testNativeExtension()
+      if enabled
+        $.addClass doc, 'tainted'
+        if Conf['Disable Native Extension'] and !Main.isFirstRun
+          msg = $.el 'div',
+            <%= html('Failed to disable the native extension. You may need to <a href="' + meta.faq + '#blocking-native-extension" target="_blank">block it</a>.') %>
+          new Notice 'error', msg
+
     unless errors instanceof Array
       error = errors
     else if errors.length is 1
@@ -556,7 +567,7 @@ Main =
     addDetails data.error.stack.replace(data.error.toString(), '').trim() if data.error.stack
     addDetails '\n`' + data.html + '`' if data.html
     details = details.replace /file:\/{3}.+\//g, '' # Remove local file paths
-    url = "<%= meta.newIssue.replace('%title', '#{encodeURIComponent title}').replace('%details', '#{encodeURIComponent details}') %>"
+    url = '<%= meta.newIssue %>'.replace('%title', encodeURIComponent title).replace('%details', encodeURIComponent details)
     <%= html('<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>') %>
 
   isThisPageLegit: ->

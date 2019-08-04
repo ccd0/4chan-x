@@ -168,11 +168,7 @@ tools.html = function(template) {
   if (stream.text) {
     throw new Error(`Unexpected characters in template (${stream.text}): ${template}`);
   }
-  return `(innerHTML: \`${output}\`)`;
-};
-
-tools.assert = function(statement) {
-  return `throw new Error 'Assertion failed: ' + \`${constExpression(statement)}\` unless ${statement}`;
+  return `\`{innerHTML: ${output}}\``;
 };
 
 function includesDir(templateName) {

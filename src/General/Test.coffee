@@ -18,6 +18,10 @@ Test =
     Header.menu.addEntry
       el: a2
 
+  assert: (condition) ->
+    unless condition()
+      new Notice 'warning', "Assertion failed: #{condition}", 30
+
   normalize: (root) ->
     root2 = root.cloneNode true
     for el in $$ '.mobile', root2
