@@ -35,10 +35,11 @@ QR =
       cb:   @node
 
     @shortcut = sc = $.el 'a',
-      className: 'fa fa-comment-o disabled'
+      className: 'fourchan-x--icon icon--medium disabled'
       textContent: 'QR'
       title: 'Quick Reply'
       href: 'javascript:;'
+    $.extend sc, <%= html('<span class="icon--alt-text">QR</span><svg xmlns="http://www.w3.org/2000/svg" class="svg-inline--fa fa-comment-alt fa-w-16" viewBox="0 0 512 512"><path fill="currentColor" d="M448 0H64C28.7 0 0 28.7 0 64v288c0 35.3 28.7 64 64 64h96v84c0 9.8 11.2 15.5 19.1 9.7L304 416h144c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64z"/></svg>') %>
     $.on sc, 'click', ->
       return unless QR.postingIsEnabled
       if Conf['Persistent QR'] or !QR.nodes or QR.nodes.el.hidden

@@ -74,6 +74,75 @@ body.hasDropDownNav{
   display: none !important;
 }
 
+/* Font Awesome 5 Icons */
+.fourchan-x--icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+.fourchan-x--icon.icon--small {
+  width: 11px;
+  height: 11px;
+}
+.fourchan-x--icon.icon--medium {
+  width: 13px;
+  height: 13px;
+}
+.fourchan-x--icon.icon--large {
+  width: 16px;
+  height: 16px;
+}
+.fourchan-x--icon .svg-inline--fa {
+  height: 100%;
+  width: 100%;
+}
+
+:root.shortcut-icons #shortcuts .icon--alt-text {
+  display: none;
+}
+:root:not(.shortcut-icons) #shortcuts .fourchan-x--icon .svg-inline--fa {
+  display: none;
+}
+/*
+:root.shortcut-icons #shortcuts .fa::before {
+  font-size: 15px !important;
+  margin-top: -3px !important;
+  position: relative;
+  top: 1px;
+}
+*/
+:root.shortcut-icons .shortcut.brackets-wrap::before,
+:root.shortcut-icons .shortcut.brackets-wrap::after {
+  display: none;
+}
+/*
+:root.shortcut-icons #shortcuts a .fa,
+.menu-button .fa,
+.hide-reply-button .fa,
+.hide-thread-button .fa {
+  display: inline;
+}
+*/
+
+.fa-spin {
+  -webkit-animation: spin 2s infinite linear;
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+}
+@-moz-keyframes spin {
+  0% {-moz-transform:rotate(0deg);}
+  100% {-moz-transform:rotate(359deg);}
+}
+@-webkit-keyframes spin {
+  0% {-webkit-transform:rotate(0deg);}
+  100% {-webkit-transform:rotate(359deg);}
+}
+@keyframes spin {
+  0% {transform:rotate(0deg);}
+  100% {transform:rotate(359deg);}
+}
+
 /* 4chan style fixes */
 /* overrides 4chan CSS on div.opContainer, div.op */
 :root.sw-yotsuba .opContainer, :root.sw-yotsuba .op {
@@ -1583,7 +1652,7 @@ $site$thread[hidden] + hr {
 }
 #qr .close {
   float: right;
-  padding: 0 3px;
+  margin: 2px 0 1px 2px;
 }
 .qr-link-container {
   text-align: center;
@@ -2034,24 +2103,13 @@ a:only-of-type > .remove {
 }
 
 /* Menu */
-.menu-button:not(.fa-bars) {
-  display: inline-block;
+.menu-button {
   position: relative;
   cursor: pointer;
-}
-#header-bar .menu-button i {
-  border-top:   6px solid;
-  border-right: 4px solid transparent;
-  border-left:  4px solid transparent;
-  display: inline-block;
-  margin: 2px;
   vertical-align: middle;
 }
-.postInfo > .menu-button,
-#thread-watcher .menu-button {
-  width: 18px;
-  height: 15px;
-  text-align: center;
+.postInfo .menu-button {
+  margin: 0 2px;
 }
 #menu {
   position: fixed;
@@ -2161,8 +2219,7 @@ a:only-of-type > .remove {
   flex: 1;
 }
 #embedding .jump {
-  margin: -1px 4px;
-  text-decoration: none;
+  margin: 0 4px;
 }
 
 /* Gallery */
