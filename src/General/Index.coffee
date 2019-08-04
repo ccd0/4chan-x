@@ -85,7 +85,7 @@ Index =
 
     # Navigation links at top of index
     @navLinks = $.el 'div', className: 'navLinks json-index'
-    $.extend @navLinks, <%= readHTML('NavLinks.html') %>
+    $.extend @navLinks, `<%= readHTML('NavLinks.html') %>`
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
     $('.archlistlink', @navLinks).hidden = true unless BoardConfig.isArchived(g.BOARD.ID)
     $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
@@ -134,7 +134,7 @@ Index =
 
     # Page list
     @pagelist = $.el 'div', className: 'pagelist json-index'
-    $.extend @pagelist, <%= readHTML('PageList.html') %>
+    $.extend @pagelist, `<%= readHTML('PageList.html') %>`
     $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
     $.on @pagelist, 'click', @cb.pageNav
 
@@ -206,7 +206,7 @@ Index =
         el: $.el 'a',
           href:      'javascript:;'
           className: 'has-shortcut-text'
-        , <%= html('<span></span><span class="shortcut-text">Shift+click</span>') %>
+        , `<%= html('<span></span><span class="shortcut-text">Shift+click</span>') %>`
         order: 20
         open: ({thread}) ->
           return false if Conf['Index Mode'] isnt 'catalog'

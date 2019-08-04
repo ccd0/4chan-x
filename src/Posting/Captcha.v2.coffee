@@ -12,9 +12,9 @@ Captcha.v2 =
     $.on d, 'CaptchaCount', @count.bind(@)
 
     root = $.el 'div', className: 'captcha-root'
-    $.extend root, <%= html(
+    $.extend root, `<%= html(
       '<div class="captcha-counter"><a href="javascript:;"></a></div>'
-    ) %>
+    ) %>`
     counter   = $ '.captcha-counter > a', root
     @nodes = {root, counter}
     @count()

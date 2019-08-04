@@ -145,7 +145,7 @@ Build =
     else
       "#{url}#q#{ID}"
 
-    postInfo = <%= readHTML('PostInfo.html') %>
+    postInfo = `<%= readHTML('PostInfo.html') %>`
 
     ### File Info ###
 
@@ -155,13 +155,13 @@ Build =
       shortFilename = Build.shortFilename file.name
       fileThumb = if file.isSpoiler then Build.spoilerThumb(boardID) else file.thumbURL.replace(protocol, '')
 
-    fileBlock = <%= readHTML('File.html') %>
+    fileBlock = `<%= readHTML('File.html') %>`
 
     ### Whole Post ###
 
     postClass = if o.isReply then 'reply' else 'op'
 
-    wholePost = <%= readHTML('Post.html') %>
+    wholePost = `<%= readHTML('Post.html') %>`
 
     container = $.el 'div',
       className: "postContainer #{postClass}Container"
@@ -238,7 +238,7 @@ Build =
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
 
-    container = $.el 'div', <%= readHTML('CatalogThread.html') %>
+    container = $.el 'div', `<%= readHTML('CatalogThread.html') %>`
     $.before thread.OP.nodes.info, [container.childNodes...]
 
     for br in $$('br', thread.OP.nodes.comment) when br.previousSibling and br.previousSibling.nodeName is 'BR'
@@ -266,6 +266,6 @@ Build =
 
     link = Build.postURL thread.board.ID, thread.ID, data.no
     $.el 'div', {className: 'catalog-reply'},
-      <%= readHTML('CatalogReply.html') %>
+      `<%= readHTML('CatalogReply.html') %>`
 
 SW.yotsuba.Build = Build

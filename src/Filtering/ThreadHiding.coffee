@@ -139,7 +139,7 @@ ThreadHiding =
     a = $.el 'a',
       className: "#{type}-thread-button"
       href:      'javascript:;'
-    $.extend a, <%= html('<span class="fa fa-?{type === "hide"}{minus}{plus}-square"></span>') %>
+    $.extend a, `<%= html('<span class="fa fa-?{type === "hide"}{minus}{plus}-square"></span>') %>`
     a.dataset.fullID = thread.fullID
     $.on a, 'click', ThreadHiding.toggle
     a

@@ -121,7 +121,7 @@ Main =
     $.set changes, ->
       if items['Show Updated Notifications'] ? true
         el = $.el 'span',
-          <%= html(meta.name + ' has been updated to <a href="' + meta.changelog + '" target="_blank">version ${g.VERSION}</a>.') %>
+          `<%= html(meta.name + ' has been updated to <a href="' + meta.changelog + '" target="_blank">version ${g.VERSION}</a>.') %>`
         new Notice 'info', el, 15
 
   parseURL: (site=g.SITE, url=location) ->
@@ -316,7 +316,7 @@ Main =
 
     if g.SITE.isIncomplete?()
       msg = $.el 'div',
-        <%= html('The page didn&#039;t load completely.<br>Some features may not work unless you <a href="javascript:;">reload</a>.') %>
+        `<%= html('The page didn&#039;t load completely.<br>Some features may not work unless you <a href="javascript:;">reload</a>.') %>`
       $.on $('a', msg), 'click', -> location.reload()
       new Notice 'warning', msg
 
@@ -510,7 +510,7 @@ Main =
         $.addClass doc, 'tainted'
         if Conf['Disable Native Extension'] and !Main.isFirstRun
           msg = $.el 'div',
-            <%= html('Failed to disable the native extension. You may need to <a href="' + meta.faq + '#blocking-native-extension" target="_blank">block it</a>.') %>
+            `<%= html('Failed to disable the native extension. You may need to <a href="' + meta.faq + '#blocking-native-extension" target="_blank">block it</a>.') %>`
           new Notice 'error', msg
 
     unless errors instanceof Array
@@ -522,7 +522,7 @@ Main =
       return
 
     div = $.el 'div',
-      <%= html('${errors.length} errors occurred.&{Main.reportLink(errors)} [<a href="javascript:;">show</a>]') %>
+      `<%= html('${errors.length} errors occurred.&{Main.reportLink(errors)} [<a href="javascript:;">show</a>]') %>`
     $.on div.lastElementChild, 'click', ->
       [@textContent, logs.hidden] = if @textContent is 'show' then (
         ['hide', false]
@@ -540,7 +540,7 @@ Main =
   parseError: (data, reportLink) ->
     c.error data.message, data.error.stack
     message = $.el 'div',
-      <%= html('${data.message}?{reportLink}{&{reportLink}}') %>
+      `<%= html('${data.message}?{reportLink}{&{reportLink}}') %>`
     error = $.el 'div',
       textContent: "#{data.error.name or 'Error'}: #{data.error.message or 'see console for details'}"
     lines = data.error.stack?.match(/\d+(?=:\d+\)?$)/mg)?.join().replace(/^/, ' at ') or ''
@@ -554,7 +554,7 @@ Main =
     title += " (+#{errors.length - 1} other errors)" if errors.length > 1
     details = ''
     addDetails = (text) ->
-      unless encodeURIComponent(title + details + text + '\n').length > <%= meta.newIssueMaxLength - meta.newIssue.replace(/%(title|details)/, '').length %>
+      unless encodeURIComponent(title + details + text + '\n').length > `<%= meta.newIssueMaxLength - meta.newIssue.replace(/%(title|details)/, '').length %>`
         details += text + '\n'
     addDetails """
       [Please describe the steps needed to reproduce this error.]
@@ -568,7 +568,7 @@ Main =
     addDetails '\n`' + data.html + '`' if data.html
     details = details.replace /file:\/{3}.+\//g, '' # Remove local file paths
     url = '<%= meta.newIssue %>'.replace('%title', encodeURIComponent title).replace('%details', encodeURIComponent details)
-    <%= html('<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>') %>
+    `<%= html('<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>') %>`
 
   isThisPageLegit: ->
     # not 404 error page or similar.

@@ -556,7 +556,7 @@ $.crxWorking = ->
       return true
   unless $.crxWarningShown
     msg = $.el 'div',
-      <%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>
+      `<%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>`
     $.on $('a', msg), 'click', -> location.reload()
     new Notice 'warning', msg
     $.crxWarningShown = true
