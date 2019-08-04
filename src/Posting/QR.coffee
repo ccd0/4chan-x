@@ -546,6 +546,7 @@ QR =
 
     $.on nodes.autohide,       'change',    QR.toggleHide
     $.on nodes.close,          'click',     QR.close
+    $.on nodes.status,         'click',     QR.submit
     $.on nodes.form,           'submit',    QR.submit
     $.on nodes.sjisToggle,     'click',     QR.toggleSJIS
     $.on nodes.texButton,      'mousedown', QR.texPreviewShow
@@ -637,6 +638,7 @@ QR =
 
   submit: (e) ->
     e?.preventDefault()
+    force = e?.shiftKey
 
     if QR.req
       QR.abort()
@@ -644,9 +646,12 @@ QR =
 
     $.forceSync 'cooldowns'
     if QR.cooldown.seconds
-      QR.cooldown.auto = !QR.cooldown.auto
-      QR.status()
-      return
+      if force
+        QR.cooldown.clear()
+      else
+        QR.cooldown.auto = !QR.cooldown.auto
+        QR.status()
+        return
 
     post = QR.posts[0]
     post.forceSave()
@@ -679,7 +684,7 @@ QR =
         QR.captcha.setup(!QR.cooldown.auto or d.activeElement is QR.nodes.status)
 
     QR.cleanNotifications()
-    if err
+    if err and !force
       # stop auto-posting
       QR.cooldown.auto = false
       QR.status()

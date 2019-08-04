@@ -107,6 +107,13 @@ QR.cooldown =
       $.set 'cooldowns', cooldowns, ->
         QR.cooldown.changes = $.dict()
 
+  clear: ->
+    QR.cooldown.data = $.dict()
+    QR.cooldown.changes = $.dict()
+    QR.cooldown.auto = false
+    QR.cooldown.update()
+    $.queueTask $.delete, 'cooldowns'
+
   update: ->
     return unless QR.cooldown.isCounting
 
