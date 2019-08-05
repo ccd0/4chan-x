@@ -2,6 +2,21 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.12
+
+**v1.14.12.0** *(2019-08-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.11.1.
+- Shift+click on the Quick Reply submit button will now attempt to post regardless of cooldowns or other errors.
+- Improved error reporting. #862
+- Detect conflicts with native extension and show appropriate error message. #1627
+- Only show MD5 quick filter notification when using keybind. #2385
+- Update Loopvid embedding.
+- Update settings import from loadletter fork.
+- (saxamaphone69) Make text areas in settings resize vertically only.
+- Fix cooldown when the time is an exact number of minutes. #2301
+- Cache titles to reduce title requests. #2327
+- Other bugfixes.
+
 ### v1.14.11
 
 **v1.14.11.1** *(2019-08-03)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.1/builds/4chan-X-noupdate.crx)]
