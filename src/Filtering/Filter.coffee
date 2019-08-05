@@ -1,6 +1,5 @@
 Filter =
   filters: $.dict()
-  results: $.dict()
   init: ->
     return unless g.VIEW in ['index', 'thread', 'catalog'] and Conf['Filter']
     return if g.VIEW is 'catalog' and not Conf['Filter in Native Catalog']
