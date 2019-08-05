@@ -259,17 +259,20 @@ Settings =
         'Disable 4chan\'s extension': 'Disable Native Extension'
         'Comment Auto-Expansion': ''
         'Remove Slug': ''
+        'Always HTTPS': 'Redirect to HTTPS'
         'Check for Updates': ''
         'Recursive Filtering': 'Recursive Hiding'
         'Reply Hiding': 'Reply Hiding Buttons'
         'Thread Hiding': 'Thread Hiding Buttons'
         'Show Stubs': 'Stubs'
         'Image Auto-Gif': 'Replace GIF'
+        'Expand All WebM': 'Expand videos'
         'Reveal Spoilers': 'Reveal Spoiler Thumbnails'
         'Expand From Current': 'Expand from here'
         'Current Page': 'Page Count in Stats'
         'Current Page Position': ''
         'Alternative captcha': 'Use Recaptcha v1'
+        'Alt index captcha': 'Use Recaptcha v1 on Index'
         'Auto Submit': 'Post on Captcha Completion'
         'Open Reply in New Tab': 'Open Post in New Tab'
         'Remember QR size': 'Remember QR Size'
@@ -293,6 +296,7 @@ Settings =
         'spoiler': 'Spoiler tags'
         'sageru': 'Toggle sage'
         'code': 'Code tags'
+        'sjis': 'SJIS tags'
         'submit': 'Submit QR'
         'watch': 'Watch'
         'update': 'Update'
@@ -313,6 +317,9 @@ Settings =
         # updater
         'Scrolling': 'Auto Scroll'
         'Verbose': ''
+      if 'Always CDN' of data.Conf
+        data.Conf['fourchanImageHost'] = if data.Conf['Always CDN'] then 'i.4cdn.org' else ''
+        delete data.Conf['Always CDN']
       data.Conf.sauces = data.Conf.sauces.replace /\$\d/g, (c) ->
         switch c
           when '$1'
@@ -329,10 +336,10 @@ Settings =
         data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, (s) -> "#{s[0].toUpperCase()}#{s[1..]}").replace /(^|.+\+)[A-Z]$/g, (s) ->
           "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
       if data.WatchedThreads
-        data.Conf['watchedThreads'] = boards: $.dict()
+        data.Conf['watchedThreads'] = $.dict.clone {'4chan.org': {boards: {}}}
         for boardID, threads of data.WatchedThreads
           for threadID, threadData of threads
-            (data.Conf['watchedThreads'].boards[boardID] or= $.dict())[threadID] = excerpt: threadData.textContent
+            (data.Conf['watchedThreads']['4chan.org'].boards[boardID] or= $.dict())[threadID] = excerpt: threadData.textContent
       data
 
   upgrade: (data, version) ->
