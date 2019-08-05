@@ -58,7 +58,7 @@ ImageCommon =
     threadJSON = g.SITE.urls.threadJSON?(post)
     return unless threadJSON
     $.ajax threadJSON, onloadend: ->
-      post.kill !post.isClone if @status is 404
+      post.kill !post.isClone, fileObj.index if @status is 404
       return redirect() if @status isnt 200
       for postObj in @response.posts
         break if postObj.no is post.ID
