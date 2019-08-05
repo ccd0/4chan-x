@@ -20,6 +20,8 @@ Embedding =
         for key, service of Embedding.types when service.title?.batchSize
           Embedding.flushTitles service.title
         return
+      @cache.init Conf['cachedTitles']
+      $.sync 'cachedTitles', @cache.sync
 
   events: (post) ->
     return if g.VIEW is 'archive'
@@ -106,7 +108,9 @@ Embedding =
     {key, uid, options, link, post} = data
     return if not (service = Embedding.types[key].title)
     $.addClass link, key.toLowerCase()
-    if service.batchSize
+    if (text = Embedding.cache.get data)
+      Embedding.cb.titleText text, data
+    else if service.batchSize
       (service.queue or= []).push data
       if service.queue.length >= service.batchSize
         Embedding.flushTitles service
@@ -121,6 +125,38 @@ Embedding =
       Embedding.cb.title @, data for data in queue
       return
     CrossOrigin.cache service.api(data.uid for data in queue), cb
+
+  cache: do ->
+    titles = $.dict()
+    newEntries = []
+    init = (data) ->
+      try
+        for {key, uid, text} in data
+          titles["#{key}.#{uid}"] = text
+        return
+    sync = (data) ->
+      try
+        for {key, uid, text} in data
+          k = "#{key}.#{uid}"
+          break if k of titles
+          titles[k] = text
+        return
+    get = ({key, uid}) ->
+      titles["#{key}.#{uid}"]
+    set = ({key, uid}, text) ->
+      titles["#{key}.#{uid}"] = text
+      newEntries.push {key, uid, text}
+      save()
+    save = $.debounce 2 * $.SECOND, ->
+      $.get 'cachedTitles', Conf['cachedTitles'], ({cachedTitles}) ->
+        sync cachedTitles
+        try
+          cachedTitles = newEntries.concat(cachedTitles)[-100..]
+        catch
+          cachedTitles = newEntries
+        newEntries = []
+        $.set 'cachedTitles', cachedTitles
+    {init, sync, get, set, save}
 
   preview: (data) ->
     {key, uid, link} = data
@@ -179,21 +215,25 @@ Embedding =
     title: (req, data) ->
       return unless req.status
 
-      {key, uid, options, link, post} = data
+      {key, uid} = data
       {status} = req
       service = Embedding.types[key].title
 
-      text = "[#{key}] #{switch status
+      switch status
         when 200, 304
-          service.text req.response, uid
+          text = service.text req.response, uid
+          Embedding.cache.set data, text
         when 404
-          "Not Found"
+          text = "Not Found"
         when 403
-          "Forbidden or Private"
+          text = "Forbidden or Private"
         else
-          "#{status}'d"
-      }"
+          text = "#{status}'d"
+      Embedding.cb.titleText text, data
 
+    titleText: (text, data) ->
+      {key, link, post} = data
+      text = "[#{key}] #{text}"
       link.dataset.original = link.textContent
       link.textContent = text
       for post2 in post.clones

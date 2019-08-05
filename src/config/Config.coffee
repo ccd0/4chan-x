@@ -1183,3 +1183,5 @@ Config =
   hiddenPSAList: [{}]
 
   knownBanners: '<%= readJSON("banners.json").join(",") %>'
+
+  cachedTitles: [[]]
