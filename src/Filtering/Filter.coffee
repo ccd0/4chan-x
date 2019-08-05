@@ -266,7 +266,7 @@ Filter =
       ta.setSelectionRange tl, tl
       ta.focus()
 
-  quickFilterMD5: ->
+  quickFilterMD5: (e) ->
     post = Get.postFromNode @
     files = post.files.filter((f) -> f.MD5)
     return unless files.length
@@ -277,6 +277,13 @@ Filter =
       PostHiding.hide origin
     else if g.VIEW is 'index'
       ThreadHiding.hide origin.thread
+
+    unless e.type is 'keydown'
+      # feedback for when nothing gets hidden
+      if post.nodes.post.getBoundingClientRect().height
+        new Notice 'info', 'MD5 filtered.', 2
+      return
+
     {notice} = Filter.quickFilterMD5
     if notice
       notice.filters.push filter
