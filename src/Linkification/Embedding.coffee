@@ -360,7 +360,7 @@ Embedding =
         el
     ,
       key: 'Loopvid'
-      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|m2|pc|1c|pi|ni|wl|ko|gc)\/[\w\-\/]+(?:,[\w\-\/]+)*|fc\/\w+\/\d+|https?:\/\/.+)/
+      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|m2|pc|1c|pi|ni|wl|ko|mm|ic|gc)\/[\w\-\/]+(?:,[\w\-\/]+)*|fc\/\w+\/\d+|https?:\/\/.+)/
       style: 'max-width: 80vw; max-height: 80vh;'
       el: (a) ->
         el = $.el 'video',
@@ -394,14 +394,17 @@ Embedding =
               when 'ky' then ["https://kastden.org/_loopvid_media/ky/#{base}"]
               when 'mf' then ["https://kastden.org/_loopvid_media/mf/#{base}", "https://web.archive.org/web/2/https://d.maxfile.ro/#{base}"]
               when 'm2' then ["https://kastden.org/_loopvid_media/m2/#{base}"]
-              when 'pc' then ["http://a.pomf.cat/#{base}"]
+              when 'pc' then ["https://kastden.org/_loopvid_media/pc/#{base}", "https://web.archive.org/web/2/http://a.pomf.cat/#{base}"]
               when '1c' then ["http://b.1339.cf/#{base}"]
-              when 'pi' then ["https://u.pomf.is/#{base}"]
-              when 'ni' then ["https://u.nya.is/#{base}"]
+              when 'pi' then ["https://kastden.org/_loopvid_media/pi/#{base}", "https://web.archive.org/web/2/https://u.pomf.is/#{base}"]
+              when 'ni' then ["https://kastden.org/_loopvid_media/ni/#{base}", "https://web.archive.org/web/2/https://u.nya.is/#{base}"]
               when 'wl' then ["http://webm.land/media/#{base}"]
               when 'ko' then ["https://kordy.kastden.org/loopvid/#{base}"]
+              when 'mm' then ["https://kastden.org/_loopvid_media/mm/#{base}", "https://web.archive.org/web/2/https://my.mixtape.moe/#{base}"]
+              when 'ic' then ["https://media.8ch.net/file_store/#{base}"]
               when 'fc' then ["//#{ImageHost.host()}/#{base}.webm"]
               when 'gc' then ["https://#{type}.gfycat.com/#{name}.webm"]
+
             for url in urls
               $.add el, $.el 'source', src: url
         el
