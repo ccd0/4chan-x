@@ -256,7 +256,8 @@ Header =
         href: "//#{BoardConfig.domain(boardID)}/#{boardID}/"
         textContent: boardID
         title: BoardConfig.title(boardID)
-      a.href += g.VIEW if g.VIEW in ['catalog', 'archive']
+      if g.VIEW in ['catalog', 'archive'] and (urlV = Get.url g.VIEW, {siteID: '4chan.org', boardID})
+        a.href = urlV
       a.className = 'current' if a.hostname is location.hostname and boardID is g.BOARD.ID
       a
 

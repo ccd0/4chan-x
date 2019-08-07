@@ -7,6 +7,7 @@ SW.yotsuba =
     post:       ({postID})            -> "#p#{postID}"
     index:      ({boardID})           -> "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/"
     catalog:    ({boardID})           -> if boardID is 'f' then undefined else "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/catalog"
+    archive:    ({boardID})           -> if BoardConfig.isArchived(boardID) then "#{location.protocol}//#{BoardConfig.domain(boardID)}/#{boardID}/archive" else undefined
     threadJSON: ({boardID, threadID}) -> "#{location.protocol}//a.4cdn.org/#{boardID}/thread/#{threadID}.json"
     threadsListJSON: ({boardID})      -> "#{location.protocol}//a.4cdn.org/#{boardID}/threads.json"
     archiveListJSON: ({boardID})      -> if BoardConfig.isArchived(boardID) then "#{location.protocol}//a.4cdn.org/#{boardID}/archive.json" else ''
