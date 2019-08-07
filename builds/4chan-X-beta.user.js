@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.11.1
+// @version      1.14.11.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -199,7 +199,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.11.1',
+  VERSION:   '1.14.11.2',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -18077,10 +18077,10 @@ CatalogLinks = (function() {
         ref2 = a.dataset, siteID = ref2.siteID, boardID = ref2.boardID;
         if (!(siteID && boardID)) {
           ref3 = Site.parseURL(a), siteID = ref3.siteID, boardID = ref3.boardID, VIEW = ref3.VIEW;
-          if (!(siteID && boardID && (VIEW === 'index' || VIEW === 'catalog') && (a.dataset.indexOptions || a.href.replace(tail, '') === Get.url(VIEW, {
+          if (!(siteID && boardID && (VIEW === 'index' || VIEW === 'catalog') && (a.dataset.indexOptions || a.href.replace(tail, '') === (Get.url(VIEW, {
             siteID: siteID,
             boardID: boardID
-          }).replace(tail, '')))) {
+          }) || '').replace(tail, '')))) {
             continue;
           }
           $.extend(a.dataset, {
