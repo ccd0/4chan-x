@@ -58,7 +58,7 @@ Main =
 
     for db in DataBoard.keys
       Conf[db] = $.dict()
-    Conf['customTitles'] = $.dict.clone {'4chan.org': {boards: {'qa': {'boardTitle': {orig: '/qa/ - Question & Answer', title: '/qa/ - 2D / Random'}}}}}
+    Conf['customTitles'] = $.dict.clone {'4chan.org': {boards: {'qa': {'boardTitle': {orig: '/qa/ - Question & Answer', title: '/qa/ - 2D/Random'}}}}}
     Conf['boardConfig'] = boards: $.dict()
     Conf['archives'] = Redirect.archives
     Conf['selectedArchives'] = $.dict()
