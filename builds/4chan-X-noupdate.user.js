@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.12.0
+// @version      1.14.12.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -199,7 +199,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.12.0',
+  VERSION:   '1.14.12.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -7968,6 +7968,15 @@ SW = {};
           return location.protocol + "//" + (BoardConfig.domain(boardID)) + "/" + boardID + "/catalog";
         }
       },
+      archive: function(arg) {
+        var boardID;
+        boardID = arg.boardID;
+        if (BoardConfig.isArchived(boardID)) {
+          return location.protocol + "//" + (BoardConfig.domain(boardID)) + "/" + boardID + "/archive";
+        } else {
+          return void 0;
+        }
+      },
       threadJSON: function(arg) {
         var boardID, threadID;
         boardID = arg.boardID, threadID = arg.threadID;
@@ -10371,9 +10380,13 @@ Get = (function() {
 
   Get = {
     url: function() {
-      var IDs, args, ref, ref1, type;
+      var IDs, args, f, site, type;
       type = arguments[0], IDs = arguments[1], args = 3 <= arguments.length ? slice.call(arguments, 2) : [];
-      return (ref = g.sites[IDs.siteID]) != null ? (ref1 = ref.urls)[type].apply(ref1, [IDs].concat(slice.call(args))) : void 0;
+      if ((site = g.sites[IDs.siteID]) && (f = $.getOwn(site.urls, type))) {
+        return f.apply(null, [IDs].concat(slice.call(args)));
+      } else {
+        return void 0;
+      }
     },
     threadExcerpt: function(thread) {
       var OP, excerpt, ref, ref1;
@@ -10759,7 +10772,7 @@ Header = (function() {
         }
       }
       a = (function() {
-        var ref1;
+        var ref1, urlV;
         if (boardID === '@') {
           return $.el('a', {
             href: 'https://twitter.com/4chan',
@@ -10772,8 +10785,11 @@ Header = (function() {
           textContent: boardID,
           title: BoardConfig.title(boardID)
         });
-        if ((ref1 = g.VIEW) === 'catalog' || ref1 === 'archive') {
-          a.href += g.VIEW;
+        if (((ref1 = g.VIEW) === 'catalog' || ref1 === 'archive') && (urlV = Get.url(g.VIEW, {
+          siteID: '4chan.org',
+          boardID: boardID
+        }))) {
+          a.href = urlV;
         }
         if (a.hostname === location.hostname && boardID === g.BOARD.ID) {
           a.className = 'current';
@@ -18067,10 +18083,10 @@ CatalogLinks = (function() {
         ref2 = a.dataset, siteID = ref2.siteID, boardID = ref2.boardID;
         if (!(siteID && boardID)) {
           ref3 = Site.parseURL(a), siteID = ref3.siteID, boardID = ref3.boardID, VIEW = ref3.VIEW;
-          if (!(siteID && boardID && (VIEW === 'index' || VIEW === 'catalog') && (a.dataset.indexOptions || a.href.replace(tail, '') === Get.url(VIEW, {
+          if (!(siteID && boardID && (VIEW === 'index' || VIEW === 'catalog') && (a.dataset.indexOptions || a.href.replace(tail, '') === (Get.url(VIEW, {
             siteID: siteID,
             boardID: boardID
-          }).replace(tail, '')))) {
+          }) || '').replace(tail, '')))) {
             continue;
           }
           $.extend(a.dataset, {
@@ -27146,7 +27162,7 @@ Main = (function() {
             'qa': {
               'boardTitle': {
                 orig: '/qa/ - Question & Answer',
-                title: '/qa/ - 2D / Random'
+                title: '/qa/ - 2D/Random'
               }
             }
           }

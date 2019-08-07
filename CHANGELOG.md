@@ -4,6 +4,11 @@
 
 ### v1.14.12
 
+**v1.14.12.1** *(2019-08-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.11.2: - Fix error from Catalog Links feature in native catalog when /f/ is in the custom board list. #2390
+- Fix custom board links for boards without native catalog/archive being changed to nonexistent native catalog/archive links on catalog/archive pages. #2390
+- Fix spacing in /qa/ board title. #2369
+
 **v1.14.12.0** *(2019-08-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.11.1.
 - Shift+click on the Quick Reply submit button will now attempt to post regardless of cooldowns or other errors.
