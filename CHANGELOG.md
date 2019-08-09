@@ -4,6 +4,9 @@
 
 ### v1.14.12
 
+**v1.14.12.2** *(2019-08-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.2/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.11.3: Reduce default thread updater interval from 30 seconds to 5 seconds.
+
 **v1.14.12.1** *(2019-08-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.1/builds/4chan-X-noupdate.crx)]
 - Merge v1.14.11.2: - Fix error from Catalog Links feature in native catalog when /f/ is in the custom board list. #2390
 - Fix custom board links for boards without native catalog/archive being changed to nonexistent native catalog/archive links on catalog/archive pages. #2390

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.12.1
+// @version      1.14.12.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -199,7 +199,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.12.1',
+  VERSION:   '1.14.12.2',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -551,7 +551,7 @@ Config = (function() {
         'Auto Update': [true, 'Automatically fetch new posts.'],
         'Optional Increase': [false, 'Increase the intervals between updates on threads without new posts.']
       },
-      'Interval': 30
+      'Interval': 5
     },
     customCooldown: 0,
     customCooldownEnabled: true,
