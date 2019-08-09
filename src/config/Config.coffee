@@ -1153,7 +1153,7 @@ Config =
         false
         'Increase the intervals between updates on threads without new posts.'
       ]
-    'Interval': 30
+    'Interval': 5
 
   customCooldown: 0
   customCooldownEnabled: true
