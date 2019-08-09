@@ -167,6 +167,8 @@ Settings =
       $('div[data-name="Remember QR Size"]', section).hidden = true
     if $.perProtocolSettings or location.protocol isnt 'https:'
       $('div[data-name="Redirect to HTTPS"]', section).hidden = true
+    if $.platform isnt 'crx'
+      $('div[data-name="Work around CORB Bug"]', section).hidden = true
 
     $.get items, (items) ->
       for key, val of items
