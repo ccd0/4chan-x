@@ -4,6 +4,9 @@
 
 ### v1.14.12
 
+**v1.14.12.3** *(2019-08-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.3/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.11.4: Assume Chrome is broken by default. #2378
+
 **v1.14.12.2** *(2019-08-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.2/builds/4chan-X-noupdate.crx)]
 - Merge v1.14.11.3: Reduce default thread updater interval from 30 seconds to 5 seconds.
 

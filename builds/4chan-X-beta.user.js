@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.12.2
+// @version      1.14.12.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -199,7 +199,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.12.2',
+  VERSION:   '1.14.12.3',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -270,6 +270,7 @@ Config = (function() {
         'Remove Spoilers': [false, 'Remove all spoilers in text.'],
         'Reveal Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'],
         'Normalize URL': [true, 'Rewrite the URL of the current page, removing slugs and excess slashes, and changing /res/ to /thread/.'],
+        'Work around CORB Bug': [true, 'Leave this checked until your garbage browser is fixed.'],
         'Disable Autoplaying Sounds': [false, 'Prevent sounds on the page from autoplaying.'],
         'Disable Native Extension': [true, '4chan X is NOT designed to work with the native extension.'],
         'Enable Native Flash Embedding': [true, 'Activate the native extension\'s Flash embedding if the native extension is disabled.']
@@ -558,7 +559,6 @@ Config = (function() {
     'Thread Quotes': false,
     'Max Replies': 1000,
     'Autohiding Scrollbar': false,
-    'Chromium CORB Bug': false,
     position: {
       'embedding.position': 'top: 50px; right: 0px;',
       'thread-stats.position': 'bottom: 0px; right: 0px;',
@@ -12729,6 +12729,9 @@ Settings = (function() {
       }
       if ($.perProtocolSettings || location.protocol !== 'https:') {
         $('div[data-name="Redirect to HTTPS"]', section).hidden = true;
+      }
+      if ($.platform !== 'crx') {
+        $('div[data-name="Work around CORB Bug"]', section).hidden = true;
       }
       $.get(items, function(items) {
         var val;
