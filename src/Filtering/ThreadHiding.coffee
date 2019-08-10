@@ -137,9 +137,9 @@ ThreadHiding =
 
   makeButton: (thread, type) ->
     a = $.el 'a',
-      className: "#{type}-thread-button fourchan-x--icon icon--small"
+      className: "#{type}-thread-button"
       href:      'javascript:;'
-    $.extend a, `<%= html('&{type === "hide" ? Icons.minus_square : Icons.plus_square}') %>`
+    $.extend a, `<%= html('<span class="fourchan-x--icon icon--small">&{type === "hide" ? Icons.minus_square : Icons.plus_square}</span>') %>`
     a.dataset.fullID = thread.fullID
     $.on a, 'click', ThreadHiding.toggle
     a
@@ -149,7 +149,8 @@ ThreadHiding =
     numReplies += +summary.textContent.match /\d+/ if summary = $ g.SITE.selectors.summary, root
 
     a = ThreadHiding.makeButton thread, 'show'
-    $.add a, $.tn " #{thread.OP.info.nameBlock} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
+    $.add a, $.el 'span',
+      textContent: " #{thread.OP.info.nameBlock} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
     thread.stub = $.el 'div',
       className: 'stub'
     if Conf['Menu']

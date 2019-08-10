@@ -80,8 +80,11 @@ body.hasDropDownNav{
  */
 
 .fourchan-x--icon {
+  display: -webkit-inline-flex;
   display: inline-flex;
+  -webkit-justify-content: center;
   justify-content: center;
+  -webkit-align-items: center;
   align-items: center;
   width: 13px;
   height: 13px;
@@ -116,14 +119,9 @@ body.hasDropDownNav{
 :root.shortcut-icons .shortcut.brackets-wrap::after {
   display: none;
 }
-/*
-:root.shortcut-icons #shortcuts a .fa,
-.menu-button .fa,
-.hide-reply-button .fa,
-.hide-thread-button .fa {
-  display: inline;
+.download-button {
+  vertical-align: text-bottom;
 }
-*/
 .fa-spin {
   -webkit-animation: spin 2s infinite linear;
   -moz-animation: spin 2s infinite linear;
@@ -2048,6 +2046,10 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
   color: #e00;
   padding: 1px;
 }
+.remove .fourchan-x--icon {
+  -webkit-filter: drop-shadow(0 0 2px #000);
+  filter: drop-shadow(0 0 2px #000);
+}
 a:only-of-type > .remove {
   display: none;
 }
@@ -2097,8 +2099,7 @@ a:only-of-type > .remove {
 }
 
 /* Menu */
-.menu-button:not(.fa-bars) {
-  display: inline-block;
+.menu-button {
   position: relative;
   cursor: pointer;
 }
@@ -2111,9 +2112,9 @@ a:only-of-type > .remove {
   vertical-align: middle;
 }
 .postInfo > .menu-button,
-#thread-watcher .menu-button {
+#thread-watcher .menu-button,
+.stub > .menu-button {
   margin: 0 3px;
-  vertical-align: text-top;
   height: 8px;
   width: 8px;
 }

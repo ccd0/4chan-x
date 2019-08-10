@@ -51,7 +51,7 @@ FileInfo =
       else
         `<%= html('<span class="fnswitch"><span class="fntrunc">${shortname}</span><span class="fnfull">${fullname}</span></span>') %>`
     N: -> `<%= html('${this.file.name}') %>`
-    d: -> `<%= html('<a href="${this.file.url}" download="${this.file.name}" class="fa fa-download download-button"></a>') %>`
+    d: -> `<%= html('<a href="${this.file.url}" download="${this.file.name}" class="download-button fourchan-x--icon">&{Icons.download}</a>') %>`
     f: -> `<%= html('<a href="javascript:;" class="fa fa-times quick-filter-md5"></a>') %>`
     p: -> `<%= html('?{this.file.isSpoiler}{Spoiler, }') %>`
     s: -> `<%= html('${this.file.size}') %>`
