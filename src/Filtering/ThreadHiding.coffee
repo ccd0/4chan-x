@@ -139,7 +139,7 @@ ThreadHiding =
     a = $.el 'a',
       className: "#{type}-thread-button fourchan-x--icon icon--small"
       href:      'javascript:;'
-    $.extend a, `<%= html('<span class="fa fa-?{type === "hide"}{minus}{plus}-square"></span>') %>`
+    $.extend a, `<%= html('&{type === "hide" ? Icons.minus_square : Icons.plus_square}') %>`
     a.dataset.fullID = thread.fullID
     $.on a, 'click', ThreadHiding.toggle
     a
