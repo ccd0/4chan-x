@@ -12,11 +12,11 @@ ThreadUpdater =
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
         id:        'updater'
-      $.extend sc, <%= html('<span id="update-status" class="empty"></span><span id="update-timer" class="empty" title="Update now"></span>') %>
+      $.extend sc, `<%= html('<span id="update-status" class="empty"></span><span id="update-timer" class="empty" title="Update now"></span>') %>`
       Header.addShortcut 'updater', sc, 100
     else
       @dialog = sc = UI.dialog 'updater',
-        <%= html('<div class="move"></div><span id="update-status" class="empty"></span><span id="update-timer" class="empty" title="Update now"></span>') %>
+        `<%= html('<div class="move"></div><span id="update-status" class="empty"></span><span id="update-timer" class="empty" title="Update now"></span>') %>`
       $.addClass doc, 'float'
       $.ready ->
         $.add d.body, sc
@@ -31,7 +31,7 @@ ThreadUpdater =
 
     updateLink = $.el 'span',
       className: 'brackets-wrap updatelink'
-    $.extend updateLink, <%= html('<a href="javascript:;">Update</a>') %>
+    $.extend updateLink, `<%= html('<a href="javascript:;">Update</a>') %>`
     Main.ready ->
       ($.add navLinksBot, [$.tn(' '), updateLink] if (navLinksBot = $ '.navLinksBot'))
     $.on updateLink.firstElementChild, 'click', @update
@@ -50,7 +50,7 @@ ThreadUpdater =
       subEntries.push el: el
 
     @settings = $.el 'span',
-      <%= html('<a href="javascript:;">Interval</a>') %>
+      `<%= html('<a href="javascript:;">Interval</a>') %>`
 
     $.on @settings, 'click', @intervalShortcut
 
@@ -91,7 +91,7 @@ ThreadUpdater =
   http://freesound.org/people/pierrecartoons1979/sounds/90112/
   cc-by-nc-3.0
   ###
-  beep: 'data:audio/wav;base64,<%= readBase64('beep.wav') %>'
+  beep: 'data:audio/wav;base64,<%= readBase64("beep.wav") %>'
 
   playBeep: ->
     {audio} = ThreadUpdater

@@ -129,6 +129,10 @@ Config =
         true
         'Rewrite the URL of the current page, removing slugs and excess slashes, and changing /res/ to /thread/.'
       ]
+      'Work around CORB Bug': [
+        true
+        'Leave this checked until your garbage browser is fixed.'
+      ]
       'Disable Autoplaying Sounds': [
         false
         'Prevent sounds on the page from autoplaying.'
@@ -1153,7 +1157,7 @@ Config =
         false
         'Increase the intervals between updates on threads without new posts.'
       ]
-    'Interval': 30
+    'Interval': 5
 
   customCooldown: 0
   customCooldownEnabled: true
@@ -1163,7 +1167,6 @@ Config =
   'Max Replies': 1000
 
   'Autohiding Scrollbar': false
-  'Chromium CORB Bug': false
 
   position:
     'embedding.position':      'top: 50px; right: 0px;'
@@ -1182,4 +1185,6 @@ Config =
 
   hiddenPSAList: [{}]
 
-  knownBanners: '<%= readJSON('banners.json').join(',') %>'
+  knownBanners: '<%= readJSON("banners.json").join(",") %>'
+
+  cachedTitles: [[]]

@@ -73,7 +73,7 @@ QR =
     if (origToggle = $.id 'togglePostFormLink')
       link = $.el 'h1',
         className: "qr-link-container"
-      $.extend link, <%= html('<a href="javascript:;" class="qr-link">?{g.VIEW === "thread"}{Reply to Thread}{Start a Thread}</a>') %>
+      $.extend link, `<%= html('<a href="javascript:;" class="qr-link">?{g.VIEW === "thread"}{Reply to Thread}{Start a Thread}</a>') %>`
 
       QR.link = link.firstElementChild
       $.on link.firstChild, 'click', ->
@@ -86,7 +86,7 @@ QR =
     if g.VIEW is 'thread'
       linkBot = $.el 'div',
         className: "brackets-wrap qr-link-container-bottom"
-      $.extend linkBot, <%= html('<a href="javascript:;" class="qr-link-bottom">Reply to Thread</a>') %>
+      $.extend linkBot, `<%= html('<a href="javascript:;" class="qr-link-bottom">Reply to Thread</a>') %>`
 
       $.on linkBot.firstElementChild, 'click', ->
         QR.open()
@@ -244,10 +244,10 @@ QR =
 
   connectionError: ->
     $.el 'span',
-      <%= html(
+      `<%= html(
         'Connection error while posting. ' +
         '[<a href="' + meta.faq + '#connection-errors" target="_blank">More info</a>]'
-      ) %>
+      ) %>`
 
   notifications: []
 
@@ -364,7 +364,7 @@ QR =
 
   openError: ->
     div = $.el 'div'
-    $.extend div, <%= html('Could not open file. [<a href="' + meta.faq + '#error-reading-metadata" target="_blank">More info</a>]') %>
+    $.extend div, `<%= html('Could not open file. [<a href="' + meta.faq + '#error-reading-metadata" target="_blank">More info</a>]') %>`
     QR.error div
 
   setFile: (e) ->
@@ -491,7 +491,7 @@ QR =
   dialog: ->
     QR.nodes = nodes =
       el: dialog = UI.dialog 'qr',
-        <%= readHTML('QuickReply.html') %>
+        `<%= readHTML('QuickReply.html') %>`
 
     setNode = (name, query) ->
       nodes[name] = $ query, dialog
@@ -547,6 +547,7 @@ QR =
 
     $.on nodes.autohide,       'change',    QR.toggleHide
     $.on nodes.close,          'click',     QR.close
+    $.on nodes.status,         'click',     QR.submit
     $.on nodes.form,           'submit',    QR.submit
     $.on nodes.sjisToggle,     'click',     QR.toggleSJIS
     $.on nodes.texButton,      'mousedown', QR.texPreviewShow
@@ -638,6 +639,7 @@ QR =
 
   submit: (e) ->
     e?.preventDefault()
+    force = e?.shiftKey
 
     if QR.req
       QR.abort()
@@ -645,9 +647,12 @@ QR =
 
     $.forceSync 'cooldowns'
     if QR.cooldown.seconds
-      QR.cooldown.auto = !QR.cooldown.auto
-      QR.status()
-      return
+      if force
+        QR.cooldown.clear()
+      else
+        QR.cooldown.auto = !QR.cooldown.auto
+        QR.status()
+        return
 
     post = QR.posts[0]
     post.forceSave()
@@ -680,7 +685,7 @@ QR =
         QR.captcha.setup(!QR.cooldown.auto or d.activeElement is QR.nodes.status)
 
     QR.cleanNotifications()
-    if err
+    if err and !force
       # stop auto-posting
       QR.cooldown.auto = false
       QR.status()
@@ -794,9 +799,11 @@ QR =
           # On connection error, the post most likely didn't go through.
           # If the post did go through, it should be stopped by the duplicate reply cooldown.
           QR.cooldown.addDelay post, 2
-      else if err.textContent and (m = err.textContent.match /(?:(\d+)\s+minutes?\s+)?(\d+)\s+second/i) and !/duplicate|hour/i.test(err.textContent)
+      else if err.textContent and (m = err.textContent.match /\d+\s+(?:minute|second)/gi) and !/duplicate|hour/i.test(err.textContent)
         QR.cooldown.auto = !/have\s+been\s+muted/i.test(err.textContent)
-        seconds = 60 * (+(m[1]||0)) + (+m[2])
+        seconds = 0
+        for mi in m
+          seconds += (if /minute/i.test(mi) then 60 else 1) * (+mi.match(/\d+/)[0])
         if /muted/i.test err.textContent
           QR.cooldown.addMute seconds
         else

@@ -24,8 +24,8 @@ tools.multiline = function(text) {
   return text.replace(/\n+/g, '\n').split(/^/m).map(JSON.stringify).join('+').replace(/"\+"/g, '\\\n');
 };
 
-// Convert JSON object to Coffeescript expression (via embedded JS).
-var constExpression = data => '`' + JSON.stringify(data).replace(/`/g, '\\`') + '`';
+// Convert JSONify-able object to Javascript expression.
+var constExpression = data => JSON.stringify(data).replace(/`/g, '\\`');
 
 function TextStream(text) {
   this.text = text;
@@ -151,11 +151,11 @@ Placeholder.prototype.build = function() {
     throw new Error(`JavaScript in template is not an expression (${expr})`);
   }
   switch(this.type) {
-    case '$': return `\`E(${expr})\``;        // $ : escaped text
-    case '&': return `\`(${expr}).innerHTML\``; // & : contents of HTML element or template (of form {innerHTML: "safeHTML"})
-    case '@': return `\`E.cat(${expr})\``;    // @ : contents of array of HTML elements or templates (see src/General/Globals.coffee for E.cat)
+    case '$': return `E(${expr})`;        // $ : escaped text
+    case '&': return `(${expr}).innerHTML`; // & : contents of HTML element or template (of form {innerHTML: "safeHTML"})
+    case '@': return `E.cat(${expr})`;    // @ : contents of array of HTML elements or templates (see src/General/Globals.coffee for E.cat)
     case '?':
-      return `(if \`(${expr})\` then ${this.args[1] || '""'} else ${this.args[2] || '""'})`; // ? : conditional expression
+      return `((${expr}) ? ${this.args[1] || '""'} : ${this.args[2] || '""'})`; // ? : conditional expression
   }
   throw new Error(`Unrecognized placeholder type (${this.type})`);
 };
@@ -168,11 +168,7 @@ tools.html = function(template) {
   if (stream.text) {
     throw new Error(`Unexpected characters in template (${stream.text}): ${template}`);
   }
-  return `(innerHTML: ${output})`;
-};
-
-tools.assert = function(statement) {
-  return `throw new Error 'Assertion failed: ' + ${constExpression(statement)} unless ${statement}`;
+  return `{innerHTML: ${output}}`;
 };
 
 function includesDir(templateName) {

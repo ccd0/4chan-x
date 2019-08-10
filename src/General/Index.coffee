@@ -85,7 +85,7 @@ Index =
 
     # Navigation links at top of index
     @navLinks = $.el 'div', className: 'navLinks json-index'
-    $.extend @navLinks, <%= readHTML('NavLinks.html') %>
+    $.extend @navLinks, `<%= readHTML('NavLinks.html') %>`
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
     $('.archlistlink', @navLinks).hidden = true unless BoardConfig.isArchived(g.BOARD.ID)
     $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
@@ -134,7 +134,7 @@ Index =
 
     # Page list
     @pagelist = $.el 'div', className: 'pagelist json-index'
-    $.extend @pagelist, <%= readHTML('PageList.html') %>
+    $.extend @pagelist, `<%= readHTML('PageList.html') %>`
     $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
     $.on @pagelist, 'click', @cb.pageNav
 
@@ -206,7 +206,7 @@ Index =
         el: $.el 'a',
           href:      'javascript:;'
           className: 'has-shortcut-text'
-        , <%= html('<span></span><span class="shortcut-text">Shift+click</span>') %>
+        , `<%= html('<span></span><span class="shortcut-text">Shift+click</span>') %>`
         order: 20
         open: ({thread}) ->
           return false if Conf['Index Mode'] isnt 'catalog'
@@ -721,7 +721,8 @@ Index =
           thread.setPage(Index.threadPosition[ID] // Index.threadsNumPerPage + 1)
         else
           obj = Index.parsedThreads[ID]
-          OP = new Post g.SITE.Build.post(obj), thread, g.BOARD
+          opRoot = g.SITE.Build.post(obj)
+          OP = new Post opRoot, thread, g.BOARD
           OP.filterResults = obj.filterResults
           newPosts.push OP
 
@@ -733,6 +734,7 @@ Index =
         errors.push
           message: "Parsing of Thread No.#{thread} failed. Thread will be skipped."
           error: err
+          html: opRoot?.outerHTML
     Main.handleErrors errors if errors
 
     if withReplies
@@ -763,6 +765,7 @@ Index =
           errors.push
             message: "Parsing of Post No.#{data.no} failed. Post will be skipped."
             error: err
+            html: node?.outerHTML
       $.add thread.nodes.root, nodes
 
     Main.handleErrors errors if errors

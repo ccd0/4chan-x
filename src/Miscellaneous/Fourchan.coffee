@@ -12,17 +12,16 @@ Fourchan =
         unless $.hasClass pre, 'prettyprinted'
           pre.innerHTML = e.detail.html
           $.addClass pre, 'prettyprinted'
-      $.globalEval '''
-        window.addEventListener('prettyprint', function(e) {
+      $.global ->
+        window.addEventListener('prettyprint', (e) ->
           window.dispatchEvent(new CustomEvent('prettyprint:cb', {
             detail: {
               ID:   e.detail.ID,
               i:    e.detail.i,
-              html: prettyPrintOne(e.detail.html)
+              html: window.prettyPrintOne(e.detail.html)
             }
-          }));
-        }, false);
-      '''
+          }))
+        , false)
       Callbacks.Post.push
         name: 'Parse [code] tags'
         cb:   Fourchan.code

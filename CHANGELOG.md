@@ -2,7 +2,42 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.12
+
+**v1.14.12.3** *(2019-08-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.3/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.11.4: Assume Chrome is broken by default. #2378
+
+**v1.14.12.2** *(2019-08-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.2/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.11.3: Reduce default thread updater interval from 30 seconds to 5 seconds.
+
+**v1.14.12.1** *(2019-08-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.11.2: - Fix error from Catalog Links feature in native catalog when /f/ is in the custom board list. #2390
+- Fix custom board links for boards without native catalog/archive being changed to nonexistent native catalog/archive links on catalog/archive pages. #2390
+- Fix spacing in /qa/ board title. #2369
+
+**v1.14.12.0** *(2019-08-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.11.1.
+- Shift+click on the Quick Reply submit button will now attempt to post regardless of cooldowns or other errors.
+- Improved error reporting. #862
+- Detect conflicts with native extension and show appropriate error message. #1627
+- Only show MD5 quick filter notification when using keybind. #2385
+- Update Loopvid embedding.
+- Update settings import from loadletter fork.
+- (saxamaphone69) Make text areas in settings resize vertically only.
+- Fix cooldown when the time is an exact number of minutes. #2301
+- Cache titles to reduce title requests. #2327
+- Other bugfixes.
+
 ### v1.14.11
+
+**v1.14.11.4** *(2019-08-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.4/builds/4chan-X-noupdate.crx)]
+- Assume Chrome is broken by default. #2378
+
+**v1.14.11.3** *(2019-08-09)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.3/builds/4chan-X-noupdate.crx)]
+- Reduce default thread updater interval from 30 seconds to 5 seconds.
+
+**v1.14.11.2** *(2019-08-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.2/builds/4chan-X-noupdate.crx)]
+- Fix error from Catalog Links feature in native catalog when /f/ is in the custom board list. #2390
 
 **v1.14.11.1** *(2019-08-03)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.11.1/builds/4chan-X-noupdate.crx)]
 - Security improvements.

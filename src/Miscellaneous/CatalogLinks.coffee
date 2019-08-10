@@ -68,7 +68,7 @@ CatalogLinks =
         continue unless (
           siteID and boardID and
           VIEW in ['index', 'catalog'] and
-          (a.dataset.indexOptions or a.href.replace(tail, '') is Get.url(VIEW, {siteID, boardID}).replace(tail, ''))
+          (a.dataset.indexOptions or a.href.replace(tail, '') is (Get.url(VIEW, {siteID, boardID}) or '').replace(tail, ''))
         )
         $.extend a.dataset, {siteID, boardID}
 

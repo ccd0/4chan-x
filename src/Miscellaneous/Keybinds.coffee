@@ -211,18 +211,13 @@ Keybinds =
         return unless threadRoot
         post = Keybinds.post threadRoot
         Keybinds.hl +1, threadRoot
-        Filter.quickFilterMD5.call post
+        Filter.quickFilterMD5.call post, e
       when Conf['Previous Post Quoting You']
         return unless threadRoot and QuoteYou.db
         QuoteYou.cb.seek 'preceding'
       when Conf['Next Post Quoting You']
         return unless threadRoot and QuoteYou.db
         QuoteYou.cb.seek 'following'
-      <% if (readJSON('/.tests_enabled')) { %>
-      when 'v'
-        return unless threadRoot
-        Test.testAll()
-      <% } %>
       else
         return
     e.preventDefault()

@@ -21,7 +21,7 @@ Settings =
     $.on d, 'AddSettingsSection',   Settings.addSection
     $.on d, 'OpenSettings', (e) -> Settings.open e.detail
 
-    if Conf['Disable Native Extension']
+    if g.SITE.software is 'yotsuba' and Conf['Disable Native Extension']
       if $.hasStorage
         # Run in page context to handle case where 4chan X has localStorage access but not the page.
         # (e.g. Pale Moon 26.2.2, GM 3.8, cookies disabled for 4chan only)
@@ -44,7 +44,7 @@ Settings =
     Settings.dialog = dialog = $.el 'div',
       id:        'overlay'
     ,
-      <%= readHTML('Settings.html') %>
+      `<%= readHTML('Settings.html') %>`
 
     $.on $('.export', dialog), 'click',  Settings.export
     $.on $('.import', dialog), 'click',  Settings.import
@@ -112,16 +112,16 @@ Settings =
       $.onExists doc, '.adg-rects > .desktop', (ad) -> $.onExists ad, 'iframe', ->
         url = Redirect.to 'thread', {boardID: 'qa', threadID: 362590}
         cb $.el 'li',
-          <%= html(
+          `<%= html(
             'To protect yourself from <a href="${url}" target="_blank">malicious ads</a>,' +
             ' you should <a href="https://github.com/gorhill/uBlock#ublock-origin" target="_blank">block ads</a> on 4chan.'
-          ) %>
+          ) %>`
 
   main: (section) ->
     warnings = $.el 'fieldset',
       hidden: true
     ,
-      <%= html('<legend>Warnings</legend><ul></ul>') %>
+      `<%= html('<legend>Warnings</legend><ul></ul>') %>`
     addWarning = (item) ->
       $.add $('ul', warnings), item
       warnings.hidden = false
@@ -136,7 +136,7 @@ Settings =
       for key, arr of obj when arr instanceof Array
         description = arr[1]
         div = $.el 'div',
-          <%= html('<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>') %>
+          `<%= html('<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>') %>`
         div.dataset.name = key
         input = $ 'input', div
         $.on input, 'change', $.cb.checked
@@ -154,11 +154,11 @@ Settings =
 
     for keyFS, obj of Config.main
       fs = $.el 'fieldset',
-        <%= html('<legend>${keyFS}</legend>') %>
+        `<%= html('<legend>${keyFS}</legend>') %>`
       addCheckboxes fs, obj
       if keyFS is 'Posting and Captchas'
         $.add fs, $.el 'p',
-          <%= html('For more info on captcha options and issues, see the <a href="' + meta.captchaFAQ + '" target="_blank">captcha FAQ</a>.') %>
+          `<%= html('For more info on captcha options and issues, see the <a href="' + meta.captchaFAQ + '" target="_blank">captcha FAQ</a>.') %>`
       $.add section, fs
     addCheckboxes $('div[data-name="JSON Index"] > .suboption-list', section), Config.Index
 
@@ -167,6 +167,8 @@ Settings =
       $('div[data-name="Remember QR Size"]', section).hidden = true
     if $.perProtocolSettings or location.protocol isnt 'https:'
       $('div[data-name="Redirect to HTTPS"]', section).hidden = true
+    if $.platform isnt 'crx'
+      $('div[data-name="Work around CORB Bug"]', section).hidden = true
 
     $.get items, (items) ->
       for key, val of items
@@ -175,7 +177,7 @@ Settings =
       return
 
     div = $.el 'div',
-      <%= html('<button></button><span class="description">: Clear manually-hidden threads and posts on all boards. Reload the page to apply.') %>
+      `<%= html('<button></button><span class="description">: Clear manually-hidden threads and posts on all boards. Reload the page to apply.') %>`
     button = $ 'button', div
     $.get {hiddenThreads: $.dict(), hiddenPosts: $.dict()}, ({hiddenThreads, hiddenPosts}) ->
       hiddenNum = 0
@@ -259,17 +261,20 @@ Settings =
         'Disable 4chan\'s extension': 'Disable Native Extension'
         'Comment Auto-Expansion': ''
         'Remove Slug': ''
+        'Always HTTPS': 'Redirect to HTTPS'
         'Check for Updates': ''
         'Recursive Filtering': 'Recursive Hiding'
         'Reply Hiding': 'Reply Hiding Buttons'
         'Thread Hiding': 'Thread Hiding Buttons'
         'Show Stubs': 'Stubs'
         'Image Auto-Gif': 'Replace GIF'
+        'Expand All WebM': 'Expand videos'
         'Reveal Spoilers': 'Reveal Spoiler Thumbnails'
         'Expand From Current': 'Expand from here'
         'Current Page': 'Page Count in Stats'
         'Current Page Position': ''
         'Alternative captcha': 'Use Recaptcha v1'
+        'Alt index captcha': 'Use Recaptcha v1 on Index'
         'Auto Submit': 'Post on Captcha Completion'
         'Open Reply in New Tab': 'Open Post in New Tab'
         'Remember QR size': 'Remember QR Size'
@@ -293,6 +298,7 @@ Settings =
         'spoiler': 'Spoiler tags'
         'sageru': 'Toggle sage'
         'code': 'Code tags'
+        'sjis': 'SJIS tags'
         'submit': 'Submit QR'
         'watch': 'Watch'
         'update': 'Update'
@@ -313,6 +319,9 @@ Settings =
         # updater
         'Scrolling': 'Auto Scroll'
         'Verbose': ''
+      if 'Always CDN' of data.Conf
+        data.Conf['fourchanImageHost'] = if data.Conf['Always CDN'] then 'i.4cdn.org' else ''
+        delete data.Conf['Always CDN']
       data.Conf.sauces = data.Conf.sauces.replace /\$\d/g, (c) ->
         switch c
           when '$1'
@@ -329,10 +338,10 @@ Settings =
         data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, (s) -> "#{s[0].toUpperCase()}#{s[1..]}").replace /(^|.+\+)[A-Z]$/g, (s) ->
           "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
       if data.WatchedThreads
-        data.Conf['watchedThreads'] = boards: $.dict()
+        data.Conf['watchedThreads'] = $.dict.clone {'4chan.org': {boards: {}}}
         for boardID, threads of data.WatchedThreads
           for threadID, threadData of threads
-            (data.Conf['watchedThreads'].boards[boardID] or= $.dict())[threadID] = excerpt: threadData.textContent
+            (data.Conf['watchedThreads']['4chan.org'].boards[boardID] or= $.dict())[threadID] = excerpt: threadData.textContent
       data
 
   upgrade: (data, version) ->
@@ -517,7 +526,7 @@ Settings =
           window.location.reload()
 
   filter: (section) ->
-    $.extend section, <%= readHTML('Filter-select.html') %>
+    $.extend section, `<%= readHTML('Filter-select.html') %>`
     select = $ 'select', section
     $.on select, 'change', Settings.selectFilter
     Settings.selectFilter.call select
@@ -537,12 +546,12 @@ Settings =
         $.add div, ta
       return
     filterTypes = Object.keys(Config.filter).filter((x) -> x isnt 'general').map (x, i) ->
-      <%= html('?{i}{,}<wbr>${x}') %>
-    $.extend div, <%= readHTML('Filter-guide.html') %>
+      `<%= html('?{i}{,}<wbr>${x}') %>`
+    $.extend div, `<%= readHTML('Filter-guide.html') %>`
     $('.warning', div).hidden = Conf['Filter']
 
   sauce: (section) ->
-    $.extend section, <%= readHTML('Sauce.html') %>
+    $.extend section, `<%= readHTML('Sauce.html') %>`
     $('.warning', section).hidden = Conf['Sauce']
     ta = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
@@ -551,7 +560,7 @@ Settings =
     $.on ta, 'change', $.cb.value
 
   advanced: (section) ->
-    $.extend section, <%= readHTML('Advanced.html') %>
+    $.extend section, `<%= readHTML('Advanced.html') %>`
     warning.hidden = Conf[warning.dataset.feature] for warning in $$ '.warning', section
 
     inputs = $.dict()
@@ -705,7 +714,7 @@ Settings =
         textContent: archive[1]
       }
 
-    $.extend td, <%= html('<select></select>') %>
+    $.extend td, `<%= html('<select></select>') %>`
     select = td.firstElementChild
     if not (select.disabled = length is 1)
       # XXX GM can't into datasets
@@ -793,7 +802,7 @@ Settings =
     $.cb.checked.call @
 
   keybinds: (section) ->
-    $.extend section, <%= readHTML('Keybinds.html') %>
+    $.extend section, `<%= readHTML('Keybinds.html') %>`
     $('.warning', section).hidden = Conf['Keybinds']
 
     tbody  = $ 'tbody', section
@@ -801,7 +810,7 @@ Settings =
     inputs = $.dict()
     for key, arr of Config.hotkeys
       tr = $.el 'tr',
-        <%= html('<td>${arr[1]}</td><td><input class="field"></td>') %>
+        `<%= html('<td>${arr[1]}</td><td><input class="field"></td>') %>`
       input = $ 'input', tr
       input.name = key
       input.spellcheck = false

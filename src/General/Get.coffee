@@ -1,6 +1,9 @@
 Get =
   url: (type, IDs, args...) ->
-    g.sites[IDs.siteID]?.urls[type] IDs, args...
+    if (site = g.sites[IDs.siteID]) and (f = $.getOwn(site.urls, type))
+      f IDs, args...
+    else
+      undefined
   threadExcerpt: (thread) ->
     {OP} = thread
     excerpt = ("/#{decodeURIComponent thread.board.ID}/ - ") + (

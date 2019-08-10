@@ -25,9 +25,6 @@ SW.tinyboard =
     'Banner'
     'Flash Features'
     'Reply Pruning'
-    <% if (readJSON('/.tests_enabled')) { %>
-    'Build Test'
-    <% } %>
   ]
 
   detect: ->

@@ -12,7 +12,7 @@ ImageExpand =
     Header.addShortcut 'expand-all', @EAI, 520
     $.on d, 'scroll visibilitychange', @cb.playVideos
     @videoControls = $.el 'span', className: 'video-controls'
-    $.extend @videoControls, <%= html(' <a href="javascript:;" title="You can also contract the video by dragging it to the left.">contract</a>') %>
+    $.extend @videoControls, `<%= html(' <a href="javascript:;" title="You can also contract the video by dragging it to the left.">contract</a>') %>`
 
     Callbacks.Post.push
       name: 'Image Expansion'

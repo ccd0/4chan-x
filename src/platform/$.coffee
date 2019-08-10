@@ -79,7 +79,7 @@ $.ajax = do ->
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
     # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
-    if Conf['Chromium CORB Bug'] and g.SITE.software is 'yotsuba' and !options.testCORB
+    if Conf['Work around CORB Bug'] and g.SITE.software is 'yotsuba' and !options.testCORB
       return $.ajaxPage url, options
     <% } %>
     {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options
@@ -95,8 +95,8 @@ $.ajax = do ->
       <% if (type === 'crx') { %>
       # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
       $.on r, 'load', ->
-        if !Conf['Chromium CORB Bug'] and r.readyState is 4 and r.status is 200 and r.statusText is '' and r.response is null
-          $.set 'Chromium CORB Bug', (Conf['Chromium CORB Bug'] = Date.now())
+        if !Conf['Work around CORB Bug'] and r.readyState is 4 and r.status is 200 and r.statusText is '' and r.response is null
+          $.set 'Work around CORB Bug', (Conf['Work around CORB Bug'] = Date.now())
       <% } %>
       r.send form
     catch err
@@ -114,14 +114,6 @@ do ->
   requests = $.dict()
 
   $.ajaxPageInit = ->
-    if Conf['Chromium CORB Bug'] and g.SITE.software is 'yotsuba'
-      unless 0 <= Date.now() - Conf['Chromium CORB Bug'] < 2 * $.DAY
-        $.ajax "#{location.protocol}//a.4cdn.org/boards.json",
-          testCORB: true
-          onloadend: ->
-            if @response
-              $.set 'Chromium CORB Bug', (Conf['Chromium CORB Bug'] = false)
-
     $.global ->
       window.FCX.requests = Object.create(null)
 
@@ -396,8 +388,8 @@ do ->
 $.modifiedClick = (e) ->
   e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
 
-$.open = 
 <% if (type === 'userscript') { %>
+$.open =
   if GM?.openInTab?
     GM.openInTab
   else if GM_openInTab?
@@ -405,6 +397,7 @@ $.open =
   else
     (url) -> window.open url, '_blank'
 <% } else { %>
+$.open =
   (url) -> window.open url, '_blank'
 <% } %>
 
@@ -445,19 +438,19 @@ $.queueTask = do ->
       taskQueue.push arguments
       setTimeout execTask, 0
 
-$.globalEval = (code, data) ->
-  script = $.el 'script',
-    textContent: code
-  $.extend script.dataset, data if data
-  $.add (d.head or doc), script
-  $.rm script
-
 $.global = (fn, data) ->
   if doc
-    $.globalEval "(#{fn})();", data
+    script = $.el 'script',
+      textContent: "(#{fn}).call(document.currentScript.dataset);"
+    $.extend script.dataset, data if data
+    $.add (d.head or doc), script
+    $.rm script
+    script.dataset
   else
     # XXX dwb
-    fn()
+    try
+      fn.call(data)
+    data
 
 $.bytesToString = (size) ->
   unit = 0 # Bytes
@@ -556,7 +549,7 @@ $.crxWorking = ->
       return true
   unless $.crxWarningShown
     msg = $.el 'div',
-      <%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>
+      `<%= html('4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.') %>`
     $.on $('a', msg), 'click', -> location.reload()
     new Notice 'warning', msg
     $.crxWarningShown = true

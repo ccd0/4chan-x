@@ -71,7 +71,10 @@ Linkify =
 
         if Linkify.regString.test word
           links.push Linkify.makeRange node, endNode, index, length
-          <% if (readJSON('/.tests_enabled')) { %><%= assert('word is links[links.length-1].toString()') %><% } %>
+          <% if (readJSON('/.tests_enabled')) { %>
+          Test.assert ->
+            word is links[links.length-1].toString()
+          <% } %>
 
         break unless test.lastIndex and node is endNode
 

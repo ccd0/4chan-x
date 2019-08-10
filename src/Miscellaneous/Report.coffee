@@ -35,7 +35,7 @@ Report =
       id: 'archive-report'
       hidden: true
     ,
-      <%= readHTML('ArchiveReport.html') %>
+      `<%= readHTML('ArchiveReport.html') %>`
     enabled = $ '#archive-report-enabled', fieldset
     reason  = $ '#archive-report-reason',  fieldset
     submit  = $ '#archive-report-submit',  fieldset

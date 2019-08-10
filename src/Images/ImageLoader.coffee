@@ -17,7 +17,7 @@ ImageLoader =
     return unless Conf['Image Prefetching'] and g.VIEW in ['index', 'thread']
 
     prefetch = $.el 'label',
-      <%= html('<input type="checkbox" name="prefetch"> Prefetch Images') %>
+      `<%= html('<input type="checkbox" name="prefetch"> Prefetch Images') %>`
 
     @el = prefetch.firstElementChild
     $.on @el, 'change', @toggle
@@ -53,7 +53,11 @@ ImageLoader =
   prefetch: (post, file) ->
     {isImage, isVideo, thumb, url} = file
     return if file.isPrefetched or !(isImage or isVideo) or post.isHidden or post.thread.isHidden
-    type    = if (match = url.match(/\.([^.]+)$/)[1].toUpperCase()) is 'JPEG' then 'JPG' else match
+    if isVideo
+      type = 'WEBM'
+    else
+      type = url.match(/\.([^.]+)$/)?[1].toUpperCase()
+      type = 'JPG' if type is 'JPEG'
     replace = Conf["Replace #{type}"] and !/spoiler/.test(thumb.src or thumb.dataset.src)
     return unless replace or Conf['prefetch']
     return if $.hasClass doc, 'catalog-mode'

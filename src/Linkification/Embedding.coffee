@@ -6,7 +6,7 @@ Embedding =
 
     if Conf['Embedding'] and g.VIEW isnt 'archive'
       @dialog = UI.dialog 'embedding',
-        <%= readHTML('Embed.html') %>
+        `<%= readHTML('Embed.html') %>`
       @media = $ '#media-embed', @dialog
       $.one d, '4chanXInitFinished', @ready
       $.on  d, 'IndexRefreshInternal', ->
@@ -20,6 +20,8 @@ Embedding =
         for key, service of Embedding.types when service.title?.batchSize
           Embedding.flushTitles service.title
         return
+      @cache.init Conf['cachedTitles']
+      $.sync 'cachedTitles', @cache.sync
 
   events: (post) ->
     return if g.VIEW is 'archive'
@@ -62,7 +64,7 @@ Embedding =
       className:   'embedder'
       href:        'javascript:;'
     ,
-      <%= html('(<span>un</span>embed)') %>
+      `<%= html('(<span>un</span>embed)') %>`
 
     embed.dataset[name] = value for name, value of {key, uid, options, href}
 
@@ -106,7 +108,9 @@ Embedding =
     {key, uid, options, link, post} = data
     return if not (service = Embedding.types[key].title)
     $.addClass link, key.toLowerCase()
-    if service.batchSize
+    if (text = Embedding.cache.get data)
+      Embedding.cb.titleText text, data
+    else if service.batchSize
       (service.queue or= []).push data
       if service.queue.length >= service.batchSize
         Embedding.flushTitles service
@@ -121,6 +125,38 @@ Embedding =
       Embedding.cb.title @, data for data in queue
       return
     CrossOrigin.cache service.api(data.uid for data in queue), cb
+
+  cache: do ->
+    titles = $.dict()
+    newEntries = []
+    init = (data) ->
+      try
+        for {key, uid, text} in data
+          titles["#{key}.#{uid}"] = text
+        return
+    sync = (data) ->
+      try
+        for {key, uid, text} in data
+          k = "#{key}.#{uid}"
+          break if k of titles
+          titles[k] = text
+        return
+    get = ({key, uid}) ->
+      titles["#{key}.#{uid}"]
+    set = ({key, uid}, text) ->
+      titles["#{key}.#{uid}"] = text
+      newEntries.push {key, uid, text}
+      save()
+    save = $.debounce 2 * $.SECOND, ->
+      $.get 'cachedTitles', Conf['cachedTitles'], ({cachedTitles}) ->
+        sync cachedTitles
+        try
+          cachedTitles = newEntries.concat(cachedTitles)[-100..]
+        catch
+          cachedTitles = newEntries
+        newEntries = []
+        $.set 'cachedTitles', cachedTitles
+    {init, sync, get, set, save}
 
   preview: (data) ->
     {key, uid, link} = data
@@ -179,21 +215,25 @@ Embedding =
     title: (req, data) ->
       return unless req.status
 
-      {key, uid, options, link, post} = data
+      {key, uid} = data
       {status} = req
       service = Embedding.types[key].title
 
-      text = "[#{key}] #{switch status
+      switch status
         when 200, 304
-          service.text req.response, uid
+          text = service.text req.response, uid
+          Embedding.cache.set data, text
         when 404
-          "Not Found"
+          text = "Not Found"
         when 403
-          "Forbidden or Private"
+          text = "Forbidden or Private"
         else
-          "#{status}'d"
-      }"
+          text = "#{status}'d"
+      Embedding.cb.titleText text, data
 
+    titleText: (text, data) ->
+      {key, link, post} = data
+      text = "[#{key}] #{text}"
       link.dataset.original = link.textContent
       link.textContent = text
       for post2 in post.clones
@@ -216,7 +256,7 @@ Embedding =
       regExp: /^[^?#]+\.(?:gif|png|jpg|jpeg|bmp)(?::\w+)?(?:[?#]|$)/i
       style: ''
       el: (a) ->
-        $.el 'div', <%= html('<a target="_blank" href="${a.dataset.href}"><img src="${a.dataset.href}" style="max-width: 80vw; max-height: 80vh;"></a>') %>
+        $.el 'div', `<%= html('<a target="_blank" href="${a.dataset.href}"><img src="${a.dataset.href}" style="max-width: 80vw; max-height: 80vh;"></a>') %>`
     ,
       key: 'video'
       regExp: /^[^?#]+\.(?:og[gv]|webm|mp4)(?:[?#]|$)/i
@@ -320,7 +360,7 @@ Embedding =
         el
     ,
       key: 'Loopvid'
-      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|m2|pc|1c|pi|ni|wl|ko|gc)\/[\w\-\/]+(?:,[\w\-\/]+)*|fc\/\w+\/\d+|https?:\/\/.+)/
+      regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|m2|pc|1c|pi|ni|wl|ko|mm|ic|gc)\/[\w\-\/]+(?:,[\w\-\/]+)*|fc\/\w+\/\d+|https?:\/\/.+)/
       style: 'max-width: 80vw; max-height: 80vh;'
       el: (a) ->
         el = $.el 'video',
@@ -354,14 +394,17 @@ Embedding =
               when 'ky' then ["https://kastden.org/_loopvid_media/ky/#{base}"]
               when 'mf' then ["https://kastden.org/_loopvid_media/mf/#{base}", "https://web.archive.org/web/2/https://d.maxfile.ro/#{base}"]
               when 'm2' then ["https://kastden.org/_loopvid_media/m2/#{base}"]
-              when 'pc' then ["http://a.pomf.cat/#{base}"]
+              when 'pc' then ["https://kastden.org/_loopvid_media/pc/#{base}", "https://web.archive.org/web/2/http://a.pomf.cat/#{base}"]
               when '1c' then ["http://b.1339.cf/#{base}"]
-              when 'pi' then ["https://u.pomf.is/#{base}"]
-              when 'ni' then ["https://u.nya.is/#{base}"]
+              when 'pi' then ["https://kastden.org/_loopvid_media/pi/#{base}", "https://web.archive.org/web/2/https://u.pomf.is/#{base}"]
+              when 'ni' then ["https://kastden.org/_loopvid_media/ni/#{base}", "https://web.archive.org/web/2/https://u.nya.is/#{base}"]
               when 'wl' then ["http://webm.land/media/#{base}"]
               when 'ko' then ["https://kordy.kastden.org/loopvid/#{base}"]
+              when 'mm' then ["https://kastden.org/_loopvid_media/mm/#{base}", "https://web.archive.org/web/2/https://my.mixtape.moe/#{base}"]
+              when 'ic' then ["https://media.8ch.net/file_store/#{base}"]
               when 'fc' then ["//#{ImageHost.host()}/#{base}.webm"]
               when 'gc' then ["https://#{type}.gfycat.com/#{name}.webm"]
+
             for url in urls
               $.add el, $.el 'source', src: url
         el

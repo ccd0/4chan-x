@@ -1,10 +1,17 @@
 Header =
   init: ->
+    $.onExists doc, 'body', =>
+      return unless Main.isThisPageLegit()
+      $.add @bar, [@noticesRoot, @toggle]
+      $.prepend d.body, @bar
+      $.add d.body, Header.hover
+      @setBarPosition Conf['Bottom Header']
+
     @menu = new UI.Menu 'header'
 
     menuButton = $.el 'span',
-      className: 'fourchan-x--icon icon--small menu-button'
-    $.extend menuButton, <%= html('<svg xmlns="http://www.w3.org/2000/svg" class="svg-inline--fa fa-angle-down fa-w-10" viewBox="0 0 320 512"><path fill="currentColor" d="M143 352.3L7 216.3c-9.4-9.4-9.4-24.6 0-33.9l22.6-22.6c9.4-9.4 24.6-9.4 33.9 0l96.4 96.4 96.4-96.4c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9l-136 136c-9.2 9.4-24.4 9.4-33.8 0z"/></svg>') %>
+      className: 'menu-button'
+    $.extend menuButton, `<%= html('<i></i>') %>`
 
     box = UI.checkbox
 
@@ -86,12 +93,6 @@ Header =
 
     @setBoardList()
 
-    $.onExists doc, 'body', =>
-      return unless Main.isThisPageLegit()
-      $.prepend d.body, @bar
-      $.add d.body, Header.hover
-      @setBarPosition Conf['Bottom Header']
-
     $.onExists doc, "#{g.SITE.selectors.boardList} + *", Header.generateFullBoardList
 
     Main.ready ->
@@ -102,7 +103,8 @@ Header =
         $('#navtopright',        footer).id = 'navbotright'
         $('#settingsWindowLink', footer).id = 'settingsWindowLinkBot'
         $.before absbot, footer
-        $.globalEval 'window.cloneTopNav = function() {};'
+        $.global ->
+          window.cloneTopNav = ->
       if (Header.bottomBoardList = $ g.SITE.selectors.boardListBottom)
         for a in $$ 'a', Header.bottomBoardList
           a.className = 'current' if a.hostname is location.hostname and a.pathname.split('/')[1] is g.BOARD.ID
@@ -140,7 +142,7 @@ Header =
   setBoardList: ->
     Header.boardList = boardList = $.el 'span',
       id: 'board-list'
-    $.extend boardList, <%= html(
+    $.extend boardList, `<%= html(
       '<span id="custom-board-list"></span>' +
       '<span id="full-board-list" hidden>' +
         '<span class="hide-board-list-container brackets-wrap">' +
@@ -149,12 +151,12 @@ Header =
         ' ' +
         '<span class="boardList"></span>' +
       '</span>'
-    ) %>
+    ) %>`
 
     btn = $('.hide-board-list-button', boardList)
     $.on btn, 'click', Header.toggleBoardList
 
-    $.add Header.bar, [Header.boardList, Header.shortcuts, Header.noticesRoot, Header.toggle]
+    $.prepend Header.bar, [Header.boardList, Header.shortcuts]
 
     Header.setCustomNav Conf['Custom Board Navigation']
     Header.generateBoardList Conf['boardnav']
@@ -254,7 +256,8 @@ Header =
         href: "//#{BoardConfig.domain(boardID)}/#{boardID}/"
         textContent: boardID
         title: BoardConfig.title(boardID)
-      a.href += g.VIEW if g.VIEW in ['catalog', 'archive']
+      if g.VIEW in ['catalog', 'archive'] and (urlV = Get.url g.VIEW, {siteID: '4chan.org', boardID})
+        a.href = urlV
       a.className = 'current' if a.hostname is location.hostname and boardID is g.BOARD.ID
       a
 
@@ -392,7 +395,7 @@ Header =
     Header.previousOffset = offsetY
 
   setBarPosition: (bottom) ->
-    Header.barPositionToggler.checked = bottom
+    Header.barPositionToggler?.checked = bottom
     $.event 'CloseMenu'
     args = if bottom then [
       'bottom-header'
@@ -545,11 +548,11 @@ Header =
         return
 
     el = $.el 'span',
-      <%= html(
+      `<%= html(
         meta.name + ' needs your permission to show desktop notifications. ' +
         '[<a href="' + meta.faq + '#why-is-4chan-x-asking-for-permission-to-show-desktop-notifications" target="_blank">FAQ</a>]<br>' +
         '<button>Authorize</button> or <button>Disable</button>'
-      ) %>
+      ) %>`
     [authorize, disable] = $$ 'button', el
     $.on authorize, 'click', ->
       Notification.requestPermission (status) ->
