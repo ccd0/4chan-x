@@ -2,14 +2,15 @@ ImageLoader =
   init: ->
     return unless g.VIEW in ['index', 'thread', 'archive']
     return unless Conf['Image Prefetching'] or
-      Conf['Replace JPG'] or Conf['Replace PNG'] or Conf['Replace GIF'] or Conf['Replace WEBM']
+      (replace = Conf['Replace JPG'] or Conf['Replace PNG'] or Conf['Replace GIF'] or Conf['Replace WEBM'])
 
     Callbacks.Post.push
       name: 'Image Replace'
       cb:   @node
 
     $.on d, 'PostsInserted', ->
-      g.posts.forEach ImageLoader.prefetchAll
+      if Conf['prefetch'] or replace
+        g.posts.forEach ImageLoader.prefetchAll
 
     if Conf['Replace WEBM']
       $.on d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', @playVideos
