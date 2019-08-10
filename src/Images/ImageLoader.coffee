@@ -9,7 +9,7 @@ ImageLoader =
       cb:   @node
 
     $.on d, 'PostsInserted', ->
-      if Conf['prefetch'] or replace
+      if ImageLoader.prefetchEnabled or replace
         g.posts.forEach ImageLoader.prefetchAll
 
     if Conf['Replace WEBM']
@@ -60,7 +60,7 @@ ImageLoader =
       type = url.match(/\.([^.]+)$/)?[1].toUpperCase()
       type = 'JPG' if type is 'JPEG'
     replace = Conf["Replace #{type}"] and !/spoiler/.test(thumb.src or thumb.dataset.src)
-    return unless replace or Conf['prefetch']
+    return unless replace or ImageLoader.prefetchEnabled
     return if $.hasClass doc, 'catalog-mode'
     return unless [post, post.clones...].some (clone) -> doc.contains clone.nodes.root
     file.isPrefetched = true
@@ -85,7 +85,7 @@ ImageLoader =
     return
 
   toggle: ->
-    if Conf['prefetch'] = @checked
+    if ImageLoader.prefetchEnabled = @checked
       g.posts.forEach ImageLoader.prefetchAll
     return
 
