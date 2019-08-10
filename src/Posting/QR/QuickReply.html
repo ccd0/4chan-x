@@ -3,11 +3,7 @@
     <input type="checkbox" id="autohide" title="Auto-hide">
     Quick Reply
   </label>
-  <a href="javascript:;" class="fourchan-x--icon icon--medium close" title="Close">
-    <svg xmlns="http://www.w3.org/2000/svg" class="svg-inline--fa fa-times fa-w-11" viewBox="0 0 352 512">
-      <path fill="currentColor" d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"/>
-    </svg>
-  </a>
+  <a href="javascript:;" class="close" title="Close">×</a>
   <select data-name="thread" title="Create a new thread / Reply">
     <option value="new">New thread</option>
   </select>
@@ -44,36 +40,12 @@
         <input type="checkbox" id="qr-file-spoiler" title="Spoiler image">
         <a class="checkbox-letter">S</a>
       </label>
-      <a id="qr-oekaki-button" class="fourchan-x--icon icon--small" title="Edit in Tegaki">
-        <svg xmlns="http://www.w3.org/2000/svg" class="svg-inline--fa fa-pen fa-w-16" viewBox="0 0 512 512">
-          <path fill="currentColor" d="M290.74 93.24l128.02 128.02-277.99 277.99-114.14 12.6C11.35 513.54-1.56 500.62.14 485.34l12.7-114.22 277.9-277.88zm207.2-19.06l-60.11-60.11c-18.75-18.75-49.16-18.75-67.91 0l-56.55 56.55 128.02 128.02 56.55-56.55c18.75-18.76 18.75-49.16 0-67.91z"/>
-        </svg>
-      </a>
-      <a href="javascript:;" id="qr-filerm" class="fourchan-x--icon icon--small" title="Remove file">
-        <svg xmlns="http://www.w3.org/2000/svg" class="svg-inline--fa fa-times-circle fa-w-16" viewBox="0 0 512 512">
-          <path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm121.6 313.1c4.7 4.7 4.7 12.3 0 17L338 377.6c-4.7 4.7-12.3 4.7-17 0L256 312l-65.1 65.6c-4.7 4.7-12.3 4.7-17 0L134.4 338c-4.7-4.7-4.7-12.3 0-17l65.6-65-65.6-65.1c-4.7-4.7-4.7-12.3 0-17l39.6-39.6c4.7-4.7 12.3-4.7 17 0l65 65.7 65.1-65.6c4.7-4.7 12.3-4.7 17 0l39.6 39.6c4.7 4.7 4.7 12.3 0 17L312 256l65.6 65.1z"/>
-        </svg>
-      </a>
-      <a id="url-button" class="fourchan-x--icon icon--small" title="Post from URL">
-        <svg xmlns="http://www.w3.org/2000/svg" class="svg-inline--fa fa-link fa-w-16" viewBox="0 0 512 512">
-          <path fill="currentColor" d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/>
-        </svg>
-      </a>
-      <a hidden id="paste-area" title="Select to paste images" class="fourchan-x--icon icon--small" tabindex="-1" contentEditable="true">
-        <svg xmlns="http://www.w3.org/2000/svg" class="svg-inline--fa fa-paste fa-w-14" viewBox="0 0 448 512">
-          <path fill="currentColor" d="M128 184c0-30.879 25.122-56 56-56h136V56c0-13.255-10.745-24-24-24h-80.61C204.306 12.89 183.637 0 160 0s-44.306 12.89-55.39 32H24C10.745 32 0 42.745 0 56v336c0 13.255 10.745 24 24 24h104V184zm32-144c13.255 0 24 10.745 24 24s-10.745 24-24 24-24-10.745-24-24 10.745-24 24-24zm184 248h104v200c0 13.255-10.745 24-24 24H184c-13.255 0-24-10.745-24-24V184c0-13.255 10.745-24 24-24h136v104c0 13.2 10.8 24 24 24zm104-38.059V256h-96v-96h6.059a24 24 0 0 1 16.97 7.029l65.941 65.941a24.002 24.002 0 0 1 7.03 16.971z"/>
-        </svg>
-      </a>
-      <a id="custom-cooldown-button" class="fourchan-x--icon icon--small disabled" title="Toggle custom cooldown">
-        <svg xmlns="http://www.w3.org/2000/svg" class="svg-inline--fa fa-clock fa-w-16" viewBox="0 0 512 512">
-          <path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm57.1 350.1L224.9 294c-3.1-2.3-4.9-5.9-4.9-9.7V116c0-6.6 5.4-12 12-12h48c6.6 0 12 5.4 12 12v137.7l63.5 46.2c5.4 3.9 6.5 11.4 2.6 16.8l-28.2 38.8c-3.9 5.3-11.4 6.5-16.8 2.6z"/>
-        </svg>
-      </a>
-      <a id="dump-button" class="fourchan-x--icon icon--small" title="Dump list">
-        <svg xmlns="http://www.w3.org/2000/svg" class="svg-inline--fa fa-plus-square fa-w-14" viewBox="0 0 448 512">
-          <path fill="currentColor" d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-32 252c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92H92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"/>
-        </svg>
-      </a>
+      <a id="qr-oekaki-button" class="fourchan-x--icon" title="Edit in Tegaki">&{Icons.edit}</a>
+      <a href="javascript:;" id="qr-filerm" class="fourchan-x--icon" title="Remove file">&{Icons.times_circle}</a>
+      <a id="url-button" class="fourchan-x--icon" title="Post from URL">&{Icons.link}</a>
+      <a hidden id="paste-area" title="Select to paste images" class="fourchan-x--icon" tabindex="-1" contentEditable="true">&{Icons.clipboard}</a>
+      <a id="custom-cooldown-button" class="fourchan-x--icon disabled" title="Toggle custom cooldown">&{Icons.clock_o}</a>
+      <a id="dump-button" class="fourchan-x--icon" title="Dump list">&{Icons.plus_square}</a>
     </span>
     <input type="submit">
   </div>

@@ -4,7 +4,7 @@ QR.post = class
       className: 'qr-preview'
       draggable: true
       href: 'javascript:;'
-    $.extend el, `<%= html('<a class="remove fa fa-times-circle" title="Remove"></a><label class="qr-preview-spoiler"><input type="checkbox"> Spoiler</label><span></span>') %>`
+    $.extend el, `<%= html('<a class="remove fourchan-x--icon" title="Remove">&{Icons.times_circle}</a><label class="qr-preview-spoiler"><input type="checkbox"> Spoiler</label><span></span>') %>`
 
     @nodes =
       el:      el

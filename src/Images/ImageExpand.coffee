@@ -3,10 +3,10 @@ ImageExpand =
     return if not (@enabled = Conf['Image Expansion'] and g.VIEW in ['index', 'thread'])
 
     @EAI = $.el 'a',
-      className: 'expand-all-shortcut fa fa-expand'
-      textContent: 'EAI' 
+      className: 'expand-all-shortcut fourchan-x--icon icon--large'
       title: 'Expand All Images'
       href: 'javascript:;'
+    $.extend @EAI, `<%= html('<span class="icon--alt-text">EAI</span>&{Icons.expand}') %>`
 
     $.on @EAI, 'click', @cb.toggleAll
     Header.addShortcut 'expand-all', @EAI, 520
@@ -22,7 +22,7 @@ ImageExpand =
     return unless @file and (@file.isImage or @file.isVideo)
     $.on @file.thumbLink, 'click', ImageExpand.cb.toggle
 
-    if @isClone 
+    if @isClone
       if @file.isExpanding
         # If we clone a post where the image is still loading,
         # make it loading in the clone too.
@@ -66,12 +66,14 @@ ImageExpand =
         $.queueTask func, post
 
       if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
-        ImageExpand.EAI.className = 'contract-all-shortcut fa fa-compress'
+        ImageExpand.EAI.className = 'contract-all-shortcut fourchan-x--icon icon--large'
         ImageExpand.EAI.title     = 'Contract All Images'
+        $.extend ImageExpand.EAI, `<%= html('<span class="icon--alt-text">CAI</span>&{Icons.compress}') %>`
         func = ImageExpand.expand
       else
-        ImageExpand.EAI.className = 'expand-all-shortcut fa fa-expand'
+        ImageExpand.EAI.className = 'expand-all-shortcut fourchan-x--icon icon--large'
         ImageExpand.EAI.title     = 'Expand All Images'
+        $.extend ImageExpand.EAI, `<%= html('<span class="icon--alt-text">EAI</span>&{Icons.expand}') %>`
         func = ImageExpand.contract
 
       g.posts.forEach (post) ->

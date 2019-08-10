@@ -74,43 +74,44 @@ body.hasDropDownNav{
   display: none !important;
 }
 
-/* Font Awesome 5 Icons */
+/*!
+ *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
+ *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
+ */
+
 .fourchan-x--icon {
   display: inline-flex;
   justify-content: center;
   align-items: center;
+  width: 13px;
+  height: 13px;
 }
 .fourchan-x--icon.icon--small {
   width: 11px;
   height: 11px;
 }
-.fourchan-x--icon.icon--medium {
-  width: 13px;
-  height: 13px;
-}
 .fourchan-x--icon.icon--large {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
 }
-.fourchan-x--icon .svg-inline--fa {
+.fourchan-x--icon .inline-svg--fa {
   height: 100%;
   width: 100%;
 }
-
-:root.shortcut-icons #shortcuts .icon--alt-text {
-  display: none;
-}
-:root:not(.shortcut-icons) #shortcuts .fourchan-x--icon .svg-inline--fa {
-  display: none;
-}
-/*
-:root.shortcut-icons #shortcuts .fa::before {
-  font-size: 15px !important;
-  margin-top: -3px !important;
+:root.shortcut-icons #shortcuts .fourchan-x--icon {
   position: relative;
   top: 1px;
 }
-*/
+:root.shortcut-icons #shortcuts .icon--alt-text {
+  display: none;
+}
+:root:not(.shortcut-icons) #shortcuts .fourchan-x--icon {
+  height: auto;
+  width: auto;
+}
+:root:not(.shortcut-icons) #shortcuts .fourchan-x--icon .inline-svg--fa {
+  display: none;
+}
 :root.shortcut-icons .shortcut.brackets-wrap::before,
 :root.shortcut-icons .shortcut.brackets-wrap::after {
   display: none;
@@ -123,20 +124,19 @@ body.hasDropDownNav{
   display: inline;
 }
 */
-
 .fa-spin {
   -webkit-animation: spin 2s infinite linear;
   -moz-animation: spin 2s infinite linear;
   -o-animation: spin 2s infinite linear;
   animation: spin 2s infinite linear;
 }
-@-moz-keyframes spin {
-  0% {-moz-transform:rotate(0deg);}
-  100% {-moz-transform:rotate(359deg);}
-}
 @-webkit-keyframes spin {
   0% {-webkit-transform:rotate(0deg);}
   100% {-webkit-transform:rotate(359deg);}
+}
+@-moz-keyframes spin {
+  0% {-moz-transform:rotate(0deg);}
+  100% {-moz-transform:rotate(359deg);}
 }
 @keyframes spin {
   0% {transform:rotate(0deg);}
@@ -1257,15 +1257,9 @@ textarea.copy-text-element {
   padding: 0px 4px;
 }
 .watch-thread-link {
-  padding-top: 18px;
-  width: 18px;
-  height: 0px;
-  display: inline-block;
-  background-repeat: no-repeat;
   opacity: 0.2;
   position: relative;
-  top: 1px;
-  background-image: url("data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(0,0,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>");
+  top: 2px;
 }
 .watch-thread-link.watched {
   opacity: 1;
@@ -2103,13 +2097,25 @@ a:only-of-type > .remove {
 }
 
 /* Menu */
-.menu-button {
+.menu-button:not(.fa-bars) {
+  display: inline-block;
   position: relative;
   cursor: pointer;
+}
+#header-bar .menu-button i {
+  border-top:   6px solid;
+  border-right: 4px solid transparent;
+  border-left:  4px solid transparent;
+  display: inline-block;
+  margin: 2px;
   vertical-align: middle;
 }
-.postInfo .menu-button {
-  margin: 0 2px;
+.postInfo > .menu-button,
+#thread-watcher .menu-button {
+  margin: 0 3px;
+  vertical-align: text-top;
+  height: 8px;
+  width: 8px;
 }
 #menu {
   position: fixed;

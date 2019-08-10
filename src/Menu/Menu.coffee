@@ -3,10 +3,10 @@ Menu =
     return unless g.VIEW in ['index', 'thread'] and Conf['Menu']
 
     @button = $.el 'a',
-      className: 'menu-button'
+      className: 'menu-button fourchan-x--icon icon--small'
       href:      'javascript:;'
 
-    $.extend @button, `<%= html('<i class="fa fa-angle-down"></i>') %>`
+    $.extend @button, `<%= html('&{Icons.angle_down}') %>`
 
     @menu = new UI.Menu 'post'
     Callbacks.Post.push

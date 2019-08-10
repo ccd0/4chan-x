@@ -114,7 +114,8 @@ Header =
       cs = $.el 'a', href: 'javascript:;'
       if g.VIEW is 'catalog'
         cs.title = cs.textContent = 'Catalog Settings'
-        cs.className = 'fa fa-book'
+        cs.className = 'fourchan-x--icon icon--large'
+        $.extend cs, `<%= html('&{Icons.book}') %>`
       else
         cs.title = cs.textContent = '4chan Settings'
         cs.className = 'native-settings'

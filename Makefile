@@ -32,7 +32,7 @@ version = $(shell node -p "JSON.parse(require('fs').readFileSync('version.json')
 
 source_directories := \
  globals config css platform classes site \
- Archive Filtering General Images Linkification \
+ Archive Filtering General Icons Images Linkification \
  Menu Miscellaneous Monitoring Posting Quotelinks \
  main
 
