@@ -17,15 +17,15 @@ ImageLoader =
 
     return unless Conf['Image Prefetching'] and g.VIEW in ['index', 'thread']
 
-    prefetch = $.el 'label',
-      `<%= html('<input type="checkbox" name="prefetch"> Prefetch Images') %>`
+    el = $.el 'a',
+      href: 'javascript:;'
+      title: 'Prefetch Images'
+      className: 'fa fa-bolt disabled'
+      textContent: 'Prefetch'
 
-    @el = prefetch.firstElementChild
-    $.on @el, 'change', @toggle
+    $.on el, 'click', @toggle
 
-    Header.menu.addEntry
-      el: prefetch
-      order: 98
+    Header.addShortcut 'gallery', el, 525
 
   node: ->
     return if @isClone
@@ -85,7 +85,9 @@ ImageLoader =
     return
 
   toggle: ->
-    if ImageLoader.prefetchEnabled = @checked
+    ImageLoader.prefetchEnabled = !ImageLoader.prefetchEnabled
+    @classList.toggle 'disabled', !ImageLoader.prefetchEnabled
+    if ImageLoader.prefetchEnabled
       g.posts.forEach ImageLoader.prefetchAll
     return
 

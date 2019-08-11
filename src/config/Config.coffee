@@ -270,7 +270,7 @@ Config =
       ]
       'Image Prefetching': [
         true
-        'Add link in header menu to turn on image preloading.'
+        'Add a shortcut icon to the header to turn on image preloading.'
       ]
       'Fappe Tyme': [
         true
