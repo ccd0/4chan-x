@@ -269,7 +269,7 @@ Config =
         'Replace webm and mp4 thumbnails with the actual video. Probably will degrade browser performance ;)'
       ]
       'Image Prefetching': [
-        false
+        true
         'Add link in header menu to turn on image preloading.'
       ]
       'Fappe Tyme': [
