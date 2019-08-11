@@ -403,8 +403,9 @@ ThreadWatcher =
 
   makeLine: (siteID, boardID, threadID, data) ->
     x = $.el 'a',
-      className: 'fa fa-times'
+      className: 'fourchan-x--icon'
       href: 'javascript:;'
+    $.extend x, `<%= html('&{Icons.close}') %>`
     $.on x, 'click', ThreadWatcher.cb.rm
 
     {excerpt} = data
