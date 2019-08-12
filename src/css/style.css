@@ -943,10 +943,7 @@ div[data-checked="false"] > .suboption-list {
   padding-left: 2px;
 }
 .catalog-stats > .menu-button {
-  font-weight: normal;
-}
-.catalog-stats > .menu-button > i::before {
-  line-height: 11px;
+  width: 8px;
 }
 .catalog-stats {
   font-size: 10px;
