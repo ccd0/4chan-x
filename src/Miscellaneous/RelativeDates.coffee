@@ -31,7 +31,7 @@ RelativeDates =
   # diff is milliseconds from now.
   relative: (diff, now, date, abbrev) ->
     unit = if (number = (diff / $.DAY)) >= 1
-      years  = now.getYear()  - date.getYear()
+      years  = now.getFullYear()  - date.getFullYear()
       months = now.getMonth() - date.getMonth()
       days   = now.getDate()  - date.getDate()
       if years > 1
