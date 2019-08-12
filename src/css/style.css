@@ -74,11 +74,7 @@ body.hasDropDownNav{
   display: none !important;
 }
 
-/*!
- *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
- *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
- */
-
+/* Icons */
 .fourchan-x--icon {
   display: -webkit-inline-flex;
   display: inline-flex;
