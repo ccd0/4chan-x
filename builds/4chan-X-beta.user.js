@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.12.3
+// @version      1.14.12.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -199,7 +199,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.12.3',
+  VERSION:   '1.14.12.4',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -307,7 +307,7 @@ Config = (function() {
         'Replace JPG': [false, 'Replace jpg thumbnails with the actual image.'],
         'Replace PNG': [false, 'Replace png thumbnails with the actual image.'],
         'Replace WEBM': [false, 'Replace webm and mp4 thumbnails with the actual video. Probably will degrade browser performance ;)'],
-        'Image Prefetching': [false, 'Add link in header menu to turn on image preloading.'],
+        'Image Prefetching': [true, 'Add a shortcut icon to the header to turn on image preloading.'],
         'Fappe Tyme': [true, 'Hide posts without images when header menu item is checked. *hint* *hint*'],
         'Werk Tyme': [true, 'Hide all post images when header menu item is checked.'],
         'Autoplay': [true, 'Videos begin playing immediately when opened.'],
@@ -15611,11 +15611,11 @@ ImageLoader = (function() {
 
   ImageLoader = {
     init: function() {
-      var prefetch, ref, ref1;
+      var el, ref, ref1, replace;
       if ((ref = g.VIEW) !== 'index' && ref !== 'thread' && ref !== 'archive') {
         return;
       }
-      if (!(Conf['Image Prefetching'] || Conf['Replace JPG'] || Conf['Replace PNG'] || Conf['Replace GIF'] || Conf['Replace WEBM'])) {
+      if (!(Conf['Image Prefetching'] || (replace = Conf['Replace JPG'] || Conf['Replace PNG'] || Conf['Replace GIF'] || Conf['Replace WEBM']))) {
         return;
       }
       Callbacks.Post.push({
@@ -15623,7 +15623,9 @@ ImageLoader = (function() {
         cb: this.node
       });
       $.on(d, 'PostsInserted', function() {
-        return g.posts.forEach(ImageLoader.prefetchAll);
+        if (ImageLoader.prefetchEnabled || replace) {
+          return g.posts.forEach(ImageLoader.prefetchAll);
+        }
       });
       if (Conf['Replace WEBM']) {
         $.on(d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', this.playVideos);
@@ -15631,13 +15633,14 @@ ImageLoader = (function() {
       if (!(Conf['Image Prefetching'] && ((ref1 = g.VIEW) === 'index' || ref1 === 'thread'))) {
         return;
       }
-      prefetch = $.el('label', {innerHTML: "<input type=\"checkbox\" name=\"prefetch\"> Prefetch Images"});
-      this.el = prefetch.firstElementChild;
-      $.on(this.el, 'change', this.toggle);
-      return Header.menu.addEntry({
-        el: prefetch,
-        order: 98
+      el = $.el('a', {
+        href: 'javascript:;',
+        title: 'Prefetch Images',
+        className: 'fa fa-bolt disabled',
+        textContent: 'Prefetch'
       });
+      $.on(el, 'click', this.toggle);
+      return Header.addShortcut('gallery', el, 525);
     },
     node: function() {
       var file, i, len, ref;
@@ -15691,7 +15694,7 @@ ImageLoader = (function() {
         }
       }
       replace = Conf["Replace " + type] && !/spoiler/.test(thumb.src || thumb.dataset.src);
-      if (!(replace || Conf['prefetch'])) {
+      if (!(replace || ImageLoader.prefetchEnabled)) {
         return;
       }
       if ($.hasClass(doc, 'catalog-mode')) {
@@ -15740,7 +15743,9 @@ ImageLoader = (function() {
       }
     },
     toggle: function() {
-      if (Conf['prefetch'] = this.checked) {
+      ImageLoader.prefetchEnabled = !ImageLoader.prefetchEnabled;
+      this.classList.toggle('disabled', !ImageLoader.prefetchEnabled);
+      if (ImageLoader.prefetchEnabled) {
         g.posts.forEach(ImageLoader.prefetchAll);
       }
     },
