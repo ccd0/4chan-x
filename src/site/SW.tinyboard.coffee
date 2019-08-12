@@ -174,6 +174,13 @@ SW.tinyboard =
       $.replace nextSibling, uniqueID
       $.add uniqueID, nextSibling
 
+  parseDate: (node) ->
+    date = Date.parse(node.getAttribute('datetime')?.trim())
+    return new Date(date) unless isNaN(date)
+    date = Date.parse(node.textContent.trim() + ' UTC') # e.g. onesixtwo.club
+    return new Date(date) unless isNaN(date)
+    undefined
+
   parseFile: (post, file) ->
     {text, link, thumb} = file
     return false if $.x("ancestor::#{@xpath.postContainer}[1]", text) isnt post.nodes.root # file belongs to a reply
