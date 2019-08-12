@@ -7,7 +7,7 @@ Time =
       cb:   @node
 
   node: ->
-    return if @isClone
+    return if !@info.date or @isClone
     {textContent} = @nodes.date
     @nodes.date.textContent = textContent.match(/^\s*/)[0] + Time.format(Conf['time'], @info.date) + textContent.match(/\s*$/)[0]
 

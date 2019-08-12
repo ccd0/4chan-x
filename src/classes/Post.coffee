@@ -41,6 +41,8 @@ class Post
       flag:      @nodes.flag?.title
       date:      if @nodes.date then new Date(@nodes.date.getAttribute('datetime')?.trim() or (@nodes.date.dataset.utc * 1000))
 
+    delete @info.date if @info.date and isNaN(@info.date.getTime())
+
     if Conf['Anonymize']
       @info.nameBlock = 'Anonymous'
     else

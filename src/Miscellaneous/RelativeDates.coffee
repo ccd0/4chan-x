@@ -15,6 +15,7 @@ RelativeDates =
         cb:   @node
 
   node: ->
+    return unless @info.date
     dateEl = @nodes.date
     if Conf['Relative Date Title']
       $.on dateEl, 'mouseover', => RelativeDates.hover @
