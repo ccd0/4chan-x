@@ -2,29 +2,30 @@ ImageLoader =
   init: ->
     return unless g.VIEW in ['index', 'thread', 'archive']
     return unless Conf['Image Prefetching'] or
-      Conf['Replace JPG'] or Conf['Replace PNG'] or Conf['Replace GIF'] or Conf['Replace WEBM']
+      (replace = Conf['Replace JPG'] or Conf['Replace PNG'] or Conf['Replace GIF'] or Conf['Replace WEBM'])
 
     Callbacks.Post.push
       name: 'Image Replace'
       cb:   @node
 
     $.on d, 'PostsInserted', ->
-      g.posts.forEach ImageLoader.prefetchAll
+      if ImageLoader.prefetchEnabled or replace
+        g.posts.forEach ImageLoader.prefetchAll
 
     if Conf['Replace WEBM']
       $.on d, 'scroll visibilitychange 4chanXInitFinished PostsInserted', @playVideos
 
     return unless Conf['Image Prefetching'] and g.VIEW in ['index', 'thread']
 
-    prefetch = $.el 'label',
-      `<%= html('<input type="checkbox" name="prefetch"> Prefetch Images') %>`
+    el = $.el 'a',
+      href: 'javascript:;'
+      title: 'Prefetch Images'
+      className: 'fa fa-bolt disabled'
+      textContent: 'Prefetch'
 
-    @el = prefetch.firstElementChild
-    $.on @el, 'change', @toggle
+    $.on el, 'click', @toggle
 
-    Header.menu.addEntry
-      el: prefetch
-      order: 98
+    Header.addShortcut 'gallery', el, 525
 
   node: ->
     return if @isClone
@@ -59,7 +60,7 @@ ImageLoader =
       type = url.match(/\.([^.]+)$/)?[1].toUpperCase()
       type = 'JPG' if type is 'JPEG'
     replace = Conf["Replace #{type}"] and !/spoiler/.test(thumb.src or thumb.dataset.src)
-    return unless replace or Conf['prefetch']
+    return unless replace or ImageLoader.prefetchEnabled
     return if $.hasClass doc, 'catalog-mode'
     return unless [post, post.clones...].some (clone) -> doc.contains clone.nodes.root
     file.isPrefetched = true
@@ -84,7 +85,9 @@ ImageLoader =
     return
 
   toggle: ->
-    if Conf['prefetch'] = @checked
+    ImageLoader.prefetchEnabled = !ImageLoader.prefetchEnabled
+    @classList.toggle 'disabled', !ImageLoader.prefetchEnabled
+    if ImageLoader.prefetchEnabled
       g.posts.forEach ImageLoader.prefetchAll
     return
 
