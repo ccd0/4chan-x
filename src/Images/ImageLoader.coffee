@@ -25,7 +25,7 @@ ImageLoader =
 
     $.on el, 'click', @toggle
 
-    Header.addShortcut 'gallery', el, 525
+    Header.addShortcut 'prefetch', el, 525
 
   node: ->
     return if @isClone
