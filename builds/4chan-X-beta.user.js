@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.12.4
+// @version      1.14.12.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -199,7 +199,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.12.4',
+  VERSION:   '1.14.12.5',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -6829,7 +6829,7 @@ Post = (function() {
     };
 
     function Post(root, thread, board, flags) {
-      var clone, j, k, key, len, len1, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, selector;
+      var clone, j, k, key, len, len1, ref, ref1, ref10, ref11, ref12, ref13, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, selector;
       this.thread = thread;
       this.board = board;
       if (flags == null) {
@@ -6869,7 +6869,7 @@ Post = (function() {
         flagCode: (ref7 = this.nodes.flag) != null ? (ref8 = ref7.className.match(/flag-(\w+)/)) != null ? ref8[1].toUpperCase() : void 0 : void 0,
         flagCodeTroll: (ref9 = this.nodes.flag) != null ? (ref10 = ref9.src) != null ? (ref11 = ref10.match(/(\w+)\.gif$/)) != null ? ref11[1].toUpperCase() : void 0 : void 0 : void 0,
         flag: (ref12 = this.nodes.flag) != null ? ref12.title : void 0,
-        date: this.nodes.date ? new Date(((ref13 = this.nodes.date.getAttribute('datetime')) != null ? ref13.trim() : void 0) || (this.nodes.date.dataset.utc * 1000)) : void 0
+        date: this.nodes.date ? g.SITE.parseDate(this.nodes.date) : void 0
       };
       if (Conf['Anonymize']) {
         this.info.nameBlock = 'Anonymous';
@@ -6891,9 +6891,9 @@ Post = (function() {
       if (g.posts.get(this.fullID)) {
         this.isRebuilt = true;
         this.clones = g.posts.get(this.fullID).clones;
-        ref14 = this.clones;
-        for (k = 0, len1 = ref14.length; k < len1; k++) {
-          clone = ref14[k];
+        ref13 = this.clones;
+        for (k = 0, len1 = ref13.length; k < len1; k++) {
+          clone = ref13[k];
           clone.origin = this;
         }
       }
@@ -7898,6 +7898,18 @@ SW = {};
         return $.add(uniqueID, nextSibling);
       }
     },
+    parseDate: function(node) {
+      var date, ref;
+      date = Date.parse((ref = node.getAttribute('datetime')) != null ? ref.trim() : void 0);
+      if (!isNaN(date)) {
+        return new Date(date);
+      }
+      date = Date.parse(node.textContent.trim() + ' UTC');
+      if (!isNaN(date)) {
+        return new Date(date);
+      }
+      return void 0;
+    },
     parseFile: function(post, file) {
       var info, infoNode, link, nameNode, ref, ref1, text, thumb;
       text = file.text, link = file.link, thumb = file.thumb;
@@ -8210,6 +8222,9 @@ SW = {};
         }
         return results;
       }
+    },
+    parseDate: function(node) {
+      return new Date(node.dataset.utc * 1000);
     },
     parseFile: function(post, file) {
       var info, link, m, ref, ref1, ref2, text, thumb;
@@ -15640,7 +15655,7 @@ ImageLoader = (function() {
         textContent: 'Prefetch'
       });
       $.on(el, 'click', this.toggle);
-      return Header.addShortcut('gallery', el, 525);
+      return Header.addShortcut('prefetch', el, 525);
     },
     node: function() {
       var file, i, len, ref;
@@ -19901,6 +19916,9 @@ RelativeDates = (function() {
     },
     node: function() {
       var dateEl;
+      if (!this.info.date) {
+        return;
+      }
       dateEl = this.nodes.date;
       if (Conf['Relative Date Title']) {
         $.on(dateEl, 'mouseover', (function(_this) {
@@ -19918,7 +19936,7 @@ RelativeDates = (function() {
     },
     relative: function(diff, now, date, abbrev) {
       var days, months, number, rounded, unit, years;
-      unit = (number = diff / $.DAY) >= 1 ? (years = now.getYear() - date.getYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = months + 12 * years) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
+      unit = (number = diff / $.DAY) >= 1 ? (years = now.getFullYear() - date.getFullYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = months + 12 * years) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
       rounded = Math.round(number);
       if (abbrev) {
         unit = unit === 'month' ? 'mo' : unit[0];
@@ -20244,7 +20262,7 @@ Time = (function() {
     },
     node: function() {
       var textContent;
-      if (this.isClone) {
+      if (!this.info.date || this.isClone) {
         return;
       }
       textContent = this.nodes.date.textContent;

@@ -4,6 +4,10 @@
 
 ### v1.14.12
 
+**v1.14.12.5** *(2019-08-12)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.5/builds/4chan-X-noupdate.crx)]
+- Make date parsing work on onesixtwo.club and avoid errors when we fail to parse the date.
+- Minor bugfixes.
+
 **v1.14.12.4** *(2019-08-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.4/builds/4chan-X-noupdate.crx)]
 - Move prefetch toggle from header menu to shortcut icons and make the option show up by default.
 
