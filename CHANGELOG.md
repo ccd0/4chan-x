@@ -4,6 +4,10 @@
 
 ### v1.14.12
 
+**v1.14.12.6** *(2019-08-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.6/builds/4chan-X-noupdate.crx)]
+- Fix bug in Replace [filetype] features from v1.14.12.4.
+- Enable by default on kissu.moe.
+
 **v1.14.12.5** *(2019-08-12)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.5/builds/4chan-X-noupdate.crx)]
 - Make date parsing work on onesixtwo.club and avoid errors when we fail to parse the date.
 - Minor bugfixes.

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.12.5
+// @version      1.14.12.6
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -28,6 +28,8 @@
 // @include      https://is.4channel.org/*
 // @include      http://is2.4channel.org/*
 // @include      https://is2.4channel.org/*
+// @include      https://kissu.moe/*
+// @include      https://www.kissu.moe/*
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=887877714&*
@@ -199,7 +201,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.12.5',
+  VERSION:   '1.14.12.6',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -15630,7 +15632,8 @@ ImageLoader = (function() {
       if ((ref = g.VIEW) !== 'index' && ref !== 'thread' && ref !== 'archive') {
         return;
       }
-      if (!(Conf['Image Prefetching'] || (replace = Conf['Replace JPG'] || Conf['Replace PNG'] || Conf['Replace GIF'] || Conf['Replace WEBM']))) {
+      replace = Conf['Replace JPG'] || Conf['Replace PNG'] || Conf['Replace GIF'] || Conf['Replace WEBM'];
+      if (!(Conf['Image Prefetching'] || replace)) {
         return;
       }
       Callbacks.Post.push({
