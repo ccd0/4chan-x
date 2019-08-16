@@ -15632,7 +15632,8 @@ ImageLoader = (function() {
       if ((ref = g.VIEW) !== 'index' && ref !== 'thread' && ref !== 'archive') {
         return;
       }
-      if (!(Conf['Image Prefetching'] || (replace = Conf['Replace JPG'] || Conf['Replace PNG'] || Conf['Replace GIF'] || Conf['Replace WEBM']))) {
+      replace = Conf['Replace JPG'] || Conf['Replace PNG'] || Conf['Replace GIF'] || Conf['Replace WEBM'];
+      if (!(Conf['Image Prefetching'] || replace)) {
         return;
       }
       Callbacks.Post.push({
