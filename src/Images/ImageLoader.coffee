@@ -1,8 +1,8 @@
 ImageLoader =
   init: ->
     return unless g.VIEW in ['index', 'thread', 'archive']
-    return unless Conf['Image Prefetching'] or
-      (replace = Conf['Replace JPG'] or Conf['Replace PNG'] or Conf['Replace GIF'] or Conf['Replace WEBM'])
+    replace = Conf['Replace JPG'] or Conf['Replace PNG'] or Conf['Replace GIF'] or Conf['Replace WEBM']
+    return unless Conf['Image Prefetching'] or replace
 
     Callbacks.Post.push
       name: 'Image Replace'
