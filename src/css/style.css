@@ -2433,3 +2433,11 @@ a:only-of-type > .remove {
 .postJumper > .next {
   font-size: 120%;
 }
+
+/* PSA */
+.fcx-announcement {
+  text-align: center;
+}
+.fcx-announcement a {
+  text-decoration: underline;
+}
