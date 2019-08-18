@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.12.6
+// @version      1.14.12.7
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -28,8 +28,26 @@
 // @include      https://is.4channel.org/*
 // @include      http://is2.4channel.org/*
 // @include      https://is2.4channel.org/*
+// @include      https://fufufu.moe/*
+// @include      https://gnfos.com/*
+// @include      https://himasugi.blog/*
+// @include      https://www.himasugi.blog/*
+// @include      https://kakashi-nenpo.com/*
+// @include      https://www.kakashi-nenpo.com/*
 // @include      https://kissu.moe/*
 // @include      https://www.kissu.moe/*
+// @include      https://lainchan.org/*
+// @include      https://www.lainchan.org/*
+// @include      https://merorin.com/*
+// @include      https://ota-ch.com/*
+// @include      https://www.ota-ch.com/*
+// @include      https://ponyville.us/*
+// @include      https://www.ponyville.us/*
+// @include      https://samachan.org/*
+// @include      https://sportschan.org/*
+// @include      https://www.sportschan.org/*
+// @include      https://sushigirl.us/*
+// @include      https://www.sushigirl.us/*
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=887877714&*
