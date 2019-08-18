@@ -835,21 +835,10 @@ Config =
 
   boardnav: """
     [ toggle-all ]
-    a-replace
-    c-replace
-    g-replace
-    k-replace
-    v-replace
-    vg-replace
-    vr-replace
-    ck-replace
-    co-replace
-    fit-replace
-    jp-replace
-    mu-replace
-    sp-replace
-    tv-replace
-    vp-replace
+    [current-index-text:"Index"
+    current-catalog-text:"Catalog"
+    current-expired-text:"Expired"
+    current-archive-text:"Archive"]
     [external-text:"FAQ","<%= meta.faq %>"]
   """
 
