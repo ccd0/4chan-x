@@ -55,9 +55,9 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "cm", "co", "ic", "sci", "tg", "v", "vg", "vip", "y"],
-  "files": ["a", "cm", "co", "ic", "sci", "tg", "v", "vg", "vip", "y"],
-  "search": ["a", "cm", "co", "ic", "sci", "tg", "v", "vg", "y"]
+  "boards": ["cm", "co", "ic", "sci", "tg", "vip", "y"],
+  "files": ["cm", "co", "ic", "sci", "tg", "vip", "y"],
+  "search": ["cm", "co", "ic", "sci", "tg", "y"]
 }, {
   "uid": 25,
   "name": "arch.b4k.co",
