@@ -170,6 +170,15 @@ body.hasDropDownNav{
   font-size: inherit;
 }
 
+/* Tinyboard site style fixes */
+:root[data-host="fufufu.moe"].fixed.top-header:not(.autohide) div.pages.top,
+:root[data-host="merorin.com"].fixed.top-header:not(.autohide) span.settings {
+  top: 26px;
+}
+:root[data-host="fufufu.moe"]:not(.fixed) #header-bar {
+  margin-top: 38px;
+}
+
 /* Anti-autoplay */
 audio.controls-added {
   display: block;
