@@ -102,7 +102,7 @@ ThreadWatcher =
     # Add missing excerpt for threads added by Auto Watch
     if data and not data.excerpt?
       $.queueTask =>
-        ThreadWatcher.update siteID, boardID, threadID, val: {excerpt: Get.threadExcerpt @thread}
+        ThreadWatcher.update siteID, boardID, threadID, {excerpt: Get.threadExcerpt @thread}
 
   catalogNode: ->
     $.addClass @nodes.root, 'watched' if ThreadWatcher.isWatched @thread
