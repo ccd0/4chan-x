@@ -4,6 +4,12 @@
 
 ### v1.14.12
 
+**v1.14.12.8** *(2019-08-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.8/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.14.7.0 (commit af00c711ff) causing excerpt in thread watcher to not be set. #2404
+- Workaround for issue with new Chrome layout engine. #2397
+- Fix workaround for Chrome CORB bug breaking posting in old versions of Chrome. #2396
+- Maintain old default boardlist for people upgrading from previous versions.
+
 **v1.14.12.7** *(2019-08-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.7/builds/4chan-X-noupdate.crx)]
 - Enable 4chan X by default on more sites.
 - Add small announcement on /qa/.

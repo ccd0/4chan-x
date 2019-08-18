@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.12.7
+// @version      1.14.12.8
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -219,7 +219,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.12.7',
+  VERSION:   '1.14.12.8',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -2826,6 +2826,9 @@ input[name=\"Default Volume\"] {\n\
   float: left;\n\
   margin-right: 4px;\n\
   padding: 2px;\n\
+}\n\
+.replacedSideArrows {\n\
+  float: left;\n\
 }\n\
 .hide-thread-button:not(:hover),\n\
 .hide-reply-button:not(:hover) {\n\
@@ -9664,7 +9667,7 @@ PostHiding = (function() {
       if ((sa = g.SITE.selectors.sideArrows)) {
         sideArrows = $(sa, this.nodes.root);
         $.replace(sideArrows.firstChild, button);
-        return sideArrows.removeAttribute('class');
+        return sideArrows.className = 'replacedSideArrows';
       } else {
         return $.prepend(this.nodes.root, button);
       }
@@ -13341,6 +13344,11 @@ Settings = (function() {
       if (compareString < '00001.00014.00010.00001') {
         if (data['Filter in Native Catalog'] == null) {
           set('Filter in Native Catalog', false);
+        }
+      }
+      if (compareString < '00001.00014.00012.00008') {
+        if (data['boardnav'] == null) {
+          set('boardnav', "[ toggle-all ]\na-replace\nc-replace\ng-replace\nk-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nco-replace\nfit-replace\njp-replace\nmu-replace\nsp-replace\ntv-replace\nvp-replace\n[external-text:\"FAQ\",\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions\"]");
         }
       }
       return changes;
@@ -21518,9 +21526,7 @@ ThreadWatcher = (function() {
         return $.queueTask((function(_this) {
           return function() {
             return ThreadWatcher.update(siteID, boardID, threadID, {
-              val: {
-                excerpt: Get.threadExcerpt(_this.thread)
-              }
+              excerpt: Get.threadExcerpt(_this.thread)
             });
           };
         })(this));
