@@ -4,6 +4,12 @@
 
 ### v1.14.12
 
+**v1.14.12.7** *(2019-08-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.7/builds/4chan-X-noupdate.crx)]
+- Enable 4chan X by default on more sites.
+- Add small announcement on /qa/.
+- Remove 4chan boards from default custom board list.
+- Workarounds for clashes between header and fixed elements on some sites.
+
 **v1.14.12.6** *(2019-08-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.6/builds/4chan-X-noupdate.crx)]
 - Fix bug in Replace [filetype] features from v1.14.12.4.
 - Enable by default on kissu.moe.

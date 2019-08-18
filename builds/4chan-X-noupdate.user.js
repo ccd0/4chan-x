@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.12.6
+// @version      1.14.12.7
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -28,8 +28,26 @@
 // @include      https://is.4channel.org/*
 // @include      http://is2.4channel.org/*
 // @include      https://is2.4channel.org/*
+// @include      https://fufufu.moe/*
+// @include      https://gnfos.com/*
+// @include      https://himasugi.blog/*
+// @include      https://www.himasugi.blog/*
+// @include      https://kakashi-nenpo.com/*
+// @include      https://www.kakashi-nenpo.com/*
 // @include      https://kissu.moe/*
 // @include      https://www.kissu.moe/*
+// @include      https://lainchan.org/*
+// @include      https://www.lainchan.org/*
+// @include      https://merorin.com/*
+// @include      https://ota-ch.com/*
+// @include      https://www.ota-ch.com/*
+// @include      https://ponyville.us/*
+// @include      https://www.ponyville.us/*
+// @include      https://samachan.org/*
+// @include      https://sportschan.org/*
+// @include      https://www.sportschan.org/*
+// @include      https://sushigirl.us/*
+// @include      https://www.sushigirl.us/*
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=887877714&*
@@ -186,7 +204,7 @@
 
 'use strict';
 
-var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, CatalogThreadNative, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, ModContact, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostJumper, PostRedirect, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Test, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, Tinyboard, UI, Unread, UnreadIndex, Volume;
+var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, CatalogThreadNative, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, ModContact, Nav, NormalizeURL, Notice, PSA, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostJumper, PostRedirect, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Test, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, Tinyboard, UI, Unread, UnreadIndex, Volume;
 
 var Conf, E, c, d, doc, docSet, g;
 
@@ -201,7 +219,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.12.6',
+  VERSION:   '1.14.12.7',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -472,7 +490,7 @@ Config = (function() {
       archiveAutoUpdate: true
     },
     externalCatalogURLs: "//catalog.neet.tv/%board/;boards:4chan.org:3,a,adv,an,asp,biz,c,cgl,ck,cm,co,diy,f,fa,fit,g,gd,his,i,int,jp,k,lgbt,lit,m,mlp,mu,n,news,o,out,p,po,pol,s4s,sci,sp,tg,toy,trv,tv,v,vg,vip,vp,vr,w,wg,wsg,wsr,x",
-    boardnav: "[ toggle-all ]\na-replace\nc-replace\ng-replace\nk-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nco-replace\nfit-replace\njp-replace\nmu-replace\nsp-replace\ntv-replace\nvp-replace\n[external-text:\"FAQ\",\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions\"]",
+    boardnav: "[ toggle-all ]\n[current-index-text:\"Index\"\ncurrent-catalog-text:\"Catalog\"\ncurrent-expired-text:\"Expired\"\ncurrent-archive-text:\"Archive\"]\n[external-text:\"FAQ\",\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions\"]",
     QR: {
       'QR.personas': "#options:\"sage\";boards:jp;always",
       sjisPreview: false
@@ -1492,6 +1510,14 @@ body.hasDropDownNav{\n\
 }\n\
 .gal-buttons.gal-buttons a {\n\
   font-size: inherit;\n\
+}\n\
+/* Tinyboard site style fixes */\n\
+:root[data-host=\"fufufu.moe\"].fixed.top-header:not(.autohide) div.pages.top,\n\
+:root[data-host=\"merorin.com\"].fixed.top-header:not(.autohide) span.settings {\n\
+  top: 26px;\n\
+}\n\
+:root[data-host=\"fufufu.moe\"]:not(.fixed) #header-bar {\n\
+  margin-top: 38px;\n\
 }\n\
 /* Anti-autoplay */\n\
 audio.controls-added {\n\
@@ -3714,6 +3740,13 @@ a:only-of-type > .remove {\n\
 .postJumper > .prev,\n\
 .postJumper > .next {\n\
   font-size: 120%;\n\
+}\n\
+/* PSA */\n\
+.fcx-announcement {\n\
+  text-align: center;\n\
+}\n\
+.fcx-announcement a {\n\
+  text-decoration: underline;\n\
 }\n\
 /* General */\n\
 :root.yotsuba .dialog {\n\
@@ -8758,7 +8791,7 @@ Redirect = (function() {
       { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ], "reports": true },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "search": [ "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
       { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
-      { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "cm", "co", "ic", "sci", "tg", "v", "vg", "vip", "y" ], "files": [ "a", "cm", "co", "ic", "sci", "tg", "v", "vg", "vip", "y" ], "search": [ "a", "cm", "co", "ic", "sci", "tg", "v", "vg", "y" ] },
+      { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "files": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "search": [ "cm", "co", "ic", "sci", "tg", "y" ] },
       { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v", "vp" ], "files": [], "search": [] },
       { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
       { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
@@ -19708,6 +19741,36 @@ NormalizeURL = (function() {
 
 }).call(this);
 
+PSA = (function() {
+  var PSA;
+
+  PSA = {
+    init: function() {
+      var announcement, el;
+      if (g.SITE.software !== 'yotsuba') {
+        return;
+      }
+      if (g.BOARD.ID === 'qa') {
+        announcement = {
+          innerHTML: "Stay in touch with your <a href=\"https://www.4chan-x.net/qa_friends.html\" target=\"_blank\" rel=\"noopener\">/qa/ friends</a>!"
+        };
+      }
+      if (!announcement) {
+        return;
+      }
+      el = $.el('div', {
+        className: 'fcx-announcement'
+      }, announcement);
+      return $.onExists(doc, '.boardBanner', function(banner) {
+        return $.after(banner, el);
+      });
+    }
+  };
+
+  return PSA;
+
+}).call(this);
+
 PSAHiding = (function() {
   var PSAHiding,
     slice = [].slice;
@@ -27869,7 +27932,7 @@ Main = (function() {
         }
       });
     },
-    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Delay Redirect on Post', PostRedirect], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Tinyboard Glue', Tinyboard], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Captcha Solving Service', Captcha.service], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Post Jumper', PostJumper], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Copy Text Link', CopyTextLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Unread Line in Index', UnreadIndex], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning], ['Mod Contact Links', ModContact]]
+    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Delay Redirect on Post', PostRedirect], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Tinyboard Glue', Tinyboard], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Captcha Solving Service', Captcha.service], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Post Jumper', PostJumper], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Copy Text Link', CopyTextLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Unread Line in Index', UnreadIndex], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Announcements', PSA], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning], ['Mod Contact Links', ModContact]]
   };
 
   return Main;
