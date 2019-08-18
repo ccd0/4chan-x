@@ -29,7 +29,7 @@ PostHiding =
     if (sa = g.SITE.selectors.sideArrows)
       sideArrows = $ sa, @nodes.root
       $.replace sideArrows.firstChild, button
-      sideArrows.removeAttribute 'class'
+      sideArrows.className = 'replacedSideArrows'
     else
       $.prepend @nodes.root, button
 

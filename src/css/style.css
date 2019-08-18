@@ -1506,6 +1506,9 @@ input[name="Default Volume"] {
   margin-right: 4px;
   padding: 2px;
 }
+.replacedSideArrows {
+  float: left;
+}
 .hide-thread-button:not(:hover),
 .hide-reply-button:not(:hover) {
   opacity: 0.4;
