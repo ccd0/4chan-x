@@ -25,7 +25,7 @@
       return expand(matches, /^\*/, ['http', 'https']);
     }
     return [].concat(
-      expandMatches(meta.includes_only.concat(meta.matches)).map(function(match) {
+      expandMatches(meta.includes_only.concat(meta.matches, meta.matches_extra)).map(function(match) {
         return '// @include      ' + match;
       }),
       expandMatches(meta.exclude_matches).map(function(match) {

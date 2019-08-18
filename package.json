@@ -43,18 +43,18 @@
       "*://is.4chan.org/*",
       "*://is2.4chan.org/*",
       "*://is.4channel.org/*",
-      "*://is2.4channel.org/*",
-      "https://kissu.moe/*",
-      "https://www.kissu.moe/*"
+      "*://is2.4channel.org/*"
     ],
     "matches_only": [
       "*://*.4chan.org/*",
       "*://*.4channel.org/*",
-      "*://*.4cdn.org/*",
+      "*://*.4cdn.org/*"
+    ],
+    "matches": [
       "https://kissu.moe/*",
       "https://www.kissu.moe/*"
     ],
-    "matches": [
+    "matches_extra": [
       "https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
       "https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
       "https://www.google.com/recaptcha/api2/frame?*&k=887877714&*",
