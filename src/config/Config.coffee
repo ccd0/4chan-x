@@ -196,6 +196,11 @@ Config =
         'Apply 4chan X filters in native catalog.'
         1
       ]
+      'MD5 Quick Filter Notifications': [
+        true
+        'Show notification when quick filtering MD5s using the button or keybind.'
+        1
+      ]
       'Recursive Hiding': [
         true
         'Hide replies of hidden posts, recursively.'
