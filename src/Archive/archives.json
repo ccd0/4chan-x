@@ -66,8 +66,8 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["g", "jp", "mlp", "v", "vp"],
-  "files": [],
-  "search": []
+  "files": ["v", "vp"],
+  "search": ["v"]
 }, {
   "uid": 28,
   "name": "bstats",
