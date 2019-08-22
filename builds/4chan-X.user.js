@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.12.8
+// @version      1.14.12.9
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -219,7 +219,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.12.8',
+  VERSION:   '1.14.12.9',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -308,6 +308,7 @@ Config = (function() {
         'Filter': [true, 'Self-moderation placebo.'],
         'Filtered Backlinks': [false, 'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.', 1],
         'Filter in Native Catalog': [true, 'Apply 4chan X filters in native catalog.', 1],
+        'MD5 Quick Filter Notifications': [true, 'Show notification when quick filtering MD5s using the button or keybind.', 1],
         'Recursive Hiding': [true, 'Hide replies of hidden posts, recursively.'],
         'Thread Hiding Buttons': [true, 'Add buttons to hide entire threads.'],
         'Reply Hiding Buttons': [true, 'Add buttons to hide single replies.'],
@@ -8795,7 +8796,7 @@ Redirect = (function() {
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "search": [ "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
       { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
       { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "files": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "search": [ "cm", "co", "ic", "sci", "tg", "y" ] },
-      { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v", "vp" ], "files": [], "search": [] },
+      { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v", "vp" ], "files": [ "v", "vp" ], "search": [ "v" ] },
       { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
       { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
@@ -9481,7 +9482,7 @@ Filter = (function() {
         return ta.focus();
       });
     },
-    quickFilterMD5: function(e) {
+    quickFilterMD5: function() {
       var files, filter, links, msg, notice, origin, post;
       post = Get.postFromNode(this);
       files = post.files.filter(function(f) {
@@ -9500,7 +9501,7 @@ Filter = (function() {
       } else if (g.VIEW === 'index') {
         ThreadHiding.hide(origin.thread);
       }
-      if (e.type !== 'keydown') {
+      if (!Conf['MD5 Quick Filter Notifications']) {
         if (post.nodes.post.getBoundingClientRect().height) {
           new Notice('info', 'MD5 filtered.', 2);
         }
@@ -11953,9 +11954,13 @@ Index = (function() {
       }
       if (Conf['Index Refresh Notifications']) {
         Index.notice || (Index.notice = new Notice('info', 'Refreshing index...'));
+        Index.nTimeout || (Index.nTimeout = setTimeout(function() {
+          var ref;
+          return (ref = Index.notice) != null ? ref.el.lastElementChild.textContent += ' (disable JSON Index if this takes too long)' : void 0;
+        }, 3 * $.SECOND));
       } else {
         Index.nTimeout || (Index.nTimeout = setTimeout(function() {
-          return Index.notice || (Index.notice = new Notice('info', 'Refreshing index...'));
+          return Index.notice || (Index.notice = new Notice('info', 'Refreshing index... (disable JSON Index if this takes too long)'));
         }, 3 * $.SECOND));
       }
       if (!firstTime && d.readyState !== 'loading' && !$('.board + *')) {

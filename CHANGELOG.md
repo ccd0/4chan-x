@@ -4,6 +4,10 @@
 
 ### v1.14.12
 
+**v1.14.12.9** *(2019-08-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.9/builds/4chan-X-noupdate.crx)]
+- Add option to enable/disable notification on quick filtering MD5s. #2408
+- Suggest disabling JSON Index if catalog.json is loading slowly. #2412
+
 **v1.14.12.8** *(2019-08-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.8/builds/4chan-X-noupdate.crx)]
 - Fix bug from v1.14.7.0 (commit af00c711ff) causing excerpt in thread watcher to not be set. #2404
 - Workaround for issue with new Chrome layout engine. #2397
