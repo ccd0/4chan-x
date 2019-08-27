@@ -225,6 +225,9 @@ Header =
         href: url or 'javascript:;'
         textContent: text or '+'
         className: 'external'
+      if /-nt/.test t
+        a.target = '_blank'
+        a.rel = 'noopener';
       return a
 
     boardID = t.split('-')[0]
@@ -236,6 +239,9 @@ Header =
           href: "/#{g.BOARD.ID}/"
           textContent: text or g.BOARD.ID
           className: 'current'
+        if /-nt/.test t
+          a.target = '_blank'
+          a.rel = 'noopener';
         if /-index/.test(t)
           a.dataset.only = 'index'
         else if /-catalog/.test(t)
