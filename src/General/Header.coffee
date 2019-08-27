@@ -191,7 +191,7 @@ Header =
     $.rmAll list
     return unless boardnav
     boardnav = boardnav.replace /(\r\n|\n|\r)/g, ' '
-    re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g
+    re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|nt|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g
     nodes = (Header.mapCustomNavigation(t) for t in boardnav.match re)
     $.add list, nodes
     CatalogLinks.setLinks list
@@ -293,6 +293,11 @@ Header =
         a.href = "//#{BoardConfig.domain(boardID)}/#{boardID}/archive"
       else
         return a.firstChild # Its text node.
+    
+    if /-nt/.test t
+      a.target = '_blank'
+      a.rel = 'noopener noreferrer';
+      return a
 
     $.addClass a, 'navSmall' if boardID is '@'
     a
