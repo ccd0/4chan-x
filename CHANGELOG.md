@@ -4,6 +4,9 @@
 
 ### v1.14.12
 
+**v1.14.12.10** *(2019-08-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.10/builds/4chan-X-noupdate.crx)]
+- Turn clicking to open in Gallery off on Tinyboard sites when JS enabled to avoid conflict with native image expansion.
+
 **v1.14.12.9** *(2019-08-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.9/builds/4chan-X-noupdate.crx)]
 - Add option to enable/disable notification on quick filtering MD5s. #2408
 - Suggest disabling JSON Index if catalog.json is loading slowly. #2412

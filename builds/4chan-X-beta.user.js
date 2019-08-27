@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.12.9
+// @version      1.14.12.10
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -219,7 +219,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.12.9',
+  VERSION:   '1.14.12.10',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -14402,7 +14402,7 @@ Gallery = (function() {
           Gallery.generateThumb(this, file);
           Gallery.nodes.total.textContent = Gallery.images.length;
         }
-        if (!Conf['Image Expansion']) {
+        if (!(Conf['Image Expansion'] || (g.SITE.software === 'tinyboard' && Main.jsEnabled))) {
           results.push($.on(file.thumbLink, 'click', Gallery.cb.image));
         } else {
           results.push(void 0);
