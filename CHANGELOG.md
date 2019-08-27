@@ -2,6 +2,13 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.13
+
+**v1.14.13.0** *(2019-08-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.12.10.
+- (saxamaphone69) Add option to open custom navigation links in a new tab.
+- Move reply hiding button inside .intro on Tinyboard to reduce unwanted wrapping of .intro line.
+
 ### v1.14.12
 
 **v1.14.12.10** *(2019-08-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.10/builds/4chan-X-noupdate.crx)]
