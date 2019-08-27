@@ -1506,6 +1506,10 @@ input[name="Default Volume"] {
   margin-right: 4px;
   padding: 2px;
 }
+$site$infoRoot a.hide-reply-button {
+  margin-right: 6px;
+  padding: 0;
+}
 .replacedSideArrows {
   float: left;
 }

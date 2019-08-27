@@ -31,7 +31,7 @@ PostHiding =
       $.replace sideArrows.firstChild, button
       sideArrows.className = 'replacedSideArrows'
     else
-      $.prepend @nodes.root, button
+      $.prepend @nodes.info, button
 
   menu:
     init: ->
