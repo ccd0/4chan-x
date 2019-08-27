@@ -293,11 +293,10 @@ Header =
         a.href = "//#{BoardConfig.domain(boardID)}/#{boardID}/archive"
       else
         return a.firstChild # Its text node.
-    
+
     if /-nt/.test t
       a.target = '_blank'
       a.rel = 'noopener noreferrer';
-      return a
 
     $.addClass a, 'navSmall' if boardID is '@'
     a
