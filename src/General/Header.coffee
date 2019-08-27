@@ -296,7 +296,7 @@ Header =
 
     if /-nt/.test t
       a.target = '_blank'
-      a.rel = 'noopener noreferrer';
+      a.rel = 'noopener';
 
     $.addClass a, 'navSmall' if boardID is '@'
     a
