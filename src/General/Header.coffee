@@ -192,7 +192,7 @@ Header =
     $.rmAll list
     return unless boardnav
     boardnav = boardnav.replace /(\r\n|\n|\r)/g, ' '
-    re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g
+    re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|nt|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g
     nodes = (Header.mapCustomNavigation(t) for t in boardnav.match re)
     $.add list, nodes
     CatalogLinks.setLinks list
@@ -226,6 +226,9 @@ Header =
         href: url or 'javascript:;'
         textContent: text or '+'
         className: 'external'
+      if /-nt/.test t
+        a.target = '_blank'
+        a.rel = 'noopener';
       return a
 
     boardID = t.split('-')[0]
@@ -237,6 +240,9 @@ Header =
           href: "/#{g.BOARD.ID}/"
           textContent: text or g.BOARD.ID
           className: 'current'
+        if /-nt/.test t
+          a.target = '_blank'
+          a.rel = 'noopener';
         if /-index/.test(t)
           a.dataset.only = 'index'
         else if /-catalog/.test(t)
@@ -294,6 +300,10 @@ Header =
         a.href = "//#{BoardConfig.domain(boardID)}/#{boardID}/archive"
       else
         return a.firstChild # Its text node.
+
+    if /-nt/.test t
+      a.target = '_blank'
+      a.rel = 'noopener';
 
     $.addClass a, 'navSmall' if boardID is '@'
     a

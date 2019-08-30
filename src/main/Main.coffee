@@ -662,6 +662,7 @@ Main =
     ['Index Navigation',          Nav]
     ['Keybinds',                  Keybinds]
     ['Banner',                    Banner]
+    ['Announcements',             PSA]
     ['Flash Features',            Flash]
     ['Reply Pruning',             ReplyPruning]
     ['Mod Contact Links',         ModContact]

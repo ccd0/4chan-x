@@ -174,6 +174,9 @@ SW.yotsuba =
       for type in ['Sticky', 'Closed'] when (icon = $ "img[alt=#{type}]", nodes.info)
         $.addClass icon, "#{type.toLowerCase()}Icon", 'retina'
 
+  parseDate: (node) ->
+    new Date(node.dataset.utc * 1000)
+
   parseFile: (post, file) ->
     {text, link, thumb} = file
     return false if not (info = link.nextSibling?.textContent.match /\(([\d.]+ [KMG]?B).*\)/)

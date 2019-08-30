@@ -24,7 +24,7 @@ Gallery =
         Gallery.generateThumb @, file
         Gallery.nodes.total.textContent = Gallery.images.length
 
-      unless Conf['Image Expansion']
+      unless Conf['Image Expansion'] or (g.SITE.software is 'tinyboard' and Main.jsEnabled)
         $.on file.thumbLink, 'click', Gallery.cb.image
 
   build: (image) ->

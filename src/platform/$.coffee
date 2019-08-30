@@ -79,7 +79,7 @@ $.ajax = do ->
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
     <% if (type === 'crx') { %>
     # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
-    if Conf['Work around CORB Bug'] and g.SITE.software is 'yotsuba' and !options.testCORB
+    if Conf['Work around CORB Bug'] and g.SITE.software is 'yotsuba' and !options.testCORB and FormData.prototype.entries
       return $.ajaxPage url, options
     <% } %>
     {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options

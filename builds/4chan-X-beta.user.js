@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.12.4
+// @version      1.14.13.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -28,6 +28,26 @@
 // @include      https://is.4channel.org/*
 // @include      http://is2.4channel.org/*
 // @include      https://is2.4channel.org/*
+// @include      https://fufufu.moe/*
+// @include      https://gnfos.com/*
+// @include      https://himasugi.blog/*
+// @include      https://www.himasugi.blog/*
+// @include      https://kakashi-nenpo.com/*
+// @include      https://www.kakashi-nenpo.com/*
+// @include      https://kissu.moe/*
+// @include      https://www.kissu.moe/*
+// @include      https://lainchan.org/*
+// @include      https://www.lainchan.org/*
+// @include      https://merorin.com/*
+// @include      https://ota-ch.com/*
+// @include      https://www.ota-ch.com/*
+// @include      https://ponyville.us/*
+// @include      https://www.ponyville.us/*
+// @include      https://samachan.org/*
+// @include      https://sportschan.org/*
+// @include      https://www.sportschan.org/*
+// @include      https://sushigirl.us/*
+// @include      https://www.sushigirl.us/*
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=887877714&*
@@ -184,7 +204,7 @@
 
 'use strict';
 
-var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, CatalogThreadNative, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, ModContact, Nav, NormalizeURL, Notice, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostJumper, PostRedirect, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Test, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, Tinyboard, UI, Unread, UnreadIndex, Volume;
+var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, CatalogThreadNative, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, ModContact, Nav, NormalizeURL, Notice, PSA, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostJumper, PostRedirect, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Test, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, Tinyboard, UI, Unread, UnreadIndex, Volume;
 
 var Conf, E, c, d, doc, docSet, g;
 
@@ -199,7 +219,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.12.4',
+  VERSION:   '1.14.13.0',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -288,6 +308,7 @@ Config = (function() {
         'Filter': [true, 'Self-moderation placebo.'],
         'Filtered Backlinks': [false, 'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.', 1],
         'Filter in Native Catalog': [true, 'Apply 4chan X filters in native catalog.', 1],
+        'MD5 Quick Filter Notifications': [true, 'Show notification when quick filtering MD5s using the button or keybind.', 1],
         'Recursive Hiding': [true, 'Hide replies of hidden posts, recursively.'],
         'Thread Hiding Buttons': [true, 'Add buttons to hide entire threads.'],
         'Reply Hiding Buttons': [true, 'Add buttons to hide single replies.'],
@@ -470,7 +491,7 @@ Config = (function() {
       archiveAutoUpdate: true
     },
     externalCatalogURLs: "//catalog.neet.tv/%board/;boards:4chan.org:3,a,adv,an,asp,biz,c,cgl,ck,cm,co,diy,f,fa,fit,g,gd,his,i,int,jp,k,lgbt,lit,m,mlp,mu,n,news,o,out,p,po,pol,s4s,sci,sp,tg,toy,trv,tv,v,vg,vip,vp,vr,w,wg,wsg,wsr,x",
-    boardnav: "[ toggle-all ]\na-replace\nc-replace\ng-replace\nk-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nco-replace\nfit-replace\njp-replace\nmu-replace\nsp-replace\ntv-replace\nvp-replace\n[external-text:\"FAQ\",\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions\"]",
+    boardnav: "[ toggle-all ]\n[current-index-text:\"Index\"\ncurrent-catalog-text:\"Catalog\"\ncurrent-expired-text:\"Expired\"\ncurrent-archive-text:\"Archive\"]\n[external-text:\"FAQ\",\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions\"]",
     QR: {
       'QR.personas': "#options:\"sage\";boards:jp;always",
       sjisPreview: false
@@ -1490,6 +1511,14 @@ body.hasDropDownNav{\n\
 }\n\
 .gal-buttons.gal-buttons a {\n\
   font-size: inherit;\n\
+}\n\
+/* Tinyboard site style fixes */\n\
+:root[data-host=\"fufufu.moe\"].fixed.top-header:not(.autohide) div.pages.top,\n\
+:root[data-host=\"merorin.com\"].fixed.top-header:not(.autohide) span.settings {\n\
+  top: 26px;\n\
+}\n\
+:root[data-host=\"fufufu.moe\"]:not(.fixed) #header-bar {\n\
+  margin-top: 38px;\n\
 }\n\
 /* Anti-autoplay */\n\
 audio.controls-added {\n\
@@ -2799,6 +2828,13 @@ input[name=\"Default Volume\"] {\n\
   margin-right: 4px;\n\
   padding: 2px;\n\
 }\n\
+$site$infoRoot a.hide-reply-button {\n\
+  margin-right: 6px;\n\
+  padding: 0;\n\
+}\n\
+.replacedSideArrows {\n\
+  float: left;\n\
+}\n\
 .hide-thread-button:not(:hover),\n\
 .hide-reply-button:not(:hover) {\n\
   opacity: 0.4;\n\
@@ -3712,6 +3748,13 @@ a:only-of-type > .remove {\n\
 .postJumper > .prev,\n\
 .postJumper > .next {\n\
   font-size: 120%;\n\
+}\n\
+/* PSA */\n\
+.fcx-announcement {\n\
+  text-align: center;\n\
+}\n\
+.fcx-announcement a {\n\
+  text-decoration: underline;\n\
 }\n\
 /* General */\n\
 :root.yotsuba .dialog {\n\
@@ -6829,7 +6872,7 @@ Post = (function() {
     };
 
     function Post(root, thread, board, flags) {
-      var clone, j, k, key, len, len1, ref, ref1, ref10, ref11, ref12, ref13, ref14, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, selector;
+      var clone, j, k, key, len, len1, ref, ref1, ref10, ref11, ref12, ref13, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, selector;
       this.thread = thread;
       this.board = board;
       if (flags == null) {
@@ -6869,7 +6912,7 @@ Post = (function() {
         flagCode: (ref7 = this.nodes.flag) != null ? (ref8 = ref7.className.match(/flag-(\w+)/)) != null ? ref8[1].toUpperCase() : void 0 : void 0,
         flagCodeTroll: (ref9 = this.nodes.flag) != null ? (ref10 = ref9.src) != null ? (ref11 = ref10.match(/(\w+)\.gif$/)) != null ? ref11[1].toUpperCase() : void 0 : void 0 : void 0,
         flag: (ref12 = this.nodes.flag) != null ? ref12.title : void 0,
-        date: this.nodes.date ? new Date(((ref13 = this.nodes.date.getAttribute('datetime')) != null ? ref13.trim() : void 0) || (this.nodes.date.dataset.utc * 1000)) : void 0
+        date: this.nodes.date ? g.SITE.parseDate(this.nodes.date) : void 0
       };
       if (Conf['Anonymize']) {
         this.info.nameBlock = 'Anonymous';
@@ -6891,9 +6934,9 @@ Post = (function() {
       if (g.posts.get(this.fullID)) {
         this.isRebuilt = true;
         this.clones = g.posts.get(this.fullID).clones;
-        ref14 = this.clones;
-        for (k = 0, len1 = ref14.length; k < len1; k++) {
-          clone = ref14[k];
+        ref13 = this.clones;
+        for (k = 0, len1 = ref13.length; k < len1; k++) {
+          clone = ref13[k];
           clone.origin = this;
         }
       }
@@ -7898,6 +7941,18 @@ SW = {};
         return $.add(uniqueID, nextSibling);
       }
     },
+    parseDate: function(node) {
+      var date, ref;
+      date = Date.parse((ref = node.getAttribute('datetime')) != null ? ref.trim() : void 0);
+      if (!isNaN(date)) {
+        return new Date(date);
+      }
+      date = Date.parse(node.textContent.trim() + ' UTC');
+      if (!isNaN(date)) {
+        return new Date(date);
+      }
+      return void 0;
+    },
     parseFile: function(post, file) {
       var info, infoNode, link, nameNode, ref, ref1, text, thumb;
       text = file.text, link = file.link, thumb = file.thumb;
@@ -8210,6 +8265,9 @@ SW = {};
         }
         return results;
       }
+    },
+    parseDate: function(node) {
+      return new Date(node.dataset.utc * 1000);
     },
     parseFile: function(post, file) {
       var info, link, m, ref, ref1, ref2, text, thumb;
@@ -8741,8 +8799,8 @@ Redirect = (function() {
       { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ], "reports": true },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "search": [ "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
       { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
-      { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "cm", "co", "ic", "sci", "tg", "v", "vg", "vip", "y" ], "files": [ "a", "cm", "co", "ic", "sci", "tg", "v", "vg", "vip", "y" ], "search": [ "a", "cm", "co", "ic", "sci", "tg", "v", "vg", "y" ] },
-      { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v", "vp" ], "files": [], "search": [] },
+      { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "files": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "search": [ "cm", "co", "ic", "sci", "tg", "y" ] },
+      { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v", "vp" ], "files": [ "v", "vp" ], "search": [ "v" ] },
       { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
       { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
@@ -9428,7 +9486,7 @@ Filter = (function() {
         return ta.focus();
       });
     },
-    quickFilterMD5: function(e) {
+    quickFilterMD5: function() {
       var files, filter, links, msg, notice, origin, post;
       post = Get.postFromNode(this);
       files = post.files.filter(function(f) {
@@ -9447,7 +9505,7 @@ Filter = (function() {
       } else if (g.VIEW === 'index') {
         ThreadHiding.hide(origin.thread);
       }
-      if (e.type !== 'keydown') {
+      if (!Conf['MD5 Quick Filter Notifications']) {
         if (post.nodes.post.getBoundingClientRect().height) {
           new Notice('info', 'MD5 filtered.', 2);
         }
@@ -9614,9 +9672,9 @@ PostHiding = (function() {
       if ((sa = g.SITE.selectors.sideArrows)) {
         sideArrows = $(sa, this.nodes.root);
         $.replace(sideArrows.firstChild, button);
-        return sideArrows.removeAttribute('class');
+        return sideArrows.className = 'replacedSideArrows';
       } else {
-        return $.prepend(this.nodes.root, button);
+        return $.prepend(this.nodes.info, button);
       }
     },
     menu: {
@@ -10702,7 +10760,7 @@ Header = (function() {
         return;
       }
       boardnav = boardnav.replace(/(\r\n|\n|\r)/g, ' ');
-      re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g;
+      re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|nt|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g;
       nodes = (function() {
         var j, len, ref, results;
         ref = boardnav.match(re);
@@ -10748,6 +10806,10 @@ Header = (function() {
           textContent: text || '+',
           className: 'external'
         });
+        if (/-nt/.test(t)) {
+          a.target = '_blank';
+          a.rel = 'noopener';
+        }
         return a;
       }
       boardID = t.split('-')[0];
@@ -10760,6 +10822,10 @@ Header = (function() {
             textContent: text || g.BOARD.ID,
             className: 'current'
           });
+          if (/-nt/.test(t)) {
+            a.target = '_blank';
+            a.rel = 'noopener';
+          }
           if (/-index/.test(t)) {
             a.dataset.only = 'index';
           } else if (/-catalog/.test(t)) {
@@ -10833,6 +10899,10 @@ Header = (function() {
         } else {
           return a.firstChild;
         }
+      }
+      if (/-nt/.test(t)) {
+        a.target = '_blank';
+        a.rel = 'noopener';
       }
       if (boardID === '@') {
         $.addClass(a, 'navSmall');
@@ -11900,9 +11970,13 @@ Index = (function() {
       }
       if (Conf['Index Refresh Notifications']) {
         Index.notice || (Index.notice = new Notice('info', 'Refreshing index...'));
+        Index.nTimeout || (Index.nTimeout = setTimeout(function() {
+          var ref;
+          return (ref = Index.notice) != null ? ref.el.lastElementChild.textContent += ' (disable JSON Index if this takes too long)' : void 0;
+        }, 3 * $.SECOND));
       } else {
         Index.nTimeout || (Index.nTimeout = setTimeout(function() {
-          return Index.notice || (Index.notice = new Notice('info', 'Refreshing index...'));
+          return Index.notice || (Index.notice = new Notice('info', 'Refreshing index... (disable JSON Index if this takes too long)'));
         }, 3 * $.SECOND));
       }
       if (!firstTime && d.readyState !== 'loading' && !$('.board + *')) {
@@ -13293,6 +13367,11 @@ Settings = (function() {
           set('Filter in Native Catalog', false);
         }
       }
+      if (compareString < '00001.00014.00012.00008') {
+        if (data['boardnav'] == null) {
+          set('boardnav', "[ toggle-all ]\na-replace\nc-replace\ng-replace\nk-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nco-replace\nfit-replace\njp-replace\nmu-replace\nsp-replace\ntv-replace\nvp-replace\n[external-text:\"FAQ\",\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions\"]");
+        }
+      }
       return changes;
     },
     loadSettings: function(data, cb) {
@@ -13367,7 +13446,7 @@ Settings = (function() {
     },
     advanced: function(section) {
       var applyCSS, boardSelect, customCSS, event, input, inputs, interval, items, itemsArchive, j, k, l, len, len1, len2, len3, listImageHost, m, name, ref, ref1, ref2, ref3, ref4, table, textContent, updateArchives, warning;
-      $.extend(section, {innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>External Catalog</legend><div class=\"warning\" data-feature=\"External Catalog\"><code>External Catalog</code> is disabled. This will be used only as a fallback.</div><div>URLs of external catalog sites, where <code>%board</code> is to be replaced by the board name.<br>Each URL should be followed by <code>;boards:</code> and optionally <code>;exclude:</code> and a list of supported/excluded boards in the format explained in the Filter guide.</div><textarea hidden name=\"externalCatalogURLs\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Override 4chan Image Host</legend><div>Change 4chan image links to this domain. Leave blank for no change.</div><div><input name=\"fourchanImageHost\" class=\"field\" spellcheck=\"false\" list=\"list-fourchanImageHost\"></div><datalist id=\"list-fourchanImageHost\"></datalist></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Captcha Solving Service</legend><div>Supported services include <a href=\"https://captcha.guru/en/regen/?ref=104127\" target=\"_blank\">captcha.guru</a>, <a href=\"https://2captcha.com?from=7935487\" target=\"_blank\">2captcha</a>, and any other service implementing the 2captcha API.<br>Leave blank to disable.<div>Domain: <input name=\"captchaServiceDomain\" class=\"field\" spellcheck=\"false\" list=\"list-captchaServiceDomain\"> API Key: <input name=\"captchaServiceKey\" class=\"field\" spellcheck=\"false\"><datalist id=\"list-captchaServiceDomain\"></datalist></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div><div><a href=\"https://www.w3.org/International/articles/language-tags/\" target=\"_blank\">Language tag</a>: <input name=\"timeLocale\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>Default pasted content filename</legend><div><input name=\"pastedname\" class=\"field\" spellcheck=\"false\">.png</div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Known Banners</legend><div>List of known banners, used for click-to-change feature.</div><textarea hidden name=\"knownBanners\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"});
+      $.extend(section, {innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>External Catalog</legend><div class=\"warning\" data-feature=\"External Catalog\"><code>External Catalog</code> is disabled. This will be used only as a fallback.</div><div>URLs of external catalog sites, where <code>%board</code> is to be replaced by the board name.<br>Each URL should be followed by <code>;boards:</code> and optionally <code>;exclude:</code> and a list of supported/excluded boards in the format explained in the Filter guide.</div><textarea hidden name=\"externalCatalogURLs\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Override 4chan Image Host</legend><div>Change 4chan image links to this domain. Leave blank for no change.</div><div><input name=\"fourchanImageHost\" class=\"field\" spellcheck=\"false\" list=\"list-fourchanImageHost\"></div><datalist id=\"list-fourchanImageHost\"></datalist></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Captcha Solving Service</legend><div>Supported services include <a href=\"https://captcha.guru/en/regen/?ref=104127\" target=\"_blank\">captcha.guru</a>, <a href=\"https://2captcha.com?from=7935487\" target=\"_blank\">2captcha</a>, and any other service implementing the 2captcha API.<br>Leave blank to disable.<div>Domain: <input name=\"captchaServiceDomain\" class=\"field\" spellcheck=\"false\" list=\"list-captchaServiceDomain\"> API Key: <input name=\"captchaServiceKey\" class=\"field\" spellcheck=\"false\"><datalist id=\"list-captchaServiceDomain\"></datalist></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Open in new tab: <code>g-nt</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div><div><a href=\"https://www.w3.org/International/articles/language-tags/\" target=\"_blank\">Language tag</a>: <input name=\"timeLocale\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>Default pasted content filename</legend><div><input name=\"pastedname\" class=\"field\" spellcheck=\"false\">.png</div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Known Banners</legend><div>List of known banners, used for click-to-change feature.</div><textarea hidden name=\"knownBanners\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"});
       ref = $$('.warning', section);
       for (j = 0, len = ref.length; j < len; j++) {
         warning = ref[j];
@@ -14339,7 +14418,7 @@ Gallery = (function() {
           Gallery.generateThumb(this, file);
           Gallery.nodes.total.textContent = Gallery.images.length;
         }
-        if (!Conf['Image Expansion']) {
+        if (!(Conf['Image Expansion'] || (g.SITE.software === 'tinyboard' && Main.jsEnabled))) {
           results.push($.on(file.thumbLink, 'click', Gallery.cb.image));
         } else {
           results.push(void 0);
@@ -15615,7 +15694,8 @@ ImageLoader = (function() {
       if ((ref = g.VIEW) !== 'index' && ref !== 'thread' && ref !== 'archive') {
         return;
       }
-      if (!(Conf['Image Prefetching'] || (replace = Conf['Replace JPG'] || Conf['Replace PNG'] || Conf['Replace GIF'] || Conf['Replace WEBM']))) {
+      replace = Conf['Replace JPG'] || Conf['Replace PNG'] || Conf['Replace GIF'] || Conf['Replace WEBM'];
+      if (!(Conf['Image Prefetching'] || replace)) {
         return;
       }
       Callbacks.Post.push({
@@ -15640,7 +15720,7 @@ ImageLoader = (function() {
         textContent: 'Prefetch'
       });
       $.on(el, 'click', this.toggle);
-      return Header.addShortcut('gallery', el, 525);
+      return Header.addShortcut('prefetch', el, 525);
     },
     node: function() {
       var file, i, len, ref;
@@ -19690,6 +19770,36 @@ NormalizeURL = (function() {
 
 }).call(this);
 
+PSA = (function() {
+  var PSA;
+
+  PSA = {
+    init: function() {
+      var announcement, el;
+      if (g.SITE.software !== 'yotsuba') {
+        return;
+      }
+      if (g.BOARD.ID === 'qa') {
+        announcement = {
+          innerHTML: "Stay in touch with your <a href=\"https://www.4chan-x.net/qa_friends.html\" target=\"_blank\" rel=\"noopener\">/qa/ friends</a>!"
+        };
+      }
+      if (!announcement) {
+        return;
+      }
+      el = $.el('div', {
+        className: 'fcx-announcement'
+      }, announcement);
+      return $.onExists(doc, '.boardBanner', function(banner) {
+        return $.after(banner, el);
+      });
+    }
+  };
+
+  return PSA;
+
+}).call(this);
+
 PSAHiding = (function() {
   var PSAHiding,
     slice = [].slice;
@@ -19901,6 +20011,9 @@ RelativeDates = (function() {
     },
     node: function() {
       var dateEl;
+      if (!this.info.date) {
+        return;
+      }
       dateEl = this.nodes.date;
       if (Conf['Relative Date Title']) {
         $.on(dateEl, 'mouseover', (function(_this) {
@@ -19918,7 +20031,7 @@ RelativeDates = (function() {
     },
     relative: function(diff, now, date, abbrev) {
       var days, months, number, rounded, unit, years;
-      unit = (number = diff / $.DAY) >= 1 ? (years = now.getYear() - date.getYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = months + 12 * years) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
+      unit = (number = diff / $.DAY) >= 1 ? (years = now.getFullYear() - date.getFullYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = months + 12 * years) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
       rounded = Math.round(number);
       if (abbrev) {
         unit = unit === 'month' ? 'mo' : unit[0];
@@ -20244,7 +20357,7 @@ Time = (function() {
     },
     node: function() {
       var textContent;
-      if (this.isClone) {
+      if (!this.info.date || this.isClone) {
         return;
       }
       textContent = this.nodes.date.textContent;
@@ -21434,9 +21547,7 @@ ThreadWatcher = (function() {
         return $.queueTask((function(_this) {
           return function() {
             return ThreadWatcher.update(siteID, boardID, threadID, {
-              val: {
-                excerpt: Get.threadExcerpt(_this.thread)
-              }
+              excerpt: Get.threadExcerpt(_this.thread)
             });
           };
         })(this));
@@ -27848,7 +27959,7 @@ Main = (function() {
         }
       });
     },
-    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Delay Redirect on Post', PostRedirect], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Tinyboard Glue', Tinyboard], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Captcha Solving Service', Captcha.service], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Post Jumper', PostJumper], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Copy Text Link', CopyTextLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Unread Line in Index', UnreadIndex], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning], ['Mod Contact Links', ModContact]]
+    features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Delay Redirect on Post', PostRedirect], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Tinyboard Glue', Tinyboard], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Captcha Solving Service', Captcha.service], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Post Jumper', PostJumper], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Copy Text Link', CopyTextLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Unread Line in Index', UnreadIndex], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Announcements', PSA], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning], ['Mod Contact Links', ModContact]]
   };
 
   return Main;

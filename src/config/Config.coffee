@@ -196,6 +196,11 @@ Config =
         'Apply 4chan X filters in native catalog.'
         1
       ]
+      'MD5 Quick Filter Notifications': [
+        true
+        'Show notification when quick filtering MD5s using the button or keybind.'
+        1
+      ]
       'Recursive Hiding': [
         true
         'Hide replies of hidden posts, recursively.'
@@ -835,21 +840,10 @@ Config =
 
   boardnav: """
     [ toggle-all ]
-    a-replace
-    c-replace
-    g-replace
-    k-replace
-    v-replace
-    vg-replace
-    vr-replace
-    ck-replace
-    co-replace
-    fit-replace
-    jp-replace
-    mu-replace
-    sp-replace
-    tv-replace
-    vp-replace
+    [current-index-text:"Index"
+    current-catalog-text:"Catalog"
+    current-expired-text:"Expired"
+    current-archive-text:"Archive"]
     [external-text:"FAQ","<%= meta.faq %>"]
   """
 

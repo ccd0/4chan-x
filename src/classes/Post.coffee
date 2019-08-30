@@ -39,7 +39,7 @@ class Post
       flagCode:  @nodes.flag?.className.match(/flag-(\w+)/)?[1].toUpperCase()
       flagCodeTroll: @nodes.flag?.src?.match(/(\w+)\.gif$/)?[1].toUpperCase()
       flag:      @nodes.flag?.title
-      date:      if @nodes.date then new Date(@nodes.date.getAttribute('datetime')?.trim() or (@nodes.date.dataset.utc * 1000))
+      date:      if @nodes.date then g.SITE.parseDate(@nodes.date)
 
     if Conf['Anonymize']
       @info.nameBlock = 'Anonymous'

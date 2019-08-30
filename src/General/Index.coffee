@@ -583,10 +583,13 @@ Index =
     if Conf['Index Refresh Notifications']
       # Optional notification for manual refreshes
       Index.notice or= new Notice 'info', 'Refreshing index...'
+      Index.nTimeout or= setTimeout ->
+        Index.notice?.el.lastElementChild.textContent += ' (disable JSON Index if this takes too long)'
+      , 3 * $.SECOND
     else
       # Also display notice if Index Refresh is taking too long
       Index.nTimeout or= setTimeout ->
-        Index.notice or= new Notice 'info', 'Refreshing index...'
+        Index.notice or= new Notice 'info', 'Refreshing index... (disable JSON Index if this takes too long)'
       , 3 * $.SECOND
 
     # Hard refresh in case of incomplete page load.

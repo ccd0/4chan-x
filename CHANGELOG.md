@@ -2,7 +2,41 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.13
+
+**v1.14.13.0** *(2019-08-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.12.10.
+- (saxamaphone69) Add option to open custom navigation links in a new tab.
+- Move reply hiding button inside .intro on Tinyboard to reduce unwanted wrapping of .intro line.
+
 ### v1.14.12
+
+**v1.14.12.10** *(2019-08-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.10/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.10/builds/4chan-X-noupdate.crx)]
+- Turn clicking to open in Gallery off on Tinyboard sites when JS enabled to avoid conflict with native image expansion.
+
+**v1.14.12.9** *(2019-08-22)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.9/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.9/builds/4chan-X-noupdate.crx)]
+- Add option to enable/disable notification on quick filtering MD5s. #2408
+- Suggest disabling JSON Index if catalog.json is loading slowly. #2412
+
+**v1.14.12.8** *(2019-08-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.8/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.8/builds/4chan-X-noupdate.crx)]
+- Fix bug from v1.14.7.0 (commit af00c711ff) causing excerpt in thread watcher to not be set. #2404
+- Workaround for issue with new Chrome layout engine. #2397
+- Fix workaround for Chrome CORB bug breaking posting in old versions of Chrome. #2396
+- Maintain old default boardlist for people upgrading from previous versions.
+
+**v1.14.12.7** *(2019-08-18)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.7/builds/4chan-X-noupdate.crx)]
+- Enable 4chan X by default on more sites.
+- Add small announcement on /qa/.
+- Remove 4chan boards from default custom board list.
+- Workarounds for clashes between header and fixed elements on some sites.
+
+**v1.14.12.6** *(2019-08-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.6/builds/4chan-X-noupdate.crx)]
+- Fix bug in Replace [filetype] features from v1.14.12.4.
+- Enable by default on kissu.moe.
+
+**v1.14.12.5** *(2019-08-12)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.5/builds/4chan-X-noupdate.crx)]
+- Make date parsing work on onesixtwo.club and avoid errors when we fail to parse the date.
+- Minor bugfixes.
 
 **v1.14.12.4** *(2019-08-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.12.4/builds/4chan-X-noupdate.crx)]
 - Move prefetch toggle from header menu to shortcut icons and make the option show up by default.

@@ -506,6 +506,27 @@ Settings =
     if compareString < '00001.00014.00010.00001'
       unless data['Filter in Native Catalog']?
         set 'Filter in Native Catalog', false
+    if compareString < '00001.00014.00012.00008'
+      unless data['boardnav']?
+        set 'boardnav', """
+          [ toggle-all ]
+          a-replace
+          c-replace
+          g-replace
+          k-replace
+          v-replace
+          vg-replace
+          vr-replace
+          ck-replace
+          co-replace
+          fit-replace
+          jp-replace
+          mu-replace
+          sp-replace
+          tv-replace
+          vp-replace
+          [external-text:"FAQ","<%= meta.faq %>"]
+        """
     changes
 
   loadSettings: (data, cb) ->
