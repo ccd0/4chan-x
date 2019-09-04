@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.12.10
+// @version      1.14.13.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -54,10 +54,6 @@
 // @include      https://www.google.com/recaptcha/api2/bframe?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      http://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
-// @exclude      http://www.4chan.org/pass
-// @exclude      https://www.4chan.org/pass
-// @exclude      http://www.4chan.org/pass?*
-// @exclude      https://www.4chan.org/pass?*
 // @exclude      http://www.4chan.org/advertise
 // @exclude      https://www.4chan.org/advertise
 // @exclude      http://www.4chan.org/advertise?*
@@ -66,10 +62,6 @@
 // @exclude      https://www.4chan.org/donate
 // @exclude      http://www.4chan.org/donate?*
 // @exclude      https://www.4chan.org/donate?*
-// @exclude      http://www.4channel.org/pass
-// @exclude      https://www.4channel.org/pass
-// @exclude      http://www.4channel.org/pass?*
-// @exclude      https://www.4channel.org/pass?*
 // @exclude      http://www.4channel.org/advertise
 // @exclude      https://www.4channel.org/advertise
 // @exclude      http://www.4channel.org/advertise?*
@@ -204,7 +196,7 @@
 
 'use strict';
 
-var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, CatalogThreadNative, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, ModContact, Nav, NormalizeURL, Notice, PSA, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostJumper, PostRedirect, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Test, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, Tinyboard, UI, Unread, UnreadIndex, Volume;
+var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, CatalogThreadNative, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, ModContact, Nav, NormalizeURL, Notice, PSA, PSAHiding, PassLink, PassMessage, Polyfill, Post, PostHiding, PostJumper, PostRedirect, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Test, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, Tinyboard, UI, Unread, UnreadIndex, Volume;
 
 var Conf, E, c, d, doc, docSet, g;
 
@@ -219,7 +211,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.12.10',
+  VERSION:   '1.14.13.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -2827,6 +2819,10 @@ input[name=\"Default Volume\"] {\n\
   float: left;\n\
   margin-right: 4px;\n\
   padding: 2px;\n\
+}\n\
+$site$infoRoot a.hide-reply-button {\n\
+  margin-right: 6px;\n\
+  padding: 0;\n\
 }\n\
 .replacedSideArrows {\n\
   float: left;\n\
@@ -8154,7 +8150,8 @@ SW = {};
     },
     regexp: {
       quotelink: /^https?:\/\/boards\.4chan(?:nel)?\.org\/+([^\/]+)\/+thread\/+(\d+)(?:[\/?][^#]*)?(?:#p(\d+))?$/,
-      quotelinkHTML: /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
+      quotelinkHTML: /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g,
+      pass: /^https?:\/\/www\.4chan(?:nel)?\.org\/+pass(?:$|[?#])/
     },
     bgColoredEl: function() {
       return $.el('div', {
@@ -8189,10 +8186,14 @@ SW = {};
       switch (location.hostname) {
         case 'www.4chan.org':
         case 'www.4channel.org':
-          $.onExists(doc, 'body', function() {
-            return $.addStyle(CSS.www);
-          });
-          Captcha.replace.init();
+          if (SW.yotsuba.regexp.pass.test(location.href)) {
+            PassMessage.init();
+          } else {
+            $.onExists(doc, 'body', function() {
+              return $.addStyle(CSS.www);
+            });
+            Captcha.replace.init();
+          }
           break;
         case 'sys.4chan.org':
         case 'sys.4channel.org':
@@ -9670,7 +9671,7 @@ PostHiding = (function() {
         $.replace(sideArrows.firstChild, button);
         return sideArrows.className = 'replacedSideArrows';
       } else {
-        return $.prepend(this.nodes.root, button);
+        return $.prepend(this.nodes.info, button);
       }
     },
     menu: {
@@ -10756,7 +10757,7 @@ Header = (function() {
         return;
       }
       boardnav = boardnav.replace(/(\r\n|\n|\r)/g, ' ');
-      re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g;
+      re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|nt|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g;
       nodes = (function() {
         var j, len, ref, results;
         ref = boardnav.match(re);
@@ -10802,6 +10803,10 @@ Header = (function() {
           textContent: text || '+',
           className: 'external'
         });
+        if (/-nt/.test(t)) {
+          a.target = '_blank';
+          a.rel = 'noopener';
+        }
         return a;
       }
       boardID = t.split('-')[0];
@@ -10814,6 +10819,10 @@ Header = (function() {
             textContent: text || g.BOARD.ID,
             className: 'current'
           });
+          if (/-nt/.test(t)) {
+            a.target = '_blank';
+            a.rel = 'noopener';
+          }
           if (/-index/.test(t)) {
             a.dataset.only = 'index';
           } else if (/-catalog/.test(t)) {
@@ -10887,6 +10896,10 @@ Header = (function() {
         } else {
           return a.firstChild;
         }
+      }
+      if (/-nt/.test(t)) {
+        a.target = '_blank';
+        a.rel = 'noopener';
       }
       if (boardID === '@') {
         $.addClass(a, 'navSmall');
@@ -13430,7 +13443,7 @@ Settings = (function() {
     },
     advanced: function(section) {
       var applyCSS, boardSelect, customCSS, event, input, inputs, interval, items, itemsArchive, j, k, l, len, len1, len2, len3, listImageHost, m, name, ref, ref1, ref2, ref3, ref4, table, textContent, updateArchives, warning;
-      $.extend(section, {innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>External Catalog</legend><div class=\"warning\" data-feature=\"External Catalog\"><code>External Catalog</code> is disabled. This will be used only as a fallback.</div><div>URLs of external catalog sites, where <code>%board</code> is to be replaced by the board name.<br>Each URL should be followed by <code>;boards:</code> and optionally <code>;exclude:</code> and a list of supported/excluded boards in the format explained in the Filter guide.</div><textarea hidden name=\"externalCatalogURLs\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Override 4chan Image Host</legend><div>Change 4chan image links to this domain. Leave blank for no change.</div><div><input name=\"fourchanImageHost\" class=\"field\" spellcheck=\"false\" list=\"list-fourchanImageHost\"></div><datalist id=\"list-fourchanImageHost\"></datalist></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Captcha Solving Service</legend><div>Supported services include <a href=\"https://captcha.guru/en/regen/?ref=104127\" target=\"_blank\">captcha.guru</a>, <a href=\"https://2captcha.com?from=7935487\" target=\"_blank\">2captcha</a>, and any other service implementing the 2captcha API.<br>Leave blank to disable.<div>Domain: <input name=\"captchaServiceDomain\" class=\"field\" spellcheck=\"false\" list=\"list-captchaServiceDomain\"> API Key: <input name=\"captchaServiceKey\" class=\"field\" spellcheck=\"false\"><datalist id=\"list-captchaServiceDomain\"></datalist></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div><div><a href=\"https://www.w3.org/International/articles/language-tags/\" target=\"_blank\">Language tag</a>: <input name=\"timeLocale\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>Default pasted content filename</legend><div><input name=\"pastedname\" class=\"field\" spellcheck=\"false\">.png</div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Known Banners</legend><div>List of known banners, used for click-to-change feature.</div><textarea hidden name=\"knownBanners\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"});
+      $.extend(section, {innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>External Catalog</legend><div class=\"warning\" data-feature=\"External Catalog\"><code>External Catalog</code> is disabled. This will be used only as a fallback.</div><div>URLs of external catalog sites, where <code>%board</code> is to be replaced by the board name.<br>Each URL should be followed by <code>;boards:</code> and optionally <code>;exclude:</code> and a list of supported/excluded boards in the format explained in the Filter guide.</div><textarea hidden name=\"externalCatalogURLs\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Override 4chan Image Host</legend><div>Change 4chan image links to this domain. Leave blank for no change.</div><div><input name=\"fourchanImageHost\" class=\"field\" spellcheck=\"false\" list=\"list-fourchanImageHost\"></div><datalist id=\"list-fourchanImageHost\"></datalist></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Captcha Solving Service</legend><div>Supported services include <a href=\"https://captcha.guru/en/regen/?ref=104127\" target=\"_blank\">captcha.guru</a>, <a href=\"https://2captcha.com?from=7935487\" target=\"_blank\">2captcha</a>, and any other service implementing the 2captcha API.<br>Leave blank to disable.<div>Domain: <input name=\"captchaServiceDomain\" class=\"field\" spellcheck=\"false\" list=\"list-captchaServiceDomain\"> API Key: <input name=\"captchaServiceKey\" class=\"field\" spellcheck=\"false\"><datalist id=\"list-captchaServiceDomain\"></datalist></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Open in new tab: <code>g-nt</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div><div><a href=\"https://www.w3.org/International/articles/language-tags/\" target=\"_blank\">Language tag</a>: <input name=\"timeLocale\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>Default pasted content filename</legend><div><input name=\"pastedname\" class=\"field\" spellcheck=\"false\">.png</div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Known Banners</legend><div>List of known banners, used for click-to-change feature.</div><textarea hidden name=\"knownBanners\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"});
       ref = $$('.warning', section);
       for (j = 0, len = ref.length; j < len; j++) {
         warning = ref[j];
@@ -19870,6 +19883,30 @@ PSAHiding = (function() {
   };
 
   return PSAHiding;
+
+}).call(this);
+
+PassMessage = (function() {
+  var PassMessage;
+
+  PassMessage = {
+    init: function() {
+      var msg;
+      msg = $.el('div', {
+        className: 'box-outer top-box'
+      }, {innerHTML: "<div class=\"box-inner\"><div class=\"boxbar\"><h2>Trouble buying a 4chan Pass? (a message from 4chan X)</h2></div><div class=\"boxcontent\"><p>You can buy solved CAPTCHAs at <a href=\"https://captcha.guru/en/regen/?ref=104127\" target=\"_blank\" rel=\"noopener\">captcha.guru</a>, <a href=\"https://2captcha.com?from=7935487\" target=\"_blank\" rel=\"noopener\">2captcha</a>, and similar services. They&#039;re a bit slow, but sufficient for image dumping. Depending on how much you post, this can be cheaper than a Pass, and it doesn&#039;t require cryptocurrency to purchase. 4chan X has integrated support for services that use 2captcha&#039;s API. Go to <b>Advanced &gt; Captcha Solving Service</b> in the settings panel to set it up.</p><p>If you&#039;re thinking of buying a Pass because of annoying &quot;Click verify once there are none left&quot; captchas, you may be able to get rid of them for free by checking <b>Force Noscript Captcha</b> in your settings.</p><p>Most imageboards either don&#039;t require captchas to post at all or require them only in limited circumstances. Consider using another site. 4chan X works on many Tinyboard-based sites by default, and if your preferred site isn&#039;t on the default list, you can enable 4chan X on it by following <a href=\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#other-imageboards\" target=\"_blank\" rel=\"noopener\">these instructions</a>.</p></div></div>"});
+      return $.ready(function() {
+        var hd;
+        if ((hd = $.id('hd'))) {
+          return $.after(hd, msg);
+        } else {
+          return $.prepend(d.body, msg);
+        }
+      });
+    }
+  };
+
+  return PassMessage;
 
 }).call(this);
 
@@ -27291,7 +27328,7 @@ Main = (function() {
       Conf['Toggleable Thread Watcher'] = true;
       Conf['siteSoftware'] = '';
       Conf['Use Faster Image Host'] = 'true';
-      if (/\.4chan(?:nel)?\.org$/.test(location.hostname) && !$$('script:not([src])', d).filter(function(s) {
+      if (/\.4chan(?:nel)?\.org$/.test(location.hostname) && !SW.yotsuba.regexp.pass.test(location.href) && !$$('script:not([src])', d).filter(function(s) {
         return /this\[/.test(s.textContent);
       }).length) {
         ($.getSync || $.get)({
