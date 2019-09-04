@@ -80,14 +80,10 @@
       "*://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*"
     ],
     "exclude_matches": [
-      "*://www.4chan.org/pass",
-      "*://www.4chan.org/pass?*",
       "*://www.4chan.org/advertise",
       "*://www.4chan.org/advertise?*",
       "*://www.4chan.org/donate",
       "*://www.4chan.org/donate?*",
-      "*://www.4channel.org/pass",
-      "*://www.4channel.org/pass?*",
       "*://www.4channel.org/advertise",
       "*://www.4channel.org/advertise?*",
       "*://www.4channel.org/donate",
