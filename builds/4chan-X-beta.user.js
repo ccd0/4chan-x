@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.13.0
+// @version      1.14.13.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -54,10 +54,6 @@
 // @include      https://www.google.com/recaptcha/api2/bframe?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      http://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
-// @exclude      http://www.4chan.org/pass
-// @exclude      https://www.4chan.org/pass
-// @exclude      http://www.4chan.org/pass?*
-// @exclude      https://www.4chan.org/pass?*
 // @exclude      http://www.4chan.org/advertise
 // @exclude      https://www.4chan.org/advertise
 // @exclude      http://www.4chan.org/advertise?*
@@ -66,10 +62,6 @@
 // @exclude      https://www.4chan.org/donate
 // @exclude      http://www.4chan.org/donate?*
 // @exclude      https://www.4chan.org/donate?*
-// @exclude      http://www.4channel.org/pass
-// @exclude      https://www.4channel.org/pass
-// @exclude      http://www.4channel.org/pass?*
-// @exclude      https://www.4channel.org/pass?*
 // @exclude      http://www.4channel.org/advertise
 // @exclude      https://www.4channel.org/advertise
 // @exclude      http://www.4channel.org/advertise?*
@@ -204,7 +196,7 @@
 
 'use strict';
 
-var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, CatalogThreadNative, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, ModContact, Nav, NormalizeURL, Notice, PSA, PSAHiding, PassLink, Polyfill, Post, PostHiding, PostJumper, PostRedirect, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Test, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, Tinyboard, UI, Unread, UnreadIndex, Volume;
+var $, $$, Anonymize, AntiAutoplay, ArchiveLink, Banner, Board, BoardConfig, CSS, Callbacks, Captcha, CatalogLinks, CatalogThread, CatalogThreadNative, Config, Connection, CopyTextLink, CrossOrigin, CustomCSS, DataBoard, DeleteLink, DownloadLink, Embedding, ExpandComment, ExpandThread, FappeTyme, Favicon, Fetcher, FileInfo, Filter, Flash, Fourchan, Gallery, Get, Header, IDColor, IDHighlight, IDPostCount, ImageCommon, ImageExpand, ImageHost, ImageHover, ImageLoader, Index, Keybinds, Linkify, Main, MarkNewIPs, Menu, Metadata, ModContact, Nav, NormalizeURL, Notice, PSA, PSAHiding, PassLink, PassMessage, Polyfill, Post, PostHiding, PostJumper, PostRedirect, PostSuccessful, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, RemoveSpoilers, ReplyPruning, Report, ReportLink, RevealSpoilers, SW, Sauce, Settings, ShimSet, SimpleDict, Site, Test, Thread, ThreadHiding, ThreadLinks, ThreadStats, ThreadUpdater, ThreadWatcher, Time, Tinyboard, UI, Unread, UnreadIndex, Volume;
 
 var Conf, E, c, d, doc, docSet, g;
 
@@ -219,7 +211,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.13.0',
+  VERSION:   '1.14.13.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -8158,7 +8150,8 @@ SW = {};
     },
     regexp: {
       quotelink: /^https?:\/\/boards\.4chan(?:nel)?\.org\/+([^\/]+)\/+thread\/+(\d+)(?:[\/?][^#]*)?(?:#p(\d+))?$/,
-      quotelinkHTML: /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
+      quotelinkHTML: /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g,
+      pass: /^https?:\/\/www\.4chan(?:nel)?\.org\/+pass(?:$|[?#])/
     },
     bgColoredEl: function() {
       return $.el('div', {
@@ -8193,10 +8186,14 @@ SW = {};
       switch (location.hostname) {
         case 'www.4chan.org':
         case 'www.4channel.org':
-          $.onExists(doc, 'body', function() {
-            return $.addStyle(CSS.www);
-          });
-          Captcha.replace.init();
+          if (SW.yotsuba.regexp.pass.test(location.href)) {
+            PassMessage.init();
+          } else {
+            $.onExists(doc, 'body', function() {
+              return $.addStyle(CSS.www);
+            });
+            Captcha.replace.init();
+          }
           break;
         case 'sys.4chan.org':
         case 'sys.4channel.org':
@@ -19889,6 +19886,30 @@ PSAHiding = (function() {
 
 }).call(this);
 
+PassMessage = (function() {
+  var PassMessage;
+
+  PassMessage = {
+    init: function() {
+      var msg;
+      msg = $.el('div', {
+        className: 'box-outer top-box'
+      }, {innerHTML: "<div class=\"box-inner\"><div class=\"boxbar\"><h2>Trouble buying a 4chan Pass? (a message from 4chan X)</h2></div><div class=\"boxcontent\"><p>You can buy solved CAPTCHAs at <a href=\"https://captcha.guru/en/regen/?ref=104127\" target=\"_blank\" rel=\"noopener\">captcha.guru</a>, <a href=\"https://2captcha.com?from=7935487\" target=\"_blank\" rel=\"noopener\">2captcha</a>, and similar services. They&#039;re a bit slow, but sufficient for image dumping. Depending on how much you post, this can be cheaper than a Pass, and it doesn&#039;t require cryptocurrency to purchase. 4chan X has integrated support for services that use 2captcha&#039;s API. Go to <b>Advanced &gt; Captcha Solving Service</b> in the settings panel to set it up.</p><p>If you&#039;re thinking of buying a Pass because of annoying &quot;Click verify once there are none left&quot; captchas, you may be able to get rid of them for free by checking <b>Force Noscript Captcha</b> in your settings.</p><p>Most imageboards either don&#039;t require captchas to post at all or require them only in limited circumstances. Consider using another site. 4chan X works on many Tinyboard-based sites by default, and if your preferred site isn&#039;t on the default list, you can enable 4chan X on it by following <a href=\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#other-imageboards\" target=\"_blank\" rel=\"noopener\">these instructions</a>.</p></div></div>"});
+      return $.ready(function() {
+        var hd;
+        if ((hd = $.id('hd'))) {
+          return $.after(hd, msg);
+        } else {
+          return $.prepend(d.body, msg);
+        }
+      });
+    }
+  };
+
+  return PassMessage;
+
+}).call(this);
+
 PostJumper = (function() {
   var PostJumper;
 
@@ -27307,7 +27328,7 @@ Main = (function() {
       Conf['Toggleable Thread Watcher'] = true;
       Conf['siteSoftware'] = '';
       Conf['Use Faster Image Host'] = 'true';
-      if (/\.4chan(?:nel)?\.org$/.test(location.hostname) && !$$('script:not([src])', d).filter(function(s) {
+      if (/\.4chan(?:nel)?\.org$/.test(location.hostname) && !SW.yotsuba.regexp.pass.test(location.href) && !$$('script:not([src])', d).filter(function(s) {
         return /this\[/.test(s.textContent);
       }).length) {
         ($.getSync || $.get)({

@@ -4,6 +4,9 @@
 
 ### v1.14.13
 
+**v1.14.13.1** *(2019-09-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.1/builds/4chan-X-noupdate.crx)]
+- Add message to 4chan Pass buyers.
+
 **v1.14.13.0** *(2019-08-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.12.10.
 - (saxamaphone69) Add option to open custom navigation links in a new tab.
