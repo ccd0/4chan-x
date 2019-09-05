@@ -4,6 +4,9 @@
 
 ### v1.14.13
 
+**v1.14.13.2** *(2019-09-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.2/builds/4chan-X-noupdate.crx)]
+- Tweak message to Pass buyers and add button to dismiss it.
+
 **v1.14.13.1** *(2019-09-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.1/builds/4chan-X-noupdate.crx)]
 - Add message to 4chan Pass buyers.
 
