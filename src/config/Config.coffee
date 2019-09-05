@@ -1182,3 +1182,5 @@ Config =
   knownBanners: '<%= readJSON("banners.json").join(",") %>'
 
   cachedTitles: [[]]
+
+  passMessageClosed: false

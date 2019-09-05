@@ -1,8 +1,13 @@
 <div class="box-inner">
-  <div class="boxbar"><h2>Trouble buying a 4chan Pass? (a message from 4chan X)</h2></div>
+  <div class="boxbar">
+    <h2>
+      Trouble buying a 4chan Pass? (a message from 4chan X) 
+      <a href="javascript:;" style="text-decoration: none; float: right; margin-right: 4px;" title="Close">×</a>
+    </h2>
+  </div>
   <div class="boxcontent">
     <p>
-      You can buy solved CAPTCHAs at <%= meta.captchaServiceLinks.map(function(x) {return '<a href="' + x[1] + '" target="_blank" rel="noopener">' + x[0] + '</a>'}).join(', ') %>, and similar services. 
+      You can buy solved CAPTCHAs at <%= meta.captchaServiceLinks.map(function(x) {return x[0]}).join(', ') %>, and similar services. 
       They&#039;re a bit slow, but sufficient for image dumping. 
       Depending on how much you post, this can be cheaper than a Pass, and it doesn&#039;t require cryptocurrency to purchase. 
       4chan X has integrated support for services that use 2captcha&#039;s API. 
