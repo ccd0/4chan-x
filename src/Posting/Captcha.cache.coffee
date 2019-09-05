@@ -14,7 +14,7 @@ Captcha.cache =
     not (
       @haveCookie() or @captchas.length or QR.req
     ) and (
-      QR.posts.length > 1 or Conf['Auto-load captcha'] or QR.posts[0].com or QR.posts[0].file
+      QR.posts.length > 1 or Conf['Auto-load captcha'] or /^\s*[^\s>]/m.test(QR.posts[0].com or '') or QR.posts[0].file
     ) and (
       @submitCB or $.event('LoadCaptcha')
     )
