@@ -12,6 +12,9 @@
 
 ### v1.14.13
 
+**v1.14.13.3** *(2019-09-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.3/builds/4chan-X-noupdate.crx)]
+- Move most of the pass message text to the wiki where we can let anyone edit it.
+
 **v1.14.13.2** *(2019-09-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.2/builds/4chan-X-noupdate.crx)]
 - Tweak message to Pass buyers and add button to dismiss it.
 
