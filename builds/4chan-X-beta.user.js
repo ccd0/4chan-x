@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.14.0
+// @version      1.14.14.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -211,7 +211,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.14.0',
+  VERSION:   '1.14.14.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -19899,7 +19899,8 @@ PassMessage = (function() {
       }
       msg = $.el('div', {
         className: 'box-outer top-box'
-      }, {innerHTML: "<div class=\"box-inner\"><div class=\"boxbar\"><h2>Trouble buying a 4chan Pass? (a message from 4chan X) <a href=\"javascript:;\" style=\"text-decoration: none; float: right; margin-right: 4px;\" title=\"Close\">×</a></h2></div><div class=\"boxcontent\"><p>You can buy solved CAPTCHAs at captcha.guru, 2captcha, and similar services. They&#039;re a bit slow, but sufficient for image dumping. Depending on how much you post, this can be cheaper than a Pass, and it doesn&#039;t require cryptocurrency to purchase. 4chan X has integrated support for services that use 2captcha&#039;s API. Go to <b>Advanced &gt; Captcha Solving Service</b> in the settings panel to set it up.</p><p>If you&#039;re thinking of buying a Pass because of annoying &quot;Click verify once there are none left&quot; captchas, you may be able to get rid of them for free by checking <b>Force Noscript Captcha</b> in your settings.</p><p>Most imageboards either don&#039;t require captchas to post at all or require them only in limited circumstances. Consider using another site. 4chan X works on many Tinyboard-based sites by default, and if your preferred site isn&#039;t on the default list, you can enable 4chan X on it by following <a href=\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions#other-imageboards\" target=\"_blank\" rel=\"noopener\">these instructions</a>.</p></div></div>"});
+      }, {innerHTML: "<div class=\"box-inner\"><div class=\"boxbar\"><h2>Trouble buying a 4chan Pass? (a message from 4chan X) <a href=\"javascript:;\" style=\"text-decoration: none; float: right; margin-right: 4px;\" title=\"Close\">×</a></h2></div><div class=\"boxcontent\">Check the 4chan X wiki for <a href=\"https://github.com/ccd0/4chan-x/wiki/Captcha-FAQ#alternatives\" target=\"_blank\" rel=\"noopener\">alternative solutions</a>.</div></div>"});
+      msg.style.cssText = 'padding-bottom: 0;';
       close = $('a', msg);
       $.on(close, 'click', function() {
         $.rm(msg);
