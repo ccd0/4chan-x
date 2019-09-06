@@ -5,6 +5,7 @@ PassMessage =
       className: 'box-outer top-box'
     ,
       `<%= readHTML('PassMessage.html') %>`
+    msg.style.cssText = 'padding-bottom: 0;'
     close = $ 'a', msg
     $.on close, 'click', ->
       $.rm msg
