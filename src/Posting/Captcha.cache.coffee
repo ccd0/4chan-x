@@ -37,6 +37,7 @@ Captcha.cache =
         if !$.event('RequestCaptcha', {isReply})
           @prerequested = true
           @submitCB = @save.bind(@)
+          @updateCount()
 
   haveCookie: ->
     /\b_ct=/.test(d.cookie) and QR.posts[0].thread isnt 'new'
@@ -53,17 +54,21 @@ Captcha.cache =
   request: (isReply) ->
     if !@submitCB
       return if $.event('RequestCaptcha', {isReply})
-    (cb) => @submitCB = cb
+    (cb) =>
+      @submitCB = cb
+      @updateCount()
 
   abort: ->
     if @submitCB
       delete @submitCB
       $.event 'AbortCaptcha'
+      @updateCount()
 
   saveAPI: (captcha) ->
     if (cb = @submitCB)
       delete @submitCB
       cb captcha
+      @updateCount()
     else
       @save captcha
 
@@ -74,6 +79,7 @@ Captcha.cache =
         QR.captcha.setup(d.activeElement is QR.nodes.status)
       delete @submitCB
       cb()
+      @updateCount()
 
   save: (captcha) ->
     if (cb = @submitCB)
@@ -97,4 +103,7 @@ Captcha.cache =
     clearTimeout @timer
     if @captchas.length
       @timer = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
+    @updateCount()
+
+  updateCount: ->
     $.event 'CaptchaCount', @captchas.length

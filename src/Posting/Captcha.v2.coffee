@@ -181,7 +181,8 @@ Captcha.v2 =
 
   count: ->
     count = Captcha.cache.getCount()
-    @nodes.counter.textContent = "Captchas: #{count}"
+    loading = if Captcha.cache.submitCB then '...' else ''
+    @nodes.counter.textContent = "Captchas: #{count}#{loading}"
     @moreNeeded()
 
   reload: ->
