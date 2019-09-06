@@ -2,6 +2,14 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.14
+
+**v1.14.14.0** *(2019-09-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.13.2.
+- Don't open captcha when the only text so far is a quote link or quoted text. #2421
+- Add option to request captcha from captcha services when you start typing.
+- Provide a visual indication that the captcha is loading from the captcha service.
+
 ### v1.14.13
 
 **v1.14.13.2** *(2019-09-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.2/builds/4chan-X-noupdate.crx)]
