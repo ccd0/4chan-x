@@ -167,6 +167,7 @@ QR.post = class
       QR.characterCount()
     @nodes.span.textContent = @com
     QR.captcha.moreNeeded()
+    Captcha.cache.prerequest()
 
   @rmErrored: (e) ->
     e.stopPropagation()

@@ -1184,3 +1184,5 @@ Config =
   cachedTitles: [[]]
 
   passMessageClosed: false
+
+  'Prerequest Captcha': false

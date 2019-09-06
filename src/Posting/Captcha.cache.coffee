@@ -10,19 +10,39 @@ Captcha.cache =
   getCount: ->
     @captchas.length
 
-  needed: ->
+  neededRaw: ->
     not (
-      @haveCookie() or @captchas.length or QR.req
+      @haveCookie() or @captchas.length or QR.req or @submitCB
     ) and (
       QR.posts.length > 1 or Conf['Auto-load captcha'] or /^\s*[^\s>]/m.test(QR.posts[0].com or '') or QR.posts[0].file
-    ) and (
-      @submitCB or $.event('LoadCaptcha')
     )
+
+  needed: ->
+    @neededRaw() and $.event('LoadCaptcha')
+
+  prerequest: ->
+    return unless Conf['Prerequest Captcha']
+    # Post count temporarily off by 1 when called from QR.post.rm, QR.close, or QR.submit
+    $.queueTask =>
+      if (
+        !@prerequested and
+        @neededRaw() and
+        !$.event('LoadCaptcha') and
+        !QR.captcha.occupied() and
+        QR.cooldown.seconds <= 60 and
+        QR.selected is QR.posts[QR.posts.length - 1] and
+        /^\s*[^\s>]/m.test(QR.selected.com or '')
+      )
+        isReply = (QR.selected.thread isnt 'new')
+        if !$.event('RequestCaptcha', {isReply})
+          @prerequested = true
+          @submitCB = @save.bind(@)
 
   haveCookie: ->
     /\b_ct=/.test(d.cookie) and QR.posts[0].thread isnt 'new'
 
   getOne: ->
+    delete @prerequested
     @clear()
     if (captcha = @captchas.shift())
       @count()
@@ -31,7 +51,8 @@ Captcha.cache =
       null
 
   request: (isReply) ->
-    return if $.event('RequestCaptcha', {isReply})
+    if !@submitCB
+      return if $.event('RequestCaptcha', {isReply})
     (cb) => @submitCB = cb
 
   abort: ->

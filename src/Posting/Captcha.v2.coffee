@@ -192,3 +192,6 @@ Captcha.v2 =
       $.global ->
         container = document.querySelector '#qr .captcha-container'
         window.grecaptcha.reset container.dataset.widgetID
+
+  occupied: ->
+    !!@nodes.container and !@timeouts.destroy
