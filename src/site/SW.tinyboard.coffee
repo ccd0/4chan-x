@@ -199,7 +199,7 @@ SW.tinyboard =
 
   isThumbExpanded: (file) ->
     # Detect old Tinyboard image expansion that changes src attribute on thumbnail.
-    $.hasClass file.thumb.parentNode, 'expanded'
+    $.hasClass(file.thumb.parentNode, 'expanded') or file.thumb.parentNode.dataset.expanded is 'true'
 
   isLinkified: (link) ->
     /\bnofollow\b/.test(link.rel)
