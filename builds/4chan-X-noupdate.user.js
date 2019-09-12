@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.14.1
+// @version      1.14.14.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -211,7 +211,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.14.1',
+  VERSION:   '1.14.14.2',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -2252,8 +2252,7 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 .catalog-post > .postInfo > :not(.subject):not(.nameBlock):not(.dateTime),\n\
 .catalog-post > .postInfo > .nameBlock > .contact-links,\n\
 .catalog-post > * > * > .posteruid,\n\
-.catalog-post > * > * > .uniqueIDJumper,\n\
-.catalog-post > * > * > .capcodeJumper,\n\
+.catalog-post > * > * > .postJumper,\n\
 :root.bottom-backlinks .catalog-post > .container,\n\
 .post:not(.catalog-post) > .catalog-link,\n\
 .post:not(.catalog-post) > .catalog-stats,\n\
@@ -7974,7 +7973,7 @@ SW = {};
       return true;
     },
     isThumbExpanded: function(file) {
-      return $.hasClass(file.thumb.parentNode, 'expanded');
+      return $.hasClass(file.thumb.parentNode, 'expanded') || file.thumb.parentNode.dataset.expanded === 'true';
     },
     isLinkified: function(link) {
       return /\bnofollow\b/.test(link.rel);
@@ -23077,7 +23076,7 @@ Captcha = {};
       return this.captchas.length;
     },
     neededRaw: function() {
-      return !(this.haveCookie() || this.captchas.length || QR.req || this.submitCB) && (QR.posts.length > 1 || Conf['Auto-load captcha'] || /^\s*[^\s>]/m.test(QR.posts[0].com || '') || QR.posts[0].file);
+      return !(this.haveCookie() || this.captchas.length || QR.req || this.submitCB) && (QR.posts.length > 1 || Conf['Auto-load captcha'] || !QR.posts[0].isOnlyQuotes() || QR.posts[0].file);
     },
     needed: function() {
       return this.neededRaw() && $.event('LoadCaptcha');
@@ -23089,7 +23088,7 @@ Captcha = {};
       return $.queueTask((function(_this) {
         return function() {
           var isReply;
-          if (!_this.prerequested && _this.neededRaw() && !$.event('LoadCaptcha') && !QR.captcha.occupied() && QR.cooldown.seconds <= 60 && QR.selected === QR.posts[QR.posts.length - 1] && /^\s*[^\s>]/m.test(QR.selected.com || '')) {
+          if (!_this.prerequested && _this.neededRaw() && !$.event('LoadCaptcha') && !QR.captcha.occupied() && QR.cooldown.seconds <= 60 && QR.selected === QR.posts[QR.posts.length - 1] && !QR.selected.isOnlyQuotes()) {
             isReply = QR.selected.thread !== 'new';
             if (!$.event('RequestCaptcha', {
               isReply: isReply
@@ -24321,7 +24320,7 @@ QR = (function() {
       }
     },
     quote: function(e) {
-      var ancestor, base, caretPos, com, frag, i, insideCode, j, k, l, len, len1, len2, len3, n, node, o, post, postRange, range, ref, ref1, ref2, ref3, ref4, ref5, ref6, root, sel, text, thread;
+      var ancestor, base, caretPos, com, frag, i, insideCode, j, k, l, len, len1, len2, len3, n, node, o, post, postRange, range, ref, ref1, ref2, ref3, ref4, ref5, ref6, root, sel, text, thread, wasOnlyQuotes;
       if (e != null) {
         e.preventDefault();
       }
@@ -24390,11 +24389,15 @@ QR = (function() {
       if (!com.value) {
         thread.value = Get.threadFromNode(this);
       }
+      wasOnlyQuotes = QR.selected.isOnlyQuotes();
       caretPos = com.selectionStart;
       com.value = com.value.slice(0, caretPos) + text + com.value.slice(com.selectionEnd);
       range = caretPos + text.length;
       com.setSelectionRange(range, range);
       com.focus();
+      if (wasOnlyQuotes) {
+        QR.selected.quotedText = com.value;
+      }
       QR.selected.save(com);
       return QR.selected.save(thread);
     },
@@ -24798,6 +24801,7 @@ QR = (function() {
         }
       }
       post = QR.posts[0];
+      delete post.quotedText;
       post.forceSave();
       threadID = post.thread;
       thread = g.BOARD.threads.get(threadID);
@@ -25873,6 +25877,10 @@ QR = (function() {
       this.nodes.span.textContent = this.com;
       QR.captcha.moreNeeded();
       return Captcha.cache.prerequest();
+    };
+
+    _Class.prototype.isOnlyQuotes = function() {
+      return (this.com || '').trim() === (this.quotedText || '').trim();
     };
 
     _Class.rmErrored = function(e) {

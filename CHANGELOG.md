@@ -4,6 +4,11 @@
 
 ### v1.14.14
 
+**v1.14.14.2** *(2019-09-12)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.2/builds/4chan-X-noupdate.crx)]
+- (saxamaphone69) CSS Fix for Post Jumper so it doesn't show up in catalog.
+- Improve accuracy of determining that comment is only a quote and thus captcha should not be opened yet. #2421, #2431
+- Fix image hover activating when mousing over expanded images on ota-ch.
+
 **v1.14.14.1** *(2019-09-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.1/builds/4chan-X-noupdate.crx)]
 - Merge v1.14.13.3: Move most of the pass message text to the wiki where we can let anyone edit it.
 
