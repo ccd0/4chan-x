@@ -169,6 +169,9 @@ QR.post = class
     QR.captcha.moreNeeded()
     Captcha.cache.prerequest()
 
+  isOnlyQuotes: ->
+    (@com or '').trim() is (@quotedText or '').trim()
+
   @rmErrored: (e) ->
     e.stopPropagation()
     for post in QR.posts by -1 when errors = post.errors

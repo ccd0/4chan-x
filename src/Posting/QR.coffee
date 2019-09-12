@@ -329,6 +329,8 @@ QR =
     {com, thread} = QR.nodes
     thread.value = Get.threadFromNode @ unless com.value
 
+    wasOnlyQuotes = QR.selected.isOnlyQuotes()
+
     caretPos = com.selectionStart
     # Replace selection for text.
     com.value = com.value[...caretPos] + text + com.value[com.selectionEnd..]
@@ -336,6 +338,9 @@ QR =
     range = caretPos + text.length
     com.setSelectionRange range, range
     com.focus()
+
+    # This allows us to determine if any text other than quotes has been typed.
+    QR.selected.quotedText = com.value if wasOnlyQuotes
 
     QR.selected.save com
     QR.selected.save thread
@@ -654,6 +659,7 @@ QR =
         return
 
     post = QR.posts[0]
+    delete post.quotedText
     post.forceSave()
     threadID = post.thread
     thread = g.BOARD.threads.get(threadID)

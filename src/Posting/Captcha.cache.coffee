@@ -14,7 +14,7 @@ Captcha.cache =
     not (
       @haveCookie() or @captchas.length or QR.req or @submitCB
     ) and (
-      QR.posts.length > 1 or Conf['Auto-load captcha'] or /^\s*[^\s>]/m.test(QR.posts[0].com or '') or QR.posts[0].file
+      QR.posts.length > 1 or Conf['Auto-load captcha'] or !QR.posts[0].isOnlyQuotes() or QR.posts[0].file
     )
 
   needed: ->
@@ -31,7 +31,7 @@ Captcha.cache =
         !QR.captcha.occupied() and
         QR.cooldown.seconds <= 60 and
         QR.selected is QR.posts[QR.posts.length - 1] and
-        /^\s*[^\s>]/m.test(QR.selected.com or '')
+        !QR.selected.isOnlyQuotes()
       )
         isReply = (QR.selected.thread isnt 'new')
         if !$.event('RequestCaptcha', {isReply})
