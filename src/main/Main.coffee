@@ -79,7 +79,11 @@ Main =
     Conf['Use Faster Image Host'] = 'true'
 
     # Enforce JS whitelist
-    if /\.4chan(?:nel)?\.org$/.test(location.hostname) and !$$('script:not([src])', d).filter((s) -> /this\[/.test(s.textContent)).length
+    if (
+      /\.4chan(?:nel)?\.org$/.test(location.hostname) and
+      !SW.yotsuba.regexp.pass.test(location.href) and
+      !$$('script:not([src])', d).filter((s) -> /this\[/.test(s.textContent)).length
+    )
       ($.getSync or $.get) {'jsWhitelist': Conf['jsWhitelist']}, ({jsWhitelist}) ->
         $.addCSP "script-src #{jsWhitelist.replace(/^#.*$/mg, '').replace(/[\s;]+/g, ' ').trim()}"
 

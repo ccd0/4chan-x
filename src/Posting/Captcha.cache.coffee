@@ -10,19 +10,40 @@ Captcha.cache =
   getCount: ->
     @captchas.length
 
-  needed: ->
+  neededRaw: ->
     not (
-      @haveCookie() or @captchas.length or QR.req
+      @haveCookie() or @captchas.length or QR.req or @submitCB
     ) and (
-      QR.posts.length > 1 or Conf['Auto-load captcha'] or QR.posts[0].com or QR.posts[0].file
-    ) and (
-      @submitCB or $.event('LoadCaptcha')
+      QR.posts.length > 1 or Conf['Auto-load captcha'] or !QR.posts[0].isOnlyQuotes() or QR.posts[0].file
     )
+
+  needed: ->
+    @neededRaw() and $.event('LoadCaptcha')
+
+  prerequest: ->
+    return unless Conf['Prerequest Captcha']
+    # Post count temporarily off by 1 when called from QR.post.rm, QR.close, or QR.submit
+    $.queueTask =>
+      if (
+        !@prerequested and
+        @neededRaw() and
+        !$.event('LoadCaptcha') and
+        !QR.captcha.occupied() and
+        QR.cooldown.seconds <= 60 and
+        QR.selected is QR.posts[QR.posts.length - 1] and
+        !QR.selected.isOnlyQuotes()
+      )
+        isReply = (QR.selected.thread isnt 'new')
+        if !$.event('RequestCaptcha', {isReply})
+          @prerequested = true
+          @submitCB = @save.bind(@)
+          @updateCount()
 
   haveCookie: ->
     /\b_ct=/.test(d.cookie) and QR.posts[0].thread isnt 'new'
 
   getOne: ->
+    delete @prerequested
     @clear()
     if (captcha = @captchas.shift())
       @count()
@@ -31,18 +52,23 @@ Captcha.cache =
       null
 
   request: (isReply) ->
-    return if $.event('RequestCaptcha', {isReply})
-    (cb) => @submitCB = cb
+    if !@submitCB
+      return if $.event('RequestCaptcha', {isReply})
+    (cb) =>
+      @submitCB = cb
+      @updateCount()
 
   abort: ->
     if @submitCB
       delete @submitCB
       $.event 'AbortCaptcha'
+      @updateCount()
 
   saveAPI: (captcha) ->
     if (cb = @submitCB)
       delete @submitCB
       cb captcha
+      @updateCount()
     else
       @save captcha
 
@@ -53,6 +79,7 @@ Captcha.cache =
         QR.captcha.setup(d.activeElement is QR.nodes.status)
       delete @submitCB
       cb()
+      @updateCount()
 
   save: (captcha) ->
     if (cb = @submitCB)
@@ -76,4 +103,7 @@ Captcha.cache =
     clearTimeout @timer
     if @captchas.length
       @timer = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
+    @updateCount()
+
+  updateCount: ->
     $.event 'CaptchaCount', @captchas.length

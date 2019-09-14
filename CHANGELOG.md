@@ -2,7 +2,32 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.14
+
+**v1.14.14.2** *(2019-09-12)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.2/builds/4chan-X-noupdate.crx)]
+- (saxamaphone69) CSS Fix for Post Jumper so it doesn't show up in catalog.
+- Improve accuracy of determining that comment is only a quote and thus captcha should not be opened yet. #2421, #2431
+- Fix image hover activating when mousing over expanded images on ota-ch.
+
+**v1.14.14.1** *(2019-09-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.13.3: Move most of the pass message text to the wiki where we can let anyone edit it.
+
+**v1.14.14.0** *(2019-09-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.13.2.
+- Don't open captcha when the only text so far is a quote link or quoted text. #2421
+- Add option to request captcha from captcha services when you start typing.
+- Provide a visual indication that the captcha is loading from the captcha service.
+
 ### v1.14.13
+
+**v1.14.13.3** *(2019-09-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.3/builds/4chan-X-noupdate.crx)]
+- Move most of the pass message text to the wiki where we can let anyone edit it.
+
+**v1.14.13.2** *(2019-09-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.2/builds/4chan-X-noupdate.crx)]
+- Tweak message to Pass buyers and add button to dismiss it.
+
+**v1.14.13.1** *(2019-09-04)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.1/builds/4chan-X-noupdate.crx)]
+- Add message to 4chan Pass buyers.
 
 **v1.14.13.0** *(2019-08-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.12.10.

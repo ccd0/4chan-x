@@ -1182,3 +1182,7 @@ Config =
   knownBanners: '<%= readJSON("banners.json").join(",") %>'
 
   cachedTitles: [[]]
+
+  passMessageClosed: false
+
+  'Prerequest Captcha': false

@@ -181,7 +181,8 @@ Captcha.v2 =
 
   count: ->
     count = Captcha.cache.getCount()
-    @nodes.counter.textContent = "Captchas: #{count}"
+    loading = if Captcha.cache.submitCB then '...' else ''
+    @nodes.counter.textContent = "Captchas: #{count}#{loading}"
     @moreNeeded()
 
   reload: ->
@@ -192,3 +193,6 @@ Captcha.v2 =
       $.global ->
         container = document.querySelector '#qr .captcha-container'
         window.grecaptcha.reset container.dataset.widgetID
+
+  occupied: ->
+    !!@nodes.container and !@timeouts.destroy

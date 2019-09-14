@@ -100,6 +100,8 @@ SW.yotsuba =
       ///
     quotelinkHTML:
       /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g
+    pass:
+      /^https?:\/\/www\.4chan(?:nel)?\.org\/+pass(?:$|[?#])/
 
   bgColoredEl: ->
     $.el 'div', className: 'reply'
@@ -130,8 +132,11 @@ SW.yotsuba =
   initAuxiliary: ->
     switch location.hostname
       when 'www.4chan.org', 'www.4channel.org'
-        $.onExists doc, 'body', -> $.addStyle CSS.www
-        Captcha.replace.init()
+        if SW.yotsuba.regexp.pass.test(location.href)
+          PassMessage.init()
+        else
+          $.onExists doc, 'body', -> $.addStyle CSS.www
+          Captcha.replace.init()
         return
       when 'sys.4chan.org', 'sys.4channel.org'
         pathname = location.pathname.split /\/+/

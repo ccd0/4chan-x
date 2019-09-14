@@ -167,6 +167,10 @@ QR.post = class
       QR.characterCount()
     @nodes.span.textContent = @com
     QR.captcha.moreNeeded()
+    Captcha.cache.prerequest()
+
+  isOnlyQuotes: ->
+    (@com or '').trim() is (@quotedText or '').trim()
 
   @rmErrored: (e) ->
     e.stopPropagation()
