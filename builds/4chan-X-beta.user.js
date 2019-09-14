@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.14.2
+// @version      1.14.14.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -211,7 +211,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.14.2',
+  VERSION:   '1.14.14.3',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -23094,7 +23094,11 @@ Captcha = {};
               isReply: isReply
             })) {
               _this.prerequested = true;
-              _this.submitCB = _this.save.bind(_this);
+              _this.submitCB = function(captcha) {
+                if (captcha) {
+                  return _this.save(captcha);
+                }
+              };
               return _this.updateCount();
             }
           }
