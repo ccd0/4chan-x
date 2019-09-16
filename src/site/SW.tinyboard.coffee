@@ -95,7 +95,7 @@ SW.tinyboard =
       catalog: ' > .thread'
     comment:   '.body'
     spoiler:   '.spoiler'
-    quotelink: 'a[onclick^="highlightReply("]'
+    quotelink: 'a[onclick*="highlightReply("]'
     catalog:
       board:  '#Grid'
       thread: '.mix'
@@ -123,12 +123,12 @@ SW.tinyboard =
         ([^/]+) # boardID
         /res/
         (\d+)   # threadID
-        \.\w+#
+        (?:\.\w+)?#
         (\d+)   # postID
         $
       ///
     quotelinkHTML:
-      /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)\.\w+#(\d+)"/g
+      /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)(?:\.\w+)?#(\d+)"/g
 
   Build:
     parseJSON: (data, board) ->
