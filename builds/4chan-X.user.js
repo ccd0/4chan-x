@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.14.3
+// @version      1.14.14.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -211,7 +211,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.14.3',
+  VERSION:   '1.14.14.4',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -7848,7 +7848,7 @@ SW = {};
       },
       comment: '.body',
       spoiler: '.spoiler',
-      quotelink: 'a[onclick^="highlightReply("]',
+      quotelink: 'a[onclick*="highlightReply("]',
       catalog: {
         board: '#Grid',
         thread: '.mix',
@@ -7872,8 +7872,8 @@ SW = {};
       replyContainer: 'div[starts-with(@id,"reply_")]'
     },
     regexp: {
-      quotelink: /\/([^\/]+)\/res\/(\d+)\.\w+#(\d+)$/,
-      quotelinkHTML: /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)\.\w+#(\d+)"/g
+      quotelink: /\/([^\/]+)\/res\/(\d+)(?:\.\w+)?#(\d+)$/,
+      quotelinkHTML: /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)(?:\.\w+)?#(\d+)"/g
     },
     Build: {
       parseJSON: function(data, board) {
@@ -28030,7 +28030,7 @@ Main = (function() {
     },
     isThisPageLegit: function() {
       if (!('thisPageIsLegit' in Main)) {
-        Main.thisPageIsLegit = g.SITE.isThisPageLegit ? g.SITE.isThisPageLegit() : !/^[45]\d\d\b/.test(document.title) && !/\.json$/.test(location.pathname);
+        Main.thisPageIsLegit = g.SITE.isThisPageLegit ? g.SITE.isThisPageLegit() : !/^[45]\d\d\b/.test(document.title) && !/\.(?:json|rss)$/.test(location.pathname);
       }
       return Main.thisPageIsLegit;
     },

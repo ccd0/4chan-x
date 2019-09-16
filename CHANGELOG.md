@@ -4,6 +4,10 @@
 
 ### v1.14.14
 
+**v1.14.14.4** *(2019-09-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.4/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.13.4: Update for quotelink changes on kissu.moe.
+- Don't try to insert header etc. on .rss URLs.
+
 **v1.14.14.3** *(2019-09-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.3/builds/4chan-X-noupdate.crx)]
 - Fix bug in handling captcha errors when using captcha prerequest.
 
