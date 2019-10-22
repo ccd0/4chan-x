@@ -145,6 +145,10 @@ Main =
     else if pathname[2] in ['thread', 'res']
       r.VIEW = 'thread'
       r.threadID = r.THREADID = +pathname[3].replace(/\.\w+$/, '')
+    else if pathname[2] is 'archive' and pathname[3] is 'res'
+      r.VIEW = 'thread'
+      r.threadID = r.THREADID = +pathname[4].replace(/\.\w+$/, '')
+      r.threadArchived = true
     else if /^(?:catalog|archive)(?:\.\w+)?$/.test(pathname[2])
       r.VIEW = pathname[2].replace(/\.\w+$/, '')
     else if /^(?:index|\d*)(?:\.\w+)?$/.test(pathname[2])
@@ -348,6 +352,7 @@ Main =
       Main.handleErrors errors if errors.length
 
       if g.VIEW is 'thread'
+        threads[0].isArchived = true if g.threadArchived
         g.SITE.parseThreadMetadata?(threads[0])
 
       Main.callbackNodes 'Thread', threads
