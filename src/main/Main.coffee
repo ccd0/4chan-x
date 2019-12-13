@@ -352,7 +352,9 @@ Main =
       Main.handleErrors errors if errors.length
 
       if g.VIEW is 'thread'
-        threads[0].isArchived = true if g.threadArchived
+        if g.threadArchived
+          threads[0].isArchived = true
+          threads[0].kill()
         g.SITE.parseThreadMetadata?(threads[0])
 
       Main.callbackNodes 'Thread', threads
