@@ -162,11 +162,8 @@ ThreadWatcher =
         if Conf['Auto Prune'] or not (data and typeof data is 'object') # corrupt data
           db.delete {boardID, threadID}
           nKilled++
-        else if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
-          ThreadWatcher.fetchStatus {siteID, boardID, threadID, data}
         else
-          db.extend {boardID, threadID, val: {isDead: true, page: undefined, lastPage: undefined, unread: undefined, quotingYou: undefined}}
-          nKilled++
+          ThreadWatcher.fetchStatus {siteID, boardID, threadID, data}
       ThreadWatcher.refresh() if nKilled
     onThreadRefresh: (e) ->
       thread = g.threads.get(e.detail.threadID)
@@ -340,12 +337,12 @@ ThreadWatcher =
     if @status is 200 and @response
       last = @response.posts[@response.posts.length-1].no
       replies = @response.posts.length-1
-      isDead = !!@response.posts[0].archived
+      isDead = isArchived = !!@response.posts[0].archived
       if isDead and Conf['Auto Prune']
         ThreadWatcher.rm siteID, boardID, threadID
         return
 
-      return if last is data.last and isDead is data.isDead
+      return if last is data.last and isDead is data.isDead and isArchived is data.isArchived
 
       lastReadPost = ThreadWatcher.unreaddb.get {siteID, boardID, threadID, defaultValue: 0}
       unread = data.unread or 0
@@ -379,7 +376,7 @@ ThreadWatcher =
         quotingYou = postObj.no if quotesYou
 
       newData or= {}
-      $.extend newData, {last, replies, isDead, unread, quotingYou}
+      $.extend newData, {last, replies, isDead, isArchived, unread, quotingYou}
       ThreadWatcher.update siteID, boardID, threadID, newData
 
     else if @status is 404
@@ -508,7 +505,7 @@ ThreadWatcher =
       ThreadWatcher.rm siteID, boardID, threadID
       return
     if newData.isDead or newData.last is -1
-      for key in ['page', 'lastPage', 'unread', 'quotingyou'] when key not of newData
+      for key in ['isArchived', 'page', 'lastPage', 'unread', 'quotingyou'] when key not of newData
         newData[key] = undefined
     if newData.last? and newData.last < data.last
       newData.modified = undefined
@@ -528,8 +525,8 @@ ThreadWatcher =
     if Conf['Auto Prune']
       ThreadWatcher.db.delete {boardID, threadID}
       return cb()
-    return cb() if data.isDead and not (data.page? or data.lastPage? or data.unread? or data.quotingYou?)
-    ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true, page: undefined, lastPage: undefined, unread: undefined, quotingYou: undefined}}, cb
+    return cb() if data.isDead and not (data.isArchived? or data.page? or data.lastPage? or data.unread? or data.quotingYou?)
+    ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true, isArchived: undefined, page: undefined, lastPage: undefined, unread: undefined, quotingYou: undefined}}, cb
 
   toggle: (thread) ->
     siteID   = g.SITE.ID
