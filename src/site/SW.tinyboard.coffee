@@ -54,6 +54,9 @@ SW.tinyboard =
     threadsListJSON: ({siteID, boardID}) ->
       root = Conf['siteProperties'][siteID]?.root
       if root then "#{root}#{boardID}/threads.json" else ''
+    archiveListJSON: ({siteID, boardID}) ->
+      root = Conf['siteProperties'][siteID]?.root
+      if root then "#{root}#{boardID}/archive/archive.json" else ''
     catalogJSON: ({siteID, boardID}) ->
       root = Conf['siteProperties'][siteID]?.root
       if root then "#{root}#{boardID}/catalog.json" else ''

@@ -141,7 +141,7 @@ class DataBoard
       return that.ajaxCleanParse(boardID, @response) unless archiveList
       response1 = @response
       $.cache archiveList, ->
-        return unless @status is 200
+        return unless @status is 200 or (!g.SITE.archivedBoardsKnown and @status is 404)
         that.ajaxCleanParse(boardID, response1, @response)
 
   ajaxCleanParse: (boardID, response1, response2) ->
