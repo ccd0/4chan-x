@@ -138,11 +138,20 @@ class DataBoard
     $.cache threadsList, ->
       return unless @status is 200
       archiveList = g.SITE.urls.archiveListJSON?({siteID, boardID})
-      return that.ajaxCleanParse(boardID, @response) unless archiveList
+      archiveListHTML = g.SITE.urls.archive?({siteID, boardID})
       response1 = @response
-      $.cache archiveList, ->
-        return unless @status is 200
-        that.ajaxCleanParse(boardID, response1, @response)
+      if archiveList
+        $.cache archiveList, ->
+          return unless @status is 200
+          that.ajaxCleanParse(boardID, response1, @response)
+      else if g.SITE.archiveListParse and archiveListHTML
+        $.cache archiveListHTML, ->
+          return unless @status is 200 or @status is 404
+          response2 = if @status is 404 then [] else g.SITE.archiveListParse(@response)
+          that.ajaxCleanParse(boardID, response1, response2)
+        , {responseType: 'document'}
+      else
+        that.ajaxCleanParse(boardID, @response)
 
   ajaxCleanParse: (boardID, response1, response2) ->
     siteID = g.SITE.ID
