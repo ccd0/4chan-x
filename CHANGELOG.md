@@ -4,6 +4,10 @@
 
 ### v1.14.14
 
+**v1.14.14.5** *(2019-12-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.5/builds/4chan-X-noupdate.crx)]
+- Never mark Youtube videos as 'Forbidden or Private' since 403 errors are most likely from API throttling. #2327
+- Update for changes in Tegaki (4chan drawing script). #2467
+
 **v1.14.14.4** *(2019-09-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.4/builds/4chan-X-noupdate.crx)]
 - Merge v1.14.13.4: Update for quotelink changes on kissu.moe.
 - Don't try to insert header etc. on .rss URLs.

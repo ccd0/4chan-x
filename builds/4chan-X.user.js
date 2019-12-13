@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.14.4
+// @version      1.14.14.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -211,7 +211,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.14.4',
+  VERSION:   '1.14.14.5',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -488,7 +488,7 @@ Config = (function() {
       'QR.personas': "#options:\"sage\";boards:jp;always",
       sjisPreview: false
     },
-    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\nhttps://cdnjs.cloudflare.com\nhttps://rawgit.com\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'\n\n# Banner ads\n#http://s.zkcdn.net/ados.js\n#https://s.zkcdn.net/ados.js\n#http://engine.4chan-ads.org\n#https://engine.4chan-ads.org',
+    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\nhttps://cdnjs.cloudflare.com\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'\n\n# Banner ads\n#http://s.zkcdn.net/ados.js\n#https://s.zkcdn.net/ados.js\n#http://engine.4chan-ads.org\n#https://engine.4chan-ads.org',
     captchaLanguage: '',
     time: '%m/%d/%y(%a)%H:%M:%S',
     timeLocale: '',
@@ -8798,7 +8798,7 @@ Redirect = (function() {
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "search": [ "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
       { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
       { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "files": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "search": [ "cm", "co", "ic", "sci", "tg", "y" ] },
-      { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v", "vp" ], "files": [ "v", "vp" ], "search": [ "v" ] },
+      { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v", "vg", "vp" ], "files": [], "search": [ "v", "vg" ] },
       { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
       { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
@@ -16713,11 +16713,11 @@ Embedding = (function() {
         }
       },
       title: function(req, data) {
-        var key, service, status, text, uid;
+        var key, link, service, status, text, uid;
         if (!req.status) {
           return;
         }
-        key = data.key, uid = data.uid;
+        key = data.key, uid = data.uid, link = data.link;
         status = req.status;
         service = Embedding.types[key].title;
         switch (status) {
@@ -16730,7 +16730,7 @@ Embedding = (function() {
             text = "Not Found";
             break;
           case 403:
-            text = "Forbidden or Private";
+            text = service.ignore403 ? link.textContent : "Forbidden or Private";
             break;
           default:
             text = status + "'d";
@@ -17220,6 +17220,7 @@ Embedding = (function() {
         },
         title: {
           batchSize: 50,
+          ignore403: true,
           api: function(uids) {
             var ids, key;
             ids = encodeURIComponent(uids.join(','));
@@ -24430,7 +24431,8 @@ QR = (function() {
       });
       $.on(el, (isVideo ? 'loadeddata' : 'load'), function() {
         e.target.getContext('2d').drawImage(el, 0, 0);
-        return URL.revokeObjectURL(el.src);
+        URL.revokeObjectURL(el.src);
+        return $.event('QRImageDrawn', null, e.target);
       });
       return el.src = URL.createObjectURL(file);
     },
@@ -25415,46 +25417,25 @@ QR = (function() {
       });
     },
     load: function(cb) {
-      var n, onerror, onload, script, style;
-      n = 0;
-      onload = function() {
-        if (++n === 2) {
-          return cb();
-        }
-      };
-      onerror = function() {
-        var script;
-        $.rm(this);
-        script = $.el('script', {
-          src: 'https://rawgit.com/desuwa/tegaki/master/tegaki.js'
-        });
-        $.on(script, 'load', onload);
-        return $.add(d.head, script);
-      };
-      script = $('script[src^="//s.4cdn.org/js/painter"], script[src="https://rawgit.com/desuwa/tegaki/master/tegaki.js"]', d.head);
-      if (script) {
-        if (!script.dataset.success) {
-          $.global(function() {
-            return document.querySelector('script[src^="//s.4cdn.org/js/painter"], script[src="https://rawgit.com/desuwa/tegaki/master/tegaki.js"]').dataset.success = !!window.Tegaki;
-          });
-        }
-        if (script.dataset.success === 'true') {
-          return cb();
-        } else {
-          n = 1;
-          return onerror.call(script);
-        }
+      var n, onload, script, style;
+      if ($('script[src^="//s.4cdn.org/js/tegaki"]', d.head)) {
+        return cb();
       } else {
         style = $.el('link', {
           rel: 'stylesheet',
-          href: "//s.4cdn.org/css/painter." + (Date.now()) + ".css"
+          href: "//s.4cdn.org/css/tegaki." + (Date.now()) + ".css"
         });
         script = $.el('script', {
-          src: "//s.4cdn.org/js/painter.min." + (Date.now()) + ".js"
+          src: "//s.4cdn.org/js/tegaki.min." + (Date.now()) + ".js"
         });
+        n = 0;
+        onload = function() {
+          if (++n === 2) {
+            return cb();
+          }
+        };
         $.on(style, 'load', onload);
         $.on(script, 'load', onload);
-        $.on(script, 'error', onerror);
         return $.add(d.head, [style, script]);
       }
     },
@@ -25502,7 +25483,7 @@ QR = (function() {
             }));
           };
           cb = function(e) {
-            var selected;
+            var canvas, selected;
             if (e) {
               this.removeEventListener('QRMetadata', cb, false);
             }
@@ -25533,7 +25514,16 @@ QR = (function() {
               height: +selected.dataset.height,
               bgColor: 'transparent'
             });
-            return Tegaki.activeCtx.canvas.dispatchEvent(new CustomEvent('QRDrawFile', {
+            canvas = document.createElement('canvas');
+            canvas.width = canvas.naturalWidth = +selected.dataset.width;
+            canvas.height = canvas.naturalHeight = +selected.dataset.height;
+            canvas.hidden = true;
+            document.body.appendChild(canvas);
+            canvas.addEventListener('QRImageDrawn', function() {
+              this.remove();
+              return Tegaki.onOpenImageLoaded.call(this);
+            }, false);
+            return canvas.dispatchEvent(new CustomEvent('QRDrawFile', {
               bubbles: true
             }));
           };
