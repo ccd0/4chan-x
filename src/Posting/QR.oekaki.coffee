@@ -60,14 +60,14 @@ QR.oekaki =
         document.querySelector('#qr .oekaki').hidden = false
 
   load: (cb) ->
-    if $ 'script[src^="//s.4cdn.org/js/painter"]', d.head
+    if $ 'script[src^="//s.4cdn.org/js/tegaki"]', d.head
       cb()
     else
       style = $.el 'link',
         rel: 'stylesheet'
-        href: "//s.4cdn.org/css/painter.#{Date.now()}.css"
+        href: "//s.4cdn.org/css/tegaki.#{Date.now()}.css"
       script = $.el 'script',
-        src: "//s.4cdn.org/js/painter.min.#{Date.now()}.js"
+        src: "//s.4cdn.org/js/tegaki.min.#{Date.now()}.js"
       n = 0
       onload = ->
         cb() if ++n is 2
@@ -124,7 +124,16 @@ QR.oekaki =
           width:  +selected.dataset.width
           height: +selected.dataset.height
           bgColor: 'transparent'
-        Tegaki.activeCtx.canvas.dispatchEvent new CustomEvent 'QRDrawFile', {bubbles: true}
+        canvas = document.createElement 'canvas'
+        canvas.width  = canvas.naturalWidth  = +selected.dataset.width
+        canvas.height = canvas.naturalHeight = +selected.dataset.height
+        canvas.hidden = true
+        document.body.appendChild canvas
+        canvas.addEventListener 'QRImageDrawn', ->
+          @remove()
+          Tegaki.onOpenImageLoaded.call @
+        , false
+        canvas.dispatchEvent new CustomEvent 'QRDrawFile', {bubbles: true}
       if Tegaki.bg and Tegaki.onDoneCb is FCX.oekakiCB and source is FCX.oekakiLatest
         FCX.oekakiName = name
         Tegaki.resume()
