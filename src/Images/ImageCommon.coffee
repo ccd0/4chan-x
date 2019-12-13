@@ -57,8 +57,12 @@ ImageCommon =
 
     threadJSON = g.SITE.urls.threadJSON?(post)
     return unless threadJSON
-    $.ajax threadJSON, onloadend: ->
-      post.kill !post.isClone, fileObj.index if @status is 404
+    parseJSON = (isArchiveURL) ->
+      if @status is 404
+        if !isArchiveURL and (archivedThreadJSON = g.SITE.urls.archivedThreadJSON?(post))
+          $.ajax archivedThreadJSON, onloadend: -> parseJSON.call(@, true)
+        else
+          post.kill !post.isClone, fileObj.index
       return redirect() if @status isnt 200
       for postObj in @response.posts
         break if postObj.no is post.ID
@@ -70,6 +74,7 @@ ImageCommon =
         redirect()
       else
         url = fileObj.url
+    $.ajax threadJSON, onloadend: -> parseJSON.call(@)
 
   # Add controls, but not until the mouse is moved over the video.
   addControls: (video) ->
