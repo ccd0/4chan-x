@@ -237,7 +237,7 @@ Header =
       else
         a = $.el 'a',
           href: "/#{g.BOARD.ID}/"
-          textContent: text or g.BOARD.ID
+          textContent: text or decodeURIComponent(g.BOARD.ID)
           className: 'current'
         if /-nt/.test t
           a.target = '_blank'
