@@ -318,10 +318,7 @@ ThreadWatcher =
             (thread.newData or= {}).modified = modified
             ThreadWatcher.fetchStatus thread
       else
-        if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
-          ThreadWatcher.fetchStatus thread
-        else
-          ThreadWatcher.update siteID, boardID, threadID, {isDead: true}
+        ThreadWatcher.fetchStatus thread
     return
 
   fetchStatus: (thread) ->
