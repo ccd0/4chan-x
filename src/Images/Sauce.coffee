@@ -110,7 +110,7 @@ Sauce =
   formatters:
     TURL:  (post, file) -> file.thumbURL
     URL:   (post, file) -> file.url
-    IMG:   (post, file, ext) -> if ext in ['gif', 'jpg', 'png'] then file.url else file.thumbURL
+    IMG:   (post, file, ext) -> if ext in ['gif', 'jpg', 'jpeg', 'png'] then file.url else file.thumbURL
     MD5:   (post, file) -> file.MD5
     sMD5:  (post, file) -> file.MD5?.replace /[+/=]/g, (c) -> ({'+': '-', '/': '_', '=': ''})[c]
     hMD5:  (post, file) -> if file.MD5 then ("0#{c.charCodeAt(0).toString(16)}"[-2..] for c in atob file.MD5).join('')

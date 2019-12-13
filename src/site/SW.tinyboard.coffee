@@ -45,6 +45,7 @@ SW.tinyboard =
     post:    ({postID})                   -> "##{postID}"
     index:   ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/"
     catalog: ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/catalog.html"
+    archive: ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/archive/"
     threadJSON: ({siteID, boardID, threadID}) ->
       root = Conf['siteProperties'][siteID]?.root
       if root then "#{root}#{boardID}/res/#{threadID}.json" else ''
@@ -107,6 +108,7 @@ SW.tinyboard =
     nav:
       prev: '.pages > form > [value=Previous]'
       next: '.pages > form > [value=Next]'
+    archiveThreadID: '#archive-list td:first-of-type'
 
   classes:
     highlight: 'highlighted'
@@ -206,3 +208,6 @@ SW.tinyboard =
 
   catalogPin: (threadRoot) ->
     threadRoot.dataset.sticky = 'true'
+
+  archiveListParse: (response) ->
+    $$(SW.tinyboard.selectors.archiveThreadID, response).map((x) -> +x.textContent)

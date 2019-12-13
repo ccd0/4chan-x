@@ -23,7 +23,8 @@ class Post
     if not @isReply
       @thread.OP = @
       for key in ['isSticky', 'isClosed', 'isArchived']
-        @thread[key] = if (selector = g.SITE.selectors.icons[key]) then !!$(selector, @nodes.info) else false
+        if (selector = g.SITE.selectors.icons[key])
+          @thread[key] = !!$(selector, @nodes.info)
       if @thread.isArchived
         @thread.isClosed = true
         @thread.kill()
