@@ -2,6 +2,16 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.15
+
+**v1.14.15.0** *(2019-12-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.14.5.
+- Support archived threads on kissu.moe.
+- Fix display of board names containing special characters in custom board list. #2473
+- Increase link title cache size. #2327
+- Add option to use your own Youtube API key. #2327
+- %URL in Sauce uses full image when extension is .jpeg.
+
 ### v1.14.14
 
 **v1.14.14.5** *(2019-12-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.5/builds/4chan-X-noupdate.crx)]
