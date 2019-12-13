@@ -208,7 +208,7 @@ $.whenModified = (url, bucket, cb, options={}) ->
 do ->
   reqs = $.dict()
   $.cache = (url, cb, options={}) ->
-    {ajax, responseType} = options
+    {ajax} = options
     if (req = reqs[url])
       if req.callbacks
         req.callbacks.push cb
@@ -221,7 +221,7 @@ do ->
       for cb in @callbacks
         do (cb) => $.queueTask => cb.call @, {isCached: false}
       delete @callbacks
-    req = (ajax or $.ajax) url, {onloadend, responseType}
+    req = (ajax or $.ajax) url, {onloadend}
     req.callbacks = [cb]
     reqs[url] = req
   $.cleanCache = (testf) ->
