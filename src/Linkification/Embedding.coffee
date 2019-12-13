@@ -151,7 +151,7 @@ Embedding =
       $.get 'cachedTitles', Conf['cachedTitles'], ({cachedTitles}) ->
         sync cachedTitles
         try
-          cachedTitles = newEntries.concat(cachedTitles)[-100..]
+          cachedTitles = newEntries.concat(cachedTitles)[-1000..]
         catch
           cachedTitles = newEntries
         newEntries = []
