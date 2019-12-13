@@ -332,12 +332,13 @@ ThreadWatcher =
     return if data.last is -1 # 404 or no JSON API
     ThreadWatcher.fetch url, {siteID, force}, [thread], ThreadWatcher.parseStatus
 
-  parseStatus: ({siteID, boardID, threadID, data, newData}) ->
+  parseStatus: (thread, isArchiveURL) ->
+    {siteID, boardID, threadID, data, newData, force} = thread
     site = g.sites[siteID]
     if @status is 200 and @response
       last = @response.posts[@response.posts.length-1].no
       replies = @response.posts.length-1
-      isDead = isArchived = !!@response.posts[0].archived
+      isDead = isArchived = !!(@response.posts[0].archived or isArchiveURL)
       if isDead and Conf['Auto Prune']
         ThreadWatcher.rm siteID, boardID, threadID
         return
@@ -380,7 +381,10 @@ ThreadWatcher =
       ThreadWatcher.update siteID, boardID, threadID, newData
 
     else if @status is 404
-      if site.mayLackJSON and !data.last?
+      archiveURL = g.sites[siteID]?.urls.archivedThreadJSON?({siteID, boardID, threadID})
+      if !isArchiveURL and archiveURL
+        ThreadWatcher.fetch archiveURL, {siteID, force}, [thread, true], ThreadWatcher.parseStatus
+      else if site.mayLackJSON and !data.last?
         ThreadWatcher.update siteID, boardID, threadID, {last: -1}
       else
         ThreadWatcher.update siteID, boardID, threadID, {isDead: true}
@@ -403,12 +407,12 @@ ThreadWatcher =
       href: 'javascript:;'
     $.on x, 'click', ThreadWatcher.cb.rm
 
-    {excerpt} = data
+    {excerpt, isArchived} = data
     excerpt or= "/#{boardID}/ - No.#{threadID}"
     excerpt = ThreadWatcher.prefixes[siteID] + excerpt if Conf['Show Site Prefix']
 
     link = $.el 'a',
-      href: g.sites[siteID]?.urls.thread({siteID, boardID, threadID}) or ''
+      href: g.sites[siteID]?.urls.thread({siteID, boardID, threadID}, isArchived) or ''
       title: excerpt
       className: 'watcher-link'
 

@@ -41,14 +41,17 @@ SW.tinyboard =
     false
 
   urls:
-    thread: ({siteID, boardID, threadID}) -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/res/#{threadID}.html"
+    thread: ({siteID, boardID, threadID}, isArchived) ->
+      "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/#{if isArchived then 'archive/' else ''}res/#{threadID}.html"
     post:    ({postID})                   -> "##{postID}"
     index:   ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/"
     catalog: ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/catalog.html"
     archive: ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/archive/"
-    threadJSON: ({siteID, boardID, threadID}) ->
+    threadJSON: ({siteID, boardID, threadID}, isArchived) ->
       root = Conf['siteProperties'][siteID]?.root
-      if root then "#{root}#{boardID}/res/#{threadID}.json" else ''
+      if root then "#{root}#{boardID}/#{if isArchived then 'archive/' else ''}res/#{threadID}.json" else ''
+    archivedThreadJSON: (thread) ->
+      SW.tinyboard.urls.threadJSON thread, true
     threadsListJSON: ({siteID, boardID}) ->
       root = Conf['siteProperties'][siteID]?.root
       if root then "#{root}#{boardID}/threads.json" else ''
