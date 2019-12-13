@@ -215,7 +215,7 @@ Embedding =
     title: (req, data) ->
       return unless req.status
 
-      {key, uid} = data
+      {key, uid, link} = data
       {status} = req
       service = Embedding.types[key].title
 
@@ -226,7 +226,7 @@ Embedding =
         when 404
           text = "Not Found"
         when 403
-          text = "Forbidden or Private"
+          text = if service.ignore403 then link.textContent else "Forbidden or Private"
         else
           text = "#{status}'d"
       Embedding.cb.titleText text, data
@@ -539,6 +539,7 @@ Embedding =
         el
       title:
         batchSize: 50
+        ignore403: true
         api: (uids) ->
           ids = encodeURIComponent uids.join(',')
           key = '<%= meta.youtubeAPIKey %>'
