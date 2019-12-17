@@ -239,3 +239,22 @@ SW.yotsuba =
   testNativeExtension: ->
     $.global ->
       @enabled = 'true' if window.Parser.postMenuIcon
+
+  transformBoardList: ->
+    nodes = []
+    spacer = -> $.el 'span', className: 'spacer'
+    items = $.X './/a|.//text()[not(ancestor::a)]', $(SW.yotsuba.selectors.boardList)
+    i = 0
+    while node = items.snapshotItem i++
+      switch node.nodeName
+        when '#text'
+          for chr in node.nodeValue
+            span = $.el 'span', textContent: chr
+            span.className = 'space' if chr is ' '
+            nodes.push spacer() if chr is ']'
+            nodes.push span
+            nodes.push spacer() if chr is '['
+        when 'A'
+          a = node.cloneNode true
+          nodes.push a
+    return nodes

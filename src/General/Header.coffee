@@ -165,25 +165,14 @@ Header =
     $.sync 'boardnav', Header.generateBoardList
 
   generateFullBoardList: ->
-    nodes = []
-    spacer = -> $.el 'span', className: 'spacer'
-    items = $.X './/a|.//text()[not(ancestor::a)]', $(g.SITE.selectors.boardList)
-    i = 0
-    while node = items.snapshotItem i++
-      switch node.nodeName
-        when '#text'
-          for chr in node.nodeValue
-            span = $.el 'span', textContent: chr
-            span.className = 'space' if chr is ' '
-            nodes.push spacer() if chr is ']'
-            nodes.push span
-            nodes.push spacer() if chr is '['
-        when 'A'
-          a = node.cloneNode true
-          a.className = 'current' if a.hostname is location.hostname and a.pathname.split('/')[1] is g.BOARD.ID
-          nodes.push a
+    if g.SITE.transformBoardList
+      nodes = g.SITE.transformBoardList()
+    else
+      nodes = [$(g.SITE.selectors.boardList).cloneNode(true).childNodes...]
     fullBoardList = $ '.boardList', Header.boardList
     $.add fullBoardList, nodes
+    for a in $$ 'a', fullBoardList
+      a.className = 'current' if a.hostname is location.hostname and a.pathname.split('/')[1] is g.BOARD.ID
     CatalogLinks.setLinks fullBoardList
 
   generateBoardList: (boardnav) ->

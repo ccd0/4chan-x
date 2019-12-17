@@ -379,52 +379,52 @@ audio.controls-added {
   font-weight: bold;
 }
 @media (min-width: 1300px) {
-  :root.fixed:not(.centered-links) #header-bar {
+  :root.sw-yotsuba.fixed:not(.centered-links) #header-bar {
     white-space: nowrap;
     display: -webkit-flex;
     display: flex;
     -webkit-align-items: center;
     align-items: center;
   }
-  :root.fixed:not(.centered-links) #board-list {
+  :root.sw-yotsuba.fixed:not(.centered-links) #board-list {
     -webkit-flex: auto;
     flex: auto;
   }
-  :root.fixed:not(.centered-links) #full-board-list {
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list {
     display: -webkit-flex;
     display: flex;
   }
-  :root.fixed:not(.centered-links) .hide-board-list-container {
+  :root.sw-yotsuba.fixed:not(.centered-links) .hide-board-list-container {
     -webkit-flex: none;
     flex: none;
     margin-right: 5px;
   }
-  :root.fixed:not(.centered-links) #full-board-list > .boardList {
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList {
     -webkit-flex: auto;
     flex: auto;
     display: -webkit-flex;
     display: flex;
     width: 0px; /* XXX Fixes Edge not shrinking the board list below default size when needed */
   }
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > a,
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > span:not(.space):not(.spacer) {
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > a,
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > span:not(.space):not(.spacer) {
     -webkit-flex: none;
     flex: none;
     padding: .17em;
     margin: -.17em -.32em;
   }
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > span {
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > span {
     pointer-events: none;
   }
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > span.space {
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > span.space {
     -webkit-flex: 0 .63 .63em;
     flex: 0 .63 .63em;
   }
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > span.spacer {
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > span.spacer {
     -webkit-flex: 0 .38 .38em;
     flex: 0 .38 .38em;
   }
-  :root.fixed:not(.centered-links) #shortcuts {
+  :root.sw-yotsuba.fixed:not(.centered-links) #shortcuts {
     float: initial;
     -webkit-flex: none;
     flex: none;
