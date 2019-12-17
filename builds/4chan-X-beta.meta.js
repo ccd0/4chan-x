@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.15.0
+// @version      1.14.15.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -28,6 +28,8 @@
 // @include      https://is.4channel.org/*
 // @include      http://is2.4channel.org/*
 // @include      https://is2.4channel.org/*
+// @include      https://erischan.org/*
+// @include      https://www.erischan.org/*
 // @include      https://fufufu.moe/*
 // @include      https://gnfos.com/*
 // @include      https://himasugi.blog/*
@@ -44,6 +46,7 @@
 // @include      https://ponyville.us/*
 // @include      https://www.ponyville.us/*
 // @include      https://samachan.org/*
+// @include      https://smuglo.li/*
 // @include      https://sportschan.org/*
 // @include      https://www.sportschan.org/*
 // @include      https://sushigirl.us/*
