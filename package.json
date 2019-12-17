@@ -51,6 +51,8 @@
       "*://*.4cdn.org/*"
     ],
     "matches": [
+      "https://erischan.org/*",
+      "https://www.erischan.org/*",
       "https://fufufu.moe/*",
       "https://gnfos.com/*",
       "https://himasugi.blog/*",
@@ -67,6 +69,7 @@
       "https://ponyville.us/*",
       "https://www.ponyville.us/*",
       "https://samachan.org/*",
+      "https://smuglo.li/*",
       "https://sportschan.org/*",
       "https://www.sportschan.org/*",
       "https://sushigirl.us/*",
