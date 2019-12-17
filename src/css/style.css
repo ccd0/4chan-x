@@ -169,14 +169,28 @@ body.hasDropDownNav{
 .gal-buttons.gal-buttons a {
   font-size: inherit;
 }
+:root.sw-tinyboard.fixed.top-header:not(.autohide) .boardlist,
+:root.sw-tinyboard.fixed.top-header:not(.autohide) .bar.top {
+  position: static;
+}
+:root.sw-tinyboard.fixed.top-header.autohide .boardlist,
+:root.sw-tinyboard.fixed.top-header.autohide .bar.top {
+  z-index: 3;
+}
 
-/* Tinyboard site style fixes */
+/* Tinyboard site style conflicts */
 :root[data-host="fufufu.moe"].fixed.top-header:not(.autohide) div.pages.top,
 :root[data-host="merorin.com"].fixed.top-header:not(.autohide) span.settings {
   top: 26px;
 }
 :root[data-host="fufufu.moe"]:not(.fixed) #header-bar {
   margin-top: 38px;
+}
+:root[data-host="lainchan.org"]:not(.fixed) #header-bar {
+  margin-top: 17px;
+}
+:root[data-host="smuglo.li"]:not(.fixed) #header-bar {
+  margin-top: 8px;
 }
 
 /* Anti-autoplay */
