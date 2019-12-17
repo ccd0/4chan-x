@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.15.0
+// @version      1.14.15.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -28,6 +28,8 @@
 // @include      https://is.4channel.org/*
 // @include      http://is2.4channel.org/*
 // @include      https://is2.4channel.org/*
+// @include      https://erischan.org/*
+// @include      https://www.erischan.org/*
 // @include      https://fufufu.moe/*
 // @include      https://gnfos.com/*
 // @include      https://himasugi.blog/*
@@ -44,6 +46,7 @@
 // @include      https://ponyville.us/*
 // @include      https://www.ponyville.us/*
 // @include      https://samachan.org/*
+// @include      https://smuglo.li/*
 // @include      https://sportschan.org/*
 // @include      https://www.sportschan.org/*
 // @include      https://sushigirl.us/*
@@ -211,7 +214,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.15.0',
+  VERSION:   '1.14.15.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -1507,13 +1510,27 @@ body.hasDropDownNav{\n\
 .gal-buttons.gal-buttons a {\n\
   font-size: inherit;\n\
 }\n\
-/* Tinyboard site style fixes */\n\
+:root.sw-tinyboard.fixed.top-header:not(.autohide) .boardlist,\n\
+:root.sw-tinyboard.fixed.top-header:not(.autohide) .bar.top {\n\
+  position: static;\n\
+}\n\
+:root.sw-tinyboard.fixed.top-header.autohide .boardlist,\n\
+:root.sw-tinyboard.fixed.top-header.autohide .bar.top {\n\
+  z-index: 3;\n\
+}\n\
+/* Tinyboard site style conflicts */\n\
 :root[data-host=\"fufufu.moe\"].fixed.top-header:not(.autohide) div.pages.top,\n\
 :root[data-host=\"merorin.com\"].fixed.top-header:not(.autohide) span.settings {\n\
   top: 26px;\n\
 }\n\
 :root[data-host=\"fufufu.moe\"]:not(.fixed) #header-bar {\n\
   margin-top: 38px;\n\
+}\n\
+:root[data-host=\"lainchan.org\"]:not(.fixed) #header-bar {\n\
+  margin-top: 17px;\n\
+}\n\
+:root[data-host=\"smuglo.li\"]:not(.fixed) #header-bar {\n\
+  margin-top: 8px;\n\
 }\n\
 /* Anti-autoplay */\n\
 audio.controls-added {\n\
@@ -1713,52 +1730,52 @@ audio.controls-added {\n\
   font-weight: bold;\n\
 }\n\
 @media (min-width: 1300px) {\n\
-  :root.fixed:not(.centered-links) #header-bar {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #header-bar {\n\
     white-space: nowrap;\n\
     display: -webkit-flex;\n\
     display: flex;\n\
     -webkit-align-items: center;\n\
     align-items: center;\n\
   }\n\
-  :root.fixed:not(.centered-links) #board-list {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #board-list {\n\
     -webkit-flex: auto;\n\
     flex: auto;\n\
   }\n\
-  :root.fixed:not(.centered-links) #full-board-list {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list {\n\
     display: -webkit-flex;\n\
     display: flex;\n\
   }\n\
-  :root.fixed:not(.centered-links) .hide-board-list-container {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) .hide-board-list-container {\n\
     -webkit-flex: none;\n\
     flex: none;\n\
     margin-right: 5px;\n\
   }\n\
-  :root.fixed:not(.centered-links) #full-board-list > .boardList {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList {\n\
     -webkit-flex: auto;\n\
     flex: auto;\n\
     display: -webkit-flex;\n\
     display: flex;\n\
     width: 0px; /* XXX Fixes Edge not shrinking the board list below default size when needed */\n\
   }\n\
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > a,\n\
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > span:not(.space):not(.spacer) {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > a,\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > span:not(.space):not(.spacer) {\n\
     -webkit-flex: none;\n\
     flex: none;\n\
     padding: .17em;\n\
     margin: -.17em -.32em;\n\
   }\n\
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > span {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > span {\n\
     pointer-events: none;\n\
   }\n\
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > span.space {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > span.space {\n\
     -webkit-flex: 0 .63 .63em;\n\
     flex: 0 .63 .63em;\n\
   }\n\
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > span.spacer {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > span.spacer {\n\
     -webkit-flex: 0 .38 .38em;\n\
     flex: 0 .38 .38em;\n\
   }\n\
-  :root.fixed:not(.centered-links) #shortcuts {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #shortcuts {\n\
     float: initial;\n\
     -webkit-flex: none;\n\
     flex: none;\n\
@@ -8369,6 +8386,44 @@ SW = {};
           return this.enabled = 'true';
         }
       });
+    },
+    transformBoardList: function() {
+      var a, chr, i, items, j, len, node, nodes, ref, spacer, span;
+      nodes = [];
+      spacer = function() {
+        return $.el('span', {
+          className: 'spacer'
+        });
+      };
+      items = $.X('.//a|.//text()[not(ancestor::a)]', $(SW.yotsuba.selectors.boardList));
+      i = 0;
+      while (node = items.snapshotItem(i++)) {
+        switch (node.nodeName) {
+          case '#text':
+            ref = node.nodeValue;
+            for (j = 0, len = ref.length; j < len; j++) {
+              chr = ref[j];
+              span = $.el('span', {
+                textContent: chr
+              });
+              if (chr === ' ') {
+                span.className = 'space';
+              }
+              if (chr === ']') {
+                nodes.push(spacer());
+              }
+              nodes.push(span);
+              if (chr === '[') {
+                nodes.push(spacer());
+              }
+            }
+            break;
+          case 'A':
+            a = node.cloneNode(true);
+            nodes.push(a);
+        }
+      }
+      return nodes;
     }
   };
 
@@ -10554,7 +10609,8 @@ Get = (function() {
 }).call(this);
 
 Header = (function() {
-  var Header;
+  var Header,
+    slice = [].slice;
 
   Header = {
     init: function() {
@@ -10652,7 +10708,7 @@ Header = (function() {
       this.setBoardList();
       $.onExists(doc, g.SITE.selectors.boardList + " + *", Header.generateFullBoardList);
       Main.ready(function() {
-        var a, absbot, footer, j, len, ref;
+        var a, absbot, footer, i, len, ref;
         if (g.SITE.software === 'yotsuba' && !(footer = $.id('boardNavDesktopFoot'))) {
           if (!(absbot = $.id('absbot'))) {
             return;
@@ -10668,8 +10724,8 @@ Header = (function() {
         }
         if ((Header.bottomBoardList = $(g.SITE.selectors.boardListBottom))) {
           ref = $$('a', Header.bottomBoardList);
-          for (j = 0, len = ref.length; j < len; j++) {
-            a = ref[j];
+          for (i = 0, len = ref.length; i < len; i++) {
+            a = ref[i];
             if (a.hostname === location.hostname && a.pathname.split('/')[1] === g.BOARD.ID) {
               a.className = 'current';
             }
@@ -10725,46 +10781,21 @@ Header = (function() {
       return $.sync('boardnav', Header.generateBoardList);
     },
     generateFullBoardList: function() {
-      var a, chr, fullBoardList, i, items, j, len, node, nodes, ref, spacer, span;
-      nodes = [];
-      spacer = function() {
-        return $.el('span', {
-          className: 'spacer'
-        });
-      };
-      items = $.X('.//a|.//text()[not(ancestor::a)]', $(g.SITE.selectors.boardList));
-      i = 0;
-      while (node = items.snapshotItem(i++)) {
-        switch (node.nodeName) {
-          case '#text':
-            ref = node.nodeValue;
-            for (j = 0, len = ref.length; j < len; j++) {
-              chr = ref[j];
-              span = $.el('span', {
-                textContent: chr
-              });
-              if (chr === ' ') {
-                span.className = 'space';
-              }
-              if (chr === ']') {
-                nodes.push(spacer());
-              }
-              nodes.push(span);
-              if (chr === '[') {
-                nodes.push(spacer());
-              }
-            }
-            break;
-          case 'A':
-            a = node.cloneNode(true);
-            if (a.hostname === location.hostname && a.pathname.split('/')[1] === g.BOARD.ID) {
-              a.className = 'current';
-            }
-            nodes.push(a);
-        }
+      var a, fullBoardList, i, len, nodes, ref;
+      if (g.SITE.transformBoardList) {
+        nodes = g.SITE.transformBoardList();
+      } else {
+        nodes = slice.call($(g.SITE.selectors.boardList).cloneNode(true).childNodes);
       }
       fullBoardList = $('.boardList', Header.boardList);
       $.add(fullBoardList, nodes);
+      ref = $$('a', fullBoardList);
+      for (i = 0, len = ref.length; i < len; i++) {
+        a = ref[i];
+        if (a.hostname === location.hostname && a.pathname.split('/')[1] === g.BOARD.ID) {
+          a.className = 'current';
+        }
+      }
       return CatalogLinks.setLinks(fullBoardList);
     },
     generateBoardList: function(boardnav) {
@@ -10777,11 +10808,11 @@ Header = (function() {
       boardnav = boardnav.replace(/(\r\n|\n|\r)/g, ' ');
       re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|nt|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g;
       nodes = (function() {
-        var j, len, ref, results;
+        var i, len, ref, results;
         ref = boardnav.match(re);
         results = [];
-        for (j = 0, len = ref.length; j < len; j++) {
-          t = ref[j];
+        for (i = 0, len = ref.length; i < len; i++) {
+          t = ref[i];
           results.push(Header.mapCustomNavigation(t));
         }
         return results;
@@ -11165,7 +11196,7 @@ Header = (function() {
       }
     },
     addShortcut: function(id, el, index) {
-      var item, j, len, ref, shortcut;
+      var i, item, len, ref, shortcut;
       shortcut = $.el('span', {
         id: "shortcut-" + id,
         className: 'shortcut brackets-wrap'
@@ -11173,8 +11204,8 @@ Header = (function() {
       $.add(shortcut, el);
       shortcut.dataset.index = index;
       ref = $$('[data-index]', Header.shortcuts);
-      for (j = 0, len = ref.length; j < len; j++) {
-        item = ref[j];
+      for (i = 0, len = ref.length; i < len; i++) {
+        item = ref[i];
         if (!(+item.dataset.index > +index)) {
           continue;
         }
@@ -17347,7 +17378,7 @@ Linkify = (function() {
           if ((length = index + word.length) === data.length) {
             test.lastIndex = 0;
             while ((saved = snapshot.snapshotItem(i++))) {
-              if (saved.nodeName === 'BR') {
+              if (saved.nodeName === 'BR' || (saved.parentElement.nodeName === 'P' && !saved.previousSibling)) {
                 if ((part1 = word.match(/(https?:\/\/)?([a-z\d-]+\.)*[a-z\d-]+$/i)) && (part2 = (ref = snapshot.snapshotItem(i)) != null ? (ref1 = ref.data) != null ? ref1.match(/^(\.[a-z\d-]+)*\//i) : void 0 : void 0) && (part1[0] + part2[0]).search(Linkify.regString) === 0) {
                   continue;
                 } else {

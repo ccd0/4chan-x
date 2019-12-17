@@ -4,6 +4,12 @@
 
 ### v1.14.15
 
+**v1.14.15.1** *(2019-12-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.1/builds/4chan-X-noupdate.crx)]
+- Enable 4chan X by default on more sites.
+- Fix spurious linkification bug on infinity-based sites. #2356
+- Fix clash between 4chan X header bar and native header bars. #2171
+- Fix unwanted spaces in full board list on Tinyboard sites.
+
 **v1.14.15.0** *(2019-12-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.14.5.
 - Support archived threads on kissu.moe.
