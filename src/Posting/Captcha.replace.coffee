@@ -47,3 +47,7 @@ Captcha.replace =
           break if (textarea = $ 'textarea', node)
         textarea.value = token
         $.event 'input', null, textarea
+      disabled: ->
+        msg = $.el 'div',
+          <%= html('Noscript captcha seems to be disabled on 4chan.<br>You may be able to post if you uncheck &quot;Force Noscript Captcha&quot; in your settings.') %>
+        new Notice 'warning', msg

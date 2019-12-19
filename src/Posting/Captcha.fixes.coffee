@@ -79,6 +79,8 @@ Captcha.fixes =
         {token}
       else if $('.fbc-imageselect-challenge > form')
         {working: true}
+      else if (ns = $ 'noscript') and /please enable javascript/i.test(ns.textContent)
+        {disabled: true}
       else
         null
     new Connection(window.parent, '*').send data if data
