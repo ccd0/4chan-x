@@ -191,7 +191,7 @@ SW.tinyboard =
     {text, link, thumb} = file
     return false if $.x("ancestor::#{@xpath.postContainer}[1]", text) isnt post.nodes.root # file belongs to a reply
     return false if not (infoNode = if '(' in link.nextSibling?.textContent then link.nextSibling else link.nextElementSibling)
-    return false if not (info = infoNode.textContent.match /\((Spoiler Image, )?([\d.]+ [KMG]?B).*\)/)
+    return false if not (info = infoNode.textContent.match /\((.*,\s*)?([\d.]+ [KMG]?B).*\)/)
     nameNode = $ '.postfilename', text
     $.extend file,
       name:       if nameNode then (nameNode.title or nameNode.textContent) else link.pathname.match(/[^/]*$/)[0]
@@ -200,7 +200,7 @@ SW.tinyboard =
     if thumb
       $.extend file,
         thumbURL:  if /\/static\//.test(thumb.src) and /\.(?:gif|jpe?g|png)$/.test(link.href) then link.href else thumb.src
-        isSpoiler: !!info[1] or link.textContent is 'Spoiler Image'
+        isSpoiler: /^Spoiler/i.test(info[1] or '') or link.textContent is 'Spoiler Image'
     true
 
   isThumbExpanded: (file) ->
