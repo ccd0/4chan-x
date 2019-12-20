@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.15.1
+// @version      1.14.15.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -214,7 +214,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.15.1',
+  VERSION:   '1.14.15.2',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -23313,13 +23313,15 @@ Captcha = {};
       return $.on(d, 'keydown', this.keybinds.bind(this));
     },
     initNoscript: function() {
-      var data, form, ref, token;
+      var data, form, ns, ref, token;
       this.noscript = true;
       form = $('.fbc-imageselect-challenge > form');
       data = (token = (ref = $('.fbc-verification-token > textarea')) != null ? ref.value : void 0) ? {
         token: token
       } : $('.fbc-imageselect-challenge > form') ? {
         working: true
+      } : (ns = $('noscript')) && /please enable javascript/i.test(ns.textContent) ? {
+        disabled: true
       } : null;
       if (data) {
         new Connection(window.parent, '*').send(data);
@@ -23525,6 +23527,13 @@ Captcha = {};
           }
           textarea.value = token;
           return $.event('input', null, textarea);
+        },
+        disabled: function() {
+          var msg;
+          msg = $.el('div', {
+            innerHTML: "Noscript captcha seems to be disabled on 4chan.<br>You may be able to post if you uncheck &quot;Force Noscript Captcha&quot; in your settings.<br>If you hate the Javascript version of Recaptcha, consider visiting <a href=\"https://www.4chan-x.net/4chan_alternatives.html#" + E(g.BOARD.ID) + "\" target=\"_blank\" rel=\"noopener\">other imageboards</a>."
+          });
+          return new Notice('warning', msg);
         }
       });
     }

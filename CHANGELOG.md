@@ -4,6 +4,9 @@
 
 ### v1.14.15
 
+**v1.14.15.2** *(2019-12-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.2/builds/4chan-X-noupdate.crx)]
+- Display message when noscript captcha is disabled, and link to open list of alternate imageboards. #1539 #2500
+
 **v1.14.15.1** *(2019-12-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.1/builds/4chan-X-noupdate.crx)]
 - Enable 4chan X by default on more sites.
 - Fix spurious linkification bug on infinity-based sites. #2356
