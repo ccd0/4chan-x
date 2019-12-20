@@ -49,5 +49,5 @@ Captcha.replace =
         $.event 'input', null, textarea
       disabled: ->
         msg = $.el 'div',
-          <%= html('Noscript captcha seems to be disabled on 4chan.<br>You may be able to post if you uncheck &quot;Force Noscript Captcha&quot; in your settings.') %>
+          <%= html('Noscript captcha seems to be disabled on 4chan.<br>You may be able to post if you uncheck &quot;Force Noscript Captcha&quot; in your settings.<br>Consider visiting <a href="' + meta.alternatives + '#${g.BOARD.ID}" target="_blank" rel="noopener">other imageboards</a>.') %>
         new Notice 'warning', msg

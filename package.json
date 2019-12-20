@@ -16,6 +16,7 @@
     "issues": "https://gitreports.com/issue/ccd0/4chan-x",
     "newIssue": "https://gitreports.com/issue/ccd0/4chan-x?issue_title=%title&details=%details",
     "newIssueMaxLength": 8181,
+    "alternatives": "https://www.4chan-x.net/4chan_alternatives.html",
     "appid": "lacclbnghgdicfifcamcmcnilckjamag",
     "appidGecko": "4chan-x@4chan-x.net",
     "chromeStoreID": "ohnjgmpcibpbafdlkimncjhflgedgpam",
