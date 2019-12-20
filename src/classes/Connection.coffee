@@ -12,7 +12,7 @@ class Connection
     @targetWindow().postMessage "#{g.NAMESPACE}#{JSON.stringify data}", @origin
 
   onMessage: (e) =>
-    return unless e.source is @targetWindow() and
+    return unless (@target is null or e.source is @targetWindow()) and
       e.origin is @origin and
       typeof e.data is 'string' and
       e.data[...g.NAMESPACE.length] is g.NAMESPACE

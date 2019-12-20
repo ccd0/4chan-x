@@ -2,6 +2,12 @@ Captcha.replace =
   init: ->
     return unless g.SITE.software is 'yotsuba' and d.cookie.indexOf('pass_enabled=1') < 0
 
+    new Connection null, 'https://www.google.com',
+      recaptchaBlocked: ->
+        msg = $.el 'div',
+          <%= html('Google seems to have blocked you from using Recaptcha. [<a href="' + meta.captchaFAQ + '" target="_blank" rel="noopener">More info</a>]<br>Consider visiting <a href="' + meta.alternatives + '#${g.BOARD.ID}" target="_blank" rel="noopener">other imageboards</a>.') %>
+        new Notice 'warning', msg
+
     if Conf['Force Noscript Captcha'] and Main.jsEnabled
       $.ready Captcha.replace.noscript
       return
@@ -49,5 +55,5 @@ Captcha.replace =
         $.event 'input', null, textarea
       disabled: ->
         msg = $.el 'div',
-          <%= html('Noscript captcha seems to be disabled on 4chan.<br>You may be able to post if you uncheck &quot;Force Noscript Captcha&quot; in your settings.<br>Consider visiting <a href="' + meta.alternatives + '#${g.BOARD.ID}" target="_blank" rel="noopener">other imageboards</a>.') %>
+          <%= html('Noscript captcha seems to be disabled on 4chan. [<a href="' + meta.captchaFAQ + '" target="_blank" rel="noopener">More info</a>]<br>You may be able to post if you uncheck &quot;Force Noscript Captcha&quot; in your settings.<br>Consider visiting <a href="' + meta.alternatives + '#${g.BOARD.ID}" target="_blank" rel="noopener">other imageboards</a>.') %>
         new Notice 'warning', msg

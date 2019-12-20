@@ -66,6 +66,8 @@ Captcha.fixes =
     return
 
   initPopup: ->
+    $.onExists d.body, '.rc-doscaptcha-body', ->
+      new Connection(window.parent, '*').send {recaptchaBlocked: true}
     $.addStyle @css
     @fixImages()
     new MutationObserver(=> @fixImages()).observe d.body, {childList: true, subtree: true}
