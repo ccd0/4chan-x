@@ -2,6 +2,12 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.16
+
+**v1.14.16.0** *(2019-12-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.15.2.
+- Fix parsing of spoilered images on kissu.moe.
+
 ### v1.14.15
 
 **v1.14.15.2** *(2019-12-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.2/builds/4chan-X-noupdate.crx)]

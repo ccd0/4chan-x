@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.15.2
+// @version      1.14.16.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -214,7 +214,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.15.2',
+  VERSION:   '1.14.16.0',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -7988,7 +7988,7 @@ SW = {};
       if (!(infoNode = indexOf.call((ref = link.nextSibling) != null ? ref.textContent : void 0, '(') >= 0 ? link.nextSibling : link.nextElementSibling)) {
         return false;
       }
-      if (!(info = infoNode.textContent.match(/\((Spoiler Image, )?([\d.]+ [KMG]?B).*\)/))) {
+      if (!(info = infoNode.textContent.match(/\((.*,\s*)?([\d.]+ [KMG]?B).*\)/))) {
         return false;
       }
       nameNode = $('.postfilename', text);
@@ -8000,7 +8000,7 @@ SW = {};
       if (thumb) {
         $.extend(file, {
           thumbURL: /\/static\//.test(thumb.src) && /\.(?:gif|jpe?g|png)$/.test(link.href) ? link.href : thumb.src,
-          isSpoiler: !!info[1] || link.textContent === 'Spoiler Image'
+          isSpoiler: /^Spoiler/i.test(info[1] || '') || link.textContent === 'Spoiler Image'
         });
       }
       return true;
