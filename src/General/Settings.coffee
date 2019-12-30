@@ -527,6 +527,9 @@ Settings =
           vp-replace
           [external-text:"FAQ","<%= meta.faq %>"]
         """
+    if compareString < '00001.00014.00015.00003'
+      if data['archiveLists']?
+        set 'archiveLists', data['archiveLists'].replace('https://mayhemydg.github.io/archives.json/archives.json', 'https://nstepien.github.io/archives.json/archives.json')
     changes
 
   loadSettings: (data, cb) ->

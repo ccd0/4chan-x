@@ -830,7 +830,7 @@ Config =
     'Custom Board Navigation':    true
 
   archives:
-    archiveLists:      'https://mayhemydg.github.io/archives.json/archives.json'
+    archiveLists:      'https://nstepien.github.io/archives.json/archives.json'
     lastarchivecheck:  0
     archiveAutoUpdate: true
 
