@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.15.2
+// @version      1.14.15.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -76,7 +76,7 @@
 // @connect      4chan.org
 // @connect      4channel.org
 // @connect      4cdn.org
-// @connect      mayhemydg.github.io
+// @connect      nstepien.github.io
 // @connect      archive.4plebs.org
 // @connect      archive.nyafuu.org
 // @connect      archive.rebeccablacktech.com
@@ -214,7 +214,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.15.2',
+  VERSION:   '1.14.15.3',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -481,7 +481,7 @@ Config = (function() {
       'Custom Board Navigation': true
     },
     archives: {
-      archiveLists: 'https://mayhemydg.github.io/archives.json/archives.json',
+      archiveLists: 'https://nstepien.github.io/archives.json/archives.json',
       lastarchivecheck: 0,
       archiveAutoUpdate: true
     },
@@ -13416,6 +13416,11 @@ Settings = (function() {
       if (compareString < '00001.00014.00012.00008') {
         if (data['boardnav'] == null) {
           set('boardnav', "[ toggle-all ]\na-replace\nc-replace\ng-replace\nk-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nco-replace\nfit-replace\njp-replace\nmu-replace\nsp-replace\ntv-replace\nvp-replace\n[external-text:\"FAQ\",\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions\"]");
+        }
+      }
+      if (compareString < '00001.00014.00015.00003') {
+        if (data['archiveLists'] != null) {
+          set('archiveLists', data['archiveLists'].replace('https://mayhemydg.github.io/archives.json/archives.json', 'https://nstepien.github.io/archives.json/archives.json'));
         }
       }
       return changes;

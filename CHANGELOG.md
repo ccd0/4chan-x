@@ -4,6 +4,9 @@
 
 ### v1.14.15
 
+**v1.14.15.3** *(2019-12-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.3/builds/4chan-X-noupdate.crx)]
+- Update location of archive list. #2520
+
 **v1.14.15.2** *(2019-12-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.2/builds/4chan-X-noupdate.crx)]
 - Display message when noscript captcha is disabled, and link to open list of alternate imageboards. #1539 #2500
 
