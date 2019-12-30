@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.16.0
+// @version      1.14.16.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -76,7 +76,7 @@
 // @connect      4chan.org
 // @connect      4channel.org
 // @connect      4cdn.org
-// @connect      mayhemydg.github.io
+// @connect      nstepien.github.io
 // @connect      archive.4plebs.org
 // @connect      archive.nyafuu.org
 // @connect      archive.rebeccablacktech.com
