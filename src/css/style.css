@@ -197,6 +197,7 @@ body.hasDropDownNav{
 audio.controls-added {
   display: block;
   margin: auto;
+  white-space: normal;
 }
 :root.anti-autoplay div.embed {
   position: static;
