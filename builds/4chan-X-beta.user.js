@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.16.1
+// @version      1.14.16.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -214,7 +214,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.16.1',
+  VERSION:   '1.14.16.2',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -1536,6 +1536,7 @@ body.hasDropDownNav{\n\
 audio.controls-added {\n\
   display: block;\n\
   margin: auto;\n\
+  white-space: normal;\n\
 }\n\
 :root.anti-autoplay div.embed {\n\
   position: static;\n\
