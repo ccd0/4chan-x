@@ -4,6 +4,9 @@
 
 ### v1.14.16
 
+**v1.14.16.2** *(2020-01-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.2/builds/4chan-X-noupdate.crx)]
+- Make sure audio element with added controls is not collapsed.
+
 **v1.14.16.1** *(2019-12-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.1/builds/4chan-X-noupdate.crx)]
 - Merge v1.14.15.3: Update location of archive list. #2520
 
