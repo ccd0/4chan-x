@@ -515,14 +515,16 @@ Embedding =
           src: "https://vine.co/v/#{a.dataset.uid}/card"
     ,
       key: 'Vocaroo'
-      regExp: /^\w+:\/\/(?:www\.)?vocaroo\.com\/i\/(\w+)/
+      regExp: /^\w+:\/\/(?:(?:www\.|old\.)?vocaroo\.com|voca\.ro)\/((?:i\/)?\w+)/
       style: ''
       el: (a) ->
         el = $.el 'audio',
           controls: true
           preload: 'auto'
-        type = if el.canPlayType 'audio/webm' then 'webm' else 'mp3'
-        el.src = "//vocaroo.com/media_command.php?media=#{a.dataset.uid}&command=download_#{type}"
+        el.src = if /^i\//.test(a.dataset.uid)
+          "https://old.vocaroo.com/media_command.php?media=#{a.dataset.uid.replace('i/', '')}&command=download_mp3"
+        else
+          "https://media.vocaroo.com/mp3/#{a.dataset.uid}"
         el
     ,
       key: 'YouTube'
