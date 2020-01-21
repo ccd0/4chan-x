@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.15.3
+// @version      1.14.16.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -214,7 +214,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.15.3',
+  VERSION:   '1.14.16.3',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -1536,6 +1536,7 @@ body.hasDropDownNav{\n\
 audio.controls-added {\n\
   display: block;\n\
   margin: auto;\n\
+  white-space: normal;\n\
 }\n\
 :root.anti-autoplay div.embed {\n\
   position: static;\n\
@@ -7988,7 +7989,7 @@ SW = {};
       if (!(infoNode = indexOf.call((ref = link.nextSibling) != null ? ref.textContent : void 0, '(') >= 0 ? link.nextSibling : link.nextElementSibling)) {
         return false;
       }
-      if (!(info = infoNode.textContent.match(/\((Spoiler Image, )?([\d.]+ [KMG]?B).*\)/))) {
+      if (!(info = infoNode.textContent.match(/\((.*,\s*)?([\d.]+ [KMG]?B).*\)/))) {
         return false;
       }
       nameNode = $('.postfilename', text);
@@ -8000,7 +8001,7 @@ SW = {};
       if (thumb) {
         $.extend(file, {
           thumbURL: /\/static\//.test(thumb.src) && /\.(?:gif|jpe?g|png)$/.test(link.href) ? link.href : thumb.src,
-          isSpoiler: !!info[1] || link.textContent === 'Spoiler Image'
+          isSpoiler: /^Spoiler/i.test(info[1] || '') || link.textContent === 'Spoiler Image'
         });
       }
       return true;
@@ -13418,7 +13419,7 @@ Settings = (function() {
           set('boardnav', "[ toggle-all ]\na-replace\nc-replace\ng-replace\nk-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nco-replace\nfit-replace\njp-replace\nmu-replace\nsp-replace\ntv-replace\nvp-replace\n[external-text:\"FAQ\",\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions\"]");
         }
       }
-      if (compareString < '00001.00014.00015.00003') {
+      if (compareString < '00001.00014.00016.00001') {
         if (data['archiveLists'] != null) {
           set('archiveLists', data['archiveLists'].replace('https://mayhemydg.github.io/archives.json/archives.json', 'https://nstepien.github.io/archives.json/archives.json'));
         }
@@ -17251,16 +17252,15 @@ Embedding = (function() {
         }
       }, {
         key: 'Vocaroo',
-        regExp: /^\w+:\/\/(?:www\.)?vocaroo\.com\/i\/(\w+)/,
+        regExp: /^\w+:\/\/(?:(?:www\.|old\.)?vocaroo\.com|voca\.ro)\/((?:i\/)?\w+)/,
         style: '',
         el: function(a) {
-          var el, type;
+          var el;
           el = $.el('audio', {
             controls: true,
             preload: 'auto'
           });
-          type = el.canPlayType('audio/webm') ? 'webm' : 'mp3';
-          el.src = "//vocaroo.com/media_command.php?media=" + a.dataset.uid + "&command=download_" + type;
+          el.src = /^i\//.test(a.dataset.uid) ? "https://old.vocaroo.com/media_command.php?media=" + (a.dataset.uid.replace('i/', '')) + "&command=download_mp3" : "https://media.vocaroo.com/mp3/" + a.dataset.uid;
           return el;
         }
       }, {
