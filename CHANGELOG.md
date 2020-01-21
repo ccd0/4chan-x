@@ -4,6 +4,9 @@
 
 ### v1.14.16
 
+**v1.14.16.3** *(2020-01-21)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.3/builds/4chan-X-noupdate.crx)]
+- Update Vocaroo embedding. #2528
+
 **v1.14.16.2** *(2020-01-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.2/builds/4chan-X-noupdate.crx)]
 - Make sure audio element with added controls is not collapsed.
 

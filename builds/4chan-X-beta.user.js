@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.16.2
+// @version      1.14.16.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -214,7 +214,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.16.2',
+  VERSION:   '1.14.16.3',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -17252,16 +17252,15 @@ Embedding = (function() {
         }
       }, {
         key: 'Vocaroo',
-        regExp: /^\w+:\/\/(?:www\.)?vocaroo\.com\/i\/(\w+)/,
+        regExp: /^\w+:\/\/(?:(?:www\.|old\.)?vocaroo\.com|voca\.ro)\/((?:i\/)?\w+)/,
         style: '',
         el: function(a) {
-          var el, type;
+          var el;
           el = $.el('audio', {
             controls: true,
             preload: 'auto'
           });
-          type = el.canPlayType('audio/webm') ? 'webm' : 'mp3';
-          el.src = "//vocaroo.com/media_command.php?media=" + a.dataset.uid + "&command=download_" + type;
+          el.src = /^i\//.test(a.dataset.uid) ? "https://old.vocaroo.com/media_command.php?media=" + (a.dataset.uid.replace('i/', '')) + "&command=download_mp3" : "https://media.vocaroo.com/mp3/" + a.dataset.uid;
           return el;
         }
       }, {
