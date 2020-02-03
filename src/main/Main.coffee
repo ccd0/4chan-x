@@ -344,6 +344,9 @@ Main =
       posts   = []
       errors  = []
 
+      try
+        g.SITE.preParsingFixes?(board)
+
       Main.addThreadsObserver = new MutationObserver Main.addThreads
       Main.addPostsObserver   = new MutationObserver Main.addPosts
       Main.addThreadsObserver.observe board, {childList: true}

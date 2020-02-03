@@ -168,6 +168,11 @@ SW.tinyboard =
   isFileURL: (url) ->
     /\/src\/[^\/]+/.test(url.pathname)
 
+  preParsingFixes: (board) ->
+    # fixes effects of unclosed link in announcement
+    if (broken = $('a > input[name="board"]', board))
+      $.before broken.parentNode, broken
+
   parseNodes: (post, nodes) ->
     # Add vichan's span.poster_id around the ID if not already present.
     return if nodes.uniqueID
