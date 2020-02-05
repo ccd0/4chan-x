@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.16.3
+// @version      1.14.16.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -214,7 +214,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.16.3',
+  VERSION:   '1.14.16.4',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -7950,6 +7950,12 @@ SW = {};
     },
     isFileURL: function(url) {
       return /\/src\/[^\/]+/.test(url.pathname);
+    },
+    preParsingFixes: function(board) {
+      var broken;
+      if ((broken = $('a > input[name="board"]', board))) {
+        return $.before(broken.parentNode, broken);
+      }
     },
     parseNodes: function(post, nodes) {
       var m, nextSibling, uniqueID;
@@ -27757,12 +27763,17 @@ Main = (function() {
       }
     },
     initThread: function() {
-      var base, board, errors, posts, s, threads;
+      var base, base1, board, errors, posts, s, threads;
       s = g.SITE.selectors;
       if ((board = $(s.board))) {
         threads = [];
         posts = [];
         errors = [];
+        try {
+          if (typeof (base = g.SITE).preParsingFixes === "function") {
+            base.preParsingFixes(board);
+          }
+        } catch (error1) {}
         Main.addThreadsObserver = new MutationObserver(Main.addThreads);
         Main.addPostsObserver = new MutationObserver(Main.addPosts);
         Main.addThreadsObserver.observe(board, {
@@ -27777,8 +27788,8 @@ Main = (function() {
             threads[0].isArchived = true;
             threads[0].kill();
           }
-          if (typeof (base = g.SITE).parseThreadMetadata === "function") {
-            base.parseThreadMetadata(threads[0]);
+          if (typeof (base1 = g.SITE).parseThreadMetadata === "function") {
+            base1.parseThreadMetadata(threads[0]);
           }
         }
         Main.callbackNodes('Thread', threads);
