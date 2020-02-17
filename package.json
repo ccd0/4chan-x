@@ -1,6 +1,6 @@
 {
   "name": "4chan-X",
-  "description": "Cross-browser userscript for maximum lurking on 4chan.",
+  "description": "4chan X is a script that adds various features to anonymous imageboards. It was originally developed for 4chan but has no affiliation with it.",
   "meta": {
     "name": "4chan X",
     "path": "4chan-x",
