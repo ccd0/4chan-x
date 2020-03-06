@@ -173,13 +173,20 @@ body.hasDropDownNav{
 :root.sw-tinyboard.fixed.top-header:not(.autohide) .bar.top {
   position: static;
 }
+:root.sw-tinyboard.fixed.top-header:not(.autohide) div.pages.top {
+  top: auto;
+  bottom: 0;
+}
 :root.sw-tinyboard.fixed.top-header.autohide .boardlist,
 :root.sw-tinyboard.fixed.top-header.autohide .bar.top {
   z-index: 3;
 }
 
 /* Tinyboard site style conflicts */
-:root[data-host="fufufu.moe"].fixed.top-header:not(.autohide) div.pages.top,
+:root[data-host="fufufu.moe"].fixed.top-header:not(.autohide) div.pages.top {
+  top: 26px;
+  bottom: auto;
+}
 :root[data-host="merorin.com"].fixed.top-header:not(.autohide) span.settings {
   top: 26px;
 }
