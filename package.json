@@ -74,7 +74,8 @@
       "https://sportschan.org/*",
       "https://www.sportschan.org/*",
       "https://sushigirl.us/*",
-      "https://www.sushigirl.us/*"
+      "https://www.sushigirl.us/*",
+      "https://tvch.moe/*"
     ],
     "matches_extra": [
       "https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",
