@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.16.4
+// @version      1.14.16.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
-// @description  Cross-browser userscript for maximum lurking on 4chan.
+// @description  4chan X is a script that adds various features to anonymous imageboards. It was originally developed for 4chan but has no affiliation with it.
 // @license      MIT; https://github.com/ccd0/4chan-x/blob/master/LICENSE 
 // @include      http://boards.4chan.org/*
 // @include      https://boards.4chan.org/*
@@ -51,6 +51,7 @@
 // @include      https://www.sportschan.org/*
 // @include      https://sushigirl.us/*
 // @include      https://www.sushigirl.us/*
+// @include      https://tvch.moe/*
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=887877714&*
@@ -214,7 +215,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.16.4',
+  VERSION:   '1.14.16.5',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -1514,12 +1515,19 @@ body.hasDropDownNav{\n\
 :root.sw-tinyboard.fixed.top-header:not(.autohide) .bar.top {\n\
   position: static;\n\
 }\n\
+:root.sw-tinyboard.fixed.top-header:not(.autohide) div.pages.top {\n\
+  top: auto;\n\
+  bottom: 0;\n\
+}\n\
 :root.sw-tinyboard.fixed.top-header.autohide .boardlist,\n\
 :root.sw-tinyboard.fixed.top-header.autohide .bar.top {\n\
   z-index: 3;\n\
 }\n\
 /* Tinyboard site style conflicts */\n\
-:root[data-host=\"fufufu.moe\"].fixed.top-header:not(.autohide) div.pages.top,\n\
+:root[data-host=\"fufufu.moe\"].fixed.top-header:not(.autohide) div.pages.top {\n\
+  top: 26px;\n\
+  bottom: auto;\n\
+}\n\
 :root[data-host=\"merorin.com\"].fixed.top-header:not(.autohide) span.settings {\n\
   top: 26px;\n\
 }\n\
