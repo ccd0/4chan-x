@@ -4,6 +4,9 @@
 
 ### v1.14.16
 
+**v1.14.16.5** *(2020-03-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.5/builds/4chan-X-noupdate.crx)]
+- Enable 4chan X by default on more sites.
+
 **v1.14.16.4** *(2020-02-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.4/builds/4chan-X-noupdate.crx)]
 - Fix for unclosed link in https://sushigirl.us/ announcement.
 
