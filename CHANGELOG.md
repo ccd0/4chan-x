@@ -4,6 +4,9 @@
 
 ### v1.14.16
 
+**v1.14.16.6** *(2020-03-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.6/builds/4chan-X-noupdate.crx)]
+- Fix description exceeding maximum length.
+
 **v1.14.16.5** *(2020-03-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.5/builds/4chan-X-noupdate.crx)]
 - Enable 4chan X by default on more sites.
 
