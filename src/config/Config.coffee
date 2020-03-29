@@ -798,7 +798,7 @@ Config =
 
     # Other tools:
     #http://exif.regex.info/exif.cgi?imgurl=%URL
-    #//imgops.com/%URL;types:gif,jpg,png
+    #//imgops.com/start?url=%URL;types:gif,jpg,png
     #//www.gif-explode.com/%URL;types:gif
   """
 

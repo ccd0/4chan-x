@@ -535,6 +535,9 @@ Settings =
         set 'sauces', data['sauces'].replace(
           /https:\/\/www\.deviantart\.com\/gallery\/#\/d%\$1%\$2;regexp:\/\^\\w\+_by_\\w\+\[_-\]d\(\[\\da-z\]\{6\}\)\\b\|\^d\(\[\\da-z\]\{6\}\)-\[\\da-z\]\{8\}-\//g,
           'javascript:void(open("https://www.deviantart.com/"+%$1.replace(/_/g,"-")+"/art/"+parseInt(%$2,36)));regexp:/^\\w+_by_(\\w+)[_-]d([\\da-z]{6})\\b/'
+        ).replace(
+          /\/\/imgops\.com\/%URL/g
+          '//imgops.com/start?url=%URL'
         )
     changes
 
