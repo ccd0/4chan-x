@@ -530,6 +530,12 @@ Settings =
     if compareString < '00001.00014.00016.00001'
       if data['archiveLists']?
         set 'archiveLists', data['archiveLists'].replace('https://mayhemydg.github.io/archives.json/archives.json', 'https://nstepien.github.io/archives.json/archives.json')
+    if compareString < '00001.00014.00016.00007'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(
+          /https:\/\/www\.deviantart\.com\/gallery\/#\/d%\$1%\$2;regexp:\/\^\\w\+_by_\\w\+\[_-\]d\(\[\\da-z\]\{6\}\)\\b\|\^d\(\[\\da-z\]\{6\}\)-\[\\da-z\]\{8\}-\//g,
+          'javascript:void(open("https://www.deviantart.com/"+%$1.replace(/_/g,"-")+"/art/"+parseInt(%$2,36)));regexp:/^\\w+_by_(\\w+)[_-]d([\\da-z]{6})\\b/'
+        )
     changes
 
   loadSettings: (data, cb) ->
