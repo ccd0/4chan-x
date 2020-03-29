@@ -320,8 +320,10 @@ Embedding =
       key: 'Gfycat'
       regExp: /^\w+:\/\/(?:www\.)?gfycat\.com\/(?:iframe\/)?(\w+)/
       el: (a) ->
-        div = $.el 'iframe',
-          src: "//gfycat.com/iframe/#{a.dataset.uid}"
+        el = $.el 'iframe',
+          src: "//gfycat.com/ifr/#{a.dataset.uid}"
+        el.setAttribute "allowfullscreen", "true"
+        el
     ,
       key: 'Gist'
       regExp: /^\w+:\/\/gist\.github\.com\/[\w\-]+\/(\w+)/
