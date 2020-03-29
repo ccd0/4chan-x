@@ -413,13 +413,12 @@ Embedding =
     ,
       key: 'Openings.moe'
       regExp: /^\w+:\/\/openings.moe\/\?video=([^.&=]+)/
-      style: 'max-width: 80vw; max-height: 80vh;'
+      style: 'width: 1280px; height: 720px; max-width: 80vw; max-height: 80vh;'
       el: (a) ->
-        $.el 'video',
-          controls: true
-          preload:  'auto'
-          src:      "//openings.moe/video/#{a.dataset.uid}.webm"
-          loop:     true
+        el = $.el 'iframe',
+          src: "https://openings.moe/?video=#{a.dataset.uid}",
+        el.setAttribute "allowfullscreen", "true"
+        el
     ,
       key: 'Pastebin'
       regExp: /^\w+:\/\/(?:\w+\.)?pastebin\.com\/(?!u\/)(?:[\w.]+(?:\/|\?i\=))?(\w+)/
