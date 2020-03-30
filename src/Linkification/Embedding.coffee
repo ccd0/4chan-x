@@ -222,7 +222,10 @@ Embedding =
       switch status
         when 200, 304
           text = service.text req.response, uid
-          Embedding.cache.set data, text
+          if typeof text is 'string'
+            Embedding.cache.set data, text
+          else
+            text = link.textContent
         when 404
           text = "Not Found"
         when 403
