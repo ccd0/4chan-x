@@ -354,10 +354,10 @@ Embedding =
           src: "https://paste.installgentoo.com/view/embed/#{a.dataset.uid}"
     ,
       key: 'LiveLeak'
-      regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*i=(\w+)/
+      regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*[tif]=(\w+)/
       el: (a) ->
         el = $.el 'iframe',
-          src: "https://www.liveleak.com/ll_embed?i=#{a.dataset.uid}",
+          src: "https://www.liveleak.com/e/#{a.dataset.uid}",
         el.setAttribute "allowfullscreen", "true"
         el
     ,
