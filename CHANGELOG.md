@@ -4,6 +4,11 @@
 
 ### v1.14.16
 
+**v1.14.16.7** *(2020-03-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.7/builds/4chan-X-noupdate.crx)]
+- Fix bug causing some sections on advanced settings not to show up outside 4chan.
+- Sauce: Update DeviantArt URL format (#2563) and ImgOps URL format.
+- Embedding: Update Gfycat, LiveLeak, and Openings.moe embedding, and fix minor bugs.
+
 **v1.14.16.6** *(2020-03-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.6/builds/4chan-X-noupdate.crx)]
 - Fix description exceeding maximum length.
 
