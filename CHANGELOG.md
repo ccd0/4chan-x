@@ -2,6 +2,12 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.17
+
+**v1.14.17.0** *(2020-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.16.7.
+- Preliminary support for new Kissu UI.
+
 ### v1.14.16
 
 **v1.14.16.7** *(2020-03-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.7/builds/4chan-X-noupdate.crx)]
