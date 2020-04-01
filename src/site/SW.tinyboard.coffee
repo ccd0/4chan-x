@@ -186,9 +186,14 @@ SW.tinyboard =
   parseNodes: (post, nodes) ->
     # Add vichan's span.poster_id around the ID if not already present.
     return if nodes.uniqueID
-    nodes.info.normalize()
-    {nextSibling} = nodes.nameBlock
-    if nextSibling.nodeType is 3 and (m = nextSibling.textContent.match /(\s*ID:\s*)(\S+)/)
+    text = ''
+    node = nodes.nameBlock.nextSibling
+    while node and node.nodeType is 3
+      text += node.textContent
+      node = node.nextSibling
+    if (m = text.match /(\s*ID:\s*)(\S+)/)
+      nodes.info.normalize()
+      {nextSibling} = nodes.nameBlock
       nextSibling = nextSibling.splitText m[1].length
       nextSibling.splitText m[2].length
       nodes.uniqueID = uniqueID = $.el 'span', {className: 'poster_id'}
