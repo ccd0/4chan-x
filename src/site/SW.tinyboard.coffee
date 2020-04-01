@@ -40,6 +40,16 @@ SW.tinyboard =
         return properties
     false
 
+  awaitBoard: (cb) ->
+    if (reactUI = $.id('react-ui'))
+      s = @selectors = Object.create @selectors
+      s.boardFor = {index: '.page-container'}
+      s.thread = 'div[id^="thread_"]'
+      s.threadDivider = 'page-container > hr'
+      Main.mounted cb
+    else
+      cb()
+
   urls:
     thread: ({siteID, boardID, threadID}, isArchived) ->
       "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/#{if isArchived then 'archive/' else ''}res/#{threadID}.html"
@@ -196,7 +206,7 @@ SW.tinyboard =
     {text, link, thumb} = file
     return false if $.x("ancestor::#{@xpath.postContainer}[1]", text) isnt post.nodes.root # file belongs to a reply
     return false if not (infoNode = if '(' in link.nextSibling?.textContent then link.nextSibling else link.nextElementSibling)
-    return false if not (info = infoNode.textContent.match /\((.*,\s*)?([\d.]+ [KMG]?B).*\)/)
+    return false if not (info = infoNode.textContent.match /\((.*,\s*)?([\d.]+ ?[KMG]?B).*\)/)
     nameNode = $ '.postfilename', text
     $.extend file,
       name:       if nameNode then (nameNode.title or nameNode.textContent) else link.pathname.match(/[^/]*$/)[0]

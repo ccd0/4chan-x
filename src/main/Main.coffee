@@ -30,6 +30,15 @@ Main =
         new Notice 'error', 'Error: Multiple copies of 4chan X are enabled.'
         $.addClass doc, 'tainted'
 
+    # Detect "mounted" event from Kissu
+    mountedCB = ->
+      d.removeEventListener 'mounted', mountedCB, true
+      Main.isMounted = true
+      for cb in Main.mountedCBs
+        try
+          cb()
+    d.addEventListener 'mounted', mountedCB, true
+
     # Flatten default values from Config into Conf
     flatten = (parent, obj) ->
       if obj instanceof Array
@@ -332,14 +341,17 @@ Main =
     if g.VIEW is 'catalog'
       Main.initCatalog()
     else if !Index.enabled
-      Main.initThread() 
+      if g.SITE.awaitBoard
+        g.SITE.awaitBoard Main.initThread
+      else
+        Main.initThread()
     else
       Main.expectInitFinished = true
       $.event '4chanXInitFinished'
 
   initThread: ->
     s = g.SITE.selectors
-    if (board = $ s.board)
+    if (board = $ (s.boardFor?[g.VIEW] or s.board))
       threads = []
       posts   = []
       errors  = []
@@ -388,7 +400,7 @@ Main =
       Main.addPostsObserver.observe threadRoot, {childList: true}
 
   parsePosts: (postRoots, thread, posts, errors) ->
-    for postRoot in postRoots when !postRoot.dataset.fullID and $(g.SITE.selectors.comment, postRoot)
+    for postRoot in postRoots when !(postRoot.dataset.fullID and g.posts.get(postRoot.dataset.fullID)) and $(g.SITE.selectors.comment, postRoot)
       try
         posts.push new Post postRoot, thread, thread.board
       catch err
@@ -600,6 +612,14 @@ Main =
   ready: (cb) ->
     $.ready ->
       (cb() if Main.isThisPageLegit())
+
+  mounted: (cb) ->
+    if Main.isMounted
+      cb()
+    else
+      Main.mountedCBs.push cb
+
+  mountedCBs: []
 
   features: [
     ['Polyfill',                  Polyfill]
