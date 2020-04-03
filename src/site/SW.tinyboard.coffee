@@ -45,7 +45,6 @@ SW.tinyboard =
       s = @selectors = Object.create @selectors
       s.boardFor = {index: '.page-container'}
       s.thread = 'div[id^="thread_"]'
-      s.threadDivider = 'page-container > hr'
       Main.mounted cb
     else
       cb()
