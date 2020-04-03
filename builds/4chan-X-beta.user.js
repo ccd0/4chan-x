@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.17.0
+// @version      1.14.17.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -215,7 +215,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.17.0',
+  VERSION:   '1.14.17.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -7785,7 +7785,6 @@ SW = {};
           index: '.page-container'
         };
         s.thread = 'div[id^="thread_"]';
-        s.threadDivider = 'page-container > hr';
         return Main.mounted(cb);
       } else {
         return cb();
@@ -7867,7 +7866,7 @@ SW = {};
     selectors: {
       board: 'form[name="postcontrols"]',
       thread: 'input[name="board"] ~ div[id^="thread_"]',
-      threadDivider: 'div[id^="thread_"] > hr:last-of-type',
+      threadDivider: 'div[id^="thread_"] > hr:last-child',
       summary: '.omitted',
       postContainer: 'div[id^="reply_"]:not(.hidden)',
       opBottom: '.op',
