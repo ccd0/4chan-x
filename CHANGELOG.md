@@ -4,6 +4,9 @@
 
 ### v1.14.17
 
+**v1.14.17.1** *(2020-04-03)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.1/builds/4chan-X-noupdate.crx)]
+- Fix 'Mark Read' link for 'Unread Line in Index' being placed in wrong position on smuglo.li.
+
 **v1.14.17.0** *(2020-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.16.7.
 - Preliminary support for new Kissu UI.
