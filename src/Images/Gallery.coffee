@@ -7,8 +7,8 @@ Gallery =
     el = $.el 'a',
       href: 'javascript:;'
       title: 'Gallery'
-      className: 'fa fa-picture-o'
-      textContent: 'Gallery'
+      className: 'fourchan-x--icon icon--large'
+    $.extend el, `<%= html('<span class="icon--alt-text">Gallery</span>&{Icons.picture_o}') %>`
 
     $.on el, 'click', @cb.toggle
 

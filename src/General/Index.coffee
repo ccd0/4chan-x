@@ -43,10 +43,10 @@ Index =
 
     # Header refresh button
     @button = $.el 'a',
-      className: 'fa fa-refresh'
+      className: 'fourchan-x--icon icon--large'
       title: 'Refresh'
       href: 'javascript:;'
-      textContent: 'Refresh Index'
+    $.extend @button, `<%= html('<span class="icon--alt-text">Refresh Index</span>&{Icons.refresh}') %>`
     $.on @button, 'click', -> Index.update()
     Header.addShortcut 'index-refresh', @button, 590
 
@@ -188,7 +188,7 @@ Index =
 
     threadIDs = Index.threadsOnPage pageNum
     Index.buildStructure threadIDs
-    
+
   endNotice: do ->
     notify = false
     reset = -> notify = false

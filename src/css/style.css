@@ -74,6 +74,69 @@ body.hasDropDownNav{
   display: none !important;
 }
 
+/* Icons */
+.fourchan-x--icon {
+  display: -webkit-inline-flex;
+  display: inline-flex;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
+  width: 13px;
+  height: 13px;
+}
+.fourchan-x--icon.icon--small {
+  width: 11px;
+  height: 11px;
+}
+.fourchan-x--icon.icon--large {
+  width: 14px;
+  height: 14px;
+}
+.fourchan-x--icon .inline-svg--fa {
+  height: 100%;
+  width: 100%;
+}
+:root.shortcut-icons #shortcuts .fourchan-x--icon {
+  position: relative;
+  top: 1px;
+}
+:root.shortcut-icons #shortcuts .icon--alt-text {
+  display: none;
+}
+:root:not(.shortcut-icons) #shortcuts .fourchan-x--icon {
+  height: auto;
+  width: auto;
+}
+:root:not(.shortcut-icons) #shortcuts .fourchan-x--icon .inline-svg--fa {
+  display: none;
+}
+:root.shortcut-icons .shortcut.brackets-wrap::before,
+:root.shortcut-icons .shortcut.brackets-wrap::after {
+  display: none;
+}
+.download-button {
+  vertical-align: text-bottom;
+}
+.fa-spin {
+  -webkit-animation: spin 2s infinite linear;
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+}
+@-webkit-keyframes spin {
+  0% {-webkit-transform:rotate(0deg);}
+  100% {-webkit-transform:rotate(359deg);}
+}
+@-moz-keyframes spin {
+  0% {-moz-transform:rotate(0deg);}
+  100% {-moz-transform:rotate(359deg);}
+}
+@keyframes spin {
+  0% {transform:rotate(0deg);}
+  100% {transform:rotate(359deg);}
+}
+
 /* 4chan style fixes */
 /* overrides 4chan CSS on div.opContainer, div.op */
 :root.sw-yotsuba .opContainer, :root.sw-yotsuba .op {
@@ -911,10 +974,7 @@ div[data-checked="false"] > .suboption-list {
   padding-left: 2px;
 }
 .catalog-stats > .menu-button {
-  font-weight: normal;
-}
-.catalog-stats > .menu-button > i::before {
-  line-height: 11px;
+  width: 8px;
 }
 .catalog-stats {
   font-size: 10px;
@@ -1218,15 +1278,9 @@ textarea.copy-text-element {
   padding: 0px 4px;
 }
 .watch-thread-link {
-  padding-top: 18px;
-  width: 18px;
-  height: 0px;
-  display: inline-block;
-  background-repeat: no-repeat;
   opacity: 0.2;
   position: relative;
-  top: 1px;
-  background-image: url("data:image/svg+xml,<svg viewBox='0 0 26 26' preserveAspectRatio='true' xmlns='http://www.w3.org/2000/svg'><path fill='rgb(0,0,0)' d='M24.132,7.971c-2.203-2.205-5.916-2.098-8.25,0.235L15.5,8.588l-0.382-0.382c-2.334-2.333-6.047-2.44-8.25-0.235c-2.204,2.203-2.098,5.916,0.235,8.249l8.396,8.396l8.396-8.396C26.229,13.887,26.336,10.174,24.132,7.971z'/></svg>");
+  top: 2px;
 }
 .watch-thread-link.watched {
   opacity: 1;
@@ -1620,7 +1674,7 @@ $site$thread[hidden] + hr {
 }
 #qr .close {
   float: right;
-  padding: 0 3px;
+  margin: 2px 0 1px 2px;
 }
 .qr-link-container {
   text-align: center;
@@ -2022,6 +2076,10 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
   color: #e00;
   padding: 1px;
 }
+.remove .fourchan-x--icon {
+  -webkit-filter: drop-shadow(0 0 2px #000);
+  filter: drop-shadow(0 0 2px #000);
+}
 a:only-of-type > .remove {
   display: none;
 }
@@ -2071,8 +2129,7 @@ a:only-of-type > .remove {
 }
 
 /* Menu */
-.menu-button:not(.fa-bars) {
-  display: inline-block;
+.menu-button {
   position: relative;
   cursor: pointer;
 }
@@ -2085,10 +2142,11 @@ a:only-of-type > .remove {
   vertical-align: middle;
 }
 .postInfo > .menu-button,
-#thread-watcher .menu-button {
-  width: 18px;
-  height: 15px;
-  text-align: center;
+#thread-watcher .menu-button,
+.stub > .menu-button {
+  margin: 0 3px;
+  height: 8px;
+  width: 8px;
 }
 #menu {
   position: fixed;
@@ -2198,8 +2256,7 @@ a:only-of-type > .remove {
   flex: 1;
 }
 #embedding .jump {
-  margin: -1px 4px;
-  text-decoration: none;
+  margin: 0 4px;
 }
 
 /* Gallery */

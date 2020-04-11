@@ -90,7 +90,7 @@ ThreadHiding =
         className: 'show-thread-link'
         textContent: 'Show'
         href: 'javascript:;'
-      $.on div, 'click', ThreadHiding.menu.show 
+      $.on div, 'click', ThreadHiding.menu.show
 
       Menu.menu.addEntry
         el: div
@@ -139,7 +139,7 @@ ThreadHiding =
     a = $.el 'a',
       className: "#{type}-thread-button"
       href:      'javascript:;'
-    $.extend a, `<%= html('<span class="fa fa-?{type === "hide"}{minus}{plus}-square"></span>') %>`
+    $.extend a, `<%= html('<span class="fourchan-x--icon icon--small">&{type === "hide" ? Icons.minus_square : Icons.plus_square}</span>') %>`
     a.dataset.fullID = thread.fullID
     $.on a, 'click', ThreadHiding.toggle
     a

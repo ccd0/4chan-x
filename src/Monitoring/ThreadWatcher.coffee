@@ -4,10 +4,10 @@ ThreadWatcher =
 
     @shortcut = sc = $.el 'a',
       id:   'watcher-link'
-      textContent: 'Watcher'
       title: 'Thread Watcher'
       href: 'javascript:;'
-      className: 'fa fa-eye'
+      className: 'fourchan-x--icon icon--large '
+    $.extend sc, `<%= html('<span class="icon--alt-text">Watcher</span>&{Icons.eye}') %>`
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
     @dbLM   = new DataBoard 'watcherLastModified', null, true
@@ -91,7 +91,8 @@ ThreadWatcher =
     else
       toggler = $.el 'a',
         href: 'javascript:;'
-        className: 'watch-thread-link'
+        className: 'watch-thread-link fourchan-x--icon icon--large'
+      $.extend toggler, `<%= html('&{Icons.heart}') %>`
       $.before $('input', @nodes.info), toggler
     siteID = g.SITE.ID
     boardID = @board.ID
@@ -400,8 +401,9 @@ ThreadWatcher =
 
   makeLine: (siteID, boardID, threadID, data) ->
     x = $.el 'a',
-      className: 'fa fa-times'
+      className: 'fourchan-x--icon'
       href: 'javascript:;'
+    $.extend x, `<%= html('&{Icons.close}') %>`
     $.on x, 'click', ThreadWatcher.cb.rm
 
     {excerpt, isArchived} = data
