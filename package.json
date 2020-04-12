@@ -120,12 +120,12 @@
     "coffeescript": "=1.12.7",
     "esprima": "^4.0.1",
     "font-awesome": "=4.7.0",
-    "jshint": "^2.10.2",
-    "jszip": "^3.2.2",
+    "jshint": "^2.11.0",
+    "jszip": "^3.3.0",
     "lodash.template": "^4.5.0",
-    "markdown-it": "^9.0.0",
-    "markdown-it-anchor": "^5.2.4",
-    "request": "^2.88.0"
+    "markdown-it": "^10.0.0",
+    "markdown-it-anchor": "^5.2.7",
+    "request": "^2.88.2"
   },
   "repository": {
     "type": "git",
