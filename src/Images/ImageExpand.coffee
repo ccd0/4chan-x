@@ -6,7 +6,7 @@ ImageExpand =
       className: 'expand-all-shortcut fourchan-x--icon icon--large'
       title: 'Expand All Images'
       href: 'javascript:;'
-    $.extend @EAI, `<%= html('<span class="icon--alt-text">EAI</span>&{Icons.expand}') %>`
+    Icon.set @EAI, 'expand', 'EAI'
 
     $.on @EAI, 'click', @cb.toggleAll
     Header.addShortcut 'expand-all', @EAI, 520
@@ -68,12 +68,12 @@ ImageExpand =
       if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
         ImageExpand.EAI.className = 'contract-all-shortcut fourchan-x--icon icon--large'
         ImageExpand.EAI.title     = 'Contract All Images'
-        $.extend ImageExpand.EAI, `<%= html('<span class="icon--alt-text">CAI</span>&{Icons.compress}') %>`
+        Icon.set ImageExpand.EAI, 'compress', 'CAI'
         func = ImageExpand.expand
       else
         ImageExpand.EAI.className = 'expand-all-shortcut fourchan-x--icon icon--large'
         ImageExpand.EAI.title     = 'Expand All Images'
-        $.extend ImageExpand.EAI, `<%= html('<span class="icon--alt-text">EAI</span>&{Icons.expand}') %>`
+        Icon.set ImageExpand.EAI, 'expand', 'EAI'
         func = ImageExpand.contract
 
       g.posts.forEach (post) ->

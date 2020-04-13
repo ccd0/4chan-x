@@ -5,7 +5,7 @@ Settings =
       className:   'settings-link fourchan-x--icon icon--large'
       title:       '<%= meta.name %> Settings'
       href:        'javascript:;'
-    $.extend link, `<%= html('<span class="icon--alt-text">Settings</span>&{Icons.wrench}') %>`
+    Icon.set link, 'wrench', 'Settings'
     $.on link, 'click', Settings.open
 
     Header.addShortcut 'settings', link, 820

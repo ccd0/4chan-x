@@ -113,9 +113,9 @@ Header =
     if g.SITE.software is 'yotsuba' and (g.VIEW is 'catalog' or !Conf['Disable Native Extension'])
       cs = $.el 'a', href: 'javascript:;'
       if g.VIEW is 'catalog'
-        cs.title = cs.textContent = 'Catalog Settings'
+        cs.title = 'Catalog Settings'
         cs.className = 'fourchan-x--icon icon--large'
-        $.extend cs, `<%= html('&{Icons.book}') %>`
+        Icon.set cs, 'book', 'Catalog Settings'
       else
         cs.title = cs.textContent = '4chan Settings'
         cs.className = 'native-settings'

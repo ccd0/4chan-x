@@ -51,8 +51,8 @@ FileInfo =
       else
         `<%= html('<span class="fnswitch"><span class="fntrunc">${shortname}</span><span class="fnfull">${fullname}</span></span>') %>`
     N: -> `<%= html('${this.file.name}') %>`
-    d: -> `<%= html('<a href="${this.file.url}" download="${this.file.name}" class="download-button fourchan-x--icon">&{Icons.download}</a>') %>`
-    f: -> `<%= html('<a href="javascript:;" class="quick-filter-md5 fourchan-x--icon">&{Icons.close}</a>') %>`
+    d: -> `<%= html('<a href="${this.file.url}" download="${this.file.name}" class="download-button fourchan-x--icon" data-icon="download">&{Icons.download}</a>') %>`
+    f: -> `<%= html('<a href="javascript:;" class="quick-filter-md5 fourchan-x--icon" data-icon="close">&{Icons.close}</a>') %>`
     p: -> `<%= html('?{this.file.isSpoiler}{Spoiler, }') %>`
     s: -> `<%= html('${this.file.size}') %>`
     B: -> `<%= html('${Math.round(this.file.sizeInBytes)} Bytes') %>`

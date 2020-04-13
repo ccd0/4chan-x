@@ -7,7 +7,7 @@ ThreadWatcher =
       title: 'Thread Watcher'
       href: 'javascript:;'
       className: 'fourchan-x--icon icon--large '
-    $.extend sc, `<%= html('<span class="icon--alt-text">Watcher</span>&{Icons.eye}') %>`
+    Icon.set sc, 'eye', 'Watcher'
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
     @dbLM   = new DataBoard 'watcherLastModified', null, true
@@ -92,7 +92,7 @@ ThreadWatcher =
       toggler = $.el 'a',
         href: 'javascript:;'
         className: 'watch-thread-link fourchan-x--icon icon--large'
-      $.extend toggler, `<%= html('&{Icons.heart}') %>`
+      Icon.set toggler, 'heart'
       $.before $('input', @nodes.info), toggler
     siteID = g.SITE.ID
     boardID = @board.ID
@@ -403,7 +403,7 @@ ThreadWatcher =
     x = $.el 'a',
       className: 'fourchan-x--icon'
       href: 'javascript:;'
-    $.extend x, `<%= html('&{Icons.close}') %>`
+    Icon.set x, 'close'
     $.on x, 'click', ThreadWatcher.cb.rm
 
     {excerpt, isArchived} = data

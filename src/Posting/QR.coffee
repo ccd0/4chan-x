@@ -38,7 +38,7 @@ QR =
       className: 'fourchan-x--icon icon--large disabled'
       title: 'Quick Reply'
       href: 'javascript:;'
-    $.extend sc, `<%= html('<span class="icon--alt-text">QR</span>&{Icons.comment_o}') %>`
+    Icon.set sc, 'comment_o', 'QR'
     $.on sc, 'click', ->
       return unless QR.postingIsEnabled
       if Conf['Persistent QR'] or !QR.nodes or QR.nodes.el.hidden
