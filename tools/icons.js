@@ -34,7 +34,7 @@ async function generate(name) {
   var bounds = BoundingHelper.path({type: 'path', d: path}, true);
   var translateX = -Math.floor(bounds.left);
   var translateY = Math.ceil(bounds.bottom);
-  var svg = `<svg xmlns="http://www.w3.org/2000/svg" class="inline-svg--fa" data-icon="${name}" viewBox="${bounds.left + translateX} ${-bounds.bottom + translateY} ${bounds.width} ${bounds.height}"><g transform="scale(1 -1) translate(${translateX}, ${-translateY})"><path fill="currentColor" d="${path}"/></g></svg>`;
+  var svg = `<svg xmlns="http://www.w3.org/2000/svg" class="inline-svg--fa" viewBox="${bounds.left + translateX} ${-bounds.bottom + translateY} ${bounds.width} ${bounds.height}"><g transform="scale(1 -1) translate(${translateX}, ${-translateY})"><path fill="currentColor" d="${path}"/></g></svg>`;
   svg = (await svgo.optimize(svg)).data;
   return svg;
 }
