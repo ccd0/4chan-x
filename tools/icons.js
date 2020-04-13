@@ -2,7 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var parser = require('sax').parser(true);
 var BoundingHelper = require('svg-boundings');
-var svgo = new (require('svgo'))({plugins: [{cleanupNumericValues: false}]});
+var svgo = new (require('svgo'))();
 
 var variables = require.resolve('font-awesome/less/variables.less');
 var font = require.resolve('font-awesome/fonts/fontawesome-webfont.svg');
@@ -20,25 +20,33 @@ for (var line of lines) {
 var glyphs = new Map();
 var parser = require('sax').parser(true);
 parser.onopentag = function(x) {
-  if (x.name == 'glyph') {
+  if (x.name == 'glyph' && x.attributes.unicode && x.attributes.d) {
     glyphs.set(x.attributes.unicode, x.attributes.d);
   }
 };
 parser.write(fs.readFileSync(font)).close();
 
-async function generate(name, offsetX, offsetY) {
+async function generate(name) {
   var path = glyphs.get(characters.get(name));
+  if (!path) {
+    throw new Error('Icon not found');
+  }
   var bounds = BoundingHelper.path({type: 'path', d: path}, true);
-  var svg = `<svg xmlns="http://www.w3.org/2000/svg" class="inline-svg--fa" data-icon="${name}" viewBox="${offsetX} ${offsetY} ${bounds.width} ${bounds.height}"><g transform="scale(1 -1) translate(${-bounds.left + offsetX}, ${-bounds.bottom - offsetY})"><path fill="currentColor" d="${path}"/></g></svg>`;
+  var translateX = -Math.floor(bounds.left);
+  var translateY = Math.ceil(bounds.bottom);
+  var svg = `<svg xmlns="http://www.w3.org/2000/svg" class="inline-svg--fa" data-icon="${name}" viewBox="${bounds.left + translateX} ${-bounds.bottom + translateY} ${bounds.width} ${bounds.height}"><g transform="scale(1 -1) translate(${translateX}, ${-translateY})"><path fill="currentColor" d="${path}"/></g></svg>`;
   svg = (await svgo.optimize(svg)).data;
   return svg;
 }
 
-async function save(name, offsetX, offsetY) {
-  var svg = await generate(name.replace(/_/g, '-'), offsetX, offsetY);
-  var dest = path.resolve(__dirname, '..', 'src', 'Icons', `${name}.svg`);
-  return fs.promises.writeFile(dest, svg);
+async function save(name) {
+  try {
+    var svg = await generate(name.replace(/_/g, '-'));
+    var dest = path.resolve(__dirname, '..', 'src', 'Icons', `${name}.svg`);
+    return fs.promises.writeFile(dest, svg);
+  } catch(err) {
+    console.error(`Error generating icon ${name}:`, err);
+  }
 }
 
-var args = process.argv.slice(2);
-save(args[0], +(args[1] || "0"), +(args[2] || "0"));
+Promise.all(process.argv.slice(2).map(save));
