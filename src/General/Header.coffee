@@ -117,8 +117,9 @@ Header =
         cs.className = 'fourchan-x--icon icon--large'
         Icon.set cs, 'book', 'Catalog Settings'
       else
-        cs.title = cs.textContent = '4chan Settings'
+        cs.title = '4chan Settings'
         cs.className = 'native-settings'
+        $.extend cs, `<%= html('<span class="icon--alt-text">4chan Settings</span>') %>`
       $.on cs, 'click', () ->
         $.id('settingsWindowLink').click()
       @addShortcut 'native', cs, 810

@@ -420,8 +420,6 @@ audio.controls-added {
   margin-left: 3px;
 }
 :root.shortcut-icons .native-settings {
-  font-size: 0;
-  color: transparent;
   display: inline-block;
   vertical-align: middle;
   height: 13px;
