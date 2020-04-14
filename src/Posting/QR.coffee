@@ -364,6 +364,7 @@ QR =
     $.on el, (if isVideo then 'loadeddata' else 'load'), ->
       e.target.getContext('2d').drawImage el, 0, 0
       URL.revokeObjectURL el.src
+      $.event 'QRImageDrawn', null, e.target
     el.src = URL.createObjectURL file
 
   openError: ->

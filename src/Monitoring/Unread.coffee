@@ -262,5 +262,6 @@ Unread =
       ThreadWatcher.update g.SITE.ID, Unread.thread.board.ID, Unread.thread.ID,
         last: Unread.thread.lastPost
         isDead: Unread.thread.isDead
+        isArchived: Unread.thread.isArchived
         unread: Unread.posts.size
         quotingYou: (quotingYou.last or 0)

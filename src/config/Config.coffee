@@ -772,7 +772,7 @@ Config =
   sauces: """
     # Known filename formats:
     https://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/
-    https://www.deviantart.com/gallery/#/d%$1%$2;regexp:/^\\w+_by_\\w+[_-]d([\\da-z]{6})\\b|^d([\\da-z]{6})-[\\da-z]{8}-/
+    javascript:void(open("https://www.deviantart.com/"+%$1.replace(/_/g,"-")+"/art/"+parseInt(%$2,36)));regexp:/^\\w+_by_(\\w+)[_-]d([\\da-z]{6})\\b/
     https://imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/
     https://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/
     https://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/
@@ -798,7 +798,7 @@ Config =
 
     # Other tools:
     #http://exif.regex.info/exif.cgi?imgurl=%URL
-    #//imgops.com/%URL;types:gif,jpg,png
+    #//imgops.com/start?url=%URL;types:gif,jpg,png
     #//www.gif-explode.com/%URL;types:gif
   """
 
@@ -830,7 +830,7 @@ Config =
     'Custom Board Navigation':    true
 
   archives:
-    archiveLists:      'https://mayhemydg.github.io/archives.json/archives.json'
+    archiveLists:      'https://nstepien.github.io/archives.json/archives.json'
     lastarchivecheck:  0
     archiveAutoUpdate: true
 
@@ -862,7 +862,6 @@ Config =
     http://cdn.mathjax.org
     https://cdn.mathjax.org
     https://cdnjs.cloudflare.com
-    https://rawgit.com
     'self'
     'unsafe-inline'
     'unsafe-eval'
@@ -1186,3 +1185,5 @@ Config =
   passMessageClosed: false
 
   'Prerequest Captcha': false
+
+  youtubeAPIKey: '<%= meta.youtubeAPIKey %>'

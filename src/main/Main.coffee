@@ -30,6 +30,15 @@ Main =
         new Notice 'error', 'Error: Multiple copies of 4chan X are enabled.'
         $.addClass doc, 'tainted'
 
+    # Detect "mounted" event from Kissu
+    mountedCB = ->
+      d.removeEventListener 'mounted', mountedCB, true
+      Main.isMounted = true
+      for cb in Main.mountedCBs
+        try
+          cb()
+    d.addEventListener 'mounted', mountedCB, true
+
     # Flatten default values from Config into Conf
     flatten = (parent, obj) ->
       if obj instanceof Array
@@ -145,6 +154,10 @@ Main =
     else if pathname[2] in ['thread', 'res']
       r.VIEW = 'thread'
       r.threadID = r.THREADID = +pathname[3].replace(/\.\w+$/, '')
+    else if pathname[2] is 'archive' and pathname[3] is 'res'
+      r.VIEW = 'thread'
+      r.threadID = r.THREADID = +pathname[4].replace(/\.\w+$/, '')
+      r.threadArchived = true
     else if /^(?:catalog|archive)(?:\.\w+)?$/.test(pathname[2])
       r.VIEW = pathname[2].replace(/\.\w+$/, '')
     else if /^(?:index|\d*)(?:\.\w+)?$/.test(pathname[2])
@@ -322,17 +335,27 @@ Main =
     if g.VIEW is 'catalog'
       Main.initCatalog()
     else if !Index.enabled
+<<<<<<< HEAD
       Main.initThread()
+=======
+      if g.SITE.awaitBoard
+        g.SITE.awaitBoard Main.initThread
+      else
+        Main.initThread()
+>>>>>>> f8c2483541bf2ff0195ec1241b62d73cbb43ec09
     else
       Main.expectInitFinished = true
       $.event '4chanXInitFinished'
 
   initThread: ->
     s = g.SITE.selectors
-    if (board = $ s.board)
+    if (board = $ (s.boardFor?[g.VIEW] or s.board))
       threads = []
       posts   = []
       errors  = []
+
+      try
+        g.SITE.preParsingFixes?(board)
 
       Main.addThreadsObserver = new MutationObserver Main.addThreads
       Main.addPostsObserver   = new MutationObserver Main.addPosts
@@ -342,6 +365,9 @@ Main =
       Main.handleErrors errors if errors.length
 
       if g.VIEW is 'thread'
+        if g.threadArchived
+          threads[0].isArchived = true
+          threads[0].kill()
         g.SITE.parseThreadMetadata?(threads[0])
 
       Main.callbackNodes 'Thread', threads
@@ -372,7 +398,7 @@ Main =
       Main.addPostsObserver.observe threadRoot, {childList: true}
 
   parsePosts: (postRoots, thread, posts, errors) ->
-    for postRoot in postRoots when !postRoot.dataset.fullID and $(g.SITE.selectors.comment, postRoot)
+    for postRoot in postRoots when !(postRoot.dataset.fullID and g.posts.get(postRoot.dataset.fullID)) and $(g.SITE.selectors.comment, postRoot)
       try
         posts.push new Post postRoot, thread, thread.board
       catch err
@@ -578,12 +604,20 @@ Main =
       Main.thisPageIsLegit = if g.SITE.isThisPageLegit
         g.SITE.isThisPageLegit()
       else
-        !/^[45]\d\d\b/.test(document.title) and !/\.json$/.test(location.pathname)
+        !/^[45]\d\d\b/.test(document.title) and !/\.(?:json|rss)$/.test(location.pathname)
     Main.thisPageIsLegit
 
   ready: (cb) ->
     $.ready ->
       (cb() if Main.isThisPageLegit())
+
+  mounted: (cb) ->
+    if Main.isMounted
+      cb()
+    else
+      Main.mountedCBs.push cb
+
+  mountedCBs: []
 
   features: [
     ['Polyfill',                  Polyfill]

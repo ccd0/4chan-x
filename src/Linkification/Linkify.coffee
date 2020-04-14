@@ -42,7 +42,7 @@ Linkify =
           test.lastIndex = 0
 
           while (saved = snapshot.snapshotItem i++)
-            if saved.nodeName is 'BR'
+            if saved.nodeName is 'BR' or (saved.parentElement.nodeName is 'P' and !saved.previousSibling)
               if (
                 # link deliberately split
                 (part1 = word.match /(https?:\/\/)?([a-z\d-]+\.)*[a-z\d-]+$/i) and

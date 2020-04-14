@@ -1,6 +1,6 @@
 {
   "name": "4chan-X",
-  "description": "Cross-browser userscript for maximum lurking on 4chan.",
+  "description": "4chan X is a script that adds various features to anonymous imageboards.",
   "meta": {
     "name": "4chan X",
     "path": "4chan-x",
@@ -16,6 +16,7 @@
     "issues": "https://gitreports.com/issue/ccd0/4chan-x",
     "newIssue": "https://gitreports.com/issue/ccd0/4chan-x?issue_title=%title&details=%details",
     "newIssueMaxLength": 8181,
+    "alternatives": "https://www.4chan-x.net/4chan_alternatives.html",
     "appid": "lacclbnghgdicfifcamcmcnilckjamag",
     "appidGecko": "4chan-x@4chan-x.net",
     "chromeStoreID": "ohnjgmpcibpbafdlkimncjhflgedgpam",
@@ -51,6 +52,8 @@
       "*://*.4cdn.org/*"
     ],
     "matches": [
+      "https://erischan.org/*",
+      "https://www.erischan.org/*",
       "https://fufufu.moe/*",
       "https://gnfos.com/*",
       "https://himasugi.blog/*",
@@ -67,10 +70,12 @@
       "https://ponyville.us/*",
       "https://www.ponyville.us/*",
       "https://samachan.org/*",
+      "https://smuglo.li/*",
       "https://sportschan.org/*",
       "https://www.sportschan.org/*",
       "https://sushigirl.us/*",
-      "https://www.sushigirl.us/*"
+      "https://www.sushigirl.us/*",
+      "https://tvch.moe/*"
     ],
     "matches_extra": [
       "https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*",

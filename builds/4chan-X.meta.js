@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.14.2
+// @version      1.14.17.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
-// @description  Cross-browser userscript for maximum lurking on 4chan.
+// @description  4chan X is a script that adds various features to anonymous imageboards.
 // @license      MIT; https://github.com/ccd0/4chan-x/blob/master/LICENSE 
 // @include      http://boards.4chan.org/*
 // @include      https://boards.4chan.org/*
@@ -28,6 +28,8 @@
 // @include      https://is.4channel.org/*
 // @include      http://is2.4channel.org/*
 // @include      https://is2.4channel.org/*
+// @include      https://erischan.org/*
+// @include      https://www.erischan.org/*
 // @include      https://fufufu.moe/*
 // @include      https://gnfos.com/*
 // @include      https://himasugi.blog/*
@@ -44,10 +46,12 @@
 // @include      https://ponyville.us/*
 // @include      https://www.ponyville.us/*
 // @include      https://samachan.org/*
+// @include      https://smuglo.li/*
 // @include      https://sportschan.org/*
 // @include      https://www.sportschan.org/*
 // @include      https://sushigirl.us/*
 // @include      https://www.sushigirl.us/*
+// @include      https://tvch.moe/*
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=887877714&*
@@ -73,7 +77,7 @@
 // @connect      4chan.org
 // @connect      4channel.org
 // @connect      4cdn.org
-// @connect      mayhemydg.github.io
+// @connect      nstepien.github.io
 // @connect      archive.4plebs.org
 // @connect      archive.nyafuu.org
 // @connect      archive.rebeccablacktech.com

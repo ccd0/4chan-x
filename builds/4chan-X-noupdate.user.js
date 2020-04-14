@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.14.2
+// @version      1.14.17.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
-// @description  Cross-browser userscript for maximum lurking on 4chan.
+// @description  4chan X is a script that adds various features to anonymous imageboards.
 // @license      MIT; https://github.com/ccd0/4chan-x/blob/master/LICENSE 
 // @include      http://boards.4chan.org/*
 // @include      https://boards.4chan.org/*
@@ -28,6 +28,8 @@
 // @include      https://is.4channel.org/*
 // @include      http://is2.4channel.org/*
 // @include      https://is2.4channel.org/*
+// @include      https://erischan.org/*
+// @include      https://www.erischan.org/*
 // @include      https://fufufu.moe/*
 // @include      https://gnfos.com/*
 // @include      https://himasugi.blog/*
@@ -44,10 +46,12 @@
 // @include      https://ponyville.us/*
 // @include      https://www.ponyville.us/*
 // @include      https://samachan.org/*
+// @include      https://smuglo.li/*
 // @include      https://sportschan.org/*
 // @include      https://www.sportschan.org/*
 // @include      https://sushigirl.us/*
 // @include      https://www.sushigirl.us/*
+// @include      https://tvch.moe/*
 // @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @include      https://www.google.com/recaptcha/api2/frame?*&k=887877714&*
@@ -73,7 +77,7 @@
 // @connect      4chan.org
 // @connect      4channel.org
 // @connect      4cdn.org
-// @connect      mayhemydg.github.io
+// @connect      nstepien.github.io
 // @connect      archive.4plebs.org
 // @connect      archive.nyafuu.org
 // @connect      archive.rebeccablacktech.com
@@ -211,7 +215,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.14.2',
+  VERSION:   '1.14.17.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -450,7 +454,7 @@ Config = (function() {
       filesize: '',
       MD5: ''
     },
-    sauces: "# Known filename formats:\nhttps://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/\nhttps://www.deviantart.com/gallery/#/d%$1%$2;regexp:/^\\w+_by_\\w+[_-]d([\\da-z]{6})\\b|^d([\\da-z]{6})-[\\da-z]{8}-/\nhttps://imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/\nhttps://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/\nhttps://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/\n\n# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\nhttps://yandex.com/images/search?rpt=imageview&url=%IMG\n#//tineye.com/search?url=%IMG\n#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://trace.moe/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desuarchive.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://exif.regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
+    sauces: "# Known filename formats:\nhttps://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/\njavascript:void(open(\"https://www.deviantart.com/\"+%$1.replace(/_/g,\"-\")+\"/art/\"+parseInt(%$2,36)));regexp:/^\\w+_by_(\\w+)[_-]d([\\da-z]{6})\\b/\nhttps://imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/\nhttps://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/\nhttps://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/\n\n# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\nhttps://yandex.com/images/search?rpt=imageview&url=%IMG\n#//tineye.com/search?url=%IMG\n#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://trace.moe/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desuarchive.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://exif.regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/start?url=%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
     FappeT: {
       werk: false
     },
@@ -478,7 +482,7 @@ Config = (function() {
       'Custom Board Navigation': true
     },
     archives: {
-      archiveLists: 'https://mayhemydg.github.io/archives.json/archives.json',
+      archiveLists: 'https://nstepien.github.io/archives.json/archives.json',
       lastarchivecheck: 0,
       archiveAutoUpdate: true
     },
@@ -488,7 +492,7 @@ Config = (function() {
       'QR.personas': "#options:\"sage\";boards:jp;always",
       sjisPreview: false
     },
-    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\nhttps://cdnjs.cloudflare.com\nhttps://rawgit.com\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'\n\n# Banner ads\n#http://s.zkcdn.net/ados.js\n#https://s.zkcdn.net/ados.js\n#http://engine.4chan-ads.org\n#https://engine.4chan-ads.org',
+    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\nhttps://cdnjs.cloudflare.com\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'\n\n# Banner ads\n#http://s.zkcdn.net/ados.js\n#https://s.zkcdn.net/ados.js\n#http://engine.4chan-ads.org\n#https://engine.4chan-ads.org',
     captchaLanguage: '',
     time: '%m/%d/%y(%a)%H:%M:%S',
     timeLocale: '',
@@ -591,7 +595,8 @@ Config = (function() {
     knownBanners: '0.jpg,1.jpg,2.jpg,4.jpg,6.jpg,7.jpg,8.jpg,9.jpg,10.jpg,11.jpg,12.jpg,13.jpg,14.jpg,16.jpg,17.jpg,18.jpg,19.jpg,20.jpg,21.jpg,22.jpg,24.jpg,25.jpg,26.jpg,28.jpg,29.jpg,33.jpg,38.jpg,39.jpg,43.jpg,44.jpg,45.jpg,46.jpg,47.jpg,52.jpg,54.jpg,57.jpg,59.jpg,60.jpg,61.jpg,64.jpg,66.jpg,67.jpg,69.jpg,71.jpg,72.jpg,76.jpg,77.jpg,81.jpg,82.jpg,83.jpg,84.jpg,88.jpg,90.jpg,91.jpg,96.jpg,98.jpg,99.jpg,100.jpg,104.jpg,106.jpg,116.jpg,119.jpg,137.jpg,140.jpg,148.jpg,149.jpg,150.jpg,154.jpg,156.jpg,157.jpg,158.jpg,159.jpg,161.jpg,162.jpg,164.jpg,165.jpg,166.jpg,167.jpg,168.jpg,169.jpg,170.jpg,171.jpg,172.jpg,173.jpg,174.jpg,175.jpg,176.jpg,178.jpg,179.jpg,180.jpg,181.jpg,182.jpg,183.jpg,186.jpg,189.jpg,190.jpg,192.jpg,193.jpg,194.jpg,197.jpg,198.jpg,200.jpg,201.jpg,202.jpg,203.jpg,205.jpg,206.jpg,207.jpg,208.jpg,210.jpg,213.jpg,214.jpg,215.jpg,216.jpg,218.jpg,219.jpg,220.jpg,221.jpg,222.jpg,223.jpg,224.jpg,227.jpg,0.png,1.png,2.png,3.png,5.png,6.png,9.png,10.png,11.png,12.png,14.png,16.png,19.png,20.png,21.png,22.png,23.png,24.png,26.png,27.png,28.png,29.png,30.png,31.png,32.png,33.png,34.png,37.png,39.png,40.png,41.png,42.png,43.png,44.png,45.png,48.png,49.png,50.png,51.png,52.png,53.png,57.png,58.png,59.png,64.png,66.png,67.png,68.png,69.png,70.png,71.png,72.png,76.png,78.png,79.png,81.png,82.png,85.png,86.png,87.png,89.png,95.png,98.png,100.png,101.png,102.png,105.png,106.png,107.png,109.png,110.png,111.png,112.png,113.png,114.png,115.png,116.png,118.png,119.png,120.png,121.png,122.png,123.png,126.png,128.png,130.png,134.png,136.png,138.png,139.png,140.png,142.png,145.png,146.png,149.png,150.png,151.png,152.png,153.png,154.png,155.png,156.png,157.png,158.png,159.png,160.png,163.png,164.png,165.png,166.png,167.png,168.png,169.png,170.png,171.png,172.png,173.png,174.png,178.png,179.png,180.png,181.png,182.png,184.png,186.png,188.png,190.png,192.png,193.png,194.png,195.png,196.png,197.png,198.png,200.png,202.png,203.png,205.png,206.png,207.png,209.png,212.png,213.png,214.png,216.png,217.png,218.png,219.png,220.png,221.png,222.png,223.png,224.png,225.png,226.png,229.png,231.png,232.png,233.png,234.png,235.png,237.png,238.png,239.png,240.png,241.png,242.png,244.png,245.png,246.png,247.png,248.png,249.png,250.png,253.png,254.png,255.png,256.png,257.png,258.png,259.png,260.png,262.png,268.png,0.gif,1.gif,2.gif,3.gif,4.gif,5.gif,6.gif,7.gif,8.gif,9.gif,10.gif,12.gif,13.gif,14.gif,15.gif,16.gif,18.gif,19.gif,20.gif,21.gif,22.gif,23.gif,24.gif,28.gif,29.gif,30.gif,33.gif,34.gif,35.gif,36.gif,37.gif,39.gif,40.gif,42.gif,44.gif,45.gif,46.gif,48.gif,50.gif,52.gif,54.gif,55.gif,57.gif,58.gif,59.gif,60.gif,61.gif,63.gif,64.gif,66.gif,67.gif,68.gif,69.gif,70.gif,72.gif,73.gif,75.gif,76.gif,77.gif,78.gif,80.gif,81.gif,82.gif,83.gif,86.gif,87.gif,88.gif,92.gif,93.gif,94.gif,95.gif,96.gif,97.gif,98.gif,99.gif,100.gif,101.gif,102.gif,103.gif,104.gif,105.gif,106.gif,108.gif,109.gif,110.gif,111.gif,112.gif,113.gif,115.gif,116.gif,117.gif,118.gif,119.gif,120.gif,122.gif,123.gif,124.gif,127.gif,129.gif,130.gif,131.gif,134.gif,135.gif,136.gif,138.gif,139.gif,141.gif,144.gif,146.gif,148.gif,149.gif,153.gif,154.gif,155.gif,157.gif,158.gif,159.gif,160.gif,161.gif,162.gif,164.gif,166.gif,167.gif,168.gif,169.gif,170.gif,171.gif,172.gif,173.gif,174.gif,175.gif,176.gif,177.gif,178.gif,181.gif,182.gif,183.gif,185.gif,186.gif,187.gif,188.gif,189.gif,190.gif,191.gif,192.gif,193.gif,195.gif,196.gif,197.gif,200.gif,201.gif,202.gif,203.gif,204.gif,205.gif,206.gif,207.gif,208.gif,209.gif,210.gif,211.gif,212.gif,213.gif,214.gif,215.gif,216.gif,217.gif,219.gif,220.gif,221.gif,222.gif,224.gif,225.gif,226.gif,227.gif,228.gif,230.gif,232.gif,233.gif,234.gif,235.gif,238.gif,240.gif,241.gif,243.gif,244.gif,245.gif,246.gif,247.gif,249.gif,250.gif,251.gif,253.gif',
     cachedTitles: [[]],
     passMessageClosed: false,
-    'Prerequest Captcha': false
+    'Prerequest Captcha': false,
+    youtubeAPIKey: 'AIzaSyB5_zaen_-46Uhz1xGR-lz1YoUMHqCD6CE'
   };
 
   return Config;
@@ -1506,18 +1511,40 @@ body.hasDropDownNav{\n\
 .gal-buttons.gal-buttons a {\n\
   font-size: inherit;\n\
 }\n\
-/* Tinyboard site style fixes */\n\
-:root[data-host=\"fufufu.moe\"].fixed.top-header:not(.autohide) div.pages.top,\n\
+:root.sw-tinyboard.fixed.top-header:not(.autohide) .boardlist,\n\
+:root.sw-tinyboard.fixed.top-header:not(.autohide) .bar.top {\n\
+  position: static;\n\
+}\n\
+:root.sw-tinyboard.fixed.top-header:not(.autohide) div.pages.top {\n\
+  top: auto;\n\
+  bottom: 0;\n\
+}\n\
+:root.sw-tinyboard.fixed.top-header.autohide .boardlist,\n\
+:root.sw-tinyboard.fixed.top-header.autohide .bar.top {\n\
+  z-index: 3;\n\
+}\n\
+/* Tinyboard site style conflicts */\n\
+:root[data-host=\"fufufu.moe\"].fixed.top-header:not(.autohide) div.pages.top {\n\
+  top: 26px;\n\
+  bottom: auto;\n\
+}\n\
 :root[data-host=\"merorin.com\"].fixed.top-header:not(.autohide) span.settings {\n\
   top: 26px;\n\
 }\n\
 :root[data-host=\"fufufu.moe\"]:not(.fixed) #header-bar {\n\
   margin-top: 38px;\n\
 }\n\
+:root[data-host=\"lainchan.org\"]:not(.fixed) #header-bar {\n\
+  margin-top: 17px;\n\
+}\n\
+:root[data-host=\"smuglo.li\"]:not(.fixed) #header-bar {\n\
+  margin-top: 8px;\n\
+}\n\
 /* Anti-autoplay */\n\
 audio.controls-added {\n\
   display: block;\n\
   margin: auto;\n\
+  white-space: normal;\n\
 }\n\
 :root.anti-autoplay div.embed {\n\
   position: static;\n\
@@ -1712,52 +1739,52 @@ audio.controls-added {\n\
   font-weight: bold;\n\
 }\n\
 @media (min-width: 1300px) {\n\
-  :root.fixed:not(.centered-links) #header-bar {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #header-bar {\n\
     white-space: nowrap;\n\
     display: -webkit-flex;\n\
     display: flex;\n\
     -webkit-align-items: center;\n\
     align-items: center;\n\
   }\n\
-  :root.fixed:not(.centered-links) #board-list {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #board-list {\n\
     -webkit-flex: auto;\n\
     flex: auto;\n\
   }\n\
-  :root.fixed:not(.centered-links) #full-board-list {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list {\n\
     display: -webkit-flex;\n\
     display: flex;\n\
   }\n\
-  :root.fixed:not(.centered-links) .hide-board-list-container {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) .hide-board-list-container {\n\
     -webkit-flex: none;\n\
     flex: none;\n\
     margin-right: 5px;\n\
   }\n\
-  :root.fixed:not(.centered-links) #full-board-list > .boardList {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList {\n\
     -webkit-flex: auto;\n\
     flex: auto;\n\
     display: -webkit-flex;\n\
     display: flex;\n\
     width: 0px; /* XXX Fixes Edge not shrinking the board list below default size when needed */\n\
   }\n\
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > a,\n\
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > span:not(.space):not(.spacer) {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > a,\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > span:not(.space):not(.spacer) {\n\
     -webkit-flex: none;\n\
     flex: none;\n\
     padding: .17em;\n\
     margin: -.17em -.32em;\n\
   }\n\
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > span {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > span {\n\
     pointer-events: none;\n\
   }\n\
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > span.space {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > span.space {\n\
     -webkit-flex: 0 .63 .63em;\n\
     flex: 0 .63 .63em;\n\
   }\n\
-  :root.fixed:not(.centered-links) #full-board-list > .boardList > span.spacer {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #full-board-list > .boardList > span.spacer {\n\
     -webkit-flex: 0 .38 .38em;\n\
     flex: 0 .38 .38em;\n\
   }\n\
-  :root.fixed:not(.centered-links) #shortcuts {\n\
+  :root.sw-yotsuba.fixed:not(.centered-links) #shortcuts {\n\
     float: initial;\n\
     -webkit-flex: none;\n\
     flex: none;\n\
@@ -6405,7 +6432,7 @@ DataBoard = (function() {
         }
         response1 = this.response;
         return $.cache(archiveList, function() {
-          if (this.status !== 200) {
+          if (!(this.status === 200 || (!g.SITE.archivedBoardsKnown && this.status === 404))) {
             return;
           }
           return that.ajaxCleanParse(boardID, response1, this.response);
@@ -6887,7 +6914,9 @@ Post = (function() {
         ref = ['isSticky', 'isClosed', 'isArchived'];
         for (j = 0, len = ref.length; j < len; j++) {
           key = ref[j];
-          this.thread[key] = (selector = g.SITE.selectors.icons[key]) ? !!$(selector, this.nodes.info) : false;
+          if ((selector = g.SITE.selectors.icons[key])) {
+            this.thread[key] = !!$(selector, this.nodes.info);
+          }
         }
         if (this.thread.isArchived) {
           this.thread.isClosed = true;
@@ -7748,11 +7777,24 @@ SW = {};
       }
       return false;
     },
+    awaitBoard: function(cb) {
+      var reactUI, s;
+      if ((reactUI = $.id('react-ui'))) {
+        s = this.selectors = Object.create(this.selectors);
+        s.boardFor = {
+          index: '.page-container'
+        };
+        s.thread = 'div[id^="thread_"]';
+        return Main.mounted(cb);
+      } else {
+        return cb();
+      }
+    },
     urls: {
-      thread: function(arg) {
+      thread: function(arg, isArchived) {
         var boardID, ref, siteID, threadID;
         siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID;
-        return "" + (((ref = Conf['siteProperties'][siteID]) != null ? ref.root : void 0) || ("http://" + siteID + "/")) + boardID + "/res/" + threadID + ".html";
+        return "" + (((ref = Conf['siteProperties'][siteID]) != null ? ref.root : void 0) || ("http://" + siteID + "/")) + boardID + "/" + (isArchived ? 'archive/' : '') + "res/" + threadID + ".html";
       },
       post: function(arg) {
         var postID;
@@ -7769,15 +7811,18 @@ SW = {};
         siteID = arg.siteID, boardID = arg.boardID;
         return "" + (((ref = Conf['siteProperties'][siteID]) != null ? ref.root : void 0) || ("http://" + siteID + "/")) + boardID + "/catalog.html";
       },
-      threadJSON: function(arg) {
+      threadJSON: function(arg, isArchived) {
         var boardID, ref, root, siteID, threadID;
         siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID;
         root = (ref = Conf['siteProperties'][siteID]) != null ? ref.root : void 0;
         if (root) {
-          return "" + root + boardID + "/res/" + threadID + ".json";
+          return "" + root + boardID + "/" + (isArchived ? 'archive/' : '') + "res/" + threadID + ".json";
         } else {
           return '';
         }
+      },
+      archivedThreadJSON: function(thread) {
+        return SW.tinyboard.urls.threadJSON(thread, true);
       },
       threadsListJSON: function(arg) {
         var boardID, ref, root, siteID;
@@ -7785,6 +7830,16 @@ SW = {};
         root = (ref = Conf['siteProperties'][siteID]) != null ? ref.root : void 0;
         if (root) {
           return "" + root + boardID + "/threads.json";
+        } else {
+          return '';
+        }
+      },
+      archiveListJSON: function(arg) {
+        var boardID, ref, root, siteID;
+        siteID = arg.siteID, boardID = arg.boardID;
+        root = (ref = Conf['siteProperties'][siteID]) != null ? ref.root : void 0;
+        if (root) {
+          return "" + root + boardID + "/archive/archive.json";
         } else {
           return '';
         }
@@ -7811,7 +7866,7 @@ SW = {};
     selectors: {
       board: 'form[name="postcontrols"]',
       thread: 'input[name="board"] ~ div[id^="thread_"]',
-      threadDivider: 'div[id^="thread_"] > hr:last-of-type',
+      threadDivider: 'div[id^="thread_"] > hr:last-child',
       summary: '.omitted',
       postContainer: 'div[id^="reply_"]:not(.hidden)',
       opBottom: '.op',
@@ -7848,7 +7903,7 @@ SW = {};
       },
       comment: '.body',
       spoiler: '.spoiler',
-      quotelink: 'a[onclick^="highlightReply("]',
+      quotelink: 'a[onclick*="highlightReply("]',
       catalog: {
         board: '#Grid',
         thread: '.mix',
@@ -7872,8 +7927,8 @@ SW = {};
       replyContainer: 'div[starts-with(@id,"reply_")]'
     },
     regexp: {
-      quotelink: /\/([^\/]+)\/res\/(\d+)\.\w+#(\d+)$/,
-      quotelinkHTML: /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)\.\w+#(\d+)"/g
+      quotelink: /\/([^\/]+)\/res\/(\d+)(?:\.\w+)?#(\d+)$/,
+      quotelinkHTML: /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)(?:\.\w+)?#(\d+)"/g
     },
     Build: {
       parseJSON: function(data, board) {
@@ -7917,14 +7972,26 @@ SW = {};
     isFileURL: function(url) {
       return /\/src\/[^\/]+/.test(url.pathname);
     },
+    preParsingFixes: function(board) {
+      var broken;
+      if ((broken = $('a > input[name="board"]', board))) {
+        return $.before(broken.parentNode, broken);
+      }
+    },
     parseNodes: function(post, nodes) {
-      var m, nextSibling, uniqueID;
+      var m, nextSibling, node, text, uniqueID;
       if (nodes.uniqueID) {
         return;
       }
-      nodes.info.normalize();
-      nextSibling = nodes.nameBlock.nextSibling;
-      if (nextSibling.nodeType === 3 && (m = nextSibling.textContent.match(/(\s*ID:\s*)(\S+)/))) {
+      text = '';
+      node = nodes.nameBlock.nextSibling;
+      while (node && node.nodeType === 3) {
+        text += node.textContent;
+        node = node.nextSibling;
+      }
+      if ((m = text.match(/(\s*ID:\s*)(\S+)/))) {
+        nodes.info.normalize();
+        nextSibling = nodes.nameBlock.nextSibling;
         nextSibling = nextSibling.splitText(m[1].length);
         nextSibling.splitText(m[2].length);
         nodes.uniqueID = uniqueID = $.el('span', {
@@ -7955,7 +8022,7 @@ SW = {};
       if (!(infoNode = indexOf.call((ref = link.nextSibling) != null ? ref.textContent : void 0, '(') >= 0 ? link.nextSibling : link.nextElementSibling)) {
         return false;
       }
-      if (!(info = infoNode.textContent.match(/\((Spoiler Image, )?([\d.]+ [KMG]?B).*\)/))) {
+      if (!(info = infoNode.textContent.match(/\((.*,\s*)?([\d.]+ ?[KMG]?B).*\)/))) {
         return false;
       }
       nameNode = $('.postfilename', text);
@@ -7967,7 +8034,7 @@ SW = {};
       if (thumb) {
         $.extend(file, {
           thumbURL: /\/static\//.test(thumb.src) && /\.(?:gif|jpe?g|png)$/.test(link.href) ? link.href : thumb.src,
-          isSpoiler: !!info[1] || link.textContent === 'Spoiler Image'
+          isSpoiler: /^Spoiler/i.test(info[1] || '') || link.textContent === 'Spoiler Image'
         });
       }
       return true;
@@ -7991,6 +8058,7 @@ SW = {};
   SW.yotsuba = {
     isOPContainerThread: false,
     hasIPCount: true,
+    archivedBoardsKnown: true,
     urls: {
       thread: function(arg) {
         var boardID, threadID;
@@ -8352,6 +8420,44 @@ SW = {};
           return this.enabled = 'true';
         }
       });
+    },
+    transformBoardList: function() {
+      var a, chr, i, items, j, len, node, nodes, ref, spacer, span;
+      nodes = [];
+      spacer = function() {
+        return $.el('span', {
+          className: 'spacer'
+        });
+      };
+      items = $.X('.//a|.//text()[not(ancestor::a)]', $(SW.yotsuba.selectors.boardList));
+      i = 0;
+      while (node = items.snapshotItem(i++)) {
+        switch (node.nodeName) {
+          case '#text':
+            ref = node.nodeValue;
+            for (j = 0, len = ref.length; j < len; j++) {
+              chr = ref[j];
+              span = $.el('span', {
+                textContent: chr
+              });
+              if (chr === ' ') {
+                span.className = 'space';
+              }
+              if (chr === ']') {
+                nodes.push(spacer());
+              }
+              nodes.push(span);
+              if (chr === '[') {
+                nodes.push(spacer());
+              }
+            }
+            break;
+          case 'A':
+            a = node.cloneNode(true);
+            nodes.push(a);
+        }
+      }
+      return nodes;
     }
   };
 
@@ -8798,7 +8904,7 @@ Redirect = (function() {
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "search": [ "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
       { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
       { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "files": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "search": [ "cm", "co", "ic", "sci", "tg", "y" ] },
-      { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v", "vp" ], "files": [ "v", "vp" ], "search": [ "v" ] },
+      { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "jp", "mlp", "v", "vg", "vp" ], "files": [], "search": [ "v", "vg" ] },
       { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
       { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
@@ -10537,7 +10643,8 @@ Get = (function() {
 }).call(this);
 
 Header = (function() {
-  var Header;
+  var Header,
+    slice = [].slice;
 
   Header = {
     init: function() {
@@ -10635,7 +10742,7 @@ Header = (function() {
       this.setBoardList();
       $.onExists(doc, g.SITE.selectors.boardList + " + *", Header.generateFullBoardList);
       Main.ready(function() {
-        var a, absbot, footer, j, len, ref;
+        var a, absbot, footer, i, len, ref;
         if (g.SITE.software === 'yotsuba' && !(footer = $.id('boardNavDesktopFoot'))) {
           if (!(absbot = $.id('absbot'))) {
             return;
@@ -10651,8 +10758,8 @@ Header = (function() {
         }
         if ((Header.bottomBoardList = $(g.SITE.selectors.boardListBottom))) {
           ref = $$('a', Header.bottomBoardList);
-          for (j = 0, len = ref.length; j < len; j++) {
-            a = ref[j];
+          for (i = 0, len = ref.length; i < len; i++) {
+            a = ref[i];
             if (a.hostname === location.hostname && a.pathname.split('/')[1] === g.BOARD.ID) {
               a.className = 'current';
             }
@@ -10708,46 +10815,21 @@ Header = (function() {
       return $.sync('boardnav', Header.generateBoardList);
     },
     generateFullBoardList: function() {
-      var a, chr, fullBoardList, i, items, j, len, node, nodes, ref, spacer, span;
-      nodes = [];
-      spacer = function() {
-        return $.el('span', {
-          className: 'spacer'
-        });
-      };
-      items = $.X('.//a|.//text()[not(ancestor::a)]', $(g.SITE.selectors.boardList));
-      i = 0;
-      while (node = items.snapshotItem(i++)) {
-        switch (node.nodeName) {
-          case '#text':
-            ref = node.nodeValue;
-            for (j = 0, len = ref.length; j < len; j++) {
-              chr = ref[j];
-              span = $.el('span', {
-                textContent: chr
-              });
-              if (chr === ' ') {
-                span.className = 'space';
-              }
-              if (chr === ']') {
-                nodes.push(spacer());
-              }
-              nodes.push(span);
-              if (chr === '[') {
-                nodes.push(spacer());
-              }
-            }
-            break;
-          case 'A':
-            a = node.cloneNode(true);
-            if (a.hostname === location.hostname && a.pathname.split('/')[1] === g.BOARD.ID) {
-              a.className = 'current';
-            }
-            nodes.push(a);
-        }
+      var a, fullBoardList, i, len, nodes, ref;
+      if (g.SITE.transformBoardList) {
+        nodes = g.SITE.transformBoardList();
+      } else {
+        nodes = slice.call($(g.SITE.selectors.boardList).cloneNode(true).childNodes);
       }
       fullBoardList = $('.boardList', Header.boardList);
       $.add(fullBoardList, nodes);
+      ref = $$('a', fullBoardList);
+      for (i = 0, len = ref.length; i < len; i++) {
+        a = ref[i];
+        if (a.hostname === location.hostname && a.pathname.split('/')[1] === g.BOARD.ID) {
+          a.className = 'current';
+        }
+      }
       return CatalogLinks.setLinks(fullBoardList);
     },
     generateBoardList: function(boardnav) {
@@ -10760,11 +10842,11 @@ Header = (function() {
       boardnav = boardnav.replace(/(\r\n|\n|\r)/g, ' ');
       re = /[\w@]+(-(all|title|replace|full|index|catalog|archive|expired|nt|(mode|sort|text):"[^"]+"(,"[^"]+")?))*|[^\w@]+/g;
       nodes = (function() {
-        var j, len, ref, results;
+        var i, len, ref, results;
         ref = boardnav.match(re);
         results = [];
-        for (j = 0, len = ref.length; j < len; j++) {
-          t = ref[j];
+        for (i = 0, len = ref.length; i < len; i++) {
+          t = ref[i];
           results.push(Header.mapCustomNavigation(t));
         }
         return results;
@@ -10817,7 +10899,7 @@ Header = (function() {
         } else {
           a = $.el('a', {
             href: "/" + g.BOARD.ID + "/",
-            textContent: text || g.BOARD.ID,
+            textContent: text || decodeURIComponent(g.BOARD.ID),
             className: 'current'
           });
           if (/-nt/.test(t)) {
@@ -11148,7 +11230,7 @@ Header = (function() {
       }
     },
     addShortcut: function(id, el, index) {
-      var item, j, len, ref, shortcut;
+      var i, item, len, ref, shortcut;
       shortcut = $.el('span', {
         id: "shortcut-" + id,
         className: 'shortcut brackets-wrap'
@@ -11156,8 +11238,8 @@ Header = (function() {
       $.add(shortcut, el);
       shortcut.dataset.index = index;
       ref = $$('[data-index]', Header.shortcuts);
-      for (j = 0, len = ref.length; j < len; j++) {
-        item = ref[j];
+      for (i = 0, len = ref.length; i < len; i++) {
+        item = ref[i];
         if (!(+item.dataset.index > +index)) {
           continue;
         }
@@ -13370,6 +13452,16 @@ Settings = (function() {
           set('boardnav', "[ toggle-all ]\na-replace\nc-replace\ng-replace\nk-replace\nv-replace\nvg-replace\nvr-replace\nck-replace\nco-replace\nfit-replace\njp-replace\nmu-replace\nsp-replace\ntv-replace\nvp-replace\n[external-text:\"FAQ\",\"https://github.com/ccd0/4chan-x/wiki/Frequently-Asked-Questions\"]");
         }
       }
+      if (compareString < '00001.00014.00016.00001') {
+        if (data['archiveLists'] != null) {
+          set('archiveLists', data['archiveLists'].replace('https://mayhemydg.github.io/archives.json/archives.json', 'https://nstepien.github.io/archives.json/archives.json'));
+        }
+      }
+      if (compareString < '00001.00014.00016.00007') {
+        if (data['sauces'] != null) {
+          set('sauces', data['sauces'].replace(/https:\/\/www\.deviantart\.com\/gallery\/#\/d%\$1%\$2;regexp:\/\^\\w\+_by_\\w\+\[_-\]d\(\[\\da-z\]\{6\}\)\\b\|\^d\(\[\\da-z\]\{6\}\)-\[\\da-z\]\{8\}-\//g, 'javascript:void(open("https://www.deviantart.com/"+%$1.replace(/_/g,"-")+"/art/"+parseInt(%$2,36)));regexp:/^\\w+_by_(\\w+)[_-]d([\\da-z]{6})\\b/').replace(/\/\/imgops\.com\/%URL/g, '//imgops.com/start?url=%URL'));
+        }
+      }
       return changes;
     },
     loadSettings: function(data, cb) {
@@ -13444,7 +13536,7 @@ Settings = (function() {
     },
     advanced: function(section) {
       var applyCSS, boardSelect, customCSS, event, input, inputs, interval, items, itemsArchive, j, k, l, len, len1, len2, len3, listImageHost, m, name, ref, ref1, ref2, ref3, ref4, table, textContent, updateArchives, warning;
-      $.extend(section, {innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>External Catalog</legend><div class=\"warning\" data-feature=\"External Catalog\"><code>External Catalog</code> is disabled. This will be used only as a fallback.</div><div>URLs of external catalog sites, where <code>%board</code> is to be replaced by the board name.<br>Each URL should be followed by <code>;boards:</code> and optionally <code>;exclude:</code> and a list of supported/excluded boards in the format explained in the Filter guide.</div><textarea hidden name=\"externalCatalogURLs\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Override 4chan Image Host</legend><div>Change 4chan image links to this domain. Leave blank for no change.</div><div><input name=\"fourchanImageHost\" class=\"field\" spellcheck=\"false\" list=\"list-fourchanImageHost\"></div><datalist id=\"list-fourchanImageHost\"></datalist></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Captcha Solving Service</legend><div>Supported services include <a href=\"https://captcha.guru/en/regen/?ref=104127\" target=\"_blank\">captcha.guru</a>, <a href=\"https://2captcha.com?from=7935487\" target=\"_blank\">2captcha</a>, and any other service implementing the 2captcha API.<br>Leave blank to disable.<div>Domain: <input name=\"captchaServiceDomain\" class=\"field\" spellcheck=\"false\" list=\"list-captchaServiceDomain\"> API Key: <input name=\"captchaServiceKey\" class=\"field\" spellcheck=\"false\"><datalist id=\"list-captchaServiceDomain\"></datalist></div><div><label><input type=\"checkbox\" name=\"Prerequest Captcha\"> Request captcha when you start typing. Quicker but may result some captchas expiring and being wasted.</label></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Open in new tab: <code>g-nt</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div><div><a href=\"https://www.w3.org/International/articles/language-tags/\" target=\"_blank\">Language tag</a>: <input name=\"timeLocale\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>Default pasted content filename</legend><div><input name=\"pastedname\" class=\"field\" spellcheck=\"false\">.png</div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Known Banners</legend><div>List of known banners, used for click-to-change feature.</div><textarea hidden name=\"knownBanners\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"});
+      $.extend(section, {innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>External Catalog</legend><div class=\"warning\" data-feature=\"External Catalog\"><code>External Catalog</code> is disabled. This will be used only as a fallback.</div><div>URLs of external catalog sites, where <code>%board</code> is to be replaced by the board name.<br>Each URL should be followed by <code>;boards:</code> and optionally <code>;exclude:</code> and a list of supported/excluded boards in the format explained in the Filter guide.</div><textarea hidden name=\"externalCatalogURLs\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Override 4chan Image Host</legend><div>Change 4chan image links to this domain. Leave blank for no change.</div><div><input name=\"fourchanImageHost\" class=\"field\" spellcheck=\"false\" list=\"list-fourchanImageHost\"></div><datalist id=\"list-fourchanImageHost\"></datalist></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Captcha Solving Service</legend><div>Supported services include <a href=\"https://captcha.guru/en/regen/?ref=104127\" target=\"_blank\">captcha.guru</a>, <a href=\"https://2captcha.com?from=7935487\" target=\"_blank\">2captcha</a>, and any other service implementing the 2captcha API.<br>Leave blank to disable.<div>Domain: <input name=\"captchaServiceDomain\" class=\"field\" spellcheck=\"false\" list=\"list-captchaServiceDomain\"> API Key: <input name=\"captchaServiceKey\" class=\"field\" spellcheck=\"false\"><datalist id=\"list-captchaServiceDomain\"></datalist></div><div><label><input type=\"checkbox\" name=\"Prerequest Captcha\"> Request captcha when you start typing. Quicker but may result some captchas expiring and being wasted.</label></div></fieldset><fieldset><legend>Youtube API Key</legend><div>API key used to fetch Youtube link titles. You can obtain your own key <a href=\"https://console.cloud.google.com/marketplace/details/google/youtube.googleapis.com\" target=\"_blank\">here</a> to make the feature work when the default key exceeds its quota.</div><div><input name=\"youtubeAPIKey\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Open in new tab: <code>g-nt</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div><div><a href=\"https://www.w3.org/International/articles/language-tags/\" target=\"_blank\">Language tag</a>: <input name=\"timeLocale\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>Default pasted content filename</legend><div><input name=\"pastedname\" class=\"field\" spellcheck=\"false\">.png</div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Known Banners</legend><div>List of known banners, used for click-to-change feature.</div><textarea hidden name=\"knownBanners\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"});
       ref = $$('.warning', section);
       for (j = 0, len = ref.length; j < len; j++) {
         warning = ref[j];
@@ -14969,7 +15061,7 @@ ImageCommon = (function() {
       return g.SITE.software === 'yotsuba' && !ImageHost.test(file.src.split('/')[2]);
     },
     error: function(file, post, fileObj, delay, cb) {
-      var base, redirect, src, threadJSON, timeoutID, url;
+      var base, parseJSON, redirect, src, threadJSON, timeoutID, url;
       src = fileObj.url.split('/');
       url = null;
       if (g.SITE.software === 'yotsuba' && Conf['404 Redirect']) {
@@ -15004,31 +15096,42 @@ ImageCommon = (function() {
       if (!threadJSON) {
         return;
       }
-      return $.ajax(threadJSON, {
-        onloadend: function() {
-          var i, len, postObj, ref, ref1;
-          if (this.status === 404) {
+      parseJSON = function(isArchiveURL) {
+        var archivedThreadJSON, base1, i, len, postObj, ref, ref1;
+        if (this.status === 404) {
+          if (!isArchiveURL && (archivedThreadJSON = typeof (base1 = g.SITE.urls).archivedThreadJSON === "function" ? base1.archivedThreadJSON(post) : void 0)) {
+            $.ajax(archivedThreadJSON, {
+              onloadend: function() {
+                return parseJSON.call(this, true);
+              }
+            });
+          } else {
             post.kill(!post.isClone, fileObj.index);
           }
-          if (this.status !== 200) {
-            return redirect();
+        }
+        if (this.status !== 200) {
+          return redirect();
+        }
+        ref = this.response.posts;
+        for (i = 0, len = ref.length; i < len; i++) {
+          postObj = ref[i];
+          if (postObj.no === post.ID) {
+            break;
           }
-          ref = this.response.posts;
-          for (i = 0, len = ref.length; i < len; i++) {
-            postObj = ref[i];
-            if (postObj.no === post.ID) {
-              break;
-            }
-          }
-          if (postObj.no !== post.ID) {
-            post.kill();
-            return redirect();
-          } else if (ref1 = fileObj.docIndex, indexOf.call(g.SITE.Build.parseJSON(postObj, post.board).filesDeleted, ref1) >= 0) {
-            post.kill(true);
-            return redirect();
-          } else {
-            return url = fileObj.url;
-          }
+        }
+        if (postObj.no !== post.ID) {
+          post.kill();
+          return redirect();
+        } else if (ref1 = fileObj.docIndex, indexOf.call(g.SITE.Build.parseJSON(postObj, post.board).filesDeleted, ref1) >= 0) {
+          post.kill(true);
+          return redirect();
+        } else {
+          return url = fileObj.url;
+        }
+      };
+      return $.ajax(threadJSON, {
+        onloadend: function() {
+          return parseJSON.call(this);
         }
       });
     },
@@ -16181,7 +16284,7 @@ Sauce = (function() {
         return file.url;
       },
       IMG: function(post, file, ext) {
-        if (ext === 'gif' || ext === 'jpg' || ext === 'png') {
+        if (ext === 'gif' || ext === 'jpg' || ext === 'jpeg' || ext === 'png') {
           return file.url;
         } else {
           return file.thumbURL;
@@ -16632,7 +16735,7 @@ Embedding = (function() {
           cachedTitles = arg.cachedTitles;
           sync(cachedTitles);
           try {
-            cachedTitles = newEntries.concat(cachedTitles).slice(-100);
+            cachedTitles = newEntries.concat(cachedTitles).slice(-1000);
           } catch (error) {
             cachedTitles = newEntries;
           }
@@ -16713,24 +16816,28 @@ Embedding = (function() {
         }
       },
       title: function(req, data) {
-        var key, service, status, text, uid;
+        var key, link, service, status, text, uid;
         if (!req.status) {
           return;
         }
-        key = data.key, uid = data.uid;
+        key = data.key, uid = data.uid, link = data.link;
         status = req.status;
         service = Embedding.types[key].title;
         switch (status) {
           case 200:
           case 304:
             text = service.text(req.response, uid);
-            Embedding.cache.set(data, text);
+            if (typeof text === 'string') {
+              Embedding.cache.set(data, text);
+            } else {
+              text = link.textContent;
+            }
             break;
           case 404:
             text = "Not Found";
             break;
           case 403:
-            text = "Forbidden or Private";
+            text = service.ignore403 ? link.textContent : "Forbidden or Private";
             break;
           default:
             text = status + "'d";
@@ -16871,10 +16978,12 @@ Embedding = (function() {
         key: 'Gfycat',
         regExp: /^\w+:\/\/(?:www\.)?gfycat\.com\/(?:iframe\/)?(\w+)/,
         el: function(a) {
-          var div;
-          return div = $.el('iframe', {
-            src: "//gfycat.com/iframe/" + a.dataset.uid
+          var el;
+          el = $.el('iframe', {
+            src: "//gfycat.com/ifr/" + a.dataset.uid
           });
+          el.setAttribute("allowfullscreen", "true");
+          return el;
         }
       }, {
         key: 'Gist',
@@ -16926,11 +17035,11 @@ Embedding = (function() {
         }
       }, {
         key: 'LiveLeak',
-        regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*i=(\w+)/,
+        regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*[tif]=(\w+)/,
         el: function(a) {
           var el;
           el = $.el('iframe', {
-            src: "https://www.liveleak.com/ll_embed?i=" + a.dataset.uid
+            src: "https://www.liveleak.com/e/" + a.dataset.uid
           });
           el.setAttribute("allowfullscreen", "true");
           return el;
@@ -17036,14 +17145,14 @@ Embedding = (function() {
       }, {
         key: 'Openings.moe',
         regExp: /^\w+:\/\/openings.moe\/\?video=([^.&=]+)/,
-        style: 'max-width: 80vw; max-height: 80vh;',
+        style: 'width: 1280px; height: 720px; max-width: 80vw; max-height: 80vh;',
         el: function(a) {
-          return $.el('video', {
-            controls: true,
-            preload: 'auto',
-            src: "//openings.moe/video/" + a.dataset.uid + ".webm",
-            loop: true
+          var el;
+          el = $.el('iframe', {
+            src: "https://openings.moe/?video=" + a.dataset.uid
           });
+          el.setAttribute("allowfullscreen", "true");
+          return el;
         }
       }, {
         key: 'Pastebin',
@@ -17187,16 +17296,15 @@ Embedding = (function() {
         }
       }, {
         key: 'Vocaroo',
-        regExp: /^\w+:\/\/(?:www\.)?vocaroo\.com\/i\/(\w+)/,
+        regExp: /^\w+:\/\/(?:(?:www\.|old\.)?vocaroo\.com|voca\.ro)\/((?:i\/)?\w+)/,
         style: '',
         el: function(a) {
-          var el, type;
+          var el;
           el = $.el('audio', {
             controls: true,
             preload: 'auto'
           });
-          type = el.canPlayType('audio/webm') ? 'webm' : 'mp3';
-          el.src = "//vocaroo.com/media_command.php?media=" + a.dataset.uid + "&command=download_" + type;
+          el.src = /^i\//.test(a.dataset.uid) ? "https://old.vocaroo.com/media_command.php?media=" + (a.dataset.uid.replace('i/', '')) + "&command=download_mp3" : "https://media.vocaroo.com/mp3/" + a.dataset.uid;
           return el;
         }
       }, {
@@ -17220,10 +17328,11 @@ Embedding = (function() {
         },
         title: {
           batchSize: 50,
+          ignore403: true,
           api: function(uids) {
             var ids, key;
             ids = encodeURIComponent(uids.join(','));
-            key = 'AIzaSyB5_zaen_-46Uhz1xGR-lz1YoUMHqCD6CE';
+            key = Conf['youtubeAPIKey'];
             return "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" + ids + "&fields=items%28id%2Csnippet%28title%29%29&key=" + key;
           },
           text: function(data, uid) {
@@ -17318,7 +17427,7 @@ Linkify = (function() {
           if ((length = index + word.length) === data.length) {
             test.lastIndex = 0;
             while ((saved = snapshot.snapshotItem(i++))) {
-              if (saved.nodeName === 'BR') {
+              if (saved.nodeName === 'BR' || (saved.parentElement.nodeName === 'P' && !saved.previousSibling)) {
                 if ((part1 = word.match(/(https?:\/\/)?([a-z\d-]+\.)*[a-z\d-]+$/i)) && (part2 = (ref = snapshot.snapshotItem(i)) != null ? (ref1 = ref.data) != null ? ref1.match(/^(\.[a-z\d-]+)*\//i) : void 0 : void 0) && (part1[0] + part2[0]).search(Linkify.regString) === 0) {
                   continue;
                 } else {
@@ -18665,7 +18774,7 @@ FileInfo = (function() {
       n: function() {
         var fullname, shortname;
         fullname = this.file.name;
-        shortname = g.SITE.Build.shortFilename(this.file.name, this.isReply);
+        shortname = SW.yotsuba.Build.shortFilename(this.file.name, this.isReply);
         if (fullname === shortname) {
           return {innerHTML: E(fullname)};
         } else {
@@ -21702,26 +21811,13 @@ ThreadWatcher = (function() {
               threadID: threadID
             });
             nKilled++;
-          } else if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
+          } else {
             ThreadWatcher.fetchStatus({
               siteID: siteID,
               boardID: boardID,
               threadID: threadID,
               data: data
             });
-          } else {
-            db.extend({
-              boardID: boardID,
-              threadID: threadID,
-              val: {
-                isDead: true,
-                page: void 0,
-                lastPage: void 0,
-                unread: void 0,
-                quotingYou: void 0
-              }
-            });
-            nKilled++;
           }
         }
         if (nKilled) {
@@ -21984,13 +22080,7 @@ ThreadWatcher = (function() {
             }
           }
         } else {
-          if (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) {
-            ThreadWatcher.fetchStatus(thread);
-          } else {
-            ThreadWatcher.update(siteID, boardID, threadID, {
-              isDead: true
-            });
-          }
+          ThreadWatcher.fetchStatus(thread);
         }
       }
     },
@@ -22016,19 +22106,19 @@ ThreadWatcher = (function() {
         force: force
       }, [thread], ThreadWatcher.parseStatus);
     },
-    parseStatus: function(arg) {
-      var boardID, data, isDead, j, last, lastReadPost, len1, match, newData, postObj, quotesYou, quotingYou, ref, ref1, ref2, regexp, replies, site, siteID, threadID, unread, youOP;
-      siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID, data = arg.data, newData = arg.newData;
+    parseStatus: function(thread, isArchiveURL) {
+      var archiveURL, base, boardID, data, force, isArchived, isDead, j, last, lastReadPost, len1, match, newData, postObj, quotesYou, quotingYou, ref, ref1, ref2, ref3, regexp, replies, site, siteID, threadID, unread, youOP;
+      siteID = thread.siteID, boardID = thread.boardID, threadID = thread.threadID, data = thread.data, newData = thread.newData, force = thread.force;
       site = g.sites[siteID];
       if (this.status === 200 && this.response) {
         last = this.response.posts[this.response.posts.length - 1].no;
         replies = this.response.posts.length - 1;
-        isDead = !!this.response.posts[0].archived;
+        isDead = isArchived = !!(this.response.posts[0].archived || isArchiveURL);
         if (isDead && Conf['Auto Prune']) {
           ThreadWatcher.rm(siteID, boardID, threadID);
           return;
         }
-        if (last === data.last && isDead === data.isDead) {
+        if (last === data.last && isDead === data.isDead && isArchived === data.isArchived) {
           return;
         }
         lastReadPost = ThreadWatcher.unreaddb.get({
@@ -22095,12 +22185,23 @@ ThreadWatcher = (function() {
           last: last,
           replies: replies,
           isDead: isDead,
+          isArchived: isArchived,
           unread: unread,
           quotingYou: quotingYou
         });
         return ThreadWatcher.update(siteID, boardID, threadID, newData);
       } else if (this.status === 404) {
-        if (site.mayLackJSON && (data.last == null)) {
+        archiveURL = (ref3 = g.sites[siteID]) != null ? typeof (base = ref3.urls).archivedThreadJSON === "function" ? base.archivedThreadJSON({
+          siteID: siteID,
+          boardID: boardID,
+          threadID: threadID
+        }) : void 0 : void 0;
+        if (!isArchiveURL && archiveURL) {
+          return ThreadWatcher.fetch(archiveURL, {
+            siteID: siteID,
+            force: force
+          }, [thread, true], ThreadWatcher.parseStatus);
+        } else if (site.mayLackJSON && (data.last == null)) {
           return ThreadWatcher.update(siteID, boardID, threadID, {
             last: -1
           });
@@ -22142,13 +22243,13 @@ ThreadWatcher = (function() {
       return all;
     },
     makeLine: function(siteID, boardID, threadID, data) {
-      var count, div, excerpt, fullID, link, page, ref, title, x;
+      var count, div, excerpt, fullID, isArchived, link, page, ref, title, x;
       x = $.el('a', {
         className: 'fa fa-times',
         href: 'javascript:;'
       });
       $.on(x, 'click', ThreadWatcher.cb.rm);
-      excerpt = data.excerpt;
+      excerpt = data.excerpt, isArchived = data.isArchived;
       excerpt || (excerpt = "/" + boardID + "/ - No." + threadID);
       if (Conf['Show Site Prefix']) {
         excerpt = ThreadWatcher.prefixes[siteID] + excerpt;
@@ -22158,7 +22259,7 @@ ThreadWatcher = (function() {
           siteID: siteID,
           boardID: boardID,
           threadID: threadID
-        }) : void 0) || '',
+        }, isArchived) : void 0) || '',
         title: excerpt,
         className: 'watcher-link'
       });
@@ -22311,7 +22412,7 @@ ThreadWatcher = (function() {
         return;
       }
       if (newData.isDead || newData.last === -1) {
-        ref1 = ['page', 'lastPage', 'unread', 'quotingyou'];
+        ref1 = ['isArchived', 'page', 'lastPage', 'unread', 'quotingyou'];
         for (j = 0, len1 = ref1.length; j < len1; j++) {
           key = ref1[j];
           if (!(key in newData)) {
@@ -22361,7 +22462,7 @@ ThreadWatcher = (function() {
         });
         return cb();
       }
-      if (data.isDead && !((data.page != null) || (data.lastPage != null) || (data.unread != null) || (data.quotingYou != null))) {
+      if (data.isDead && !((data.isArchived != null) || (data.page != null) || (data.lastPage != null) || (data.unread != null) || (data.quotingYou != null))) {
         return cb();
       }
       return ThreadWatcher.db.extend({
@@ -22369,6 +22470,7 @@ ThreadWatcher = (function() {
         threadID: threadID,
         val: {
           isDead: true,
+          isArchived: void 0,
           page: void 0,
           lastPage: void 0,
           unread: void 0,
@@ -22904,6 +23006,7 @@ Unread = (function() {
         return ThreadWatcher.update(g.SITE.ID, Unread.thread.board.ID, Unread.thread.ID, {
           last: Unread.thread.lastPost,
           isDead: Unread.thread.isDead,
+          isArchived: Unread.thread.isArchived,
           unread: Unread.posts.size,
           quotingYou: quotingYou.last || 0
         });
@@ -23094,7 +23197,11 @@ Captcha = {};
               isReply: isReply
             })) {
               _this.prerequested = true;
-              _this.submitCB = _this.save.bind(_this);
+              _this.submitCB = function(captcha) {
+                if (captcha) {
+                  return _this.save(captcha);
+                }
+              };
               return _this.updateCount();
             }
           }
@@ -23255,13 +23362,15 @@ Captcha = {};
       return $.on(d, 'keydown', this.keybinds.bind(this));
     },
     initNoscript: function() {
-      var data, form, ref, token;
+      var data, form, ns, ref, token;
       this.noscript = true;
       form = $('.fbc-imageselect-challenge > form');
       data = (token = (ref = $('.fbc-verification-token > textarea')) != null ? ref.value : void 0) ? {
         token: token
       } : $('.fbc-imageselect-challenge > form') ? {
         working: true
+      } : (ns = $('noscript')) && /please enable javascript/i.test(ns.textContent) ? {
+        disabled: true
       } : null;
       if (data) {
         new Connection(window.parent, '*').send(data);
@@ -23467,6 +23576,13 @@ Captcha = {};
           }
           textarea.value = token;
           return $.event('input', null, textarea);
+        },
+        disabled: function() {
+          var msg;
+          msg = $.el('div', {
+            innerHTML: "Noscript captcha seems to be disabled on 4chan.<br>You may be able to post if you uncheck &quot;Force Noscript Captcha&quot; in your settings.<br>If you hate the Javascript version of Recaptcha, consider visiting <a href=\"https://www.4chan-x.net/4chan_alternatives.html#" + E(g.BOARD.ID) + "\" target=\"_blank\" rel=\"noopener\">other imageboards</a>."
+          });
+          return new Notice('warning', msg);
         }
       });
     }
@@ -24426,7 +24542,8 @@ QR = (function() {
       });
       $.on(el, (isVideo ? 'loadeddata' : 'load'), function() {
         e.target.getContext('2d').drawImage(el, 0, 0);
-        return URL.revokeObjectURL(el.src);
+        URL.revokeObjectURL(el.src);
+        return $.event('QRImageDrawn', null, e.target);
       });
       return el.src = URL.createObjectURL(file);
     },
@@ -25411,46 +25528,25 @@ QR = (function() {
       });
     },
     load: function(cb) {
-      var n, onerror, onload, script, style;
-      n = 0;
-      onload = function() {
-        if (++n === 2) {
-          return cb();
-        }
-      };
-      onerror = function() {
-        var script;
-        $.rm(this);
-        script = $.el('script', {
-          src: 'https://rawgit.com/desuwa/tegaki/master/tegaki.js'
-        });
-        $.on(script, 'load', onload);
-        return $.add(d.head, script);
-      };
-      script = $('script[src^="//s.4cdn.org/js/painter"], script[src="https://rawgit.com/desuwa/tegaki/master/tegaki.js"]', d.head);
-      if (script) {
-        if (!script.dataset.success) {
-          $.global(function() {
-            return document.querySelector('script[src^="//s.4cdn.org/js/painter"], script[src="https://rawgit.com/desuwa/tegaki/master/tegaki.js"]').dataset.success = !!window.Tegaki;
-          });
-        }
-        if (script.dataset.success === 'true') {
-          return cb();
-        } else {
-          n = 1;
-          return onerror.call(script);
-        }
+      var n, onload, script, style;
+      if ($('script[src^="//s.4cdn.org/js/tegaki"]', d.head)) {
+        return cb();
       } else {
         style = $.el('link', {
           rel: 'stylesheet',
-          href: "//s.4cdn.org/css/painter." + (Date.now()) + ".css"
+          href: "//s.4cdn.org/css/tegaki." + (Date.now()) + ".css"
         });
         script = $.el('script', {
-          src: "//s.4cdn.org/js/painter.min." + (Date.now()) + ".js"
+          src: "//s.4cdn.org/js/tegaki.min." + (Date.now()) + ".js"
         });
+        n = 0;
+        onload = function() {
+          if (++n === 2) {
+            return cb();
+          }
+        };
         $.on(style, 'load', onload);
         $.on(script, 'load', onload);
-        $.on(script, 'error', onerror);
         return $.add(d.head, [style, script]);
       }
     },
@@ -25498,7 +25594,7 @@ QR = (function() {
             }));
           };
           cb = function(e) {
-            var selected;
+            var canvas, selected;
             if (e) {
               this.removeEventListener('QRMetadata', cb, false);
             }
@@ -25529,7 +25625,16 @@ QR = (function() {
               height: +selected.dataset.height,
               bgColor: 'transparent'
             });
-            return Tegaki.activeCtx.canvas.dispatchEvent(new CustomEvent('QRDrawFile', {
+            canvas = document.createElement('canvas');
+            canvas.width = canvas.naturalWidth = +selected.dataset.width;
+            canvas.height = canvas.naturalHeight = +selected.dataset.height;
+            canvas.hidden = true;
+            document.body.appendChild(canvas);
+            canvas.addEventListener('QRImageDrawn', function() {
+              this.remove();
+              return Tegaki.onOpenImageLoaded.call(this);
+            }, false);
+            return canvas.dispatchEvent(new CustomEvent('QRDrawFile', {
               bubbles: true
             }));
           };
@@ -27272,7 +27377,7 @@ Main = (function() {
 
   Main = {
     init: function() {
-      var db, flatten, i, items, j, k, key, len, ref, ref1, ref2, w;
+      var db, flatten, i, items, j, k, key, len, mountedCB, ref, ref1, ref2, w;
       try {
         w = window;
         if ($.platform === 'crx') {
@@ -27317,6 +27422,21 @@ Main = (function() {
           return $.addClass(doc, 'tainted');
         }
       });
+      mountedCB = function() {
+        var cb, j, len, ref1, results;
+        d.removeEventListener('mounted', mountedCB, true);
+        Main.isMounted = true;
+        ref1 = Main.mountedCBs;
+        results = [];
+        for (j = 0, len = ref1.length; j < len; j++) {
+          cb = ref1[j];
+          try {
+            results.push(cb());
+          } catch (error1) {}
+        }
+        return results;
+      };
+      d.addEventListener('mounted', mountedCB, true);
       flatten = function(parent, obj) {
         var key, val;
         if (obj instanceof Array) {
@@ -27466,6 +27586,10 @@ Main = (function() {
       } else if ((ref = pathname[2]) === 'thread' || ref === 'res') {
         r.VIEW = 'thread';
         r.threadID = r.THREADID = +pathname[3].replace(/\.\w+$/, '');
+      } else if (pathname[2] === 'archive' && pathname[3] === 'res') {
+        r.VIEW = 'thread';
+        r.threadID = r.THREADID = +pathname[4].replace(/\.\w+$/, '');
+        r.threadArchived = true;
       } else if (/^(?:catalog|archive)(?:\.\w+)?$/.test(pathname[2])) {
         r.VIEW = pathname[2].replace(/\.\w+$/, '');
       } else if (/^(?:index|\d*)(?:\.\w+)?$/.test(pathname[2])) {
@@ -27685,19 +27809,28 @@ Main = (function() {
       if (g.VIEW === 'catalog') {
         return Main.initCatalog();
       } else if (!Index.enabled) {
-        return Main.initThread();
+        if (g.SITE.awaitBoard) {
+          return g.SITE.awaitBoard(Main.initThread);
+        } else {
+          return Main.initThread();
+        }
       } else {
         Main.expectInitFinished = true;
         return $.event('4chanXInitFinished');
       }
     },
     initThread: function() {
-      var base, board, errors, posts, s, threads;
+      var base, base1, board, errors, posts, ref, s, threads;
       s = g.SITE.selectors;
-      if ((board = $(s.board))) {
+      if ((board = $(((ref = s.boardFor) != null ? ref[g.VIEW] : void 0) || s.board))) {
         threads = [];
         posts = [];
         errors = [];
+        try {
+          if (typeof (base = g.SITE).preParsingFixes === "function") {
+            base.preParsingFixes(board);
+          }
+        } catch (error1) {}
         Main.addThreadsObserver = new MutationObserver(Main.addThreads);
         Main.addPostsObserver = new MutationObserver(Main.addPosts);
         Main.addThreadsObserver.observe(board, {
@@ -27708,8 +27841,12 @@ Main = (function() {
           Main.handleErrors(errors);
         }
         if (g.VIEW === 'thread') {
-          if (typeof (base = g.SITE).parseThreadMetadata === "function") {
-            base.parseThreadMetadata(threads[0]);
+          if (g.threadArchived) {
+            threads[0].isArchived = true;
+            threads[0].kill();
+          }
+          if (typeof (base1 = g.SITE).parseThreadMetadata === "function") {
+            base1.parseThreadMetadata(threads[0]);
           }
         }
         Main.callbackNodes('Thread', threads);
@@ -27753,7 +27890,7 @@ Main = (function() {
       var err, j, len, postRoot;
       for (j = 0, len = postRoots.length; j < len; j++) {
         postRoot = postRoots[j];
-        if (!postRoot.dataset.fullID && $(g.SITE.selectors.comment, postRoot)) {
+        if (!(postRoot.dataset.fullID && g.posts.get(postRoot.dataset.fullID)) && $(g.SITE.selectors.comment, postRoot)) {
           try {
             posts.push(new Post(postRoot, thread, thread.board));
           } catch (error1) {
@@ -28026,7 +28163,7 @@ Main = (function() {
     },
     isThisPageLegit: function() {
       if (!('thisPageIsLegit' in Main)) {
-        Main.thisPageIsLegit = g.SITE.isThisPageLegit ? g.SITE.isThisPageLegit() : !/^[45]\d\d\b/.test(document.title) && !/\.json$/.test(location.pathname);
+        Main.thisPageIsLegit = g.SITE.isThisPageLegit ? g.SITE.isThisPageLegit() : !/^[45]\d\d\b/.test(document.title) && !/\.(?:json|rss)$/.test(location.pathname);
       }
       return Main.thisPageIsLegit;
     },
@@ -28037,6 +28174,14 @@ Main = (function() {
         }
       });
     },
+    mounted: function(cb) {
+      if (Main.isMounted) {
+        return cb();
+      } else {
+        return Main.mountedCBs.push(cb);
+      }
+    },
+    mountedCBs: [],
     features: [['Polyfill', Polyfill], ['Board Configuration', BoardConfig], ['Normalize URL', NormalizeURL], ['Delay Redirect on Post', PostRedirect], ['Captcha Configuration', Captcha.replace], ['Image Host Rewriting', ImageHost], ['Redirect', Redirect], ['Header', Header], ['Catalog Links', CatalogLinks], ['Settings', Settings], ['Index Generator', Index], ['Disable Autoplay', AntiAutoplay], ['Announcement Hiding', PSAHiding], ['Fourchan thingies', Fourchan], ['Tinyboard Glue', Tinyboard], ['Color User IDs', IDColor], ['Highlight by User ID', IDHighlight], ['Count Posts by ID', IDPostCount], ['Custom CSS', CustomCSS], ['Thread Links', ThreadLinks], ['Linkify', Linkify], ['Reveal Spoilers', RemoveSpoilers], ['Resurrect Quotes', Quotify], ['Filter', Filter], ['Thread Hiding Buttons', ThreadHiding], ['Reply Hiding Buttons', PostHiding], ['Recursive', Recursive], ['Strike-through Quotes', QuoteStrikeThrough], ['Captcha Solving Service', Captcha.service], ['Quick Reply Personas', QR.persona], ['Quick Reply', QR], ['Cooldown', QR.cooldown], ['Post Jumper', PostJumper], ['Pass Link', PassLink], ['Menu', Menu], ['Index Generator (Menu)', Index.menu], ['Report Link', ReportLink], ['Copy Text Link', CopyTextLink], ['Thread Hiding (Menu)', ThreadHiding.menu], ['Reply Hiding (Menu)', PostHiding.menu], ['Delete Link', DeleteLink], ['Filter (Menu)', Filter.menu], ['Edit Link', QR.oekaki.menu], ['Download Link', DownloadLink], ['Archive Link', ArchiveLink], ['Quote Inlining', QuoteInline], ['Quote Previewing', QuotePreview], ['Quote Backlinks', QuoteBacklink], ['Mark Quotes of You', QuoteYou], ['Mark OP Quotes', QuoteOP], ['Mark Cross-thread Quotes', QuoteCT], ['Anonymize', Anonymize], ['Time Formatting', Time], ['Relative Post Dates', RelativeDates], ['File Info Formatting', FileInfo], ['Fappe Tyme', FappeTyme], ['Gallery', Gallery], ['Gallery (menu)', Gallery.menu], ['Sauce', Sauce], ['Image Expansion', ImageExpand], ['Image Expansion (Menu)', ImageExpand.menu], ['Reveal Spoiler Thumbnails', RevealSpoilers], ['Image Loading', ImageLoader], ['Image Hover', ImageHover], ['Volume Control', Volume], ['WEBM Metadata', Metadata], ['Comment Expansion', ExpandComment], ['Thread Expansion', ExpandThread], ['Favicon', Favicon], ['Unread', Unread], ['Unread Line in Index', UnreadIndex], ['Quote Threading', QuoteThreading], ['Thread Stats', ThreadStats], ['Thread Updater', ThreadUpdater], ['Thread Watcher', ThreadWatcher], ['Thread Watcher (Menu)', ThreadWatcher.menu], ['Mark New IPs', MarkNewIPs], ['Index Navigation', Nav], ['Keybinds', Keybinds], ['Banner', Banner], ['Announcements', PSA], ['Flash Features', Flash], ['Reply Pruning', ReplyPruning], ['Mod Contact Links', ModContact]]
   };
 

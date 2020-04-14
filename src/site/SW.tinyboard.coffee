@@ -40,17 +40,32 @@ SW.tinyboard =
         return properties
     false
 
+  awaitBoard: (cb) ->
+    if (reactUI = $.id('react-ui'))
+      s = @selectors = Object.create @selectors
+      s.boardFor = {index: '.page-container'}
+      s.thread = 'div[id^="thread_"]'
+      Main.mounted cb
+    else
+      cb()
+
   urls:
-    thread: ({siteID, boardID, threadID}) -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/res/#{threadID}.html"
+    thread: ({siteID, boardID, threadID}, isArchived) ->
+      "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/#{if isArchived then 'archive/' else ''}res/#{threadID}.html"
     post:    ({postID})                   -> "##{postID}"
     index:   ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/"
     catalog: ({siteID, boardID})          -> "#{Conf['siteProperties'][siteID]?.root or "http://#{siteID}/"}#{boardID}/catalog.html"
-    threadJSON: ({siteID, boardID, threadID}) ->
+    threadJSON: ({siteID, boardID, threadID}, isArchived) ->
       root = Conf['siteProperties'][siteID]?.root
-      if root then "#{root}#{boardID}/res/#{threadID}.json" else ''
+      if root then "#{root}#{boardID}/#{if isArchived then 'archive/' else ''}res/#{threadID}.json" else ''
+    archivedThreadJSON: (thread) ->
+      SW.tinyboard.urls.threadJSON thread, true
     threadsListJSON: ({siteID, boardID}) ->
       root = Conf['siteProperties'][siteID]?.root
       if root then "#{root}#{boardID}/threads.json" else ''
+    archiveListJSON: ({siteID, boardID}) ->
+      root = Conf['siteProperties'][siteID]?.root
+      if root then "#{root}#{boardID}/archive/archive.json" else ''
     catalogJSON: ({siteID, boardID}) ->
       root = Conf['siteProperties'][siteID]?.root
       if root then "#{root}#{boardID}/catalog.json" else ''
@@ -62,7 +77,7 @@ SW.tinyboard =
   selectors:
     board:         'form[name="postcontrols"]'
     thread:        'input[name="board"] ~ div[id^="thread_"]'
-    threadDivider: 'div[id^="thread_"] > hr:last-of-type'
+    threadDivider: 'div[id^="thread_"] > hr:last-child'
     summary:       '.omitted'
     postContainer: 'div[id^="reply_"]:not(.hidden)' # postContainer is thread for OP
     opBottom:      '.op'
@@ -95,7 +110,7 @@ SW.tinyboard =
       catalog: ' > .thread'
     comment:   '.body'
     spoiler:   '.spoiler'
-    quotelink: 'a[onclick^="highlightReply("]'
+    quotelink: 'a[onclick*="highlightReply("]'
     catalog:
       board:  '#Grid'
       thread: '.mix'
@@ -123,12 +138,12 @@ SW.tinyboard =
         ([^/]+) # boardID
         /res/
         (\d+)   # threadID
-        \.\w+#
+        (?:\.\w+)?#
         (\d+)   # postID
         $
       ///
     quotelinkHTML:
-      /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)\.\w+#(\d+)"/g
+      /<a [^>]*\bhref="[^"]*\/([^\/]+)\/res\/(\d+)(?:\.\w+)?#(\d+)"/g
 
   Build:
     parseJSON: (data, board) ->
@@ -162,12 +177,22 @@ SW.tinyboard =
   isFileURL: (url) ->
     /\/src\/[^\/]+/.test(url.pathname)
 
+  preParsingFixes: (board) ->
+    # fixes effects of unclosed link in announcement
+    if (broken = $('a > input[name="board"]', board))
+      $.before broken.parentNode, broken
+
   parseNodes: (post, nodes) ->
     # Add vichan's span.poster_id around the ID if not already present.
     return if nodes.uniqueID
-    nodes.info.normalize()
-    {nextSibling} = nodes.nameBlock
-    if nextSibling.nodeType is 3 and (m = nextSibling.textContent.match /(\s*ID:\s*)(\S+)/)
+    text = ''
+    node = nodes.nameBlock.nextSibling
+    while node and node.nodeType is 3
+      text += node.textContent
+      node = node.nextSibling
+    if (m = text.match /(\s*ID:\s*)(\S+)/)
+      nodes.info.normalize()
+      {nextSibling} = nodes.nameBlock
       nextSibling = nextSibling.splitText m[1].length
       nextSibling.splitText m[2].length
       nodes.uniqueID = uniqueID = $.el 'span', {className: 'poster_id'}
@@ -185,7 +210,7 @@ SW.tinyboard =
     {text, link, thumb} = file
     return false if $.x("ancestor::#{@xpath.postContainer}[1]", text) isnt post.nodes.root # file belongs to a reply
     return false if not (infoNode = if '(' in link.nextSibling?.textContent then link.nextSibling else link.nextElementSibling)
-    return false if not (info = infoNode.textContent.match /\((Spoiler Image, )?([\d.]+ [KMG]?B).*\)/)
+    return false if not (info = infoNode.textContent.match /\((.*,\s*)?([\d.]+ ?[KMG]?B).*\)/)
     nameNode = $ '.postfilename', text
     $.extend file,
       name:       if nameNode then (nameNode.title or nameNode.textContent) else link.pathname.match(/[^/]*$/)[0]
@@ -194,7 +219,7 @@ SW.tinyboard =
     if thumb
       $.extend file,
         thumbURL:  if /\/static\//.test(thumb.src) and /\.(?:gif|jpe?g|png)$/.test(link.href) then link.href else thumb.src
-        isSpoiler: !!info[1] or link.textContent is 'Spoiler Image'
+        isSpoiler: /^Spoiler/i.test(info[1] or '') or link.textContent is 'Spoiler Image'
     true
 
   isThumbExpanded: (file) ->

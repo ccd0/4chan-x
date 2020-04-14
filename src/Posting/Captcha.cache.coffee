@@ -36,7 +36,8 @@ Captcha.cache =
         isReply = (QR.selected.thread isnt 'new')
         if !$.event('RequestCaptcha', {isReply})
           @prerequested = true
-          @submitCB = @save.bind(@)
+          @submitCB = (captcha) =>
+            @save captcha if captcha
           @updateCount()
 
   haveCookie: ->

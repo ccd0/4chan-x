@@ -151,7 +151,7 @@ Embedding =
       $.get 'cachedTitles', Conf['cachedTitles'], ({cachedTitles}) ->
         sync cachedTitles
         try
-          cachedTitles = newEntries.concat(cachedTitles)[-100..]
+          cachedTitles = newEntries.concat(cachedTitles)[-1000..]
         catch
           cachedTitles = newEntries
         newEntries = []
@@ -215,18 +215,21 @@ Embedding =
     title: (req, data) ->
       return unless req.status
 
-      {key, uid} = data
+      {key, uid, link} = data
       {status} = req
       service = Embedding.types[key].title
 
       switch status
         when 200, 304
           text = service.text req.response, uid
-          Embedding.cache.set data, text
+          if typeof text is 'string'
+            Embedding.cache.set data, text
+          else
+            text = link.textContent
         when 404
           text = "Not Found"
         when 403
-          text = "Forbidden or Private"
+          text = if service.ignore403 then link.textContent else "Forbidden or Private"
         else
           text = "#{status}'d"
       Embedding.cb.titleText text, data
@@ -320,8 +323,10 @@ Embedding =
       key: 'Gfycat'
       regExp: /^\w+:\/\/(?:www\.)?gfycat\.com\/(?:iframe\/)?(\w+)/
       el: (a) ->
-        div = $.el 'iframe',
-          src: "//gfycat.com/iframe/#{a.dataset.uid}"
+        el = $.el 'iframe',
+          src: "//gfycat.com/ifr/#{a.dataset.uid}"
+        el.setAttribute "allowfullscreen", "true"
+        el
     ,
       key: 'Gist'
       regExp: /^\w+:\/\/gist\.github\.com\/[\w\-]+\/(\w+)/
@@ -352,10 +357,10 @@ Embedding =
           src: "https://paste.installgentoo.com/view/embed/#{a.dataset.uid}"
     ,
       key: 'LiveLeak'
-      regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*i=(\w+)/
+      regExp: /^\w+:\/\/(?:\w+\.)?liveleak\.com\/.*\?.*[tif]=(\w+)/
       el: (a) ->
         el = $.el 'iframe',
-          src: "https://www.liveleak.com/ll_embed?i=#{a.dataset.uid}",
+          src: "https://www.liveleak.com/e/#{a.dataset.uid}",
         el.setAttribute "allowfullscreen", "true"
         el
     ,
@@ -411,13 +416,12 @@ Embedding =
     ,
       key: 'Openings.moe'
       regExp: /^\w+:\/\/openings.moe\/\?video=([^.&=]+)/
-      style: 'max-width: 80vw; max-height: 80vh;'
+      style: 'width: 1280px; height: 720px; max-width: 80vw; max-height: 80vh;'
       el: (a) ->
-        $.el 'video',
-          controls: true
-          preload:  'auto'
-          src:      "//openings.moe/video/#{a.dataset.uid}.webm"
-          loop:     true
+        el = $.el 'iframe',
+          src: "https://openings.moe/?video=#{a.dataset.uid}",
+        el.setAttribute "allowfullscreen", "true"
+        el
     ,
       key: 'Pastebin'
       regExp: /^\w+:\/\/(?:\w+\.)?pastebin\.com\/(?!u\/)(?:[\w.]+(?:\/|\?i\=))?(\w+)/
@@ -515,14 +519,16 @@ Embedding =
           src: "https://vine.co/v/#{a.dataset.uid}/card"
     ,
       key: 'Vocaroo'
-      regExp: /^\w+:\/\/(?:www\.)?vocaroo\.com\/i\/(\w+)/
+      regExp: /^\w+:\/\/(?:(?:www\.|old\.)?vocaroo\.com|voca\.ro)\/((?:i\/)?\w+)/
       style: ''
       el: (a) ->
         el = $.el 'audio',
           controls: true
           preload: 'auto'
-        type = if el.canPlayType 'audio/webm' then 'webm' else 'mp3'
-        el.src = "//vocaroo.com/media_command.php?media=#{a.dataset.uid}&command=download_#{type}"
+        el.src = if /^i\//.test(a.dataset.uid)
+          "https://old.vocaroo.com/media_command.php?media=#{a.dataset.uid.replace('i/', '')}&command=download_mp3"
+        else
+          "https://media.vocaroo.com/mp3/#{a.dataset.uid}"
         el
     ,
       key: 'YouTube'
@@ -539,9 +545,10 @@ Embedding =
         el
       title:
         batchSize: 50
+        ignore403: true
         api: (uids) ->
           ids = encodeURIComponent uids.join(',')
-          key = '<%= meta.youtubeAPIKey %>'
+          key = Conf['youtubeAPIKey']
           "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=#{ids}&fields=items%28id%2Csnippet%28title%29%29&key=#{key}"
         text: (data, uid) ->
           for item in data.items when item.id is uid

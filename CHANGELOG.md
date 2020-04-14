@@ -2,7 +2,78 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.17
+
+**v1.14.17.1** *(2020-04-03)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.1/builds/4chan-X-noupdate.crx)]
+- Fix 'Mark Read' link for 'Unread Line in Index' being placed in wrong position on smuglo.li.
+
+**v1.14.17.0** *(2020-04-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.16.7.
+- Preliminary support for new Kissu UI.
+
+### v1.14.16
+
+**v1.14.16.7** *(2020-03-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.7/builds/4chan-X-noupdate.crx)]
+- Fix bug causing some sections on advanced settings not to show up outside 4chan.
+- Sauce: Update DeviantArt URL format (#2563) and ImgOps URL format.
+- Embedding: Update Gfycat, LiveLeak, and Openings.moe embedding, and fix minor bugs.
+
+**v1.14.16.6** *(2020-03-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.6/builds/4chan-X-noupdate.crx)]
+- Fix description exceeding maximum length.
+
+**v1.14.16.5** *(2020-03-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.5/builds/4chan-X-noupdate.crx)]
+- Enable 4chan X by default on more sites.
+
+**v1.14.16.4** *(2020-02-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.4/builds/4chan-X-noupdate.crx)]
+- Fix for unclosed link in https://sushigirl.us/ announcement.
+
+**v1.14.16.3** *(2020-01-21)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.3/builds/4chan-X-noupdate.crx)]
+- Update Vocaroo embedding. #2528
+
+**v1.14.16.2** *(2020-01-01)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.2/builds/4chan-X-noupdate.crx)]
+- Make sure audio element with added controls is not collapsed.
+
+**v1.14.16.1** *(2019-12-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.1/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.15.3: Update location of archive list. #2520
+
+**v1.14.16.0** *(2019-12-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.16.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.15.2.
+- Fix parsing of spoilered images on kissu.moe.
+
+### v1.14.15
+
+**v1.14.15.3** *(2019-12-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.3/builds/4chan-X-noupdate.crx)]
+- Update location of archive list. #2520
+
+**v1.14.15.2** *(2019-12-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.2/builds/4chan-X-noupdate.crx)]
+- Display message when noscript captcha is disabled, and link to open list of alternate imageboards. #1539 #2500
+
+**v1.14.15.1** *(2019-12-17)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.1/builds/4chan-X-noupdate.crx)]
+- Enable 4chan X by default on more sites.
+- Fix spurious linkification bug on infinity-based sites. #2356
+- Fix clash between 4chan X header bar and native header bars. #2171
+- Fix unwanted spaces in full board list on Tinyboard sites.
+
+**v1.14.15.0** *(2019-12-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.15.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.14.5.
+- Support archived threads on kissu.moe.
+- Fix display of board names containing special characters in custom board list. #2473
+- Increase link title cache size. #2327
+- Add option to use your own Youtube API key. #2327
+- %URL in Sauce uses full image when extension is .jpeg.
+
 ### v1.14.14
+
+**v1.14.14.5** *(2019-12-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.5/builds/4chan-X-noupdate.crx)]
+- Never mark Youtube videos as 'Forbidden or Private' since 403 errors are most likely from API throttling. #2327
+- Update for changes in Tegaki (4chan drawing script). #2467
+
+**v1.14.14.4** *(2019-09-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.4/builds/4chan-X-noupdate.crx)]
+- Merge v1.14.13.4: Update for quotelink changes on kissu.moe.
+- Don't try to insert header etc. on .rss URLs.
+
+**v1.14.14.3** *(2019-09-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.3/builds/4chan-X-noupdate.crx)]
+- Fix bug in handling captcha errors when using captcha prerequest.
 
 **v1.14.14.2** *(2019-09-12)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.14.2/builds/4chan-X-noupdate.crx)]
 - (saxamaphone69) CSS Fix for Post Jumper so it doesn't show up in catalog.
@@ -19,6 +90,9 @@
 - Provide a visual indication that the captcha is loading from the captcha service.
 
 ### v1.14.13
+
+**v1.14.13.4** *(2019-09-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.4/builds/4chan-X-noupdate.crx)]
+- Update for quotelink changes on kissu.moe.
 
 **v1.14.13.3** *(2019-09-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.13.3/builds/4chan-X-noupdate.crx)]
 - Move most of the pass message text to the wiki where we can let anyone edit it.
