@@ -335,14 +335,10 @@ Main =
     if g.VIEW is 'catalog'
       Main.initCatalog()
     else if !Index.enabled
-<<<<<<< HEAD
-      Main.initThread()
-=======
       if g.SITE.awaitBoard
         g.SITE.awaitBoard Main.initThread
       else
         Main.initThread()
->>>>>>> f8c2483541bf2ff0195ec1241b62d73cbb43ec09
     else
       Main.expectInitFinished = true
       $.event '4chanXInitFinished'

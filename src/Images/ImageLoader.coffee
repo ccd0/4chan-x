@@ -21,7 +21,7 @@ ImageLoader =
       href: 'javascript:;'
       title: 'Prefetch Images'
       className: 'fourchan-x--icon icon--large disabled'
-    $.extend el, `<%= html('<span class="icon--alt-text">Prefetch</span>&{Icons.bolt}') %>`
+    Icon.set el, 'bolt', 'Prefetch'
 
     $.on el, 'click', @toggle
 

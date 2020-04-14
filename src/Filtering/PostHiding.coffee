@@ -158,8 +158,9 @@ PostHiding =
 
   makeButton: (post, type) ->
     span = $.el 'span',
-      className:   "fourchan-x--icon icon--small"
-    $.extend span, `<%= html('&{type === "hide" ? Icons.minus_square_o : Icons.plus_square_o}') %>`
+      className: 'fourchan-x--icon icon--small'
+    icon = (if type is 'hide' then 'minus_square_o' else 'plus_square_o')
+    Icon.set span, icon
     a = $.el 'a',
       className: "#{type}-reply-button"
       href:      'javascript:;'

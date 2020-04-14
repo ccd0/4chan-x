@@ -75,50 +75,19 @@ body.hasDropDownNav{
 }
 
 /* Icons */
-.fourchan-x--icon {
-  display: -webkit-inline-flex;
-  display: inline-flex;
-  -webkit-justify-content: center;
-  justify-content: center;
-  -webkit-align-items: center;
-  align-items: center;
-  width: 13px;
-  height: 13px;
-}
-.fourchan-x--icon.icon--small {
-  width: 11px;
-  height: 11px;
-}
-.fourchan-x--icon.icon--large {
-  width: 14px;
+.fourchan-x--icon > .inline-svg--fa {
   height: 14px;
+  margin: -11px 0 -3px;
 }
-.fourchan-x--icon .inline-svg--fa {
-  height: 100%;
-  width: 100%;
-}
-:root.shortcut-icons #shortcuts .fourchan-x--icon {
-  position: relative;
-  top: 1px;
-}
-:root.shortcut-icons #shortcuts .icon--alt-text {
-  display: none;
-}
-:root:not(.shortcut-icons) #shortcuts .fourchan-x--icon {
-  height: auto;
-  width: auto;
-}
-:root:not(.shortcut-icons) #shortcuts .fourchan-x--icon .inline-svg--fa {
+:root.shortcut-icons #shortcuts .icon--alt-text,
+:root:not(.shortcut-icons) #shortcuts .fourchan-x--icon > .inline-svg--fa {
   display: none;
 }
 :root.shortcut-icons .shortcut.brackets-wrap::before,
 :root.shortcut-icons .shortcut.brackets-wrap::after {
   display: none;
 }
-.download-button {
-  vertical-align: text-bottom;
-}
-.fa-spin {
+.fa-spin > .inline-svg--fa {
   -webkit-animation: spin 2s infinite linear;
   -moz-animation: spin 2s infinite linear;
   -o-animation: spin 2s infinite linear;
@@ -973,9 +942,6 @@ div[data-checked="false"] > .suboption-list {
   vertical-align: text-top;
   padding-left: 2px;
 }
-.catalog-stats > .menu-button {
-  width: 8px;
-}
 .catalog-stats {
   font-size: 10px;
   font-weight: 700;
@@ -1280,7 +1246,7 @@ textarea.copy-text-element {
 .watch-thread-link {
   opacity: 0.2;
   position: relative;
-  top: 2px;
+  top: -2px;
 }
 .watch-thread-link.watched {
   opacity: 1;
@@ -2076,7 +2042,7 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
   color: #e00;
   padding: 1px;
 }
-.remove .fourchan-x--icon {
+.remove > .fourchan-x--icon > .inline-svg--fa {
   -webkit-filter: drop-shadow(0 0 2px #000);
   filter: drop-shadow(0 0 2px #000);
 }
@@ -2145,8 +2111,6 @@ a:only-of-type > .remove {
 #thread-watcher .menu-button,
 .stub > .menu-button {
   margin: 0 3px;
-  height: 8px;
-  width: 8px;
 }
 #menu {
   position: fixed;

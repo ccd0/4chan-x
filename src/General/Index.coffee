@@ -46,7 +46,7 @@ Index =
       className: 'fourchan-x--icon icon--large'
       title: 'Refresh'
       href: 'javascript:;'
-    $.extend @button, `<%= html('<span class="icon--alt-text">Refresh Index</span>&{Icons.refresh}') %>`
+    Icon.set @button, 'refresh', 'Refresh Index'
     $.on @button, 'click', -> Index.update()
     Header.addShortcut 'index-refresh', @button, 590
 

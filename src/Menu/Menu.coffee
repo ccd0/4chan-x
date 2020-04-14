@@ -6,7 +6,7 @@ Menu =
       className: 'menu-button fourchan-x--icon icon--small'
       href:      'javascript:;'
 
-    $.extend @button, `<%= html('&{Icons.angle_down}') %>`
+    Icon.set @button, 'angle_down'
 
     @menu = new UI.Menu 'post'
     Callbacks.Post.push
