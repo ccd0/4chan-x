@@ -1,7 +1,6 @@
 var fs = require('fs');
 var path = require('path');
 var parser = require('sax').parser(true);
-var BoundingHelper = require('svg-boundings');
 var svgo = new (require('svgo'))();
 
 var variables = require.resolve('font-awesome/less/variables.less');
@@ -20,21 +19,19 @@ for (var line of lines) {
 var glyphs = new Map();
 var parser = require('sax').parser(true);
 parser.onopentag = function(x) {
-  if (x.name == 'glyph' && x.attributes.unicode && x.attributes.d) {
-    glyphs.set(x.attributes.unicode, x.attributes.d);
+  var a = x.attributes;
+  if (x.name == 'glyph' && a.unicode && a.d) {
+    glyphs.set(a.unicode, a);
   }
 };
 parser.write(fs.readFileSync(font)).close();
 
 async function generate(name) {
-  var path = glyphs.get(characters.get(name));
-  if (!path) {
+  var glyph = glyphs.get(characters.get(name));
+  if (!glyph) {
     throw new Error('Icon not found');
   }
-  var bounds = BoundingHelper.path({type: 'path', d: path}, true);
-  var translateX = -Math.floor(bounds.left);
-  var translateY = Math.ceil(bounds.bottom);
-  var svg = `<svg xmlns="http://www.w3.org/2000/svg" class="inline-svg--fa" viewBox="${bounds.left + translateX} ${-bounds.bottom + translateY} ${bounds.width} ${bounds.height}"><g transform="scale(1 -1) translate(${translateX}, ${-translateY})"><path fill="currentColor" d="${path}"/></g></svg>`;
+  var svg = `<svg xmlns="http://www.w3.org/2000/svg" class="inline-svg--fa" viewBox="0 0 ${glyph['horiz-adv-x'] || 1536} 1792"><g transform="scale(1 -1) translate(0, -1536)"><path fill="currentColor" d="${glyph.d}"/></g></svg>`;
   svg = (await svgo.optimize(svg)).data;
   return svg;
 }
