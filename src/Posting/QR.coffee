@@ -35,10 +35,10 @@ QR =
       cb:   @node
 
     @shortcut = sc = $.el 'a',
-      className: 'fa fa-comment-o disabled'
-      textContent: 'QR'
+      className: 'fourchan-x--icon icon--large disabled'
       title: 'Quick Reply'
       href: 'javascript:;'
+    Icon.set sc, 'comment_o', 'QR'
     $.on sc, 'click', ->
       return unless QR.postingIsEnabled
       if Conf['Persistent QR'] or !QR.nodes or QR.nodes.el.hidden

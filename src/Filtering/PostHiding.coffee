@@ -158,8 +158,9 @@ PostHiding =
 
   makeButton: (post, type) ->
     span = $.el 'span',
-      className:   "fa fa-#{if type is 'hide' then 'minus' else 'plus'}-square-o"
-      textContent: ""
+      className: 'fourchan-x--icon icon--small'
+    icon = (if type is 'hide' then 'minus_square_o' else 'plus_square_o')
+    Icon.set span, icon
     a = $.el 'a',
       className: "#{type}-reply-button"
       href:      'javascript:;'
@@ -183,7 +184,7 @@ PostHiding =
 
   toggle: ->
     post = Get.postFromNode @
-    PostHiding[(if post.isHidden then 'show' else 'hide')] post 
+    PostHiding[(if post.isHidden then 'show' else 'hide')] post
     PostHiding.saveHiddenState post, post.isHidden
 
   hide: (post, makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->

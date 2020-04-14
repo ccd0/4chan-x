@@ -20,8 +20,8 @@ ImageLoader =
     el = $.el 'a',
       href: 'javascript:;'
       title: 'Prefetch Images'
-      className: 'fa fa-bolt disabled'
-      textContent: 'Prefetch'
+      className: 'fourchan-x--icon icon--large disabled'
+    Icon.set el, 'bolt', 'Prefetch'
 
     $.on el, 'click', @toggle
 

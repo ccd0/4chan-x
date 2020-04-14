@@ -1,5 +1,5 @@
 {
-  "esnext": true,
+  "esversion": 8,
   "undef":  true,
   "unused": true,
   "node":   true

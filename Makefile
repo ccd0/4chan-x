@@ -32,7 +32,7 @@ version = $(shell node -p "JSON.parse(require('fs').readFileSync('version.json')
 
 source_directories := \
  globals config css platform classes site \
- Archive Filtering General Images Linkification \
+ Archive Filtering General Icons Images Linkification \
  Menu Miscellaneous Monitoring Posting Quotelinks \
  main
 
@@ -51,8 +51,6 @@ uses_tests_enabled := \
 
 imports_src/globals/globals.js := \
  version.json
-imports_src/css/CSS.js := \
- node_modules/font-awesome/fonts/fontawesome-webfont.woff
 imports_src/Monitoring/Favicon.coffee := \
  src/meta/icon128.png
 

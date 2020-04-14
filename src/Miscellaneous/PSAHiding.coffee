@@ -25,8 +25,9 @@ PSAHiding =
 
     PSAHiding.btn = btn = $.el 'a',
       title:     'Mark announcement as read and hide.'
-      className: 'hide-announcement-button fa fa-minus-square'
+      className: 'hide-announcement-button fourchan-x--icon'
       href:      'javascript:;'
+    Icon.set btn, 'minus_square'
     $.on btn, 'click', PSAHiding.toggle
     if psa.firstChild?.tagName is 'HR'
       $.after psa.firstChild, btn

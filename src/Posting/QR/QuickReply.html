@@ -40,12 +40,12 @@
         <input type="checkbox" id="qr-file-spoiler" title="Spoiler image">
         <a class="checkbox-letter">S</a>
       </label>
-      <a id="qr-oekaki-button" title="Edit in Tegaki"><i class="fa fa-edit"></i></a>
-      <a href="javascript:;" id="qr-filerm" title="Remove file"><i class="fa fa-times-circle"></i></a>
-      <a id="url-button" title="Post from URL"><i class="fa fa-link"></i></a>
-      <a hidden id="paste-area" title="Select to paste images" class="fa fa-clipboard" tabindex="-1" contentEditable="true"></a>
-      <a id="custom-cooldown-button" title="Toggle custom cooldown" class="disabled"><i class="fa fa-clock-o"></i></a>
-      <a id="dump-button" title="Dump list"><i class="fa fa-plus-square"></i></a>
+      <a id="qr-oekaki-button" class="fourchan-x--icon" title="Edit in Tegaki" data-icon="edit">&{Icons.edit}</a>
+      <a href="javascript:;" id="qr-filerm" class="fourchan-x--icon" title="Remove file" data-icon="times_circle">&{Icons.times_circle}</a>
+      <a id="url-button" class="fourchan-x--icon" title="Post from URL" data-icon="link">&{Icons.link}</a>
+      <a hidden id="paste-area" title="Select to paste images" class="fourchan-x--icon" tabindex="-1" contentEditable="true" data-icon="clipboard">&{Icons.clipboard}</a>
+      <a id="custom-cooldown-button" class="fourchan-x--icon disabled" title="Toggle custom cooldown" data-icon="clock">&{Icons.clock_o}</a>
+      <a id="dump-button" class="fourchan-x--icon" title="Dump list" data-icon="plus_square">&{Icons.plus_square}</a>
     </span>
     <input type="submit">
   </div>
@@ -62,4 +62,4 @@
 </form>
 <datalist id="list-name"></datalist>
 <datalist id="list-email"></datalist>
-<datalist id="list-sub"></datalist> 
+<datalist id="list-sub"></datalist>
