@@ -76,8 +76,7 @@ body.hasDropDownNav{
 
 /* Icons */
 .fourchan-x--icon > .inline-svg--fa {
-  height: 14px;
-  margin: -11px 0 -3px;
+  vertical-align: middle;
 }
 :root.shortcut-icons #shortcuts .icon--alt-text,
 :root:not(.shortcut-icons) #shortcuts .fourchan-x--icon > .inline-svg--fa {
@@ -104,6 +103,15 @@ body.hasDropDownNav{
 @keyframes spin {
   0% {transform:rotate(0deg);}
   100% {transform:rotate(359deg);}
+}
+.catalog-stats > .menu-button > .inline-svg--fa,
+#thread-watcher > .move .inline-svg--fa,
+#qr-filename-container .inline-svg--fa {
+    position: relative;
+    top: -.1em;
+}
+.watch-thread-link > .inline-svg--fa {
+    vertical-align: text-top;
 }
 
 /* 4chan style fixes */
@@ -410,14 +418,13 @@ audio.controls-added {
 }
 .shortcut {
   margin-left: 3px;
-  vertical-align: middle;
 }
 :root.shortcut-icons .native-settings {
   font-size: 0;
   color: transparent;
   display: inline-block;
-  vertical-align: top;
-  height: 12px;
+  vertical-align: middle;
+  height: 13px;
   width: 14px;
   background: url('//s.4cdn.org/image/favicon.ico') 0px -1px no-repeat;
 }
@@ -1245,8 +1252,6 @@ textarea.copy-text-element {
 }
 .watch-thread-link {
   opacity: 0.2;
-  position: relative;
-  top: -2px;
 }
 .watch-thread-link.watched {
   opacity: 1;
@@ -1545,7 +1550,7 @@ input[name="Default Volume"] {
 .hide-reply-button {
   float: left;
   margin-right: 4px;
-  padding: 2px;
+  padding: 0 2px;
 }
 $site$infoRoot a.hide-reply-button {
   margin-right: 6px;
@@ -1564,7 +1569,6 @@ $site$infoRoot a.hide-reply-button {
   left: 1px;
 }
 .hide-thread-button {
-  margin-top: -1px;
   width: 11px;
 }
 .stub ~ :not(.threadDivider) {
