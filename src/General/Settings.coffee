@@ -539,6 +539,9 @@ Settings =
           /\/\/imgops\.com\/%URL/g
           '//imgops.com/start?url=%URL'
         )
+    if compareString < '00001.00014.00017.00002'
+      if data['jsWhitelist']?
+        set 'jsWhitelist', data['jsWhitelist'] + '\n\nhttps://hcaptcha.com\nhttps://*.hcaptcha.com'
     changes
 
   loadSettings: (data, cb) ->
