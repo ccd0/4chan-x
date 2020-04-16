@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.17.1
+// @version      1.14.17.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -215,7 +215,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.17.1',
+  VERSION:   '1.14.17.2',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -492,7 +492,7 @@ Config = (function() {
       'QR.personas': "#options:\"sage\";boards:jp;always",
       sjisPreview: false
     },
-    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\nhttps://cdnjs.cloudflare.com\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'\n\n# Banner ads\n#http://s.zkcdn.net/ados.js\n#https://s.zkcdn.net/ados.js\n#http://engine.4chan-ads.org\n#https://engine.4chan-ads.org',
+    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\nhttps://cdnjs.cloudflare.com\nhttps://hcaptcha.com\nhttps://*.hcaptcha.com\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'',
     captchaLanguage: '',
     time: '%m/%d/%y(%a)%H:%M:%S',
     timeLocale: '',
@@ -13460,6 +13460,11 @@ Settings = (function() {
       if (compareString < '00001.00014.00016.00007') {
         if (data['sauces'] != null) {
           set('sauces', data['sauces'].replace(/https:\/\/www\.deviantart\.com\/gallery\/#\/d%\$1%\$2;regexp:\/\^\\w\+_by_\\w\+\[_-\]d\(\[\\da-z\]\{6\}\)\\b\|\^d\(\[\\da-z\]\{6\}\)-\[\\da-z\]\{8\}-\//g, 'javascript:void(open("https://www.deviantart.com/"+%$1.replace(/_/g,"-")+"/art/"+parseInt(%$2,36)));regexp:/^\\w+_by_(\\w+)[_-]d([\\da-z]{6})\\b/').replace(/\/\/imgops\.com\/%URL/g, '//imgops.com/start?url=%URL'));
+        }
+      }
+      if (compareString < '00001.00014.00017.00002') {
+        if (data['jsWhitelist'] != null) {
+          set('jsWhitelist', data['jsWhitelist'] + '\n\nhttps://hcaptcha.com\nhttps://*.hcaptcha.com');
         }
       }
       return changes;

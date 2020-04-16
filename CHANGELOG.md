@@ -4,6 +4,9 @@
 
 ### v1.14.17
 
+**v1.14.17.2** *(2020-04-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.2/builds/4chan-X-noupdate.crx)]
+- Add hcaptcha.com and subdomains to Javascript Whitelist so that captcha on Cloudflare security check operates properly. #2584
+
 **v1.14.17.1** *(2020-04-03)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.1/builds/4chan-X-noupdate.crx)]
 - Fix 'Mark Read' link for 'Unread Line in Index' being placed in wrong position on smuglo.li.
 
