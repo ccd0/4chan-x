@@ -1023,6 +1023,7 @@ div[data-checked="false"] > .suboption-list {
 }
 .catalog-post .prettyprinted {
   max-width: 100%;
+  -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
 .catalog-post .MathJax_Display {
@@ -1711,6 +1712,7 @@ input.field.tripped:not(:hover):not(:focus) {
 }
 .field {
   -moz-box-sizing: border-box;
+  box-sizing: border-box;
   margin: 0px;
   padding: 2px 4px 3px;
 }
@@ -1970,6 +1972,7 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
 }
 .qr-preview {
   -moz-box-sizing: border-box;
+  box-sizing: border-box;
   counter-increment: thumbnails;
   cursor: move;
   display: inline-block;
@@ -2050,7 +2053,9 @@ a:only-of-type > .remove {
   position: absolute;
   bottom: 20px;
   right: 10px;
+  -webkit-transform: translateY(-50%);
   -moz-transform: translateY(-50%);
+  transform: translateY(-50%);
 }
 .textarea {
   position: relative;
