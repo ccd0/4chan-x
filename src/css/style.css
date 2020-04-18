@@ -2054,7 +2054,6 @@ a:only-of-type > .remove {
   bottom: 20px;
   right: 10px;
   -webkit-transform: translateY(-50%);
-  -moz-transform: translateY(-50%);
   transform: translateY(-50%);
 }
 .textarea {
