@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.17.2
+// @version      1.14.17.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -215,7 +215,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.17.2',
+  VERSION:   '1.14.17.3',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -23523,10 +23523,10 @@ Captcha = {};
       if (Conf['captchaLanguage'].trim() || Conf['Captcha Fixes']) {
         if ((ref = location.hostname) === 'boards.4chan.org' || ref === 'boards.4channel.org') {
           return $.onExists(doc, '#captchaFormPart', function(node) {
-            return $.onExists(node, 'iframe', Captcha.replace.iframe);
+            return $.onExists(node, 'iframe[src^="https://www.google.com/recaptcha/"]', Captcha.replace.iframe);
           });
         } else {
-          return $.onExists(doc, 'iframe', Captcha.replace.iframe);
+          return $.onExists(doc, 'iframe[src^="https://www.google.com/recaptcha/"]', Captcha.replace.iframe);
         }
       }
     },
@@ -23542,7 +23542,7 @@ Captcha = {};
       $.rm(original);
       insert = function() {
         span.innerHTML = noscript.textContent;
-        return Captcha.replace.iframe($('iframe', span));
+        return Captcha.replace.iframe($('iframe[src^="https://www.google.com/recaptcha/"]', span));
       };
       if ((toggle = $('#togglePostFormLink a, #form-link'))) {
         return $.on(toggle, 'click', insert);
@@ -23810,7 +23810,7 @@ Captcha = {};
         $.queueTask((function(_this) {
           return function() {
             var iframe;
-            if (_this.nodes.container && d.activeElement === _this.nodes.counter && (iframe = $('iframe', _this.nodes.container))) {
+            if (_this.nodes.container && d.activeElement === _this.nodes.counter && (iframe = $('iframe[src^="https://www.google.com/recaptcha/"]', _this.nodes.container))) {
               iframe.focus();
               return QR.focus();
             }
@@ -23884,7 +23884,7 @@ Captcha = {};
         ref = mutation.addedNodes;
         for (j = 0, len1 = ref.length; j < len1; j++) {
           node = ref[j];
-          if ((iframe = $.x('./descendant-or-self::iframe', node))) {
+          if ((iframe = $.x('./descendant-or-self::iframe[starts-with(@src, "https://www.google.com/recaptcha/")]', node))) {
             this.setupIFrame(iframe);
           }
           if ((textarea = $.x('./descendant-or-self::textarea', node))) {

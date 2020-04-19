@@ -4,6 +4,9 @@
 
 ### v1.14.17
 
+**v1.14.17.3** *(2020-04-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.3/builds/4chan-X-noupdate.crx)]
+- Fix captcha loading issue when captcha language option is used. #2531
+
 **v1.14.17.2** *(2020-04-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.17.2/builds/4chan-X-noupdate.crx)]
 - Add hcaptcha.com and subdomains to Javascript Whitelist so that captcha on Cloudflare security check operates properly. #2584
 
