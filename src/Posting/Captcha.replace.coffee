@@ -8,9 +8,9 @@ Captcha.replace =
 
     if Conf['captchaLanguage'].trim() or Conf['Captcha Fixes']
       if location.hostname in ['boards.4chan.org', 'boards.4channel.org']
-        $.onExists doc, '#captchaFormPart', (node) -> $.onExists node, 'iframe', Captcha.replace.iframe
+        $.onExists doc, '#captchaFormPart', (node) -> $.onExists node, 'iframe[src^="https://www.google.com/recaptcha/"]', Captcha.replace.iframe
       else
-        $.onExists doc, 'iframe', Captcha.replace.iframe
+        $.onExists doc, 'iframe[src^="https://www.google.com/recaptcha/"]', Captcha.replace.iframe
 
   noscript: ->
     return if not ((original = $ '#g-recaptcha') and (noscript = $ 'noscript', original.parentNode))
@@ -20,7 +20,7 @@ Captcha.replace =
     $.rm original
     insert = ->
       span.innerHTML = noscript.textContent
-      Captcha.replace.iframe $('iframe', span)
+      Captcha.replace.iframe $('iframe[src^="https://www.google.com/recaptcha/"]', span)
     if (toggle = $ '#togglePostFormLink a, #form-link')
       $.on toggle, 'click', insert
     else

@@ -69,7 +69,7 @@ Captcha.v2 =
     if @nodes.container
       # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=1226835
       $.queueTask =>
-        if @nodes.container and d.activeElement is @nodes.counter and (iframe = $ 'iframe', @nodes.container)
+        if @nodes.container and d.activeElement is @nodes.counter and (iframe = $ 'iframe[src^="https://www.google.com/recaptcha/"]', @nodes.container)
           iframe.focus()
           QR.focus() # Event handler not fired in Firefox
       return
@@ -120,7 +120,7 @@ Captcha.v2 =
   afterSetup: (mutations) ->
     for mutation in mutations
       for node in mutation.addedNodes
-        @setupIFrame   iframe   if (iframe   = $.x './descendant-or-self::iframe',   node)
+        @setupIFrame   iframe   if (iframe   = $.x './descendant-or-self::iframe[starts-with(@src, "https://www.google.com/recaptcha/")]',   node)
         @setupTextArea textarea if (textarea = $.x './descendant-or-self::textarea', node)
     return
 
