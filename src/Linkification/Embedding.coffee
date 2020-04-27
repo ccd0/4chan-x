@@ -263,8 +263,8 @@ Embedding =
         $.el 'iframe',
           src: "https://clyp.it/#{a.dataset.uid}/widget"
       title:
-        api: (uid) -> "https://api.clyp.it/#{uid}"
-        text: (_) -> _.Title
+        api: (uid) -> "https://api.clyp.it/oembed?url=https://clyp.it/#{uid}"
+        text: (_) -> _.title
     ,
       key: 'Dailymotion'
       regExp:  /^\w+:\/\/(?:(?:www\.)?dailymotion\.com\/(?:embed\/)?video|dai\.ly)\/([A-Za-z0-9]+)[^?]*(.*)/
