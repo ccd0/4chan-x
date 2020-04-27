@@ -49,7 +49,7 @@
 // @connect      soundcloud.com
 // @connect      api.streamable.com
 // @connect      vimeo.com
-// @connect      www.googleapis.com
+// @connect      noembed.com
 // @connect      *
 <%=
   meta.grants.map(function(grant) {

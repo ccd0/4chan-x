@@ -505,15 +505,8 @@ Embedding =
         el.setAttribute "allowfullscreen", "true"
         el
       title:
-        batchSize: 50
-        api: (uids) ->
-          ids = encodeURIComponent uids.join(',')
-          key = '<%= meta.youtubeAPIKey %>'
-          "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=#{ids}&fields=items%28id%2Csnippet%28title%29%29&key=#{key}"
-        text: (data, uid) ->
-          for item in data.items when item.id is uid
-            return item.snippet.title
-          'Not Found'
+        api: (uid) -> "https://noembed.com/embed?url=https%3A//www.youtube.com/watch%3Fv%3D#{uid}&format=json"
+        text: (_) -> _.title
       preview:
         url: (uid) -> "https://img.youtube.com/vi/#{uid}/0.jpg"
         height: 360
