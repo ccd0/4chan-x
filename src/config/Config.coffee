@@ -1181,5 +1181,3 @@ Config =
   passMessageClosed: false
 
   'Prerequest Captcha': false
-
-  youtubeAPIKey: '<%= meta.youtubeAPIKey %>'

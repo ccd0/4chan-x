@@ -548,7 +548,7 @@ Embedding =
         ignore403: true
         api: (uids) ->
           ids = encodeURIComponent uids.join(',')
-          key = Conf['youtubeAPIKey']
+          key = '<%= meta.youtubeAPIKey %>'
           "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=#{ids}&fields=items%28id%2Csnippet%28title%29%29&key=#{key}"
         text: (data, uid) ->
           for item in data.items when item.id is uid
