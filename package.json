@@ -24,11 +24,11 @@
     "captchaServiceLinks": [
       [
         "captcha.guru",
-        "https://captcha.guru/en/regen/?ref=104127"
+        "https://captcha.guru/"
       ],
       [
         "2captcha",
-        "https://2captcha.com?from=7935487"
+        "https://2captcha.com/"
       ]
     ],
     "distBranch": "gh-pages",
