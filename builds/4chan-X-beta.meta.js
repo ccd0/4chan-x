@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.17.3
+// @version      1.14.18.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -95,7 +95,7 @@
 // @connect      soundcloud.com
 // @connect      api.streamable.com
 // @connect      vimeo.com
-// @connect      www.googleapis.com
+// @connect      noembed.com
 // @connect      *
 // @grant        GM_getValue
 // @grant        GM_setValue
