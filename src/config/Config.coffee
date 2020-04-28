@@ -1167,6 +1167,7 @@ Config =
   captchaServiceDomain: ''
   captchaServiceKey: [{
     'https://api.captcha.guru': ''
+    'https://azcaptcha.com':    ''
     'https://2captcha.com':     ''
   }]
 
