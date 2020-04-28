@@ -195,7 +195,7 @@ Embedding =
             text = link.textContent
         when 404
           "Not Found"
-        when 403
+        when 403, 401
           "Forbidden or Private"
         else
           "#{status}'d"
