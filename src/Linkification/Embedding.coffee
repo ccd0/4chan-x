@@ -177,11 +177,14 @@ Embedding =
         $.toggleClass @, 'embed-removed'
 
     title: (req, data) ->
-      return unless req.status
-
       {key, uid, options, link, post} = data
-      {status} = req
       service = Embedding.types[key].title
+
+      {status} = req
+      if status in [200, 304] and service.status
+        status = service.status(req.response)[0]
+
+      return unless status
 
       text = "[#{key}] #{switch status
         when 200, 304
@@ -507,6 +510,12 @@ Embedding =
       title:
         api: (uid) -> "https://noembed.com/embed?url=https%3A//www.youtube.com/watch%3Fv%3D#{uid}&format=json"
         text: (_) -> _.title
+        status: (_) ->
+          if _.error
+            m = _.error.match(/^(\d*)\s*(.*)/)
+            [+m[1], m[2]]
+          else
+            [200, 'OK']
       preview:
         url: (uid) -> "https://img.youtube.com/vi/#{uid}/0.jpg"
         height: 360
