@@ -4,6 +4,9 @@
 
 ### v1.14.18
 
+**v1.14.18.1** *(2020-04-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.18.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.18.1/builds/4chan-X-noupdate.crx)]
+- Support smuglo.li fallback domains.
+
 **v1.14.18.0** *(2020-04-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.18.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.18.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.17.3.
 - Switch to noembed.com for Youtube titles. This should fix most Youtube titles not loading. #2327
