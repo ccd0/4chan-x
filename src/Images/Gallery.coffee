@@ -341,7 +341,7 @@ Gallery =
       {current, frame} = Gallery.nodes
       {style} = current
 
-      if Conf['Stretch to Fit'] and (dim = g.posts.get(current.dataset.post)?.file.dimensions)
+      if Conf['Stretch to Fit'] and (dim = g.posts.get(current.dataset.post)?.files[+current.dataset.file].dimensions)
         [width, height] = dim.split 'x'
         containerWidth = frame.clientWidth
         containerHeight = doc.clientHeight - 25
