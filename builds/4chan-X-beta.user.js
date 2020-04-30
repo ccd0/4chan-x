@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.18.0
+// @version      1.14.18.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -47,6 +47,9 @@
 // @include      https://www.ponyville.us/*
 // @include      https://samachan.org/*
 // @include      https://smuglo.li/*
+// @include      https://notso.smuglo.li/*
+// @include      https://smugloli.net/*
+// @include      https://smug.nepu.moe/*
 // @include      https://sportschan.org/*
 // @include      https://www.sportschan.org/*
 // @include      https://sushigirl.us/*
@@ -215,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.18.0',
+  VERSION:   '1.14.18.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -8806,6 +8809,15 @@ Site = (function() {
       },
       '4cdn.org': {
         canonical: '4chan.org'
+      },
+      'notso.smuglo.li': {
+        canonical: 'smuglo.li'
+      },
+      'smugloli.net': {
+        canonical: 'smuglo.li'
+      },
+      'smug.nepu.moe': {
+        canonical: 'smuglo.li'
       }
     },
     init: function(cb) {
