@@ -3,6 +3,9 @@ Site =
     '4chan.org':    {software: 'yotsuba'}
     '4channel.org': {canonical: '4chan.org'}
     '4cdn.org':     {canonical: '4chan.org'}
+    'notso.smuglo.li': {canonical: 'smuglo.li'}
+    'smugloli.net':    {canonical: 'smuglo.li'}
+    'smug.nepu.moe':   {canonical: 'smuglo.li'}
 
   init: (cb) ->
     $.extend Conf['siteProperties'], Site.defaultProperties
