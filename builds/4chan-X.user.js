@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.17.3
+// @version      1.14.18.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -47,6 +47,9 @@
 // @include      https://www.ponyville.us/*
 // @include      https://samachan.org/*
 // @include      https://smuglo.li/*
+// @include      https://notso.smuglo.li/*
+// @include      https://smugloli.net/*
+// @include      https://smug.nepu.moe/*
 // @include      https://sportschan.org/*
 // @include      https://www.sportschan.org/*
 // @include      https://sushigirl.us/*
@@ -95,7 +98,7 @@
 // @connect      soundcloud.com
 // @connect      api.streamable.com
 // @connect      vimeo.com
-// @connect      www.googleapis.com
+// @connect      noembed.com
 // @connect      *
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -215,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.17.3',
+  VERSION:   '1.14.18.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -587,16 +590,15 @@ Config = (function() {
     captchaServiceKey: [
       {
         'https://api.captcha.guru': '',
+        'https://azcaptcha.com': '',
         'https://2captcha.com': ''
       }
     ],
     fourchanImageHost: 'i.4cdn.org',
     hiddenPSAList: [{}],
     knownBanners: '0.jpg,1.jpg,2.jpg,4.jpg,6.jpg,7.jpg,8.jpg,9.jpg,10.jpg,11.jpg,12.jpg,13.jpg,14.jpg,16.jpg,17.jpg,18.jpg,19.jpg,20.jpg,21.jpg,22.jpg,24.jpg,25.jpg,26.jpg,28.jpg,29.jpg,33.jpg,38.jpg,39.jpg,43.jpg,44.jpg,45.jpg,46.jpg,47.jpg,52.jpg,54.jpg,57.jpg,59.jpg,60.jpg,61.jpg,64.jpg,66.jpg,67.jpg,69.jpg,71.jpg,72.jpg,76.jpg,77.jpg,81.jpg,82.jpg,83.jpg,84.jpg,88.jpg,90.jpg,91.jpg,96.jpg,98.jpg,99.jpg,100.jpg,104.jpg,106.jpg,116.jpg,119.jpg,137.jpg,140.jpg,148.jpg,149.jpg,150.jpg,154.jpg,156.jpg,157.jpg,158.jpg,159.jpg,161.jpg,162.jpg,164.jpg,165.jpg,166.jpg,167.jpg,168.jpg,169.jpg,170.jpg,171.jpg,172.jpg,173.jpg,174.jpg,175.jpg,176.jpg,178.jpg,179.jpg,180.jpg,181.jpg,182.jpg,183.jpg,186.jpg,189.jpg,190.jpg,192.jpg,193.jpg,194.jpg,197.jpg,198.jpg,200.jpg,201.jpg,202.jpg,203.jpg,205.jpg,206.jpg,207.jpg,208.jpg,210.jpg,213.jpg,214.jpg,215.jpg,216.jpg,218.jpg,219.jpg,220.jpg,221.jpg,222.jpg,223.jpg,224.jpg,227.jpg,0.png,1.png,2.png,3.png,5.png,6.png,9.png,10.png,11.png,12.png,14.png,16.png,19.png,20.png,21.png,22.png,23.png,24.png,26.png,27.png,28.png,29.png,30.png,31.png,32.png,33.png,34.png,37.png,39.png,40.png,41.png,42.png,43.png,44.png,45.png,48.png,49.png,50.png,51.png,52.png,53.png,57.png,58.png,59.png,64.png,66.png,67.png,68.png,69.png,70.png,71.png,72.png,76.png,78.png,79.png,81.png,82.png,85.png,86.png,87.png,89.png,95.png,98.png,100.png,101.png,102.png,105.png,106.png,107.png,109.png,110.png,111.png,112.png,113.png,114.png,115.png,116.png,118.png,119.png,120.png,121.png,122.png,123.png,126.png,128.png,130.png,134.png,136.png,138.png,139.png,140.png,142.png,145.png,146.png,149.png,150.png,151.png,152.png,153.png,154.png,155.png,156.png,157.png,158.png,159.png,160.png,163.png,164.png,165.png,166.png,167.png,168.png,169.png,170.png,171.png,172.png,173.png,174.png,178.png,179.png,180.png,181.png,182.png,184.png,186.png,188.png,190.png,192.png,193.png,194.png,195.png,196.png,197.png,198.png,200.png,202.png,203.png,205.png,206.png,207.png,209.png,212.png,213.png,214.png,216.png,217.png,218.png,219.png,220.png,221.png,222.png,223.png,224.png,225.png,226.png,229.png,231.png,232.png,233.png,234.png,235.png,237.png,238.png,239.png,240.png,241.png,242.png,244.png,245.png,246.png,247.png,248.png,249.png,250.png,253.png,254.png,255.png,256.png,257.png,258.png,259.png,260.png,262.png,268.png,0.gif,1.gif,2.gif,3.gif,4.gif,5.gif,6.gif,7.gif,8.gif,9.gif,10.gif,12.gif,13.gif,14.gif,15.gif,16.gif,18.gif,19.gif,20.gif,21.gif,22.gif,23.gif,24.gif,28.gif,29.gif,30.gif,33.gif,34.gif,35.gif,36.gif,37.gif,39.gif,40.gif,42.gif,44.gif,45.gif,46.gif,48.gif,50.gif,52.gif,54.gif,55.gif,57.gif,58.gif,59.gif,60.gif,61.gif,63.gif,64.gif,66.gif,67.gif,68.gif,69.gif,70.gif,72.gif,73.gif,75.gif,76.gif,77.gif,78.gif,80.gif,81.gif,82.gif,83.gif,86.gif,87.gif,88.gif,92.gif,93.gif,94.gif,95.gif,96.gif,97.gif,98.gif,99.gif,100.gif,101.gif,102.gif,103.gif,104.gif,105.gif,106.gif,108.gif,109.gif,110.gif,111.gif,112.gif,113.gif,115.gif,116.gif,117.gif,118.gif,119.gif,120.gif,122.gif,123.gif,124.gif,127.gif,129.gif,130.gif,131.gif,134.gif,135.gif,136.gif,138.gif,139.gif,141.gif,144.gif,146.gif,148.gif,149.gif,153.gif,154.gif,155.gif,157.gif,158.gif,159.gif,160.gif,161.gif,162.gif,164.gif,166.gif,167.gif,168.gif,169.gif,170.gif,171.gif,172.gif,173.gif,174.gif,175.gif,176.gif,177.gif,178.gif,181.gif,182.gif,183.gif,185.gif,186.gif,187.gif,188.gif,189.gif,190.gif,191.gif,192.gif,193.gif,195.gif,196.gif,197.gif,200.gif,201.gif,202.gif,203.gif,204.gif,205.gif,206.gif,207.gif,208.gif,209.gif,210.gif,211.gif,212.gif,213.gif,214.gif,215.gif,216.gif,217.gif,219.gif,220.gif,221.gif,222.gif,224.gif,225.gif,226.gif,227.gif,228.gif,230.gif,232.gif,233.gif,234.gif,235.gif,238.gif,240.gif,241.gif,243.gif,244.gif,245.gif,246.gif,247.gif,249.gif,250.gif,251.gif,253.gif',
-    cachedTitles: [[]],
     passMessageClosed: false,
-    'Prerequest Captcha': false,
-    youtubeAPIKey: 'AIzaSyB5_zaen_-46Uhz1xGR-lz1YoUMHqCD6CE'
+    'Prerequest Captcha': false
   };
 
   return Config;
@@ -2358,6 +2360,7 @@ div[data-checked=\"false\"] > .suboption-list {\n\
 }\n\
 .catalog-post .prettyprinted {\n\
   max-width: 100%;\n\
+  -moz-box-sizing: border-box;\n\
   box-sizing: border-box;\n\
 }\n\
 .catalog-post .MathJax_Display {\n\
@@ -3030,6 +3033,7 @@ input.field.tripped:not(:hover):not(:focus) {\n\
 }\n\
 .field {\n\
   -moz-box-sizing: border-box;\n\
+  box-sizing: border-box;\n\
   margin: 0px;\n\
   padding: 2px 4px 3px;\n\
 }\n\
@@ -3284,6 +3288,7 @@ input[type=\"checkbox\"]:checked ~ .checkbox-letter {\n\
 }\n\
 .qr-preview {\n\
   -moz-box-sizing: border-box;\n\
+  box-sizing: border-box;\n\
   counter-increment: thumbnails;\n\
   cursor: move;\n\
   display: inline-block;\n\
@@ -3364,7 +3369,8 @@ a:only-of-type > .remove {\n\
   position: absolute;\n\
   bottom: 20px;\n\
   right: 10px;\n\
-  -moz-transform: translateY(-50%);\n\
+  -webkit-transform: translateY(-50%);\n\
+  transform: translateY(-50%);\n\
 }\n\
 .textarea {\n\
   position: relative;\n\
@@ -8803,6 +8809,15 @@ Site = (function() {
       },
       '4cdn.org': {
         canonical: '4chan.org'
+      },
+      'notso.smuglo.li': {
+        canonical: 'smuglo.li'
+      },
+      'smugloli.net': {
+        canonical: 'smuglo.li'
+      },
+      'smug.nepu.moe': {
+        canonical: 'smuglo.li'
       }
     },
     init: function(cb) {
@@ -13541,7 +13556,7 @@ Settings = (function() {
     },
     advanced: function(section) {
       var applyCSS, boardSelect, customCSS, event, input, inputs, interval, items, itemsArchive, j, k, l, len, len1, len2, len3, listImageHost, m, name, ref, ref1, ref2, ref3, ref4, table, textContent, updateArchives, warning;
-      $.extend(section, {innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>External Catalog</legend><div class=\"warning\" data-feature=\"External Catalog\"><code>External Catalog</code> is disabled. This will be used only as a fallback.</div><div>URLs of external catalog sites, where <code>%board</code> is to be replaced by the board name.<br>Each URL should be followed by <code>;boards:</code> and optionally <code>;exclude:</code> and a list of supported/excluded boards in the format explained in the Filter guide.</div><textarea hidden name=\"externalCatalogURLs\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Override 4chan Image Host</legend><div>Change 4chan image links to this domain. Leave blank for no change.</div><div><input name=\"fourchanImageHost\" class=\"field\" spellcheck=\"false\" list=\"list-fourchanImageHost\"></div><datalist id=\"list-fourchanImageHost\"></datalist></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Captcha Solving Service</legend><div>Supported services include <a href=\"https://captcha.guru/en/regen/?ref=104127\" target=\"_blank\">captcha.guru</a>, <a href=\"https://2captcha.com?from=7935487\" target=\"_blank\">2captcha</a>, and any other service implementing the 2captcha API.<br>Leave blank to disable.<div>Domain: <input name=\"captchaServiceDomain\" class=\"field\" spellcheck=\"false\" list=\"list-captchaServiceDomain\"> API Key: <input name=\"captchaServiceKey\" class=\"field\" spellcheck=\"false\"><datalist id=\"list-captchaServiceDomain\"></datalist></div><div><label><input type=\"checkbox\" name=\"Prerequest Captcha\"> Request captcha when you start typing. Quicker but may result some captchas expiring and being wasted.</label></div></fieldset><fieldset><legend>Youtube API Key</legend><div>API key used to fetch Youtube link titles. You can obtain your own key <a href=\"https://console.cloud.google.com/marketplace/details/google/youtube.googleapis.com\" target=\"_blank\">here</a> to make the feature work when the default key exceeds its quota.</div><div><input name=\"youtubeAPIKey\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Open in new tab: <code>g-nt</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div><div><a href=\"https://www.w3.org/International/articles/language-tags/\" target=\"_blank\">Language tag</a>: <input name=\"timeLocale\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>Default pasted content filename</legend><div><input name=\"pastedname\" class=\"field\" spellcheck=\"false\">.png</div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Known Banners</legend><div>List of known banners, used for click-to-change feature.</div><textarea hidden name=\"knownBanners\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"});
+      $.extend(section, {innerHTML: "<fieldset><legend>Archives</legend><div class=\"warning\" data-feature=\"404 Redirect\"><code>404 Redirect</code> is disabled.</div><select id=\"archive-board-select\"></select><table id=\"archive-table\"><thead><th>Thread redirection</th><th>Post fetching</th><th>File redirection</th></thead><tbody></tbody></table><br><div><b>Archive Lists</b>: Each line below should be an archive list in <a href=\"https://github.com/MayhemYDG/archives.json/blob/gh-pages/CONTRIBUTING.md\" target=\"_blank\">this format</a> or a URL to load an archive list from.<br>Archive properties can be overriden by another item with the same <code>uid</code> (or if absent, its <code>name</code>).</div><textarea hidden name=\"archiveLists\" class=\"field\" spellcheck=\"false\"></textarea><button id=\"update-archives\">Update now</button> Last updated: <time id=\"lastarchivecheck\"></time> <label><input type=\"checkbox\" name=\"archiveAutoUpdate\"> Auto-update</label></fieldset><fieldset><legend>External Catalog</legend><div class=\"warning\" data-feature=\"External Catalog\"><code>External Catalog</code> is disabled. This will be used only as a fallback.</div><div>URLs of external catalog sites, where <code>%board</code> is to be replaced by the board name.<br>Each URL should be followed by <code>;boards:</code> and optionally <code>;exclude:</code> and a list of supported/excluded boards in the format explained in the Filter guide.</div><textarea hidden name=\"externalCatalogURLs\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Override 4chan Image Host</legend><div>Change 4chan image links to this domain. Leave blank for no change.</div><div><input name=\"fourchanImageHost\" class=\"field\" spellcheck=\"false\" list=\"list-fourchanImageHost\"></div><datalist id=\"list-fourchanImageHost\"></datalist></fieldset><fieldset><legend>Captcha Language</legend><div>Choose from <a href=\"https://developers.google.com/recaptcha/docs/language\" target=\"_blank\">list of language codes</a>. Leave blank to autoselect.</div><div><input name=\"captchaLanguage\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Captcha Solving Service</legend><div>Supported services include <a href=\"https://captcha.guru/\" target=\"_blank\">captcha.guru</a>, <a href=\"https://azcaptcha.com/\" target=\"_blank\">AZcaptcha</a>, <a href=\"https://2captcha.com/\" target=\"_blank\">2captcha</a>, and any other service implementing the 2captcha API.<br>Leave blank to disable.<div>Domain: <input name=\"captchaServiceDomain\" class=\"field\" spellcheck=\"false\" list=\"list-captchaServiceDomain\"> API Key: <input name=\"captchaServiceKey\" class=\"field\" spellcheck=\"false\"><datalist id=\"list-captchaServiceDomain\"></datalist></div><div><label><input type=\"checkbox\" name=\"Prerequest Captcha\"> Request captcha when you start typing. Quicker but may result some captchas expiring and being wasted.</label></div></fieldset><fieldset><legend>Custom Board Navigation</legend><div><textarea hidden name=\"boardnav\" class=\"field\" spellcheck=\"false\"></textarea></div><span class=\"note\">New lines will be converted into spaces.</span><br><br><div class=\"note\">In the following examples for /g/, <code>g</code> can be changed to a different board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Twitter link (<code>@</code>).</div><div>Board link: <code>g</code></div><div>Archive link: <code>g-archive</code></div><div>Internal archive link: <code>g-expired</code></div><div>Title link: <code>g-title</code></div><div>Board link (Replace with title when on that board): <code>g-replace</code></div><div>Full text link: <code>g-full</code></div><div>Custom text link: <code>g-text:&quot;Install Gentoo&quot;</code></div><div>Index-only link: <code>g-index</code></div><div>Catalog-only link: <code>g-catalog</code></div><div>Index mode: <code>g-mode:&quot;infinite scrolling&quot;</code></div><div>Index sort: <code>g-sort:&quot;creation date rev&quot;</code></div><div>External link: <code>external-text:&quot;Google&quot;,&quot;http://www.google.com&quot;</code></div><div>Open in new tab: <code>g-nt</code></div><div>Combinations are possible: <code>g-index-text:&quot;Technology Index&quot;</code></div><div>Full board list toggle: <code>toggle-all</code></div><br><div class=\"note\"><code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:&quot;Piracy&quot;]</code><br>will give you<br><code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>if you are on /g/.</div></fieldset><fieldset><legend>Time Formatting <span class=\"warning\" data-feature=\"Time Formatting\">is disabled.</span></legend><div><input name=\"time\" class=\"field\" spellcheck=\"false\">: <span class=\"time-preview\"></span></div><div>Supported <a href=\"http://man7.org/linux/man-pages/man1/date.1.html\" target=\"_blank\">format specifiers</a>:</div><div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div><div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div><div>Year: <code>%y</code>, <code>%Y</code></div><div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div><div>Minute: <code>%M</code></div><div>Second: <code>%S</code></div><div>Literal <code>%</code>: <code>%%</code></div><div><a href=\"https://www.w3.org/International/articles/language-tags/\" target=\"_blank\">Language tag</a>: <input name=\"timeLocale\" class=\"field\" spellcheck=\"false\"></div></fieldset><fieldset><legend>Quote Backlinks formatting <span class=\"warning\" data-feature=\"Quote Backlinks\">is disabled.</span></legend><div><input name=\"backlink\" class=\"field\" spellcheck=\"false\">: <span class=\"backlink-preview\"></span></div></fieldset><fieldset><legend>Default pasted content filename</legend><div><input name=\"pastedname\" class=\"field\" spellcheck=\"false\">.png</div></fieldset><fieldset><legend>File Info Formatting <span class=\"warning\" data-feature=\"File Info Formatting\">is disabled.</span></legend><div><input name=\"fileInfo\" class=\"field\" spellcheck=\"false\">: <span class=\"file-info file-info-preview\"></span></div><div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div><div>Filename: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (4chan filename)</div><div>Download button: <code>%d</code></div><div>Quick filter MD5: <code>%f</code></div><div>Spoiler indicator: <code>%p</code></div><div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div><div>Resolution: <code>%r</code> (Displays &#039;PDF&#039; for PDF files)</div><div>Tag: <code>%g</code><div>Literal <code>%</code>: <code>%%</code></div></fieldset><fieldset><legend>Quick Reply Personas</legend><textarea hidden class=\"personafield field\" name=\"QR.personas\" spellcheck=\"false\"></textarea><p>One item per line.<br>Items will be added in the relevant input&#039;s auto-completion list.<br>Password items will always be used, since there is no password input.<br>Lines starting with a <code>#</code> will be ignored.</p><ul>You can use these settings with each item, separate them with semicolons:<li>Possible items are: <code>name</code>, <code>options</code> (or equivalently <code>email</code>), <code>subject</code> and <code>password</code>.</li><li>Wrap values of items with quotes, like this: <code>options:&quot;sage&quot;</code>.</li><li>Force values as defaults with the <code>always</code> keyword, for example: <code>options:&quot;sage&quot;;always</code>.</li><li>Select specific boards for an item, separated with commas, for example: <code>options:&quot;sage&quot;;boards:jp;always</code>.</li></ul></fieldset><fieldset><legend>Unread Favicon <span class=\"warning\" data-feature=\"Unread Favicon\">is disabled.</span></legend><select name=\"favicon\"><option value=\"ferongr\">ferongr</option><option value=\"xat-\">xat-</option><option value=\"4chanJS\">4chanJS</option><option value=\"Mayhem\">Mayhem</option><option value=\"Original\">Original</option><option value=\"Metro\">Metro</option></select><span class=\"favicon-preview\"></span></fieldset><fieldset><legend>Thread Updater <span class=\"warning\" data-feature=\"Thread Updater\">is disabled.</span></legend><div>Interval: <input type=\"number\" name=\"Interval\" class=\"field\" min=\"1\"> seconds</div></fieldset><fieldset><legend>Custom Cooldown Time</legend><div>Seconds: <input type=\"number\" name=\"customCooldown\" class=\"field\" min=\"0\"></div></fieldset><fieldset><legend><label><input type=\"checkbox\" name=\"Custom CSS\"> Custom CSS</label></legend><div>For more information about customizing 4chan X&#039;s CSS, see the <a href=\"https://github.com/ccd0/4chan-x/wiki/Styling-Guide\" target=\"_blank\">styling guide</a>.</div><button id=\"apply-css\">Apply CSS</button><textarea hidden name=\"usercss\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Javascript Whitelist</legend><div>Sources from which Javascript is allowed to be loaded by <a href=\"http://content-security-policy.com/#source_list\" target=\"_blank\">Content Security Policy</a>.<br>Lines starting with a <code>#</code> will be ignored.</div><textarea hidden name=\"jsWhitelist\" class=\"field\" spellcheck=\"false\"></textarea></fieldset><fieldset><legend>Known Banners</legend><div>List of known banners, used for click-to-change feature.</div><textarea hidden name=\"knownBanners\" class=\"field\" spellcheck=\"false\"></textarea></fieldset>"});
       ref = $$('.warning', section);
       for (j = 0, len = ref.length; j < len; j++) {
         warning = ref[j];
@@ -16496,13 +16511,13 @@ Embedding = (function() {
         $.one(d, '4chanXInitFinished', this.ready);
         $.on(d, 'IndexRefreshInternal', function() {
           return g.posts.forEach(function(post) {
-            var embed, l, len1, len2, n, ref2, ref3;
+            var embed, k, l, len1, len2, ref2, ref3;
             ref2 = [post].concat(slice.call(post.clones));
-            for (l = 0, len1 = ref2.length; l < len1; l++) {
-              post = ref2[l];
+            for (k = 0, len1 = ref2.length; k < len1; k++) {
+              post = ref2[k];
               ref3 = post.nodes.embedlinks;
-              for (n = 0, len2 = ref3.length; n < len2; n++) {
-                embed = ref3[n];
+              for (l = 0, len2 = ref3.length; l < len2; l++) {
+                embed = ref3[l];
                 Embedding.cb.catalogRemove.call(embed);
               }
             }
@@ -16510,7 +16525,7 @@ Embedding = (function() {
         });
       }
       if (Conf['Link Title']) {
-        $.on(d, '4chanXInitFinished PostsInserted', function() {
+        return $.on(d, '4chanXInitFinished PostsInserted', function() {
           var key, ref2, ref3, service;
           ref2 = Embedding.types;
           for (key in ref2) {
@@ -16520,8 +16535,6 @@ Embedding = (function() {
             }
           }
         });
-        this.cache.init(Conf['cachedTitles']);
-        return $.sync('cachedTitles', this.cache.sync);
       }
     },
     events: function(post) {
@@ -16649,15 +16662,13 @@ Embedding = (function() {
       return style.pointerEvents = 'none';
     },
     title: function(data) {
-      var key, link, options, post, service, text, uid;
+      var key, link, options, post, service, uid;
       key = data.key, uid = data.uid, options = data.options, link = data.link, post = data.post;
       if (!(service = Embedding.types[key].title)) {
         return;
       }
       $.addClass(link, key.toLowerCase());
-      if ((text = Embedding.cache.get(data))) {
-        return Embedding.cb.titleText(text, data);
-      } else if (service.batchSize) {
+      if (service.batchSize) {
         (service.queue || (service.queue = [])).push(data);
         if (service.queue.length >= service.batchSize) {
           return Embedding.flushTitles(service);
@@ -16692,70 +16703,6 @@ Embedding = (function() {
         return results;
       })()), cb);
     },
-    cache: (function() {
-      var get, init, newEntries, save, set, sync, titles;
-      titles = $.dict();
-      newEntries = [];
-      init = function(data) {
-        var j, key, len, ref, text, uid;
-        try {
-          for (j = 0, len = data.length; j < len; j++) {
-            ref = data[j], key = ref.key, uid = ref.uid, text = ref.text;
-            titles[key + "." + uid] = text;
-          }
-        } catch (error) {}
-      };
-      sync = function(data) {
-        var j, k, key, len, ref, text, uid;
-        try {
-          for (j = 0, len = data.length; j < len; j++) {
-            ref = data[j], key = ref.key, uid = ref.uid, text = ref.text;
-            k = key + "." + uid;
-            if (k in titles) {
-              break;
-            }
-            titles[k] = text;
-          }
-        } catch (error) {}
-      };
-      get = function(arg) {
-        var key, uid;
-        key = arg.key, uid = arg.uid;
-        return titles[key + "." + uid];
-      };
-      set = function(arg, text) {
-        var key, uid;
-        key = arg.key, uid = arg.uid;
-        titles[key + "." + uid] = text;
-        newEntries.push({
-          key: key,
-          uid: uid,
-          text: text
-        });
-        return save();
-      };
-      save = $.debounce(2 * $.SECOND, function() {
-        return $.get('cachedTitles', Conf['cachedTitles'], function(arg) {
-          var cachedTitles;
-          cachedTitles = arg.cachedTitles;
-          sync(cachedTitles);
-          try {
-            cachedTitles = newEntries.concat(cachedTitles).slice(-1000);
-          } catch (error) {
-            cachedTitles = newEntries;
-          }
-          newEntries = [];
-          return $.set('cachedTitles', cachedTitles);
-        });
-      });
-      return {
-        init: init,
-        sync: sync,
-        get: get,
-        set: set,
-        save: save
-      };
-    })(),
     preview: function(data) {
       var key, link, service, uid;
       key = data.key, uid = data.uid, link = data.link;
@@ -16821,46 +16768,44 @@ Embedding = (function() {
         }
       },
       title: function(req, data) {
-        var key, link, service, status, text, uid;
-        if (!req.status) {
+        var base1, j, k, key, len, len1, link, link2, options, post, post2, ref, ref1, service, status, text, uid;
+        key = data.key, uid = data.uid, options = data.options, link = data.link, post = data.post;
+        service = Embedding.types[key].title;
+        status = req.status;
+        if ((status === 200 || status === 304) && service.status) {
+          status = service.status(req.response)[0];
+        }
+        if (!status) {
           return;
         }
-        key = data.key, uid = data.uid, link = data.link;
-        status = req.status;
-        service = Embedding.types[key].title;
-        switch (status) {
-          case 200:
-          case 304:
-            text = service.text(req.response, uid);
-            if (typeof text === 'string') {
-              Embedding.cache.set(data, text);
-            } else {
-              text = link.textContent;
-            }
-            break;
-          case 404:
-            text = "Not Found";
-            break;
-          case 403:
-            text = service.ignore403 ? link.textContent : "Forbidden or Private";
-            break;
-          default:
-            text = status + "'d";
-        }
-        return Embedding.cb.titleText(text, data);
-      },
-      titleText: function(text, data) {
-        var base1, j, key, l, len, len1, link, link2, post, post2, ref, ref1;
-        key = data.key, link = data.link, post = data.post;
-        text = "[" + key + "] " + text;
+        text = "[" + key + "] " + ((function() {
+          switch (status) {
+            case 200:
+            case 304:
+              text = service.text(req.response, uid);
+              if (typeof text === 'string') {
+                return text;
+              } else {
+                return text = link.textContent;
+              }
+              break;
+            case 404:
+              return "Not Found";
+            case 403:
+            case 401:
+              return "Forbidden or Private";
+            default:
+              return status + "'d";
+          }
+        })());
         link.dataset.original = link.textContent;
         link.textContent = text;
         ref = post.clones;
         for (j = 0, len = ref.length; j < len; j++) {
           post2 = ref[j];
           ref1 = $$('a.linkify', post2.nodes.comment);
-          for (l = 0, len1 = ref1.length; l < len1; l++) {
-            link2 = ref1[l];
+          for (k = 0, len1 = ref1.length; k < len1; k++) {
+            link2 = ref1[k];
             if (!(link2.href === link.href)) {
               continue;
             }
@@ -16947,10 +16892,10 @@ Embedding = (function() {
         },
         title: {
           api: function(uid) {
-            return "https://api.clyp.it/" + uid;
+            return "https://api.clyp.it/oembed?url=https://clyp.it/" + uid;
           },
           text: function(_) {
-            return _.Title;
+            return _.title;
           }
         }
       }, {
@@ -17054,7 +16999,7 @@ Embedding = (function() {
         regExp: /^\w+:\/\/(?:www\.)?loopvid.appspot.com\/#?((?:pf|kd|lv|gd|gh|db|dx|nn|cp|wu|ig|ky|mf|m2|pc|1c|pi|ni|wl|ko|mm|ic|gc)\/[\w\-\/]+(?:,[\w\-\/]+)*|fc\/\w+\/\d+|https?:\/\/.+)/,
         style: 'max-width: 80vw; max-height: 80vh;',
         el: function(a) {
-          var _, base, el, host, j, l, len, len1, len2, n, name, names, ref, ref1, type, types, url, urls;
+          var _, base, el, host, j, k, l, len, len1, len2, name, names, ref, ref1, type, types, url, urls;
           el = $.el('video', {
             controls: true,
             preload: 'auto',
@@ -17082,8 +17027,8 @@ Embedding = (function() {
           ref1 = names.split(',');
           for (j = 0, len = ref1.length; j < len; j++) {
             name = ref1[j];
-            for (l = 0, len1 = types.length; l < len1; l++) {
-              type = types[l];
+            for (k = 0, len1 = types.length; k < len1; k++) {
+              type = types[k];
               base = "" + name + type;
               urls = (function() {
                 switch (host) {
@@ -17137,8 +17082,8 @@ Embedding = (function() {
                     return ["https://" + type + ".gfycat.com/" + name + ".webm"];
                 }
               })();
-              for (n = 0, len2 = urls.length; n < len2; n++) {
-                url = urls[n];
+              for (l = 0, len2 = urls.length; l < len2; l++) {
+                url = urls[l];
                 $.add(el, $.el('source', {
                   src: url
                 }));
@@ -17332,24 +17277,20 @@ Embedding = (function() {
           return el;
         },
         title: {
-          batchSize: 50,
-          ignore403: true,
-          api: function(uids) {
-            var ids, key;
-            ids = encodeURIComponent(uids.join(','));
-            key = Conf['youtubeAPIKey'];
-            return "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" + ids + "&fields=items%28id%2Csnippet%28title%29%29&key=" + key;
+          api: function(uid) {
+            return "https://noembed.com/embed?url=https%3A//www.youtube.com/watch%3Fv%3D" + uid + "&format=json";
           },
-          text: function(data, uid) {
-            var item, j, len, ref;
-            ref = data.items;
-            for (j = 0, len = ref.length; j < len; j++) {
-              item = ref[j];
-              if (item.id === uid) {
-                return item.snippet.title;
-              }
+          text: function(_) {
+            return _.title;
+          },
+          status: function(_) {
+            var m;
+            if (_.error) {
+              m = _.error.match(/^(\d*)\s*(.*)/);
+              return [+m[1], m[2]];
+            } else {
+              return [200, 'OK'];
             }
-            return 'Not Found';
           }
         },
         preview: {

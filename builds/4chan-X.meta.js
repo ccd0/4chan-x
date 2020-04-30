@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.17.3
+// @version      1.14.18.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -47,6 +47,9 @@
 // @include      https://www.ponyville.us/*
 // @include      https://samachan.org/*
 // @include      https://smuglo.li/*
+// @include      https://notso.smuglo.li/*
+// @include      https://smugloli.net/*
+// @include      https://smug.nepu.moe/*
 // @include      https://sportschan.org/*
 // @include      https://www.sportschan.org/*
 // @include      https://sushigirl.us/*
@@ -95,7 +98,7 @@
 // @connect      soundcloud.com
 // @connect      api.streamable.com
 // @connect      vimeo.com
-// @connect      www.googleapis.com
+// @connect      noembed.com
 // @connect      *
 // @grant        GM_getValue
 // @grant        GM_setValue
