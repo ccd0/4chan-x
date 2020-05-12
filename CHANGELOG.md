@@ -2,6 +2,13 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.19
+
+**v1.14.19.0** *(2020-05-12)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.19.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.19.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.18.1.
+- Fix issue where shift-click on Quick Reply submit to bypass warning did not use captcha when posting.
+- Fix Gallery 'Stretch to Fit' on sites with multifile posting.
+
 ### v1.14.18
 
 **v1.14.18.1** *(2020-04-30)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.18.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.18.1/builds/4chan-X-noupdate.crx)]
