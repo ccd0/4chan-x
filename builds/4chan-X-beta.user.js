@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.18.1
+// @version      1.14.19.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -218,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.18.1',
+  VERSION:   '1.14.19.0',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -14936,7 +14936,7 @@ Gallery = (function() {
         var containerHeight, containerWidth, current, dim, frame, height, margin, minHeight, ref, ref1, ref2, ref3, style, width;
         ref = Gallery.nodes, current = ref.current, frame = ref.frame;
         style = current.style;
-        if (Conf['Stretch to Fit'] && (dim = (ref1 = g.posts.get(current.dataset.post)) != null ? ref1.file.dimensions : void 0)) {
+        if (Conf['Stretch to Fit'] && (dim = (ref1 = g.posts.get(current.dataset.post)) != null ? ref1.files[+current.dataset.file].dimensions : void 0)) {
           ref2 = dim.split('x'), width = ref2[0], height = ref2[1];
           containerWidth = frame.clientWidth;
           containerHeight = doc.clientHeight - 25;
@@ -24888,7 +24888,7 @@ QR = (function() {
       if (g.BOARD.ID === 'r9k' && !((ref = post.com) != null ? ref.match(/[a-z-]/i) : void 0)) {
         err || (err = 'Original comment required.');
       }
-      if (QR.captcha.isEnabled && !(/\b_ct=/.test(d.cookie) && threadID) && !err) {
+      if (QR.captcha.isEnabled && !(/\b_ct=/.test(d.cookie) && threadID) && !(err && !force)) {
         captcha = QR.captcha.getOne(!!threadID) || Captcha.cache.request(!!threadID);
         if (!captcha) {
           err = 'No valid captcha.';
