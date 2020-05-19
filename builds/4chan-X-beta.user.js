@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.19.0
+// @version      1.14.19.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -218,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.19.0',
+  VERSION:   '1.14.19.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -19846,6 +19846,20 @@ PSA = (function() {
       return $.onExists(doc, '.boardBanner', function(banner) {
         return $.after(banner, el);
       });
+    },
+    site: function() {
+      if (location.hostname === 'samachan.org') {
+        return $.onExists(doc, '.navbar', function(navbar) {
+          var link;
+          link = $.el('a', {
+            href: 'https://sushigirl.us/yakuza/res/776.html',
+            target: '_blank',
+            rel: 'noopener',
+            textContent: 'Looking for a new home? Some users are regrouping on SushiChan. (a message from 4chan X)'
+          });
+          return $.add(navbar, [$.el('br'), link]);
+        });
+      }
     }
   };
 
@@ -27490,6 +27504,9 @@ Main = (function() {
             val = Conf[key];
             Conf[key] = (ref4 = items[key]) != null ? ref4 : val;
           }
+          try {
+            PSA.site();
+          } catch (error1) {}
           return Site.init(Main.initFeatures);
         });
       });
