@@ -4,6 +4,9 @@
 
 ### v1.14.19
 
+**v1.14.19.2** *(2020-05-21)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.19.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.19.2/builds/4chan-X-noupdate.crx)]
+- Revert "Add link on recently-departed Samachan to proposed move to SushiChan."
+
 **v1.14.19.1** *(2020-05-19)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.19.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.19.1/builds/4chan-X-noupdate.crx)]
 - Add link on recently-departed Samachan to proposed move to SushiChan.
 
