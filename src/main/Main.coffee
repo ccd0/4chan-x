@@ -125,8 +125,6 @@ Main =
         for key, val of Conf
           Conf[key] = items[key] ? val
 
-        try
-          PSA.site()
         Site.init Main.initFeatures
 
   upgrade: (items) ->
