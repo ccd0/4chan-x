@@ -73,6 +73,7 @@ ImageLoader =
       return
 
     el = $.el if isImage then 'img' else 'video'
+    el.preload = 'auto' if isVideo
     if replace and isImage
       $.on el, 'load', ->
         clone.file.thumb.src = url for clone in post.clones
