@@ -1180,3 +1180,5 @@ Config =
   passMessageClosed: false
 
   'Prerequest Captcha': false
+
+  'PSAseen': [[]]
