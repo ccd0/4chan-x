@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.19.3
+// @version      1.14.19.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -218,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.19.3',
+  VERSION:   '1.14.19.4',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -17168,7 +17168,7 @@ Embedding = (function() {
         el: function(a) {
           var el, m, time, url;
           m = a.dataset.uid.match(/(\w+)(?:\/v\/(\d+))?/);
-          url = "//player.twitch.tv/?" + (m[2] ? "video=v" + m[2] : "channel=" + m[1]) + "&autoplay=false";
+          url = "//player.twitch.tv/?" + (m[2] ? "video=v" + m[2] : "channel=" + m[1]) + "&autoplay=false&parent=" + location.hostname;
           if ((time = a.dataset.href.match(/\bt=(\w+)/))) {
             url += "&time=" + time[1];
           }
