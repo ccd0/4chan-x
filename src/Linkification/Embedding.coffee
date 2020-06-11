@@ -425,7 +425,7 @@ Embedding =
       regExp: /^\w+:\/\/(?:www\.|secure\.)?twitch\.tv\/(\w[^#\&\?]*)/
       el: (a) ->
         m = a.dataset.uid.match /(\w+)(?:\/v\/(\d+))?/
-        url = "//player.twitch.tv/?#{if m[2] then "video=v#{m[2]}" else "channel=#{m[1]}"}&autoplay=false"
+        url = "//player.twitch.tv/?#{if m[2] then "video=v#{m[2]}" else "channel=#{m[1]}"}&autoplay=false&parent=#{location.hostname}"
         if (time = a.dataset.href.match /\bt=(\w+)/)
           url += "&time=#{time[1]}"
         el = $.el 'iframe',
