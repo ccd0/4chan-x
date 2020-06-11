@@ -4,6 +4,9 @@
 
 ### v1.14.19
 
+**v1.14.19.4** *(2020-06-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.19.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.19.4/builds/4chan-X-noupdate.crx)]
+- Update Twitch embedding.
+
 **v1.14.19.3** *(2020-05-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.19.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.19.3/builds/4chan-X-noupdate.crx)]
 - Fix videos not being prefetched properly by prefetch button. #2601
 - Link former Samachan users to SushiChan with one-time notification.
