@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.19.4
+// @version      1.14.20.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -218,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.19.4',
+  VERSION:   '1.14.20.0',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -326,7 +326,7 @@ Config = (function() {
         'Replace GIF': [false, 'Replace gif thumbnails with the actual image.'],
         'Replace JPG': [false, 'Replace jpg thumbnails with the actual image.'],
         'Replace PNG': [false, 'Replace png thumbnails with the actual image.'],
-        'Replace WEBM': [false, 'Replace webm and mp4 thumbnails with the actual video. Probably will degrade browser performance ;)'],
+        'Replace WEBM': [false, 'Replace webm, mp4, and ogv thumbnails with the actual video. Probably will degrade browser performance ;)'],
         'Image Prefetching': [true, 'Add a shortcut icon to the header to turn on image preloading.'],
         'Fappe Tyme': [true, 'Hide posts without images when header menu item is checked. *hint* *hint*'],
         'Werk Tyme': [true, 'Hide all post images when header menu item is checked.'],
@@ -5377,6 +5377,14 @@ $ = (function() {
     });
   };
 
+  $.isImage = function(url) {
+    return /\.(jpe?g|png|gif|bmp|webp)$/i.test(url);
+  };
+
+  $.isVideo = function(url) {
+    return /\.(webm|mp4|ogv)$/i.test(url);
+  };
+
   $.engine = (function() {
     if (/Edge\//.test(navigator.userAgent)) {
       return 'edge';
@@ -7138,8 +7146,8 @@ Post = (function() {
       }
       $.extend(file, {
         url: file.link.href,
-        isImage: /\.(jpe?g|png|gif|bmp)$/i.test(file.link.href),
-        isVideo: /\.(webm|mp4)$/i.test(file.link.href)
+        isImage: $.isImage(file.link.href),
+        isVideo: $.isVideo(file.link.href)
       });
       size = +file.size.match(/[\d.]+/)[0];
       unit = ['B', 'KB', 'MB', 'GB'].indexOf(file.size.match(/\w+$/)[0]);
@@ -8040,7 +8048,7 @@ SW = {};
       });
       if (thumb) {
         $.extend(file, {
-          thumbURL: /\/static\//.test(thumb.src) && /\.(?:gif|jpe?g|png)$/.test(link.href) ? link.href : thumb.src,
+          thumbURL: /\/static\//.test(thumb.src) && $.isImage(link.href) ? link.href : thumb.src,
           isSpoiler: /^Spoiler/i.test(info[1] || '') || link.textContent === 'Spoiler Image'
         });
       }
@@ -14669,6 +14677,7 @@ Gallery = (function() {
       elType = $.getOwn({
         'webm': 'video',
         'mp4': 'video',
+        'ogv': 'video',
         'pdf': 'iframe'
       }, ext) || 'img';
       file = $.el(elType);
@@ -16835,7 +16844,7 @@ Embedding = (function() {
         }
       }, {
         key: 'image',
-        regExp: /^[^?#]+\.(?:gif|png|jpg|jpeg|bmp)(?::\w+)?(?:[?#]|$)/i,
+        regExp: /^[^?#]+\.(?:gif|png|jpg|jpeg|bmp|webp)(?::\w+)?(?:[?#]|$)/i,
         style: '',
         el: function(a) {
           return $.el('div', {innerHTML: "<a target=\"_blank\" href=\"" + E(a.dataset.href) + "\"><img src=\"" + E(a.dataset.href) + "\" style=\"max-width: 80vw; max-height: 80vh;\"></a>"});

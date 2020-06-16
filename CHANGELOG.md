@@ -2,6 +2,15 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.20
+
+**v1.14.20.0** *(2020-06-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.19.4.
+- Make image features work with .webp images.
+- Make embedding work with .webp links. #365
+- Make video features work with .ogv videos.
+- Fix 'Reveal Spoiler Thumbnails' on .bmp files.
+
 ### v1.14.19
 
 **v1.14.19.4** *(2020-06-11)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.19.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.19.4/builds/4chan-X-noupdate.crx)]
