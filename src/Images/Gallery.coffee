@@ -133,7 +133,7 @@ Gallery =
 
   load: (thumb, errorCB) ->
     ext = thumb.href.match /\w*$/
-    elType = $.getOwn({'webm': 'video', 'mp4': 'video', 'pdf': 'iframe'}, ext) or 'img'
+    elType = $.getOwn({'webm': 'video', 'mp4': 'video', 'ogv': 'video', 'pdf': 'iframe'}, ext) or 'img'
     file = $.el elType
     $.extend file.dataset, thumb.dataset
     $.on file, 'error', errorCB

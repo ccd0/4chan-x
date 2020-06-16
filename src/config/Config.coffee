@@ -271,7 +271,7 @@ Config =
       ]
       'Replace WEBM': [
         false
-        'Replace webm and mp4 thumbnails with the actual video. Probably will degrade browser performance ;)'
+        'Replace webm, mp4, and ogv thumbnails with the actual video. Probably will degrade browser performance ;)'
       ]
       'Image Prefetching': [
         true
