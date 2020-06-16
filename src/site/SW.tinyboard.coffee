@@ -218,7 +218,7 @@ SW.tinyboard =
       dimensions: info[0].match(/\d+x\d+/)?[0]
     if thumb
       $.extend file,
-        thumbURL:  if /\/static\//.test(thumb.src) and /\.(?:gif|jpe?g|png)$/.test(link.href) then link.href else thumb.src
+        thumbURL:  if /\/static\//.test(thumb.src) and $.isImage(link.href) then link.href else thumb.src
         isSpoiler: /^Spoiler/i.test(info[1] or '') or link.textContent is 'Spoiler Image'
     true
 
