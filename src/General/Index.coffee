@@ -819,7 +819,10 @@ Index =
     sortType = Index.currentSort.replace(/-rev$/, '')
     Index.sortedThreadIDs = switch sortType
       when 'lastreply', 'lastlong'
+        repliesAvailable = liveThreadData.some (thread) -> thread.last_replies?.length
         lastlong = (thread) ->
+          if !repliesAvailable
+            return thread.last_modified
           for r, i in (thread.last_replies or []) by -1
             continue if Index.isHiddenReply thread.no, r
             if sortType is 'lastreply'
@@ -827,7 +830,7 @@ Index =
             len = if r.com then g.SITE.Build.parseComment(r.com).replace(/[^a-z]/ig, '').length else 0
             if len >= Index.lastLongThresholds[+!!r.ext]
               return r
-          if thread.omitted_posts then thread.last_replies[0] else thread
+          if thread.omitted_posts and thread.last_replies?.length then thread.last_replies[0] else thread
         lastlongD = $.dict()
         for thread in liveThreadData
           lastlongD[thread.no] = lastlong(thread).no
