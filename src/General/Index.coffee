@@ -714,7 +714,7 @@ Index =
         else
           thread = new Thread ID, g.BOARD
           newThreads.push thread
-        lastPost = if threadData.last_replies then threadData.last_replies[threadData.last_replies.length - 1].no else ID
+        lastPost = if threadData.last_replies and threadData.last_replies.length then threadData.last_replies[threadData.last_replies.length - 1].no else ID
         thread.lastPost = lastPost if lastPost > thread.lastPost
         thread.json = threadData
         threads.push thread
