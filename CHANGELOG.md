@@ -4,6 +4,9 @@
 
 ### v1.14.20
 
+**v1.14.20.2** *(2020-08-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.2/builds/4chan-X-noupdate.crx)]
+- Fix index not working on /vg/ when sort mode is last reply. https://github.com/ccd0/4chan-x/issues/2685#issuecomment-679311712
+
 **v1.14.20.1** *(2020-08-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.1/builds/4chan-X-noupdate.crx)]
 - Update for 4chan /vg/ change.
 

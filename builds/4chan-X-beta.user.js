@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.20.1
+// @version      1.14.20.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -218,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.20.1',
+  VERSION:   '1.14.20.2',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -12389,7 +12389,7 @@ Index = (function() {
       $.add(thread.OP.nodes.post, nodes.replies);
     },
     sort: function() {
-      var lastlong, lastlongD, liveThreadData, liveThreadIDs, sortType, thread, threadIDs;
+      var lastlong, lastlongD, liveThreadData, liveThreadIDs, repliesAvailable, sortType, thread, threadIDs;
       liveThreadIDs = Index.liveThreadIDs, liveThreadData = Index.liveThreadData;
       if (!liveThreadData) {
         return;
@@ -12400,8 +12400,15 @@ Index = (function() {
         switch (sortType) {
           case 'lastreply':
           case 'lastlong':
+            repliesAvailable = liveThreadData.some(function(thread) {
+              var ref;
+              return (ref = thread.last_replies) != null ? ref.length : void 0;
+            });
             lastlong = function(thread) {
-              var i, k, len, r, ref;
+              var i, k, len, r, ref, ref1;
+              if (!repliesAvailable) {
+                return thread.last_modified;
+              }
               ref = thread.last_replies || [];
               for (i = k = ref.length - 1; k >= 0; i = k += -1) {
                 r = ref[i];
@@ -12416,7 +12423,7 @@ Index = (function() {
                   return r;
                 }
               }
-              if (thread.omitted_posts) {
+              if (thread.omitted_posts && ((ref1 = thread.last_replies) != null ? ref1.length : void 0)) {
                 return thread.last_replies[0];
               } else {
                 return thread;
