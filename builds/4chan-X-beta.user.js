@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.20.0
+// @version      1.14.20.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -218,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.20.0',
+  VERSION:   '1.14.20.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -12244,7 +12244,7 @@ Index = (function() {
             thread = new Thread(ID, g.BOARD);
             newThreads.push(thread);
           }
-          lastPost = threadData.last_replies ? threadData.last_replies[threadData.last_replies.length - 1].no : ID;
+          lastPost = threadData.last_replies && threadData.last_replies.length ? threadData.last_replies[threadData.last_replies.length - 1].no : ID;
           if (lastPost > thread.lastPost) {
             thread.lastPost = lastPost;
           }

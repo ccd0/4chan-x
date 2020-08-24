@@ -4,6 +4,9 @@
 
 ### v1.14.20
 
+**v1.14.20.1** *(2020-08-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.1/builds/4chan-X-noupdate.crx)]
+- Update for 4chan /vg/ change.
+
 **v1.14.20.0** *(2020-06-16)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.19.4.
 - Make image features work with .webp images.
