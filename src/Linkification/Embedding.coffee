@@ -492,7 +492,7 @@ Embedding =
         el.src = if /^i\//.test(a.dataset.uid)
           "https://old.vocaroo.com/media_command.php?media=#{a.dataset.uid.replace('i/', '')}&command=download_mp3"
         else
-          "https://media.vocaroo.com/mp3/#{a.dataset.uid}"
+          "https://media1.vocaroo.com/mp3/#{a.dataset.uid}"
         el
     ,
       key: 'YouTube'
