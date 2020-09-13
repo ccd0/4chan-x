@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
   <app appid='lacclbnghgdicfifcamcmcnilckjamag'>
-    <updatecheck codebase='https://www.4chan-x.net/builds/4chan-X.crx' version='1.14.20.2' />
+    <updatecheck codebase='https://www.4chan-x.net/builds/4chan-X.crx' version='1.14.20.3' />
   </app>
 </gupdate>
 
