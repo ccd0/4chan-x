@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.20.2
+// @version      1.14.20.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -218,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.20.2',
+  VERSION:   '1.14.20.3',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -17274,7 +17274,7 @@ Embedding = (function() {
             controls: true,
             preload: 'auto'
           });
-          el.src = /^i\//.test(a.dataset.uid) ? "https://old.vocaroo.com/media_command.php?media=" + (a.dataset.uid.replace('i/', '')) + "&command=download_mp3" : "https://media.vocaroo.com/mp3/" + a.dataset.uid;
+          el.src = /^i\//.test(a.dataset.uid) ? "https://old.vocaroo.com/media_command.php?media=" + (a.dataset.uid.replace('i/', '')) + "&command=download_mp3" : "https://media1.vocaroo.com/mp3/" + a.dataset.uid;
           return el;
         }
       }, {
