@@ -108,4 +108,14 @@
   "boards": ["h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u"],
   "files": ["h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u"],
   "reports": true
+}, {
+  "uid": 31,
+  "name": "TokyoChronos",
+  "domain": "www.tokyochronos.net",
+  "http": false,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["g", "jp", "vrpg"],
+  "files": ["g", "jp", "vrpg"],
+  "reports": true
 }]
