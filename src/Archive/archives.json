@@ -5,8 +5,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
-  "files": ["adv", "f", "hr", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
+  "boards": ["adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
+  "files": ["adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
   "reports": true
 }, {
   "uid": 4,
@@ -15,8 +15,8 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["bant", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
-  "files": ["bant", "c", "e", "n", "news", "out", "p", "toy", "vip", "vp", "w", "wg", "wsr"],
+  "boards": ["bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "w", "wg", "wsr"],
+  "files": ["bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "w", "wg", "wsr"],
   "reports": true
 }, {
   "uid": 8,
@@ -45,8 +45,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg"],
-  "files": ["a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "qa", "r9k", "tg", "trash", "vr", "wsg"],
+  "boards": ["a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "q", "qa", "r9k", "tg", "trash", "vr", "wsg"],
+  "files": ["a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "q", "qa", "r9k", "tg", "trash", "vr", "wsg"],
   "reports": true
 }, {
   "uid": 24,
@@ -65,9 +65,9 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["g", "jp", "mlp", "v", "vg", "vp"],
+  "boards": ["g", "jp", "mlp", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst"],
   "files": [],
-  "search": ["v", "vg"]
+  "search": ["v", "vg", "vm", "vmg", "vrpg", "vst"]
 }, {
   "uid": 28,
   "name": "bstats",
@@ -84,9 +84,9 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vp", "vr", "w", "wg", "wsg", "wsr", "x", "y"],
-  "files": ["can", "cock", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "qst", "spa", "vint", "vip"],
-  "search": ["aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "w", "wg", "wsg", "wsr", "x", "y"],
+  "boards": ["3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "con", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "q", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vmg", "vp", "vr", "vrpg", "w", "wg", "wsg", "wsr", "x", "y"],
+  "files": ["can", "cock", "con", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "q", "qst", "spa", "vint", "vip"],
+  "search": ["aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "vrpg", "w", "wg", "wsg", "wsr", "x", "y"],
   "reports": true
 }, {
   "uid": 30,
@@ -107,5 +107,15 @@
   "software": "foolfuuka",
   "boards": ["h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u"],
   "files": ["h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u"],
+  "reports": true
+}, {
+  "uid": 34,
+  "name": "TokyoChronos",
+  "domain": "www.tokyochronos.net",
+  "http": false,
+  "https": true,
+  "software": "foolfuuka",
+  "boards": ["g", "jp", "vrpg"],
+  "files": ["g", "jp", "vrpg"],
   "reports": true
 }]
