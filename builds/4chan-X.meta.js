@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.20.3
+// @version      1.14.20.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -80,7 +80,7 @@
 // @connect      4chan.org
 // @connect      4channel.org
 // @connect      4cdn.org
-// @connect      nstepien.github.io
+// @connect      4chenz.github.io
 // @connect      archive.4plebs.org
 // @connect      archive.nyafuu.org
 // @connect      archive.rebeccablacktech.com
@@ -92,6 +92,7 @@
 // @connect      archived.moe
 // @connect      thebarchive.com
 // @connect      archiveofsins.com
+// @connect      www.tokyochronos.net
 // @connect      api.clyp.it
 // @connect      api.dailymotion.com
 // @connect      api.github.com
