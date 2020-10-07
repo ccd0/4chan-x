@@ -4,6 +4,9 @@
 
 ### v1.14.20
 
+**v1.14.20.4** *(2020-10-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.4/builds/4chan-X-noupdate.crx)]
+- Change default archives list to https://4chenz.github.io/archives.json/archives.json #2808
+
 **v1.14.20.3** *(2020-09-13)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.3/builds/4chan-X-noupdate.crx)]
 - (nonasol) Update vocaroo media link. This fixes the issue where the newer voca.ro links aren't loading properly.
 
