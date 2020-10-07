@@ -37,7 +37,7 @@
 // @connect      4chan.org
 // @connect      4channel.org
 // @connect      4cdn.org
-// @connect      nstepien.github.io
+// @connect      4chenz.github.io
 <%=
   readJSON('/src/Archive/archives.json').map(function(archive) {
     return '// @connect      ' + archive.domain;

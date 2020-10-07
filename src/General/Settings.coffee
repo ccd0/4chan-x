@@ -542,6 +542,9 @@ Settings =
     if compareString < '00001.00014.00017.00002'
       if data['jsWhitelist']?
         set 'jsWhitelist', data['jsWhitelist'] + '\n\nhttps://hcaptcha.com\nhttps://*.hcaptcha.com'
+    if compareString < '00001.00014.00020.00004'
+      if data['archiveLists']?
+        set 'archiveLists', data['archiveLists'].replace('https://nstepien.github.io/archives.json/archives.json', 'https://4chenz.github.io/archives.json/archives.json')
     changes
 
   loadSettings: (data, cb) ->
