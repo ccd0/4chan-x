@@ -1,6 +1,7 @@
 Sauce =
   init: ->
     return unless g.VIEW in ['index', 'thread'] and Conf['Sauce']
+    $.addClass doc, 'show-sauce'
 
     links = []
     for link in Conf['sauces'].split '\n'
