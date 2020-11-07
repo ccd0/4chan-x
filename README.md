@@ -22,7 +22,7 @@ Install [Violentmonkey](https://addons.mozilla.org/en-US/firefox/addon/violentmo
 Ports of Greasemonkey are available for [SeaMonkey](https://sourceforge.net/projects/gmport/) and [Pale Moon](https://github.com/janekptacijarabaci/greasemonkey/releases/latest).
 
 ### Chromium
-**Userscript**: Install [Violentmonkey](https://chrome.google.com/webstore/detail/violent-monkey/jinjaccalgkegednnccohejagnlnfdag)) or [Tampermonkey](https://tampermonkey.net/), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
+**Userscript**: Install [Violentmonkey](https://chrome.google.com/webstore/detail/violent-monkey/jinjaccalgkegednnccohejagnlnfdag) or [Tampermonkey](https://tampermonkey.net/), then **[click here to install 4chan X](https://www.4chan-x.net/builds/4chan-X.user.js)**.
 
 **Chrome extension**: 4chan X is also available as a standalone Chrome extension. The Chrome extension has the additional feature of being able to sync your settings and data with other devices via Chrome Sync. But there is an issue when the script updates: Whenever the Chrome extension is updated, until you hard refresh (F5) the tab, 4chan X is unable to save any data (such as posts marked as yours and settings changes). The userscript version above does not have this problem when 4chan X updates, only when Violentmonkey / Tampermonkey is updated. To install as a Chrome extension:
 
