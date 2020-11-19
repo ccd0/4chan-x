@@ -843,7 +843,7 @@ Index =
       when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
       when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
       when 'filecount'  then [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
-      when 'activity'   then [liveThreadData...].sort((a, b) -> (tmp_time-a.time)/a.replies - (tmp_time-b.time)/b.replies ).map (post) -> post.no
+      when 'activity'   then [liveThreadData...].sort((a, b) -> (tmp_time-a.time)/(a.replies+1) - (tmp_time-b.time)/(b.replies+1) ).map (post) -> post.no
       else liveThreadIDs
     if /-rev$/.test(Index.currentSort)
       Index.sortedThreadIDs = [Index.sortedThreadIDs...].reverse()
