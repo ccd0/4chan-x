@@ -403,6 +403,7 @@ Index =
       'creation-date':     'birth'
       'reply-count':       'replycount'
       'file-count':        'filecount'
+      'posts-per-minute':  'activity'
 
   processHash: ->
     # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=483304
@@ -816,6 +817,7 @@ Index =
   sort: ->
     {liveThreadIDs, liveThreadData} = Index
     return unless liveThreadData
+    tmp_time = new Date().getTime()/1000;
     sortType = Index.currentSort.replace(/-rev$/, '')
     Index.sortedThreadIDs = switch sortType
       when 'lastreply', 'lastlong'
@@ -841,6 +843,7 @@ Index =
       when 'birth'      then [liveThreadIDs... ].sort (a, b) -> b - a
       when 'replycount' then [liveThreadData...].sort((a, b) -> b.replies - a.replies).map (post) -> post.no
       when 'filecount'  then [liveThreadData...].sort((a, b) -> b.images  - a.images ).map (post) -> post.no
+      when 'activity'   then [liveThreadData...].sort((a, b) -> (tmp_time-a.time)/a.replies - (tmp_time-b.time)/b.replies ).map (post) -> post.no
       else liveThreadIDs
     if /-rev$/.test(Index.currentSort)
       Index.sortedThreadIDs = [Index.sortedThreadIDs...].reverse()
