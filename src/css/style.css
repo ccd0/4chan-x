@@ -544,9 +544,6 @@ audio.controls-added {
   padding: 0 2px;
   margin: 0;
 }
-#fourchanx-settings > button.impexre > a {
-  text-decoration:none; color:initial;
-}
 .section-container {
   -webkit-flex: 1;
   flex: 1;
@@ -562,6 +559,9 @@ audio.controls-added {
 .export, .import, .reset {
   cursor: pointer;
   text-decoration: none !important;
+}
+#fourchanx-settings > button.impexres > a, #fourchanx-settings > button.impexres > a:visited {
+  color:initial;
 }
 .tab-selected {
   font-weight: 700;
