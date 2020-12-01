@@ -544,6 +544,9 @@ audio.controls-added {
   padding: 0 2px;
   margin: 0;
 }
+#fourchanx-settings > button.impexre > a {
+  text-decoration:none; color:initial;
+}
 .section-container {
   -webkit-flex: 1;
   flex: 1;
