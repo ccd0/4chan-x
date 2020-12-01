@@ -560,6 +560,7 @@ audio.controls-added {
   cursor: pointer;
   text-decoration: none !important;
 }
+#fourchanx-settings > button.impexres {margin-right:.5em;}
 #fourchanx-settings > button.impexres > a, #fourchanx-settings > button.impexres > a:visited {
   color:initial;
 }
