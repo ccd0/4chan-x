@@ -508,7 +508,7 @@ Embedding =
         el.setAttribute "allowfullscreen", "true"
         el
       title:
-        api: (uid) -> "https://noembed.com/embed?url=https%3A//www.youtube.com/watch%3Fv%3D#{uid}&format=json"
+        api: (uid) -> "https://www.youtube.com/oembed?url=https%3A//www.youtube.com/watch%3Fv%3D#{uid}&format=json"
         text: (_) -> _.title
         status: (_) ->
           if _.error
