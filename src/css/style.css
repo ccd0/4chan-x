@@ -2395,53 +2395,59 @@ a:only-of-type > .remove {
   bottom: 2px;
   vertical-align: baseline;
 }
-.gal-buttons,
-.gal-name,
-.gal-count {
+.gal-labels {
   position: fixed;
-  right: 195px;
-}
-.gal-hide-thumbnails .gal-buttons,
-.gal-hide-thumbnails .gal-count,
-.gal-hide-thumbnails .gal-name {
-  right: 44px;
-}
-.gal-name {
   bottom: 6px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: flex-end;
+  align-items: flex-end;
+
+}
+:root:not(.show-sauce) .gal-sauce {
+  display: none;
+}
+.gal-name,
+.gal-count,
+.gal-sauce {
   background: rgba(0,0,0,0.6) !important;
   border-radius: 3px;
   padding: 1px 5px 2px 5px;
+  margin-top: 3px;
+  color: #ffffff !important;
   text-decoration: none !important;
-  color: white !important;
+}
+.gal-sauce a {
+  color: #ffffff !important;
 }
 .gal-name:hover,
-.gal-buttons a:hover {
+.gal-buttons a:hover,
+.gal-sauce a:hover {
   color: rgb(95, 95, 101) !important;
 }
 :root.gal-pdf .gal-buttons a:hover {
   color: rgb(204, 204, 204) !important;
 }
-.gal-count {
-  bottom: 27px;
-  background: rgba(0,0,0,0.6) !important;
-  border-radius: 3px;
-  padding: 1px 5px 2px 5px;
-  color: #ffffff !important;
+.gal-buttons,
+.gal-labels {
+  position: fixed;
+  right: 195px;
 }
-:root:not(.gal-fit-width):not(.gal-pdf) .gal-name {
+.gal-hide-thumbnails .gal-buttons,
+.gal-hide-thumbnails .gal-labels {
+  right: 44px;
+}
+:root:not(.gal-fit-width):not(.gal-pdf) .gal-labels {
   bottom: 23px !important;
 }
-:root:not(.gal-fit-width):not(.gal-pdf) .gal-count {
-  bottom: 44px !important;
-}
 :root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-buttons,
-:root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-name,
-:root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-count {
+:root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-labels {
   right: 178px !important;
 }
 :root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-buttons,
-:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-name,
-:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-count {
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-labels {
   right: 28px !important;
 }
 :root.gallery-open.fixed #header-bar:not(.autohide),

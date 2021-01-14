@@ -51,6 +51,7 @@ Gallery =
       name:    '.gal-name'
       count:   '.count'
       total:   '.total'
+      sauce:   '.gal-sauce'
       thumbs:  '.gal-thumbnails'
       next:    '.gal-image a'
       current: '.gal-image img'
@@ -177,6 +178,15 @@ Gallery =
     nodes.name.href         = thumb.href
     nodes.frame.scrollTop   = 0
     nodes.next.focus()
+
+    # Set sauce links
+    $.rmAll nodes.sauce
+    if Conf['Sauce'] and Sauce.links and (post = g.posts.get(file.dataset.post))
+      sauces = []
+      for link in Sauce.links
+        if (node = Sauce.createSauceLink link, post, post.files[file.dataset.file])
+          sauces.push $.tn(' '), node
+      $.add nodes.sauce, sauces
 
     # Continue slideshow if moving forward, stop otherwise
     if Gallery.slideshow and (newID > oldID or (oldID is Gallery.images.length-1 and newID is 0))
