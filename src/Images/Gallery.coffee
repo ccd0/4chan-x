@@ -184,7 +184,7 @@ Gallery =
     if Conf['Sauce'] and Sauce.links and (post = g.posts.get(file.dataset.post))
       sauces = []
       for link in Sauce.links
-        if (node = Sauce.createSauceLink link, post, post.files[file.dataset.file])
+        if (node = Sauce.createSauceLink link, post, post.files[+file.dataset.file])
           sauces.push $.tn(' '), node
       $.add nodes.sauce, sauces
 
