@@ -1016,6 +1016,10 @@ Config =
       'Shift+Left'
       'Rotate image anticlockwise in gallery.'
     ]
+    'Download Gallery Image': [
+      'Shift+j'
+      'Download current image in gallery.'
+    ]
     'fappeTyme': [
       'f'
       'Toggle Fappe Tyme.'

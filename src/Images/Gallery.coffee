@@ -264,6 +264,8 @@ Gallery =
           Gallery.cb.rotateLeft
         when Conf['Rotate image clockwise']
           Gallery.cb.rotateRight
+        when Conf['Download Gallery Image']
+          Gallery.cb.download
 
       return unless cb
       e.stopPropagation()
@@ -297,6 +299,10 @@ Gallery =
     toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
     blank: (e) -> Gallery.cb.close() if e.target is @
     toggleSlideshow: ->  Gallery.cb[if Gallery.slideshow then 'stop' else 'start']()
+
+    download: ->
+      name = $ '.gal-name'
+      name.click()
 
     pause: ->
       Gallery.cb.stop()
