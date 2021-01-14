@@ -4,6 +4,9 @@
 
 ### v1.14.20
 
+**v1.14.20.5** *(2021-01-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.5/builds/4chan-X-noupdate.crx)]
+- (ihavenoface) Use native oembed for youtube link titles. Fixes "Forbidden or Private" on YouTube embeds.
+
 **v1.14.20.4** *(2020-10-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.4/builds/4chan-X-noupdate.crx)]
 - Change default archives list to https://4chenz.github.io/archives.json/archives.json #2808
 
