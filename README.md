@@ -33,7 +33,7 @@ Ports of Greasemonkey are available for [SeaMonkey](https://sourceforge.net/proj
 Note: This version of 4chan X does not work with Opera 12. If you need Opera 12 support, try [loadletter's fork](https://github.com/loadletter/4chan-x) instead.
 
 ### Safari
-Install the [Userscripts](https://itunes.apple.com/us/app/userscripts/id1463298887) extension. Enable it by pressing `⌘,`, navigating to the extensions pane and checking `Userscripts` chechbox. Now open the Userscripts editor by clicking on the `</>` button in the taskbar. Then click on the `+` button and select the `New Javascript` option. Replace the default text with the contents of the 4chan X **[script](https://www.4chan-x.net/builds/4chan-X.user.js)**. Finally save it by pressing `⌘s`.
+Install the [Userscripts](https://itunes.apple.com/us/app/userscripts/id1463298887) extension. Enable it by pressing `⌘,`, navigating to the extensions pane and checking `Userscripts` checkbox. Now open the Userscripts editor by clicking on the `</>` button in the taskbar. Then click on the `+` button and select the `New Javascript` option. Replace the default text with the contents of the 4chan X **[script](https://www.4chan-x.net/builds/4chan-X.user.js)**. Finally save it by pressing `⌘s`.
 
 ### WebKitGTK+ / QtWebKit / QtWebEngine
 Several minimal browsers have support for userscripts and can run 4chan X. Due to the lack of the cross-site GM_* API, and lack of support for userscripts in iframes, not all features will work. You may experience crashes when repeatedly solving the default image-based captchas. You can avoid this problem by enabling `Use Recaptcha v1` in your settings.
