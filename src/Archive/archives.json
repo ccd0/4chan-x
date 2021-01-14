@@ -65,7 +65,7 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["g", "jp", "mlp", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst"],
+  "boards": ["g", "mlp", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst"],
   "files": [],
   "search": ["v", "vg", "vm", "vmg", "vrpg", "vst"]
 }, {
@@ -115,7 +115,7 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["g", "jp", "vrpg"],
-  "files": ["g", "jp", "vrpg"],
+  "boards": ["jp", "vrpg"],
+  "files": ["jp", "vrpg"],
   "reports": true
 }]
