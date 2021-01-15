@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.20.6
+// @version      1.14.21.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -219,7 +219,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.20.6',
+  VERSION:   '1.14.21.0',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -538,6 +538,7 @@ Config = (function() {
       'Slideshow': ['Ctrl+Right', 'Toggle the gallery slideshow mode.'],
       'Rotate image clockwise': ['Shift+Right', 'Rotate image clockwise in gallery.'],
       'Rotate image anticlockwise': ['Shift+Left', 'Rotate image anticlockwise in gallery.'],
+      'Download Gallery Image': ['Shift+j', 'Download current image in gallery.'],
       'fappeTyme': ['f', 'Toggle Fappe Tyme.'],
       'werkTyme': ['Shift+w', 'Toggle Werk Tyme.'],
       'Front page': ['1', 'Jump to front page.'],
@@ -3709,53 +3710,58 @@ a:only-of-type > .remove {\n\
   bottom: 2px;\n\
   vertical-align: baseline;\n\
 }\n\
-.gal-buttons,\n\
-.gal-name,\n\
-.gal-count {\n\
+.gal-labels {\n\
   position: fixed;\n\
-  right: 195px;\n\
-}\n\
-.gal-hide-thumbnails .gal-buttons,\n\
-.gal-hide-thumbnails .gal-count,\n\
-.gal-hide-thumbnails .gal-name {\n\
-  right: 44px;\n\
-}\n\
-.gal-name {\n\
   bottom: 6px;\n\
+  display: -webkit-flex;\n\
+  display: flex;\n\
+  -webkit-flex-direction: column;\n\
+  flex-direction: column;\n\
+  -webkit-align-items: flex-end;\n\
+  align-items: flex-end;\n\
+}\n\
+:root:not(.show-sauce) .gal-sauce {\n\
+  display: none;\n\
+}\n\
+.gal-name,\n\
+.gal-count,\n\
+.gal-sauce {\n\
   background: rgba(0,0,0,0.6) !important;\n\
   border-radius: 3px;\n\
   padding: 1px 5px 2px 5px;\n\
+  margin-top: 3px;\n\
+  color: #ffffff !important;\n\
   text-decoration: none !important;\n\
-  color: white !important;\n\
+}\n\
+.gal-sauce a {\n\
+  color: #ffffff !important;\n\
 }\n\
 .gal-name:hover,\n\
-.gal-buttons a:hover {\n\
+.gal-buttons a:hover,\n\
+.gal-sauce a:hover {\n\
   color: rgb(95, 95, 101) !important;\n\
 }\n\
 :root.gal-pdf .gal-buttons a:hover {\n\
   color: rgb(204, 204, 204) !important;\n\
 }\n\
-.gal-count {\n\
-  bottom: 27px;\n\
-  background: rgba(0,0,0,0.6) !important;\n\
-  border-radius: 3px;\n\
-  padding: 1px 5px 2px 5px;\n\
-  color: #ffffff !important;\n\
+.gal-buttons,\n\
+.gal-labels {\n\
+  position: fixed;\n\
+  right: 195px;\n\
 }\n\
-:root:not(.gal-fit-width):not(.gal-pdf) .gal-name {\n\
+.gal-hide-thumbnails .gal-buttons,\n\
+.gal-hide-thumbnails .gal-labels {\n\
+  right: 44px;\n\
+}\n\
+:root:not(.gal-fit-width):not(.gal-pdf) .gal-labels {\n\
   bottom: 23px !important;\n\
 }\n\
-:root:not(.gal-fit-width):not(.gal-pdf) .gal-count {\n\
-  bottom: 44px !important;\n\
-}\n\
 :root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-buttons,\n\
-:root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-name,\n\
-:root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-count {\n\
+:root.gal-fit-height:not(.gal-pdf):not(.gal-hide-thumbnails) .gal-labels {\n\
   right: 178px !important;\n\
 }\n\
 :root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-buttons,\n\
-:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-name,\n\
-:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-count {\n\
+:root.gal-hide-thumbnails.gal-fit-height:not(.gal-pdf) .gal-labels {\n\
   right: 28px !important;\n\
 }\n\
 :root.gallery-open.fixed #header-bar:not(.autohide),\n\
@@ -11421,7 +11427,7 @@ Index = (function() {
       this.navLinks = $.el('div', {
         className: 'navLinks json-index'
       });
-      $.extend(this.navLinks, {innerHTML: "<span class=\"brackets-wrap indexlink\"><a href=\"#index\">Index</a></span> <span class=\"brackets-wrap cataloglink\"><a href=\"#catalog\">Catalog</a></span> <span class=\"brackets-wrap archlistlink\"><a href=\"./archive\">Archive</a></span> <span class=\"brackets-wrap bottomlink\"><a href=\"#bottom\">Bottom</a></span> <span class=\"brackets-wrap\" id=\"index-last-refresh\"><a href=\"javascript:;\"><time title=\"Last index refresh\">...</time></a></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a><span id=\"hidden-label\" hidden> &mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><span id=\"index-options\"><input type=\"checkbox\" id=\"index-rev\" name=\"Reverse Sort\" title=\"Reverse sort order\"><span id=\"lastlong-options\" hidden><input type=\"text\" title=\"Minimum letter count (without image)\"><input type=\"text\" title=\"Minimum letter count (with image)\"></span><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"lastlong\">Last long reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select></span>"});
+      $.extend(this.navLinks, {innerHTML: "<span class=\"brackets-wrap indexlink\"><a href=\"#index\">Index</a></span> <span class=\"brackets-wrap cataloglink\"><a href=\"#catalog\">Catalog</a></span> <span class=\"brackets-wrap archlistlink\"><a href=\"./archive\">Archive</a></span> <span class=\"brackets-wrap bottomlink\"><a href=\"#bottom\">Bottom</a></span> <span class=\"brackets-wrap\" id=\"index-last-refresh\"><a href=\"javascript:;\"><time title=\"Last index refresh\">...</time></a></span> <input type=\"search\" id=\"index-search\" class=\"field\" placeholder=\"Search\"><a id=\"index-search-clear\" href=\"javascript:;\" title=\"Clear search\">×</a><span id=\"hidden-label\" hidden> &mdash; <span id=\"hidden-count\"></span> <span id=\"hidden-toggle\">[<a href=\"javascript:;\">Show</a>]</span></span><span id=\"index-options\"><input type=\"checkbox\" id=\"index-rev\" name=\"Reverse Sort\" title=\"Reverse sort order\"><span id=\"lastlong-options\" hidden><input type=\"text\" title=\"Minimum letter count (without image)\"><input type=\"text\" title=\"Minimum letter count (with image)\"></span><select id=\"index-sort\" name=\"Index Sort\"><option disabled>Index Sort</option><option value=\"bump\">Bump order</option><option value=\"lastreply\">Last reply</option><option value=\"lastlong\">Last long reply</option><option value=\"birth\">Creation date</option><option value=\"replycount\">Reply count</option><option value=\"filecount\">File count</option><option value=\"activity\">Posts per minute</option></select><select id=\"index-size\" name=\"Index Size\"><option disabled>Image Size</option><option value=\"small\">Small</option><option value=\"large\">Large</option></select><select id=\"index-mode\" name=\"Index Mode\"><option disabled>Index Mode</option><option value=\"paged\">Paged</option><option value=\"infinite\">Infinite scrolling</option><option value=\"all pages\">All threads</option><option value=\"catalog\">Catalog</option></select></span>"});
       $('.cataloglink a', this.navLinks).href = CatalogLinks.catalog();
       if (!BoardConfig.isArchived(g.BOARD.ID)) {
         $('.archlistlink', this.navLinks).hidden = true;
@@ -11831,7 +11837,8 @@ Index = (function() {
         'last-long-reply': 'lastlong',
         'creation-date': 'birth',
         'reply-count': 'replycount',
-        'file-count': 'filecount'
+        'file-count': 'filecount',
+        'posts-per-minute': 'activity'
       }
     },
     processHash: function() {
@@ -12391,11 +12398,12 @@ Index = (function() {
       $.add(thread.OP.nodes.post, nodes.replies);
     },
     sort: function() {
-      var lastlong, lastlongD, liveThreadData, liveThreadIDs, repliesAvailable, sortType, thread, threadIDs;
+      var lastlong, lastlongD, liveThreadData, liveThreadIDs, repliesAvailable, sortType, thread, threadIDs, tmp_time;
       liveThreadIDs = Index.liveThreadIDs, liveThreadData = Index.liveThreadData;
       if (!liveThreadData) {
         return;
       }
+      tmp_time = new Date().getTime() / 1000;
       sortType = Index.currentSort.replace(/-rev$/, '');
       Index.sortedThreadIDs = (function() {
         var k, len1;
@@ -12456,6 +12464,12 @@ Index = (function() {
           case 'filecount':
             return slice.call(liveThreadData).sort(function(a, b) {
               return b.images - a.images;
+            }).map(function(post) {
+              return post.no;
+            });
+          case 'activity':
+            return slice.call(liveThreadData).sort(function(a, b) {
+              return (tmp_time - a.time) / (a.replies + 1) - (tmp_time - b.time) / (b.replies + 1);
             }).map(function(post) {
               return post.no;
             });
@@ -14580,13 +14594,14 @@ Gallery = (function() {
       nodes.el = dialog = $.el('div', {
         id: 'a-gallery'
       });
-      $.extend(dialog, {innerHTML: "<div class=\"gal-viewport\"><span class=\"gal-buttons\"><a href=\"javascript:;\" class=\"gal-start\" title=\"Start slideshow\"><i></i></a><a href=\"javascript:;\" class=\"gal-stop\" title=\"Stop slideshow\"><i></i></a><a href=\"javascript:;\" class=\"menu-button\"><i></i></a><a href=\"javascript:;\" class=\"gal-close\">×</a></span><a class=\"gal-name\" target=\"_blank\"></a><span class=\"gal-count\"><span class=\"count\"></span> / <span class=\"total\"></span></span><div class=\"gal-prev\"></div><div class=\"gal-image\"><a href=\"javascript:;\"><img></a></div><div class=\"gal-next\"></div></div><div class=\"gal-thumbnails\"></div>"});
+      $.extend(dialog, {innerHTML: "<div class=\"gal-viewport\"><span class=\"gal-buttons\"><a href=\"javascript:;\" class=\"gal-start\" title=\"Start slideshow\"><i></i></a><a href=\"javascript:;\" class=\"gal-stop\" title=\"Stop slideshow\"><i></i></a><a href=\"javascript:;\" class=\"menu-button\"><i></i></a><a href=\"javascript:;\" class=\"gal-close\">×</a></span><div class=\"gal-labels\"><span class=\"gal-count\"><span class=\"count\"></span> / <span class=\"total\"></span></span><a class=\"gal-name\" target=\"_blank\"></a><span class=\"gal-sauce\"></span></div><div class=\"gal-prev\"></div><div class=\"gal-image\"><a href=\"javascript:;\"><img></a></div><div class=\"gal-next\"></div></div><div class=\"gal-thumbnails\"></div>"});
       ref = {
         buttons: '.gal-buttons',
         frame: '.gal-image',
         name: '.gal-name',
         count: '.count',
         total: '.total',
+        sauce: '.gal-sauce',
         thumbs: '.gal-thumbnails',
         next: '.gal-image a',
         current: '.gal-image img'
@@ -14701,7 +14716,7 @@ Gallery = (function() {
       return file;
     },
     open: function(thumb) {
-      var el, file, newID, nodes, oldID, post, ref;
+      var el, file, i, len, link, newID, node, nodes, oldID, post, ref, ref1, sauces;
       nodes = Gallery.nodes;
       oldID = +nodes.current.dataset.id;
       newID = +thumb.dataset.id;
@@ -14738,6 +14753,18 @@ Gallery = (function() {
       nodes.name.href = thumb.href;
       nodes.frame.scrollTop = 0;
       nodes.next.focus();
+      $.rmAll(nodes.sauce);
+      if (Conf['Sauce'] && Sauce.links && (post = g.posts.get(file.dataset.post))) {
+        sauces = [];
+        ref1 = Sauce.links;
+        for (i = 0, len = ref1.length; i < len; i++) {
+          link = ref1[i];
+          if ((node = Sauce.createSauceLink(link, post, post.files[+file.dataset.file]))) {
+            sauces.push($.tn(' '), node);
+          }
+        }
+        $.add(nodes.sauce, sauces);
+      }
       if (Gallery.slideshow && (newID > oldID || (oldID === Gallery.images.length - 1 && newID === 0))) {
         Gallery.setupTimer();
       } else {
@@ -14834,6 +14861,8 @@ Gallery = (function() {
               return Gallery.cb.rotateLeft;
             case Conf['Rotate image clockwise']:
               return Gallery.cb.rotateRight;
+            case Conf['Download Gallery Image']:
+              return Gallery.cb.download;
           }
         })();
         if (!cb) {
@@ -14886,6 +14915,11 @@ Gallery = (function() {
       },
       toggleSlideshow: function() {
         return Gallery.cb[Gallery.slideshow ? 'stop' : 'start']();
+      },
+      download: function() {
+        var name;
+        name = $('.gal-name');
+        return name.click();
       },
       pause: function() {
         var current;
@@ -16164,6 +16198,7 @@ Sauce = (function() {
       if (!(((ref = g.VIEW) === 'index' || ref === 'thread') && Conf['Sauce'])) {
         return;
       }
+      $.addClass(doc, 'show-sauce');
       links = [];
       ref1 = Conf['sauces'].split('\n');
       for (j = 0, len = ref1.length; j < len; j++) {
@@ -17873,7 +17908,7 @@ Menu = (function() {
       if (this.isClone) {
         button = $('.menu-button', this.nodes.info);
         $.rmClass(button, 'active');
-        $.rm($('.dialog', button));
+        $.rm($('.dialog', this.nodes.info));
         Menu.makeButton(this, button);
         return;
       }
