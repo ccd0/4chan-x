@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.20.5
+// @version      1.14.20.6
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -99,7 +99,7 @@
 // @connect      soundcloud.com
 // @connect      api.streamable.com
 // @connect      vimeo.com
-// @connect      noembed.com
+// @connect      www.youtube.com
 // @connect      *
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -219,7 +219,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.20.5',
+  VERSION:   '1.14.20.6',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)

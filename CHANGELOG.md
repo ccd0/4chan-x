@@ -4,6 +4,9 @@
 
 ### v1.14.20
 
+**v1.14.20.6** *(2021-01-15)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.6/builds/4chan-X-noupdate.crx)]
+- Userscript only: Add Youtube to Tampermonkey XHR domain whitelist to stop annoying permission popups.
+
 **v1.14.20.5** *(2021-01-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.20.5/builds/4chan-X-noupdate.crx)]
 - (ihavenoface) Use native oembed for youtube link titles. Fixes "Forbidden or Private" on YouTube embeds.
 
