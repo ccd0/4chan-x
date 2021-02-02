@@ -15,8 +15,8 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "w", "wg", "wsr"],
-  "files": ["bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "w", "wg", "wsr"],
+  "boards": ["bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr"],
+  "files": ["bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr"],
   "reports": true
 }, {
   "uid": 8,
