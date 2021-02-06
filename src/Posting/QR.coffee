@@ -564,9 +564,11 @@ QR =
         QR.setCustomCooldown customCooldownEnabled
         $.sync 'customCooldownEnabled', QR.setCustomCooldown
 
-    $.get 'Randomize Filename', Conf['Randomize Filename'], ({'Randomize Filename': randomizeFilenameEnabled}) ->
-      QR.setRandomizedFilename randomizeFilenameEnabled
-      $.sync 'Randomize Filename', QR.setRandomizedFilename
+    if Conf['Randomize Filename Button']
+      QR.nodes.randomizedFilename.hidden = false
+      $.get 'Randomize Filename', Conf['Randomize Filename'], ({'Randomize Filename': randomizeFilenameEnabled}) ->
+        QR.setRandomizedFilename randomizeFilenameEnabled
+        $.sync 'Randomize Filename', QR.setRandomizedFilename
 
     QR.flagsInput()
 
