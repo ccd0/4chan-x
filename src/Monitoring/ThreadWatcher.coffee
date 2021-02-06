@@ -126,6 +126,11 @@ ThreadWatcher =
       for a in $$ 'a[title]', ThreadWatcher.list
         $.open a.href
       $.event 'CloseMenu'
+    clear: ->
+      for {siteID, boardID, threadID} in ThreadWatcher.getAll()
+        ThreadWatcher.db.delete {siteID, boardID, threadID}
+      ThreadWatcher.refresh()
+      $.event 'CloseMenu'
     pruneDeads: ->
       return if $.hasClass @, 'disabled'
       for {siteID, boardID, threadID, data} in ThreadWatcher.getAll() when data.isDead
@@ -601,6 +606,13 @@ ThreadWatcher =
       entries.push
         text: 'Open all threads'
         cb: ThreadWatcher.cb.openAll
+        open: ->
+          @el.classList.toggle 'disabled', !ThreadWatcher.list.firstElementChild
+          true
+
+      entries.push
+        text: 'Clear all threads'
+        cb: ThreadWatcher.cb.clear
         open: ->
           @el.classList.toggle 'disabled', !ThreadWatcher.list.firstElementChild
           true
