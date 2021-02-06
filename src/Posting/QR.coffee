@@ -215,6 +215,21 @@ QR =
     QR.setCustomCooldown enabled
     $.set 'customCooldownEnabled', enabled
 
+  setRandomizedFilename: (enabled) ->
+    Conf['Randomize Filename'] = enabled
+    QR.nodes.randomizedFilename.classList.toggle 'disabled', !enabled
+    if enabled
+      for post in QR.posts when post.file
+        post.randomizeFilename()
+        post.saveFilename()
+        post.showFileData()
+
+  toggleRandomizedFilename: ->
+    enabled = $.hasClass QR.nodes.randomizedFilename, 'disabled'
+    QR.setRandomizedFilename enabled
+    $.set 'Randomize Filename', enabled
+
+
   error: (err, focusOverride) ->
     QR.open()
     if typeof err is 'string'
@@ -528,6 +543,7 @@ QR =
     setNode 'urlButton',      '#url-button'
     setNode 'pasteArea',      '#paste-area'
     setNode 'customCooldown', '#custom-cooldown-button'
+    setNode 'randomizedFilename', '#randomize-filename-button'
     setNode 'dumpButton',     '#dump-button'
     setNode 'status',         '[type=submit]'
     setNode 'flashTag',       '[name=filetag]'
@@ -547,6 +563,10 @@ QR =
       $.get 'customCooldownEnabled', Conf['customCooldownEnabled'], ({customCooldownEnabled}) ->
         QR.setCustomCooldown customCooldownEnabled
         $.sync 'customCooldownEnabled', QR.setCustomCooldown
+
+    $.get 'Randomize Filename', Conf['Randomize Filename'], ({'Randomize Filename': randomizeFilenameEnabled}) ->
+      QR.setRandomizedFilename randomizeFilenameEnabled
+      $.sync 'Randomize Filename', QR.setRandomizedFilename
 
     QR.flagsInput()
 
@@ -568,6 +588,7 @@ QR =
     $.on nodes.fileRM,         'click',     -> QR.selected.rmFile()
     $.on nodes.urlButton,      'click',     -> QR.handleUrl ''
     $.on nodes.customCooldown, 'click',     QR.toggleCustomCooldown
+    $.on nodes.randomizedFilename, 'click', QR.toggleRandomizedFilename
     $.on nodes.dumpButton,     'click',     -> nodes.el.classList.toggle 'dump'
     $.on nodes.fileInput,      'change',    QR.handleFiles
 
