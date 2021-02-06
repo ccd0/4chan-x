@@ -2056,6 +2056,15 @@ a:only-of-type > .remove {
   -webkit-transform: translateY(-50%);
   transform: translateY(-50%);
 }
+#clear-posts {
+  cursor: pointer;
+  position: absolute;
+  bottom: 5px;
+  right: 10px;
+}
+#clear-posts .fa:before {
+  font-size: 16px;
+}
 .textarea {
   position: relative;
   display: -webkit-flex;
