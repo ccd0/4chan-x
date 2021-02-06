@@ -127,6 +127,7 @@ ThreadWatcher =
         $.open a.href
       $.event 'CloseMenu'
     clear: ->
+      return unless confirm "Delete ALL threads from watcher?"
       for {siteID, boardID, threadID} in ThreadWatcher.getAll()
         ThreadWatcher.db.delete {siteID, boardID, threadID}
       ThreadWatcher.refresh()
