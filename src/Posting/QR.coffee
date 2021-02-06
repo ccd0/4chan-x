@@ -218,7 +218,7 @@ QR =
   setRandomizedFilename: (enabled) ->
     Conf['Randomize Filename'] = enabled
     QR.nodes.randomizedFilename.classList.toggle 'disabled', !enabled
-    if enabled
+    if enabled and QR.posts.length == 1
       for post in QR.posts when post.file
         post.randomizeFilename()
         post.saveFilename()
