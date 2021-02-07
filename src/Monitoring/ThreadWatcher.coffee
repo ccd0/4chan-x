@@ -551,7 +551,7 @@ ThreadWatcher =
     data.excerpt = Get.threadExcerpt thread if thread.OP
     ThreadWatcher.addRaw boardID, threadID, data, cb
 
-  addRaw: (boardID, threadID, data, cb) ->
+  addRaw: (boardID, threadID, data, cb, skipRefresh = false) ->
     oldData = ThreadWatcher.db.get {boardID, threadID, defaultValue: $.dict()}
     delete oldData.last
     delete oldData.modified
@@ -559,6 +559,7 @@ ThreadWatcher =
     ThreadWatcher.db.set {boardID, threadID, val: oldData}, cb
     ThreadWatcher.refresh()
     thread = {siteID: g.SITE.ID, boardID, threadID, data, force: true}
+    return if skipRefresh
     if Conf['Show Page'] and !data.isDead
       ThreadWatcher.fetchBoard [thread]
     else if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
