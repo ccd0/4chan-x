@@ -35,3 +35,4 @@ uid | name | domain | software
 `32`|`4tan`|[boards.4tan.org](https://boards.4tan.org)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `33`|`YEET Archive`|[archive.yeet.net](https://archive.yeet.net)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `34`|`TokyoChronos`|[www.tokyochronos.net](https://www.tokyochronos.net)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
+`35`|`Wakarimasen Archive`|[archive.wakarimasen.moe](http://archive.wakarimasen.moe)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
