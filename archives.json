@@ -115,8 +115,9 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["jp", "vrpg"],
-  "files": ["jp", "vrpg"],
+  "boards": ["g", "jp", "vrpg", "vt"],
+  "files": ["g", "jp", "vrpg", "vt"],
+  "search": ["jp", "vrpg", "vt"],
   "reports": true
 }, {"uid": 35,
   "name" : "Wakarimasen Archive",
