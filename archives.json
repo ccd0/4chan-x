@@ -115,11 +115,11 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["g", "jp", "vrpg", "vt"],
-  "files": ["g", "jp", "vrpg", "vt"],
-  "search": ["jp", "vrpg", "vt"],
+  "boards": ["a", "g", "jp", "vrpg", "vt"],
+  "files": ["a", "jp", "vrpg", "vt"],
   "reports": true
-}, {"uid": 35,
+}, {
+  "uid": 35,
   "name" : "Wakarimasen Archive",
   "domain" : "archive.wakarimasen.moe",
   "http" : true,
