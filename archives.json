@@ -19,16 +19,6 @@
   "files": ["bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr"],
   "reports": true
 }, {
-  "uid": 8,
-  "name": "Rebecca Black Tech",
-  "domain": "archive.rebeccablacktech.com",
-  "http": false,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["cgl", "g", "mu"],
-  "files": ["cgl", "g", "mu"],
-  "reports": true
-}, {
   "uid": 10,
   "name": "warosu",
   "domain": "warosu.org",
@@ -45,8 +35,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "q", "qa", "r9k", "tg", "trash", "vr", "wsg"],
-  "files": ["a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "q", "qa", "r9k", "tg", "trash", "vr", "wsg"],
+  "boards": ["a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "gif", "his", "int", "k", "m", "mu", "mlp", "q", "qa", "r9k", "tg", "trash", "vr", "wsg"],
+  "files": ["a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "gif", "his", "int", "k", "m", "mu", "mlp", "q", "qa", "r9k", "tg", "trash", "vr", "wsg"],
   "reports": true
 }, {
   "uid": 24,
