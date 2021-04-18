@@ -35,8 +35,8 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "gif", "his", "int", "k", "m", "mu", "mlp", "q", "qa", "r9k", "tg", "trash", "vr", "wsg"],
-  "files": ["a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "gif", "his", "int", "k", "m", "mu", "mlp", "q", "qa", "r9k", "tg", "trash", "vr", "wsg"],
+  "boards": ["a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "gif", "his", "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr", "wsg"],
+  "files": ["a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "gif", "his", "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr", "wsg"],
   "reports": true
 }, {
   "uid": 24,
@@ -55,9 +55,9 @@
   "http": true,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["g", "mlp", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst"],
+  "boards": ["g", "mlp", "qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst"],
   "files": [],
-  "search": ["v", "vg", "vm", "vmg", "vrpg", "vst"]
+  "search": ["qb", "v", "vg", "vm", "vmg", "vrpg", "vst"]
 }, {
   "uid": 28,
   "name": "bstats",
