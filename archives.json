@@ -105,8 +105,8 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["r9k", "vt"],
-  "files": ["r9k", "vt"],
+  "boards": ["a", "g", "jp", "r9k", "vrpg", "vt"],
+  "files": ["a", "g", "jp", "r9k", "vrpg", "vt"],
   "reports": true
 }, {
   "uid": 35,
