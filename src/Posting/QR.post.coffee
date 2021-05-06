@@ -57,7 +57,7 @@ QR.post = class
       if QR.nodes.flag
         @flag = if prev
           prev.flag
-        else
+        else if persona.flag and persona.flag of g.BOARD.config.board_flags
           persona.flag
       (@load() if QR.selected is @) # load persona
     @select() if select
@@ -123,7 +123,7 @@ QR.post = class
       return
     {name}  = input.dataset
     return unless name in ['thread', 'name', 'email', 'sub', 'com', 'filename', 'flag']
-    prev    = @[name]
+    prev    = @[name] or input.dataset.default or null
     @[name] = input.value or input.dataset.default or null
     switch name
       when 'thread'
