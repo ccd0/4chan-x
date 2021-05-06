@@ -6,6 +6,7 @@ Site =
     'notso.smuglo.li': {canonical: 'smuglo.li'}
     'smugloli.net':    {canonical: 'smuglo.li'}
     'smug.nepu.moe':   {canonical: 'smuglo.li'}
+    'original.kissu.moe': {canonical: 'kissu.moe'}
 
   init: (cb) ->
     $.extend Conf['siteProperties'], Site.defaultProperties
