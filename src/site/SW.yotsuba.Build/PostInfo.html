@@ -13,7 +13,7 @@
     ?{capcodeDescription}{ <img src="${staticPath}${capcodeLC}icon${gifIcon}" alt="${capcode} Icon" title="This user is ${capcodeDescription}." class="identityIcon retina">}
     ?{uniqueID && !capcode}{ <span class="posteruid id_${uniqueID}">(ID: <span class="hand" title="Highlight posts by this ID">${uniqueID}</span>)</span>}
     ?{flagCode}{ <span title="${flag}" class="flag flag-${flagCode.toLowerCase()}"></span>}
-    ?{flagCodeTroll}{ <img src="${staticPath}country/troll/${flagCodeTroll.toLowerCase()}.gif" alt="${flagCodeTroll}" title="${flag}" class="countryFlag">}
+    ?{flagCodeTroll}{ <span title="${flag}" class="bfl bfl-${flagCodeTroll.toLowerCase()}"></span>}
   </span> 
   <span class="dateTime" data-utc="${dateUTC}">${dateText}</span> 
   <span class="postNum?{!(boardID === "f" && !o.isReply)}{ desktop}">

@@ -622,8 +622,8 @@ QR =
     addFlag = (value, textContent) ->
       $.add select, $.el 'option', {value, textContent}
 
-    addFlag '0', 'Geographic Location'
-    for value, textContent of BoardConfig.troll_flags
+    addFlag '0', (if g.BOARD.config.country_flags then 'Geographic Location' else 'None')
+    for value, textContent of g.BOARD.config.board_flags
       addFlag value, textContent
 
     select
@@ -635,7 +635,7 @@ QR =
       $.rm nodes.flag
       delete nodes.flag
 
-    if g.BOARD.config.troll_flags
+    if g.BOARD.config.board_flags
       flag = QR.flags()
       flag.dataset.name    = 'flag'
       flag.dataset.default = '0'
