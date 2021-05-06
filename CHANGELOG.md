@@ -4,6 +4,10 @@
 
 ### v1.14.21
 
+**v1.14.21.1** *(2021-05-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.1/builds/4chan-X-noupdate.crx)]
+- Fix some posts not being processed on 4chan /g/ and /sci/.
+- Update for flag changes on 4chan /mlp/ and /pol/.
+
 **v1.14.21.0** *(2021-01-15)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.20.6.
 - (ihavenoface) Fix bug causing unwanted menu in inlined/previewed quotes.

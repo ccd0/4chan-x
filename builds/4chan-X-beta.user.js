@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.21.0
+// @version      1.14.21.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -45,7 +45,6 @@
 // @include      https://www.ota-ch.com/*
 // @include      https://ponyville.us/*
 // @include      https://www.ponyville.us/*
-// @include      https://samachan.org/*
 // @include      https://smuglo.li/*
 // @include      https://notso.smuglo.li/*
 // @include      https://smugloli.net/*
@@ -83,7 +82,6 @@
 // @connect      4chenz.github.io
 // @connect      archive.4plebs.org
 // @connect      archive.nyafuu.org
-// @connect      archive.rebeccablacktech.com
 // @connect      warosu.org
 // @connect      desuarchive.org
 // @connect      boards.fireden.net
@@ -93,6 +91,7 @@
 // @connect      thebarchive.com
 // @connect      archiveofsins.com
 // @connect      www.tokyochronos.net
+// @connect      archive.wakarimasen.moe
 // @connect      api.clyp.it
 // @connect      api.dailymotion.com
 // @connect      api.github.com
@@ -219,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.21.0',
+  VERSION:   '1.14.21.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -6914,7 +6913,7 @@ Post = (function() {
     };
 
     function Post(root, thread, board, flags) {
-      var clone, j, k, key, len, len1, ref, ref1, ref10, ref11, ref12, ref13, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, selector;
+      var clone, j, k, key, len, len1, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, selector;
       this.thread = thread;
       this.board = board;
       if (flags == null) {
@@ -6954,8 +6953,8 @@ Post = (function() {
         capcode: (ref5 = this.nodes.capcode) != null ? ref5.textContent.replace('## ', '') : void 0,
         pass: (ref6 = this.nodes.pass) != null ? ref6.title.match(/\d*$/)[0] : void 0,
         flagCode: (ref7 = this.nodes.flag) != null ? (ref8 = ref7.className.match(/flag-(\w+)/)) != null ? ref8[1].toUpperCase() : void 0 : void 0,
-        flagCodeTroll: (ref9 = this.nodes.flag) != null ? (ref10 = ref9.src) != null ? (ref11 = ref10.match(/(\w+)\.gif$/)) != null ? ref11[1].toUpperCase() : void 0 : void 0 : void 0,
-        flag: (ref12 = this.nodes.flag) != null ? ref12.title : void 0,
+        flagCodeTroll: (ref9 = this.nodes.flag) != null ? (ref10 = ref9.className.match(/bfl-(\w+)/)) != null ? ref10[1].toUpperCase() : void 0 : void 0,
+        flag: (ref11 = this.nodes.flag) != null ? ref11.title : void 0,
         date: this.nodes.date ? g.SITE.parseDate(this.nodes.date) : void 0
       };
       if (Conf['Anonymize']) {
@@ -6978,9 +6977,9 @@ Post = (function() {
       if (g.posts.get(this.fullID)) {
         this.isRebuilt = true;
         this.clones = g.posts.get(this.fullID).clones;
-        ref13 = this.clones;
-        for (k = 0, len1 = ref13.length; k < len1; k++) {
-          clone = ref13[k];
+        ref12 = this.clones;
+        for (k = 0, len1 = ref12.length; k < len1; k++) {
+          clone = ref12[k];
           clone.origin = this;
         }
       }
@@ -8190,7 +8189,7 @@ SW = {};
         uniqueID: '.posteruid > .hand',
         capcode: '.capcode.hand',
         pass: '.n-pu',
-        flag: '.flag, .countryFlag',
+        flag: '.flag, .bfl',
         date: '.dateTime',
         nameBlock: '.nameBlock',
         quote: '.postNum > a:nth-of-type(2)',
@@ -8549,8 +8548,8 @@ SW = {};
         pass: data.since4pass != null ? "" + data.since4pass : void 0,
         uniqueID: data.id,
         flagCode: data.country,
-        flagCodeTroll: data.troll_country,
-        flag: $.unescape(data.country_name),
+        flagCodeTroll: data.board_flag,
+        flag: $.unescape(data.country_name || data.flag_name),
         dateUTC: data.time,
         dateText: data.now,
         commentHTML: {
@@ -8659,7 +8658,7 @@ SW = {};
       url = Build.threadURL(boardID, threadID);
       postLink = url + "#p" + ID;
       quoteLink = Build.sameThread(boardID, threadID) ? "javascript:quote('" + (+ID) + "');" : url + "#q" + ID;
-      postInfo = {innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((o.extra.xa19s) ? " <span class=\"like-score\">" + E(o.extra.xa19s) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcodeDescription) ? "" : " ") + ((capcodeDescription) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + ((flagCodeTroll) ? " <img src=\"" + E(staticPath) + "country/troll/" + E(flagCodeTroll.toLowerCase()) + ".gif\" alt=\"" + E(flagCodeTroll) + "\" title=\"" + E(flag) + "\" class=\"countryFlag\">" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.extra.xa19l && o.isReply) ? " <a data-cmd=\"like-post\" href=\"#\" class=\"like-btn\">Like! ×" + E(o.extra.xa19l) + "</a>" : "") + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"stickyIcon retina\"") + ">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"closedIcon retina\"") + ">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"};
+      postInfo = {innerHTML: "<div class=\"postInfo desktop\" id=\"pi" + E(ID) + "\"><input type=\"checkbox\" name=\"" + E(ID) + "\" value=\"delete\"> " + ((!o.isReply || boardID === "f" || subject) ? "<span class=\"subject\">" + E(subject || "") + "</span> " : "") + "<span class=\"nameBlock" + ((capcode) ? " capcode" + E(capcode) : "") + "\">" + ((email) ? "<a href=\"mailto:" + E(encodeURIComponent(email).replace(/%40/g, "@")) + "\" class=\"useremail\">" : "") + "<span class=\"name" + ((capcode) ? " capcode" : "") + "\">" + E(name) + "</span>" + ((tripcode) ? " <span class=\"postertrip\">" + E(tripcode) + "</span>" : "") + ((pass) ? " <span title=\"Pass user since " + E(pass) + "\" class=\"n-pu\"></span>" : "") + ((capcode) ? " <strong class=\"capcode hand id_" + E(capcodeLC) + "\" title=\"Highlight posts by " + E(capcodePlural) + "\">## " + E(capcode) + "</strong>" : "") + ((email) ? "</a>" : "") + ((boardID === "f" && !o.isReply || capcodeDescription) ? "" : " ") + ((capcodeDescription) ? " <img src=\"" + E(staticPath) + E(capcodeLC) + "icon" + E(gifIcon) + "\" alt=\"" + E(capcode) + " Icon\" title=\"This user is " + E(capcodeDescription) + ".\" class=\"identityIcon retina\">" : "") + ((uniqueID && !capcode) ? " <span class=\"posteruid id_" + E(uniqueID) + "\">(ID: <span class=\"hand\" title=\"Highlight posts by this ID\">" + E(uniqueID) + "</span>)</span>" : "") + ((flagCode) ? " <span title=\"" + E(flag) + "\" class=\"flag flag-" + E(flagCode.toLowerCase()) + "\"></span>" : "") + ((flagCodeTroll) ? " <span title=\"" + E(flag) + "\" class=\"bfl bfl-" + E(flagCodeTroll.toLowerCase()) + "\"></span>" : "") + "</span> <span class=\"dateTime\" data-utc=\"" + E(dateUTC) + "\">" + E(dateText) + "</span> <span class=\"postNum" + ((!(boardID === "f" && !o.isReply)) ? " desktop" : "") + "\"><a href=\"" + E(postLink) + "\" title=\"Link to this post\">No.</a><a href=\"" + E(quoteLink) + "\" title=\"Reply to this post\">" + E(ID) + "</a>" + ((o.isSticky) ? " <img src=\"" + E(staticPath) + "sticky" + E(gifIcon) + "\" alt=\"Sticky\" title=\"Sticky\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"stickyIcon retina\"") + ">" : "") + ((o.isClosed && !o.isArchived) ? " <img src=\"" + E(staticPath) + "closed" + E(gifIcon) + "\" alt=\"Closed\" title=\"Closed\"" + ((boardID === "f") ? " style=\"height: 18px; width: 18px;\"" : " class=\"closedIcon retina\"") + ">" : "") + ((o.isArchived) ? " <img src=\"" + E(staticPath) + "archived" + E(gifIcon) + "\" alt=\"Archived\" title=\"Archived\" class=\"archivedIcon retina\">" : "") + ((!o.isReply && g.VIEW === "index") ? " &nbsp; <span>[<a href=\"/" + E(boardID) + "/thread/" + E(threadID) + "\" class=\"replylink\">Reply</a>]</span>" : "") + "</span></div>"};
 
       /* File Info */
       if (file) {
@@ -8668,7 +8667,7 @@ SW = {};
         shortFilename = Build.shortFilename(file.name);
         fileThumb = file.isSpoiler ? Build.spoilerThumb(boardID) : file.thumbURL.replace(protocol, '');
       }
-      fileBlock = {innerHTML: ((file) ? "<div class=\"file\" id=\"f" + E(ID) + "\">" + ((boardID === "f") ? "<div class=\"fileInfo\" data-md5=\"" + E(file.MD5) + "\"><span class=\"fileText\" id=\"fT" + E(ID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(fileURL) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E(file.size) + ", " + E(file.dimensions) + ((file.tag) ? ", " + E(file.tag) : "") + ")</span></div>" : "<div class=\"fileText\" id=\"fT" + E(ID) + "\"" + ((file.isSpoiler) ? " title=\"" + E(file.name) + "\"" : "") + ">File: <a" + ((file.name === shortFilename || file.isSpoiler) ? "" : " title=\"" + E(file.name) + "\"") + " href=\"" + E(fileURL) + "\" target=\"_blank\">" + ((file.isSpoiler) ? "Spoiler Image" : E(shortFilename)) + "</a> (" + E(file.size) + ", " + E(file.dimensions || "PDF") + ")</div><a class=\"fileThumb" + ((file.isSpoiler) ? " imgspoiler" : "") + "\" href=\"" + E(fileURL) + "\" target=\"_blank\"" + ((file.hasDownscale) ? " data-m" : "") + "><img src=\"" + E(fileThumb) + "\" alt=\"" + E(file.size) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.isSpoiler ? 100 : file.theight) + "px; width: " + E(file.isSpoiler ? 100 : file.twidth) + "px;\"></a>") + "</div>" : ((o.fileDeleted) ? "<div class=\"file\" id=\"f" + E(ID) + "\"><span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span></div>" : ""))};
+      fileBlock = {innerHTML: ((file) ? "<div class=\"file\" id=\"f" + E(ID) + "\">" + ((boardID === "f") ? "<div class=\"fileInfo\" data-md5=\"" + E(file.MD5) + "\"><span class=\"fileText\" id=\"fT" + E(ID) + "\">File: <a data-width=\"" + E(file.width) + "\" data-height=\"" + E(file.height) + "\" href=\"" + E(fileURL) + "\" target=\"_blank\">" + E(file.name) + "</a>-(" + E(file.size) + ", " + E(file.dimensions) + ((file.tag) ? ", " + E(file.tag) : "") + ")</span></div>" : "<div class=\"fileText\" id=\"fT" + E(ID) + "\"" + ((file.isSpoiler) ? " title=\"" + E(file.name) + "\"" : "") + ">File: <a" + ((file.name === shortFilename || file.isSpoiler) ? "" : " title=\"" + E(file.name) + "\"") + " href=\"" + E(fileURL) + "\" target=\"_blank\">" + ((file.isSpoiler) ? "Spoiler Image" : E(shortFilename)) + "</a> (" + E(file.size) + ", " + E(file.dimensions || "PDF") + ")</div><a class=\"fileThumb" + ((file.isSpoiler) ? " imgspoiler" : "") + "\" href=\"" + E(fileURL) + "\" target=\"_blank\"" + ((file.hasDownscale) ? " data-m" : "") + "><img src=\"" + E(fileThumb) + "\" alt=\"" + E(file.size) + "\" data-md5=\"" + E(file.MD5) + "\" style=\"height: " + E(file.isSpoiler ? 100 : file.theight) + "px; width: " + E(file.isSpoiler ? 100 : file.twidth) + "px;\"loading=\"lazy\"></a>") + "</div>" : ((o.fileDeleted) ? "<div class=\"file\" id=\"f" + E(ID) + "\"><span class=\"fileThumb\"><img src=\"" + E(staticPath) + "filedeleted-res" + E(gifIcon) + "\" alt=\"File deleted.\" class=\"fileDeletedRes retina\"></span></div>" : ""))};
 
       /* Whole Post */
       postClass = o.isReply ? 'reply' : 'op';
@@ -8930,17 +8929,17 @@ Redirect = (function() {
   Redirect = {
     archives: [
       { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "reports": true },
-      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "w", "wg", "wsr" ], "files": [ "bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "w", "wg", "wsr" ], "reports": true },
-      { "uid": 8, "name": "Rebecca Black Tech", "domain": "archive.rebeccablacktech.com", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cgl", "g", "mu" ], "files": [ "cgl", "g", "mu" ], "reports": true },
-      { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ], "search": [ "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr" ] },
-      { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "q", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "co", "d", "fit", "gif", "his", "int", "k", "m", "mlp", "q", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
+      { "uid": 4, "name": "Nyafuu Archive", "domain": "archive.nyafuu.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr" ], "files": [ "bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr" ], "reports": true },
+      { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr", "vt" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr", "vt" ], "search": [ "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr", "vt" ] },
+      { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "gif", "his", "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "gif", "his", "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
       { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "files": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "search": [ "cm", "co", "ic", "sci", "tg", "y" ] },
-      { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "mlp", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst" ], "files": [], "search": [ "v", "vg", "vm", "vmg", "vrpg", "vst" ] },
+      { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "mlp", "qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst" ], "files": [ "qb", "v", "vg", "vm", "vmg", "vrpg", "vst" ], "search": [ "qb", "v", "vg", "vm", "vmg", "vrpg", "vst" ] },
       { "uid": 28, "name": "bstats", "domain": "archive.b-stats.org", "http": false, "https": true, "software": "foolfuuka", "boards": [ "f", "cm", "hm", "lgbt", "news", "qst", "trash", "y" ], "files": [] },
-      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "con", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "q", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vmg", "vp", "vr", "vrpg", "w", "wg", "wsg", "wsr", "x", "y" ], "files": [ "can", "cock", "con", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "q", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "vrpg", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
+      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "con", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "pw", "q", "qa", "qb", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vmg", "vp", "vr", "vrpg", "vt", "w", "wg", "wsg", "wsr", "x", "xs", "y" ], "files": [ "can", "cock", "con", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "q", "qb", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "vrpg", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u" ], "files": [ "h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u" ], "reports": true },
-      { "uid": 34, "name": "TokyoChronos", "domain": "www.tokyochronos.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "jp", "vrpg" ], "files": [ "jp", "vrpg" ], "reports": true }
+      { "uid": 34, "name": "TokyoChronos", "domain": "www.tokyochronos.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "g", "jp", "r9k", "vt" ], "files": [ "a", "g", "jp", "r9k", "vt" ], "reports": true },
+      { "uid": 35, "name": "Wakarimasen Archive", "domain": "archive.wakarimasen.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "pw", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vm", "vmg", "vp", "vr", "vrpg", "vst", "vt", "w", "wg", "wsg", "wsr", "x", "xs", "y" ], "files": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "pw", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vm", "vmg", "vp", "vr", "vrpg", "vst", "vt", "w", "wg", "wsg", "wsr", "x", "xs", "y" ], "reports": true }
     ],
     init: function() {
       var now, ref;
@@ -10458,22 +10457,22 @@ BoardConfig = (function() {
   BoardConfig = {
     cbs: [],
     init: function() {
-      var boards, now, ref, ref1, troll_flags;
+      var boards, now, ref;
       if (g.SITE.software !== 'yotsuba') {
         return;
       }
       now = Date.now();
-      if (!((now - 2 * $.HOUR < (ref = Conf['boardConfig'].lastChecked || 0) && ref <= now) && Conf['boardConfig'].troll_flags)) {
+      if (!((now - 2 * $.HOUR < (ref = Conf['boardConfig'].lastChecked || 0) && ref <= now))) {
         return $.ajax(location.protocol + "//a.4cdn.org/boards.json", {
           onloadend: this.load
         });
       } else {
-        ref1 = Conf['boardConfig'], boards = ref1.boards, troll_flags = ref1.troll_flags;
-        return this.set(boards, troll_flags);
+        boards = Conf['boardConfig'].boards;
+        return this.set(boards);
       }
     },
     load: function() {
-      var board, boards, err, i, len, ref, ref1, troll_flags;
+      var board, boards, err, i, len, ref;
       if (this.status === 200 && this.response && this.response.boards) {
         boards = $.dict();
         ref = this.response.boards;
@@ -10481,14 +10480,12 @@ BoardConfig = (function() {
           board = ref[i];
           boards[board.board] = board;
         }
-        troll_flags = this.response.troll_flags;
         $.set('boardConfig', {
           boards: boards,
-          troll_flags: troll_flags,
           lastChecked: Date.now()
         });
       } else {
-        ref1 = Conf['boardConfig'], boards = ref1.boards, troll_flags = ref1.troll_flags;
+        boards = Conf['boardConfig'].boards;
         err = (function() {
           switch (this.status) {
             case 0:
@@ -10501,12 +10498,11 @@ BoardConfig = (function() {
         }).call(this);
         new Notice('warning', "Failed to load board configuration. " + err, 20);
       }
-      return BoardConfig.set(boards, troll_flags);
+      return BoardConfig.set(boards);
     },
-    set: function(boards1, troll_flags1) {
+    set: function(boards1) {
       var ID, board, cb, i, len, ref, ref1;
       this.boards = boards1;
-      this.troll_flags = troll_flags1;
       ref = g.boards;
       for (ID in ref) {
         board = ref[ID];
@@ -17587,8 +17583,8 @@ ArchiveLink = (function() {
         return true;
       } : function(post) {
         var typeParam, value;
-        typeParam = type === 'country' && post.info.flagCodeTroll ? 'tag' : type;
-        value = type === 'country' ? post.info.flagCode || post.info.flagCodeTroll : Filter.values(type, post)[0];
+        typeParam = type === 'country' && post.info.flagCodeTroll ? 'troll_country' : type;
+        value = type === 'country' ? post.info.flagCode || post.info.flagCodeTroll.toLowerCase() : Filter.values(type, post)[0];
         if (!value) {
           return false;
         }
@@ -18905,7 +18901,9 @@ Fourchan = (function() {
           cb: Fourchan.code
         });
         g.posts.forEach(function(post) {
-          return Callbacks.Post.execute(post, ['Parse [code] tags'], true);
+          if (post.callbacksExecuted) {
+            return Callbacks.Post.execute(post, ['Parse [code] tags'], true);
+          }
         });
         ExpandComment.callbacks.push(Fourchan.code);
       }
@@ -18932,7 +18930,9 @@ Fourchan = (function() {
           cb: Fourchan.math
         });
         g.posts.forEach(function(post) {
-          return Callbacks.Post.execute(post, ['Parse [math] tags'], true);
+          if (post.callbacksExecuted) {
+            return Callbacks.Post.execute(post, ['Parse [math] tags'], true);
+          }
         });
         return ExpandComment.callbacks.push(Fourchan.math);
       }
@@ -24884,8 +24884,8 @@ QR = (function() {
           textContent: textContent
         }));
       };
-      addFlag('0', 'Geographic Location');
-      ref = BoardConfig.troll_flags;
+      addFlag('0', (g.BOARD.config.country_flags ? 'Geographic Location' : 'None'));
+      ref = g.BOARD.config.board_flags;
       for (value in ref) {
         textContent = ref[value];
         addFlag(value, textContent);
@@ -24902,7 +24902,7 @@ QR = (function() {
         $.rm(nodes.flag);
         delete nodes.flag;
       }
-      if (g.BOARD.config.troll_flags) {
+      if (g.BOARD.config.board_flags) {
         flag = QR.flags();
         flag.dataset.name = 'flag';
         flag.dataset["default"] = '0';
@@ -25829,7 +25829,7 @@ QR = (function() {
           _this.email = 'email' in QR.persona.always ? QR.persona.always.email : '';
           _this.sub = 'sub' in QR.persona.always ? QR.persona.always.sub : '';
           if (QR.nodes.flag) {
-            _this.flag = prev ? prev.flag : persona.flag;
+            _this.flag = prev ? prev.flag : persona.flag && persona.flag in g.BOARD.config.board_flags ? persona.flag : void 0;
           }
           if (QR.selected === _this) {
             return _this.load();
@@ -25928,7 +25928,7 @@ QR = (function() {
       if (name !== 'thread' && name !== 'name' && name !== 'email' && name !== 'sub' && name !== 'com' && name !== 'filename' && name !== 'flag') {
         return;
       }
-      prev = this[name];
+      prev = this[name] || input.dataset["default"] || null;
       this[name] = input.value || input.dataset["default"] || null;
       switch (name) {
         case 'thread':
