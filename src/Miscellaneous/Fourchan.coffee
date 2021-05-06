@@ -25,7 +25,9 @@ Fourchan =
       Callbacks.Post.push
         name: 'Parse [code] tags'
         cb:   Fourchan.code
-      g.posts.forEach (post) -> Callbacks.Post.execute post, ['Parse [code] tags'], true
+      g.posts.forEach (post) ->
+        if post.callbacksExecuted
+          Callbacks.Post.execute post, ['Parse [code] tags'], true
       ExpandComment.callbacks.push Fourchan.code
 
     if g.BOARD.config.math_tags
@@ -46,7 +48,9 @@ Fourchan =
       Callbacks.Post.push
         name: 'Parse [math] tags'
         cb:   Fourchan.math
-      g.posts.forEach (post) -> Callbacks.Post.execute post, ['Parse [math] tags'], true
+      g.posts.forEach (post) ->
+        if post.callbacksExecuted
+          Callbacks.Post.execute post, ['Parse [math] tags'], true
       ExpandComment.callbacks.push Fourchan.math
 
   # Disable 4chan's ID highlighting (replaced by IDHighlight) and reported post hiding.
