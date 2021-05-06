@@ -56,7 +56,7 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["g", "mlp", "qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst"],
-  "files": [],
+  "files": ["qb", "v", "vg", "vm", "vmg", "vrpg", "vst"],
   "search": ["qb", "v", "vg", "vm", "vmg", "vrpg", "vst"]
 }, {
   "uid": 28,
