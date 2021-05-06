@@ -521,7 +521,7 @@ Main =
       unless nodes[i]
         (cb() if cb)
         return
-      setTimeout softTask, 0 
+      $.queueTask softTask
 
     softTask()
 
