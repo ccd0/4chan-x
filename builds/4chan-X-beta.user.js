@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.21.1
+// @version      1.14.21.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -218,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.21.1',
+  VERSION:   '1.14.21.2',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -17582,9 +17582,9 @@ ArchiveLink = (function() {
         });
         return true;
       } : function(post) {
-        var typeParam, value;
+        var ref, typeParam, value;
         typeParam = type === 'country' && post.info.flagCodeTroll ? 'troll_country' : type;
-        value = type === 'country' ? post.info.flagCode || post.info.flagCodeTroll.toLowerCase() : Filter.values(type, post)[0];
+        value = type === 'country' ? post.info.flagCode || ((ref = post.info.flagCodeTroll) != null ? ref.toLowerCase() : void 0) : Filter.values(type, post)[0];
         if (!value) {
           return false;
         }
