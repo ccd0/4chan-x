@@ -4,6 +4,9 @@
 
 ### v1.14.21
 
+**v1.14.21.2** *(2021-05-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.2/builds/4chan-X-noupdate.crx)]
+- Fix bug introduced in v1.14.21.1 causing error message when menu opened.
+
 **v1.14.21.1** *(2021-05-06)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.1/builds/4chan-X-noupdate.crx)]
 - Fix some posts not being processed on 4chan /g/ and /sci/.
 - Update for flag changes on 4chan /mlp/ and /pol/.
