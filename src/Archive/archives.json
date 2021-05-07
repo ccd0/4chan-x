@@ -25,7 +25,7 @@
   "http": false,
   "https": true,
   "software": "fuuka",
-  "boards": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr", "vt"],
+  "boards": ["3", "biz", "cgl", "ck", "diy", "fa", "ic", "jp", "lit", "sci", "tg", "vr", "vt"],
   "files": ["3", "biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr", "vt"],
   "search": ["biz", "cgl", "ck", "diy", "fa", "g", "ic", "jp", "lit", "sci", "tg", "vr", "vt"]
 }, {
