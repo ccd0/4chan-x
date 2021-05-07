@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.21.2
+// @version      1.14.21.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -218,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.21.2',
+  VERSION:   '1.14.21.3',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -20695,13 +20695,23 @@ Favicon = (function() {
         return d.head && (Favicon.el = $('link[rel="shortcut icon"]', d.head));
       }), Favicon.initAsap);
     },
+    set: function(status) {
+      Favicon.status = status;
+      if (Favicon.el) {
+        Favicon.el.href = Favicon[status];
+        return $.add(d.head, Favicon.el);
+      }
+    },
     initAsap: function() {
       var href;
       Favicon.el.type = 'image/x-icon';
       href = Favicon.el.href;
       Favicon.isSFW = /ws\.ico$/.test(href);
       Favicon["default"] = href;
-      return Favicon["switch"]();
+      Favicon["switch"]();
+      if (Favicon.status) {
+        return Favicon.set(Favicon.status);
+      }
     },
     "switch": function() {
       var f, i, items, t;
@@ -22995,8 +23005,7 @@ Unread = (function() {
       Unread.saveThreadWatcherCount();
       if (Conf['Unread Favicon'] && g.SITE.software === 'yotsuba') {
         isDead = Unread.thread.isDead;
-        Favicon.el.href = countQuotingYou ? Favicon[isDead ? 'unreadDeadY' : 'unreadY'] : count ? Favicon[isDead ? 'unreadDead' : 'unread'] : Favicon[isDead ? 'dead' : 'default'];
-        return $.add(d.head, Favicon.el);
+        return Favicon.set((countQuotingYou ? (isDead ? 'unreadDeadY' : 'unreadY') : count ? (isDead ? 'unreadDead' : 'unread') : (isDead ? 'dead' : 'default')));
       }
     },
     saveThreadWatcherCount: $.debounce(2 * $.SECOND, function() {

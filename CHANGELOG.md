@@ -4,6 +4,9 @@
 
 ### v1.14.21
 
+**v1.14.21.3** *(2021-05-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.3/builds/4chan-X-noupdate.crx)]
+- Fix race condition causing unread posts tracking to malfunction.
+
 **v1.14.21.2** *(2021-05-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.2/builds/4chan-X-noupdate.crx)]
 - Fix bug introduced in v1.14.21.1 causing error message when menu opened.
 
