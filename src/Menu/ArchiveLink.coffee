@@ -43,7 +43,7 @@ ArchiveLink =
         else
           type
         value = if type is 'country'
-          post.info.flagCode or post.info.flagCodeTroll.toLowerCase()
+          post.info.flagCode or post.info.flagCodeTroll?.toLowerCase()
         else
           Filter.values(type, post)[0]
         # We want to parse the exact same stuff as the filter does already.
