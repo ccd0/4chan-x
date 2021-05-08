@@ -126,6 +126,11 @@ ThreadWatcher =
       for a in $$ 'a[title]', ThreadWatcher.list
         $.open a.href
       $.event 'CloseMenu'
+    openUnread: ->
+      return if $.hasClass @, 'disabled'
+      for a in $$ '.replies-unread a[title]', ThreadWatcher.list
+        $.open a.href
+      $.event 'CloseMenu'
     openDeads: ->
       return if $.hasClass @, 'disabled'
       for a in $$ 'a[title]', ThreadWatcher.list
@@ -609,6 +614,14 @@ ThreadWatcher =
         cb: ThreadWatcher.cb.openAll
         open: ->
           @el.classList.toggle 'disabled', !ThreadWatcher.list.firstElementChild
+          true
+
+      # `Open Unread` entry
+      entries.push
+        text: 'Open unread threads'
+        cb: ThreadWatcher.cb.openUnread
+        open: ->
+          @el.classList.toggle 'disabled', !$('.replies-unread', ThreadWatcher.list)
           true
 
       # `Open dead threads` entry
