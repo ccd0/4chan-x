@@ -123,19 +123,18 @@ ThreadWatcher =
   cb:
     openAll: ->
       return if $.hasClass @, 'disabled'
-      for a in $$ 'a[title]', ThreadWatcher.list
+      for a in $$ 'a.watcher-link', ThreadWatcher.list
         $.open a.href
       $.event 'CloseMenu'
     openUnread: ->
       return if $.hasClass @, 'disabled'
-      for a in $$ '.replies-unread a[title]', ThreadWatcher.list
+      for a in $$ '.replies-unread > a.watcher-link', ThreadWatcher.list
         $.open a.href
       $.event 'CloseMenu'
     openDeads: ->
       return if $.hasClass @, 'disabled'
-      for a in $$ 'a[title]', ThreadWatcher.list
-        if a.parentNode.classList.contains("dead-thread")
-          $.open a.href
+      for a in $$ '.dead-thread > a.watcher-link', ThreadWatcher.list
+        $.open a.href
       $.event 'CloseMenu'
     pruneDeads: ->
       return if $.hasClass @, 'disabled'
