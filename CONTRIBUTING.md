@@ -31,7 +31,7 @@ If you're reporting a bug, the more detail you can give, the better. If I can't 
 
 - 4chan X is mostly written in [CoffeeScript](http://coffeescript.org/). If you're already familiar with Javascript, it doesn't take long to pick up.
 - Edit the sources in the src/ directory (not the compiled scripts in builds/).
-- Fetch needed dependencies with: `npm install`
+- Fetch needed dependencies with: `npm install` 
 - Compile the script with: `make`
 - Install the compiled script (found in the testbuilds/ directory), and test your changes.
 - Make sure you have set your name and email as you want them, as they will be published in your commit message:<br>`git config user.name yourname`<br>`git config user.email youremail`
@@ -41,7 +41,8 @@ If you're reporting a bug, the more detail you can give, the better. If I can't 
   - Push your changes to any online Git repository, and [open an issue](https://gitreports.com/issue/ccd0/4chan-x) with an explanation of your changes and the URL, branch, and commit you want me to pull from.
   - Export your changes via `git bundle` (e.g. `git bundle create file.bundle master..your-branch`), and upload them to a file host. Then [open an issue](https://gitreports.com/issue/ccd0/4chan-x) with an explanation of your changes and the URL of the file.
 
-Archive list updates should go to https://github.com/MayhemYDG/archives.json.
+Pull requests to archive.json should be sent upstream:  https://github.com/4chenz/archives.json   
+4chan X updates from there automatically.
 
 ### More info
 
