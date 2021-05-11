@@ -55,8 +55,8 @@ Build =
       pass:     if data.since4pass? then "#{data.since4pass}" else undefined
       uniqueID: data.id
       flagCode: data.country
-      flagCodeTroll: data.troll_country
-      flag:     $.unescape data.country_name
+      flagCodeTroll: data.board_flag
+      flag:     $.unescape (data.country_name or data.flag_name)
       dateUTC:  data.time
       dateText: data.now
       commentHTML: {innerHTML: data.com or ''}

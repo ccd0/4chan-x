@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.21.0
+// @version      1.14.21.3
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -45,7 +45,6 @@
 // @include      https://www.ota-ch.com/*
 // @include      https://ponyville.us/*
 // @include      https://www.ponyville.us/*
-// @include      https://samachan.org/*
 // @include      https://smuglo.li/*
 // @include      https://notso.smuglo.li/*
 // @include      https://smugloli.net/*
@@ -83,7 +82,6 @@
 // @connect      4chenz.github.io
 // @connect      archive.4plebs.org
 // @connect      archive.nyafuu.org
-// @connect      archive.rebeccablacktech.com
 // @connect      warosu.org
 // @connect      desuarchive.org
 // @connect      boards.fireden.net
@@ -93,6 +91,7 @@
 // @connect      thebarchive.com
 // @connect      archiveofsins.com
 // @connect      www.tokyochronos.net
+// @connect      archive.wakarimasen.moe
 // @connect      api.clyp.it
 // @connect      api.dailymotion.com
 // @connect      api.github.com

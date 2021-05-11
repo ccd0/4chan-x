@@ -4,30 +4,29 @@ BoardConfig =
   init: ->
     return unless g.SITE.software is 'yotsuba'
     now = Date.now()
-    unless now - 2 * $.HOUR < (Conf['boardConfig'].lastChecked or 0) <= now and Conf['boardConfig'].troll_flags
+    unless now - 2 * $.HOUR < (Conf['boardConfig'].lastChecked or 0) <= now
       $.ajax "#{location.protocol}//a.4cdn.org/boards.json",
         onloadend: @load
     else
-      {boards, troll_flags} = Conf['boardConfig']
-      @set boards, troll_flags
+      {boards} = Conf['boardConfig']
+      @set boards
 
   load: ->
     if @status is 200 and @response and @response.boards
       boards = $.dict()
       for board in @response.boards
         boards[board.board] = board
-      {troll_flags} = @response
-      $.set 'boardConfig', {boards, troll_flags, lastChecked: Date.now()}
+      $.set 'boardConfig', {boards, lastChecked: Date.now()}
     else
-      {boards, troll_flags} = Conf['boardConfig']
+      {boards} = Conf['boardConfig']
       err = switch @status
         when 0   then 'Connection Error'
         when 200 then 'Invalid Data'
         else          "Error #{@statusText} (#{@status})"
       new Notice 'warning', "Failed to load board configuration. #{err}", 20
-    BoardConfig.set boards, troll_flags
+    BoardConfig.set boards
 
-  set: (@boards, @troll_flags) ->
+  set: (@boards) ->
     for ID, board of g.boards
       board.config = @boards[ID] or {}
     for cb in @cbs

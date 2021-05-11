@@ -41,7 +41,8 @@ If you're reporting a bug, the more detail you can give, the better. If I can't 
   - Push your changes to any online Git repository, and [open an issue](https://gitreports.com/issue/ccd0/4chan-x) with an explanation of your changes and the URL, branch, and commit you want me to pull from.
   - Export your changes via `git bundle` (e.g. `git bundle create file.bundle master..your-branch`), and upload them to a file host. Then [open an issue](https://gitreports.com/issue/ccd0/4chan-x) with an explanation of your changes and the URL of the file.
 
-Archive list updates should go to https://github.com/MayhemYDG/archives.json.
+Pull requests to archive.json should be sent upstream: https://github.com/4chenz/archives.json
+4chan X updates from there automatically.
 
 ### More info
 

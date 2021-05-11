@@ -43,7 +43,7 @@ SW.yotsuba =
       uniqueID:  '.posteruid > .hand'
       capcode:   '.capcode.hand'
       pass:      '.n-pu'
-      flag:      '.flag, .countryFlag'
+      flag:      '.flag, .bfl'
       date:      '.dateTime'
       nameBlock: '.nameBlock'
       quote:     '.postNum > a:nth-of-type(2)'

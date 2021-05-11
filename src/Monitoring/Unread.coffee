@@ -236,15 +236,14 @@ Unread =
 
     if Conf['Unread Favicon'] and g.SITE.software is 'yotsuba'
       {isDead} = Unread.thread
-      Favicon.el.href =
+      Favicon.set (
         if countQuotingYou
-          Favicon[if isDead then 'unreadDeadY' else 'unreadY']
+          (if isDead then 'unreadDeadY' else 'unreadY')
         else if count
-          Favicon[if isDead then 'unreadDead' else 'unread']
+          (if isDead then 'unreadDead' else 'unread')
         else
-          Favicon[if isDead then 'dead' else 'default']
-      # `favicon.href = href` doesn't work on Firefox.
-      $.add d.head, Favicon.el
+          (if isDead then 'dead' else 'default')
+      )
 
   saveThreadWatcherCount: $.debounce 2 * $.SECOND, ->
     $.forceSync 'Remember Last Read Post'

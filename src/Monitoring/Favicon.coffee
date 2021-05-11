@@ -1,13 +1,22 @@
 Favicon =
   init: ->
     $.asap (-> d.head and (Favicon.el = $ 'link[rel="shortcut icon"]', d.head)), Favicon.initAsap
-  
+
+  set: (status) ->
+    Favicon.status = status
+    if Favicon.el
+      Favicon.el.href = Favicon[status]
+      # `favicon.href = href` doesn't work on Firefox.
+      $.add d.head, Favicon.el
+
   initAsap: ->
     Favicon.el.type = 'image/x-icon'
     {href}          = Favicon.el
     Favicon.isSFW   = /ws\.ico$/.test href
     Favicon.default = href
     Favicon.switch()
+    if Favicon.status
+      Favicon.set Favicon.status
 
   switch: ->
     items = {
