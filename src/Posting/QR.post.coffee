@@ -167,7 +167,8 @@ QR.post = class
       QR.characterCount()
     @nodes.span.textContent = @com
     QR.captcha.moreNeeded()
-    Captcha.cache.prerequest()
+    if QR.captcha is Captcha.v2
+      Captcha.cache.prerequest()
 
   isOnlyQuotes: ->
     (@com or '').trim() is (@quotedText or '').trim()
