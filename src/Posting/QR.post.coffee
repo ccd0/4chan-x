@@ -74,6 +74,7 @@ QR.post = class
       (QR.posts[index-1] or QR.posts[index+1]).select()
     QR.posts.splice index, 1
     QR.status()
+    QR.captcha.updateThread?()
 
   delete: ->
     $.rm @nodes.el
@@ -129,6 +130,7 @@ QR.post = class
       when 'thread'
         (if @thread isnt 'new' then $.addClass else $.rmClass) QR.nodes.el, 'reply-to-thread'
         QR.status()
+        QR.captcha.updateThread?()
       when 'com'
         @updateComment()
       when 'filename'
@@ -403,3 +405,4 @@ QR.post = class
     post = QR.posts.splice(oldIndex, 1)[0]
     QR.posts.splice newIndex, 0, post
     QR.status()
+    QR.captcha.updateThread?()

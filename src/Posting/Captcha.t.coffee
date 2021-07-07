@@ -12,14 +12,21 @@ Captcha.t =
   moreNeeded: ->
     return
 
+  getThread: ->
+    boardID = g.BOARD.ID
+    if QR.posts[0].thread is 'new'
+      threadID = '0'
+    else
+      threadID = '' + QR.posts[0].thread
+    {boardID, threadID}
+
   setup: (focus) ->
     return unless @isEnabled
 
     if !@nodes.container
       @nodes.container = $.el 'div', className: 'captcha-container'
       $.prepend @nodes.root, @nodes.container
-      boardID = g.BOARD.ID
-      threadID = '' + QR.posts[0].thread
+      Captcha.t.currentThread = Captcha.t.getThread()
       $.global ->
         el = document.querySelector '#qr .captcha-container'
         window.TCaptcha.init el, @boardID, +@threadID
@@ -28,7 +35,7 @@ Captcha.t =
             type: 'warning',
             content: '' + err
           }})
-      , {boardID, threadID}
+      , Captcha.t.currentThread
 
     if focus
       $('#t-resp').focus()
@@ -39,6 +46,13 @@ Captcha.t =
       window.TCaptcha.destroy()
     $.rm @nodes.container
     delete @nodes.container
+
+  updateThread: ->
+    {boardID, threadID} = Captcha.t.currentThread
+    newThread = Captcha.t.getThread()
+    unless newThread.boardID is boardID and newThread.threadID is threadID
+      Captcha.t.destroy()
+      Captcha.t.setup()
 
   getOne: ->
     response = {}
