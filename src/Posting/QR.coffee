@@ -26,8 +26,6 @@ QR =
 
     @posts = []
 
-    @captcha = Captcha.v2
-
     $.on d, '4chanXInitFinished', -> BoardConfig.ready QR.initReady
 
     Callbacks.Post.push
@@ -50,6 +48,8 @@ QR =
     Header.addShortcut 'qr', sc, 540
 
   initReady: ->
+    captchaVersion = if $('#t-root') then 't' else 'v2'
+    QR.captcha = Captcha[captchaVersion]
     QR.postingIsEnabled = true
 
     {config} = g.BOARD
@@ -684,8 +684,10 @@ QR =
     if g.BOARD.ID is 'r9k' and !post.com?.match(/[a-z-]/i)
       err or= 'Original comment required.'
 
-    if QR.captcha.isEnabled and !(/\b_ct=/.test(d.cookie) and threadID) and !(err and !force)
-      captcha = QR.captcha.getOne(!!threadID) or Captcha.cache.request(!!threadID)
+    if QR.captcha.isEnabled and !(QR.captcha is Captcha.v2 and /\b_ct=/.test(d.cookie) and threadID) and !(err and !force)
+      captcha = QR.captcha.getOne(!!threadID)
+      if QR.captcha is Captcha.v2
+        captcha or= Captcha.cache.request(!!threadID)
       unless captcha
         err = 'No valid captcha.'
         QR.captcha.setup(!QR.cooldown.auto or d.activeElement is QR.nodes.status)
@@ -736,11 +738,15 @@ QR =
     cb = (response) ->
       if response?
         QR.currentCaptcha = response
-        if response.challenge?
-          options.form.append 'recaptcha_challenge_field', response.challenge
-          options.form.append 'recaptcha_response_field', response.response
+        if QR.captcha is Captcha.v2
+          if response.challenge?
+            options.form.append 'recaptcha_challenge_field', response.challenge
+            options.form.append 'recaptcha_response_field', response.response
+          else
+            options.form.append 'g-recaptcha-response', response.response
         else
-          options.form.append 'g-recaptcha-response', response.response
+          for key, val of response
+            options.form.append key, val
       QR.req = $.ajax "https://sys.#{location.hostname.split('.')[1]}.org/#{g.BOARD}/post", options
       QR.req.progress = '...'
 
@@ -749,10 +755,11 @@ QR =
       QR.req =
         progress: '...'
         abort: ->
-          Captcha.cache.abort()
+          if QR.captcha is Captcha.v2
+            Captcha.cache.abort()
           cb = null
       captcha (response) ->
-        if Captcha.cache.haveCookie()
+        if QR.captcha is Captcha.v2 and Captcha.cache.haveCookie()
           cb?()
           Captcha.cache.save response if response
         else if response
@@ -780,10 +787,11 @@ QR =
       $('a', err)?.target = '_blank' # duplicate image link
     else if (connErr = (!@response or @response.title isnt 'Post successful!'))
       err = QR.connectionError()
-      Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
+      Captcha.cache.save QR.currentCaptcha if QR.captcha is Captcha.v2 and QR.currentCaptcha
     else if @status isnt 200
       err = "Error #{@statusText} (#{@status})"
 
+    QR.captcha.setUsed?() unless connErr
     delete QR.currentCaptcha
 
     if err
@@ -901,7 +909,7 @@ QR =
     if (oldReq = QR.req) and !QR.req.isUploadFinished
       delete QR.req
       oldReq.abort()
-      Captcha.cache.save QR.currentCaptcha if QR.currentCaptcha
+      Captcha.cache.save QR.currentCaptcha if QR.captcha is Captcha.v2 and QR.currentCaptcha
       delete QR.currentCaptcha
       QR.posts[0].unlock()
       QR.cooldown.auto = false

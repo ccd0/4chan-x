@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.21.3
+// @version      1.14.21.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -218,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.21.3',
+  VERSION:   '1.14.21.5',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -23733,6 +23733,115 @@ Captcha = {};
 }).call(this);
 
 (function() {
+  Captcha.t = {
+    init: function() {
+      var root;
+      if (d.cookie.indexOf('pass_enabled=1') >= 0) {
+        return;
+      }
+      if (!(this.isEnabled = !!$('#t-root') || !$.id('postForm'))) {
+        return;
+      }
+      root = $.el('div', {
+        className: 'captcha-root'
+      });
+      this.nodes = {
+        root: root
+      };
+      $.addClass(QR.nodes.el, 'has-captcha', 'captcha-t');
+      return $.after(QR.nodes.com.parentNode, root);
+    },
+    moreNeeded: function() {},
+    getThread: function() {
+      var boardID, threadID;
+      boardID = g.BOARD.ID;
+      if (QR.posts[0].thread === 'new') {
+        threadID = '0';
+      } else {
+        threadID = '' + QR.posts[0].thread;
+      }
+      return {
+        boardID: boardID,
+        threadID: threadID
+      };
+    },
+    setup: function(focus) {
+      if (!this.isEnabled) {
+        return;
+      }
+      if (!this.nodes.container) {
+        this.nodes.container = $.el('div', {
+          className: 'captcha-container'
+        });
+        $.prepend(this.nodes.root, this.nodes.container);
+        Captcha.t.currentThread = Captcha.t.getThread();
+        $.global(function() {
+          var el;
+          el = document.querySelector('#qr .captcha-container');
+          window.TCaptcha.init(el, this.boardID, +this.threadID);
+          return window.TCaptcha.setErrorCb(function(err) {
+            return window.dispatchEvent(new CustomEvent('CreateNotification', {
+              detail: {
+                type: 'warning',
+                content: '' + err
+              }
+            }));
+          });
+        }, Captcha.t.currentThread);
+      }
+      if (focus) {
+        return $('#t-resp').focus();
+      }
+    },
+    destroy: function() {
+      if (!(this.isEnabled && this.nodes.container)) {
+        return;
+      }
+      $.global(function() {
+        return window.TCaptcha.destroy();
+      });
+      $.rm(this.nodes.container);
+      return delete this.nodes.container;
+    },
+    updateThread: function() {
+      var boardID, newThread, ref, threadID;
+      ref = Captcha.t.currentThread, boardID = ref.boardID, threadID = ref.threadID;
+      newThread = Captcha.t.getThread();
+      if (!(newThread.boardID === boardID && newThread.threadID === threadID)) {
+        Captcha.t.destroy();
+        return Captcha.t.setup();
+      }
+    },
+    getOne: function() {
+      var i, key, len, ref, response;
+      response = {};
+      if (this.nodes.container) {
+        ref = ['t-response', 't-challenge'];
+        for (i = 0, len = ref.length; i < len; i++) {
+          key = ref[i];
+          response[key] = $("[name='" + key + "']", this.nodes.container).value;
+        }
+      }
+      if (!response['t-response']) {
+        response = null;
+      }
+      return response;
+    },
+    setUsed: function() {
+      if (this.nodes.container) {
+        return $.global(function() {
+          return window.TCaptcha.clearChallenge();
+        });
+      }
+    },
+    occupied: function() {
+      return !!this.nodes.container;
+    }
+  };
+
+}).call(this);
+
+(function() {
   var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Captcha.v2 = {
@@ -24158,7 +24267,6 @@ QR = (function() {
         return;
       }
       this.posts = [];
-      this.captcha = Captcha.v2;
       $.on(d, '4chanXInitFinished', function() {
         return BoardConfig.ready(QR.initReady);
       });
@@ -24186,7 +24294,9 @@ QR = (function() {
       return Header.addShortcut('qr', sc, 540);
     },
     initReady: function() {
-      var config, link, linkBot, navLinksBot, origToggle, prop;
+      var captchaVersion, config, link, linkBot, navLinksBot, origToggle, prop;
+      captchaVersion = $('#t-root') ? 't' : 'v2';
+      QR.captcha = Captcha[captchaVersion];
       QR.postingIsEnabled = true;
       config = g.BOARD.config;
       prop = function(key, def) {
@@ -24964,8 +25074,11 @@ QR = (function() {
       if (g.BOARD.ID === 'r9k' && !((ref = post.com) != null ? ref.match(/[a-z-]/i) : void 0)) {
         err || (err = 'Original comment required.');
       }
-      if (QR.captcha.isEnabled && !(/\b_ct=/.test(d.cookie) && threadID) && !(err && !force)) {
-        captcha = QR.captcha.getOne(!!threadID) || Captcha.cache.request(!!threadID);
+      if (QR.captcha.isEnabled && !(QR.captcha === Captcha.v2 && /\b_ct=/.test(d.cookie) && threadID) && !(err && !force)) {
+        captcha = QR.captcha.getOne(!!threadID);
+        if (QR.captcha === Captcha.v2) {
+          captcha || (captcha = Captcha.cache.request(!!threadID));
+        }
         if (!captcha) {
           err = 'No valid captcha.';
           QR.captcha.setup(!QR.cooldown.auto || d.activeElement === QR.nodes.status);
@@ -25015,13 +25128,21 @@ QR = (function() {
         };
       }
       cb = function(response) {
+        var key, val;
         if (response != null) {
           QR.currentCaptcha = response;
-          if (response.challenge != null) {
-            options.form.append('recaptcha_challenge_field', response.challenge);
-            options.form.append('recaptcha_response_field', response.response);
+          if (QR.captcha === Captcha.v2) {
+            if (response.challenge != null) {
+              options.form.append('recaptcha_challenge_field', response.challenge);
+              options.form.append('recaptcha_response_field', response.response);
+            } else {
+              options.form.append('g-recaptcha-response', response.response);
+            }
           } else {
-            options.form.append('g-recaptcha-response', response.response);
+            for (key in response) {
+              val = response[key];
+              options.form.append(key, val);
+            }
           }
         }
         QR.req = $.ajax("https://sys." + (location.hostname.split('.')[1]) + ".org/" + g.BOARD + "/post", options);
@@ -25031,12 +25152,14 @@ QR = (function() {
         QR.req = {
           progress: '...',
           abort: function() {
-            Captcha.cache.abort();
+            if (QR.captcha === Captcha.v2) {
+              Captcha.cache.abort();
+            }
             return cb = null;
           }
         };
         captcha(function(response) {
-          if (Captcha.cache.haveCookie()) {
+          if (QR.captcha === Captcha.v2 && Captcha.cache.haveCookie()) {
             if (typeof cb === "function") {
               cb();
             }
@@ -25058,7 +25181,7 @@ QR = (function() {
       return QR.status();
     },
     response: function() {
-      var URL, _, connErr, err, h1, isReply, j, lastPostToThread, len, m, mi, open, post, postID, postsCount, ref, ref1, ref2, ref3, seconds, threadID;
+      var URL, _, base, connErr, err, h1, isReply, j, lastPostToThread, len, m, mi, open, post, postID, postsCount, ref, ref1, ref2, ref3, seconds, threadID;
       if (this !== QR.req) {
         return;
       }
@@ -25071,11 +25194,16 @@ QR = (function() {
         }
       } else if ((connErr = !this.response || this.response.title !== 'Post successful!')) {
         err = QR.connectionError();
-        if (QR.currentCaptcha) {
+        if (QR.captcha === Captcha.v2 && QR.currentCaptcha) {
           Captcha.cache.save(QR.currentCaptcha);
         }
       } else if (this.status !== 200) {
         err = "Error " + this.statusText + " (" + this.status + ")";
+      }
+      if (!connErr) {
+        if (typeof (base = QR.captcha).setUsed === "function") {
+          base.setUsed();
+        }
       }
       delete QR.currentCaptcha;
       if (err) {
@@ -25197,7 +25325,7 @@ QR = (function() {
       if ((oldReq = QR.req) && !QR.req.isUploadFinished) {
         delete QR.req;
         oldReq.abort();
-        if (QR.currentCaptcha) {
+        if (QR.captcha === Captcha.v2 && QR.currentCaptcha) {
           Captcha.cache.save(QR.currentCaptcha);
         }
         delete QR.currentCaptcha;
@@ -25853,7 +25981,7 @@ QR = (function() {
     }
 
     _Class.prototype.rm = function() {
-      var index;
+      var base, index;
       this["delete"]();
       index = QR.posts.indexOf(this);
       if (QR.posts.length === 1) {
@@ -25863,7 +25991,8 @@ QR = (function() {
         (QR.posts[index - 1] || QR.posts[index + 1]).select();
       }
       QR.posts.splice(index, 1);
-      return QR.status();
+      QR.status();
+      return typeof (base = QR.captcha).updateThread === "function" ? base.updateThread() : void 0;
     };
 
     _Class.prototype["delete"] = function() {
@@ -25928,7 +26057,7 @@ QR = (function() {
     };
 
     _Class.prototype.save = function(input, forced) {
-      var name, prev;
+      var base, name, prev;
       if (input.type === 'checkbox') {
         this.spoiler = input.checked;
         return;
@@ -25943,6 +26072,9 @@ QR = (function() {
         case 'thread':
           (this.thread !== 'new' ? $.addClass : $.rmClass)(QR.nodes.el, 'reply-to-thread');
           QR.status();
+          if (typeof (base = QR.captcha).updateThread === "function") {
+            base.updateThread();
+          }
           break;
         case 'com':
           this.updateComment();
@@ -26003,7 +26135,9 @@ QR = (function() {
       }
       this.nodes.span.textContent = this.com;
       QR.captcha.moreNeeded();
-      return Captcha.cache.prerequest();
+      if (QR.captcha === Captcha.v2) {
+        return Captcha.cache.prerequest();
+      }
     };
 
     _Class.prototype.isOnlyQuotes = function() {
@@ -26335,7 +26469,7 @@ QR = (function() {
     };
 
     _Class.prototype.drop = function() {
-      var el, index, newIndex, oldIndex, post;
+      var base, el, index, newIndex, oldIndex, post;
       $.rmClass(this, 'over');
       if (!this.draggable) {
         return;
@@ -26352,7 +26486,8 @@ QR = (function() {
       (oldIndex < newIndex ? $.after : $.before)(this, el);
       post = QR.posts.splice(oldIndex, 1)[0];
       QR.posts.splice(newIndex, 0, post);
-      return QR.status();
+      QR.status();
+      return typeof (base = QR.captcha).updateThread === "function" ? base.updateThread() : void 0;
     };
 
     return _Class;

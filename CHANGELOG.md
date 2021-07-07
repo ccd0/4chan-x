@@ -4,6 +4,12 @@
 
 ### v1.14.21
 
+**v1.14.21.5** *(2021-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.5/builds/4chan-X-noupdate.crx)]
+- Fix bug causing captcha to sometimes not work when replying from index.
+
+**v1.14.21.4** *(2021-07-05)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.4/builds/4chan-X-noupdate.crx)]
+- Preliminary support for new first-party captcha on 4chan.
+
 **v1.14.21.3** *(2021-05-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.3/builds/4chan-X-noupdate.crx)]
 - Fix race condition causing unread posts tracking to malfunction.
 
