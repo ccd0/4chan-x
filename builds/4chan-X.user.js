@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.21.4
+// @version      1.14.21.5
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -218,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.21.4',
+  VERSION:   '1.14.21.5',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -23752,8 +23752,20 @@ Captcha = {};
       return $.after(QR.nodes.com.parentNode, root);
     },
     moreNeeded: function() {},
-    setup: function(focus) {
+    getThread: function() {
       var boardID, threadID;
+      boardID = g.BOARD.ID;
+      if (QR.posts[0].thread === 'new') {
+        threadID = '0';
+      } else {
+        threadID = '' + QR.posts[0].thread;
+      }
+      return {
+        boardID: boardID,
+        threadID: threadID
+      };
+    },
+    setup: function(focus) {
       if (!this.isEnabled) {
         return;
       }
@@ -23762,8 +23774,7 @@ Captcha = {};
           className: 'captcha-container'
         });
         $.prepend(this.nodes.root, this.nodes.container);
-        boardID = g.BOARD.ID;
-        threadID = '' + QR.posts[0].thread;
+        Captcha.t.currentThread = Captcha.t.getThread();
         $.global(function() {
           var el;
           el = document.querySelector('#qr .captcha-container');
@@ -23776,10 +23787,7 @@ Captcha = {};
               }
             }));
           });
-        }, {
-          boardID: boardID,
-          threadID: threadID
-        });
+        }, Captcha.t.currentThread);
       }
       if (focus) {
         return $('#t-resp').focus();
@@ -23794,6 +23802,15 @@ Captcha = {};
       });
       $.rm(this.nodes.container);
       return delete this.nodes.container;
+    },
+    updateThread: function() {
+      var boardID, newThread, ref, threadID;
+      ref = Captcha.t.currentThread, boardID = ref.boardID, threadID = ref.threadID;
+      newThread = Captcha.t.getThread();
+      if (!(newThread.boardID === boardID && newThread.threadID === threadID)) {
+        Captcha.t.destroy();
+        return Captcha.t.setup();
+      }
     },
     getOne: function() {
       var i, key, len, ref, response;
@@ -25964,7 +25981,7 @@ QR = (function() {
     }
 
     _Class.prototype.rm = function() {
-      var index;
+      var base, index;
       this["delete"]();
       index = QR.posts.indexOf(this);
       if (QR.posts.length === 1) {
@@ -25974,7 +25991,8 @@ QR = (function() {
         (QR.posts[index - 1] || QR.posts[index + 1]).select();
       }
       QR.posts.splice(index, 1);
-      return QR.status();
+      QR.status();
+      return typeof (base = QR.captcha).updateThread === "function" ? base.updateThread() : void 0;
     };
 
     _Class.prototype["delete"] = function() {
@@ -26039,7 +26057,7 @@ QR = (function() {
     };
 
     _Class.prototype.save = function(input, forced) {
-      var name, prev;
+      var base, name, prev;
       if (input.type === 'checkbox') {
         this.spoiler = input.checked;
         return;
@@ -26054,6 +26072,9 @@ QR = (function() {
         case 'thread':
           (this.thread !== 'new' ? $.addClass : $.rmClass)(QR.nodes.el, 'reply-to-thread');
           QR.status();
+          if (typeof (base = QR.captcha).updateThread === "function") {
+            base.updateThread();
+          }
           break;
         case 'com':
           this.updateComment();
@@ -26448,7 +26469,7 @@ QR = (function() {
     };
 
     _Class.prototype.drop = function() {
-      var el, index, newIndex, oldIndex, post;
+      var base, el, index, newIndex, oldIndex, post;
       $.rmClass(this, 'over');
       if (!this.draggable) {
         return;
@@ -26465,7 +26486,8 @@ QR = (function() {
       (oldIndex < newIndex ? $.after : $.before)(this, el);
       post = QR.posts.splice(oldIndex, 1)[0];
       QR.posts.splice(newIndex, 0, post);
-      return QR.status();
+      QR.status();
+      return typeof (base = QR.captcha).updateThread === "function" ? base.updateThread() : void 0;
     };
 
     return _Class;
