@@ -4,6 +4,10 @@
 
 ### v1.14.21
 
+**v1.14.21.7** *(2021-07-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.7/builds/4chan-X-noupdate.crx)]
+- Don't warn on posting without captcha when "Verification not required."
+- Fix error reported in #3124.
+
 **v1.14.21.6** *(2021-07-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.6/builds/4chan-X-noupdate.crx)]
 - Captcha related bugfixes.
 
