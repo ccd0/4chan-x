@@ -60,7 +60,7 @@ Captcha.t =
     if @nodes.container
       for key in ['t-response', 't-challenge']
         response[key] = $("[name='#{key}']", @nodes.container).value
-    if !response['t-response']
+    if !response['t-response'] and !((el = $('#t-msg')) and /Verification not required/i.test(el.textContent))
       response = null
     response
 
