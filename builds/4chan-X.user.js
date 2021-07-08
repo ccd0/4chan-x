@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.21.5
+// @version      1.14.21.6
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -218,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.21.5',
+  VERSION:   '1.14.21.6',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -23805,7 +23805,10 @@ Captcha = {};
     },
     updateThread: function() {
       var boardID, newThread, ref, threadID;
-      ref = Captcha.t.currentThread, boardID = ref.boardID, threadID = ref.threadID;
+      if (!this.isEnabled) {
+        return;
+      }
+      ref = Captcha.t.currentThread || {}, boardID = ref.boardID, threadID = ref.threadID;
       newThread = Captcha.t.getThread();
       if (!(newThread.boardID === boardID && newThread.threadID === threadID)) {
         Captcha.t.destroy();
@@ -24295,7 +24298,7 @@ QR = (function() {
     },
     initReady: function() {
       var captchaVersion, config, link, linkBot, navLinksBot, origToggle, prop;
-      captchaVersion = $('#t-root') ? 't' : 'v2';
+      captchaVersion = $('#g-recaptcha, #captcha-forced-noscript') ? 'v2' : 't';
       QR.captcha = Captcha[captchaVersion];
       QR.postingIsEnabled = true;
       config = g.BOARD.config;
