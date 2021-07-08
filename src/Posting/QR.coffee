@@ -48,7 +48,7 @@ QR =
     Header.addShortcut 'qr', sc, 540
 
   initReady: ->
-    captchaVersion = if $('#t-root') then 't' else 'v2'
+    captchaVersion = if $('#g-recaptcha, #captcha-forced-noscript') then 'v2' else 't'
     QR.captcha = Captcha[captchaVersion]
     QR.postingIsEnabled = true
 
