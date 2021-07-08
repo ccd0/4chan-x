@@ -65,6 +65,7 @@ Captcha.t =
     response
 
   setUsed: ->
+    return unless @isEnabled
     if @nodes.container
       $.global ->
         window.TCaptcha.clearChallenge()
