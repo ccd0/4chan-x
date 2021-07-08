@@ -4,6 +4,9 @@
 
 ### v1.14.21
 
+**v1.14.21.6** *(2021-07-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.6/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.6/builds/4chan-X-noupdate.crx)]
+- Captcha related bugfixes.
+
 **v1.14.21.5** *(2021-07-07)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.5/builds/4chan-X-noupdate.crx)]
 - Fix bug causing captcha to sometimes not work when replying from index.
 
