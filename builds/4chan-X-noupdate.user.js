@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.21.6
+// @version      1.14.21.7
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -218,7 +218,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.21.6',
+  VERSION:   '1.14.21.7',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -23816,7 +23816,7 @@ Captcha = {};
       }
     },
     getOne: function() {
-      var i, key, len, ref, response;
+      var el, i, key, len, ref, response;
       response = {};
       if (this.nodes.container) {
         ref = ['t-response', 't-challenge'];
@@ -23825,12 +23825,15 @@ Captcha = {};
           response[key] = $("[name='" + key + "']", this.nodes.container).value;
         }
       }
-      if (!response['t-response']) {
+      if (!response['t-response'] && !((el = $('#t-msg')) && /Verification not required/i.test(el.textContent))) {
         response = null;
       }
       return response;
     },
     setUsed: function() {
+      if (!this.isEnabled) {
+        return;
+      }
       if (this.nodes.container) {
         return $.global(function() {
           return window.TCaptcha.clearChallenge();
