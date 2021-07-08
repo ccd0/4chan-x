@@ -48,7 +48,8 @@ Captcha.t =
     delete @nodes.container
 
   updateThread: ->
-    {boardID, threadID} = Captcha.t.currentThread
+    return unless @isEnabled
+    {boardID, threadID} = (Captcha.t.currentThread or {})
     newThread = Captcha.t.getThread()
     unless newThread.boardID is boardID and newThread.threadID is threadID
       Captcha.t.destroy()
