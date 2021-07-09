@@ -7,6 +7,21 @@ It was previously developed by [aeosynth](https://github.com/aeosynth/4chan-x), 
 If you're looking for a maintained fork of OneeChan (a style script used in addition to 4chan X), try
 https://github.com/KevinParnell/OneeChan.
 
+## Features
+4chan X adds a number of small quality of life features to improve your imageboard browsing experience.
+
+Features include:
+
+- **Thread Watcher**: Easily track threads from across boards, and see how many unread replies there are 
+- **Filter out non-image replies**: Want to just see image replies (hint hint)? Get ride of text-only posts in one stroke of your keyboard.
+- **Automated Captcha Solver**: Don't have a 4chan Gold pass? This allows you to (usually) circumvent captchas
+- **JSON Mode**: Infinite scrolling, catalog mode, gallery mode, filter and search more easily with a new JSON mode
+- **Helpful Keybindings**: Expand all images, hide non-image posts, expand threads, and more with simple keybindings
+- **Thread Monitoring**: Automatically shows new replies, and divides read posts from unread posts with a red line
+- **Archived Threads**: Get redirected to the archived version of a thread automatically instead of getting an error message
+- **Quick Reply**: All in one way to reply, create threads, and dump content
+
+
 ## Please note
 **Uninstalling**: 4chan X disables the native extension, so if you uninstall 4chan X, you'll need to re-enable it. To do this, click the `[Settings]` link in the top right corner, uncheck "`Disable the native extension`" in the panel that appears, and click the "`Save Settings`" button. If you don't see a "`Save Settings`" button, it may be being hidden by your ad blocker.
 
