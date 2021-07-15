@@ -72,6 +72,7 @@ Main =
     Conf['archives'] = Redirect.archives
     Conf['selectedArchives'] = $.dict()
     Conf['cooldowns'] = $.dict()
+    Conf['autoWatchLastScan'] = null
     Conf['Index Sort'] = $.dict()
     Conf["Last Long Reply Thresholds #{i}"] = $.dict() for i in [0...2]
     Conf['siteProperties'] = $.dict()
@@ -521,7 +522,7 @@ Main =
       unless nodes[i]
         (cb() if cb)
         return
-      setTimeout softTask, 0 
+      setTimeout softTask, 0
 
     softTask()
 
@@ -698,6 +699,7 @@ Main =
     ['Thread Updater',            ThreadUpdater]
     ['Thread Watcher',            ThreadWatcher]
     ['Thread Watcher (Menu)',     ThreadWatcher.menu]
+    ['Auto Watcher',              AutoWatcher]
     ['Mark New IPs',              MarkNewIPs]
     ['Index Navigation',          Nav]
     ['Keybinds',                  Keybinds]

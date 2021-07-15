@@ -78,10 +78,12 @@ Filter =
           else
             types = ['subject', 'name', 'filename', 'comment']
 
-        # Hide the post (default case).
-        hide = !(hl or noti)
+        watch = /(?:^|;)\s*watch/.test filter
 
-        filter = {isstring, regexp, boards, excludes, mask, hide, stub, hl, top, noti}
+        # Hide the post (default case).
+        hide = !(hl or noti or watch)
+
+        filter = {isstring, regexp, boards, excludes, mask, hide, stub, hl, top, noti, watch}
         if key is 'general'
           for type in types
             (@filters[type] or= []).push filter
@@ -119,11 +121,12 @@ Filter =
 
   test: (post, hideable=true) ->
     return post.filterResults if post.filterResults
-    hide = false
-    stub = true
-    hl   = undefined
-    top  = false
-    noti = false
+    hide  = false
+    stub  = true
+    hl    = undefined
+    top   = false
+    noti  = false
+    watch = false
     if QuoteYou.isYou(post)
       hideable = false
     mask = (if post.isReply then 2 else 1)
@@ -149,14 +152,16 @@ Filter =
             top or= filter.top
             if filter.noti
               noti = true
+            if filter.watch
+              watch = true
     if hide
       {hide, stub}
     else
-      {hl, top, noti}
+      {hl, top, noti, watch}
 
   node: ->
     return if @isClone
-    {hide, stub, hl, top, noti} = Filter.test @, (!@isFetchedQuote and (@isReply or g.VIEW is 'index'))
+    {hide, stub, hl, top, noti, watch} = Filter.test @, (!@isFetchedQuote and (@isReply or g.VIEW is 'index'))
     if hide
       if @isReply
         PostHiding.hide @, stub
@@ -168,6 +173,9 @@ Filter =
         $.addClass @nodes.root, hl...
     if noti and Unread.posts and (@ID > Unread.lastReadPost) and not QuoteYou.isYou(@)
       Unread.openNotification @, ' triggered a notification filter'
+    if watch and !ThreadWatcher.isWatched(@thread)
+      ThreadWatcher.add(@thread)
+
 
   catalog: ->
     return unless (url = g.SITE.urls.catalogJSON?(g.BOARD))
