@@ -352,6 +352,11 @@ QR =
     counter.hidden      = count < QR.max_comment/2
     (if count > QR.max_comment then $.addClass else $.rmClass) counter, 'warning'
 
+  clearPosts: ->
+    for post in QR.posts
+      post.delete()
+    new QR.post true
+
   getFile: ->
     $.event 'QRFile', QR.selected?.file
 
@@ -516,6 +521,7 @@ QR =
     setNode 'texPreview',     '#tex-preview'
     setNode 'dumpList',       '#dump-list'
     setNode 'addPost',        '#add-post'
+    setNode 'clearPosts',     '#clear-posts'
     setNode 'oekaki',         '.oekaki'
     setNode 'drawButton',     '#qr-draw-button'
     setNode 'fileSubmit',     '#file-n-submit'
@@ -558,6 +564,7 @@ QR =
     $.on nodes.texButton,      'mousedown', QR.texPreviewShow
     $.on nodes.texButton,      'mouseup',   QR.texPreviewHide
     $.on nodes.addPost,        'click',     -> new QR.post true
+    $.on nodes.clearPosts,     'click',     QR.clearPosts
     $.on nodes.drawButton,     'click',     QR.oekaki.draw
     $.on nodes.fileButton,     'click',     QR.openFileInput
     $.on nodes.noFile,         'click',     QR.openFileInput
