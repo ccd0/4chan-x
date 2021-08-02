@@ -53,6 +53,7 @@ a[href="javascript:;"] {
 }
 .warning {
   color: red;
+  margin-left: .25rem;
 }
 :root.sw-yotsuba #boardNavDesktop, :root.sw-yotsuba #boardNavMobile {
   display: none !important;
@@ -2120,11 +2121,9 @@ a:only-of-type > .remove {
 .left>.entry.has-submenu {
   padding-right: 17px !important;
 }
-.entry input[type="checkbox"],
+input[type="checkbox"],
 .entry input[type="radio"] {
-  margin: 0px;
-  position: relative;
-  top: 2px;
+  vertical-align: middle;
 }
 .entry input[type="number"] {
   width: 4.5em;
@@ -2478,4 +2477,12 @@ a:only-of-type > .remove {
 }
 .fcx-announcement a {
   text-decoration: underline;
+}
+
+div.reply {
+  padding: .125rem;
+}
+
+div.postInfo.desktop {
+  margin-top: .2rem;
 }
