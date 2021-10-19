@@ -424,7 +424,7 @@ Embedding =
       key: 'TwitchTV'
       regExp: /^\w+:\/\/(?:www\.|secure\.|clips\.)?twitch\.tv\/(\w[^#\&\?]*)/
       el: (a) ->
-        if a.dataset.href.match(/^\w+:\/\/(www\.|secure\.|clips\.)?twitch\.tv/)[1] is 'clips.'
+        if a.dataset.href.match(/^\w+:\/\/(?:(clips\.)|\w+\.)?twitch\.tv/)[1]
           url = "//clips.twitch.tv/embed?clip=#{a.dataset.uid}&parent=#{location.hostname}"
         else
           m = a.dataset.uid.match /(\w+)(?:\/(?:v\/)?(\d+))?/
