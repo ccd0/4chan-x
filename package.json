@@ -128,7 +128,7 @@
     "jshint": "^2.12.0",
     "jszip": "^3.5.0",
     "lodash.template": "^4.5.0",
-    "markdown-it": "^12.0.4",
+    "markdown-it": "^12.3.2",
     "markdown-it-anchor": "^7.0.0",
     "request": "^2.88.2"
   },
