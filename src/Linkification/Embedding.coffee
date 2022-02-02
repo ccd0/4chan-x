@@ -489,8 +489,7 @@ Embedding =
         el = $.el 'iframe'
         el.width = 300
         el.height = 60
-        el.setAttribute('frameborder', 0);
-        el.allow = "autoplay"
+        el.setAttribute('frameborder', 0)
         el.src = "https://vocaroo.com/embed/#{a.dataset.uid.replace(/^i\//, '')}?autoplay=0"
         el
     ,
