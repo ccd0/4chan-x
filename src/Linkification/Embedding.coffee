@@ -486,13 +486,12 @@ Embedding =
       regExp: /^\w+:\/\/(?:(?:www\.|old\.)?vocaroo\.com|voca\.ro)\/((?:i\/)?\w+)/
       style: ''
       el: (a) ->
-        el = $.el 'audio',
-          controls: true
-          preload: 'auto'
-        el.src = if /^i\//.test(a.dataset.uid)
-          "https://old.vocaroo.com/media_command.php?media=#{a.dataset.uid.replace('i/', '')}&command=download_mp3"
-        else
-          "https://media1.vocaroo.com/mp3/#{a.dataset.uid}"
+        el = $.el 'iframe'
+        el.width = 300
+        el.height = 60
+        el.setAttribute('frameborder', 0);
+        el.allow = "autoplay"
+        el.src = "https://vocaroo.com/embed/#{a.dataset.uid.replace(/^i\//, '')}?autoplay=0"
         el
     ,
       key: 'YouTube'
