@@ -36,3 +36,4 @@ uid | name | domain | software
 `33`|`YEET Archive`|[archive.yeet.net](https://archive.yeet.net)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `34`|`TokyoChronos`|[www.tokyochronos.net](https://www.tokyochronos.net)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
 `35`|`Wakarimasen Archive`|[archive.wakarimasen.moe](http://archive.wakarimasen.moe)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
+`36`|`Rozen Arcana`|[archive.alice.al](https://archive.alice.al)|[FoolFuuka](https://github.com/FoolCode/FoolFuuka)
