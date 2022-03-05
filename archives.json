@@ -9,16 +9,6 @@
   "files": ["adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x"],
   "reports": true
 }, {
-  "uid": 4,
-  "name": "Nyafuu Archive",
-  "domain": "archive.nyafuu.org",
-  "http": false,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr"],
-  "files": ["bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr"],
-  "reports": true
-}, {
   "uid": 10,
   "name": "warosu",
   "domain": "warosu.org",
@@ -56,17 +46,8 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["g", "mlp", "qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst"],
-  "files": ["qb", "v", "vg", "vm", "vmg", "vrpg", "vst"],
+  "files": ["qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst"],
   "search": ["qb", "v", "vg", "vm", "vmg", "vrpg", "vst"]
-}, {
-  "uid": 28,
-  "name": "bstats",
-  "domain": "archive.b-stats.org",
-  "http": false,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["f", "cm", "hm", "lgbt", "news", "qst", "trash", "y"],
-  "files": []
 }, {
   "uid": 29,
   "name": "Archived.Moe",
@@ -125,7 +106,7 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr"],
-  "files": ["bant", "c", "con", "e", "n", "news", "out", "p", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr"],
+  "boards": ["bant", "c", "con", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr"],
+  "files": ["bant", "c", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr"],
   "reports": true
 }]
