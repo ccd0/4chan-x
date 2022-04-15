@@ -118,4 +118,14 @@
   "boards" : ["3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "pw", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vm", "vmg", "vp", "vr", "vrpg", "vst", "vt", "w", "wg", "wsg", "wsr", "x", "xs", "y"],
   "files" : ["3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "pw", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vm", "vmg", "vp", "vr", "vrpg", "vst", "vt", "w", "wg", "wsg", "wsr", "x", "xs", "y"],
   "reports": true
-}]
+}, {
+  "uid": 36,
+  "name" : "Oldfriend Archive",
+  "domain" : "old.sage.moe",
+  "http" : true,
+  "https" : true,
+  "software": "foolfuuka",
+  "boards" : ["a", "an", "b", "c", "cgl", "ck", "cm", "co", "d", "e", "fa", "fit", "g", "gif", "h", "hc", "hr", "i", "ib", "ic", "ip", "jp", "k", "m", "mu", "n", "o", "p", "po", "r", "r9k", "s", "sp", "t", "tg", "toy", "trv", "tv", "u", "v", "w", "wg", "x", "y"],
+  "files" : [],
+  "reports": true
+  ]
