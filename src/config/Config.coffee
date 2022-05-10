@@ -1119,6 +1119,14 @@ Config =
       'Alt+Down'
       'Scroll to the next post that quotes you.'
     ]
+    'Next filter highlight': [
+      'Shift+Alt+Down'
+      'Scroll to the next filter-highlighted post.'
+    ]
+    'Previous filter highlight': [
+      'Shift+Alt+Up'
+      'Scroll to the previous filter-highlighted post.'
+    ]
 
   updater:
     checkbox:
