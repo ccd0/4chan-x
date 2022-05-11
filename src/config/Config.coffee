@@ -612,6 +612,10 @@ Config =
         true
         'Add option in header menu to thread conversations.'
       ]
+      'Avoid Duplicated Quotes': [
+        false
+        'Avoid adding a duplicate instances of a given post number when quoting with selected text'
+      ]
 
   imageExpansion:
     'Fit width': [
