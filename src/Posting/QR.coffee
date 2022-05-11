@@ -293,7 +293,8 @@ QR =
     {root} = post.nodes
     postRange = new Range()
     postRange.selectNode root
-    text = if post.board.ID is g.BOARD.ID then ">>#{post}\n" else ">>>/#{post.board}/#{post}\n"
+    quoteBacklink = if post.board.ID is g.BOARD.ID then ">>#{post}\n" else ">>>/#{post.board}/#{post}\n"
+    quoteText = ""
     for i in [0...sel.rangeCount]
       range = sel.getRangeAt i
       # Trim range to be fully inside post
@@ -323,12 +324,20 @@ QR =
       for node in $$ '.embedder', frag
         $.rm node.previousSibling if node.previousSibling?.nodeValue is ' '
         $.rm node
-      text += ">#{frag.textContent.trim()}\n"
+      quoteText = ">#{frag.textContent.trim()}\n"
 
     QR.openPost()
     {com, thread} = QR.nodes
     thread.value = Get.threadFromNode @ unless com.value
 
+    text = quoteBacklink
+    if quoteText != ""
+      alreadyQuoted = com.value.includes quoteBacklink
+      if !Conf['Avoid Duplicated Quotes'] or !alreadyQuoted
+        text = quoteBacklink + quoteText
+      else
+        text = quoteText
+    
     wasOnlyQuotes = QR.selected.isOnlyQuotes()
 
     caretPos = com.selectionStart
