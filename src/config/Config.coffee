@@ -614,7 +614,7 @@ Config =
       ]
       'Avoid Duplicated Quotes': [
         false
-        'Avoid adding a duplicate instances of a given post number when quoting with selected text'
+        'Avoid adding duplicate instances of a given post number when quoting with selected text'
       ]
 
   imageExpansion:
