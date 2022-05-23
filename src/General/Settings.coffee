@@ -612,7 +612,7 @@ Settings =
       $.id('lastarchivecheck').textContent = 'never'
 
     items = $.dict()
-    for name, input of inputs when name not in ['captchaServiceKey', 'Interval', 'Custom CSS']
+    for name, input of inputs when name not in ['Interval', 'Custom CSS']
       items[name] = Conf[name]
       event = if (
         input.nodeName is 'SELECT' or
@@ -634,11 +634,6 @@ Settings =
     listImageHost = $.id 'list-fourchanImageHost'
     for textContent in ImageHost.suggestions
       $.add listImageHost, $.el 'option', {textContent}
-
-    $.on inputs['captchaServiceKey'], 'input', Settings.captchaServiceKey
-    $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) ->
-      Conf['captchaServiceKey'] = captchaServiceKey
-      Settings.captchaServiceDomainList()
 
     interval  = inputs['Interval']
     customCSS = inputs['Custom CSS']
@@ -770,31 +765,6 @@ Settings =
       $.set 'selectedArchives', selectedArchives
       Conf['selectedArchives'] = selectedArchives
       Redirect.selectArchives()
-
-  captchaServiceDomain: ->
-    $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) =>
-      keyInput = $('[name=captchaServiceKey]')
-      keyInput.value = captchaServiceKey[@value.trim()] or ''
-      keyInput.disabled = !@value.trim()
-
-  captchaServiceKey: ->
-    domain = Conf['captchaServiceDomain']
-    value = @value.trim()
-    Conf['captchaServiceKey'][domain] = value
-    $.get 'captchaServiceKey', Conf['captchaServiceKey'], ({captchaServiceKey}) ->
-      captchaServiceKey[domain] = value
-      delete captchaServiceKey[domain] unless value or $.hasOwn(Config['captchaServiceKey'][0], domain)
-      Conf['captchaServiceKey'] = captchaServiceKey
-      $.set 'captchaServiceKey', captchaServiceKey
-      Settings.captchaServiceDomainList()
-
-  captchaServiceDomainList: ->
-    list = $.id 'list-captchaServiceDomain'
-    $.rmAll list
-    for domain of Conf['captchaServiceKey']
-      $.add list, $.el 'option',
-        textContent: domain
-    return
 
   boardnav: ->
     Header.generateBoardList @value

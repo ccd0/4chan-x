@@ -21,20 +21,6 @@
     "appidGecko": "4chan-x@4chan-x.net",
     "chromeStoreID": "ohnjgmpcibpbafdlkimncjhflgedgpam",
     "recaptchaKey": "6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc",
-    "captchaServiceLinks": [
-      [
-        "captcha.guru",
-        "https://captcha.guru/"
-      ],
-      [
-        "AZcaptcha",
-        "https://azcaptcha.com/"
-      ],
-      [
-        "2captcha",
-        "https://2captcha.com/"
-      ]
-    ],
     "distBranch": "gh-pages",
     "includes_only": [
       "*://boards.4chan.org/*",

@@ -521,10 +521,6 @@ Config =
         'Submit the post immediately when the captcha is completed.'
         1
       ]
-      'Captcha Fixes': [
-        true
-        'Make captcha easier to use, especially with the keyboard.'
-      ]
       'Force Noscript Captcha': [
         false
         'Use the non-Javascript fallback captcha even if Javascript is enabled.'
@@ -1167,13 +1163,6 @@ Config =
     'updater.position':        'bottom: 0px; left: 0px;'
     'thread-watcher.position': 'top: 50px; left: 0px;'
     'qr.position':             'top: 50px; right: 0px;'
-
-  captchaServiceDomain: ''
-  captchaServiceKey: [{
-    'https://api.captcha.guru': ''
-    'https://azcaptcha.com':    ''
-    'https://2captcha.com':     ''
-  }]
 
   fourchanImageHost: 'i.4cdn.org'
 
