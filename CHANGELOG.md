@@ -2,6 +2,17 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.22
+
+**v1.14.22.0** *(2022-05-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.21.7.
+- (puckzxz) Added option in Thread Watcher to open dead threads
+- (paradox460) Add a menu item to open unread in ThreadWatcher
+- (WastedMeerkat) Fixed Twitch.tv embeds
+- (PinkCatGoodActually) Fix vocaroo embeds
+- Remove google.com permissions.
+- Remove obsolete 'Captcha Fixes' and 'Captcha Solving Service' options and related code.
+
 ### v1.14.21
 
 **v1.14.21.7** *(2021-07-08)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.7/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.21.7/builds/4chan-X-noupdate.crx)]
