@@ -121,15 +121,15 @@
     }
   },
   "devDependencies": {
-    "chrome-webstore-upload": "^0.4.2",
+    "chrome-webstore-upload": "^0.4.4",
     "coffeescript": "=1.12.7",
     "esprima": "^4.0.1",
     "font-awesome": "=4.7.0",
-    "jshint": "^2.12.0",
-    "jszip": "^3.5.0",
+    "jshint": "^2.13.4",
+    "jszip": "^3.10.0",
     "lodash.template": "^4.5.0",
-    "markdown-it": "^12.0.4",
-    "markdown-it-anchor": "^7.0.0",
+    "markdown-it": "^12.3.2",
+    "markdown-it-anchor": "^7.1.0",
     "request": "^2.88.2"
   },
   "repository": {
@@ -149,6 +149,5 @@
   "readmeFilename": "README.md",
   "engines": {
     "node": ">=0.10"
-  },
-  "dependencies": {}
+  }
 }
