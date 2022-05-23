@@ -422,12 +422,16 @@ Embedding =
         text: (_) -> _.title
     ,
       key: 'TwitchTV'
-      regExp: /^\w+:\/\/(?:www\.|secure\.)?twitch\.tv\/(\w[^#\&\?]*)/
+      regExp: /^\w+:\/\/(?:www\.|secure\.|clips\.|m\.)?twitch\.tv\/(\w[^#\&\?]*)/
       el: (a) ->
-        m = a.dataset.uid.match /(\w+)(?:\/v\/(\d+))?/
-        url = "//player.twitch.tv/?#{if m[2] then "video=v#{m[2]}" else "channel=#{m[1]}"}&autoplay=false&parent=#{location.hostname}"
-        if (time = a.dataset.href.match /\bt=(\w+)/)
-          url += "&time=#{time[1]}"
+        m = a.dataset.href.match /^\w+:\/\/(?:(clips\.)|\w+\.)?twitch\.tv\/(?:\w+\/)?(clip\/)?(\w[^#\&\?]*)/;
+        if m[1] or m[2]
+          url = "//clips.twitch.tv/embed?clip=#{m[3]}&parent=#{location.hostname}"
+        else
+          m = a.dataset.uid.match /(\w+)(?:\/(?:v\/)?(\d+))?/
+          url = "//player.twitch.tv/?#{if m[2] then "video=v#{m[2]}" else "channel=#{m[1]}"}&autoplay=false&parent=#{location.hostname}"
+          if (time = a.dataset.href.match /\bt=(\w+)/)
+            url += "&time=#{time[1]}"
         el = $.el 'iframe',
           src: url
         el.setAttribute "allowfullscreen", "true"
