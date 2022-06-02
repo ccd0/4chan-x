@@ -47,7 +47,7 @@
   "software": "foolfuuka",
   "boards": ["g", "mlp", "qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst"],
   "files": ["qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst"],
-  "search": ["qb", "v", "vg", "vm", "vmg", "vrpg", "vst"]
+  "search": ["qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst"]
 }, {
   "uid": 29,
   "name": "Archived.Moe",
@@ -90,23 +90,13 @@
   "files": ["a", "c", "g", "jp", "mu", "r9k", "vp", "vrpg", "vt"],
   "reports": true
 }, {
-  "uid": 35,
-  "name": "Wakarimasen Archive",
-  "domain": "archive.wakarimasen.moe",
-  "http": true,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "pw", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vm", "vmg", "vp", "vr", "vrpg", "vst", "vt", "w", "wg", "wsg", "wsr", "x", "xs", "y"],
-  "files": ["3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "pw", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vm", "vmg", "vp", "vr", "vrpg", "vst", "vt", "w", "wg", "wsg", "wsr", "x", "xs", "y"],
-  "reports": true
-}, {
   "uid": 36,
   "name": "Rozen Arcana",
   "domain": "archive.alice.al",
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["bant", "c", "con", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr"],
-  "files": ["bant", "c", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr"],
+  "boards": ["bant", "c", "con", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr"],
+  "files": ["bant", "c", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr"],
   "reports": true
 }]
