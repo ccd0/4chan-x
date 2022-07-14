@@ -4,6 +4,9 @@
 
 ### v1.14.22
 
+**v1.14.22.1** *(2022-07-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.1/builds/4chan-X-noupdate.crx)]
+- Remove old /nen/, add successor site.
+
 **v1.14.22.0** *(2022-05-23)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.21.7.
 - (puckzxz) Added option in Thread Watcher to open dead threads

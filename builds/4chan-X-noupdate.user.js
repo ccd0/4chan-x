@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.22.0
+// @version      1.14.22.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -34,8 +34,8 @@
 // @include      https://gnfos.com/*
 // @include      https://himasugi.blog/*
 // @include      https://www.himasugi.blog/*
-// @include      https://kakashi-nenpo.com/*
-// @include      https://www.kakashi-nenpo.com/*
+// @include      https://kakashinenpo.com/*
+// @include      https://www.kakashinenpo.com/*
 // @include      https://kissu.moe/*
 // @include      https://www.kissu.moe/*
 // @include      https://lainchan.org/*
@@ -83,7 +83,6 @@
 // @connect      thebarchive.com
 // @connect      archiveofsins.com
 // @connect      www.tokyochronos.net
-// @connect      archive.wakarimasen.moe
 // @connect      archive.alice.al
 // @connect      api.clyp.it
 // @connect      api.dailymotion.com
@@ -211,7 +210,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.22.0',
+  VERSION:   '1.14.22.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -8916,13 +8915,12 @@ Redirect = (function() {
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "ic", "jp", "lit", "sci", "vr", "vt" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "ic", "jp", "lit", "sci", "vr", "vt" ], "search": [ "biz", "cgl", "ck", "diy", "fa", "ic", "jp", "lit", "sci", "vr", "vt" ] },
       { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "gif", "his", "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "gif", "his", "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
       { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "files": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "search": [ "cm", "co", "ic", "sci", "tg", "y" ] },
-      { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "mlp", "qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst" ], "files": [ "qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst" ], "search": [ "qb", "v", "vg", "vm", "vmg", "vrpg", "vst" ] },
+      { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "mlp", "qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst" ], "files": [ "qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst" ], "search": [ "qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst" ] },
       { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "con", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "pw", "q", "qa", "qb", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vmg", "vp", "vr", "vrpg", "vt", "w", "wg", "wsg", "wsr", "x", "xs", "y" ], "files": [ "can", "cock", "con", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "q", "qb", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "vrpg", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u" ], "files": [ "h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u" ], "reports": true },
       { "uid": 34, "name": "TokyoChronos", "domain": "www.tokyochronos.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "c", "g", "jp", "mu", "r9k", "vp", "vrpg", "vt" ], "files": [ "a", "c", "g", "jp", "mu", "r9k", "vp", "vrpg", "vt" ], "reports": true },
-      { "uid": 35, "name": "Wakarimasen Archive", "domain": "archive.wakarimasen.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "pw", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vm", "vmg", "vp", "vr", "vrpg", "vst", "vt", "w", "wg", "wsg", "wsr", "x", "xs", "y" ], "files": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "cgl", "ck", "cm", "co", "d", "diy", "e", "f", "fa", "fit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mu", "n", "news", "o", "out", "p", "po", "pol", "pw", "qa", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vip", "vm", "vmg", "vp", "vr", "vrpg", "vst", "vt", "w", "wg", "wsg", "wsr", "x", "xs", "y" ], "reports": true },
-      { "uid": 36, "name": "Rozen Arcana", "domain": "archive.alice.al", "http": false, "https": true, "software": "foolfuuka", "boards": [ "bant", "c", "con", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr" ], "files": [ "bant", "c", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vmg", "vp", "vst", "vt", "w", "wg", "wsr" ], "reports": true }
+      { "uid": 36, "name": "Rozen Arcana", "domain": "archive.alice.al", "http": false, "https": true, "software": "foolfuuka", "boards": [ "bant", "c", "con", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr" ], "files": [ "bant", "c", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr" ], "reports": true }
     ],
     init: function() {
       var now, ref;
