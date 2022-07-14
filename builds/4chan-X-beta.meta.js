@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.22.0
+// @version      1.14.22.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -34,8 +34,8 @@
 // @include      https://gnfos.com/*
 // @include      https://himasugi.blog/*
 // @include      https://www.himasugi.blog/*
-// @include      https://kakashi-nenpo.com/*
-// @include      https://www.kakashi-nenpo.com/*
+// @include      https://kakashinenpo.com/*
+// @include      https://www.kakashinenpo.com/*
 // @include      https://kissu.moe/*
 // @include      https://www.kissu.moe/*
 // @include      https://lainchan.org/*
@@ -83,7 +83,6 @@
 // @connect      thebarchive.com
 // @connect      archiveofsins.com
 // @connect      www.tokyochronos.net
-// @connect      archive.wakarimasen.moe
 // @connect      archive.alice.al
 // @connect      api.clyp.it
 // @connect      api.dailymotion.com
