@@ -2,7 +2,7 @@
 
 Bug reports and feature requests for 4chan X are tracked at **https://github.com/ccd0/4chan-x/issues?q=is%3Aopen+sort%3Aupdated-desc**.
 
-You can submit a bug report / feature request either via your Github account or the [anonymous report form](https://gitreports.com/issue/ccd0/4chan-x).
+You can submit a bug report / feature request via your Github account.
 
 If you're reporting a bug, the more detail you can give, the better. If I can't reproduce your bug, I probably won't be able to fix it. You can help by doing the following:
 
@@ -38,8 +38,8 @@ If you're reporting a bug, the more detail you can give, the better. If I can't 
 - Commit your changes: `git commit -a`
 - Open a pull request by doing any of the following:
   - Fork this repository on Github, push your changes to your fork, and make a pull request through the Github website.
-  - Push your changes to any online Git repository, and [open an issue](https://gitreports.com/issue/ccd0/4chan-x) with an explanation of your changes and the URL, branch, and commit you want me to pull from.
-  - Export your changes via `git bundle` (e.g. `git bundle create file.bundle master..your-branch`), and upload them to a file host. Then [open an issue](https://gitreports.com/issue/ccd0/4chan-x) with an explanation of your changes and the URL of the file.
+  - Push your changes to any online Git repository, and send an email with an explanation of your changes and the URL, branch, and commit you want me to pull from.
+  - Export your changes via `git bundle` (e.g. `git bundle create file.bundle master..your-branch`), and upload them to a file host. Then send an email with an explanation of your changes and the URL of the file.
 
 Pull requests to archive.json should be sent upstream: https://github.com/4chenz/archives.json
 4chan X updates from there automatically.
