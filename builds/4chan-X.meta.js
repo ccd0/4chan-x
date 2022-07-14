@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.21.7
+// @version      1.14.22.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -34,8 +34,8 @@
 // @include      https://gnfos.com/*
 // @include      https://himasugi.blog/*
 // @include      https://www.himasugi.blog/*
-// @include      https://kakashi-nenpo.com/*
-// @include      https://www.kakashi-nenpo.com/*
+// @include      https://kakashinenpo.com/*
+// @include      https://www.kakashinenpo.com/*
 // @include      https://kissu.moe/*
 // @include      https://www.kissu.moe/*
 // @include      https://lainchan.org/*
@@ -54,12 +54,6 @@
 // @include      https://sushigirl.us/*
 // @include      https://www.sushigirl.us/*
 // @include      https://tvch.moe/*
-// @include      https://www.google.com/recaptcha/api2/anchor?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
-// @include      https://www.google.com/recaptcha/api2/frame?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
-// @include      https://www.google.com/recaptcha/api2/frame?*&k=887877714&*
-// @include      https://www.google.com/recaptcha/api2/bframe?*&k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
-// @include      http://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
-// @include      https://www.google.com/recaptcha/api/fallback?k=6Ldp2bsSAAAAAAJ5uyx_lx34lJeEpTLVkP5k04qc*
 // @exclude      http://www.4chan.org/advertise
 // @exclude      https://www.4chan.org/advertise
 // @exclude      http://www.4chan.org/advertise?*
@@ -81,17 +75,15 @@
 // @connect      4cdn.org
 // @connect      4chenz.github.io
 // @connect      archive.4plebs.org
-// @connect      archive.nyafuu.org
 // @connect      warosu.org
 // @connect      desuarchive.org
 // @connect      boards.fireden.net
 // @connect      arch.b4k.co
-// @connect      archive.b-stats.org
 // @connect      archived.moe
 // @connect      thebarchive.com
 // @connect      archiveofsins.com
 // @connect      www.tokyochronos.net
-// @connect      archive.wakarimasen.moe
+// @connect      archive.alice.al
 // @connect      api.clyp.it
 // @connect      api.dailymotion.com
 // @connect      api.github.com
