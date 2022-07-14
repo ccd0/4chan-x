@@ -491,6 +491,11 @@ Config =
         'Set the filename to a random timestamp within the past year. Disabled on /f/.'
         1
       ]
+      'Randomize Filename Button': [
+        false
+        'Show a button on the Quick Reply to randomize the filename.'
+        1
+      ]
       'Show New Thread Option in Threads': [
         true
         'Show the option to post a new / different thread from inside a thread.'

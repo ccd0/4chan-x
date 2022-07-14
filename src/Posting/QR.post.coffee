@@ -205,10 +205,14 @@ QR.post = class
         error.parentNode.previousElementSibling.click()
     return
 
+
+  randomizeFilename: ->
+    @filename  = "#{Date.now() - Math.floor(Math.random() * 365 * $.DAY)}"
+    @filename += ext[0] if ext = @file.name.match QR.validExtension
+
   setFile: (@file) ->
     if Conf['Randomize Filename'] and g.BOARD.ID isnt 'f'
-      @filename  = "#{Date.now() - Math.floor(Math.random() * 365 * $.DAY)}"
-      @filename += ext[0] if ext = @file.name.match QR.validExtension
+      @randomizeFilename()
     else
       @filename  = @file.name
     @filesize = $.bytesToString @file.size
