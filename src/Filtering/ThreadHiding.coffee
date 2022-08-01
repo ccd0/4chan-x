@@ -184,7 +184,7 @@ ThreadHiding =
     ThreadHiding.saveHiddenState thread
 
   hide: (thread, makeStub=Conf['Stubs']) ->
-    return if thread.isHidden
+    return if thread.isHidden or (thread.isHighlighted and Conf['Always Show Highlighted Threads'])
     threadRoot = thread.nodes.root
     thread.isHidden = true
     Index.updateHideLabel()
