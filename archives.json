@@ -26,7 +26,7 @@
   "https": true,
   "software": "foolfuuka",
   "boards": ["a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "his", "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr", "wsg"],
-  "files": ["a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "his", "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr", "wsg"],
+  "files": ["a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "his", "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr"],
   "reports": true
 }, {
   "uid": 24,
@@ -35,9 +35,9 @@
   "http": false,
   "https": true,
   "software": "foolfuuka",
-  "boards": ["cm", "co", "ic", "sci", "tg", "vip", "y"],
-  "files": ["cm", "co", "ic", "sci", "tg", "vip", "y"],
-  "search": ["cm", "co", "ic", "sci", "tg", "y"]
+  "boards": ["cm", "co", "ic", "sci", "vip", "y"],
+  "files": ["cm", "co", "ic", "sci", "vip", "y"],
+  "search": ["cm", "co", "ic", "sci", "y"]
 }, {
   "uid": 25,
   "name": "arch.b4k.co",
