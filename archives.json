@@ -91,8 +91,8 @@
   "reports": true
 }, {
   "uid": 36,
-  "name": "Rozen Arcana",
-  "domain": "archive.alice.al",
+  "name": "palanq.win",
+  "domain": "archive.palanq.win",
   "http": false,
   "https": true,
   "software": "foolfuuka",
