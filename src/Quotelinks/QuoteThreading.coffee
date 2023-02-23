@@ -7,12 +7,12 @@ QuoteThreading =
     return unless Conf['Quote Threading'] and g.VIEW is 'thread'
 
     @controls = $.el 'label',
-      `<%= html('<input id="threadingControl" name="Thread Quotes" type="checkbox"> Threading') %>`
+      `{innerHTML: "<input id=\"threadingControl\" name=\"Thread Quotes\" type=\"checkbox\"> Threading"}`
 
     @threadNewLink = $.el 'span',
       className: 'brackets-wrap threadnewlink'
       hidden: true
-    $.extend @threadNewLink, `<%= html('<a href="javascript:;">Thread New Posts</a>') %>`
+    $.extend @threadNewLink, `{innerHTML: "<a href=\"javascript:;\">Thread New Posts</a>"}`
 
     @input = $('input', @controls)
     @input.checked = Conf['Thread Quotes']

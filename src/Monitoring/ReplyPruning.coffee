@@ -16,7 +16,7 @@ ReplyPruning =
     el = $.el 'span',
       title: 'Maximum number of replies to show.'
     ,
-      `<%= html(' <input type="number" name="Max Replies" min="0" step="1" value="${Conf["Max Replies"]}" class="field">') %>`
+      `{innerHTML: " <input type=\"number\" name=\"Max Replies\" min=\"0\" step=\"1\" value=\"" + E(Conf["Max Replies"]) + "\" class=\"field\">"}`
     $.prepend el, label
 
     @inputs =

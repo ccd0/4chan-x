@@ -1,3 +1,5 @@
+import galleryPage from './Gallery/Gallery.html'
+
 Gallery =
   init: ->
     return if not (@enabled = Conf['Gallery'] and g.VIEW in ['index', 'thread'])
@@ -43,7 +45,7 @@ Gallery =
 
     nodes.el = dialog = $.el 'div',
       id: 'a-gallery'
-    $.extend dialog, `<%= readHTML('Gallery.html') %>`
+    $.extend dialog, {innerHTML: galleryPage }
 
     nodes[key] = $ value, dialog for key, value of {
       buttons: '.gal-buttons'
@@ -404,7 +406,7 @@ Gallery =
     createSubEntries: ->
       subEntries = (Gallery.menu.createSubEntry item for item in ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Stretch to Fit', 'Scroll to Post'])
 
-      delayLabel = $.el 'label', `<%= html('Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">') %>`
+      delayLabel = $.el 'label', `{innerHTML: 'Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">'}`
       delayInput = delayLabel.firstElementChild
       delayInput.value = Gallery.delay
       $.on delayInput, 'change', Gallery.cb.setDelay

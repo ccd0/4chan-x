@@ -1,3 +1,6 @@
+import userCss from './user.css'
+import banners from './banners.js'
+
 Config =
   main:
     'Miscellaneous':
@@ -878,7 +881,7 @@ Config =
 
   favicon: 'ferongr'
 
-  usercss: `<%= JSON.stringify(read('user.css')) %>`
+  usercss: userCss
 
   hotkeys:
     # QR & Options
@@ -1168,7 +1171,7 @@ Config =
 
   hiddenPSAList: [{}]
 
-  knownBanners: '<%= readJSON("banners.json").join(",") %>'
+  knownBanners: banners.join(',')
 
   passMessageClosed: false
 

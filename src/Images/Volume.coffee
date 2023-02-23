@@ -29,7 +29,7 @@ Volume =
     volumeEntry = $.el 'label',
       title: 'Default volume for videos.'
     $.extend volumeEntry,
-      `<%= html('<input name="Default Volume" type="range" min="0" max="1" step="0.01" value="${Conf["Default Volume"]}"> Volume') %>`
+      `{innerHTML: "<input name=\"Default Volume\" type=\"range\" min=\"0\" max=\"1\" step=\"0.01\" value=\"" + E(Conf["Default Volume"]) + "\"> Volume"}`
 
     @inputs =
       unmute: unmuteEntry.firstElementChild

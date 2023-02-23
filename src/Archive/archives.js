@@ -1,4 +1,4 @@
-[{
+const archives = [{
   "uid": 3,
   "name": "4plebs",
   "domain": "archive.4plebs.org",
@@ -99,4 +99,6 @@
   "boards": ["bant", "c", "con", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr"],
   "files": ["bant", "c", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr"],
   "reports": true
-}]
+}];
+
+export default archives;

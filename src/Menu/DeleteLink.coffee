@@ -93,7 +93,7 @@ DeleteLink =
 
     link.textContent = DeleteLink.linkText fileOnly
     if resDoc.title is '4chan - Banned' # Ban/warn check
-      el = $.el 'span', `<%= html('You can&#039;t delete posts because you are <a href="//www.4chan.org/banned" target="_blank">banned</a>.') %>`
+      el = $.el 'span', `{innerHTML: "You can&#039;t delete posts because you are <a href=\"//www.4chan.org/banned\" target=\"_blank\">banned</a>."}`
       new Notice 'warning', el, 20
     else if msg = resDoc.getElementById 'errmsg' # error!
       new Notice 'warning', msg.textContent, 20

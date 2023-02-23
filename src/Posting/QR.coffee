@@ -1,3 +1,5 @@
+import QuickReplyPage from './QR/QuickReply.html'
+
 QR =
   mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm']
 
@@ -72,7 +74,7 @@ QR =
     if (origToggle = $.id 'togglePostFormLink')
       link = $.el 'h1',
         className: "qr-link-container"
-      $.extend link, `<%= html('<a href="javascript:;" class="qr-link">?{g.VIEW === "thread"}{Reply to Thread}{Start a Thread}</a>') %>`
+      $.extend link, `{innerHTML: '<a href="javascript:;" class="qr-link">?{g.VIEW === "thread"}{Reply to Thread}{Start a Thread}</a>'}`
 
       QR.link = link.firstElementChild
       $.on link.firstChild, 'click', ->
@@ -85,7 +87,7 @@ QR =
     if g.VIEW is 'thread'
       linkBot = $.el 'div',
         className: "brackets-wrap qr-link-container-bottom"
-      $.extend linkBot, `<%= html('<a href="javascript:;" class="qr-link-bottom">Reply to Thread</a>') %>`
+      $.extend linkBot, `{innerHTML: '<a href="javascript:;" class="qr-link-bottom">Reply to Thread</a>'}`
 
       $.on linkBot.firstElementChild, 'click', ->
         QR.open()
@@ -243,10 +245,10 @@ QR =
 
   connectionError: ->
     $.el 'span',
-      `<%= html(
+      `{ innerHTML:
         'Connection error while posting. ' +
         '[<a href="' + meta.faq + '#connection-errors" target="_blank">More info</a>]'
-      ) %>`
+      }`
 
   notifications: []
 
@@ -369,7 +371,7 @@ QR =
 
   openError: ->
     div = $.el 'div'
-    $.extend div, `<%= html('Could not open file. [<a href="' + meta.faq + '#error-reading-metadata" target="_blank">More info</a>]') %>`
+    $.extend div, `{ innerHTML: 'Could not open file. [<a href="' + meta.faq + '#error-reading-metadata" target="_blank">More info</a>]'}`
     QR.error div
 
   setFile: (e) ->
@@ -496,7 +498,7 @@ QR =
   dialog: ->
     QR.nodes = nodes =
       el: dialog = UI.dialog 'qr',
-        `<%= readHTML('QuickReply.html') %>`
+        `{ innerHTML: QuickReplyPage }`
 
     setNode = (name, query) ->
       nodes[name] = $ query, dialog

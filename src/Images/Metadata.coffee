@@ -15,7 +15,7 @@ Metadata =
           className: 'webm-title'
         el.dataset.index = i
         $.extend el,
-          `<%= html('<a href="javascript:;"></a>') %>`
+          `{innerHTML: "<a href=\"javascript:;\"></a>"}`
         $.add file.text, [$.tn(' '), el]
       $.one el.lastElementChild, 'mouseover focus', Metadata.load if el.children.length is 1
     return

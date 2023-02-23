@@ -1,3 +1,9 @@
+import PostInfoPage from './SW.yotsuba.Build/PostInfo.html'
+import FilePage from './SW.yotsuba.Build/File.html'
+import PostPage from './SW.yotsuba.Build/Post.html'
+import CatalogThreadPage from './SW.yotsuba.Build/CatalogThread.html'
+import CatalogReplyPage from './SW.yotsuba.Build/CatalogReply.html'
+
 Build =
   staticPath: '//s.4cdn.org/image/'
   gifIcon: if window.devicePixelRatio >= 2 then '@2x.gif' else '.gif'
@@ -145,7 +151,7 @@ Build =
     else
       "#{url}#q#{ID}"
 
-    postInfo = `<%= readHTML('PostInfo.html') %>`
+    postInfo = { innerHTML: PostInfoPage }
 
     ### File Info ###
 
@@ -155,13 +161,13 @@ Build =
       shortFilename = Build.shortFilename file.name
       fileThumb = if file.isSpoiler then Build.spoilerThumb(boardID) else file.thumbURL.replace(protocol, '')
 
-    fileBlock = `<%= readHTML('File.html') %>`
+    fileBlock = { innerHTML: FilePage }
 
     ### Whole Post ###
 
     postClass = if o.isReply then 'reply' else 'op'
 
-    wholePost = `<%= readHTML('Post.html') %>`
+    wholePost = `{ innerHTML: PostPage }`
 
     container = $.el 'div',
       className: "postContainer #{postClass}Container"
@@ -238,7 +244,7 @@ Build =
     postCount = data.replies + 1
     fileCount = data.images  + !!data.ext
 
-    container = $.el 'div', `<%= readHTML('CatalogThread.html') %>`
+    container = $.el 'div', { innerHTML: CatalogThreadPage }
     $.before thread.OP.nodes.info, [container.childNodes...]
 
     for br in $$('br', thread.OP.nodes.comment) when br.previousSibling and br.previousSibling.nodeName is 'BR'
@@ -266,6 +272,6 @@ Build =
 
     link = Build.postURL thread.board.ID, thread.ID, data.no
     $.el 'div', {className: 'catalog-reply'},
-      `<%= readHTML('CatalogReply.html') %>`
+      `{ innerHTML: CatalogReplyPage }`
 
 SW.yotsuba.Build = Build

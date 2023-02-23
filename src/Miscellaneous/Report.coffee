@@ -1,3 +1,5 @@
+import ReportPage from './ArchiveReport.html';
+
 Report =
   init: ->
     return if not (match = location.search.match /\bno=(\d+)/)
@@ -35,7 +37,7 @@ Report =
       id: 'archive-report'
       hidden: true
     ,
-      `<%= readHTML('ArchiveReport.html') %>`
+      `{ innerHTML: ReportPage }`
     enabled = $ '#archive-report-enabled', fieldset
     reason  = $ '#archive-report-reason',  fieldset
     submit  = $ '#archive-report-submit',  fieldset

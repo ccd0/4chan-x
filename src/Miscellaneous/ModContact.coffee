@@ -16,19 +16,13 @@ ModContact =
       $.add @nodes.post, moveNote
 
   template: (capcode) ->
-    `<%= html(
-      '<a href="https://www.4chan.org/feedback" target="_blank">feedback</a>&{ModContact.specific[capcode]()}'
-    ) %>`
+    `{innerHTML: "<a href=\"https://www.4chan.org/feedback\" target=\"_blank\">feedback</a>" + (ModContact.specific[capcode]()).innerHTML}`
 
   specific:
-    Mod:       -> `<%= html(' <a href="https://www.4chan-x.net/4chan-irc.html" target="_blank">IRC</a>') %>`
+    Mod:       -> `{innerHTML: " <a href=\"https://www.4chan-x.net/4chan-irc.html\" target=\"_blank\">IRC</a>"}`
     Manager:   -> ModContact.specific.Mod()
-    Developer: -> `<%= html(' <a href="https://github.com/4chan" target="_blank">github</a>') %>`
-    Admin:     -> `<%= html(' <a href="https://twitter.com/hiroyuki_ni" target="_blank">twitter</a>') %>`
+    Developer: -> `{innerHTML: " <a href=\"https://github.com/4chan\" target=\"_blank\">github</a>"}`
+    Admin:     -> `{innerHTML: " <a href=\"https://twitter.com/hiroyuki_ni\" target=\"_blank\">twitter</a>"}`
 
   moveNote:
-    qa: `<%= html(
-      'Moving a thread to /qa/ does not imply mods will read it. If you wish to contact mods, use ' +
-      '<a href="https://www.4chan.org/feedback" target="_blank">feedback</a><span class="invisible"> (https://www.4chan.org/feedback)</span> or ' +
-      '<a href="https://www.4chan-x.net/4chan-irc.html" target="_blank">IRC</a><span class="invisible"> (https://www.4chan-x.net/4chan-irc.html)</span>.'
-    ) %>`
+    qa: `{innerHTML: "Moving a thread to /qa/ does not imply mods will read it. If you wish to contact mods, use <a href=\"https://www.4chan.org/feedback\" target=\"_blank\">feedback</a><span class=\"invisible\"> (https://www.4chan.org/feedback)</span> or <a href=\"https://www.4chan-x.net/4chan-irc.html\" target=\"_blank\">IRC</a><span class=\"invisible\"> (https://www.4chan-x.net/4chan-irc.html)</span>."}`

@@ -149,10 +149,10 @@ class Fetcher
         greentext = text[0] is '>'
         text = text.replace /(\[\/?[a-z]+):lit(\])/g, '$1$2'
         text = for text2, j in text.split /(>>(?:>\/[a-z\d]+\/)?\d+)/g
-          `<%= html('?{j % 2}{<span class="deadlink">${text2}</span>}{${text2}}') %>`
-        text = `<%= html('?{greentext}{<span class="quote">@{text}</span>}{@{text}}') %>`
+          `{innerHTML: ((j % 2) ? "<span class=\"deadlink\">" + E(text2) + "</span>" : E(text2))}`
+        text = `{innerHTML: ((greentext) ? "<span class=\"quote\">" + E.cat(text) + "</span>" : E.cat(text))}`
         text
-    comment = `<%= html('@{comment}') %>`
+    comment = `{innerHTML: E.cat(comment)}`
 
     @threadID = +data.thread_num
     o =
@@ -220,24 +220,24 @@ class Fetcher
     @insert post
 
   archiveTags:
-    '\n':         `<%= html('<br>') %>`
-    '[b]':        `<%= html('<b>') %>`
-    '[/b]':       `<%= html('</b>') %>`
-    '[spoiler]':  `<%= html('<s>') %>`
-    '[/spoiler]': `<%= html('</s>') %>`
-    '[code]':     `<%= html('<pre class="prettyprint">') %>`
-    '[/code]':    `<%= html('</pre>') %>`
-    '[moot]':     `<%= html('<div style="padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px">') %>`
-    '[/moot]':    `<%= html('</div>') %>`
-    '[banned]':   `<%= html('<strong style="color: red;">') %>`
-    '[/banned]':  `<%= html('</strong>') %>`
-    '[fortune]':  (text) -> `<%= html('<span class="fortune" style="color:${text.match(/#\\w+|$/)[0]}"><b>') %>`
-    '[/fortune]': `<%= html('</b></span>') %>`
-    '[i]':        `<%= html('<span class="mu-i">') %>`
-    '[/i]':       `<%= html('</span>') %>`
-    '[red]':      `<%= html('<span class="mu-r">') %>`
-    '[/red]':     `<%= html('</span>') %>`
-    '[green]':    `<%= html('<span class="mu-g">') %>`
-    '[/green]':   `<%= html('</span>') %>`
-    '[blue]':     `<%= html('<span class="mu-b">') %>`
-    '[/blue]':    `<%= html('</span>') %>`
+    '\n':         `{innerHTML: "<br>"}`
+    '[b]':        `{innerHTML: "<b>"}`
+    '[/b]':       `{innerHTML: "</b>"}`
+    '[spoiler]':  `{innerHTML: "<s>"}`
+    '[/spoiler]': `{innerHTML: "</s>"}`
+    '[code]':     `{innerHTML: "<pre class=\"prettyprint\">"}`
+    '[/code]':    `{innerHTML: "</pre>"}`
+    '[moot]':     `{innerHTML: "<div style=\"padding:5px;margin-left:.5em;border-color:#faa;border:2px dashed rgba(255,0,0,.1);border-radius:2px\">"}`
+    '[/moot]':    `{innerHTML: "</div>"}`
+    '[banned]':   `{innerHTML: "<strong style=\"color: red;\">"}`
+    '[/banned]':  `{innerHTML: "</strong>"}`
+    '[fortune]':  (text) -> `{innerHTML: "<span class=\"fortune\" style=\"color:" + E(text.match(/#\w+|$/)[0]) + "\"><b>"}`
+    '[/fortune]': `{innerHTML: "</b></span>"}`
+    '[i]':        `{innerHTML: "<span class=\"mu-i\">"}`
+    '[/i]':       `{innerHTML: "</span>"}`
+    '[red]':      `{innerHTML: "<span class=\"mu-r\">"}`
+    '[/red]':     `{innerHTML: "</span>"}`
+    '[green]':    `{innerHTML: "<span class=\"mu-g\">"}`
+    '[/green]':   `{innerHTML: "</span>"}`
+    '[blue]':     `{innerHTML: "<span class=\"mu-b\">"}`
+    '[/blue]':    `{innerHTML: "</span>"}`

@@ -1,3 +1,5 @@
+import ThreadWatcherPage from './ThreadWatcher/ThreadWatcher.html'
+
 ThreadWatcher =
   init: ->
     return if not (@enabled = Conf['Thread Watcher'])
@@ -11,7 +13,7 @@ ThreadWatcher =
 
     @db     = new DataBoard 'watchedThreads', @refresh, true
     @dbLM   = new DataBoard 'watcherLastModified', null, true
-    @dialog = UI.dialog 'thread-watcher', `<%= readHTML('ThreadWatcher.html') %>`
+    @dialog = UI.dialog 'thread-watcher', `{ innerHTML: ThreadWatcherPage }`
     @status = $ '#watcher-status', @dialog
     @list   = @dialog.lastElementChild
     @refreshButton = $ '.refresh', @dialog
@@ -50,7 +52,7 @@ ThreadWatcher =
         el: $.el 'a',
           href:      'javascript:;'
           className: 'has-shortcut-text'
-        , `<%= html('<span></span><span class="shortcut-text">Alt+click</span>') %>`
+        , `{innerHTML: '<span></span><span class="shortcut-text">Alt+click</span>'}`
         order: 6
         open: ({thread}) ->
           return false if Conf['Index Mode'] isnt 'catalog'

@@ -1,3 +1,6 @@
+import NavLinksPage from './Index/NavLinks.html'
+import PageListPage from './Index/PageList.html'
+
 Index =
   showHiddenThreads: false
   changed: {}
@@ -85,7 +88,7 @@ Index =
 
     # Navigation links at top of index
     @navLinks = $.el 'div', className: 'navLinks json-index'
-    $.extend @navLinks, `<%= readHTML('NavLinks.html') %>`
+    $.extend @navLinks, `{innerHTML: NavLinksPage}`
     $('.cataloglink a', @navLinks).href = CatalogLinks.catalog()
     $('.archlistlink', @navLinks).hidden = true unless BoardConfig.isArchived(g.BOARD.ID)
     $.on $('#index-last-refresh a', @navLinks), 'click', @cb.refreshFront
@@ -134,7 +137,7 @@ Index =
 
     # Page list
     @pagelist = $.el 'div', className: 'pagelist json-index'
-    $.extend @pagelist, `<%= readHTML('PageList.html') %>`
+    $.extend @pagelist, `{innerHTML: PageList}`
     $('.cataloglink a', @pagelist).href = CatalogLinks.catalog()
     $.on @pagelist, 'click', @cb.pageNav
 
@@ -188,7 +191,7 @@ Index =
 
     threadIDs = Index.threadsOnPage pageNum
     Index.buildStructure threadIDs
-    
+
   endNotice: do ->
     notify = false
     reset = -> notify = false
@@ -206,7 +209,7 @@ Index =
         el: $.el 'a',
           href:      'javascript:;'
           className: 'has-shortcut-text'
-        , `<%= html('<span></span><span class="shortcut-text">Shift+click</span>') %>`
+        , `{innerHTML: "<span></span><span class=\"shortcut-text\">Shift+click</span>"}`
         order: 20
         open: ({thread}) ->
           return false if Conf['Index Mode'] isnt 'catalog'

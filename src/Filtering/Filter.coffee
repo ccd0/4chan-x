@@ -290,7 +290,7 @@ Filter =
       $('span', notice.el).textContent = "#{notice.filters.length} MD5s filtered."
     else
       msg = $.el 'div',
-        `<%= html('<span>MD5 filtered.</span> [<a href="javascript:;">show</a>] [<a href="javascript:;">undo</a>]') %>`
+        `{innerHTML: "<span>MD5 filtered.</span> [<a href=\"javascript:;\">show</a>] [<a href=\"javascript:;\">undo</a>]"}`
       notice = Filter.quickFilterMD5.notice = new Notice 'info', msg, undefined, ->
         delete Filter.quickFilterMD5.notice
       notice.filters = [filter]

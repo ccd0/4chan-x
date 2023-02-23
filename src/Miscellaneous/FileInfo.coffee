@@ -29,9 +29,9 @@ FileInfo =
       output.push if $.hasOwn(FileInfo.formatters, c)
         FileInfo.formatters[c].call post
       else
-        `<%= html('${s}') %>`
+        `{innerHTML: E(s)}`
       ''
-    $.extend outputNode, `<%= html('@{output}') %>`
+    $.extend outputNode, `{innerHTML: E.cat(output)}`
     for a in $$ '.download-button', outputNode
       $.on a, 'click', ImageCommon.download
     for a in $$ '.quick-filter-md5', outputNode
@@ -39,25 +39,25 @@ FileInfo =
     return
 
   formatters:
-    t: -> `<%= html('${this.file.url.match(/[^\/]*$/)[0]}') %>`
-    T: -> `<%= html('<a href="${this.file.url}" target="_blank">&{FileInfo.formatters.t.call(this)}</a>') %>`
-    l: -> `<%= html('<a href="${this.file.url}" target="_blank">&{FileInfo.formatters.n.call(this)}</a>') %>`
-    L: -> `<%= html('<a href="${this.file.url}" target="_blank">&{FileInfo.formatters.N.call(this)}</a>') %>`
+    t: -> `{innerHTML: E(this.file.url.match(/[^/]*$/)[0])}`
+    T: -> `{innerHTML: "<a href=\"" + E(this.file.url) + "\" target=\"_blank\">" + (FileInfo.formatters.t.call(this)).innerHTML + "</a>"}`
+    l: -> `{innerHTML: "<a href=\"" + E(this.file.url) + "\" target=\"_blank\">" + (FileInfo.formatters.n.call(this)).innerHTML + "</a>"}`
+    L: -> `{innerHTML: "<a href=\"" + E(this.file.url) + "\" target=\"_blank\">" + (FileInfo.formatters.N.call(this)).innerHTML + "</a>"}`
     n: ->
       fullname  = @file.name
       shortname = SW.yotsuba.Build.shortFilename @file.name, @isReply
       if fullname is shortname
-        `<%= html('${fullname}') %>`
+        `{innerHTML: E(fullname)}`
       else
-        `<%= html('<span class="fnswitch"><span class="fntrunc">${shortname}</span><span class="fnfull">${fullname}</span></span>') %>`
-    N: -> `<%= html('${this.file.name}') %>`
-    d: -> `<%= html('<a href="${this.file.url}" download="${this.file.name}" class="fa fa-download download-button"></a>') %>`
-    f: -> `<%= html('<a href="javascript:;" class="fa fa-times quick-filter-md5"></a>') %>`
-    p: -> `<%= html('?{this.file.isSpoiler}{Spoiler, }') %>`
-    s: -> `<%= html('${this.file.size}') %>`
-    B: -> `<%= html('${Math.round(this.file.sizeInBytes)} Bytes') %>`
-    K: -> `<%= html('${Math.round(this.file.sizeInBytes/1024)} KB') %>`
-    M: -> `<%= html('${Math.round(this.file.sizeInBytes/1048576*100)/100} MB') %>`
-    r: -> `<%= html('${this.file.dimensions || "PDF"}') %>`
-    g: -> `<%= html('?{this.file.tag}{, ${this.file.tag}}{}') %>`
-    '%': -> `<%= html('%') %>`
+        `{innerHTML: "<span class=\"fnswitch\"><span class=\"fntrunc\">" + E(shortname) + "</span><span class=\"fnfull\">" + E(fullname) + "</span></span>"}`
+    N: -> `{innerHTML: E(this.file.name)}`
+    d: -> `{innerHTML: "<a href=\"" + E(this.file.url) + "\" download=\"" + E(this.file.name) + "\" class=\"fa fa-download download-button\"></a>"}`
+    f: -> `{innerHTML: "<a href=\"javascript:;\" class=\"fa fa-times quick-filter-md5\"></a>"}`
+    p: -> `{innerHTML: ((this.file.isSpoiler) ? "Spoiler, " : "")}`
+    s: -> `{innerHTML: E(this.file.size)}`
+    B: -> `{innerHTML: E(Math.round(this.file.sizeInBytes)) + " Bytes"}`
+    K: -> `{innerHTML: E(Math.round(this.file.sizeInBytes/1024)) + " KB"}`
+    M: -> `{innerHTML: E(Math.round(this.file.sizeInBytes/1048576*100)/100) + " MB"}`
+    r: -> `{innerHTML: E(this.file.dimensions || "PDF")}`
+    g: -> `{innerHTML: ((this.file.tag) ? ", " + E(this.file.tag) : "")}`
+    '%': -> `{innerHTML: "%"}`

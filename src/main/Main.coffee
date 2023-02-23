@@ -330,7 +330,7 @@ Main =
 
     if g.SITE.isIncomplete?()
       msg = $.el 'div',
-        `<%= html('The page didn&#039;t load completely.<br>Some features may not work unless you <a href="javascript:;">reload</a>.') %>`
+        `{innerHTML: 'The page didn&#039;t load completely.<br>Some features may not work unless you <a href="javascript:;">reload</a>.'}`
       $.on $('a', msg), 'click', -> location.reload()
       new Notice 'warning', msg
 
@@ -518,7 +518,7 @@ Main =
       unless nodes[i]
         (cb() if cb)
         return
-      setTimeout softTask, 0 
+      setTimeout softTask, 0
 
     softTask()
 
@@ -547,7 +547,7 @@ Main =
       return
 
     div = $.el 'div',
-      `<%= html('${errors.length} errors occurred.&{Main.reportLink(errors)} [<a href="javascript:;">show</a>]') %>`
+      `{innerHTML: '${errors.length} errors occurred.&{Main.reportLink(errors)} [<a href="javascript:;">show</a>]'}`
     $.on div.lastElementChild, 'click', ->
       [@textContent, logs.hidden] = if @textContent is 'show' then (
         ['hide', false]
@@ -565,7 +565,7 @@ Main =
   parseError: (data, reportLink) ->
     c.error data.message, data.error.stack
     message = $.el 'div',
-      `<%= html('${data.message}?{reportLink}{&{reportLink}}') %>`
+      `{innerHTML: '${data.message}?{reportLink}{&{reportLink}}'}`
     error = $.el 'div',
       textContent: "#{data.error.name or 'Error'}: #{data.error.message or 'see console for details'}"
     lines = data.error.stack?.match(/\d+(?=:\d+\)?$)/mg)?.join().replace(/^/, ' at ') or ''
@@ -595,7 +595,7 @@ Main =
     addDetails '\n`' + data.html + '`' if data.html
     details = details.replace /file:\/{3}.+\//g, '' # Remove local file paths
     url = '<%= meta.newIssue %>'.replace('%title', encodeURIComponent title).replace('%details', encodeURIComponent details)
-    `<%= html('<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>') %>`
+    `{innerHTML: '<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>'}`
 
   isThisPageLegit: ->
     # not 404 error page or similar.

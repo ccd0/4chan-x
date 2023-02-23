@@ -4,7 +4,7 @@ QR.post = class
       className: 'qr-preview'
       draggable: true
       href: 'javascript:;'
-    $.extend el, `<%= html('<a class="remove fa fa-times-circle" title="Remove"></a><label class="qr-preview-spoiler"><input type="checkbox"> Spoiler</label><span></span>') %>`
+    $.extend el, `{innerHTML: '<a class="remove fa fa-times-circle" title="Remove"></a><label class="qr-preview-spoiler"><input type="checkbox"> Spoiler</label><span></span>'}`
 
     @nodes =
       el:      el
@@ -185,7 +185,7 @@ QR.post = class
 
   error: (className, message, link) ->
     div = $.el 'div', {className}
-    $.extend div, `<%= html('${message}?{link}{ [<a href="${link}" target="_blank">More info</a>]}<br>[<a href="javascript:;">delete post</a>] [<a href="javascript:;">delete all</a>]') %>`
+    $.extend div, `{innerHTML: '${message}?{link}{ [<a href="${link}" target="_blank">More info</a>]}<br>[<a href="javascript:;">delete post</a>] [<a href="javascript:;">delete all</a>]'}`
     (@errors or= []).push div
     [rm, rmAll] = $$ 'a', div
     $.on div, 'click', =>

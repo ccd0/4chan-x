@@ -1,7 +1,7 @@
 class Notice
   constructor: (type, content, @timeout, @onclose) ->
     @el = $.el 'div',
-      `<%= html('<a href="javascript:;" class="close fa fa-times" title="Close"></a><div class="message"></div>') %>`
+      `{innerHTML: "<a href=\"javascript:;\" class=\"close fa fa-times\" title=\"Close\"></a><div class=\"message\"></div>"}`
     @el.style.opacity = 0
     @setType type
     $.on @el.firstElementChild, 'click', @close

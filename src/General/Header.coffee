@@ -11,7 +11,7 @@ Header =
 
     menuButton = $.el 'span',
       className: 'menu-button'
-    $.extend menuButton, `<%= html('<i></i>') %>`
+    $.extend menuButton, `{innerHTML: "<i></i>"}`
 
     box = UI.checkbox
 
@@ -142,16 +142,7 @@ Header =
   setBoardList: ->
     Header.boardList = boardList = $.el 'span',
       id: 'board-list'
-    $.extend boardList, `<%= html(
-      '<span id="custom-board-list"></span>' +
-      '<span id="full-board-list" hidden>' +
-        '<span class="hide-board-list-container brackets-wrap">' +
-          '<a href="javascript:;" class="hide-board-list-button">&nbsp;-&nbsp;</a>' +
-        '</span>' +
-        ' ' +
-        '<span class="boardList"></span>' +
-      '</span>'
-    ) %>`
+    $.extend boardList, `{innerHTML: "<span id=\"custom-board-list\"></span><span id=\"full-board-list\" hidden><span class=\"hide-board-list-container brackets-wrap\"><a href=\"javascript:;\" class=\"hide-board-list-button\">&nbsp;-&nbsp;</a></span> <span class=\"boardList\"></span></span>"}`
 
     btn = $('.hide-board-list-button', boardList)
     $.on btn, 'click', Header.toggleBoardList
@@ -546,12 +537,9 @@ Header =
         # but it'll still work if status is 'default'.
         return
 
+    # TODO meta
     el = $.el 'span',
-      `<%= html(
-        meta.name + ' needs your permission to show desktop notifications. ' +
-        '[<a href="' + meta.faq + '#why-is-4chan-x-asking-for-permission-to-show-desktop-notifications" target="_blank">FAQ</a>]<br>' +
-        '<button>Authorize</button> or <button>Disable</button>'
-      ) %>`
+      `{innerHTML: "meta.name needs your permission to show desktop notifications. [<a href=\"meta.faq#why-is-4chan-x-asking-for-permission-to-show-desktop-notifications\" target=\"_blank\">FAQ</a>]<br><button>Authorize</button> or <button>Disable</button>"}`
     [authorize, disable] = $$ 'button', el
     $.on authorize, 'click', ->
       Notification.requestPermission (status) ->

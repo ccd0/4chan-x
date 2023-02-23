@@ -1,3 +1,5 @@
+import Beep from './ThreadUpdater/beep.wav'
+
 ThreadUpdater =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
@@ -12,11 +14,11 @@ ThreadUpdater =
     if Conf['Updater and Stats in Header']
       @dialog = sc = $.el 'span',
         id:        'updater'
-      $.extend sc, `<%= html('<span id="update-status" class="empty"></span><span id="update-timer" class="empty" title="Update now"></span>') %>`
+      $.extend sc, `{innerHTML: '<span id="update-status" class="empty"></span><span id="update-timer" class="empty" title="Update now"></span>'}`
       Header.addShortcut 'updater', sc, 100
     else
       @dialog = sc = UI.dialog 'updater',
-        `<%= html('<div class="move"></div><span id="update-status" class="empty"></span><span id="update-timer" class="empty" title="Update now"></span>') %>`
+        `{innerHTML: '<div class="move"></div><span id="update-status" class="empty"></span><span id="update-timer" class="empty" title="Update now"></span>'}`
       $.addClass doc, 'float'
       $.ready ->
         $.add d.body, sc
@@ -31,7 +33,7 @@ ThreadUpdater =
 
     updateLink = $.el 'span',
       className: 'brackets-wrap updatelink'
-    $.extend updateLink, `<%= html('<a href="javascript:;">Update</a>') %>`
+    $.extend updateLink, `{innerHTML: '<a href="javascript:;">Update</a>'}`
     Main.ready ->
       ($.add navLinksBot, [$.tn(' '), updateLink] if (navLinksBot = $ '.navLinksBot'))
     $.on updateLink.firstElementChild, 'click', @update
@@ -50,7 +52,7 @@ ThreadUpdater =
       subEntries.push el: el
 
     @settings = $.el 'span',
-      `<%= html('<a href="javascript:;">Interval</a>') %>`
+      `{innerHTML: '<a href="javascript:;">Interval</a>'}`
 
     $.on @settings, 'click', @intervalShortcut
 
@@ -65,7 +67,7 @@ ThreadUpdater =
     Callbacks.Thread.push
       name: 'Thread Updater'
       cb:   @node
-  
+
   node: ->
     ThreadUpdater.thread       = @
     ThreadUpdater.root         = @nodes.root

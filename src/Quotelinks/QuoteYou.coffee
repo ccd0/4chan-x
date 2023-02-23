@@ -59,7 +59,7 @@ QuoteYou =
       label = $.el 'label',
         className: 'toggle-you'
       ,
-        `<%= html('<input type="checkbox"> You') %>`
+        `{innerHTML: '<input type="checkbox"> You'}`
       input = $ 'input', label
       $.on input, 'change', QuoteYou.menu.toggle
       Menu.menu?.addEntry

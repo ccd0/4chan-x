@@ -1,10 +1,12 @@
+import PassMessagePage from './PassMessage/PassMessage.html';
+
 PassMessage =
   init: ->
     return if Conf['passMessageClosed']
     msg = $.el 'div',
       className: 'box-outer top-box'
     ,
-      `<%= readHTML('PassMessage.html') %>`
+      `{ innerHTML: PassMessagePage }`
     msg.style.cssText = 'padding-bottom: 0;'
     close = $ 'a', msg
     $.on close, 'click', ->
