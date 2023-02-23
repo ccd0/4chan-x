@@ -786,7 +786,8 @@ QR =
     post.unlock()
 
     if (err = @response?.getElementById 'errmsg') # error!
-      $('a', err)?.target = '_blank' # duplicate image link
+      # TODO: check if exists
+      $('a', err).target = '_blank' # duplicate image link
     else if (connErr = (!@response or @response.title isnt 'Post successful!'))
       err = QR.connectionError()
       Captcha.cache.save QR.currentCaptcha if QR.captcha is Captcha.v2 and QR.currentCaptcha

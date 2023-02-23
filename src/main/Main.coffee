@@ -223,7 +223,8 @@ Main =
     return if !Main.isThisPageLegit()
 
     # disable the mobile layout
-    $('link[href*=mobile]', d.head)?.disabled = true
+    # TODO check if exists
+    $('link[href*=mobile]', d.head).disabled = true
     doc.dataset.host = location.host
     $.addClass doc, "sw-#{g.SITE.software}"
     $.addClass doc, if g.VIEW is 'thread' then 'thread-view' else g.VIEW

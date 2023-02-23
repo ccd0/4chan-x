@@ -5,11 +5,13 @@ Volume =
 
     $.sync 'Allow Sound', (x) ->
       Conf['Allow Sound'] = x
-      Volume.inputs?.unmute.checked = x
+      # TODO check if inputs exits
+      Volume.inputs.unmute.checked = x
 
     $.sync 'Default Volume', (x) ->
       Conf['Default Volume'] = x
-      Volume.inputs?.volume.value = x
+      # TODO check if inputs exits
+      Volume.inputs.volume.value = x
 
     if Conf['Mouse Wheel Volume']
       Callbacks.Post.push

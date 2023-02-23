@@ -588,7 +588,8 @@ Index =
       # Optional notification for manual refreshes
       Index.notice or= new Notice 'info', 'Refreshing index...'
       Index.nTimeout or= setTimeout ->
-        Index.notice?.el.lastElementChild.textContent += ' (disable JSON Index if this takes too long)'
+        # TODO check if notice exists
+        Index.notice.el.lastElementChild.textContent += ' (disable JSON Index if this takes too long)'
       , 3 * $.SECOND
     else
       # Also display notice if Index Refresh is taking too long

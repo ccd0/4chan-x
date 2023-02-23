@@ -59,4 +59,5 @@ PSAHiding =
       $.add content, [psa.childNodes...]
     else
       $.add psa, [content.childNodes...]
-    PSAHiding.hr?.hidden = psa.hidden
+    # TODO check if hr exists
+    PSAHiding.hr.hidden = psa.hidden

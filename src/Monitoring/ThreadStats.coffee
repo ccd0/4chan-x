@@ -77,7 +77,8 @@ ThreadStats =
     {thread, postCountEl, fileCountEl, ipCountEl} = ThreadStats
     postCountEl.textContent = ThreadStats.postCount
     fileCountEl.textContent = ThreadStats.fileCount
-    ipCountEl?.textContent  = thread.ipCount ? '?'
+    # TOTO check if ipCountEl exists
+    ipCountEl.textContent  = thread.ipCount ? '?'
     postCountEl.classList.toggle 'warning', (thread.postLimit and !thread.isSticky)
     fileCountEl.classList.toggle 'warning', (thread.fileLimit and !thread.isSticky)
 
