@@ -16,12 +16,12 @@ import Mayhem_unreadSFW from './Favicon/Mayhem.unreadSFW.png';
 import Mayhem_unreadSFWY from './Favicon/Mayhem.unreadSFWY.png';
 import Mayhem_unreadNSFW from './Favicon/Mayhem.unreadNSFW.png';
 import Mayhem_unreadNSFWY from './Favicon/Mayhem.unreadNSFWY.png';
-import 4chanJS_unreadDead from './Favicon/4chanJS.unreadDead.png';
-import 4chanJS_unreadDeadY from './Favicon/4chanJS.unreadDeadY.png';
-import 4chanJS_unreadSFW from './Favicon/4chanJS.unreadSFW.png';
-import 4chanJS_unreadSFWY from './Favicon/4chanJS.unreadSFWY.png';
-import 4chanJS_unreadNSFW from './Favicon/4chanJS.unreadNSFW.png';
-import 4chanJS_unreadNSFWY from './Favicon/4chanJS.unreadNSFWY.png';
+import fourChanJS_unreadDead from './Favicon/4chanJS.unreadDead.png';
+import fourChanJS_unreadDeadY from './Favicon/4chanJS.unreadDeadY.png';
+import fourChanJS_unreadSFW from './Favicon/4chanJS.unreadSFW.png';
+import fourChanJS_unreadSFWY from './Favicon/4chanJS.unreadSFWY.png';
+import fourChanJS_unreadNSFW from './Favicon/4chanJS.unreadNSFW.png';
+import fourChanJS_unreadNSFWY from './Favicon/4chanJS.unreadNSFWY.png';
 import Original_unreadDead from './Favicon/Original.unreadDead.png';
 import Original_unreadDeadY from './Favicon/Original.unreadDeadY.png';
 import Original_unreadSFW from './Favicon/Original.unreadSFW.png';
@@ -85,12 +85,12 @@ Favicon =
         Mayhem_unreadNSFWY,
       ]
       '4chanJS': [
-        4chanJS_unreadDead,
-        4chanJS_unreadDeadY,
-        4chanJS_unreadSFW,
-        4chanJS_unreadSFWY,
-        4chanJS_unreadNSFW,
-        4chanJS_unreadNSFWY,
+        fourChanJS_unreadDead,
+        fourChanJS_unreadDeadY,
+        fourChanJS_unreadSFW,
+        fourChanJS_unreadSFWY,
+        fourChanJS_unreadNSFW,
+        fourChanJS_unreadNSFWY,
       ]
       Original: [
         Original_unreadDead,

@@ -2,9 +2,9 @@ class Post
   toString: -> @ID
 
   constructor: (root, @thread, @board, flags={}) ->
-    <% if (readJSON('/.tests_enabled')) { %>
-    @normalizedOriginal = Test.normalize root
-    <% } %>
+    # <% if (readJSON('/.tests_enabled')) { %>
+    # @normalizedOriginal = Test.normalize root
+    # <% } %>
 
     $.extend @, flags
     @ID       = +root.id.match(/\d*$/)[0]
@@ -57,9 +57,9 @@ class Post
     @isHidden = false
 
     @clones = []
-    <% if (readJSON('/.tests_enabled')) { %>
-    return if @forBuildTest
-    <% } %>
+    # <% if (readJSON('/.tests_enabled')) { %>
+    # return if @forBuildTest
+    # <% } %>
     if g.posts.get(@fullID)
       @isRebuilt = true
       @clones = g.posts.get(@fullID).clones

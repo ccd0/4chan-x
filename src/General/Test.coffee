@@ -1,4 +1,4 @@
-<% if (readJSON('/.tests_enabled')) { %>
+# <% if (readJSON('/.tests_enabled')) { %>
 Test =
   init: ->
     return unless g.SITE.software is 'yotsuba' and g.VIEW in ['index', 'thread']
@@ -169,4 +169,4 @@ Test =
       Test.testAll()
       e.preventDefault()
       e.stopPropagation()
-<% } %>
+# <% } %>

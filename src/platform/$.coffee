@@ -77,11 +77,11 @@ $.ajax = do ->
     options.type or= options.form and 'post' or 'get'
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
-    <% if (type === 'crx') { %>
-    # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
-    if Conf['Work around CORB Bug'] and g.SITE.software is 'yotsuba' and !options.testCORB and FormData.prototype.entries
-      return $.ajaxPage url, options
-    <% } %>
+    # <% if (type === 'crx') { %>
+    # # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
+    # if Conf['Work around CORB Bug'] and g.SITE.software is 'yotsuba' and !options.testCORB and FormData.prototype.entries
+    #   return $.ajaxPage url, options
+    # <% } %>
     {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options
     r = new pageXHR()
     try
@@ -92,12 +92,12 @@ $.ajax = do ->
       $.extend r.upload, {onprogress}
       # connection error or content blocker
       $.on r, 'error', -> (c.warn "4chan X failed to load: #{url}" unless r.status)
-      <% if (type === 'crx') { %>
-      # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
-      $.on r, 'load', ->
-        if !Conf['Work around CORB Bug'] and r.readyState is 4 and r.status is 200 and r.statusText is '' and r.response is null
-          $.set 'Work around CORB Bug', (Conf['Work around CORB Bug'] = Date.now())
-      <% } %>
+      # <% if (type === 'crx') { %>
+      # # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
+      # $.on r, 'load', ->
+      #   if !Conf['Work around CORB Bug'] and r.readyState is 4 and r.status is 200 and r.statusText is '' and r.response is null
+      #     $.set 'Work around CORB Bug', (Conf['Work around CORB Bug'] = Date.now())
+      # <% } %>
       r.send form
     catch err
       # XXX Some content blockers in Firefox (e.g. Adblock Plus and NoScript) throw an exception instead of simulating a connection error.
@@ -107,9 +107,9 @@ $.ajax = do ->
       $.queueTask $.event, 'loadend', null, r
     r
 
-<% if (type === 'crx') { %>
-# XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
-do ->
+# <% if (type === 'crx') { %>
+# # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
+# do ->
   requestID = 0
   requests = $.dict()
 
@@ -179,7 +179,7 @@ do ->
     form = Array.from(form.entries()) if form
     $.event '4chanXAjax', {url, timeout, responseType, withCredentials, type, onprogress: !!onprogress, form, headers, id}
     req
-<% } %>
+# <% } %>
 
 # Status Code 304: Not modified
 # With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
@@ -357,13 +357,13 @@ $.one = (el, events, handler) ->
   $.on el, events, cb
 
 $.event = (event, detail, root=d) ->
-  <% if (type === 'userscript') { %>
+  # <% if (type === 'userscript') { %>
   if detail? and typeof cloneInto is 'function'
     detail = cloneInto detail, d.defaultView
-  <% } %>
+  # <% } %>
   root.dispatchEvent new CustomEvent event, {bubbles: true, cancelable: true, detail}
 
-<% if (type === 'userscript') { %>
+# <% if (type === 'userscript') { %>
 # XXX Make $.event work in Pale Moon with GM 3.x (no cloneInto function).
 do ->
   return unless /PaleMoon\//.test(navigator.userAgent) and +GM_info?.version?.split('.')[0] >= 2 and typeof cloneInto is 'undefined'
@@ -383,12 +383,12 @@ do ->
         obj
     $.event = (event, detail, root=d) ->
       root.dispatchEvent new CustomEvent event, {bubbles: true, cancelable: true, detail: clone detail}
-<% } %>
+# <% } %>
 
 $.modifiedClick = (e) ->
   e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
 
-<% if (type === 'userscript') { %>
+# <% if (type === 'userscript') { %>
 $.open =
   if GM?.openInTab?
     GM.openInTab
@@ -396,10 +396,10 @@ $.open =
     GM_openInTab
   else
     (url) -> window.open url, '_blank'
-<% } else { %>
+# <% } else { %>
 $.open =
   (url) -> window.open url, '_blank'
-<% } %>
+# <% } %>
 
 $.debounce = (wait, fn) ->
   lastCall = 0
@@ -527,7 +527,7 @@ $.securityCheck = (data) ->
   if location.protocol isnt 'https:'
     delete data['Redirect to HTTPS']
 
-<% if (type === 'crx') { %>
+# <% if (type === 'crx') { %>
 # https://developer.chrome.com/extensions/storage.html
 $.oldValue =
   local: $.dict()
@@ -646,7 +646,7 @@ do ->
       cb? err unless --count
     chrome.storage.local.clear done
     chrome.storage.sync.clear  done
-<% } else { %>
+# <% } else { %>
 
 # http://wiki.greasespot.net/Main_Page
 # https://tampermonkey.net/documentation.php
@@ -809,4 +809,4 @@ else
       $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''
     cb?()
 
-<% } %>
+# <% } %>

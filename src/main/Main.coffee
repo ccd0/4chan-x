@@ -130,8 +130,9 @@ Main =
     items.previousversion = changes.previousversion = g.VERSION
     $.set changes, ->
       if items['Show Updated Notifications'] ? true
+        # TODO meta
         el = $.el 'span',
-          `<%= html(meta.name + ' has been updated to <a href="' + meta.changelog + '" target="_blank">version ${g.VERSION}</a>.') %>`
+          `{ innerHTML: 'meta.name has been updated to <a href="' + meta.changelog + '" target="_blank">version ${g.VERSION}</a>.'}`
         new Notice 'info', el, 15
 
   parseURL: (site=g.SITE, url=location) ->
@@ -535,7 +536,7 @@ Main =
         $.addClass doc, 'tainted'
         if Conf['Disable Native Extension'] and !Main.isFirstRun
           msg = $.el 'div',
-            `<%= html('Failed to disable the native extension. You may need to <a href="' + meta.faq + '#blocking-native-extension" target="_blank">block it</a>.') %>`
+            `{innerHTML: 'Failed to disable the native extension. You may need to <a href="' + meta.faq + '#blocking-native-extension" target="_blank">block it</a>.'}`
           new Notice 'error', msg
 
     unless errors instanceof Array
@@ -579,7 +580,8 @@ Main =
     title += " (+#{errors.length - 1} other errors)" if errors.length > 1
     details = ''
     addDetails = (text) ->
-      unless encodeURIComponent(title + details + text + '\n').length > `<%= meta.newIssueMaxLength - meta.newIssue.replace(/%(title|details)/, '').length %>`
+      # TODO meta
+      unless encodeURIComponent(title + details + text + '\n').length > `"meta.newIssueMaxLength - meta.newIssue.replace(/%(title|details)/, '')".length`
         details += text + '\n'
     addDetails """
       [Please describe the steps needed to reproduce this error.]
@@ -704,6 +706,6 @@ Main =
     ['Mod Contact Links',         ModContact]
   ]
 
-<% if (readJSON('/.tests_enabled')) { %>
-Main.features.push ['Build Test', Test]
-<% } %>
+# <% if (readJSON('/.tests_enabled')) { %>
+# Main.features.push ['Build Test', Test]
+# <% } %>

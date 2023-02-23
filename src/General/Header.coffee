@@ -385,7 +385,8 @@ Header =
     Header.previousOffset = offsetY
 
   setBarPosition: (bottom) ->
-    Header.barPositionToggler?.checked = bottom
+    # TODO check if barPositionToggler exists
+    Header.barPositionToggler.checked = bottom
     $.event 'CloseMenu'
     args = if bottom then [
       'bottom-header'

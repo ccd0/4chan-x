@@ -1,4 +1,4 @@
-<% if (type === 'crx') { %>
+# <% if (type === 'crx') { %>
 eventPageRequest = do ->
   callbacks = []
   chrome.runtime.onMessage.addListener (response) ->
@@ -8,17 +8,17 @@ eventPageRequest = do ->
     chrome.runtime.sendMessage params, (id) ->
       callbacks[id] = cb
 
-<% } %>
+# <% } %>
 CrossOrigin =
   binary: (url, cb, headers=$.dict()) ->
     # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
-    <% if (type === 'crx') { %>
+    # <% if (type === 'crx') { %>
     eventPageRequest {type: 'ajax', url, headers, responseType: 'arraybuffer'}, ({response, responseHeaderString}) ->
       response = new Uint8Array(response) if response
       cb response, responseHeaderString
-    <% } %>
-    <% if (type === 'userscript') { %>
+    # <% } %>
+    # <% if (type === 'userscript') { %>
     fallback = ->
       $.ajax url, {
         headers
@@ -57,7 +57,7 @@ CrossOrigin =
       (GM?.xmlHttpRequest or GM_xmlhttpRequest) gmOptions
     catch
       fallback()
-    <% } %>
+    # <% } %>
 
   file: (url, cb) ->
     CrossOrigin.binary url, (data, headers) ->
@@ -112,15 +112,15 @@ CrossOrigin =
     {onloadend, timeout, responseType, headers} = options
     responseType ?= 'json'
 
-    <% if (type === 'userscript') { %>
+    # <% if (type === 'userscript') { %>
     unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
       return $.ajax url, options
-    <% } %>
+    # <% } %>
 
     req = new CrossOrigin.Request()
     req.onloadend = onloadend
 
-    <% if (type === 'userscript') { %>
+    # <% if (type === 'userscript') { %>
     gmOptions = {
       method: 'GET'
       url
@@ -153,14 +153,14 @@ CrossOrigin =
       req.abort = ->
         try
           gmReq.abort()
-    <% } %>
+    # <% } %>
 
-    <% if (type === 'crx') { %>
+    # <% if (type === 'crx') { %>
     eventPageRequest {type: 'ajax', url, responseType, headers, timeout}, (result) ->
       if result.status
         $.extend req, result
       req.onloadend()
-    <% } %>
+    # <% } %>
 
     req
 
@@ -168,15 +168,15 @@ CrossOrigin =
     $.cache url, cb,
       ajax: CrossOrigin.ajax
 
-  <% if (type === 'crx') { %>
+  # <% if (type === 'crx') { %>
   permission: (cb, cbFail, origins) ->
     eventPageRequest {type: 'permission', origins}, (result) ->
       if result
         cb()
       else
         cbFail()
-  <% } %>
-  <% if (type === 'userscript') { %>
+  # <% } %>
+  # <% if (type === 'userscript') { %>
   permission: (cb) ->
     cb()
-  <% } %>
+  # <% } %>
