@@ -359,9 +359,9 @@ QR =
   splitPost: ->
     count = QR.nodes.com.value.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length
     text = QR.nodes.com.value
-    return if count < QR.max_comment
+    return if count < QR.max_comment or QR.selected.isLocked
     lastPostLength = 0
-    QR.posts[QR.posts.length - 1].setComment("");
+    QR.selected.setComment("");
 
     for line in text.split("\n")
       currentLength = line.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length + 1 # 1 for newline
@@ -370,7 +370,7 @@ QR =
         post.setComment(line)
         lastPostLength = currentLength
       else
-        currentPost = QR.posts[QR.posts.length - 1]
+        currentPost = QR.selected 
         newComment = [currentPost.com, line].filter((el) -> el != null).join("\n")
         currentPost.setComment(newComment)
         lastPostLength += currentLength
