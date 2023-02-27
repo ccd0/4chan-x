@@ -706,6 +706,9 @@ QR =
     post.lock()
 
     formData =
+      MAX_FILE_SIZE: QR.max_size
+      mode:     'regist'
+      pwd:      QR.persona.getPassword()
       resto:    threadID
       name:     post.name unless QR.forcedAnon
       email:    post.email
@@ -715,8 +718,6 @@ QR =
       filetag:  filetag
       spoiler:  post.spoiler
       flag:     post.flag
-      mode:     'regist'
-      pwd:      QR.persona.getPassword()
 
     options =
       responseType: 'document'
