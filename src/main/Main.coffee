@@ -88,6 +88,7 @@ Main =
     if (
       /\.4chan(?:nel)?\.org$/.test(location.hostname) and
       !SW.yotsuba.regexp.pass.test(location.href) and
+      !SW.yotsuba.regexp.captcha.test(location.href) and
       !$$('script:not([src])', d).filter((s) -> /this\[/.test(s.textContent)).length
     )
       ($.getSync or $.get) {'jsWhitelist': Conf['jsWhitelist']}, ({jsWhitelist}) ->
