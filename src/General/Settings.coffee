@@ -548,6 +548,12 @@ Settings =
     if compareString < '00001.00014.00022.00002'
       if data['sauces']?
         set 'sauces', data['sauces'].replace(/^#?\s*https:\/\/www\.google\.com\/searchbyimage\?image_url=%(IMG|T?URL)&safe=off(?=$|;)/mg, 'https://lens.google.com/uploadbyurl?url=%$1')
+    if compareString < '00001.00014.00022.00003'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(/^#?\s*https:\/\/lens\.google\.com\/uploadbyurl\?url=%(IMG|T?URL)(?=$|;)/mg, 'https://www.google.com/searchbyimage?sbisrc=4chanx&image_url=%$1&safe=off')
+      addSauces [
+        '#https://lens.google.com/uploadbyurl?url=%IMG;text:lens'
+      ]
     changes
 
   loadSettings: (data, cb) ->

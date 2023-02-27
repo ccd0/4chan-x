@@ -774,10 +774,11 @@ Config =
     https://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/
 
     # Reverse image search:
-    https://lens.google.com/uploadbyurl?url=%IMG
+    https://www.google.com/searchbyimage?sbisrc=4chanx&image_url=%IMG&safe=off
     https://yandex.com/images/search?rpt=imageview&url=%IMG
     #//tineye.com/search?url=%IMG
     #//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights
+    #https://lens.google.com/uploadbyurl?url=%IMG;text:lens
 
     # Specialized reverse image search:
     //iqdb.org/?url=%IMG
