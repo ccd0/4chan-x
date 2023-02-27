@@ -68,8 +68,7 @@
       "https://www.sushigirl.us/*",
       "https://tvch.moe/*"
     ],
-    "matches_extra": [
-    ],
+    "matches_extra": [],
     "exclude_matches": [
       "*://www.4chan.org/advertise",
       "*://www.4chan.org/advertise?*",
@@ -102,7 +101,7 @@
     }
   },
   "devDependencies": {
-    "chrome-webstore-upload": "^0.4.4",
+    "chrome-webstore-upload": "^1.0.0",
     "coffeescript": "=1.12.7",
     "esprima": "^4.0.1",
     "font-awesome": "=4.7.0",
