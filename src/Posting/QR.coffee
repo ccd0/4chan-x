@@ -295,35 +295,36 @@ QR =
     postRange.selectNode root
     text = if post.board.ID is g.BOARD.ID then ">>#{post}\n" else ">>>/#{post.board}/#{post}\n"
     for i in [0...sel.rangeCount]
-      range = sel.getRangeAt i
-      # Trim range to be fully inside post
-      if range.compareBoundaryPoints(Range.START_TO_START, postRange) < 0
-        range.setStartBefore root
-      if range.compareBoundaryPoints(Range.END_TO_END, postRange) > 0
-        range.setEndAfter root
+      try
+        range = sel.getRangeAt i
+        # Trim range to be fully inside post
+        if range.compareBoundaryPoints(Range.START_TO_START, postRange) < 0
+          range.setStartBefore root
+        if range.compareBoundaryPoints(Range.END_TO_END, postRange) > 0
+          range.setEndAfter root
 
-      continue unless range.toString().trim()
+        continue unless range.toString().trim()
 
-      frag  = range.cloneContents()
-      ancestor = range.commonAncestorContainer
-      # Quoting the insides of a spoiler/code tag.
-      if $.x 'ancestor-or-self::*[self::s or contains(@class,"removed-spoiler")]', ancestor
-        $.prepend frag, $.tn '[spoiler]'
-        $.add     frag, $.tn '[/spoiler]'
-      if insideCode = $.x 'ancestor-or-self::pre[contains(@class,"prettyprint")]', ancestor
-        $.prepend frag, $.tn '[code]'
-        $.add     frag, $.tn '[/code]'
-      for node in $$ (if insideCode then 'br' else '.prettyprint br'), frag
-        $.replace node, $.tn '\n'
-      for node in $$ 'br', frag
-        $.replace node, $.tn '\n>' unless node is frag.lastChild
-      g.SITE.insertTags?(frag)
-      for node in $$ '.linkify[data-original]', frag
-        $.replace node, $.tn node.dataset.original
-      for node in $$ '.embedder', frag
-        $.rm node.previousSibling if node.previousSibling?.nodeValue is ' '
-        $.rm node
-      text += ">#{frag.textContent.trim()}\n"
+        frag  = range.cloneContents()
+        ancestor = range.commonAncestorContainer
+        # Quoting the insides of a spoiler/code tag.
+        if $.x 'ancestor-or-self::*[self::s or contains(@class,"removed-spoiler")]', ancestor
+          $.prepend frag, $.tn '[spoiler]'
+          $.add     frag, $.tn '[/spoiler]'
+        if insideCode = $.x 'ancestor-or-self::pre[contains(@class,"prettyprint")]', ancestor
+          $.prepend frag, $.tn '[code]'
+          $.add     frag, $.tn '[/code]'
+        for node in $$ (if insideCode then 'br' else '.prettyprint br'), frag
+          $.replace node, $.tn '\n'
+        for node in $$ 'br', frag
+          $.replace node, $.tn '\n>' unless node is frag.lastChild
+        g.SITE.insertTags?(frag)
+        for node in $$ '.linkify[data-original]', frag
+          $.replace node, $.tn node.dataset.original
+        for node in $$ '.embedder', frag
+          $.rm node.previousSibling if node.previousSibling?.nodeValue is ' '
+          $.rm node
+        text += ">#{frag.textContent.trim()}\n"
 
     QR.openPost()
     {com, thread} = QR.nodes
