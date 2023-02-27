@@ -4,6 +4,15 @@
 
 ### v1.14.22
 
+**v1.14.22.2** *(2023-02-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.2/builds/4chan-X-noupdate.crx)]
+- Fix quick reply not opening immediately after making post. #2905
+- Update Randomize Filename to match current 4chan format. https://boards.4channel.org/g/thread/91737566#p91784238
+- Remove empty space from ads if they don't load. https://kissu.moe/b/res/7155#11052
+- Make post from QR more like original form post to possibly reduce posting errors. #3330
+- Disable Javascript Whitelist on captcha iframe to fix issues with Cloudflare scripts. #3292
+- (4chenz) Add Google Lens image search url.
+- Change issues link from dead gitreports.com back to Github.
+
 **v1.14.22.1** *(2022-07-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.1/builds/4chan-X-noupdate.crx)]
 - Remove old /nen/, add successor site.
 

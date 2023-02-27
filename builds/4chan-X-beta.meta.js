@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.22.1
+// @version      1.14.22.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -83,7 +83,8 @@
 // @connect      thebarchive.com
 // @connect      archiveofsins.com
 // @connect      www.tokyochronos.net
-// @connect      archive.alice.al
+// @connect      archive.palanq.win
+// @connect      eientei.xyz
 // @connect      api.clyp.it
 // @connect      api.dailymotion.com
 // @connect      api.github.com

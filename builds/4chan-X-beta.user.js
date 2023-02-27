@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.22.1
+// @version      1.14.22.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -83,7 +83,8 @@
 // @connect      thebarchive.com
 // @connect      archiveofsins.com
 // @connect      www.tokyochronos.net
-// @connect      archive.alice.al
+// @connect      archive.palanq.win
+// @connect      eientei.xyz
 // @connect      api.clyp.it
 // @connect      api.dailymotion.com
 // @connect      api.github.com
@@ -210,7 +211,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.22.1',
+  VERSION:   '1.14.22.2',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -448,7 +449,7 @@ Config = (function() {
       filesize: '',
       MD5: ''
     },
-    sauces: "# Known filename formats:\nhttps://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/\njavascript:void(open(\"https://www.deviantart.com/\"+%$1.replace(/_/g,\"-\")+\"/art/\"+parseInt(%$2,36)));regexp:/^\\w+_by_(\\w+)[_-]d([\\da-z]{6})\\b/\nhttps://imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/\nhttps://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/\nhttps://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/\n\n# Reverse image search:\nhttps://www.google.com/searchbyimage?image_url=%IMG&safe=off\nhttps://yandex.com/images/search?rpt=imageview&url=%IMG\n#//tineye.com/search?url=%IMG\n#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://trace.moe/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desuarchive.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://exif.regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/start?url=%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
+    sauces: "# Known filename formats:\nhttps://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/\njavascript:void(open(\"https://www.deviantart.com/\"+%$1.replace(/_/g,\"-\")+\"/art/\"+parseInt(%$2,36)));regexp:/^\\w+_by_(\\w+)[_-]d([\\da-z]{6})\\b/\nhttps://imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/\nhttps://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/\nhttps://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/\n\n# Reverse image search:\nhttps://lens.google.com/uploadbyurl?url=%IMG\nhttps://yandex.com/images/search?rpt=imageview&url=%IMG\n#//tineye.com/search?url=%IMG\n#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights\n\n# Specialized reverse image search:\n//iqdb.org/?url=%IMG\nhttps://trace.moe/?auto&url=%IMG;text:wait\n#//3d.iqdb.org/?url=%IMG\n#//saucenao.com/search.php?url=%IMG\n\n# \"View Same\" in archives:\nhttp://eye.swfchan.com/search/?q=%name;types:swf\n#https://desuarchive.org/_/search/image/%sMD5/\n#https://archive.4plebs.org/_/search/image/%sMD5/\n#https://boards.fireden.net/_/search/image/%sMD5/\n#https://foolz.fireden.net/_/search/image/%sMD5/\n\n# Other tools:\n#http://exif.regex.info/exif.cgi?imgurl=%URL\n#//imgops.com/start?url=%URL;types:gif,jpg,png\n#//www.gif-explode.com/%URL;types:gif",
     FappeT: {
       werk: false
     },
@@ -1468,7 +1469,8 @@ body.hasDropDownNav{\n\
 }\n\
 :root.sw-yotsuba:not(.ads-loaded) hr.abovePostForm,\n\
 :root.sw-yotsuba:not(.ads-loaded) .adg-rects > hr,\n\
-:root.sw-yotsuba #adg-ol + hr {\n\
+:root.sw-yotsuba #adg-ol + hr,\n\
+:root.sw-yotsuba .danbo-slot:empty {\n\
   display: none;\n\
 }\n\
 :root.sw-yotsuba .adg-rects {\n\
@@ -8224,7 +8226,8 @@ SW = {};
     regexp: {
       quotelink: /^https?:\/\/boards\.4chan(?:nel)?\.org\/+([^\/]+)\/+thread\/+(\d+)(?:[\/?][^#]*)?(?:#p(\d+))?$/,
       quotelinkHTML: /<a [^>]*\bhref="(?:(?:\/\/boards\.4chan(?:nel)?\.org)?\/([^\/]+)\/thread\/)?(\d+)?(?:#p(\d+))?"/g,
-      pass: /^https?:\/\/www\.4chan(?:nel)?\.org\/+pass(?:$|[?#])/
+      pass: /^https?:\/\/www\.4chan(?:nel)?\.org\/+pass(?:$|[?#])/,
+      captcha: /^https?:\/\/sys\.4chan(?:nel)?\.org\/+captcha(?:$|[?#])/
     },
     bgColoredEl: function() {
       return $.el('div', {
@@ -8913,14 +8916,15 @@ Redirect = (function() {
     archives: [
       { "uid": 3, "name": "4plebs", "domain": "archive.4plebs.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "files": [ "adv", "f", "hr", "mlpol", "mo", "o", "pol", "s4s", "sp", "tg", "trv", "tv", "x" ], "reports": true },
       { "uid": 10, "name": "warosu", "domain": "warosu.org", "http": false, "https": true, "software": "fuuka", "boards": [ "3", "biz", "cgl", "ck", "diy", "fa", "ic", "jp", "lit", "sci", "vr", "vt" ], "files": [ "3", "biz", "cgl", "ck", "diy", "fa", "ic", "jp", "lit", "sci", "vr", "vt" ], "search": [ "biz", "cgl", "ck", "diy", "fa", "ic", "jp", "lit", "sci", "vr", "vt" ] },
-      { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "gif", "his", "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "gif", "his", "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "reports": true },
-      { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "files": [ "cm", "co", "ic", "sci", "tg", "vip", "y" ], "search": [ "cm", "co", "ic", "sci", "tg", "y" ] },
+      { "uid": 23, "name": "Desuarchive", "domain": "desuarchive.org", "http": true, "https": true, "software": "foolfuuka", "boards": [ "a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "his", "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr", "wsg" ], "files": [ "a", "aco", "an", "c", "cgl", "co", "d", "fit", "g", "his", "int", "k", "m", "mlp", "mu", "q", "qa", "r9k", "tg", "trash", "vr" ], "reports": true },
+      { "uid": 24, "name": "fireden.net", "domain": "boards.fireden.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "cm", "co", "ic", "sci", "vip", "y" ], "files": [ "cm", "co", "ic", "sci", "vip", "y" ], "search": [ "cm", "co", "ic", "sci", "y" ] },
       { "uid": 25, "name": "arch.b4k.co", "domain": "arch.b4k.co", "http": true, "https": true, "software": "foolfuuka", "boards": [ "g", "mlp", "qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst" ], "files": [ "qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst" ], "search": [ "qb", "v", "vg", "vm", "vmg", "vp", "vrpg", "vst" ] },
-      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "con", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "pw", "q", "qa", "qb", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vmg", "vp", "vr", "vrpg", "vt", "w", "wg", "wsg", "wsr", "x", "xs", "y" ], "files": [ "can", "cock", "con", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "q", "qb", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "vrpg", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
+      { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "con", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "pw", "q", "qa", "qb", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vm", "vmg", "vp", "vr", "vrpg", "vst", "vt", "w", "wg", "wsg", "wsr", "x", "xs", "y" ], "files": [ "can", "cock", "con", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "q", "qb", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "pw", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "vrpg", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u" ], "files": [ "h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u" ], "reports": true },
-      { "uid": 34, "name": "TokyoChronos", "domain": "www.tokyochronos.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "a", "c", "g", "jp", "mu", "r9k", "vp", "vrpg", "vt" ], "files": [ "a", "c", "g", "jp", "mu", "r9k", "vp", "vrpg", "vt" ], "reports": true },
-      { "uid": 36, "name": "Rozen Arcana", "domain": "archive.alice.al", "http": false, "https": true, "software": "foolfuuka", "boards": [ "bant", "c", "con", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr" ], "files": [ "bant", "c", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr" ], "reports": true }
+      { "uid": 34, "name": "TokyoChronos", "domain": "www.tokyochronos.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "c", "g", "jp", "mu", "vp", "vrpg", "vt" ], "files": [], "reports": true },
+      { "uid": 36, "name": "palanq.win", "domain": "archive.palanq.win", "http": false, "https": true, "software": "foolfuuka", "boards": [ "bant", "c", "con", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr" ], "files": [ "bant", "c", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr" ], "reports": true },
+      { "uid": 37, "name": "Eientei", "domain": "eientei.xyz", "http": false, "https": true, "software": "Eientei", "boards": [ "3", "i", "sci", "xs" ], "files": [ "3", "i", "sci", "xs" ], "reports": true }
     ],
     init: function() {
       var now, ref;
@@ -12747,7 +12751,7 @@ Settings = (function() {
       $.event('CloseMenu');
       Settings.dialog = dialog = $.el('div', {
         id: 'overlay'
-      }, {innerHTML: "<div id=\"fourchanx-settings\" class=\"dialog\"><nav><div class=\"sections-list\"></div><p class=\"imp-exp-result warning\"></p><div class=\"credits\"><a class=\"export\">Export</a>&nbsp|&nbsp<a class=\"import\">Import</a>&nbsp|&nbsp<a class=\"reset\">Reset Settings</a>&nbsp|&nbsp<input type=\"file\" hidden><a href=\"https://www.4chan-x.net/\" target=\"_blank\">4chan X</a>&nbsp|&nbsp<a href=\"https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md\" target=\"_blank\">" + E(g.VERSION) + "</a>&nbsp|&nbsp<a href=\"https://gitreports.com/issue/ccd0/4chan-x\" target=\"_blank\">Issues</a>&nbsp|&nbsp<a href=\"javascript:;\" class=\"close fa fa-times\" title=\"Close\"></a></div></nav><div class=\"section-container\"><section></section></div></div>"});
+      }, {innerHTML: "<div id=\"fourchanx-settings\" class=\"dialog\"><nav><div class=\"sections-list\"></div><p class=\"imp-exp-result warning\"></p><div class=\"credits\"><a class=\"export\">Export</a>&nbsp|&nbsp<a class=\"import\">Import</a>&nbsp|&nbsp<a class=\"reset\">Reset Settings</a>&nbsp|&nbsp<input type=\"file\" hidden><a href=\"https://www.4chan-x.net/\" target=\"_blank\">4chan X</a>&nbsp|&nbsp<a href=\"https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md\" target=\"_blank\">" + E(g.VERSION) + "</a>&nbsp|&nbsp<a href=\"https://github.com/ccd0/4chan-x/issues\" target=\"_blank\">Issues</a>&nbsp|&nbsp<a href=\"javascript:;\" class=\"close fa fa-times\" title=\"Close\"></a></div></nav><div class=\"section-container\"><section></section></div></div>"});
       $.on($('.export', dialog), 'click', Settings["export"]);
       $.on($('.import', dialog), 'click', Settings["import"]);
       $.on($('.reset', dialog), 'click', Settings.reset);
@@ -13494,6 +13498,11 @@ Settings = (function() {
       if (compareString < '00001.00014.00020.00004') {
         if (data['archiveLists'] != null) {
           set('archiveLists', data['archiveLists'].replace('https://nstepien.github.io/archives.json/archives.json', 'https://4chenz.github.io/archives.json/archives.json'));
+        }
+      }
+      if (compareString < '00001.00014.00022.00002') {
+        if (data['sauces'] != null) {
+          set('sauces', data['sauces'].replace(/^#?\s*https:\/\/www\.google\.com\/searchbyimage\?image_url=%(IMG|T?URL)&safe=off(?=$|;)/mg, 'https://lens.google.com/uploadbyurl?url=%$1'));
         }
       }
       return changes;
@@ -24223,55 +24232,57 @@ QR = (function() {
       postRange.selectNode(root);
       text = post.board.ID === g.BOARD.ID ? ">>" + post + "\n" : ">>>/" + post.board + "/" + post + "\n";
       for (i = j = 0, ref = sel.rangeCount; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-        range = sel.getRangeAt(i);
-        if (range.compareBoundaryPoints(Range.START_TO_START, postRange) < 0) {
-          range.setStartBefore(root);
-        }
-        if (range.compareBoundaryPoints(Range.END_TO_END, postRange) > 0) {
-          range.setEndAfter(root);
-        }
-        if (!range.toString().trim()) {
-          continue;
-        }
-        frag = range.cloneContents();
-        ancestor = range.commonAncestorContainer;
-        if ($.x('ancestor-or-self::*[self::s or contains(@class,"removed-spoiler")]', ancestor)) {
-          $.prepend(frag, $.tn('[spoiler]'));
-          $.add(frag, $.tn('[/spoiler]'));
-        }
-        if (insideCode = $.x('ancestor-or-self::pre[contains(@class,"prettyprint")]', ancestor)) {
-          $.prepend(frag, $.tn('[code]'));
-          $.add(frag, $.tn('[/code]'));
-        }
-        ref1 = $$((insideCode ? 'br' : '.prettyprint br'), frag);
-        for (k = 0, len = ref1.length; k < len; k++) {
-          node = ref1[k];
-          $.replace(node, $.tn('\n'));
-        }
-        ref2 = $$('br', frag);
-        for (l = 0, len1 = ref2.length; l < len1; l++) {
-          node = ref2[l];
-          if (node !== frag.lastChild) {
-            $.replace(node, $.tn('\n>'));
+        try {
+          range = sel.getRangeAt(i);
+          if (range.compareBoundaryPoints(Range.START_TO_START, postRange) < 0) {
+            range.setStartBefore(root);
           }
-        }
-        if (typeof (base = g.SITE).insertTags === "function") {
-          base.insertTags(frag);
-        }
-        ref3 = $$('.linkify[data-original]', frag);
-        for (n = 0, len2 = ref3.length; n < len2; n++) {
-          node = ref3[n];
-          $.replace(node, $.tn(node.dataset.original));
-        }
-        ref4 = $$('.embedder', frag);
-        for (o = 0, len3 = ref4.length; o < len3; o++) {
-          node = ref4[o];
-          if (((ref5 = node.previousSibling) != null ? ref5.nodeValue : void 0) === ' ') {
-            $.rm(node.previousSibling);
+          if (range.compareBoundaryPoints(Range.END_TO_END, postRange) > 0) {
+            range.setEndAfter(root);
           }
-          $.rm(node);
-        }
-        text += ">" + (frag.textContent.trim()) + "\n";
+          if (!range.toString().trim()) {
+            continue;
+          }
+          frag = range.cloneContents();
+          ancestor = range.commonAncestorContainer;
+          if ($.x('ancestor-or-self::*[self::s or contains(@class,"removed-spoiler")]', ancestor)) {
+            $.prepend(frag, $.tn('[spoiler]'));
+            $.add(frag, $.tn('[/spoiler]'));
+          }
+          if (insideCode = $.x('ancestor-or-self::pre[contains(@class,"prettyprint")]', ancestor)) {
+            $.prepend(frag, $.tn('[code]'));
+            $.add(frag, $.tn('[/code]'));
+          }
+          ref1 = $$((insideCode ? 'br' : '.prettyprint br'), frag);
+          for (k = 0, len = ref1.length; k < len; k++) {
+            node = ref1[k];
+            $.replace(node, $.tn('\n'));
+          }
+          ref2 = $$('br', frag);
+          for (l = 0, len1 = ref2.length; l < len1; l++) {
+            node = ref2[l];
+            if (node !== frag.lastChild) {
+              $.replace(node, $.tn('\n>'));
+            }
+          }
+          if (typeof (base = g.SITE).insertTags === "function") {
+            base.insertTags(frag);
+          }
+          ref3 = $$('.linkify[data-original]', frag);
+          for (n = 0, len2 = ref3.length; n < len2; n++) {
+            node = ref3[n];
+            $.replace(node, $.tn(node.dataset.original));
+          }
+          ref4 = $$('.embedder', frag);
+          for (o = 0, len3 = ref4.length; o < len3; o++) {
+            node = ref4[o];
+            if (((ref5 = node.previousSibling) != null ? ref5.nodeValue : void 0) === ' ') {
+              $.rm(node.previousSibling);
+            }
+            $.rm(node);
+          }
+          text += ">" + (frag.textContent.trim()) + "\n";
+        } catch (error) {}
       }
       QR.openPost();
       ref6 = QR.nodes, com = ref6.com, thread = ref6.thread;
@@ -24735,6 +24746,9 @@ QR = (function() {
       QR.cooldown.auto = QR.posts.length > 1;
       post.lock();
       formData = {
+        MAX_FILE_SIZE: QR.max_size,
+        mode: 'regist',
+        pwd: QR.persona.getPassword(),
         resto: threadID,
         name: !QR.forcedAnon ? post.name : void 0,
         email: post.email,
@@ -24743,9 +24757,7 @@ QR = (function() {
         upfile: post.file,
         filetag: filetag,
         spoiler: post.spoiler,
-        flag: post.flag,
-        mode: 'regist',
-        pwd: QR.persona.getPassword()
+        flag: post.flag
       };
       options = {
         responseType: 'document',
@@ -25857,7 +25869,7 @@ QR = (function() {
       var ext, ref;
       this.file = file1;
       if (Conf['Randomize Filename'] && g.BOARD.ID !== 'f') {
-        this.filename = "" + (Date.now() - Math.floor(Math.random() * 365 * $.DAY));
+        this.filename = "" + (Date.now() * 1000 - Math.floor(Math.random() * 365 * $.DAY * 1000));
         if (ext = this.file.name.match(QR.validExtension)) {
           this.filename += ext[0];
         }
@@ -27294,7 +27306,7 @@ Main = (function() {
       Conf['Captcha Fixes'] = true;
       Conf['captchaServiceDomain'] = '';
       Conf['captchaServiceKey'] = $.dict();
-      if (/\.4chan(?:nel)?\.org$/.test(location.hostname) && !SW.yotsuba.regexp.pass.test(location.href) && !$$('script:not([src])', d).filter(function(s) {
+      if (/\.4chan(?:nel)?\.org$/.test(location.hostname) && !SW.yotsuba.regexp.pass.test(location.href) && !SW.yotsuba.regexp.captcha.test(location.href) && !$$('script:not([src])', d).filter(function(s) {
         return /this\[/.test(s.textContent);
       }).length) {
         ($.getSync || $.get)({
@@ -27931,7 +27943,7 @@ Main = (function() {
       }
       details = '';
       addDetails = function(text) {
-        if (!(encodeURIComponent(title + details + text + '\n').length > 8110)) {
+        if (!(encodeURIComponent(title + details + text + '\n').length > 8143)) {
           return details += text + '\n';
         }
       };
@@ -27947,7 +27959,7 @@ Main = (function() {
         addDetails('\n`' + data.html + '`');
       }
       details = details.replace(/file:\/{3}.+\//g, '');
-      url = 'https://gitreports.com/issue/ccd0/4chan-x?issue_title=%title&details=%details'.replace('%title', encodeURIComponent(title)).replace('%details', encodeURIComponent(details));
+      url = 'https://github.com/ccd0/4chan-x/issues'.replace('%title', encodeURIComponent(title)).replace('%details', encodeURIComponent(details));
       return {innerHTML: "<span class=\"report-error\"> [<a href=\"" + E(url) + "\" target=\"_blank\">report</a>]</span>"};
     },
     isThisPageLegit: function() {
