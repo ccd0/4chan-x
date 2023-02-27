@@ -207,7 +207,7 @@ QR.post = class
 
   setFile: (@file) ->
     if Conf['Randomize Filename'] and g.BOARD.ID isnt 'f'
-      @filename  = "#{Date.now() - Math.floor(Math.random() * 365 * $.DAY)}"
+      @filename  = "#{Date.now() * 1000 - Math.floor(Math.random() * 365 * $.DAY * 1000)}"
       @filename += ext[0] if ext = @file.name.match QR.validExtension
     else
       @filename  = @file.name
