@@ -4,6 +4,9 @@
 
 ### v1.14.22
 
+**v1.14.22.3** *(2023-02-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.3/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.3/builds/4chan-X-noupdate.crx)]
+- Switch Google image search back to old version, thanks to https://boards.4channel.org/g/thread/91737566#p91789527 and others.
+
 **v1.14.22.2** *(2023-02-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.2/builds/4chan-X-noupdate.crx)]
 - Fix quick reply not opening immediately after making post. #2905
 - Update Randomize Filename to match current 4chan format. https://boards.4channel.org/g/thread/91737566#p91784238
@@ -11,6 +14,7 @@
 - Make post from QR more like original form post to possibly reduce posting errors. #3330
 - Disable Javascript Whitelist on captcha iframe to fix issues with Cloudflare scripts. #3292
 - (4chenz) Add Google Lens image search url.
+- Change Google image search to Google Lens due to old link not working.
 - Change issues link from dead gitreports.com back to Github.
 
 **v1.14.22.1** *(2022-07-14)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.1/builds/4chan-X-noupdate.crx)]
