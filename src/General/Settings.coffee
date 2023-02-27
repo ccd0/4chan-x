@@ -545,6 +545,9 @@ Settings =
     if compareString < '00001.00014.00020.00004'
       if data['archiveLists']?
         set 'archiveLists', data['archiveLists'].replace('https://nstepien.github.io/archives.json/archives.json', 'https://4chenz.github.io/archives.json/archives.json')
+    if compareString < '00001.00014.00022.00002'
+      if data['sauces']?
+        set 'sauces', data['sauces'].replace(/^#?\s*https:\/\/www\.google\.com\/searchbyimage\?image_url=%(IMG|T?URL)&safe=off(?=$|;)/mg, 'https://lens.google.com/uploadbyurl?url=%$1')
     changes
 
   loadSettings: (data, cb) ->
