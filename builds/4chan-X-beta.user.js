@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.22.3
+// @version      1.14.22.4
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -211,7 +211,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.22.3',
+  VERSION:   '1.14.22.4',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -5369,7 +5369,7 @@ $ = (function() {
   };
 
   $.isImage = function(url) {
-    return /\.(jpe?g|png|gif|bmp|webp)$/i.test(url);
+    return /\.(jpe?g|jfif|png|gif|bmp|webp|avif|jxl)$/i.test(url);
   };
 
   $.isVideo = function(url) {
@@ -13500,14 +13500,12 @@ Settings = (function() {
           set('archiveLists', data['archiveLists'].replace('https://nstepien.github.io/archives.json/archives.json', 'https://4chenz.github.io/archives.json/archives.json'));
         }
       }
-      if (compareString < '00001.00014.00022.00002') {
-        if (data['sauces'] != null) {
-          set('sauces', data['sauces'].replace(/^#?\s*https:\/\/www\.google\.com\/searchbyimage\?image_url=%(IMG|T?URL)&safe=off(?=$|;)/mg, 'https://lens.google.com/uploadbyurl?url=%$1'));
-        }
-      }
       if (compareString < '00001.00014.00022.00003') {
         if (data['sauces'] != null) {
-          set('sauces', data['sauces'].replace(/^#?\s*https:\/\/lens\.google\.com\/uploadbyurl\?url=%(IMG|T?URL)(?=$|;)/mg, 'https://www.google.com/searchbyimage?sbisrc=4chanx&image_url=%$1&safe=off'));
+          set('sauces', data['sauces'].replace(/^#?\s*https:\/\/www\.google\.com\/searchbyimage\?image_url=%(IMG|T?URL)&safe=off(?=$|;)/mg, 'https://www.google.com/searchbyimage?sbisrc=4chanx&image_url=%$1&safe=off'));
+          if (compareString === '00001.00014.00022.00002' && !/\bsbisrc=/.test(data['sauces'])) {
+            set('sauces', data['sauces'].replace(/^#?\s*https:\/\/lens\.google\.com\/uploadbyurl\?url=%(IMG|T?URL)(?=$|;)/m, 'https://www.google.com/searchbyimage?sbisrc=4chanx&image_url=%$1&safe=off'));
+          }
         }
         addSauces(['#https://lens.google.com/uploadbyurl?url=%IMG;text:lens']);
       }
