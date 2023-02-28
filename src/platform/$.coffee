@@ -490,7 +490,7 @@ $.unescape = (text) ->
   text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt|#44);/g, (c) ->
     (({'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','})[c])
 
-$.isImage = (url) -> /\.(jpe?g|png|gif|bmp|webp)$/i.test url
+$.isImage = (url) -> /\.(jpe?g|jfif|png|gif|bmp|webp|avif|jxl)$/i.test url
 $.isVideo = (url) -> /\.(webm|mp4|ogv)$/i.test url
 
 $.engine = do ->
