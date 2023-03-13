@@ -1,19 +1,30 @@
-DownloadLink =
-  init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Download Link']
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+const DownloadLink = {
+  init() {
+    if (!['index', 'thread'].includes(g.VIEW) || !Conf['Menu'] || !Conf['Download Link']) { return; }
 
-    a = $.el 'a',
-      className: 'download-link'
+    const a = $.el('a', {
+      className: 'download-link',
       textContent: 'Download file'
+    }
+    );
 
-    # Specifying the filename with the download attribute only works for same-origin links.
-    $.on a, 'click', ImageCommon.download
+    // Specifying the filename with the download attribute only works for same-origin links.
+    $.on(a, 'click', ImageCommon.download);
 
-    Menu.menu.addEntry
-      el: a
-      order: 100
-      open: ({file}) ->
-        return false unless file
-        a.href     = file.url
-        a.download = file.name
-        true
+    return Menu.menu.addEntry({
+      el: a,
+      order: 100,
+      open({file}) {
+        if (!file) { return false; }
+        a.href     = file.url;
+        a.download = file.name;
+        return true;
+      }
+    });
+  }
+};

@@ -1,416 +1,506 @@
-import galleryPage from './Gallery/Gallery.html'
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+import galleryPage from './Gallery/Gallery.html';
 
-Gallery =
-  init: ->
-    return if not (@enabled = Conf['Gallery'] and g.VIEW in ['index', 'thread'])
+var Gallery = {
+  init() {
+    if (!(this.enabled = Conf['Gallery'] && ['index', 'thread'].includes(g.VIEW))) { return; }
 
-    @delay = Conf['Slide Delay']
+    this.delay = Conf['Slide Delay'];
 
-    el = $.el 'a',
-      href: 'javascript:;'
-      title: 'Gallery'
-      className: 'fa fa-picture-o'
+    const el = $.el('a', {
+      href: 'javascript:;',
+      title: 'Gallery',
+      className: 'fa fa-picture-o',
       textContent: 'Gallery'
+    }
+    );
 
-    $.on el, 'click', @cb.toggle
+    $.on(el, 'click', this.cb.toggle);
 
-    Header.addShortcut 'gallery', el, 530
+    Header.addShortcut('gallery', el, 530);
 
-    Callbacks.Post.push
-      name: 'Gallery'
-      cb:   @node
+    return Callbacks.Post.push({
+      name: 'Gallery',
+      cb:   this.node
+    });
+  },
 
-  node: ->
-    for file in @files when file.thumb
-      if Gallery.nodes
-        Gallery.generateThumb @, file
-        Gallery.nodes.total.textContent = Gallery.images.length
+  node() {
+    return (() => {
+      const result = [];
+      for (var file of this.files) {
+        if (file.thumb) {
+          if (Gallery.nodes) {
+            Gallery.generateThumb(this, file);
+            Gallery.nodes.total.textContent = Gallery.images.length;
+          }
 
-      unless Conf['Image Expansion'] or (g.SITE.software is 'tinyboard' and Main.jsEnabled)
-        $.on file.thumbLink, 'click', Gallery.cb.image
+          if (!Conf['Image Expansion'] && ((g.SITE.software !== 'tinyboard') || !Main.jsEnabled)) {
+            result.push($.on(file.thumbLink, 'click', Gallery.cb.image));
+          } else {
+            result.push(undefined);
+          }
+        }
+      }
+      return result;
+    })();
+  },
 
-  build: (image) ->
-    {cb} = Gallery
+  build(image) {
+    let dialog, thumb;
+    const {cb} = Gallery;
 
-    if Conf['Fullscreen Gallery']
-      $.one d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', ->
-        $.on d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', cb.close
-      doc.mozRequestFullScreen?()
-      doc.webkitRequestFullScreen?(Element.ALLOW_KEYBOARD_INPUT)
-
-    Gallery.images  = []
-    nodes = Gallery.nodes = {}
-    Gallery.fileIDs = $.dict()
-    Gallery.slideshow = false
-
-    nodes.el = dialog = $.el 'div',
-      id: 'a-gallery'
-    $.extend dialog, {innerHTML: galleryPage }
-
-    nodes[key] = $ value, dialog for key, value of {
-      buttons: '.gal-buttons'
-      frame:   '.gal-image'
-      name:    '.gal-name'
-      count:   '.count'
-      total:   '.total'
-      sauce:   '.gal-sauce'
-      thumbs:  '.gal-thumbnails'
-      next:    '.gal-image a'
-      current: '.gal-image img'
+    if (Conf['Fullscreen Gallery']) {
+      $.one(d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', () => $.on(d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', cb.close));
+      doc.mozRequestFullScreen?.();
+      doc.webkitRequestFullScreen?.(Element.ALLOW_KEYBOARD_INPUT);
     }
 
-    menuButton = $ '.menu-button', dialog
-    nodes.menu = new UI.Menu 'gallery'
+    Gallery.images  = [];
+    const nodes = (Gallery.nodes = {});
+    Gallery.fileIDs = $.dict();
+    Gallery.slideshow = false;
 
-    $.on nodes.frame, 'click', cb.blank
-    $.on nodes.frame, 'wheel', Volume.wheel if Conf['Mouse Wheel Volume']
-    $.on nodes.next,  'click', cb.click
-    $.on nodes.name,  'click', ImageCommon.download
+    nodes.el = (dialog = $.el('div',
+      {id: 'a-gallery'}));
+    $.extend(dialog, {innerHTML: galleryPage });
 
-    $.on $('.gal-prev',  dialog), 'click', cb.prev
-    $.on $('.gal-next',  dialog), 'click', cb.next
-    $.on $('.gal-start', dialog), 'click', cb.start
-    $.on $('.gal-stop',  dialog), 'click', cb.stop
-    $.on $('.gal-close', dialog), 'click', cb.close
+    const object = {
+      buttons: '.gal-buttons',
+      frame:   '.gal-image',
+      name:    '.gal-name',
+      count:   '.count',
+      total:   '.total',
+      sauce:   '.gal-sauce',
+      thumbs:  '.gal-thumbnails',
+      next:    '.gal-image a',
+      current: '.gal-image img'
+    };
+    for (var key in object) { var value = object[key]; nodes[key] = $(value, dialog); }
 
-    $.on menuButton, 'click', (e) ->
-      nodes.menu.toggle e, @, g
+    const menuButton = $('.menu-button', dialog);
+    nodes.menu = new UI.Menu('gallery');
 
-    for entry in Gallery.menu.createSubEntries()
-      entry.order = 0
-      nodes.menu.addEntry entry
+    $.on(nodes.frame, 'click', cb.blank);
+    if (Conf['Mouse Wheel Volume']) { $.on(nodes.frame, 'wheel', Volume.wheel); }
+    $.on(nodes.next,  'click', cb.click);
+    $.on(nodes.name,  'click', ImageCommon.download);
 
-    $.on  d, 'keydown', cb.keybinds
-    $.off d, 'keydown', Keybinds.keydown if Conf['Keybinds']
+    $.on($('.gal-prev',  dialog), 'click', cb.prev);
+    $.on($('.gal-next',  dialog), 'click', cb.next);
+    $.on($('.gal-start', dialog), 'click', cb.start);
+    $.on($('.gal-stop',  dialog), 'click', cb.stop);
+    $.on($('.gal-close', dialog), 'click', cb.close);
 
-    $.on window, 'resize', Gallery.cb.setHeight
+    $.on(menuButton, 'click', function(e) {
+      return nodes.menu.toggle(e, this, g);
+    });
 
-    for postThumb in $$ g.SITE.selectors.file.thumb
-      continue unless (post = Get.postFromNode postThumb)
-      for file in post.files when file.thumb
-        Gallery.generateThumb post, file
-        # If no image to open is given, pick image we have scrolled to.
-        if !image and Gallery.fileIDs["#{post.fullID}.#{file.index}"]
-          candidate = file.thumbLink
-          if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
-            image = candidate
-    $.addClass doc, 'gallery-open'
+    for (var entry of Gallery.menu.createSubEntries()) {
+      entry.order = 0;
+      nodes.menu.addEntry(entry);
+    }
 
-    $.add d.body, dialog
+    $.on(d, 'keydown', cb.keybinds);
+    if (Conf['Keybinds']) { $.off(d, 'keydown', Keybinds.keydown); }
 
-    nodes.thumbs.scrollTop = 0
-    nodes.current.parentElement.scrollTop = 0
+    $.on(window, 'resize', Gallery.cb.setHeight);
 
-    thumb = $ "[href='#{image.href}']", nodes.thumbs if image
-    thumb or= Gallery.images[Gallery.images.length-1]
-    Gallery.open thumb if thumb
+    for (var postThumb of $$(g.SITE.selectors.file.thumb)) {
+      var post;
+      if (!(post = Get.postFromNode(postThumb))) { continue; }
+      for (var file of post.files) {
+        if (file.thumb) {
+          Gallery.generateThumb(post, file);
+          // If no image to open is given, pick image we have scrolled to.
+          if (!image && Gallery.fileIDs[`${post.fullID}.${file.index}`]) {
+            var candidate = file.thumbLink;
+            if ((Header.getTopOf(candidate) + candidate.getBoundingClientRect().height) >= 0) {
+              image = candidate;
+            }
+          }
+        }
+      }
+    }
+    $.addClass(doc, 'gallery-open');
 
-    doc.style.overflow = 'hidden'
-    nodes.total.textContent = Gallery.images.length
+    $.add(d.body, dialog);
 
-  generateThumb: (post, file) ->
-    return if post.isClone or post.isHidden
-    return unless file and file.thumb and (file.isImage or file.isVideo or Conf['PDF in Gallery'])
-    return if Gallery.fileIDs["#{post.fullID}.#{file.index}"]
+    nodes.thumbs.scrollTop = 0;
+    nodes.current.parentElement.scrollTop = 0;
 
-    Gallery.fileIDs["#{post.fullID}.#{file.index}"] = true
+    if (image) { thumb = $(`[href='${image.href}']`, nodes.thumbs); }
+    if (!thumb) { thumb = Gallery.images[Gallery.images.length-1]; }
+    if (thumb) { Gallery.open(thumb); }
 
-    thumb = $.el 'a',
-      className: 'gal-thumb'
-      href:      file.url
-      target:    '_blank'
+    doc.style.overflow = 'hidden';
+    return nodes.total.textContent = Gallery.images.length;
+  },
+
+  generateThumb(post, file) {
+    if (post.isClone || post.isHidden) { return; }
+    if (!file || !file.thumb || (!file.isImage && !file.isVideo && !Conf['PDF in Gallery'])) { return; }
+    if (Gallery.fileIDs[`${post.fullID}.${file.index}`]) { return; }
+
+    Gallery.fileIDs[`${post.fullID}.${file.index}`] = true;
+
+    const thumb = $.el('a', {
+      className: 'gal-thumb',
+      href:      file.url,
+      target:    '_blank',
       title:     file.name
+    }
+    );
 
-    thumb.dataset.id   = Gallery.images.length
-    thumb.dataset.post = post.fullID
-    thumb.dataset.file = file.index
+    thumb.dataset.id   = Gallery.images.length;
+    thumb.dataset.post = post.fullID;
+    thumb.dataset.file = file.index;
 
-    thumbImg = file.thumb.cloneNode false
-    thumbImg.style.cssText = ''
-    $.add thumb, thumbImg
+    const thumbImg = file.thumb.cloneNode(false);
+    thumbImg.style.cssText = '';
+    $.add(thumb, thumbImg);
 
-    $.on thumb, 'click', Gallery.cb.open
+    $.on(thumb, 'click', Gallery.cb.open);
 
-    Gallery.images.push thumb
-    $.add Gallery.nodes.thumbs, thumb
+    Gallery.images.push(thumb);
+    return $.add(Gallery.nodes.thumbs, thumb);
+  },
 
-  load: (thumb, errorCB) ->
-    ext = thumb.href.match /\w*$/
-    elType = $.getOwn({'webm': 'video', 'mp4': 'video', 'ogv': 'video', 'pdf': 'iframe'}, ext) or 'img'
-    file = $.el elType
-    $.extend file.dataset, thumb.dataset
-    $.on file, 'error', errorCB
-    file.src = thumb.href
-    file
+  load(thumb, errorCB) {
+    const ext = thumb.href.match(/\w*$/);
+    const elType = $.getOwn({'webm': 'video', 'mp4': 'video', 'ogv': 'video', 'pdf': 'iframe'}, ext) || 'img';
+    const file = $.el(elType);
+    $.extend(file.dataset, thumb.dataset);
+    $.on(file, 'error', errorCB);
+    file.src = thumb.href;
+    return file;
+  },
 
-  open: (thumb) ->
-    {nodes} = Gallery
-    oldID = +nodes.current.dataset.id
-    newID = +thumb.dataset.id
+  open(thumb) {
+    let el, file, post;
+    const {nodes} = Gallery;
+    const oldID = +nodes.current.dataset.id;
+    const newID = +thumb.dataset.id;
 
-    # Highlight, center selected thumbnail
-    $.rmClass  el,    'gal-highlight' if el = Gallery.images[oldID]
-    $.addClass thumb, 'gal-highlight'
-    nodes.thumbs.scrollTop = thumb.offsetTop + thumb.offsetHeight/2 - nodes.thumbs.clientHeight/2
+    // Highlight, center selected thumbnail
+    if (el = Gallery.images[oldID]) { $.rmClass(el,    'gal-highlight'); }
+    $.addClass(thumb, 'gal-highlight');
+    nodes.thumbs.scrollTop = (thumb.offsetTop + (thumb.offsetHeight/2)) - (nodes.thumbs.clientHeight/2);
 
-    # Load image or use preloaded image
-    if Gallery.cache?.dataset.id is ''+newID
-      file = Gallery.cache
-      $.off file, 'error', Gallery.cacheError
-      $.on file, 'error', Gallery.error
-    else
-      file = Gallery.load thumb, Gallery.error
+    // Load image or use preloaded image
+    if (Gallery.cache?.dataset.id === (''+newID)) {
+      file = Gallery.cache;
+      $.off(file, 'error', Gallery.cacheError);
+      $.on(file, 'error', Gallery.error);
+    } else {
+      file = Gallery.load(thumb, Gallery.error);
+    }
 
-    # Replace old image with new one
-    $.off nodes.current, 'error', Gallery.error
-    ImageCommon.pause nodes.current
-    $.replace nodes.current, file
-    nodes.current = file
+    // Replace old image with new one
+    $.off(nodes.current, 'error', Gallery.error);
+    ImageCommon.pause(nodes.current);
+    $.replace(nodes.current, file);
+    nodes.current = file;
 
-    if file.nodeName is 'VIDEO'
-      file.loop = true
-      Volume.setup file
-      file.play() if Conf['Autoplay']
-      ImageCommon.addControls file if Conf['Show Controls']
+    if (file.nodeName === 'VIDEO') {
+      file.loop = true;
+      Volume.setup(file);
+      if (Conf['Autoplay']) { file.play(); }
+      if (Conf['Show Controls']) { ImageCommon.addControls(file); }
+    }
 
-    doc.classList.toggle 'gal-pdf', file.nodeName is 'IFRAME'
-    Gallery.cb.setHeight()
-    nodes.count.textContent = +thumb.dataset.id + 1
-    nodes.name.download     = nodes.name.textContent = thumb.title
-    nodes.name.href         = thumb.href
-    nodes.frame.scrollTop   = 0
-    nodes.next.focus()
+    doc.classList.toggle('gal-pdf', file.nodeName === 'IFRAME');
+    Gallery.cb.setHeight();
+    nodes.count.textContent = +thumb.dataset.id + 1;
+    nodes.name.download     = (nodes.name.textContent = thumb.title);
+    nodes.name.href         = thumb.href;
+    nodes.frame.scrollTop   = 0;
+    nodes.next.focus();
 
-    # Set sauce links
-    $.rmAll nodes.sauce
-    if Conf['Sauce'] and Sauce.links and (post = g.posts.get(file.dataset.post))
-      sauces = []
-      for link in Sauce.links
-        if (node = Sauce.createSauceLink link, post, post.files[+file.dataset.file])
-          sauces.push $.tn(' '), node
-      $.add nodes.sauce, sauces
+    // Set sauce links
+    $.rmAll(nodes.sauce);
+    if (Conf['Sauce'] && Sauce.links && (post = g.posts.get(file.dataset.post))) {
+      const sauces = [];
+      for (var link of Sauce.links) {
+        var node;
+        if (node = Sauce.createSauceLink(link, post, post.files[+file.dataset.file])) {
+          sauces.push($.tn(' '), node);
+        }
+      }
+      $.add(nodes.sauce, sauces);
+    }
 
-    # Continue slideshow if moving forward, stop otherwise
-    if Gallery.slideshow and (newID > oldID or (oldID is Gallery.images.length-1 and newID is 0))
-      Gallery.setupTimer()
-    else
-      Gallery.cb.stop()
+    // Continue slideshow if moving forward, stop otherwise
+    if (Gallery.slideshow && ((newID > oldID) || ((oldID === (Gallery.images.length-1)) && (newID === 0)))) {
+      Gallery.setupTimer();
+    } else {
+      Gallery.cb.stop();
+    }
 
-    # Scroll to post
-    if Conf['Scroll to Post'] and (post = g.posts.get(file.dataset.post))
-      Header.scrollTo post.nodes.root
+    // Scroll to post
+    if (Conf['Scroll to Post'] && (post = g.posts.get(file.dataset.post))) {
+      Header.scrollTo(post.nodes.root);
+    }
 
-    # Preload next image
-    if isNaN(oldID) or newID is (oldID + 1) % Gallery.images.length
-      Gallery.cache = Gallery.load Gallery.images[(newID + 1) % Gallery.images.length], Gallery.cacheError
+    // Preload next image
+    if (isNaN(oldID) || (newID === ((oldID + 1) % Gallery.images.length))) {
+      return Gallery.cache = Gallery.load(Gallery.images[(newID + 1) % Gallery.images.length], Gallery.cacheError);
+    }
+  },
 
-  error: ->
-    if @error?.code is MediaError.MEDIA_ERR_DECODE
-      return new Notice 'error', 'Corrupt or unplayable video', 30
-    return if ImageCommon.isFromArchive @
-    post = g.posts.get(@dataset.post)
-    file = post.files[+@dataset.file]
-    ImageCommon.error @, post, file, null, (url) =>
-      return unless url
-      Gallery.images[+@dataset.id].href = url
-      (@src = url if Gallery.nodes.current is @)
+  error() {
+    if (this.error?.code === MediaError.MEDIA_ERR_DECODE) {
+      return new Notice('error', 'Corrupt or unplayable video', 30);
+    }
+    if (ImageCommon.isFromArchive(this)) { return; }
+    const post = g.posts.get(this.dataset.post);
+    const file = post.files[+this.dataset.file];
+    return ImageCommon.error(this, post, file, null, url => {
+      if (!url) { return; }
+      Gallery.images[+this.dataset.id].href = url;
+      if (Gallery.nodes.current === this) { return this.src = url; }
+    });
+  },
 
-  cacheError: ->
-    delete Gallery.cache
+  cacheError() {
+    return delete Gallery.cache;
+  },
 
-  cleanupTimer: ->
-    clearTimeout Gallery.timeoutID
-    {current} = Gallery.nodes
-    $.off current, 'canplaythrough load', Gallery.startTimer
-    $.off current, 'ended', Gallery.cb.next
+  cleanupTimer() {
+    clearTimeout(Gallery.timeoutID);
+    const {current} = Gallery.nodes;
+    $.off(current, 'canplaythrough load', Gallery.startTimer);
+    return $.off(current, 'ended', Gallery.cb.next);
+  },
 
-  startTimer: ->
-    Gallery.timeoutID = setTimeout Gallery.checkTimer, Gallery.delay * $.SECOND
+  startTimer() {
+    return Gallery.timeoutID = setTimeout(Gallery.checkTimer, Gallery.delay * $.SECOND);
+  },
 
-  setupTimer: ->
-    Gallery.cleanupTimer()
-    {current} = Gallery.nodes
-    isVideo = current.nodeName is 'VIDEO'
-    current.play() if isVideo
-    if (if isVideo then current.readyState >= 4 else current.complete) or current.nodeName is 'IFRAME'
-      Gallery.startTimer()
-    else
-      $.on current, (if isVideo then 'canplaythrough' else 'load'), Gallery.startTimer
+  setupTimer() {
+    Gallery.cleanupTimer();
+    const {current} = Gallery.nodes;
+    const isVideo = current.nodeName === 'VIDEO';
+    if (isVideo) { current.play(); }
+    if ((isVideo ? current.readyState >= 4 : current.complete) || (current.nodeName === 'IFRAME')) {
+      return Gallery.startTimer();
+    } else {
+      return $.on(current, (isVideo ? 'canplaythrough' : 'load'), Gallery.startTimer);
+    }
+  },
 
-  checkTimer: ->
-    {current} = Gallery.nodes
-    if current.nodeName is 'VIDEO' and !current.paused
-      $.on current, 'ended', Gallery.cb.next
-      current.loop = false
-    else
-      Gallery.cb.next()
+  checkTimer() {
+    const {current} = Gallery.nodes;
+    if ((current.nodeName === 'VIDEO') && !current.paused) {
+      $.on(current, 'ended', Gallery.cb.next);
+      return current.loop = false;
+    } else {
+      return Gallery.cb.next();
+    }
+  },
 
-  cb:
-    keybinds: (e) ->
-      return if not (key = Keybinds.keyCode e)
+  cb: {
+    keybinds(e) {
+      let key;
+      if (!(key = Keybinds.keyCode(e))) { return; }
 
-      cb = switch key
-        when Conf['Close'], Conf['Open Gallery']
-          Gallery.cb.close
-        when Conf['Next Gallery Image']
-          Gallery.cb.next
-        when Conf['Advance Gallery']
-          Gallery.cb.advance
-        when Conf['Previous Gallery Image']
-          Gallery.cb.prev
-        when Conf['Pause']
-          Gallery.cb.pause
-        when Conf['Slideshow']
-          Gallery.cb.toggleSlideshow
-        when Conf['Rotate image anticlockwise']
-          Gallery.cb.rotateLeft
-        when Conf['Rotate image clockwise']
-          Gallery.cb.rotateRight
-        when Conf['Download Gallery Image']
-          Gallery.cb.download
+      const cb = (() => { switch (key) {
+        case Conf['Close']: case Conf['Open Gallery']:
+          return Gallery.cb.close;
+        case Conf['Next Gallery Image']:
+          return Gallery.cb.next;
+        case Conf['Advance Gallery']:
+          return Gallery.cb.advance;
+        case Conf['Previous Gallery Image']:
+          return Gallery.cb.prev;
+        case Conf['Pause']:
+          return Gallery.cb.pause;
+        case Conf['Slideshow']:
+          return Gallery.cb.toggleSlideshow;
+        case Conf['Rotate image anticlockwise']:
+          return Gallery.cb.rotateLeft;
+        case Conf['Rotate image clockwise']:
+          return Gallery.cb.rotateRight;
+        case Conf['Download Gallery Image']:
+          return Gallery.cb.download;
+      } })();
 
-      return unless cb
-      e.stopPropagation()
-      e.preventDefault()
-      cb()
+      if (!cb) { return; }
+      e.stopPropagation();
+      e.preventDefault();
+      return cb();
+    },
 
-    open: (e) ->
-      e.preventDefault() if e
-      if @ then Gallery.open @
+    open(e) {
+      if (e) { e.preventDefault(); }
+      if (this) { return Gallery.open(this); }
+    },
 
-    image: (e) ->
-      e.preventDefault()
-      e.stopPropagation()
-      Gallery.build @
+    image(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      return Gallery.build(this);
+    },
 
-    prev:      ->
-      Gallery.cb.open.call(
-        Gallery.images[+Gallery.nodes.current.dataset.id - 1] or Gallery.images[Gallery.images.length - 1]
-      )
-    next:      ->
-      Gallery.cb.open.call(
-        Gallery.images[+Gallery.nodes.current.dataset.id + 1] or Gallery.images[0]
-      )
+    prev() {
+      return Gallery.cb.open.call(
+        Gallery.images[+Gallery.nodes.current.dataset.id - 1] || Gallery.images[Gallery.images.length - 1]
+      );
+    },
+    next() {
+      return Gallery.cb.open.call(
+        Gallery.images[+Gallery.nodes.current.dataset.id + 1] || Gallery.images[0]
+      );
+    },
 
-    click: (e) ->
-      return if ImageCommon.onControls e
-      e.preventDefault()
-      Gallery.cb.advance()
+    click(e) {
+      if (ImageCommon.onControls(e)) { return; }
+      e.preventDefault();
+      return Gallery.cb.advance();
+    },
 
-    advance:   -> if !Conf['Autoplay'] and Gallery.nodes.current.paused then Gallery.nodes.current.play() else Gallery.cb.next()
-    toggle:    -> (if Gallery.nodes then Gallery.cb.close else Gallery.build)()
-    blank: (e) -> Gallery.cb.close() if e.target is @
-    toggleSlideshow: ->  Gallery.cb[if Gallery.slideshow then 'stop' else 'start']()
+    advance() { if (!Conf['Autoplay'] && Gallery.nodes.current.paused) { return Gallery.nodes.current.play(); } else { return Gallery.cb.next(); } },
+    toggle() { return (Gallery.nodes ? Gallery.cb.close : Gallery.build)(); },
+    blank(e) { if (e.target === this) { return Gallery.cb.close(); } },
+    toggleSlideshow() {  return Gallery.cb[Gallery.slideshow ? 'stop' : 'start'](); },
 
-    download: ->
-      name = $ '.gal-name'
-      name.click()
+    download() {
+      const name = $('.gal-name');
+      return name.click();
+    },
 
-    pause: ->
-      Gallery.cb.stop()
-      {current} = Gallery.nodes
-      current[if current.paused then 'play' else 'pause']() if current.nodeName is 'VIDEO'
+    pause() {
+      Gallery.cb.stop();
+      const {current} = Gallery.nodes;
+      if (current.nodeName === 'VIDEO') { return current[current.paused ? 'play' : 'pause'](); }
+    },
 
-    start: ->
-      $.addClass Gallery.nodes.buttons, 'gal-playing'
-      Gallery.slideshow = true
-      Gallery.setupTimer()
+    start() {
+      $.addClass(Gallery.nodes.buttons, 'gal-playing');
+      Gallery.slideshow = true;
+      return Gallery.setupTimer();
+    },
 
-    stop: ->
-      return unless Gallery.slideshow
-      Gallery.cleanupTimer()
-      {current} = Gallery.nodes
-      current.loop = true if current.nodeName is 'VIDEO'
-      $.rmClass Gallery.nodes.buttons, 'gal-playing'
-      Gallery.slideshow = false
+    stop() {
+      if (!Gallery.slideshow) { return; }
+      Gallery.cleanupTimer();
+      const {current} = Gallery.nodes;
+      if (current.nodeName === 'VIDEO') { current.loop = true; }
+      $.rmClass(Gallery.nodes.buttons, 'gal-playing');
+      return Gallery.slideshow = false;
+    },
 
-    rotateLeft:  -> Gallery.cb.rotate 270
-    rotateRight: -> Gallery.cb.rotate  90
+    rotateLeft() { return Gallery.cb.rotate(270); },
+    rotateRight() { return Gallery.cb.rotate(90); },
 
-    rotate: $.debounce 100, (delta) ->
-      {current} = Gallery.nodes
-      return if current.nodeName is 'IFRAME'
-      current.dataRotate = ((current.dataRotate or 0) + delta) % 360
-      current.style.transform = "rotate(#{current.dataRotate}deg)"
-      Gallery.cb.setHeight()
+    rotate: $.debounce(100, function(delta) {
+      const {current} = Gallery.nodes;
+      if (current.nodeName === 'IFRAME') { return; }
+      current.dataRotate = ((current.dataRotate || 0) + delta) % 360;
+      current.style.transform = `rotate(${current.dataRotate}deg)`;
+      return Gallery.cb.setHeight();
+    }),
 
-    close: ->
-      $.off Gallery.nodes.current, 'error', Gallery.error
-      ImageCommon.pause Gallery.nodes.current
-      $.rm Gallery.nodes.el
-      $.rmClass doc, 'gallery-open'
-      if Conf['Fullscreen Gallery']
-        $.off d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', Gallery.cb.close
-        d.mozCancelFullScreen?()
-        d.webkitExitFullscreen?()
-      delete Gallery.nodes
-      delete Gallery.fileIDs
-      doc.style.overflow = ''
+    close() {
+      $.off(Gallery.nodes.current, 'error', Gallery.error);
+      ImageCommon.pause(Gallery.nodes.current);
+      $.rm(Gallery.nodes.el);
+      $.rmClass(doc, 'gallery-open');
+      if (Conf['Fullscreen Gallery']) {
+        $.off(d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', Gallery.cb.close);
+        d.mozCancelFullScreen?.();
+        d.webkitExitFullscreen?.();
+      }
+      delete Gallery.nodes;
+      delete Gallery.fileIDs;
+      doc.style.overflow = '';
 
-      $.off d, 'keydown', Gallery.cb.keybinds
-      $.on  d, 'keydown', Keybinds.keydown if Conf['Keybinds']
-      $.off window, 'resize', Gallery.cb.setHeight
-      clearTimeout Gallery.timeoutID
+      $.off(d, 'keydown', Gallery.cb.keybinds);
+      if (Conf['Keybinds']) { $.on(d, 'keydown', Keybinds.keydown); }
+      $.off(window, 'resize', Gallery.cb.setHeight);
+      return clearTimeout(Gallery.timeoutID);
+    },
 
-    setFitness: ->
-      (if @checked then $.addClass else $.rmClass) doc, "gal-#{@name.toLowerCase().replace /\s+/g, '-'}"
+    setFitness() {
+      return (this.checked ? $.addClass : $.rmClass)(doc, `gal-${this.name.toLowerCase().replace(/\s+/g, '-')}`);
+    },
 
-    setHeight: $.debounce 100, ->
-      {current, frame} = Gallery.nodes
-      {style} = current
+    setHeight: $.debounce(100, function() {
+      let dim, margin, minHeight;
+      const {current, frame} = Gallery.nodes;
+      const {style} = current;
 
-      if Conf['Stretch to Fit'] and (dim = g.posts.get(current.dataset.post)?.files[+current.dataset.file].dimensions)
-        [width, height] = dim.split 'x'
-        containerWidth = frame.clientWidth
-        containerHeight = doc.clientHeight - 25
-        if (current.dataRotate or 0) % 180 is 90
-          [containerWidth, containerHeight] = [containerHeight, containerWidth]
-        minHeight = Math.min(containerHeight, height / width * containerWidth)
-        style.minHeight = minHeight + 'px'
-        style.minWidth = (width / height * minHeight) + 'px'
-      else
-        style.minHeight = style.minWidth = ''
+      if (Conf['Stretch to Fit'] && (dim = g.posts.get(current.dataset.post)?.files[+current.dataset.file].dimensions)) {
+        const [width, height] = Array.from(dim.split('x'));
+        let containerWidth = frame.clientWidth;
+        let containerHeight = doc.clientHeight - 25;
+        if (((current.dataRotate || 0) % 180) === 90) {
+          [containerWidth, containerHeight] = Array.from([containerHeight, containerWidth]);
+        }
+        minHeight = Math.min(containerHeight, (height / width) * containerWidth);
+        style.minHeight = minHeight + 'px';
+        style.minWidth = ((width / height) * minHeight) + 'px';
+      } else {
+        style.minHeight = (style.minWidth = '');
+      }
 
-      if (current.dataRotate or 0) % 180 is 90
-        style.maxWidth  = if Conf['Fit Height'] then "#{doc.clientHeight - 25}px" else 'none'
-        style.maxHeight = if Conf['Fit Width']  then "#{frame.clientWidth}px"     else 'none'
-        margin = (current.clientWidth - current.clientHeight)/2
-        style.margin = "#{margin}px #{-margin}px"
-      else
-        style.maxWidth = style.maxHeight = style.margin = ''
+      if (((current.dataRotate || 0) % 180) === 90) {
+        style.maxWidth  = Conf['Fit Height'] ? `${doc.clientHeight - 25}px` : 'none';
+        style.maxHeight = Conf['Fit Width']  ? `${frame.clientWidth}px`     : 'none';
+        margin = (current.clientWidth - current.clientHeight)/2;
+        return style.margin = `${margin}px ${-margin}px`;
+      } else {
+        return style.maxWidth = (style.maxHeight = (style.margin = ''));
+      }
+    }),
 
-    setDelay: -> Gallery.delay = +@value
+    setDelay() { return Gallery.delay = +this.value; }
+  },
 
-  menu:
-    init: ->
-      return unless Gallery.enabled
+  menu: {
+    init() {
+      if (!Gallery.enabled) { return; }
 
-      el = $.el 'span',
-        textContent: 'Gallery'
+      const el = $.el('span', {
+        textContent: 'Gallery',
         className: 'gallery-link'
+      }
+      );
 
-      Header.menu.addEntry
-        el: el
-        order: 105
+      return Header.menu.addEntry({
+        el,
+        order: 105,
         subEntries: Gallery.menu.createSubEntries()
+      });
+    },
 
-    createSubEntry: (name) ->
-      label = UI.checkbox name, name
-      input = label.firstElementChild
-      $.on input, 'change', Gallery.cb.setFitness if name in ['Hide Thumbnails', 'Fit Width', 'Fit Height']
-      $.event 'change', null, input
-      $.on input, 'change', $.cb.checked
-      $.on input, 'change', Gallery.cb.setHeight  if name in ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Stretch to Fit']
-      el: label
+    createSubEntry(name) {
+      const label = UI.checkbox(name, name);
+      const input = label.firstElementChild;
+      if (['Hide Thumbnails', 'Fit Width', 'Fit Height'].includes(name)) { $.on(input, 'change', Gallery.cb.setFitness); }
+      $.event('change', null, input);
+      $.on(input, 'change', $.cb.checked);
+      if (['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Stretch to Fit'].includes(name)) { $.on(input, 'change', Gallery.cb.setHeight); }
+      return {el: label};
+    },
 
-    createSubEntries: ->
-      subEntries = (Gallery.menu.createSubEntry item for item in ['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Stretch to Fit', 'Scroll to Post'])
+    createSubEntries() {
+      const subEntries = (['Hide Thumbnails', 'Fit Width', 'Fit Height', 'Stretch to Fit', 'Scroll to Post'].map((item) => Gallery.menu.createSubEntry(item)));
 
-      delayLabel = $.el 'label', `{innerHTML: 'Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">'}`
-      delayInput = delayLabel.firstElementChild
-      delayInput.value = Gallery.delay
-      $.on delayInput, 'change', Gallery.cb.setDelay
-      $.on delayInput, 'change', $.cb.value
-      subEntries.push el: delayLabel
+      const delayLabel = $.el('label', {innerHTML: 'Slide Delay: <input type="number" name="Slide Delay" min="0" step="any" class="field">'});
+      const delayInput = delayLabel.firstElementChild;
+      delayInput.value = Gallery.delay;
+      $.on(delayInput, 'change', Gallery.cb.setDelay);
+      $.on(delayInput, 'change', $.cb.value);
+      subEntries.push({el: delayLabel});
 
-      subEntries
+      return subEntries;
+    }
+  }
+};

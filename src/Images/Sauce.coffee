@@ -1,121 +1,170 @@
-Sauce =
-  init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Sauce']
-    $.addClass doc, 'show-sauce'
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS204: Change includes calls to have a more natural evaluation order
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var Sauce = {
+  init() {
+    let link;
+    if (!['index', 'thread'].includes(g.VIEW) || !Conf['Sauce']) { return; }
+    $.addClass(doc, 'show-sauce');
 
-    links = []
-    for link in Conf['sauces'].split '\n'
-      if link[0] isnt '#' and (linkData = @parseLink link)
-        links.push linkData
-    return unless links.length
+    const links = [];
+    for (link of Conf['sauces'].split('\n')) {
+      var linkData;
+      if ((link[0] !== '#') && (linkData = this.parseLink(link))) {
+        links.push(linkData);
+      }
+    }
+    if (!links.length) { return; }
 
-    @links = links
-    @link  = $.el 'a',
-      target:    '_blank'
+    this.links = links;
+    this.link  = $.el('a', {
+      target:    '_blank',
       className: 'sauce'
-    Callbacks.Post.push
-      name: 'Sauce'
-      cb:   @node
+    }
+    );
+    return Callbacks.Post.push({
+      name: 'Sauce',
+      cb:   this.node
+    });
+  },
 
-  parseLink: (link) ->
-    return null if not (link = link.trim())
-    parts = $.dict()
-    for part, i in link.split /;(?=(?:text|boards|types|regexp|sandbox):?)/
-      if i is 0
-        parts['url'] = part
-      else
-        m = part.match /^(\w*):?(.*)$/
-        parts[m[1]] = m[2]
-    parts['text'] or= parts['url'].match(/(\w+)\.\w+\//)?[1] or '?'
-    if 'boards' of parts
-      parts['boards'] = Filter.parseBoards parts['boards']
-    if 'regexp' of parts
-      try
-        if (regexp = parts['regexp'].match /^\/(.*)\/(\w*)$/)
-          parts['regexp'] = RegExp regexp[1], regexp[2]
-        else
-          parts['regexp'] = RegExp parts['regexp']
-      catch err
-        new Notice 'warning', [
-          $.tn "Invalid regexp for Sauce link:"
-          $.el 'br'
-          $.tn link
-          $.el 'br'
-          $.tn err.message
-        ], 60
-        return null
-    parts
+  parseLink(link) {
+    if (!(link = link.trim())) { return null; }
+    const parts = $.dict();
+    const iterable = link.split(/;(?=(?:text|boards|types|regexp|sandbox):?)/);
+    for (let i = 0; i < iterable.length; i++) {
+      var part = iterable[i];
+      if (i === 0) {
+        parts['url'] = part;
+      } else {
+        var m = part.match(/^(\w*):?(.*)$/);
+        parts[m[1]] = m[2];
+      }
+    }
+    if (!parts['text']) { parts['text'] = parts['url'].match(/(\w+)\.\w+\//)?.[1] || '?'; }
+    if ('boards' in parts) {
+      parts['boards'] = Filter.parseBoards(parts['boards']);
+    }
+    if ('regexp' in parts) {
+      try {
+        let regexp;
+        if (regexp = parts['regexp'].match(/^\/(.*)\/(\w*)$/)) {
+          parts['regexp'] = RegExp(regexp[1], regexp[2]);
+        } else {
+          parts['regexp'] = RegExp(parts['regexp']);
+        }
+      } catch (err) {
+        new Notice('warning', [
+          $.tn("Invalid regexp for Sauce link:"),
+          $.el('br'),
+          $.tn(link),
+          $.el('br'),
+          $.tn(err.message)
+        ], 60);
+        return null;
+      }
+    }
+    return parts;
+  },
 
-  createSauceLink: (link, post, file) ->
-    ext = file.url.match(/[^.]*$/)[0]
-    parts = $.dict()
-    $.extend parts, link
+  createSauceLink(link, post, file) {
+    let a, matches, needle;
+    const ext = file.url.match(/[^.]*$/)[0];
+    const parts = $.dict();
+    $.extend(parts, link);
 
-    return null unless !parts['boards'] or parts['boards']["#{post.siteID}/#{post.boardID}"] or parts['boards']["#{post.siteID}/*"]
-    return null unless !parts['types']  or ext in parts['types'].split(',')
-    return null unless !parts['regexp'] or (matches = file.name.match parts['regexp'])
+    if (!!parts['boards'] && !parts['boards'][`${post.siteID}/${post.boardID}`] && !parts['boards'][`${post.siteID}/*`]) { return null; }
+    if (!!parts['types']  && (needle = ext, !parts['types'].split(',').includes(needle))) { return null; }
+    if (!!parts['regexp'] && (!(matches = file.name.match(parts['regexp'])))) { return null; }
 
-    missing = []
-    for key in ['url', 'text']
-      parts[key] = parts[key].replace /%(T?URL|IMG|[sh]?MD5|board|name|%|semi|\$\d+)/g, (orig, parameter) ->
-        if parameter[0] is '$'
-          return orig unless matches
-          type = matches[parameter[1..]] or ''
-        else
-          type = Sauce.formatters[parameter] post, file, ext
-          if not type?
-            missing.push parameter
-            return ''
+    const missing = [];
+    for (var key of ['url', 'text']) {
+      parts[key] = parts[key].replace(/%(T?URL|IMG|[sh]?MD5|board|name|%|semi|\$\d+)/g, function(orig, parameter) {
+        let type;
+        if (parameter[0] === '$') {
+          if (!matches) { return orig; }
+          type = matches[parameter.slice(1)] || '';
+        } else {
+          type = Sauce.formatters[parameter](post, file, ext);
+          if ((type == null)) {
+            missing.push(parameter);
+            return '';
+          }
+        }
 
-        if key is 'url' and parameter not in ['%', 'semi']
-          type = JSON.stringify type if /^javascript:/i.test parts['url']
-          type = encodeURIComponent type
-        type
+        if ((key === 'url') && !['%', 'semi'].includes(parameter)) {
+          if (/^javascript:/i.test(parts['url'])) { type = JSON.stringify(type); }
+          type = encodeURIComponent(type);
+        }
+        return type;
+      });
+    }
 
-    if g.SITE.areMD5sDeferred?(post.board) and missing.length and !missing.filter((x) -> !/^.?MD5$/.test(x)).length
-      a = Sauce.link.cloneNode false
-      a.dataset.skip = '1'
-      return a
+    if (g.SITE.areMD5sDeferred?.(post.board) && missing.length && !missing.filter(x => !/^.?MD5$/.test(x)).length) {
+      a = Sauce.link.cloneNode(false);
+      a.dataset.skip = '1';
+      return a;
+    }
 
-    return null if missing.length
+    if (missing.length) { return null; }
 
-    a = Sauce.link.cloneNode false
-    a.href = parts['url']
-    a.textContent = parts['text']
-    a.removeAttribute 'target' if /^javascript:/i.test parts['url']
-    a
+    a = Sauce.link.cloneNode(false);
+    a.href = parts['url'];
+    a.textContent = parts['text'];
+    if (/^javascript:/i.test(parts['url'])) { a.removeAttribute('target'); }
+    return a;
+  },
 
-  node: ->
-    return if @isClone
-    for file in @files
-      Sauce.file @, file
-    return
+  node() {
+    if (this.isClone) { return; }
+    for (var file of this.files) {
+      Sauce.file(this, file);
+    }
+  },
 
-  file: (post, file) ->
-    nodes = []
-    skipped = []
-    for link in Sauce.links
-      if (node = Sauce.createSauceLink link, post, file)
-        nodes.push $.tn(' '), node
-        skipped.push [link, node] if node.dataset.skip
-    $.add file.text, nodes
+  file(post, file) {
+    let link, node;
+    const nodes = [];
+    const skipped = [];
+    for (link of Sauce.links) {
+      if (node = Sauce.createSauceLink(link, post, file)) {
+        nodes.push($.tn(' '), node);
+        if (node.dataset.skip) { skipped.push([link, node]); }
+      }
+    }
+    $.add(file.text, nodes);
 
-    if skipped.length
-      observer = new MutationObserver ->
-        if file.text.dataset.md5
-          for [link, node] in skipped when (node2 = Sauce.createSauceLink link, post, file)
-            $.replace node, node2
-          observer.disconnect()
-      observer.observe file.text, {attributes: true}
+    if (skipped.length) {
+      var observer = new MutationObserver(function() {
+        if (file.text.dataset.md5) {
+          for ([link, node] of skipped) {
+            var node2;
+            if (node2 = Sauce.createSauceLink(link, post, file)) {
+              $.replace(node, node2);
+            }
+          }
+          return observer.disconnect();
+        }
+      });
+      return observer.observe(file.text, {attributes: true});
+    }
+  },
 
-  formatters:
-    TURL:  (post, file) -> file.thumbURL
-    URL:   (post, file) -> file.url
-    IMG:   (post, file, ext) -> if ext in ['gif', 'jpg', 'jpeg', 'png'] then file.url else file.thumbURL
-    MD5:   (post, file) -> file.MD5
-    sMD5:  (post, file) -> file.MD5?.replace /[+/=]/g, (c) -> ({'+': '-', '/': '_', '=': ''})[c]
-    hMD5:  (post, file) -> if file.MD5 then ("0#{c.charCodeAt(0).toString(16)}"[-2..] for c in atob file.MD5).join('')
-    board: (post) -> post.board.ID
-    name:  (post, file) -> file.name
-    '%':   -> '%'
-    semi:  -> ';'
+  formatters: {
+    TURL(post, file) { return file.thumbURL; },
+    URL(post, file) { return file.url; },
+    IMG(post, file, ext) { if (['gif', 'jpg', 'jpeg', 'png'].includes(ext)) { return file.url; } else { return file.thumbURL; } },
+    MD5(post, file) { return file.MD5; },
+    sMD5(post, file) { return file.MD5?.replace(/[+/=]/g, c => ({'+': '-', '/': '_', '=': ''})[c]); },
+    hMD5(post, file) { if (file.MD5) { return (atob(file.MD5).map((c) => `0${c.charCodeAt(0).toString(16)}`.slice(-2))).join(''); } },
+    board(post) { return post.board.ID; },
+    name(post, file) { return file.name; },
+    '%'() { return '%'; },
+    semi() { return ';'; }
+  }
+};

@@ -1,157 +1,198 @@
-Linkify =
-  init: ->
-    return if g.VIEW not in ['index', 'thread', 'archive'] or not Conf['Linkify']
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var Linkify = {
+  init() {
+    if (!['index', 'thread', 'archive'].includes(g.VIEW) || !Conf['Linkify']) { return; }
 
-    if Conf['Comment Expansion']
-      ExpandComment.callbacks.push @node
+    if (Conf['Comment Expansion']) {
+      ExpandComment.callbacks.push(this.node);
+    }
 
-    Callbacks.Post.push
-      name: 'Linkify'
-      cb:   @node
+    Callbacks.Post.push({
+      name: 'Linkify',
+      cb:   this.node
+    });
 
-    Embedding.init()
+    return Embedding.init();
+  },
 
-  node: ->
-    return Embedding.events @ if @isClone
-    return unless Linkify.regString.test @info.comment
-    for link in $$ 'a', @nodes.comment when g.SITE.isLinkified?(link)
-      $.addClass link, 'linkify'
-      ImageHost.fixLinks [link] if ImageHost.useFaster
-      Embedding.process link, @
-    links = Linkify.process @nodes.comment
-    ImageHost.fixLinks links if ImageHost.useFaster
-    Embedding.process link, @ for link in links
-    return
+  node() {
+    let link;
+    if (this.isClone) { return Embedding.events(this); }
+    if (!Linkify.regString.test(this.info.comment)) { return; }
+    for (link of $$('a', this.nodes.comment)) {
+      if (g.SITE.isLinkified?.(link)) {
+        $.addClass(link, 'linkify');
+        if (ImageHost.useFaster) { ImageHost.fixLinks([link]); }
+        Embedding.process(link, this);
+      }
+    }
+    const links = Linkify.process(this.nodes.comment);
+    if (ImageHost.useFaster) { ImageHost.fixLinks(links); }
+    for (link of links) { Embedding.process(link, this); }
+  },
 
-  process: (node) ->
-    test     = /[^\s"]+/g
-    space    = /[\s"]/
-    snapshot = $.X './/br|.//text()', node
-    i = 0
-    links = []
-    while node = snapshot.snapshotItem i++
-      {data} = node
-      continue if !data or node.parentElement.nodeName is "A"
+  process(node) {
+    let length;
+    const test     = /[^\s"]+/g;
+    const space    = /[\s"]/;
+    const snapshot = $.X('.//br|.//text()', node);
+    let i = 0;
+    const links = [];
+    while ((node = snapshot.snapshotItem(i++))) {
+      var result;
+      var {data} = node;
+      if (!data || (node.parentElement.nodeName === "A")) { continue; }
 
-      while result = test.exec data
-        {index} = result
-        endNode = node
-        word    = result[0]
-        # End of node, not necessarily end of space-delimited string
-        if (length = index + word.length) is data.length
-          test.lastIndex = 0
+      while ((result = test.exec(data))) {
+        var {index} = result;
+        var endNode = node;
+        var word    = result[0];
+        // End of node, not necessarily end of space-delimited string
+        if ((length = index + word.length) === data.length) {
+          var saved;
+          test.lastIndex = 0;
 
-          while (saved = snapshot.snapshotItem i++)
-            if saved.nodeName is 'BR' or (saved.parentElement.nodeName is 'P' and !saved.previousSibling)
+          while (saved = snapshot.snapshotItem(i++)) {
+            var end;
+            if ((saved.nodeName === 'BR') || ((saved.parentElement.nodeName === 'P') && !saved.previousSibling)) {
+              var part1, part2;
               if (
-                # link deliberately split
-                (part1 = word.match /(https?:\/\/)?([a-z\d-]+\.)*[a-z\d-]+$/i) and
-                (part2 = snapshot.snapshotItem(i)?.data?.match /^(\.[a-z\d-]+)*\//i) and
-                (part1[0] + part2[0]).search(Linkify.regString) is 0
-              )
-                continue
-              else
-                break
+                // link deliberately split
+                (part1 = word.match(/(https?:\/\/)?([a-z\d-]+\.)*[a-z\d-]+$/i)) &&
+                (part2 = snapshot.snapshotItem(i)?.data?.match(/^(\.[a-z\d-]+)*\//i)) &&
+                ((part1[0] + part2[0]).search(Linkify.regString) === 0)
+              ) {
+                continue;
+              } else {
+                break;
+              }
+            }
 
-            if saved.parentElement.nodeName is "A" and not Linkify.regString.test(word)
-              break
+            if ((saved.parentElement.nodeName === "A") && !Linkify.regString.test(word)) {
+              break;
+            }
 
-            endNode  = saved
-            {data}   = saved
+            endNode  = saved;
+            ({data}   = saved);
 
-            if end = space.exec data
-              # Set our snapshot and regex to start on this node at this position when the loop resumes
-              word += data[...end.index]
-              test.lastIndex = length = end.index
-              i--
-              break
-            else
-              {length} = data
-              word    += data
+            if (end = space.exec(data)) {
+              // Set our snapshot and regex to start on this node at this position when the loop resumes
+              word += data.slice(0, end.index);
+              test.lastIndex = (length = end.index);
+              i--;
+              break;
+            } else {
+              ({length} = data);
+              word    += data;
+            }
+          }
+        }
 
-        if Linkify.regString.test word
-          links.push Linkify.makeRange node, endNode, index, length
-          # <% if (readJSON('/.tests_enabled')) { %>
-          # Test.assert ->
-          #   word is links[links.length-1].toString()
-          # <% } %>
+        if (Linkify.regString.test(word)) {
+          links.push(Linkify.makeRange(node, endNode, index, length));
+        }
+          // <% if (readJSON('/.tests_enabled')) { %>
+          // Test.assert ->
+          //   word is links[links.length-1].toString()
+          // <% } %>
 
-        break unless test.lastIndex and node is endNode
+        if (!test.lastIndex || (node !== endNode)) { break; }
+      }
+    }
 
-    i = links.length
-    while i--
-      links[i] = Linkify.makeLink links[i]
-    links
+    i = links.length;
+    while (i--) {
+      links[i] = Linkify.makeLink(links[i]);
+    }
+    return links;
+  },
 
-  regString: ///(
-    # http, magnet, ftp, etc
-    (https?|mailto|git|magnet|ftp|irc):(
-      [a-z\d%/?]
-    )
-    | # This should account for virtually all links posted without http:
-    ([-a-z\d]+[.])+(
-      aero|asia|biz|cat|com|coop|dance|info|int|jobs|mobi|moe|museum|name|net|org|post|pro|tel|travel|xxx|xyz|edu|gov|mil|[a-z]{2}
-    )([:/]|(?![^\s"]))
-    | # IPv4 Addresses
-    [\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}\.[\d]{1,3}
-    | # E-mails
-    [-\w\d.@]+@[a-z\d.-]+\.[a-z\d]
-  )///i
+  regString: new RegExp(`(\
+\
+(https?|mailto|git|magnet|ftp|irc):(\
+[a-z\\d%/?]\
+)\
+|\
+([-a-z\\d]+[.])+(\
+aero|asia|biz|cat|com|coop|dance|info|int|jobs|mobi|moe|museum|name|net|org|post|pro|tel|travel|xxx|xyz|edu|gov|mil|[a-z]{2}\
+)([:/]|(?![^\\s"]))\
+|\
+[\\d]{1,3}\\.[\\d]{1,3}\\.[\\d]{1,3}\\.[\\d]{1,3}\
+|\
+[-\\w\\d.@]+@[a-z\\d.-]+\\.[a-z\\d]\
+)`, 'i'),
 
-  makeRange: (startNode, endNode, startOffset, endOffset) ->
-    range = document.createRange()
-    range.setStart startNode, startOffset
-    range.setEnd   endNode,   endOffset
-    range
+  makeRange(startNode, endNode, startOffset, endOffset) {
+    const range = document.createRange();
+    range.setStart(startNode, startOffset);
+    range.setEnd(endNode,   endOffset);
+    return range;
+  },
 
-  makeLink: (range) ->
-    text = range.toString()
+  makeLink(range) {
+    let t;
+    let encodedDomain;
+    let text = range.toString();
 
-    # Clean start of range
-    i = text.search Linkify.regString
+    // Clean start of range
+    let i = text.search(Linkify.regString);
 
-    if i > 0
-      text = text.slice i
-      i-- while range.startOffset + i >= range.startContainer.data.length
+    if (i > 0) {
+      text = text.slice(i);
+      while ((range.startOffset + i) >= range.startContainer.data.length) { i--; }
 
-      range.setStart range.startContainer, range.startOffset + i if i
+      if (i) { range.setStart(range.startContainer, range.startOffset + i); }
+    }
 
-    # Clean end of range
-    i = 0
-    while /[)\]}>.,]/.test t = text.charAt text.length - (1 + i)
-      break unless /[.,]/.test(t) or (text.match /[()\[\]{}<>]/g).length % 2
-      i++
+    // Clean end of range
+    i = 0;
+    while (/[)\]}>.,]/.test(t = text.charAt(text.length - (1 + i)))) {
+      if (!/[.,]/.test(t) && !((text.match(/[()\[\]{}<>]/g)).length % 2)) { break; }
+      i++;
+    }
 
-    if i
-      text = text.slice 0, -i
-      i-- while range.endOffset - i < 0
+    if (i) {
+      text = text.slice(0, -i);
+      while ((range.endOffset - i) < 0) { i--; }
 
-      if i
-        range.setEnd range.endContainer, range.endOffset - i
+      if (i) {
+        range.setEnd(range.endContainer, range.endOffset - i);
+      }
+    }
 
-    # Make our link 'valid' if it is formatted incorrectly.
-    unless /((mailto|magnet):|.+:\/\/)/.test text
+    // Make our link 'valid' if it is formatted incorrectly.
+    if (!/((mailto|magnet):|.+:\/\/)/.test(text)) {
       text = (
-        if /@/.test text
+        /@/.test(text) ?
           'mailto:'
-        else
+        :
           'http://'
-      ) + text
+      ) + text;
+    }
 
-    # Decode percent-encoded characters in domain so that they behave consistently across browsers.
-    if encodedDomain = text.match /^(https?:\/\/[^/]*%[0-9a-f]{2})(.*)$/i
-      text = encodedDomain[1].replace(/%([0-9a-f]{2})/ig, (x, y) ->
-        if y is '25' then x else String.fromCharCode(parseInt y, 16)
-      ) + encodedDomain[2]
+    // Decode percent-encoded characters in domain so that they behave consistently across browsers.
+    if (encodedDomain = text.match(/^(https?:\/\/[^/]*%[0-9a-f]{2})(.*)$/i)) {
+      text = encodedDomain[1].replace(/%([0-9a-f]{2})/ig, function(x, y) {
+        if (y === '25') { return x; } else { return String.fromCharCode(parseInt(y, 16)); }
+      }) + encodedDomain[2];
+    }
 
-    a = $.el 'a',
-      className: 'linkify'
-      rel:       'noreferrer noopener'
-      target:    '_blank'
+    const a = $.el('a', {
+      className: 'linkify',
+      rel:       'noreferrer noopener',
+      target:    '_blank',
       href:      text
+    }
+    );
 
-    # Insert the range into the anchor, the anchor into the range's DOM location, and destroy the range.
-    $.add a, range.extractContents()
-    range.insertNode a
+    // Insert the range into the anchor, the anchor into the range's DOM location, and destroy the range.
+    $.add(a, range.extractContents());
+    range.insertNode(a);
 
-    a
+    return a;
+  }
+};

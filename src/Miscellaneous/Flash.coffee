@@ -1,12 +1,23 @@
-Flash =
-  init: ->
-    if g.BOARD.ID is 'f' and Conf['Enable Native Flash Embedding']
-      $.ready Flash.initReady
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var Flash = {
+  init() {
+    if ((g.BOARD.ID === 'f') && Conf['Enable Native Flash Embedding']) {
+      return $.ready(Flash.initReady);
+    }
+  },
 
-  initReady: ->
-    if $.hasStorage
-      $.global -> (window.SWFEmbed.init() if JSON.parse(localStorage['4chan-settings'] or '{}').disableAll)
-    else
-      if g.VIEW is 'thread'
-        $.global -> window.Main.tid = location.pathname.split(/\/+/)[3]
-      $.global -> window.SWFEmbed.init()
+  initReady() {
+    if ($.hasStorage) {
+      return $.global(function() { if (JSON.parse(localStorage['4chan-settings'] || '{}').disableAll) { return window.SWFEmbed.init(); } });
+    } else {
+      if (g.VIEW === 'thread') {
+        $.global(() => window.Main.tid = location.pathname.split(/\/+/)[3]);
+      }
+      return $.global(() => window.SWFEmbed.init());
+    }
+  }
+};

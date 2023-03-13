@@ -1,21 +1,34 @@
-PostRedirect =
-  init: ->
-    $.on d, 'QRPostSuccessful', (e) =>
-      return unless e.detail.redirect
-      @event = e
-      @delays = 0
-      $.queueTask =>
-        if e is @event and @delays is 0
-          location.href = e.detail.redirect
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+const PostRedirect = {
+  init() {
+    return $.on(d, 'QRPostSuccessful', e => {
+      if (!e.detail.redirect) { return; }
+      this.event = e;
+      this.delays = 0;
+      return $.queueTask(() => {
+        if ((e === this.event) && (this.delays === 0)) {
+          return location.href = e.detail.redirect;
+        }
+      });
+    });
+  },
 
-  delays: 0
+  delays: 0,
 
-  delay: ->
-    return null unless @event
-    e = @event
-    @delays++
-    () =>
-      return unless e is @event
-      @delays--
-      if @delays is 0
-        location.href = e.detail.redirect
+  delay() {
+    if (!this.event) { return null; }
+    const e = this.event;
+    this.delays++;
+    return () => {
+      if (e !== this.event) { return; }
+      this.delays--;
+      if (this.delays === 0) {
+        return location.href = e.detail.redirect;
+      }
+    };
+  }
+};

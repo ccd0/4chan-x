@@ -1,62 +1,100 @@
-BoardConfig =
-  cbs: []
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var BoardConfig = {
+  cbs: [],
 
-  init: ->
-    return unless g.SITE.software is 'yotsuba'
-    now = Date.now()
-    unless now - 2 * $.HOUR < (Conf['boardConfig'].lastChecked or 0) <= now
-      $.ajax "#{location.protocol}//a.4cdn.org/boards.json",
-        onloadend: @load
-    else
-      {boards} = Conf['boardConfig']
-      @set boards
+  init() {
+    let middle;
+    if (g.SITE.software !== 'yotsuba') { return; }
+    const now = Date.now();
+    if (now - (2 * $.HOUR) >= ((middle = Conf['boardConfig'].lastChecked || 0)) || middle > now) {
+      return $.ajax(`${location.protocol}//a.4cdn.org/boards.json`,
+        {onloadend: this.load});
+    } else {
+      const {boards} = Conf['boardConfig'];
+      return this.set(boards);
+    }
+  },
 
-  load: ->
-    if @status is 200 and @response and @response.boards
-      boards = $.dict()
-      for board in @response.boards
-        boards[board.board] = board
-      $.set 'boardConfig', {boards, lastChecked: Date.now()}
-    else
-      {boards} = Conf['boardConfig']
-      err = switch @status
-        when 0   then 'Connection Error'
-        when 200 then 'Invalid Data'
-        else          "Error #{@statusText} (#{@status})"
-      new Notice 'warning', "Failed to load board configuration. #{err}", 20
-    BoardConfig.set boards
+  load() {
+    let boards;
+    if ((this.status === 200) && this.response && this.response.boards) {
+      boards = $.dict();
+      for (var board of this.response.boards) {
+        boards[board.board] = board;
+      }
+      $.set('boardConfig', {boards, lastChecked: Date.now()});
+    } else {
+      ({boards} = Conf['boardConfig']);
+      const err = (() => { switch (this.status) {
+        case 0:   return 'Connection Error';
+        case 200: return 'Invalid Data';
+        default:          return `Error ${this.statusText} (${this.status})`;
+      } })();
+      new Notice('warning', `Failed to load board configuration. ${err}`, 20);
+    }
+    return BoardConfig.set(boards);
+  },
 
-  set: (@boards) ->
-    for ID, board of g.boards
-      board.config = @boards[ID] or {}
-    for cb in @cbs
-      $.queueTask cb
-    return
+  set(boards) {
+    this.boards = boards;
+    for (var ID in g.boards) {
+      var board = g.boards[ID];
+      board.config = this.boards[ID] || {};
+    }
+    for (var cb of this.cbs) {
+      $.queueTask(cb);
+    }
+  },
 
-  ready: (cb) ->
-    if @boards
-      cb()
-    else
-      @cbs.push cb
+  ready(cb) {
+    if (this.boards) {
+      return cb();
+    } else {
+      return this.cbs.push(cb);
+    }
+  },
 
-  sfwBoards: (sfw) ->
-    board for board, data of (@boards or Conf['boardConfig'].boards) when !!data.ws_board is sfw
+  sfwBoards(sfw) {
+    return (() => {
+      const result = [];
+      const object = this.boards || Conf['boardConfig'].boards;
+      for (var board in object) {
+        var data = object[board];
+        if (!!data.ws_board === sfw) {
+          result.push(board);
+        }
+      }
+      return result;
+    })();
+  },
 
-  isSFW: (board) ->
-    !!(@boards or Conf['boardConfig'].boards)[board]?.ws_board
+  isSFW(board) {
+    return !!(this.boards || Conf['boardConfig'].boards)[board]?.ws_board;
+  },
 
-  domain: (board) ->
-    "boards.#{if BoardConfig.isSFW(board) then '4channel' else '4chan'}.org"
+  domain(board) {
+    return `boards.${BoardConfig.isSFW(board) ? '4channel' : '4chan'}.org`;
+  },
 
-  isArchived: (board) ->
-    # assume archive exists if no data available to prevent cleaning of archived threads
-    data = (@boards or Conf['boardConfig'].boards)[board]
-    !data or data.is_archived
+  isArchived(board) {
+    // assume archive exists if no data available to prevent cleaning of archived threads
+    const data = (this.boards || Conf['boardConfig'].boards)[board];
+    return !data || data.is_archived;
+  },
 
-  noAudio: (boardID) ->
-    return false unless g.SITE.software is 'yotsuba'
-    boards = @boards or Conf['boardConfig'].boards
-    boards and boards[boardID] and !boards[boardID].webm_audio
+  noAudio(boardID) {
+    if (g.SITE.software !== 'yotsuba') { return false; }
+    const boards = this.boards || Conf['boardConfig'].boards;
+    return boards && boards[boardID] && !boards[boardID].webm_audio;
+  },
 
-  title: (boardID) ->
-    (@boards or Conf['boardConfig'].boards)?[boardID]?.title or ''
+  title(boardID) {
+    return (this.boards || Conf['boardConfig'].boards)?.[boardID]?.title || '';
+  }
+};

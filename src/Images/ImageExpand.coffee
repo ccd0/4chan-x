@@ -1,306 +1,385 @@
-ImageExpand =
-  init: ->
-    return if not (@enabled = Conf['Image Expansion'] and g.VIEW in ['index', 'thread'])
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var ImageExpand = {
+  init() {
+    if (!(this.enabled = Conf['Image Expansion'] && ['index', 'thread'].includes(g.VIEW))) { return; }
 
-    @EAI = $.el 'a',
-      className: 'expand-all-shortcut fa fa-expand'
-      textContent: 'EAI' 
-      title: 'Expand All Images'
+    this.EAI = $.el('a', {
+      className: 'expand-all-shortcut fa fa-expand',
+      textContent: 'EAI', 
+      title: 'Expand All Images',
       href: 'javascript:;'
+    }
+    );
 
-    $.on @EAI, 'click', @cb.toggleAll
-    Header.addShortcut 'expand-all', @EAI, 520
-    $.on d, 'scroll visibilitychange', @cb.playVideos
-    @videoControls = $.el 'span', className: 'video-controls'
-    $.extend @videoControls, `{innerHTML: " <a href=\"javascript:;\" title=\"You can also contract the video by dragging it to the left.\">contract</a>"}`
+    $.on(this.EAI, 'click', this.cb.toggleAll);
+    Header.addShortcut('expand-all', this.EAI, 520);
+    $.on(d, 'scroll visibilitychange', this.cb.playVideos);
+    this.videoControls = $.el('span', {className: 'video-controls'});
+    $.extend(this.videoControls, {innerHTML: " <a href=\"javascript:;\" title=\"You can also contract the video by dragging it to the left.\">contract</a>"});
 
-    Callbacks.Post.push
-      name: 'Image Expansion'
-      cb: @node
+    return Callbacks.Post.push({
+      name: 'Image Expansion',
+      cb: this.node
+    });
+  },
 
-  node: ->
-    return unless @file and (@file.isImage or @file.isVideo)
-    $.on @file.thumbLink, 'click', ImageExpand.cb.toggle
+  node() {
+    if (!this.file || (!this.file.isImage && !this.file.isVideo)) { return; }
+    $.on(this.file.thumbLink, 'click', ImageExpand.cb.toggle);
 
-    if @isClone 
-      if @file.isExpanding
-        # If we clone a post where the image is still loading,
-        # make it loading in the clone too.
-        ImageExpand.contract @
-        ImageExpand.expand @
+    if (this.isClone) { 
+      if (this.file.isExpanding) {
+        // If we clone a post where the image is still loading,
+        // make it loading in the clone too.
+        ImageExpand.contract(this);
+        return ImageExpand.expand(this);
 
-      else if @file.isExpanded and @file.isVideo
-        Volume.setup @file.fullImage
-        ImageExpand.setupVideoCB @
-        ImageExpand.setupVideo @, !@origin.file.fullImage?.paused or @origin.file.wasPlaying, @file.fullImage.controls
+      } else if (this.file.isExpanded && this.file.isVideo) {
+        Volume.setup(this.file.fullImage);
+        ImageExpand.setupVideoCB(this);
+        return ImageExpand.setupVideo(this, !this.origin.file.fullImage?.paused || this.origin.file.wasPlaying, this.file.fullImage.controls);
+      }
 
-    else if ImageExpand.on and !@isHidden and !@isFetchedQuote and
-      (Conf['Expand spoilers'] or !@file.isSpoiler) and
-      (Conf['Expand videos'] or !@file.isVideo)
-        ImageExpand.expand @
+    } else if (ImageExpand.on && !this.isHidden && !this.isFetchedQuote &&
+      (Conf['Expand spoilers'] || !this.file.isSpoiler) &&
+      (Conf['Expand videos'] || !this.file.isVideo)) {
+        return ImageExpand.expand(this);
+      }
+  },
 
-  cb:
-    toggle: (e) ->
-      return if $.modifiedClick e
-      post = Get.postFromNode @
-      {file} = post
-      return if file.isExpanded and ImageCommon.onControls e
-      e.preventDefault()
-      if !Conf['Autoplay'] and file.fullImage?.paused
-        file.fullImage.play()
-      else
-        ImageExpand.toggle post
+  cb: {
+    toggle(e) {
+      if ($.modifiedClick(e)) { return; }
+      const post = Get.postFromNode(this);
+      const {file} = post;
+      if (file.isExpanded && ImageCommon.onControls(e)) { return; }
+      e.preventDefault();
+      if (!Conf['Autoplay'] && file.fullImage?.paused) {
+        return file.fullImage.play();
+      } else {
+        return ImageExpand.toggle(post);
+      }
+    },
 
-    toggleAll: ->
-      $.event 'CloseMenu'
-      threadRoot = Nav.getThread()
-      toggle = (post) ->
-        {file} = post
-        return unless file and (file.isImage or file.isVideo) and doc.contains post.nodes.root
-        if ImageExpand.on and
-          (!Conf['Expand spoilers']  and file.isSpoiler or
-          !Conf['Expand videos']     and file.isVideo or
-          Conf['Expand from here']   and Header.getTopOf(file.thumb) < 0 or
-          Conf['Expand thread only'] and g.VIEW is 'index' and !threadRoot?.contains(file.thumb))
-            return
-        $.queueTask func, post
+    toggleAll() {
+      let func;
+      $.event('CloseMenu');
+      const threadRoot = Nav.getThread();
+      const toggle = function(post) {
+        const {file} = post;
+        if (!file || (!file.isImage && !file.isVideo) || !doc.contains(post.nodes.root)) { return; }
+        if (ImageExpand.on &&
+          ((!Conf['Expand spoilers']  && file.isSpoiler) ||
+          (!Conf['Expand videos']     && file.isVideo) ||
+          (Conf['Expand from here']   && (Header.getTopOf(file.thumb) < 0)) ||
+          (Conf['Expand thread only'] && (g.VIEW === 'index') && !threadRoot?.contains(file.thumb)))) {
+            return;
+          }
+        return $.queueTask(func, post);
+      };
 
-      if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
-        ImageExpand.EAI.className = 'contract-all-shortcut fa fa-compress'
-        ImageExpand.EAI.title     = 'Contract All Images'
-        func = ImageExpand.expand
-      else
-        ImageExpand.EAI.className = 'expand-all-shortcut fa fa-expand'
-        ImageExpand.EAI.title     = 'Expand All Images'
-        func = ImageExpand.contract
+      if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
+        ImageExpand.EAI.className = 'contract-all-shortcut fa fa-compress';
+        ImageExpand.EAI.title     = 'Contract All Images';
+        func = ImageExpand.expand;
+      } else {
+        ImageExpand.EAI.className = 'expand-all-shortcut fa fa-expand';
+        ImageExpand.EAI.title     = 'Expand All Images';
+        func = ImageExpand.contract;
+      }
 
-      g.posts.forEach (post) ->
-        toggle post for post in [post, post.clones...]
-        return
+      return g.posts.forEach(function(post) {
+        for (post of [post, ...Array.from(post.clones)]) { toggle(post); }
+      });
+    },
 
-    playVideos: ->
-      g.posts.forEach (post) ->
-        for post in [post, post.clones...]
-          {file} = post
-          continue unless file and file.isVideo and file.isExpanded
+    playVideos() {
+      return g.posts.forEach(function(post) {
+        for (post of [post, ...Array.from(post.clones)]) {
+          var {file} = post;
+          if (!file || !file.isVideo || !file.isExpanded) { continue; }
 
-          video = file.fullImage
-          visible = ($.hasAudio(video) and not video.muted) or Header.isNodeVisible video
-          if visible and file.wasPlaying
-            delete file.wasPlaying
-            video.play()
-          else if !visible and !video.paused
-            file.wasPlaying = true
-            video.pause()
-        return
+          var video = file.fullImage;
+          var visible = ($.hasAudio(video) && !video.muted) || Header.isNodeVisible(video);
+          if (visible && file.wasPlaying) {
+            delete file.wasPlaying;
+            video.play();
+          } else if (!visible && !video.paused) {
+            file.wasPlaying = true;
+            video.pause();
+          }
+        }
+      });
+    },
 
-    setFitness: ->
-      $[if @checked then 'addClass' else 'rmClass'] doc, @name.toLowerCase().replace /\s+/g, '-'
+    setFitness() {
+      return $[this.checked ? 'addClass' : 'rmClass'](doc, this.name.toLowerCase().replace(/\s+/g, '-'));
+    }
+  },
 
-  toggle: (post) ->
-    unless post.file.isExpanding or post.file.isExpanded
-      post.file.scrollIntoView = Conf['Scroll into view']
-      ImageExpand.expand post
-      return
+  toggle(post) {
+    if (!post.file.isExpanding && !post.file.isExpanded) {
+      post.file.scrollIntoView = Conf['Scroll into view'];
+      ImageExpand.expand(post);
+      return;
+    }
 
-    ImageExpand.contract post
+    ImageExpand.contract(post);
 
-    if Conf['Advance on contract']
-      next = post.nodes.root
-      while next = $.x "following::div[contains(@class,'postContainer')][1]", next
-        break unless $('.stub', next) or next.offsetHeight is 0
-      if next
-        Header.scrollTo next
+    if (Conf['Advance on contract']) {
+      let next = post.nodes.root;
+      while ((next = $.x("following::div[contains(@class,'postContainer')][1]", next))) {
+        if (!$('.stub', next) && (next.offsetHeight !== 0)) { break; }
+      }
+      if (next) {
+        return Header.scrollTo(next);
+      }
+    }
+  },
 
-  contract: (post) ->
-    {file} = post
+  contract(post) {
+    let bottom, el, oldHeight, scrollY;
+    const {file} = post;
 
-    if el = file.fullImage
-      top = Header.getTopOf el
-      bottom = top + el.getBoundingClientRect().height
-      oldHeight = d.body.clientHeight
-      {scrollY} = window
+    if (el = file.fullImage) {
+      const top = Header.getTopOf(el);
+      bottom = top + el.getBoundingClientRect().height;
+      oldHeight = d.body.clientHeight;
+      ({scrollY} = window);
+    }
 
-    $.rmClass post.nodes.root, 'expanded-image'
-    $.rmClass file.thumb,      'expanding'
-    $.rm file.videoControls
-    file.thumbLink.href   = file.url
-    file.thumbLink.target = '_blank'
-    for x in ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying', 'scrollIntoView']
-      delete file[x]
+    $.rmClass(post.nodes.root, 'expanded-image');
+    $.rmClass(file.thumb,      'expanding');
+    $.rm(file.videoControls);
+    file.thumbLink.href   = file.url;
+    file.thumbLink.target = '_blank';
+    for (var x of ['isExpanding', 'isExpanded', 'videoControls', 'wasPlaying', 'scrollIntoView']) {
+      delete file[x];
+    }
 
-    return unless el
+    if (!el) { return; }
 
-    if doc.contains el
-      if bottom <= 0
-        # For images entirely above us, scroll to remain in place.
-        window.scrollBy 0, scrollY - window.scrollY + d.body.clientHeight - oldHeight
-      else
-        # For images not above us that would be moved above us, scroll to the thumbnail.
-        Header.scrollToIfNeeded post.nodes.root
-      if window.scrollX > 0
-        # If we have scrolled right viewing an expanded image, return to the left.
-        window.scrollBy -window.scrollX, 0
+    if (doc.contains(el)) {
+      if (bottom <= 0) {
+        // For images entirely above us, scroll to remain in place.
+        window.scrollBy(0, ((scrollY - window.scrollY) + d.body.clientHeight) - oldHeight);
+      } else {
+        // For images not above us that would be moved above us, scroll to the thumbnail.
+        Header.scrollToIfNeeded(post.nodes.root);
+      }
+      if (window.scrollX > 0) {
+        // If we have scrolled right viewing an expanded image, return to the left.
+        window.scrollBy(-window.scrollX, 0);
+      }
+    }
 
-    $.off el, 'error', ImageExpand.error
-    ImageCommon.pushCache el
-    if file.isVideo
-      ImageCommon.pause el
-      for eventName, cb of ImageExpand.videoCB
-        $.off el, eventName, cb
-    ImageCommon.rewind file.thumb if Conf['Restart when Opened']
-    delete file.fullImage
-    $.queueTask ->
-      # XXX Work around Chrome/Chromium not firing mouseover on the thumbnail.
-      return if file.isExpanding or file.isExpanded
-      $.rmClass el, 'full-image'
-      return if el.id
-      $.rm el
+    $.off(el, 'error', ImageExpand.error);
+    ImageCommon.pushCache(el);
+    if (file.isVideo) {
+      ImageCommon.pause(el);
+      for (var eventName in ImageExpand.videoCB) {
+        var cb = ImageExpand.videoCB[eventName];
+        $.off(el, eventName, cb);
+      }
+    }
+    if (Conf['Restart when Opened']) { ImageCommon.rewind(file.thumb); }
+    delete file.fullImage;
+    return $.queueTask(function() {
+      // XXX Work around Chrome/Chromium not firing mouseover on the thumbnail.
+      if (file.isExpanding || file.isExpanded) { return; }
+      $.rmClass(el, 'full-image');
+      if (el.id) { return; }
+      return $.rm(el);
+    });
+  },
 
-  expand: (post, src) ->
-    # Do not expand images of hidden/filtered replies, or already expanded pictures.
-    {file} = post
-    {thumb, thumbLink, isVideo} = file
-    return if post.isHidden or file.isExpanding or file.isExpanded
+  expand(post, src) {
+    // Do not expand images of hidden/filtered replies, or already expanded pictures.
+    let el;
+    const {file} = post;
+    const {thumb, thumbLink, isVideo} = file;
+    if (post.isHidden || file.isExpanding || file.isExpanded) { return; }
 
-    $.addClass thumb, 'expanding'
-    file.isExpanding = true
+    $.addClass(thumb, 'expanding');
+    file.isExpanding = true;
 
-    if file.fullImage
-      el = file.fullImage
-    else if ImageCommon.cache?.dataset.fileID is "#{post.fullID}.#{file.index}"
-      el = file.fullImage = ImageCommon.popCache()
-      $.on el, 'error', ImageExpand.error
-      ImageCommon.rewind el if Conf['Restart when Opened'] and el.id isnt 'ihover'
-      el.removeAttribute 'id'
-    else
-      el = file.fullImage = $.el (if isVideo then 'video' else 'img')
-      el.dataset.fileID = "#{post.fullID}.#{file.index}"
-      $.on el, 'error', ImageExpand.error
-      el.src = src or file.url
+    if (file.fullImage) {
+      el = file.fullImage;
+    } else if (ImageCommon.cache?.dataset.fileID === `${post.fullID}.${file.index}`) {
+      el = (file.fullImage = ImageCommon.popCache());
+      $.on(el, 'error', ImageExpand.error);
+      if (Conf['Restart when Opened'] && (el.id !== 'ihover')) { ImageCommon.rewind(el); }
+      el.removeAttribute('id');
+    } else {
+      el = (file.fullImage = $.el((isVideo ? 'video' : 'img')));
+      el.dataset.fileID = `${post.fullID}.${file.index}`;
+      $.on(el, 'error', ImageExpand.error);
+      el.src = src || file.url;
+    }
 
-    el.className = 'full-image'
-    $.after thumb, el
+    el.className = 'full-image';
+    $.after(thumb, el);
 
-    if isVideo
-      # add contract link to file info
-      if !file.videoControls
-        file.videoControls = ImageExpand.videoControls.cloneNode true
-        $.add file.text, file.videoControls
+    if (isVideo) {
+      // add contract link to file info
+      if (!file.videoControls) {
+        file.videoControls = ImageExpand.videoControls.cloneNode(true);
+        $.add(file.text, file.videoControls);
+      }
 
-      # disable link to file so native controls can work
-      thumbLink.removeAttribute 'href'
-      thumbLink.removeAttribute 'target'
+      // disable link to file so native controls can work
+      thumbLink.removeAttribute('href');
+      thumbLink.removeAttribute('target');
 
-      el.loop = true
-      Volume.setup el
-      ImageExpand.setupVideoCB post
+      el.loop = true;
+      Volume.setup(el);
+      ImageExpand.setupVideoCB(post);
+    }
 
-    if !isVideo
-      $.asap (-> el.naturalHeight), -> ImageExpand.completeExpand post
-    else if el.readyState >= el.HAVE_METADATA
-      ImageExpand.completeExpand post
-    else
-      $.on el, 'loadedmetadata', -> ImageExpand.completeExpand post
+    if (!isVideo) {
+      return $.asap((() => el.naturalHeight), () => ImageExpand.completeExpand(post));
+    } else if (el.readyState >= el.HAVE_METADATA) {
+      return ImageExpand.completeExpand(post);
+    } else {
+      return $.on(el, 'loadedmetadata', () => ImageExpand.completeExpand(post));
+    }
+  },
 
-  completeExpand: (post) ->
-    {file} = post
-    return unless file.isExpanding # contracted before the image loaded
+  completeExpand(post) {
+    const {file} = post;
+    if (!file.isExpanding) { return; } // contracted before the image loaded
 
-    bottom = Header.getTopOf(file.thumb) + file.thumb.getBoundingClientRect().height
-    oldHeight = d.body.clientHeight
-    {scrollY} = window
+    const bottom = Header.getTopOf(file.thumb) + file.thumb.getBoundingClientRect().height;
+    const oldHeight = d.body.clientHeight;
+    const {scrollY} = window;
 
-    $.addClass post.nodes.root, 'expanded-image'
-    $.rmClass  file.thumb,      'expanding'
-    file.isExpanded = true
-    delete file.isExpanding
+    $.addClass(post.nodes.root, 'expanded-image');
+    $.rmClass(file.thumb,      'expanding');
+    file.isExpanded = true;
+    delete file.isExpanding;
 
-    # Scroll to keep our place in the thread when images are expanded above us.
-    if doc.contains(post.nodes.root) and bottom <= 0
-      window.scrollBy 0, scrollY - window.scrollY + d.body.clientHeight - oldHeight
+    // Scroll to keep our place in the thread when images are expanded above us.
+    if (doc.contains(post.nodes.root) && (bottom <= 0)) {
+      window.scrollBy(0, ((scrollY - window.scrollY) + d.body.clientHeight) - oldHeight);
+    }
 
-    # Scroll to display full image.
-    if file.scrollIntoView
-      delete file.scrollIntoView
-      imageBottom = Math.min(doc.clientHeight - file.fullImage.getBoundingClientRect().bottom - 25, Header.getBottomOf file.fullImage)
-      if imageBottom < 0
-        window.scrollBy 0, Math.min(-imageBottom, Header.getTopOf file.fullImage)
+    // Scroll to display full image.
+    if (file.scrollIntoView) {
+      delete file.scrollIntoView;
+      const imageBottom = Math.min(doc.clientHeight - file.fullImage.getBoundingClientRect().bottom - 25, Header.getBottomOf(file.fullImage));
+      if (imageBottom < 0) {
+        window.scrollBy(0, Math.min(-imageBottom, Header.getTopOf(file.fullImage)));
+      }
+    }
 
-    if file.isVideo
-      ImageExpand.setupVideo post, Conf['Autoplay'], Conf['Show Controls']
+    if (file.isVideo) {
+      return ImageExpand.setupVideo(post, Conf['Autoplay'], Conf['Show Controls']);
+    }
+  },
 
-  setupVideo: (post, playing, controls) ->
-    {fullImage} = post.file
-    unless playing
-      fullImage.controls = controls
-      return
-    fullImage.controls = false
-    $.asap (-> doc.contains fullImage), ->
-      if !d.hidden and Header.isNodeVisible fullImage
-        fullImage.play()
-      else
-        post.file.wasPlaying = true
-    if controls
-      ImageCommon.addControls fullImage
+  setupVideo(post, playing, controls) {
+    const {fullImage} = post.file;
+    if (!playing) {
+      fullImage.controls = controls;
+      return;
+    }
+    fullImage.controls = false;
+    $.asap((() => doc.contains(fullImage)), function() {
+      if (!d.hidden && Header.isNodeVisible(fullImage)) {
+        return fullImage.play();
+      } else {
+        return post.file.wasPlaying = true;
+      }
+    });
+    if (controls) {
+      return ImageCommon.addControls(fullImage);
+    }
+  },
 
-  videoCB: do ->
-    # dragging to the left contracts the video
-    mousedown = false
-    mouseover:     -> mousedown = false
-    mousedown: (e) -> mousedown = true  if e.button is 0
-    mouseup:   (e) -> mousedown = false if e.button is 0
-    mouseout:  (e) -> ImageExpand.toggle(Get.postFromNode @) if ((e.buttons & 1) or mousedown) and e.clientX <= @getBoundingClientRect().left
+  videoCB: (function() {
+    // dragging to the left contracts the video
+    let mousedown = false;
+    return {
+      mouseover() { return mousedown = false; },
+      mousedown(e) { if (e.button === 0) { return mousedown = true; } },
+      mouseup(e) { if (e.button === 0) { return mousedown = false; } },
+      mouseout(e) { if (((e.buttons & 1) || mousedown) && (e.clientX <= this.getBoundingClientRect().left)) { return ImageExpand.toggle(Get.postFromNode(this)); } }
+    };
+  })(),
 
-  setupVideoCB: (post) ->
-    for eventName, cb of ImageExpand.videoCB
-      $.on post.file.fullImage, eventName, cb
-    if post.file.videoControls
-      $.on post.file.videoControls.firstElementChild, 'click', -> ImageExpand.toggle post
+  setupVideoCB(post) {
+    for (var eventName in ImageExpand.videoCB) {
+      var cb = ImageExpand.videoCB[eventName];
+      $.on(post.file.fullImage, eventName, cb);
+    }
+    if (post.file.videoControls) {
+      return $.on(post.file.videoControls.firstElementChild, 'click', () => ImageExpand.toggle(post));
+    }
+  },
 
-  error: ->
-    post = Get.postFromNode @
-    $.rm @
-    delete post.file.fullImage
-    # Images can error:
-    #  - before the image started loading.
-    #  - after the image started loading.
-    # Don't try to re-expand if it was already contracted.
-    return unless post.file.isExpanding or post.file.isExpanded
-    if ImageCommon.decodeError @, post.file
-      return ImageExpand.contract post
-    # Don't autoretry images from the archive.
-    if ImageCommon.isFromArchive @
-      return ImageExpand.contract post
-    ImageCommon.error @, post, post.file, 10 * $.SECOND, (URL) ->
-      if post.file.isExpanding or post.file.isExpanded
-        ImageExpand.contract post
-        (ImageExpand.expand post, URL if URL)
+  error() {
+    const post = Get.postFromNode(this);
+    $.rm(this);
+    delete post.file.fullImage;
+    // Images can error:
+    //  - before the image started loading.
+    //  - after the image started loading.
+    // Don't try to re-expand if it was already contracted.
+    if (!post.file.isExpanding && !post.file.isExpanded) { return; }
+    if (ImageCommon.decodeError(this, post.file)) {
+      return ImageExpand.contract(post);
+    }
+    // Don't autoretry images from the archive.
+    if (ImageCommon.isFromArchive(this)) {
+      return ImageExpand.contract(post);
+    }
+    return ImageCommon.error(this, post, post.file, 10 * $.SECOND, function(URL) {
+      if (post.file.isExpanding || post.file.isExpanded) {
+        ImageExpand.contract(post);
+        if (URL) { return ImageExpand.expand(post, URL); }
+      }
+    });
+  },
 
-  menu:
-    init: ->
-      return unless ImageExpand.enabled
+  menu: {
+    init() {
+      if (!ImageExpand.enabled) { return; }
 
-      el = $.el 'span',
-        textContent: 'Image Expansion'
+      const el = $.el('span', {
+        textContent: 'Image Expansion',
         className:   'image-expansion-link'
+      }
+      );
 
-      {createSubEntry} = ImageExpand.menu
-      subEntries = []
-      for name, conf of Config.imageExpansion
-        subEntries.push createSubEntry name, conf[1]
+      const {createSubEntry} = ImageExpand.menu;
+      const subEntries = [];
+      for (var name in Config.imageExpansion) {
+        var conf = Config.imageExpansion[name];
+        subEntries.push(createSubEntry(name, conf[1]));
+      }
 
-      Header.menu.addEntry
-        el: el
-        order: 105
-        subEntries: subEntries
+      return Header.menu.addEntry({
+        el,
+        order: 105,
+        subEntries
+      });
+    },
 
-    createSubEntry: (name, desc) ->
-      label = UI.checkbox name, name
-      label.title = desc
-      input = label.firstElementChild
-      if name in ['Fit width', 'Fit height']
-        $.on input, 'change', ImageExpand.cb.setFitness
-      $.event 'change', null, input
-      $.on input, 'change', $.cb.checked
-      el: label
+    createSubEntry(name, desc) {
+      const label = UI.checkbox(name, name);
+      label.title = desc;
+      const input = label.firstElementChild;
+      if (['Fit width', 'Fit height'].includes(name)) {
+        $.on(input, 'change', ImageExpand.cb.setFitness);
+      }
+      $.event('change', null, input);
+      $.on(input, 'change', $.cb.checked);
+      return {el: label};
+    }
+  }
+};

@@ -1,23 +1,34 @@
-IDHighlight =
-  init: ->
-    return unless g.VIEW in ['index', 'thread']
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var IDHighlight = {
+  init() {
+    if (!['index', 'thread'].includes(g.VIEW)) { return; }
 
-    Callbacks.Post.push
-      name: 'Highlight by User ID'
-      cb:   @node
+    return Callbacks.Post.push({
+      name: 'Highlight by User ID',
+      cb:   this.node
+    });
+  },
 
-  uniqueID: null
+  uniqueID: null,
 
-  node: ->
-    $.on @nodes.uniqueIDRoot, 'click', IDHighlight.click @ if @nodes.uniqueIDRoot
-    $.on @nodes.capcode,      'click', IDHighlight.click @ if @nodes.capcode
-    IDHighlight.set @ unless @isClone
+  node() {
+    if (this.nodes.uniqueIDRoot) { $.on(this.nodes.uniqueIDRoot, 'click', IDHighlight.click(this)); }
+    if (this.nodes.capcode) { $.on(this.nodes.capcode,      'click', IDHighlight.click(this)); }
+    if (!this.isClone) { return IDHighlight.set(this); }
+  },
 
-  set: (post) ->
-    match = (post.info.uniqueID or post.info.capcode) is IDHighlight.uniqueID
-    $[if match then 'addClass' else 'rmClass'] post.nodes.post, 'highlight'
+  set(post) {
+    const match = (post.info.uniqueID || post.info.capcode) === IDHighlight.uniqueID;
+    return $[match ? 'addClass' : 'rmClass'](post.nodes.post, 'highlight');
+  },
 
-  click: (post) -> ->
-    uniqueID = post.info.uniqueID or post.info.capcode
-    IDHighlight.uniqueID = if IDHighlight.uniqueID is uniqueID then null else uniqueID
-    g.posts.forEach IDHighlight.set
+  click(post) { return function() {
+    const uniqueID = post.info.uniqueID || post.info.capcode;
+    IDHighlight.uniqueID = IDHighlight.uniqueID === uniqueID ? null : uniqueID;
+    return g.posts.forEach(IDHighlight.set);
+  }; }
+};

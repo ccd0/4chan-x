@@ -1,18 +1,28 @@
-PostSuccessful =
-  init: ->
-    return unless Conf['Remember Your Posts']
-    $.ready @ready
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+const PostSuccessful = {
+  init() {
+    if (!Conf['Remember Your Posts']) { return; }
+    return $.ready(this.ready);
+  },
 
-  ready: ->
-    return unless d.title is 'Post successful!'
+  ready() {
+    if (d.title !== 'Post successful!') { return; }
 
-    [_, threadID, postID] = $('h1').nextSibling.textContent.match /thread:(\d+),no:(\d+)/
-    postID   = +postID
-    threadID = +threadID or postID
+    let [_, threadID, postID] = Array.from($('h1').nextSibling.textContent.match(/thread:(\d+),no:(\d+)/));
+    postID   = +postID;
+    threadID = +threadID || postID;
 
-    db = new DataBoard 'yourPosts'
-    db.set
-      boardID: g.BOARD.ID
-      threadID: threadID
-      postID: postID
+    const db = new DataBoard('yourPosts');
+    return db.set({
+      boardID: g.BOARD.ID,
+      threadID,
+      postID,
       val: true
+    });
+  }
+};

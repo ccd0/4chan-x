@@ -1,110 +1,155 @@
-Captcha.cache =
-  init: ->
-    $.on d, 'SaveCaptcha', (e) =>
-      @saveAPI e.detail
-    $.on d, 'NoCaptcha', (e) =>
-      @noCaptcha e.detail
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+Captcha.cache = {
+  init() {
+    $.on(d, 'SaveCaptcha', e => {
+      return this.saveAPI(e.detail);
+    });
+    return $.on(d, 'NoCaptcha', e => {
+      return this.noCaptcha(e.detail);
+    });
+  },
 
-  captchas: []
+  captchas: [],
 
-  getCount: ->
-    @captchas.length
+  getCount() {
+    return this.captchas.length;
+  },
 
-  neededRaw: ->
-    not (
-      @haveCookie() or @captchas.length or QR.req or @submitCB
-    ) and (
-      QR.posts.length > 1 or Conf['Auto-load captcha'] or !QR.posts[0].isOnlyQuotes() or QR.posts[0].file
-    )
+  neededRaw() {
+    return !(
+      this.haveCookie() || this.captchas.length || QR.req || this.submitCB
+    ) && (
+      (QR.posts.length > 1) || Conf['Auto-load captcha'] || !QR.posts[0].isOnlyQuotes() || QR.posts[0].file
+    );
+  },
 
-  needed: ->
-    @neededRaw() and $.event('LoadCaptcha')
+  needed() {
+    return this.neededRaw() && $.event('LoadCaptcha');
+  },
 
-  prerequest: ->
-    return unless Conf['Prerequest Captcha']
-    # Post count temporarily off by 1 when called from QR.post.rm, QR.close, or QR.submit
-    $.queueTask =>
+  prerequest() {
+    if (!Conf['Prerequest Captcha']) { return; }
+    // Post count temporarily off by 1 when called from QR.post.rm, QR.close, or QR.submit
+    return $.queueTask(() => {
       if (
-        !@prerequested and
-        @neededRaw() and
-        !$.event('LoadCaptcha') and
-        !QR.captcha.occupied() and
-        QR.cooldown.seconds <= 60 and
-        QR.selected is QR.posts[QR.posts.length - 1] and
+        !this.prerequested &&
+        this.neededRaw() &&
+        !$.event('LoadCaptcha') &&
+        !QR.captcha.occupied() &&
+        (QR.cooldown.seconds <= 60) &&
+        (QR.selected === QR.posts[QR.posts.length - 1]) &&
         !QR.selected.isOnlyQuotes()
-      )
-        isReply = (QR.selected.thread isnt 'new')
-        if !$.event('RequestCaptcha', {isReply})
-          @prerequested = true
-          @submitCB = (captcha) =>
-            @save captcha if captcha
-          @updateCount()
+      ) {
+        const isReply = (QR.selected.thread !== 'new');
+        if (!$.event('RequestCaptcha', {isReply})) {
+          this.prerequested = true;
+          this.submitCB = captcha => {
+            if (captcha) { return this.save(captcha); }
+          };
+          return this.updateCount();
+        }
+      }
+    });
+  },
 
-  haveCookie: ->
-    /\b_ct=/.test(d.cookie) and QR.posts[0].thread isnt 'new'
+  haveCookie() {
+    return /\b_ct=/.test(d.cookie) && (QR.posts[0].thread !== 'new');
+  },
 
-  getOne: ->
-    delete @prerequested
-    @clear()
-    if (captcha = @captchas.shift())
-      @count()
-      captcha
-    else
-      null
+  getOne() {
+    let captcha;
+    delete this.prerequested;
+    this.clear();
+    if (captcha = this.captchas.shift()) {
+      this.count();
+      return captcha;
+    } else {
+      return null;
+    }
+  },
 
-  request: (isReply) ->
-    if !@submitCB
-      return if $.event('RequestCaptcha', {isReply})
-    (cb) =>
-      @submitCB = cb
-      @updateCount()
+  request(isReply) {
+    if (!this.submitCB) {
+      if ($.event('RequestCaptcha', {isReply})) { return; }
+    }
+    return cb => {
+      this.submitCB = cb;
+      return this.updateCount();
+    };
+  },
 
-  abort: ->
-    if @submitCB
-      delete @submitCB
-      $.event 'AbortCaptcha'
-      @updateCount()
+  abort() {
+    if (this.submitCB) {
+      delete this.submitCB;
+      $.event('AbortCaptcha');
+      return this.updateCount();
+    }
+  },
 
-  saveAPI: (captcha) ->
-    if (cb = @submitCB)
-      delete @submitCB
-      cb captcha
-      @updateCount()
-    else
-      @save captcha
+  saveAPI(captcha) {
+    let cb;
+    if (cb = this.submitCB) {
+      delete this.submitCB;
+      cb(captcha);
+      return this.updateCount();
+    } else {
+      return this.save(captcha);
+    }
+  },
 
-  noCaptcha: (detail) ->
-    if (cb = @submitCB)
-      if !@haveCookie() or detail?.error
-        QR.error(detail?.error or 'Failed to retrieve captcha.')
-        QR.captcha.setup(d.activeElement is QR.nodes.status)
-      delete @submitCB
-      cb()
-      @updateCount()
+  noCaptcha(detail) {
+    let cb;
+    if (cb = this.submitCB) {
+      if (!this.haveCookie() || detail?.error) {
+        QR.error(detail?.error || 'Failed to retrieve captcha.');
+        QR.captcha.setup(d.activeElement === QR.nodes.status);
+      }
+      delete this.submitCB;
+      cb();
+      return this.updateCount();
+    }
+  },
 
-  save: (captcha) ->
-    if (cb = @submitCB)
-      @abort()
-      cb captcha
-      return
-    @captchas.push captcha
-    @captchas.sort (a, b) -> a.timeout - b.timeout
-    @count()
+  save(captcha) {
+    let cb;
+    if (cb = this.submitCB) {
+      this.abort();
+      cb(captcha);
+      return;
+    }
+    this.captchas.push(captcha);
+    this.captchas.sort((a, b) => a.timeout - b.timeout);
+    return this.count();
+  },
 
-  clear: ->
-    if @captchas.length
-      now = Date.now()
-      for captcha, i in @captchas
-        break if captcha.timeout > now
-      if i
-        @captchas = @captchas[i..]
-        @count()
+  clear() {
+    if (this.captchas.length) {
+      let i;
+      const now = Date.now();
+      for (i = 0; i < this.captchas.length; i++) {
+        var captcha = this.captchas[i];
+        if (captcha.timeout > now) { break; }
+      }
+      if (i) {
+        this.captchas = this.captchas.slice(i);
+        return this.count();
+      }
+    }
+  },
 
-  count: ->
-    clearTimeout @timer
-    if @captchas.length
-      @timer = setTimeout @clear.bind(@), @captchas[0].timeout - Date.now()
-    @updateCount()
+  count() {
+    clearTimeout(this.timer);
+    if (this.captchas.length) {
+      this.timer = setTimeout(this.clear.bind(this), this.captchas[0].timeout - Date.now());
+    }
+    return this.updateCount();
+  },
 
-  updateCount: ->
-    $.event 'CaptchaCount', @captchas.length
+  updateCount() {
+    return $.event('CaptchaCount', this.captchas.length);
+  }
+};

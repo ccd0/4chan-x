@@ -1,105 +1,137 @@
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
 import ReportPage from './ArchiveReport.html';
 
-Report =
-  init: ->
-    return if not (match = location.search.match /\bno=(\d+)/)
-    Captcha.replace.init()
-    @postID = +match[1]
-    $.ready @ready
+var Report = {
+  init() {
+    let match;
+    if (!(match = location.search.match(/\bno=(\d+)/))) { return; }
+    Captcha.replace.init();
+    this.postID = +match[1];
+    return $.ready(this.ready);
+  },
 
-  ready: ->
-    $.addStyle CSS.report
+  ready() {
+    $.addStyle(CSS.report);
 
-    Report.archive() if Conf['Archive Report']
+    if (Conf['Archive Report']) { Report.archive(); }
 
-    new MutationObserver(->
-      Report.fit 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
-      Report.fit 'body'
-    ).observe d.body,
-      childList:  true
-      attributes: true
+    new MutationObserver(function() {
+      Report.fit('iframe[src^="https://www.google.com/recaptcha/api2/frame"]');
+      return Report.fit('body');
+    }).observe(d.body, {
+      childList:  true,
+      attributes: true,
       subtree:    true
-    Report.fit 'body'
+    }
+    );
+    return Report.fit('body');
+  },
 
-  fit: (selector) ->
-    return if not ((el = $ selector, doc) and getComputedStyle(el).visibility isnt 'hidden')
-    dy = el.getBoundingClientRect().bottom - doc.clientHeight + 8
-    window.resizeBy 0, dy if dy > 0
+  fit(selector) {
+    let el;
+    if (!((el = $(selector, doc)) && (getComputedStyle(el).visibility !== 'hidden'))) { return; }
+    const dy = (el.getBoundingClientRect().bottom - doc.clientHeight) + 8;
+    if (dy > 0) { return window.resizeBy(0, dy); }
+  },
 
-  archive: ->
-    return unless (urls = Redirect.report g.BOARD.ID).length
+  archive() {
+    let match, urls;
+    if (!(urls = Redirect.report(g.BOARD.ID)).length) { return; }
 
-    form    = $ 'form'
-    types   = $.id 'reportTypes'
-    message = $ 'h3'
+    const form    = $('form');
+    const types   = $.id('reportTypes');
+    const message = $('h3');
 
-    fieldset = $.el 'fieldset',
-      id: 'archive-report'
+    const fieldset = $.el('fieldset', {
+      id: 'archive-report',
       hidden: true
+    }
     ,
-      `{ innerHTML: ReportPage }`
-    enabled = $ '#archive-report-enabled', fieldset
-    reason  = $ '#archive-report-reason',  fieldset
-    submit  = $ '#archive-report-submit',  fieldset
+      { innerHTML: ReportPage });
+    const enabled = $('#archive-report-enabled', fieldset);
+    const reason  = $('#archive-report-reason',  fieldset);
+    const submit  = $('#archive-report-submit',  fieldset);
 
-    $.on enabled, 'change', ->
-      reason.disabled = !@checked
+    $.on(enabled, 'change', function() {
+      return reason.disabled = !this.checked;
+    });
 
-    if form and types
-      fieldset.hidden = !$('[value="31"]', types).checked
-      $.on types, 'change', (e) ->
-        fieldset.hidden = (e.target.value isnt '31')
-        Report.fit 'body'
-      $.after types, fieldset
-      Report.fit 'body'
-      $.one form, 'submit', (e) ->
-        if !fieldset.hidden and enabled.checked
-          e.preventDefault()
-          Report.archiveSubmit urls, reason.value, (results) =>
-            @action = '#archiveresults=' + encodeURIComponent JSON.stringify results
-            @submit()
-    else if message
-      fieldset.hidden = /Report submitted!/.test(message.textContent)
-      $.on enabled, 'change', ->
-        submit.hidden = !@checked
-      $.after message, fieldset
-      $.on submit, 'click', ->
-        Report.archiveSubmit urls, reason.value, Report.archiveResults
-
-    if (match = location.hash.match /^#archiveresults=(.*)$/)
-      try
-        Report.archiveResults JSON.parse decodeURIComponent match[1]
-
-  archiveSubmit: (urls, reason, cb) ->
-    form = $.formData
-      board:  g.BOARD.ID
-      num:    Report.postID
-      reason: reason
-    results = []
-    for [name, url] in urls
-      do (name, url) ->
-        $.ajax url, {
-          onloadend: ->
-            results.push [name, @response or {error: ''}]
-            if results.length is urls.length
-              cb results
-          form
+    if (form && types) {
+      fieldset.hidden = !$('[value="31"]', types).checked;
+      $.on(types, 'change', function(e) {
+        fieldset.hidden = (e.target.value !== '31');
+        return Report.fit('body');
+      });
+      $.after(types, fieldset);
+      Report.fit('body');
+      $.one(form, 'submit', function(e) {
+        if (!fieldset.hidden && enabled.checked) {
+          e.preventDefault();
+          return Report.archiveSubmit(urls, reason.value, results => {
+            this.action = '#archiveresults=' + encodeURIComponent(JSON.stringify(results));
+            return this.submit();
+          });
         }
-    return
+      });
+    } else if (message) {
+      fieldset.hidden = /Report submitted!/.test(message.textContent);
+      $.on(enabled, 'change', function() {
+        return submit.hidden = !this.checked;
+      });
+      $.after(message, fieldset);
+      $.on(submit, 'click', () => Report.archiveSubmit(urls, reason.value, Report.archiveResults));
+    }
 
-  archiveResults: (results) ->
-    fieldset = $.id 'archive-report'
-    for [name, response] in results
-      line = $.el 'h3',
-        className: 'archive-report-response'
-      if 'success' of response
-        $.addClass line, 'archive-report-success'
-        line.textContent = "#{name}: #{response.success}"
-      else
-        $.addClass line, 'archive-report-error'
-        line.textContent = "#{name}: #{response.error or 'Error reporting post.'}"
-      if fieldset
-        $.before fieldset, line
-      else
-        $.add d.body, line
-    return
+    if (match = location.hash.match(/^#archiveresults=(.*)$/)) {
+      try {
+        return Report.archiveResults(JSON.parse(decodeURIComponent(match[1])));
+      } catch (error) {}
+    }
+  },
+
+  archiveSubmit(urls, reason, cb) {
+    const form = $.formData({
+      board:  g.BOARD.ID,
+      num:    Report.postID,
+      reason
+    });
+    const results = [];
+    for (var [name, url] of urls) {
+      (function(name, url) {
+        return $.ajax(url, {
+          onloadend() {
+            results.push([name, this.response || {error: ''}]);
+            if (results.length === urls.length) {
+              return cb(results);
+            }
+          },
+          form
+        });
+      })(name, url);
+    }
+  },
+
+  archiveResults(results) {
+    const fieldset = $.id('archive-report');
+    for (var [name, response] of results) {
+      var line = $.el('h3',
+        {className: 'archive-report-response'});
+      if ('success' in response) {
+        $.addClass(line, 'archive-report-success');
+        line.textContent = `${name}: ${response.success}`;
+      } else {
+        $.addClass(line, 'archive-report-error');
+        line.textContent = `${name}: ${response.error || 'Error reporting post.'}`;
+      }
+      if (fieldset) {
+        $.before(fieldset, line);
+      } else {
+        $.add(d.body, line);
+      }
+    }
+  }
+};

@@ -1,15 +1,27 @@
-NormalizeURL =
-  init: ->
-    return unless Conf['Normalize URL']
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+const NormalizeURL = {
+  init() {
+    if (!Conf['Normalize URL']) { return; }
 
-    pathname = location.pathname.split /\/+/
-    if g.SITE.software is 'yotsuba'
-      switch g.VIEW
-        when 'thread'
-          pathname[2] = 'thread'
-          pathname = pathname[0...4]
-        when 'index'
-          pathname = pathname[0...3]
-    pathname = pathname.join '/'
-    if location.pathname isnt pathname
-      history.replaceState history.state, '', "#{location.protocol}//#{location.host}#{pathname}#{location.hash}"
+    let pathname = location.pathname.split(/\/+/);
+    if (g.SITE.software === 'yotsuba') {
+      switch (g.VIEW) {
+        case 'thread':
+          pathname[2] = 'thread';
+          pathname = pathname.slice(0, 4);
+          break;
+        case 'index':
+          pathname = pathname.slice(0, 3);
+          break;
+      }
+    }
+    pathname = pathname.join('/');
+    if (location.pathname !== pathname) {
+      return history.replaceState(history.state, '', `${location.protocol}//${location.host}${pathname}${location.hash}`);
+    }
+  }
+};

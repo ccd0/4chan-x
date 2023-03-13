@@ -1,183 +1,240 @@
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
 import archives from './archives.js';
 
-Redirect =
-  # TODO check
-  archives: archives
+var Redirect = {
+  // TODO check
+  archives,
 
-  init: ->
-    @selectArchives()
-    if Conf['archiveAutoUpdate']
-      now = Date.now()
-      @update() unless now - 2 * $.DAY < Conf['lastarchivecheck'] <= now
+  init() {
+    this.selectArchives();
+    if (Conf['archiveAutoUpdate']) {
+      const now = Date.now();
+      if (now - (2 * $.DAY) >= Conf['lastarchivecheck'] || Conf['lastarchivecheck'] > now) { return this.update(); }
+    }
+  },
 
-  selectArchives: ->
-    o =
-      thread: $.dict()
-      post:   $.dict()
+  selectArchives() {
+    let boardID, boards, data, files;
+    const o = {
+      thread: $.dict(),
+      post:   $.dict(),
       file:   $.dict()
+    };
 
-    archives = $.dict()
-    for data in Conf['archives']
-      for key in ['boards', 'files']
-        data[key] = [] unless data[key] instanceof Array
-      {uid, name, boards, files, software} = data
-      continue unless software in ['fuuka', 'foolfuuka']
-      archives[JSON.stringify(uid ? name)] = data
-      for boardID in boards
-        o.thread[boardID] = data unless boardID of o.thread
-        o.post[boardID]   = data unless boardID of o.post   or software isnt 'foolfuuka'
-        o.file[boardID]   = data unless boardID of o.file   or boardID  not in files
+    archives = $.dict();
+    for (data of Conf['archives']) {
+      var name, software, uid;
+      for (var key of ['boards', 'files']) {
+        if (!(data[key] instanceof Array)) { data[key] = []; }
+      }
+      ({uid, name, boards, files, software} = data);
+      if (!['fuuka', 'foolfuuka'].includes(software)) { continue; }
+      archives[JSON.stringify(uid ?? name)] = data;
+      for (boardID of boards) {
+        if (!(boardID in o.thread)) { o.thread[boardID] = data; }
+        if (!(boardID in o.post)   && (software === 'foolfuuka')) { o.post[boardID]   = data; }
+        if (!(boardID in o.file)   && files.includes(boardID)) { o.file[boardID]   = data; }
+      }
+    }
 
-    for boardID, record of Conf['selectedArchives']
-      for type, id of record when (archive = archives[JSON.stringify id]) and $.hasOwn(o, type)
-        boards = if type is 'file' then archive.files else archive.boards
-        o[type][boardID] = archive if boardID in boards
+    for (boardID in Conf['selectedArchives']) {
+      var record = Conf['selectedArchives'][boardID];
+      for (var type in record) {
+        var archive;
+        var id = record[type];
+        if ((archive = archives[JSON.stringify(id)]) && $.hasOwn(o, type)) {
+          boards = type === 'file' ? archive.files : archive.boards;
+          if (boards.includes(boardID)) { o[type][boardID] = archive; }
+        }
+      }
+    }
 
-    Redirect.data = o
+    return Redirect.data = o;
+  },
 
-  update: (cb) ->
-    urls = []
-    responses = []
-    nloaded = 0
-    for url in Conf['archiveLists'].split('\n') when url[0] isnt '#'
-      url = url.trim()
-      urls.push url if url
+  update(cb) {
+    let url;
+    const urls = [];
+    const responses = [];
+    let nloaded = 0;
+    for (url of Conf['archiveLists'].split('\n')) {
+      if (url[0] !== '#') {
+        url = url.trim();
+        if (url) { urls.push(url); }
+      }
+    }
 
-    fail = (url, action, msg) ->
-      new Notice 'warning', "Error #{action} archive data from\n#{url}\n#{msg}", 20
+    const fail = (url, action, msg) => new Notice('warning', `Error ${action} archive data from\n${url}\n${msg}`, 20);
 
-    load = (i) -> ->
-      return fail urls[i], 'fetching', (if @status then "Error #{@statusText} (#{@status})" else 'Connection Error') unless @status is 200
-      {response} = @
-      response = [response] unless response instanceof Array
-      responses[i] = response
-      nloaded++
-      if nloaded is urls.length
-        Redirect.parse responses, cb
+    const load = i => (function() {
+      if (this.status !== 200) { return fail(urls[i], 'fetching', (this.status ? `Error ${this.statusText} (${this.status})` : 'Connection Error')); }
+      let {response} = this;
+      if (!(response instanceof Array)) { response = [response]; }
+      responses[i] = response;
+      nloaded++;
+      if (nloaded === urls.length) {
+        return Redirect.parse(responses, cb);
+      }
+    });
 
-    if urls.length
-      for url, i in urls
-        if url[0] in ['[', '{']
-          try
-            response = JSON.parse url
-          catch err
-            fail url, 'parsing', err.message
-            continue
-          load(i).call {status: 200, response}
-        else
-          CrossOrigin.ajax url,
-            onloadend: load(i)
-    else
-      Redirect.parse [], cb
-    return
+    if (urls.length) {
+      for (let i = 0; i < urls.length; i++) {
+        url = urls[i];
+        if (['[', '{'].includes(url[0])) {
+          var response;
+          try {
+            response = JSON.parse(url);
+          } catch (err) {
+            fail(url, 'parsing', err.message);
+            continue;
+          }
+          load(i).call({status: 200, response});
+        } else {
+          CrossOrigin.ajax(url,
+            {onloadend: load(i)});
+        }
+      }
+    } else {
+      Redirect.parse([], cb);
+    }
+  },
 
-  parse: (responses, cb) ->
-    archives = []
-    archiveUIDs = $.dict()
-    for response in responses
-      for data in response
-        uid = JSON.stringify(data.uid ? data.name)
-        if uid of archiveUIDs
-          $.extend archiveUIDs[uid], data
-        else
-          archiveUIDs[uid] = $.dict.clone data
-          archives.push data
-    items = {archives, lastarchivecheck: Date.now()}
-    $.set items
-    $.extend Conf, items
-    Redirect.selectArchives()
-    cb?()
+  parse(responses, cb) {
+    archives = [];
+    const archiveUIDs = $.dict();
+    for (var response of responses) {
+      for (var data of response) {
+        var uid = JSON.stringify(data.uid ?? data.name);
+        if (uid in archiveUIDs) {
+          $.extend(archiveUIDs[uid], data);
+        } else {
+          archiveUIDs[uid] = $.dict.clone(data);
+          archives.push(data);
+        }
+      }
+    }
+    const items = {archives, lastarchivecheck: Date.now()};
+    $.set(items);
+    $.extend(Conf, items);
+    Redirect.selectArchives();
+    return cb?.();
+  },
 
-  to: (dest, data) ->
-    archive = (if dest in ['search', 'board'] then Redirect.data.thread else Redirect.data[dest])[data.boardID]
-    return '' unless archive
-    Redirect[dest] archive, data
+  to(dest, data) {
+    const archive = (['search', 'board'].includes(dest) ? Redirect.data.thread : Redirect.data[dest])[data.boardID];
+    if (!archive) { return ''; }
+    return Redirect[dest](archive, data);
+  },
 
-  protocol: (archive) ->
-    protocol = location.protocol
-    unless $.getOwn(archive, protocol[0...-1])
-      protocol = if protocol is 'https:' then 'http:' else 'https:'
-    "#{protocol}//"
+  protocol(archive) {
+    let {
+      protocol
+    } = location;
+    if (!$.getOwn(archive, protocol.slice(0, -1))) {
+      protocol = protocol === 'https:' ? 'http:' : 'https:';
+    }
+    return `${protocol}//`;
+  },
 
-  thread: (archive, {boardID, threadID, postID}) ->
-    # Keep the post number only if the location.hash was sent f.e.
-    path = if threadID
-      "#{boardID}/thread/#{threadID}"
-    else
-      "#{boardID}/post/#{postID}"
-    if archive.software is 'foolfuuka'
-      path += '/'
-    if threadID and postID
-      path += if archive.software is 'foolfuuka'
-        "##{postID}"
-      else
-        "#p#{postID}"
-    "#{Redirect.protocol archive}#{archive.domain}/#{path}"
+  thread(archive, {boardID, threadID, postID}) {
+    // Keep the post number only if the location.hash was sent f.e.
+    let path = threadID ?
+      `${boardID}/thread/${threadID}`
+    :
+      `${boardID}/post/${postID}`;
+    if (archive.software === 'foolfuuka') {
+      path += '/';
+    }
+    if (threadID && postID) {
+      path += archive.software === 'foolfuuka' ?
+        `#${postID}`
+      :
+        `#p${postID}`;
+    }
+    return `${Redirect.protocol(archive)}${archive.domain}/${path}`;
+  },
 
-  post: (archive, {boardID, postID}) ->
-    # For fuuka-based archives:
-    # https://github.com/eksopl/fuuka/issues/27
-    protocol = Redirect.protocol archive
-    url = "#{protocol}#{archive.domain}/_/api/chan/post/?board=#{boardID}&num=#{postID}"
-    return '' unless Redirect.securityCheck url
+  post(archive, {boardID, postID}) {
+    // For fuuka-based archives:
+    // https://github.com/eksopl/fuuka/issues/27
+    const protocol = Redirect.protocol(archive);
+    const url = `${protocol}${archive.domain}/_/api/chan/post/?board=${boardID}&num=${postID}`;
+    if (!Redirect.securityCheck(url)) { return ''; }
 
-    url
+    return url;
+  },
 
-  file: (archive, {boardID, filename}) ->
-    return '' unless filename
-    if boardID is 'f'
-      filename = encodeURIComponent $.unescape decodeURIComponent filename
-    else
-      return '' if /[sm]\.jpg$/.test(filename)
-    "#{Redirect.protocol archive}#{archive.domain}/#{boardID}/full_image/#{filename}"
+  file(archive, {boardID, filename}) {
+    if (!filename) { return ''; }
+    if (boardID === 'f') {
+      filename = encodeURIComponent($.unescape(decodeURIComponent(filename)));
+    } else {
+      if (/[sm]\.jpg$/.test(filename)) { return ''; }
+    }
+    return `${Redirect.protocol(archive)}${archive.domain}/${boardID}/full_image/${filename}`;
+  },
 
-  board: (archive, {boardID}) ->
-    "#{Redirect.protocol archive}#{archive.domain}/#{boardID}/"
+  board(archive, {boardID}) {
+    return `${Redirect.protocol(archive)}${archive.domain}/${boardID}/`;
+  },
 
-  search: (archive, {boardID, type, value}) ->
-    type = if type is 'name'
+  search(archive, {boardID, type, value}) {
+    type = type === 'name' ?
       'username'
-    else if type is 'MD5'
+    : type === 'MD5' ?
       'image'
-    else
-      type
-    if type is 'capcode'
-      # https://github.com/pleebe/FoolFuuka/blob/bf4224eed04637a4d0bd4411c2bf5f9945dfec0b/src/Model/Search.php#L363
+    :
+      type;
+    if (type === 'capcode') {
+      // https://github.com/pleebe/FoolFuuka/blob/bf4224eed04637a4d0bd4411c2bf5f9945dfec0b/src/Model/Search.php#L363
       value = $.getOwn({
-        'Developer': 'dev'
+        'Developer': 'dev',
         'Verified':  'ver'
-      }, value) or value.toLowerCase()
-    else if type is 'image'
-      value = value.replace /[+/=]/g, (c) -> ({'+': '-', '/': '_', '=': ''})[c]
-    value = encodeURIComponent value
-    path  = if archive.software is 'foolfuuka'
-      "#{boardID}/search/#{type}/#{value}/"
-    else if type is 'image'
-      "#{boardID}/image/#{value}"
-    else
-      "#{boardID}/?task=search2&search_#{type}=#{value}"
-    "#{Redirect.protocol archive}#{archive.domain}/#{path}"
+      }, value) || value.toLowerCase();
+    } else if (type === 'image') {
+      value = value.replace(/[+/=]/g, c => ({'+': '-', '/': '_', '=': ''})[c]);
+    }
+    value = encodeURIComponent(value);
+    const path  = archive.software === 'foolfuuka' ?
+      `${boardID}/search/${type}/${value}/`
+    : type === 'image' ?
+      `${boardID}/image/${value}`
+    :
+      `${boardID}/?task=search2&search_${type}=${value}`;
+    return `${Redirect.protocol(archive)}${archive.domain}/${path}`;
+  },
 
-  report: (boardID) ->
-    urls = []
-    for archive in Conf['archives']
-      {software, https, reports, boards, name, domain} = archive
-      if software is 'foolfuuka' and https and reports and boards instanceof Array and boardID in boards
-        urls.push [name, "https://#{domain}/_/api/chan/offsite_report/"]
-    urls
+  report(boardID) {
+    const urls = [];
+    for (var archive of Conf['archives']) {
+      var {software, https, reports, boards, name, domain} = archive;
+      if ((software === 'foolfuuka') && https && reports && boards instanceof Array && boards.includes(boardID)) {
+        urls.push([name, `https://${domain}/_/api/chan/offsite_report/`]);
+      }
+    }
+    return urls;
+  },
 
-  securityCheck: (url) ->
-    /^https:\/\//.test(url) or
-    location.protocol is 'http:' or
-    Conf['Exempt Archives from Encryption']
+  securityCheck(url) {
+    return /^https:\/\//.test(url) ||
+    (location.protocol === 'http:') ||
+    Conf['Exempt Archives from Encryption'];
+  },
 
-  navigate: (dest, data, alternative) ->
-    Redirect.init() unless Redirect.data
-    url = Redirect.to dest, data
-    if url and (
-      Redirect.securityCheck(url) or
-      confirm "Redirect to #{url}?\n\nYour connection will not be encrypted."
-    )
-      location.replace url
-    else if alternative
-      location.replace alternative
+  navigate(dest, data, alternative) {
+    if (!Redirect.data) { Redirect.init(); }
+    const url = Redirect.to(dest, data);
+    if (url && (
+      Redirect.securityCheck(url) ||
+      confirm(`Redirect to ${url}?\n\nYour connection will not be encrypted.`)
+    )) {
+      return location.replace(url);
+    } else if (alternative) {
+      return location.replace(alternative);
+    }
+  }
+};

@@ -1,24 +1,36 @@
-class Board
-  toString: -> @ID
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+class Board {
+  toString() { return this.ID; }
 
-  constructor: (@ID) ->
-    @boardID = @ID
-    @siteID  = g.SITE.ID
-    @threads = new SimpleDict()
-    @posts   = new SimpleDict()
-    @config  = BoardConfig.boards?[@ID] or {}
+  constructor(ID) {
+    this.ID = ID;
+    this.boardID = this.ID;
+    this.siteID  = g.SITE.ID;
+    this.threads = new SimpleDict();
+    this.posts   = new SimpleDict();
+    this.config  = BoardConfig.boards?.[this.ID] || {};
 
-    g.boards[@] = @
+    g.boards[this] = this;
+  }
 
-  cooldowns: ->
-    c2 = (@config or {}).cooldowns or {}
-    c =
-      thread: c2.threads or 0
-      reply:  c2.replies or 0
-      image:  c2.images  or 0
-      thread_global: 300 # inter-board thread cooldown
-    # Pass users have reduced cooldowns.
-    if d.cookie.indexOf('pass_enabled=1') >= 0
-      for key in ['reply', 'image']
-        c[key] = Math.ceil(c[key] / 2)
-    c
+  cooldowns() {
+    const c2 = (this.config || {}).cooldowns || {};
+    const c = {
+      thread: c2.threads || 0,
+      reply:  c2.replies || 0,
+      image:  c2.images  || 0,
+      thread_global: 300 // inter-board thread cooldown
+    };
+    // Pass users have reduced cooldowns.
+    if (d.cookie.indexOf('pass_enabled=1') >= 0) {
+      for (var key of ['reply', 'image']) {
+        c[key] = Math.ceil(c[key] / 2);
+      }
+    }
+    return c;
+  }
+}

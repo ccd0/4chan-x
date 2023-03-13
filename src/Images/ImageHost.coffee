@@ -1,34 +1,51 @@
-ImageHost =
-  init: ->
-    return unless (@useFaster = /\S/.test(Conf['fourchanImageHost'])) and g.SITE.software is 'yotsuba' and g.VIEW in ['index', 'thread']
-    Callbacks.Post.push
-      name: 'Image Host Rewriting'
-      cb:   @node
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var ImageHost = {
+  init() {
+    if ((!(this.useFaster = /\S/.test(Conf['fourchanImageHost']))) || (g.SITE.software !== 'yotsuba') || !['index', 'thread'].includes(g.VIEW)) { return; }
+    return Callbacks.Post.push({
+      name: 'Image Host Rewriting',
+      cb:   this.node
+    });
+  },
 
-  suggestions: ['i.4cdn.org', 'is2.4chan.org']
+  suggestions: ['i.4cdn.org', 'is2.4chan.org'],
 
-  host: ->
-    Conf['fourchanImageHost'].trim() or 'i.4cdn.org'
-  flashHost: ->
-    'i.4cdn.org'
-  thumbHost: ->
-    'i.4cdn.org'
-  test: (hostname) ->
-    hostname is 'i.4cdn.org' or ImageHost.regex.test(hostname)
+  host() {
+    return Conf['fourchanImageHost'].trim() || 'i.4cdn.org';
+  },
+  flashHost() {
+    return 'i.4cdn.org';
+  },
+  thumbHost() {
+    return 'i.4cdn.org';
+  },
+  test(hostname) {
+    return (hostname === 'i.4cdn.org') || ImageHost.regex.test(hostname);
+  },
 
-  regex: /^is\d*\.4chan(?:nel)?\.org$/
+  regex: /^is\d*\.4chan(?:nel)?\.org$/,
 
-  node: ->
-    return if @isClone
-    host = ImageHost.host()
-    if @file and ImageHost.test(@file.url.split('/')[2]) and not /\.swf$/.test(@file.url)
-      @file.link.hostname = host
-      @file.thumbLink.hostname = host if @file.thumbLink
-      @file.url = @file.link.href
-    ImageHost.fixLinks $$('a', @nodes.comment)
+  node() {
+    if (this.isClone) { return; }
+    const host = ImageHost.host();
+    if (this.file && ImageHost.test(this.file.url.split('/')[2]) && !/\.swf$/.test(this.file.url)) {
+      this.file.link.hostname = host;
+      if (this.file.thumbLink) { this.file.thumbLink.hostname = host; }
+      this.file.url = this.file.link.href;
+    }
+    return ImageHost.fixLinks($$('a', this.nodes.comment));
+  },
 
-  fixLinks: (links) ->
-    for link in links when ImageHost.test(link.hostname) and not /\.swf$/.test(link.pathname)
-      host = ImageHost.host()
-      link.hostname = host unless link.hostname is host
-    return
+  fixLinks(links) {
+    for (var link of links) {
+      if (ImageHost.test(link.hostname) && !/\.swf$/.test(link.pathname)) {
+        var host = ImageHost.host();
+        if (link.hostname !== host) { link.hostname = host; }
+      }
+    }
+  }
+};

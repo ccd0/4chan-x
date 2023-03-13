@@ -1,182 +1,238 @@
-# <% if (type === 'crx') { %>
-eventPageRequest = do ->
-  callbacks = []
-  chrome.runtime.onMessage.addListener (response) ->
-    callbacks[response.id] response.data
-    delete callbacks[response.id]
-  (params, cb) ->
-    chrome.runtime.sendMessage params, (id) ->
-      callbacks[id] = cb
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS206: Consider reworking classes to avoid initClass
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+// <% if (type === 'crx') { %>
+let Request;
+const eventPageRequest = (function() {
+  const callbacks = [];
+  chrome.runtime.onMessage.addListener(function(response) {
+    callbacks[response.id](response.data);
+    return delete callbacks[response.id];});
+  return (params, cb) => chrome.runtime.sendMessage(params, id => callbacks[id] = cb);
+})();
 
-# <% } %>
-CrossOrigin =
-  binary: (url, cb, headers=$.dict()) ->
-    # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
-    url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
-    # <% if (type === 'crx') { %>
-    eventPageRequest {type: 'ajax', url, headers, responseType: 'arraybuffer'}, ({response, responseHeaderString}) ->
-      response = new Uint8Array(response) if response
-      cb response, responseHeaderString
-    # <% } %>
-    # <% if (type === 'userscript') { %>
-    fallback = ->
-      $.ajax url, {
-        headers
-        responseType: 'arraybuffer'
-        onloadend: ->
-          if @status and @response
-            cb new Uint8Array(@response), @getAllResponseHeaders()
-          else
-            cb null
-      }
-    unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
-      fallback()
-      return
-    gmOptions =
-      method: "GET"
-      url: url
-      headers: headers
-      responseType: 'arraybuffer'
-      overrideMimeType: 'text/plain; charset=x-user-defined'
-      onload: (xhr) ->
-        if xhr.response instanceof ArrayBuffer
-          data = new Uint8Array xhr.response
-        else
-          r = xhr.responseText
-          data = new Uint8Array r.length
-          i = 0
-          while i < r.length
-            data[i] = r.charCodeAt i
-            i++
-        cb data, xhr.responseHeaders
-      onerror: ->
-        cb null
-      onabort: ->
-        cb null
-    try
-      (GM?.xmlHttpRequest or GM_xmlhttpRequest) gmOptions
-    catch
-      fallback()
-    # <% } %>
-
-  file: (url, cb) ->
-    CrossOrigin.binary url, (data, headers) ->
-      return cb null unless data?
-      name = url.match(/([^\/?#]+)\/*(?:$|[?#])/)?[1]
-      contentType        = headers.match(/Content-Type:\s*(.*)/i)?[1]
-      contentDisposition = headers.match(/Content-Disposition:\s*(.*)/i)?[1]
-      mime = contentType?.match(/[^;]*/)[0] or 'application/octet-stream'
-      match =
-        contentDisposition?.match(/\bfilename\s*=\s*"((\\"|[^"])+)"/i)?[1] or
-        contentType?.match(/\bname\s*=\s*"((\\"|[^"])+)"/i)?[1]
-      if match
-        name = match.replace /\\"/g, '"'
-      if /^text\/plain;\s*charset=x-user-defined$/i.test(mime)
-        # In JS Blocker (Safari) content type comes back as 'text/plain; charset=x-user-defined'; guess from filename instead.
-        mime = $.getOwn(QR.typeFromExtension, name.match(/[^.]*$/)[0].toLowerCase()) or 'application/octet-stream'
-      blob = new Blob([data], {type: mime})
-      blob.name = name
-      cb blob
-
-  Request: class Request
-    status: 0
-    statusText: ''
-    response: null
-    responseHeaderString: null
-    getResponseHeader: (headerName) ->
-      if !@responseHeaders? and @responseHeaderString?
-        @responseHeaders = $.dict()
-        for header in @responseHeaderString.split('\r\n')
-          if (i = header.indexOf(':')) >= 0
-            key = header[...i].trim().toLowerCase()
-            val = header[i+1..].trim()
-            @responseHeaders[key] = val
-      @responseHeaders?[headerName.toLowerCase()] ? null
-    abort: ->
-    onloadend: ->
-
-  # Attempts to fetch `url` using cross-origin privileges, if available.
-  # Interface is a subset of that of $.ajax.
-  # Options:
-  #   `onloadend` - called with the returned object as `this` on success or error/abort/timeout.
-  #   `timeout` - time limit for request
-  #   `responseType` - expected response type, 'json' by default; 'json' and 'text' supported
-  #   `headers` - request headers
-  # Returned object properties:
-  #   `status` - HTTP status (0 if connection not successful)
-  #   `statusText` - HTTP status text
-  #   `response` - decoded response body
-  #   `abort` - function for aborting the request (silently fails on some platforms)
-  #   `getResponseHeader` - function for reading response headers
-  ajax: (url, options={}) ->
-    {onloadend, timeout, responseType, headers} = options
-    responseType ?= 'json'
-
-    # <% if (type === 'userscript') { %>
-    unless GM?.xmlHttpRequest? or GM_xmlhttpRequest?
-      return $.ajax url, options
-    # <% } %>
-
-    req = new CrossOrigin.Request()
-    req.onloadend = onloadend
-
-    # <% if (type === 'userscript') { %>
-    gmOptions = {
-      method: 'GET'
-      url
-      headers
-      timeout
-      onload: (xhr) ->
-        try
-          response = switch responseType
-            when 'json'
-              if xhr.responseText then JSON.parse(xhr.responseText) else null
-            else
-              xhr.responseText
-          $.extend req, {
-            response
-            status: xhr.status
-            statusText: xhr.statusText
-            responseHeaderString: xhr.responseHeaders
+// <% } %>
+var CrossOrigin = {
+  binary(url, cb, headers=$.dict()) {
+    // XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
+    url = url.replace(/^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/');
+    // <% if (type === 'crx') { %>
+    eventPageRequest({type: 'ajax', url, headers, responseType: 'arraybuffer'}, function({response, responseHeaderString}) {
+      if (response) { response = new Uint8Array(response); }
+      return cb(response, responseHeaderString);
+    });
+    // <% } %>
+    // <% if (type === 'userscript') { %>
+    const fallback = function() {
+      return $.ajax(url, {
+        headers,
+        responseType: 'arraybuffer',
+        onloadend() {
+          if (this.status && this.response) {
+            return cb(new Uint8Array(this.response), this.getAllResponseHeaders());
+          } else {
+            return cb(null);
           }
-        req.onloadend()
-      onerror:   -> req.onloadend()
-      onabort:   -> req.onloadend()
-      ontimeout: -> req.onloadend()
+        }
+      });
+    };
+    if ((GM?.xmlHttpRequest == null) && (typeof GM_xmlhttpRequest === 'undefined' || GM_xmlhttpRequest === null)) {
+      fallback();
+      return;
     }
-    try
-      gmReq = (GM?.xmlHttpRequest or GM_xmlhttpRequest) gmOptions
-    catch
-      return $.ajax url, options
+    const gmOptions = {
+      method: "GET",
+      url,
+      headers,
+      responseType: 'arraybuffer',
+      overrideMimeType: 'text/plain; charset=x-user-defined',
+      onload(xhr) {
+        let data;
+        if (xhr.response instanceof ArrayBuffer) {
+          data = new Uint8Array(xhr.response);
+        } else {
+          const r = xhr.responseText;
+          data = new Uint8Array(r.length);
+          let i = 0;
+          while (i < r.length) {
+            data[i] = r.charCodeAt(i);
+            i++;
+          }
+        }
+        return cb(data, xhr.responseHeaders);
+      },
+      onerror() {
+        return cb(null);
+      },
+      onabort() {
+        return cb(null);
+      }
+    };
+    try {
+      return (GM?.xmlHttpRequest || GM_xmlhttpRequest)(gmOptions);
+    } catch (error) {
+      return fallback();
+    }
+  },
+    // <% } %>
 
-    if gmReq and typeof gmReq.abort is 'function'
-      req.abort = ->
-        try
-          gmReq.abort()
-    # <% } %>
+  file(url, cb) {
+    return CrossOrigin.binary(url, function(data, headers) {
+      if (data == null) { return cb(null); }
+      let name = url.match(/([^\/?#]+)\/*(?:$|[?#])/)?.[1];
+      const contentType        = headers.match(/Content-Type:\s*(.*)/i)?.[1];
+      const contentDisposition = headers.match(/Content-Disposition:\s*(.*)/i)?.[1];
+      let mime = contentType?.match(/[^;]*/)[0] || 'application/octet-stream';
+      const match =
+        contentDisposition?.match(/\bfilename\s*=\s*"((\\"|[^"])+)"/i)?.[1] ||
+        contentType?.match(/\bname\s*=\s*"((\\"|[^"])+)"/i)?.[1];
+      if (match) {
+        name = match.replace(/\\"/g, '"');
+      }
+      if (/^text\/plain;\s*charset=x-user-defined$/i.test(mime)) {
+        // In JS Blocker (Safari) content type comes back as 'text/plain; charset=x-user-defined'; guess from filename instead.
+        mime = $.getOwn(QR.typeFromExtension, name.match(/[^.]*$/)[0].toLowerCase()) || 'application/octet-stream';
+      }
+      const blob = new Blob([data], {type: mime});
+      blob.name = name;
+      return cb(blob);
+    });
+  },
 
-    # <% if (type === 'crx') { %>
-    eventPageRequest {type: 'ajax', url, responseType, headers, timeout}, (result) ->
-      if result.status
-        $.extend req, result
-      req.onloadend()
-    # <% } %>
+  Request: (Request = (function() {
+    Request = class Request {
+      static initClass() {
+        this.prototype.status = 0;
+        this.prototype.statusText = '';
+        this.prototype.response = null;
+        this.prototype.responseHeaderString = null;
+      }
+      getResponseHeader(headerName) {
+        if ((this.responseHeaders == null) && (this.responseHeaderString != null)) {
+          this.responseHeaders = $.dict();
+          for (var header of this.responseHeaderString.split('\r\n')) {
+            var i;
+            if ((i = header.indexOf(':')) >= 0) {
+              var key = header.slice(0, i).trim().toLowerCase();
+              var val = header.slice(i+1).trim();
+              this.responseHeaders[key] = val;
+            }
+          }
+        }
+        return this.responseHeaders?.[headerName.toLowerCase()] ?? null;
+      }
+      abort() {}
+      onloadend() {}
+    };
+    Request.initClass();
+    return Request;
+  })()),
 
-    req
+  // Attempts to fetch `url` using cross-origin privileges, if available.
+  // Interface is a subset of that of $.ajax.
+  // Options:
+  //   `onloadend` - called with the returned object as `this` on success or error/abort/timeout.
+  //   `timeout` - time limit for request
+  //   `responseType` - expected response type, 'json' by default; 'json' and 'text' supported
+  //   `headers` - request headers
+  // Returned object properties:
+  //   `status` - HTTP status (0 if connection not successful)
+  //   `statusText` - HTTP status text
+  //   `response` - decoded response body
+  //   `abort` - function for aborting the request (silently fails on some platforms)
+  //   `getResponseHeader` - function for reading response headers
+  ajax(url, options={}) {
+    let gmReq;
+    let {onloadend, timeout, responseType, headers} = options;
+    if (responseType == null) { responseType = 'json'; }
 
-  cache: (url, cb) ->
-    $.cache url, cb,
-      ajax: CrossOrigin.ajax
+    // <% if (type === 'userscript') { %>
+    if ((GM?.xmlHttpRequest == null) && (typeof GM_xmlhttpRequest === 'undefined' || GM_xmlhttpRequest === null)) {
+      return $.ajax(url, options);
+    }
+    // <% } %>
 
-  # <% if (type === 'crx') { %>
-  permission: (cb, cbFail, origins) ->
-    eventPageRequest {type: 'permission', origins}, (result) ->
-      if result
-        cb()
-      else
-        cbFail()
-  # <% } %>
-  # <% if (type === 'userscript') { %>
-  permission: (cb) ->
-    cb()
-  # <% } %>
+    const req = new CrossOrigin.Request();
+    req.onloadend = onloadend;
+
+    // <% if (type === 'userscript') { %>
+    const gmOptions = {
+      method: 'GET',
+      url,
+      headers,
+      timeout,
+      onload(xhr) {
+        try {
+          const response = (() => { switch (responseType) {
+            case 'json':
+              if (xhr.responseText) { return JSON.parse(xhr.responseText); } else { return null; }
+            default:
+              return xhr.responseText;
+          } })();
+          $.extend(req, {
+            response,
+            status: xhr.status,
+            statusText: xhr.statusText,
+            responseHeaderString: xhr.responseHeaders
+          });
+        } catch (error) {}
+        return req.onloadend();
+      },
+      onerror() { return req.onloadend(); },
+      onabort() { return req.onloadend(); },
+      ontimeout() { return req.onloadend(); }
+    };
+    try {
+      gmReq = (GM?.xmlHttpRequest || GM_xmlhttpRequest)(gmOptions);
+    } catch (error) {
+      return $.ajax(url, options);
+    }
+
+    if (gmReq && (typeof gmReq.abort === 'function')) {
+      req.abort = function() {
+        try {
+          return gmReq.abort();
+        } catch (error1) {}
+      };
+    }
+    // <% } %>
+
+    // <% if (type === 'crx') { %>
+    eventPageRequest({type: 'ajax', url, responseType, headers, timeout}, function(result) {
+      if (result.status) {
+        $.extend(req, result);
+      }
+      return req.onloadend();
+    });
+    // <% } %>
+
+    return req;
+  },
+
+  cache(url, cb) {
+    return $.cache(url, cb,
+      {ajax: CrossOrigin.ajax});
+  },
+
+  // <% if (type === 'crx') { %>
+  permission(cb, cbFail, origins) {
+    return eventPageRequest({type: 'permission', origins}, function(result) {
+      if (result) {
+        return cb();
+      } else {
+        return cbFail();
+      }
+    });
+  },
+  // <% } %>
+  // <% if (type === 'userscript') { %>
+  permission(cb) {
+    return cb();
+  }
+};
+  // <% } %>

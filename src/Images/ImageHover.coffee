@@ -1,78 +1,104 @@
-ImageHover =
-  init: ->
-    return if g.VIEW not in ['index', 'thread']
-    if Conf['Image Hover']
-      Callbacks.Post.push
-        name: 'Image Hover'
-        cb:   @node
-    if Conf['Image Hover in Catalog']
-      Callbacks.CatalogThread.push
-        name: 'Image Hover'
-        cb:   @catalogNode
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var ImageHover = {
+  init() {
+    if (!['index', 'thread'].includes(g.VIEW)) { return; }
+    if (Conf['Image Hover']) {
+      Callbacks.Post.push({
+        name: 'Image Hover',
+        cb:   this.node
+      });
+    }
+    if (Conf['Image Hover in Catalog']) {
+      return Callbacks.CatalogThread.push({
+        name: 'Image Hover',
+        cb:   this.catalogNode
+      });
+    }
+  },
 
-  node: ->
-    for file in @files when (file.isImage or file.isVideo) and file.thumb
-      $.on file.thumb, 'mouseover', ImageHover.mouseover(@, file)
+  node() {
+    return this.files.filter((file) => (file.isImage || file.isVideo) && file.thumb).map((file) =>
+      $.on(file.thumb, 'mouseover', ImageHover.mouseover(this, file)));
+  },
 
-  catalogNode: ->
-    file = @thread.OP.files[0]
-    return unless file and (file.isImage or file.isVideo)
-    $.on @nodes.thumb, 'mouseover', ImageHover.mouseover(@thread.OP, file)
+  catalogNode() {
+    const file = this.thread.OP.files[0];
+    if (!file || (!file.isImage && !file.isVideo)) { return; }
+    return $.on(this.nodes.thumb, 'mouseover', ImageHover.mouseover(this.thread.OP, file));
+  },
 
-  mouseover: (post, file) -> (e) ->
-    return unless doc.contains @
-    {isVideo} = file
-    return if file.isExpanding or file.isExpanded or g.SITE.isThumbExpanded?(file)
-    error = ImageHover.error post, file
-    if ImageCommon.cache?.dataset.fileID is "#{post.fullID}.#{file.index}"
-      el = ImageCommon.popCache()
-      $.on el, 'error', error
-    else
-      el = $.el (if isVideo then 'video' else 'img')
-      el.dataset.fileID = "#{post.fullID}.#{file.index}"
-      $.on el, 'error', error
-      el.src = file.url
+  mouseover(post, file) { return function(e) {
+    let el, height, width;
+    if (!doc.contains(this)) { return; }
+    const {isVideo} = file;
+    if (file.isExpanding || file.isExpanded || g.SITE.isThumbExpanded?.(file)) { return; }
+    const error = ImageHover.error(post, file);
+    if (ImageCommon.cache?.dataset.fileID === `${post.fullID}.${file.index}`) {
+      el = ImageCommon.popCache();
+      $.on(el, 'error', error);
+    } else {
+      el = $.el((isVideo ? 'video' : 'img'));
+      el.dataset.fileID = `${post.fullID}.${file.index}`;
+      $.on(el, 'error', error);
+      el.src = file.url;
+    }
 
-    if Conf['Restart when Opened']
-      ImageCommon.rewind el
-      ImageCommon.rewind @
-    el.id = 'ihover'
-    $.add Header.hover, el
-    if isVideo
-      el.loop     = true
-      el.controls = false
-      Volume.setup el
-      if Conf['Autoplay']
-        el.play()
-        @currentTime = el.currentTime if @nodeName is 'VIDEO'
-    if file.dimensions
-      [width, height] = (+x for x in file.dimensions.split 'x')
-      maxWidth = doc.clientWidth
-      maxHeight = doc.clientHeight - UI.hover.padding
-      scale = Math.min 1, maxWidth / width, maxHeight / height
-      width *= scale
-      height *= scale
-      el.style.maxWidth  = "#{width}px"
-      el.style.maxHeight = "#{height}px"
-    UI.hover
-      root: @
-      el: el
-      latestEvent: e
-      endEvents: 'mouseout click'
-      height: height
-      width: width
-      noRemove: true
-      cb: ->
-        $.off el, 'error', error
-        ImageCommon.pushCache el
-        ImageCommon.pause el
-        $.rm el
-        el.removeAttribute 'style'
+    if (Conf['Restart when Opened']) {
+      ImageCommon.rewind(el);
+      ImageCommon.rewind(this);
+    }
+    el.id = 'ihover';
+    $.add(Header.hover, el);
+    if (isVideo) {
+      el.loop     = true;
+      el.controls = false;
+      Volume.setup(el);
+      if (Conf['Autoplay']) {
+        el.play();
+        if (this.nodeName === 'VIDEO') { this.currentTime = el.currentTime; }
+      }
+    }
+    if (file.dimensions) {
+      [width, height] = Array.from((file.dimensions.split('x').map((x) => +x)));
+      const maxWidth = doc.clientWidth;
+      const maxHeight = doc.clientHeight - UI.hover.padding;
+      const scale = Math.min(1, maxWidth / width, maxHeight / height);
+      width *= scale;
+      height *= scale;
+      el.style.maxWidth  = `${width}px`;
+      el.style.maxHeight = `${height}px`;
+    }
+    return UI.hover({
+      root: this,
+      el,
+      latestEvent: e,
+      endEvents: 'mouseout click',
+      height,
+      width,
+      noRemove: true,
+      cb() {
+        $.off(el, 'error', error);
+        ImageCommon.pushCache(el);
+        ImageCommon.pause(el);
+        $.rm(el);
+        return el.removeAttribute('style');
+      }
+    });
+  }; },
 
-  error: (post, file) -> ->
-    return if ImageCommon.decodeError @, file
-    ImageCommon.error @, post, file, 3 * $.SECOND, (URL) =>
-      if URL
-        @src = URL + if @src is URL then '?' + Date.now() else ''
-      else
-        $.rm @
+  error(post, file) { return function() {
+    if (ImageCommon.decodeError(this, file)) { return; }
+    return ImageCommon.error(this, post, file, 3 * $.SECOND, URL => {
+      if (URL) {
+        return this.src = URL + (this.src === URL ? '?' + Date.now() : '');
+      } else {
+        return $.rm(this);
+      }
+    });
+  }; }
+};

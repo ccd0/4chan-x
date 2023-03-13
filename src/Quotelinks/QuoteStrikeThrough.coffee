@@ -1,16 +1,26 @@
-QuoteStrikeThrough =
-  init: ->
-    return unless g.VIEW in ['index', 'thread'] and
-      (Conf['Reply Hiding Buttons'] or (Conf['Menu'] and Conf['Reply Hiding Link']) or Conf['Filter'])
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+const QuoteStrikeThrough = {
+  init() {
+    if (!['index', 'thread'].includes(g.VIEW) ||
+      (!Conf['Reply Hiding Buttons'] && (!Conf['Menu'] || !Conf['Reply Hiding Link']) && !Conf['Filter'])) { return; }
 
-    Callbacks.Post.push
-      name: 'Strike-through Quotes'
-      cb:   @node
+    return Callbacks.Post.push({
+      name: 'Strike-through Quotes',
+      cb:   this.node
+    });
+  },
 
-  node: ->
-    return if @isClone
-    for quotelink in @nodes.quotelinks
-      {boardID, postID} = Get.postDataFromLink quotelink
-      if g.posts.get("#{boardID}.#{postID}")?.isHidden
-        $.addClass quotelink, 'filtered'
-    return
+  node() {
+    if (this.isClone) { return; }
+    for (var quotelink of this.nodes.quotelinks) {
+      var {boardID, postID} = Get.postDataFromLink(quotelink);
+      if (g.posts.get(`${boardID}.${postID}`)?.isHidden) {
+        $.addClass(quotelink, 'filtered');
+      }
+    }
+  }
+};

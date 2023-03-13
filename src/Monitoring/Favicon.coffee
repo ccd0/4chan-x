@@ -1,3 +1,9 @@
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
 import ferongr_unreadDead from './Favicon/ferongr.unreadDead.png';
 import ferongr_unreadDeadY from './Favicon/ferongr.unreadDeadY.png';
 import ferongr_unreadSFW from './Favicon/ferongr.unreadSFW.png';
@@ -38,28 +44,33 @@ import dead from './Favicon/dead.gif';
 import empty from './Favicon/empty.gif';
 
 
-Favicon =
-  init: ->
-    $.asap (-> d.head and (Favicon.el = $ 'link[rel="shortcut icon"]', d.head)), Favicon.initAsap
+var Favicon = {
+  init() {
+    return $.asap((() => d.head && (Favicon.el = $('link[rel="shortcut icon"]', d.head))), Favicon.initAsap);
+  },
 
-  set: (status) ->
-    Favicon.status = status
-    if Favicon.el
-      Favicon.el.href = Favicon[status]
-      # `favicon.href = href` doesn't work on Firefox.
-      $.add d.head, Favicon.el
+  set(status) {
+    Favicon.status = status;
+    if (Favicon.el) {
+      Favicon.el.href = Favicon[status];
+      // `favicon.href = href` doesn't work on Firefox.
+      return $.add(d.head, Favicon.el);
+    }
+  },
 
-  initAsap: ->
-    Favicon.el.type = 'image/x-icon'
-    {href}          = Favicon.el
-    Favicon.isSFW   = /ws\.ico$/.test href
-    Favicon.default = href
-    Favicon.switch()
-    if Favicon.status
-      Favicon.set Favicon.status
+  initAsap() {
+    Favicon.el.type = 'image/x-icon';
+    const {href}          = Favicon.el;
+    Favicon.isSFW   = /ws\.ico$/.test(href);
+    Favicon.default = href;
+    Favicon.switch();
+    if (Favicon.status) {
+      return Favicon.set(Favicon.status);
+    }
+  },
 
-  switch: ->
-    items = {
+  switch() {
+    let items = {
       ferongr: [
         ferongr_unreadDead,
         ferongr_unreadDeadY,
@@ -67,7 +78,7 @@ Favicon =
         ferongr_unreadSFWY,
         ferongr_unreadNSFW,
         ferongr_unreadNSFWY,
-      ]
+      ],
       'xat-': [
         xat_unreadDead,
         xat_unreadDeadY,
@@ -75,7 +86,7 @@ Favicon =
         xat_unreadSFWY,
         xat_unreadNSFW,
         xat_unreadNSFWY,
-      ]
+      ],
       Mayhem: [
         Mayhem_unreadDead,
         Mayhem_unreadDeadY,
@@ -83,7 +94,7 @@ Favicon =
         Mayhem_unreadSFWY,
         Mayhem_unreadNSFW,
         Mayhem_unreadNSFWY,
-      ]
+      ],
       '4chanJS': [
         fourChanJS_unreadDead,
         fourChanJS_unreadDeadY,
@@ -91,7 +102,7 @@ Favicon =
         fourChanJS_unreadSFWY,
         fourChanJS_unreadNSFW,
         fourChanJS_unreadNSFWY,
-      ]
+      ],
       Original: [
         Original_unreadDead,
         Original_unreadDeadY,
@@ -99,7 +110,7 @@ Favicon =
         Original_unreadSFWY,
         Original_unreadNSFW,
         Original_unreadNSFWY,
-      ]
+      ],
       'Metro': [
         Metro_unreadDead,
         Metro_unreadDeadY,
@@ -108,28 +119,33 @@ Favicon =
         Metro_unreadNSFW,
         Metro_unreadNSFWY,
       ]
+    };
+    items = $.getOwn(items, Conf['favicon']);
+
+    const f = Favicon;
+    const t = 'data:image/png;base64,';
+    let i = 0;
+    while (items[i]) {
+      items[i] = t + items[i++];
     }
-    items = $.getOwn(items, Conf['favicon'])
 
-    f = Favicon
-    t = 'data:image/png;base64,'
-    i = 0
-    while items[i]
-      items[i] = t + items[i++]
+    [f.unreadDead, f.unreadDeadY, f.unreadSFW, f.unreadSFWY, f.unreadNSFW, f.unreadNSFWY] = Array.from(items);
+    return f.update();
+  },
 
-    [f.unreadDead, f.unreadDeadY, f.unreadSFW, f.unreadSFWY, f.unreadNSFW, f.unreadNSFWY] = items
-    f.update()
+  update() {
+    if (this.isSFW) {
+      this.unread  = this.unreadSFW;
+      return this.unreadY = this.unreadSFWY;
+    } else {
+      this.unread  = this.unreadNSFW;
+      return this.unreadY = this.unreadNSFWY;
+    }
+  },
 
-  update: ->
-    if @isSFW
-      @unread  = @unreadSFW
-      @unreadY = @unreadSFWY
-    else
-      @unread  = @unreadNSFW
-      @unreadY = @unreadNSFWY
-
-  SFW:   '//s.4cdn.org/image/favicon-ws.ico'
-  NSFW:  '//s.4cdn.org/image/favicon.ico'
-  # TODO
-  dead:  'data:image/gif;base64,<%= readBase64("dead.gif") %>'
+  SFW:   '//s.4cdn.org/image/favicon-ws.ico',
+  NSFW:  '//s.4cdn.org/image/favicon.ico',
+  // TODO
+  dead:  'data:image/gif;base64,<%= readBase64("dead.gif") %>',
   logo:  'data:image/png;base64,<%= readBase64("/src/meta/icon128.png") %>'
+};

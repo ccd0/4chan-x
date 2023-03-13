@@ -1,108 +1,146 @@
-ImageCommon =
-  # Pause and mute video in preparation for removing the element from the document.
-  pause: (video) ->
-    return unless video.nodeName is 'VIDEO'
-    video.pause()
-    $.off video, 'volumechange', Volume.change
-    video.muted = true
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * DS204: Change includes calls to have a more natural evaluation order
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var ImageCommon = {
+  // Pause and mute video in preparation for removing the element from the document.
+  pause(video) {
+    if (video.nodeName !== 'VIDEO') { return; }
+    video.pause();
+    $.off(video, 'volumechange', Volume.change);
+    return video.muted = true;
+  },
 
-  rewind: (el) ->
-    if el.nodeName is 'VIDEO'
-      el.currentTime = 0 if el.readyState >= el.HAVE_METADATA
-    else if /\.gif$/.test el.src
-      $.queueTask -> el.src = el.src
+  rewind(el) {
+    if (el.nodeName === 'VIDEO') {
+      if (el.readyState >= el.HAVE_METADATA) { return el.currentTime = 0; }
+    } else if (/\.gif$/.test(el.src)) {
+      return $.queueTask(() => el.src = el.src);
+    }
+  },
 
-  pushCache: (el) ->
-    ImageCommon.cache = el
-    $.on el, 'error', ImageCommon.cacheError
+  pushCache(el) {
+    ImageCommon.cache = el;
+    return $.on(el, 'error', ImageCommon.cacheError);
+  },
 
-  popCache: ->
-    el = ImageCommon.cache
-    $.off el, 'error', ImageCommon.cacheError
-    delete ImageCommon.cache
-    el
+  popCache() {
+    const el = ImageCommon.cache;
+    $.off(el, 'error', ImageCommon.cacheError);
+    delete ImageCommon.cache;
+    return el;
+  },
 
-  cacheError: ->
-    delete ImageCommon.cache if ImageCommon.cache is @
+  cacheError() {
+    if (ImageCommon.cache === this) { return delete ImageCommon.cache; }
+  },
 
-  decodeError: (file, fileObj) ->
-    return false unless file.error?.code is MediaError.MEDIA_ERR_DECODE
-    if not (message = $ '.warning', fileObj.thumb.parentNode)
-      message = $.el 'div', className:   'warning'
-      $.after fileObj.thumb, message
-    message.textContent = 'Error: Corrupt or unplayable video'
-    return true
+  decodeError(file, fileObj) {
+    let message;
+    if (file.error?.code !== MediaError.MEDIA_ERR_DECODE) { return false; }
+    if (!(message = $('.warning', fileObj.thumb.parentNode))) {
+      message = $.el('div', {className:   'warning'});
+      $.after(fileObj.thumb, message);
+    }
+    message.textContent = 'Error: Corrupt or unplayable video';
+    return true;
+  },
 
-  isFromArchive: (file) ->
-    g.SITE.software is 'yotsuba' and !ImageHost.test(file.src.split('/')[2])
+  isFromArchive(file) {
+    return (g.SITE.software === 'yotsuba') && !ImageHost.test(file.src.split('/')[2]);
+  },
 
-  error: (file, post, fileObj, delay, cb) ->
-    src = fileObj.url.split '/'
-    url = null
-    if g.SITE.software is 'yotsuba' and Conf['404 Redirect']
-      url = Redirect.to 'file', {
-        boardID:  post.board.ID
+  error(file, post, fileObj, delay, cb) {
+    let timeoutID;
+    const src = fileObj.url.split('/');
+    let url = null;
+    if ((g.SITE.software === 'yotsuba') && Conf['404 Redirect']) {
+      url = Redirect.to('file', {
+        boardID:  post.board.ID,
         filename: src[src.length - 1]
+      });
+    }
+    if (!url || !Redirect.securityCheck(url)) { url = null; }
+
+    if ((post.isDead || fileObj.isDead) && !ImageCommon.isFromArchive(file)) { return cb(url); }
+
+    if (delay != null) { timeoutID = setTimeout((() => cb(url)), delay); }
+    if (post.isDead || fileObj.isDead) { return; }
+    const redirect = function() {
+      if (!ImageCommon.isFromArchive(file)) {
+        if (delay != null) { clearTimeout(timeoutID); }
+        return cb(url);
       }
-    url = null unless url and Redirect.securityCheck(url)
+    };
 
-    return cb url if (post.isDead or fileObj.isDead) and not ImageCommon.isFromArchive(file)
+    const threadJSON = g.SITE.urls.threadJSON?.(post);
+    if (!threadJSON) { return; }
+    var parseJSON = function(isArchiveURL) {
+      let needle, postObj;
+      if (this.status === 404) {
+        let archivedThreadJSON;
+        if (!isArchiveURL && (archivedThreadJSON = g.SITE.urls.archivedThreadJSON?.(post))) {
+          $.ajax(archivedThreadJSON, {onloadend() { return parseJSON.call(this, true); }});
+        } else {
+          post.kill(!post.isClone, fileObj.index);
+        }
+      }
+      if (this.status !== 200) { return redirect(); }
+      for (postObj of this.response.posts) {
+        if (postObj.no === post.ID) { break; }
+      }
+      if (postObj.no !== post.ID) {
+        post.kill();
+        return redirect();
+      } else if ((needle = fileObj.docIndex, g.SITE.Build.parseJSON(postObj, post.board).filesDeleted.includes(needle))) {
+        post.kill(true);
+        return redirect();
+      } else {
+        return url = fileObj.url;
+      }
+    };
+    return $.ajax(threadJSON, {onloadend() { return parseJSON.call(this); }});
+  },
 
-    timeoutID = setTimeout (-> cb url), delay if delay?
-    return if post.isDead or fileObj.isDead
-    redirect = ->
-      unless ImageCommon.isFromArchive file
-        clearTimeout timeoutID if delay?
-        cb url
+  // Add controls, but not until the mouse is moved over the video.
+  addControls(video) {
+    var handler = function() {
+      $.off(video, 'mouseover', handler);
+      // Hacky workaround for Firefox forever-loading bug for very short videos
+      const t = new Date().getTime();
+      return $.asap((() => ($.engine !== 'gecko') || ((video.readyState >= 3) && (video.currentTime <= Math.max(0.1, (video.duration - 0.5)))) || (new Date().getTime() >= (t + 1000))), () => video.controls = true);
+    };
+    return $.on(video, 'mouseover', handler);
+  },
 
-    threadJSON = g.SITE.urls.threadJSON?(post)
-    return unless threadJSON
-    parseJSON = (isArchiveURL) ->
-      if @status is 404
-        if !isArchiveURL and (archivedThreadJSON = g.SITE.urls.archivedThreadJSON?(post))
-          $.ajax archivedThreadJSON, onloadend: -> parseJSON.call(@, true)
-        else
-          post.kill !post.isClone, fileObj.index
-      return redirect() if @status isnt 200
-      for postObj in @response.posts
-        break if postObj.no is post.ID
-      if postObj.no isnt post.ID
-        post.kill()
-        redirect()
-      else if fileObj.docIndex in g.SITE.Build.parseJSON(postObj, post.board).filesDeleted
-        post.kill true
-        redirect()
-      else
-        url = fileObj.url
-    $.ajax threadJSON, onloadend: -> parseJSON.call(@)
+  // XXX Estimate whether clicks are on the video controls and should be ignored.
+  onControls(e) {
+    return (Conf['Show Controls'] && Conf['Click Passthrough'] && (e.target.nodeName === 'VIDEO')) ||
+      (e.target.controls && ((e.target.getBoundingClientRect().bottom - e.clientY) < 35));
+  },
 
-  # Add controls, but not until the mouse is moved over the video.
-  addControls: (video) ->
-    handler = ->
-      $.off video, 'mouseover', handler
-      # Hacky workaround for Firefox forever-loading bug for very short videos
-      t = new Date().getTime()
-      $.asap (-> $.engine isnt 'gecko' or (video.readyState >= 3 and video.currentTime <= Math.max 0.1, (video.duration - 0.5)) or new Date().getTime() >= t + 1000), ->
-        video.controls = true
-    $.on video, 'mouseover', handler
-
-  # XXX Estimate whether clicks are on the video controls and should be ignored.
-  onControls: (e) ->
-    (Conf['Show Controls'] and Conf['Click Passthrough'] and e.target.nodeName is 'VIDEO') or
-      (e.target.controls and e.target.getBoundingClientRect().bottom - e.clientY < 35)
-
-  download: (e) ->
-    return true if @protocol is 'blob:'
-    e.preventDefault()
-    {href, download} = @
-    CrossOrigin.file href, (blob) ->
-      if blob
-        a = $.el 'a',
-          href: URL.createObjectURL(blob)
-          download: download
+  download(e) {
+    if (this.protocol === 'blob:') { return true; }
+    e.preventDefault();
+    const {href, download} = this;
+    return CrossOrigin.file(href, function(blob) {
+      if (blob) {
+        const a = $.el('a', {
+          href: URL.createObjectURL(blob),
+          download,
           hidden: true
-        $.add d.body, a
-        a.click()
-        $.rm a
-      else
-        new Notice 'warning', "Could not download #{href}", 20
+        }
+        );
+        $.add(d.body, a);
+        a.click();
+        return $.rm(a);
+      } else {
+        return new Notice('warning', `Could not download ${href}`, 20);
+      }
+    });
+  }
+};

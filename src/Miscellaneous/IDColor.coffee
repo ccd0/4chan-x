@@ -1,41 +1,53 @@
-IDColor =
-  init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Color User IDs']
-    @ids = $.dict()
-    @ids['Heaven'] = [0, 0, 0, '#fff']
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var IDColor = {
+  init() {
+    if (!['index', 'thread'].includes(g.VIEW) || !Conf['Color User IDs']) { return; }
+    this.ids = $.dict();
+    this.ids['Heaven'] = [0, 0, 0, '#fff'];
 
-    Callbacks.Post.push
-      name: 'Color User IDs'
-      cb:   @node
+    return Callbacks.Post.push({
+      name: 'Color User IDs',
+      cb:   this.node
+    });
+  },
 
-  node: ->
-    return if @isClone or !((uid = @info.uniqueID) and (span = @nodes.uniqueID))
+  node() {
+    let span, uid;
+    if (this.isClone || !((uid = this.info.uniqueID) && (span = this.nodes.uniqueID))) { return; }
 
-    rgb = IDColor.ids[uid] or IDColor.compute uid
+    const rgb = IDColor.ids[uid] || IDColor.compute(uid);
 
-    # Style the damn node.
-    {style} = span
-    style.color = rgb[3]
-    style.backgroundColor = "rgb(#{rgb[0]},#{rgb[1]},#{rgb[2]})"
-    $.addClass span, 'painted'
+    // Style the damn node.
+    const {style} = span;
+    style.color = rgb[3];
+    style.backgroundColor = `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+    return $.addClass(span, 'painted');
+  },
 
-  compute: (uid) ->
-    # Convert chars to integers, bitshift and math to create a larger integer
-    # Create a nice string of binary
-    hash = if g.SITE.uidColor then g.SITE.uidColor(uid) else parseInt(uid, 16)
+  compute(uid) {
+    // Convert chars to integers, bitshift and math to create a larger integer
+    // Create a nice string of binary
+    const hash = g.SITE.uidColor ? g.SITE.uidColor(uid) : parseInt(uid, 16);
 
-    # Convert binary string to numerical values with bitshift and '&' truncation.
-    rgb = [
-      (hash >> 16) & 0xFF
-      (hash >> 8)  & 0xFF
+    // Convert binary string to numerical values with bitshift and '&' truncation.
+    const rgb = [
+      (hash >> 16) & 0xFF,
+      (hash >> 8)  & 0xFF,
       hash & 0xFF
-    ]
+    ];
 
-    # Weight color luminance values, assign a font color that should be readable. 
-    rgb.push if $.luma(rgb) > 125
+    // Weight color luminance values, assign a font color that should be readable. 
+    rgb.push($.luma(rgb) > 125 ?
       '#000'
-    else
+    :
       '#fff'
+    );
 
-    # Cache.
-    @ids[uid] = rgb
+    // Cache.
+    return this.ids[uid] = rgb;
+  }
+};

@@ -1,8 +1,14 @@
-# loosely follows the jquery api:
-# http://api.jquery.com/
-# not chainable
-$ = (selector, root=d.body) ->
-  root.querySelector selector
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS205: Consider reworking code to avoid use of IIFEs
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+// loosely follows the jquery api:
+// http://api.jquery.com/
+// not chainable
+const $ = (selector, root=d.body) => root.querySelector(selector);
 
 $.DAY = 24 * (
   $.HOUR = 60 * (
@@ -10,803 +16,1001 @@ $.DAY = 24 * (
       $.SECOND = 1000
     )
   )
-)
+);
 
-$.id = (id) ->
-  d.getElementById id
+$.id = id => d.getElementById(id);
 
-$.ready = (fc) ->
-  unless d.readyState is 'loading'
-    $.queueTask fc
-    return
-  cb = ->
-    $.off d, 'DOMContentLoaded', cb
-    fc()
-  $.on d, 'DOMContentLoaded', cb
-
-$.formData = (form) ->
-  if form instanceof HTMLFormElement
-    return new FormData form
-  fd = new FormData()
-  for key, val of form when val
-    if typeof val is 'object' and 'newName' of val
-      fd.append key, val, val.newName
-    else
-      fd.append key, val
-  fd
-
-$.extend = (object, properties) ->
-  for key, val of properties
-    object[key] = val
-  return
-
-$.dict = ->
-  Object.create(null)
-
-$.dict.clone = (obj) ->
-  if typeof obj isnt 'object' or obj is null
-    obj
-  else if obj instanceof Array
-    arr = []
-    for i in [0...obj.length] by 1
-      arr.push $.dict.clone(obj[i])
-    arr
-  else
-    map = Object.create(null)
-    for key, val of obj
-      map[key] = $.dict.clone(val)
-    map
-
-$.dict.json = (str) ->
-  $.dict.clone(JSON.parse(str))
-
-$.hasOwn = (obj, key) ->
-  Object::hasOwnProperty.call(obj, key)
-
-$.getOwn = (obj, key) ->
-  if Object::hasOwnProperty.call(obj, key) then obj[key] else undefined
-
-$.ajax = do ->
-  if window.wrappedJSObject and not XMLHttpRequest.wrappedJSObject
-    pageXHR = XPCNativeWrapper window.wrappedJSObject.XMLHttpRequest
-  else
-    pageXHR = XMLHttpRequest
-
-  (url, options={}) ->
-    options.responseType ?= 'json'
-    options.type or= options.form and 'post' or 'get'
-    # XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
-    url = url.replace /^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/'
-    # <% if (type === 'crx') { %>
-    # # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
-    # if Conf['Work around CORB Bug'] and g.SITE.software is 'yotsuba' and !options.testCORB and FormData.prototype.entries
-    #   return $.ajaxPage url, options
-    # <% } %>
-    {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options
-    r = new pageXHR()
-    try
-      r.open type, url, true
-      for key, value of (headers or {})
-        r.setRequestHeader key, value
-      $.extend r, {onloadend, timeout, responseType, withCredentials}
-      $.extend r.upload, {onprogress}
-      # connection error or content blocker
-      $.on r, 'error', -> (c.warn "4chan X failed to load: #{url}" unless r.status)
-      # <% if (type === 'crx') { %>
-      # # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
-      # $.on r, 'load', ->
-      #   if !Conf['Work around CORB Bug'] and r.readyState is 4 and r.status is 200 and r.statusText is '' and r.response is null
-      #     $.set 'Work around CORB Bug', (Conf['Work around CORB Bug'] = Date.now())
-      # <% } %>
-      r.send form
-    catch err
-      # XXX Some content blockers in Firefox (e.g. Adblock Plus and NoScript) throw an exception instead of simulating a connection error.
-      throw err unless err.result is 0x805e0006
-      r.onloadend = onloadend
-      $.queueTask $.event, 'error',   null, r
-      $.queueTask $.event, 'loadend', null, r
-    r
-
-# <% if (type === 'crx') { %>
-# # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
-# do ->
-  requestID = 0
-  requests = $.dict()
-
-  $.ajaxPageInit = ->
-    $.global ->
-      window.FCX.requests = Object.create(null)
-
-      document.addEventListener '4chanXAjax', (e) ->
-        {url, timeout, responseType, withCredentials, type, onprogress, form, headers, id} = e.detail
-        window.FCX.requests[id] = r = new XMLHttpRequest()
-        r.open type, url, true
-        for key, value of (headers or {})
-          r.setRequestHeader key, value
-        r.responseType = if responseType is 'document' then 'text' else responseType
-        r.timeout = timeout
-        r.withCredentials = withCredentials
-        if onprogress
-          r.upload.onprogress = (e) ->
-            {loaded, total} = e
-            detail = {loaded, total, id}
-            document.dispatchEvent new CustomEvent '4chanXAjaxProgress', {bubbles: true, detail}
-        r.onloadend = ->
-          delete window.FCX.requests[id]
-          {status, statusText, response} = @
-          responseHeaderString = @getAllResponseHeaders()
-          detail = {status, statusText, response, responseHeaderString, id}
-          document.dispatchEvent new CustomEvent '4chanXAjaxLoadend', {bubbles: true, detail}
-        # connection error or content blocker
-        r.onerror = ->
-          console.warn "4chan X failed to load: #{url}" unless r.status
-        if form
-          fd = new FormData()
-          for entry in form
-            fd.append(entry[0], entry[1])
-        else
-          fd = null
-        r.send fd
-      , false
-
-      document.addEventListener '4chanXAjaxAbort', (e) ->
-        return unless (r = window.FCX.requests[e.detail.id])
-        r.abort()
-      , false
-
-    $.on d, '4chanXAjaxProgress', (e) ->
-      return unless (req = requests[e.detail.id])
-      req.upload.onprogress.call req.upload, e.detail
-
-    $.on d, '4chanXAjaxLoadend', (e) ->
-      return unless (req = requests[e.detail.id])
-      delete requests[e.detail.id]
-      if e.detail.status
-        for key in ['status', 'statusText', 'response', 'responseHeaderString']
-          req[key] = e.detail[key]
-        if req.responseType is 'document'
-          req.response = new DOMParser().parseFromString(e.detail.response, 'text/html')
-      req.onloadend()
-
-  $.ajaxPage = (url, options={}) ->
-    {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options
-    id = requestID++
-    requests[id] = req = new CrossOrigin.Request()
-    $.extend req, {responseType, onloadend}
-    req.upload = {onprogress}
-    req.abort = ->
-      $.event '4chanXAjaxAbort', {id}
-    form = Array.from(form.entries()) if form
-    $.event '4chanXAjax', {url, timeout, responseType, withCredentials, type, onprogress: !!onprogress, form, headers, id}
-    req
-# <% } %>
-
-# Status Code 304: Not modified
-# With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
-# This saves a lot of bandwidth and CPU time for both the users and the servers.
-$.lastModified = $.dict()
-$.whenModified = (url, bucket, cb, options={}) ->
-  {timeout, ajax} = options
-  params = []
-  # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
-  params.push "s=#{bucket}" if $.engine is 'blink'
-  params.push "t=#{Date.now()}" if url.split('/')[2] is 'a.4cdn.org'
-  url0 = url
-  url += '?' + params.join('&') if params.length
-  headers = $.dict()
-  if (t = $.lastModified[bucket]?[url0])?
-    headers['If-Modified-Since'] = t
-  r = (ajax or $.ajax) url, {
-    onloadend: ->
-      ($.lastModified[bucket] or= $.dict())[url0] = @getResponseHeader('Last-Modified')
-      cb.call @
-    timeout
-    headers
+$.ready = function(fc) {
+  if (d.readyState !== 'loading') {
+    $.queueTask(fc);
+    return;
   }
-  r
+  var cb = function() {
+    $.off(d, 'DOMContentLoaded', cb);
+    return fc();
+  };
+  return $.on(d, 'DOMContentLoaded', cb);
+};
 
-do ->
-  reqs = $.dict()
-  $.cache = (url, cb, options={}) ->
-    {ajax} = options
-    if (req = reqs[url])
-      if req.callbacks
-        req.callbacks.push cb
-      else
-        $.queueTask -> cb.call req, {isCached: true}
-      return req
-    onloadend = ->
-      unless @status
-        delete reqs[url]
-      for cb in @callbacks
-        do (cb) => $.queueTask => cb.call @, {isCached: false}
-      delete @callbacks
-    req = (ajax or $.ajax) url, {onloadend}
-    req.callbacks = [cb]
-    reqs[url] = req
-  $.cleanCache = (testf) ->
-    for url of reqs when testf url
-      delete reqs[url]
-    return
+$.formData = function(form) {
+  if (form instanceof HTMLFormElement) {
+    return new FormData(form);
+  }
+  const fd = new FormData();
+  for (var key in form) {
+    var val = form[key];
+    if (val) {
+      if ((typeof val === 'object') && 'newName' in val) {
+        fd.append(key, val, val.newName);
+      } else {
+        fd.append(key, val);
+      }
+    }
+  }
+  return fd;
+};
 
-$.cb =
-  checked: ->
-    if $.hasOwn(Conf, @name)
-      $.set @name, @checked
-      Conf[@name] = @checked
-  value: ->
-    if $.hasOwn(Conf, @name)
-      $.set @name, @value.trim()
-      Conf[@name] = @value
+$.extend = function(object, properties) {
+  for (var key in properties) {
+    var val = properties[key];
+    object[key] = val;
+  }
+};
 
-$.asap = (test, cb) ->
-  if test()
-    cb()
-  else
-    setTimeout $.asap, 25, test, cb
+$.dict = () => Object.create(null);
 
-$.onExists = (root, selector, cb) ->
-  if el = $ selector, root
-    return cb el
-  observer = new MutationObserver ->
-    if el = $ selector, root
-      observer.disconnect()
-      cb el
-  observer.observe root, {childList: true, subtree: true}
+$.dict.clone = function(obj) {
+  if ((typeof obj !== 'object') || (obj === null)) {
+    return obj;
+  } else if (obj instanceof Array) {
+    const arr = [];
+    for (let i = 0, end = obj.length; i < end; i++) {
+      arr.push($.dict.clone(obj[i]));
+    }
+    return arr;
+  } else {
+    const map = Object.create(null);
+    for (var key in obj) {
+      var val = obj[key];
+      map[key] = $.dict.clone(val);
+    }
+    return map;
+  }
+};
 
-$.addStyle = (css, id, test='head') ->
-  style = $.el 'style',
-    textContent: css
-  style.id = id if id?
-  $.onExists doc, test, ->
-    $.add d.head, style
-  style
+$.dict.json = str => $.dict.clone(JSON.parse(str));
 
-$.addCSP = (policy) ->
-  meta = $.el 'meta',
-    httpEquiv: 'Content-Security-Policy'
+$.hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
+
+$.getOwn = function(obj, key) {
+  if (Object.prototype.hasOwnProperty.call(obj, key)) { return obj[key]; } else { return undefined; }
+};
+
+$.ajax = (function() {
+  let pageXHR;
+  if (window.wrappedJSObject && !XMLHttpRequest.wrappedJSObject) {
+    pageXHR = XPCNativeWrapper(window.wrappedJSObject.XMLHttpRequest);
+  } else {
+    pageXHR = XMLHttpRequest;
+  }
+
+  (function(url, options={}) {
+    if (options.responseType == null) { options.responseType = 'json'; }
+    if (!options.type) { options.type = (options.form && 'post') || 'get'; }
+    // XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
+    url = url.replace(/^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/');
+    // <% if (type === 'crx') { %>
+    // # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
+    // if Conf['Work around CORB Bug'] and g.SITE.software is 'yotsuba' and !options.testCORB and FormData.prototype.entries
+    //   return $.ajaxPage url, options
+    // <% } %>
+    const {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options;
+    const r = new pageXHR();
+    try {
+      r.open(type, url, true);
+      const object = headers || {};
+      for (var key in object) {
+        var value = object[key];
+        r.setRequestHeader(key, value);
+      }
+      $.extend(r, {onloadend, timeout, responseType, withCredentials});
+      $.extend(r.upload, {onprogress});
+      // connection error or content blocker
+      $.on(r, 'error', function() { if (!r.status) { return c.warn(`4chan X failed to load: ${url}`); } });
+      // <% if (type === 'crx') { %>
+      // # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
+      // $.on r, 'load', ->
+      //   if !Conf['Work around CORB Bug'] and r.readyState is 4 and r.status is 200 and r.statusText is '' and r.response is null
+      //     $.set 'Work around CORB Bug', (Conf['Work around CORB Bug'] = Date.now())
+      // <% } %>
+      r.send(form);
+    } catch (err) {
+      // XXX Some content blockers in Firefox (e.g. Adblock Plus and NoScript) throw an exception instead of simulating a connection error.
+      if (err.result !== 0x805e0006) { throw err; }
+      r.onloadend = onloadend;
+      $.queueTask($.event, 'error',   null, r);
+      $.queueTask($.event, 'loadend', null, r);
+    }
+    return r;
+  });
+
+// <% if (type === 'crx') { %>
+// # XXX https://bugs.chromium.org/p/chromium/issues/detail?id=920638
+// do ->
+  let requestID = 0;
+  const requests = $.dict();
+
+  $.ajaxPageInit = function() {
+    $.global(function() {
+      window.FCX.requests = Object.create(null);
+
+      document.addEventListener('4chanXAjax', function(e) {
+        let fd, r;
+        const {url, timeout, responseType, withCredentials, type, onprogress, form, headers, id} = e.detail;
+        window.FCX.requests[id] = (r = new XMLHttpRequest());
+        r.open(type, url, true);
+        const object = headers || {};
+        for (var key in object) {
+          var value = object[key];
+          r.setRequestHeader(key, value);
+        }
+        r.responseType = responseType === 'document' ? 'text' : responseType;
+        r.timeout = timeout;
+        r.withCredentials = withCredentials;
+        if (onprogress) {
+          r.upload.onprogress = function(e) {
+            const {loaded, total} = e;
+            const detail = {loaded, total, id};
+            return document.dispatchEvent(new CustomEvent('4chanXAjaxProgress', {bubbles: true, detail}));
+          };
+        }
+        r.onloadend = function() {
+          delete window.FCX.requests[id];
+          const {status, statusText, response} = this;
+          const responseHeaderString = this.getAllResponseHeaders();
+          const detail = {status, statusText, response, responseHeaderString, id};
+          return document.dispatchEvent(new CustomEvent('4chanXAjaxLoadend', {bubbles: true, detail}));
+        };
+        // connection error or content blocker
+        r.onerror = function() {
+          if (!r.status) { return console.warn(`4chan X failed to load: ${url}`); }
+        };
+        if (form) {
+          fd = new FormData();
+          for (var entry of form) {
+            fd.append(entry[0], entry[1]);
+          }
+        } else {
+          fd = null;
+        }
+        return r.send(fd);
+      }
+      , false);
+
+      return document.addEventListener('4chanXAjaxAbort', function(e) {
+        let r;
+        if (!(r = window.FCX.requests[e.detail.id])) { return; }
+        return r.abort();
+      }
+      , false);
+    });
+
+    $.on(d, '4chanXAjaxProgress', function(e) {
+      let req;
+      if (!(req = requests[e.detail.id])) { return; }
+      return req.upload.onprogress.call(req.upload, e.detail);
+    });
+
+    return $.on(d, '4chanXAjaxLoadend', function(e) {
+      let req;
+      if (!(req = requests[e.detail.id])) { return; }
+      delete requests[e.detail.id];
+      if (e.detail.status) {
+        for (var key of ['status', 'statusText', 'response', 'responseHeaderString']) {
+          req[key] = e.detail[key];
+        }
+        if (req.responseType === 'document') {
+          req.response = new DOMParser().parseFromString(e.detail.response, 'text/html');
+        }
+      }
+      return req.onloadend();
+    });
+  };
+
+  return $.ajaxPage = function(url, options={}) {
+    let req;
+    let {onloadend, timeout, responseType, withCredentials, type, onprogress, form, headers} = options;
+    const id = requestID++;
+    requests[id] = (req = new CrossOrigin.Request());
+    $.extend(req, {responseType, onloadend});
+    req.upload = {onprogress};
+    req.abort = () => $.event('4chanXAjaxAbort', {id});
+    if (form) { form = Array.from(form.entries()); }
+    $.event('4chanXAjax', {url, timeout, responseType, withCredentials, type, onprogress: !!onprogress, form, headers, id});
+    return req;
+  };
+})();
+// <% } %>
+
+// Status Code 304: Not modified
+// With the `If-Modified-Since` header we only receive the HTTP headers and no body for 304 responses.
+// This saves a lot of bandwidth and CPU time for both the users and the servers.
+$.lastModified = $.dict();
+$.whenModified = function(url, bucket, cb, options={}) {
+  let t;
+  const {timeout, ajax} = options;
+  const params = [];
+  // XXX https://bugs.chromium.org/p/chromium/issues/detail?id=643659
+  if ($.engine === 'blink') { params.push(`s=${bucket}`); }
+  if (url.split('/')[2] === 'a.4cdn.org') { params.push(`t=${Date.now()}`); }
+  const url0 = url;
+  if (params.length) { url += '?' + params.join('&'); }
+  const headers = $.dict();
+  if ((t = $.lastModified[bucket]?.[url0]) != null) {
+    headers['If-Modified-Since'] = t;
+  }
+  const r = (ajax || $.ajax)(url, {
+    onloadend() {
+      ($.lastModified[bucket] || ($.lastModified[bucket] = $.dict()))[url0] = this.getResponseHeader('Last-Modified');
+      return cb.call(this);
+    },
+    timeout,
+    headers
+  });
+  return r;
+};
+
+(function() {
+  const reqs = $.dict();
+  $.cache = function(url, cb, options={}) {
+    let req;
+    const {ajax} = options;
+    if (req = reqs[url]) {
+      if (req.callbacks) {
+        req.callbacks.push(cb);
+      } else {
+        $.queueTask(() => cb.call(req, {isCached: true}));
+      }
+      return req;
+    }
+    const onloadend = function() {
+      if (!this.status) {
+        delete reqs[url];
+      }
+      for (cb of this.callbacks) {
+        (cb => $.queueTask(() => cb.call(this, {isCached: false})))(cb);
+      }
+      return delete this.callbacks;
+    };
+    req = (ajax || $.ajax)(url, {onloadend});
+    req.callbacks = [cb];
+    return reqs[url] = req;
+  };
+  return $.cleanCache = function(testf) {
+    for (var url in reqs) {
+      if (testf(url)) {
+        delete reqs[url];
+      }
+    }
+  };
+})();
+
+$.cb = {
+  checked() {
+    if ($.hasOwn(Conf, this.name)) {
+      $.set(this.name, this.checked);
+      return Conf[this.name] = this.checked;
+    }
+  },
+  value() {
+    if ($.hasOwn(Conf, this.name)) {
+      $.set(this.name, this.value.trim());
+      return Conf[this.name] = this.value;
+    }
+  }
+};
+
+$.asap = function(test, cb) {
+  if (test()) {
+    return cb();
+  } else {
+    return setTimeout($.asap, 25, test, cb);
+  }
+};
+
+$.onExists = function(root, selector, cb) {
+  let el;
+  if (el = $(selector, root)) {
+    return cb(el);
+  }
+  var observer = new MutationObserver(function() {
+    if (el = $(selector, root)) {
+      observer.disconnect();
+      return cb(el);
+    }
+  });
+  return observer.observe(root, {childList: true, subtree: true});
+};
+
+$.addStyle = function(css, id, test='head') {
+  const style = $.el('style',
+    {textContent: css});
+  if (id != null) { style.id = id; }
+  $.onExists(doc, test, () => $.add(d.head, style));
+  return style;
+};
+
+$.addCSP = function(policy) {
+  const meta = $.el('meta', {
+    httpEquiv: 'Content-Security-Policy',
     content:   policy
-  if d.head
-    $.add d.head, meta
-    $.rm meta
-  else
-    head = $.add (doc or d), $.el('head')
-    $.add head, meta
-    $.rm head
+  }
+  );
+  if (d.head) {
+    $.add(d.head, meta);
+    return $.rm(meta);
+  } else {
+    const head = $.add((doc || d), $.el('head'));
+    $.add(head, meta);
+    return $.rm(head);
+  }
+};
 
-$.x = (path, root) ->
-  root or= d.body
-  # XPathResult.ANY_UNORDERED_NODE_TYPE === 8
-  d.evaluate(path, root, null, 8, null).singleNodeValue
+$.x = function(path, root) {
+  if (!root) { root = d.body; }
+  // XPathResult.ANY_UNORDERED_NODE_TYPE === 8
+  return d.evaluate(path, root, null, 8, null).singleNodeValue;
+};
 
-$.X = (path, root) ->
-  root or= d.body
-  # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE === 7
-  d.evaluate path, root, null, 7, null
+$.X = function(path, root) {
+  if (!root) { root = d.body; }
+  // XPathResult.ORDERED_NODE_SNAPSHOT_TYPE === 7
+  return d.evaluate(path, root, null, 7, null);
+};
 
-$.addClass = (el, classNames...) ->
-  el.classList.add className for className in classNames
-  return
+$.addClass = function(el, ...classNames) {
+  for (var className of classNames) { el.classList.add(className); }
+};
 
-$.rmClass = (el, classNames...) ->
-  el.classList.remove className for className in classNames
-  return
+$.rmClass = function(el, ...classNames) {
+  for (var className of classNames) { el.classList.remove(className); }
+};
 
-$.toggleClass = (el, className) ->
-  el.classList.toggle className
+$.toggleClass = (el, className) => el.classList.toggle(className);
 
-$.hasClass = (el, className) ->
-  className in el.classList
+$.hasClass = (el, className) => el.classList.includes(className);
 
-$.rm = (el) ->
-  el?.remove()
+$.rm = el => el?.remove();
 
-$.rmAll = (root) ->
-  # https://gist.github.com/MayhemYDG/8646194
-  root.textContent = null
+$.rmAll = root => // https://gist.github.com/MayhemYDG/8646194
+root.textContent = null;
 
-$.tn = (s) ->
-  d.createTextNode s
+$.tn = s => d.createTextNode(s);
 
-$.frag = ->
-  d.createDocumentFragment()
+$.frag = () => d.createDocumentFragment();
 
-$.nodes = (nodes) ->
-  unless nodes instanceof Array
-    return nodes
-  frag = $.frag()
-  for node in nodes
-    frag.appendChild node
-  frag
+$.nodes = function(nodes) {
+  if (!(nodes instanceof Array)) {
+    return nodes;
+  }
+  const frag = $.frag();
+  for (var node of nodes) {
+    frag.appendChild(node);
+  }
+  return frag;
+};
 
-$.add = (parent, el) ->
-  parent.appendChild $.nodes el
+$.add = (parent, el) => parent.appendChild($.nodes(el));
 
-$.prepend = (parent, el) ->
-  parent.insertBefore $.nodes(el), parent.firstChild
+$.prepend = (parent, el) => parent.insertBefore($.nodes(el), parent.firstChild);
 
-$.after = (root, el) ->
-  root.parentNode.insertBefore $.nodes(el), root.nextSibling
+$.after = (root, el) => root.parentNode.insertBefore($.nodes(el), root.nextSibling);
 
-$.before = (root, el) ->
-  root.parentNode.insertBefore $.nodes(el), root
+$.before = (root, el) => root.parentNode.insertBefore($.nodes(el), root);
 
-$.replace = (root, el) ->
-  root.parentNode.replaceChild $.nodes(el), root
+$.replace = (root, el) => root.parentNode.replaceChild($.nodes(el), root);
 
-$.el = (tag, properties, properties2) ->
-  el = d.createElement tag
-  $.extend el, properties  if properties
-  $.extend el, properties2 if properties2
-  el
+$.el = function(tag, properties, properties2) {
+  const el = d.createElement(tag);
+  if (properties) { $.extend(el, properties); }
+  if (properties2) { $.extend(el, properties2); }
+  return el;
+};
 
-$.on = (el, events, handler) ->
-  for event in events.split ' '
-    el.addEventListener event, handler, false
-  return
+$.on = function(el, events, handler) {
+  for (var event of events.split(' ')) {
+    el.addEventListener(event, handler, false);
+  }
+};
 
-$.off = (el, events, handler) ->
-  for event in events.split ' '
-    el.removeEventListener event, handler, false
-  return
+$.off = function(el, events, handler) {
+  for (var event of events.split(' ')) {
+    el.removeEventListener(event, handler, false);
+  }
+};
 
-$.one = (el, events, handler) ->
-  cb = (e) ->
-    $.off el, events, cb
-    handler.call @, e
-  $.on el, events, cb
+$.one = function(el, events, handler) {
+  var cb = function(e) {
+    $.off(el, events, cb);
+    return handler.call(this, e);
+  };
+  return $.on(el, events, cb);
+};
 
-$.event = (event, detail, root=d) ->
-  # <% if (type === 'userscript') { %>
-  if detail? and typeof cloneInto is 'function'
-    detail = cloneInto detail, d.defaultView
-  # <% } %>
-  root.dispatchEvent new CustomEvent event, {bubbles: true, cancelable: true, detail}
+$.event = function(event, detail, root=d) {
+  // <% if (type === 'userscript') { %>
+  if ((detail != null) && (typeof cloneInto === 'function')) {
+    detail = cloneInto(detail, d.defaultView);
+  }
+  // <% } %>
+  return root.dispatchEvent(new CustomEvent(event, {bubbles: true, cancelable: true, detail}));
+};
 
-# <% if (type === 'userscript') { %>
-# XXX Make $.event work in Pale Moon with GM 3.x (no cloneInto function).
-do ->
-  return unless /PaleMoon\//.test(navigator.userAgent) and +GM_info?.version?.split('.')[0] >= 2 and typeof cloneInto is 'undefined'
+// <% if (type === 'userscript') { %>
+// XXX Make $.event work in Pale Moon with GM 3.x (no cloneInto function).
+(function() {
+  if (!/PaleMoon\//.test(navigator.userAgent) || (+GM_info?.version?.split('.')[0] < 2) || (typeof cloneInto !== 'undefined')) { return; }
 
-  try
-    new CustomEvent 'x', detail: {}
-  catch err
-    unsafeConstructors =
-      Object: unsafeWindow.Object
+  try {
+    return new CustomEvent('x', {detail: {}});
+  } catch (err) {
+    const unsafeConstructors = {
+      Object: unsafeWindow.Object,
       Array:  unsafeWindow.Array
-    clone = (obj) ->
-      if obj? and typeof obj is 'object' and (constructor = unsafeConstructors[obj.constructor.name])
-        obj2 = new constructor()
-        obj2[key] = clone val for key, val of obj
-        obj2
-      else
-        obj
-    $.event = (event, detail, root=d) ->
-      root.dispatchEvent new CustomEvent event, {bubbles: true, cancelable: true, detail: clone detail}
-# <% } %>
+    };
+    var clone = function(obj) {
+      let constructor;
+      if ((obj != null) && (typeof obj === 'object') && (constructor = unsafeConstructors[obj.constructor.name])) {
+        const obj2 = new constructor();
+        for (var key in obj) { var val = obj[key]; obj2[key] = clone(val); }
+        return obj2;
+      } else {
+        return obj;
+      }
+    };
+    return $.event = (event, detail, root=d) => root.dispatchEvent(new CustomEvent(event, {bubbles: true, cancelable: true, detail: clone(detail)}));
+  }
+})();
+// <% } %>
 
-$.modifiedClick = (e) ->
-  e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+$.modifiedClick = e => e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || (e.button !== 0);
 
-# <% if (type === 'userscript') { %>
+// <% if (type === 'userscript') { %>
 $.open =
-  if GM?.openInTab?
+  (GM?.openInTab != null) ?
     GM.openInTab
-  else if GM_openInTab?
+  : (typeof GM_openInTab !== 'undefined' && GM_openInTab !== null) ?
     GM_openInTab
-  else
-    (url) -> window.open url, '_blank'
-# <% } else { %>
+  :
+    url => window.open(url, '_blank');
+// <% } else { %>
 $.open =
-  (url) -> window.open url, '_blank'
-# <% } %>
+  url => window.open(url, '_blank');
+// <% } %>
 
-$.debounce = (wait, fn) ->
-  lastCall = 0
-  timeout  = null
-  that     = null
-  args     = null
-  exec = ->
-    lastCall = Date.now()
-    fn.apply that, args
-  ->
-    args = arguments
-    that = this
-    if lastCall < Date.now() - wait
-      return exec()
-    # stop current reset
-    clearTimeout timeout
-    # after wait, let next invocation execute immediately
-    timeout = setTimeout exec, wait
+$.debounce = function(wait, fn) {
+  let lastCall = 0;
+  let timeout  = null;
+  let that     = null;
+  let args     = null;
+  const exec = function() {
+    lastCall = Date.now();
+    return fn.apply(that, args);
+  };
+  return function() {
+    args = arguments;
+    that = this;
+    if (lastCall < (Date.now() - wait)) {
+      return exec();
+    }
+    // stop current reset
+    clearTimeout(timeout);
+    // after wait, let next invocation execute immediately
+    return timeout = setTimeout(exec, wait);
+  };
+};
 
-$.queueTask = do ->
-  # inspired by https://www.w3.org/Bugs/Public/show_bug.cgi?id=15007
-  taskQueue = []
-  execTask = ->
-    task = taskQueue.shift()
-    func = task[0]
-    args = Array::slice.call task, 1
-    func.apply func, args
-  if window.MessageChannel
-    taskChannel = new MessageChannel()
-    taskChannel.port1.onmessage = execTask
-    ->
-      taskQueue.push arguments
-      taskChannel.port2.postMessage null
-  else # XXX Firefox
-    ->
-      taskQueue.push arguments
-      setTimeout execTask, 0
+$.queueTask = (function() {
+  // inspired by https://www.w3.org/Bugs/Public/show_bug.cgi?id=15007
+  const taskQueue = [];
+  const execTask = function() {
+    const task = taskQueue.shift();
+    const func = task[0];
+    const args = Array.prototype.slice.call(task, 1);
+    return func.apply(func, args);
+  };
+  if (window.MessageChannel) {
+    const taskChannel = new MessageChannel();
+    taskChannel.port1.onmessage = execTask;
+    return function() {
+      taskQueue.push(arguments);
+      return taskChannel.port2.postMessage(null);
+    };
+  } else { // XXX Firefox
+    return function() {
+      taskQueue.push(arguments);
+      return setTimeout(execTask, 0);
+    };
+  }
+})();
 
-$.global = (fn, data) ->
-  if doc
-    script = $.el 'script',
-      textContent: "(#{fn}).call(document.currentScript.dataset);"
-    $.extend script.dataset, data if data
-    $.add (d.head or doc), script
-    $.rm script
-    script.dataset
-  else
-    # XXX dwb
-    try
-      fn.call(data)
-    data
+$.global = function(fn, data) {
+  if (doc) {
+    const script = $.el('script',
+      {textContent: `(${fn}).call(document.currentScript.dataset);`});
+    if (data) { $.extend(script.dataset, data); }
+    $.add((d.head || doc), script);
+    $.rm(script);
+    return script.dataset;
+  } else {
+    // XXX dwb
+    try {
+      fn.call(data);
+    } catch (error) {}
+    return data;
+  }
+};
 
-$.bytesToString = (size) ->
-  unit = 0 # Bytes
-  while size >= 1024
-    size /= 1024
-    unit++
-  # Remove trailing 0s.
+$.bytesToString = function(size) {
+  let unit = 0; // Bytes
+  while (size >= 1024) {
+    size /= 1024;
+    unit++;
+  }
+  // Remove trailing 0s.
   size =
-    if unit > 1
-      # Keep the size as a float if the size is greater than 2^20 B.
-      # Round to hundredth.
+    unit > 1 ?
+      // Keep the size as a float if the size is greater than 2^20 B.
+      // Round to hundredth.
       Math.round(size * 100) / 100
-    else
-      # Round to an integer otherwise.
-      Math.round size
-  "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
+    :
+      // Round to an integer otherwise.
+      Math.round(size);
+  return `${size} ${['B', 'KB', 'MB', 'GB'][unit]}`;
+};
 
-$.minmax = (value, min, max) ->
-  return (
-    if value < min
-      min
-    else
-      if value > max
-        max
-      else
-        value
-    )
+$.minmax = (value, min, max) => value < min ?
+  min
+:
+  value > max ?
+    max
+  :
+    value;
 
-$.hasAudio = (video) ->
-  video.mozHasAudio or !!video.webkitAudioDecodedByteCount
+$.hasAudio = video => video.mozHasAudio || !!video.webkitAudioDecodedByteCount;
 
-$.luma = (rgb) ->
-  rgb[0] * 0.299 + rgb[1] * 0.587 + rgb[2] * 0.114
+$.luma = rgb => (rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114);
 
-$.unescape = (text) ->
-  return text unless text?
-  text.replace(/<[^>]*>/g, '').replace /&(amp|#039|quot|lt|gt|#44);/g, (c) ->
-    (({'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','})[c])
+$.unescape = function(text) {
+  if (text == null) { return text; }
+  return text.replace(/<[^>]*>/g, '').replace(/&(amp|#039|quot|lt|gt|#44);/g, c => ({'&amp;': '&', '&#039;': "'", '&quot;': '"', '&lt;': '<', '&gt;': '>', '&#44;': ','})[c]);
+};
 
-$.isImage = (url) -> /\.(jpe?g|png|gif|bmp|webp)$/i.test url
-$.isVideo = (url) -> /\.(webm|mp4|ogv)$/i.test url
+$.isImage = url => /\.(jpe?g|png|gif|bmp|webp)$/i.test(url);
+$.isVideo = url => /\.(webm|mp4|ogv)$/i.test(url);
 
-$.engine = do ->
-  return 'edge'   if /Edge\//.test navigator.userAgent
-  return 'blink'  if /Chrome\//.test navigator.userAgent
-  return 'webkit' if /WebKit\//.test navigator.userAgent
-  return 'gecko'  if /Gecko\/|Goanna/.test navigator.userAgent # Goanna = Pale Moon 26+
+$.engine = (function() {
+  if (/Edge\//.test(navigator.userAgent)) { return 'edge'; }
+  if (/Chrome\//.test(navigator.userAgent)) { return 'blink'; }
+  if (/WebKit\//.test(navigator.userAgent)) { return 'webkit'; }
+  if (/Gecko\/|Goanna/.test(navigator.userAgent)) { return 'gecko'; } // Goanna = Pale Moon 26+
+})();
 
 $.platform = '<%= type %>';
 
-$.hasStorage = do ->
-  try
-    return true if localStorage.getItem(g.NAMESPACE + 'hasStorage') is 'true'
-    localStorage.setItem(g.NAMESPACE + 'hasStorage', 'true')
-    return localStorage.getItem(g.NAMESPACE + 'hasStorage') is 'true'
-  catch
-    false
+$.hasStorage = (function() {
+  try {
+    if (localStorage.getItem(g.NAMESPACE + 'hasStorage') === 'true') { return true; }
+    localStorage.setItem(g.NAMESPACE + 'hasStorage', 'true');
+    return localStorage.getItem(g.NAMESPACE + 'hasStorage') === 'true';
+  } catch (error) {
+    return false;
+  }
+})();
 
-$.item = (key, val) ->
-  item = $.dict()
-  item[key] = val
-  item
+$.item = function(key, val) {
+  const item = $.dict();
+  item[key] = val;
+  return item;
+};
 
-$.oneItemSugar = (fn) ->
-  (key, val, cb) ->
-    if typeof key is 'string'
-      fn $.item(key, val), cb
-    else
-      fn key, val
+$.oneItemSugar = fn => (function(key, val, cb) {
+  if (typeof key === 'string') {
+    return fn($.item(key, val), cb);
+  } else {
+    return fn(key, val);
+  }
+});
 
-$.syncing = $.dict()
+$.syncing = $.dict();
 
-$.securityCheck = (data) ->
-  if location.protocol isnt 'https:'
-    delete data['Redirect to HTTPS']
+$.securityCheck = function(data) {
+  if (location.protocol !== 'https:') {
+    return delete data['Redirect to HTTPS'];
+  }
+};
 
-# <% if (type === 'crx') { %>
-# https://developer.chrome.com/extensions/storage.html
-$.oldValue =
-  local: $.dict()
+// <% if (type === 'crx') { %>
+// https://developer.chrome.com/extensions/storage.html
+$.oldValue = {
+  local: $.dict(),
   sync:  $.dict()
+};
 
-chrome.storage.onChanged.addListener (changes, area) ->
-  for key of changes
-    oldValue = $.oldValue.local[key] ? $.oldValue.sync[key]
-    $.oldValue[area][key] = $.dict.clone(changes[key].newValue)
-    newValue = $.oldValue.local[key] ? $.oldValue.sync[key]
-    cb = $.syncing[key]
-    if cb and JSON.stringify(newValue) isnt JSON.stringify(oldValue)
-      cb newValue, key
-  return
-$.sync = (key, cb) ->
-  $.syncing[key] = cb
-$.forceSync = -> return
+chrome.storage.onChanged.addListener(function(changes, area) {
+  for (var key in changes) {
+    var oldValue = $.oldValue.local[key] ?? $.oldValue.sync[key];
+    $.oldValue[area][key] = $.dict.clone(changes[key].newValue);
+    var newValue = $.oldValue.local[key] ?? $.oldValue.sync[key];
+    var cb = $.syncing[key];
+    if (cb && (JSON.stringify(newValue) !== JSON.stringify(oldValue))) {
+      cb(newValue, key);
+    }
+  }
+});
+$.sync = (key, cb) => $.syncing[key] = cb;
+$.forceSync = function() {  };
 
-$.crxWorking = ->
-  try
-    if chrome.runtime.getManifest()
-      return true
-  unless $.crxWarningShown
-    msg = $.el 'div',
-      `{innerHTML: '4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.'}`
-    $.on $('a', msg), 'click', -> location.reload()
-    new Notice 'warning', msg
-    $.crxWarningShown = true
-  false
+$.crxWorking = function() {
+  try {
+    if (chrome.runtime.getManifest()) {
+      return true;
+    }
+  } catch (error) {}
+  if (!$.crxWarningShown) {
+    const msg = $.el('div',
+      {innerHTML: '4chan X seems to have been updated. You will need to <a href="javascript:;">reload</a> the page.'});
+    $.on($('a', msg), 'click', () => location.reload());
+    new Notice('warning', msg);
+    $.crxWarningShown = true;
+  }
+  return false;
+};
 
-$.get = $.oneItemSugar (data, cb) ->
-  return unless $.crxWorking()
-  results = {}
-  get = (area) ->
-    keys = Object.keys data
-    # XXX slow performance in Firefox
-    if $.engine is 'gecko' and area is 'sync' and keys.length > 3
-      keys = null
-    chrome.storage[area].get keys, (result) ->
-      result = $.dict.clone(result)
-      if chrome.runtime.lastError
-        c.error chrome.runtime.lastError.message
-      if keys is null
-        result2 = $.dict()
-        result2[key] = val for key, val of result when $.hasOwn(data, key)
-        result = result2
-      for key of data
-        $.oldValue[area][key] = result[key]
-      results[area] = result
-      if results.local and results.sync
-        $.extend data, results.sync
-        $.extend data, results.local
-        cb data
-  get 'local'
-  get 'sync'
+$.get = $.oneItemSugar(function(data, cb) {
+  if (!$.crxWorking()) { return; }
+  const results = {};
+  const get = function(area) {
+    let keys = Object.keys(data);
+    // XXX slow performance in Firefox
+    if (($.engine === 'gecko') && (area === 'sync') && (keys.length > 3)) {
+      keys = null;
+    }
+    return chrome.storage[area].get(keys, function(result) {
+      let key;
+      result = $.dict.clone(result);
+      if (chrome.runtime.lastError) {
+        c.error(chrome.runtime.lastError.message);
+      }
+      if (keys === null) {
+        const result2 = $.dict();
+        for (key in result) { var val = result[key]; if ($.hasOwn(data, key)) { result2[key] = val; } }
+        result = result2;
+      }
+      for (key in data) {
+        $.oldValue[area][key] = result[key];
+      }
+      results[area] = result;
+      if (results.local && results.sync) {
+        $.extend(data, results.sync);
+        $.extend(data, results.local);
+        return cb(data);
+      }
+    });
+  };
+  get('local');
+  return get('sync');
+});
 
-do ->
-  items =
-    local: $.dict()
+(function() {
+  const items = {
+    local: $.dict(),
     sync:  $.dict()
+  };
 
-  exceedsQuota = (key, value) ->
-    # bytes in UTF-8
-    unescape(encodeURIComponent(JSON.stringify(key))).length + unescape(encodeURIComponent(JSON.stringify(value))).length > chrome.storage.sync.QUOTA_BYTES_PER_ITEM
+  const exceedsQuota = (key, value) => // bytes in UTF-8
+  unescape(encodeURIComponent(JSON.stringify(key))).length + unescape(encodeURIComponent(JSON.stringify(value))).length > chrome.storage.sync.QUOTA_BYTES_PER_ITEM;
 
-  $.delete = (keys) ->
-    return unless $.crxWorking()
-    if typeof keys is 'string'
-      keys = [keys]
-    for key in keys
-      delete items.local[key]
-      delete items.sync[key]
-    chrome.storage.local.remove keys
-    chrome.storage.sync.remove keys
+  $.delete = function(keys) {
+    if (!$.crxWorking()) { return; }
+    if (typeof keys === 'string') {
+      keys = [keys];
+    }
+    for (var key of keys) {
+      delete items.local[key];
+      delete items.sync[key];
+    }
+    chrome.storage.local.remove(keys);
+    return chrome.storage.sync.remove(keys);
+  };
 
-  timeout = {}
-  setArea = (area, cb) ->
-    data = $.dict()
-    $.extend data, items[area]
-    return if !Object.keys(data).length or timeout[area] > Date.now()
-    chrome.storage[area].set data, ->
-      if err = chrome.runtime.lastError
-        c.error err.message
-        setTimeout setArea, $.MINUTE, area
-        timeout[area] = Date.now() + $.MINUTE
-        return cb? err
+  const timeout = {};
+  var setArea = function(area, cb) {
+    const data = $.dict();
+    $.extend(data, items[area]);
+    if (!Object.keys(data).length || (timeout[area] > Date.now())) { return; }
+    return chrome.storage[area].set(data, function() {
+      let err;
+      let key;
+      if (err = chrome.runtime.lastError) {
+        c.error(err.message);
+        setTimeout(setArea, $.MINUTE, area);
+        timeout[area] = Date.now() + $.MINUTE;
+        return cb?.(err);
+      }
 
-      delete timeout[area]
-      delete items[area][key] for key of data when items[area][key] is data[key]
-      if area is 'local'
-        items.sync[key] = val for key, val of data when not exceedsQuota(key, val)
-        setSync()
-      else
-        chrome.storage.local.remove (key for key of data when not (key of items.local))
-      cb?()
+      delete timeout[area];
+      for (key in data) { if (items[area][key] === data[key]) { delete items[area][key]; } }
+      if (area === 'local') {
+        for (key in data) { var val = data[key]; if (!exceedsQuota(key, val)) { items.sync[key] = val; } }
+        setSync();
+      } else {
+        chrome.storage.local.remove(((() => {
+          const result = [];
+          for (key in data) {
+            if (!(key in items.local)) {
+              result.push(key);
+            }
+          }
+          return result;
+        })()));
+      }
+      return cb?.();
+    });
+  };
 
-  setSync = $.debounce $.SECOND, ->
-    setArea 'sync'
+  var setSync = $.debounce($.SECOND, () => setArea('sync'));
 
-  $.set = $.oneItemSugar (data, cb) ->
-    return unless $.crxWorking()
-    $.securityCheck data
-    $.extend items.local, data
-    setArea 'local', cb
+  $.set = $.oneItemSugar(function(data, cb) {
+    if (!$.crxWorking()) { return; }
+    $.securityCheck(data);
+    $.extend(items.local, data);
+    return setArea('local', cb);
+  });
 
-  $.clear = (cb) ->
-    return unless $.crxWorking()
-    items.local = $.dict()
-    items.sync  = $.dict()
-    count = 2
-    err   = null
-    done  = ->
-      if chrome.runtime.lastError
-        c.error chrome.runtime.lastError.message
-      err ?= chrome.runtime.lastError
-      cb? err unless --count
-    chrome.storage.local.clear done
-    chrome.storage.sync.clear  done
-# <% } else { %>
+  return $.clear = function(cb) {
+    if (!$.crxWorking()) { return; }
+    items.local = $.dict();
+    items.sync  = $.dict();
+    let count = 2;
+    let err   = null;
+    const done  = function() {
+      if (chrome.runtime.lastError) {
+        c.error(chrome.runtime.lastError.message);
+      }
+      if (err == null) { err = chrome.runtime.lastError; }
+      if (!--count) { return cb?.(err); }
+    };
+    chrome.storage.local.clear(done);
+    return chrome.storage.sync.clear(done);
+  };
+})();
+// <% } else { %>
 
-# http://wiki.greasespot.net/Main_Page
-# https://tampermonkey.net/documentation.php
+// http://wiki.greasespot.net/Main_Page
+// https://tampermonkey.net/documentation.php
 
-if GM?.deleteValue? and window.BroadcastChannel and not GM_addValueChangeListener?
+if ((GM?.deleteValue != null) && window.BroadcastChannel && (typeof GM_addValueChangeListener === 'undefined' || GM_addValueChangeListener === null)) {
 
-  $.syncChannel = new BroadcastChannel(g.NAMESPACE + 'sync')
+  $.syncChannel = new BroadcastChannel(g.NAMESPACE + 'sync');
 
-  $.on $.syncChannel, 'message', (e) ->
-    for key, val of e.data when (cb = $.syncing[key])
-      cb $.dict.json(JSON.stringify(val)), key
+  $.on($.syncChannel, 'message', e => (() => {
+    const result = [];
+    for (var key in e.data) {
+      var cb;
+      var val = e.data[key];
+      if (cb = $.syncing[key]) {
+        result.push(cb($.dict.json(JSON.stringify(val)), key));
+      }
+    }
+    return result;
+  })());
 
-  $.sync = (key, cb) ->
-    $.syncing[key] = cb
+  $.sync = (key, cb) => $.syncing[key] = cb;
 
-  $.forceSync = ->
+  $.forceSync = function() {};
 
-  $.delete = (keys, cb) ->
-    unless keys instanceof Array
-      keys = [keys]
-    Promise.all(GM.deleteValue(g.NAMESPACE + key) for key in keys).then ->
-      items = $.dict()
-      items[key] = undefined for key in keys
-      $.syncChannel.postMessage items
-      cb?()
+  $.delete = function(keys, cb) {
+    let key;
+    if (!(keys instanceof Array)) {
+      keys = [keys];
+    }
+    return Promise.all((() => {
+      const result = [];
+      for (key of keys) {         result.push(GM.deleteValue(g.NAMESPACE + key));
+      }
+      return result;
+    })()).then(function() {
+      const items = $.dict();
+      for (key of keys) { items[key] = undefined; }
+      $.syncChannel.postMessage(items);
+      return cb?.();
+    });
+  };
 
-  $.get = $.oneItemSugar (items, cb) ->
-    keys = Object.keys items
-    Promise.all(GM.getValue(g.NAMESPACE + key) for key in keys).then (values) ->
-      for val, i in values when val
-        items[keys[i]] = $.dict.json val
-      cb items
+  $.get = $.oneItemSugar(function(items, cb) {
+    const keys = Object.keys(items);
+    return Promise.all(keys.map((key) => GM.getValue(g.NAMESPACE + key))).then(function(values) {
+      for (let i = 0; i < values.length; i++) {
+        var val = values[i];
+        if (val) {
+          items[keys[i]] = $.dict.json(val);
+        }
+      }
+      return cb(items);
+    });
+  });
 
-  $.set = $.oneItemSugar (items, cb) ->
-    $.securityCheck items
-    Promise.all(GM.setValue(g.NAMESPACE + key, JSON.stringify(val)) for key, val of items).then ->
-      $.syncChannel.postMessage items
-      cb?()
+  $.set = $.oneItemSugar(function(items, cb) {
+    $.securityCheck(items);
+    return Promise.all((() => {
+      const result = [];
+      for (var key in items) {
+        var val = items[key];
+        result.push(GM.setValue(g.NAMESPACE + key, JSON.stringify(val)));
+      }
+      return result;
+    })()).then(function() {
+      $.syncChannel.postMessage(items);
+      return cb?.();
+    });
+  });
 
-  $.clear = (cb) ->
-    GM.listValues().then((keys) ->
-      $.delete keys.map((key) -> key.replace g.NAMESPACE, ''), cb
-    ).catch( ->
-      $.delete Object.keys(Conf).concat(['previousversion', 'QR Size', 'QR.persona']), cb
-    )
-else
+  $.clear = cb => GM.listValues().then(keys => $.delete(keys.map(key => key.replace(g.NAMESPACE, '')), cb)).catch( () => $.delete(Object.keys(Conf).concat(['previousversion', 'QR Size', 'QR.persona']), cb));
+} else {
 
-  unless GM_deleteValue?
-    $.perProtocolSettings = true
+  if (typeof GM_deleteValue === 'undefined' || GM_deleteValue === null) {
+    $.perProtocolSettings = true;
+  }
 
-  if GM_deleteValue?
-    $.getValue   = GM_getValue
-    $.listValues = -> GM_listValues() # error when called if missing
-  else if $.hasStorage
-    $.getValue = (key) -> localStorage.getItem(key)
-    $.listValues = ->
-      key for key of localStorage when key[...g.NAMESPACE.length] is g.NAMESPACE
-  else
-    $.getValue   = ->
-    $.listValues = -> []
+  if (typeof GM_deleteValue !== 'undefined' && GM_deleteValue !== null) {
+    $.getValue   = GM_getValue;
+    $.listValues = () => GM_listValues(); // error when called if missing
+  } else if ($.hasStorage) {
+    $.getValue = key => localStorage.getItem(key);
+    $.listValues = () => (() => {
+      const result = [];
+      for (var key in localStorage) {
+        if (key.slice(0, g.NAMESPACE.length) === g.NAMESPACE) {
+          result.push(key);
+        }
+      }
+      return result;
+    })();
+  } else {
+    $.getValue   = function() {};
+    $.listValues = () => [];
+  }
 
-  if GM_addValueChangeListener?
-    $.setValue    = GM_setValue
-    $.deleteValue = GM_deleteValue
-  else if GM_deleteValue?
-    $.oldValue = $.dict()
-    $.setValue = (key, val) ->
-      GM_setValue key, val
-      if key of $.syncing
-        $.oldValue[key]   = val
-        localStorage.setItem(key, val) if $.hasStorage # for `storage` events
-    $.deleteValue = (key) ->
-      GM_deleteValue key
-      if key of $.syncing
-        delete $.oldValue[key]
-        localStorage.removeItem key if $.hasStorage # for `storage` events
-    $.cantSync = true if !$.hasStorage
-  else if $.hasStorage
-    $.oldValue = $.dict()
-    $.setValue = (key, val) ->
-      $.oldValue[key]   = val if key of $.syncing
-      localStorage.setItem(key, val)
-    $.deleteValue = (key) ->
-      delete $.oldValue[key] if key of $.syncing
-      localStorage.removeItem key
-  else
-    $.setValue = ->
-    $.deleteValue = ->
-    $.cantSync = $.cantSet = true
+  if (typeof GM_addValueChangeListener !== 'undefined' && GM_addValueChangeListener !== null) {
+    $.setValue    = GM_setValue;
+    $.deleteValue = GM_deleteValue;
+  } else if (typeof GM_deleteValue !== 'undefined' && GM_deleteValue !== null) {
+    $.oldValue = $.dict();
+    $.setValue = function(key, val) {
+      GM_setValue(key, val);
+      if (key in $.syncing) {
+        $.oldValue[key]   = val;
+        if ($.hasStorage) { return localStorage.setItem(key, val); } // for `storage` events
+      }
+    };
+    $.deleteValue = function(key) {
+      GM_deleteValue(key);
+      if (key in $.syncing) {
+        delete $.oldValue[key];
+        if ($.hasStorage) { return localStorage.removeItem(key); } // for `storage` events
+      }
+    };
+    if (!$.hasStorage) { $.cantSync = true; }
+  } else if ($.hasStorage) {
+    $.oldValue = $.dict();
+    $.setValue = function(key, val) {
+      if (key in $.syncing) { $.oldValue[key]   = val; }
+      return localStorage.setItem(key, val);
+    };
+    $.deleteValue = function(key) {
+      if (key in $.syncing) { delete $.oldValue[key]; }
+      return localStorage.removeItem(key);
+    };
+  } else {
+    $.setValue = function() {};
+    $.deleteValue = function() {};
+    $.cantSync = ($.cantSet = true);
+  }
 
-  if GM_addValueChangeListener?
-    $.sync = (key, cb) ->
-      $.syncing[key] = GM_addValueChangeListener g.NAMESPACE + key, (key2, oldValue, newValue, remote) ->
-        if remote
-          newValue = $.dict.json newValue unless newValue is undefined
-          cb newValue, key
-    $.forceSync = ->
-  else if GM_deleteValue? or $.hasStorage
-    $.sync = (key, cb) ->
-      key = g.NAMESPACE + key
-      $.syncing[key] = cb
-      $.oldValue[key] = $.getValue key
+  if (typeof GM_addValueChangeListener !== 'undefined' && GM_addValueChangeListener !== null) {
+    $.sync = (key, cb) => $.syncing[key] = GM_addValueChangeListener(g.NAMESPACE + key, function(key2, oldValue, newValue, remote) {
+      if (remote) {
+        if (newValue !== undefined) { newValue = $.dict.json(newValue); }
+        return cb(newValue, key);
+      }
+    });
+    $.forceSync = function() {};
+  } else if ((typeof GM_deleteValue !== 'undefined' && GM_deleteValue !== null) || $.hasStorage) {
+    $.sync = function(key, cb) {
+      key = g.NAMESPACE + key;
+      $.syncing[key] = cb;
+      return $.oldValue[key] = $.getValue(key);
+    };
 
-    do ->
-      onChange = ({key, newValue}) ->
-        return if not (cb = $.syncing[key])
-        if newValue?
-          return if newValue is $.oldValue[key]
-          $.oldValue[key] = newValue
-          cb $.dict.json(newValue), key[g.NAMESPACE.length..]
-        else
-          return unless $.oldValue[key]?
-          delete $.oldValue[key]
-          cb undefined, key[g.NAMESPACE.length..]
-      $.on window, 'storage', onChange
+    (function() {
+      const onChange = function({key, newValue}) {
+        let cb;
+        if (!(cb = $.syncing[key])) { return; }
+        if (newValue != null) {
+          if (newValue === $.oldValue[key]) { return; }
+          $.oldValue[key] = newValue;
+          return cb($.dict.json(newValue), key.slice(g.NAMESPACE.length));
+        } else {
+          if ($.oldValue[key] == null) { return; }
+          delete $.oldValue[key];
+          return cb(undefined, key.slice(g.NAMESPACE.length));
+        }
+      };
+      $.on(window, 'storage', onChange);
 
-      $.forceSync = (key) ->
-        # Storage events don't work across origins
-        # e.g. http://boards.4chan.org and https://boards.4chan.org
-        # so force a check for changes to avoid lost data.
-        key = g.NAMESPACE + key
-        onChange {key, newValue: $.getValue key}
-  else
-    $.sync = ->
-    $.forceSync = ->
+      return $.forceSync = function(key) {
+        // Storage events don't work across origins
+        // e.g. http://boards.4chan.org and https://boards.4chan.org
+        // so force a check for changes to avoid lost data.
+        key = g.NAMESPACE + key;
+        return onChange({key, newValue: $.getValue(key)});
+      };
+    })();
+  } else {
+    $.sync = function() {};
+    $.forceSync = function() {};
+  }
 
-  $.delete = (keys) ->
-    unless keys instanceof Array
-      keys = [keys]
-    for key in keys
-      $.deleteValue g.NAMESPACE + key
-    return
+  $.delete = function(keys) {
+    if (!(keys instanceof Array)) {
+      keys = [keys];
+    }
+    for (var key of keys) {
+      $.deleteValue(g.NAMESPACE + key);
+    }
+  };
 
-  $.get = $.oneItemSugar (items, cb) ->
-    $.queueTask $.getSync, items, cb
+  $.get = $.oneItemSugar((items, cb) => $.queueTask($.getSync, items, cb));
 
-  $.getSync = (items, cb) ->
-    for key of items when (val2 = $.getValue g.NAMESPACE + key)
-      try
-        items[key] = $.dict.json val2
-      catch err
-        # XXX https://github.com/ccd0/4chan-x/issues/2218
-        unless /^(?:undefined)*$/.test(val2)
-          throw err
-    cb items
+  $.getSync = function(items, cb) {
+    for (var key in items) {
+      var val2;
+      if (val2 = $.getValue(g.NAMESPACE + key)) {
+        try {
+          items[key] = $.dict.json(val2);
+        } catch (err) {
+          // XXX https://github.com/ccd0/4chan-x/issues/2218
+          if (!/^(?:undefined)*$/.test(val2)) {
+            throw err;
+          }
+        }
+      }
+    }
+    return cb(items);
+  };
 
-  $.set = $.oneItemSugar (items, cb) ->
-    $.securityCheck items
-    $.queueTask ->
-      for key, value of items
-        $.setValue(g.NAMESPACE + key, JSON.stringify value)
-      cb?()
+  $.set = $.oneItemSugar(function(items, cb) {
+    $.securityCheck(items);
+    return $.queueTask(function() {
+      for (var key in items) {
+        var value = items[key];
+        $.setValue(g.NAMESPACE + key, JSON.stringify(value));
+      }
+      return cb?.();
+    });
+  });
 
-  $.clear = (cb) ->
-    # XXX https://github.com/greasemonkey/greasemonkey/issues/2033
-    # Also support case where GM_listValues is not defined.
-    $.delete Object.keys(Conf)
-    $.delete ['previousversion', 'QR Size', 'QR.persona']
-    try
-      $.delete $.listValues().map (key) -> key.replace g.NAMESPACE, ''
-    cb?()
+  $.clear = function(cb) {
+    // XXX https://github.com/greasemonkey/greasemonkey/issues/2033
+    // Also support case where GM_listValues is not defined.
+    $.delete(Object.keys(Conf));
+    $.delete(['previousversion', 'QR Size', 'QR.persona']);
+    try {
+      $.delete($.listValues().map(key => key.replace(g.NAMESPACE, '')));
+    } catch (error) {}
+    return cb?.();
+  };
+}
 
-# <% } %>
+// <% } %>

@@ -1,89 +1,112 @@
-class RandomAccessList
-  constructor: (items) ->
-    @length = 0
-    @push item for item in items if items
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+class RandomAccessList {
+  constructor(items) {
+    this.length = 0;
+    if (items) { for (var item of items) { this.push(item); } }
+  }
 
-  push: (data) ->
-    {ID} = data
-    ID or= data.id
-    return if @[ID]
-    {last} = @
-    @[ID] = item =
-      prev: last
-      next: null
-      data: data
-      ID:   ID
-    item.prev = last
-    @last = if last
-      last.next = item
-    else
-      @first = item
-    @length++
+  push(data) {
+    let item;
+    let {ID} = data;
+    if (!ID) { ID = data.id; }
+    if (this[ID]) { return; }
+    const {last} = this;
+    this[ID] = (item = {
+      prev: last,
+      next: null,
+      data,
+      ID
+    });
+    item.prev = last;
+    this.last = last ?
+      (last.next = item)
+    :
+      (this.first = item);
+    return this.length++;
+  }
 
-  before: (root, item) ->
-    return if item.next is root or item is root
+  before(root, item) {
+    if ((item.next === root) || (item === root)) { return; }
 
-    @rmi item
+    this.rmi(item);
 
-    {prev} = root
-    root.prev = item
-    item.next = root
-    item.prev = prev
-    if prev
-      prev.next = item
-    else
-      @first = item
+    const {prev} = root;
+    root.prev = item;
+    item.next = root;
+    item.prev = prev;
+    if (prev) {
+      return prev.next = item;
+    } else {
+      return this.first = item;
+    }
+  }
 
-  after: (root, item) ->
-    return if item.prev is root or item is root
+  after(root, item) {
+    if ((item.prev === root) || (item === root)) { return; }
 
-    @rmi item
+    this.rmi(item);
 
-    {next} = root
-    root.next = item
-    item.prev = root
-    item.next = next
-    if next
-      next.prev = item
-    else
-      @last = item
+    const {next} = root;
+    root.next = item;
+    item.prev = root;
+    item.next = next;
+    if (next) {
+      return next.prev = item;
+    } else {
+      return this.last = item;
+    }
+  }
 
-  prepend: (item) ->
-    {first} = @
-    return if item is first or not @[item.ID]
-    @rmi item
-    item.next  = first
-    if first
-      first.prev = item
-    else
-      @last = item
-    @first = item
-    delete item.prev
+  prepend(item) {
+    const {first} = this;
+    if ((item === first) || !this[item.ID]) { return; }
+    this.rmi(item);
+    item.next  = first;
+    if (first) {
+      first.prev = item;
+    } else {
+      this.last = item;
+    }
+    this.first = item;
+    return delete item.prev;
+  }
 
-  shift: ->
-    @rm @first.ID
+  shift() {
+    return this.rm(this.first.ID);
+  }
 
-  order: ->
-    order = [item = @first]
-    order.push item while item = item.next
-    order
+  order() {
+    let item;
+    const order = [(item = this.first)];
+    while ((item = item.next)) { order.push(item); }
+    return order;
+  }
 
-  rm: (ID) ->
-    item = @[ID]
-    return unless item
-    delete @[ID]
-    @length--
-    @rmi item
-    delete item.next
-    delete item.prev
+  rm(ID) {
+    const item = this[ID];
+    if (!item) { return; }
+    delete this[ID];
+    this.length--;
+    this.rmi(item);
+    delete item.next;
+    return delete item.prev;
+  }
 
-  rmi: (item) ->
-    {prev, next} = item
-    if prev
-      prev.next = next
-    else
-      @first = next
-    if next
-      next.prev = prev
-    else
-      @last = prev
+  rmi(item) {
+    const {prev, next} = item;
+    if (prev) {
+      prev.next = next;
+    } else {
+      this.first = next;
+    }
+    if (next) {
+      return next.prev = prev;
+    } else {
+      return this.last = prev;
+    }
+  }
+}

@@ -1,135 +1,169 @@
-ReplyPruning =
-  init: ->
-    return unless g.VIEW is 'thread' and Conf['Reply Pruning']
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS104: Avoid inline assignments
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var ReplyPruning = {
+  init() {
+    if ((g.VIEW !== 'thread') || !Conf['Reply Pruning']) { return; }
 
-    @container = $.frag()
+    this.container = $.frag();
 
-    @summary = $.el 'span',
-      hidden:    true
+    this.summary = $.el('span', {
+      hidden:    true,
       className: 'summary'
-    @summary.style.cursor = 'pointer'
-    $.on @summary, 'click', =>
-      @inputs.enabled.checked = !@inputs.enabled.checked
-      $.event 'change', null, @inputs.enabled
+    }
+    );
+    this.summary.style.cursor = 'pointer';
+    $.on(this.summary, 'click', () => {
+      this.inputs.enabled.checked = !this.inputs.enabled.checked;
+      return $.event('change', null, this.inputs.enabled);
+    });
 
-    label = UI.checkbox 'Prune Replies', 'Show Last', Conf['Prune All Threads']
-    el = $.el 'span',
-      title: 'Maximum number of replies to show.'
+    const label = UI.checkbox('Prune Replies', 'Show Last', Conf['Prune All Threads']);
+    const el = $.el('span',
+      {title: 'Maximum number of replies to show.'}
     ,
-      `{innerHTML: " <input type=\"number\" name=\"Max Replies\" min=\"0\" step=\"1\" value=\"" + E(Conf["Max Replies"]) + "\" class=\"field\">"}`
-    $.prepend el, label
+      {innerHTML: " <input type=\"number\" name=\"Max Replies\" min=\"0\" step=\"1\" value=\"" + E(Conf["Max Replies"]) + "\" class=\"field\">"});
+    $.prepend(el, label);
 
-    @inputs =
-      enabled: label.firstElementChild
+    this.inputs = {
+      enabled: label.firstElementChild,
       replies: el.lastElementChild
+    };
 
-    @setEnabled.call @inputs.enabled
-    $.on @inputs.enabled, 'change', @setEnabled
-    $.on @inputs.replies, 'change', $.cb.value
+    this.setEnabled.call(this.inputs.enabled);
+    $.on(this.inputs.enabled, 'change', this.setEnabled);
+    $.on(this.inputs.replies, 'change', $.cb.value);
 
-    Header.menu.addEntry
-      el:    el
+    Header.menu.addEntry({
+      el,
       order: 190
+    });
 
-    Callbacks.Thread.push
-      name: 'Reply Pruning'
-      cb:   @node
+    return Callbacks.Thread.push({
+      name: 'Reply Pruning',
+      cb:   this.node
+    });
+  },
 
-  position: 0
-  hidden: 0
-  hiddenFiles: 0
-  total: 0
-  totalFiles: 0
+  position: 0,
+  hidden: 0,
+  hiddenFiles: 0,
+  total: 0,
+  totalFiles: 0,
 
-  setEnabled: ->
-    other = QuoteThreading.input
-    if @checked and other?.checked
-      other.checked = false
-      $.event 'change', null, other
-    ReplyPruning.active = @checked
+  setEnabled() {
+    const other = QuoteThreading.input;
+    if (this.checked && other?.checked) {
+      other.checked = false;
+      $.event('change', null, other);
+    }
+    return ReplyPruning.active = this.checked;
+  },
 
-  showIfHidden: (id) ->
-    if ReplyPruning.container and $("##{id}", ReplyPruning.container)
-      ReplyPruning.inputs.enabled.checked = false
-      $.event 'change', null, ReplyPruning.inputs.enabled
+  showIfHidden(id) {
+    if (ReplyPruning.container && $(`#${id}`, ReplyPruning.container)) {
+      ReplyPruning.inputs.enabled.checked = false;
+      return $.event('change', null, ReplyPruning.inputs.enabled);
+    }
+  },
 
-  node: ->
-    ReplyPruning.thread = @
+  node() {
+    let middle;
+    ReplyPruning.thread = this;
 
-    if @isSticky
-      ReplyPruning.active = ReplyPruning.inputs.enabled.checked = true
-      if QuoteThreading.input
-        # Disable Quote Threading for this thread but don't save the setting.
-        Conf['Thread Quotes'] = QuoteThreading.input.checked = false
+    if (this.isSticky) {
+      ReplyPruning.active = (ReplyPruning.inputs.enabled.checked = true);
+      if (QuoteThreading.input) {
+        // Disable Quote Threading for this thread but don't save the setting.
+        Conf['Thread Quotes'] = (QuoteThreading.input.checked = false);
+      }
+    }
 
-    @posts.forEach (post) ->
-      if post.isReply
-        ReplyPruning.total++
-        (ReplyPruning.totalFiles++ if post.file)
+    this.posts.forEach(function(post) {
+      if (post.isReply) {
+        ReplyPruning.total++;
+        if (post.file) { return ReplyPruning.totalFiles++; }
+      }
+    });
 
-    # If we're linked to a post that we would hide, don't hide the posts in the first place.
+    // If we're linked to a post that we would hide, don't hide the posts in the first place.
     if (
-      ReplyPruning.active and
-      /^#p\d+$/.test(location.hash) and
-      1 <= @posts.keys.indexOf(location.hash[2..]) < 1 + Math.max(ReplyPruning.total - +Conf["Max Replies"], 0)
-    )
-      ReplyPruning.active = ReplyPruning.inputs.enabled.checked = false
+      ReplyPruning.active &&
+      /^#p\d+$/.test(location.hash) &&
+      (1 <= (middle = this.posts.keys.indexOf(location.hash.slice(2))) && middle < 1 + Math.max(ReplyPruning.total - +Conf["Max Replies"], 0))
+    ) {
+      ReplyPruning.active = (ReplyPruning.inputs.enabled.checked = false);
+    }
 
-    $.after @OP.nodes.root, ReplyPruning.summary
+    $.after(this.OP.nodes.root, ReplyPruning.summary);
 
-    $.on ReplyPruning.inputs.enabled, 'change', ReplyPruning.update
-    $.on ReplyPruning.inputs.replies, 'change', ReplyPruning.update
-    $.on d, 'ThreadUpdate', ReplyPruning.updateCount
-    $.on d, 'ThreadUpdate', ReplyPruning.update
+    $.on(ReplyPruning.inputs.enabled, 'change', ReplyPruning.update);
+    $.on(ReplyPruning.inputs.replies, 'change', ReplyPruning.update);
+    $.on(d, 'ThreadUpdate', ReplyPruning.updateCount);
+    $.on(d, 'ThreadUpdate', ReplyPruning.update);
 
-    ReplyPruning.update()
+    return ReplyPruning.update();
+  },
 
-  updateCount: (e) ->
-    return if e.detail[404]
-    for fullID in e.detail.newPosts
-      ReplyPruning.total++
-      ReplyPruning.totalFiles++ if g.posts.get(fullID).file
-    return
+  updateCount(e) {
+    if (e.detail[404]) { return; }
+    for (var fullID of e.detail.newPosts) {
+      ReplyPruning.total++;
+      if (g.posts.get(fullID).file) { ReplyPruning.totalFiles++; }
+    }
+  },
 
-  update: ->
-    hidden1 = ReplyPruning.hidden
-    hidden2 = if ReplyPruning.active
+  update() {
+    let boardTop, node, post;
+    const hidden1 = ReplyPruning.hidden;
+    const hidden2 = ReplyPruning.active ?
       Math.max(ReplyPruning.total - +Conf["Max Replies"], 0)
-    else
-      0
+    :
+      0;
 
-    # Record position from bottom of document
-    oldPos = d.body.clientHeight - window.scrollY
+    // Record position from bottom of document
+    const oldPos = d.body.clientHeight - window.scrollY;
 
-    {posts} = ReplyPruning.thread
+    const {posts} = ReplyPruning.thread;
 
-    if ReplyPruning.hidden < hidden2
-      while ReplyPruning.hidden < hidden2 and ReplyPruning.position < posts.keys.length
-        post = posts.get(posts.keys[ReplyPruning.position++])
-        if post.isReply and not post.isFetchedQuote
-          $.add ReplyPruning.container, node while (node = ReplyPruning.summary.nextSibling) and node isnt post.nodes.root
-          $.add ReplyPruning.container, post.nodes.root
-          ReplyPruning.hidden++
-          ReplyPruning.hiddenFiles++ if post.file
+    if (ReplyPruning.hidden < hidden2) {
+      while ((ReplyPruning.hidden < hidden2) && (ReplyPruning.position < posts.keys.length)) {
+        post = posts.get(posts.keys[ReplyPruning.position++]);
+        if (post.isReply && !post.isFetchedQuote) {
+          while ((node = ReplyPruning.summary.nextSibling) && (node !== post.nodes.root)) { $.add(ReplyPruning.container, node); }
+          $.add(ReplyPruning.container, post.nodes.root);
+          ReplyPruning.hidden++;
+          if (post.file) { ReplyPruning.hiddenFiles++; }
+        }
+      }
 
-    else if ReplyPruning.hidden > hidden2
-      frag = $.frag()
-      while ReplyPruning.hidden > hidden2 and ReplyPruning.position > 0
-        post = posts.get(posts.keys[--ReplyPruning.position])
-        if post.isReply and not post.isFetchedQuote
-          $.prepend frag, node while (node = ReplyPruning.container.lastChild) and node isnt post.nodes.root
-          $.prepend frag, post.nodes.root
-          ReplyPruning.hidden--
-          ReplyPruning.hiddenFiles-- if post.file
-      $.after ReplyPruning.summary, frag
-      $.event 'PostsInserted', null, ReplyPruning.summary.parentNode
+    } else if (ReplyPruning.hidden > hidden2) {
+      const frag = $.frag();
+      while ((ReplyPruning.hidden > hidden2) && (ReplyPruning.position > 0)) {
+        post = posts.get(posts.keys[--ReplyPruning.position]);
+        if (post.isReply && !post.isFetchedQuote) {
+          while ((node = ReplyPruning.container.lastChild) && (node !== post.nodes.root)) { $.prepend(frag, node); }
+          $.prepend(frag, post.nodes.root);
+          ReplyPruning.hidden--;
+          if (post.file) { ReplyPruning.hiddenFiles--; }
+        }
+      }
+      $.after(ReplyPruning.summary, frag);
+      $.event('PostsInserted', null, ReplyPruning.summary.parentNode);
+    }
 
-    ReplyPruning.summary.textContent = if ReplyPruning.active
-      g.SITE.Build.summaryText '+', ReplyPruning.hidden, ReplyPruning.hiddenFiles
-    else
-      g.SITE.Build.summaryText '-', ReplyPruning.total, ReplyPruning.totalFiles
-    ReplyPruning.summary.hidden = (ReplyPruning.total <= +Conf["Max Replies"])
+    ReplyPruning.summary.textContent = ReplyPruning.active ?
+      g.SITE.Build.summaryText('+', ReplyPruning.hidden, ReplyPruning.hiddenFiles)
+    :
+      g.SITE.Build.summaryText('-', ReplyPruning.total, ReplyPruning.totalFiles);
+    ReplyPruning.summary.hidden = (ReplyPruning.total <= +Conf["Max Replies"]);
 
-    # Maintain position in thread when posts are added/removed above
-    if hidden1 isnt hidden2 and (boardTop = Header.getTopOf $('.board')) < 0
-      window.scrollBy 0, Math.max(d.body.clientHeight - oldPos, window.scrollY + boardTop) - window.scrollY
+    // Maintain position in thread when posts are added/removed above
+    if ((hidden1 !== hidden2) && ((boardTop = Header.getTopOf($('.board'))) < 0)) {
+      return window.scrollBy(0, Math.max(d.body.clientHeight - oldPos, window.scrollY + boardTop) - window.scrollY);
+    }
+  }
+};

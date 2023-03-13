@@ -1,36 +1,52 @@
-Menu =
-  init: ->
-    return unless g.VIEW in ['index', 'thread'] and Conf['Menu']
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var Menu = {
+  init() {
+    if (!['index', 'thread'].includes(g.VIEW) || !Conf['Menu']) { return; }
 
-    @button = $.el 'a',
-      className: 'menu-button'
+    this.button = $.el('a', {
+      className: 'menu-button',
       href:      'javascript:;'
+    }
+    );
 
-    $.extend @button, `{innerHTML: "<i class=\"fa fa-angle-down\"></i>"}`
+    $.extend(this.button, {innerHTML: "<i class=\"fa fa-angle-down\"></i>"});
 
-    @menu = new UI.Menu 'post'
-    Callbacks.Post.push
-      name: 'Menu'
-      cb:   @node
+    this.menu = new UI.Menu('post');
+    Callbacks.Post.push({
+      name: 'Menu',
+      cb:   this.node
+    });
 
-    Callbacks.CatalogThread.push
-      name: 'Menu'
-      cb:   @catalogNode
+    return Callbacks.CatalogThread.push({
+      name: 'Menu',
+      cb:   this.catalogNode
+    });
+  },
 
-  node: ->
-    if @isClone
-      button = $ '.menu-button', @nodes.info
-      $.rmClass button, 'active'
-      $.rm $('.dialog', @nodes.info)
-      Menu.makeButton @, button
-      return
-    $.add @nodes.info, Menu.makeButton @
+  node() {
+    if (this.isClone) {
+      const button = $('.menu-button', this.nodes.info);
+      $.rmClass(button, 'active');
+      $.rm($('.dialog', this.nodes.info));
+      Menu.makeButton(this, button);
+      return;
+    }
+    return $.add(this.nodes.info, Menu.makeButton(this));
+  },
 
-  catalogNode: ->
-    $.after @nodes.icons, Menu.makeButton @thread.OP
+  catalogNode() {
+    return $.after(this.nodes.icons, Menu.makeButton(this.thread.OP));
+  },
 
-  makeButton: (post, button) ->
-    button or= Menu.button.cloneNode true
-    $.on button, 'click', (e) ->
-      Menu.menu.toggle e, @, post
-    button
+  makeButton(post, button) {
+    if (!button) { button = Menu.button.cloneNode(true); }
+    $.on(button, 'click', function(e) {
+      return Menu.menu.toggle(e, this, post);
+    });
+    return button;
+  }
+};

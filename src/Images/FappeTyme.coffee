@@ -1,61 +1,85 @@
-FappeTyme =
-  init: ->
-    return unless (Conf['Fappe Tyme'] or Conf['Werk Tyme']) and g.VIEW in ['index', 'thread', 'archive']
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var FappeTyme = {
+  init() {
+    if ((!Conf['Fappe Tyme'] && !Conf['Werk Tyme']) || !['index', 'thread', 'archive'].includes(g.VIEW)) { return; }
 
-    @nodes = {}
-    @enabled =
-      fappe: false
+    this.nodes = {};
+    this.enabled = {
+      fappe: false,
       werk:  Conf['werk']
+    };
 
-    for type in ["Fappe", "Werk"] when Conf["#{type} Tyme"]
-      lc = type.toLowerCase()
-      el = UI.checkbox lc, "#{type} Tyme", false
-      el.title = "#{type} Tyme"
+    for (var type of ["Fappe", "Werk"]) {
+      if (Conf[`${type} Tyme`]) {
+        var lc = type.toLowerCase();
+        var el = UI.checkbox(lc, `${type} Tyme`, false);
+        el.title = `${type} Tyme`;
 
-      @nodes[lc] = el.firstElementChild
-      @set lc, true if Conf[lc]
-      $.on @nodes[lc], 'change', @toggle.bind(@, lc)
+        this.nodes[lc] = el.firstElementChild;
+        if (Conf[lc]) { this.set(lc, true); }
+        $.on(this.nodes[lc], 'change', this.toggle.bind(this, lc));
 
-      Header.menu.addEntry
-        el:    el
-        order: 97
+        Header.menu.addEntry({
+          el,
+          order: 97
+        });
 
-      indicator = $.el 'span',
-        className: 'indicator'
-        textContent: type[0]
-        title: "#{type} Tyme active"
-      $.on indicator, 'click', ->
-        check = $.getOwn(FappeTyme.nodes, @parentNode.id.replace('shortcut-', ''))
-        check.checked = !check.checked
-        $.event 'change', null, check
-      Header.addShortcut lc, indicator, 410
+        var indicator = $.el('span', {
+          className: 'indicator',
+          textContent: type[0],
+          title: `${type} Tyme active`
+        }
+        );
+        $.on(indicator, 'click', function() {
+          const check = $.getOwn(FappeTyme.nodes, this.parentNode.id.replace('shortcut-', ''));
+          check.checked = !check.checked;
+          return $.event('change', null, check);
+        });
+        Header.addShortcut(lc, indicator, 410);
+      }
+    }
 
-    if Conf['Werk Tyme']
-      $.sync 'werk', @set.bind(@, 'werk')
+    if (Conf['Werk Tyme']) {
+      $.sync('werk', this.set.bind(this, 'werk'));
+    }
 
-    Callbacks.Post.push
-      name: 'Fappe Tyme'
-      cb:   @node
+    Callbacks.Post.push({
+      name: 'Fappe Tyme',
+      cb:   this.node
+    });
 
-    Callbacks.CatalogThread.push
-      name: 'Werk Tyme'
-      cb:   @catalogNode
+    return Callbacks.CatalogThread.push({
+      name: 'Werk Tyme',
+      cb:   this.catalogNode
+    });
+  },
 
-  node: ->
-    @nodes.root.classList.toggle 'noFile', !@files.length
+  node() {
+    return this.nodes.root.classList.toggle('noFile', !this.files.length);
+  },
 
-  catalogNode: ->
-    file = @thread.OP.files[0]
-    return if !file
-    filename = $.el 'div',
-      textContent: file.name
+  catalogNode() {
+    const file = this.thread.OP.files[0];
+    if (!file) { return; }
+    const filename = $.el('div', {
+      textContent: file.name,
       className:   'werkTyme-filename'
-    $.add @nodes.thumb.parentNode, filename
+    }
+    );
+    return $.add(this.nodes.thumb.parentNode, filename);
+  },
 
-  set: (type, enabled) ->
-    @enabled[type] = @nodes[type].checked = enabled
-    $["#{if enabled then 'add' else 'rm'}Class"] doc, "#{type}Tyme"
+  set(type, enabled) {
+    this.enabled[type] = (this.nodes[type].checked = enabled);
+    return $[`${enabled ? 'add' : 'rm'}Class`](doc, `${type}Tyme`);
+  },
 
-  toggle: (type) ->
-    @set type, !@enabled[type]
-    $.cb.checked.call @nodes[type] if type is 'werk'
+  toggle(type) {
+    this.set(type, !this.enabled[type]);
+    if (type === 'werk') { return $.cb.checked.call(this.nodes[type]); }
+  }
+};

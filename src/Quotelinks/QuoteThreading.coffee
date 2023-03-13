@@ -1,160 +1,205 @@
-###
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+/*
   <3 aeosynth
-###
+*/
 
-QuoteThreading =
-  init: ->
-    return unless Conf['Quote Threading'] and g.VIEW is 'thread'
+var QuoteThreading = {
+  init() {
+    if (!Conf['Quote Threading'] || (g.VIEW !== 'thread')) { return; }
 
-    @controls = $.el 'label',
-      `{innerHTML: "<input id=\"threadingControl\" name=\"Thread Quotes\" type=\"checkbox\"> Threading"}`
+    this.controls = $.el('label',
+      {innerHTML: "<input id=\"threadingControl\" name=\"Thread Quotes\" type=\"checkbox\"> Threading"});
 
-    @threadNewLink = $.el 'span',
-      className: 'brackets-wrap threadnewlink'
+    this.threadNewLink = $.el('span', {
+      className: 'brackets-wrap threadnewlink',
       hidden: true
-    $.extend @threadNewLink, `{innerHTML: "<a href=\"javascript:;\">Thread New Posts</a>"}`
+    }
+    );
+    $.extend(this.threadNewLink, {innerHTML: "<a href=\"javascript:;\">Thread New Posts</a>"});
 
-    @input = $('input', @controls)
-    @input.checked = Conf['Thread Quotes']
+    this.input = $('input', this.controls);
+    this.input.checked = Conf['Thread Quotes'];
 
-    $.on @input, 'change', @setEnabled
-    $.on @input, 'change', @rethread
-    $.on @threadNewLink.firstElementChild, 'click', @rethread
-    $.on d, '4chanXInitFinished', => @ready = true
+    $.on(this.input, 'change', this.setEnabled);
+    $.on(this.input, 'change', this.rethread);
+    $.on(this.threadNewLink.firstElementChild, 'click', this.rethread);
+    $.on(d, '4chanXInitFinished', () => { return this.ready = true; });
 
-    Header.menu.addEntry @entry =
-      el:    @controls
+    Header.menu.addEntry(this.entry = {
+      el:    this.controls,
       order: 99
+    }
+    );
 
-    Callbacks.Thread.push
-      name: 'Quote Threading'
-      cb:   @setThread
+    Callbacks.Thread.push({
+      name: 'Quote Threading',
+      cb:   this.setThread
+    });
 
-    Callbacks.Post.push
-      name: 'Quote Threading'
-      cb:   @node
+    return Callbacks.Post.push({
+      name: 'Quote Threading',
+      cb:   this.node
+    });
+  },
 
-  parent:   $.dict()
-  children: $.dict()
-  inserted: $.dict()
+  parent:   $.dict(),
+  children: $.dict(),
+  inserted: $.dict(),
 
-  toggleThreading: ->
-    @setThreadingState !Conf['Thread Quotes']
+  toggleThreading() {
+    return this.setThreadingState(!Conf['Thread Quotes']);
+  },
 
-  setThreadingState: (enabled) ->
-    @input.checked = enabled
-    @setEnabled.call @input
-    @rethread.call @input
+  setThreadingState(enabled) {
+    this.input.checked = enabled;
+    this.setEnabled.call(this.input);
+    return this.rethread.call(this.input);
+  },
 
-  setEnabled: ->
-    if @checked
-      $.set 'Prune All Threads', false
-      other = ReplyPruning.inputs?.enabled
-      if other?.checked
-        other.checked = false
-        $.event 'change', null, other
-    $.cb.checked.call @
+  setEnabled() {
+    if (this.checked) {
+      $.set('Prune All Threads', false);
+      const other = ReplyPruning.inputs?.enabled;
+      if (other?.checked) {
+        other.checked = false;
+        $.event('change', null, other);
+      }
+    }
+    return $.cb.checked.call(this);
+  },
 
-  setThread: ->
-    QuoteThreading.thread = @
-    $.asap (-> !Conf['Thread Updater'] or $ '.navLinksBot > .updatelink'), ->
-      ($.add navLinksBot, [$.tn(' '), QuoteThreading.threadNewLink] if (navLinksBot = $ '.navLinksBot'))
+  setThread() {
+    QuoteThreading.thread = this;
+    return $.asap((() => !Conf['Thread Updater'] || $('.navLinksBot > .updatelink')), function() {
+      let navLinksBot;
+      if (navLinksBot = $('.navLinksBot')) { return $.add(navLinksBot, [$.tn(' '), QuoteThreading.threadNewLink]); }
+    });
+  },
 
-  node: ->
-    return if @isFetchedQuote or @isClone or !@isReply
+  node() {
+    let parent;
+    if (this.isFetchedQuote || this.isClone || !this.isReply) { return; }
 
-    parents = new Set()
-    lastParent = null
-    for quote in @quotes when parent = g.posts.get(quote)
-      if not parent.isFetchedQuote and parent.isReply and parent.ID < @ID
-        parents.add parent.ID
-        lastParent = parent if not lastParent or parent.ID > lastParent.ID
+    const parents = new Set();
+    let lastParent = null;
+    for (var quote of this.quotes) {
+      if ((parent = g.posts.get(quote))) {
+        if (!parent.isFetchedQuote && parent.isReply && (parent.ID < this.ID)) {
+          parents.add(parent.ID);
+          if (!lastParent || (parent.ID > lastParent.ID)) { lastParent = parent; }
+        }
+      }
+    }
 
-    return unless lastParent
+    if (!lastParent) { return; }
 
-    ancestor = lastParent
-    while ancestor = QuoteThreading.parent[ancestor.fullID]
-      parents.delete ancestor.ID
+    let ancestor = lastParent;
+    while ((ancestor = QuoteThreading.parent[ancestor.fullID])) {
+      parents.delete(ancestor.ID);
+    }
 
-    if parents.size is 1
-      QuoteThreading.parent[@fullID] = lastParent
+    if (parents.size === 1) {
+      return QuoteThreading.parent[this.fullID] = lastParent;
+    }
+  },
 
-  descendants: (post) ->
-    posts = [post]
-    if children = QuoteThreading.children[post.fullID]
-      for child in children
-        posts = posts.concat QuoteThreading.descendants child
-    posts
+  descendants(post) {
+    let children;
+    let posts = [post];
+    if (children = QuoteThreading.children[post.fullID]) {
+      for (var child of children) {
+        posts = posts.concat(QuoteThreading.descendants(child));
+      }
+    }
+    return posts;
+  },
 
-  insert: (post) ->
-    return false if not (
-      Conf['Thread Quotes'] and
-      (parent = QuoteThreading.parent[post.fullID]) and
+  insert(post) {
+    let parent, x;
+    if (!(
+      Conf['Thread Quotes'] &&
+      (parent = QuoteThreading.parent[post.fullID]) &&
       !QuoteThreading.inserted[post.fullID]
-    )
+    )) { return false; }
 
-    descendants = QuoteThreading.descendants post
-    if !Unread.posts.has(parent.ID)
-      if (do -> return true for x in descendants when Unread.posts.has x.ID)
-        QuoteThreading.threadNewLink.hidden = false
-        return false
+    const descendants = QuoteThreading.descendants(post);
+    if (!Unread.posts.has(parent.ID)) {
+      if ((function() { for (var x of descendants) { if (Unread.posts.has(x.ID)) { return true; } } })()) {
+        QuoteThreading.threadNewLink.hidden = false;
+        return false;
+      }
+    }
 
-    {order} = Unread
-    children = (QuoteThreading.children[parent.fullID] or= [])
-    threadContainer = parent.nodes.threadContainer or $.el 'div', className: 'threadContainer'
-    nodes = [post.nodes.root]
-    nodes.push post.nodes.threadContainer if post.nodes.threadContainer
+    const {order} = Unread;
+    const children = (QuoteThreading.children[parent.fullID] || (QuoteThreading.children[parent.fullID] = []));
+    const threadContainer = parent.nodes.threadContainer || $.el('div', {className: 'threadContainer'});
+    const nodes = [post.nodes.root];
+    if (post.nodes.threadContainer) { nodes.push(post.nodes.threadContainer); }
 
-    i = children.length
-    i-- for child in children by -1 when child.ID >= post.ID
-    if i isnt children.length
-      next = children[i]
-      order.before order[next.ID], order[x.ID] for x in descendants
-      children.splice i, 0, post
-      $.before next.nodes.root, nodes
-    else
-      prev = parent
-      while (prev2 = QuoteThreading.children[prev.fullID]) and prev2.length
-        prev = prev2[prev2.length-1]
-      order.after order[prev.ID], order[x.ID] for x in descendants by -1
-      children.push post
-      $.add threadContainer, nodes
+    let i = children.length;
+    for (let j = children.length - 1; j >= 0; j--) { var child = children[j]; if (child.ID >= post.ID) { i--; } }
+    if (i !== children.length) {
+      const next = children[i];
+      for (x of descendants) { order.before(order[next.ID], order[x.ID]); }
+      children.splice(i, 0, post);
+      $.before(next.nodes.root, nodes);
+    } else {
+      let prev2;
+      let prev = parent;
+      while ((prev2 = QuoteThreading.children[prev.fullID]) && prev2.length) {
+        prev = prev2[prev2.length-1];
+      }
+      for (let k = descendants.length - 1; k >= 0; k--) { x = descendants[k]; order.after(order[prev.ID], order[x.ID]); }
+      children.push(post);
+      $.add(threadContainer, nodes);
+    }
 
-    QuoteThreading.inserted[post.fullID] = true
+    QuoteThreading.inserted[post.fullID] = true;
 
-    unless parent.nodes.threadContainer
-      parent.nodes.threadContainer = threadContainer
-      $.addClass parent.nodes.root, 'threadOP'
-      $.after parent.nodes.root, threadContainer
+    if (!parent.nodes.threadContainer) {
+      parent.nodes.threadContainer = threadContainer;
+      $.addClass(parent.nodes.root, 'threadOP');
+      $.after(parent.nodes.root, threadContainer);
+    }
 
-    return true
+    return true;
+  },
 
-  rethread: ->
-    return unless QuoteThreading.ready
-    {thread} = QuoteThreading
-    {posts} = thread
+  rethread() {
+    if (!QuoteThreading.ready) { return; }
+    const {thread} = QuoteThreading;
+    const {posts} = thread;
 
-    QuoteThreading.threadNewLink.hidden = true
+    QuoteThreading.threadNewLink.hidden = true;
 
-    if Conf['Thread Quotes']
-      posts.forEach QuoteThreading.insert
-    else
-      nodes = []
-      Unread.order = new RandomAccessList()
-      QuoteThreading.inserted = $.dict()
-      posts.forEach (post) ->
-        return if post.isFetchedQuote
-        Unread.order.push post
-        nodes.push post.nodes.root if post.isReply
-        if QuoteThreading.children[post.fullID]
-          delete QuoteThreading.children[post.fullID]
-          $.rmClass post.nodes.root, 'threadOP'
-          $.rm post.nodes.threadContainer
-          delete post.nodes.threadContainer
-      $.add thread.nodes.root, nodes
+    if (Conf['Thread Quotes']) {
+      posts.forEach(QuoteThreading.insert);
+    } else {
+      const nodes = [];
+      Unread.order = new RandomAccessList();
+      QuoteThreading.inserted = $.dict();
+      posts.forEach(function(post) {
+        if (post.isFetchedQuote) { return; }
+        Unread.order.push(post);
+        if (post.isReply) { nodes.push(post.nodes.root); }
+        if (QuoteThreading.children[post.fullID]) {
+          delete QuoteThreading.children[post.fullID];
+          $.rmClass(post.nodes.root, 'threadOP');
+          $.rm(post.nodes.threadContainer);
+          return delete post.nodes.threadContainer;
+        }
+      });
+      $.add(thread.nodes.root, nodes);
+    }
 
-    Unread.position = Unread.order.first
-    Unread.updatePosition()
-    Unread.setLine true
-    Unread.read()
-    Unread.update()
+    Unread.position = Unread.order.first;
+    Unread.updatePosition();
+    Unread.setLine(true);
+    Unread.read();
+    return Unread.update();
+  }
+};

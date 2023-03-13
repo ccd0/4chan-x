@@ -1,79 +1,112 @@
-Post.Clone = class extends Post
-  isClone: true
+/*
+ * decaffeinate suggestions:
+ * DS002: Fix invalid constructor
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS206: Consider reworking classes to avoid initClass
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+Post.Clone = (function() {
+  const Cls = class extends Post {
+    static initClass() {
+      this.prototype.isClone = true;
+    }
 
-  constructor: ->
-    that = Object.create(Post.Clone.prototype)
-    that.construct arguments...
-    return that
+    constructor() {
+      const that = Object.create(Post.Clone.prototype);
+      that.construct(...arguments);
+      return that;
+    }
 
-  construct: (@origin, @context, contractThumb) ->
-    for key in ['ID', 'postID', 'threadID', 'boardID', 'siteID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply']
-      # Copy or point to the origin's key value.
-      @[key] = @origin[key]
+    construct(origin, context, contractThumb) {
+      let file, fileRoots, key;
+      this.origin = origin;
+      this.context = context;
+      for (key of ['ID', 'postID', 'threadID', 'boardID', 'siteID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply']) {
+        // Copy or point to the origin's key value.
+        this[key] = this.origin[key];
+      }
 
-    {nodes} = @origin
-    root = if contractThumb
-      @cloneWithoutVideo nodes.root
-    else
-      nodes.root.cloneNode true
-    Post.Clone.suffix or= 0
-    for node in [root, $$('[id]', root)...]
-      node.id += "_#{Post.Clone.suffix}"
-    Post.Clone.suffix++
+      const {nodes} = this.origin;
+      const root = contractThumb ?
+        this.cloneWithoutVideo(nodes.root)
+      :
+        nodes.root.cloneNode(true);
+      if (!Post.Clone.suffix) { Post.Clone.suffix = 0; }
+      for (var node of [root, ...Array.from($$('[id]', root))]) {
+        node.id += `_${Post.Clone.suffix}`;
+      }
+      Post.Clone.suffix++;
 
-    # Remove inlined posts inside of this post.
-    for inline  in $$ '.inline', root
-      $.rm inline
-    for inlined in $$ '.inlined', root
-      $.rmClass inlined, 'inlined'
+      // Remove inlined posts inside of this post.
+      for (var inline  of $$('.inline', root)) {
+        $.rm(inline);
+      }
+      for (var inlined of $$('.inlined', root)) {
+        $.rmClass(inlined, 'inlined');
+      }
 
-    @nodes = @parseNodes root
+      this.nodes = this.parseNodes(root);
 
-    root.hidden = false # post hiding
-    $.rmClass root,        'forwarded' # quote inlining
-    $.rmClass @nodes.post, 'highlight' # keybind navigation, ID highlighting
+      root.hidden = false; // post hiding
+      $.rmClass(root,        'forwarded'); // quote inlining
+      $.rmClass(this.nodes.post, 'highlight'); // keybind navigation, ID highlighting
 
-    # Remove catalog stuff.
-    unless @isReply
-      @setCatalogOP false
-      $.rm $('.catalog-link', @nodes.post)
-      $.rm $('.catalog-stats', @nodes.post)
-      $.rm $('.catalog-replies', @nodes.post)
+      // Remove catalog stuff.
+      if (!this.isReply) {
+        this.setCatalogOP(false);
+        $.rm($('.catalog-link', this.nodes.post));
+        $.rm($('.catalog-stats', this.nodes.post));
+        $.rm($('.catalog-replies', this.nodes.post));
+      }
 
-    @parseQuotes()
-    @quotes = [@origin.quotes...]
+      this.parseQuotes();
+      this.quotes = [...Array.from(this.origin.quotes)];
 
-    @files = []
-    fileRoots = @fileRoots() if @origin.files.length
-    for originFile in @origin.files
-      # Copy values, point to relevant elements.
-      file = {}
-      for key, val of originFile
-        file[key] = val
-      fileRoot = fileRoots[file.docIndex]
-      for key, selector of g.SITE.selectors.file
-        file[key] = $ selector, fileRoot
-      file.thumbLink = file.thumb?.parentNode
-      file.fullImage = $ '.full-image', file.thumbLink if file.thumbLink
-      file.videoControls = $ '.video-controls', file.text
-      file.thumb.muted = true if file.videoThumb
-      @files.push file
+      this.files = [];
+      if (this.origin.files.length) { fileRoots = this.fileRoots(); }
+      for (var originFile of this.origin.files) {
+        // Copy values, point to relevant elements.
+        file = {};
+        for (key in originFile) {
+          var val = originFile[key];
+          file[key] = val;
+        }
+        var fileRoot = fileRoots[file.docIndex];
+        for (key in g.SITE.selectors.file) {
+          var selector = g.SITE.selectors.file[key];
+          file[key] = $(selector, fileRoot);
+        }
+        file.thumbLink = file.thumb?.parentNode;
+        if (file.thumbLink) { file.fullImage = $('.full-image', file.thumbLink); }
+        file.videoControls = $('.video-controls', file.text);
+        if (file.videoThumb) { file.thumb.muted = true; }
+        this.files.push(file);
+      }
 
-    if @files.length
-      @file = @files[0]
+      if (this.files.length) {
+        this.file = this.files[0];
 
-      # Contract thumbnails in quote preview
-      ImageExpand.contract @ if @file.thumb and contractThumb
+        // Contract thumbnails in quote preview
+        if (this.file.thumb && contractThumb) { ImageExpand.contract(this); }
+      }
 
-    @isDead  = true if @origin.isDead
-    root.dataset.clone = @origin.clones.push(@) - 1
+      if (this.origin.isDead) { this.isDead  = true; }
+      return root.dataset.clone = this.origin.clones.push(this) - 1;
+    }
 
-  cloneWithoutVideo: (node) ->
-    if node.tagName is 'VIDEO' and !node.dataset.md5 # (exception for WebM thumbnails)
-      []
-    else if node.nodeType is Node.ELEMENT_NODE and $ 'video', node
-      clone = node.cloneNode false
-      $.add clone, @cloneWithoutVideo child for child in node.childNodes
-      clone
-    else
-      node.cloneNode true
+    cloneWithoutVideo(node) {
+      if ((node.tagName === 'VIDEO') && !node.dataset.md5) { // (exception for WebM thumbnails)
+        return [];
+      } else if ((node.nodeType === Node.ELEMENT_NODE) && $('video', node)) {
+        const clone = node.cloneNode(false);
+        for (var child of node.childNodes) { $.add(clone, this.cloneWithoutVideo(child)); }
+        return clone;
+      } else {
+        return node.cloneNode(true);
+      }
+    }
+  };
+  Cls.initClass();
+  return Cls;
+})();

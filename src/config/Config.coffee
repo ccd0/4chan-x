@@ -1,1180 +1,1203 @@
-import userCss from './user.css'
-import banners from './banners.js'
+import userCss from './user.css';
+import banners from './banners.js';
 
-Config =
-  main:
-    'Miscellaneous':
+const Config = {
+  main: {
+    'Miscellaneous': {
       'Redirect to HTTPS': [
-        true
+        true,
         'Redirect to the HTTPS version of 4chan.'
-      ]
+      ],
       'JSON Index': [
-        true
+        true,
         'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'
-      ]
+      ],
       'Use <%= meta.name %> Catalog': [
-        true
-        'Link to <%= meta.name %>\'s catalog instead of the native 4chan one.'
+        true,
+        'Link to <%= meta.name %>\'s catalog instead of the native 4chan one.',
         1
-      ]
+      ],
       'Index Refresh Notifications': [
-        false
-        'Show a notice at the top of the page when the index is refreshed.'
+        false,
+        'Show a notice at the top of the page when the index is refreshed.',
         1
-      ]
+      ],
       'Follow Cursor': [
-        true
+        true,
         'Image Hover and Quote Preview move with the mouse cursor.'
-      ]
+      ],
       'Open Threads in New Tab': [
-        false
+        false,
         'Make links to threads in the index / <%= meta.name %> catalog open in a new tab.'
-      ]
+      ],
       'External Catalog': [
-        false
+        false,
         'Link to external catalog instead of the internal one.'
-      ]
+      ],
       'Catalog Links': [
-        false
+        false,
         'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'
-      ]
+      ],
       'Announcement Hiding': [
-        true
+        true,
         'Add button to hide 4chan announcements.'
-      ]
+      ],
       'Desktop Notifications': [
-        true
+        true,
         'Enables desktop notifications across various <%= meta.name %> features.'
-      ]
+      ],
       '404 Redirect': [
-        true
+        true,
         'Redirect dead threads and images to the archives.'
-      ]
+      ],
       'Archive Report': [
-        true
+        true,
         'Enable reporting posts to supported archives.'
-      ]
+      ],
       'Exempt Archives from Encryption': [
-        true
+        true,
         'Permit loading content from, and warningless redirects to, HTTP-only archives from HTTPS pages.'
-      ]
+      ],
       'Keybinds': [
-        true
+        true,
         'Bind actions to keyboard shortcuts.'
-      ]
+      ],
       'Time Formatting': [
-        true
+        true,
         'Localize and format timestamps.'
-      ]
+      ],
       'Relative Post Dates': [
-        true
+        true,
         'Display dates like "3 minutes ago". Tooltip shows the timestamp.'
-      ]
+      ],
       'Relative Date Title': [
-        true
-        'Show Relative Post Date only when hovering over dates.'
+        true,
+        'Show Relative Post Date only when hovering over dates.',
         1
-      ]
+      ],
       'Comment Expansion': [
-        true
+        true,
         'Expand comments that are too long to display on the index. Not applicable with JSON Index.'
-      ]
+      ],
       'File Info Formatting': [
-        true
+        true,
         'Reformat the file information.'
-      ]
+      ],
       'Thread Expansion': [
-        true
+        true,
         'Add buttons to expand threads.'
-      ]
+      ],
       'Index Navigation': [
-        false
+        false,
         'Add buttons to navigate between threads.'
-      ]
+      ],
       'Reply Navigation': [
-        false
+        false,
         'Add buttons to navigate to top / bottom of thread.'
-      ]
+      ],
       'Unique ID and Capcode Navigation': [
-        false
+        false,
         'Add buttons to navigate to posts having the same unique ID or capcode.'
-      ]
+      ],
       'Custom Board Titles': [
-        true
+        true,
         'Allow editing of the board title and subtitle by ctrl/\u2318+clicking them.'
-      ]
+      ],
       'Persistent Custom Board Titles': [
-        false
-        'Force custom board titles to be persistent, even if the board titles are updated.'
+        false,
+        'Force custom board titles to be persistent, even if the board titles are updated.',
         1
-      ]
+      ],
       'Show Updated Notifications': [
-        true
+        true,
         'Show notifications when <%= meta.name %> is successfully updated.'
-      ]
+      ],
       'Color User IDs': [
-        true
+        true,
         'Assign unique colors to user IDs on boards that use them'
-      ]
+      ],
       'Count Posts by ID': [
-        true
+        true,
         'Display number of posts in the thread when hovering over an ID.'
-      ]
+      ],
       'Remove Spoilers': [
-        false
+        false,
         'Remove all spoilers in text.'
-      ]
+      ],
       'Reveal Spoilers': [
-        false
+        false,
         'Indicate spoilers if Remove Spoilers is enabled, or make the text appear hovered if Remove Spoiler is disabled.'
-      ]
+      ],
       'Normalize URL': [
-        true
+        true,
         'Rewrite the URL of the current page, removing slugs and excess slashes, and changing /res/ to /thread/.'
-      ]
+      ],
       'Work around CORB Bug': [
-        true
+        true,
         'Leave this checked until your garbage browser is fixed.'
-      ]
+      ],
       'Disable Autoplaying Sounds': [
-        false
+        false,
         'Prevent sounds on the page from autoplaying.'
-      ]
+      ],
       'Disable Native Extension': [
-        true
+        true,
         '<%= meta.name %> is NOT designed to work with the native extension.'
-      ]
+      ],
       'Enable Native Flash Embedding': [
-        true
+        true,
         'Activate the native extension\'s Flash embedding if the native extension is disabled.'
       ]
+    },
 
-    'Linkification':
+    'Linkification': {
       'Linkify': [
-        true
+        true,
         'Convert text into links where applicable.'
-      ]
+      ],
       'Link Title': [
-        true
-        'Replace the link of a supported site with its actual title.'
+        true,
+        'Replace the link of a supported site with its actual title.',
         1
-      ]
+      ],
       'Cover Preview': [
-        true
-        'Show preview of supported links on hover.'
+        true,
+        'Show preview of supported links on hover.',
         1
-      ]
+      ],
       'Embedding': [
-        true
-        'Embed supported services. Note: Some services don\'t work on HTTPS.'
+        true,
+        'Embed supported services. Note: Some services don\'t work on HTTPS.',
         1
-      ]
+      ],
       'Auto-embed': [
-        false
-        'Auto-embed Linkify Embeds.'
+        false,
+        'Auto-embed Linkify Embeds.',
         2
-      ]
+      ],
       'Floating Embeds': [
-        false
-        'Embed content in a frame that remains in place when the page is scrolled.'
+        false,
+        'Embed content in a frame that remains in place when the page is scrolled.',
         2
       ]
+    },
 
-    'Filtering':
+    'Filtering': {
       'Anonymize': [
-        false
+        false,
         'Make everyone Anonymous.'
-      ]
+      ],
       'Filter': [
-        true
+        true,
         'Self-moderation placebo.'
-      ]
+      ],
       'Filtered Backlinks': [
-        false
-        'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.'
+        false,
+        'When enabled, shows backlinks to filtered posts with a line-through decoration. Otherwise, hides the backlinks.',
         1
-      ]
+      ],
       'Filter in Native Catalog': [
-        true
-        'Apply 4chan X filters in native catalog.'
+        true,
+        'Apply 4chan X filters in native catalog.',
         1
-      ]
+      ],
       'MD5 Quick Filter Notifications': [
-        true
-        'Show notification when quick filtering MD5s using the button or keybind.'
+        true,
+        'Show notification when quick filtering MD5s using the button or keybind.',
         1
-      ]
+      ],
       'Recursive Hiding': [
-        true
+        true,
         'Hide replies of hidden posts, recursively.'
-      ]
+      ],
       'Thread Hiding Buttons': [
-        true
+        true,
         'Add buttons to hide entire threads.'
-      ]
+      ],
       'Reply Hiding Buttons': [
-        true
+        true,
         'Add buttons to hide single replies.'
-      ]
+      ],
       'Stubs': [
-        true
+        true,
         'Show stubs of hidden threads / replies.'
       ]
+    },
 
-    'Images and Videos':
+    'Images and Videos': {
       'Image Expansion': [
-        true
+        true,
         'Expand images / videos.'
-      ]
+      ],
       'Image Hover': [
-        true
+        true,
         'Show full image / video on mouseover.'
-      ]
+      ],
       'Image Hover in Catalog': [
-        true
+        true,
         'Show full image / video on mouseover in <%= meta.name %> catalog.'
-      ]
+      ],
       'Gallery': [
-        true
+        true,
         'Adds a simple and cute image gallery. Has more options in the gallery menu.'
-      ]
+      ],
       'Fullscreen Gallery': [
-        false
-        'Open gallery in fullscreen mode.'
+        false,
+        'Open gallery in fullscreen mode.',
         1
-      ]
+      ],
       'PDF in Gallery': [
-        false
-        'Show PDF files in gallery.'
+        false,
+        'Show PDF files in gallery.',
         1
-      ]
+      ],
       'Sauce': [
-        true
+        true,
         'Add sauce links to images.'
-      ]
+      ],
       'WEBM Metadata': [
-        true
+        true,
         'Add link to fetch title metadata from webm videos.'
-      ]
+      ],
       'Reveal Spoiler Thumbnails': [
-        false
+        false,
         'Replace spoiler thumbnails with the original image.'
-      ]
+      ],
       'Replace GIF': [
-        false
+        false,
         'Replace gif thumbnails with the actual image.'
-      ]
+      ],
       'Replace JPG': [
-        false
+        false,
         'Replace jpg thumbnails with the actual image.'
-      ]
+      ],
       'Replace PNG': [
-        false
+        false,
         'Replace png thumbnails with the actual image.'
-      ]
+      ],
       'Replace WEBM': [
-        false
+        false,
         'Replace webm, mp4, and ogv thumbnails with the actual video. Probably will degrade browser performance ;)'
-      ]
+      ],
       'Image Prefetching': [
-        true
+        true,
         'Add a shortcut icon to the header to turn on image preloading.'
-      ]
+      ],
       'Fappe Tyme': [
-        true
+        true,
         'Hide posts without images when header menu item is checked. *hint* *hint*'
-      ]
+      ],
       'Werk Tyme': [
-        true
+        true,
         'Hide all post images when header menu item is checked.'
-      ]
+      ],
       'Autoplay': [
-        true
+        true,
         'Videos begin playing immediately when opened.'
-      ]
+      ],
       'Restart when Opened': [
-        false
+        false,
         'Restart GIFs and WebMs when you hover over or expand them.'
-      ]
+      ],
       'Show Controls': [
-        true
+        true,
         'Show controls on videos expanded inline.'
-      ]
+      ],
       'Click Passthrough': [
-        false
-        'Clicks on videos trigger your browser\'s default behavior. Videos can be contracted with button / dragging to the left.'
+        false,
+        'Clicks on videos trigger your browser\'s default behavior. Videos can be contracted with button / dragging to the left.',
         1
-      ]
+      ],
       'Allow Sound': [
-        true
+        true,
         'Open videos with the sound unmuted.'
-      ]
+      ],
       'Mouse Wheel Volume': [
-        true
+        true,
         'Adjust volume of videos with the mouse wheel over the thumbnail/filename/gallery.'
-      ]
+      ],
       'Loop in New Tab': [
-        true
+        true,
         'Loop videos opened in their own tabs.'
-      ]
+      ],
       'Volume in New Tab': [
-        true
+        true,
         'Apply <%= meta.name %> mute and volume settings to videos opened in their own tabs.'
       ]
+    },
 
-    'Menu':
+    'Menu': {
       'Menu': [
-        true
+        true,
         'Add a drop-down menu to posts.'
-      ]
+      ],
       'Report Link': [
-        true
-        'Add a report link to the menu.'
+        true,
+        'Add a report link to the menu.',
         1
-      ]
+      ],
       'Copy Text Link': [
-        true
-        'Add a link to copy the post\'s text.'
+        true,
+        'Add a link to copy the post\'s text.',
         1
-      ]
+      ],
       'Thread Hiding Link': [
-        true
-        'Add a link to hide entire threads.'
+        true,
+        'Add a link to hide entire threads.',
         1
-      ]
+      ],
       'Reply Hiding Link': [
-        true
-        'Add a link to hide single replies.'
+        true,
+        'Add a link to hide single replies.',
         1
-      ]
+      ],
       'Delete Link': [
-        true
-        'Add post and image deletion links to the menu.'
+        true,
+        'Add post and image deletion links to the menu.',
         1
-      ]
+      ],
       'Archive Link': [
-        true
-        'Add an archive link to the menu.'
+        true,
+        'Add an archive link to the menu.',
         1
-      ]
+      ],
       'Edit Link': [
-        true
-        'Add a link to edit the image in Tegaki, /i/\'s painting program. Requires Quick Reply.'
+        true,
+        'Add a link to edit the image in Tegaki, /i/\'s painting program. Requires Quick Reply.',
         1
-      ]
+      ],
       'Download Link': [
-        false
-        'Add a download with original filename link to the menu.'
+        false,
+        'Add a download with original filename link to the menu.',
         1
       ]
+    },
 
-    'Monitoring':
+    'Monitoring': {
       'Thread Updater': [
-        true
+        true,
         'Fetch and insert new replies. Has more options in the header menu and the "Advanced" tab.'
-      ]
+      ],
       'Unread Count': [
-        true
+        true,
         'Show the unread posts count in the tab title.'
-      ]
+      ],
       'Quoted Title': [
-        false
-        'Change the page title to reflect you\'ve been quoted.'
+        false,
+        'Change the page title to reflect you\'ve been quoted.',
         1
-      ]
+      ],
       'Hide Unread Count at (0)': [
-        false
-        'Hide the unread posts count in the tab title when it reaches 0.'
+        false,
+        'Hide the unread posts count in the tab title when it reaches 0.',
         1
-      ]
+      ],
       'Unread Favicon': [
-        true
+        true,
         'Show a different favicon when there are unread posts.'
-      ]
+      ],
       'Unread Line': [
-        true
+        true,
         'Show a line to distinguish read posts from unread ones.'
-      ]
+      ],
       'Remember Last Read Post': [
-        true
+        true,
         'Remember how far you\'ve read after you close the thread.'
-      ]
+      ],
       'Scroll to Last Read Post': [
-        true
-        'Scroll back to the last read post when reopening a thread.'
+        true,
+        'Scroll back to the last read post when reopening a thread.',
         1
-      ]
+      ],
       'Unread Line in Index': [
-        false
-        'Show a line between read and unread posts in threads in the index.'
+        false,
+        'Show a line between read and unread posts in threads in the index.',
         1
-      ]
+      ],
       'Remove Thread Excerpt': [
-        false
+        false,
         'Replace the excerpt of the thread in the tab title with the board title.'
-      ]
+      ],
       'Thread Stats': [
-        true
+        true,
         'Display reply and image count.'
-      ]
+      ],
       'IP Count in Stats': [
-        true
-        'Display the unique IP count in the thread stats.'
+        true,
+        'Display the unique IP count in the thread stats.',
         1
-      ]
+      ],
       'Page Count in Stats': [
-        true
-        'Display the page count in the thread stats.'
+        true,
+        'Display the page count in the thread stats.',
         1
-      ]
+      ],
       'Updater and Stats in Header': [
         true,
         'Places the thread updater and thread stats in the header instead of floating them.'
-      ]
+      ],
       'Thread Watcher': [
-        true
+        true,
         'Bookmark threads. Has more options in the thread watcher menu.'
-      ]
+      ],
       'Fixed Thread Watcher': [
-        true
-        'Makes the thread watcher scroll with the page.'
+        true,
+        'Makes the thread watcher scroll with the page.',
         1
-      ]
+      ],
       'Persistent Thread Watcher': [
-        false
-        'The thread watcher will be visible when the page is loaded.'
+        false,
+        'The thread watcher will be visible when the page is loaded.',
         1
-      ]
+      ],
       'Mark New IPs': [
-        false
+        false,
         'Label each post from a new IP with the thread\'s current IP count.'
-      ]
+      ],
       'Reply Pruning': [
-        true
+        true,
         'Add option in header menu to hide old replies in long threads. Activated by default in stickies.'
-      ]
+      ],
       'Prune All Threads': [
-        false
-        'Activate Reply Pruning by default in all threads.'
+        false,
+        'Activate Reply Pruning by default in all threads.',
         1
       ]
+    },
 
-    'Posting and Captchas':
+    'Posting and Captchas': {
       'Quick Reply': [
-        true
+        true,
         'All-in-one form to reply, create threads, automate dumping and more.'
-      ]
+      ],
       'Persistent QR': [
-        false
-        'The Quick reply won\'t disappear after posting.'
+        false,
+        'The Quick reply won\'t disappear after posting.',
         1
-      ]
+      ],
       'Auto Hide QR': [
-        true
-        'Automatically hide the quick reply when posting.'
+        true,
+        'Automatically hide the quick reply when posting.',
         2
-      ]
+      ],
       'Open Post in New Tab': [
-        true
-        'Open new threads in a new tab, and open replies in a new tab if you\'re not already in the thread.'
+        true,
+        'Open new threads in a new tab, and open replies in a new tab if you\'re not already in the thread.',
         1
-      ]
+      ],
       'Remember QR Size': [
-        false
-        'Remember the size of the Quick reply.'
+        false,
+        'Remember the size of the Quick reply.',
         1
-      ]
+      ],
       'Remember Spoiler': [
-        false
-        'Remember the spoiler state, instead of resetting after posting.'
+        false,
+        'Remember the spoiler state, instead of resetting after posting.',
         1
-      ]
+      ],
       'Randomize Filename': [
-        false
-        'Set the filename to a random timestamp within the past year. Disabled on /f/.'
+        false,
+        'Set the filename to a random timestamp within the past year. Disabled on /f/.',
         1
-      ]
+      ],
       'Show New Thread Option in Threads': [
-        true
-        'Show the option to post a new / different thread from inside a thread.'
+        true,
+        'Show the option to post a new / different thread from inside a thread.',
         1
-      ]
+      ],
       'Show Upload Progress': [
-        true
-        'Track progress of file uploads as percentage in submit button.'
+        true,
+        'Track progress of file uploads as percentage in submit button.',
         1
-      ]
+      ],
       'Cooldown': [
-        true
-        'Indicate the remaining time before posting again.'
+        true,
+        'Indicate the remaining time before posting again.',
         1
-      ]
+      ],
       'Posting Success Notifications': [
-        true
-        'Show notifications on successful post creation or file uploading.'
+        true,
+        'Show notifications on successful post creation or file uploading.',
         1
-      ]
+      ],
       'Auto-load captcha': [
-        false
-        'Automatically load the captcha in the QR even if your post is empty.'
+        false,
+        'Automatically load the captcha in the QR even if your post is empty.',
         1
-      ]
+      ],
       'Post on Captcha Completion': [
-        false
-        'Submit the post immediately when the captcha is completed.'
+        false,
+        'Submit the post immediately when the captcha is completed.',
         1
-      ]
+      ],
       'Force Noscript Captcha': [
-        false
+        false,
         'Use the non-Javascript fallback captcha even if Javascript is enabled.'
-      ]
+      ],
       'Pass Link': [
-        false
+        false,
         'Add a 4chan Pass login link to the bottom of the page.'
       ]
+    },
 
-    'Quote Links':
+    'Quote Links': {
       'Quote Backlinks': [
-        true
+        true,
         'Add quote backlinks.'
-      ]
+      ],
       'OP Backlinks': [
-        true
-        'Add backlinks to the OP.'
+        true,
+        'Add backlinks to the OP.',
         1
-      ]
+      ],
       'Bottom Backlinks': [
-        false
-        'Place backlinks at the bottom of posts.'
+        false,
+        'Place backlinks at the bottom of posts.',
         1
-      ]
+      ],
       'Quote Inlining': [
-        true
+        true,
         'Inline quoted post on click.'
-      ]
+      ],
       'Inline Cross-thread Quotes Only': [
-        false
-        'Don\'t inline quote links when the posts are visible in the thread.'
+        false,
+        'Don\'t inline quote links when the posts are visible in the thread.',
         1
-      ]
+      ],
       'Quote Hash Navigation': [
-        false
-        'Include an extra link after quotes for autoscrolling to quoted posts.'
+        false,
+        'Include an extra link after quotes for autoscrolling to quoted posts.',
         1
-      ]
+      ],
       'Forward Hiding': [
-        true
-        'Hide original posts of inlined backlinks.'
+        true,
+        'Hide original posts of inlined backlinks.',
         1
-      ]
+      ],
       'Quote Previewing': [
-        true
+        true,
         'Show quoted post on hover.'
-      ]
+      ],
       'Quote Highlighting': [
-        true
-        'Highlight the previewed post.'
+        true,
+        'Highlight the previewed post.',
         1
-      ]
+      ],
       'Resurrect Quotes': [
-        true
+        true,
         'Link dead quotes to the archives, and support inlining/previewing of archive links like quote links.'
-      ]
+      ],
       'Remember Your Posts': [
-        true
+        true,
         'Remember your posting history.'
-      ]
+      ],
       'Mark Quotes of You': [
-        true
-        'Add \'(You)\' to quotes linking to your posts.'
+        true,
+        'Add \'(You)\' to quotes linking to your posts.',
         1
-      ]
+      ],
       'Highlight Posts Quoting You': [
-        true
-        'Highlights any posts that contain a quote to your post.'
+        true,
+        'Highlights any posts that contain a quote to your post.',
         1
-      ]
+      ],
       'Highlight Own Posts': [
-        true
-        'Highlights own posts.'
+        true,
+        'Highlights own posts.',
         1
-      ]
+      ],
       'Mark OP Quotes': [
-        true
+        true,
         'Add \'(OP)\' to OP quotes.'
-      ]
+      ],
       'Mark Cross-thread Quotes': [
-        true
+        true,
         'Add \'(Cross-thread)\' to cross-threads quotes.'
-      ]
+      ],
       'Quote Threading': [
-        true
+        true,
         'Add option in header menu to thread conversations.'
       ]
+    }
+  },
 
-  imageExpansion:
+  imageExpansion: {
     'Fit width': [
-      true
+      true,
       ''
-    ]
+    ],
     'Fit height': [
-      false
+      false,
       ''
-    ]
+    ],
     'Scroll into view': [
-      true
+      true,
       'Scroll down when expanding images to bring the full image into view.'
-    ]
+    ],
     'Expand spoilers': [
-      true
+      true,
       'Expand all images along with spoilers.'
-    ]
+    ],
     'Expand videos': [
-      true
+      true,
       'Expand all images also expands videos.'
-    ]
+    ],
     'Expand from here': [
-      false
+      false,
       'Expand all images only from current position to thread end.'
-    ]
+    ],
     'Expand thread only': [
-      false
+      false,
       'In index, expand all images only within the current thread.'
-    ]
+    ],
     'Advance on contract': [
-      false
+      false,
       'Advance to next post when contracting an expanded image.'
     ]
+  },
 
-  gallery:
+  gallery: {
     'Hide Thumbnails': [
       false
-    ]
-    'Fit Width': [ # 'Fit width' (lowercase W) belongs to Image Expansion. Engine limitations, heh.
+    ],
+    'Fit Width': [ // 'Fit width' (lowercase W) belongs to Image Expansion. Engine limitations, heh.
       true
-    ]
+    ],
     'Fit Height': [
       true
-    ]
+    ],
     'Stretch to Fit': [
       false
-    ]
+    ],
     'Scroll to Post': [
       true
-    ]
+    ],
     'Slide Delay': [
       6.0
     ]
+  },
 
-  'Default Volume': 1.0
+  'Default Volume': 1.0,
 
-  threadWatcher:
+  threadWatcher: {
     'Current Board': [
-      false
+      false,
       'Only show watched threads from the current board.'
-    ]
+    ],
     'Auto Update Thread Watcher': [
-      true
+      true,
       'Periodically check status of watched threads.'
-    ]
+    ],
     'Auto Watch': [
-      true
+      true,
       'Automatically watch threads you start.'
-    ]
+    ],
     'Auto Watch Reply': [
-      true
+      true,
       'Automatically watch threads you reply to.'
-    ]
+    ],
     'Auto Prune': [
-      false
+      false,
       'Automatically remove dead threads.'
-    ]
+    ],
     'Show Page': [
-      true
+      true,
       'Show what page watched threads are on.'
-    ]
+    ],
     'Show Unread Count': [
-      true
+      true,
       'Show number of unread posts in watched threads.'
-    ]
+    ],
     'Show Site Prefix': [
-      true
+      true,
       'When multiple sites are shown in the thread watcher, add a prefix to board names to distinguish them.'
-    ]
+    ],
     'Require OP Quote Link': [
-      false
+      false,
       'For purposes of thread watcher highlighting, only consider posts with a quote link to the OP as replies to the OP.'
     ]
+  },
 
-  filter:
-    general: ''
+  filter: {
+    general: '',
 
-    postID: """
-      # Highlight dubs on [s4s]:
-      #/(\\d)\\1$/;highlight;top:no;boards:s4s
-    """
+    postID: `\
+# Highlight dubs on [s4s]:
+#/(\\d)\\1$/;highlight;top:no;boards:s4s\
+`,
 
-    name: """
-      # Filter any namefags:
-      #/^(?!Anonymous$)/
-    """
+    name: `\
+# Filter any namefags:
+#/^(?!Anonymous$)/\
+`,
 
-    uniqueID: """
-      # Filter a specific ID:
-      #/Txhvk1Tl/
-    """
+    uniqueID: `\
+# Filter a specific ID:
+#/Txhvk1Tl/\
+`,
 
-    tripcode: """
-      # Filter any tripfag
-      #/^!/
-    """
+    tripcode: `\
+# Filter any tripfag
+#/^!/\
+`,
 
-    capcode: """
-      # Set a custom class for mods:
-      #/Mod$/;highlight:mod;op:yes
-      # Set a custom class for admins:
-      #/Admin$/;highlight:admin;op:yes
-    """
+    capcode: `\
+# Set a custom class for mods:
+#/Mod$/;highlight:mod;op:yes
+# Set a custom class for admins:
+#/Admin$/;highlight:admin;op:yes\
+`,
 
-    pass: """
-      # Filter anyone using since4pass:
-      #/./
-    """
+    pass: `\
+# Filter anyone using since4pass:
+#/./\
+`,
 
-    email: ''
+    email: '',
 
-    subject: """
-      # Filter Generals on /v/:
-      #/general/i;boards:v;op:only
-    """
+    subject: `\
+# Filter Generals on /v/:
+#/general/i;boards:v;op:only\
+`,
 
-    comment: """
-      # Filter Stallman copypasta on /g/:
-      #/what you\'re refer+ing to as linux/i;boards:g
-      # Filter posts with 20 or more quote links:
-      #/(?:>>\\d(?:(?!>>\\d)[^])*){20}/
-      # Filter posts like T H I S / H / I / S:
-      #/^>?\\s?\\w\\s?(\\w)\\s?(\\w)\\s?(\\w).*$[\\s>]+\\1[\\s>]+\\2[\\s>]+\\3/im
-    """
+    comment: `\
+# Filter Stallman copypasta on /g/:
+#/what you\'re refer+ing to as linux/i;boards:g
+# Filter posts with 20 or more quote links:
+#/(?:>>\\d(?:(?!>>\\d)[^])*){20}/
+# Filter posts like T H I S / H / I / S:
+#/^>?\\s?\\w\\s?(\\w)\\s?(\\w)\\s?(\\w).*$[\\s>]+\\1[\\s>]+\\2[\\s>]+\\3/im\
+`,
 
-    flag: ''
-    filename: ''
-    dimensions: """
-      # Highlight potential wallpapers:
-      #/1920x1080/;op:yes;highlight;top:no;boards:w,wg
-    """
+    flag: '',
+    filename: '',
+    dimensions: `\
+# Highlight potential wallpapers:
+#/1920x1080/;op:yes;highlight;top:no;boards:w,wg\
+`,
 
-    filesize: ''
+    filesize: '',
 
     MD5: ''
+  },
 
-  sauces: """
-    # Known filename formats:
-    https://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/
-    javascript:void(open("https://www.deviantart.com/"+%$1.replace(/_/g,"-")+"/art/"+parseInt(%$2,36)));regexp:/^\\w+_by_(\\w+)[_-]d([\\da-z]{6})\\b/
-    https://imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/
-    https://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/
-    https://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/
+  sauces: `\
+# Known filename formats:
+https://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/
+javascript:void(open("https://www.deviantart.com/"+%$1.replace(/_/g,"-")+"/art/"+parseInt(%$2,36)));regexp:/^\\w+_by_(\\w+)[_-]d([\\da-z]{6})\\b/
+https://imgur.com/%$1;regexp:/^(?![a-zA-Z][a-z]{6})(?![A-Z]{7})(?!\\d{7})([\\da-zA-Z]{7})(?: \\(\\d+\\))?\\.\\w+$/
+https://flickr.com/photo.gne?id=%$1;regexp:/^(\\d+)_[\\da-f]{10}(?:_\\w)*\\b/
+https://www.facebook.com/photo.php?fbid=%$1;regexp:/^\\d+_(\\d+)_\\d+_[no]\\b/
 
-    # Reverse image search:
-    https://www.google.com/searchbyimage?image_url=%IMG&safe=off
-    https://yandex.com/images/search?rpt=imageview&url=%IMG
-    #//tineye.com/search?url=%IMG
-    #//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights
+# Reverse image search:
+https://www.google.com/searchbyimage?image_url=%IMG&safe=off
+https://yandex.com/images/search?rpt=imageview&url=%IMG
+#//tineye.com/search?url=%IMG
+#//www.bing.com/images/search?q=imgurl:%IMG&view=detailv2&iss=sbi#enterInsights
 
-    # Specialized reverse image search:
-    //iqdb.org/?url=%IMG
-    https://trace.moe/?auto&url=%IMG;text:wait
-    #//3d.iqdb.org/?url=%IMG
-    #//saucenao.com/search.php?url=%IMG
+# Specialized reverse image search:
+//iqdb.org/?url=%IMG
+https://trace.moe/?auto&url=%IMG;text:wait
+#//3d.iqdb.org/?url=%IMG
+#//saucenao.com/search.php?url=%IMG
 
-    # "View Same" in archives:
-    http://eye.swfchan.com/search/?q=%name;types:swf
-    #https://desuarchive.org/_/search/image/%sMD5/
-    #https://archive.4plebs.org/_/search/image/%sMD5/
-    #https://boards.fireden.net/_/search/image/%sMD5/
-    #https://foolz.fireden.net/_/search/image/%sMD5/
+# "View Same" in archives:
+http://eye.swfchan.com/search/?q=%name;types:swf
+#https://desuarchive.org/_/search/image/%sMD5/
+#https://archive.4plebs.org/_/search/image/%sMD5/
+#https://boards.fireden.net/_/search/image/%sMD5/
+#https://foolz.fireden.net/_/search/image/%sMD5/
 
-    # Other tools:
-    #http://exif.regex.info/exif.cgi?imgurl=%URL
-    #//imgops.com/start?url=%URL;types:gif,jpg,png
-    #//www.gif-explode.com/%URL;types:gif
-  """
+# Other tools:
+#http://exif.regex.info/exif.cgi?imgurl=%URL
+#//imgops.com/start?url=%URL;types:gif,jpg,png
+#//www.gif-explode.com/%URL;types:gif\
+`,
 
-  FappeT:
+  FappeT: {
     werk:  false
+  },
 
-  'Custom CSS': true
+  'Custom CSS': true,
 
-  Index:
-    'Index Mode': 'paged'
-    'Previous Index Mode': 'paged'
-    'Index Size': 'small'
-    'Show Replies':          [true,  'Show replies in the index, and also in the catalog if "Catalog hover expand" is checked.']
-    'Catalog Hover Expand':  [false, 'Expand the comment and show more details when you hover over a thread in the catalog.']
-    'Catalog Hover Toggle':  [true,  'Turn "Catalog hover expand" on and off by clicking in the catalog.']
-    'Pin Watched Threads':   [false, 'Move watched threads to the start of the index.']
-    'Anchor Hidden Threads': [true,  'Move hidden threads to the end of the index.']
+  Index: {
+    'Index Mode': 'paged',
+    'Previous Index Mode': 'paged',
+    'Index Size': 'small',
+    'Show Replies':          [true,  'Show replies in the index, and also in the catalog if "Catalog hover expand" is checked.'],
+    'Catalog Hover Expand':  [false, 'Expand the comment and show more details when you hover over a thread in the catalog.'],
+    'Catalog Hover Toggle':  [true,  'Turn "Catalog hover expand" on and off by clicking in the catalog.'],
+    'Pin Watched Threads':   [false, 'Move watched threads to the start of the index.'],
+    'Anchor Hidden Threads': [true,  'Move hidden threads to the end of the index.'],
     'Refreshed Navigation':  [false, 'Refresh index when navigating through pages.']
+  },
 
-  Header:
-    'Fixed Header':               true
-    'Header auto-hide':           false
-    'Header auto-hide on scroll': false
-    'Bottom Header':              false
-    'Centered links':             false
-    'Header catalog links':       false
-    'Bottom Board List':          true
-    'Shortcut Icons':             true
+  Header: {
+    'Fixed Header':               true,
+    'Header auto-hide':           false,
+    'Header auto-hide on scroll': false,
+    'Bottom Header':              false,
+    'Centered links':             false,
+    'Header catalog links':       false,
+    'Bottom Board List':          true,
+    'Shortcut Icons':             true,
     'Custom Board Navigation':    true
+  },
 
-  archives:
-    archiveLists:      'https://4chenz.github.io/archives.json/archives.json'
-    lastarchivecheck:  0
+  archives: {
+    archiveLists:      'https://4chenz.github.io/archives.json/archives.json',
+    lastarchivecheck:  0,
     archiveAutoUpdate: true
+  },
 
-  externalCatalogURLs: """
-    //catalog.neet.tv/%board/;boards:4chan.org:3,a,adv,an,asp,biz,c,cgl,ck,cm,co,diy,f,fa,fit,g,gd,his,i,int,jp,k,lgbt,lit,m,mlp,mu,n,news,o,out,p,po,pol,s4s,sci,sp,tg,toy,trv,tv,v,vg,vip,vp,vr,w,wg,wsg,wsr,x
-  """
+  externalCatalogURLs: `\
+//catalog.neet.tv/%board/;boards:4chan.org:3,a,adv,an,asp,biz,c,cgl,ck,cm,co,diy,f,fa,fit,g,gd,his,i,int,jp,k,lgbt,lit,m,mlp,mu,n,news,o,out,p,po,pol,s4s,sci,sp,tg,toy,trv,tv,v,vg,vip,vp,vr,w,wg,wsg,wsr,x\
+`,
 
-  boardnav: """
-    [ toggle-all ]
-    [current-index-text:"Index"
-    current-catalog-text:"Catalog"
-    current-expired-text:"Expired"
-    current-archive-text:"Archive"]
-    [external-text:"FAQ","<%= meta.faq %>"]
-  """
+  boardnav: `\
+[ toggle-all ]
+[current-index-text:"Index"
+current-catalog-text:"Catalog"
+current-expired-text:"Expired"
+current-archive-text:"Archive"]
+[external-text:"FAQ","<%= meta.faq %>"]\
+`,
 
-  QR:
-    'QR.personas': """
-      #options:"sage";boards:jp;always
-    """
+  QR: {
+    'QR.personas': `\
+#options:"sage";boards:jp;always\
+`,
     sjisPreview: false
+  },
 
-  jsWhitelist: '''
-    http://s.4cdn.org
-    https://s.4cdn.org
-    http://www.google.com
-    https://www.google.com
-    https://www.gstatic.com
-    http://cdn.mathjax.org
-    https://cdn.mathjax.org
-    https://cdnjs.cloudflare.com
-    https://hcaptcha.com
-    https://*.hcaptcha.com
-    'self'
-    'unsafe-inline'
-    'unsafe-eval'
-  '''
+  jsWhitelist: `\
+http://s.4cdn.org
+https://s.4cdn.org
+http://www.google.com
+https://www.google.com
+https://www.gstatic.com
+http://cdn.mathjax.org
+https://cdn.mathjax.org
+https://cdnjs.cloudflare.com
+https://hcaptcha.com
+https://*.hcaptcha.com
+'self'
+'unsafe-inline'
+'unsafe-eval'\
+`,
 
-  captchaLanguage: ''
+  captchaLanguage: '',
 
-  time: '%m/%d/%y(%a)%H:%M:%S'
-  timeLocale: ''
+  time: '%m/%d/%y(%a)%H:%M:%S',
+  timeLocale: '',
 
-  backlink: '>>%id'
+  backlink: '>>%id',
 
-  pastedname: 'file'
+  pastedname: 'file',
 
-  fileInfo: '%l %d (%p%s, %r%g)'
+  fileInfo: '%l %d (%p%s, %r%g)',
 
-  favicon: 'ferongr'
+  favicon: 'ferongr',
 
-  usercss: userCss
+  usercss: userCss,
 
-  hotkeys:
-    # QR & Options
+  hotkeys: {
+    // QR & Options
     'Toggle board list': [
-      'Ctrl+b'
+      'Ctrl+b',
       'Toggle the full board list.'
-    ]
+    ],
     'Toggle header': [
-      'Shift+h'
+      'Shift+h',
       'Toggle the auto-hide option of the header.'
-    ]
+    ],
     'Open empty QR': [
-      'q'
+      'q',
       'Open QR without post number inserted.'
-    ]
+    ],
     'Open QR': [
-      'Shift+q'
+      'Shift+q',
       'Open QR with post number inserted.'
-    ]
+    ],
     'Open settings': [
-      'Alt+o'
+      'Alt+o',
       'Open Settings.'
-    ]
+    ],
     'Close': [
-      'Esc'
+      'Esc',
       'Close dialogs or notifications.'
-    ]
+    ],
     'Spoiler tags': [
-      'Ctrl+s'
+      'Ctrl+s',
       'Insert spoiler tags.'
-    ]
+    ],
     'Code tags': [
-      'Alt+c'
+      'Alt+c',
       'Insert code tags.'
-    ]
+    ],
     'Eqn tags':  [
-      'Alt+e'
+      'Alt+e',
       'Insert eqn tags.'
-    ]
+    ],
     'Math tags': [
-      'Alt+m'
+      'Alt+m',
       'Insert math tags.'
-    ]
+    ],
     'SJIS tags': [
-      'Alt+a'
+      'Alt+a',
       'Insert SJIS tags.'
-    ]
+    ],
     'Toggle sage': [
-      'Alt+s'
+      'Alt+s',
       'Toggle sage in options field.'
-    ]
+    ],
     'Toggle Cooldown': [
-      'Alt+Comma'
+      'Alt+Comma',
       'Toggle custom cooldown timer.'
-    ]
+    ],
     'Post from URL': [
-      'Alt+l'
+      'Alt+l',
       'Post from URL.'
-    ]
+    ],
     'Add new post': [
-      'Alt+n'
+      'Alt+n',
       'Add new post to the QR dump list.'
-    ]
+    ],
     'Submit QR': [
-      'Ctrl+Enter'
+      'Ctrl+Enter',
       'Submit post.'
-    ]
-    # Thread related
+    ],
+    // Thread related
     'Watch': [
-      'w'
+      'w',
       'Watch thread.'
-    ]
+    ],
     'Update': [
-      'r'
+      'r',
       'Update the thread / refresh the index.'
-    ]
+    ],
     'Update thread watcher': [
-      'Shift+r'
+      'Shift+r',
       'Manually refresh thread watcher.'
-    ]
+    ],
     'Toggle thread watcher': [
-      't'
+      't',
       'Toggle visibility of thread watcher.'
-    ]
+    ],
     'Toggle threading': [
-      'Shift+t'
+      'Shift+t',
       'Toggle threading.'
-    ]
+    ],
     'Mark thread read': [
-      'Ctrl+0'
+      'Ctrl+0',
       'Mark thread read from index (requires "Unread Line in Index").'
-    ]
-    # Images
+    ],
+    // Images
     'Expand image': [
-      'Shift+e'
+      'Shift+e',
       'Expand selected image.'
-    ]
+    ],
     'Expand images': [
-      'e'
+      'e',
       'Expand all images.'
-    ]
+    ],
     'Open Gallery': [
-      'g'
+      'g',
       'Opens the gallery.'
-    ]
+    ],
     'Next Gallery Image': [
       'Right',
       'Go to the next image in gallery mode.'
-    ]
+    ],
     'Previous Gallery Image': [
       'Left',
       'Go to the previous image in gallery mode.'
-    ]
+    ],
     'Advance Gallery': [
       'Enter',
       'Go to next image or, if Autoplay is off, play video.'
     ],
     'Pause': [
-      'p'
+      'p',
       'Pause/play videos in the gallery.'
-    ]
+    ],
     'Slideshow': [
-      'Ctrl+Right'
+      'Ctrl+Right',
       'Toggle the gallery slideshow mode.'
-    ]
+    ],
     'Rotate image clockwise': [
-      'Shift+Right'
+      'Shift+Right',
       'Rotate image clockwise in gallery.'
-    ]
+    ],
     'Rotate image anticlockwise': [
-      'Shift+Left'
+      'Shift+Left',
       'Rotate image anticlockwise in gallery.'
-    ]
+    ],
     'Download Gallery Image': [
-      'Shift+j'
+      'Shift+j',
       'Download current image in gallery.'
-    ]
+    ],
     'fappeTyme': [
-      'f'
+      'f',
       'Toggle Fappe Tyme.'
-    ]
+    ],
     'werkTyme': [
-      'Shift+w'
+      'Shift+w',
       'Toggle Werk Tyme.'
-    ]
-    # Board Navigation
+    ],
+    // Board Navigation
     'Front page': [
-      '1'
+      '1',
       'Jump to front page.'
-    ]
+    ],
     'Open front page': [
-      'Shift+1'
+      'Shift+1',
       'Open front page in a new tab.'
-    ]
+    ],
     'Next page': [
-      'Ctrl+Right'
+      'Ctrl+Right',
       'Jump to the next page.'
-    ]
+    ],
     'Previous page': [
-      'Ctrl+Left'
+      'Ctrl+Left',
       'Jump to the previous page.'
-    ]
+    ],
     'Paged mode': [
-      'Alt+1'
+      'Alt+1',
       'Open the index in paged mode.'
-    ]
+    ],
     'Infinite scrolling mode': [
-      'Alt+2'
+      'Alt+2',
       'Open the index in infinite scrolling mode.'
-    ]
+    ],
     'All pages mode': [
-      'Alt+3'
+      'Alt+3',
       'Open the index in all threads mode.'
-    ]
+    ],
     'Open catalog': [
-      'Shift+c'
+      'Shift+c',
       'Open the catalog of the current board.'
-    ]
+    ],
     'Search form': [
-      'Ctrl+Alt+s'
+      'Ctrl+Alt+s',
       'Focus the search field on the board index.'
-    ]
+    ],
     'Cycle sort type': [
-      'Alt+x'
+      'Alt+x',
       'Cycle through index sort types.'
-    ]
-    # Thread Navigation
+    ],
+    // Thread Navigation
     'Next thread': [
-      'Ctrl+Down'
+      'Ctrl+Down',
       'See next thread.'
-    ]
+    ],
     'Previous thread': [
-      'Ctrl+Up'
+      'Ctrl+Up',
       'See previous thread.'
-    ]
+    ],
     'Expand thread': [
-      'Ctrl+e'
+      'Ctrl+e',
       'Expand thread.'
-    ]
+    ],
     'Open thread': [
-      'o'
+      'o',
       'Open thread in current tab.'
-    ]
+    ],
     'Open thread tab': [
-      'Shift+o'
+      'Shift+o',
       'Open thread in new tab.'
-    ]
-    # Reply Navigation
+    ],
+    // Reply Navigation
     'Next reply': [
-      'j'
+      'j',
       'Select next reply.'
-    ]
+    ],
     'Previous reply': [
-      'k'
+      'k',
       'Select previous reply.'
-    ]
+    ],
     'Deselect reply': [
-      'Shift+d'
+      'Shift+d',
       'Deselect reply.'
-    ]
+    ],
     'Hide': [
-      'x'
+      'x',
       'Hide thread.'
-    ]
+    ],
     'Quick Filter MD5': [
-      '5'
+      '5',
       'Add the MD5 of the selected image to the filter list.'
-    ]
+    ],
     'Previous Post Quoting You': [
-      'Alt+Up'
+      'Alt+Up',
       'Scroll to the previous post that quotes you.'
-    ]
+    ],
     'Next Post Quoting You': [
-      'Alt+Down'
+      'Alt+Down',
       'Scroll to the next post that quotes you.'
     ]
+  },
 
-  updater:
-    checkbox:
+  updater: {
+    checkbox: {
       'Beep': [
-        false
+        false,
         'Beep on new post to completely read thread.'
-      ]
+      ],
       'Beep Quoting You': [
-        false
+        false,
         'Beep on new post quoting you.'
-      ]
+      ],
       'Auto Scroll': [
-        false
+        false,
         'Scroll updated posts into view. Only enabled at bottom of page.'
-      ]
+      ],
       'Bottom Scroll': [
-        false
+        false,
         'Always scroll to the bottom, not the first new post. Useful for event threads.'
-      ]
+      ],
       'Scroll BG': [
-        false
+        false,
         'Auto-scroll background tabs.'
-      ]
+      ],
       'Auto Update': [
-        true
+        true,
         'Automatically fetch new posts.'
-      ]
+      ],
       'Optional Increase': [
-        false
+        false,
         'Increase the intervals between updates on threads without new posts.'
       ]
+    },
     'Interval': 5
+  },
 
-  customCooldown: 0
-  customCooldownEnabled: true
+  customCooldown: 0,
+  customCooldownEnabled: true,
 
-  'Thread Quotes': false
+  'Thread Quotes': false,
 
-  'Max Replies': 1000
+  'Max Replies': 1000,
 
-  'Autohiding Scrollbar': false
+  'Autohiding Scrollbar': false,
 
-  position:
-    'embedding.position':      'top: 50px; right: 0px;'
-    'thread-stats.position':   'bottom: 0px; right: 0px;'
-    'updater.position':        'bottom: 0px; left: 0px;'
-    'thread-watcher.position': 'top: 50px; left: 0px;'
+  position: {
+    'embedding.position':      'top: 50px; right: 0px;',
+    'thread-stats.position':   'bottom: 0px; right: 0px;',
+    'updater.position':        'bottom: 0px; left: 0px;',
+    'thread-watcher.position': 'top: 50px; left: 0px;',
     'qr.position':             'top: 50px; right: 0px;'
+  },
 
-  fourchanImageHost: 'i.4cdn.org'
+  fourchanImageHost: 'i.4cdn.org',
 
-  hiddenPSAList: [{}]
+  hiddenPSAList: [{}],
 
-  knownBanners: banners.join(',')
+  knownBanners: banners.join(','),
 
-  passMessageClosed: false
+  passMessageClosed: false,
 
-  'Prerequest Captcha': false
+  'Prerequest Captcha': false,
 
   'PSAseen': [[]]
+};

@@ -1,70 +1,96 @@
-ExpandComment =
-  init: ->
-    return if g.VIEW isnt 'index' or !Conf['Comment Expansion'] or Conf['JSON Index']
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var ExpandComment = {
+  init() {
+    if ((g.VIEW !== 'index') || !Conf['Comment Expansion'] || Conf['JSON Index']) { return; }
 
-    Callbacks.Post.push
-      name: 'Comment Expansion'
-      cb:   @node
+    return Callbacks.Post.push({
+      name: 'Comment Expansion',
+      cb:   this.node
+    });
+  },
 
-  node: ->
-    if a = $ '.abbr > a:not([onclick])', @nodes.comment
-      $.on a, 'click', ExpandComment.cb
+  node() {
+    let a;
+    if (a = $('.abbr > a:not([onclick])', this.nodes.comment)) {
+      return $.on(a, 'click', ExpandComment.cb);
+    }
+  },
 
-  callbacks: []
+  callbacks: [],
 
-  cb: (e) ->
-    e.preventDefault()
-    ExpandComment.expand Get.postFromNode @
+  cb(e) {
+    e.preventDefault();
+    return ExpandComment.expand(Get.postFromNode(this));
+  },
 
-  expand: (post) ->
-    if post.nodes.longComment and !post.nodes.longComment.parentNode
-      $.replace post.nodes.shortComment, post.nodes.longComment
-      post.nodes.comment = post.nodes.longComment
-      return
-    return if not (a = $ '.abbr > a', post.nodes.comment)
-    a.textContent = "Post No.#{post} Loading..."
-    $.cache g.SITE.urls.threadJSON({boardID: post.boardID, threadID: post.threadID}), -> ExpandComment.parse @, a, post
+  expand(post) {
+    let a;
+    if (post.nodes.longComment && !post.nodes.longComment.parentNode) {
+      $.replace(post.nodes.shortComment, post.nodes.longComment);
+      post.nodes.comment = post.nodes.longComment;
+      return;
+    }
+    if (!(a = $('.abbr > a', post.nodes.comment))) { return; }
+    a.textContent = `Post No.${post} Loading...`;
+    return $.cache(g.SITE.urls.threadJSON({boardID: post.boardID, threadID: post.threadID}), function() { return ExpandComment.parse(this, a, post); });
+  },
 
-  contract: (post) ->
-    return unless post.nodes.shortComment
-    a = $ '.abbr > a', post.nodes.shortComment
-    a.textContent = 'here'
-    $.replace post.nodes.longComment, post.nodes.shortComment
-    post.nodes.comment = post.nodes.shortComment
+  contract(post) {
+    if (!post.nodes.shortComment) { return; }
+    const a = $('.abbr > a', post.nodes.shortComment);
+    a.textContent = 'here';
+    $.replace(post.nodes.longComment, post.nodes.shortComment);
+    return post.nodes.comment = post.nodes.shortComment;
+  },
 
-  parse: (req, a, post) ->
-    {status} = req
-    unless status in [200, 304]
-      a.textContent = if status then "Error #{req.statusText} (#{status})" else 'Connection Error'
-      return
+  parse(req, a, post) {
+    let postObj, spoilerRange;
+    const {status} = req;
+    if (![200, 304].includes(status)) {
+      a.textContent = status ? `Error ${req.statusText} (${status})` : 'Connection Error';
+      return;
+    }
 
-    posts = req.response.posts
-    if spoilerRange = posts[0].custom_spoiler
-      g.SITE.Build.spoilerRange[g.BOARD] = spoilerRange
+    const {
+      posts
+    } = req.response;
+    if (spoilerRange = posts[0].custom_spoiler) {
+      g.SITE.Build.spoilerRange[g.BOARD] = spoilerRange;
+    }
 
-    for postObj in posts
-      break if postObj.no is post.ID
-    if postObj.no isnt post.ID
-      a.textContent = "Post No.#{post} not found."
-      return
+    for (postObj of posts) {
+      if (postObj.no === post.ID) { break; }
+    }
+    if (postObj.no !== post.ID) {
+      a.textContent = `Post No.${post} not found.`;
+      return;
+    }
 
-    {comment} = post.nodes
-    clone = comment.cloneNode false
-    clone.innerHTML = postObj.com
-    # Fix pathnames
-    for quote in $$ '.quotelink', clone
-      href = quote.getAttribute 'href'
-      continue if href[0] is '/' # Cross-board quote, or board link
-      if href[0] is '#'
-        quote.href = "#{a.pathname.split(/\/+/).splice(0,4).join('/')}#{href}"
-      else
-        quote.href = "#{a.pathname.split(/\/+/).splice(0,3).join('/')}/#{href}"
-    post.nodes.shortComment = comment
-    $.replace comment, clone
-    post.nodes.comment = post.nodes.longComment = clone
-    post.parseComment()
-    post.parseQuotes()
+    const {comment} = post.nodes;
+    const clone = comment.cloneNode(false);
+    clone.innerHTML = postObj.com;
+    // Fix pathnames
+    for (var quote of $$('.quotelink', clone)) {
+      var href = quote.getAttribute('href');
+      if (href[0] === '/') { continue; } // Cross-board quote, or board link
+      if (href[0] === '#') {
+        quote.href = `${a.pathname.split(/\/+/).splice(0,4).join('/')}${href}`;
+      } else {
+        quote.href = `${a.pathname.split(/\/+/).splice(0,3).join('/')}/${href}`;
+      }
+    }
+    post.nodes.shortComment = comment;
+    $.replace(comment, clone);
+    post.nodes.comment = (post.nodes.longComment = clone);
+    post.parseComment();
+    post.parseQuotes();
 
-    for callback in ExpandComment.callbacks
-      callback.call post
-    return
+    for (var callback of ExpandComment.callbacks) {
+      callback.call(post);
+    }
+  }
+};

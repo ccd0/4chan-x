@@ -1,64 +1,86 @@
-QuotePreview =
-  init: ->
-    return unless Conf['Quote Previewing']
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var QuotePreview = {
+  init() {
+    if (!Conf['Quote Previewing']) { return; }
 
-    if g.VIEW is 'archive'
-      $.on d, 'mouseover', (e) ->
-        if e.target.nodeName is 'A' and $.hasClass(e.target, 'quotelink')
-          QuotePreview.mouseover.call e.target, e
+    if (g.VIEW === 'archive') {
+      $.on(d, 'mouseover', function(e) {
+        if ((e.target.nodeName === 'A') && $.hasClass(e.target, 'quotelink')) {
+          return QuotePreview.mouseover.call(e.target, e);
+        }
+      });
+    }
 
-    return unless g.VIEW in ['index', 'thread']
+    if (!['index', 'thread'].includes(g.VIEW)) { return; }
 
-    if Conf['Comment Expansion']
-      ExpandComment.callbacks.push @node
+    if (Conf['Comment Expansion']) {
+      ExpandComment.callbacks.push(this.node);
+    }
 
-    Callbacks.Post.push
-      name: 'Quote Previewing'
-      cb:   @node
+    return Callbacks.Post.push({
+      name: 'Quote Previewing',
+      cb:   this.node
+    });
+  },
 
-  node: ->
-    for link in @nodes.quotelinks.concat [@nodes.backlinks...], @nodes.archivelinks
-      $.on link, 'mouseover', QuotePreview.mouseover
-    return
+  node() {
+    for (var link of this.nodes.quotelinks.concat([...Array.from(this.nodes.backlinks)], this.nodes.archivelinks)) {
+      $.on(link, 'mouseover', QuotePreview.mouseover);
+    }
+  },
 
-  mouseover: (e) ->
-    return if ($.hasClass(@, 'inlined') and not $.hasClass(doc, 'catalog-mode')) or not d.contains(@)
+  mouseover(e) {
+    let origin;
+    if (($.hasClass(this, 'inlined') && !$.hasClass(doc, 'catalog-mode')) || !d.contains(this)) { return; }
 
-    {boardID, threadID, postID} = Get.postDataFromLink @
+    const {boardID, threadID, postID} = Get.postDataFromLink(this);
 
-    qp = $.el 'div',
-      id: 'qp'
+    const qp = $.el('div', {
+      id: 'qp',
       className: 'dialog'
+    }
+    );
 
-    $.add Header.hover, qp
-    new Fetcher boardID, threadID, postID, qp, Get.postFromNode(@)
+    $.add(Header.hover, qp);
+    new Fetcher(boardID, threadID, postID, qp, Get.postFromNode(this));
 
-    UI.hover
-      root: @
-      el: qp
-      latestEvent: e
-      endEvents: 'mouseout click'
+    UI.hover({
+      root: this,
+      el: qp,
+      latestEvent: e,
+      endEvents: 'mouseout click',
       cb: QuotePreview.mouseout
+    });
 
-    if Conf['Quote Highlighting'] and (origin = g.posts.get("#{boardID}.#{postID}"))
-      posts = [origin].concat origin.clones
-      # Remove the clone that's in the qp from the array.
-      posts.pop()
-      for post in posts
-        $.addClass post.nodes.post, 'qphl'
-    return
+    if (Conf['Quote Highlighting'] && (origin = g.posts.get(`${boardID}.${postID}`))) {
+      const posts = [origin].concat(origin.clones);
+      // Remove the clone that's in the qp from the array.
+      posts.pop();
+      for (var post of posts) {
+        $.addClass(post.nodes.post, 'qphl');
+      }
+    }
+  },
 
-  mouseout: ->
-    # Stop if it only contains text.
-    return if not (root = @el.firstElementChild)
+  mouseout() {
+    // Stop if it only contains text.
+    let root;
+    if (!(root = this.el.firstElementChild)) { return; }
 
-    $.event 'PostsRemoved', null, Header.hover
+    $.event('PostsRemoved', null, Header.hover);
 
-    clone = Get.postFromRoot root
-    post  = clone.origin
-    post.rmClone root.dataset.clone
+    const clone = Get.postFromRoot(root);
+    let post  = clone.origin;
+    post.rmClone(root.dataset.clone);
 
-    return unless Conf['Quote Highlighting']
-    for post in [post].concat post.clones
-      $.rmClass post.nodes.post, 'qphl'
-    return
+    if (!Conf['Quote Highlighting']) { return; }
+    for (post of [post].concat(post.clones)) {
+      $.rmClass(post.nodes.post, 'qphl');
+    }
+  }
+};

@@ -1,20 +1,33 @@
-IDPostCount =
-  init: ->
-    return unless g.VIEW is 'thread' and Conf['Count Posts by ID']
-    Callbacks.Thread.push
-      name: 'Count Posts by ID'
-      cb:   -> IDPostCount.thread = @
-    Callbacks.Post.push
-      name: 'Count Posts by ID'
-      cb:   @node
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var IDPostCount = {
+  init() {
+    if ((g.VIEW !== 'thread') || !Conf['Count Posts by ID']) { return; }
+    Callbacks.Thread.push({
+      name: 'Count Posts by ID',
+      cb() { return IDPostCount.thread = this; }
+    });
+    return Callbacks.Post.push({
+      name: 'Count Posts by ID',
+      cb:   this.node
+    });
+  },
 
-  node: ->
-    if @nodes.uniqueID and @thread is IDPostCount.thread
-      $.on @nodes.uniqueID, 'mouseover', IDPostCount.count
+  node() {
+    if (this.nodes.uniqueID && (this.thread === IDPostCount.thread)) {
+      return $.on(this.nodes.uniqueID, 'mouseover', IDPostCount.count);
+    }
+  },
 
-  count: ->
-    {uniqueID} = Get.postFromNode(@).info
-    n = 0
-    IDPostCount.thread.posts.forEach (post) ->
-      (n++ if post.info.uniqueID is uniqueID)
-    @title = "#{n} post#{if n is 1 then '' else 's'} by this ID"
+  count() {
+    const {uniqueID} = Get.postFromNode(this).info;
+    let n = 0;
+    IDPostCount.thread.posts.forEach(function(post) {
+      if (post.info.uniqueID === uniqueID) { return n++; }
+    });
+    return this.title = `${n} post${n === 1 ? '' : 's'} by this ID`;
+  }
+};

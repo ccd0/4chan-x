@@ -1,71 +1,96 @@
-Get =
-  url: (type, IDs, args...) ->
-    if (site = g.sites[IDs.siteID]) and (f = $.getOwn(site.urls, type))
-      f IDs, args...
-    else
-      undefined
-  threadExcerpt: (thread) ->
-    {OP} = thread
-    excerpt = ("/#{decodeURIComponent thread.board.ID}/ - ") + (
-      OP.info.subject?.trim() or
-      OP.commentDisplay().replace(/\n+/g, ' // ') or
-      OP.file?.name or
-      "No.#{OP}")
-    return "#{excerpt[...70]}..." if excerpt.length > 73
-    excerpt
-  threadFromRoot: (root) ->
-    return null unless root?
-    {board} = root.dataset
-    g.threads.get("#{if board then encodeURIComponent(board) else g.BOARD.ID}.#{root.id.match(/\d*$/)[0]}")
-  threadFromNode: (node) ->
-    Get.threadFromRoot $.x "ancestor-or-self::#{g.SITE.xpath.thread}", node
-  postFromRoot: (root) ->
-    return null unless root?
-    post  = g.posts.get(root.dataset.fullID)
-    index = root.dataset.clone
-    if index then post.clones[+index] else post
-  postFromNode: (root) ->
-    Get.postFromRoot $.x "ancestor-or-self::#{g.SITE.xpath.postContainer}[1]", root
-  postDataFromLink: (link) ->
-    if link.dataset.postID # resurrected quote
-      {boardID, threadID, postID} = link.dataset
-      threadID or= 0
-    else
-      match = link.href.match g.SITE.regexp.quotelink
-      [boardID, threadID, postID] = match[1..]
-      postID or= threadID
-    return {
-      boardID:  boardID
-      threadID: +threadID
-      postID:   +postID
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * DS207: Consider shorter variations of null checks
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var Get = {
+  url(type, IDs, ...args) {
+    let f, site;
+    if ((site = g.sites[IDs.siteID]) && (f = $.getOwn(site.urls, type))) {
+      return f(IDs, ...Array.from(args));
+    } else {
+      return undefined;
     }
-  allQuotelinksLinkingTo: (post) ->
-    # Get quotelinks & backlinks linking to the given post.
-    quotelinks = []
-    {posts} = g
-    {fullID} = post
-    handleQuotes = (qPost, type) ->
-      quotelinks.push qPost.nodes[type]...
-      quotelinks.push clone.nodes[type]... for clone in qPost.clones
-      return
-    # First:
-    #   In every posts,
-    #   if it did quote this post,
-    #   get all their backlinks.
-    posts.forEach (qPost) ->
-      if fullID in qPost.quotes
-        handleQuotes qPost, 'quotelinks'
+  },
+  threadExcerpt(thread) {
+    const {OP} = thread;
+    const excerpt = (`/${decodeURIComponent(thread.board.ID)}/ - `) + (
+      OP.info.subject?.trim() ||
+      OP.commentDisplay().replace(/\n+/g, ' // ') ||
+      OP.file?.name ||
+      `No.${OP}`);
+    if (excerpt.length > 73) { return `${excerpt.slice(0, 70)}...`; }
+    return excerpt;
+  },
+  threadFromRoot(root) {
+    if (root == null) { return null; }
+    const {board} = root.dataset;
+    return g.threads.get(`${board ? encodeURIComponent(board) : g.BOARD.ID}.${root.id.match(/\d*$/)[0]}`);
+  },
+  threadFromNode(node) {
+    return Get.threadFromRoot($.x(`ancestor-or-self::${g.SITE.xpath.thread}`, node));
+  },
+  postFromRoot(root) {
+    if (root == null) { return null; }
+    const post  = g.posts.get(root.dataset.fullID);
+    const index = root.dataset.clone;
+    if (index) { return post.clones[+index]; } else { return post; }
+  },
+  postFromNode(root) {
+    return Get.postFromRoot($.x(`ancestor-or-self::${g.SITE.xpath.postContainer}[1]`, root));
+  },
+  postDataFromLink(link) {
+    let boardID, postID, threadID;
+    if (link.dataset.postID) { // resurrected quote
+      ({boardID, threadID, postID} = link.dataset);
+      if (!threadID) { threadID = 0; }
+    } else {
+      const match = link.href.match(g.SITE.regexp.quotelink);
+      [boardID, threadID, postID] = Array.from(match.slice(1));
+      if (!postID) { postID = threadID; }
+    }
+    return {
+      boardID,
+      threadID: +threadID,
+      postID:   +postID
+    };
+  },
+  allQuotelinksLinkingTo(post) {
+    // Get quotelinks & backlinks linking to the given post.
+    const quotelinks = [];
+    const {posts} = g;
+    const {fullID} = post;
+    const handleQuotes = function(qPost, type) {
+      quotelinks.push(...Array.from(qPost.nodes[type] || []));
+      for (var clone of qPost.clones) { quotelinks.push(...Array.from(clone.nodes[type] || [])); }
+    };
+    // First:
+    //   In every posts,
+    //   if it did quote this post,
+    //   get all their backlinks.
+    posts.forEach(function(qPost) {
+      if (qPost.quotes.includes(fullID)) {
+        return handleQuotes(qPost, 'quotelinks');
+      }
+    });
 
-    # Second:
-    #   If we have quote backlinks:
-    #   in all posts this post quoted
-    #   and their clones,
-    #   get all of their backlinks.
-    if Conf['Quote Backlinks']
-      handleQuotes qPost, 'backlinks' for quote in post.quotes when qPost = posts.get(quote)
+    // Second:
+    //   If we have quote backlinks:
+    //   in all posts this post quoted
+    //   and their clones,
+    //   get all of their backlinks.
+    if (Conf['Quote Backlinks']) {
+      for (var quote of post.quotes) { var qPost;
+      if ((qPost = posts.get(quote))) { handleQuotes(qPost, 'backlinks'); } }
+    }
 
-    # Third:
-    #   Filter out irrelevant quotelinks.
-    quotelinks.filter (quotelink) ->
-      {boardID, postID} = Get.postDataFromLink quotelink
-      boardID is post.board.ID and postID is post.ID
+    // Third:
+    //   Filter out irrelevant quotelinks.
+    return quotelinks.filter(function(quotelink) {
+      const {boardID, postID} = Get.postDataFromLink(quotelink);
+      return (boardID === post.board.ID) && (postID === post.ID);
+    });
+  }
+};

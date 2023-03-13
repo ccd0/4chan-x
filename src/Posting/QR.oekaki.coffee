@@ -1,145 +1,183 @@
-QR.oekaki =
-  menu:
-    init: ->
-      return unless g.VIEW in ['index', 'thread'] and Conf['Menu'] and Conf['Edit Link'] and Conf['Quick Reply']
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+QR.oekaki = {
+  menu: {
+    init() {
+      if (!['index', 'thread'].includes(g.VIEW) || !Conf['Menu'] || !Conf['Edit Link'] || !Conf['Quick Reply']) { return; }
 
-      a = $.el 'a',
-        className: 'edit-link'
-        href: 'javascript:;'
+      const a = $.el('a', {
+        className: 'edit-link',
+        href: 'javascript:;',
         textContent: 'Edit image'
-      $.on a, 'click', @editFile
+      }
+      );
+      $.on(a, 'click', this.editFile);
 
-      Menu.menu.addEntry
-        el: a
-        order: 90
-        open: (post) ->
-          QR.oekaki.menu.post = post
-          {file} = post
-          QR.postingIsEnabled and !!file and (file.isImage or file.isVideo)
-
-    editFile: ->
-      {post} = QR.oekaki.menu
-      QR.quote.call post.nodes.post
-      {isVideo} = post.file
-      currentTime = post.file.fullImage?.currentTime or 0
-      CrossOrigin.file post.file.url, (blob) ->
-        if !blob
-          QR.error "Can't load file."
-        else if isVideo
-          video = $.el 'video'
-          $.on video, 'loadedmetadata', ->
-            $.on video, 'seeked', ->
-              canvas = $.el 'canvas',
-                width: video.videoWidth
-                height: video.videoHeight
-              canvas.getContext('2d').drawImage(video, 0, 0)
-              canvas.toBlob (snapshot) ->
-                snapshot.name = post.file.name.replace(/\.\w+$/, '') + '.png'
-                QR.handleFiles [snapshot]
-                QR.oekaki.edit()
-            video.currentTime = currentTime
-          $.on video, 'error', -> QR.openError()
-          video.src = URL.createObjectURL blob
-        else
-          blob.name = post.file.name
-          QR.handleFiles [blob]
-          QR.oekaki.edit()
-
-  setup: ->
-    $.global ->
-      {FCX} = window
-      FCX.oekakiCB = ->
-        window.Tegaki.flatten().toBlob (file) ->
-          source = "oekaki-#{Date.now()}"
-          FCX.oekakiLatest = source
-          document.dispatchEvent new CustomEvent 'QRSetFile', {
-            bubbles: true
-            detail: {file, name: FCX.oekakiName, source}
-          }
-      if window.Tegaki
-        document.querySelector('#qr .oekaki').hidden = false
-
-  load: (cb) ->
-    if $ 'script[src^="//s.4cdn.org/js/tegaki"]', d.head
-      cb()
-    else
-      style = $.el 'link',
-        rel: 'stylesheet'
-        href: "//s.4cdn.org/css/tegaki.#{Date.now()}.css"
-      script = $.el 'script',
-        src: "//s.4cdn.org/js/tegaki.min.#{Date.now()}.js"
-      n = 0
-      onload = ->
-        cb() if ++n is 2
-      $.on style,  'load', onload
-      $.on script, 'load', onload
-      $.add d.head, [style, script]
-
-  draw: ->
-    $.global ->
-      {Tegaki, FCX} = window
-      Tegaki.destroy() if Tegaki.bg
-      FCX.oekakiName = 'tegaki.png'
-      Tegaki.open
-        onDone: FCX.oekakiCB
-        onCancel: -> Tegaki.bgColor = '#ffffff'
-        width:  +document.querySelector('#qr [name=oekaki-width]').value
-        height: +document.querySelector('#qr [name=oekaki-height]').value
-        bgColor:
-          if document.querySelector('#qr [name=oekaki-bg]').checked
-            document.querySelector('#qr [name=oekaki-bgcolor]').value
-          else
-            'transparent'
-
-  button: ->
-    if QR.selected.file
-      QR.oekaki.edit()
-    else
-      QR.oekaki.toggle()
-
-  edit: ->
-    QR.oekaki.load -> $.global ->
-      {Tegaki, FCX} = window
-      name     = document.getElementById('qr-filename').value.replace(/\.\w+$/, '') + '.png'
-      {source} = document.getElementById('file-n-submit').dataset
-      error = (content) ->
-        document.dispatchEvent new CustomEvent 'CreateNotification', {
-          bubbles: true
-          detail: {type: 'warning', content, lifetime: 20}
+      return Menu.menu.addEntry({
+        el: a,
+        order: 90,
+        open(post) {
+          QR.oekaki.menu.post = post;
+          const {file} = post;
+          return QR.postingIsEnabled && !!file && (file.isImage || file.isVideo);
         }
-      cb = (e) ->
-        @removeEventListener('QRMetadata', cb, false) if e
-        selected = document.getElementById 'selected'
-        return error 'No file to edit.'        unless selected?.dataset.type
-        return error 'Not an image.'           unless /^(image|video)\//.test selected.dataset.type
-        return error 'Metadata not available.' unless selected.dataset.height
-        if selected.dataset.height is 'loading'
-          selected.addEventListener('QRMetadata', cb, false)
-          return
-        Tegaki.destroy() if Tegaki.bg
-        FCX.oekakiName = name
-        Tegaki.open
-          onDone: FCX.oekakiCB
-          onCancel: -> Tegaki.bgColor = '#ffffff'
-          width:  +selected.dataset.width
-          height: +selected.dataset.height
-          bgColor: 'transparent'
-        canvas = document.createElement 'canvas'
-        canvas.width  = canvas.naturalWidth  = +selected.dataset.width
-        canvas.height = canvas.naturalHeight = +selected.dataset.height
-        canvas.hidden = true
-        document.body.appendChild canvas
-        canvas.addEventListener 'QRImageDrawn', ->
-          @remove()
-          Tegaki.onOpenImageLoaded.call @
-        , false
-        canvas.dispatchEvent new CustomEvent 'QRDrawFile', {bubbles: true}
-      if Tegaki.bg and Tegaki.onDoneCb is FCX.oekakiCB and source is FCX.oekakiLatest
-        FCX.oekakiName = name
-        Tegaki.resume()
-      else
-        cb()
+      });
+    },
 
-  toggle: ->
-    QR.oekaki.load ->
-      QR.nodes.oekaki.hidden = !QR.nodes.oekaki.hidden
+    editFile() {
+      const {post} = QR.oekaki.menu;
+      QR.quote.call(post.nodes.post);
+      const {isVideo} = post.file;
+      const currentTime = post.file.fullImage?.currentTime || 0;
+      return CrossOrigin.file(post.file.url, function(blob) {
+        if (!blob) {
+          return QR.error("Can't load file.");
+        } else if (isVideo) {
+          const video = $.el('video');
+          $.on(video, 'loadedmetadata', function() {
+            $.on(video, 'seeked', function() {
+              const canvas = $.el('canvas', {
+                width: video.videoWidth,
+                height: video.videoHeight
+              }
+              );
+              canvas.getContext('2d').drawImage(video, 0, 0);
+              return canvas.toBlob(function(snapshot) {
+                snapshot.name = post.file.name.replace(/\.\w+$/, '') + '.png';
+                QR.handleFiles([snapshot]);
+                return QR.oekaki.edit();
+              });
+            });
+            return video.currentTime = currentTime;
+          });
+          $.on(video, 'error', () => QR.openError());
+          return video.src = URL.createObjectURL(blob);
+        } else {
+          blob.name = post.file.name;
+          QR.handleFiles([blob]);
+          return QR.oekaki.edit();
+        }
+      });
+    }
+  },
+
+  setup() {
+    return $.global(function() {
+      const {FCX} = window;
+      FCX.oekakiCB = () => window.Tegaki.flatten().toBlob(function(file) {
+        const source = `oekaki-${Date.now()}`;
+        FCX.oekakiLatest = source;
+        return document.dispatchEvent(new CustomEvent('QRSetFile', {
+          bubbles: true,
+          detail: {file, name: FCX.oekakiName, source}
+        }));});
+      if (window.Tegaki) {
+        return document.querySelector('#qr .oekaki').hidden = false;
+      }
+    });
+  },
+
+  load(cb) {
+    if ($('script[src^="//s.4cdn.org/js/tegaki"]', d.head)) {
+      return cb();
+    } else {
+      const style = $.el('link', {
+        rel: 'stylesheet',
+        href: `//s.4cdn.org/css/tegaki.${Date.now()}.css`
+      }
+      );
+      const script = $.el('script',
+        {src: `//s.4cdn.org/js/tegaki.min.${Date.now()}.js`});
+      let n = 0;
+      const onload = function() {
+        if (++n === 2) { return cb(); }
+      };
+      $.on(style,  'load', onload);
+      $.on(script, 'load', onload);
+      return $.add(d.head, [style, script]);
+    }
+  },
+
+  draw() {
+    return $.global(function() {
+      const {Tegaki, FCX} = window;
+      if (Tegaki.bg) { Tegaki.destroy(); }
+      FCX.oekakiName = 'tegaki.png';
+      return Tegaki.open({
+        onDone: FCX.oekakiCB,
+        onCancel() { return Tegaki.bgColor = '#ffffff'; },
+        width:  +document.querySelector('#qr [name=oekaki-width]').value,
+        height: +document.querySelector('#qr [name=oekaki-height]').value,
+        bgColor:
+          document.querySelector('#qr [name=oekaki-bg]').checked ?
+            document.querySelector('#qr [name=oekaki-bgcolor]').value
+          :
+            'transparent'
+      });
+    });
+  },
+
+  button() {
+    if (QR.selected.file) {
+      return QR.oekaki.edit();
+    } else {
+      return QR.oekaki.toggle();
+    }
+  },
+
+  edit() {
+    return QR.oekaki.load(() => $.global(function() {
+      const {Tegaki, FCX} = window;
+      const name     = document.getElementById('qr-filename').value.replace(/\.\w+$/, '') + '.png';
+      const {source} = document.getElementById('file-n-submit').dataset;
+      const error = content => document.dispatchEvent(new CustomEvent('CreateNotification', {
+        bubbles: true,
+        detail: {type: 'warning', content, lifetime: 20}
+      }));
+      var cb = function(e) {
+        if (e) { this.removeEventListener('QRMetadata', cb, false); }
+        const selected = document.getElementById('selected');
+        if (!selected?.dataset.type) { return error('No file to edit.'); }
+        if (!/^(image|video)\//.test(selected.dataset.type)) { return error('Not an image.'); }
+        if (!selected.dataset.height) { return error('Metadata not available.'); }
+        if (selected.dataset.height === 'loading') {
+          selected.addEventListener('QRMetadata', cb, false);
+          return;
+        }
+        if (Tegaki.bg) { Tegaki.destroy(); }
+        FCX.oekakiName = name;
+        Tegaki.open({
+          onDone: FCX.oekakiCB,
+          onCancel() { return Tegaki.bgColor = '#ffffff'; },
+          width:  +selected.dataset.width,
+          height: +selected.dataset.height,
+          bgColor: 'transparent'
+        });
+        const canvas = document.createElement('canvas');
+        canvas.width  = (canvas.naturalWidth  = +selected.dataset.width);
+        canvas.height = (canvas.naturalHeight = +selected.dataset.height);
+        canvas.hidden = true;
+        document.body.appendChild(canvas);
+        canvas.addEventListener('QRImageDrawn', function() {
+          this.remove();
+          return Tegaki.onOpenImageLoaded.call(this);
+        }
+        , false);
+        return canvas.dispatchEvent(new CustomEvent('QRDrawFile', {bubbles: true}));
+      };
+      if (Tegaki.bg && (Tegaki.onDoneCb === FCX.oekakiCB) && (source === FCX.oekakiLatest)) {
+        FCX.oekakiName = name;
+        return Tegaki.resume();
+      } else {
+        return cb();
+      }
+    }));
+  },
+
+  toggle() {
+    return QR.oekaki.load(() => QR.nodes.oekaki.hidden = !QR.nodes.oekaki.hidden);
+  }
+};

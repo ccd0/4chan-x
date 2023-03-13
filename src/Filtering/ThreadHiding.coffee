@@ -1,208 +1,274 @@
-ThreadHiding =
-  init: ->
-    return if g.VIEW not in ['index', 'catalog'] or !Conf['Thread Hiding Buttons'] and !(Conf['Menu'] and Conf['Thread Hiding Link']) and !Conf['JSON Index']
-    @db = new DataBoard 'hiddenThreads'
-    return @catalogWatch() if g.VIEW is 'catalog'
-    @catalogSet g.BOARD
-    $.on d, 'IndexRefreshInternal', @onIndexRefresh
-    if Conf['Thread Hiding Buttons']
-      $.addClass doc, 'thread-hide'
-    Callbacks.Post.push
-      name: 'Thread Hiding'
-      cb:   @node
+/*
+ * decaffeinate suggestions:
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
+var ThreadHiding = {
+  init() {
+    if (!['index', 'catalog'].includes(g.VIEW) || (!Conf['Thread Hiding Buttons'] && !(Conf['Menu'] && Conf['Thread Hiding Link']) && !Conf['JSON Index'])) { return; }
+    this.db = new DataBoard('hiddenThreads');
+    if (g.VIEW === 'catalog') { return this.catalogWatch(); }
+    this.catalogSet(g.BOARD);
+    $.on(d, 'IndexRefreshInternal', this.onIndexRefresh);
+    if (Conf['Thread Hiding Buttons']) {
+      $.addClass(doc, 'thread-hide');
+    }
+    return Callbacks.Post.push({
+      name: 'Thread Hiding',
+      cb:   this.node
+    });
+  },
 
-  catalogSet: (board) ->
-    return unless $.hasStorage and g.SITE.software is 'yotsuba'
-    hiddenThreads = ThreadHiding.db.get
-      boardID: board.ID
+  catalogSet(board) {
+    if (!$.hasStorage || (g.SITE.software !== 'yotsuba')) { return; }
+    const hiddenThreads = ThreadHiding.db.get({
+      boardID: board.ID,
       defaultValue: $.dict()
-    hiddenThreads[threadID] = true for threadID of hiddenThreads
-    localStorage.setItem "4chan-hide-t-#{board}", JSON.stringify hiddenThreads
+    });
+    for (var threadID in hiddenThreads) { hiddenThreads[threadID] = true; }
+    return localStorage.setItem(`4chan-hide-t-${board}`, JSON.stringify(hiddenThreads));
+  },
 
-  catalogWatch: ->
-    return unless $.hasStorage and g.SITE.software is 'yotsuba'
-    @hiddenThreads = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
-    Main.ready ->
-      # 4chan's catalog sets the style to "display: none;" when hiding or unhiding a thread.
-      new MutationObserver(ThreadHiding.catalogSave).observe $.id('threads'), {
-        attributes: true
-        subtree: true
-        attributeFilter: ['style']
+  catalogWatch() {
+    if (!$.hasStorage || (g.SITE.software !== 'yotsuba')) { return; }
+    this.hiddenThreads = JSON.parse(localStorage.getItem(`4chan-hide-t-${g.BOARD}`)) || {};
+    return Main.ready(() => // 4chan's catalog sets the style to "display: none;" when hiding or unhiding a thread.
+    new MutationObserver(ThreadHiding.catalogSave).observe($.id('threads'), {
+      attributes: true,
+      subtree: true,
+      attributeFilter: ['style']
+    }));
+  },
+
+  catalogSave() {
+    let threadID;
+    const hiddenThreads2 = JSON.parse(localStorage.getItem(`4chan-hide-t-${g.BOARD}`)) || {};
+    for (threadID in hiddenThreads2) {
+      if (!$.hasOwn(ThreadHiding.hiddenThreads, threadID)) {
+        ThreadHiding.db.set({
+          boardID:  g.BOARD.ID,
+          threadID,
+          val:      {makeStub: Conf['Stubs']}});
       }
+    }
+    for (threadID in ThreadHiding.hiddenThreads) {
+      if (!$.hasOwn(hiddenThreads2, threadID)) {
+        ThreadHiding.db.delete({
+          boardID:  g.BOARD.ID,
+          threadID
+        });
+      }
+    }
+    return ThreadHiding.hiddenThreads = hiddenThreads2;
+  },
 
-  catalogSave: ->
-    hiddenThreads2 = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
-    for threadID of hiddenThreads2 when !$.hasOwn(ThreadHiding.hiddenThreads, threadID)
-      ThreadHiding.db.set
-        boardID:  g.BOARD.ID
-        threadID: threadID
-        val:      {makeStub: Conf['Stubs']}
-    for threadID of ThreadHiding.hiddenThreads when !$.hasOwn(hiddenThreads2, threadID)
-      ThreadHiding.db.delete
-        boardID:  g.BOARD.ID
-        threadID: threadID
-    ThreadHiding.hiddenThreads = hiddenThreads2
+  isHidden(boardID, threadID) {
+    return !!(ThreadHiding.db && ThreadHiding.db.get({boardID, threadID}));
+  },
 
-  isHidden: (boardID, threadID) ->
-    !!(ThreadHiding.db and ThreadHiding.db.get {boardID, threadID})
+  node() {
+    let data;
+    if (this.isReply || this.isClone || this.isFetchedQuote) { return; }
 
-  node: ->
-    return if @isReply or @isClone or @isFetchedQuote
+    if (Conf['Thread Hiding Buttons']) {
+      $.prepend(this.nodes.root, ThreadHiding.makeButton(this.thread, 'hide'));
+    }
 
-    if Conf['Thread Hiding Buttons']
-      $.prepend @nodes.root, ThreadHiding.makeButton(@thread, 'hide')
+    if (data = ThreadHiding.db.get({boardID: this.board.ID, threadID: this.ID})) {
+      return ThreadHiding.hide(this.thread, data.makeStub);
+    }
+  },
 
-    if data = ThreadHiding.db.get {boardID: @board.ID, threadID: @ID}
-      ThreadHiding.hide @thread, data.makeStub
+  onIndexRefresh() {
+    return g.BOARD.threads.forEach(function(thread) {
+      const {root} = thread.nodes;
+      if (thread.isHidden && thread.stub && !root.contains(thread.stub)) {
+        return ThreadHiding.makeStub(thread, root);
+      }
+    });
+  },
 
-  onIndexRefresh: ->
-    g.BOARD.threads.forEach (thread) ->
-      {root} = thread.nodes
-      if thread.isHidden and thread.stub and !root.contains(thread.stub)
-        ThreadHiding.makeStub thread, root
+  menu: {
+    init() {
+      if ((g.VIEW !== 'index') || !Conf['Menu'] || !Conf['Thread Hiding Link']) { return; }
 
-  menu:
-    init: ->
-      return if g.VIEW isnt 'index' or !Conf['Menu'] or !Conf['Thread Hiding Link']
-
-      div = $.el 'div',
-        className: 'hide-thread-link'
+      let div = $.el('div', {
+        className: 'hide-thread-link',
         textContent: 'Hide'
+      }
+      );
 
-      apply = $.el 'a',
-        textContent: 'Apply'
+      const apply = $.el('a', {
+        textContent: 'Apply',
         href: 'javascript:;'
-      $.on apply, 'click', ThreadHiding.menu.hide
+      }
+      );
+      $.on(apply, 'click', ThreadHiding.menu.hide);
 
-      makeStub = UI.checkbox 'Stubs', 'Make stub'
+      const makeStub = UI.checkbox('Stubs', 'Make stub');
 
-      Menu.menu.addEntry
-        el: div
-        order: 20
-        open: ({thread, isReply}) ->
-          if isReply or thread.isHidden or Conf['JSON Index'] and Conf['Index Mode'] is 'catalog'
-            return false
-          ThreadHiding.menu.thread = thread
-          true
-        subEntries: [{el: apply}, {el: makeStub}]
+      Menu.menu.addEntry({
+        el: div,
+        order: 20,
+        open({thread, isReply}) {
+          if (isReply || thread.isHidden || (Conf['JSON Index'] && (Conf['Index Mode'] === 'catalog'))) {
+            return false;
+          }
+          ThreadHiding.menu.thread = thread;
+          return true;
+        },
+        subEntries: [{el: apply}, {el: makeStub}]});
 
-      div = $.el 'a',
-        className: 'show-thread-link'
-        textContent: 'Show'
+      div = $.el('a', {
+        className: 'show-thread-link',
+        textContent: 'Show',
         href: 'javascript:;'
-      $.on div, 'click', ThreadHiding.menu.show 
+      }
+      );
+      $.on(div, 'click', ThreadHiding.menu.show); 
 
-      Menu.menu.addEntry
-        el: div
-        order: 20
-        open: ({thread, isReply}) ->
-          if isReply or !thread.isHidden or Conf['JSON Index'] and Conf['Index Mode'] is 'catalog'
-            return false
-          ThreadHiding.menu.thread = thread
-          true
+      Menu.menu.addEntry({
+        el: div,
+        order: 20,
+        open({thread, isReply}) {
+          if (isReply || !thread.isHidden || (Conf['JSON Index'] && (Conf['Index Mode'] === 'catalog'))) {
+            return false;
+          }
+          ThreadHiding.menu.thread = thread;
+          return true;
+        }
+      });
 
-      hideStubLink = $.el 'a',
-        textContent: 'Hide stub'
+      const hideStubLink = $.el('a', {
+        textContent: 'Hide stub',
         href: 'javascript:;'
-      $.on hideStubLink, 'click', ThreadHiding.menu.hideStub
+      }
+      );
+      $.on(hideStubLink, 'click', ThreadHiding.menu.hideStub);
 
-      Menu.menu.addEntry
-        el: hideStubLink
-        order: 15
-        open: ({thread, isReply}) ->
-          if isReply or !thread.isHidden or Conf['JSON Index'] and Conf['Index Mode'] is 'catalog'
-            return false
-          ThreadHiding.menu.thread = thread
+      return Menu.menu.addEntry({
+        el: hideStubLink,
+        order: 15,
+        open({thread, isReply}) {
+          if (isReply || !thread.isHidden || (Conf['JSON Index'] && (Conf['Index Mode'] === 'catalog'))) {
+            return false;
+          }
+          return ThreadHiding.menu.thread = thread;
+        }
+      });
+    },
 
-    hide: ->
-      makeStub = $('input', @parentNode).checked
-      {thread} = ThreadHiding.menu
-      ThreadHiding.hide thread, makeStub
-      ThreadHiding.saveHiddenState thread, makeStub
-      $.event 'CloseMenu'
+    hide() {
+      const makeStub = $('input', this.parentNode).checked;
+      const {thread} = ThreadHiding.menu;
+      ThreadHiding.hide(thread, makeStub);
+      ThreadHiding.saveHiddenState(thread, makeStub);
+      return $.event('CloseMenu');
+    },
 
-    show: ->
-      {thread} = ThreadHiding.menu
-      ThreadHiding.show thread
-      ThreadHiding.saveHiddenState thread
-      $.event 'CloseMenu'
+    show() {
+      const {thread} = ThreadHiding.menu;
+      ThreadHiding.show(thread);
+      ThreadHiding.saveHiddenState(thread);
+      return $.event('CloseMenu');
+    },
 
-    hideStub: ->
-      {thread} = ThreadHiding.menu
-      ThreadHiding.show thread
-      ThreadHiding.hide thread, false
-      ThreadHiding.saveHiddenState thread, false
-      $.event 'CloseMenu'
-      return
+    hideStub() {
+      const {thread} = ThreadHiding.menu;
+      ThreadHiding.show(thread);
+      ThreadHiding.hide(thread, false);
+      ThreadHiding.saveHiddenState(thread, false);
+      $.event('CloseMenu');
+    }
+  },
 
-  makeButton: (thread, type) ->
-    a = $.el 'a',
-      className: "#{type}-thread-button"
+  makeButton(thread, type) {
+    const a = $.el('a', {
+      className: `${type}-thread-button`,
       href:      'javascript:;'
-    $.extend a, `{innerHTML: "<span class=\"fa fa-" + ((type === "hide") ? "minus" : "plus") + "-square\"></span>"}`
-    a.dataset.fullID = thread.fullID
-    $.on a, 'click', ThreadHiding.toggle
-    a
+    }
+    );
+    $.extend(a, {innerHTML: "<span class=\"fa fa-" + ((type === "hide") ? "minus" : "plus") + "-square\"></span>"});
+    a.dataset.fullID = thread.fullID;
+    $.on(a, 'click', ThreadHiding.toggle);
+    return a;
+  },
 
-  makeStub: (thread, root) ->
-    numReplies  = $$(g.SITE.selectors.replyOriginal, root).length
-    numReplies += +summary.textContent.match /\d+/ if summary = $ g.SITE.selectors.summary, root
+  makeStub(thread, root) {
+    let summary, threadDivider;
+    let numReplies  = $$(g.SITE.selectors.replyOriginal, root).length;
+    if (summary = $(g.SITE.selectors.summary, root)) { numReplies += +summary.textContent.match(/\d+/); }
 
-    a = ThreadHiding.makeButton thread, 'show'
-    $.add a, $.tn " #{thread.OP.info.nameBlock} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
-    thread.stub = $.el 'div',
-      className: 'stub'
-    if Conf['Menu']
-      $.add thread.stub, [a, Menu.makeButton thread.OP]
-    else
-      $.add thread.stub, a
-    $.prepend root, thread.stub
+    const a = ThreadHiding.makeButton(thread, 'show');
+    $.add(a, $.tn(` ${thread.OP.info.nameBlock} (${numReplies === 1 ? '1 reply' : `${numReplies} replies`})`));
+    thread.stub = $.el('div',
+      {className: 'stub'});
+    if (Conf['Menu']) {
+      $.add(thread.stub, [a, Menu.makeButton(thread.OP)]);
+    } else {
+      $.add(thread.stub, a);
+    }
+    $.prepend(root, thread.stub);
 
-    # Prevent hiding of thread divider on sites that put it inside the thread
-    if (threadDivider = $ g.SITE.selectors.threadDivider, root)
-      $.addClass threadDivider, 'threadDivider'
+    // Prevent hiding of thread divider on sites that put it inside the thread
+    if (threadDivider = $(g.SITE.selectors.threadDivider, root)) {
+      return $.addClass(threadDivider, 'threadDivider');
+    }
+  },
 
-  saveHiddenState: (thread, makeStub) ->
-    if thread.isHidden
-      ThreadHiding.db.set
-        boardID:  thread.board.ID
+  saveHiddenState(thread, makeStub) {
+    if (thread.isHidden) {
+      ThreadHiding.db.set({
+        boardID:  thread.board.ID,
+        threadID: thread.ID,
+        val: {makeStub}});
+    } else {
+      ThreadHiding.db.delete({
+        boardID:  thread.board.ID,
         threadID: thread.ID
-        val: {makeStub}
-    else
-      ThreadHiding.db.delete
-        boardID:  thread.board.ID
-        threadID: thread.ID
-    ThreadHiding.catalogSet thread.board
+      });
+    }
+    return ThreadHiding.catalogSet(thread.board);
+  },
 
-  toggle: (thread) ->
-    unless thread instanceof Thread
-      thread = g.threads.get(@dataset.fullID)
-    if thread.isHidden
-      ThreadHiding.show thread
-    else
-      ThreadHiding.hide thread
-    ThreadHiding.saveHiddenState thread
+  toggle(thread) {
+    if (!(thread instanceof Thread)) {
+      thread = g.threads.get(this.dataset.fullID);
+    }
+    if (thread.isHidden) {
+      ThreadHiding.show(thread);
+    } else {
+      ThreadHiding.hide(thread);
+    }
+    return ThreadHiding.saveHiddenState(thread);
+  },
 
-  hide: (thread, makeStub=Conf['Stubs']) ->
-    return if thread.isHidden
-    threadRoot = thread.nodes.root
-    thread.isHidden = true
-    Index.updateHideLabel()
-    if thread.catalogView and !Index.showHiddenThreads
-      $.rm thread.catalogView.nodes.root
-      $.event 'PostsRemoved', null, Index.root
+  hide(thread, makeStub=Conf['Stubs']) {
+    if (thread.isHidden) { return; }
+    const threadRoot = thread.nodes.root;
+    thread.isHidden = true;
+    Index.updateHideLabel();
+    if (thread.catalogView && !Index.showHiddenThreads) {
+      $.rm(thread.catalogView.nodes.root);
+      $.event('PostsRemoved', null, Index.root);
+    }
 
-    return threadRoot.hidden = true unless makeStub
+    if (!makeStub) { return threadRoot.hidden = true; }
 
-    ThreadHiding.makeStub thread, threadRoot
+    return ThreadHiding.makeStub(thread, threadRoot);
+  },
 
-  show: (thread) ->
-    if thread.stub
-      $.rm thread.stub
-      delete thread.stub
-    threadRoot = thread.nodes.root
-    threadRoot.hidden = thread.isHidden = false
-    Index.updateHideLabel()
-    if thread.catalogView and Index.showHiddenThreads
-      $.rm thread.catalogView.nodes.root
-      $.event 'PostsRemoved', null, Index.root
+  show(thread) {
+    if (thread.stub) {
+      $.rm(thread.stub);
+      delete thread.stub;
+    }
+    const threadRoot = thread.nodes.root;
+    threadRoot.hidden = (thread.isHidden = false);
+    Index.updateHideLabel();
+    if (thread.catalogView && Index.showHiddenThreads) {
+      $.rm(thread.catalogView.nodes.root);
+      return $.event('PostsRemoved', null, Index.root);
+    }
+  }
+};
