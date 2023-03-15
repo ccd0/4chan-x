@@ -1,3 +1,11 @@
+import Redirect from "../Archive/Redirect";
+import Callbacks from "../classes/Callbacks";
+import Post from "../classes/Post";
+import { g, Conf, doc } from "../globals/globals";
+import ExpandComment from "../Miscellaneous/ExpandComment";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -138,3 +146,4 @@ var Quotify = {
     return $.replace(deadlink, [...Array.from(deadlink.childNodes)]);
   }
 };
+export default Quotify;

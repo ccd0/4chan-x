@@ -1,4 +1,6 @@
-class CatalogThread {
+import $ from "../platform/$";
+
+export default class CatalogThread {
   toString() { return this.ID; }
 
   constructor(root, thread) {

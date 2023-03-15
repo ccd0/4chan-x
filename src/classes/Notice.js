@@ -1,9 +1,14 @@
+import Header from "../General/Header";
+import { d } from "../globals/globals";
+import $ from "../platform/$";
+import { SECOND } from "../platform/helpers";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-class Notice {
+export default class Notice {
   constructor(type, content, timeout, onclose) {
     this.add = this.add.bind(this);
     this.close = this.close.bind(this);
@@ -36,7 +41,7 @@ class Notice {
     $.add(Header.noticesRoot, this.el);
     this.el.clientHeight; // force reflow
     this.el.style.opacity = 1;
-    if (this.timeout) { return setTimeout(this.close, this.timeout * $.SECOND); }
+    if (this.timeout) { return setTimeout(this.close, this.timeout * SECOND); }
   }
 
   close() {

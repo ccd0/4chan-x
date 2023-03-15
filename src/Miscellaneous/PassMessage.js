@@ -1,9 +1,11 @@
+import { Conf, d } from "../globals/globals";
+import $ from "../platform/$";
+import PassMessagePage from './PassMessage/PassMessageHtml';
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-import PassMessagePage from './PassMessage/PassMessage.html';
 
 const PassMessage = {
   init() {
@@ -11,7 +13,7 @@ const PassMessage = {
     const msg = $.el('div',
       {className: 'box-outer top-box'}
     ,
-      { innerHTML: PassMessagePage });
+      PassMessagePage);
     msg.style.cssText = 'padding-bottom: 0;';
     const close = $('a', msg);
     $.on(close, 'click', function() {
@@ -28,3 +30,4 @@ const PassMessage = {
     });
   }
 };
+export default PassMessage;

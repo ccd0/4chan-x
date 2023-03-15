@@ -1,9 +1,13 @@
+import { g, Conf, doc, d } from "../globals/globals";
+import Main from "../main/Main";
+import $ from "../platform/$";
+import Captcha from "./Captcha";
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-Captcha.replace = {
+const CaptchaReplace = {
   init() {
     if ((g.SITE.software !== 'yotsuba') || (d.cookie.indexOf('pass_enabled=1') >= 0)) { return; }
 
@@ -50,3 +54,4 @@ Captcha.replace = {
     }
   }
 };
+export default CaptchaReplace;

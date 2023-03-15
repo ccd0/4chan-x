@@ -1,3 +1,6 @@
+import { g, Conf } from "../globals/globals";
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -21,3 +24,4 @@ var Flash = {
     }
   }
 };
+export default Flash;

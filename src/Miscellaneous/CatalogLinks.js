@@ -1,3 +1,16 @@
+import Callbacks from "../classes/Callbacks";
+import Filter from "../Filtering/Filter";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+import meta from '../../package.json';
+import Index from "../General/Index";
+import Site from "../site/Site";
+import Header from "../General/Header";
+import { g, Conf } from "../globals/globals";
+import UI from "../General/UI";
+import Get from "../General/Get";
+import { dict } from "../platform/helpers";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -28,14 +41,14 @@ var CatalogLinks = {
             var catalogLink = link.parentNode.cloneNode(true);
             var link2 = catalogLink.firstElementChild;
             link2.href = catalogURL;
-            link2.textContent = link2.hostname === location.hostname ? '<%= meta.name %> Catalog' : 'External Catalog';
+            link2.textContent = link2.hostname === location.hostname ? `${meta.name} Catalog` : 'External Catalog';
             $.after(link.parentNode, [$.tn(' '), catalogLink]);
           }
         }
       });
     }
 
-    if ((g.SITE.software === 'yotsuba') && Conf['JSON Index'] && Conf['Use <%= meta.name %> Catalog']) {
+    if ((g.SITE.software === 'yotsuba') && Conf['JSON Index'] && Conf[`Use ${meta.name} Catalog`]) {
       Callbacks.Post.push({
         name: 'Catalog Link Rewrite',
         cb:   this.node
@@ -111,12 +124,12 @@ var CatalogLinks = {
   },
 
   externalParse() {
-    CatalogLinks.externalList = $.dict();
+    CatalogLinks.externalList = dict();
     for (var line of Conf['externalCatalogURLs'].split('\n')) {
       if (line[0] === '#') { continue; }
       var url = line.split(';')[0];
       var boards   = Filter.parseBoards(line.match(/;boards:([^;]+)/)?.[1] || '*');
-      var excludes = Filter.parseBoards(line.match(/;exclude:([^;]+)/)?.[1]) || $.dict();
+      var excludes = Filter.parseBoards(line.match(/;exclude:([^;]+)/)?.[1]) || dict();
       for (var board in boards) {
         if (!excludes[board] && !excludes[board.split('/')[0] + '/*']) {
           CatalogLinks.externalList[board] = url;
@@ -143,7 +156,7 @@ var CatalogLinks = {
     let external, nativeCatalog;
     if (Conf['External Catalog'] && (external = CatalogLinks.external(board))) {
       return external;
-    } else if (Index.enabledOn(board) && Conf['Use <%= meta.name %> Catalog']) {
+    } else if (Index.enabledOn(board) && Conf[`Use ${meta.name} Catalog`]) {
       return CatalogLinks.jsonIndex(board, '#catalog');
     } else if (nativeCatalog = Get.url('catalog', board)) {
       return nativeCatalog;
@@ -160,3 +173,4 @@ var CatalogLinks = {
     }
   }
 };
+export default CatalogLinks;

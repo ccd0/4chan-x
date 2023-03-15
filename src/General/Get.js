@@ -1,3 +1,6 @@
+import { Conf, g } from "../globals/globals";
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -94,3 +97,4 @@ var Get = {
     });
   }
 };
+export default Get;

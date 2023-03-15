@@ -1,5 +1,5 @@
 var fs = require('fs');
-var template = require('./template');
+var template = require('./template.js');
 var coffee = require('coffeescript');
 
 for (var name of process.argv.slice(2)) {

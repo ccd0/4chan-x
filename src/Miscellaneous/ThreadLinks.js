@@ -1,3 +1,6 @@
+import Callbacks from "../classes/Callbacks";
+import { g, Conf } from "../globals/globals";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -30,3 +33,4 @@ var ThreadLinks = {
     return link.target = '_blank';
   }
 };
+export default ThreadLinks;

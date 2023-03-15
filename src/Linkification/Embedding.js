@@ -1,3 +1,14 @@
+import Get from '../General/Get';
+import Header from '../General/Header';
+import UI from '../General/UI';
+import { g, Conf, d, doc } from '../globals/globals';
+import ImageHost from '../Images/ImageHost';
+import Main from '../main/Main';
+import $ from '../platform/$';
+import $$ from '../platform/$$';
+import CrossOrigin from '../platform/CrossOrigin';
+import { dict } from '../platform/helpers';
+import EmbeddingPage from './Embedding/Embed.html';
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -6,12 +17,11 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-import EmbeddingPage from './Ebedding/embedding.html';
 
 var Embedding = {
   init() {
     if (!['index', 'thread', 'archive'].includes(g.VIEW) || !Conf['Linkify'] || (!Conf['Embedding'] && !Conf['Link Title'] && !Conf['Cover Preview'])) { return; }
-    this.types = $.dict();
+    this.types = dict();
     for (var type of this.ordered_types) { this.types[type.key] = type; }
 
     if (Conf['Embedding'] && (g.VIEW !== 'archive')) {
@@ -689,3 +699,4 @@ var Embedding = {
     }
   ]
 };
+export default Embedding;

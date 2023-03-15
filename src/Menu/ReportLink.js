@@ -1,3 +1,7 @@
+import { g, Conf } from "../globals/globals";
+import $ from "../platform/$";
+import Menu from "./Menu";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -37,3 +41,4 @@ var ReportLink = {
     return window.open(url, id, set);
   }
 };
+export default ReportLink;

@@ -1,9 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS101: Remove unnecessary use of Array.from
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
- */
 import ferongr_unreadDead from './Favicon/ferongr.unreadDead.png';
 import ferongr_unreadDeadY from './Favicon/ferongr.unreadDeadY.png';
 import ferongr_unreadSFW from './Favicon/ferongr.unreadSFW.png';
@@ -42,7 +36,15 @@ import Metro_unreadNSFW from './Favicon/Metro.unreadNSFW.png';
 import Metro_unreadNSFWY from './Favicon/Metro.unreadNSFWY.png';
 import dead from './Favicon/dead.gif';
 import empty from './Favicon/empty.gif';
+import $ from '../platform/$';
+import { Conf, d } from '../globals/globals';
 
+/*
+ * decaffeinate suggestions:
+ * DS101: Remove unnecessary use of Array.from
+ * DS102: Remove unnecessary code created because of implicit returns
+ * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
+ */
 
 var Favicon = {
   init() {
@@ -145,7 +147,7 @@ var Favicon = {
 
   SFW:   '//s.4cdn.org/image/favicon-ws.ico',
   NSFW:  '//s.4cdn.org/image/favicon.ico',
-  // TODO
-  dead:  'data:image/gif;base64,<%= readBase64("dead.gif") %>',
-  logo:  'data:image/png;base64,<%= readBase64("/src/meta/icon128.png") %>'
+  dead: `data:image/gif;base64,${dead}`,
+  logo: `data:image/png;base64,${empty}`,
 };
+export default Favicon;

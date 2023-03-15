@@ -1,3 +1,5 @@
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -24,3 +26,4 @@ const Polyfill = {
     };
   }
 };
+export default Polyfill;

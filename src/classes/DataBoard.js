@@ -1,3 +1,7 @@
+import { Conf, d, g } from "../globals/globals";
+import $ from "../platform/$";
+import { dict, HOUR } from "../platform/helpers";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -6,11 +10,11 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-class DataBoard {
+export default class DataBoard {
   static initClass() {
     this.keys = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads', 'watcherLastModified', 'customTitles'];
-  
-    this.prototype.changes = [];
+
+    this.changes = [];
   }
 
   constructor(key, sync, dontClean) {
@@ -39,20 +43,20 @@ class DataBoard {
       delete this.data.boards;
       delete this.data.lastChecked;
     }
-    return this.data[g.SITE.ID] || (this.data[g.SITE.ID] = {boards: $.dict()});
+    return this.data[g.SITE.ID] || (this.data[g.SITE.ID] = { boards: dict() });
   }
 
   save(change, cb) {
     change();
-    this.changes.push(change);
-    return $.get(this.key, {boards: $.dict()}, items => {
-      if (!this.changes.length) { return; }
+    DataBoard.changes.push(change);
+    return $.get(this.key, { boards: dict() }, items => {
+      if (!DataBoard.changes.length) { return; }
       const needSync = ((items[this.key].version || 0) > (this.data.version || 0));
       if (needSync) {
         this.initData(items[this.key]);
-        for (change of this.changes) { change(); }
+        for (change of DataBoard.changes) { change(); }
       }
-      this.changes = [];
+      DataBoard.changes = [];
       this.data.version = (this.data.version || 0) + 1;
       return $.set(this.key, this.data, () => {
         if (needSync) { this.sync?.(); }
@@ -62,10 +66,10 @@ class DataBoard {
   }
 
   forceSync(cb) {
-    return $.get(this.key, {boards: $.dict()}, items => {
+    return $.get(this.key, { boards: dict() }, items => {
       if ((items[this.key].version || 0) > (this.data.version || 0)) {
         this.initData(items[this.key]);
-        for (var change of this.changes) { change(); }
+        for (var change of DataBoard.changes) { change(); }
         this.sync?.();
       }
       return cb?.();
@@ -112,12 +116,12 @@ class DataBoard {
 
   setUnsafe({siteID, boardID, threadID, postID, val}) {
     if (!siteID) { siteID = g.SITE.ID; }
-    if (!this.data[siteID]) { this.data[siteID] = {boards: $.dict()}; }
+    if (!this.data[siteID]) { this.data[siteID] = { boards: dict() }; }
     if (postID !== undefined) {
       let base;
-      return (((base = this.data[siteID].boards[boardID] || (this.data[siteID].boards[boardID] = $.dict())))[threadID] || (base[threadID] = $.dict()))[postID] = val;
+      return (((base = this.data[siteID].boards[boardID] || (this.data[siteID].boards[boardID] = dict())))[threadID] || (base[threadID] = dict()))[postID] = val;
     } else if (threadID !== undefined) {
-      return (this.data[siteID].boards[boardID] || (this.data[siteID].boards[boardID] = $.dict()))[threadID] = val;
+      return (this.data[siteID].boards[boardID] || (this.data[siteID].boards[boardID] = dict()))[threadID] = val;
     } else {
       return this.data[siteID].boards[boardID] = val;
     }
@@ -125,7 +129,7 @@ class DataBoard {
 
   extend({siteID, boardID, threadID, postID, val}, cb) {
     return this.save(() => {
-      const oldVal = this.get({siteID, boardID, threadID, postID, defaultValue: $.dict()});
+      const oldVal = this.get({ siteID, boardID, threadID, postID, defaultValue: dict() });
       for (var key in val) {
         var subVal = val[key];
         if (typeof subVal === 'undefined') {
@@ -180,7 +184,7 @@ class DataBoard {
       this.deleteIfEmpty({siteID, boardID});
     }
     const now = Date.now();
-    if (now - (2 * $.HOUR) >= ((middle = this.data[siteID].lastChecked || 0)) || middle > now) {
+    if (now - (2 * HOUR) >= ((middle = this.data[siteID].lastChecked || 0)) || middle > now) {
       this.data[siteID].lastChecked = now;
       for (boardID in this.data[siteID].boards) {
         this.ajaxClean(boardID);
@@ -209,7 +213,7 @@ class DataBoard {
     let board, ID;
     const siteID = g.SITE.ID;
     if (!(board = this.data[siteID].boards[boardID])) { return; }
-    const threads = $.dict();
+    const threads = dict();
     if (response1) {
       for (var page of response1) {
         for (var thread of page.threads) {

@@ -1,3 +1,6 @@
+import { g, Conf } from "../globals/globals";
+import Main from "../main/Main";
+import $ from "../platform/$";
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -22,3 +25,4 @@ const PassLink = {
     return $.before(styleSelector.previousSibling, [passLink, $.tn('\u00A0\u00A0')]);
   }
 };
+export default PassLink;

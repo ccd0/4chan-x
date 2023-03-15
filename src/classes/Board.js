@@ -1,9 +1,13 @@
+import BoardConfig from "../General/BoardConfig";
+import { d, g } from "../globals/globals";
+import SimpleDict from "./SimpleDict";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-class Board {
+export default class Board {
   toString() { return this.ID; }
 
   constructor(ID) {

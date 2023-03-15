@@ -1,3 +1,7 @@
+import { g } from "../globals/globals";
+import Main from "../main/Main";
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -35,3 +39,4 @@ const Tinyboard = {
     }
   }
 };
+export default Tinyboard;

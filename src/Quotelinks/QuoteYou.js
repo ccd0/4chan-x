@@ -1,3 +1,15 @@
+import Callbacks from "../classes/Callbacks";
+import DataBoard from "../classes/DataBoard";
+import Notice from "../classes/Notice";
+import Get from "../General/Get";
+import Header from "../General/Header";
+import { Conf, d, doc, g } from "../globals/globals";
+import Menu from "../Menu/Menu";
+import ExpandComment from "../Miscellaneous/ExpandComment";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+import PostRedirect from "../Posting/PostRedirect";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -164,3 +176,4 @@ var QuoteYou = {
     }
   }
 };
+export default QuoteYou;

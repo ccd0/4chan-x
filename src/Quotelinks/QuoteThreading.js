@@ -1,3 +1,12 @@
+import Callbacks from "../classes/Callbacks";
+import RandomAccessList from "../classes/RandomAccessList";
+import Header from "../General/Header";
+import { Conf, d, g } from "../globals/globals";
+import ReplyPruning from "../Monitoring/ReplyPruning";
+import Unread from "../Monitoring/Unread";
+import $ from "../platform/$";
+import { dict } from "../platform/helpers";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -46,9 +55,9 @@ var QuoteThreading = {
     });
   },
 
-  parent:   $.dict(),
-  children: $.dict(),
-  inserted: $.dict(),
+  parent:   dict(),
+  children: dict(),
+  inserted: dict(),
 
   toggleThreading() {
     return this.setThreadingState(!Conf['Thread Quotes']);
@@ -181,7 +190,7 @@ var QuoteThreading = {
     } else {
       const nodes = [];
       Unread.order = new RandomAccessList();
-      QuoteThreading.inserted = $.dict();
+      QuoteThreading.inserted = dict();
       posts.forEach(function(post) {
         if (post.isFetchedQuote) { return; }
         Unread.order.push(post);
@@ -203,3 +212,4 @@ var QuoteThreading = {
     return Unread.update();
   }
 };
+export default QuoteThreading;

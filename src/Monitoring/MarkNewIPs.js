@@ -1,3 +1,7 @@
+import Callbacks from "../classes/Callbacks";
+import { g, Conf } from "../globals/globals";
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -61,3 +65,4 @@ var MarkNewIPs = {
     return $.addClass(post.nodes.root, 'old-ip');
   }
 };
+export default MarkNewIPs;

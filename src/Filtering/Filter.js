@@ -1,3 +1,18 @@
+import Callbacks from "../classes/Callbacks";
+import Notice from "../classes/Notice";
+import Config from "../config/Config";
+import Get from "../General/Get";
+import Settings from "../General/Settings";
+import { g, Conf, doc } from "../globals/globals";
+import Menu from "../Menu/Menu";
+import Unread from "../Monitoring/Unread";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+import { dict } from "../platform/helpers";
+import QuoteYou from "../Quotelinks/QuoteYou";
+import PostHiding from "./PostHiding";
+import ThreadHiding from "./ThreadHiding";
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -7,7 +22,7 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
 var Filter = {
-  filters: $.dict(),
+  filters: dict(),
   init() {
     if (!['index', 'thread', 'catalog'].includes(g.VIEW) || !Conf['Filter']) { return; }
     if ((g.VIEW === 'catalog') && !Conf['Filter in Native Catalog']) { return; }
@@ -126,7 +141,7 @@ var Filter = {
     let boards;
     if (!boardsRaw) { return false; }
     if (boards = Filter.parseBoardsMemo[boardsRaw]) { return boards; }
-    boards = $.dict();
+    boards = dict();
     let siteFilter = '';
     for (var boardID of boardsRaw.split(',')) {
       if (boardID.includes(':')) {
@@ -149,7 +164,7 @@ var Filter = {
     return boards;
   },
 
-  parseBoardsMemo: $.dict(),
+  parseBoardsMemo: dict(),
 
   test(post, hideable=true) {
     if (post.filterResults) { return post.filterResults; }
@@ -225,7 +240,7 @@ var Filter = {
   catalog() {
     let url;
     if (!(url = g.SITE.urls.catalogJSON?.(g.BOARD))) { return; }
-    Filter.catalogData = $.dict();
+    Filter.catalogData = dict();
     $.ajax(url,
       {onloadend: Filter.catalogParse});
     return Callbacks.CatalogThreadNative.push({
@@ -500,3 +515,4 @@ var Filter = {
     }
   }
 };
+export default Filter;

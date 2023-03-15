@@ -3,7 +3,7 @@
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-class RandomAccessList {
+export default class RandomAccessList {
   constructor(items) {
     this.length = 0;
     if (items) { for (var item of items) { this.push(item); } }

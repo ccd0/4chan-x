@@ -1,3 +1,8 @@
+import Callbacks from "../classes/Callbacks";
+import Header from "../General/Header";
+import { g, Conf, d } from "../globals/globals";
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -133,3 +138,4 @@ var ImageLoader = {
     });
   }
 };
+export default ImageLoader;

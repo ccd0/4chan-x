@@ -6,6 +6,20 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
 import galleryPage from './Gallery/Gallery.html';
+import $ from '../platform/$';
+import Callbacks from '../classes/Callbacks';
+import Notice from '../classes/Notice';
+import Main from '../main/Main';
+import Keybinds from '../Miscellaneous/Keybinds';
+import $$ from '../platform/$$';
+import ImageCommon from './ImageCommon';
+import Sauce from './Sauce';
+import Volume from './Volume';
+import Header from '../General/Header';
+import { Conf, d, doc, g } from '../globals/globals';
+import UI from '../General/UI';
+import Get from '../General/Get';
+import { debounce, dict, SECOND } from '../platform/helpers';
 
 var Gallery = {
   init() {
@@ -64,7 +78,7 @@ var Gallery = {
 
     Gallery.images  = [];
     const nodes = (Gallery.nodes = {});
-    Gallery.fileIDs = $.dict();
+    Gallery.fileIDs = dict();
     Gallery.slideshow = false;
 
     nodes.el = (dialog = $.el('div',
@@ -280,7 +294,7 @@ var Gallery = {
   },
 
   startTimer() {
-    return Gallery.timeoutID = setTimeout(Gallery.checkTimer, Gallery.delay * $.SECOND);
+    return Gallery.timeoutID = setTimeout(Gallery.checkTimer, Gallery.delay * SECOND);
   },
 
   setupTimer() {
@@ -399,7 +413,7 @@ var Gallery = {
     rotateLeft() { return Gallery.cb.rotate(270); },
     rotateRight() { return Gallery.cb.rotate(90); },
 
-    rotate: $.debounce(100, function(delta) {
+    rotate: debounce(100, function(delta) {
       const {current} = Gallery.nodes;
       if (current.nodeName === 'IFRAME') { return; }
       current.dataRotate = ((current.dataRotate || 0) + delta) % 360;
@@ -431,7 +445,7 @@ var Gallery = {
       return (this.checked ? $.addClass : $.rmClass)(doc, `gal-${this.name.toLowerCase().replace(/\s+/g, '-')}`);
     },
 
-    setHeight: $.debounce(100, function() {
+    setHeight: debounce(100, function () {
       let dim, margin, minHeight;
       const {current, frame} = Gallery.nodes;
       const {style} = current;
@@ -504,3 +518,4 @@ var Gallery = {
     }
   }
 };
+export default Gallery;
