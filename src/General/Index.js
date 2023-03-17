@@ -28,7 +28,7 @@ import UI from './UI';
 import Menu from '../Menu/Menu';
 
 import NavLinksPage from './Index/NavLinks.html';
-import PageListPage from './Index/PageList.html';
+import PageList from './Index/PageList.html';
 import BoardConfig from './BoardConfig';
 import Get from './Get';
 import { dict, SECOND } from '../platform/helpers';
@@ -692,14 +692,14 @@ var Index = {
     const pagesRoot  = $('.pages', Index.pagelist);
 
     // Previous/Next buttons
-    const prev = pagesRoot.previousSibling.firstChild;
-    const next = pagesRoot.nextSibling.firstChild;
+    const prev = pagesRoot.previousElementSibling.firstElementChild;
+    const next = pagesRoot.nextElementSibling.firstElementChild;
     let href = Math.max(pageNum - 1, 1);
     prev.href = href === 1 ? './' : href;
-    prev.firstChild.disabled = href === pageNum;
+    prev.firstElementChild.disabled = href === pageNum;
     href = Math.min(pageNum + 1, maxPageNum);
     next.href = href === 1 ? './' : href;
-    next.firstChild.disabled = href === pageNum;
+    next.firstElementChild.disabled = href === pageNum;
 
     // <strong> current page
     if (strong = $('strong', pagesRoot)) {

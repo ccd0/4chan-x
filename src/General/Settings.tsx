@@ -27,7 +27,7 @@ import Unread from '../Monitoring/Unread';
 import $$ from '../platform/$$';
 import $ from '../platform/$';
 import meta from '../../package.json';
-import { c, Conf, d, doc, g } from '../globals/globals';
+import { c, Conf, d, doc, E, g } from '../globals/globals';
 import Header from './Header';
 import h, { hFragment } from '../globals/jsx';
 import { dict, platform } from '../platform/helpers';

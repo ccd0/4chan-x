@@ -357,7 +357,7 @@ $.rmClass = function(el, ...classNames) {
 
 $.toggleClass = (el, className) => el.classList.toggle(className);
 
-$.hasClass = (el, className) => el.classList.includes(className);
+$.hasClass = (el, className) => el.classList.contains(className);
 
 $.rm = el => el?.remove();
 

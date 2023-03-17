@@ -365,8 +365,8 @@ var Main = {
     if (!Main.isThisPageLegit()) { return; }
 
     // disable the mobile layout
-    // TODO check if exists
-    $('link[href*=mobile]', d.head).disabled = true;
+    const mobileLink = $('link[href*=mobile]', d.head);
+    if (mobileLink) mobileLink.disabled = true;
     doc.dataset.host = location.host;
     $.addClass(doc, `sw-${g.SITE.software}`);
     $.addClass(doc, g.VIEW === 'thread' ? 'thread-view' : g.VIEW);
