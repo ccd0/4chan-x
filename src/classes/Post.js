@@ -5,12 +5,6 @@ import $ from "../platform/$";
 import $$ from "../platform/$$";
 import Callbacks from "./Callbacks";
 
-/**
- * Original coffeescript version added a child class that somehow skips the original constructor in the compilation
- * output? In es classes we have to do tha manually.
- */
-const skipConstructor = Symbol('skip post constructor');
-
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -34,7 +28,8 @@ export default class Post {
     // @normalizedOriginal = Test.normalize root
     // <% } %>
 
-    if (root === skipConstructor) return;
+    // Skip initialization for PostClone
+    if (root === undefined && thread === undefined && board === undefined) return;
 
     this.root = root;
     this.thread = thread;
@@ -355,7 +350,7 @@ export default class Post {
   addClone(context, contractThumb) {
     // Callbacks may not have been run yet due to anti-browser-lock delay in Main.callbackNodesDB.
     Callbacks.Post.execute(this);
-    return new PostClone(skipConstructor).construct(this, context, contractThumb);
+    return new PostClone(this, context, contractThumb);
   }
 
   rmClone(index) {
@@ -377,12 +372,10 @@ export default class Post {
 export class PostClone extends Post {
   static suffix = 0;
 
-  constructor(root, thread, board, flags = {}) {
-    super(root, thread, board, flags = {});
+  constructor(origin, context, contractThumb) {
+    super();
     this.isClone = true;
-  }
 
-  construct(origin, context, contractThumb) {
     let file, fileRoots, key;
     this.origin = origin;
     this.context = context;
