@@ -1,7 +1,7 @@
 import Get from '../General/Get';
 import Header from '../General/Header';
 import UI from '../General/UI';
-import { g, Conf, d, doc } from '../globals/globals';
+import { g, Conf, d, doc, E } from '../globals/globals';
 import ImageHost from '../Images/ImageHost';
 import Main from '../main/Main';
 import $ from '../platform/$';
@@ -315,7 +315,8 @@ var Embedding = {
       regExp: /^[^?#]+\.(?:gif|png|jpg|jpeg|bmp|webp)(?::\w+)?(?:[?#]|$)/i,
       style: '',
       el(a) {
-        return $.el('div', {innerHTML: '<a target="_blank" href="${a.dataset.href}"><img src="${a.dataset.href}" style="max-width: 80vw; max-height: 80vh;"></a>'});
+        const hrefEsc = E(a.dataset.href);
+        return $.el('div', { innerHTML: `<a target="_blank" href="${hrefEsc}"><img src="${hrefEsc}" style="max-width: 80vw; max-height: 80vh;"></a>`});
       }
     }
     , {
