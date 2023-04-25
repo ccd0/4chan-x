@@ -92,7 +92,7 @@ ThreadStats =
       ThreadStats.pageCountEl.textContent = 'Dead'
       $.addClass ThreadStats.pageCountEl, 'warning'
       return
-    ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 2 * $.MINUTE
+    ThreadStats.timeout = setTimeout ThreadStats.fetchPage, 2 * $.MINUTE / (23 * (ThreadStats.pageCountEl.classList.contains 'warning') + 1)
     $.whenModified(
       g.SITE.urls.threadsListJSON(ThreadStats.thread),
       'ThreadStats',
@@ -118,6 +118,8 @@ ThreadStats =
             if thread.no is ThreadStats.thread.ID
               ThreadStats.pageCountEl.textContent = pageNum + 1
               ThreadStats.pageCountEl.classList.toggle 'warning', (i >= nThreads - @response[0].threads.length)
+              if ThreadStats.pageCountEl.classList.contains 'warning'
+                ThreadStats.pageCountEl.textContent += " (" + (nThreads - i - 1) + ")"
               ThreadStats.lastPageUpdate = new Date(thread.last_modified * $.SECOND)
               ThreadStats.retry()
               return
