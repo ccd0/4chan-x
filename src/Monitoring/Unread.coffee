@@ -56,7 +56,11 @@ Unread =
     Unread.read()
     Unread.update()
     $.on  d, 'scroll visibilitychange', Unread.read
-    $.on  d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
+    if Conf['Unread Line']
+      $.on  d, 'scroll', ->
+        if (window.innerHeight + window.scrollY) >= d.body.offsetHeight
+            Unread.setLine true if not Conf['Auto Scroll']
+      $.on  d, 'visibilitychange', Unread.setLine
 
   positionPrev: ->
     if Unread.position then Unread.position.prev else Unread.order.last
