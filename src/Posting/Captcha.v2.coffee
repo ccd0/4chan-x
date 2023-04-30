@@ -23,7 +23,7 @@ Captcha.v2 =
 
     $.on counter, 'click', @toggle.bind @
     $.on counter, 'keydown', (e) =>
-      return unless Keybinds.keyCode(e) is 'Space'
+      return unless Keybinds.key(e) is 'Space'
       @toggle()
       e.preventDefault()
       e.stopPropagation()

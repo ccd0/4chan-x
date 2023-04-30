@@ -138,24 +138,24 @@ class Menu
     while subEntry = $ '.focused', entry
       entry = subEntry
 
-    switch e.keyCode
-      when 27 # Esc
+    switch e.key
+      when 'Escape'
         lastToggledButton.focus()
         @close()
-      when 13, 32 # Enter, Space
+      when 'Enter', ' '
         entry.click()
-      when 38 # Up
+      when 'ArrowUp'
         if next = @findNextEntry entry, -1
           @focus next
-      when 40 # Down
+      when 'ArrowDown'
         if next = @findNextEntry entry, +1
           @focus next
-      when 39 # Right
+      when 'ArrowRight'
         if (submenu = $ '.submenu', entry) and (next = submenu.firstElementChild)
           while nextPrev = @findNextEntry next, -1
             next = nextPrev
           @focus next
-      when 37 # Left
+      when 'ArrowLeft'
         if next = $.x 'parent::*[contains(@class,"submenu")]/parent::*', entry
           @focus next
       else
@@ -369,7 +369,7 @@ hover = (e) ->
   style.right = right
 
 hoverend = (e) ->
-  return if e.type is 'keydown' and e.keyCode isnt 13 or e.target.nodeName is "TEXTAREA"
+  return if e.type is 'keydown' and e.key isnt 'Enter' or e.target.nodeName is "TEXTAREA"
   $.rm @el unless @noRemove
   $.off @root, @endEvents,  @hoverend
   $.off d,     'keydown',   @hoverend
