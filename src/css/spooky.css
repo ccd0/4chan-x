@@ -122,7 +122,8 @@
   border-color: rgb(254, 150, 0);
 }
 :root.spooky #qr.sjis-preview #sjis-toggle,
-:root.spooky #qr.tex-preview #tex-preview-button {
+:root.spooky #qr.tex-preview #tex-preview-button,
+:root.spooky #qr.code-preview #code-preview-button {
   background: rgb(26, 27, 29);
 }
 :root.spooky #qr select,

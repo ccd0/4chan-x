@@ -1668,8 +1668,11 @@ body:not(.board_f) #qr select[name="filetag"],
 #qr.reply-to-thread select[name="filetag"],
 #qr:not(.has-sjis) #sjis-toggle,
 #qr:not(.has-math) #tex-preview-button,
+#qr:not(.has-code) #code-preview-button,
 #qr.tex-preview .textarea > :not(#tex-preview),
-#qr:not(.tex-preview) #tex-preview {
+#qr.code-preview .textarea > :not(#code-preview),
+#qr:not(.tex-preview) #tex-preview,
+#qr:not(.code-preview) #code-preview {
   display: none;
 }
 .persona button {
@@ -1682,7 +1685,7 @@ body:not(.board_f) #qr select[name="filetag"],
   background: linear-gradient(to bottom, #F8F8F8, #DCDCDC) no-repeat;
   color: #000;
 }
-#qr.sjis-preview #sjis-toggle, #qr.tex-preview #tex-preview-button {
+#qr.sjis-preview #sjis-toggle, #qr.tex-preview #tex-preview-button, #qr.code-preview #code-preview-button {
   background: #DCDCDC;
 }
 #sjis-toggle, #qr.sjis-preview textarea.field {
@@ -1695,6 +1698,9 @@ body:not(.board_f) #qr select[name="filetag"],
 }
 #tex-preview {
   white-space: pre-line;
+}
+#code-preview-button {
+  font-family: monospace;
 }
 #qr textarea.field {
   height: 14.8em;

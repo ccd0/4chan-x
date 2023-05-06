@@ -196,6 +196,15 @@ QR =
 
   texPreviewHide: ->
     $.rmClass QR.nodes.el, 'tex-preview'
+  
+  codePreviewShow: ->
+    return QR.codePreviewHide() if $.hasClass QR.nodes.el, 'code-preview'
+    $.addClass QR.nodes.el, 'code-preview'
+    QR.nodes.codePreview.textContent = QR.nodes.com.value
+    $.event 'prettyprint', null, QR.nodes.codePreview
+  
+  codePreviewHide: ->
+    $.rmClass QR.nodes.el, 'code-preview'
 
   addPost: ->
     wasOpen = (QR.nodes and !QR.nodes.el.hidden)
@@ -509,12 +518,14 @@ QR =
     setNode 'form',           'form'
     setNode 'sjisToggle',     '#sjis-toggle'
     setNode 'texButton',      '#tex-preview-button'
+    setNode 'codeButton',     '#code-preview-button'
     setNode 'name',           '[data-name=name]'
     setNode 'email',          '[data-name=email]'
     setNode 'sub',            '[data-name=sub]'
     setNode 'com',            '[data-name=com]'
     setNode 'charCount',      '#char-count'
     setNode 'texPreview',     '#tex-preview'
+    setNode 'codePreview',    '#code-preview'
     setNode 'dumpList',       '#dump-list'
     setNode 'addPost',        '#add-post'
     setNode 'oekaki',         '.oekaki'
@@ -540,7 +551,9 @@ QR =
     classList.toggle 'has-spoiler',  QR.spoiler
     classList.toggle 'has-sjis',     !!config.sjis_tags
     classList.toggle 'has-math',     !!config.math_tags
+    classList.toggle 'has-code',     !!config.code_tags
     classList.toggle 'sjis-preview', !!config.sjis_tags and Conf['sjisPreview']
+    classList.toggle 'code-preview', !!config.code_tags and Conf['codePreview']
     classList.toggle 'show-new-thread-option', Conf['Show New Thread Option in Threads']
 
     if parseInt(Conf['customCooldown'], 10) > 0
@@ -558,6 +571,8 @@ QR =
     $.on nodes.sjisToggle,     'click',     QR.toggleSJIS
     $.on nodes.texButton,      'mousedown', QR.texPreviewShow
     $.on nodes.texButton,      'mouseup',   QR.texPreviewHide
+    $.on nodes.codeButton,     'mousedown', QR.codePreviewShow
+    $.on nodes.codeButton,     'mouseup',   QR.codePreviewHide
     $.on nodes.addPost,        'click',     -> new QR.post true
     $.on nodes.drawButton,     'click',     QR.oekaki.draw
     $.on nodes.fileButton,     'click',     QR.openFileInput

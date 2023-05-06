@@ -849,6 +849,7 @@ Config =
       #options:"sage";boards:jp;always
     """
     sjisPreview: false
+    codePreview: false
 
   jsWhitelist: '''
     http://s.4cdn.org

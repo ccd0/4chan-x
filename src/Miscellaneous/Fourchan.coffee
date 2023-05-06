@@ -14,13 +14,16 @@ Fourchan =
           $.addClass pre, 'prettyprinted'
       $.global ->
         window.addEventListener('prettyprint', (e) ->
-          window.dispatchEvent(new CustomEvent('prettyprint:cb', {
-            detail: {
-              ID:   e.detail.ID,
-              i:    e.detail.i,
-              html: window.prettyPrintOne(e.detail.html)
-            }
-          }))
+          if e.target.id is 'code-preview'
+            window.prettyPrintOne(e.target)
+          else
+            window.dispatchEvent(new CustomEvent('prettyprint:cb', {
+              detail: {
+                ID:   e.detail.ID,
+                i:    e.detail.i,
+                html: window.prettyPrintOne(e.detail.html)
+              }
+            }))
         , false)
       Callbacks.Post.push
         name: 'Parse [code] tags'

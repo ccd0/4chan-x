@@ -131,7 +131,8 @@
   border-color: rgb(129, 162, 190);
 }
 :root.tomorrow #qr.sjis-preview #sjis-toggle,
-:root.tomorrow #qr.tex-preview #tex-preview-button {
+:root.tomorrow #qr.tex-preview #tex-preview-button,
+:root.tomorrow #qr.code-preview #code-preview-button {
   background: rgb(26, 27, 29);
 }
 :root.tomorrow #qr select,
