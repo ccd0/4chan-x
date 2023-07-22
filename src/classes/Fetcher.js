@@ -10,6 +10,7 @@ import ImageHost from "../Images/ImageHost";
 import CrossOrigin from "../platform/CrossOrigin";
 import Get from "../General/Get";
 import { dict } from "../platform/helpers";
+import { isEscaped } from "../globals/jsx";
 
 /*
  * decaffeinate suggestions:
@@ -22,7 +23,7 @@ import { dict } from "../platform/helpers";
  */
 export default class Fetcher {
   static initClass() {
-  
+
     this.prototype.archiveTags = {
       '\n':         {innerHTML: "<br>"},
       '[b]':        {innerHTML: "<b>"},
@@ -238,14 +239,14 @@ export default class Fetcher {
           var greentext = text[0] === '>';
           text = text.replace(/(\[\/?[a-z]+):lit(\])/g, '$1$2');
           text = text.split(/(>>(?:>\/[a-z\d]+\/)?\d+)/g).map((text2, j) =>
-            {innerHTML: ((j % 2) ? "<span class=\"deadlink\">" + E(text2) + "</span>" : E(text2));});
+            ({innerHTML: ((j % 2) ? "<span class=\"deadlink\">" + E(text2) + "</span>" : E(text2))}));
           text = {innerHTML: ((greentext) ? "<span class=\"quote\">" + E.cat(text) + "</span>" : E.cat(text))};
           result.push(text);
         }
       }
       return result;
     })();
-    comment = {innerHTML: E.cat(comment)};
+    comment = { innerHTML: E.cat(comment), [isEscaped]: true };
 
     this.threadID = +data.thread_num;
     const o = {

@@ -3,7 +3,7 @@ import Fetcher from "../classes/Fetcher";
 import Get from "../General/Get";
 import Header from "../General/Header";
 import UI from "../General/UI";
-import { Conf, d, g } from "../globals/globals";
+import { Conf, d, doc, g } from "../globals/globals";
 import ExpandComment from "../Miscellaneous/ExpandComment";
 import $ from "../platform/$";
 
