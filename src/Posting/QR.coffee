@@ -370,7 +370,7 @@ QR =
         post.setComment(line)
         lastPostLength = currentLength
       else
-        currentPost = QR.selected 
+        currentPost = QR.selected
         newComment = [currentPost.com, line].filter((el) -> el != null).join("\n")
         currentPost.setComment(newComment)
         lastPostLength += currentLength
