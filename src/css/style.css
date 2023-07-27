@@ -2074,6 +2074,13 @@ a:only-of-type > .remove {
 #char-count.warning {
   color: red;
 }
+#split-post {
+  font-size: 8pt;
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  cursor: pointer;
+}
 
 /* Menu */
 .menu-button:not(.fa-bars) {

@@ -353,6 +353,30 @@ QR =
     counter.hidden      = count < QR.max_comment/2
     (if count > QR.max_comment then $.addClass else $.rmClass) counter, 'warning'
 
+    splitPost = QR.nodes.splitPost
+    splitPost.hidden = count < QR.max_comment
+
+  splitPost: ->
+    count = QR.nodes.com.value.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length
+    text = QR.nodes.com.value
+    return if count < QR.max_comment
+    lastPostLength = 0
+    QR.posts[QR.posts.length - 1].setComment("");
+
+    for line in text.split("\n")
+      currentLength = line.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length + 1 # 1 for newline
+      if (currentLength + lastPostLength) > QR.max_comment
+        post = new QR.post()
+        post.setComment(line)
+        lastPostLength = currentLength
+      else
+        currentPost = QR.posts[QR.posts.length - 1]
+        newComment = [currentPost.com, line].filter((el) -> el != null).join("\n")
+        currentPost.setComment(newComment)
+        lastPostLength += currentLength
+
+    QR.nodes.el.classList.add 'dump'
+
   getFile: ->
     $.event 'QRFile', QR.selected?.file
 
@@ -514,6 +538,7 @@ QR =
     setNode 'sub',            '[data-name=sub]'
     setNode 'com',            '[data-name=com]'
     setNode 'charCount',      '#char-count'
+    setNode 'splitPost',      '#split-post'
     setNode 'texPreview',     '#tex-preview'
     setNode 'dumpList',       '#dump-list'
     setNode 'addPost',        '#add-post'
@@ -558,6 +583,7 @@ QR =
     $.on nodes.sjisToggle,     'click',     QR.toggleSJIS
     $.on nodes.texButton,      'mousedown', QR.texPreviewShow
     $.on nodes.texButton,      'mouseup',   QR.texPreviewHide
+    $.on nodes.splitPost,      'click',     QR.splitPost
     $.on nodes.addPost,        'click',     -> new QR.post true
     $.on nodes.drawButton,     'click',     QR.oekaki.draw
     $.on nodes.fileButton,     'click',     QR.openFileInput
