@@ -366,7 +366,7 @@ QR =
     for line in text.split("\n")
       currentLength = line.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length + 1 # 1 for newline
       if (currentLength + lastPostLength) > QR.max_comment
-        post = new QR.post()
+        post = new QR.post true
         post.setComment(line)
         lastPostLength = currentLength
       else
