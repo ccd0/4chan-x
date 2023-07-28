@@ -400,3 +400,39 @@ Filter =
 
       Filter.addFilter type, res, ->
         Filter.showFilters type
+
+  cb:
+    seek: (type) ->
+      {highlight} = g.SITE.classes
+      $.rmClass highlighted, highlight if (highlighted = $ ".#{highlight}")
+
+      unless Filter.lastRead and doc.contains(Filter.lastRead) and $.hasClass(Filter.lastRead, 'filter-highlight')
+        if not (post = Filter.lastRead = $ '.filter-highlight')
+          new Notice 'warning', 'No posts match your lame filters.', 20
+          return
+        return if Filter.cb.scroll post
+      else
+        post = Filter.lastRead
+
+      str = "#{type}::div[contains(@class,'filter-highlight')]"
+
+      while (post = (result = $.X(str, post)).snapshotItem(if type is 'preceding' then result.snapshotLength - 1 else 0))
+        return if Filter.cb.scroll post
+
+      posts = $$ '.filter-highlight'
+      Filter.cb.scroll posts[if type is 'following' then 0 else posts.length - 1]
+
+    scroll: (root) ->
+      post = Get.postFromRoot root
+      if !post.nodes.post.getBoundingClientRect().height
+        return false
+      else
+        Filter.lastRead = root
+        location.href = Get.url('post', post)
+        Header.scrollTo post.nodes.post
+        if post.isReply
+          sel = "#{g.SITE.selectors.postContainer}#{g.SITE.selectors.highlightable.reply}"
+          node = post.nodes.root
+          node = $ sel, node unless node.matches(sel)
+          $.addClass node, g.SITE.classes.highlight
+        return true
