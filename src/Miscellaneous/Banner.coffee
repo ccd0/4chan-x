@@ -56,7 +56,7 @@ Banner =
 
     keydown: (e) ->
       e.stopPropagation()
-      return @blur() if !e.shiftKey and e.keyCode is 13
+      return @blur() if !e.shiftKey and e.key is 'Enter'
 
     blur: ->
       $.replace br, $.tn('\n') for br in $$ 'br', @
