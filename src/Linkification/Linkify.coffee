@@ -149,9 +149,16 @@ Linkify =
       rel:       'noreferrer noopener'
       target:    '_blank'
       href:      text
-
-    # Insert the range into the anchor, the anchor into the range's DOM location, and destroy the range.
+      if /magnet:/.test text
+        range.extractContents()
+        dn = new URL(text)
+        if dn.searchParams.get('dn')
+          text: "🧲"+dn.searchParams.get('dn')
+        else
+          text: "🧲"+text
+ 
+    # Insert the range into the anchor, the anchor into the range's DOM location, and destroy$
     $.add a, range.extractContents()
     range.insertNode a
-
+ 
     a
