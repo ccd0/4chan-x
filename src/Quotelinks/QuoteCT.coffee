@@ -5,9 +5,8 @@ QuoteCT =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
-    # \u00A0 is nbsp
     @mark = $.el 'span',
-      textContent: '\u00A0(Cross-thread)'
+      textContent: ' (Cross-thread)'
       className:   'qmark-ct'
     Callbacks.Post.push
       name: 'Mark Cross-thread Quotes'

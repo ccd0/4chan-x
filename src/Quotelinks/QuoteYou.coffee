@@ -22,9 +22,8 @@ QuoteYou =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
-    # \u00A0 is nbsp
     @mark = $.el 'span',
-      textContent: '\u00A0(You)'
+      textContent: ' (You)'
       className:   'qmark-you'
     Callbacks.Post.push
       name: 'Mark Quotes of You'
