@@ -147,6 +147,9 @@ Filter =
             unless hl and filter.hl in hl
               (hl or= []).push filter.hl
             top or= filter.top
+            if filter.hl and Conf['Always Show Highlighted Threads']
+              hide = false
+              hideable = false
             if filter.noti
               noti = true
     if hide
@@ -164,6 +167,7 @@ Filter =
         ThreadHiding.hide @thread, stub
     else
       if hl
+        @thread.isHighlighted = true
         @highlights = hl
         $.addClass @nodes.root, hl...
     if noti and Unread.posts and (@ID > Unread.lastReadPost) and not QuoteYou.isYou(@)

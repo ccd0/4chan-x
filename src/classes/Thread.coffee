@@ -10,6 +10,7 @@ class Thread
     @posts      = new SimpleDict()
     @isDead     = false
     @isHidden   = false
+    @isHighlighted = false
     @isSticky   = false
     @isClosed   = false
     @isArchived = false
