@@ -18,10 +18,11 @@ PostHiding =
 
     if data = PostHiding.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
       if data.thisPost
-        PostHiding.hide @, data.makeStub, data.hideRecursively
+        PostHiding.hide @, 'Manually hidden', data.makeStub, data.hideRecursively
       else
-        Recursive.apply PostHiding.hide, @, data.makeStub, true
-        Recursive.add   PostHiding.hide, @, data.makeStub, true
+        label = "Recursively hidden for quoting No.#{@postID}"
+        Recursive.apply PostHiding.hide, @, label, data.makeStub, true
+        Recursive.add   PostHiding.hide, @, label, data.makeStub, true
 
     return unless Conf['Reply Hiding Buttons']
 
@@ -121,15 +122,16 @@ PostHiding =
       thisPost = $('input[name=thisPost]', parent).checked
       replies  = $('input[name=replies]',  parent).checked
       makeStub = $('input[name=makeStub]', parent).checked
+      label    = 'Manually hidden'
       {post}   = PostHiding.menu
       if thisPost
-        PostHiding.hide post, makeStub, replies
+        PostHiding.hide post, label, makeStub, replies
       else if replies
-        Recursive.apply PostHiding.hide, post, makeStub, true
-        Recursive.add   PostHiding.hide, post, makeStub, true
+        Recursive.apply PostHiding.hide, post, label, makeStub, true
+        Recursive.add   PostHiding.hide, post, label, makeStub, true
       else
         return
-      PostHiding.saveHiddenState post, true, thisPost, makeStub, replies
+      PostHiding.saveHiddenState post, true, thisPost, label, makeStub, replies
       $.event 'CloseMenu'
 
     show: ->
@@ -186,13 +188,15 @@ PostHiding =
     PostHiding[(if post.isHidden then 'show' else 'hide')] post 
     PostHiding.saveHiddenState post, post.isHidden
 
-  hide: (post, makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->
+  hide: (post, label, makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->
+    post.labels.push label unless label in post.labels
     return if post.isHidden
     post.isHidden = true
 
     if hideRecursively
-      Recursive.apply PostHiding.hide, post, makeStub, true
-      Recursive.add   PostHiding.hide, post, makeStub, true
+      label = "Recursively hidden for quoting No.#{post.postID}"
+      Recursive.apply PostHiding.hide, post, label, makeStub, true
+      Recursive.add   PostHiding.hide, post, label, makeStub, true
 
     for quotelink in Get.allQuotelinksLinkingTo post
       $.addClass quotelink, 'filtered'
@@ -217,6 +221,9 @@ PostHiding =
     else
       post.nodes.root.hidden = false
     post.isHidden = false
+    post.labels = post.labels.filter (label) ->
+      # Mayhem says this is lame
+      !/^(Manually hidden|Recurisvely hidden|Hidden by)/.test label
     if showRecursively
       Recursive.apply PostHiding.show, post, true
       Recursive.rm    PostHiding.hide, post
