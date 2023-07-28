@@ -293,7 +293,12 @@ QR =
     {root} = post.nodes
     postRange = new Range()
     postRange.selectNode root
-    text = if post.board.ID is g.BOARD.ID then ">>#{post}\n" else ">>>/#{post.board}/#{post}\n"
+    text = if e instanceof MouseEvent && e.getModifierState("Control")
+      ""
+    else if post.board.ID is g.BOARD.ID
+      ">>#{post}\n"
+    else
+      ">>>/#{post.board}/#{post}\n"
     for i in [0...sel.rangeCount]
       try
         range = sel.getRangeAt i
