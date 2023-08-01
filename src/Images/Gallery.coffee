@@ -46,15 +46,16 @@ Gallery =
     $.extend dialog, `<%= readHTML('Gallery.html') %>`
 
     nodes[key] = $ value, dialog for key, value of {
-      buttons: '.gal-buttons'
-      frame:   '.gal-image'
-      name:    '.gal-name'
-      count:   '.count'
-      total:   '.total'
-      sauce:   '.gal-sauce'
-      thumbs:  '.gal-thumbnails'
-      next:    '.gal-image a'
-      current: '.gal-image img'
+      buttons:    '.gal-buttons'
+      frame:      '.gal-image'
+      name:       '.gal-name'
+      dimensions: '.gal-dimensions'
+      count:      '.count'
+      total:      '.total'
+      sauce:      '.gal-sauce'
+      thumbs:     '.gal-thumbnails'
+      next:       '.gal-image a'
+      current:    '.gal-image img'
     }
 
     menuButton = $ '.menu-button', dialog
@@ -178,6 +179,10 @@ Gallery =
     nodes.name.href         = thumb.href
     nodes.frame.scrollTop   = 0
     nodes.next.focus()
+
+    if Conf['Image Resolution'] and (post = g.posts.get(file.dataset.post)) and post.file.dimensions
+      [w, h] = post.file.dimensions.split('x')
+      nodes.dimensions.innerText = "#{w} x #{h} px"
 
     # Set sauce links
     $.rmAll nodes.sauce
