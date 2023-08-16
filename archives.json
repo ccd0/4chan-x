@@ -80,16 +80,6 @@
   "files": ["h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u"],
   "reports": true
 }, {
-  "uid": 34,
-  "name": "TokyoChronos",
-  "domain": "www.tokyochronos.net",
-  "http": false,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["c", "g", "jp", "mu", "vp", "vrpg", "vt"],
-  "files": [],
-  "reports": true
-}, {
   "uid": 36,
   "name": "palanq.win",
   "domain": "archive.palanq.win",
