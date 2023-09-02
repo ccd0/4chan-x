@@ -13,11 +13,10 @@ import { dict, HOUR } from "../platform/helpers";
 export default class DataBoard {
   static initClass() {
     this.keys = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts', 'watchedThreads', 'watcherLastModified', 'customTitles'];
-
-    this.changes = [];
   }
 
   constructor(key, sync, dontClean) {
+    this.changes = [];
     this.onSync = this.onSync.bind(this);
     this.key = key;
     this.initData(Conf[this.key]);
@@ -48,15 +47,15 @@ export default class DataBoard {
 
   save(change, cb) {
     change();
-    DataBoard.changes.push(change);
+    this.changes.push(change);
     return $.get(this.key, { boards: dict() }, items => {
-      if (!DataBoard.changes.length) { return; }
+      if (!this.changes.length) { return; }
       const needSync = ((items[this.key].version || 0) > (this.data.version || 0));
       if (needSync) {
         this.initData(items[this.key]);
-        for (change of DataBoard.changes) { change(); }
+        for (change of this.changes) { change(); }
       }
-      DataBoard.changes = [];
+      this.changes = [];
       this.data.version = (this.data.version || 0) + 1;
       return $.set(this.key, this.data, () => {
         if (needSync) { this.sync?.(); }
@@ -69,7 +68,7 @@ export default class DataBoard {
     return $.get(this.key, { boards: dict() }, items => {
       if ((items[this.key].version || 0) > (this.data.version || 0)) {
         this.initData(items[this.key]);
-        for (var change of DataBoard.changes) { change(); }
+        for (var change of this.changes) { change(); }
         this.sync?.();
       }
       return cb?.();
