@@ -1,26 +1,21 @@
 import { g, Conf, doc, d } from "../globals/globals";
 import Main from "../main/Main";
 import $ from "../platform/$";
-import Captcha from "./Captcha";
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
- */
+
 const CaptchaReplace = {
   init() {
     if ((g.SITE.software !== 'yotsuba') || (d.cookie.indexOf('pass_enabled=1') >= 0)) { return; }
 
     if (Conf['Force Noscript Captcha'] && Main.jsEnabled) {
-      $.ready(Captcha.replace.noscript);
+      $.ready(this.noscript);
       return;
     }
 
     if (Conf['captchaLanguage'].trim()) {
       if (['boards.4chan.org', 'boards.4channel.org'].includes(location.hostname)) {
-        return $.onExists(doc, '#captchaFormPart', node => $.onExists(node, 'iframe[src^="https://www.google.com/recaptcha/"]', Captcha.replace.iframe));
+        $.onExists(doc, '#captchaFormPart', node => $.onExists(node, 'iframe[src^="https://www.google.com/recaptcha/"]', this.iframe));
       } else {
-        return $.onExists(doc, 'iframe[src^="https://www.google.com/recaptcha/"]', Captcha.replace.iframe);
+        $.onExists(doc, 'iframe[src^="https://www.google.com/recaptcha/"]', this.iframe);
       }
     }
   },
@@ -34,12 +29,12 @@ const CaptchaReplace = {
     $.rm(original);
     const insert = function() {
       span.innerHTML = noscript.textContent;
-      return Captcha.replace.iframe($('iframe[src^="https://www.google.com/recaptcha/"]', span));
+      this.iframe($('iframe[src^="https://www.google.com/recaptcha/"]', span));
     };
     if (toggle = $('#togglePostFormLink a, #form-link')) {
-      return $.on(toggle, 'click', insert);
+      $.on(toggle, 'click', insert);
     } else {
-      return insert();
+      insert();
     }
   },
 
