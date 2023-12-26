@@ -1,3 +1,11 @@
+import DataBoard from "../classes/DataBoard";
+import { Conf, d, g } from "../globals/globals";
+import Main from "../main/Main";
+import Unread from "../Monitoring/Unread";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+import { dict } from "../platform/helpers";
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -103,7 +111,7 @@ var Banner = {
     }
   },
 
-  original: $.dict(),
+  original: dict(),
 
   custom(child) {
     let data;
@@ -125,3 +133,4 @@ var Banner = {
     }
   }
 };
+export default Banner;

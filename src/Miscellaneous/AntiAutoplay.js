@@ -1,3 +1,8 @@
+import Callbacks from "../classes/Callbacks";
+import { Conf, doc } from "../globals/globals";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -44,3 +49,4 @@ var AntiAutoplay = {
     return $.addClass(el, 'autoplay-removed');
   }
 };
+export default AntiAutoplay;

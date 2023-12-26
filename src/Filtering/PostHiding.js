@@ -1,3 +1,12 @@
+import Callbacks from "../classes/Callbacks";
+import DataBoard from "../classes/DataBoard";
+import Get from "../General/Get";
+import UI from "../General/UI";
+import { g, Conf, doc } from "../globals/globals";
+import Menu from "../Menu/Menu";
+import $ from "../platform/$";
+import Recursive from "./Recursive";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -288,3 +297,4 @@ var PostHiding = {
     }
   }
 };
+export default PostHiding;

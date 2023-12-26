@@ -1,3 +1,7 @@
+import QR from "../Posting/QR";
+import $ from "./$";
+import { dict, platform } from "./helpers";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -6,80 +10,78 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-// <% if (type === 'crx') { %>
-let Request;
-const eventPageRequest = (function() {
-  const callbacks = [];
-  chrome.runtime.onMessage.addListener(function(response) {
-    callbacks[response.id](response.data);
-    return delete callbacks[response.id];});
-  return (params, cb) => chrome.runtime.sendMessage(params, id => callbacks[id] = cb);
-})();
-
-// <% } %>
+let eventPageRequest;
+if (platform === 'crx') {
+  eventPageRequest = (function () {
+    const callbacks = [];
+    chrome.runtime.onMessage.addListener(function(response) {
+      callbacks[response.id](response.data);
+      return delete callbacks[response.id];});
+    return (params, cb) => chrome.runtime.sendMessage(params, id => callbacks[id] = cb);
+  })();
+}
 var CrossOrigin = {
-  binary(url, cb, headers=$.dict()) {
+  binary(url, cb, headers = dict()) {
     // XXX https://forums.lanik.us/viewtopic.php?f=64&t=24173&p=78310
     url = url.replace(/^((?:https?:)?\/\/(?:\w+\.)?(?:4chan|4channel|4cdn)\.org)\/adv\//, '$1//adv/');
-    // <% if (type === 'crx') { %>
+    if (platform === 'crx') {
     eventPageRequest({type: 'ajax', url, headers, responseType: 'arraybuffer'}, function({response, responseHeaderString}) {
       if (response) { response = new Uint8Array(response); }
       return cb(response, responseHeaderString);
     });
-    // <% } %>
-    // <% if (type === 'userscript') { %>
-    const fallback = function() {
-      return $.ajax(url, {
+    } else {
+      const fallback = function() {
+        return $.ajax(url, {
+          headers,
+          responseType: 'arraybuffer',
+          onloadend() {
+            if (this.status && this.response) {
+              return cb(new Uint8Array(this.response), this.getAllResponseHeaders());
+            } else {
+              return cb(null);
+            }
+          }
+        });
+      };
+      if ((typeof window.GM_xmlhttpRequest === 'undefined' || window.GM_xmlhttpRequest === null)) {
+        fallback();
+        return;
+      }
+      const gmOptions = {
+        method: "GET",
+        url,
         headers,
         responseType: 'arraybuffer',
-        onloadend() {
-          if (this.status && this.response) {
-            return cb(new Uint8Array(this.response), this.getAllResponseHeaders());
+        overrideMimeType: 'text/plain; charset=x-user-defined',
+        onload(xhr) {
+          let data;
+          if (xhr.response instanceof ArrayBuffer) {
+            data = new Uint8Array(xhr.response);
           } else {
-            return cb(null);
+            const r = xhr.responseText;
+            data = new Uint8Array(r.length);
+            let i = 0;
+            while (i < r.length) {
+              data[i] = r.charCodeAt(i);
+              i++;
+            }
           }
+          return cb(data, xhr.responseHeaders);
+        },
+        onerror() {
+          return cb(null);
+        },
+        onabort() {
+          return cb(null);
         }
-      });
-    };
-    if ((GM?.xmlHttpRequest == null) && (typeof GM_xmlhttpRequest === 'undefined' || GM_xmlhttpRequest === null)) {
-      fallback();
-      return;
-    }
-    const gmOptions = {
-      method: "GET",
-      url,
-      headers,
-      responseType: 'arraybuffer',
-      overrideMimeType: 'text/plain; charset=x-user-defined',
-      onload(xhr) {
-        let data;
-        if (xhr.response instanceof ArrayBuffer) {
-          data = new Uint8Array(xhr.response);
-        } else {
-          const r = xhr.responseText;
-          data = new Uint8Array(r.length);
-          let i = 0;
-          while (i < r.length) {
-            data[i] = r.charCodeAt(i);
-            i++;
-          }
-        }
-        return cb(data, xhr.responseHeaders);
-      },
-      onerror() {
-        return cb(null);
-      },
-      onabort() {
-        return cb(null);
+      };
+      try {
+        return (GM?.xmlHttpRequest || GM_xmlhttpRequest)(gmOptions);
+      } catch (error) {
+        return fallback();
       }
-    };
-    try {
-      return (GM?.xmlHttpRequest || GM_xmlhttpRequest)(gmOptions);
-    } catch (error) {
-      return fallback();
     }
   },
-    // <% } %>
 
   file(url, cb) {
     return CrossOrigin.binary(url, function(data, headers) {
@@ -104,8 +106,8 @@ var CrossOrigin = {
     });
   },
 
-  Request: (Request = (function() {
-    Request = class Request {
+  Request: (function() {
+    const Request = class Request {
       static initClass() {
         this.prototype.status = 0;
         this.prototype.statusText = '';
@@ -114,7 +116,7 @@ var CrossOrigin = {
       }
       getResponseHeader(headerName) {
         if ((this.responseHeaders == null) && (this.responseHeaderString != null)) {
-          this.responseHeaders = $.dict();
+          this.responseHeaders = dict();
           for (var header of this.responseHeaderString.split('\r\n')) {
             var i;
             if ((i = header.indexOf(':')) >= 0) {
@@ -131,7 +133,7 @@ var CrossOrigin = {
     };
     Request.initClass();
     return Request;
-  })()),
+  })(),
 
   // Attempts to fetch `url` using cross-origin privileges, if available.
   // Interface is a subset of that of $.ajax.
@@ -151,65 +153,61 @@ var CrossOrigin = {
     let {onloadend, timeout, responseType, headers} = options;
     if (responseType == null) { responseType = 'json'; }
 
-    // <% if (type === 'userscript') { %>
-    if ((GM?.xmlHttpRequest == null) && (typeof GM_xmlhttpRequest === 'undefined' || GM_xmlhttpRequest === null)) {
+    if ((window.GM?.xmlHttpRequest == null) && (typeof window.GM_xmlhttpRequest === 'undefined' || window.GM_xmlhttpRequest === null)) {
       return $.ajax(url, options);
     }
-    // <% } %>
 
     const req = new CrossOrigin.Request();
     req.onloadend = onloadend;
 
-    // <% if (type === 'userscript') { %>
-    const gmOptions = {
-      method: 'GET',
-      url,
-      headers,
-      timeout,
-      onload(xhr) {
-        try {
-          const response = (() => { switch (responseType) {
-            case 'json':
-              if (xhr.responseText) { return JSON.parse(xhr.responseText); } else { return null; }
-            default:
-              return xhr.responseText;
-          } })();
-          $.extend(req, {
-            response,
-            status: xhr.status,
-            statusText: xhr.statusText,
-            responseHeaderString: xhr.responseHeaders
-          });
-        } catch (error) {}
-        return req.onloadend();
-      },
-      onerror() { return req.onloadend(); },
-      onabort() { return req.onloadend(); },
-      ontimeout() { return req.onloadend(); }
-    };
-    try {
-      gmReq = (GM?.xmlHttpRequest || GM_xmlhttpRequest)(gmOptions);
-    } catch (error) {
-      return $.ajax(url, options);
-    }
-
-    if (gmReq && (typeof gmReq.abort === 'function')) {
-      req.abort = function() {
-        try {
-          return gmReq.abort();
-        } catch (error1) {}
+    if (platform === 'userscript') {
+      const gmOptions = {
+        method: 'GET',
+        url,
+        headers,
+        timeout,
+        onload(xhr) {
+          try {
+            const response = (() => { switch (responseType) {
+              case 'json':
+                if (xhr.responseText) { return JSON.parse(xhr.responseText); } else { return null; }
+              default:
+                return xhr.responseText;
+            } })();
+            $.extend(req, {
+              response,
+              status: xhr.status,
+              statusText: xhr.statusText,
+              responseHeaderString: xhr.responseHeaders
+            });
+          } catch (error) {}
+          return req.onloadend();
+        },
+        onerror() { return req.onloadend(); },
+        onabort() { return req.onloadend(); },
+        ontimeout() { return req.onloadend(); }
       };
-    }
-    // <% } %>
-
-    // <% if (type === 'crx') { %>
-    eventPageRequest({type: 'ajax', url, responseType, headers, timeout}, function(result) {
-      if (result.status) {
-        $.extend(req, result);
+      try {
+        gmReq = (GM?.xmlHttpRequest || GM_xmlhttpRequest)(gmOptions);
+      } catch (error) {
+        return $.ajax(url, options);
       }
-      return req.onloadend();
-    });
-    // <% } %>
+
+      if (gmReq && (typeof gmReq.abort === 'function')) {
+        req.abort = function() {
+          try {
+            return gmReq.abort();
+          } catch (error1) {}
+        };
+      }
+    } else {
+      eventPageRequest({type: 'ajax', url, responseType, headers, timeout}, function(result) {
+        if (result.status) {
+          $.extend(req, result);
+        }
+        return req.onloadend();
+      });
+    }
 
     return req;
   },
@@ -219,20 +217,17 @@ var CrossOrigin = {
       {ajax: CrossOrigin.ajax});
   },
 
-  // <% if (type === 'crx') { %>
   permission(cb, cbFail, origins) {
-    return eventPageRequest({type: 'permission', origins}, function(result) {
-      if (result) {
-        return cb();
-      } else {
-        return cbFail();
-      }
-    });
-  },
-  // <% } %>
-  // <% if (type === 'userscript') { %>
-  permission(cb) {
+    if (platform === 'crx') {
+      return eventPageRequest({type: 'permission', origins}, function(result) {
+        if (result) {
+          return cb();
+        } else {
+          return cbFail();
+        }
+      });
+    }
     return cb();
-  }
+  },
 };
-  // <% } %>
+export default CrossOrigin;

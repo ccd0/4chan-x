@@ -1,3 +1,9 @@
+import Callbacks from "../classes/Callbacks";
+import Get from "../General/Get";
+import { g, Conf } from "../globals/globals";
+import ExpandComment from "../Miscellaneous/ExpandComment";
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -52,3 +58,4 @@ var QuoteOP = {
     }
   }
 };
+export default QuoteOP;

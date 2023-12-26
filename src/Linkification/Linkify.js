@@ -1,3 +1,12 @@
+import Callbacks from "../classes/Callbacks";
+// import Test from "../General/Test";
+import { g, Conf } from "../globals/globals";
+import ImageHost from "../Images/ImageHost";
+import ExpandComment from "../Miscellaneous/ExpandComment";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+import Embedding from "./Embedding";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -94,11 +103,13 @@ var Linkify = {
 
         if (Linkify.regString.test(word)) {
           links.push(Linkify.makeRange(node, endNode, index, length));
-        }
+
           // <% if (readJSON('/.tests_enabled')) { %>
-          // Test.assert ->
-          //   word is links[links.length-1].toString()
+          // if (links.length) {
+          // Test.assert(() => word === links[links.length - 1]?.toString());
+          // }
           // <% } %>
+        }
 
         if (!test.lastIndex || (node !== endNode)) { break; }
       }
@@ -196,3 +207,4 @@ aero|asia|biz|cat|com|coop|dance|info|int|jobs|mobi|moe|museum|name|net|org|post
     return a;
   }
 };
+export default Linkify;

@@ -1,5 +1,6 @@
 import userCss from './user.css';
-import banners from './banners.js';
+import banners from './banners.json';
+import meta from '../../package.json';
 
 const Config = {
   main: {
@@ -12,9 +13,9 @@ const Config = {
         true,
         'Replace the original board index with one supporting searching, sorting, infinite scrolling, and a catalog mode.'
       ],
-      'Use <%= meta.name %> Catalog': [
+      [`Use ${meta.name} Catalog`]: [
         true,
-        'Link to <%= meta.name %>\'s catalog instead of the native 4chan one.',
+        `Link to ${meta.name}'s catalog instead of the native 4chan one.`,
         1
       ],
       'Index Refresh Notifications': [
@@ -28,7 +29,7 @@ const Config = {
       ],
       'Open Threads in New Tab': [
         false,
-        'Make links to threads in the index / <%= meta.name %> catalog open in a new tab.'
+        `Make links to threads in the index / ${meta.name} catalog open in a new tab.`
       ],
       'External Catalog': [
         false,
@@ -44,7 +45,7 @@ const Config = {
       ],
       'Desktop Notifications': [
         true,
-        'Enables desktop notifications across various <%= meta.name %> features.'
+        `Enables desktop notifications across various ${meta.name} features.`
       ],
       '404 Redirect': [
         true,
@@ -110,7 +111,7 @@ const Config = {
       ],
       'Show Updated Notifications': [
         true,
-        'Show notifications when <%= meta.name %> is successfully updated.'
+        `Show notifications when ${meta.name} is successfully updated.`
       ],
       'Color User IDs': [
         true,
@@ -142,7 +143,7 @@ const Config = {
       ],
       'Disable Native Extension': [
         true,
-        '<%= meta.name %> is NOT designed to work with the native extension.'
+        `${meta.name} is NOT designed to work with the native extension.`
       ],
       'Enable Native Flash Embedding': [
         true,
@@ -235,7 +236,7 @@ const Config = {
       ],
       'Image Hover in Catalog': [
         true,
-        'Show full image / video on mouseover in <%= meta.name %> catalog.'
+        `Show full image / video on mouseover in ${meta.name} catalog.`
       ],
       'Gallery': [
         true,
@@ -322,7 +323,7 @@ const Config = {
       ],
       'Volume in New Tab': [
         true,
-        'Apply <%= meta.name %> mute and volume settings to videos opened in their own tabs.'
+        `Apply ${meta.name} mute and volume settings to videos opened in their own tabs.`
       ]
     },
 
@@ -860,7 +861,7 @@ http://eye.swfchan.com/search/?q=%name;types:swf
 current-catalog-text:"Catalog"
 current-expired-text:"Expired"
 current-archive-text:"Archive"]
-[external-text:"FAQ","<%= meta.faq %>"]\
+[external-text:"FAQ","${meta.name}"]\
 `,
 
   QR: {
@@ -1201,3 +1202,4 @@ https://*.hcaptcha.com
 
   'PSAseen': [[]]
 };
+export default Config;

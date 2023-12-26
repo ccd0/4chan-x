@@ -1,9 +1,13 @@
+import SimpleDict from "./SimpleDict";
+import $ from "../platform/$";
+import { g } from "../globals/globals";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-class Thread {
+export default class Thread {
   toString() { return this.ID; }
 
   constructor(ID, board) {

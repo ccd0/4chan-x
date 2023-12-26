@@ -1,3 +1,9 @@
+import { Conf, doc, g } from "../globals/globals";
+import Main from "../main/Main";
+import $ from "../platform/$";
+import { dict } from "../platform/helpers";
+import SW from "./SW";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -26,7 +32,7 @@ var Site = {
         if (changes = SW[software].detect?.()) {
           changes.software = software;
           hostname = location.hostname.replace(/^www\./, '');
-          var properties = (Conf['siteProperties'][hostname] || (Conf['siteProperties'][hostname] = $.dict()));
+          var properties = (Conf['siteProperties'][hostname] || (Conf['siteProperties'][hostname] = dict()));
           var changed = 0;
           for (var key in changes) {
             if (properties[key] !== changes[key]) {
@@ -79,3 +85,4 @@ var Site = {
     return g.SITE = g.sites[hostname];
   }
 };
+export default Site;

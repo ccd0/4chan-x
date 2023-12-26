@@ -1,3 +1,8 @@
+import { g, Conf } from "../globals/globals";
+import ImageCommon from "../Images/ImageCommon";
+import $ from "../platform/$";
+import Menu from "./Menu";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -28,3 +33,4 @@ const DownloadLink = {
     });
   }
 };
+export default DownloadLink;

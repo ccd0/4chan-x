@@ -1,3 +1,7 @@
+import { g, Conf, d } from "../globals/globals";
+import $ from "../platform/$";
+import Menu from "./Menu";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -39,3 +43,4 @@ var CopyTextLink = {
     return $.rm(el);
   }
 };
+export default CopyTextLink;

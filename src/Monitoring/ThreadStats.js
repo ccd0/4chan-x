@@ -1,3 +1,10 @@
+import Callbacks from "../classes/Callbacks";
+import Header from "../General/Header";
+import UI from "../General/UI";
+import { g, Conf, E, doc, d } from "../globals/globals";
+import $ from "../platform/$";
+import { MINUTE, SECOND } from "../platform/helpers";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -110,7 +117,7 @@ var ThreadStats = {
       $.addClass(ThreadStats.pageCountEl, 'warning');
       return;
     }
-    ThreadStats.timeout = setTimeout(ThreadStats.fetchPage, 2 * $.MINUTE);
+    ThreadStats.timeout = setTimeout(ThreadStats.fetchPage, 2 * MINUTE);
     return $.whenModified(
       g.SITE.urls.threadsListJSON(ThreadStats.thread),
       'ThreadStats',
@@ -144,7 +151,7 @@ var ThreadStats = {
             if (thread.no === ThreadStats.thread.ID) {
               ThreadStats.pageCountEl.textContent = pageNum + 1;
               ThreadStats.pageCountEl.classList.toggle('warning', (i >= (nThreads - this.response[0].threads.length)));
-              ThreadStats.lastPageUpdate = new Date(thread.last_modified * $.SECOND);
+              ThreadStats.lastPageUpdate = new Date(thread.last_modified * SECOND);
               ThreadStats.retry();
               return;
             }
@@ -167,6 +174,7 @@ var ThreadStats = {
       (ThreadStats.thread.posts.get(ThreadStats.thread.lastPost).info.date <= ThreadStats.lastPageUpdate)
     ) { return; }
     clearTimeout(ThreadStats.timeout);
-    return ThreadStats.timeout = setTimeout(ThreadStats.fetchPage, 5 * $.SECOND);
+    return ThreadStats.timeout = setTimeout(ThreadStats.fetchPage, 5 * SECOND);
   }
 };
+export default ThreadStats;

@@ -1,3 +1,11 @@
+import Callbacks from "../classes/Callbacks";
+import { g, Conf, doc } from "../globals/globals";
+import $ from "../platform/$";
+import { dict } from "../platform/helpers";
+import QuoteInline from "./QuoteInline";
+import QuotePreview from "./QuotePreview";
+import QuoteYou from "./QuoteYou";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -15,7 +23,7 @@ var QuoteBacklink = {
   // Second callback adds relevant containers into posts.
   // This is is so that fetched posts can get their backlinks,
   // and that as much backlinks are appended in the background as possible.
-  containers: $.dict(),
+  containers: dict(),
   init() {
     if (!['index', 'thread'].includes(g.VIEW) || !Conf['Quote Backlinks']) { return; }
 
@@ -91,3 +99,4 @@ var QuoteBacklink = {
       (this.containers[id] = $.el('span', {className: 'container'}));
   }
 };
+export default QuoteBacklink;

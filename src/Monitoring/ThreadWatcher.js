@@ -1,3 +1,26 @@
+import ThreadWatcherPage from './ThreadWatcher/ThreadWatcher.html';
+import $ from "../platform/$";
+import Board from '../classes/Board';
+import Callbacks from '../classes/Callbacks';
+import DataBoard from '../classes/DataBoard';
+import Thread from '../classes/Thread';
+import Filter from '../Filtering/Filter';
+import Main from '../main/Main';
+import $$ from '../platform/$$';
+import Config from '../config/Config';
+import CrossOrigin from '../platform/CrossOrigin';
+import PostRedirect from '../Posting/PostRedirect';
+import QuoteYou from '../Quotelinks/QuoteYou';
+import Unread from './Unread';
+import UnreadIndex from './UnreadIndex';
+import Header from '../General/Header';
+import Index from '../General/Index';
+import { Conf, d, doc, g } from '../globals/globals';
+import Menu from '../Menu/Menu';
+import UI from '../General/UI';
+import Get from '../General/Get';
+import { dict, HOUR, MINUTE } from '../platform/helpers';
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -6,7 +29,6 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-import ThreadWatcherPage from './ThreadWatcher/ThreadWatcher.html';
 
 var ThreadWatcher = {
   init() {
@@ -275,7 +297,7 @@ var ThreadWatcher = {
       url,
       'ThreadWatcher',
       onloadend,
-      {timeout: $.MINUTE, ajax}
+      { timeout: MINUTE, ajax }
     );
     return ThreadWatcher.requests.push(req);
   },
@@ -299,7 +321,7 @@ var ThreadWatcher = {
   },
 
   initLastModified() {
-    const lm = ($.lastModified['ThreadWatcher'] || ($.lastModified['ThreadWatcher'] = $.dict()));
+    const lm = ($.lastModified['ThreadWatcher'] || ($.lastModified['ThreadWatcher'] = dict()));
     for (var siteID in ThreadWatcher.dbLM.data) {
       var boards = ThreadWatcher.dbLM.data[siteID];
       for (var boardID in boards.boards) {
@@ -321,7 +343,7 @@ var ThreadWatcher = {
     clearTimeout(ThreadWatcher.timeout);
     if (!Conf['Auto Update Thread Watcher']) { return; }
     const {db} = ThreadWatcher;
-    const interval = Conf['Show Page'] || (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) ? 5 * $.MINUTE : 2 * $.HOUR;
+    const interval = Conf['Show Page'] || (ThreadWatcher.unreadEnabled && Conf['Show Unread Count']) ? 5 * MINUTE : 2 * HOUR;
     const now = Date.now();
     if ((now - interval >= ((middle = db.data.lastChecked || 0)) || middle > now) && !d.hidden && !!d.hasFocus()) {
       ThreadWatcher.fetchAllStatus(interval);
@@ -355,7 +377,7 @@ var ThreadWatcher = {
             let middle1;
             const {db} = ThreadWatcher;
             const now = Date.now();
-            const deep = !(now - (2 * $.HOUR) < ((middle1 = db.data.lastChecked2 || 0)) && middle1 <= now);
+            const deep = !(now - (2 * HOUR) < ((middle1 = db.data.lastChecked2 || 0)) && middle1 <= now);
             const boards = ThreadWatcher.getAll(true);
             for (var board of boards) {
               ThreadWatcher.fetchBoard(board, deep);
@@ -395,7 +417,7 @@ var ThreadWatcher = {
     const {siteID, boardID} = board[0];
     const lmDate = this.getResponseHeader('Last-Modified');
     ThreadWatcher.dbLM.extend({siteID, boardID, val: $.item(url, lmDate)});
-    const threads = $.dict();
+    const threads = dict();
     let pageLength = 0;
     let nThreads = 0;
     let oldest = null;
@@ -612,7 +634,7 @@ var ThreadWatcher = {
   },
 
   setPrefixes(threads) {
-    const prefixes = $.dict();
+    const prefixes = dict();
     for (var {siteID} of threads) {
       if (siteID in prefixes) { continue; }
       var len = 0;
@@ -751,7 +773,7 @@ var ThreadWatcher = {
   },
 
   addRaw(boardID, threadID, data, cb) {
-    const oldData = ThreadWatcher.db.get({boardID, threadID, defaultValue: $.dict()});
+    const oldData = ThreadWatcher.db.get({ boardID, threadID, defaultValue: dict() });
     delete oldData.last;
     delete oldData.modified;
     $.extend(oldData, data);
@@ -896,3 +918,4 @@ var ThreadWatcher = {
     }
   }
 };
+export default ThreadWatcher;

@@ -1,3 +1,10 @@
+import Callbacks from "../classes/Callbacks";
+import Notice from "../classes/Notice";
+import Filter from "../Filtering/Filter";
+import { g, Conf, doc } from "../globals/globals";
+import $ from "../platform/$";
+import { dict } from "../platform/helpers";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -35,7 +42,7 @@ var Sauce = {
 
   parseLink(link) {
     if (!(link = link.trim())) { return null; }
-    const parts = $.dict();
+    const parts = dict();
     const iterable = link.split(/;(?=(?:text|boards|types|regexp|sandbox):?)/);
     for (let i = 0; i < iterable.length; i++) {
       var part = iterable[i];
@@ -75,7 +82,7 @@ var Sauce = {
   createSauceLink(link, post, file) {
     let a, matches, needle;
     const ext = file.url.match(/[^.]*$/)[0];
-    const parts = $.dict();
+    const parts = dict();
     $.extend(parts, link);
 
     if (!!parts['boards'] && !parts['boards'][`${post.siteID}/${post.boardID}`] && !parts['boards'][`${post.siteID}/*`]) { return null; }
@@ -168,3 +175,4 @@ var Sauce = {
     semi() { return ';'; }
   }
 };
+export default Sauce;

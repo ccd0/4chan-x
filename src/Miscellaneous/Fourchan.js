@@ -1,3 +1,11 @@
+import Callbacks from "../classes/Callbacks";
+import BoardConfig from "../General/BoardConfig";
+import { d, doc, g } from "../globals/globals";
+import Main from "../main/Main";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+import ExpandComment from "./ExpandComment";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -111,3 +119,4 @@ var Fourchan = {
     return cb();
   }
 };
+export default Fourchan;

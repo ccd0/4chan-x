@@ -1,3 +1,15 @@
+import Callbacks from "../classes/Callbacks";
+import DataBoard from "../classes/DataBoard";
+import Thread from "../classes/Thread";
+import Index from "../General/Index";
+import UI from "../General/UI";
+import { g, Conf, d, doc } from "../globals/globals";
+import Main from "../main/Main";
+import Menu from "../Menu/Menu";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+import { dict } from "../platform/helpers";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -23,7 +35,7 @@ var ThreadHiding = {
     if (!$.hasStorage || (g.SITE.software !== 'yotsuba')) { return; }
     const hiddenThreads = ThreadHiding.db.get({
       boardID: board.ID,
-      defaultValue: $.dict()
+      defaultValue: dict()
     });
     for (var threadID in hiddenThreads) { hiddenThreads[threadID] = true; }
     return localStorage.setItem(`4chan-hide-t-${board}`, JSON.stringify(hiddenThreads));
@@ -272,3 +284,4 @@ var ThreadHiding = {
     }
   }
 };
+export default ThreadHiding;

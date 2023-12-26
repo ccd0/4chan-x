@@ -1,3 +1,6 @@
+import Header from "../General/Header";
+import { Conf, doc, g } from "../globals/globals";
+import $ from "../platform/$";
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -81,7 +84,7 @@ var PSAHiding = {
     } else {
       $.add(psa, [...Array.from(content.childNodes)]);
     }
-    // TODO check if hr exists
-    return PSAHiding.hr.hidden = psa.hidden;
+    if (PSAHiding.hr) PSAHiding.hr.hidden = psa.hidden;
   }
 };
+export default PSAHiding;

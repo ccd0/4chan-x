@@ -1,3 +1,13 @@
+import Callbacks from "../classes/Callbacks";
+import Post from "../classes/Post";
+import Get from "../General/Get";
+import Index from "../General/Index";
+import { g, Conf, d } from "../globals/globals";
+import Main from "../main/Main";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+import { dict } from "../platform/helpers";
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -5,7 +15,7 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
 var ExpandThread = {
-  statuses: $.dict(),
+  statuses: dict(),
   init() {
     if (!((g.VIEW === 'index') && Conf['Thread Expansion'])) { return; }
     if (Conf['JSON Index']) {
@@ -156,3 +166,4 @@ var ExpandThread = {
     }
   }
 };
+export default ExpandThread;

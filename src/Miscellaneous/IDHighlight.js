@@ -1,3 +1,7 @@
+import Callbacks from "../classes/Callbacks";
+import { g } from "../globals/globals";
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -32,3 +36,4 @@ var IDHighlight = {
     return g.posts.forEach(IDHighlight.set);
   }; }
 };
+export default IDHighlight;

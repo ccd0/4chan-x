@@ -1,15 +1,19 @@
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-class SimpleDict {
+export default class SimpleDict<T> {
+  keys: string[]
+
   constructor() {
     this.keys = [];
   }
 
-  push(key, data) {
+  push(key, data: T) {
     key = `${key}`;
     if (!this[key]) { this.keys.push(key); }
     return this[key] = data;
@@ -28,7 +32,7 @@ class SimpleDict {
     for (var key of [...Array.from(this.keys)]) { fn(this[key]); }
   }
 
-  get(key) {
+  get(key): T {
     if (key === 'keys') {
       return undefined;
     } else {

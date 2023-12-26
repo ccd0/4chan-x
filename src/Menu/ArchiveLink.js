@@ -1,3 +1,9 @@
+import $ from "../platform/$";
+import Redirect from "../Archive/Redirect";
+import Filter from "../Filtering/Filter";
+import { g, Conf } from "../globals/globals";
+import Menu from "./Menu";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -76,3 +82,4 @@ const ArchiveLink = {
     };
   }
 };
+export default ArchiveLink;

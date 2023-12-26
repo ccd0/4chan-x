@@ -1,3 +1,9 @@
+import $ from "../platform/$";
+import Callbacks from "../classes/Callbacks";
+import CrossOrigin from "../platform/CrossOrigin";
+import { Conf, d, g } from "../globals/globals";
+import Get from "../General/Get";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -87,3 +93,4 @@ var Metadata = {
     return null;
   }
 };
+export default Metadata;

@@ -6,20 +6,41 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-import SettingsPage from './Settings/Settings.html';
+import SettingsPage from './Settings/SettingsHtml';
 import FilterGuidePage from './Settings/Filter-guide.html';
 import SaucePage from './Settings/Sauce.html';
 import AdvancedPage from './Settings/Advanced.html';
 import KeybindsPage from './Settings/Keybinds.html';
 import FilterSelectPage from './Settings/Filter-select.html';
+import Redirect from '../Archive/Redirect';
+import DataBoard from '../classes/DataBoard';
+import Notice from '../classes/Notice';
+import Config from '../config/Config';
+import ImageHost from '../Images/ImageHost';
+import CustomCSS from '../Miscellaneous/CustomCSS';
+import FileInfo from '../Miscellaneous/FileInfo';
+import Keybinds from '../Miscellaneous/Keybinds';
+import Time from '../Miscellaneous/Time';
+import Favicon from '../Monitoring/Favicon';
+import ThreadUpdater from '../Monitoring/ThreadUpdater';
+import Unread from '../Monitoring/Unread';
+import $$ from '../platform/$$';
+import $ from '../platform/$';
+import meta from '../../package.json';
+import { c, Conf, d, doc, E, g } from '../globals/globals';
+import Header from './Header';
+import h, { hFragment } from '../globals/jsx';
+import { dict, platform } from '../platform/helpers';
 
 var Settings = {
+  dialog: undefined as HTMLDivElement | undefined,
+
   init() {
     // 4chan X settings link
     const link = $.el('a', {
       className:   'settings-link fa fa-wrench',
       textContent: 'Settings',
-      title:       '<%= meta.name %> Settings',
+      title:       `${meta.name} Settings`,
       href:        'javascript:;'
     }
     );
@@ -63,8 +84,8 @@ var Settings = {
     $.event('CloseMenu');
 
     Settings.dialog = (dialog = $.el('div',
-      {id:        'overlay'}
-    , { innerHTML: SettingsPage }));
+      { id: 'overlay' }
+      , SettingsPage));
 
     $.on($('.export', dialog), 'click',  Settings.export);
     $.on($('.import', dialog), 'click',  Settings.import);
@@ -135,7 +156,7 @@ var Settings = {
         const why = $.cantSet ? 'save your settings' : 'synchronize settings between tabs';
         return cb($.el('li', {
           textContent: `\
-<%= meta.name %> needs local storage to ${why}.
+${meta.name} needs local storage to ${why}.
 Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's privacy settings (may be listed as part of "local data" or "cookies").\
 `
         }
@@ -147,10 +168,10 @@ Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's pri
       return $.onExists(doc, '.adg-rects > .desktop', ad => $.onExists(ad, 'iframe', function() {
         const url = Redirect.to('thread', {boardID: 'qa', threadID: 362590});
         return cb($.el('li',
-          { innerHTML:
-            'To protect yourself from <a href="${url}" target="_blank">malicious ads</a>,' +
-            ' you should <a href="https://github.com/gorhill/uBlock#ublock-origin" target="_blank">block ads</a> on 4chan.'
-          }
+          <>
+            To protect yourself from <a href={url} target="_blank">malicious ads</a>,
+            you should <a href="https://github.com/gorhill/uBlock#ublock-origin" target="_blank">block ads</a> on 4chan.
+          </>
         )
         );
       }));
@@ -173,8 +194,8 @@ Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's pri
     }
     $.add(section, warnings);
 
-    const items  = $.dict();
-    const inputs = $.dict();
+    const items  = dict();
+    const inputs = dict();
     const addCheckboxes = function(root, obj) {
       const containers = [root];
       return (() => {
@@ -184,7 +205,7 @@ Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's pri
           if (arr instanceof Array) {
             var description = arr[1];
             var div = $.el('div',
-              {innerHTML: '<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>'});
+              { innerHTML: `<label><input type="checkbox" name="${key}">${key}</label><span class="description">: ${description}</span>` });
             div.dataset.name = key;
             var input = $('input', div);
             $.on(input, 'change', $.cb.checked);
@@ -209,7 +230,7 @@ Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's pri
     for (var keyFS in Config.main) {
       var obj = Config.main[keyFS];
       var fs = $.el('fieldset',
-        {innerHTML: '<legend>${keyFS}</legend>'});
+        { innerHTML: `<legend>${keyFS}</legend>` });
       addCheckboxes(fs, obj);
       if (keyFS === 'Posting and Captchas') {
         $.add(fs, $.el('p',
@@ -227,7 +248,7 @@ Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's pri
     if ($.perProtocolSettings || (location.protocol !== 'https:')) {
       $('div[data-name="Redirect to HTTPS"]', section).hidden = true;
     }
-    if ($.platform !== 'crx') {
+    if (platform !== 'crx') {
       $('div[data-name="Work around CORB Bug"]', section).hidden = true;
     }
 
@@ -242,7 +263,7 @@ Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's pri
     const div = $.el('div',
       {innerHTML: '<button></button><span class="description">: Clear manually-hidden threads and posts on all boards. Reload the page to apply.'});
     const button = $('button', div);
-    $.get({hiddenThreads: $.dict(), hiddenPosts: $.dict()}, function({hiddenThreads, hiddenPosts}) {
+    $.get({hiddenThreads: dict(), hiddenPosts: dict()}, function({hiddenThreads, hiddenPosts}) {
       let board, ID, site, thread;
       let hiddenNum = 0;
       for (ID in hiddenThreads) {
@@ -281,7 +302,7 @@ Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's pri
     });
     $.on(button, 'click', function() {
       this.textContent = 'Hidden: 0';
-      return $.get('hiddenThreads', $.dict(), function({hiddenThreads}) {
+      return $.get('hiddenThreads', dict(), function({hiddenThreads}) {
         if ($.hasStorage && (g.SITE.software === 'yotsuba')) {
           let boardID;
           for (boardID in hiddenThreads['4chan.org']?.boards) {
@@ -299,7 +320,7 @@ Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's pri
 
   export() {
     // Make sure to export the most recent data, but don't overwrite existing `Conf` object.
-    const Conf2 = $.dict();
+    const Conf2 = dict();
     $.extend(Conf2, Conf);
     return $.get(Conf2, function(Conf2) {
       // Don't export cached JSON data.
@@ -312,7 +333,7 @@ Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's pri
     const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
     const url = URL.createObjectURL(blob);
     const a = $.el('a', {
-      download: `<%= meta.name %> v${g.VERSION}-${data.date}.json`,
+      download: `${meta.name} v${g.VERSION}-${data.date}.json`,
       href: url
     }
     );
@@ -339,7 +360,7 @@ Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's pri
     const reader = new FileReader();
     reader.onload = function(e) {
       try {
-        return Settings.loadSettings($.dict.json(e.target.result), function(err) {
+        return Settings.loadSettings(dict.json(e.target.result), function (err) {
           if (err) {
             return output.textContent = 'Import failed due to an error.';
           } else if (confirm('Import successful. Reload now?')) {
@@ -455,12 +476,12 @@ Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's pri
         }
       }
       if (data.WatchedThreads) {
-        data.Conf['watchedThreads'] = $.dict.clone({'4chan.org': {boards: {}}});
+        data.Conf['watchedThreads'] = dict.clone({ '4chan.org': { boards: {} } });
         for (var boardID in data.WatchedThreads) {
           var threads = data.WatchedThreads[boardID];
           for (var threadID in threads) {
             var threadData = threads[threadID];
-            (data.Conf['watchedThreads']['4chan.org'].boards[boardID] || (data.Conf['watchedThreads']['4chan.org'].boards[boardID] = $.dict()))[threadID] = {excerpt: threadData.textContent};
+            (data.Conf['watchedThreads']['4chan.org'].boards[boardID] || (data.Conf['watchedThreads']['4chan.org'].boards[boardID] = dict()))[threadID] = { excerpt: threadData.textContent };
           }
         }
       }
@@ -470,7 +491,7 @@ Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's pri
 
   upgrade(data, version) {
     let corrupted, key, val;
-    const changes = $.dict();
+    const changes = dict();
     const set = (key, value) => data[key] = (changes[key] = value);
     const setD = function(key, value) {
       if (data[key] == null) { return set(key, value); }
@@ -684,7 +705,7 @@ Enable it on boards.${location.hostname.split('.')[1]}.org in your browser's pri
         }
       }
       if ((data['siteSoftware'] != null) && (data['siteProperties'] == null)) {
-        const siteProperties = $.dict();
+        const siteProperties = dict();
         for (var line of data['siteSoftware'].split('\n')) {
           var [hostname, software] = Array.from(line.split(' '));
           siteProperties[hostname] = {software};
@@ -745,7 +766,7 @@ mu-replace
 sp-replace
 tv-replace
 vp-replace
-[external-text:"FAQ","<%= meta.faq %>"]\
+[external-text:"FAQ","${meta.faq}"]\
 `
         );
       }
@@ -831,7 +852,7 @@ vp-replace
       return;
     }
     const filterTypes = Object.keys(Config.filter).filter(x => x !== 'general').map((x, i) => ({
-      innerHTML: '?{i}{,}<wbr>${x}'
+      innerHTML: (i ? "," : "") + `<wbr>${E(x)}`
     }));
     $.extend(div, { innerHTML: FilterGuidePage });
     return $('.warning', div).hidden = Conf['Filter'];
@@ -853,7 +874,7 @@ vp-replace
     $.extend(section, { innerHTML: AdvancedPage });
     for (var warning of $$('.warning', section)) { warning.hidden = Conf[warning.dataset.feature]; }
 
-    const inputs = $.dict();
+    const inputs = dict();
     for (input of $$('[name]', section)) {
       inputs[input.name] = input;
     }
@@ -864,7 +885,7 @@ vp-replace
       return $.id('lastarchivecheck').textContent = 'never';
     });
 
-    const items = $.dict();
+    const items = dict();
     for (name in inputs) {
       input = inputs[name];
       if (!['Interval', 'Custom CSS'].includes(name)) {
@@ -909,7 +930,7 @@ vp-replace
     $.on(customCSS, 'change', Settings.togglecss);
     $.on(applyCSS,  'click',  () => CustomCSS.update());
 
-    const itemsArchive = $.dict();
+    const itemsArchive = dict();
     for (name of ['archives', 'selectedArchives', 'lastarchivecheck']) { itemsArchive[name] = Conf[name]; }
     $.get(itemsArchive, function(itemsArchive) {
       $.extend(Conf, itemsArchive);
@@ -943,7 +964,7 @@ vp-replace
     $.rmAll(boardSelect);
     $.rmAll(tbody);
 
-    const archBoards = $.dict();
+    const archBoards = dict();
     for (var {uid, name, boards, files, software} of Conf['archives']) {
       if (!['fuuka', 'foolfuuka'].includes(software)) { continue; }
       for (boardID of boards) {
@@ -1039,7 +1060,7 @@ vp-replace
 
   saveSelectedArchive() {
     return $.get('selectedArchives', Conf['selectedArchives'], ({selectedArchives}) => {
-      (selectedArchives[this.dataset.boardid] || (selectedArchives[this.dataset.boardid] = $.dict()))[this.dataset.type] = JSON.parse(this.value);
+      (selectedArchives[this.dataset.boardid] || (selectedArchives[this.dataset.boardid] = dict()))[this.dataset.type] = JSON.parse(this.value);
       $.set('selectedArchives', selectedArchives);
       Conf['selectedArchives'] = selectedArchives;
       return Redirect.selectArchives();
@@ -1108,12 +1129,12 @@ vp-replace
     $('.warning', section).hidden = Conf['Keybinds'];
 
     const tbody  = $('tbody', section);
-    const items  = $.dict();
-    const inputs = $.dict();
+    const items  = dict();
+    const inputs = dict();
     for (key in Config.hotkeys) {
       var arr = Config.hotkeys[key];
       var tr = $.el('tr',
-        {innerHTML: '<td>${arr[1]}</td><td><input class="field"></td>'});
+        { innerHTML: `<td>${arr[1]}</td><td><input class="field"></td>` });
       var input = $('input', tr);
       input.name = key;
       input.spellcheck = false;
@@ -1141,3 +1162,4 @@ vp-replace
     return $.cb.value.call(this);
   }
 };
+export default Settings;

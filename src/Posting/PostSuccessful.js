@@ -1,3 +1,7 @@
+import DataBoard from "../classes/DataBoard";
+import { Conf, d, g } from "../globals/globals";
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -26,3 +30,4 @@ const PostSuccessful = {
     });
   }
 };
+export default PostSuccessful;

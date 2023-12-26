@@ -1,3 +1,9 @@
+import Callbacks from "../classes/Callbacks";
+import Header from "../General/Header";
+import UI from "../General/UI";
+import { Conf, doc, g } from "../globals/globals";
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -83,3 +89,4 @@ var FappeTyme = {
     if (type === 'werk') { return $.cb.checked.call(this.nodes[type]); }
   }
 };
+export default FappeTyme;

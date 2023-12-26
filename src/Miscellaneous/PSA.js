@@ -1,3 +1,8 @@
+import Notice from "../classes/Notice";
+import { g, Conf, doc } from "../globals/globals";
+import Main from "../main/Main";
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -21,3 +26,4 @@ const PSA = {
     }
   }
 };
+export default PSA;

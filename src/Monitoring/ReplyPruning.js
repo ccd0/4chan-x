@@ -1,3 +1,10 @@
+import Callbacks from "../classes/Callbacks";
+import Header from "../General/Header";
+import UI from "../General/UI";
+import { g, Conf, E, d } from "../globals/globals";
+import $ from "../platform/$";
+import QuoteThreading from "../Quotelinks/QuoteThreading";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -167,3 +174,4 @@ var ReplyPruning = {
     }
   }
 };
+export default ReplyPruning;

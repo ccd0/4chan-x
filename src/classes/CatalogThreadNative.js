@@ -1,4 +1,9 @@
-class CatalogThreadNative {
+import { g } from "../globals/globals";
+import $ from "../platform/$";
+import Board from "./Board";
+import Thread from "./Thread";
+
+export default class CatalogThreadNative {
   toString() { return this.ID; }
 
   constructor(root) {

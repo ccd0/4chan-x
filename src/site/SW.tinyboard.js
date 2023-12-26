@@ -1,9 +1,15 @@
+import { Conf, d } from "../globals/globals";
+import Main from "../main/Main";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+import { dict } from "../platform/helpers";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-SW.tinyboard = {
+const SWTinyboard = {
   isOPContainerThread: true,
   mayLackJSON: true,
   threadModTimeIgnoresSage: true,
@@ -36,7 +42,7 @@ SW.tinyboard = {
     for (var script of $$('script:not([src])', d.head)) {
       var m;
       if (m = script.textContent.match(/\bvar configRoot=(".*?")/)) {
-        var properties = $.dict();
+        var properties = dict();
         try {
           var root = JSON.parse(m[1]);
           if (root[0] === '/') {
@@ -75,7 +81,7 @@ SW.tinyboard = {
       if (root) { return `${root}${boardID}/${isArchived ? 'archive/' : ''}res/${threadID}.json`; } else { return ''; }
     },
     archivedThreadJSON(thread) {
-      return SW.tinyboard.urls.threadJSON(thread, true);
+      return SWTinyboard.urls.threadJSON(thread, true);
     },
     threadsListJSON({siteID, boardID}) {
       const root = Conf['siteProperties'][siteID]?.root;
@@ -93,7 +99,7 @@ SW.tinyboard = {
       return `${Conf['siteProperties'][siteID]?.root || `http://${siteID}/`}${boardID}/${filename}`;
     },
     thumb(board, filename) {
-      return SW.tinyboard.urls.file(board, filename);
+      return SWTinyboard.urls.file(board, filename);
     }
   },
 
@@ -180,7 +186,7 @@ $\
 
   Build: {
     parseJSON(data, board) {
-      const o = SW.yotsuba.Build.parseJSON(data, board);
+      const o = this.parseJSON(data, board);
       if (data.ext === 'deleted') {
         delete o.file;
         $.extend(o, {
@@ -196,7 +202,7 @@ $\
           if (extra_file.ext === 'deleted') {
             o.filesDeleted.push(i);
           } else {
-            file = SW.yotsuba.Build.parseJSONFile(data, board);
+            file = this.parseJSONFile(data, board);
             o.files.push(file);
           }
         }
@@ -296,3 +302,4 @@ $\
     return threadRoot.dataset.sticky = 'true';
   }
 };
+export default SWTinyboard;

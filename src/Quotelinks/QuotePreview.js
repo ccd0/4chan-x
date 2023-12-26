@@ -1,3 +1,12 @@
+import Callbacks from "../classes/Callbacks";
+import Fetcher from "../classes/Fetcher";
+import Get from "../General/Get";
+import Header from "../General/Header";
+import UI from "../General/UI";
+import { Conf, d, doc, g } from "../globals/globals";
+import ExpandComment from "../Miscellaneous/ExpandComment";
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -84,3 +93,4 @@ var QuotePreview = {
     }
   }
 };
+export default QuotePreview;

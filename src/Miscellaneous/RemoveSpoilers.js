@@ -1,3 +1,8 @@
+import Callbacks from "../classes/Callbacks";
+import { Conf, doc, g } from "../globals/globals";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -35,3 +40,4 @@ var RemoveSpoilers = {
     }
   }
 };
+export default RemoveSpoilers;
