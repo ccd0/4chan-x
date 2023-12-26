@@ -6,7 +6,7 @@ export default function generatePostInfoHtml(
   capcodeDescription, uniqueID, flag, flagCode, flagCodeTroll, dateUTC, dateText, postLink, quoteLink, boardID,
   threadID,
 ): EscapedHtml {
-  const nameHtml: (EscapedHtml | string)[] = [<span class={`name${capcode ? ' ' + capcode : ''}`}>{name}</span>];
+  const nameHtml: (EscapedHtml | string)[] = [<span class={`name${capcode ? ' capcode' : ''}`}>{name}</span>];
   if (tripcode) nameHtml.push(' ', <span class="postertrip">{tripcode}</span>);
   if (pass) nameHtml.push(' ', <span title={`Pass user since ${pass}`} class="n-pu"></span>)
   if (capcode) {
@@ -23,7 +23,7 @@ export default function generatePostInfoHtml(
     nameBlockContent.push(
       <img
         src={`${staticPath}${capcodeLC}icon${gifIcon}`}
-        alt={`${capcode} Icon}`}
+        alt={`${capcode} Icon`}
         title={`This user is ${capcodeDescription}.`}
         class="identityIcon retina"
       />
@@ -78,7 +78,7 @@ export default function generatePostInfoHtml(
     <input type="checkbox" name={ID} value="delete" />
     {' '}
     {...((!o.isReply || boardID === "f" || subject) ? [<span class="subject">{subject}</span>, ' '] : [])}
-    <span class={`nameBlock${capcode || ''}`}>
+    <span class={`nameBlock${capcode ? ` capcode${capcode}` : ''}`}>
       {...nameBlockContent}
     </span>
     {' '}
