@@ -556,7 +556,7 @@ Settings =
     changes
 
   loadSettings: (data, cb) ->
-    if data.version.split('.')[0] is '2' # https://github.com/loadletter/4chan-x
+    if data.version.split('.')[0] is '2' and "Disable 4chan's extension" of data.Conf # https://github.com/loadletter/4chan-x
       data = Settings.convertFrom.loadletter data
     else if data.version isnt g.VERSION
       Settings.upgrade data.Conf, data.version
