@@ -67,9 +67,9 @@ $.getOwn = (obj, key) ->
   if Object::hasOwnProperty.call(obj, key) then obj[key] else undefined
 
 $.ajax = do ->
-  if window.wrappedJSObject and not XMLHttpRequest.wrappedJSObject
-    pageXHR = XPCNativeWrapper window.wrappedJSObject.XMLHttpRequest
-  else
+  try
+    pageXHR = if window.wrappedJSObject and not XMLHttpRequest.wrappedJSObject then XPCNativeWrapper window.wrappedJSObject.XMLHttpRequest else XMLHttpRequest
+  catch
     pageXHR = XMLHttpRequest
 
   (url, options={}) ->
