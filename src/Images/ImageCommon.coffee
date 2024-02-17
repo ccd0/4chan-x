@@ -95,6 +95,7 @@ ImageCommon =
     return true if @protocol is 'blob:'
     e.preventDefault()
     {href, download} = @
+    href = href + '?gibberish'
     CrossOrigin.file href, (blob) ->
       if blob
         a = $.el 'a',
