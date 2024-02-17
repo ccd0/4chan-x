@@ -95,7 +95,8 @@ ImageCommon =
     return true if @protocol is 'blob:'
     e.preventDefault()
     {href, download} = @
-    href = href + '?gibberish'
+    search = Date.now() & Math.random().toString(20).substring(2, 6)
+    href = href + '?' + search
     CrossOrigin.file href, (blob) ->
       if blob
         a = $.el 'a',
