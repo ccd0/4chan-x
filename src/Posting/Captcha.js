@@ -10,7 +10,7 @@ import { Conf, d } from "../globals/globals";
 import { MINUTE, SECOND } from "../platform/helpers";
 
 const Captcha = {
-  Cache: {
+  cache: {
     init() {
       $.on(d, 'SaveCaptcha', e => {
         return this.saveAPI(e.detail);
@@ -159,7 +159,10 @@ const Captcha = {
     updateCount() {
       return $.event('CaptchaCount', this.captchas.length);
     }
-  }, Replace: CaptchaReplace, t: CaptchaT, v2: {
+  },
+  replace: CaptchaReplace,
+  t: CaptchaT,
+  v2: {
     lifetime: 2 * MINUTE,
 
     init() {
@@ -285,11 +288,12 @@ const Captcha = {
 
     setupJS() {
       return $.global(function () {
+        const { recaptchaKey } = this;
         const render = function () {
           const { classList } = document.documentElement;
           const container = document.querySelector('#qr .captcha-container');
           return container.dataset.widgetID = window.grecaptcha.render(container, {
-            sitekey: meta.recaptchaKey,
+            sitekey: recaptchaKey,
             theme: classList.contains('tomorrow') || classList.contains('spooky') || classList.contains('dark-captcha') ? 'dark' : 'light',
             callback(response) {
               return window.dispatchEvent(new CustomEvent('captcha:success', { detail: response }));
@@ -311,7 +315,7 @@ const Captcha = {
             return document.head.appendChild(script);
           }
         }
-      });
+      }, { recaptchaKey: meta.recaptchaKey });
     },
 
     afterSetup(mutations) {

@@ -16,7 +16,7 @@ import Unread from "../Monitoring/Unread";
 import $$ from "../platform/$$";
 import $ from "../platform/$";
 import Header from "./Header";
-import { g, Conf, c } from "../globals/globals";
+import { g, Conf, c, d } from "../globals/globals";
 import Menu from "../Menu/Menu";
 
 const Test = {

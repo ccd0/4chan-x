@@ -112,6 +112,7 @@
     "jshint": "^2.13.4",
     "jszip": "^3.10.0",
     "lodash.template": "^4.5.0",
+    "magic-string": "^0.30.10",
     "markdown-it": "^12.3.2",
     "markdown-it-anchor": "^7.1.0",
     "request": "^2.88.2",

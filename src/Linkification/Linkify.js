@@ -1,5 +1,7 @@
 import Callbacks from "../classes/Callbacks";
-// import Test from "../General/Test";
+// #region tests_enabled
+import Test from "../General/Test";
+// #endregion
 import { g, Conf } from "../globals/globals";
 import ImageHost from "../Images/ImageHost";
 import ExpandComment from "../Miscellaneous/ExpandComment";
@@ -104,11 +106,11 @@ var Linkify = {
         if (Linkify.regString.test(word)) {
           links.push(Linkify.makeRange(node, endNode, index, length));
 
-          // <% if (readJSON('/.tests_enabled')) { %>
-          // if (links.length) {
-          // Test.assert(() => word === links[links.length - 1]?.toString());
-          // }
-          // <% } %>
+          // #region tests_enabled
+          if (links.length) {
+            Test.assert(() => word === links[links.length - 1]?.toString());
+          }
+          // #endregion
         }
 
         if (!test.lastIndex || (node !== endNode)) { break; }

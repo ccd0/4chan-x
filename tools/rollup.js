@@ -7,6 +7,7 @@ import generateMetadata from '../src/meta/metadata.js';
 import { copyFile, readFile, writeFile } from 'fs/promises';
 import importBase64 from './rollup-plugin-base64.js';
 import generateManifestJson from '../src/meta/manifestJson.js';
+import removeTestCode from './rollup-plugin-remove-test-code.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -19,6 +20,7 @@ if (process.argv.includes('-beta')) {
 } else if (process.argv.includes('-noupdate')) {
   channel = '-noupdate';
 }
+const buildForTest = process.argv.includes('-test');
 
 (async () => {
   const packageJson = JSON.parse(await readFile(resolve(__dirname, '../package.json'), 'utf-8'));
@@ -35,6 +37,15 @@ if (process.argv.includes('-beta')) {
   const bundle = await rollup({
     input: resolve(__dirname, '../src/main/Main.js'),
     plugins: [
+      buildForTest ? undefined : removeTestCode({
+        include: [
+          // Only files that actually have test code.
+          "**/src/main/Main.js",
+          "**/src/classes/Post.js",
+          "**/src/Linkification/Linkify.js",
+        ],
+        sourceMap: false,
+      }),
       typescript(),
       inlineFile({
         include: ["**/*.html", "**/*.css"],

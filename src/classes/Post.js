@@ -1,4 +1,7 @@
 import Get from "../General/Get";
+// #region tests_enabled
+import Test from "../General/Test";
+// #endregion
 import { g, Conf } from "../globals/globals";
 import ImageExpand from "../Images/ImageExpand";
 import $ from "../platform/$";
@@ -24,9 +27,9 @@ export default class Post {
   toString() { return this.ID; }
 
   constructor(root, thread, board, flags={}) {
-    // <% if (readJSON('/.tests_enabled')) { %>
-    // @normalizedOriginal = Test.normalize root
-    // <% } %>
+    // #region tests_enabled
+    if (root) this.normalizedOriginal = Test.normalize(root);
+    // #endregion
 
     // Skip initialization for PostClone
     if (root === undefined && thread === undefined && board === undefined) return;
@@ -92,9 +95,9 @@ export default class Post {
     this.isHidden = false;
 
     this.clones = [];
-    // <% if (readJSON('/.tests_enabled')) { %>
-    // return if @forBuildTest
-    // <% } %>
+    // #region tests_enabled
+    if (this.forBuildTest) return;
+    // #endregion
     if (g.posts.get(this.fullID)) {
       this.isRebuilt = true;
       this.clones = g.posts.get(this.fullID).clones;

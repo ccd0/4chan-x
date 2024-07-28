@@ -88,10 +88,11 @@ import Menu from "../Menu/Menu";
 import BoardConfig from "../General/BoardConfig";
 import CaptchaReplace from "../Posting/Captcha.replace";
 import Get from "../General/Get";
-import Captcha from "../Posting/Captcha";
 import { dict, platform } from "../platform/helpers";
 import Polyfill from "../General/Polyfill";
-// import Test from "../General/Test";
+// #region tests_enabled
+import Test from "../General/Test";
+// #endregion
 
 /*
  * decaffeinate suggestions:
@@ -963,6 +964,6 @@ User agent: ${navigator.userAgent}\
 export default Main;
 $.ready(() => Main.init());
 
-// <% if (readJSON('/.tests_enabled')) { %>
-// Main.features.push(['Build Test', Test]);
-// <% } %>
+// #region tests_enabled
+Main.features.push(['Build Test', Test]);
+// #endregion
