@@ -1918,7 +1918,7 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
   opacity: 0;
   pointer-events: none;
 }
-.checkbox-letter, #paste-area, #url-button, #custom-cooldown-button, #dump-button {
+.checkbox-letter, #paste-area, #url-button, #custom-cooldown-button, #dump-button, #split-post {
   opacity: 0.6;
 }
 #paste-area {

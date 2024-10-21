@@ -449,9 +449,50 @@ var QR = {
   characterCount() {
     const counter = QR.nodes.charCount;
     const count   = QR.nodes.com.value.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length;
-    counter.textContent = count;
+    counter.textContent = count.toString();
     counter.hidden      = count < (QR.max_comment/2);
+
+    const splitPost = QR.nodes.splitPost;
+    splitPost.hidden = count < QR.max_comment;
+
     return (count > QR.max_comment ? $.addClass : $.rmClass)(counter, 'warning');
+  },
+
+  splitPost() {
+    if (QR.selected.isLocked) return;
+    const count = QR.nodes.com.value.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length;
+    if (count < QR.max_comment || QR.selected.isLocked) return;
+    const text = QR.nodes.com.value;
+    let lastPostLength = 0;
+    let splitCount = 0;
+    const idx = QR.posts.indexOf(QR.selected);
+    QR.selected.setComment("");
+
+    for (const line of text.split("\n")) {
+      const currentLength = line.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length + 1 // +1 for newline at end
+      if (currentLength + lastPostLength > QR.max_comment) {
+        const post = new QR.post(true);
+        post.setComment(line);
+        lastPostLength = currentLength;
+        splitCount++;
+      } else {
+        const newComment = [QR.selected.com, line].filter(el => el !== null).join('\n');
+        QR.selected.setComment(newComment);
+        lastPostLength += currentLength;
+      }
+    }
+    const newPostIdx = QR.posts.length - splitCount;
+    const newPosts = QR.posts.splice(newPostIdx, splitCount)
+    QR.posts.splice(idx + 1, 0, ...newPosts);
+    const rearrangedDumpList = [...QR.nodes.dumpList.children];
+    const newDumps = rearrangedDumpList.splice(newPostIdx, splitCount);
+    rearrangedDumpList.splice(idx + 1, 0, ...newDumps);
+
+    for (const e of rearrangedDumpList) {
+      QR.nodes.dumpList.appendChild(e);
+    }
+
+    QR.nodes.el.classList.add('dump');
   },
 
   getFile() {
@@ -675,6 +716,7 @@ var QR = {
     setNode('status',         '[type=submit]');
     setNode('flashTag',       '[name=filetag]');
     setNode('fileInput',      '[type=file]');
+    setNode('splitPost',      '#split-post')
 
     const {config} = g.BOARD;
     const {classList} = QR.nodes.el;
@@ -715,6 +757,7 @@ var QR = {
     $.on(nodes.customCooldown, 'click',     QR.toggleCustomCooldown);
     $.on(nodes.dumpButton,     'click',     () => nodes.el.classList.toggle('dump'));
     $.on(nodes.fileInput,      'change',    QR.handleFiles);
+    $.on(nodes.splitPost,      'click',     QR.splitPost);
 
     window.addEventListener('focus', QR.focus, true);
     window.addEventListener('blur',  QR.focus, true);
