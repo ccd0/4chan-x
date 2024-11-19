@@ -1,7 +1,7 @@
 QR =
-  mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm']
+  mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm', 'video/mp4']
 
-  validExtension: /\.(jpe?g|png|gif|pdf|swf|webm)$/i
+  validExtension: /\.(jpe?g|png|gif|pdf|swf|webm|mp4)$/i
 
   typeFromExtension:
     'jpg':  'image/jpeg'
@@ -10,7 +10,8 @@ QR =
     'gif':  'image/gif'
     'pdf':  'application/pdf'
     'swf':  'application/vnd.adobe.flash.movie'
-    'webm': 'video/webm'
+    'webm': 'video/webm',
+    'mp4': 'video/mp4'
 
   extensionFromType:
     'image/jpeg': 'jpg'
@@ -19,7 +20,8 @@ QR =
     'application/pdf': 'pdf'
     'application/vnd.adobe.flash.movie': 'swf'
     'application/x-shockwave-flash': 'swf'
-    'video/webm': 'webm'
+    'video/webm': 'webm',
+    'video/mp4': 'mp4'
 
   init: ->
     return unless Conf['Quick Reply']
