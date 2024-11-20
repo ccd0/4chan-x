@@ -23,6 +23,9 @@
 
 ### v1.14.22
 
+**v1.14.22.5** *(2024-11-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.5/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.5/builds/4chan-X-noupdate.crx)]
+- (4chenz) Support posting MP4 files on 4chan.
+
 **v1.14.22.4** *(2023-02-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.4/builds/4chan-X-noupdate.crx)]
 - Recognize JPEG files with .jfif extensions as images for purposes of Image Hover etc.; also recognize .avif and .jxl files as images.
 - Avoid breaking sauce settings of people with links to original Google Images and Google Lens, provided they didn't already update to v1.14.22.3.
