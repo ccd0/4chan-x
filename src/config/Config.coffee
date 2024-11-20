@@ -850,9 +850,7 @@ Config =
     """
     sjisPreview: false
 
-  jsWhitelist: '''
-    *
-  '''
+  jsWhitelist: ''
 
   captchaLanguage: ''
 
