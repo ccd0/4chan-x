@@ -61,7 +61,7 @@ ThreadWatcher =
           $.off @el, 'click', @cb if @cb
           @cb = ->
             $.event 'CloseMenu'
-            ThreadWatcher.toggle thread
+            ThreadWatcher.toggle thread, true
           $.on @el, 'click', @cb
           true
 
@@ -108,7 +108,7 @@ ThreadWatcher =
     $.addClass @nodes.root, 'watched' if ThreadWatcher.isWatched @thread
     $.on @nodes.root, 'mousedown click', (e) =>
       return unless e.button is 0 and e.altKey
-      ThreadWatcher.toggle @thread if e.type is 'click'
+      ThreadWatcher.toggle @thread, true if e.type is 'click'
       e.preventDefault() # Also on mousedown to prevent highlighting thumbnail in Firefox.
 
   addDialog: ->
@@ -140,13 +140,13 @@ ThreadWatcher =
       return unless confirm "Delete ALL threads from watcher?"
       for {siteID, boardID, threadID} in ThreadWatcher.getAll()
         ThreadWatcher.db.delete {siteID, boardID, threadID}
-      ThreadWatcher.refresh()
+      ThreadWatcher.refresh true
       $.event 'CloseMenu'
     pruneDeads: ->
       return if $.hasClass @, 'disabled'
       for {siteID, boardID, threadID, data} in ThreadWatcher.getAll() when data.isDead
         ThreadWatcher.db.delete {siteID, boardID, threadID}
-      ThreadWatcher.refresh()
+      ThreadWatcher.refresh true
       $.event 'CloseMenu'
     dismiss: ->
       for {siteID, boardID, threadID, data} in ThreadWatcher.getAll() when data.quotingYou
@@ -154,19 +154,19 @@ ThreadWatcher =
       $.event 'CloseMenu'
     toggle: ->
       {thread} = Get.postFromNode @
-      ThreadWatcher.toggle thread
+      ThreadWatcher.toggle thread, true
     rm: ->
       {siteID} = @parentNode.dataset
       [boardID, threadID] = @parentNode.dataset.fullID.split '.'
-      ThreadWatcher.rm siteID, boardID, +threadID
+      ThreadWatcher.rm siteID, boardID, +threadID, undefined, true
     post: (e) ->
       {boardID, threadID, postID} = e.detail
       cb = PostRedirect.delay()
       if postID is threadID
         if Conf['Auto Watch']
-          ThreadWatcher.addRaw boardID, threadID, {}, cb
+          ThreadWatcher.addRaw boardID, threadID, {}, cb, true
       else if Conf['Auto Watch Reply']
-        ThreadWatcher.add (g.threads.get(boardID + '.' + threadID) or new Thread(threadID, g.boards[boardID] or new Board(boardID))), cb
+        ThreadWatcher.add (g.threads.get(boardID + '.' + threadID) or new Thread(threadID, g.boards[boardID] or new Board(boardID))), cb, true
     onIndexUpdate: (e) ->
       {db}    = ThreadWatcher
       siteID  = g.SITE.ID
@@ -497,7 +497,7 @@ ThreadWatcher =
 
     ThreadWatcher.refreshIcon()
 
-  refresh: ->
+  refresh: (manual) ->
     ThreadWatcher.build()
 
     g.threads.forEach (thread) ->
@@ -509,7 +509,7 @@ ThreadWatcher =
       (thread.catalogView.nodes.root.classList.toggle 'watched', isWatched if thread.catalogView)
 
     if Conf['Pin Watched Threads']
-      $.event 'SortIndex', {deferred: Conf['Index Mode'] isnt 'catalog'}
+      $.event 'SortIndex', {deferred: not (manual and Conf['Index Mode'] is 'catalog')}
 
   refreshIcon: ->
     for className in ['replies-unread', 'replies-quoting-you']
@@ -545,16 +545,16 @@ ThreadWatcher =
     return cb() if data.isDead and not (data.isArchived? or data.page? or data.lastPage? or data.unread? or data.quotingYou?)
     ThreadWatcher.db.extend {boardID, threadID, val: {isDead: true, isArchived: undefined, page: undefined, lastPage: undefined, unread: undefined, quotingYou: undefined}}, cb
 
-  toggle: (thread) ->
+  toggle: (thread, manual) ->
     siteID   = g.SITE.ID
     boardID  = thread.board.ID
     threadID = thread.ID
     if ThreadWatcher.db.get {boardID, threadID}
-      ThreadWatcher.rm siteID, boardID, threadID
+      ThreadWatcher.rm siteID, boardID, threadID, undefined, manual
     else
-      ThreadWatcher.add thread
+      ThreadWatcher.add thread, undefined, manual
 
-  add: (thread, cb) ->
+  add: (thread, cb, manual) ->
     data     = {}
     siteID   = g.SITE.ID
     boardID  = thread.board.ID
@@ -565,24 +565,24 @@ ThreadWatcher =
         return
       data.isDead = true
     data.excerpt = Get.threadExcerpt thread if thread.OP
-    ThreadWatcher.addRaw boardID, threadID, data, cb
+    ThreadWatcher.addRaw boardID, threadID, data, cb, manual
 
-  addRaw: (boardID, threadID, data, cb) ->
+  addRaw: (boardID, threadID, data, cb, manual) ->
     oldData = ThreadWatcher.db.get {boardID, threadID, defaultValue: $.dict()}
     delete oldData.last
     delete oldData.modified
     $.extend oldData, data
     ThreadWatcher.db.set {boardID, threadID, val: oldData}, cb
-    ThreadWatcher.refresh()
+    ThreadWatcher.refresh manual
     thread = {siteID: g.SITE.ID, boardID, threadID, data, force: true}
     if Conf['Show Page'] and !data.isDead
       ThreadWatcher.fetchBoard [thread]
     else if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
       ThreadWatcher.fetchStatus thread
 
-  rm: (siteID, boardID, threadID, cb) ->
+  rm: (siteID, boardID, threadID, cb, manual) ->
     ThreadWatcher.db.delete {siteID, boardID, threadID}, cb
-    ThreadWatcher.refresh()
+    ThreadWatcher.refresh manual
 
   menu:
     init: ->
@@ -608,7 +608,7 @@ ThreadWatcher =
           $.rmClass  entryEl, rmClass
           entryEl.textContent = text
           true
-      $.on entryEl, 'click', -> ThreadWatcher.toggle g.threads.get("#{g.BOARD}.#{g.THREADID}")
+      $.on entryEl, 'click', -> ThreadWatcher.toggle g.threads.get("#{g.BOARD}.#{g.THREADID}"), true
 
     addMenuEntries: ->
       entries = []
@@ -688,6 +688,6 @@ ThreadWatcher =
         $.addClass entry.el, 'disabled'
         entry.el.title += '\n[Remember Last Read Post is disabled.]'
       $.on input, 'change', $.cb.checked
-      $.on input, 'change', ThreadWatcher.refresh   if name in ['Current Board', 'Show Page', 'Show Unread Count', 'Show Site Prefix']
-      $.on input, 'change', ThreadWatcher.fetchAuto if name in ['Show Page', 'Show Unread Count', 'Auto Update Thread Watcher']
+      $.on input, 'change', -> ThreadWatcher.refresh() if name in ['Current Board', 'Show Page', 'Show Unread Count', 'Show Site Prefix']
+      $.on input, 'change', ThreadWatcher.fetchAuto    if name in ['Show Page', 'Show Unread Count', 'Auto Update Thread Watcher']
       @menu.addEntry entry
