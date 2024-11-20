@@ -498,7 +498,7 @@ Embedding =
         el
     ,
       key: 'YouTube'
-      regExp: /^\w+:\/\/(?:youtu.be\/|[\w.]*youtube[\w.]*\/.*(?:v=|\bembed\/|\bv\/|live\/))([\w\-]{11})(.*)/
+      regExp: /^\w+:\/\/(?:youtu.be\/|[\w.]*youtube[\w.]*\/.*(?:v=|\bembed\/|\bv\/|live\/|shorts\/))([\w\-]{11})(.*)/
       el: (a) ->
         start = a.dataset.options.match /\b(?:star)?t\=(\w+)/
         start = start[1] if start
