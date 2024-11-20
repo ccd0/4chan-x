@@ -58,7 +58,7 @@ Settings =
         textContent: section.title
         href: 'javascript:;'
       $.on link, 'click', Settings.openSection.bind section
-      links.push link, $.tn ' | '
+      links.push link
       sectionToOpen = link if section.title is openSection
     links.pop()
     $.add $('.sections-list', dialog), links

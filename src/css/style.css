@@ -587,13 +587,32 @@ audio.controls-added {
 .sections-list {
   -webkit-flex: 1;
   flex: 1;
+  border-bottom: 1px solid #ccc;
 }
 .export, .import, .reset {
   cursor: pointer;
   text-decoration: none !important;
 }
+#fourchanx-settings > button.impexres {
+  margin-right:.5em;
+}
+#fourchanx-settings > button.impexres > a, #fourchanx-settings > button.impexres > a:visited {
+  color:initial;
+}
+div.sections-list a {
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  border-bottom: none;
+  padding: 0 3px;
+  margin-right: -1px;
+  text-decoration: none !important;
+}
 .tab-selected {
   font-weight: 700;
+  color:#000 !important;
+  background-color:#ccc;
 }
 .section-sauce ul,
 .section-advanced ul {
