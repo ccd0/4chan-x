@@ -859,11 +859,13 @@ Config =
     http://cdn.mathjax.org
     https://cdn.mathjax.org
     https://cdnjs.cloudflare.com
+    https://challenges.cloudflare.com
     https://hcaptcha.com
     https://*.hcaptcha.com
     'self'
     'unsafe-inline'
     'unsafe-eval'
+    object-src 'self' blob:
   '''
 
   captchaLanguage: ''
