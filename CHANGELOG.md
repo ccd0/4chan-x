@@ -2,6 +2,17 @@
 
 -Sometimes the changelog has notes (not comprehensive) acknowledging people's work. This does not mean the changes are their fault, only that their code was used. All changes to the script are chosen by and the fault of the maintainer (ccd0).
 
+### v1.14.23
+
+**v1.14.23.0** *(2024-11-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.23.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.23.0/builds/4chan-X-noupdate.crx)]
+- Based on v1.14.22.4.
+- (4chenz) Support posting MP4 files on 4chan.
+- 4channel.org domain is no more; fix issue with links not being bold in headers.
+- Fix for unwanted sorting of catalog under certain settings. #3212
+- Turn JS Whitelist functionality off by default. At the moment it breaks more stuff than it fixes.
+- (paradox460) Add ability to clear whole thread watcher.
+- (paradox460) Add a button to quick reply to split long posts.
+
 ### v1.14.22
 
 **v1.14.22.4** *(2023-02-28)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.4/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.22.4/builds/4chan-X-noupdate.crx)]

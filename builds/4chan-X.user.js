@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.22.4
+// @version      1.14.23.0
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -82,7 +82,6 @@
 // @connect      archived.moe
 // @connect      thebarchive.com
 // @connect      archiveofsins.com
-// @connect      www.tokyochronos.net
 // @connect      archive.palanq.win
 // @connect      eientei.xyz
 // @connect      api.clyp.it
@@ -211,7 +210,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.22.4',
+  VERSION:   '1.14.23.0',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -487,7 +486,7 @@ Config = (function() {
       'QR.personas': "#options:\"sage\";boards:jp;always",
       sjisPreview: false
     },
-    jsWhitelist: 'http://s.4cdn.org\nhttps://s.4cdn.org\nhttp://www.google.com\nhttps://www.google.com\nhttps://www.gstatic.com\nhttp://cdn.mathjax.org\nhttps://cdn.mathjax.org\nhttps://cdnjs.cloudflare.com\nhttps://hcaptcha.com\nhttps://*.hcaptcha.com\n\'self\'\n\'unsafe-inline\'\n\'unsafe-eval\'',
+    jsWhitelist: '*',
     captchaLanguage: '',
     time: '%m/%d/%y(%a)%H:%M:%S',
     timeLocale: '',
@@ -3375,6 +3374,13 @@ a:only-of-type > .remove {\n\
 }\n\
 #char-count.warning {\n\
   color: red;\n\
+}\n\
+#split-post {\n\
+  font-size: 8pt;\n\
+  position: absolute;\n\
+  bottom: 2px;\n\
+  left: 2px;\n\
+  cursor: pointer;\n\
 }\n\
 /* Menu */\n\
 .menu-button:not(.fa-bars) {\n\
@@ -8922,7 +8928,6 @@ Redirect = (function() {
       { "uid": 29, "name": "Archived.Moe", "domain": "archived.moe", "http": true, "https": true, "software": "foolfuuka", "boards": [ "3", "a", "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "co", "cock", "con", "d", "diy", "e", "f", "fa", "fap", "fit", "fitlit", "g", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "int", "jp", "k", "lgbt", "lit", "m", "mlp", "mlpol", "mo", "mtv", "mu", "n", "news", "o", "out", "outsoc", "p", "po", "pol", "pw", "q", "qa", "qb", "qst", "r", "r9k", "s", "s4s", "sci", "soc", "sp", "spa", "t", "tg", "toy", "trash", "trv", "tv", "u", "v", "vg", "vint", "vip", "vm", "vmg", "vp", "vr", "vrpg", "vst", "vt", "w", "wg", "wsg", "wsr", "x", "xs", "y" ], "files": [ "can", "cock", "con", "fap", "fitlit", "gd", "mlpol", "mo", "mtv", "outsoc", "po", "q", "qb", "qst", "spa", "vint", "vip" ], "search": [ "aco", "adv", "an", "asp", "b", "bant", "biz", "c", "can", "cgl", "ck", "cm", "cock", "con", "d", "diy", "e", "f", "fap", "fitlit", "gd", "gif", "h", "hc", "his", "hm", "hr", "i", "ic", "lgbt", "lit", "mlpol", "mo", "mtv", "n", "news", "o", "out", "outsoc", "p", "po", "pw", "q", "qa", "qst", "r", "s", "soc", "spa", "trv", "u", "vint", "vip", "vrpg", "w", "wg", "wsg", "wsr", "x", "y" ], "reports": true },
       { "uid": 30, "name": "TheBArchive.com", "domain": "thebarchive.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "b", "bant" ], "files": [ "b", "bant" ], "reports": true },
       { "uid": 31, "name": "Archive Of Sins", "domain": "archiveofsins.com", "http": true, "https": true, "software": "foolfuuka", "boards": [ "h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u" ], "files": [ "h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u" ], "reports": true },
-      { "uid": 34, "name": "TokyoChronos", "domain": "www.tokyochronos.net", "http": false, "https": true, "software": "foolfuuka", "boards": [ "c", "g", "jp", "mu", "vp", "vrpg", "vt" ], "files": [], "reports": true },
       { "uid": 36, "name": "palanq.win", "domain": "archive.palanq.win", "http": false, "https": true, "software": "foolfuuka", "boards": [ "bant", "c", "con", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr" ], "files": [ "bant", "c", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr" ], "reports": true },
       { "uid": 37, "name": "Eientei", "domain": "eientei.xyz", "http": false, "https": true, "software": "Eientei", "boards": [ "3", "i", "sci", "xs" ], "files": [ "3", "i", "sci", "xs" ], "reports": true }
     ],
@@ -10522,8 +10527,8 @@ BoardConfig = (function() {
       var ref;
       return !!((ref = (this.boards || Conf['boardConfig'].boards)[board]) != null ? ref.ws_board : void 0);
     },
-    domain: function(board) {
-      return "boards." + (BoardConfig.isSFW(board) ? '4channel' : '4chan') + ".org";
+    domain: function() {
+      return 'boards.4chan.org';
     },
     isArchived: function(board) {
       var data;
@@ -21599,7 +21604,7 @@ ThreadWatcher = (function() {
             }
             this.cb = function() {
               $.event('CloseMenu');
-              return ThreadWatcher.toggle(thread);
+              return ThreadWatcher.toggle(thread, true);
             };
             $.on(this.el, 'click', this.cb);
             return true;
@@ -21680,7 +21685,7 @@ ThreadWatcher = (function() {
             return;
           }
           if (e.type === 'click') {
-            ThreadWatcher.toggle(_this.thread);
+            ThreadWatcher.toggle(_this.thread, true);
           }
           return e.preventDefault();
         };
@@ -21734,6 +21739,23 @@ ThreadWatcher = (function() {
         }
         return $.event('CloseMenu');
       },
+      clear: function() {
+        var boardID, j, len1, ref, ref1, siteID, threadID;
+        if (!confirm("Delete ALL threads from watcher?")) {
+          return;
+        }
+        ref = ThreadWatcher.getAll();
+        for (j = 0, len1 = ref.length; j < len1; j++) {
+          ref1 = ref[j], siteID = ref1.siteID, boardID = ref1.boardID, threadID = ref1.threadID;
+          ThreadWatcher.db["delete"]({
+            siteID: siteID,
+            boardID: boardID,
+            threadID: threadID
+          });
+        }
+        ThreadWatcher.refresh(true);
+        return $.event('CloseMenu');
+      },
       pruneDeads: function() {
         var boardID, data, j, len1, ref, ref1, siteID, threadID;
         if ($.hasClass(this, 'disabled')) {
@@ -21750,7 +21772,7 @@ ThreadWatcher = (function() {
             });
           }
         }
-        ThreadWatcher.refresh();
+        ThreadWatcher.refresh(true);
         return $.event('CloseMenu');
       },
       dismiss: function() {
@@ -21769,13 +21791,13 @@ ThreadWatcher = (function() {
       toggle: function() {
         var thread;
         thread = Get.postFromNode(this).thread;
-        return ThreadWatcher.toggle(thread);
+        return ThreadWatcher.toggle(thread, true);
       },
       rm: function() {
         var boardID, ref, siteID, threadID;
         siteID = this.parentNode.dataset.siteID;
         ref = this.parentNode.dataset.fullID.split('.'), boardID = ref[0], threadID = ref[1];
-        return ThreadWatcher.rm(siteID, boardID, +threadID);
+        return ThreadWatcher.rm(siteID, boardID, +threadID, void 0, true);
       },
       post: function(e) {
         var boardID, cb, postID, ref, threadID;
@@ -21783,10 +21805,10 @@ ThreadWatcher = (function() {
         cb = PostRedirect.delay();
         if (postID === threadID) {
           if (Conf['Auto Watch']) {
-            return ThreadWatcher.addRaw(boardID, threadID, {}, cb);
+            return ThreadWatcher.addRaw(boardID, threadID, {}, cb, true);
           }
         } else if (Conf['Auto Watch Reply']) {
-          return ThreadWatcher.add(g.threads.get(boardID + '.' + threadID) || new Thread(threadID, g.boards[boardID] || new Board(boardID)), cb);
+          return ThreadWatcher.add(g.threads.get(boardID + '.' + threadID) || new Thread(threadID, g.boards[boardID] || new Board(boardID)), cb, true);
         }
       },
       onIndexUpdate: function(e) {
@@ -22367,7 +22389,7 @@ ThreadWatcher = (function() {
       $.add(list, nodes);
       return ThreadWatcher.refreshIcon();
     },
-    refresh: function() {
+    refresh: function(manual) {
       ThreadWatcher.build();
       g.threads.forEach(function(thread) {
         var isWatched, j, len1, post, ref, toggler;
@@ -22387,7 +22409,7 @@ ThreadWatcher = (function() {
       });
       if (Conf['Pin Watched Threads']) {
         return $.event('SortIndex', {
-          deferred: Conf['Index Mode'] !== 'catalog'
+          deferred: !(manual && Conf['Index Mode'] === 'catalog')
         });
       }
     },
@@ -22479,7 +22501,7 @@ ThreadWatcher = (function() {
         }
       }, cb);
     },
-    toggle: function(thread) {
+    toggle: function(thread, manual) {
       var boardID, siteID, threadID;
       siteID = g.SITE.ID;
       boardID = thread.board.ID;
@@ -22488,12 +22510,12 @@ ThreadWatcher = (function() {
         boardID: boardID,
         threadID: threadID
       })) {
-        return ThreadWatcher.rm(siteID, boardID, threadID);
+        return ThreadWatcher.rm(siteID, boardID, threadID, void 0, manual);
       } else {
-        return ThreadWatcher.add(thread);
+        return ThreadWatcher.add(thread, void 0, manual);
       }
     },
-    add: function(thread, cb) {
+    add: function(thread, cb, manual) {
       var boardID, data, siteID, threadID;
       data = {};
       siteID = g.SITE.ID;
@@ -22512,9 +22534,9 @@ ThreadWatcher = (function() {
       if (thread.OP) {
         data.excerpt = Get.threadExcerpt(thread);
       }
-      return ThreadWatcher.addRaw(boardID, threadID, data, cb);
+      return ThreadWatcher.addRaw(boardID, threadID, data, cb, manual);
     },
-    addRaw: function(boardID, threadID, data, cb) {
+    addRaw: function(boardID, threadID, data, cb, manual) {
       var oldData, thread;
       oldData = ThreadWatcher.db.get({
         boardID: boardID,
@@ -22529,7 +22551,7 @@ ThreadWatcher = (function() {
         threadID: threadID,
         val: oldData
       }, cb);
-      ThreadWatcher.refresh();
+      ThreadWatcher.refresh(manual);
       thread = {
         siteID: g.SITE.ID,
         boardID: boardID,
@@ -22543,13 +22565,13 @@ ThreadWatcher = (function() {
         return ThreadWatcher.fetchStatus(thread);
       }
     },
-    rm: function(siteID, boardID, threadID, cb) {
+    rm: function(siteID, boardID, threadID, cb, manual) {
       ThreadWatcher.db["delete"]({
         siteID: siteID,
         boardID: boardID,
         threadID: threadID
       }, cb);
-      return ThreadWatcher.refresh();
+      return ThreadWatcher.refresh(manual);
     },
     menu: {
       init: function() {
@@ -22587,7 +22609,7 @@ ThreadWatcher = (function() {
           }
         });
         return $.on(entryEl, 'click', function() {
-          return ThreadWatcher.toggle(g.threads.get(g.BOARD + "." + g.THREADID));
+          return ThreadWatcher.toggle(g.threads.get(g.BOARD + "." + g.THREADID), true);
         });
       },
       addMenuEntries: function() {
@@ -22614,6 +22636,14 @@ ThreadWatcher = (function() {
           cb: ThreadWatcher.cb.openDeads,
           open: function() {
             this.el.classList.toggle('disabled', !$('.dead-thread', ThreadWatcher.list));
+            return true;
+          }
+        });
+        entries.push({
+          text: 'Clear all threads',
+          cb: ThreadWatcher.cb.clear,
+          open: function() {
+            this.el.classList.toggle('disabled', !ThreadWatcher.list.firstElementChild);
             return true;
           }
         });
@@ -22669,9 +22699,11 @@ ThreadWatcher = (function() {
           entry.el.title += '\n[Remember Last Read Post is disabled.]';
         }
         $.on(input, 'change', $.cb.checked);
-        if (name === 'Current Board' || name === 'Show Page' || name === 'Show Unread Count' || name === 'Show Site Prefix') {
-          $.on(input, 'change', ThreadWatcher.refresh);
-        }
+        $.on(input, 'change', function() {
+          if (name === 'Current Board' || name === 'Show Page' || name === 'Show Unread Count' || name === 'Show Site Prefix') {
+            return ThreadWatcher.refresh();
+          }
+        });
         if (name === 'Show Page' || name === 'Show Unread Count' || name === 'Auto Update Thread Watcher') {
           $.on(input, 'change', ThreadWatcher.fetchAuto);
         }
@@ -23895,8 +23927,8 @@ QR = (function() {
     slice = [].slice;
 
   QR = {
-    mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm'],
-    validExtension: /\.(jpe?g|png|gif|pdf|swf|webm)$/i,
+    mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'application/vnd.adobe.flash.movie', 'application/x-shockwave-flash', 'video/webm', 'video/mp4'],
+    validExtension: /\.(jpe?g|png|gif|pdf|swf|webm|mp4)$/i,
     typeFromExtension: {
       'jpg': 'image/jpeg',
       'jpeg': 'image/jpeg',
@@ -23904,7 +23936,8 @@ QR = (function() {
       'gif': 'image/gif',
       'pdf': 'application/pdf',
       'swf': 'application/vnd.adobe.flash.movie',
-      'webm': 'video/webm'
+      'webm': 'video/webm',
+      'mp4': 'video/mp4'
     },
     extensionFromType: {
       'image/jpeg': 'jpg',
@@ -23913,7 +23946,8 @@ QR = (function() {
       'application/pdf': 'pdf',
       'application/vnd.adobe.flash.movie': 'swf',
       'application/x-shockwave-flash': 'swf',
-      'video/webm': 'webm'
+      'video/webm': 'webm',
+      'video/mp4': 'mp4'
     },
     init: function() {
       var sc;
@@ -24306,12 +24340,42 @@ QR = (function() {
       return QR.selected.save(thread);
     },
     characterCount: function() {
-      var count, counter;
+      var count, counter, splitPost;
       counter = QR.nodes.charCount;
       count = QR.nodes.com.value.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length;
       counter.textContent = count;
       counter.hidden = count < QR.max_comment / 2;
-      return (count > QR.max_comment ? $.addClass : $.rmClass)(counter, 'warning');
+      (count > QR.max_comment ? $.addClass : $.rmClass)(counter, 'warning');
+      splitPost = QR.nodes.splitPost;
+      return splitPost.hidden = count < QR.max_comment;
+    },
+    splitPost: function() {
+      var count, currentLength, currentPost, j, lastPostLength, len, line, newComment, post, ref, text;
+      count = QR.nodes.com.value.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length;
+      text = QR.nodes.com.value;
+      if (count < QR.max_comment || QR.selected.isLocked) {
+        return;
+      }
+      lastPostLength = 0;
+      QR.selected.setComment("");
+      ref = text.split("\n");
+      for (j = 0, len = ref.length; j < len; j++) {
+        line = ref[j];
+        currentLength = line.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '_').length + 1;
+        if ((currentLength + lastPostLength) > QR.max_comment) {
+          post = new QR.post(true);
+          post.setComment(line);
+          lastPostLength = currentLength;
+        } else {
+          currentPost = QR.selected;
+          newComment = [currentPost.com, line].filter(function(el) {
+            return el !== null;
+          }).join("\n");
+          currentPost.setComment(newComment);
+          lastPostLength += currentLength;
+        }
+      }
+      return QR.nodes.el.classList.add('dump');
     },
     getFile: function() {
       var ref;
@@ -24516,7 +24580,7 @@ QR = (function() {
     dialog: function() {
       var classList, config, dialog, event, i, items, name, node, nodes, save, setNode;
       QR.nodes = nodes = {
-        el: dialog = UI.dialog('qr', {innerHTML: "<div class=\"move\"><label><input type=\"checkbox\" id=\"autohide\" title=\"Auto-hide\">Quick Reply</label><a href=\"javascript:;\" class=\"close\" title=\"Close\">×</a><select data-name=\"thread\" title=\"Create a new thread / Reply\"><option value=\"new\">New thread</option></select></div><form><div class=\"persona\"><button type=\"button\" id=\"sjis-toggle\" title=\"Toggle Mona font\">∀</button><button type=\"button\" id=\"tex-preview-button\" title=\"Preview TeX\">T<sub>E</sub>X</button><input name=\"name\" data-name=\"name\" list=\"list-name\" placeholder=\"Name\" class=\"field\" size=\"1\"><input name=\"email\" data-name=\"email\" list=\"list-email\" placeholder=\"Options\" class=\"field\" size=\"1\"><input name=\"sub\" data-name=\"sub\" list=\"list-sub\" placeholder=\"Subject\" class=\"field\" size=\"1\"></div><div class=\"textarea\"><textarea data-name=\"com\" placeholder=\"Comment\" class=\"field\"></textarea><span id=\"char-count\"></span><div id=\"tex-preview\"></div></div><div id=\"dump-list-container\"><div id=\"dump-list\"></div><a id=\"add-post\" href=\"javascript:;\" title=\"Add a post\">+</a></div><div class=\"oekaki\" hidden><input type=\"button\" id=\"qr-draw-button\" value=\"Draw\"><label><span>Width:</span><input name=\"oekaki-width\" value=\"400\" type=\"number\" class=\"field\" size=\"1\"></label><label><span>Height:</span><input name=\"oekaki-height\" value=\"400\" type=\"number\" class=\"field\" size=\"1\"></label><span class=\"oekaki-bg\" title=\"Background Color\"><input name=\"oekaki-bg\" type=\"checkbox\" checked><input name=\"oekaki-bgcolor\" type=\"color\" value=\"#ffffff\"></span></div><div id=\"file-n-submit\"><input type=\"button\" id=\"qr-file-button\" value=\"Files\"><span id=\"qr-filename-container\" class=\"field\"><span id=\"qr-no-file\">No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><label id=\"qr-spoiler-label\"><input type=\"checkbox\" id=\"qr-file-spoiler\" title=\"Spoiler image\"><a class=\"checkbox-letter\">S</a></label><a id=\"qr-oekaki-button\" title=\"Edit in Tegaki\"><i class=\"fa fa-edit\"></i></a><a href=\"javascript:;\" id=\"qr-filerm\" title=\"Remove file\"><i class=\"fa fa-times-circle\"></i></a><a id=\"url-button\" title=\"Post from URL\"><i class=\"fa fa-link\"></i></a><a hidden id=\"paste-area\" title=\"Select to paste images\" class=\"fa fa-clipboard\" tabindex=\"-1\" contentEditable=\"true\"></a><a id=\"custom-cooldown-button\" title=\"Toggle custom cooldown\" class=\"disabled\"><i class=\"fa fa-clock-o\"></i></a><a id=\"dump-button\" title=\"Dump list\"><i class=\"fa fa-plus-square\"></i></a></span><input type=\"submit\"></div><select data-default=\"4\" name=\"filetag\"><option value=\"0\">Hentai</option><option value=\"6\">Porn</option><option value=\"1\">Japanese</option><option value=\"2\">Anime</option><option value=\"3\">Game</option><option value=\"5\">Loop</option><option value=\"4\" selected>Other</option></select><input type=\"file\" multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist> "})
+        el: dialog = UI.dialog('qr', {innerHTML: "<div class=\"move\"><label><input type=\"checkbox\" id=\"autohide\" title=\"Auto-hide\">Quick Reply</label><a href=\"javascript:;\" class=\"close\" title=\"Close\">×</a><select data-name=\"thread\" title=\"Create a new thread / Reply\"><option value=\"new\">New thread</option></select></div><form><div class=\"persona\"><button type=\"button\" id=\"sjis-toggle\" title=\"Toggle Mona font\">∀</button><button type=\"button\" id=\"tex-preview-button\" title=\"Preview TeX\">T<sub>E</sub>X</button><input name=\"name\" data-name=\"name\" list=\"list-name\" placeholder=\"Name\" class=\"field\" size=\"1\"><input name=\"email\" data-name=\"email\" list=\"list-email\" placeholder=\"Options\" class=\"field\" size=\"1\"><input name=\"sub\" data-name=\"sub\" list=\"list-sub\" placeholder=\"Subject\" class=\"field\" size=\"1\"></div><div class=\"textarea\"><textarea data-name=\"com\" placeholder=\"Comment\" class=\"field\"></textarea><span id=\"char-count\"></span><a id=\"split-post\" title=\"Split into multiple posts\" hidden><i class=\"fa fa-cut\"></i></a><div id=\"tex-preview\"></div></div><div id=\"dump-list-container\"><div id=\"dump-list\"></div><a id=\"add-post\" href=\"javascript:;\" title=\"Add a post\">+</a></div><div class=\"oekaki\" hidden><input type=\"button\" id=\"qr-draw-button\" value=\"Draw\"><label><span>Width:</span><input name=\"oekaki-width\" value=\"400\" type=\"number\" class=\"field\" size=\"1\"></label><label><span>Height:</span><input name=\"oekaki-height\" value=\"400\" type=\"number\" class=\"field\" size=\"1\"></label><span class=\"oekaki-bg\" title=\"Background Color\"><input name=\"oekaki-bg\" type=\"checkbox\" checked><input name=\"oekaki-bgcolor\" type=\"color\" value=\"#ffffff\"></span></div><div id=\"file-n-submit\"><input type=\"button\" id=\"qr-file-button\" value=\"Files\"><span id=\"qr-filename-container\" class=\"field\"><span id=\"qr-no-file\">No selected file</span><input id=\"qr-filename\" data-name=\"filename\" spellcheck=\"false\"><label id=\"qr-spoiler-label\"><input type=\"checkbox\" id=\"qr-file-spoiler\" title=\"Spoiler image\"><a class=\"checkbox-letter\">S</a></label><a id=\"qr-oekaki-button\" title=\"Edit in Tegaki\"><i class=\"fa fa-edit\"></i></a><a href=\"javascript:;\" id=\"qr-filerm\" title=\"Remove file\"><i class=\"fa fa-times-circle\"></i></a><a id=\"url-button\" title=\"Post from URL\"><i class=\"fa fa-link\"></i></a><a hidden id=\"paste-area\" title=\"Select to paste images\" class=\"fa fa-clipboard\" tabindex=\"-1\" contentEditable=\"true\"></a><a id=\"custom-cooldown-button\" title=\"Toggle custom cooldown\" class=\"disabled\"><i class=\"fa fa-clock-o\"></i></a><a id=\"dump-button\" title=\"Dump list\"><i class=\"fa fa-plus-square\"></i></a></span><input type=\"submit\"></div><select data-default=\"4\" name=\"filetag\"><option value=\"0\">Hentai</option><option value=\"6\">Porn</option><option value=\"1\">Japanese</option><option value=\"2\">Anime</option><option value=\"3\">Game</option><option value=\"5\">Loop</option><option value=\"4\" selected>Other</option></select><input type=\"file\" multiple></form><datalist id=\"list-name\"></datalist><datalist id=\"list-email\"></datalist><datalist id=\"list-sub\"></datalist> "})
       };
       setNode = function(name, query) {
         return nodes[name] = $(query, dialog);
@@ -24533,6 +24597,7 @@ QR = (function() {
       setNode('sub', '[data-name=sub]');
       setNode('com', '[data-name=com]');
       setNode('charCount', '#char-count');
+      setNode('splitPost', '#split-post');
       setNode('texPreview', '#tex-preview');
       setNode('dumpList', '#dump-list');
       setNode('addPost', '#add-post');
@@ -24577,6 +24642,7 @@ QR = (function() {
       $.on(nodes.sjisToggle, 'click', QR.toggleSJIS);
       $.on(nodes.texButton, 'mousedown', QR.texPreviewShow);
       $.on(nodes.texButton, 'mouseup', QR.texPreviewHide);
+      $.on(nodes.splitPost, 'click', QR.splitPost);
       $.on(nodes.addPost, 'click', function() {
         return new QR.post(true);
       });
