@@ -851,19 +851,7 @@ Config =
     sjisPreview: false
 
   jsWhitelist: '''
-    http://s.4cdn.org
-    https://s.4cdn.org
-    http://www.google.com
-    https://www.google.com
-    https://www.gstatic.com
-    http://cdn.mathjax.org
-    https://cdn.mathjax.org
-    https://cdnjs.cloudflare.com
-    https://hcaptcha.com
-    https://*.hcaptcha.com
-    'self'
-    'unsafe-inline'
-    'unsafe-eval'
+    *
   '''
 
   captchaLanguage: ''
