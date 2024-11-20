@@ -4,6 +4,14 @@
 
 ### v1.14.23
 
+**v1.14.23.1** *(2024-11-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.23.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.23.1/builds/4chan-X-noupdate.crx)]
+- (saxamaphone69) Fix dead documentation link.
+- (youcmd) Recognize Youtube stream links.
+- (kpg-anon) Recognize Youtube shorts links.
+- (TuxedoTako) Fix settings import from 4chan XT.
+- (edde746) Fix issue with script on Orion browser.
+- Possible fix for reported issue in v1.14.23.0 causing stylesheet selector not to work.
+
 **v1.14.23.0** *(2024-11-20)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.23.0/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.23.0/builds/4chan-X-noupdate.crx)]
 - Based on v1.14.22.4.
 - (4chenz) Support posting MP4 files on 4chan.
