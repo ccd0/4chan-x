@@ -5,9 +5,8 @@ QuoteOP =
     if Conf['Comment Expansion']
       ExpandComment.callbacks.push @node
 
-    # \u00A0 is nbsp
     @mark = $.el 'span',
-      textContent: '\u00A0(OP)'
+      textContent: ' (OP)'
       className:   'qmark-op'
     Callbacks.Post.push
       name: 'Mark OP Quotes'
