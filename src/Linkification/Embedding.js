@@ -668,7 +668,7 @@ var Embedding = {
     }
     , {
       key: 'YouTube',
-      regExp: /^\w+:\/\/(?:youtu.be\/|[\w.]*youtube[\w.]*\/.*(?:v=|\bembed\/|\bv\/))([\w\-]{11})(.*)/,
+      regExp: /^\w+:\/\/(?:youtu.be\/|[\w.]*youtube[\w.]*\/.*(?:v=|\bembed\/|\bv\/|shorts\/|live\/|watch\/))([\w\-]{11})(.*)/,
       el(a) {
         let start = a.dataset.options.match(/\b(?:star)?t\=(\w+)/);
         if (start) { start = start[1]; }

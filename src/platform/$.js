@@ -62,11 +62,11 @@ $.getOwn = function(obj, key) {
 };
 
 $.ajax = (function() {
-  let pageXHR;
+  let pageXHR = XMLHttpRequest;
   if (window.wrappedJSObject && !XMLHttpRequest.wrappedJSObject) {
-    pageXHR = XPCNativeWrapper(window.wrappedJSObject.XMLHttpRequest);
-  } else {
-    pageXHR = XMLHttpRequest;
+    try {
+      pageXHR = XPCNativeWrapper(window.wrappedJSObject.XMLHttpRequest);
+    } catch (e) {}
   }
 
   const r = (function (url, options={}) {

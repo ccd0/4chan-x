@@ -80,16 +80,6 @@
   "files": ["h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u"],
   "reports": true
 }, {
-  "uid": 34,
-  "name": "TokyoChronos",
-  "domain": "www.tokyochronos.net",
-  "http": false,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["a", "c", "g", "jp", "mu", "r9k", "vp", "vrpg", "vt"],
-  "files": ["a", "c", "g", "jp", "mu", "r9k", "vp", "vrpg", "vt"],
-  "reports": true
-}, {
   "uid": 36,
   "name": "Rozen Arcana",
   "domain": "archive.alice.al",

@@ -84,7 +84,7 @@ var BoardConfig = {
   },
 
   domain(board) {
-    return `boards.${BoardConfig.isSFW(board) ? '4channel' : '4chan'}.org`;
+    return 'boards.4chan.org';
   },
 
   isArchived(board) {
