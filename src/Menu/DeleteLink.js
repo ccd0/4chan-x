@@ -1,3 +1,9 @@
+import Notice from "../classes/Notice";
+import { g, Conf } from "../globals/globals";
+import $ from "../platform/$";
+import { dict } from "../platform/helpers";
+import QR from "../Posting/QR";
+import Menu from "./Menu";
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -5,7 +11,7 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
 var DeleteLink = {
-  auto: [$.dict(), $.dict()],
+  auto: [dict(), dict()],
 
   init() {
     if (!['index', 'thread'].includes(g.VIEW) || !Conf['Menu'] || !Conf['Delete Link']) { return; }
@@ -147,7 +153,7 @@ var DeleteLink = {
   },
 
   cooldown: {
-    seconds: $.dict(),
+    seconds: dict(),
 
     start(post, seconds) {
       // Already counting.
@@ -176,3 +182,4 @@ var DeleteLink = {
     }
   }
 };
+export default DeleteLink;

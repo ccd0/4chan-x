@@ -1,3 +1,6 @@
+import Callbacks from "../classes/Callbacks";
+import { g, Conf } from "../globals/globals";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -31,3 +34,4 @@ const RevealSpoilers = {
     }
   }
 };
+export default RevealSpoilers;

@@ -1,3 +1,15 @@
+import Callbacks from "../classes/Callbacks";
+import DataBoard from "../classes/DataBoard";
+import Get from "../General/Get";
+import Header from "../General/Header";
+import Index from "../General/Index";
+import { g, Conf, d } from "../globals/globals";
+import ExpandThread from "../Miscellaneous/ExpandThread";
+import $ from "../platform/$";
+import { dict } from "../platform/helpers";
+import QuoteYou from "../Quotelinks/QuoteYou";
+import ThreadWatcher from "./ThreadWatcher";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -5,9 +17,9 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
 var UnreadIndex = {
-  lastReadPost: $.dict(),
-  hr:           $.dict(),
-  markReadLink: $.dict(),
+  lastReadPost: dict(),
+  hr:           dict(),
+  markReadLink: dict(),
 
   init() {
     if ((g.VIEW !== 'index') || !Conf['Remember Last Read Post'] || !Conf['Unread Line in Index']) { return; }
@@ -143,3 +155,4 @@ var UnreadIndex = {
     );
   }
 };
+export default UnreadIndex;

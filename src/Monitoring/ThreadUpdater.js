@@ -1,3 +1,18 @@
+import Beep from './ThreadUpdater/beep.wav';
+import $ from "../platform/$";
+import Callbacks from '../classes/Callbacks';
+import Notice from '../classes/Notice';
+import Post from '../classes/Post';
+import Main from '../main/Main';
+import Config from '../config/Config';
+import Settings from '../General/Settings';
+import QuoteThreading from '../Quotelinks/QuoteThreading';
+import Unread from './Unread';
+import Header from '../General/Header';
+import { g, Conf, d, doc } from '../globals/globals';
+import UI from '../General/UI';
+import { MINUTE, SECOND } from '../platform/helpers';
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -5,7 +20,6 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-import Beep from './ThreadUpdater/beep.wav';
 
 var ThreadUpdater = {
   init() {
@@ -112,7 +126,7 @@ var ThreadUpdater = {
   http://freesound.org/people/pierrecartoons1979/sounds/90112/
   cc-by-nc-3.0
   */
-  beep: 'data:audio/wav;base64,<%= readBase64("beep.wav") %>',
+  beep: `data:audio/wav;base64,${Beep}`,
 
   playBeep() {
     const {audio} = ThreadUpdater;
@@ -231,7 +245,7 @@ var ThreadUpdater = {
     // Fetching your own posts after posting
     if (ThreadUpdater.postID && (ThreadUpdater.checkPostCount < 5)) {
       ThreadUpdater.set('timer', '...', 'loading');
-      ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.update, ++ThreadUpdater.checkPostCount * $.SECOND);
+      ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.update, ++ThreadUpdater.checkPostCount * SECOND);
       return;
     }
 
@@ -298,7 +312,7 @@ var ThreadUpdater = {
       g.SITE.urls.threadJSON({boardID: ThreadUpdater.thread.board.ID, threadID: ThreadUpdater.thread.ID}),
       'ThreadUpdater',
       ThreadUpdater.cb.load,
-      {timeout: $.MINUTE}
+      { timeout: MINUTE }
     );
   },
 
@@ -330,7 +344,7 @@ var ThreadUpdater = {
 
     // XXX Reject updates that falsely delete the last post.
     if ((postObjects[postObjects.length-1].no < lastPost) &&
-      ((new Date(req.getResponseHeader('Last-Modified')) - thread.posts.get(lastPost).info.date) < (30 * $.SECOND))) { return; }
+      ((new Date(req.getResponseHeader('Last-Modified')) - thread.posts.get(lastPost).info.date) < (30 * SECOND))) { return; }
 
     g.SITE.Build.spoilerRange[board] = OP.custom_spoiler;
     thread.setStatus('Archived', !!OP.archived);
@@ -448,3 +462,4 @@ var ThreadUpdater = {
     );
   }
 };
+export default ThreadUpdater;

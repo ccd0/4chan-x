@@ -1,3 +1,11 @@
+import Redirect from "../Archive/Redirect";
+import Notice from "../classes/Notice";
+import { g, Conf, d } from "../globals/globals";
+import $ from "../platform/$";
+import CrossOrigin from "../platform/CrossOrigin";
+import ImageHost from "./ImageHost";
+import Volume from "./Volume";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -144,3 +152,4 @@ var ImageCommon = {
     });
   }
 };
+export default ImageCommon;

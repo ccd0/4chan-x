@@ -1,3 +1,10 @@
+import Callbacks from "../classes/Callbacks";
+import Config from "../config/Config";
+import Header from "../General/Header";
+import UI from "../General/UI";
+import { g, Conf, E } from "../globals/globals";
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -10,14 +17,12 @@ var Volume = {
 
     $.sync('Allow Sound', function(x) {
       Conf['Allow Sound'] = x;
-      // TODO check if inputs exits
-      return Volume.inputs.unmute.checked = x;
+      if (Volume.inputs) Volume.inputs.unmute.checked = x;
     });
 
     $.sync('Default Volume', function(x) {
       Conf['Default Volume'] = x;
-      // TODO check if inputs exits
-      return Volume.inputs.volume.value = x;
+      if (Volume.inputs) Volume.inputs.volume.value = x;
     });
 
     if (Conf['Mouse Wheel Volume']) {
@@ -110,3 +115,4 @@ var Volume = {
     return e.preventDefault();
   }
 };
+export default Volume;

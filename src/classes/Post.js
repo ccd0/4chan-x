@@ -1,27 +1,40 @@
+import Get from "../General/Get";
+// #region tests_enabled
+import Test from "../General/Test";
+// #endregion
+import { g, Conf } from "../globals/globals";
+import ImageExpand from "../Images/ImageExpand";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+import Callbacks from "./Callbacks";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
  * DS206: Consider reworking classes to avoid initClass
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-class Post {
-  static initClass() {
-  
-    this.deadMark =
-      // \u00A0 is nbsp
-      $.el('span', {
-        textContent: '\u00A0(Dead)',
-        className:   'qmark-dead'
-      }
-      );
-  }
+export default class Post {
+  // because of a circular dependency $ might not be initialized, so we can't use $.el
+  static deadMark = (() => {
+    const el = document.createElement('span');
+    // \u00A0 is nbsp
+    el.textContent = '\u00A0(Dead)';
+    el.className = 'qmark-dead';
+    return el;
+  })();
+
   toString() { return this.ID; }
 
   constructor(root, thread, board, flags={}) {
-    // <% if (readJSON('/.tests_enabled')) { %>
-    // @normalizedOriginal = Test.normalize root
-    // <% } %>
+    // #region tests_enabled
+    if (root) this.normalizedOriginal = Test.normalize(root);
+    // #endregion
 
+    // Skip initialization for PostClone
+    if (root === undefined && thread === undefined && board === undefined) return;
+
+    this.root = root;
     this.thread = thread;
     this.board = board;
     $.extend(this, flags);
@@ -82,9 +95,9 @@ class Post {
     this.isHidden = false;
 
     this.clones = [];
-    // <% if (readJSON('/.tests_enabled')) { %>
-    // return if @forBuildTest
-    // <% } %>
+    // #region tests_enabled
+    if (this.forBuildTest) return;
+    // #endregion
     if (g.posts.get(this.fullID)) {
       this.isRebuilt = true;
       this.clones = g.posts.get(this.fullID).clones;
@@ -95,6 +108,9 @@ class Post {
     this.board.posts.push(this.ID, this);
     this.thread.posts.push(this.ID, this);
     g.posts.push(this.fullID, this);
+
+    this.isFetchedQuote = false;
+    this.isClone = false;
   }
 
   parseNodes(root) {
@@ -337,7 +353,7 @@ class Post {
   addClone(context, contractThumb) {
     // Callbacks may not have been run yet due to anti-browser-lock delay in Main.callbackNodesDB.
     Callbacks.Post.execute(this);
-    return new Post.Clone(this, context, contractThumb);
+    return new PostClone(this, context, contractThumb);
   }
 
   rmClone(index) {
@@ -354,5 +370,93 @@ class Post {
     this.nodes.post.classList.toggle('op', !isCatalogOP);
     return this.nodes.post.style.left = (this.nodes.post.style.right = null);
   }
-}
-Post.initClass();
+};
+
+export class PostClone extends Post {
+  static suffix = 0;
+
+  constructor(origin, context, contractThumb) {
+    super();
+    this.isClone = true;
+
+    let file, fileRoots, key;
+    this.origin = origin;
+    this.context = context;
+    for (key of ['ID', 'postID', 'threadID', 'boardID', 'siteID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply']) {
+      // Copy or point to the origin's key value.
+      this[key] = this.origin[key];
+    }
+
+    const { nodes } = this.origin;
+    const root = contractThumb ? this.cloneWithoutVideo(nodes.root) : nodes.root.cloneNode(true);
+    for (var node of [root, ...$$('[id]', root)]) {
+      node.id += `_${PostClone.suffix}`;
+    }
+    PostClone.suffix++;
+
+    // Remove inlined posts inside of this post.
+    for (var inline of $$('.inline', root)) {
+      $.rm(inline);
+    }
+    for (var inlined of $$('.inlined', root)) {
+      $.rmClass(inlined, 'inlined');
+    }
+
+    this.nodes = this.parseNodes(root);
+
+    root.hidden = false; // post hiding
+    $.rmClass(root, 'forwarded'); // quote inlining
+    $.rmClass(this.nodes.post, 'highlight'); // keybind navigation, ID highlighting
+
+    // Remove catalog stuff.
+    if (!this.isReply) {
+      this.setCatalogOP(false);
+      $.rm($('.catalog-link', this.nodes.post));
+      $.rm($('.catalog-stats', this.nodes.post));
+      $.rm($('.catalog-replies', this.nodes.post));
+    }
+
+    this.parseQuotes();
+    this.quotes = [...this.origin.quotes];
+
+    this.files = [];
+    if (this.origin.files.length) { fileRoots = this.fileRoots(); }
+    for (var originFile of this.origin.files) {
+      // Copy values, point to relevant elements.
+      file = { ...originFile };
+      var fileRoot = fileRoots[file.docIndex];
+      for (key in g.SITE.selectors.file) {
+        var selector = g.SITE.selectors.file[key];
+        file[key] = $(selector, fileRoot);
+      }
+      file.thumbLink = file.thumb?.parentNode;
+      if (file.thumbLink) { file.fullImage = $('.full-image', file.thumbLink); }
+      file.videoControls = $('.video-controls', file.text);
+      if (file.videoThumb) { file.thumb.muted = true; }
+      this.files.push(file);
+    }
+
+    if (this.files.length) {
+      this.file = this.files[0];
+
+      // Contract thumbnails in quote preview
+      if (this.file.thumb && contractThumb) { ImageExpand.contract(this); }
+    }
+
+    if (this.origin.isDead) { this.isDead = true; }
+    root.dataset.clone = this.origin.clones.push(this) - 1;
+    return this;
+  }
+
+  cloneWithoutVideo(node) {
+    if ((node.tagName === 'VIDEO') && !node.dataset.md5) { // (exception for WebM thumbnails)
+      return [];
+    } else if ((node.nodeType === Node.ELEMENT_NODE) && $('video', node)) {
+      const clone = node.cloneNode(false);
+      for (var child of node.childNodes) { $.add(clone, this.cloneWithoutVideo(child)); }
+      return clone;
+    } else {
+      return node.cloneNode(true);
+    }
+  }
+};

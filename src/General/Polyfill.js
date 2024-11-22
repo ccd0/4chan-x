@@ -1,3 +1,5 @@
+import $ from "../platform/$";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -9,7 +11,9 @@ const Polyfill = {
     $.global(this.toBlob);
     if (!Element.prototype.matches) { Element.prototype.matches = Element.prototype.mozMatchesSelector || Element.prototype.webkitMatchesSelector; }
   },
-  toBlob() {
+  // This function is converted to a string and then put in a script tag.
+  // Do NOT shorten to `toBlob() {`.
+  toBlob: function() {
     if (HTMLCanvasElement.prototype.toBlob) { return; }
     HTMLCanvasElement.prototype.toBlob = function(cb, type, encoderOptions) {
       const url = this.toDataURL(type, encoderOptions);
@@ -24,3 +28,4 @@ const Polyfill = {
     };
   }
 };
+export default Polyfill;

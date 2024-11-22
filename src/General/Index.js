@@ -6,8 +6,32 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
+import Callbacks from '../classes/Callbacks';
+import CatalogThread from '../classes/CatalogThread';
+import Notice from '../classes/Notice';
+import Post from '../classes/Post';
+import Thread from '../classes/Thread';
+import Config from '../config/Config';
+import Filter from '../Filtering/Filter';
+import PostHiding from '../Filtering/PostHiding';
+import ThreadHiding from '../Filtering/ThreadHiding';
+import Main from '../main/Main';
+import CatalogLinks from '../Miscellaneous/CatalogLinks';
+import RelativeDates from '../Miscellaneous/RelativeDates';
+import ThreadWatcher from '../Monitoring/ThreadWatcher';
+import $$ from '../platform/$$';
+import $ from '../platform/$';
+import QuotePreview from '../Quotelinks/QuotePreview';
+import { c, Conf, d, doc, g } from '../globals/globals';
+import Header from './Header';
+import UI from './UI';
+import Menu from '../Menu/Menu';
+
 import NavLinksPage from './Index/NavLinks.html';
-import PageListPage from './Index/PageList.html';
+import PageList from './Index/PageList.html';
+import BoardConfig from './BoardConfig';
+import Get from './Get';
+import { dict, SECOND } from '../platform/helpers';
 
 var Index = {
   showHiddenThreads: false,
@@ -23,7 +47,7 @@ var Index = {
 
     // For IndexRefresh events
     $.one(d, '4chanXInitFinished', this.cb.initFinished);
-    $.on(d, 'PostsInserted',      this.cb.postsInserted);
+    $.on(d, 'PostsInserted', this.cb.postsInserted);
 
     if (!this.enabledOn(g.BOARD)) { return; }
 
@@ -69,7 +93,7 @@ var Index = {
 
     // Header "Index Navigation" submenu
     const entries = [];
-    this.inputs = (inputs = $.dict());
+    this.inputs = (inputs = dict());
     for (name in Config.Index) {
       var arr = Config.Index[name];
       if (arr instanceof Array) {
@@ -233,7 +257,7 @@ var Index = {
       if (notify) { return; }
       notify = true;
       new Notice('info', "Last page reached.", 2);
-      return setTimeout(reset, 3 * $.SECOND);
+      return setTimeout(reset, 3 * SECOND);
     };
   })(),
 
@@ -345,10 +369,10 @@ var Index = {
     },
 
     perBoardSort() {
-      Conf['Index Sort'] = this.checked ? $.dict() : '';
+      Conf['Index Sort'] = this.checked ? dict() : '';
       Index.saveSort();
       for (let i = 0; i < 2; i++) {
-        Conf[`Last Long Reply Thresholds ${i}`] = this.checked ? $.dict() : '';
+        Conf[`Last Long Reply Thresholds ${i}`] = this.checked ? dict() : '';
         Index.saveLastLongThresholds(i);
       }
     },
@@ -668,14 +692,14 @@ var Index = {
     const pagesRoot  = $('.pages', Index.pagelist);
 
     // Previous/Next buttons
-    const prev = pagesRoot.previousSibling.firstChild;
-    const next = pagesRoot.nextSibling.firstChild;
+    const prev = pagesRoot.previousElementSibling.firstElementChild;
+    const next = pagesRoot.nextElementSibling.firstElementChild;
     let href = Math.max(pageNum - 1, 1);
     prev.href = href === 1 ? './' : href;
-    prev.firstChild.disabled = href === pageNum;
+    prev.firstElementChild.disabled = href === pageNum;
     href = Math.min(pageNum + 1, maxPageNum);
     next.href = href === 1 ? './' : href;
-    next.firstChild.disabled = href === pageNum;
+    next.firstElementChild.disabled = href === pageNum;
 
     // <strong> current page
     if (strong = $('strong', pagesRoot)) {
@@ -721,13 +745,16 @@ var Index = {
     if (Conf['Index Refresh Notifications']) {
       // Optional notification for manual refreshes
       if (!Index.notice) { Index.notice = new Notice('info', 'Refreshing index...'); }
-      if (!Index.nTimeout) { Index.nTimeout = setTimeout(() => // TODO check if notice exists
-      Index.notice.el.lastElementChild.textContent += ' (disable JSON Index if this takes too long)'
-      , 3 * $.SECOND); }
+      if (!Index.nTimeout) { Index.nTimeout = setTimeout(() => {
+          if (Index.notice) {
+            Index.notice.el.lastElementChild.textContent += ' (disable JSON Index if this takes too long)';
+          }
+        }
+        , 3 * SECOND); }
     } else {
       // Also display notice if Index Refresh is taking too long
       if (!Index.nTimeout) { Index.nTimeout = setTimeout(() => Index.notice || (Index.notice = new Notice('info', 'Refreshing index... (disable JSON Index if this takes too long)'))
-      , 3 * $.SECOND); }
+      , 3 * SECOND); }
     }
 
     // Hard refresh in case of incomplete page load.
@@ -760,7 +787,7 @@ var Index = {
       if (notice) {
         notice.setType('warning');
         notice.el.lastElementChild.textContent = err;
-        setTimeout(notice.close, $.SECOND);
+        setTimeout(notice.close, SECOND);
       } else {
         new Notice('warning', err, 1);
       }
@@ -779,7 +806,7 @@ var Index = {
       if (notice) {
         notice.setType('error');
         notice.el.lastElementChild.textContent = 'Index refresh failed.';
-        setTimeout(notice.close, $.SECOND);
+        setTimeout(notice.close, SECOND);
       } else {
         new Notice('error', 'Index refresh failed.', 1);
       }
@@ -790,7 +817,7 @@ var Index = {
       if (Conf['Index Refresh Notifications']) {
         notice.setType('success');
         notice.el.lastElementChild.textContent = 'Index refreshed!';
-        setTimeout(notice.close, $.SECOND);
+        setTimeout(notice.close, SECOND);
       } else {
         notice.close();
       }
@@ -813,10 +840,10 @@ var Index = {
     Index.threadsNumPerPage = pages[0]?.threads.length || 1;
     Index.liveThreadData    = pages.reduce(((arr, next) => arr.concat(next.threads)), []);
     Index.liveThreadIDs     = Index.liveThreadData.map(data => data.no);
-    Index.liveThreadDict    = $.dict();
-    Index.threadPosition    = $.dict();
-    Index.parsedThreads     = $.dict();
-    Index.replyData         = $.dict();
+    Index.liveThreadDict    = dict();
+    Index.threadPosition    = dict();
+    Index.parsedThreads     = dict();
+    Index.replyData         = dict();
     for (let i = 0; i < Index.liveThreadData.length; i++) {
       var obj, results;
       var data = Index.liveThreadData[i];
@@ -1030,7 +1057,7 @@ var Index = {
           }
           if (thread.omitted_posts && thread.last_replies?.length) { return thread.last_replies[0]; } else { return thread; }
         };
-        var lastlongD = $.dict();
+        var lastlongD = dict();
         for (var thread of liveThreadData) {
           lastlongD[thread.no] = lastlong(thread).no;
         }
@@ -1203,3 +1230,4 @@ var Index = {
     return true;
   }
 };
+export default Index;

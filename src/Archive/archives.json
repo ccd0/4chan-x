@@ -1,4 +1,4 @@
-const archives = [{
+[{
   "uid": 3,
   "name": "4plebs",
   "domain": "archive.4plebs.org",
@@ -80,16 +80,6 @@ const archives = [{
   "files": ["h", "hc", "hm", "i", "lgbt", "r", "s", "soc", "t", "u"],
   "reports": true
 }, {
-  "uid": 34,
-  "name": "TokyoChronos",
-  "domain": "www.tokyochronos.net",
-  "http": false,
-  "https": true,
-  "software": "foolfuuka",
-  "boards": ["a", "c", "g", "jp", "mu", "r9k", "vp", "vrpg", "vt"],
-  "files": ["a", "c", "g", "jp", "mu", "r9k", "vp", "vrpg", "vt"],
-  "reports": true
-}, {
   "uid": 36,
   "name": "Rozen Arcana",
   "domain": "archive.alice.al",
@@ -99,6 +89,4 @@ const archives = [{
   "boards": ["bant", "c", "con", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr"],
   "files": ["bant", "c", "e", "i", "n", "news", "out", "p", "pw", "qst", "toy", "vip", "vp", "vt", "w", "wg", "wsr"],
   "reports": true
-}];
-
-export default archives;
+}]

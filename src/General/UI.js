@@ -1,3 +1,9 @@
+import { Conf, d, doc } from "../globals/globals";
+import Main from "../main/Main";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+import Header from "./Header";
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -278,7 +284,7 @@ var Menu = (function() {
   return Menu;
 })();
 
-var dragstart = function(e) {
+export var dragstart = function (e) {
   let isTouching;
   if ((e.type === 'mousedown') && (e.button !== 0)) { return; } // not LMB
   // prevent text selection
@@ -324,7 +330,7 @@ var dragstart = function(e) {
   }
 };
 
-var touchmove = function(e) {
+export var touchmove = function (e) {
   for (var touch of e.changedTouches) {
     if (touch.identifier === this.identifier) {
       drag.call(this, touch);
@@ -333,7 +339,7 @@ var touchmove = function(e) {
   }
 };
 
-var drag = function(e) {
+export var drag = function (e) {
   const {clientX, clientY} = e;
 
   let left = clientX - this.dx;
@@ -369,7 +375,7 @@ var drag = function(e) {
   return style.bottom = bottom;
 };
 
-var touchend = function(e) {
+export var touchend = function (e) {
   for (var touch of e.changedTouches) {
     if (touch.identifier === this.identifier) {
       dragend.call(this);
@@ -378,7 +384,7 @@ var touchend = function(e) {
   }
 };
 
-var dragend = function() {
+export var dragend = function () {
   if (this.isTouching) {
     $.off(d, 'touchmove', this.move);
     $.off(d, 'touchend touchcancel', this.up);
@@ -389,7 +395,7 @@ var dragend = function() {
   return $.set(`${this.id}.position`, this.style.cssText);
 };
 
-const hoverstart = function({root, el, latestEvent, endEvents, height, width, cb, noRemove}) {
+const hoverstart = function ({ root, el, latestEvent, endEvents, height, width, cb, noRemove }) {
   const rect = root.getBoundingClientRect();
   const o = {
     root,
@@ -428,7 +434,7 @@ const hoverstart = function({root, el, latestEvent, endEvents, height, width, cb
 
 hoverstart.padding = 25;
 
-var hover = function(e) {
+export var hover = function (e) {
   this.latestEvent = e;
   const height = (this.height || this.el.offsetHeight) + hoverstart.padding;
   const width  = (this.width  || this.el.offsetWidth);
@@ -452,7 +458,7 @@ var hover = function(e) {
   return style.right = right;
 };
 
-var hoverend = function(e) {
+export var hoverend = function (e) {
   if (((e.type === 'keydown') && (e.keyCode !== 13)) || (e.target.nodeName === "TEXTAREA")) { return; }
   if (!this.noRemove) { $.rm(this.el); }
   $.off(this.root, this.endEvents,  this.hoverend);
@@ -463,7 +469,7 @@ var hoverend = function(e) {
   if (this.cb) { return this.cb.call(this); }
 };
 
-const checkbox = function(name, text, checked) {
+export const checkbox = function (name, text, checked) {
   if (checked == null) { checked = Conf[name]; }
   const label = $.el('label');
   const input = $.el('input', {type: 'checkbox', name, checked});
@@ -477,3 +483,4 @@ const UI = {
   hover:    hoverstart,
   checkbox
 };
+export default UI;

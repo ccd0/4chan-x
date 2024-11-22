@@ -1,3 +1,17 @@
+import Redirect from "../Archive/Redirect";
+import Board from "./Board";
+import Post from "./Post";
+import Thread from "./Thread";
+import $ from "../platform/$";
+import Main from "../main/Main";
+import Index from "../General/Index";
+import { E, g, Conf, d } from "../globals/globals";
+import ImageHost from "../Images/ImageHost";
+import CrossOrigin from "../platform/CrossOrigin";
+import Get from "../General/Get";
+import { dict } from "../platform/helpers";
+import { isEscaped } from "../globals/jsx";
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -7,9 +21,9 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-class Fetcher {
+export default class Fetcher {
   static initClass() {
-  
+
     this.prototype.archiveTags = {
       '\n':         {innerHTML: "<br>"},
       '[b]':        {innerHTML: "<b>"},
@@ -79,7 +93,8 @@ class Fetcher {
     $.add(nodes.root, nodes.post);
 
     // Indicate links to the containing post.
-    for (var quote of clone.nodes.quotelinks.concat([...Array.from(clone.nodes.backlinks)])) {
+    const quotes = [...clone.nodes.quotelinks, ...clone.nodes.backlinks];
+    for (var quote of quotes) {
       var {boardID, postID} = Get.postDataFromLink(quote);
       if ((postID === this.quoter.ID) && (boardID === this.quoter.board.ID)) {
         $.addClass(quote, 'forwardlink');
@@ -218,20 +233,20 @@ class Fetcher {
       for (let i = 0; i < comment.length; i++) {
         var text = comment[i];
         if ((i % 2) === 1) {
-          var tag = this.archiveTags[text.replace(/\ .*\]/, ']')];
+          var tag = Fetcher.archiveTags[text.replace(/\ .*\]/, ']')];
           if (typeof tag === 'function') { result.push(tag(text)); } else { result.push(tag); }
         } else {
           var greentext = text[0] === '>';
           text = text.replace(/(\[\/?[a-z]+):lit(\])/g, '$1$2');
           text = text.split(/(>>(?:>\/[a-z\d]+\/)?\d+)/g).map((text2, j) =>
-            {innerHTML: ((j % 2) ? "<span class=\"deadlink\">" + E(text2) + "</span>" : E(text2));});
+            ({innerHTML: ((j % 2) ? "<span class=\"deadlink\">" + E(text2) + "</span>" : E(text2))}));
           text = {innerHTML: ((greentext) ? "<span class=\"quote\">" + E.cat(text) + "</span>" : E.cat(text))};
           result.push(text);
         }
       }
       return result;
     })();
-    comment = {innerHTML: E.cat(comment)};
+    comment = { innerHTML: E.cat(comment), [isEscaped]: true };
 
     this.threadID = +data.thread_num;
     const o = {
@@ -291,7 +306,7 @@ class Fetcher {
       if (!/\.pdf$/.test(o.file.url)) { o.file.dimensions = `${o.file.width}x${o.file.height}`; }
       if ((this.boardID === 'f') && data.media.exif) { o.file.tag = JSON.parse(data.media.exif).Tag; }
     }
-    o.extra = $.dict();
+    o.extra = dict();
 
     const board = g.boards[this.boardID] ||
       new Board(this.boardID);

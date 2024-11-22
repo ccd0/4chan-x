@@ -1,3 +1,99 @@
+import Redirect from "../Archive/Redirect";
+import Board from "../classes/Board";
+import Callbacks from "../classes/Callbacks";
+import CatalogThreadNative from "../classes/CatalogThreadNative";
+import DataBoard from "../classes/DataBoard";
+import Notice from "../classes/Notice";
+import Post from "../classes/Post";
+import SimpleDict from "../classes/SimpleDict";
+import Thread from "../classes/Thread";
+import Config from "../config/Config";
+import Anonymize from "../Filtering/Anonymize";
+import Filter from "../Filtering/Filter";
+import PostHiding from "../Filtering/PostHiding";
+import Recursive from "../Filtering/Recursive";
+import ThreadHiding from "../Filtering/ThreadHiding";
+import Index from "../General/Index";
+import Settings from "../General/Settings";
+import FappeTyme from "../Images/FappeTyme";
+import Gallery from "../Images/Gallery";
+import ImageCommon from "../Images/ImageCommon";
+import ImageExpand from "../Images/ImageExpand";
+import ImageHost from "../Images/ImageHost";
+import ImageHover from "../Images/ImageHover";
+import ImageLoader from "../Images/ImageLoader";
+import Metadata from "../Images/Metadata";
+import RevealSpoilers from "../Images/RevealSpoilers";
+import Sauce from "../Images/Sauce";
+import Volume from "../Images/Volume";
+import Linkify from "../Linkification/Linkify";
+import ArchiveLink from "../Menu/ArchiveLink";
+import CopyTextLink from "../Menu/CopyTextLink";
+import DeleteLink from "../Menu/DeleteLink";
+import DownloadLink from "../Menu/DownloadLink";
+import ReportLink from "../Menu/ReportLink";
+import AntiAutoplay from "../Miscellaneous/AntiAutoplay";
+import Banner from "../Miscellaneous/Banner";
+import CatalogLinks from "../Miscellaneous/CatalogLinks";
+import CustomCSS from "../Miscellaneous/CustomCSS";
+import ExpandComment from "../Miscellaneous/ExpandComment";
+import ExpandThread from "../Miscellaneous/ExpandThread";
+import FileInfo from "../Miscellaneous/FileInfo";
+import Flash from "../Miscellaneous/Flash";
+import Fourchan from "../Miscellaneous/Fourchan";
+import IDColor from "../Miscellaneous/IDColor";
+import IDHighlight from "../Miscellaneous/IDHighlight";
+import IDPostCount from "../Miscellaneous/IDPostCount";
+import Keybinds from "../Miscellaneous/Keybinds";
+import ModContact from "../Miscellaneous/ModContact";
+import Nav from "../Miscellaneous/Nav";
+import NormalizeURL from "../Miscellaneous/NormalizeURL";
+import PostJumper from "../Miscellaneous/PostJumper";
+import PSA from "../Miscellaneous/PSA";
+import PSAHiding from "../Miscellaneous/PSAHiding";
+import RelativeDates from "../Miscellaneous/RelativeDates";
+import RemoveSpoilers from "../Miscellaneous/RemoveSpoilers";
+import ThreadLinks from "../Miscellaneous/ThreadLinks";
+import Time from "../Miscellaneous/Time";
+import Tinyboard from "../Miscellaneous/Tinyboard";
+import Favicon from "../Monitoring/Favicon";
+import MarkNewIPs from "../Monitoring/MarkNewIPs";
+import ReplyPruning from "../Monitoring/ReplyPruning";
+import ThreadStats from "../Monitoring/ThreadStats";
+import ThreadUpdater from "../Monitoring/ThreadUpdater";
+import ThreadWatcher from "../Monitoring/ThreadWatcher";
+import Unread from "../Monitoring/Unread";
+import UnreadIndex from "../Monitoring/UnreadIndex";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+import PassLink from "../Posting/PassLink";
+import PostRedirect from "../Posting/PostRedirect";
+import QR from "../Posting/QR";
+import QuoteBacklink from "../Quotelinks/QuoteBacklink";
+import QuoteCT from "../Quotelinks/QuoteCT";
+import QuoteInline from "../Quotelinks/QuoteInline";
+import QuoteOP from "../Quotelinks/QuoteOP";
+import QuotePreview from "../Quotelinks/QuotePreview";
+import QuoteStrikeThrough from "../Quotelinks/QuoteStrikeThrough";
+import QuoteThreading from "../Quotelinks/QuoteThreading";
+import QuoteYou from "../Quotelinks/QuoteYou";
+import Quotify from "../Quotelinks/Quotify";
+import Site from "../site/Site";
+import SW from "../site/SW";
+import CSS from "../css/CSS";
+import meta from '../../package.json';
+import Header from "../General/Header";
+import { c, Conf, d, doc, docSet, E, g } from "../globals/globals";
+import Menu from "../Menu/Menu";
+import BoardConfig from "../General/BoardConfig";
+import CaptchaReplace from "../Posting/Captcha.replace";
+import Get from "../General/Get";
+import { dict, platform } from "../platform/helpers";
+import Polyfill from "../General/Polyfill";
+// #region tests_enabled
+import Test from "../General/Test";
+// #endregion
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -14,9 +110,9 @@ var Main = {
     let key;
     try {
       let w = window;
-      if ($.platform === 'crx') { w = (w.wrappedJSObject || w); }
-      if ('<%= meta.name %> antidup' in w) { return; }
-      w['<%= meta.name %> antidup'] = true;
+      if (platform === 'crx') { w = (w.wrappedJSObject || w); }
+      if (`${meta.name} antidup` in w) { return; }
+      w[`${meta.name} antidup`] = true;
     } catch (error) {}
 
     // Don't run inside ad iframes.
@@ -53,7 +149,7 @@ var Main = {
     // Flatten default values from Config into Conf
     var flatten = function(parent, obj) {
       if (obj instanceof Array) {
-        Conf[parent] = $.dict.clone(obj[0]);
+        Conf[parent] = dict.clone(obj[0]);
       } else if (typeof obj === 'object') {
         for (var key in obj) {
           var val = obj[key];
@@ -83,16 +179,16 @@ var Main = {
     flatten(null, Config);
 
     for (var db of DataBoard.keys) {
-      Conf[db] = $.dict();
+      Conf[db] = dict();
     }
-    Conf['customTitles'] = $.dict.clone({'4chan.org': {boards: {'qa': {'boardTitle': {orig: '/qa/ - Question & Answer', title: '/qa/ - 2D/Random'}}}}});
-    Conf['boardConfig'] = {boards: $.dict()};
+    Conf['customTitles'] = dict.clone({'4chan.org': {boards: {'qa': {'boardTitle': {orig: '/qa/ - Question & Answer', title: '/qa/ - 2D/Random'}}}}});
+    Conf['boardConfig'] = {boards: dict()};
     Conf['archives'] = Redirect.archives;
-    Conf['selectedArchives'] = $.dict();
-    Conf['cooldowns'] = $.dict();
-    Conf['Index Sort'] = $.dict();
-    for (let i = 0; i < 2; i++) { Conf[`Last Long Reply Thresholds ${i}`] = $.dict(); }
-    Conf['siteProperties'] = $.dict();
+    Conf['selectedArchives'] = dict();
+    Conf['cooldowns'] = dict();
+    Conf['Index Sort'] = dict();
+    for (let i = 0; i < 2; i++) { Conf[`Last Long Reply Thresholds ${i}`] = dict(); }
+    Conf['siteProperties'] = dict();
 
     // XXX old key names
     Conf['Except Archives from Encryption'] = false;
@@ -106,7 +202,7 @@ var Main = {
     Conf['Use Faster Image Host'] = 'true';
     Conf['Captcha Fixes'] = true;
     Conf['captchaServiceDomain'] = '';
-    Conf['captchaServiceKey'] = $.dict();
+    Conf['captchaServiceKey'] = dict();
 
     // Enforce JS whitelist
     if (
@@ -114,11 +210,14 @@ var Main = {
       !SW.yotsuba.regexp.pass.test(location.href) &&
       !$$('script:not([src])', d).filter(s => /this\[/.test(s.textContent)).length
     ) {
-      ($.getSync || $.get)({'jsWhitelist': Conf['jsWhitelist']}, ({jsWhitelist}) => $.addCSP(`script-src ${jsWhitelist.replace(/^#.*$/mg, '').replace(/[\s;]+/g, ' ').trim()}`));
+      ($.getSync || $.get)({'jsWhitelist': Conf['jsWhitelist']}, ({jsWhitelist}) => {
+        const parsedList = jsWhitelist.replace(/^#.*$/mg, '').replace(/[\s;]+/g, ' ').trim();
+        if (/\S/.test(parsedList)) $.addCSP(`script-src ${parsedList}`);
+      });
     }
 
     // Get saved values as items
-    const items = $.dict();
+    const items = dict();
     for (key in Conf) { items[key] = undefined; }
     items['previousversion'] = undefined;
     return ($.getSync || $.get)(items, function(items) {
@@ -162,9 +261,8 @@ var Main = {
     items.previousversion = (changes.previousversion = g.VERSION);
     return $.set(changes, function() {
       if (items['Show Updated Notifications'] ?? true) {
-        // TODO meta
         const el = $.el('span',
-          { innerHTML: 'meta.name has been updated to <a href="' + meta.changelog + '" target="_blank">version ${g.VERSION}</a>.'});
+          { innerHTML: `${meta.name} has been updated to <a href="${meta.changelog}" target="_blank">version ${g.VERSION}</a>.` });
         return new Notice('info', el, 15);
       }
     });
@@ -271,8 +369,8 @@ var Main = {
     if (!Main.isThisPageLegit()) { return; }
 
     // disable the mobile layout
-    // TODO check if exists
-    $('link[href*=mobile]', d.head).disabled = true;
+    const mobileLink = $('link[href*=mobile]', d.head);
+    if (mobileLink) mobileLink.disabled = true;
     doc.dataset.host = location.host;
     $.addClass(doc, `sw-${g.SITE.software}`);
     $.addClass(doc, g.VIEW === 'thread' ? 'thread-view' : g.VIEW);
@@ -670,7 +768,7 @@ var Main = {
         $.addClass(doc, 'tainted');
         if (Conf['Disable Native Extension'] && !Main.isFirstRun) {
           const msg = $.el('div',
-            {innerHTML: 'Failed to disable the native extension. You may need to <a href="' + meta.faq + '#blocking-native-extension" target="_blank">block it</a>.'});
+            { innerHTML: 'Failed to disable the native extension. You may need to <a href="' + E(meta.faq) + '#blocking-native-extension" target="_blank">block it</a>.' });
           new Notice('error', msg);
         }
       }
@@ -686,9 +784,11 @@ var Main = {
       return;
     }
 
-    const div = $.el('div',
-      {innerHTML: '${errors.length} errors occurred.&{Main.reportLink(errors)} [<a href="javascript:;">show</a>]'});
-    $.on(div.lastElementChild, 'click', function() {
+    const div = $.el('div', {
+      innerHTML:
+        `${errors.length} errors occurred.${Main.reportLink(errors).innerHTML} [<a href="javascript:;">show</a>]`
+    });
+    $.on(div.lastElementChild, 'click', function () {
       let ref;
       return [this.textContent, logs.hidden] = Array.from(ref = this.textContent === 'show' ? (
         ['hide', false]
@@ -709,12 +809,12 @@ var Main = {
   parseError(data, reportLink) {
     c.error(data.message, data.error.stack);
     const message = $.el('div',
-      {innerHTML: '${data.message}?{reportLink}{&{reportLink}}'});
+      { innerHTML: E(data.message) + ((reportLink) ? (reportLink).innerHTML : "") });
     const error = $.el('div',
       {textContent: `${data.error.name || 'Error'}: ${data.error.message || 'see console for details'}`});
     const lines = data.error.stack?.match(/\d+(?=:\d+\)?$)/mg)?.join().replace(/^/, ' at ') || '';
     const context = $.el('div',
-      {textContent: `(<%= meta.name %> <%= meta.fork %> v${g.VERSION} ${$.platform} on ${$.engine}${lines})`});
+      { textContent: `(${meta.name} ${meta.fork} v${g.VERSION} ${platform} on ${$.engine}${lines})` });
     return [message, error, context];
   },
 
@@ -725,20 +825,19 @@ var Main = {
     if (errors.length > 1) { title += ` (+${errors.length - 1} other errors)`; }
     let details = '';
     const addDetails = function(text) {
-      // TODO meta
-      if (encodeURIComponent(title + details + text + '\n').length <= "meta.newIssueMaxLength - meta.newIssue.replace(/%(title|details)/, '')".length) {
+      if (encodeURIComponent(title + details + text + '\n').length <= meta.newIssueMaxLength - meta.newIssue.replace(/%(title|details)/, '').length) {
         return details += text + '\n';
       }
     };
     addDetails(`\
 [Please describe the steps needed to reproduce this error.]
 
-Script: <%= meta.name %> <%= meta.fork %> v${g.VERSION} ${$.platform}
+Script: ${meta.name} ${meta.fork} v${g.VERSION} ${platform}
 URL: ${location.href}
 User agent: ${navigator.userAgent}\
 `
     );
-    if (($.platform === 'userscript') && (info = (() => {
+    if ((platform === 'userscript') && (info = (() => {
       if (typeof GM !== 'undefined' && GM !== null) { return GM.info; } else { if (typeof GM_info !== 'undefined' && GM_info !== null) { return GM_info; }
   }
     })())) {
@@ -748,8 +847,8 @@ User agent: ${navigator.userAgent}\
     if (data.error.stack) { addDetails(data.error.stack.replace(data.error.toString(), '').trim()); }
     if (data.html) { addDetails('\n`' + data.html + '`'); }
     details = details.replace(/file:\/{3}.+\//g, ''); // Remove local file paths
-    const url = '<%= meta.newIssue %>'.replace('%title', encodeURIComponent(title)).replace('%details', encodeURIComponent(details));
-    return {innerHTML: '<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>'};
+    const url = meta.newIssue.replace('%title', encodeURIComponent(title)).replace('%details', encodeURIComponent(details));
+    return { innerHTML: `<span class="report-error"> [<a href="${url}" target="_blank">report</a>]</span>` };
   },
 
   isThisPageLegit() {
@@ -784,7 +883,7 @@ User agent: ${navigator.userAgent}\
     ['Board Configuration',       BoardConfig],
     ['Normalize URL',             NormalizeURL],
     ['Delay Redirect on Post',    PostRedirect],
-    ['Captcha Configuration',     Captcha.replace],
+    ['Captcha Configuration',     CaptchaReplace],
     ['Image Host Rewriting',      ImageHost],
     ['Redirect',                  Redirect],
     ['Header',                    Header],
@@ -865,7 +964,9 @@ User agent: ${navigator.userAgent}\
     ['Mod Contact Links',         ModContact]
   ]
 };
+export default Main;
+$.ready(() => Main.init());
 
-// <% if (readJSON('/.tests_enabled')) { %>
-// Main.features.push ['Build Test', Test]
-// <% } %>
+// #region tests_enabled
+Main.features.push(['Build Test', Test]);
+// #endregion

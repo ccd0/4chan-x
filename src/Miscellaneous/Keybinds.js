@@ -1,3 +1,29 @@
+import Notice from "../classes/Notice";
+import Config from "../config/Config";
+import Filter from "../Filtering/Filter";
+import ThreadHiding from "../Filtering/ThreadHiding";
+import BoardConfig from "../General/BoardConfig";
+import Get from "../General/Get";
+import Header from "../General/Header";
+import Index from "../General/Index";
+import Settings from "../General/Settings";
+import { Conf, d, g } from "../globals/globals";
+import FappeTyme from "../Images/FappeTyme";
+import Gallery from "../Images/Gallery";
+import ImageExpand from "../Images/ImageExpand";
+import Embedding from "../Linkification/Embedding";
+import ThreadUpdater from "../Monitoring/ThreadUpdater";
+import ThreadWatcher from "../Monitoring/ThreadWatcher";
+import UnreadIndex from "../Monitoring/UnreadIndex";
+import $ from "../platform/$";
+import $$ from "../platform/$$";
+import QR from "../Posting/QR";
+import QuoteThreading from "../Quotelinks/QuoteThreading";
+import QuoteYou from "../Quotelinks/QuoteYou";
+import CatalogLinks from "./CatalogLinks";
+import ExpandThread from "./ExpandThread";
+import Nav from "./Nav";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -447,3 +473,4 @@ var Keybinds = {
     }
   }
 };
+export default Keybinds;

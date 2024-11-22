@@ -1,3 +1,7 @@
+import Callbacks from "../classes/Callbacks";
+import { Conf, g } from "../globals/globals";
+import $$ from "../platform/$$";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -49,3 +53,4 @@ var ImageHost = {
     }
   }
 };
+export default ImageHost;

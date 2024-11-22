@@ -1,3 +1,15 @@
+import Callbacks from "../classes/Callbacks";
+import DataBoard from "../classes/DataBoard";
+import RandomAccessList from "../classes/RandomAccessList";
+import Get from "../General/Get";
+import Header from "../General/Header";
+import { g, Conf, d } from "../globals/globals";
+import $ from "../platform/$";
+import { debounce, SECOND } from "../platform/helpers";
+import QuoteYou from "../Quotelinks/QuoteYou";
+import Favicon from "./Favicon";
+import ThreadWatcher from "./ThreadWatcher";
+
 /*
  * decaffeinate suggestions:
  * DS102: Remove unnecessary code created because of implicit returns
@@ -179,7 +191,7 @@ var Unread = {
       return window.focus();
     };
     return notif.onshow = () => setTimeout(() => notif.close()
-    , 7 * $.SECOND);
+    , 7 * SECOND);
   },
 
   onUpdate() {
@@ -200,7 +212,7 @@ var Unread = {
     return Unread.update();
   },
 
-  read: $.debounce(100, function(e) {
+  read: debounce(100, function(e) {
     // Update the lastReadPost when hidden posts are added to the thread.
     if (!Unread.posts.size && (Unread.readCount !== Unread.thread.posts.keys.length)) {
       Unread.saveLastReadPost();
@@ -232,7 +244,7 @@ var Unread = {
     }
   },
 
-  saveLastReadPost: $.debounce(2 * $.SECOND, function() {
+  saveLastReadPost: debounce(2 * SECOND, function() {
     let ID;
     $.forceSync('Remember Last Read Post');
     if (!Conf['Remember Last Read Post'] || !Unread.db) { return; }
@@ -300,7 +312,7 @@ var Unread = {
     }
   },
 
-  saveThreadWatcherCount: $.debounce(2 * $.SECOND, function() {
+  saveThreadWatcherCount: debounce(2 * SECOND, function() {
     $.forceSync('Remember Last Read Post');
     if (Conf['Remember Last Read Post'] && (!Unread.thread.isDead || Unread.thread.isArchived)) {
       let posts;
@@ -328,3 +340,4 @@ var Unread = {
     }
   })
 };
+export default Unread;

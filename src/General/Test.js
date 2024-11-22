@@ -5,8 +5,21 @@
  * DS205: Consider reworking code to avoid use of IIFEs
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
-// <% if (readJSON('/.tests_enabled')) { %>
-var Test = {
+
+import Notice from "../classes/Notice";
+import Post from "../classes/Post";
+import Config from "../config/Config";
+import Filter from "../Filtering/Filter";
+import ImageHost from "../Images/ImageHost";
+import Keybinds from "../Miscellaneous/Keybinds";
+import Unread from "../Monitoring/Unread";
+import $$ from "../platform/$$";
+import $ from "../platform/$";
+import Header from "./Header";
+import { g, Conf, c, d } from "../globals/globals";
+import Menu from "../Menu/Menu";
+
+const Test = {
   init() {
     if ((g.SITE.software !== 'yotsuba') || !['index', 'thread'].includes(g.VIEW)) { return; }
 
@@ -237,4 +250,4 @@ var Test = {
     }
   }
 };
-// <% } %>
+export default Test;

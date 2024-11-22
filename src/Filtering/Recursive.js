@@ -1,3 +1,7 @@
+import Callbacks from "../classes/Callbacks";
+import { g } from "../globals/globals";
+import { dict } from "../platform/helpers";
+
 /*
  * decaffeinate suggestions:
  * DS101: Remove unnecessary use of Array.from
@@ -5,7 +9,7 @@
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/main/docs/suggestions.md
  */
 var Recursive = {
-  recursives: $.dict(),
+  recursives: dict(),
   init() {
     if (!['index', 'thread'].includes(g.VIEW)) { return; }
     return Callbacks.Post.push({
@@ -57,3 +61,4 @@ var Recursive = {
     });
   }
 };
+export default Recursive;
