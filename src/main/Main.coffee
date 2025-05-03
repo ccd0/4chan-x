@@ -400,6 +400,24 @@ Main =
       Main.addPostsObserver.observe threadRoot, {childList: true}
 
   parsePosts: (postRoots, thread, posts, errors) ->
+    for node in postRoots
+      all_quotes = node.getElementsByClassName "quote"
+
+      quoteLinkify = (quote_element) ->
+        post_id = quote_element.innerText.match(/\d+/)[0]
+
+        new_element = document.createElement "a"
+        new_element.href = "#p#{post_id}"
+        new_element.innerHTML = ">#{post_id}"
+        new_element.className = "quotelink"
+
+        quote_element.replaceWith new_element
+
+      # reverse iteration since we are replacing elements as we go
+      for i in [all_quotes.length - 1..1] by -1
+        quote = all_quotes[i]
+        if quote.innerText.match />\d+$/
+          quoteLinkify quote
     for postRoot in postRoots when !(postRoot.dataset.fullID and g.posts.get(postRoot.dataset.fullID)) and $(g.SITE.selectors.comment, postRoot)
       try
         posts.push new Post postRoot, thread, thread.board
