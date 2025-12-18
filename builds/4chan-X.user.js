@@ -54,6 +54,8 @@
 // @include      https://sushigirl.us/*
 // @include      https://www.sushigirl.us/*
 // @include      https://tvch.moe/*
+// @exclude      http://boards.4chan.org/yse.html
+// @exclude      https://boards.4chan.org/yse.html
 // @exclude      http://www.4chan.org/advertise
 // @exclude      https://www.4chan.org/advertise
 // @exclude      http://www.4chan.org/advertise?*
