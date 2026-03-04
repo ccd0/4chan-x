@@ -15,7 +15,7 @@ import('chrome-webstore-upload').then(chromeWebstoreUpload => {
     refreshToken: refresh.refresh_token
   });
 
-  request(`https://chrome.google.com/webstore/detail/${pkg.meta.chromeStoreID}`, function (error, response, body) {
+  request(`https://chromewebstore.google.com/detail/${pkg.meta.chromeStoreID}`, function (error, response, body) {
 
     if (body && body.indexOf(`<meta itemprop="version" content="${v.version}"/>`) > 0 && process.argv[2] !== 'force') {
       console.log(`Version ${v.version} already uploaded.`);
