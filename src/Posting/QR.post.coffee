@@ -234,7 +234,8 @@ QR.post = class
     max = QR.max_size
     max = Math.min(max, QR.max_size_video) if /^video\//.test @file.type
     if @file.size > max
-      @fileError "File too large (file: #{@filesize}, max: #{$.bytesToString max})."
+      unless Conf['Auto Compress Large Images'] and /^image\//.test(@file.type)
+        @fileError "File too large (file: #{@filesize}, max: #{$.bytesToString max})."
 
   readFile: ->
     isVideo = /^video\//.test @file.type
@@ -246,8 +247,15 @@ QR.post = class
       $.off el, event, onload
       $.off el, 'error', onerror
       @checkDimensions el
-      @setThumbnail el
-      $.event 'QRMetadata', null, @nodes.el
+      autoCompressEnabled = Conf['Auto Compress Large Images'] and /^image\//.test(@file.type)
+      needsResizing = @file.size > QR.max_size or el.height > QR.max_height or el.width > QR.max_width
+      if !isVideo and autoCompressEnabled and needsResizing
+        @compressImage el, =>
+          @setThumbnail el
+          $.event 'QRMetadata', null, @nodes.el
+      else
+        @setThumbnail el
+        $.event 'QRMetadata', null, @nodes.el
     onerror = =>
       $.off el, event, onload
       $.off el, 'error', onerror
@@ -261,13 +269,106 @@ QR.post = class
     $.on el, 'error', onerror
     el.src = URL.createObjectURL @file
 
+  compressImage: (el, cb) ->
+    originalSize = @file.size
+    originalW = el.naturalWidth or el.width
+    originalH = el.naturalHeight or el.height
+    width = originalW
+    height = originalH
+
+    if width > QR.max_width
+      height = Math.round(height * (QR.max_width / width))
+      width = QR.max_width
+    if height > QR.max_height
+      width = Math.round(width * (QR.max_height / height))
+      height = QR.max_height
+
+    resize = width isnt originalW or height isnt originalH
+
+    doResize = =>
+      format = if @file.type is 'image/jpeg' then 'jpeg' else 'png'
+      @convertImage(el, width, height, format).then (convertedFile) =>
+        @file = convertedFile
+        notice = new Notice 'warning', $.tn(
+          "Image was too large (#{originalW} x #{originalH}) and got resized to #{width} x #{height}. " +
+          "It might have lost transparency or animation."
+        ), 10
+        QR.notifications.push notice
+        doCompress()
+      return
+
+    doCompress = =>
+      finish = =>
+        @filename = @file.name
+        @filesize = $.bytesToString @file.size
+        @updateFilename()
+        if @ is QR.selected
+          QR.nodes.filename.value = @filename
+        cb?()
+
+      if @file.size > QR.max_size
+        originalSize = @file.size
+        @convertImage(el, width, height, 'jpeg', QR.max_size).then (convertedFile) =>
+          @file = convertedFile
+          notice = new Notice 'warning', $.tn(
+            "Image was too large (#{$.bytesToString(originalSize)}) and got converted to jpg (" +
+            "#{$.bytesToString(@file.size)}). It might have lost transparency or animation."
+          ), 10
+          QR.notifications.push notice
+          finish()
+        return
+
+      finish()
+
+    if resize then doResize() else doCompress()
+
+  convertImage: (img, width, height, type = 'jpeg', maxSize) ->
+    new Promise (resolve) =>
+      cv = $.el 'canvas'
+      cv.width = width
+      cv.height = height
+      ctx = cv.getContext '2d'
+      ctx.drawImage img, 0, 0, width, height
+
+      newName = @filename.replace(/\.[a-z]+$/i, ".#{type}")
+      mime = "image/#{type}"
+
+      if type is 'jpeg' and maxSize?
+        quality = 0.9
+
+        doConvert = =>
+          cv.toBlob (blob) =>
+            return unless blob
+            newFile = new File([blob], newName, type: mime)
+            if quality > 0.1 and newFile.size > maxSize
+              quality -= 0.1
+              doConvert()
+            else if newFile.type is @file.type and newFile.size >= @file.size
+              notice = new Notice 'warning', $.tn(
+                "New jpeg file isn't smaller than the old one, so it won't be used."
+              ), 3
+              QR.notifications.push notice
+              resolve(@file)
+            else
+              resolve(newFile)
+          , mime, quality
+        doConvert()
+      else
+        quality = if type is 'jpeg' then 0.9 else undefined
+        cv.toBlob (blob) =>
+          return unless blob
+          newFile = new File([blob], newName, type: mime)
+          resolve(newFile)
+        , mime, quality
+
   checkDimensions: (el) ->
     if el.tagName is 'IMG'
       {height, width} = el
       @nodes.el.dataset.height = height
       @nodes.el.dataset.width = width
       if height > QR.max_height or width > QR.max_width
-        @fileError "Image too large (image: #{height}x#{width}px, max: #{QR.max_height}x#{QR.max_width}px)"
+        unless Conf['Auto Compress Large Images']
+          @fileError "Image too large (image: #{height}x#{width}px, max: #{QR.max_height}x#{QR.max_width}px)"
       if height < QR.min_height or width < QR.min_width
         @fileError "Image too small (image: #{height}x#{width}px, min: #{QR.min_height}x#{QR.min_width}px)"
     else

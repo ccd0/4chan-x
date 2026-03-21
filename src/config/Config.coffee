@@ -491,6 +491,11 @@ Config =
         'Set the filename to a random timestamp within the past year. Disabled on /f/.'
         1
       ]
+      'Auto Compress Large Images': [
+        false
+        'Automatically compress image files above the size limit.'
+        1
+      ]
       'Show New Thread Option in Threads': [
         true
         'Show the option to post a new / different thread from inside a thread.'
