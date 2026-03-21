@@ -291,7 +291,7 @@ QR.post = class
         @file = convertedFile
         notice = new Notice 'warning', $.tn(
           "Image was too large (#{originalW} x #{originalH}) and got resized to #{width} x #{height}. " +
-          "It might have lost transparency or animation."
+          "It might have lost animation."
         ), 10
         QR.notifications.push notice
         doCompress()
