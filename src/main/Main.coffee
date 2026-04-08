@@ -143,6 +143,8 @@ Main =
     return r if !site
     r.siteID = site.ID
 
+    return site.parseURL(url) if site.parseURL
+
     return r if site.isBoardlessPage?(url)
     pathname = url.pathname.split /\/+/
     r.boardID = pathname[1]

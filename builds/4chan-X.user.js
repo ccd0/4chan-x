@@ -54,6 +54,8 @@
 // @include      https://sushigirl.us/*
 // @include      https://www.sushigirl.us/*
 // @include      https://tvch.moe/*
+// @include      https://minilauta.org/*
+// @include      https://www.minilauta.org/*
 // @exclude      http://www.4chan.org/advertise
 // @exclude      https://www.4chan.org/advertise
 // @exclude      http://www.4chan.org/advertise?*
@@ -7760,6 +7762,216 @@ Thread = (function() {
 }).call(this);
 
 SW = {};
+
+(function() {
+  var slice = [].slice;
+
+  SW.miniboard = {
+    isOPContainerThread: false,
+    mayLackJSON: true,
+    disabledFeatures: ['Fourchan thingies', 'Tinyboard Glue', 'Banner', 'Favicon', 'Resurrect Quotes', 'Quick Reply Personas', 'Quick Reply', 'Quote Inlining', 'Quote Previewing', 'Quote Backlinks', 'Quote Threading', 'Image Expansion', 'Image Expansion (Menu)', 'Thread Hiding Buttons', 'Thread Hiding (Menu)', 'Thread Stats', 'Thread Updater', 'Reply Pruning'],
+    detect: function() {
+      var anchor, i, len, properties, ref;
+      ref = $$('div.footer > a', d.body);
+      for (i = 0, len = ref.length; i < len; i++) {
+        anchor = ref[i];
+        if (anchor.textContent === 'miniboard') {
+          properties = $.dict();
+          return properties;
+        }
+      }
+      return false;
+    },
+    urls: {
+      thread: function(arg) {
+        var boardID, siteID, threadID;
+        siteID = arg.siteID, boardID = arg.boardID, threadID = arg.threadID;
+        return location.protocol + "//" + siteID + "/" + boardID + "/" + threadID + "/";
+      },
+      post: function(arg) {
+        var boardID, postID;
+        boardID = arg.boardID, postID = arg.postID;
+        return "#" + boardID + "-" + postID;
+      },
+      index: function(arg) {
+        var boardID, siteID;
+        siteID = arg.siteID, boardID = arg.boardID;
+        return location.protocol + "//" + siteID + "/" + boardID + "/";
+      },
+      catalog: function(arg) {
+        var boardID, siteID;
+        siteID = arg.siteID, boardID = arg.boardID;
+        return location.protocol + "//" + siteID + "/" + boardID + "/catalog/";
+      },
+      file: function(arg, filename) {
+        var siteID;
+        siteID = arg.siteID;
+        return location.protocol + "//" + siteID + "/src/" + filename;
+      },
+      thumb: function(arg, filename) {
+        var siteID;
+        siteID = arg.siteID;
+        return location.protocol + "//" + siteID + "/src/thumb_" + filename;
+      }
+    },
+    selectors: {
+      board: '.deleteform',
+      thread: '.thread',
+      threadDivider: '.deleteform > hr',
+      summary: '.omitted',
+      postContainer: '.post-container',
+      replyOriginal: '.reply-container',
+      sideArrows: 'div.post-dash',
+      post: '.post',
+      infoRoot: '.post-info',
+      info: {
+        subject: '.post-subject',
+        name: '.post-name',
+        email: 'a[href^="mailto:"]',
+        tripcode: '.post-trip',
+        capcode: '.post-cap',
+        date: '.post-datetime',
+        nameBlock: 'label',
+        quote: 'a[href*="#q"]',
+        reply: '.post-id > a:first-child'
+      },
+      icons: {
+        isSticky: 'img[src="/static/sticky.png"]',
+        isClosed: 'img[src="/static/lock.png"]'
+      },
+      file: {
+        text: '.file-info',
+        link: '.file-info > a',
+        thumb: 'a.file-thumb-href > img'
+      },
+      thumbLink: 'a.file-thumb-href',
+      highlightable: {
+        op: ' > .op',
+        reply: ' > .reply',
+        catalog: ' > .thread'
+      },
+      comment: '.post-message',
+      spoiler: '.spoiler',
+      quotelink: '.reference',
+      catalog: {
+        board: '#catalog',
+        thread: '.thread',
+        thumb: 'img[id^="thumb-"]'
+      },
+      boardList: '.boardlist.desktop',
+      styleSheet: 'link:not([href^="/css/index.css"])',
+      nav: {
+        prev: '.pagetable a.prev',
+        next: '.pagetable a.next'
+      }
+    },
+    classes: {
+      highlight: 'highlight'
+    },
+    xpath: {
+      thread: 'div[contains(@class, "thread")]',
+      postContainer: 'div[contains(@class, "post-container")]',
+      replyContainer: 'div[contains(@class, "reply-container")]'
+    },
+    regexp: {
+      quotelink: /\/([^\/]+)\/(\d+)\/#[^-]+-(\d+)/,
+      quotelinkHTML: /href='\/([^\/]+)\/(\d+)\/#[^-]+-(\d+)'/g
+    },
+    transformBoardList: function() {
+      var a, i, j, len, len1, menu, nodes, ref, ref1;
+      nodes = slice.call($(g.SITE.selectors.boardList).cloneNode(true).childNodes);
+      if ((menu = $('.boardmenu.desktop'))) {
+        nodes.push($.tn(' '));
+        ref = $$('a', menu);
+        for (i = 0, len = ref.length; i < len; i++) {
+          a = ref[i];
+          nodes.push($.tn('['));
+          nodes.push(a.cloneNode(true));
+          nodes.push($.tn('] '));
+        }
+      }
+      ref1 = $$('a[data-only="catalog"]', $.id('header-bar'));
+      for (j = 0, len1 = ref1.length; j < len1; j++) {
+        a = ref1[j];
+        a.href = this.urls.catalog(g.BOARD);
+      }
+      $.rmClass(doc, 'catalog');
+      return nodes;
+    },
+    bgColoredEl: function() {
+      return $.el('div', {
+        className: 'reply'
+      });
+    },
+    isThisPageLegit: function() {
+      var boardID, pathname;
+      pathname = location.pathname.split(/\/+/);
+      boardID = pathname[1];
+      return boardID && boardID !== 'manage';
+    },
+    parseURL: function(url) {
+      var pathname, r;
+      r = {
+        siteID: this.ID
+      };
+      pathname = url.pathname.split(/\/+/);
+      r.boardID = pathname[1];
+      if (!r.boardID) {
+        return r;
+      }
+      if (r.boardID === 'manage') {
+        return r;
+      }
+      if (this.isFileURL(url)) {
+        r.VIEW = 'file';
+      } else if (/^catalog$/.test(pathname[2])) {
+        r.VIEW = 'catalog';
+      } else if (/^\d+$/.test(pathname[2])) {
+        r.VIEW = 'thread';
+        r.threadID = r.THREADID = +pathname[2];
+      } else {
+        r.VIEW = 'index';
+      }
+      return r;
+    },
+    isFileURL: function(url) {
+      return /\/src\/[^\/]+/.test(url.pathname);
+    },
+    parseNodes: function() {},
+    parseDate: function(node) {
+      var m, text, year;
+      text = node.textContent.trim();
+      if ((m = text.match(/(\d{2})\/(\d{2})\/(\d{2})\(\w+\)(\d{2}):(\d{2}):(\d{2})/))) {
+        year = 2000 + (+m[3]);
+        return new Date(year, m[2] - 1, +m[1], +m[4], +m[5], +m[6]);
+      } else {
+        return void 0;
+      }
+    },
+    parseFile: function(post, file) {
+      var info, link, ref, text, thumb;
+      text = file.text, link = file.link, thumb = file.thumb;
+      if (!(info = (ref = link.nextSibling) != null ? ref.textContent.match(/([\d.]+?[KMG]?B),\s([\d.]+x[\d.]+),\s([^\\\)\/]+?)(?:\)|$)/) : void 0)) {
+        return false;
+      }
+      $.extend(file, {
+        name: info[3],
+        size: info[1],
+        dimensions: info[2]
+      });
+      if (thumb) {
+        $.extend(file, {
+          thumbURL: thumb.src
+        });
+      }
+      return true;
+    },
+    isLinkified: function(link) {
+      return /\bnofollow\b/.test(link.rel);
+    }
+  };
+
+}).call(this);
 
 (function() {
   var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
@@ -27448,6 +27660,9 @@ Main = (function() {
         return r;
       }
       r.siteID = site.ID;
+      if (site.parseURL) {
+        return site.parseURL(url);
+      }
       if (typeof site.isBoardlessPage === "function" ? site.isBoardlessPage(url) : void 0) {
         return r;
       }

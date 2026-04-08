@@ -66,7 +66,9 @@
       "https://www.sportschan.org/*",
       "https://sushigirl.us/*",
       "https://www.sushigirl.us/*",
-      "https://tvch.moe/*"
+      "https://tvch.moe/*",
+      "https://minilauta.org/*",
+      "https://www.minilauta.org/*"
     ],
     "matches_extra": [],
     "exclude_matches": [

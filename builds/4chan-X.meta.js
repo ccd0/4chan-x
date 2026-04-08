@@ -54,6 +54,8 @@
 // @include      https://sushigirl.us/*
 // @include      https://www.sushigirl.us/*
 // @include      https://tvch.moe/*
+// @include      https://minilauta.org/*
+// @include      https://www.minilauta.org/*
 // @exclude      http://www.4chan.org/advertise
 // @exclude      https://www.4chan.org/advertise
 // @exclude      http://www.4chan.org/advertise?*
