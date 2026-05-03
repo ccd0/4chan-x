@@ -53,7 +53,7 @@ SW.yotsuba =
       isClosed:   '.closedIcon'
       isArchived: '.archivedIcon'
     file:
-      text:  '.file > :first-child'
+      text:  '.file > .fileText'
       link:  '.fileText > a'
       thumb: 'a.fileThumb > [data-md5]'
     thumbLink: 'a.fileThumb'
