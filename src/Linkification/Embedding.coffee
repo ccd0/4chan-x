@@ -438,26 +438,124 @@ Embedding =
         el
     ,
       key: 'Twitter'
-      regExp: /^\w+:\/\/(?:www\.|mobile\.)?twitter\.com\/(\w+\/status\/\d+)/
-      style: 'border: none; width: 550px; height: 250px; overflow: hidden; resize: both;'
+      regExp: /^\w+:\/\/(?:www\.|mobile\.)?(?:(?:(?:fx|vx)?twitter|(?:fixup|fixv)?x|twittpr|xcancel)\.com|nitter\.\w+\.\w+)\/(\w+\/status\/\d+)/
+      style: 'width: 550px; overflow: hidden; resize: both;'
       el: (a) ->
-        el = $.el 'iframe'
-        $.on el, 'load', ->
-          @contentWindow.postMessage {element: 't', query: 'height'}, 'https://twitframe.com'
-        onMessage = (e) ->
-          if e.source is el.contentWindow and e.origin is 'https://twitframe.com'
-            $.off window, 'message', onMessage
-            (cont or el).style.height = "#{+$.minmax(e.data.height, 250, 0.8 * doc.clientHeight)}px"
-        $.on window, 'message', onMessage
-        el.src = "https://twitframe.com/show?url=https://twitter.com/#{a.dataset.uid}"
-        if $.engine is 'gecko'
-          # XXX https://bugzilla.mozilla.org/show_bug.cgi?id=680823
-          el.style.cssText = 'border: none; width: 100%; height: 100%;'
-          cont = $.el 'div'
-          $.add cont, el
-          cont
-        else
-          el
+        cont = $.el 'div'
+        renderText = (text) ->
+          text.replace /(@\w+|#[^\s#]+)/g, (match) ->
+            prefix = match[0]
+            word = match.slice 1
+            href = if prefix is '#' then "https://x.com/hashtag/#{encodeURIComponent word}" else "https://x.com/#{word}"
+            "<a href='#{href}' target='_blank' rel='noopener noreferrer' style='color:#1d9bf0;text-decoration:none;'>#{match}</a>"
+
+        renderMedia = (tweet) ->
+          return '' unless tweet.media?.all?.length
+          items = tweet.media.all.map (media) ->
+            switch media.type
+              when 'photo'
+                "<a href='#{media.url}' target='_blank' rel='noopener noreferrer'><img src='#{media.url}' style='width:100%;height:100%;object-fit:cover;display:block;'></a>"
+              when 'video', 'gif'
+                "<video data-src='#{media.url}' controls poster='#{media.thumbnail_url}' preload='meta' style='width:100%;height:100%;object-fit:cover;display:block;'></video>"
+              else ''
+          multiple = tweet.media.all.length > 1
+          grid = if multiple then "display:grid;grid-template-columns:repeat(#{Math.min tweet.media.all.length, 2},1fr);gap:2px;" else ''
+          "<div style='margin:12px 0;border-radius:12px;overflow:hidden;border:0.5px solid rgba(0,0,0,0.1);#{grid}'>#{items.join ''}</div>"
+
+        renderPoll = (poll) ->
+          return '' unless poll
+          max = Math.max.apply null, poll.choices.map (c) -> c.percentage
+          choices = poll.choices.map (choice) ->
+            highlight = if choice.percentage is max then 'font-weight:500;' else ''
+            """
+            <div style='margin-bottom:8px;'>
+              <div style='display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;#{highlight}'>
+                <span>#{choice.label}</span>
+                <span>#{choice.percentage}%</span>
+              </div>
+              <div style='background:rgba(0,0,0,0.1);border-radius:4px;height:4px;'>
+                <div style='background:#{if choice.percentage is max then '#1d9bf0' else '#cfd9de'};width:#{choice.percentage}%;height:100%;border-radius:4px;'></div>
+              </div>
+            </div>
+            """
+          """
+          <div style='margin:12px 0;padding:12px;border:0.5px solid rgba(0,0,0,0.1);border-radius:12px;'>
+            #{choices.join ''}
+            <div style='font-size:13px;color:#536471;margin-top:4px;'>#{poll.total_votes.toLocaleString()} votes</div>
+          </div>
+          """
+
+        renderQuote = (quote) ->
+          return '' unless quote
+          avatar = if quote.author?.avatar_url then "<img src='#{quote.author.avatar_url}' style='width:20px;height:20px;border-radius:50%;'>" else ''
+          media = renderMedia quote
+          poll = renderPoll quote.poll
+          """
+          <div style='margin-top:12px;border:0.5px solid rgba(0,0,0,0.15);border-radius:12px;padding:12px;'>
+            <div style='display:flex;align-items:center;gap:6px;margin-bottom:6px;'>
+              #{avatar}
+              <span style='font-size:14px;font-weight:700;color:#0f1419;'>#{quote.author?.name or ''}</span>
+              <span style='font-size:13px;color:#536471;'>@#{quote.author?.screen_name or ''}</span>
+            </div>
+            <div style='font-size:14px;line-height:1.5;color:#0f1419;'>#{renderText quote.text or ''}</div>
+            #{media}
+            #{poll}
+          </div>
+          """
+
+        renderTweet = (tweet) ->
+          date = if tweet.created_at then new Date(tweet.created_at).toLocaleString('en-US', {hour: 'numeric', minute: '2-digit', hour12: true, month: 'short', day: 'numeric', year: 'numeric'}) else ''
+          likes = if tweet.likes >= 1000 then "#{(tweet.likes / 1000).toFixed 1}K" else "#{tweet.likes or 0}"
+          avatar = if tweet.author?.avatar_url then "<img src='#{tweet.author.avatar_url}' style='width:48px;height:48px;border-radius:50%;display:block;'>" else "<div style='width:48px;height:48px;border-radius:50%;background:#cfd9de;'></div>"
+          media = renderMedia tweet
+          poll = renderPoll tweet.poll
+          quote = renderQuote tweet.quote
+          tweetHref = tweet.url or a.dataset.href
+          """
+          <div style='font-family:sans-serif;border:0.5px solid rgba(0,0,0,0.15);border-radius:12px;padding:16px;box-sizing:border-box;background:#fff;color:#0f1419;'>
+            <div style='display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;'>
+              <a href='#{tweetHref}' target='_blank' rel='noopener noreferrer' style='flex-shrink:0;'>#{avatar}</a>
+              <div style='flex:1;min-width:0;'>
+                <a href='#{tweetHref}' target='_blank' rel='noopener noreferrer' style='text-decoration:none;color:inherit;'>
+                  <div style='font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0f1419;'>#{tweet.author?.name or ''}</div>
+                  <div style='font-size:14px;color:#536471;'>@#{tweet.author?.screen_name or ''}</div>
+                </a>
+              </div>
+              <a href='#{tweetHref}' target='_blank' rel='noopener noreferrer' style='flex-shrink:0;margin-top:2px;'>
+                <svg width='20' height='20' viewBox='0 0 24 24' fill='#0f1419'><path d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.735-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z'/></svg>
+              </a>
+            </div>
+            <div style='font-size:15px;line-height:1.5;color:#0f1419;margin-bottom:12px;'>#{renderText tweet.text or ''}</div>
+            #{media}
+            #{poll}
+            #{quote}
+            <a href='#{tweetHref}' target='_blank' rel='noopener noreferrer' style='font-size:14px;color:#536471;text-decoration:none;display:block;#{if tweet.quote then 'margin-top:12px;' else ''}margin-bottom:12px;'>#{date}</a>
+            <div style='display:flex;align-items:center;gap:20px;padding-top:12px;border-top:0.5px solid rgba(0,0,0,0.1);'>
+              <a href='https://twitter.com/intent/like?tweet_id=#{tweet.id}' target='_blank' rel='noopener noreferrer' style='display:flex;align-items:center;gap:6px;font-size:14px;color:#536471;text-decoration:none;'>
+                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640' width='24' height='24' fill='rgb(249,24,128)'><path d='M305 151.1L320 171.8L335 151.1C360 116.5 400.2 96 442.9 96C516.4 96 576 155.6 576 229.1L576 231.7C576 343.9 436.1 474.2 363.1 529.9C350.7 539.3 335.5 544 320 544C304.5 544 289.2 539.4 276.9 529.9C203.9 474.2 64 343.9 64 231.7L64 229.1C64 155.6 123.6 96 197.1 96C239.8 96 280 116.5 305 151.1z'/></svg>
+                #{likes}
+              </a>
+              <a href='https://twitter.com/intent/tweet?in_reply_to=#{tweet.id}' target='_blank' rel='noopener noreferrer' style='display:flex;align-items:center;gap:6px;font-size:14px;color:#536471;text-decoration:none;'>
+                <svg viewBox='0 0 24 24' width='24' height='24' fill='rgb(29,155,240)'><path d='M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01z'/></svg>
+                Reply
+              </a>
+              <a href='#{tweetHref}' target='_blank' rel='noopener noreferrer' style='margin-left:auto;font-size:14px;color:#006fd6;text-decoration:none;font-weight:500;'>Read on X</a>
+            </div>
+          </div>
+          """
+
+        fetch("https://api.fxtwitter.com/#{a.dataset.uid}")
+          .then (r) -> r.json()
+          .then ({tweet}) ->
+            return unless tweet
+            cont.innerHTML = renderTweet tweet
+            for videoEl in cont.querySelectorAll 'video[data-src]'
+              do (videoEl) ->
+                fetch(videoEl.dataset.src, {referrerPolicy: 'no-referrer'})
+                  .then (r) -> r.blob()
+                  .then (blob) ->
+                    videoEl.src = URL.createObjectURL blob
+        cont
     ,
       key: 'VidLii'
       regExp:  /^\w+:\/\/(?:www\.)?vidlii\.com\/watch\?v=(\w{11})/
