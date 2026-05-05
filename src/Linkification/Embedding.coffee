@@ -451,16 +451,25 @@ Embedding =
 
         renderMedia = (tweet) ->
           return '' unless tweet.media?.all?.length
-          items = tweet.media.all.map (media) ->
-            switch media.type
+          count = tweet.media.all.length
+
+          items = tweet.media.all.map (media, i) ->
+            spanStyle = if count is 3 and i is 0 then 'grid-row:span 2;' else ''
+            imgStyle  = if count is 1 then 'width:100%;height:auto;display:block;' else 'width:100%;height:100%;object-fit:cover;object-position:center;display:block;'
+            inner = switch media.type
               when 'photo'
-                "<a href='#{media.url}' target='_blank' rel='noopener noreferrer'><img src='#{media.url}' style='width:100%;height:100%;object-fit:cover;display:block;'></a>"
+                "<a href='#{media.url}' target='_blank' rel='noopener noreferrer' style='display:block;height:100%;'><img src='#{media.url}' style='#{imgStyle}'></a>"
               when 'video', 'gif'
                 "<video data-src='#{media.url}' controls poster='#{media.thumbnail_url}' preload='meta' style='width:100%;height:100%;object-fit:cover;display:block;'></video>"
               else ''
-          multiple = tweet.media.all.length > 1
-          grid = if multiple then "display:grid;grid-template-columns:repeat(#{Math.min tweet.media.all.length, 2},1fr);gap:2px;" else ''
-          "<div style='margin:12px 0;border-radius:12px;overflow:hidden;border:0.5px solid rgba(0,0,0,0.1);#{grid}'>#{items.join ''}</div>"
+            "<div style='height:100%;overflow:hidden;#{spanStyle}'>#{inner}</div>"
+
+          grid = switch count
+            when 1 then 'display:flex;align-items:center;'
+            when 3 then 'display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr);aspect-ratio:1.5;gap:2px;'
+            else       "display:grid;grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(#{Math.ceil count / 2},1fr);aspect-ratio:1.5;gap:2px;"
+
+          "<div style='margin:12px 0;border-radius:12px;overflow:hidden;border:0.5px solid rgba(0,0,0,0.1);max-height:70vh;#{grid}'>#{items.join ''}</div>"
 
         renderPoll = (poll) ->
           return '' unless poll
