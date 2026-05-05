@@ -9131,6 +9131,9 @@ Redirect = (function() {
           return '';
         }
       }
+      if (archive.domain === 'arch.b4k.dev') {
+          return "" + (Redirect.protocol(archive)) + "arch-img.b4k.dev" + "/" + boardID + "/" + filename;
+      }
       return "" + (Redirect.protocol(archive)) + archive.domain + "/" + boardID + "/full_image/" + filename;
     },
     board: function(archive, arg) {
