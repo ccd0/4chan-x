@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.24.0
+// @version      1.14.24.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -211,7 +211,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.24.0',
+  VERSION:   '1.14.24.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -6905,7 +6905,7 @@ Post = (function() {
     };
 
     function Post(root, thread, board, flags) {
-      var clone, j, k, key, len, len1, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, selector;
+      var base, clone, j, k, key, len, len1, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, selector;
       this.thread = thread;
       this.board = board;
       if (flags == null) {
@@ -6949,6 +6949,9 @@ Post = (function() {
         flag: (ref11 = this.nodes.flag) != null ? ref11.title : void 0,
         date: this.nodes.date ? g.SITE.parseDate(this.nodes.date) : void 0
       };
+      if (typeof (base = g.SITE).parseInfo === "function") {
+        base.parseInfo(this);
+      }
       if (Conf['Anonymize']) {
         this.info.nameBlock = 'Anonymous';
       } else {
@@ -8348,6 +8351,12 @@ SW = {};
           }
         }
         return results;
+      }
+    },
+    parseInfo: function(post) {
+      var _, ref;
+      if ((post.info.tripcode == null) && /\!/.test(post.info.name)) {
+        return ref = post.info.name.match(/(.*?) ?(\!.*)/), _ = ref[0], post.info.name = ref[1], post.info.tripcode = ref[2], ref;
       }
     },
     parseDate: function(node) {
