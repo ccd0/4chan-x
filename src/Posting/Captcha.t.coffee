@@ -31,6 +31,7 @@ Captcha.t =
       Captcha.t.currentThread = Captcha.t.getThread()
       $.global ->
         el = document.querySelector '#qr .captcha-container'
+        window.TCaptcha4chanXPatch?(true) if @stacked is '1'
         window.TCaptcha.init el, @boardID, +@threadID
         window.TCaptcha4chanXPatch?(@stacked is '1')
         window.TCaptcha.setErrorCb (err) ->
@@ -156,6 +157,21 @@ Captcha.t =
             margin-left: auto;
             font-weight: bold;
           }
+          #qr.fourchanx-stacked-captcha #t-slider {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+            padding: 2px 8px;
+            border: 1px solid rgba(127, 127, 127, 0.45);
+            border-radius: 3px;
+            color: inherit;
+            background: rgba(127, 127, 127, 0.1);
+            font-size: 11px;
+            line-height: 1.2;
+            opacity: 0.85;
+            user-select: none;
+          }
         '''
         document.head.appendChild style
 
@@ -260,7 +276,9 @@ Captcha.t =
         window.TCaptcha.buildSliderNode = ->
           slider = document.createElement 'span'
           slider.id = 't-slider'
-          slider.hidden = true
+          slider.textContent = 'Stacked mode'
+          slider.title = 'Stacked captcha mode is enabled.'
+          slider.setAttribute 'aria-label', 'Stacked captcha mode is enabled.'
           slider
 
         window.TCaptcha.buildNextNode = ->
