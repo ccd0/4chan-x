@@ -201,6 +201,14 @@ Captcha.t =
             font-weight: 600;
             letter-spacing: 0;
           }
+          #qr.fourchanx-stacked-captcha #t-task.fourchanx-stacked-status.is-success .fourchanx-stacked-placeholder .fa,
+          #qr.fourchanx-stacked-captcha #t-task.fourchanx-stacked-status.is-success .fourchanx-stacked-placeholder .label {
+            color: #468f3f;
+          }
+          #qr.fourchanx-stacked-captcha #t-task.fourchanx-stacked-status.is-error .fourchanx-stacked-placeholder .fa,
+          #qr.fourchanx-stacked-captcha #t-task.fourchanx-stacked-status.is-error .fourchanx-stacked-placeholder .label {
+            color: #b14d4d;
+          }
           #qr.fourchanx-stacked-captcha #t-task.fourchanx-stacked-status .fourchanx-stacked-placeholder .detail {
             font-size: 11px;
             opacity: 0.8;
@@ -240,23 +248,33 @@ Captcha.t =
         replacement = buildStackedSliderNode()
         slider.parentNode?.replaceChild replacement, slider
 
-      setStackedStatusPlaceholder = (label, detail='', icon='fa-th-large') ->
+      setStackedStatusPlaceholder = (label, detail='', icon='fa-th-large', tone='neutral') ->
         container = document.querySelector selectors.container
         return unless container
         if window.TCaptcha?.node
           window.TCaptcha.node.style.height = 'auto'
           window.TCaptcha.node.style.minHeight = '0'
           window.TCaptcha.node.style.overflow = 'visible'
+        if (nextNode = window.TCaptcha?.nextNode or document.querySelector('#t-next'))
+          nextNode.dataset.fourchanxStatusHidden = '1'
+          nextNode.style.visibility = 'hidden'
+          nextNode.textContent = ''
         container.style.height = 'auto'
         container.style.minHeight = '0'
         detailHTML = if detail then "<span class=\"detail\">#{detail}</span>" else ''
+        container.classList.remove 'is-success', 'is-error'
         container.classList.add 'fourchanx-stacked-status'
+        container.classList.add "is-#{tone}" if tone in ['success', 'error']
         container.innerHTML = "<div class=\"fourchanx-stacked-placeholder\"><span class=\"fa #{icon}\" aria-hidden=\"true\"></span><span class=\"label\">#{label}</span>#{detailHTML}</div>"
 
       clearStackedStatusPlaceholder = ->
         container = document.querySelector selectors.container
         return unless container
         container.classList.remove 'fourchanx-stacked-status'
+        container.classList.remove 'is-success', 'is-error'
+        if (nextNode = window.TCaptcha?.nextNode or document.querySelector('#t-next')) and nextNode.dataset.fourchanxStatusHidden is '1'
+          nextNode.style.visibility = ''
+          delete nextNode.dataset.fourchanxStatusHidden
         placeholder = container.querySelector '.fourchanx-stacked-placeholder'
         placeholder?.parentNode?.removeChild placeholder
 
@@ -342,9 +360,9 @@ Captcha.t =
         window.TCaptcha.setTaskNodeContent = (text) ->
           clearStackedStatusPlaceholder()
           if text is 'Done.'
-            setStackedStatusPlaceholder 'Captcha Completed', 'Click Get Captcha for a new challenge.', 'fa-check-circle'
+            setStackedStatusPlaceholder 'Captcha Completed', 'Click Get Captcha for a new challenge.', 'fa-check-circle', 'success'
           else if /expir/i.test(text)
-            setStackedStatusPlaceholder 'Captcha Expired', 'Click Get Captcha for a new challenge.', 'fa-exclamation-circle'
+            setStackedStatusPlaceholder 'Captcha Expired', 'Click Get Captcha for a new challenge.', 'fa-exclamation-circle', 'error'
           else
             @taskNode.innerHTML = "<div id=\"t-desc\">#{text}</div>"
 
