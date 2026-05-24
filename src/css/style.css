@@ -1761,6 +1761,7 @@ $site$thread[hidden] + hr {
   max-height: calc(100vh - 75px);
   overflow-y: auto;
   overflow-x: hidden;
+  padding: 1px 2px 2px;
 }
 #qrtab {
   border-radius: 3px 3px 0 0;
@@ -1803,6 +1804,7 @@ $site$thread[hidden] + hr {
   display: flex;
   -webkit-flex-direction: row;
   flex-direction: row;
+  gap: 1px;
 }
 .persona .field {
   -webkit-flex: 1;
@@ -1873,6 +1875,7 @@ input.field.tripped:not(:hover):not(:focus) {
 /* Recaptcha v2 */
 #qr .captcha-root {
   position: relative;
+  margin: 2px 0 3px;
 }
 #qr .captcha-container > div {
   margin: auto;
@@ -1931,20 +1934,24 @@ input.field.tripped:not(:hover):not(:focus) {
   display: flex;
   -webkit-align-items: stretch;
   align-items: stretch;
-  height: 25px;
-  margin-top: 1px;
+  height: 27px;
+  margin-top: 3px;
+  padding-top: 3px;
+  border-top: 1px solid rgba(127, 127, 127, 0.22);
 }
 #file-n-submit > input, #qr-draw-button {
   background: linear-gradient(to bottom, #F8F8F8, #DCDCDC) no-repeat;
   border: 1px solid #BBB;
   border-radius: 2px;
   height: 100%;
+  line-height: 1;
 }
 #qr-file-button, #qr-draw-button {
-  width: 15%;
+  width: 16%;
 }
 #file-n-submit input[type="submit"] {
-  width: 25%;
+  width: 24%;
+  font-weight: 600;
 }
 #qr-filename-container {
   -webkit-flex: 1 1 auto;
@@ -1955,7 +1962,7 @@ input.field.tripped:not(:hover):not(:focus) {
   -webkit-align-items: center;
   align-items: center;
   position: relative;
-  padding: 1px;
+  padding: 1px 2px;
 }
 input#qr-filename {
   border: none !important;
@@ -1979,7 +1986,7 @@ input#qr-filename {
   white-space: nowrap;
 }
 #qr-no-file {
-  color: #AAA;
+  color: #8f8f8f;
 }
 #qr .oekaki.has-file {
   display: none;
@@ -2068,7 +2075,12 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
   pointer-events: none;
 }
 .checkbox-letter, #paste-area, #url-button, #custom-cooldown-button, #dump-button {
-  opacity: 0.6;
+  opacity: 0.68;
+}
+#qr-filename-container > a:hover,
+#qr-filename-container > a:focus,
+#qr-filename-container > label:hover > .checkbox-letter {
+  opacity: 1;
 }
 #paste-area {
   font-size: 0;

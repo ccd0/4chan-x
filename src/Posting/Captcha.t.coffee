@@ -152,25 +152,58 @@ Captcha.t =
           }
           #qr.fourchanx-stacked-captcha #t-load {
             cursor: pointer !important;
+            min-height: 24px;
+            padding: 0 8px;
           }
           #qr.fourchanx-stacked-captcha #t-next {
             margin-left: auto;
             font-weight: bold;
-          }
-          #qr.fourchanx-stacked-captcha #t-slider {
+            min-width: 2.5em;
+            min-height: 24px;
             display: inline-flex;
             align-items: center;
+            justify-content: flex-end;
+            text-align: right;
+          }
+          #qr.fourchanx-stacked-captcha #t-slider {
+            display: none !important;
+          }
+          #qr.fourchanx-stacked-captcha #t-task.fourchanx-stacked-status {
+            display: flex;
+            flex-direction: column;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            gap: 5px;
+            height: auto !important;
+            min-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 0 15px 0 !important;
+            overflow: visible !important;
+          }
+          #qr.fourchanx-stacked-captcha #t-task.fourchanx-stacked-status .fourchanx-stacked-placeholder {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            min-width: 120px;
-            padding: 2px 8px;
-            border: 1px solid rgba(127, 127, 127, 0.45);
-            border-radius: 3px;
-            color: inherit;
-            background: rgba(127, 127, 127, 0.1);
-            font-size: 11px;
-            line-height: 1.2;
-            opacity: 0.85;
+            gap: 6px;
+            text-align: center;
+            opacity: 0.72;
+            transform: none;
+            margin: 0;
             user-select: none;
+            pointer-events: none;
+          }
+          #qr.fourchanx-stacked-captcha #t-task.fourchanx-stacked-status .fourchanx-stacked-placeholder .fa {
+            font-size: 18px;
+          }
+          #qr.fourchanx-stacked-captcha #t-task.fourchanx-stacked-status .fourchanx-stacked-placeholder .label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0;
+          }
+          #qr.fourchanx-stacked-captcha #t-task.fourchanx-stacked-status .fourchanx-stacked-placeholder .detail {
+            font-size: 11px;
+            opacity: 0.8;
           }
         '''
         document.head.appendChild style
@@ -192,6 +225,40 @@ Captcha.t =
           isActive = index is currentHighlightIndex
           btn.classList.toggle 'active', isActive
           btn.scrollIntoView(block: 'nearest') if isActive
+
+      buildStackedSliderNode = ->
+        slider = document.createElement 'span'
+        slider.id = 't-slider'
+        slider.dataset.fourchanxStacked = '1'
+        slider.hidden = true
+        slider
+
+      ensureStackedSliderNode = ->
+        slider = document.querySelector '#t-slider'
+        return unless slider
+        return if slider.dataset.fourchanxStacked is '1'
+        replacement = buildStackedSliderNode()
+        slider.parentNode?.replaceChild replacement, slider
+
+      setStackedStatusPlaceholder = (label, detail='', icon='fa-th-large') ->
+        container = document.querySelector selectors.container
+        return unless container
+        if window.TCaptcha?.node
+          window.TCaptcha.node.style.height = 'auto'
+          window.TCaptcha.node.style.minHeight = '0'
+          window.TCaptcha.node.style.overflow = 'visible'
+        container.style.height = 'auto'
+        container.style.minHeight = '0'
+        detailHTML = if detail then "<span class=\"detail\">#{detail}</span>" else ''
+        container.classList.add 'fourchanx-stacked-status'
+        container.innerHTML = "<div class=\"fourchanx-stacked-placeholder\"><span class=\"fa #{icon}\" aria-hidden=\"true\"></span><span class=\"label\">#{label}</span>#{detailHTML}</div>"
+
+      clearStackedStatusPlaceholder = ->
+        container = document.querySelector selectors.container
+        return unless container
+        container.classList.remove 'fourchanx-stacked-status'
+        placeholder = container.querySelector '.fourchanx-stacked-placeholder'
+        placeholder?.parentNode?.removeChild placeholder
 
       formatDescription = (str) ->
         (
@@ -215,6 +282,7 @@ Captcha.t =
         task = window.TCaptcha.getCurrentTask?()
         return unless window.TCaptcha.node and container and task
 
+        clearStackedStatusPlaceholder()
         window.TCaptcha.node.style.height = 'auto'
         window.TCaptcha.node.style.overflow = 'visible'
 
@@ -265,26 +333,40 @@ Captcha.t =
           @tasks = challenge.tasks
           @setTaskId 0
           createImageGrid()
+          ensureStackedSliderNode()
 
         window.TCaptcha.setTaskId = (index) ->
           @taskId = index
           @nextNode.textContent = "#{index + 1}/#{@tasks.length}"
 
         window.TCaptcha.setTaskNodeContent = (text) ->
-          @taskNode.innerHTML = "<div id=\"t-desc\">#{text}</div>"
+          clearStackedStatusPlaceholder()
+          if text is 'Done.'
+            setStackedStatusPlaceholder 'Captcha Completed', 'Click Get Captcha for a new challenge.', 'fa-check-circle'
+          else if /expir/i.test(text)
+            setStackedStatusPlaceholder 'Captcha Expired', 'Click Get Captcha for a new challenge.', 'fa-exclamation-circle'
+          else
+            @taskNode.innerHTML = "<div id=\"t-desc\">#{text}</div>"
 
         window.TCaptcha.buildSliderNode = ->
-          slider = document.createElement 'span'
-          slider.id = 't-slider'
-          slider.textContent = 'Stacked mode'
-          slider.title = 'Stacked captcha mode is enabled.'
-          slider.setAttribute 'aria-label', 'Stacked captcha mode is enabled.'
-          slider
+          buildStackedSliderNode()
 
         window.TCaptcha.buildNextNode = ->
           next = document.createElement 'span'
           next.id = 't-next'
           next
+
+        ensureStackedSliderNode()
+        setStackedStatusPlaceholder 'Stacked Captcha', 'Click Get Captcha to display captcha images.'
+        loadButton = document.querySelector '#t-load'
+        if loadButton and loadButton.dataset.fourchanxStackedLoadBound isnt '1'
+          loadButton.dataset.fourchanxStackedLoadBound = '1'
+          loadButton.addEventListener 'click', ->
+            clearStackedStatusPlaceholder()
+        if window.requestAnimationFrame
+          window.requestAnimationFrame ensureStackedSliderNode
+        else
+          setTimeout ensureStackedSliderNode, 0
 
       restoreRegular = ->
         root = document.querySelector '#qr'
@@ -298,6 +380,9 @@ Captcha.t =
         window.TCaptcha.setTaskNodeContent = original.setTaskNodeContent if original.setTaskNodeContent
         window.TCaptcha.buildSliderNode = original.buildSliderNode if original.buildSliderNode
         window.TCaptcha.buildNextNode = original.buildNextNode if original.buildNextNode
+        slider = document.querySelector '#t-slider'
+        if slider?.dataset.fourchanxStacked is '1' and original.buildSliderNode and slider.parentNode
+          slider.parentNode.replaceChild original.buildSliderNode.call(window.TCaptcha), slider
 
       window.TCaptcha4chanXPatch = (enabled=true) ->
         return unless window.TCaptcha
