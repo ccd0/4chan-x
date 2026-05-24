@@ -179,7 +179,7 @@ QRVideoPatch =
 
   stripWebMAudio: (post, file, done) ->
     unless /\.webm$/i.test(file.name or '') or /^video\/webm$/i.test(file.type or '')
-      done(null, null)
+      done(null, null, 'unsupported')
       return
     reader = new FileReader()
     reader.onerror = ->
@@ -214,17 +214,17 @@ QRVideoPatch =
             break
           pos = el.end
         unless patched
-          done(null, null)
+          done(null, null, 'noaudio')
           return
         QRVideoPatch.updateNotice(post, 'Audio stripped.', 'success')
-        done(null, new File([bytes], file.name, {type: file.type or 'video/webm'}))
+        done(null, new File([bytes], file.name, {type: file.type or 'video/webm'}), 'stripped')
       catch err
         done(err)
     reader.readAsArrayBuffer(file)
 
   stripMp4Audio: (post, file, done) ->
     unless /\.mp4$/i.test(file.name or '') or /^video\/mp4$/i.test(file.type or '')
-      done(null, null)
+      done(null, null, 'unsupported')
       return
     reader = new FileReader()
     reader.onerror = ->
@@ -235,10 +235,10 @@ QRVideoPatch =
         bytes = new Uint8Array(buffer)
         view = new DataView(buffer)
         unless QRVideoPatch.stripMp4AudioBytes(bytes, view)
-          done(null, null)
+          done(null, null, 'noaudio')
           return
         QRVideoPatch.updateNotice(post, 'Audio stripped.', 'success')
-        done(null, new File([bytes], file.name, {type: file.type or 'video/mp4'}))
+        done(null, new File([bytes], file.name, {type: file.type or 'video/mp4'}), 'stripped')
       catch err
         done(err)
     reader.readAsArrayBuffer(file)
@@ -310,7 +310,7 @@ do ->
       stop: ->
         QRVideoPatch.closeNotice(post)
       cancelled: false
-    QRVideoPatch.stripAudio post, file, (err, outFile) ->
+    QRVideoPatch.stripAudio post, file, (err, outFile, status) ->
       return unless post._videoTaskID is taskID
       delete post._videoProcessing
       delete post._pendingFile
@@ -324,6 +324,9 @@ do ->
         setTimeout((-> QRVideoPatch.closeNotice(post)), 1000)
         outFile._qrAudioStripped = true
         origSetFile.call(post, outFile)
+      else if !status? or status in ['noaudio', 'unsupported']
+        QRVideoPatch.closeNotice(post)
+        origSetFile.call(post, file)
       else
         QRVideoPatch.closeNotice(post)
         unless post.file

@@ -27337,7 +27337,7 @@ QR = (function() {
     stripWebMAudio: function(post, file, done) {
       var reader;
       if (!(/\.webm$/i.test(file.name || '') || /^video\/webm$/i.test(file.type || ''))) {
-        done(null, null);
+        done(null, null, 'unsupported');
         return;
       }
       reader = new FileReader();
@@ -27388,13 +27388,13 @@ QR = (function() {
             pos = el.end;
           }
           if (!patched) {
-            done(null, null);
+            done(null, null, 'noaudio');
             return;
           }
           QRVideoPatch.updateNotice(post, 'Audio stripped.', 'success');
           return done(null, new File([bytes], file.name, {
             type: file.type || 'video/webm'
-          }));
+          }), 'stripped');
         } catch (error) {
           err = error;
           return done(err);
@@ -27405,7 +27405,7 @@ QR = (function() {
     stripMp4Audio: function(post, file, done) {
       var reader;
       if (!(/\.mp4$/i.test(file.name || '') || /^video\/mp4$/i.test(file.type || ''))) {
-        done(null, null);
+        done(null, null, 'unsupported');
         return;
       }
       reader = new FileReader();
@@ -27419,13 +27419,13 @@ QR = (function() {
           bytes = new Uint8Array(buffer);
           view = new DataView(buffer);
           if (!QRVideoPatch.stripMp4AudioBytes(bytes, view)) {
-            done(null, null);
+            done(null, null, 'noaudio');
             return;
           }
           QRVideoPatch.updateNotice(post, 'Audio stripped.', 'success');
           return done(null, new File([bytes], file.name, {
             type: file.type || 'video/mp4'
-          }));
+          }), 'stripped');
         } catch (error) {
           err = error;
           return done(err);
@@ -27516,7 +27516,7 @@ QR = (function() {
         },
         cancelled: false
       };
-      return QRVideoPatch.stripAudio(post, file, function(err, outFile) {
+      return QRVideoPatch.stripAudio(post, file, function(err, outFile, status) {
         if (post._videoTaskID !== taskID) {
           return;
         }
@@ -27536,6 +27536,9 @@ QR = (function() {
           }), 1000);
           outFile._qrAudioStripped = true;
           return origSetFile.call(post, outFile);
+        } else if ((status == null) || (status === 'noaudio' || status === 'unsupported')) {
+          QRVideoPatch.closeNotice(post);
+          return origSetFile.call(post, file);
         } else {
           QRVideoPatch.closeNotice(post);
           if (!post.file) {
