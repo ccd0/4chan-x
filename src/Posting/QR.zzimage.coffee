@@ -26,18 +26,17 @@ QRImagePatch =
   normalizeExtension: (value) ->
     ext = (value or '').toLowerCase().trim().replace(/^\./, '')
     ext = 'jpg' if ext is 'jpeg'
-    if ext in ['jpg', 'png', 'gif', 'webp'] then ext else 'jpg'
+    ext
 
   targetFormat: ->
     ext = QRImagePatch.normalizeExtension(Conf['processedImageExtension'])
     # Backward compatibility for existing configs from prior PNG toggle builds.
     if !Conf['processedImageExtension'] and Conf['Use PNG for Processed Images']
       ext = 'png'
-    type = switch ext
-      when 'png' then 'image/png'
-      when 'gif' then 'image/gif'
-      when 'webp' then 'image/webp'
-      else 'image/jpeg'
+    type = $.getOwn(QR.typeFromExtension, ext)
+    if !type or !/^image\//.test(type) or type not in QR.mimeTypes or !QRImagePatch.isSupportedType(type)
+      type = 'image/jpeg'
+    ext = $.getOwn(QR.extensionFromType, type) or 'jpg'
     {type, ext}
 
   replaceExtension: (name, ext) ->
