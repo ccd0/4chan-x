@@ -170,7 +170,10 @@
     <label><input type="checkbox" name="Custom CSS"> Custom CSS</label>
   </legend>
   <div>For more information about customizing 4chan X&#039;s CSS, see the <a href="<%= meta.cssGuide %>" target="_blank">styling guide</a>.</div>
-  <button id="apply-css">Apply CSS</button>
+  <div class="custom-css-controls">
+    <button id="apply-css">Apply CSS</button>
+    <label><input type="checkbox" name="Custom CSS on Homepage"> Load Custom CSS on home page</label>
+  </div>
   <textarea hidden name="usercss" class="field" spellcheck="false"></textarea>
 </fieldset>
 

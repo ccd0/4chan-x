@@ -86,7 +86,7 @@ Main =
 
     # Enforce JS whitelist
     if (
-      /\.4chan(?:nel)?\.org$/.test(location.hostname) and
+      /(?:^|\.)4chan(?:nel)?\.org$/.test(location.hostname) and
       !SW.yotsuba.regexp.pass.test(location.href) and
       !SW.yotsuba.regexp.captcha.test(location.href) and
       !$$('script:not([src])', d).filter((s) -> /this\[/.test(s.textContent)).length
@@ -101,7 +101,7 @@ Main =
     items[key] = undefined for key of Conf
     items['previousversion'] = undefined
     ($.getSync or $.get) items, (items) ->
-      if !$.perProtocolSettings and /\.4chan(?:nel)?\.org$/.test(location.hostname) and (items['Redirect to HTTPS'] ? Conf['Redirect to HTTPS']) and location.protocol isnt 'https:'
+      if !$.perProtocolSettings and /(?:^|\.)4chan(?:nel)?\.org$/.test(location.hostname) and (items['Redirect to HTTPS'] ? Conf['Redirect to HTTPS']) and location.protocol isnt 'https:'
         location.replace('https://' + location.host + location.pathname + location.search + location.hash)
         return
       $.asap docSet, ->

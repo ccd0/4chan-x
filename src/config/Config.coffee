@@ -832,6 +832,7 @@ Config =
     werk:  false
 
   'Custom CSS': true
+  'Custom CSS on Homepage': false
 
   Index:
     'Index Mode': 'paged'

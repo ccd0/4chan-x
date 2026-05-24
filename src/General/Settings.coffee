@@ -815,10 +815,12 @@ Settings =
 
     interval  = inputs['Interval']
     customCSS = inputs['Custom CSS']
+    customCSSHome = inputs['Custom CSS on Homepage']
     applyCSS  = $ '#apply-css', section
 
     interval.value             =  Conf['Interval']
     customCSS.checked          =  Conf['Custom CSS']
+    customCSSHome.disabled     = !Conf['Custom CSS']
     inputs['usercss'].disabled = !Conf['Custom CSS']
     applyCSS.disabled          = !Conf['Custom CSS']
 
@@ -982,7 +984,10 @@ Settings =
     return
 
   togglecss: ->
-    if $('textarea[name=usercss]', $.x 'ancestor::fieldset[1]', @).disabled = $.id('apply-css').disabled = !@checked
+    fieldset = $.x 'ancestor::fieldset[1]', @
+    if (customCSSHome = $('input[name="Custom CSS on Homepage"]', fieldset))
+      customCSSHome.disabled = !@checked
+    if $('textarea[name=usercss]', fieldset).disabled = $.id('apply-css').disabled = !@checked
       CustomCSS.rmStyle()
     else
       CustomCSS.addStyle()

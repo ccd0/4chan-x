@@ -25,9 +25,11 @@
     "includes_only": [
       "*://boards.4chan.org/*",
       "*://sys.4chan.org/*",
+      "*://4chan.org/*",
       "*://www.4chan.org/*",
       "*://boards.4channel.org/*",
       "*://sys.4channel.org/*",
+      "*://4channel.org/*",
       "*://www.4channel.org/*",
       "*://i.4cdn.org/*",
       "*://is.4chan.org/*",
@@ -36,7 +38,9 @@
       "*://is2.4channel.org/*"
     ],
     "matches_only": [
+      "*://4chan.org/*",
       "*://*.4chan.org/*",
+      "*://4channel.org/*",
       "*://*.4channel.org/*",
       "*://*.4cdn.org/*"
     ],
@@ -70,10 +74,18 @@
     ],
     "matches_extra": [],
     "exclude_matches": [
+      "*://4chan.org/advertise",
+      "*://4chan.org/advertise?*",
+      "*://4chan.org/donate",
+      "*://4chan.org/donate?*",
       "*://www.4chan.org/advertise",
       "*://www.4chan.org/advertise?*",
       "*://www.4chan.org/donate",
       "*://www.4chan.org/donate?*",
+      "*://4channel.org/advertise",
+      "*://4channel.org/advertise?*",
+      "*://4channel.org/donate",
+      "*://4channel.org/donate?*",
       "*://www.4channel.org/advertise",
       "*://www.4channel.org/advertise?*",
       "*://www.4channel.org/donate",

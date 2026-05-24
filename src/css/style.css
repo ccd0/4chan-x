@@ -833,6 +833,17 @@ div[data-checked="false"] > .suboption-list {
 .section-advanced textarea[name="knownBanners"] {
   height: 75px;
 }
+.section-advanced .custom-css-controls {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  -webkit-align-items: center;
+  align-items: center;
+}
+.section-advanced .custom-css-controls > label {
+  margin-left: auto;
+}
 .section-advanced .archive-cell {
   min-width: 160px;
   text-align: center;

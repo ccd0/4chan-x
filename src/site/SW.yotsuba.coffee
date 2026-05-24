@@ -124,7 +124,7 @@ SW.yotsuba =
     return g.VIEW in ['index', 'thread'] and not $('.board + *')
 
   isBoardlessPage: (url) ->
-    url.hostname in ['www.4chan.org', 'www.4channel.org']
+    url.hostname in ['4chan.org', 'www.4chan.org', '4channel.org', 'www.4channel.org']
 
   isAuxiliaryPage: (url) ->
     url.hostname not in ['boards.4chan.org', 'boards.4channel.org']
@@ -134,11 +134,14 @@ SW.yotsuba =
 
   initAuxiliary: ->
     switch location.hostname
-      when 'www.4chan.org', 'www.4channel.org'
+      when '4chan.org', 'www.4chan.org', '4channel.org', 'www.4channel.org'
         if SW.yotsuba.regexp.pass.test(location.href)
           PassMessage.init()
         else
-          $.onExists doc, 'body', -> $.addStyle CSS.www
+          $.onExists doc, 'body', ->
+            $.addStyle CSS.www
+            if Conf['Custom CSS'] and Conf['Custom CSS on Homepage']
+              $.addStyle CSS.sub(Conf['usercss']), 'custom-css'
           Captcha.replace.init()
         return
       when 'sys.4chan.org', 'sys.4channel.org'
