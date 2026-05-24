@@ -50,7 +50,7 @@ QR =
     Header.addShortcut 'qr', sc, 540
 
   initReady: ->
-    captchaVersion = if $('#g-recaptcha, #captcha-forced-noscript') then 'v2' else 't'
+    captchaVersion = if $('#t-root') then 't' else if $('#g-recaptcha, #captcha-forced-noscript') then 'v2' else 't'
     QR.captcha = Captcha[captchaVersion]
     QR.postingIsEnabled = true
 
@@ -159,21 +159,42 @@ QR =
     $.queueTask ->
       unless QR.inBubble()
         QR.hasFocus = d.activeElement and QR.nodes.el.contains(d.activeElement)
-        QR.nodes.el.classList.toggle 'focus', QR.hasFocus
+        QR.nodes.el.classList.toggle 'focus', QR.hasFocus or QR.shouldPinOpen()
+        QR.updatePreviewStrip()
 
   inBubble: ->
     bubbles = $$ 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
     d.activeElement in bubbles or bubbles.some (el) ->
       getComputedStyle(el).visibility isnt 'hidden' and el.getBoundingClientRect().bottom > 0
 
+  hasDraftState: ->
+    return false unless QR.nodes and QR.posts
+    return true if QR.req
+    return true if QR.captcha?.occupied? and QR.captcha.occupied()
+    for post in QR.posts
+      return true if post?.file
+      return true if post?.com?.trim()
+    QR.posts.length > 1
+
+  shouldPinOpen: ->
+    return false unless QR.nodes and $.hasClass(QR.nodes.el, 'autohide')
+    QR.hasDraftState()
+
+  updatePreviewStrip: ->
+    return unless QR.nodes and QR.posts
+    hasPreviews = !!(QR.posts.some((post) -> post?.file) or QR.posts.length > 1)
+    QR.nodes.el.classList.toggle 'show-preview-strip', hasPreviews
+
   hide: ->
     QR.blur()
     $.addClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = true
+    QR.focus()
 
   unhide: ->
     $.rmClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = false
+    QR.nodes.el.classList.toggle 'focus', QR.hasFocus
 
   toggleHide: ->
     if @checked
@@ -259,6 +280,8 @@ QR =
 
   status: ->
     return unless QR.nodes
+    QR.updatePreviewStrip()
+    QR.nodes.el.classList.toggle 'focus', QR.hasFocus or QR.shouldPinOpen()
     {thread} = QR.posts[0]
     if thread isnt 'new' and g.threads.get("#{g.BOARD}.#{thread}").isDead
       value    = 'Dead'
@@ -488,10 +511,13 @@ QR =
   handleFile: (file, nfiles) ->
     isText = /^text\//.test file.type
     if nfiles is 1
-      post = QR.selected
+      post = if !isText and (QR.selected.file or QR.selected._pendingFile)
+        new QR.post true
+      else
+        QR.selected
     else
       post = QR.posts[QR.posts.length - 1]
-      if (if isText then post.com or post.pasting else post.file)
+      if (if isText then post.com or post.pasting else post.file or post._pendingFile)
         post = new QR.post()
     post[if isText then 'pasteText' else 'setFile'] file
 

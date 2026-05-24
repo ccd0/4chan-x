@@ -49,7 +49,10 @@ Settings =
     $.on $('.export', dialog), 'click',  Settings.export
     $.on $('.import', dialog), 'click',  Settings.import
     $.on $('.reset',  dialog), 'click',  Settings.reset
-    $.on $('input',   dialog), 'change', Settings.onImport
+    $.on $('.settings-layout-toggle input', dialog), 'change', Settings.onLayoutToggle
+    $.on $('input[type=file]', dialog), 'change', Settings.onImport
+    layoutToggle = $('.settings-layout-toggle input', dialog)
+    layoutToggle.checked = !!Conf['Modern Settings Layout']
 
     links = []
     for section in Settings.sections
@@ -58,16 +61,17 @@ Settings =
         textContent: section.title
         href: 'javascript:;'
       $.on link, 'click', Settings.openSection.bind section
-      links.push link, $.tn ' | '
+      links.push link
       sectionToOpen = link if section.title is openSection
-    links.pop()
     $.add $('.sections-list', dialog), links
     (if sectionToOpen then sectionToOpen else links[0]).click() unless openSection is 'none'
 
     $.on $('.close', dialog), 'click', Settings.close
     $.on window, 'beforeunload', Settings.close
-    $.on dialog, 'click', Settings.close
+    $.on dialog, 'click', Settings.overlayClick
     $.on dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
+    $.on d, 'keydown', Settings.keydown
+    Settings.setupWindow dialog
 
     $.add d.body, dialog
 
@@ -77,8 +81,154 @@ Settings =
     return unless Settings.dialog
     # Unfocus current field to trigger change event.
     d.activeElement?.blur()
+    Settings.saveWindowState()
+    Settings.resizeObserver?.disconnect()
+    delete Settings.resizeObserver
+    Settings.clearDragHandle()
+    $.off d, 'keydown', Settings.keydown
+    Settings.dragEnd()
     $.rm Settings.dialog
     delete Settings.dialog
+
+  keydown: (e) ->
+    return unless e.keyCode is 27
+    Settings.close()
+
+  overlayClick: ->
+    Settings.close() if Conf['Close Settings on Outside Click']
+
+  setupWindow: (dialog) ->
+    win = dialog.firstElementChild
+    win.classList.add 'settings-resizable'
+    Settings.applyLayoutMode win
+    Settings.applyWindowState win, Settings.windowState or Conf['settings.window']
+    $.get 'settings.window', null, (state) ->
+      return unless Settings.dialog and win is Settings.dialog.firstElementChild
+      if state
+        Settings.windowState = state
+        Settings.applyWindowState win, state
+    Settings.watchSize win
+    Settings.setDragHandle win
+
+  applyLayoutMode: (win) ->
+    win.classList.toggle 'settings-layout-classic', !Conf['Modern Settings Layout']
+
+  setDragHandle: (win) ->
+    Settings.clearDragHandle()
+    dialog = Settings.dialog
+    dialog?.classList.remove 'settings-freeform'
+    win.classList.remove 'settings-draggable'
+    return unless Conf['Draggable Settings Window']
+    dialog?.classList.add 'settings-freeform'
+    win.classList.add 'settings-draggable'
+    dragHandle = if Conf['Modern Settings Layout']
+      $('.settings-titlebar', win)
+    else
+      $('nav', win)
+    if dragHandle
+      Settings.dragHandle = dragHandle
+      $.on dragHandle, 'mousedown', Settings.dragStart
+
+  clearDragHandle: ->
+    return unless Settings.dragHandle
+    $.off Settings.dragHandle, 'mousedown', Settings.dragStart
+    delete Settings.dragHandle
+
+  onLayoutToggle: ->
+    $.cb.checked.call @
+    return unless (win = Settings.dialog?.firstElementChild)
+    Settings.applyLayoutMode win
+    Settings.setDragHandle win
+
+  onWindowOptionToggle: ->
+    return unless Settings.dialog
+    switch @name
+      when 'Draggable Settings Window'
+        Settings.setDragHandle Settings.dialog.firstElementChild
+      when 'Close Settings on Outside Click'
+        # Behavior reads from `Conf` on each overlay click, so no rebinding needed.
+        return
+
+  applyWindowState: (win, state) ->
+    return unless state
+    win.style.width = state.width if state.width
+    win.style.height = state.height if state.height
+    if Conf['Draggable Settings Window'] and state.left and state.top
+      win.style.position = 'fixed'
+      win.style.margin = '0'
+      win.style.left = state.left
+      win.style.top = state.top
+      win.style.right = ''
+      win.style.bottom = ''
+    else
+      win.style.position = ''
+      win.style.margin = ''
+      win.style.left = ''
+      win.style.top = ''
+      win.style.right = ''
+      win.style.bottom = ''
+
+  watchSize: (win) ->
+    if window.ResizeObserver
+      Settings.resizeObserver = new window.ResizeObserver ->
+        Settings.queueSaveWindowState()
+      Settings.resizeObserver.observe win
+
+  queueSaveWindowState: ->
+    clearTimeout Settings.sizeTimer if Settings.sizeTimer
+    Settings.sizeTimer = setTimeout(Settings.saveWindowState, 250)
+
+  saveWindowState: ->
+    clearTimeout Settings.sizeTimer if Settings.sizeTimer
+    delete Settings.sizeTimer
+    win = Settings.dialog?.firstElementChild
+    return unless win
+    rect = win.getBoundingClientRect()
+    state =
+      width: "#{Math.round(rect.width)}px"
+      height: "#{Math.round(rect.height)}px"
+    if win.style.position is 'fixed'
+      state.left = "#{Math.round(rect.left)}px"
+      state.top = "#{Math.round(rect.top)}px"
+    Settings.windowState = state
+    $.set 'settings.window', state
+
+  dragStart: (e) ->
+    return if e.button isnt 0
+    return if e.target.closest?('a, input, button, textarea, select')
+    win = Settings.dialog?.firstElementChild
+    return unless win
+    e.preventDefault()
+    rect = win.getBoundingClientRect()
+    win.style.position = 'fixed'
+    win.style.margin = '0'
+    win.style.left = "#{rect.left}px"
+    win.style.top = "#{rect.top}px"
+    Settings.drag =
+      win: win
+      dx: e.clientX - rect.left
+      dy: e.clientY - rect.top
+    $.on d, 'mousemove', Settings.dragMove
+    $.on d, 'mouseup', Settings.dragEnd
+
+  dragMove: (e) ->
+    return unless Settings.drag
+    {win, dx, dy} = Settings.drag
+    left = e.clientX - dx
+    top = e.clientY - dy
+    maxLeft = doc.clientWidth - 40
+    maxTop = doc.clientHeight - 40
+    left = Math.max 0, Math.min(left, maxLeft)
+    top = Math.max 0, Math.min(top, maxTop)
+    win.style.left = "#{left}px"
+    win.style.top = "#{top}px"
+
+  dragEnd: ->
+    return unless Settings.drag
+    $.off d, 'mousemove', Settings.dragMove
+    $.off d, 'mouseup', Settings.dragEnd
+    Settings.saveWindowState()
+    delete Settings.drag
 
   sections: []
 
@@ -140,6 +290,7 @@ Settings =
         div.dataset.name = key
         input = $ 'input', div
         $.on input, 'change', $.cb.checked
+        $.on input, 'change', Settings.onWindowOptionToggle
         $.on input, 'change', -> @parentNode.parentNode.dataset.checked = @checked
         items[key]  = Conf[key]
         inputs[key] = input
@@ -151,18 +302,37 @@ Settings =
         else if containers.length > level+1
           containers.splice level+1, containers.length - (level+1)
         $.add containers[level], div
+    addSettingGroup = (root, name, beforeSetting) ->
+      before = $("div[data-name=\"#{beforeSetting}\"]", root)
+      return unless before
+      heading = $.el 'h3',
+        className: 'settings-group-heading'
+        textContent: name
+      $.before before, heading
 
     for keyFS, obj of Config.main
       fs = $.el 'fieldset',
         `<%= html('<legend>${keyFS}</legend>') %>`
       addCheckboxes fs, obj
-      if keyFS is 'Posting and Captchas'
+      if keyFS is 'Miscellaneous'
+        addSettingGroup fs, 'Browsing and Catalog', 'Redirect to HTTPS'
+        addSettingGroup fs, 'Notifications and UI', 'Announcement Hiding'
+        addSettingGroup fs, 'Archives and Security', '404 Redirect'
+        addSettingGroup fs, 'Reading and Navigation', 'Time Formatting'
+        addSettingGroup fs, 'Identity and Content', 'Color User IDs'
+        addSettingGroup fs, 'Compatibility', 'Work around CORB Bug'
+      else if keyFS is 'Posting and Captchas'
+        if qrOptions = $('div[data-name="Quick Reply"] > .suboption-list', fs)
+          addSettingGroup qrOptions, 'Workflow', 'Persistent QR'
+          addSettingGroup qrOptions, 'Files and Submission', 'Randomize Filename'
+          addSettingGroup qrOptions, 'Captcha', 'Auto-load captcha'
         $.add fs, $.el 'p',
           `<%= html('For more info on captcha options and issues, see the <a href="' + meta.captchaFAQ + '" target="_blank">captcha FAQ</a>.') %>`
       $.add section, fs
     addCheckboxes $('div[data-name="JSON Index"] > .suboption-list', section), Config.Index
 
     # Unsupported options
+    $('div[data-name="Modern Settings Layout"]', section).hidden = true
     if $.engine isnt 'gecko'
       $('div[data-name="Remember QR Size"]', section).hidden = true
     if $.perProtocolSettings or location.protocol isnt 'https:'

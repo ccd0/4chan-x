@@ -96,6 +96,19 @@
 </fieldset>
 
 <fieldset>
+  <legend>Processed Image Extension</legend>
+  <div>Used by Quick Reply image auto-processing. Allowed: <code>jpg</code>, <code>jpeg</code>, <code>png</code>, <code>gif</code>, <code>webp</code>. Invalid values fall back to <code>jpg</code>.</div>
+  <div><input name="processedImageExtension" class="field" spellcheck="false" list="list-processedImageExtension"></div>
+  <datalist id="list-processedImageExtension">
+    <option value="jpg"></option>
+    <option value="jpeg"></option>
+    <option value="png"></option>
+    <option value="gif"></option>
+    <option value="webp"></option>
+  </datalist>
+</fieldset>
+
+<fieldset>
   <legend>File Info Formatting <span class="warning" data-feature="File Info Formatting">is disabled.</span></legend>
   <div><input name="fileInfo" class="field" spellcheck="false">: <span class="file-info file-info-preview"></span></div>
   <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (4chan filename)</div>

@@ -552,48 +552,177 @@ audio.controls-added {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   box-shadow: 0 0 15px rgba(0, 0, 0, .15);
-  height: 600px;
+  height: 640px;
   max-height: 100%;
-  width: 900px;
+  min-height: 360px;
+  width: 960px;
   max-width: 100%;
+  min-width: 520px;
   margin: auto;
-  padding: 5px;
+  padding: 0;
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: column;
   flex-direction: column;
+  overflow: hidden;
+  position: relative;
 }
-#fourchanx-settings > nav {
-  padding: 2px 2px 8px;
+#fourchanx-settings.settings-resizable {
+  resize: both;
+}
+#fourchanx-settings.settings-draggable > .settings-titlebar {
+  cursor: move;
+}
+#fourchanx-settings.settings-draggable > .settings-titlebar a,
+#fourchanx-settings.settings-draggable > .settings-titlebar input {
+  cursor: pointer;
+}
+#fourchanx-settings > .close {
+  position: absolute;
+  right: 6px;
+  top: 5px;
+  z-index: 3;
+  text-decoration: none;
+  padding: 2px 3px;
+  margin: 0;
+}
+.settings-titlebar {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-bottom: 1px solid;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  padding: 6px 28px 6px 8px;
+}
+.settings-title {
+  font-weight: 700;
+}
+.settings-body {
+  -webkit-flex: 1;
+  flex: 1;
+  min-height: 0;
   display: -webkit-flex;
   display: flex;
 }
-#fourchanx-settings > nav a {
-  text-decoration: underline;
+#fourchanx-settings > .settings-body > nav {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  border-right: 1px solid;
+  padding: 8px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-flex: 0 0 180px;
+  flex: 0 0 180px;
 }
-#fourchanx-settings > nav a.close {
+#fourchanx-settings > .settings-body > nav a {
   text-decoration: none;
-  padding: 0 2px;
-  margin: 0;
 }
 .section-container {
   -webkit-flex: 1;
   flex: 1;
   position: relative;
   overflow: auto;
-  padding-right: 5px;
+  padding: 8px 10px;
   overscroll-behavior: contain;
 }
 .sections-list {
-  -webkit-flex: 1;
-  flex: 1;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  gap: 2px;
+  overflow: auto;
+}
+.sections-list > a {
+  border-radius: 3px;
+  padding: 4px 6px;
+}
+.sections-list > a:hover,
+.sections-list > a:focus {
+  background: rgba(128, 128, 128, .12);
+}
+.settings-layout-toggle {
+  font-size: 11px;
+  margin: 6px 0;
+}
+#fourchanx-settings .settings-layout-toggle label {
+  text-decoration: none;
+}
+#fourchanx-settings.settings-layout-classic > .settings-body {
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+#fourchanx-settings.settings-layout-classic > .settings-titlebar {
+  display: none;
+}
+#fourchanx-settings.settings-layout-classic > .settings-body > nav {
+  -webkit-flex: 0 0 auto;
+  flex: 0 0 auto;
+  border-right: none;
+  border-bottom: 1px solid;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+  -webkit-align-items: flex-start;
+  align-items: flex-start;
+  padding: 4px 26px 4px 6px;
+}
+#fourchanx-settings.settings-layout-classic > .settings-body > nav a {
+  text-decoration: underline;
+}
+#fourchanx-settings.settings-layout-classic .sections-list {
+  display: block;
+  overflow: visible;
+}
+#fourchanx-settings.settings-layout-classic .sections-list > a {
+  display: inline;
+  border-radius: 0;
+  padding: 0;
+}
+#fourchanx-settings.settings-layout-classic .sections-list > a:not(:last-child)::after {
+  content: " | ";
+}
+#fourchanx-settings.settings-layout-classic .sections-list > a:hover,
+#fourchanx-settings.settings-layout-classic .sections-list > a:focus {
+  background: none;
+}
+#fourchanx-settings.settings-layout-classic .imp-exp-result {
+  margin: 0 8px 0 0;
+}
+#fourchanx-settings.settings-layout-classic .settings-layout-toggle {
+  margin: 0 8px 0 0;
+  white-space: nowrap;
+}
+#fourchanx-settings.settings-layout-classic .credits {
+  border-top: none;
+  margin-left: auto;
+  margin-top: 0;
+  padding-top: 0;
+  white-space: nowrap;
 }
 .export, .import, .reset {
   cursor: pointer;
   text-decoration: none !important;
 }
 .tab-selected {
+  background: rgba(128, 128, 128, .18);
   font-weight: 700;
+}
+.credits {
+  border-top: 1px solid;
+  font-size: 11px;
+  line-height: 1.7;
+  margin-top: auto;
+  padding-top: 7px;
+}
+.imp-exp-result {
+  font-size: 11px;
+  margin: 6px 0;
 }
 .section-sauce ul,
 .section-advanced ul {
@@ -621,8 +750,17 @@ audio.controls-added {
 .section-main li:not(:first-of-type) {
   margin-top: 4px;
 }
+.section-main fieldset > div {
+  line-height: 1.35;
+  padding: 2px 0;
+}
 .section-main label {
-  text-decoration: underline;
+  font-weight: 700;
+}
+.settings-group-heading {
+  font-size: 1em;
+  margin: 10px 0 4px;
+  opacity: .8;
 }
 div[data-checked="false"] > .suboption-list {
   display: none;
@@ -723,12 +861,13 @@ div[data-checked="false"] > .suboption-list {
 #fourchanx-settings fieldset {
   border: 1px solid;
   border-radius: 3px;
-  padding: 0.35em 0.625em 0.75em;
-  margin: 0px 2px;
+  padding: 0.5em 0.75em 0.85em;
+  margin: 0 0 8px;
 }
 #fourchanx-settings legend {
   font-weight: 700;
   color: inherit;
+  padding: 0 4px;
 }
 #fourchanx-settings textarea {
   font-family: monospace;
@@ -746,6 +885,9 @@ div[data-checked="false"] > .suboption-list {
 }
 #fourchanx-settings p {
   margin: 1em 0px;
+}
+#fourchanx-settings .description {
+  opacity: .85;
 }
 #fourchanx-settings table {
   margin: auto;
@@ -1591,6 +1733,12 @@ $site$thread[hidden] + hr {
 #file-n-submit:not(.has-file) #qr-filerm {
   display: none;
 }
+#qr.show-preview-strip #dump-list-container {
+  display: block;
+}
+#qr.show-preview-strip:not(.dump) #add-post {
+  display: none;
+}
 :root.hide-original-post-form #postForm {
   display: none !important;
 }
@@ -2028,6 +2176,9 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
 }
 a:only-of-type > .remove {
   display: none;
+}
+.qr-preview.has-file > .remove {
+  display: inline;
 }
 .remove:hover::after {
   content: " Remove";

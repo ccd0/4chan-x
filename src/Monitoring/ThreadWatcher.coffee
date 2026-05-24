@@ -242,7 +242,7 @@ ThreadWatcher =
     clearTimeout ThreadWatcher.timeout
     return unless Conf['Auto Update Thread Watcher']
     {db} = ThreadWatcher
-    interval = if Conf['Show Page'] or (ThreadWatcher.unreadEnabled and Conf['Show Unread Count']) then 5 * $.MINUTE else 2 * $.HOUR
+    interval = if Conf['Show Page'] or ThreadWatcher.trackRepliesState() then 5 * $.MINUTE else 2 * $.HOUR
     now = Date.now()
     unless now - interval < (db.data.lastChecked or 0) <= now or d.hidden or not d.hasFocus()
       ThreadWatcher.fetchAllStatus interval
@@ -329,7 +329,7 @@ ThreadWatcher =
           else
             index >= nThreads - pageLength
           ThreadWatcher.update siteID, boardID, threadID, {page, lastPage}
-        if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
+        if ThreadWatcher.trackRepliesState()
           if modified isnt data.modified or (replies? and replies isnt data.replies)
             (thread.newData or= {}).modified = modified
             ThreadWatcher.fetchStatus thread
@@ -455,12 +455,16 @@ ThreadWatcher =
     if Conf['Show Page']
       $.addClass div, 'last-page'  if data.lastPage
       div.dataset.page = data.page if data.page?
+    quotingYou = (data.quotingYou or 0) > (data.dismiss or 0)
     if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
       $.addClass div, 'replies-read'        if data.unread is 0
       $.addClass div, 'replies-unread'      if data.unread
-      $.addClass div, 'replies-quoting-you' if (data.quotingYou or 0) > (data.dismiss or 0)
+    $.addClass div, 'replies-quoting-you' if quotingYou
     $.add div, [x, $.tn(' '), link]
     div
+
+  trackRepliesState: ->
+    (ThreadWatcher.unreadEnabled and Conf['Show Unread Count']) or !!QuoteYou.db
 
   setPrefixes: (threads) ->
     prefixes = $.dict()
@@ -577,7 +581,7 @@ ThreadWatcher =
     thread = {siteID: g.SITE.ID, boardID, threadID, data, force: true}
     if Conf['Show Page'] and !data.isDead
       ThreadWatcher.fetchBoard [thread]
-    else if ThreadWatcher.unreadEnabled and Conf['Show Unread Count']
+    else if ThreadWatcher.trackRepliesState()
       ThreadWatcher.fetchStatus thread
 
   rm: (siteID, boardID, threadID, cb, manual) ->

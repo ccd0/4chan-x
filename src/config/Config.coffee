@@ -43,6 +43,18 @@ Config =
         true
         'Enables desktop notifications across various <%= meta.name %> features.'
       ]
+      'Modern Settings Layout': [
+        true
+        'Use the redesigned settings layout. Disable for a classic top-nav layout.'
+      ]
+      'Draggable Settings Window': [
+        true
+        'Allow dragging the settings window by its sidebar.'
+      ]
+      'Close Settings on Outside Click': [
+        true
+        'Close the settings window when clicking outside it. The close button and Esc still work.'
+      ]
       '404 Redirect': [
         true
         'Redirect dead threads and images to the archives.'
@@ -471,11 +483,6 @@ Config =
         'Automatically hide the quick reply when posting.'
         2
       ]
-      'Open Post in New Tab': [
-        true
-        'Open new threads in a new tab, and open replies in a new tab if you\'re not already in the thread.'
-        1
-      ]
       'Remember QR Size': [
         false
         'Remember the size of the Quick reply.'
@@ -486,19 +493,34 @@ Config =
         'Remember the spoiler state, instead of resetting after posting.'
         1
       ]
-      'Randomize Filename': [
-        false
-        'Set the filename to a random timestamp within the past year. Disabled on /f/.'
-        1
-      ]
       'Show New Thread Option in Threads': [
         true
         'Show the option to post a new / different thread from inside a thread.'
         1
       ]
+      'Randomize Filename': [
+        false
+        'Set the filename to a random timestamp within the past year. Disabled on /f/.'
+        1
+      ]
+      'Auto-process Images': [
+        true
+        'Automatically convert unsupported image formats and resize oversized image uploads in Quick Reply.'
+        1
+      ]
       'Show Upload Progress': [
         true
         'Track progress of file uploads as percentage in submit button.'
+        1
+      ]
+      'Strip Video Audio': [
+        true
+        'Remove audio from MP4 and WebM uploads in Quick Reply on boards that do not allow audio.'
+        1
+      ]
+      'Open Post in New Tab': [
+        true
+        'Open new threads in a new tab, and open replies in a new tab if you\'re not already in the thread.'
         1
       ]
       'Cooldown': [
@@ -524,10 +546,17 @@ Config =
       'Force Noscript Captcha': [
         false
         'Use the non-Javascript fallback captcha even if Javascript is enabled.'
+        1
+      ]
+      'Stacked TCaptcha': [
+        true
+        'Show 4chan\'s TCaptcha as a stacked image grid in Quick Reply instead of the default slider/next UI.'
+        1
       ]
       'Pass Link': [
         false
         'Add a 4chan Pass login link to the bottom of the page.'
+        1
       ]
 
     'Quote Links':
@@ -1160,5 +1189,7 @@ Config =
   passMessageClosed: false
 
   'Prerequest Captcha': false
+
+  processedImageExtension: 'jpg'
 
   'PSAseen': [[]]

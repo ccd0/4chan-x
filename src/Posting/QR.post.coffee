@@ -62,6 +62,7 @@ QR.post = class
       (@load() if QR.selected is @) # load persona
     @select() if select
     @unlock()
+    QR.updatePreviewStrip?()
     QR.captcha.moreNeeded()
 
   rm: ->
@@ -73,12 +74,14 @@ QR.post = class
     else if @ is QR.selected
       (QR.posts[index-1] or QR.posts[index+1]).select()
     QR.posts.splice index, 1
+    QR.updatePreviewStrip?()
     QR.status()
     QR.captcha.updateThread?()
 
   delete: ->
     $.rm @nodes.el
     URL.revokeObjectURL @URL
+    QR.updatePreviewStrip?()
     @dismissErrors()
 
   lock: (lock=true) ->
@@ -228,6 +231,7 @@ QR.post = class
       @fileError 'Unsupported file type.'
     else if /^(image|video)\//.test @file.type
       @readFile()
+    QR.updatePreviewStrip?()
     @preventAutoPost()
 
   checkSize: ->
@@ -239,17 +243,28 @@ QR.post = class
   readFile: ->
     isVideo = /^video\//.test @file.type
     el = $.el(if isVideo then 'video' else 'img')
-    return if isVideo and !el.canPlayType @file.type
 
     event = if isVideo then 'loadeddata' else 'load'
+    loaded = false
     onload = =>
+      return if loaded
+      loaded = true
       $.off el, event, onload
+      $.off el, 'loadedmetadata', onloadMeta if isVideo
+      $.off el, 'canplay', onloadMeta if isVideo
       $.off el, 'error', onerror
       @checkDimensions el
       @setThumbnail el
       $.event 'QRMetadata', null, @nodes.el
+    onloadMeta = ->
+      return if loaded
+      # Some browsers are conservative with loadeddata for object URLs.
+      # Metadata availability is enough to attempt a thumbnail render.
+      onload()
     onerror = =>
       $.off el, event, onload
+      $.off el, 'loadedmetadata', onloadMeta if isVideo
+      $.off el, 'canplay', onloadMeta if isVideo
       $.off el, 'error', onerror
       @fileError "Corrupt #{if isVideo then 'video' else 'image'} or error reading metadata.", '<%= meta.faq %>#error-reading-metadata'
       URL.revokeObjectURL el.src
@@ -258,6 +273,12 @@ QR.post = class
       $.event 'QRMetadata', null, @nodes.el
     @nodes.el.dataset.height = 'loading'
     $.on el, event, onload
+    if isVideo
+      el.preload = 'auto'
+      el.muted = true
+      el.playsInline = true
+      $.on el, 'loadedmetadata', onloadMeta
+      $.on el, 'canplay', onloadMeta
     $.on el, 'error', onerror
     el.src = URL.createObjectURL @file
 
@@ -282,7 +303,16 @@ QR.post = class
       if videoHeight < QR.min_height or videoWidth < QR.min_width
         @fileError "Video too small (video: #{videoHeight}x#{videoWidth}px, min: #{QR.min_height}x#{QR.min_width}px)"
       unless isFinite duration
-        @fileError 'Video lacks duration metadata (try remuxing)'
+        unless @file?._qrAudioStripped
+          extension = if /\.mp4$/i.test(@file?.name or '') or /^video\/mp4$/i.test(@file?.type or '')
+            'mp4'
+          else
+            'webm'
+          command = if BoardConfig.noAudio(g.BOARD.ID)
+            "ffmpeg -i input.#{extension} -c:v copy -an fixed.#{extension}"
+          else
+            "ffmpeg -i input.#{extension} -c copy fixed.#{extension}"
+          @fileError "Video lacks duration metadata. Browser processing cannot safely repair this; remux with: #{command}"
       else if duration > QR.max_duration_video
         @fileError "Video too long (video: #{duration}s, max: #{QR.max_duration_video}s)"
       if BoardConfig.noAudio(g.BOARD.ID) and $.hasAudio(el)
@@ -298,33 +328,109 @@ QR.post = class
     # to avoid crappy resized quality.
     s = 90 * 2 * window.devicePixelRatio
     s *= 3 if @file.type is 'image/gif' # let them animate
-    if isVideo
-      height = el.videoHeight
-      width = el.videoWidth
-    else
-      {height, width} = el
-      if height < s or width < s
-        @URL = el.src
-        @nodes.el.style.backgroundImage = "url(#{@URL})"
-        return
+    createThumb = =>
+      if isVideo
+        height = el.videoHeight
+        width  = el.videoWidth
+      else
+        {height, width} = el
+        if height < s or width < s
+          @URL = el.src
+          @nodes.el.style.backgroundImage = "url(#{@URL})"
+          return true
 
-    if height <= width
-      width  = s / height * width
-      height = s
-    else
-      height = s / width  * height
-      width  = s
-    cv = $.el 'canvas'
-    cv.height = height
-    cv.width  = width
-    cv.getContext('2d').drawImage el, 0, 0, width, height
-    URL.revokeObjectURL el.src
-    cv.toBlob (blob) =>
-      @URL = URL.createObjectURL blob
-      @nodes.el.style.backgroundImage = "url(#{@URL})"
+      return false unless height and width
+
+      if height <= width
+        width  = s / height * width
+        height = s
+      else
+        height = s / width  * height
+        width  = s
+      cv = $.el 'canvas'
+      cv.height = height
+      cv.width  = width
+      try
+        cv.getContext('2d').drawImage el, 0, 0, width, height
+      catch
+        return false
+      URL.revokeObjectURL el.src
+      cv.toBlob (blob) =>
+        @URL = URL.createObjectURL(blob) if blob
+        @nodes.el.style.backgroundImage = "url(#{@URL})" if @URL
+      true
+
+    if isVideo
+      done = false
+      tries = 0
+      timer = null
+      seekStarted = false
+      seekFailed = false
+      targetTime = if Number.isFinite(el.duration) and el.duration > 0
+        Math.min(0.1, el.duration / 2)
+      else
+        0
+      fallback = =>
+        cv = $.el 'canvas'
+        cv.width = 180
+        cv.height = 90
+        ctx = cv.getContext('2d')
+        ctx.fillStyle = '#2d2d2d'
+        ctx.fillRect 0, 0, cv.width, cv.height
+        ctx.fillStyle = '#bdbdbd'
+        ctx.fillRect 8, 8, cv.width - 16, cv.height - 16
+        ctx.fillStyle = '#242424'
+        ctx.font = 'bold 18px sans-serif'
+        ctx.textAlign = 'center'
+        ctx.fillText 'VIDEO', cv.width / 2, cv.height / 2 + 7
+        cv.toBlob (blob) =>
+          @URL = URL.createObjectURL(blob) if blob
+          @nodes.el.style.backgroundImage = "url(#{@URL})" if @URL
+      cleanup = ->
+        clearTimeout timer if timer
+        $.off el, 'loadeddata', tryRender
+        $.off el, 'canplay', tryRender
+        $.off el, 'seeked', tryRender
+      tryRender = ->
+        return if done
+        tries++
+        if !seekStarted and targetTime > 0
+          seekStarted = true
+          try
+            el.currentTime = targetTime
+          catch
+            seekFailed = true
+          unless seekFailed
+            timer = setTimeout tryRender, 120
+            return
+        if el.readyState >= 2 and createThumb()
+          done = true
+          cleanup()
+          return
+        if tries in [5, 9] and Number.isFinite(el.duration) and el.duration > 0
+          target = if tries is 5 then Math.min(0.25, el.duration / 2) else Math.min(0.5, el.duration / 2)
+          try
+            el.currentTime = target
+          catch
+        if tries >= 14
+          done = true
+          cleanup()
+          fallback()
+          return
+        timer = setTimeout tryRender, 80
+      $.on el, 'loadeddata', tryRender
+      $.on el, 'canplay', tryRender
+      $.on el, 'seeked', tryRender
+      $.queueTask tryRender
+      return
+
+    createThumb()
 
   rmFile: ->
     return if @isLocked
+    if QR.posts.length > 1 and !@com and !@sub
+      @rm()
+      return
     delete @file
     delete @filename
     delete @filesize
@@ -336,6 +442,7 @@ QR.post = class
     @showFileData()
     URL.revokeObjectURL @URL
     @dismissErrors (error) -> $.hasClass error, 'file-error'
+    QR.updatePreviewStrip?()
     @preventAutoPost()
 
   rmMetadata: ->
