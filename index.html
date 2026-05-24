@@ -4,7 +4,6 @@
 <title>4chan X</title>
 <link rel="stylesheet" href="web.css">
 <link rel="icon" href="img/icon.gif">
-<link rel="chrome-webstore-item" href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">
 </head><body>
 <div id="header">
 <h1 id="4chan-x">4chan X</h1>
@@ -31,13 +30,7 @@
 <p>Install <a href="https://addons.mozilla.org/en-US/firefox/addon/violentmonkey/">Violentmonkey</a>, <a href="https://addons.mozilla.org/en-US/firefox/addon/tampermonkey/">Tampermonkey</a>, or <a href="https://addons.mozilla.org/en-US/firefox/addon/greasemonkey/">Greasemonkey</a> (issues since v4: <a href="https://github.com/greasemonkey/greasemonkey/issues/2526">#2526</a>, <a href="https://github.com/greasemonkey/greasemonkey/issues/2574">#2576</a>), then <strong><a href="https://www.4chan-x.net/builds/4chan-X.user.js">click here to install 4chan X</a></strong>.</p>
 <p>Ports of Greasemonkey are available for <a href="https://sourceforge.net/projects/gmport/">SeaMonkey</a> and <a href="https://github.com/janekptacijarabaci/greasemonkey/releases/latest">Pale Moon</a>.</p>
 </div><input hidden type="checkbox" id="chromium-hide"><div><h3 id="chromium"><label for="chromium-hide">Chromium</label></h3>
-<p><strong>Userscript</strong>: Install <a href="https://chrome.google.com/webstore/detail/violent-monkey/jinjaccalgkegednnccohejagnlnfdag">Violentmonkey</a> or <a href="https://tampermonkey.net/">Tampermonkey</a>, then <strong><a href="https://www.4chan-x.net/builds/4chan-X.user.js">click here to install 4chan X</a></strong>.</p>
-<p><strong>Chrome extension</strong>: 4chan X is also available as a standalone Chrome extension. The Chrome extension has the additional feature of being able to sync your settings and data with other devices via Chrome Sync. But there is an issue when the script updates: Whenever the Chrome extension is updated, until you hard refresh (F5) the tab, 4chan X is unable to save any data (such as posts marked as yours and settings changes). The userscript version above does not have this problem when 4chan X updates, only when Violentmonkey / Tampermonkey is updated. To install as a Chrome extension:</p>
-<ul>
-<li><strong>Chromium</strong>, <strong>Vivaldi</strong>: <strong><a href="https://www.4chan-x.net/builds/4chan-X.crx">Download 4chan X</a></strong>, then open <code>chrome://extensions</code> and drag the downloaded file onto the page. Alternatively, you can install 4chan X from the <strong><a href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">Chrome store</a></strong>.</li>
-<li><strong>Opera</strong>: <strong><a href="https://www.4chan-x.net/builds/4chan-X.crx">Click to install 4chan X</a></strong>, then follow the prompts to activate it in your extension manager.</li>
-<li><strong>Chrome</strong>: Install 4chan X from the <strong><a href="https://chrome.google.com/webstore/detail/ohnjgmpcibpbafdlkimncjhflgedgpam">Chrome store</a></strong>.</li>
-</ul>
+<p>Install <a href="https://chrome.google.com/webstore/detail/violent-monkey/jinjaccalgkegednnccohejagnlnfdag">Violentmonkey</a> or <a href="https://tampermonkey.net/">Tampermonkey</a>, then <strong><a href="https://www.4chan-x.net/builds/4chan-X.user.js">click here to install 4chan X</a></strong>.</p>
 <p>Note: This version of 4chan X does not work with Opera 12. If you need Opera 12 support, try <a href="https://github.com/loadletter/4chan-x">loadletter's fork</a> instead.</p>
 </div><input hidden type="checkbox" id="safari-hide"><div><h3 id="safari"><label for="safari-hide">Safari</label></h3>
 <p>Install the <a href="https://itunes.apple.com/us/app/userscripts/id1463298887">Userscripts</a> extension. Enable it by pressing <code>⌘,</code>, navigating to the extensions pane and checking <code>Userscripts</code> checkbox. Now open the Userscripts editor by clicking on the <code>&lt;/&gt;</code> button in the taskbar. Then click on the <code>+</code> button and select the <code>New Javascript</code> option. Replace the default text with the contents of the 4chan X <strong><a href="https://www.4chan-x.net/builds/4chan-X.user.js">script</a></strong>. Finally save it by pressing <code>⌘s</code>.</p>
@@ -80,15 +73,13 @@ wget -P &quot;${XDG_DATA_HOME:-$HOME/.local/share}/uzbl/userscripts&quot; https:
 <p>To install the <strong>beta</strong> version and get updates whenever there's a new <strong>beta</strong> version:</p>
 <ul>
 <li><a href="https://www.4chan-x.net/builds/4chan-X-beta.user.js">Install userscript</a> (use with Greasemonkey / Violentmonkey / Tampermonkey / JS Blocker / etc.)</li>
-<li><a href="https://www.4chan-x.net/builds/4chan-X-beta.crx">Download Chrome extension</a> (download and drag to <code>chrome://extensions</code>)</li>
 </ul>
 <p>To install the current <strong>beta</strong> version but get updates from the <strong>stable</strong> channel (for example, if just you want a particular recent feature):</p>
 <ul>
 <li><a href="https://github.com/ccd0/4chan-x/raw/beta/builds/4chan-X.user.js">Install userscript</a></li>
-<li><a href="https://github.com/ccd0/4chan-x/raw/beta/builds/4chan-X.crx">Download Chrome extension</a></li>
 </ul>
 <h2 id="troubleshooting">Troubleshooting</h2>
-<p>If you encounter a bug, try the steps <a href="https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md#reporting-bugs">here</a>, then report it to the <a href="https://github.com/ccd0/4chan-x/issues?q=is%3Aopen+sort%3Aupdated-desc">issue tracker</a>. If the bug seems to be caused by a script update, you can install a old version from the <a href="https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md">changelog</a>.</p>
+<p>If you encounter a bug, try the steps <a href="https://github.com/ccd0/4chan-x/blob/master/CONTRIBUTING.md#reporting-bugs">here</a>, then report it to the <a href="https://github.com/ccd0/4chan-x/issues?q=is%3Aopen+sort%3Aupdated-desc">issue tracker</a>. If the bug seems to be caused by a script update, you can install a old version from the <a href="https://github.com/ccd0/4chan-x/blob/master/CHANGELOG.md">changelog</a>. You can also reach me in the <a href="https://kissu.moe/maho/res/40">4chan X thread on Kissu</a>, and this is the quickest way to get my attention if there is an urgent problem.</p>
 
 <script>
 function imagePreview() {
@@ -101,21 +92,10 @@ function imagePreview() {
   span.appendChild(img);
   this.parentNode.insertBefore(span, this.nextSibling);
 }
-function storeInstall(e) {
-  if (!e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey && e.button === 0) {
-    var url = this.href;
-    chrome.webstore.install(url, function(){}, function(){
-      location.href = url;
-    });
-    e.preventDefault();
-  }
-}
 for (var i = 0; i < document.links.length; i++) {
   var link = document.links[i];
   if (/\.png$/.test(link.pathname) && !link.querySelector('.hover')) {
     link.addEventListener('mouseover', imagePreview, false);
-  } else if (window.chrome && link.host === 'chrome.google.com') {
-    link.addEventListener('click', storeInstall, false);
   }
 }
 var engine = (function() {
