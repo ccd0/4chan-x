@@ -2056,7 +2056,12 @@ input#qr-filename {
   -webkit-flex: none;
   flex: none;
   margin: 0;
-  margin-right: 3px;
+  margin-right: 4px;
+}
+#qr-filename-container > a {
+  min-width: 14px;
+  padding: 0 1px;
+  text-align: center;
 }
 #qr:not(.has-spoiler) #qr-spoiler-label,
 #file-n-submit:not(.has-file) #qr-spoiler-label,
@@ -2113,6 +2118,99 @@ input[type="checkbox"]:checked ~ .checkbox-letter {
 }
 #qr > form > select {
   margin-top: 1px;
+}
+#qr select.qr-flag-native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+#qr .qr-flag-picker {
+  margin: 6px 0 0;
+}
+#qr .qr-flag-toggle {
+  align-items: center;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #fff !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px;
+  color: #222 !important;
+  cursor: pointer;
+  display: flex;
+  gap: 6px;
+  min-height: 22px;
+  opacity: 1;
+  padding: 0 20px 0 6px;
+  position: relative;
+  width: 100%;
+}
+#qr .qr-flag-toggle::after {
+  content: '▾';
+  font-size: 11px;
+  pointer-events: none;
+  position: absolute;
+  right: 6px;
+}
+#qr .qr-flag-picker.open .qr-flag-toggle::after {
+  content: '▴';
+}
+.qr-flag-menu {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  position: fixed;
+  z-index: 10000;
+}
+.qr-flag-option {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: #222;
+  cursor: pointer;
+  display: flex;
+  gap: 6px;
+  padding: 2px 6px;
+  text-align: left;
+  width: 100%;
+}
+.qr-flag-option:hover,
+.qr-flag-option:focus {
+  background: rgba(0, 0, 0, 0.08);
+  outline: none;
+}
+.qr-flag-option.selected {
+  font-weight: 600;
+}
+.qr-flag-icon {
+  display: inline-block;
+  flex: none;
+  height: 11px;
+  width: 16px;
+}
+.qr-flag-icon-fa {
+  color: #666;
+  font-size: 12px;
+  height: auto;
+  line-height: 1;
+  text-align: center;
+  width: 16px;
+}
+.qr-flag-icon-empty {
+  height: 11px;
+  width: 16px;
+}
+.qr-flag-label {
+  color: #222 !important;
+  line-height: 1.25;
 }
 
 /* Dumping UI */

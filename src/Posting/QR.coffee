@@ -162,6 +162,25 @@ QR =
         QR.nodes.el.classList.toggle 'focus', QR.hasFocus or QR.shouldPinOpen()
         QR.updatePreviewStrip()
 
+  isDefaultDraftState: ->
+    return false unless QR.nodes and QR.posts
+    return false if QR.req
+    return false unless QR.posts.length is 1
+    post = QR.posts[0]
+    return false unless post
+    return false if post.file or post.pasting
+    return false if post.com?.trim()
+    return false if post.sub?.trim()
+    return false if post.email?.trim()
+    defaultThread = '' + (if g.VIEW is 'thread' then g.THREADID else 'new')
+    currentThread = '' + (post.thread ? 'new')
+    return false unless currentThread is defaultThread
+    if QR.nodes.flag
+      defaultFlag = '' + (QR.nodes.flag.dataset.default ? '0')
+      currentFlag = '' + (post.flag ? defaultFlag)
+      return false unless currentFlag is defaultFlag
+    true
+
   inBubble: ->
     bubbles = $$ 'iframe[src^="https://www.google.com/recaptcha/api2/frame"]'
     d.activeElement in bubbles or bubbles.some (el) ->
@@ -170,11 +189,17 @@ QR =
   hasDraftState: ->
     return false unless QR.nodes and QR.posts
     return true if QR.req
-    return true if QR.captcha?.occupied? and QR.captcha.occupied()
-    for post in QR.posts
-      return true if post?.file
-      return true if post?.com?.trim()
-    QR.posts.length > 1
+    if QR.captcha?.isEnabled
+      # Keep QR open while an interactive captcha is actively shown/needed.
+      return true if $.hasClass(QR.nodes.el, 'captcha-open')
+      return true if QR.nodes.el.dataset.fourchanxCaptchaPending is '1'
+      if QR.captcha is Captcha.t
+        container = QR.captcha.nodes?.container
+        if container and doc.contains(container)
+          return true if $('.tcaptcha-image', container)
+          return true if $("[name='t-response']", container)?.value
+          return true if $("[name='t-challenge']", container)?.value
+    !QR.isDefaultDraftState()
 
   shouldPinOpen: ->
     return false unless QR.nodes and $.hasClass(QR.nodes.el, 'autohide')
@@ -672,30 +697,180 @@ QR =
   flags: ->
     select = $.el 'select',
       name:      'flag'
-      className: 'flagSelector'
+      className: 'flagSelector qr-flag-native'
+
+    picker = $.el 'div',
+      className: 'qr-flag-picker'
+
+    toggle = $.el 'button',
+      type: 'button'
+      className: 'qr-flag-toggle field'
+    toggle.setAttribute 'aria-expanded', 'false'
+
+    icon = $.el 'span',
+      className: 'qr-flag-icon qr-flag-icon-empty'
+    icon.setAttribute 'aria-hidden', 'true'
+
+    label = $.el 'span',
+      className: 'qr-flag-label'
+
+    $.add toggle, icon
+    $.add toggle, label
+    $.add picker, toggle
+
+    menu = $.el 'div',
+      className: 'qr-flag-menu'
+    menu.hidden = true
+    $.add d.body, menu
+
+    entries = $.dict()
+    open = false
 
     addFlag = (value, textContent) ->
       $.add select, $.el 'option', {value, textContent}
+      valueStr = '' + value
+      code = valueStr.toLowerCase().replace(/[^a-z0-9_-]+/g, '-')
+      iconClass = ''
+      if valueStr isnt '0'
+        iconClass = "bfl bfl-#{code}"
+
+      entries[valueStr] = {text: textContent, iconClass}
+
+      option = $.el 'button',
+        type: 'button'
+        className: 'qr-flag-option'
+      option.dataset.value = valueStr
+
+      optionIcon = $.el 'span',
+        className: "qr-flag-icon #{iconClass}".trim()
+      optionIcon.classList.add 'qr-flag-icon-empty' unless iconClass
+      optionIcon.setAttribute 'aria-hidden', 'true'
+
+      optionLabel = $.el 'span',
+        className: 'qr-flag-label'
+        textContent: textContent
+
+      $.add option, optionIcon
+      $.add option, optionLabel
+      $.on option, 'click', ->
+        select.value = valueStr
+        select.dispatchEvent new Event('change', {bubbles: true})
+        closeMenu()
+      $.add menu, option
+
+    updateMenuPosition = ->
+      rect = toggle.getBoundingClientRect()
+      width = Math.max rect.width, 180
+      pad = 8
+      left = Math.min Math.max(rect.left, pad), Math.max(pad, window.innerWidth - width - pad)
+      spaceBelow = window.innerHeight - rect.bottom - pad
+      spaceAbove = rect.top - pad
+      desired = Math.min (menu.scrollHeight or 320), 320
+      openUpward = spaceBelow < 150 and spaceAbove > spaceBelow
+      maxHeight = Math.max 100, (if openUpward then spaceAbove else spaceBelow)
+      height = Math.min desired, maxHeight
+      top = if openUpward then rect.top - height else rect.bottom
+      menu.style.left = "#{left}px"
+      menu.style.top = "#{Math.max(pad, top)}px"
+      menu.style.width = "#{width}px"
+      menu.style.maxHeight = "#{maxHeight}px"
+
+    closeMenu = ->
+      return unless open
+      open = false
+      picker.classList.remove 'open'
+      toggle.setAttribute 'aria-expanded', 'false'
+      menu.hidden = true
+
+    openMenu = ->
+      return if open
+      open = true
+      picker.classList.add 'open'
+      toggle.setAttribute 'aria-expanded', 'true'
+      menu.hidden = false
+      updateMenuPosition()
+
+    syncSelected = ->
+      value = '' + (select.value or '')
+      unless value of entries
+        value = '' + (select.options[0]?.value or '0')
+        select.value = value
+      data = entries[value]
+      icon.className = "qr-flag-icon #{data.iconClass}".trim()
+      icon.classList.add 'qr-flag-icon-empty' unless data.iconClass
+      label.textContent = data.text
+      for option in $$ '.qr-flag-option', menu
+        option.classList.toggle 'selected', option.dataset.value is value
 
     addFlag '0', (if g.BOARD.config.country_flags then 'Geographic Location' else 'None')
     for value, textContent of g.BOARD.config.board_flags
       addFlag value, textContent
 
-    select
+    onToggleClick = (e) ->
+      e.preventDefault()
+      e.stopPropagation()
+      if open then closeMenu() else openMenu()
+
+    onOutsideMouseDown = (e) ->
+      return unless open
+      return if picker.contains(e.target) or menu.contains(e.target)
+      closeMenu()
+
+    onDocKeydown = (e) ->
+      return unless open
+      if e.key is 'Escape'
+        closeMenu()
+        toggle.focus()
+
+    onViewportChange = ->
+      closeMenu() if open
+
+    onFormScroll = ->
+      closeMenu() if open
+
+    $.on toggle, 'click', onToggleClick
+    $.on d, 'mousedown', onOutsideMouseDown
+    $.on d, 'keydown', onDocKeydown
+    $.on window, 'resize', onViewportChange
+    $.on window, 'scroll', onViewportChange
+    $.on QR.nodes.form, 'scroll', onFormScroll
+    $.on select, 'change', syncSelected
+
+    select._syncFlagPicker = syncSelected
+    select._destroyFlagPicker = ->
+      closeMenu()
+      $.off toggle, 'click', onToggleClick
+      $.off d, 'mousedown', onOutsideMouseDown
+      $.off d, 'keydown', onDocKeydown
+      $.off window, 'resize', onViewportChange
+      $.off window, 'scroll', onViewportChange
+      $.off QR.nodes.form, 'scroll', onFormScroll
+      $.off select, 'change', syncSelected
+      $.rm menu
+
+    syncSelected()
+    {select, picker}
 
   flagsInput: ->
     {nodes} = QR
     return if not nodes
     if nodes.flag
+      nodes.flag._destroyFlagPicker?()
+      $.rm nodes.flag._picker if nodes.flag._picker
       $.rm nodes.flag
       delete nodes.flag
 
     if g.BOARD.config.board_flags
-      flag = QR.flags()
+      {select: flag, picker} = QR.flags()
       flag.dataset.name    = 'flag'
       flag.dataset.default = '0'
       nodes.flag = flag
+      nodes.flag._picker = picker
       $.add nodes.form, flag
+      $.add nodes.form, picker
+
+  updateFlagSelector: ->
+    QR.nodes?.flag?._syncFlagPicker?()
 
   submit: (e) ->
     e?.preventDefault()

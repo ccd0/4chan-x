@@ -56,6 +56,8 @@ Captcha.t =
     return unless @isEnabled and @nodes.container
     $.global ->
       window.TCaptcha.destroy()
+      root = document.querySelector '#qr'
+      delete root.dataset.fourchanxCaptchaPending if root?.dataset?.fourchanxCaptchaPending?
     $.rm @nodes.container
     delete @nodes.container
 
@@ -87,6 +89,18 @@ Captcha.t =
     if @nodes.container
       $.global ->
         window.TCaptcha.clearChallenge()
+        root = document.querySelector '#qr'
+        delete root.dataset.fourchanxCaptchaPending if root?.dataset?.fourchanxCaptchaPending?
+        return unless window.TCaptcha?.__fourchanXStackedEnabled
+        task = document.querySelector '#t-task'
+        return unless task
+        if (nextNode = window.TCaptcha?.nextNode or document.querySelector '#t-next')
+          nextNode.dataset.fourchanxStatusHidden = '1'
+          nextNode.style.visibility = 'hidden'
+          nextNode.textContent = ''
+        task.classList.remove 'is-success', 'is-error'
+        task.classList.add 'fourchanx-stacked-status'
+        task.innerHTML = '<div class="fourchanx-stacked-placeholder"><span class="fa fa-th-large" aria-hidden="true"></span><span class="label">Stacked Captcha</span><span class="detail">Click Get Captcha to display captcha images.</span></div>'
 
   occupied: ->
     !!@nodes.container
@@ -156,14 +170,7 @@ Captcha.t =
             padding: 0 8px;
           }
           #qr.fourchanx-stacked-captcha #t-next {
-            margin-left: auto;
-            font-weight: bold;
-            min-width: 2.5em;
-            min-height: 24px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: flex-end;
-            text-align: right;
+            display: none !important;
           }
           #qr.fourchanx-stacked-captcha #t-slider {
             display: none !important;
@@ -285,6 +292,24 @@ Captcha.t =
             .replace(/(?:^|>)\s*([a-z])/i, (m) -> m.toUpperCase())
         ) + '.'
 
+      setStackedStatusFromText = (text) ->
+        message = ('' + (text or '')).replace(/\s+/g, ' ').trim()
+        unless message
+          setStackedStatusPlaceholder 'Stacked Captcha', 'Click Get Captcha to display captcha images.'
+          return
+        if /verification not required/i.test(message)
+          detail = if /^verification not required[.!]?$/i.test(message)
+            ''
+          else
+            'You can submit without solving a new captcha.'
+          setStackedStatusPlaceholder 'Verification Not Required', detail, 'fa-check-circle', 'success'
+        else if /done\.?$/i.test(message)
+          setStackedStatusPlaceholder 'Captcha Completed', '', 'fa-check-circle', 'success'
+        else if /expir|error|invalid|fail|incorrect|mistyped/i.test(message)
+          setStackedStatusPlaceholder 'Captcha Error', message, 'fa-exclamation-circle', 'error'
+        else
+          setStackedStatusPlaceholder 'Stacked Captcha', message, 'fa-info-circle', 'neutral'
+
       initializeEventHandler = (container) ->
         return unless container
         return if container.dataset.hasListener
@@ -296,6 +321,8 @@ Captcha.t =
         container.dataset.hasListener = 'true'
 
       createImageGrid = ->
+        root = document.querySelector '#qr'
+        delete root.dataset.fourchanxCaptchaPending if root?.dataset?.fourchanxCaptchaPending?
         container = document.querySelector selectors.container
         task = window.TCaptcha.getCurrentTask?()
         return unless window.TCaptcha.node and container and task
@@ -359,12 +386,7 @@ Captcha.t =
 
         window.TCaptcha.setTaskNodeContent = (text) ->
           clearStackedStatusPlaceholder()
-          if text is 'Done.'
-            setStackedStatusPlaceholder 'Captcha Completed', 'Click Get Captcha for a new challenge.', 'fa-check-circle', 'success'
-          else if /expir/i.test(text)
-            setStackedStatusPlaceholder 'Captcha Expired', 'Click Get Captcha for a new challenge.', 'fa-exclamation-circle', 'error'
-          else
-            @taskNode.innerHTML = "<div id=\"t-desc\">#{text}</div>"
+          setStackedStatusFromText text
 
         window.TCaptcha.buildSliderNode = ->
           buildStackedSliderNode()
@@ -380,6 +402,8 @@ Captcha.t =
         if loadButton and loadButton.dataset.fourchanxStackedLoadBound isnt '1'
           loadButton.dataset.fourchanxStackedLoadBound = '1'
           loadButton.addEventListener 'click', ->
+            root = document.querySelector '#qr'
+            root.dataset.fourchanxCaptchaPending = '1' if root?.dataset?
             clearStackedStatusPlaceholder()
         if window.requestAnimationFrame
           window.requestAnimationFrame ensureStackedSliderNode
