@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.14.23.2
+// @version      1.14.24.1
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -28,12 +28,12 @@
 // @include      https://is.4channel.org/*
 // @include      http://is2.4channel.org/*
 // @include      https://is2.4channel.org/*
+// @include      https://39chan.moe/*
 // @include      https://erischan.org/*
 // @include      https://www.erischan.org/*
 // @include      https://fufufu.moe/*
-// @include      https://gnfos.com/*
-// @include      https://himasugi.blog/*
-// @include      https://www.himasugi.blog/*
+// @include      https://gnfos.vip/*
+// @include      https://www.gnfos.vip/*
 // @include      https://kakashinenpo.com/*
 // @include      https://www.kakashinenpo.com/*
 // @include      https://kissu.moe/*
@@ -51,9 +51,10 @@
 // @include      https://smug.nepu.moe/*
 // @include      https://sportschan.org/*
 // @include      https://www.sportschan.org/*
-// @include      https://sushigirl.us/*
-// @include      https://www.sushigirl.us/*
+// @include      https://sushigirl.cafe/*
+// @include      https://www.sushigirl.cafe/*
 // @include      https://tvch.moe/*
+// @include      https://wapchan.org/*
 // @exclude      http://www.4chan.org/advertise
 // @exclude      https://www.4chan.org/advertise
 // @exclude      http://www.4chan.org/advertise?*
@@ -210,7 +211,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.23.2',
+  VERSION:   '1.14.24.1',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -6904,7 +6905,7 @@ Post = (function() {
     };
 
     function Post(root, thread, board, flags) {
-      var clone, j, k, key, len, len1, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, selector;
+      var base, clone, j, k, key, len, len1, ref, ref1, ref10, ref11, ref12, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, selector;
       this.thread = thread;
       this.board = board;
       if (flags == null) {
@@ -6948,6 +6949,9 @@ Post = (function() {
         flag: (ref11 = this.nodes.flag) != null ? ref11.title : void 0,
         date: this.nodes.date ? g.SITE.parseDate(this.nodes.date) : void 0
       };
+      if (typeof (base = g.SITE).parseInfo === "function") {
+        base.parseInfo(this);
+      }
       if (Conf['Anonymize']) {
         this.info.nameBlock = 'Anonymous';
       } else {
@@ -7903,7 +7907,7 @@ SW = {};
       },
       file: {
         text: '.fileinfo',
-        link: '.fileinfo > a',
+        link: '.fileinfo > a, .fileinfo > .unimportant > a[download]',
         thumb: 'a > .post-image'
       },
       thumbLink: '.file > a',
@@ -8031,8 +8035,12 @@ SW = {};
       if ($.x("ancestor::" + this.xpath.postContainer + "[1]", text) !== post.nodes.root) {
         return false;
       }
-      if (!(infoNode = indexOf.call((ref = link.nextSibling) != null ? ref.textContent : void 0, '(') >= 0 ? link.nextSibling : link.nextElementSibling)) {
-        return false;
+      if (link.parentNode === text) {
+        if (!(infoNode = indexOf.call((ref = link.nextSibling) != null ? ref.textContent : void 0, '(') >= 0 ? link.nextSibling : link.nextElementSibling)) {
+          return false;
+        }
+      } else {
+        infoNode = link.parentNode;
       }
       if (!(info = infoNode.textContent.match(/\((.*,\s*)?([\d.]+ ?[KMG]?B).*\)/))) {
         return false;
@@ -8192,7 +8200,7 @@ SW = {};
         isArchived: '.archivedIcon'
       },
       file: {
-        text: '.file > :first-child',
+        text: '.file > .fileInfo, .file > .fileText',
         link: '.fileText > a',
         thumb: 'a.fileThumb > [data-md5]'
       },
@@ -8343,6 +8351,12 @@ SW = {};
           }
         }
         return results;
+      }
+    },
+    parseInfo: function(post) {
+      var _, ref;
+      if ((post.info.tripcode == null) && /\!/.test(post.info.name)) {
+        return ref = post.info.name.match(/(.*?) ?(\!.*)/), _ = ref[0], post.info.name = ref[1], post.info.tripcode = ref[2], ref;
       }
     },
     parseDate: function(node) {
