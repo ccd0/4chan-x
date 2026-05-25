@@ -794,6 +794,8 @@ Config =
 
     MD5: ''
 
+  easyFilters: ''
+
   sauces: """
     # Known filename formats:
     https://www.pixiv.net/member_illust.php?mode=medium&illust_id=%$1;regexp:/^(\\d+)_p\\d+/

@@ -804,8 +804,50 @@ div[data-checked="false"] > .suboption-list {
 .section-filter textarea {
   height: 500px;
 }
-.section-main a, .section-filter a, .section-advanced a {
+.section-main a, .section-filter a, .section-simple-filters a, .section-advanced a {
   text-decoration: underline;
+}
+.section-simple-filters .easy-filters-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 4px;
+}
+.section-simple-filters th,
+.section-simple-filters td {
+  padding: 0;
+  text-align: left;
+  vertical-align: middle;
+}
+.section-simple-filters .easy-filter-enabled,
+.section-simple-filters .easy-filter-auto,
+.section-simple-filters .easy-filter-hide {
+  display: block;
+  margin: auto;
+}
+.section-simple-filters .easy-filter-pattern {
+  min-width: 200px;
+}
+.section-simple-filters .easy-filter-boards {
+  min-width: 96px;
+}
+.section-simple-filters .easy-filter-color {
+  width: 84px;
+}
+.section-simple-filters .easy-filter-remove {
+  min-width: 26px;
+  height: 24px;
+  line-height: 20px;
+  text-align: center;
+}
+.section-simple-filters .easy-filters-controls {
+  margin-top: 6px;
+}
+.section-simple-filters .easy-filter-save {
+  margin-left: 6px;
+}
+.section-simple-filters .easy-filter-status {
+  margin-left: 8px;
+  opacity: .85;
 }
 #sauce-doc-expand:not(:checked) ~ #sauce-doc {
   max-height: 130px;

@@ -9,84 +9,10 @@ Filter =
 
     for key of Config.filter
       for line in Conf[key].split '\n'
-        continue if line[0] is '#'
+        @parseFilterLine key, line
 
-        if not (regexp = line.match /\/(.*)\/(\w*)/)
-          continue
-
-        # Don't mix up filter flags with the regular expression.
-        filter = line.replace regexp[0], ''
-
-        # List of the boards this filter applies to.
-        boards = @parseBoards filter.match(/(?:^|;)\s*boards:([^;]+)/)?[1]
-
-        # Boards to exclude from an otherwise global rule.
-        excludes = @parseBoards filter.match(/(?:^|;)\s*exclude:([^;]+)/)?[1]
-
-        if (isstring = (key in ['uniqueID', 'MD5']))
-          # MD5 filter will use strings instead of regular expressions.
-          regexp = regexp[1]
-        else
-          try
-            # Please, don't write silly regular expressions.
-            regexp = RegExp regexp[1], regexp[2]
-          catch err
-            # I warned you, bro.
-            new Notice 'warning', [
-              $.tn "Invalid #{key} filter:"
-              $.el 'br'
-              $.tn line
-              $.el 'br'
-              $.tn err.message
-            ], 60
-            continue
-
-        # Filter OPs along with their threads or replies only.
-        op = filter.match(/(?:^|;)\s*op:(no|only)/)?[1] or ''
-        mask = $.getOwn({'no': 1, 'only': 2}, op) or 0
-
-        # Filter only posts with/without files.
-        file = filter.match(/(?:^|;)\s*file:(no|only)/)?[1] or ''
-        mask = mask | ($.getOwn({'no': 4, 'only': 8}, file) or 0)
-
-        # Overrule the `Show Stubs` setting.
-        # Defaults to stub showing.
-        stub = switch filter.match(/(?:^|;)\s*stub:(yes|no)/)?[1]
-          when 'yes'
-            true
-          when 'no'
-            false
-          else
-            Conf['Stubs']
-
-        # Desktop notification
-        noti = /(?:^|;)\s*notify/.test filter
-
-        # Highlight the post.
-        # If not specified, the highlight class will be filter-highlight.
-        if (hl = /(?:^|;)\s*highlight/.test filter)
-          hl = filter.match(/(?:^|;)\s*highlight:([\w-]+)/)?[1] or 'filter-highlight'
-          # Put highlighted OP's thread on top of the board page or not.
-          # Defaults to on top.
-          top = filter.match(/(?:^|;)\s*top:(yes|no)/)?[1] or 'yes'
-          top = top is 'yes' # Turn it into a boolean
-
-        # Fields that this filter applies to (for 'general' filters)
-        if key is 'general'
-          if (types = filter.match /(?:^|;)\s*type:([^;]*)/)
-            types = types[1].split(',')
-          else
-            types = ['subject', 'name', 'filename', 'comment']
-
-        # Hide the post (default case).
-        hide = !(hl or noti)
-
-        filter = {isstring, regexp, boards, excludes, mask, hide, stub, hl, top, noti}
-        if key is 'general'
-          for type in types
-            (@filters[type] or= []).push filter
-        else
-          (@filters[key] or= []).push filter
+    for line in @easyFilterLines()
+      @parseFilterLine 'general', line
 
     return unless Object.keys(@filters).length
     if g.VIEW is 'catalog'
@@ -95,6 +21,142 @@ Filter =
       Callbacks.Post.push
         name: 'Filter'
         cb:   @node
+
+  parseFilterLine: (key, line) ->
+    return if line[0] is '#'
+
+    return if not (regexp = line.match /\/(.*)\/(\w*)/)
+
+    # Don't mix up filter flags with the regular expression.
+    filter = line.replace regexp[0], ''
+
+    # List of the boards this filter applies to.
+    boards = @parseBoards filter.match(/(?:^|;)\s*boards:([^;]+)/)?[1]
+
+    # Boards to exclude from an otherwise global rule.
+    excludes = @parseBoards filter.match(/(?:^|;)\s*exclude:([^;]+)/)?[1]
+
+    if (isstring = (key in ['uniqueID', 'MD5']))
+      # MD5 filter will use strings instead of regular expressions.
+      regexp = regexp[1]
+    else
+      try
+        # Please, don't write silly regular expressions.
+        regexp = RegExp regexp[1], regexp[2]
+      catch err
+        # I warned you, bro.
+        new Notice 'warning', [
+          $.tn "Invalid #{key} filter:"
+          $.el 'br'
+          $.tn line
+          $.el 'br'
+          $.tn err.message
+        ], 60
+        return
+
+    # Filter OPs along with their threads or replies only.
+    op = filter.match(/(?:^|;)\s*op:(no|only)/)?[1] or ''
+    mask = $.getOwn({'no': 1, 'only': 2}, op) or 0
+
+    # Filter only posts with/without files.
+    file = filter.match(/(?:^|;)\s*file:(no|only)/)?[1] or ''
+    mask = mask | ($.getOwn({'no': 4, 'only': 8}, file) or 0)
+
+    # Overrule the `Show Stubs` setting.
+    # Defaults to stub showing.
+    stub = switch filter.match(/(?:^|;)\s*stub:(yes|no)/)?[1]
+      when 'yes'
+        true
+      when 'no'
+        false
+      else
+        Conf['Stubs']
+
+    # Desktop notification
+    noti = /(?:^|;)\s*notify/.test filter
+
+    # Highlight the post.
+    # If not specified, the highlight class will be filter-highlight.
+    if (hl = /(?:^|;)\s*highlight/.test filter)
+      hl = filter.match(/(?:^|;)\s*highlight:([\w-]+)/)?[1] or 'filter-highlight'
+      # Put highlighted OP's thread on top of the board page or not.
+      # Defaults to on top.
+      top = filter.match(/(?:^|;)\s*top:(yes|no)/)?[1] or 'yes'
+      top = top is 'yes' # Turn it into a boolean
+
+    # Fields that this filter applies to (for 'general' filters)
+    if key is 'general'
+      if (types = filter.match /(?:^|;)\s*type:([^;]*)/)
+        types = types[1].split(',')
+      else
+        types = ['subject', 'name', 'filename', 'comment']
+
+    # Hide the post (default case).
+    hide = !(hl or noti)
+
+    filter = {isstring, regexp, boards, excludes, mask, hide, stub, hl, top, noti}
+    if key is 'general'
+      for type in types
+        (@filters[type] or= []).push filter
+    else
+      (@filters[key] or= []).push filter
+
+  easyFilterLines: ->
+    rules = []
+    if Conf['easyFilters'] instanceof Array
+      rules = Conf['easyFilters']
+    else if typeof Conf['easyFilters'] is 'string' and Conf['easyFilters'].trim()
+      try
+        rules = JSON.parse Conf['easyFilters']
+      catch
+        rules = []
+    return [] unless rules instanceof Array
+
+    lines = []
+    for rule in rules when rule and typeof rule is 'object'
+      continue if rule.enabled is false
+
+      pattern = if typeof rule.pattern is 'string' then rule.pattern else if typeof rule.match is 'string' then rule.match else ''
+      match = pattern.trim()
+      continue unless match
+
+      flags = if rule.caseSensitive then '' else 'i'
+      line = "/#{Filter.escape(match)}/#{flags}"
+
+      options = []
+      if typeof rule.boards is 'string' and (boards = rule.boards.trim())
+        options.push "boards:#{boards}"
+
+      type = if rule.type of Config.filter then rule.type else switch rule.field
+        when 'title'
+          'subject'
+        when 'body'
+          'comment'
+        when 'name'
+          'name'
+        else
+          'general'
+      options.push "type:#{if type is 'general' then 'subject,name,comment' else type}"
+
+      hide = if rule.hide?
+        !!rule.hide
+      else
+        ['highlight', 'notify'].indexOf(rule.action) < 0
+
+      unless hide
+        if typeof rule.color is 'string' and (color = rule.color.trim())
+          options.push "highlight:#{color}"
+        else
+          options.push 'highlight'
+        options.push "top:#{if rule.auto then 'yes' else 'no'}"
+
+      if rule.action is 'notify'
+        options.push 'notify'
+
+      line += ";#{options.join(';')}" if options.length
+      lines.push line
+
+    lines
 
   # Parse comma-separated list of boards.
   # Sites can be specified by a beginning part of the site domain followed by a colon.

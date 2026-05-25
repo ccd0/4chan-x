@@ -14,6 +14,7 @@ Settings =
 
     add 'Main',     @main
     add 'Filter',   @filter
+    add 'Simple Filters', @easyFilters
     add 'Sauce',    @sauce
     add 'Advanced', @advanced
     add 'Keybinds', @keybinds
@@ -747,6 +748,168 @@ Settings =
     select = $ 'select', section
     $.on select, 'change', Settings.selectFilter
     Settings.selectFilter.call select
+
+  easyFilterTypes: [
+    ['General', 'general']
+    ['Post Number', 'postID']
+    ['Name', 'name']
+    ['Unique ID', 'uniqueID']
+    ['Tripcode', 'tripcode']
+    ['Capcode', 'capcode']
+    ['Pass Date', 'pass']
+    ['Email', 'email']
+    ['Subject', 'subject']
+    ['Comment', 'comment']
+    ['Flag', 'flag']
+    ['Filename', 'filename']
+    ['Dimensions', 'dimensions']
+    ['Filesize', 'filesize']
+    ['Image MD5', 'MD5']
+  ]
+
+  easyFilters: (section) ->
+    $.extend section, `<%= readHTML('SimpleFilters.html') %>`
+    tbody = $('tbody', section)
+    addButton = $('.easy-filter-add', section)
+    saveButton = $('.easy-filter-save', section)
+    status = $('.easy-filter-status', section)
+
+    markDirty = ->
+      status.textContent = 'Unsaved changes.'
+
+    save = ->
+      rules = Settings.collectEasyFilters tbody
+      serialized = JSON.stringify rules
+      $.set 'easyFilters', serialized
+      Conf['easyFilters'] = serialized
+      status.textContent = "Saved #{rules.length} rule#{if rules.length is 1 then '' else 's'}."
+
+    addRow = (rule={}) ->
+      row = Settings.easyFilterRow(rule, markDirty)
+      $.add tbody, row
+      row
+
+    rules = Settings.parseEasyFilters()
+    if rules.length
+      addRow(rule) for rule in rules
+    else
+      addRow
+        enabled: true
+        hide: true
+        type: 'tripcode'
+
+    $.on addButton, 'click', ->
+      row = addRow
+        enabled: true
+        hide: true
+        type: 'tripcode'
+      patternInput = $('.easy-filter-pattern', row)
+      if patternInput
+        patternInput.focus()
+        patternInput.select()
+      markDirty()
+
+    $.on saveButton, 'click', save
+
+    status.textContent = "Loaded #{rules.length} rule#{if rules.length is 1 then '' else 's'}."
+
+  parseEasyFilters: ->
+    rules = []
+    if Conf['easyFilters'] instanceof Array
+      rules = Conf['easyFilters']
+    else if typeof Conf['easyFilters'] is 'string' and Conf['easyFilters'].trim()
+      try
+        rules = JSON.parse Conf['easyFilters']
+      catch
+        rules = []
+    return [] unless rules instanceof Array
+
+    rules.map (rule) ->
+      return {} unless rule and typeof rule is 'object'
+
+      type = if rule.type of Config.filter then rule.type else switch rule.field
+        when 'title'
+          'subject'
+        when 'body'
+          'comment'
+        when 'name'
+          'name'
+        else
+          'general'
+
+      hide = if rule.hide?
+        !!rule.hide
+      else
+        ['highlight', 'notify'].indexOf(rule.action) < 0
+
+      {
+        enabled: if rule.enabled? then !!rule.enabled else true
+        pattern: if typeof rule.pattern is 'string' then rule.pattern else if typeof rule.match is 'string' then rule.match else ''
+        boards: if typeof rule.boards is 'string' then rule.boards else ''
+        type: type
+        color: if typeof rule.color is 'string' then rule.color else ''
+        auto: if rule.auto? then !!rule.auto else false
+        hide: hide
+      }
+
+  easyFilterRow: (rule, markDirty) ->
+    tr = $.el 'tr',
+      innerHTML: """
+        <td><input class="easy-filter-enabled" type="checkbox"></td>
+        <td><input class="field easy-filter-pattern" type="text"></td>
+        <td><input class="field easy-filter-boards" type="text" placeholder="all or g,v"></td>
+        <td><select class="easy-filter-type"></select></td>
+        <td><input class="field easy-filter-color" type="text" placeholder="highlight class"></td>
+        <td><input class="easy-filter-auto" type="checkbox" title="Move highlighted OPs to top"></td>
+        <td><input class="easy-filter-hide" type="checkbox"></td>
+        <td><button class="easy-filter-remove" type="button" title="Remove">\u00d7</button></td>
+      """
+
+    typeSelect = $('.easy-filter-type', tr)
+    for [label, value] in Settings.easyFilterTypes
+      $.add typeSelect, $.el 'option', {textContent: label, value}
+
+    enabledInput = $('.easy-filter-enabled', tr)
+    patternInput = $('.easy-filter-pattern', tr)
+    boardsInput = $('.easy-filter-boards', tr)
+    colorInput = $('.easy-filter-color', tr)
+    autoInput = $('.easy-filter-auto', tr)
+    hideInput = $('.easy-filter-hide', tr)
+    removeButton = $('.easy-filter-remove', tr)
+
+    enabledInput.checked = if rule.enabled? then !!rule.enabled else true
+    patternInput.value = rule.pattern or ''
+    boardsInput.value = rule.boards or ''
+    typeSelect.value = if rule.type of Config.filter then rule.type else 'general'
+    colorInput.value = rule.color or ''
+    autoInput.checked = !!rule.auto
+    hideInput.checked = if rule.hide? then !!rule.hide else true
+
+    for input in $$ 'input, select', tr
+      $.on input, 'change', markDirty
+      $.on input, 'input', markDirty if input.type in ['text']
+
+    $.on removeButton, 'click', ->
+      $.rm tr
+      markDirty()
+
+    tr
+
+  collectEasyFilters: (tbody) ->
+    rules = []
+    for tr in $$ 'tr', tbody
+      pattern = $('.easy-filter-pattern', tr).value.trim()
+      continue unless pattern
+      type = $('.easy-filter-type', tr).value
+      rules.push
+        enabled: $('.easy-filter-enabled', tr).checked
+        pattern: pattern
+        boards: $('.easy-filter-boards', tr).value.trim()
+        type: if type of Config.filter then type else 'general'
+        color: $('.easy-filter-color', tr).value.trim()
+        auto: $('.easy-filter-auto', tr).checked
+        hide: $('.easy-filter-hide', tr).checked
+    rules
 
   selectFilter: ->
     div = @nextElementSibling
