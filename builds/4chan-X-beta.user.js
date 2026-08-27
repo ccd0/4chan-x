@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X beta
-// @version      1.14.24.1
+// @version      1.14.24.2
 // @minGMVer     1.14
 // @minFFVer     26
 // @namespace    4chan-X
@@ -211,7 +211,7 @@ docSet = function() {
 };
 
 g = {
-  VERSION:   '1.14.24.1',
+  VERSION:   '1.14.24.2',
   NAMESPACE: '4chan X.',
   sites:     Object.create(null),
   boards:    Object.create(null)
@@ -17207,7 +17207,7 @@ Embedding = (function() {
         }
       }, {
         key: 'Twitter',
-        regExp: /^\w+:\/\/(?:www\.|mobile\.)?twitter\.com\/(\w+\/status\/\d+)/,
+        regExp: /^\w+:\/\/(?:www\.|mobile\.)?(?:twitter|x)\.com\/(\w+\/status\/\d+)/,
         style: 'border: none; width: 550px; height: 250px; overflow: hidden; resize: both;',
         el: function(a) {
           var cont, el, onMessage;
@@ -17216,16 +17216,16 @@ Embedding = (function() {
             return this.contentWindow.postMessage({
               element: 't',
               query: 'height'
-            }, 'https://twitframe.com');
+            }, 'https://tf.rita.moe');
           });
           onMessage = function(e) {
-            if (e.source === el.contentWindow && e.origin === 'https://twitframe.com') {
+            if (e.source === el.contentWindow && e.origin === 'https://tf.rita.moe') {
               $.off(window, 'message', onMessage);
               return (cont || el).style.height = (+$.minmax(e.data.height, 250, 0.8 * doc.clientHeight)) + "px";
             }
           };
           $.on(window, 'message', onMessage);
-          el.src = "https://twitframe.com/show?url=https://twitter.com/" + a.dataset.uid;
+          el.src = "https://tf.rita.moe/show?url=https://twitter.com/" + a.dataset.uid;
           if ($.engine === 'gecko') {
             el.style.cssText = 'border: none; width: 100%; height: 100%;';
             cont = $.el('div');
