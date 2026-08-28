@@ -149,7 +149,7 @@ ThreadHiding =
     numReplies += +summary.textContent.match /\d+/ if summary = $ g.SITE.selectors.summary, root
 
     a = ThreadHiding.makeButton thread, 'show'
-    $.add a, $.tn " #{thread.OP.info.nameBlock} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
+    $.add a, $.tn " #{if thread.OP.info.subject? then thread.OP.info.subject + ' - ' else ''}#{thread.OP.info.nameBlock} (#{if numReplies is 1 then '1 reply' else "#{numReplies} replies"})"
     thread.stub = $.el 'div',
       className: 'stub'
     if Conf['Menu']
