@@ -200,6 +200,12 @@ Keybinds =
       when Conf['Previous reply']
         return unless threadRoot
         Keybinds.hl -1, threadRoot
+      when Conf['Next filter highlight']
+        return unless threadRoot
+        Filter.cb.seek 'following'
+      when Conf['Previous filter highlight']
+        return unless threadRoot
+        Filter.cb.seek 'preceding'
       when Conf['Deselect reply']
         return unless threadRoot
         Keybinds.hl  0, threadRoot
