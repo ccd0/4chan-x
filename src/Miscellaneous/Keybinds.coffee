@@ -17,7 +17,7 @@ Keybinds =
     Conf[hotkey] = key
 
   keydown: (e) ->
-    return if not (key = Keybinds.keyCode e)
+    return if not (key = Keybinds.key e)
     {target} = e
     if target.nodeName in ['INPUT', 'TEXTAREA']
       return unless /(Esc|Alt|Ctrl|Meta|Shift\+\w{2,})/.test(key) and not /^Alt\+(\d|Up|Down|Left|Right)$/.test(key)
@@ -223,37 +223,37 @@ Keybinds =
     e.preventDefault()
     e.stopPropagation()
 
-  keyCode: (e) ->
-    key = switch kc = e.keyCode
-      when 8 # return
+  key: (e) ->
+    key = switch k = e.key
+      when 'Backspace'
         ''
-      when 13
+      when 'Enter'
         'Enter'
-      when 27
+      when 'Escape'
         'Esc'
-      when 32
+      when ' '
         'Space'
-      when 37
+      when 'ArrowLeft'
         'Left'
-      when 38
+      when 'ArrowUp'
         'Up'
-      when 39
+      when 'ArrowRight'
         'Right'
-      when 40
+      when 'ArrowDown'
         'Down'
-      when 188
+      when ','
         'Comma'
-      when 190
+      when '.'
         'Period'
-      when 191
+      when '/'
         'Slash'
-      when 59, 186
+      when ';', ':'
         'Semicolon'
       else
-        if 48 <= kc <= 57 or 65 <= kc <= 90 # 0-9, A-Z
-          String.fromCharCode(kc).toLowerCase()
-        else if 96 <= kc <= 105 # numpad 0-9
-          String.fromCharCode(kc - 48).toLowerCase()
+        if /[0-9A-Za-z]/.test(k)
+          k.toLowerCase()
+        else if /Numpad[0-9]/.test(k) # numpad 0-9
+          k.slice(-1)
         else
           null
     if key

@@ -842,9 +842,9 @@ Settings =
       return
 
   keybind: (e) ->
-    return if e.keyCode is 9 # tab
+    return if e.key is 'Tab'
     e.preventDefault()
     e.stopPropagation()
-    return unless (key = Keybinds.keyCode e)?
+    return unless (key = Keybinds.key e)?
     @value = key
     $.cb.value.call @

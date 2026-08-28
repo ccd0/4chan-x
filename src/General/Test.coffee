@@ -164,7 +164,7 @@ Test =
         c.log list2
 
     keydown: (e) ->
-      return unless Keybinds.keyCode(e) is 'v'
+      return unless Keybinds.key(e) is 'v'
       return if e.target.nodeName in ['INPUT', 'TEXTAREA']
       Test.testAll()
       e.preventDefault()

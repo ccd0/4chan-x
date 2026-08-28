@@ -245,7 +245,7 @@ Gallery =
 
   cb:
     keybinds: (e) ->
-      return if not (key = Keybinds.keyCode e)
+      return if not (key = Keybinds.key e)
 
       cb = switch key
         when Conf['Close'], Conf['Open Gallery']

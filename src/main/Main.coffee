@@ -241,7 +241,7 @@ Main =
 
     keyboard = false
     $.on d, 'mousedown', -> keyboard = false
-    $.on d, 'keydown', (e) -> (keyboard = true if e.keyCode is 9) # tab
+    $.on d, 'keydown', (e) -> (keyboard = true if e.key is 'Tab')
     window.addEventListener 'focus', (-> doc.classList.toggle 'keyboard-focus', keyboard), true
 
     Main.setClass()
