@@ -666,6 +666,7 @@ Main =
     ['Edit Link',                 QR.oekaki.menu]
     ['Download Link',             DownloadLink]
     ['Archive Link',              ArchiveLink]
+    ['Filter Labels',             FilterLabels]
     ['Quote Inlining',            QuoteInline]
     ['Quote Previewing',          QuotePreview]
     ['Quote Backlinks',           QuoteBacklink]

@@ -54,6 +54,7 @@ class Post
     @parseQuotes()
     @parseFiles()
 
+    @labels   = []
     @isDead   = false
     @isHidden = false
 

@@ -124,6 +124,8 @@ Filter =
     hl   = undefined
     top  = false
     noti = false
+    matcher = undefined
+    fielder = undefined
     if QuoteYou.isYou(post)
       hideable = false
     mask = (if post.isReply then 2 else 1)
@@ -139,6 +141,8 @@ Filter =
             (filter.mask & mask) or
             (if filter.isstring then (filter.regexp isnt value) else !filter.regexp.test(value))
           )
+          matcher = key
+          fielder = filter.regexp
           if filter.hide
             if hideable
               hide = true
@@ -150,21 +154,24 @@ Filter =
             if filter.noti
               noti = true
     if hide
-      {hide, stub}
+      {hide, stub, matcher, fielder}
     else
-      {hl, top, noti}
+      {hl, top, noti, matcher, fielder}
 
   node: ->
     return if @isClone
-    {hide, stub, hl, top, noti} = Filter.test @, (!@isFetchedQuote and (@isReply or g.VIEW is 'index'))
+    {hide, stub, hl, top, noti, matcher, fielder} = Filter.test @, (!@isFetchedQuote and (@isReply or g.VIEW is 'index'))
     if hide
       if @isReply
         PostHiding.hide @, stub
+        @labels.push "Hidden by the #{fielder} in #{matcher}"
       else
         ThreadHiding.hide @thread, stub
+        @labels.push "Hidden by the #{fielder} in #{matcher}"
     else
       if hl
         @highlights = hl
+        @labels.push "Highlighting with #{hl} by the #{fielder} in #{matcher}"
         $.addClass @nodes.root, hl...
     if noti and Unread.posts and (@ID > Unread.lastReadPost) and not QuoteYou.isYou(@)
       Unread.openNotification @, ' triggered a notification filter'

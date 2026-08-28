@@ -364,6 +364,11 @@ Config =
         'Add a download with original filename link to the menu.'
         1
       ]
+      'Filter Labels': [
+        true
+        'Add a menu entry that lists reasons for a post matching a filter.'
+        1
+      ]
 
     'Monitoring':
       'Thread Updater': [
