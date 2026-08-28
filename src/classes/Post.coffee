@@ -210,9 +210,8 @@ class Post
     file
 
   @deadMark =
-    # \u00A0 is nbsp
     $.el 'span',
-      textContent: '\u00A0(Dead)'
+      textContent: ' (Dead)'
       className:   'qmark-dead'
 
   kill: (file, index=0) ->
