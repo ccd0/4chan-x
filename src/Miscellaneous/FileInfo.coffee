@@ -11,6 +11,8 @@ FileInfo =
     if @isClone
       for a in $$ '.file-info .download-button', @file.text
         $.on a, 'click', ImageCommon.download
+      for a in $$ '.file-info .file-star-button', @file.text
+        $.on a, 'click', Gallery.cb.toggleFileStar if Gallery.enabled
       for a in $$ '.file-info .quick-filter-md5', @file.text
         $.on a, 'click', Filter.quickFilterMD5
       return
@@ -22,6 +24,7 @@ FileInfo =
     info = $.el 'span', {className: 'file-info'}
     FileInfo.format Conf['fileInfo'], @, info
     $.prepend @file.text, info
+    Gallery.refreshFileStarButtons() if Gallery.enabled
 
   format: (formatString, post, outputNode) ->
     output = []
@@ -34,8 +37,11 @@ FileInfo =
     $.extend outputNode, `<%= html('@{output}') %>`
     for a in $$ '.download-button', outputNode
       $.on a, 'click', ImageCommon.download
+    for a in $$ '.file-star-button', outputNode
+      $.on a, 'click', Gallery.cb.toggleFileStar if Gallery.enabled
     for a in $$ '.quick-filter-md5', outputNode
       $.on a, 'click', Filter.quickFilterMD5
+    Gallery.refreshFileStarButtons() if Gallery.enabled
     return
 
   formatters:
@@ -51,7 +57,13 @@ FileInfo =
       else
         `<%= html('<span class="fnswitch"><span class="fntrunc">${shortname}</span><span class="fnfull">${fullname}</span></span>') %>`
     N: -> `<%= html('${this.file.name}') %>`
-    d: -> `<%= html('<a href="${this.file.url}" download="${this.file.name}" class="fa fa-download download-button"></a>') %>`
+    d: ->
+      download = `<%= html('<a href="${this.file.url}" download="${this.file.name}" class="fa fa-download download-button"></a>') %>`
+      star = if Conf['Gallery']
+        `<%= html('<a href="javascript:;" class="fa fa-star-o file-star-button" title="Star image" data-url="${this.file.url}" data-name="${this.file.name}" data-thumb-url="${this.file.thumbURL || this.file.url}" data-file-index="${this.file.index}"></a>') %>`
+      else
+        null
+      innerHTML: download.innerHTML + (star?.innerHTML or '')
     f: -> `<%= html('<a href="javascript:;" class="fa fa-times quick-filter-md5"></a>') %>`
     p: -> `<%= html('?{this.file.isSpoiler}{Spoiler, }') %>`
     s: -> `<%= html('${this.file.size}') %>`

@@ -2267,7 +2267,33 @@ a:only-of-type > .remove {
   flex: 0 0 auto;
   padding: 3px;
   line-height: 0;
+  position: relative;
   transition: background .2s linear;
+}
+.gal-thumb.gal-thumb-starred {
+  box-shadow: inset 0 0 0 1px rgba(255, 224, 130, 0.7);
+}
+.gal-thumb-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 16px;
+  height: 16px;
+  line-height: 15px;
+  border-radius: 50%;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  background: rgba(0,0,0,0.65);
+  opacity: 0;
+  transition: opacity .15s ease-in-out;
+}
+:root.gal-starred-mode .gal-thumb-remove {
+  opacity: 0.85;
+}
+:root.gal-starred-mode .gal-thumb:hover .gal-thumb-remove {
+  opacity: 1;
 }
 .gal-highlight {
   background: rgba(0, 190, 255,.8);
@@ -2391,6 +2417,28 @@ a:only-of-type > .remove {
 .gal-stop i {
   border: 5px solid;
   bottom: 2px;
+}
+.gal-star {
+  display: inline-block;
+  position: relative;
+  bottom: 3.5px;
+  line-height: 1;
+  margin: 0 2px;
+  text-align: center;
+}
+.gal-star.starred {
+  color: #ffe082;
+}
+.gal-star > .fa {
+  font-size: 0.72em;
+  margin: 2px;
+}
+
+.file-star-button {
+  margin-left: 0.25em;
+}
+.file-star-button.starred {
+  color: #f5b301;
 }
 .gal-buttons.gal-playing > .gal-start,
 .gal-buttons:not(.gal-playing) > .gal-stop {

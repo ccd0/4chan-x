@@ -3,6 +3,19 @@ Gallery =
     return if not (@enabled = Conf['Gallery'] and g.VIEW in ['index', 'thread'])
 
     @delay = Conf['Slide Delay']
+    @starredStorageKey = 'starredGalleryImages'
+    @starred = $.dict()
+    @starredLoaded = false
+    @starredLoading = false
+    @starredLoadCallbacks = []
+
+    @loadStarred()
+    $.sync @starredStorageKey, (starred) ->
+      Gallery.starred = Gallery.normalizeStarred starred
+      Gallery.starredLoaded = true
+      Gallery.refreshStarredShortcut()
+      Gallery.refreshStarUI()
+      Gallery.refreshFileStarButtons()
 
     el = $.el 'a',
       href: 'javascript:;'
@@ -14,20 +27,31 @@ Gallery =
 
     Header.addShortcut 'gallery', el, 530
 
+    @starredShortcut = starred = $.el 'a',
+      href: 'javascript:;'
+      title: 'Starred Images'
+      className: 'fa fa-star-o'
+      textContent: 'Starred'
+
+    $.on starred, 'click', @cb.openStarred
+
+    Header.addShortcut 'starred-gallery', starred, 531
+    @refreshStarredShortcut()
+
     Callbacks.Post.push
       name: 'Gallery'
       cb:   @node
 
   node: ->
     for file in @files when file.thumb
-      if Gallery.nodes
+      if Gallery.nodes and Gallery.mode is 'thread'
         Gallery.generateThumb @, file
         Gallery.nodes.total.textContent = Gallery.images.length
 
       unless Conf['Image Expansion'] or (g.SITE.software is 'tinyboard' and Main.jsEnabled)
         $.on file.thumbLink, 'click', Gallery.cb.image
 
-  build: (image) ->
+  build: (image, starredMode=false) ->
     {cb} = Gallery
 
     if Conf['Fullscreen Gallery']
@@ -40,6 +64,7 @@ Gallery =
     nodes = Gallery.nodes = {}
     Gallery.fileIDs = $.dict()
     Gallery.slideshow = false
+    Gallery.mode = if starredMode then 'starred' else 'thread'
 
     nodes.el = dialog = $.el 'div',
       id: 'a-gallery'
@@ -55,6 +80,7 @@ Gallery =
       thumbs:  '.gal-thumbnails'
       next:    '.gal-image a'
       current: '.gal-image img'
+      star:    '.gal-star'
     }
 
     menuButton = $ '.menu-button', dialog
@@ -69,6 +95,7 @@ Gallery =
     $.on $('.gal-next',  dialog), 'click', cb.next
     $.on $('.gal-start', dialog), 'click', cb.start
     $.on $('.gal-stop',  dialog), 'click', cb.stop
+    $.on nodes.star,      'click', cb.toggleStar
     $.on $('.gal-close', dialog), 'click', cb.close
 
     $.on menuButton, 'click', (e) ->
@@ -83,16 +110,21 @@ Gallery =
 
     $.on window, 'resize', Gallery.cb.setHeight
 
-    for postThumb in $$ g.SITE.selectors.file.thumb
-      continue unless (post = Get.postFromNode postThumb)
-      for file in post.files when file.thumb
-        Gallery.generateThumb post, file
-        # If no image to open is given, pick image we have scrolled to.
-        if !image and Gallery.fileIDs["#{post.fullID}.#{file.index}"]
-          candidate = file.thumbLink
-          if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
-            image = candidate
+    if starredMode
+      for entry in Gallery.getStarredEntries()
+        Gallery.generateStarredThumb entry
+    else
+      for postThumb in $$ g.SITE.selectors.file.thumb
+        continue unless (post = Get.postFromNode postThumb)
+        for file in post.files when file.thumb
+          Gallery.generateThumb post, file
+          # If no image to open is given, pick image we have scrolled to.
+          if !image and Gallery.fileIDs["#{post.fullID}.#{file.index}"]
+            candidate = file.thumbLink
+            if Header.getTopOf(candidate) + candidate.getBoundingClientRect().height >= 0
+              image = candidate
     $.addClass doc, 'gallery-open'
+    doc.classList.toggle 'gal-starred-mode', starredMode
 
     $.add d.body, dialog
 
@@ -131,6 +163,203 @@ Gallery =
 
     Gallery.images.push thumb
     $.add Gallery.nodes.thumbs, thumb
+    Gallery.updateThumbStarredState thumb
+
+  generateStarredThumb: (entry) ->
+    return unless entry?.url
+
+    thumb = $.el 'a',
+      className: 'gal-thumb'
+      href:      entry.url
+      target:    '_blank'
+      title:     entry.name or entry.url
+
+    thumb.dataset.id = Gallery.images.length
+    thumb.dataset.starred = '1'
+    thumb.dataset.post  = entry.postID if entry.postID?
+    thumb.dataset.file  = entry.fileIndex if entry.fileIndex?
+
+    thumbImg = $.el 'img',
+      src: entry.thumbURL or entry.url
+    $.on thumbImg, 'error', ->
+      return if @src is entry.url
+      @src = entry.url
+    $.add thumb, thumbImg
+
+    remove = $.el 'span',
+      className: 'gal-thumb-remove'
+      textContent: '×'
+      title: 'Remove starred image'
+    $.on remove, 'click', Gallery.cb.removeStarredThumb
+    $.add thumb, remove
+
+    $.on thumb, 'click', Gallery.cb.open
+
+    Gallery.images.push thumb
+    $.add Gallery.nodes.thumbs, thumb
+    Gallery.updateThumbStarredState thumb
+
+  loadStarred: (cb) ->
+    if Gallery.starredLoaded
+      cb?(Gallery.starred)
+      return
+
+    Gallery.starredLoadCallbacks.push cb if cb
+    return if Gallery.starredLoading
+
+    Gallery.starredLoading = true
+    $.get Gallery.starredStorageKey, $.dict(), (items) ->
+      Gallery.starred = Gallery.normalizeStarred items[Gallery.starredStorageKey]
+      Gallery.starredLoaded = true
+      Gallery.starredLoading = false
+      Gallery.refreshStarredShortcut()
+      Gallery.refreshStarUI()
+      while (cb2 = Gallery.starredLoadCallbacks.shift())
+        cb2 Gallery.starred
+
+  normalizeStarred: (starred) ->
+    result = $.dict()
+    return result unless starred and typeof starred is 'object'
+    for url, entry of starred when typeof url is 'string'
+      if !entry or typeof entry isnt 'object'
+        entry = {url}
+      entry = $.dict.clone entry
+      entry.url = url
+      entry.starredAt = Date.now() unless +entry.starredAt > 0
+      result[url] = entry
+    result
+
+  persistStarred: ->
+    $.set Gallery.starredStorageKey, Gallery.starred
+    Gallery.refreshStarredShortcut()
+    Gallery.refreshThumbStarredStates()
+    Gallery.refreshStarUI()
+    Gallery.refreshFileStarButtons()
+
+  getStarredEntries: ->
+    entries = (entry for own url, entry of Gallery.starred when entry?.url)
+    entries.sort (a, b) -> (b.starredAt or 0) - (a.starredAt or 0)
+
+  refreshStarredShortcut: ->
+    return unless Gallery.starredShortcut
+    count = Object.keys(Gallery.starred or {}).length
+    Gallery.starredShortcut.className = "fa #{if count then 'fa-star' else 'fa-star-o'}"
+    Gallery.starredShortcut.title = if count then "Starred Images (#{count})" else 'Starred Images'
+
+  getCurrentThumb: ->
+    return unless Gallery.nodes
+    Gallery.images[+Gallery.nodes.current.dataset.id]
+
+  makeStarredEntry: (thumb) ->
+    return unless thumb?.href
+    postID = thumb.dataset.post
+    fileIndex = thumb.dataset.file
+    [boardID, postNum] = (postID or '').split '.'
+    post = g.posts.get(postID) if postID
+    file = post?.files[+fileIndex]
+    thumbEl = $('img, video', thumb)
+    {
+      url: thumb.href
+      name: thumb.title or thumb.href.split('/').pop()
+      thumbURL: file?.thumbURL or thumbEl?.src or thumb.href
+      siteID: g.SITE.ID
+      boardID: boardID or post?.board?.ID
+      threadID: post?.thread?.ID
+      postID: postID
+      postNum: +postNum or post?.ID
+      fileIndex: +fileIndex
+      starredAt: Date.now()
+    }
+
+  makeStarredEntryFromFile: (post, file) ->
+    return unless file?.url
+    postID = post?.fullID
+    [boardID, postNum] = (postID or '').split '.'
+    {
+      url: file.url
+      name: file.name or file.url.split('/').pop()
+      thumbURL: file.thumbURL or file.thumb?.src or file.url
+      siteID: g.SITE.ID
+      boardID: boardID or post?.board?.ID
+      threadID: post?.thread?.ID
+      postID: postID
+      postNum: +postNum or post?.ID
+      fileIndex: +file.index
+      starredAt: Date.now()
+    }
+
+  isStarredURL: (url) ->
+    !!Gallery.starred?[url]
+
+  isStarredThumb: (thumb) ->
+    Gallery.isStarredURL thumb?.href
+
+  starThumb: (thumb) ->
+    return unless (entry = Gallery.makeStarredEntry thumb)
+    Gallery.starred[entry.url] = entry
+    Gallery.persistStarred()
+
+  unstarURL: (url) ->
+    return unless url and Gallery.starred?[url]
+    delete Gallery.starred[url]
+    Gallery.persistStarred()
+
+  updateThumbStarredState: (thumb) ->
+    return unless thumb
+    isStarred = Gallery.isStarredThumb thumb
+    thumb.classList.toggle 'gal-thumb-starred', isStarred
+    thumb.dataset.starred = if isStarred then '1' else '0'
+
+  refreshThumbStarredStates: ->
+    return unless Gallery.images
+    Gallery.updateThumbStarredState thumb for thumb in Gallery.images
+
+  updateFileStarButton: (button) ->
+    return unless button?.dataset?.url
+    isStarred = Gallery.isStarredURL button.dataset.url
+    button.classList.toggle 'starred', isStarred
+    button.classList.toggle 'fa-star', isStarred
+    button.classList.toggle 'fa-star-o', !isStarred
+    button.title = if isStarred then 'Unstar image' else 'Star image'
+
+  refreshFileStarButtons: ->
+    Gallery.updateFileStarButton button for button in $$('.file-star-button')
+
+  refreshStarUI: ->
+    return unless Gallery.nodes?.star
+    thumb = Gallery.getCurrentThumb()
+    isStarred = Gallery.isStarredThumb thumb
+    Gallery.nodes.star.classList.toggle 'starred', isStarred
+    icon = $('i', Gallery.nodes.star)
+    icon.classList.toggle 'fa-star', isStarred
+    icon.classList.toggle 'fa-star-o', !isStarred
+    Gallery.nodes.star.title = if isStarred then 'Remove starred image' else 'Star image'
+
+  removeThumb: (thumb) ->
+    return unless Gallery.nodes and thumb
+
+    id = +thumb.dataset.id
+    currentID = +Gallery.nodes.current.dataset.id
+    wasCurrent = id is currentID
+
+    $.rm thumb
+    Gallery.images.splice id, 1
+    image.dataset.id = i for image, i in Gallery.images
+
+    if !wasCurrent and id < currentID
+      Gallery.nodes.current.dataset.id = currentID - 1
+
+    Gallery.nodes.total.textContent = Gallery.images.length
+
+    if !Gallery.images.length
+      Gallery.cb.close()
+      new Notice 'info', 'No starred images.'
+      return
+
+    if wasCurrent
+      Gallery.open Gallery.images[id] or Gallery.images[id - 1]
+    else
+      Gallery.refreshStarUI()
 
   load: (thumb, errorCB) ->
     ext = thumb.href.match /\w*$/
@@ -178,6 +407,7 @@ Gallery =
     nodes.name.href         = thumb.href
     nodes.frame.scrollTop   = 0
     nodes.next.focus()
+    Gallery.refreshStarUI()
 
     # Set sauce links
     $.rmAll nodes.sauce
@@ -281,6 +511,63 @@ Gallery =
       e.stopPropagation()
       Gallery.build @
 
+    openStarred: (e) ->
+      e?.preventDefault()
+      Gallery.loadStarred ->
+        if !Gallery.getStarredEntries().length
+          new Notice 'info', 'No starred images yet.'
+          return
+        Gallery.cb.close() if Gallery.nodes
+        Gallery.build null, true
+
+    toggleStar: (e) ->
+      e?.preventDefault()
+      thumb = Gallery.getCurrentThumb()
+      return unless thumb
+
+      if !Gallery.starredLoaded
+        Gallery.loadStarred ->
+          Gallery.cb.toggleStar()
+        return
+
+      if Gallery.isStarredThumb thumb
+        Gallery.unstarURL thumb.href
+        if Gallery.mode is 'starred'
+          Gallery.removeThumb thumb
+      else
+        Gallery.starThumb thumb
+
+    removeStarredThumb: (e) ->
+      e.preventDefault()
+      e.stopPropagation()
+      thumb = @parentNode
+      return unless thumb?.href
+      Gallery.unstarURL thumb.href
+      Gallery.removeThumb thumb
+
+    toggleFileStar: (e) ->
+      e?.preventDefault()
+      button = @
+      return unless (url = button?.dataset?.url)
+
+      if Gallery.isStarredURL url
+        Gallery.unstarURL url
+        return
+
+      post = Get.postFromNode button
+      fileIndex = +button.dataset.fileIndex
+      file = post?.files?[fileIndex]
+      entry = Gallery.makeStarredEntryFromFile(post, file)
+      unless entry
+        entry =
+          url: url
+          name: button.dataset.name or url.split('/').pop()
+          thumbURL: button.dataset.thumbUrl or url
+          siteID: g.SITE.ID
+          starredAt: Date.now()
+      Gallery.starred[url] = entry
+      Gallery.persistStarred()
+
     prev:      ->
       Gallery.cb.open.call(
         Gallery.images[+Gallery.nodes.current.dataset.id - 1] or Gallery.images[Gallery.images.length - 1]
@@ -337,12 +624,14 @@ Gallery =
       ImageCommon.pause Gallery.nodes.current
       $.rm Gallery.nodes.el
       $.rmClass doc, 'gallery-open'
+      $.rmClass doc, 'gal-starred-mode'
       if Conf['Fullscreen Gallery']
         $.off d, 'fullscreenchange mozfullscreenchange webkitfullscreenchange', Gallery.cb.close
         d.mozCancelFullScreen?()
         d.webkitExitFullscreen?()
       delete Gallery.nodes
       delete Gallery.fileIDs
+      delete Gallery.mode
       doc.style.overflow = ''
 
       $.off d, 'keydown', Gallery.cb.keybinds
