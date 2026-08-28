@@ -213,6 +213,10 @@ Config =
         true
         'Add buttons to hide single replies.'
       ]
+      'Always Show Highlighted Threads': [
+        false
+        'Make thread highlighting override hiding.'
+      ]
       'Stubs': [
         true
         'Show stubs of hidden threads / replies.'
