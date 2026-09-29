@@ -32,7 +32,7 @@ class Menu
       id:        'menu'
       tabIndex:  0
     menu.dataset.type = @type
-    $.on menu, 'click', (e) -> e.stopPropagation()
+    $.on menu, 'click touchstart mousedown', (e) -> e.stopPropagation()
     $.on menu, 'keydown', @keybinds
     menu
 
