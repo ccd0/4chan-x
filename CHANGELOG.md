@@ -4,6 +4,10 @@
 
 ### v1.14.24
 
+**v1.14.24.2** *(2026-08-27)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.24.2/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.24.2/builds/4chan-X-noupdate.crx)]
+- (burningwiththefiresoforc) Replace hijacked twitframe domain to tf.rita.moe.
+- Support x.com domain also.
+
 **v1.14.24.1** *(2026-05-24)* - [[Userscript](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.24.1/builds/4chan-X-noupdate.user.js)] [[Chrome extension](https://raw.githubusercontent.com/ccd0/4chan-x/1.14.24.1/builds/4chan-X-noupdate.crx)]
 - Make tripcode filtering work again after 4chan update.
 
